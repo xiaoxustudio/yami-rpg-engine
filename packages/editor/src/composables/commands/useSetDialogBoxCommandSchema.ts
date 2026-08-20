@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetDialogBoxCommandSchema() {
-	const { form, save, load } = useCommandSchema('setDialogBox', {
+	const { form, save, load, commit } = useCommandSchema('setDialogBox', {
 		onLoad() {
 			getFocus(document.getElementById('setDialogBox-element'));
 		}
@@ -16,7 +16,7 @@ export function useSetDialogBoxCommandSchema() {
 			getFocus(document.getElementById('setDialogBox-properties'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			element: read(document.getElementById('setDialogBox-element')) ?? form.element,
 			properties
 		});

@@ -1,6 +1,5 @@
 import { Path } from '@app/utils/config';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Updater } from './updater.ts';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
@@ -103,11 +102,12 @@ function updateIncrementalChanges(version: string) {
 			const files = FS.readdirSync!(srcPluginDir, { withFileTypes: true });
 			for (const file of files) {
 				const guid = guidRegExp.exec(file.name)?.[0];
+				const { manifest } = getDataStore().data;
 				if (filters.length === 0 || filters.includes(guid as string)) {
-					const meta = Data.manifest.guidMap[guid as string];
+					const meta = manifest!.guidMap[guid as string];
 					if (meta) {
 						const sPath = Path.resolve!(srcPluginDir, file.name);
-						const dPath = File.path!(meta.path);
+						const dPath = Path.resolve!(dstProjectDir, meta.path);
 						this.copyFile!(sPath, dPath);
 					}
 				}

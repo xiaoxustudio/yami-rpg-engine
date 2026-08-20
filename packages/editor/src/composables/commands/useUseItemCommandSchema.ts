@@ -5,7 +5,7 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useUseItemCommandSchema() {
-	const { form, save, load } = useCommandSchema('useItem', {
+	const { form, save, load, commit } = useCommandSchema('useItem', {
 		onLoad() {
 			document
 				.getElementById('useItem-key')
@@ -24,7 +24,7 @@ export function useUseItemCommandSchema() {
 					getFocus(document.getElementById('useItem-key'));
 					return;
 				}
-				Command.save?.({ actor, mode, key, wait });
+				commit({ actor, mode, key, wait });
 				break;
 			}
 			case 'by-id': {
@@ -33,11 +33,11 @@ export function useUseItemCommandSchema() {
 					getFocus(document.getElementById('useItem-itemId'));
 					return;
 				}
-				Command.save?.({ actor, mode, itemId, wait });
+				commit({ actor, mode, itemId, wait });
 				break;
 			}
 			case 'by-item':
-				Command.save?.({
+				commit({
 					actor,
 					mode,
 					item: read(document.getElementById('useItem-item')) ?? form.item,

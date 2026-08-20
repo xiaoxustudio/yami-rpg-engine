@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetListCommandSchema() {
-	const { form, save, load } = useCommandSchema('setList', {
+	const { form, save, load, commit } = useCommandSchema('setList', {
 		onLoad() {
 			getFocus(document.getElementById('setList-variable'));
 		}
@@ -79,7 +79,7 @@ export function useSetListCommandSchema() {
 			form.operation) as string;
 		switch (operation) {
 			case 'set-empty':
-				Command.save?.({ variable, operation });
+				commit({ variable, operation });
 				break;
 			case 'set-numbers': {
 				const list = (read(document.getElementById('setList-numbers')) ??
@@ -87,7 +87,7 @@ export function useSetListCommandSchema() {
 				if (list.length === 0) {
 					return getFocus(document.getElementById('setList-numbers'));
 				}
-				Command.save?.({ variable, operation, list });
+				commit({ variable, operation, list });
 				break;
 			}
 			case 'set-strings': {
@@ -96,7 +96,7 @@ export function useSetListCommandSchema() {
 				if (list.length === 0) {
 					return getFocus(document.getElementById('setList-strings'));
 				}
-				Command.save?.({ variable, operation, list });
+				commit({ variable, operation, list });
 				break;
 			}
 			case 'set-boolean': {
@@ -105,7 +105,7 @@ export function useSetListCommandSchema() {
 				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
 				const constant = read(document.getElementById('setList-boolean')) ?? form.boolean;
-				Command.save?.({ variable, operation, index, constant, skipCheck });
+				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-number': {
@@ -114,7 +114,7 @@ export function useSetListCommandSchema() {
 				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
 				const constant = read(document.getElementById('setList-number')) ?? form.number;
-				Command.save?.({ variable, operation, index, constant, skipCheck });
+				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-string': {
@@ -123,7 +123,7 @@ export function useSetListCommandSchema() {
 				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
 				const constant = read(document.getElementById('setList-string')) ?? form.string;
-				Command.save?.({ variable, operation, index, constant, skipCheck });
+				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-variable': {
@@ -135,7 +135,7 @@ export function useSetListCommandSchema() {
 				if (VariableGetter.isNone!(operand)) {
 					return getFocus(document.getElementById('setList-operand'));
 				}
-				Command.save?.({ variable, operation, index, operand, skipCheck });
+				commit({ variable, operation, index, operand, skipCheck });
 				break;
 			}
 			case 'split-string': {
@@ -145,7 +145,7 @@ export function useSetListCommandSchema() {
 				}
 				const separator = (read(document.getElementById('setList-separator')) ??
 					form.separator) as string;
-				Command.save?.({ variable, operation, operand, separator });
+				commit({ variable, operation, operand, separator });
 				break;
 			}
 			case 'push':
@@ -154,7 +154,7 @@ export function useSetListCommandSchema() {
 				if (VariableGetter.isNone!(operand)) {
 					return getFocus(document.getElementById('setList-operand'));
 				}
-				Command.save?.({ variable, operation, operand });
+				commit({ variable, operation, operand });
 				break;
 			}
 			case 'get-attribute-names':
@@ -164,7 +164,7 @@ export function useSetListCommandSchema() {
 				if (groupId === '') {
 					return getFocus(document.getElementById('setList-attribute-groupId'));
 				}
-				Command.save?.({ variable, operation, groupId });
+				commit({ variable, operation, groupId });
 				break;
 			}
 			case 'get-enum-names':
@@ -174,12 +174,12 @@ export function useSetListCommandSchema() {
 				if (groupId === '') {
 					return getFocus(document.getElementById('setList-enum-groupId'));
 				}
-				Command.save?.({ variable, operation, groupId });
+				commit({ variable, operation, groupId });
 				break;
 			}
 			case 'get-actor-targets': {
 				const actor = read(document.getElementById('setList-actor')) ?? form.actor;
-				Command.save?.({ variable, operation, actor });
+				commit({ variable, operation, actor });
 				break;
 			}
 		}

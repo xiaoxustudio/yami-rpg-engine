@@ -24,6 +24,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -36,20 +37,15 @@ const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIReferencePage();
 
+const { bindInput } = useInspectorInput();
+
 onMounted(() => {
 	const uiReference = Inspector.uiReference;
 	if (uiReference) {
 		const elements = document.querySelectorAll(
 			'#uiReference-prefabId, #uiReference-synchronous'
 		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		if (Inspector.inputBlur) {
-			(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-				el.addEventListener('blur', Inspector.inputBlur!(uiReference, UI))
-			);
-		}
+		bindInput(elements, uiReference, UI);
 	}
 	const el = document.getElementById('uiReference-vue-mount');
 	if (el) {

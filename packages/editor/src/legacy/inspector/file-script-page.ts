@@ -13,11 +13,13 @@ import { Inspector } from './inspector.ts';
 	const FileScript: FileScriptShape = {
 		target: null,
 		meta: null,
+		info: null,
 		overview: null,
 		initialize: null,
 		create: null,
 		open: null,
 		close: null,
+		update: null,
 		windowLocalize: null
 	};
 
@@ -40,11 +42,12 @@ export default class Plugin {
 			this.target = file;
 			this.meta = meta;
 
-			const elName = $('#fileScript-name');
-			const elSize = $('#fileScript-size');
 			const size = Number((file.stats as unknown as { size: number }).size);
-			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize!(size);
+			this.info = {
+				name: file.basename + file.extname,
+				size: File.parseFileSize!(size)
+			};
+			this.update!();
 
 			await Data.scripts[meta!.guid];
 			this.meta = meta;
@@ -59,6 +62,12 @@ export default class Plugin {
 			this.meta = null;
 			this.overview?.dispatchEvent(new Event('update'));
 		}
+	};
+
+	FileScript.update = function (this: typeof FileScript) {
+		const el = $('#fileScript');
+		if (!el) return;
+		(el as HTMLElement & { update?: () => void }).update?.();
 	};
 
 	FileScript.windowLocalize = function (this, event: Event) {

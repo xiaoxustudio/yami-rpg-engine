@@ -1,4 +1,5 @@
 import { $ } from '@app/utils/dom';
+import { markRaw } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { reportError } from '@app/legacy/util/safe.ts';
@@ -6,6 +7,7 @@ import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
 import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window.ts';
 import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commandCases } from '@app/legacy/command/command-registry.ts';
 import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';
 import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
 import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
@@ -208,7 +210,7 @@ export class CommandSchema {
 	// --- 静态分发方法 ---
 
 	static _resolve(id: string) {
-		return Command.cases[id];
+		return commandCases[id];
 	}
 
 	static _topoSort(names: string[], getDeps: (name: string) => string[]) {
@@ -235,7 +237,7 @@ export class CommandSchema {
 	}
 
 	static initAll() {
-		Command.words = new Command.WordList();
+		Command.words = markRaw(new Command.WordList());
 		const subMap: Record<
 			string,
 			{ dependsOn?: string[]; initialize: (() => boolean | void) | null }
@@ -278,7 +280,7 @@ export class CommandSchema {
 		} catch (error) {
 			console.error('[initAll] Command.custom initialize failed:', error);
 		}
-		for (const [caseName, object] of Object.entries(Command.cases)) {
+		for (const [caseName, object] of Object.entries(commandCases)) {
 			try {
 				if (object.initialize?.() === false) {
 					retry.push(() => object.initialize?.());

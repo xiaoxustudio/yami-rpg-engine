@@ -1,5 +1,5 @@
 ﻿import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
@@ -21,7 +21,7 @@ const getFactor = (): number => webFrame.getZoomFactor();
 
 const open = (): void => {
 	const factor = getFactor();
-	Window.open!('zoom');
+	getWindowStore().open('zoom');
 	Object.assign(form, { factor });
 	const setForm = (
 		document.getElementById('zoom') as
@@ -40,7 +40,7 @@ const confirm = (): void => {
 	if (factor !== undefined) {
 		Editor.config!.zoom = factor;
 	}
-	Window.close!('zoom');
+	getWindowStore().close('zoom');
 	webFrame.setZoomFactor(Editor.config!.zoom!);
 };
 

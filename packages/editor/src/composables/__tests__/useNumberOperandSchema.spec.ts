@@ -13,6 +13,37 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setStringColor: (value: unknown) => `[str:${value}]`,
+	setScriptColor: (value: unknown) => `[script:${value}]`,
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	parseVariableNumber: (value: unknown) =>
+		`[vnum:${typeof value === 'object' ? (value as { key: string }).key : value}]`,
+	parseVariableString: (value: unknown) => `[vstr:${value}]`,
+	parseVariableFile: (id: string) => `<vfile:${id}>`,
+	parseVariableEnum: (group: string, key: string) => `<venum:${group}:${key}>`,
+	parsePosition: (position: { type: string }) => `<pos:${position.type}>`,
+	parseActor: (actor: { type: string }) => `<actor:${actor.type}>`,
+	parseSkill: (skill: { type: string }) => `<skill:${skill.type}>`,
+	parseState: (state: { type: string }) => `<state:${state.type}>`,
+	parseEquipment: (equipment: { type: string }) => `<equipment:${equipment.type}>`,
+	parseItem: (item: { type: string }) => `<item:${item.type}>`,
+	parseTrigger: (trigger: { type: string }) => `<trigger:${trigger.type}>`,
+	parseTilemap: (tilemap: { type: string }) => `<tilemap:${tilemap.type}>`,
+	parseElement: (element: { type: string }) => `<element:${element.type}>`,
+	parseListItem: (variable: { key: string }, index: number) => `<list:${variable.key}:${index}>`,
+	parseParameter: (key: string) => `<param:${key}>`,
+	parseTeam: (teamId: string) => `<team:${teamId}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -54,38 +85,6 @@ const makeOperand = (value: number) => ({
 	value
 });
 
-const mockCommand = (): void => {
-	Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-	Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
-	Command.setScriptColor = ((value: unknown) => `[script:${value}]`) as never;
-	Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-	Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-	Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-	Command.parseVariable = ((variable: { key: string }, type: string) =>
-		`<var:${variable.key}:${type}>`) as never;
-	Command.parseVariableNumber = ((value: unknown) =>
-		`[vnum:${typeof value === 'object' ? (value as { key: string }).key : value}]`) as never;
-	Command.parseVariableString = ((value: unknown) => `[vstr:${value}]`) as never;
-	Command.parseVariableFile = ((id: string) => `<vfile:${id}>`) as never;
-	Command.parseVariableEnum = ((group: string, key: string) =>
-		`<venum:${group}:${key}>`) as never;
-	Command.parsePosition = ((position: { type: string }) => `<pos:${position.type}>`) as never;
-	Command.parseActor = ((actor: { type: string }) => `<actor:${actor.type}>`) as never;
-	Command.parseSkill = ((skill: { type: string }) => `<skill:${skill.type}>`) as never;
-	Command.parseState = ((state: { type: string }) => `<state:${state.type}>`) as never;
-	Command.parseEquipment = ((equipment: { type: string }) =>
-		`<equipment:${equipment.type}>`) as never;
-	Command.parseItem = ((item: { type: string }) => `<item:${item.type}>`) as never;
-	Command.parseTrigger = ((trigger: { type: string }) => `<trigger:${trigger.type}>`) as never;
-	Command.parseTilemap = ((tilemap: { type: string }) => `<tilemap:${tilemap.type}>`) as never;
-	Command.parseElement = ((element: { type: string }) => `<element:${element.type}>`) as never;
-	Command.parseListItem = ((variable: { key: string }, index: number) =>
-		`<list:${variable.key}:${index}>`) as never;
-	Command.parseParameter = ((key: string) => `<param:${key}>`) as never;
-	Command.parseTeam = ((teamId: string) => `<team:${teamId}>`) as never;
-	Command.removeTextTags = ((value: string) => value) as never;
-};
-
 describe('useNumberOperandSchema（数值操作数窗口 composable：parse 树形渲染/动态行 insert/edit/save）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -95,7 +94,9 @@ describe('useNumberOperandSchema（数值操作数窗口 composable：parse 树�
 		Enum.getStringItems = vi.fn(() => []) as never;
 		Enum.getDefStringId = vi.fn(() => 'id0') as never;
 		Data.teams = { list: [{ id: 'team0' }] } as never;
-		mockCommand();
+		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
+		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
+		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
 		NumberOperand.target = null;
 	});
 

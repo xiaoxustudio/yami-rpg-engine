@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface TriggerGetterForm {
@@ -36,7 +36,7 @@ const getFrame = (): TriggerGetterFrame | null =>
 
 const open = (target: TriggerGetterTarget): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
-	Window.open!('triggerGetter');
+	getWindowStore().open('triggerGetter');
 
 	let variable = { type: 'local', key: '' };
 	const trigger = target.read?.() ?? {};
@@ -70,7 +70,7 @@ const confirm = (): void => {
 			break;
 	}
 	callback?.(getter!);
-	Window.close!('triggerGetter');
+	getWindowStore().close('triggerGetter');
 };
 
 const onWindowClosed = (): void => {

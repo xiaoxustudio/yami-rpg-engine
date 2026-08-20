@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface RegionGetterForm {
@@ -36,7 +36,7 @@ const getFrame = (): RegionGetterFrame | null =>
 
 const open = (target: RegionGetterTarget, defaults?: Partial<RegionGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
-	Window.open!('regionGetter');
+	getWindowStore().open('regionGetter');
 
 	let presetId = defaults?.presetId ?? '';
 	const region = target.read?.() ?? {};
@@ -68,7 +68,7 @@ const confirm = (): void => {
 			break;
 	}
 	callback?.(getter!);
-	Window.close!('regionGetter');
+	getWindowStore().close('regionGetter');
 };
 
 const onWindowClosed = (): void => {

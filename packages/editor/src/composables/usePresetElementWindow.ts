@@ -1,4 +1,4 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { getWindowStore } from '@app/stores/window';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
@@ -77,7 +77,7 @@ function initialize(): void {
 
 function open(openTarget: PresetElementTarget): void {
 	target = openTarget;
-	Window.open!('presetElement');
+	getWindowStore().open('presetElement');
 
 	const presetId = read(openTarget) || (UI.target?.presetId ?? '');
 	const uiId = Data.uiPresets[presetId]?.uiId ?? UI.meta?.guid ?? '';
@@ -177,7 +177,7 @@ function confirm(event?: Event): void {
 		return getFocus(list);
 	}
 	target?.input?.(presetId);
-	Window.close!('presetElement');
+	getWindowStore().close('presetElement');
 }
 
 export function usePresetElementWindow(): PresetElementWindow {

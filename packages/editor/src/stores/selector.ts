@@ -1,10 +1,10 @@
 ﻿import { defineStore } from 'pinia';
 import type { MenuItem } from '@ui-kit';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { shallowRef } from 'vue';
 import { $ } from '@app/utils/dom';
 import { clear, hasClass, seek } from '@app/utils/element-utils';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { getDataStore } from '@app/stores/data';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
@@ -147,10 +147,10 @@ export const useSelectorStore = defineStore('selector', () => {
 		target.value = t;
 		allowNone.value = allowNoneParam;
 		state.value = 'open';
-		Window.open?.('selector');
+		getWindowStore().open('selector');
 		const { nav, head, body } = Selector ?? {};
 		const guid = t.read();
-		const meta = Data.manifest.guidMap[guid];
+		const meta = getDataStore().data.manifest!.guidMap[guid];
 		const filter = t.filter;
 		Selector.filters = filter ? filter.split(' ') : null;
 		body?.computeGridProperties?.();
@@ -195,14 +195,14 @@ export const useSelectorStore = defineStore('selector', () => {
 				const meta = (files[0] as { meta?: { guid?: string } })?.meta;
 				if (meta !== undefined) {
 					Selector.target?.input?.(meta?.guid);
-					Window.close?.('selector');
+					getWindowStore().close('selector');
 				}
 				break;
 			}
 			case 0:
 				if (Selector.allowNone) {
 					Selector.target?.input?.('');
-					Window.close?.('selector');
+					getWindowStore().close('selector');
 				}
 				break;
 		}

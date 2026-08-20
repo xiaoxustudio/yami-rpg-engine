@@ -1,30 +1,30 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateTilesets(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.60')) {
-		const tilesets = Data.tilesets;
-		for (const [guid, tileset] of Object.entries<any>(tilesets)) {
-			const meta = Data.manifest.guidMap[guid];
+		const { manifest, tilesets } = getDataStore().data;
+		for (const [guid, tileset] of Object.entries<any>(tilesets!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
 			const length = tileset.width * tileset.height;
 			tileset.terrains = new Array(length).fill(0);
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.85')) {
-		const tilesets = Data.tilesets;
-		for (const [guid, tileset] of Object.entries<any>(tilesets)) {
-			const meta = Data.manifest.guidMap[guid];
+		const { manifest, tilesets } = getDataStore().data;
+		for (const [guid, tileset] of Object.entries<any>(tilesets!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
 			const length = tileset.width * tileset.height;
 			tileset.tags = new Array(length).fill(0);
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

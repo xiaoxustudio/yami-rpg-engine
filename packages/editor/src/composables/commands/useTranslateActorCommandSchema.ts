@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useTranslateActorCommandSchema() {
-	const { form, save, load } = useCommandSchema('translateActor', {
+	const { form, save, load, commit } = useCommandSchema('translateActor', {
 		onLoad() {
 			getFocus(document.getElementById('translateActor-actor'));
 		}
@@ -15,7 +15,7 @@ export function useTranslateActorCommandSchema() {
 			getFocus(document.getElementById('translateActor-distance'), 'all');
 			return;
 		}
-		Command.save!({
+		commit({
 			actor: read(document.getElementById('translateActor-actor')) ?? form.actor,
 			angle: read(document.getElementById('translateActor-angle')) ?? form.angle,
 			distance,

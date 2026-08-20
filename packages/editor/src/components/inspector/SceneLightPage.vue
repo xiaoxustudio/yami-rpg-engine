@@ -244,6 +244,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -263,6 +264,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneLightPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.sceneLight;
@@ -345,18 +348,8 @@ onMounted(() => {
 		const sliders = document.querySelectorAll(
 			'#sceneLight-range-slider, #sceneLight-intensity-slider, #sceneLight-anchorX-slider, #sceneLight-anchorY-slider, #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider, #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider'
 		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
+		bindInput(elements, editor, Scene);
+		bindSliders(sliders);
 
 		document
 			.querySelectorAll('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts')

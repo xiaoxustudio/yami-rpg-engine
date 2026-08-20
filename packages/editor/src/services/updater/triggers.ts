@@ -1,13 +1,13 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateTriggers(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const triggers = Data.triggers;
+		const { manifest, triggers } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileTrigger'));
-		for (const [guid, sTrigger] of Object.entries<any>(triggers)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sTrigger] of Object.entries<any>(triggers!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -17,8 +17,8 @@ function updateTriggers(verNum: number) {
 					dTrigger[key] = sTrigger[key];
 				}
 			}
-			triggers[guid] = dTrigger;
-			File.planToSave!(meta);
+			triggers![guid] = dTrigger;
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

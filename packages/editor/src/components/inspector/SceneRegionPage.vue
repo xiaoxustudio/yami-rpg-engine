@@ -68,6 +68,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -85,6 +86,8 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneRegionPage();
+
+const { bindInput } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.sceneRegion;
@@ -113,12 +116,7 @@ onMounted(() => {
 		const elements = document.querySelectorAll(
 			'#sceneRegion-name, #sceneRegion-color, #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height'
 		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
-		);
+		bindInput(elements, editor, Scene);
 
 		document
 			.querySelectorAll('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts')

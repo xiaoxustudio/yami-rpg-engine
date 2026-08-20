@@ -1,7 +1,7 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import type { FileMetaShape } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
-import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 
 interface SceneObject {
 	class: string;
@@ -11,10 +11,11 @@ interface SceneObject {
 
 function updateScenes(verNum: number) {
 	const replaceSceneObject = (replacer: (object: SceneObject) => SceneObject | undefined) => {
+		const { manifest, scenes } = getDataStore().data;
 		const forEachObject = (
 			objects: SceneObject[],
 			replacer: (object: SceneObject) => SceneObject | undefined,
-			meta: FileMeta
+			meta: FileMetaShape
 		) => {
 			const length = objects.length;
 			for (let i = 0; i < length; i++) {
@@ -22,15 +23,15 @@ function updateScenes(verNum: number) {
 				const replacement = replacer(object);
 				if (replacement instanceof Object) {
 					objects[i] = replacement;
-					File.planToSave!(meta);
+					append(getDataStore().data.manifest!.changes as unknown[], meta);
 				}
 				if (object.children instanceof Array) {
 					forEachObject(object.children, replacer, meta);
 				}
 			}
 		};
-		for (const [guid, scene] of Object.entries<any>(Data.scenes)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, scene] of Object.entries<any>(scenes!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -38,14 +39,15 @@ function updateScenes(verNum: number) {
 		}
 	};
 	if (verNum < Updater.getVersionNumber!('1.0.116')) {
-		for (const [guid, scene] of Object.entries<any>(Data.scenes)) {
-			const meta = Data.manifest.guidMap[guid];
+		const { manifest, scenes } = getDataStore().data;
+		for (const [guid, scene] of Object.entries<any>(scenes!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
 			delete scene.contrast;
 			scene.ambient.direct = 0;
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.116')) {

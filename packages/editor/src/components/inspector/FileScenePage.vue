@@ -120,6 +120,7 @@ import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileScenePage } from '@app/composables/useFileScenePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -133,6 +134,8 @@ const scene = useSceneStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileScenePage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.fileScene;
@@ -159,10 +162,8 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#fileScene-ambient-red-slider, #fileScene-ambient-green-slider, #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, owner)));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	bindInput(elements, editor, owner);
+	bindSliders(sliders);
 	document.querySelectorAll('#fileScene-events, #fileScene-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 

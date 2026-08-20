@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useTintImageCommandSchema() {
-	const { form, save, load } = useCommandSchema('tintImage', {
+	const { form, save, load, commit } = useCommandSchema('tintImage', {
 		onLoad() {
 			getFocus(document.getElementById('tintImage-element'));
 		}
@@ -39,7 +39,7 @@ export function useTintImageCommandSchema() {
 				blue = 0;
 				break;
 		}
-		Command.save?.({
+		commit({
 			element,
 			mode,
 			tint: [red, green, blue, gray],

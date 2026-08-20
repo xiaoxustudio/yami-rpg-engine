@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/registerEvent.ts';
 import { getElementReader, getElementWriter } from '@app/utils/dom';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { getFocus, hide, read, show, write } from '@app/utils/element-utils';
@@ -175,7 +176,7 @@ const save = (): unknown => {
 						tag = tag.trim();
 					}
 					const priority = priorityEnabled ? read('priority') : false;
-					Command.save?.({
+					commit({
 						target,
 						operation,
 						type,
@@ -191,11 +192,11 @@ const save = (): unknown => {
 					if (typeof tag === 'string' && (tag = tag.trim()) === '') {
 						return getFocus(document.getElementById('registerEvent-tag'));
 					}
-					Command.save?.({ target, operation, tag });
+					commit({ target, operation, tag });
 					break;
 				}
 				case 'reset':
-					Command.save?.({ target, operation });
+					commit({ target, operation });
 					break;
 			}
 			break;
@@ -203,7 +204,7 @@ const save = (): unknown => {
 			const actor = read('actor');
 			switch (operation) {
 				case 'register':
-					Command.save?.({
+					commit({
 						target,
 						actor,
 						operation,
@@ -213,10 +214,10 @@ const save = (): unknown => {
 					});
 					break;
 				case 'unregister':
-					Command.save?.({ target, actor, operation, type });
+					commit({ target, actor, operation, type });
 					break;
 				case 'reset':
-					Command.save?.({ target, actor, operation });
+					commit({ target, actor, operation });
 					break;
 			}
 			break;
@@ -225,7 +226,7 @@ const save = (): unknown => {
 			const element = read('element');
 			switch (operation) {
 				case 'register':
-					Command.save?.({
+					commit({
 						target,
 						element,
 						operation,
@@ -235,10 +236,10 @@ const save = (): unknown => {
 					});
 					break;
 				case 'unregister':
-					Command.save?.({ target, element, operation, type });
+					commit({ target, element, operation, type });
 					break;
 				case 'reset':
-					Command.save?.({ target, element, operation });
+					commit({ target, element, operation });
 					break;
 			}
 			break;

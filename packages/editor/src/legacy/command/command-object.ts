@@ -1,4 +1,5 @@
 import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { commandCases } from './command-registry.ts';
 import type { WordListShape } from '@app/composables/useWordList.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
 
@@ -134,7 +135,6 @@ export const Command: {
 	open: CommandMethod;
 	save: CommandMethod;
 	parse: CommandMethod;
-	parseNone: CommandMethod;
 	parseBlend: CommandMethod;
 	fetchVariables: CommandMethod;
 	parseVariable: CommandMethod;
@@ -199,24 +199,83 @@ export const Command: {
 	setCommaColors: CommandMethod;
 	setTextId: CommandMethod;
 	setTooltip: CommandMethod;
-	setInvalid: CommandMethod;
 	forEachCommand: CommandMethod;
 	WordList: { new (): WordListShape };
 	cases: Record<string, CommandSchema>;
 	custom: CommandCustomShape;
 } = {
-	target: commandState.target,
-	id: commandState.id,
-	words: commandState.words,
-	invalid: commandState.invalid,
-	saveVars: commandState.saveVars,
-	returnType: commandState.returnType,
-	eventName: commandState.eventName,
-	eventIndex: commandState.eventIndex,
-	variables: commandState.variables,
-	varMap: commandState.varMap,
-	dependsOn: commandState.dependsOn,
-	currentCommand: commandState.currentCommand,
+	get target() {
+		return commandState.target;
+	},
+	set target(value) {
+		commandState.target = value;
+	},
+	get id() {
+		return commandState.id;
+	},
+	set id(value) {
+		commandState.id = value;
+	},
+	get words() {
+		return commandState.words;
+	},
+	set words(value) {
+		commandState.words = value;
+	},
+	get invalid() {
+		return commandState.invalid;
+	},
+	set invalid(value) {
+		commandState.invalid = value;
+	},
+	get saveVars() {
+		return commandState.saveVars;
+	},
+	set saveVars(value) {
+		commandState.saveVars = value;
+	},
+	get returnType() {
+		return commandState.returnType;
+	},
+	set returnType(value) {
+		commandState.returnType = value;
+	},
+	get eventName() {
+		return commandState.eventName;
+	},
+	set eventName(value) {
+		commandState.eventName = value;
+	},
+	get eventIndex() {
+		return commandState.eventIndex;
+	},
+	set eventIndex(value) {
+		commandState.eventIndex = value;
+	},
+	get variables() {
+		return commandState.variables;
+	},
+	set variables(value) {
+		commandState.variables = value;
+	},
+	get varMap() {
+		return commandState.varMap;
+	},
+	set varMap(value) {
+		commandState.varMap = value;
+	},
+	get dependsOn() {
+		return commandState.dependsOn;
+	},
+	set dependsOn(value) {
+		commandState.dependsOn = value;
+	},
+	get currentCommand() {
+		return commandState.currentCommand;
+	},
+	set currentCommand(value) {
+		commandState.currentCommand = value;
+	},
 	setClass: null as unknown as (className: string) => string,
 	initialize: null as unknown as CommandMethod,
 	insert: null as unknown as CommandMethod,
@@ -224,7 +283,6 @@ export const Command: {
 	open: null as unknown as CommandMethod,
 	save: null as unknown as CommandMethod,
 	parse: null as unknown as CommandMethod,
-	parseNone: null as unknown as CommandMethod,
 	parseBlend: null as unknown as CommandMethod,
 	fetchVariables: null as unknown as CommandMethod,
 	parseVariable: null as unknown as CommandMethod,
@@ -289,10 +347,9 @@ export const Command: {
 	setCommaColors: null as unknown as CommandMethod,
 	setTextId: null as unknown as CommandMethod,
 	setTooltip: null as unknown as CommandMethod,
-	setInvalid: null as unknown as CommandMethod,
 	forEachCommand: null as unknown as CommandMethod,
 	WordList: null as unknown as { new (): WordListShape },
-	cases: {} as Record<string, CommandSchema>,
+	cases: commandCases,
 	custom: null as unknown as CommandCustomShape
 };
 

@@ -1,17 +1,17 @@
 import { Data } from '@app/legacy/data/data-object.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Log } from '@app/legacy/log/log-window.ts';
 import { Editor } from './editor.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
-import { PluginManager } from '@app/legacy/plugin/plugin.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
-import { Title } from '@app/legacy/title/title-bar.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { getAnimationStore } from '@app/stores/animation.ts';
+import { getPaletteStore } from '@app/stores/palette.ts';
+import { getSceneStore } from '@app/stores/scene.ts';
+import { getTitleStore } from '@app/stores/title.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
+import { useLogStore } from '@app/stores/log.ts';
+import { useParticleStore } from '@app/stores/particle.ts';
+import { usePluginStore } from '@app/stores/plugin.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
+import { useUIStore } from '@app/stores/ui.ts';
 
 function saveProject(this: typeof Editor) {
 	const { project } = this;
@@ -19,45 +19,45 @@ function saveProject(this: typeof Editor) {
 		return;
 	}
 	try {
-		Scene.saveToProject!(project);
-		UI.saveToProject(project);
-		Animation.saveToProject!(project);
-		Particle.saveToProject!(project);
-		Palette.saveToProject(project);
+		getSceneStore().saveToProject(project);
+		useUIStore().saveToProject(project as { ui: { zoom?: number }; uiPrefabs?: string[] });
+		getAnimationStore().saveToProject(project);
+		useParticleStore().saveToProject(project);
+		getPaletteStore().saveToProject(project);
 		Sprite.saveToProject(project);
 		useBrowserStore().saveToProject(
 			project as { browser: { view?: number; folders?: string[] } }
 		);
 		useSelectorStore().saveToProject(project);
-		PluginManager.saveToProject!(project);
-		Title.saveToProject!(project);
+		usePluginStore().saveToProject(project);
+		getTitleStore().saveToProject(project);
 
 		const json = JSON.stringify(project, null, 2);
 		const last = project.code;
 		if (json && json !== last) {
 			const path = this.config!.project;
 			FSP.writeFile!(path, json).catch((error: unknown) => {
-				Log.throw!(error);
+				useLogStore().logThrow(error);
 			});
 		}
 	} catch (error: unknown) {
-		Log.throw!(error);
+		useLogStore().logThrow(error);
 		return console.error(error);
 	}
 }
 
 function loadProject(this: typeof Editor) {
 	const project = this.project!;
-	Scene.loadFromProject!(project);
-	UI.loadFromProject(project);
-	Animation.loadFromProject!(project);
-	Particle.loadFromProject!(project);
-	Palette.loadFromProject(project);
+	getSceneStore().loadFromProject(project);
+	useUIStore().loadFromProject(project as { ui: { zoom: number } });
+	getAnimationStore().loadFromProject(project);
+	useParticleStore().loadFromProject(project);
+	getPaletteStore().loadFromProject(project);
 	Sprite.loadFromProject(project);
 	useBrowserStore().loadFromProject(project as { browser: { view: number; folders: string[] } });
 	useSelectorStore().loadFromProject(project);
 	Editor.hooks.onPluginLoad(project);
-	Title.loadFromProject!(project);
+	getTitleStore().loadFromProject(project);
 }
 
 function saveManifest(this: typeof Editor) {

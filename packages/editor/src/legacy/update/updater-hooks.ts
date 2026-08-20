@@ -1,5 +1,5 @@
 ﻿import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { getInspectorStore } from '@app/stores/inspector.ts';
 import { getLocalStore } from '@app/stores/local';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { UpdateLog } from '@app/legacy/log/update-log-window.ts';
@@ -11,7 +11,8 @@ export function initUpdaterHooks(): void {
 		getProjectPath: () => Editor.config?.project ?? null,
 		getProject: () => Editor.project,
 		getLocalEvents: () => EventEditor.getAllLocalEvents!(),
-		createInspectorSchema: (type: string, arg?: string) => Inspector[type].create(arg),
+		createInspectorSchema: (type: string, arg?: string) =>
+			getInspectorStore().create(type, arg),
 		getUiInspectorType: (className: string) => UI.inspectorTypeMap[className],
 		getLanguage: () => getLocalStore().language,
 		openUpdateLog: (messages?: unknown[]) => UpdateLog.open!(messages)

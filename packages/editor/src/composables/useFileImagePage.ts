@@ -1,8 +1,30 @@
 import '@app/legacy/inspector/file-image-page.ts';
+import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
+interface FileImageForm {
+	name: string;
+	size: string;
+	resolution: string;
+}
+
 export function useFileImagePage() {
+	const form = reactive<FileImageForm>({
+		name: '',
+		size: '',
+		resolution: ''
+	});
+
+	const sync = (): void => {
+		const info = Inspector?.fileImage?.info ?? null;
+		if (info) {
+			form.name = info.name;
+			form.size = info.size;
+			form.resolution = info.resolution;
+		}
+	};
+
 	const updateImage = (): void => {
 		const image = document.getElementById('fileImage-image') as HTMLImageElement | null;
 		if (!image) return;
@@ -46,5 +68,5 @@ export function useFileImagePage() {
 		}
 	};
 
-	return { updateImage, windowResize };
+	return { form, sync, updateImage, windowResize };
 }

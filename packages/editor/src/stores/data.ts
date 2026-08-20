@@ -98,6 +98,8 @@ export interface TeamShape {
 export interface TeamsShape {
 	list: TeamShape[];
 	map?: Record<string, TeamShape>;
+	collisions?: string;
+	relations?: string;
 }
 
 // 本地化数据（createLocalizationMap：list 数组 + map）

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Palette } from '@app/legacy/palette/palette.ts';
+import type { EditorProjectShape } from './editor';
 
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';
 export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
@@ -61,6 +62,14 @@ export const usePaletteStore = defineStore('palette', () => {
 		activeIndex.value = value;
 	}
 
+	function saveToProject(project: EditorProjectShape) {
+		Palette?.saveToProject?.(project);
+	}
+
+	function loadFromProject(project: EditorProjectShape) {
+		Palette?.loadFromProject?.(project);
+	}
+
 	return {
 		state,
 		mode,
@@ -73,7 +82,9 @@ export const usePaletteStore = defineStore('palette', () => {
 		initialize,
 		setMode,
 		setState,
-		setActiveIndex
+		setActiveIndex,
+		saveToProject,
+		loadFromProject
 	};
 });
 

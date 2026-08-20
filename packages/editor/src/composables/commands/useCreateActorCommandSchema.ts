@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/createActor.ts';
+﻿import '@app/legacy/module/command/createActor.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useCreateActorCommandSchema() {
-	const { form, save, load } = useCommandSchema('createActor', {
+	const { form, save, load, commit } = useCommandSchema('createActor', {
 		onLoad() {
 			getFocus(document.getElementById('createActor-actorId')!, 'all');
 		}
@@ -15,7 +15,7 @@ export function useCreateActorCommandSchema() {
 			getFocus(document.getElementById('createActor-actorId')!);
 			return;
 		}
-		Command.save!({
+		commit({
 			actorId,
 			teamId: read(document.getElementById('createActor-teamId')!) ?? form.teamId,
 			position: read(document.getElementById('createActor-position')!) ?? form.position,

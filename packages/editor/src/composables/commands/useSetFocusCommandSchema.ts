@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetFocusCommandSchema() {
-	const { form, save, load } = useCommandSchema('setFocus', {
+	const { form, save, load, commit } = useCommandSchema('setFocus', {
 		onLoad() {
 			getFocus(document.getElementById('setFocus-operation'));
 		}
@@ -13,7 +13,7 @@ export function useSetFocusCommandSchema() {
 		const operation = read(document.getElementById('setFocus-operation')) ?? form.operation;
 		switch (operation) {
 			case 'add':
-				Command.save?.({
+				commit({
 					operation,
 					element: read(document.getElementById('setFocus-element')) ?? form.element,
 					mode: read(document.getElementById('setFocus-mode')) ?? form.mode,
@@ -22,14 +22,14 @@ export function useSetFocusCommandSchema() {
 				});
 				break;
 			case 'remove':
-				Command.save?.({
+				commit({
 					operation,
 					element: read(document.getElementById('setFocus-element')) ?? form.element
 				});
 				break;
 			case 'remove-latest':
 			case 'reset':
-				Command.save?.({ operation });
+				commit({ operation });
 				break;
 		}
 	};

@@ -5,7 +5,8 @@ import { useFileImagePage } from '@app/composables/useFileImagePage';
 
 const fileImage = vi.hoisted(() => ({
 	target: null as unknown,
-	symbol: null as unknown
+	symbol: null as unknown,
+	info: null as { name: string; size: string; resolution: string } | null
 }));
 
 vi.mock('@app/legacy/inspector/inspector.ts', () => ({
@@ -32,6 +33,7 @@ describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 		document.body.innerHTML = '';
 		fileImage.target = null;
 		fileImage.symbol = null;
+		fileImage.info = null;
 		cssSpy.mockClear();
 	});
 
@@ -80,6 +82,25 @@ describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 		fileImage.symbol = null;
 		page.windowResize(new Event('resize'));
 		expect(image.style.width).toBe('200px');
+		wrapper.unmount();
+	});
+
+	it('sync 从 Inspector.fileImage.info 读取文件信息', () => {
+		const { wrapper, page } = mountPage();
+		fileImage.info = { name: 'a.png', size: '1.5 KB', resolution: '400 x 300' };
+		page.sync();
+		expect(page.form.name).toBe('a.png');
+		expect(page.form.size).toBe('1.5 KB');
+		expect(page.form.resolution).toBe('400 x 300');
+		wrapper.unmount();
+	});
+
+	it('sync 在 info 为空时保持表单不变', () => {
+		const { wrapper, page } = mountPage();
+		page.sync();
+		expect(page.form.name).toBe('');
+		expect(page.form.size).toBe('');
+		expect(page.form.resolution).toBe('');
 		wrapper.unmount();
 	});
 

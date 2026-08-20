@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface SetKeyForm {
@@ -18,7 +18,7 @@ let callback: ((key: string) => void) | null = null;
 
 const open = (key: string, cb: (key: string) => void): void => {
 	callback = cb;
-	Window.open!('setKey');
+	getWindowStore().open('setKey');
 	Object.assign(form, { key });
 	const setForm = (
 		document.getElementById('setKey') as
@@ -34,7 +34,7 @@ const confirm = (): void => {
 		document.getElementById('setKey') as (HTMLElement & { getForm?: () => SetKeyForm }) | null
 	)?.getForm;
 	callback?.(getForm?.()?.key ?? '');
-	Window.close!('setKey');
+	getWindowStore().close('setKey');
 };
 
 const onWindowClosed = (): void => {

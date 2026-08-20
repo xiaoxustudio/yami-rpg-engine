@@ -12,6 +12,32 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`,
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setStringColor: (value: unknown) => `[str:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	parseMultiLineString: (value: unknown) => String(value),
+	parseEnumStringTag: (id: string) => `<enum:${id}>`,
+	parseFileName: (id: string) => `<file:${id}>`,
+	parseVariableEnum: (group: string, key: string) => `<venum:${group}:${key}>`,
+	parseActor: (actor: { type: string }) => `<actor:${actor.type}>`,
+	parseSkill: (skill: { type: string }) => `<skill:${skill.type}>`,
+	parseState: (state: { type: string }) => `<state:${state.type}>`,
+	parseEquipment: (equipment: { type: string }) => `<equipment:${equipment.type}>`,
+	parseItem: (item: { type: string }) => `<item:${item.type}>`,
+	parseTrigger: (trigger: { type: string }) => `<trigger:${trigger.type}>`,
+	parseLight: (light: { type: string }) => `<light:${light.type}>`,
+	parseElement: (element: { type: string }) => `<element:${element.type}>`,
+	parseTeam: (teamId: string) => `<team:${teamId}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -28,32 +54,6 @@ const target = {
 	save: vi.fn(() => ({ type: 'number' }) as never)
 };
 
-const mockCommand = (): void => {
-	Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-	Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-	Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-	Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
-	Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-	Command.parseVariable = ((variable: { key: string }, type: string) =>
-		`<var:${variable.key}:${type}>`) as never;
-	Command.parseMultiLineString = ((value: unknown) => String(value)) as never;
-	Command.parseEnumStringTag = ((id: string) => `<enum:${id}>`) as never;
-	Command.parseFileName = ((id: string) => `<file:${id}>`) as never;
-	Command.parseVariableEnum = ((group: string, key: string) =>
-		`<venum:${group}:${key}>`) as never;
-	Command.parseActor = ((actor: { type: string }) => `<actor:${actor.type}>`) as never;
-	Command.parseSkill = ((skill: { type: string }) => `<skill:${skill.type}>`) as never;
-	Command.parseState = ((state: { type: string }) => `<state:${state.type}>`) as never;
-	Command.parseEquipment = ((equipment: { type: string }) =>
-		`<equipment:${equipment.type}>`) as never;
-	Command.parseItem = ((item: { type: string }) => `<item:${item.type}>`) as never;
-	Command.parseTrigger = ((trigger: { type: string }) => `<trigger:${trigger.type}>`) as never;
-	Command.parseLight = ((light: { type: string }) => `<light:${light.type}>`) as never;
-	Command.parseElement = ((element: { type: string }) => `<element:${element.type}>`) as never;
-	Command.parseTeam = ((teamId: string) => `<team:${teamId}>`) as never;
-	Command.removeTextTags = ((value: string) => value) as never;
-};
-
 describe('useIfConditionSchema（if 条件窗口 composable：parse 树形渲染/校验/动态绑定转发）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -63,7 +63,9 @@ describe('useIfConditionSchema（if 条件窗口 composable：parse 树形渲染
 		Enum.getStringItems = vi.fn(() => []) as never;
 		Enum.getDefStringId = vi.fn(() => 'id0') as never;
 		Data.teams = { list: [{ id: 'team0' }] } as never;
-		mockCommand();
+		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
+		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
+		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
 		IfCondition.target = target as never;
 	});
 

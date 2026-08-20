@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 
 export interface ImageClipForm {
 	x: number;
@@ -20,7 +20,7 @@ let callback: ((value: number[]) => void) | null = null;
 
 const open = (data: ImageClipForm, cb: (value: number[]) => void): void => {
 	callback = cb;
-	Window.open!('imageClip');
+	getWindowStore().open('imageClip');
 	Object.assign(form, data);
 	const setForm = (
 		document.getElementById('imageClip') as
@@ -38,7 +38,7 @@ const confirm = (): void => {
 	)?.getForm;
 	const data = getForm?.() ?? { ...form };
 	callback?.([data.x, data.y, data.width, data.height]);
-	Window.close!('imageClip');
+	getWindowStore().close('imageClip');
 };
 
 const onWindowClosed = (): void => {

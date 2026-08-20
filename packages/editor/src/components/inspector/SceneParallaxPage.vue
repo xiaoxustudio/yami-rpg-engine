@@ -232,6 +232,7 @@ import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -250,6 +251,8 @@ const local = useLocalStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneParallaxPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.sceneParallax;
@@ -311,10 +314,8 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider, #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	bindInput(elements, editor, Scene);
+	bindSliders(sliders);
 	document.querySelectorAll('#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 

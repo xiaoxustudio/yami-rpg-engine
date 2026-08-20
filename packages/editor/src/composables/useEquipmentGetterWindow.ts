@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface EquipmentGetterForm {
@@ -44,7 +44,7 @@ const getFrame = (): EquipmentGetterFrame | null =>
 const open = (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
 	pluginInput = target.isPluginInput === true;
-	Window.open!('equipmentGetter');
+	getWindowStore().open('equipmentGetter');
 
 	let actor = { type: 'trigger' };
 	let slot = defaults?.slot ?? '';
@@ -108,7 +108,7 @@ const confirm = (): void => {
 		getter = { getter: 'equipment', ...getter };
 	}
 	callback?.(getter!);
-	Window.close!('equipmentGetter');
+	getWindowStore().close('equipmentGetter');
 };
 
 const onWindowClosed = (): void => {

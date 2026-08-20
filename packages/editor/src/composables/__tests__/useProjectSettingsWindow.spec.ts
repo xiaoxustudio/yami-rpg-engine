@@ -41,6 +41,11 @@ vi.mock('@app/legacy/title/title-bar.ts', () => ({
 	Title: { updateTitleName: vi.fn() }
 }));
 
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	removeTextTags: (text: string) => text,
+	parseFileName: (text: string) => text
+}));
+
 vi.mock('@app/legacy/command/command-object.ts', () => ({
 	Command: { removeTextTags: (text: string) => text, parseFileName: (text: string) => text }
 }));

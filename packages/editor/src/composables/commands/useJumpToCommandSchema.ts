@@ -1,6 +1,7 @@
-import '@app/legacy/module/command/jumpTo.ts';
+﻿import '@app/legacy/module/command/jumpTo.ts';
 import { getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 
 type LabelCommand = {
@@ -44,11 +45,11 @@ const save = (): unknown => {
 			if (label === '') {
 				return getFocus(document.getElementById('jumpTo-label')!);
 			}
-			Command.save?.({ operation, label });
+			commit({ operation, label });
 			break;
 		}
 		case 'return':
-			Command.save?.({ operation });
+			commit({ operation });
 			break;
 	}
 };

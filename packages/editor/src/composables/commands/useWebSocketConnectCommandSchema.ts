@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useWebSocketConnectCommandSchema() {
-	const { form, save, load } = useCommandSchema('webSocketConnect', {
+	const { form, save, load, commit } = useCommandSchema('webSocketConnect', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketConnect-url'));
 		}
@@ -23,7 +23,7 @@ export function useWebSocketConnectCommandSchema() {
 			getFocus(elId);
 			return;
 		}
-		Command.save!({
+		commit({
 			url,
 			id,
 			protocols:

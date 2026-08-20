@@ -304,59 +304,60 @@ Command.custom = {
 		Command.save!(Command.custom.loadedScript.parameters ?? {});
 	},
 
-	loadCommandList: async function (): Promise<void> {
-		if (!Data.commands) return;
-		const { list } = CommandSuggestion;
-		if (!list) return;
-		if (!this.customFolder) {
-			if (list.data instanceof Promise) {
-				list.data = await list.data;
-			}
-			(list.data as CommandSuggestionItem[]).push(
-				(this.customFolder = {
-					class: 'folder',
-					value: 'custom',
-					expanded: true,
-					children: null
-				})
-			);
-		}
-		const commands: CustomCommandItem[] = [];
-		const commandNameMap: Record<string, string> = {};
-		for (const command of Data.commands) {
-			const id = command.id;
-			let meta = Data.scripts[id];
-			if (meta instanceof Promise) {
-				meta = await meta;
-			}
-			if (!meta || id in commandNameMap) {
-				continue;
-			}
-			const map = meta.langMap.update();
-			const name =
-				command.alias || map.get(meta.overview.plugin) || Command.parseFileName!(id);
-			commandNameMap[id] = name;
-			commands.push({
-				class: 'custom',
-				value: id,
-				name: name,
-				desc: map.get(meta.overview.desc),
-				keywords: command.keywords,
-				unspacedName: String.compress(name)
-			});
-		}
-		this.customFolder.children = commands;
-		this.commandNameMap = commandNameMap;
-		CommandSuggestion.windowLocalize!(new Event('localize'));
-		TreeList.createParents(
-			commands as unknown as Parameters<typeof TreeList.createParents>[0],
-			this.customFolder as unknown as Parameters<typeof TreeList.createParents>[1]
-		);
-	},
+	loadCommandList: loadCustomCommandList,
 
 	windowLocalize: function (event: Event): void {
 		if (Command.custom.commandNameMap) {
-			Command.custom.loadCommandList();
+			loadCustomCommandList();
 		}
 	}
 };
+
+export async function loadCustomCommandList(): Promise<void> {
+	if (!Data.commands) return;
+	const { list } = CommandSuggestion;
+	if (!list) return;
+	if (!Command.custom.customFolder) {
+		if (list.data instanceof Promise) {
+			list.data = await list.data;
+		}
+		(list.data as CommandSuggestionItem[]).push(
+			(Command.custom.customFolder = {
+				class: 'folder',
+				value: 'custom',
+				expanded: true,
+				children: null
+			})
+		);
+	}
+	const commands: CustomCommandItem[] = [];
+	const commandNameMap: Record<string, string> = {};
+	for (const command of Data.commands) {
+		const id = command.id;
+		let meta = Data.scripts[id];
+		if (meta instanceof Promise) {
+			meta = await meta;
+		}
+		if (!meta || id in commandNameMap) {
+			continue;
+		}
+		const map = meta.langMap.update();
+		const name = command.alias || map.get(meta.overview.plugin) || Command.parseFileName!(id);
+		commandNameMap[id] = name;
+		commands.push({
+			class: 'custom',
+			value: id,
+			name: name,
+			desc: map.get(meta.overview.desc),
+			keywords: command.keywords,
+			unspacedName: String.compress(name)
+		});
+	}
+	Command.custom.customFolder.children = commands;
+	Command.custom.commandNameMap = commandNameMap;
+	CommandSuggestion.windowLocalize!(new Event('localize'));
+	TreeList.createParents(
+		commands as unknown as Parameters<typeof TreeList.createParents>[0],
+		Command.custom.customFolder as unknown as Parameters<typeof TreeList.createParents>[1]
+	);
+}

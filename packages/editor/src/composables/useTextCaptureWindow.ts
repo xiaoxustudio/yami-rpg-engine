@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface FontForm {
@@ -79,7 +79,7 @@ const createTagWindow = <TForm extends object>(windowId: string) => {
 		focusId: string | null
 	): void => {
 		callback = cb;
-		Window.open!(windowId);
+		getWindowStore().open(windowId);
 		Object.assign(form, data);
 		const setForm = (
 			document.getElementById(windowId) as
@@ -103,7 +103,7 @@ const createTagWindow = <TForm extends object>(windowId: string) => {
 			return;
 		}
 		callback?.(data);
-		Window.close!(windowId);
+		getWindowStore().close(windowId);
 	};
 
 	return { form, open, confirm };

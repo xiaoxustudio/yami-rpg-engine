@@ -1,7 +1,7 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import type { FileMetaShape } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
-import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 
 interface UiNode {
 	class: string;
@@ -13,10 +13,11 @@ interface UiNode {
 
 function updateElements(verNum: number) {
 	const replaceUIElement = (replacer: (node: UiNode) => UiNode | undefined) => {
+		const { manifest, ui } = getDataStore().data;
 		const forEachElement = (
 			nodes: UiNode[],
 			replacer: (node: UiNode) => UiNode | undefined,
-			meta: FileMeta
+			meta: FileMetaShape
 		) => {
 			const length = nodes.length;
 			for (let i = 0; i < length; i++) {
@@ -24,19 +25,19 @@ function updateElements(verNum: number) {
 				const replacement = replacer(node);
 				if (replacement instanceof Object) {
 					nodes[i] = replacement;
-					File.planToSave!(meta);
+					append(getDataStore().data.manifest!.changes as unknown[], meta);
 				}
 				if (node.children instanceof Array) {
 					forEachElement(node.children, replacer, meta);
 				}
 			}
 		};
-		for (const [guid, ui] of Object.entries<any>(Data.ui)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sUi] of Object.entries<any>(ui!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			forEachElement(ui.nodes, replacer, meta);
+			forEachElement(sUi.nodes, replacer, meta);
 		}
 	};
 	if (verNum < Updater.getVersionNumber!('1.0.40')) {

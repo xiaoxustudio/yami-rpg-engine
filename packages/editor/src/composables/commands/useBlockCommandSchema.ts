@@ -1,4 +1,4 @@
-import '@app/legacy/module/command/block.ts';
+﻿import '@app/legacy/module/command/block.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -6,7 +6,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 let commands: unknown = null;
 
 export function useBlockCommandSchema() {
-	const { form, save, load } = useCommandSchema('block', {
+	const { form, save, load, commit } = useCommandSchema('block', {
 		onLoad(params) {
 			commands = params.commands ?? [];
 			getFocus(document.getElementById('block-note')!);
@@ -16,7 +16,7 @@ export function useBlockCommandSchema() {
 		const note = ((read(document.getElementById('block-note')!) ?? form.note) as string).trim();
 		const asynchronous =
 			read(document.getElementById('block-asynchronous')!) ?? form.asynchronous;
-		Command.save?.({ note, asynchronous, commands });
+		commit({ note, asynchronous, commands });
 	};
 	const reset = (): void => {
 		commands = null;

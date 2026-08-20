@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/createElement.ts';
+﻿import '@app/legacy/module/command/createElement.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useCreateElementCommandSchema() {
-	const { form, save, load } = useCommandSchema('createElement', {
+	const { form, save, load, commit } = useCommandSchema('createElement', {
 		onLoad() {
 			getFocus(document.getElementById('createElement-operation')!, 'all');
 		}
@@ -20,7 +20,7 @@ export function useCreateElementCommandSchema() {
 					getFocus(document.getElementById('createElement-uiId')!);
 					return;
 				}
-				Command.save?.({ operation, uiId });
+				commit({ operation, uiId });
 				break;
 			}
 			case 'append-one-to-root': {
@@ -30,7 +30,7 @@ export function useCreateElementCommandSchema() {
 					getFocus(document.getElementById('createElement-presetId')!);
 					return;
 				}
-				Command.save?.({ operation, presetId });
+				commit({ operation, presetId });
 				break;
 			}
 			case 'append-all-to-element': {
@@ -39,7 +39,7 @@ export function useCreateElementCommandSchema() {
 					getFocus(document.getElementById('createElement-uiId')!);
 					return;
 				}
-				Command.save?.({ operation, parent, uiId });
+				commit({ operation, parent, uiId });
 				break;
 			}
 			case 'append-one-to-element': {
@@ -49,7 +49,7 @@ export function useCreateElementCommandSchema() {
 					getFocus(document.getElementById('createElement-presetId')!);
 					return;
 				}
-				Command.save?.({ operation, parent, presetId });
+				commit({ operation, parent, presetId });
 				break;
 			}
 		}

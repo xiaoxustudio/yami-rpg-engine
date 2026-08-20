@@ -23,7 +23,7 @@
 import { computed, ref } from 'vue';
 import { YMFileBodyPane } from '@ui-kit';
 import { Data } from '@app/legacy/data/data-object.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
@@ -58,8 +58,8 @@ const windowApi = {
 	confirm: (
 		options: { message?: string; close?: () => void },
 		items: Array<{ label?: string; click?: () => void }>
-	) => Window.confirm(options, items),
-	getTopWindow: () => Window.getTopWindow()
+	) => getWindowStore().confirm(options, items),
+	getTopWindow: () => getWindowStore().getTopWindow()
 };
 const glApi = { maxTexSize: GL.maxTexSize };
 const menuState = () => Menu.state;

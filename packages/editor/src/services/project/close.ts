@@ -1,19 +1,18 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { getAudioStore } from '@app/stores/audio.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
+import { getInspectorStore } from '@app/stores/inspector.ts';
+import { getProjectStore } from '@app/stores/project.ts';
+import { getUIStore } from '@app/stores/ui.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
-import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
-import { Project } from '@app/legacy/data/project-settings-window.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/legacy/module/webserver.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
-
-import { UI } from '@app/legacy/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 function close(this: typeof Editor, save = true) {
@@ -29,15 +28,15 @@ function close(this: typeof Editor, save = true) {
 		this.project = null;
 		Editor.hooks.onWindowSaveDispatch();
 		Scene.close!();
-		UI.close();
-		Directory.close!();
-		Inspector.close();
+		getUIStore().close();
+		getDirectoryTree()?.close();
+		getInspectorStore().close();
 		getBrowserInstance()?.close?.();
 		getSelectorInstance()?.close?.();
 		Data.close!();
-		AudioManager.close!();
+		getAudioStore().close();
 		Printer.clearFonts();
-		Project.stopTSC();
+		getProjectStore().stopTSC();
 		Editor.hooks.onTitleChanged();
 		GL.textureManager.clear();
 		WebServer.stop();

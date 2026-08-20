@@ -1,4 +1,4 @@
-import '@app/legacy/module/command/loadImage.ts';
+﻿import '@app/legacy/module/command/loadImage.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -6,7 +6,7 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useLoadImageCommandSchema() {
-	const { form, save, load } = useCommandSchema('loadImage', {
+	const { form, save, load, commit } = useCommandSchema('loadImage', {
 		onLoad() {
 			document
 				.getElementById('loadImage-key')
@@ -19,28 +19,28 @@ export function useLoadImageCommandSchema() {
 		const type = read(document.getElementById('loadImage-type')!) ?? form.type;
 		switch (type) {
 			case 'actor-portrait':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					actor: read(document.getElementById('loadImage-actor')!) ?? form.actor
 				});
 				break;
 			case 'skill-icon':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					skill: read(document.getElementById('loadImage-skill')!) ?? form.skill
 				});
 				break;
 			case 'state-icon':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					state: read(document.getElementById('loadImage-state')!) ?? form.state
 				});
 				break;
 			case 'equipment-icon':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					equipment:
@@ -48,14 +48,14 @@ export function useLoadImageCommandSchema() {
 				});
 				break;
 			case 'item-icon':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					item: read(document.getElementById('loadImage-item')!) ?? form.item
 				});
 				break;
 			case 'shortcut-icon':
-				Command.save?.({
+				commit({
 					element,
 					type,
 					actor: read(document.getElementById('loadImage-actor')!) ?? form.actor,
@@ -69,7 +69,7 @@ export function useLoadImageCommandSchema() {
 					getFocus(document.getElementById('loadImage-variable')!);
 					return;
 				}
-				Command.save?.({ element, type, variable });
+				commit({ element, type, variable });
 				break;
 			}
 		}

@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/getActor.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { reactive } from 'vue';
@@ -128,7 +129,7 @@ const save = (): void => {
 			params4 = { activation, exclusion, exclusionTeamId };
 			break;
 	}
-	Command.save?.({ ...params1, ...params2, ...params3, ...params4 });
+	commit({ ...params1, ...params2, ...params3, ...params4 });
 };
 
 const schema = Command.cases.getActor;

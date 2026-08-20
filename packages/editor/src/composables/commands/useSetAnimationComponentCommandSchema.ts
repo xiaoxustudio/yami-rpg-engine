@@ -5,7 +5,7 @@ import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetAnimationComponentCommandSchema() {
-	const { form, save, load } = useCommandSchema('setAnimationComponent', {
+	const { form, save, load, commit } = useCommandSchema('setAnimationComponent', {
 		onLoad() {
 			getFocus(document.getElementById('setAnimationComponent-actor'));
 		}
@@ -42,7 +42,7 @@ export function useSetAnimationComponentCommandSchema() {
 			read(document.getElementById('setAnimationComponent-operation')) ?? form.operation;
 		switch (operation) {
 			case 'set-angle':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -52,7 +52,7 @@ export function useSetAnimationComponentCommandSchema() {
 				});
 				break;
 			case 'set-scale':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -62,7 +62,7 @@ export function useSetAnimationComponentCommandSchema() {
 				});
 				break;
 			case 'set-speed':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -72,7 +72,7 @@ export function useSetAnimationComponentCommandSchema() {
 				});
 				break;
 			case 'set-opacity':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -83,7 +83,7 @@ export function useSetAnimationComponentCommandSchema() {
 				});
 				break;
 			case 'set-priority':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -94,7 +94,7 @@ export function useSetAnimationComponentCommandSchema() {
 				});
 				break;
 			case 'set-offsetY':
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -112,7 +112,7 @@ export function useSetAnimationComponentCommandSchema() {
 					getFocus(document.getElementById('setAnimationComponent-spriteId'));
 					return;
 				}
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -131,7 +131,7 @@ export function useSetAnimationComponentCommandSchema() {
 					getFocus(document.getElementById('setAnimationComponent-playMotion'));
 					return;
 				}
-				Command.save?.({
+				commit({
 					actor,
 					animationId,
 					motion,
@@ -142,7 +142,7 @@ export function useSetAnimationComponentCommandSchema() {
 				break;
 			}
 			case 'stop-motion':
-				Command.save?.({ actor, animationId, motion, operation });
+				commit({ actor, animationId, motion, operation });
 				break;
 		}
 	};

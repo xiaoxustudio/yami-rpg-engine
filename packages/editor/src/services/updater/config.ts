@@ -1,11 +1,11 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateConfig(verNum: number) {
 	// 修改font属性为text属性
 	if (verNum < Updater.getVersionNumber!('1.0.54')) {
-		const sConfig = Data.config;
+		const sConfig = getDataStore().data.config!;
 		const dConfig: Record<string, unknown> = {};
 		for (const key of Object.keys(sConfig)) {
 			if (key === 'font') {
@@ -38,28 +38,44 @@ function updateConfig(verNum: number) {
 				}
 			}
 		}
-		Data.config = dConfig;
-		File.planToSave!(Data.manifest.project.config);
+		getDataStore().setData('config', dConfig);
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.52')) {
-		delete Data.config.text.pixelated;
-		delete Data.config.text.threshold;
-		File.planToSave!(Data.manifest.project.config);
+		const config = getDataStore().data.config!;
+		delete config.text.pixelated;
+		delete config.text.threshold;
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.68')) {
-		delete Data.config.collision.actor.ignoreTeamMember;
-		File.planToSave!(Data.manifest.project.config);
+		const config = getDataStore().data.config!;
+		delete config.collision.actor.ignoreTeamMember;
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.102')) {
-		Data.config.resolution.sceneScale = 1;
-		Data.config.resolution.uiScale = 1;
-		Data.config.text.highDefinition = false;
-		File.planToSave!(Data.manifest.project.config);
+		const config = getDataStore().data.config!;
+		config.resolution.sceneScale = 1;
+		config.resolution.uiScale = 1;
+		config.text.highDefinition = false;
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	// 修改localization.languages属性为对象
 	if (verNum < Updater.getVersionNumber!('1.0.115')) {
-		delete Data.config.text.wordWrap;
-		const { languages } = Data.config.localization;
+		const config = getDataStore().data.config!;
+		delete config.text.wordWrap;
+		const { languages } = config.localization;
 		for (let i = 0; i < languages.length; i++) {
 			if (typeof languages[i] === 'string') {
 				languages[i] = {
@@ -69,73 +85,82 @@ function updateConfig(verNum: number) {
 				};
 			}
 		}
-		File.planToSave!(Data.manifest.project.config);
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	// 修改window.display的值: 'window'->'windowed'
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const { config, events } = Data;
-		if (config.deployed === undefined) {
-			config.deployed = false;
+		const { config, events } = getDataStore().data;
+		if (config!.deployed === undefined) {
+			config!.deployed = false;
 		}
-		if (config.window.display === 'window') {
-			config.window.display = 'windowed';
+		if (config!.window.display === 'window') {
+			config!.window.display = 'windowed';
 		}
-		if (!config.virtualAxis) {
-			config.virtualAxis = {
+		if (!config!.virtualAxis) {
+			config!.virtualAxis = {
 				up: 'KeyW',
 				down: 'KeyS',
 				left: 'KeyA',
 				right: 'KeyD'
 			};
 		}
-		delete config.actor.playerTeam;
-		delete config.actor.playerActor;
-		delete config.actor.partyMembers;
-		delete config.actor.partyInventory;
-		if (config.webgl === undefined) {
-			config.webgl = { desynchronized: false };
+		delete config!.actor.playerTeam;
+		delete config!.actor.playerActor;
+		delete config!.actor.partyMembers;
+		delete config!.actor.partyInventory;
+		if (config!.webgl === undefined) {
+			config!.webgl = { desynchronized: false };
 		}
-		delete config.script.language;
-		delete config.script.outDir;
-		config.script.autoCompile = true;
-		config.save = {
+		delete config!.script.language;
+		delete config!.script.outDir;
+		config!.script.autoCompile = true;
+		config!.save = {
 			location: 'local',
-			subdir: config.gameId
+			subdir: config!.gameId
 		};
-		if (config.event) {
-			const { startup, loadGame, initScene, showText, showChoices } = config.event;
-			if (events[startup]) {
-				events[startup].type = 'startup';
+		if (config!.event) {
+			const { startup, loadGame, initScene, showText, showChoices } = config!.event;
+			if (events![startup]) {
+				events![startup].type = 'startup';
 			}
-			if (events[loadGame]) {
-				events[loadGame].type = 'loadsave';
+			if (events![loadGame]) {
+				events![loadGame].type = 'loadsave';
 			}
-			if (events[initScene]) {
-				events[initScene].type = 'createscene';
+			if (events![initScene]) {
+				events![initScene].type = 'createscene';
 			}
-			if (events[showText]) {
-				events[showText].type = 'showtext';
+			if (events![showText]) {
+				events![showText].type = 'showtext';
 			}
-			if (events[showChoices]) {
-				events[showChoices].type = 'showchoices';
+			if (events![showChoices]) {
+				events![showChoices].type = 'showchoices';
 			}
-			delete config.event;
+			delete config!.event;
 		}
-		File.planToSave!(Data.manifest.project.config);
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.127')) {
-		const { config } = Data;
-		if (config.webgl.textureMagFilter === undefined) {
-			config.webgl = {
-				desynchronized: config.webgl.desynchronized,
+		const { config } = getDataStore().data;
+		if (config!.webgl.textureMagFilter === undefined) {
+			config!.webgl = {
+				desynchronized: config!.webgl.desynchronized,
 				textureMagFilter: 'nearest',
 				textureMinFilter: 'linear'
 			};
 		}
-		if (config.preload === undefined) {
-			config.preload = 'never';
+		if (config!.preload === undefined) {
+			config!.preload = 'never';
 		}
-		File.planToSave!(Data.manifest.project.config);
+		append(
+			getDataStore().data.manifest!.changes as unknown[],
+			getDataStore().data.manifest!.project.config
+		);
 	}
 }
 

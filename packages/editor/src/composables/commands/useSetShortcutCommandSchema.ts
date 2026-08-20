@@ -5,7 +5,7 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetShortcutCommandSchema() {
-	const { form, save, load } = useCommandSchema('setShortcut', {
+	const { form, save, load, commit } = useCommandSchema('setShortcut', {
 		onLoad() {
 			const items = Enum.getStringItems!('shortcut-key');
 			document.getElementById('setShortcut-key')?.loadItems?.(items);
@@ -28,7 +28,7 @@ export function useSetShortcutCommandSchema() {
 					getFocus(document.getElementById('setShortcut-itemId'));
 					return;
 				}
-				Command.save?.({ actor, operation, key, itemId });
+				commit({ actor, operation, key, itemId });
 				break;
 			}
 			case 'set-skill-shortcut': {
@@ -38,14 +38,14 @@ export function useSetShortcutCommandSchema() {
 					getFocus(document.getElementById('setShortcut-skillId'));
 					return;
 				}
-				Command.save?.({ actor, operation, key, skillId });
+				commit({ actor, operation, key, skillId });
 				break;
 			}
 			case 'delete-shortcut':
-				Command.save?.({ actor, operation, key });
+				commit({ actor, operation, key });
 				break;
 			case 'swap-shortcuts':
-				Command.save?.({
+				commit({
 					actor,
 					operation,
 					key,

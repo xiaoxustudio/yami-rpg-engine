@@ -6,7 +6,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 import type { SetStringOperand } from '@app/legacy/module/command/setString.ts';
 
 export function useSetStringCommandSchema() {
-	const { form, save, load } = useCommandSchema('setString', {
+	const { form, save, load, commit } = useCommandSchema('setString', {
 		onLoad() {
 			getFocus(document.getElementById('setString-variable'));
 		}
@@ -366,7 +366,7 @@ export function useSetStringCommandSchema() {
 				break;
 			}
 		}
-		Command.save?.({ variable, operation, operand });
+		commit({ variable, operation, operand });
 	};
 	const writeHandler = (event: { value: string }): void => {
 		let filter = 'all';

@@ -1,13 +1,18 @@
 import { reactive } from 'vue';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commandCases } from '@app/legacy/command/command-registry.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
+
+export function commit(data: Record<string, unknown>): unknown {
+	return Command.save?.(data);
+}
 
 export interface UseCommandSchemaOptions {
 	onLoad?: (params: Record<string, unknown>) => void;
 }
 
 export function useCommandSchema(name: string, options: UseCommandSchemaOptions = {}) {
-	const schema = Command.cases[name];
+	const schema = commandCases[name];
 	const { fields } = schema;
 	const form = reactive<Record<string, unknown>>({});
 	const createDefault = (): Record<string, unknown> => {
@@ -45,9 +50,9 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 			getFocus(focusTarget);
 			return;
 		}
-		Command.save?.(data);
+		commit(data);
 	};
-	// 事件编辑器契约：Command.cases[name].load/save 转发到 composable
+	// 事件编辑器契约：commandCases[name].load/save 转发到 composable
 	schema.customLoad = (params: Record<string, unknown>): void => {
 		load(params);
 	};
@@ -56,5 +61,5 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 	};
 	// confirm 由组件 @confirm 处理，接管 initialize 避免 initAll 重复绑定
 	schema.onInitialize = (): void => {};
-	return { form, load, save };
+	return { form, load, save, commit };
 }

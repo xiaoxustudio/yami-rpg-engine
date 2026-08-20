@@ -1,8 +1,19 @@
-﻿import { getElementReader, getElementWriter } from '@app/utils/dom';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getElementReader, getElementWriter } from '@app/utils/dom';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
-import { Command } from '@app/legacy/command/command-object.ts';
+import {
+	setBooleanColor,
+	setNumberColor,
+	setStringColor
+} from '@app/composables/useCommandColor.ts';
+import {
+	parseMultiLineString,
+	parseAttributeTag,
+	parseEnumStringTag,
+	parseVariable,
+	removeTextTags
+} from '@app/composables/useCommandParse.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -51,50 +62,50 @@ const parse = (condition: SwitchConditionData, listData?: boolean): string => {
 			string = Token('null');
 			break;
 		case 'boolean':
-			string = Command.setBooleanColor!(condition.value!.toString());
+			string = setBooleanColor(condition.value!.toString());
 			break;
 		case 'number':
-			string = Command.setNumberColor!(condition.value!.toString());
+			string = setNumberColor(condition.value!.toString());
 			break;
 		case 'string':
-			string = Command.setStringColor!(`"${Command.parseMultiLineString!(condition.value)}"`);
+			string = setStringColor(`"${parseMultiLineString(condition.value as string)}"`);
 			break;
 		case 'attribute':
-			string = Command.parseAttributeTag!(condition.attributeId!, 'string');
+			string = parseAttributeTag(condition.attributeId!, 'string');
 			break;
 		case 'enum':
-			string = Command.parseEnumStringTag!(condition.stringId!);
+			string = parseEnumStringTag(condition.stringId!);
 			break;
 		case 'keyboard': {
 			const key = condition.keycode!;
 			const keyboard = t('command.switch.keyboard');
-			string = keyboard + Token('[') + Command.setStringColor!(key) + Token(']');
+			string = keyboard + Token('[') + setStringColor(key) + Token(']');
 			break;
 		}
 		case 'gamepad': {
 			const button = getButtonName(condition.button!);
 			const gamepad = t('command.switch.gamepad');
-			string = gamepad + Token('[') + Command.setStringColor!(button) + Token(']');
+			string = gamepad + Token('[') + setStringColor(button) + Token(']');
 			break;
 		}
 		case 'mouse': {
 			const button = IfCondition.parseMouseButton!(condition.button!);
 			const mouse = t('command.switch.mouse');
-			string = mouse + Token('[') + Command.setStringColor!(button) + Token(']');
+			string = mouse + Token('[') + setStringColor(button) + Token(']');
 			break;
 		}
 		case 'variable':
-			string = Command.parseVariable!(condition.variable!, 'any');
+			string = parseVariable(condition.variable!, 'any')!;
 			break;
 	}
 	if (listData) {
-		string = Command.removeTextTags!(string);
+		string = removeTextTags(string);
 	}
 	return string;
 };
 
 const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): void => {
-	Window.open!('switch-condition');
+	getWindowStore().open('switch-condition');
 	let booleanValue = false;
 	let numberValue = 0;
 	let stringValue = '';
@@ -228,7 +239,7 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 	}
-	Window.close!('switch-condition');
+	getWindowStore().close('switch-condition');
 	return condition!;
 };
 

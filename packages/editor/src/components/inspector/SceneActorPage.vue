@@ -111,6 +111,7 @@ import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -127,6 +128,8 @@ const scene = useSceneStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneActorPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const onTypeWrite = (value: unknown) => {
 	Inspector?.sceneActor?.typeWrite?.({ value });
@@ -164,10 +167,8 @@ onMounted(() => {
 		'#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId, #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale'
 	);
 	const sliders = document.querySelectorAll('#sceneActor-angle-slider, #sceneActor-scale-slider');
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	bindInput(elements, editor, Scene);
+	bindSliders(sliders);
 	document.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 

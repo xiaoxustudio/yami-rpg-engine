@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/transition.ts';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { reactive } from 'vue';
@@ -47,7 +48,7 @@ const save = (): unknown => {
 	if (duration === 0) {
 		return getFocus(document.getElementById('transition-duration'), 'all');
 	}
-	Command.save?.({
+	commit({
 		variable,
 		start: read(document.getElementById('transition-start')) ?? form.start,
 		end: read(document.getElementById('transition-end')) ?? form.end,

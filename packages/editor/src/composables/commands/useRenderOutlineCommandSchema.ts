@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useRenderOutlineCommandSchema() {
-	const { form, save, load } = useCommandSchema('renderOutline', {
+	const { form, save, load, commit } = useCommandSchema('renderOutline', {
 		onLoad() {
 			getFocus(document.getElementById('renderOutline-operation'));
 		}
@@ -14,7 +14,7 @@ export function useRenderOutlineCommandSchema() {
 			read(document.getElementById('renderOutline-operation')) ?? form.operation;
 		switch (operation) {
 			case 'add': {
-				Command.save!({
+				commit({
 					operation,
 					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor,
 					color: read(document.getElementById('renderOutline-color')) ?? form.color
@@ -22,14 +22,14 @@ export function useRenderOutlineCommandSchema() {
 				break;
 			}
 			case 'remove': {
-				Command.save!({
+				commit({
 					operation,
 					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor
 				});
 				break;
 			}
 			case 'reset':
-				Command.save!({ operation });
+				commit({ operation });
 				break;
 		}
 	};

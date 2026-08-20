@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useChangeActorPortraitCommandSchema() {
-	const { form, save, load } = useCommandSchema('changeActorPortrait', {
+	const { form, save, load, commit } = useCommandSchema('changeActorPortrait', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorPortrait-actor'));
 		}
@@ -17,13 +17,13 @@ export function useChangeActorPortraitCommandSchema() {
 		const clip = read(document.getElementById('changeActorPortrait-clip')) ?? form.clip;
 		switch (mode) {
 			case 'full':
-				Command.save?.({ actor, mode, portrait, clip });
+				commit({ actor, mode, portrait, clip });
 				break;
 			case 'portrait':
-				Command.save?.({ actor, mode, portrait });
+				commit({ actor, mode, portrait });
 				break;
 			case 'clip':
-				Command.save?.({ actor, mode, clip });
+				commit({ actor, mode, clip });
 				break;
 		}
 	};

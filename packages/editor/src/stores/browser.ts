@@ -6,7 +6,7 @@ import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { getDataStore } from '@app/stores/data';
 import { Path } from '@app/utils/config';
 import { TemplatesPath } from '@app/legacy/module/global.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
@@ -14,7 +14,7 @@ import type { MenuItem } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { getInspectorStore } from '@app/stores/inspector.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';
@@ -142,10 +142,10 @@ export const useBrowserStore = defineStore('browser', () => {
 				break;
 			}
 			case 'audio':
-				Inspector.fileAudio?.play?.();
+				getInspectorStore().play('fileAudio');
 				break;
 			case 'video':
-				Inspector.fileVideo?.play?.();
+				getInspectorStore().play('fileVideo');
 				break;
 			case 'script':
 				openScript(file.path);
@@ -167,43 +167,43 @@ export const useBrowserStore = defineStore('browser', () => {
 			if (!meta) return;
 			switch (type) {
 				case 'tileset':
-					Inspector.open?.('fileTileset', file.data, meta);
+					getInspectorStore().open('fileTileset', file.data, meta);
 					break;
 				case 'actor':
-					Inspector.open?.('fileActor', file.data, meta);
+					getInspectorStore().open('fileActor', file.data, meta);
 					break;
 				case 'skill':
-					Inspector.open?.('fileSkill', file.data, meta);
+					getInspectorStore().open('fileSkill', file.data, meta);
 					break;
 				case 'trigger':
-					Inspector.open?.('fileTrigger', file.data, meta);
+					getInspectorStore().open('fileTrigger', file.data, meta);
 					break;
 				case 'item':
-					Inspector.open?.('fileItem', file.data, meta);
+					getInspectorStore().open('fileItem', file.data, meta);
 					break;
 				case 'equipment':
-					Inspector.open?.('fileEquipment', file.data, meta);
+					getInspectorStore().open('fileEquipment', file.data, meta);
 					break;
 				case 'state':
-					Inspector.open?.('fileState', file.data, meta);
+					getInspectorStore().open('fileState', file.data, meta);
 					break;
 				case 'event':
-					Inspector.open?.('fileEvent', file.data, meta);
+					getInspectorStore().open('fileEvent', file.data, meta);
 					break;
 				case 'image':
-					Inspector.open?.('fileImage', file, meta);
+					getInspectorStore().open('fileImage', file, meta);
 					break;
 				case 'audio':
-					Inspector.open?.('fileAudio', file, meta);
+					getInspectorStore().open('fileAudio', file, meta);
 					break;
 				case 'video':
-					Inspector.open?.('fileVideo', file, meta);
+					getInspectorStore().open('fileVideo', file, meta);
 					break;
 				case 'font':
-					Inspector.open?.('fileFont', file, meta);
+					getInspectorStore().open('fileFont', file, meta);
 					break;
 				case 'script':
-					Inspector.open?.('fileScript', file, meta);
+					getInspectorStore().open('fileScript', file, meta);
 					break;
 			}
 		}
@@ -212,11 +212,11 @@ export const useBrowserStore = defineStore('browser', () => {
 	function bodyUnselect(event: Event & { value: FileItem[] }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		if (Inspector.meta !== null) {
-			const meta = Inspector.meta;
+		if (getInspectorStore().getMeta() !== null) {
+			const meta = getInspectorStore().getMeta();
 			const files = event.value;
 			if (files.length === 1 && files[0].path === meta.path) {
-				Inspector.close?.();
+				getInspectorStore().close();
 			}
 		}
 	}
@@ -434,7 +434,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		let guid: string;
 		do {
 			guid = GUID.generate64bit();
-		} while (Data.manifest.guidMap[guid]);
+		} while (getDataStore().data.manifest!.guidMap[guid]);
 		const { body } = Browser;
 		const [basename, extname] = filename.split('.');
 		const fullname = `${basename}.${guid}.${extname}`;
@@ -469,7 +469,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		let guid: string;
 		do {
 			guid = GUID.generate64bit();
-		} while (Data.manifest.guidMap[guid]);
+		} while (getDataStore().data.manifest!.guidMap[guid]);
 		const { body } = Browser;
 		const [basename, extname] = filename.split('.');
 		const fullname = `${basename}.${guid}.${extname}`;

@@ -17,6 +17,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimMotionPage } from '@app/composables/useAnimMotionPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -29,6 +30,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimMotionPage();
+
+const { bindInput } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -66,14 +69,7 @@ onMounted(() => {
 	loopEl?.relate?.([document.getElementById('animMotion-loopStart')!]);
 
 	const elements = document.querySelectorAll('#animMotion-skip, #animMotion-loop, #animMotion-loopStart');
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(animMotion, Animation))
-		);
-	}
+	bindInput(elements, animMotion, Animation);
 
 	const el = document.getElementById('animMotion-vue-mount');
 	if (el) {

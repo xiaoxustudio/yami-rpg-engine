@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/setBoolean.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { reactive } from 'vue';
 
@@ -139,7 +140,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	Command.save?.({ variable, operation, operand });
+	commit({ variable, operation, operand });
 };
 
 const schema = Command.cases.setBoolean;

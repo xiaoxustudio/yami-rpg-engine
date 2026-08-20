@@ -226,6 +226,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
@@ -239,6 +240,8 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimSpriteFramePage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const onZoomInput = (value: number) => {
 	Sprite?.setZoom?.(value);
@@ -280,26 +283,12 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(`
     #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
     #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(animSpriteFrame, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-frame-change';
-				data.motion = animSpriteFrame.motion;
-				data.direction = Animation.direction;
-			}))
-		);
-	}
-	if (Inspector.sliderFocus && Inspector.sliderBlur) {
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-	}
+	bindInput(elements, animSpriteFrame, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-frame-change';
+		data.motion = animSpriteFrame.motion;
+		data.direction = Animation.direction;
+	});
+	bindSliders(sliders);
 	Sprite.initialize();
 
 	const el = document.getElementById('animSpriteFrame-vue-mount');

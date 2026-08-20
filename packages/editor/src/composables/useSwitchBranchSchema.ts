@@ -1,6 +1,7 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { getWindowStore } from '@app/stores/window';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { removeTextTags } from '@app/composables/useCommandParse.ts';
+import { commandState } from '@app/composables/useCommandState.ts';
 import {
 	SwitchCondition,
 	type SwitchConditionData
@@ -34,13 +35,13 @@ let commands: unknown[] | null = null;
 let instance: SwitchBranchShape | null = null;
 
 const parse = (branch: SwitchBranchData, listData?: boolean): string => {
-	const words = Command.words;
+	const words = commandState.words;
 	for (const condition of branch.conditions) {
 		words.push(SwitchCondition.parse!(condition));
 	}
 	let string = words.join();
 	if (listData) {
-		string = Command.removeTextTags!(string);
+		string = removeTextTags(string);
 	}
 	return string;
 };
@@ -50,7 +51,7 @@ const open = (branch: SwitchBranchData): void => {
 		SwitchCondition.target = target!;
 		SwitchCondition.open!();
 	} else {
-		Window.open!('switch-branch');
+		getWindowStore().open('switch-branch');
 		write(document.getElementById('switch-branch-conditions'), branch.conditions.slice());
 		getFocus(document.getElementById('switch-branch-conditions'));
 		commands = branch.commands;
@@ -72,7 +73,7 @@ const save = (): unknown => {
 			return getFocus(element);
 		}
 		const savedCommands = commands;
-		Window.close!('switch-branch');
+		getWindowStore().close('switch-branch');
 		return { conditions, commands: savedCommands };
 	}
 };

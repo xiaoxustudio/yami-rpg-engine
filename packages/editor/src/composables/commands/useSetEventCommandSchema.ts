@@ -1,11 +1,11 @@
-import '@app/legacy/module/command/setEvent.ts';
+﻿import '@app/legacy/module/command/setEvent.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetEventCommandSchema() {
-	const { form, save, load } = useCommandSchema('setEvent', {
+	const { form, save, load, commit } = useCommandSchema('setEvent', {
 		onLoad() {
 			getFocus(document.getElementById('setEvent-operation')!);
 		}
@@ -24,7 +24,7 @@ export function useSetEventCommandSchema() {
 		const operation = read(document.getElementById('setEvent-operation')!) ?? form.operation;
 		switch (operation) {
 			case 'stop-propagation':
-				Command.save?.({ operation });
+				commit({ operation });
 				break;
 			case 'pause':
 			case 'continue': {
@@ -34,7 +34,7 @@ export function useSetEventCommandSchema() {
 					getFocus(document.getElementById('setEvent-variable')!);
 					return;
 				}
-				Command.save?.({ operation, variable });
+				commit({ operation, variable });
 				break;
 			}
 			case 'enable':
@@ -45,11 +45,11 @@ export function useSetEventCommandSchema() {
 					getFocus(document.getElementById('setEvent-eventId')!);
 					return;
 				}
-				Command.save?.({ operation, eventId });
+				commit({ operation, eventId });
 				break;
 			}
 			case 'goto-choice-branch':
-				Command.save?.({
+				commit({
 					operation,
 					choiceIndex:
 						read(document.getElementById('setEvent-choiceIndex')!) ?? form.choiceIndex

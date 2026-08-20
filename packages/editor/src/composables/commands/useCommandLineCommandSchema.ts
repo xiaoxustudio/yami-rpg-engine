@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useCommandLineCommandSchema() {
-	const { form, save, load } = useCommandSchema('commandLine');
+	const { form, save, load, commit } = useCommandSchema('commandLine');
 	const onSave = (): void => {
 		const key = read(document.getElementById('commandLine-key')) ?? form.key;
 		if (
@@ -20,7 +20,7 @@ export function useCommandLineCommandSchema() {
 			getFocus(document.getElementById('commandLine-variable'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			type: read(document.getElementById('commandLine-type')) ?? form.type,
 			key,
 			value: read(document.getElementById('commandLine-value')) ?? form.value,

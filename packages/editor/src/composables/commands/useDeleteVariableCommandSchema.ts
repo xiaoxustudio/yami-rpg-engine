@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useDeleteVariableCommandSchema() {
-	const { form, save, load } = useCommandSchema('deleteVariable', {
+	const { form, save, load, commit } = useCommandSchema('deleteVariable', {
 		onLoad() {
 			getFocus(document.getElementById('deleteVariable-variable'));
 		}
@@ -16,7 +16,7 @@ export function useDeleteVariableCommandSchema() {
 			getFocus(document.getElementById('deleteVariable-variable'));
 			return;
 		}
-		Command.save!({ variable });
+		commit({ variable });
 	};
 	Command.cases.deleteVariable.customSave = onSave;
 	return { form, save: onSave, load };

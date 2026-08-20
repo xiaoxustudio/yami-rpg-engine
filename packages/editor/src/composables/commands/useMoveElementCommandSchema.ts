@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/moveElement.ts';
+﻿import '@app/legacy/module/command/moveElement.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useMoveElementCommandSchema() {
-	const { form, save, load } = useCommandSchema('moveElement', {
+	const { form, save, load, commit } = useCommandSchema('moveElement', {
 		onLoad() {
 			getFocus(document.getElementById('moveElement-element')!);
 		}
@@ -16,7 +16,7 @@ export function useMoveElementCommandSchema() {
 			getFocus(document.getElementById('moveElement-properties')!);
 			return;
 		}
-		Command.save?.({
+		commit({
 			element: read(document.getElementById('moveElement-element')!) ?? form.element,
 			properties,
 			easingId: read(document.getElementById('moveElement-easingId')!) ?? form.easingId,

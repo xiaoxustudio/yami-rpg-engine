@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+import type { EditorProjectShape } from './editor';
 
 export const sceneStateKeys = [
 	'state',
@@ -94,6 +95,22 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.redo?.();
 	}
 
+	function saveToConfig(config: { colors?: Record<string, unknown> }) {
+		Scene?.saveToConfig?.(config);
+	}
+
+	function loadFromConfig(config: { colors?: Record<string, unknown> }) {
+		Scene?.loadFromConfig?.(config);
+	}
+
+	function saveToProject(project: EditorProjectShape) {
+		Scene?.saveToProject?.(project);
+	}
+
+	function loadFromProject(project: EditorProjectShape) {
+		Scene?.loadFromProject?.(project);
+	}
+
 	return {
 		state,
 		target,
@@ -120,7 +137,11 @@ export const useSceneStore = defineStore('scene', () => {
 		delete: delete_,
 		toggle,
 		undo,
-		redo
+		redo,
+		saveToConfig,
+		loadFromConfig,
+		saveToProject,
+		loadFromProject
 	};
 });
 

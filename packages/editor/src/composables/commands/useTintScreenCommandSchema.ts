@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useTintScreenCommandSchema() {
-	const { form, save, load } = useCommandSchema('tintScreen', {
+	const { form, save, load, commit } = useCommandSchema('tintScreen', {
 		onLoad() {
 			getFocus(document.getElementById('tintScreen-tint-0'), 'all');
 		}
@@ -27,7 +27,7 @@ export function useTintScreenCommandSchema() {
 			read(document.getElementById('tintScreen-tint-2')) ?? form['tint-2'],
 			read(document.getElementById('tintScreen-tint-3')) ?? form['tint-3']
 		];
-		Command.save?.({
+		commit({
 			tint,
 			easingId: read(document.getElementById('tintScreen-easingId')) ?? form.easingId,
 			duration: read(document.getElementById('tintScreen-duration')) ?? form.duration,

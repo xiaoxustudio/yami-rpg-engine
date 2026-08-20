@@ -143,6 +143,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -161,6 +162,8 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneParticlePage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.sceneParticle;
@@ -198,18 +201,8 @@ onMounted(() => {
 		const sliders = document.querySelectorAll(
 			'#sceneParticle-angle-slider, #sceneParticle-scale-slider, #sceneParticle-speed-slider, #sceneParticle-opacity-slider, #sceneParticle-priority-slider'
 		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
+		bindInput(elements, editor, Scene);
+		bindSliders(sliders);
 
 		document
 			.querySelectorAll('#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts')

@@ -1,11 +1,11 @@
-import '@app/legacy/module/command/httpRequest.ts';
+﻿import '@app/legacy/module/command/httpRequest.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useHttpRequestCommandSchema() {
-	const { form, save, load } = useCommandSchema('httpRequest', {
+	const { form, save, load, commit } = useCommandSchema('httpRequest', {
 		onLoad() {
 			getFocus(document.getElementById('httpRequest-url')!);
 		}
@@ -17,7 +17,7 @@ export function useHttpRequestCommandSchema() {
 			return;
 		}
 		const timeout = read(document.getElementById('httpRequest-timeout')!) ?? form.timeout;
-		Command.save?.({
+		commit({
 			url,
 			method: read(document.getElementById('httpRequest-method')!) ?? form.method,
 			headers: read(document.getElementById('httpRequest-header')!) ?? form.headers,

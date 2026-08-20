@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Title } from '@app/legacy/title/title-bar.ts';
+import type { EditorProjectShape } from './editor';
 
 export interface TitleShape {
 	theme: string | null;
@@ -54,6 +55,22 @@ export const useTitleStore = defineStore('title', () => {
 		Title.tabBarPopup?.(event);
 	}
 
+	function saveToConfig(config: { theme?: string }) {
+		Title.saveToConfig?.(config);
+	}
+
+	function loadFromConfig(config: { theme?: string }) {
+		Title.loadFromConfig?.(config);
+	}
+
+	function saveToProject(project: EditorProjectShape) {
+		Title.saveToProject?.(project);
+	}
+
+	function loadFromProject(project: EditorProjectShape) {
+		Title.loadFromProject?.(project);
+	}
+
 	return {
 		theme,
 		playing,
@@ -67,7 +84,11 @@ export const useTitleStore = defineStore('title', () => {
 		pointerenter,
 		tabBarSelect,
 		tabBarClosed,
-		tabBarPopup
+		tabBarPopup,
+		saveToConfig,
+		loadFromConfig,
+		saveToProject,
+		loadFromProject
 	};
 });
 

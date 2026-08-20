@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useChangeActorStateCommandSchema() {
-	const { form, save, load } = useCommandSchema('changeActorState', {
+	const { form, save, load, commit } = useCommandSchema('changeActorState', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorState-actor'));
 		}
@@ -22,11 +22,11 @@ export function useChangeActorStateCommandSchema() {
 					getFocus(document.getElementById('changeActorState-stateId'));
 					return;
 				}
-				Command.save?.({ actor, operation, stateId });
+				commit({ actor, operation, stateId });
 				break;
 			}
 			case 'remove-instance':
-				Command.save?.({
+				commit({
 					actor,
 					operation,
 					state: read(document.getElementById('changeActorState-state')) ?? form.state

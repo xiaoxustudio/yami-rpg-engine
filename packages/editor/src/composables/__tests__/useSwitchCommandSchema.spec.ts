@@ -11,6 +11,19 @@ import { CommandSchema } from '@app/legacy/module/command/schema.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setStringColor: (value: unknown) => `[str:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`,
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -57,14 +70,6 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 		VariableGetter.isNone = (variable: { key: string }) => variable.key === '';
 		Window.open = vi.fn();
 		Window.close = vi.fn();
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
-		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-		Command.removeTextTags = ((value: string) => value) as never;
-		Command.parseVariable = ((variable: { key: string }, type: string) =>
-			`<var:${variable.key}:${type}>`) as never;
 		Command.words = {
 			push: (value: string) => words.push(value),
 			join: (separator?: string) => words.join(separator ?? '')

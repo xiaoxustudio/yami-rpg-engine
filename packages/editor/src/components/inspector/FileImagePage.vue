@@ -2,9 +2,9 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileImage-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileImage-info-grid">
-			<div class="text">{{ t('components.fileImage-name.label') || 'Name' }}</div><div class="text" id="fileImage-name"></div> <div class="text">{{ t('components.fileImage-size.label') || 'Size' }}</div
-			><div class="text" id="fileImage-size"></div> <div class="text">{{ t('components.fileImage-resolution.label') || 'Resolution' }}</div
-			><div class="text" id="fileImage-resolution"></div>
+			<div class="text">{{ t('components.fileImage-name.label') || 'Name' }}</div><div class="text" id="fileImage-name">{{ form.name }}</div> <div class="text">{{ t('components.fileImage-size.label') || 'Size' }}</div
+			><div class="text" id="fileImage-size">{{ form.size }}</div> <div class="text">{{ t('components.fileImage-resolution.label') || 'Resolution' }}</div
+			><div class="text" id="fileImage-resolution">{{ form.resolution }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileImage-image-detail" open>
@@ -26,7 +26,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const { t } = useI18n();
 
-const { updateImage, windowResize } = useFileImagePage();
+const { form, sync, updateImage, windowResize } = useFileImagePage();
 
 onMounted(() => {
 	const fileImage = Inspector.fileImage;
@@ -36,8 +36,9 @@ onMounted(() => {
 
 	const el = document.getElementById('fileImage');
 	if (!el) return;
-	attachElementApi(el, { updateImage });
+	attachElementApi(el, { updateImage, update: sync });
 	el.addEventListener('resize', windowResize);
 	document.getElementById('fileImage-image-detail')?.on?.('toggle', windowResize);
+	sync();
 });
 </script>

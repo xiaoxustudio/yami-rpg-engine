@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/moveCamera.ts';
+﻿import '@app/legacy/module/command/moveCamera.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useMoveCameraCommandSchema() {
-	const { form, save, load } = useCommandSchema('moveCamera', {
+	const { form, save, load, commit } = useCommandSchema('moveCamera', {
 		onLoad() {
 			getFocus(document.getElementById('moveCamera-mode')!);
 		}
@@ -16,7 +16,7 @@ export function useMoveCameraCommandSchema() {
 		const wait = read(document.getElementById('moveCamera-wait')!) ?? form.wait;
 		switch (mode) {
 			case 'position':
-				Command.save?.({
+				commit({
 					mode,
 					position:
 						read(document.getElementById('moveCamera-position')!) ?? form.position,
@@ -26,7 +26,7 @@ export function useMoveCameraCommandSchema() {
 				});
 				break;
 			case 'actor':
-				Command.save?.({
+				commit({
 					mode,
 					actor: read(document.getElementById('moveCamera-actor')!) ?? form.actor,
 					easingId,

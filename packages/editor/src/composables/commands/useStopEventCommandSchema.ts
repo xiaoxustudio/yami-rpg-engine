@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useStopEventCommandSchema() {
-	const { form, save, load } = useCommandSchema('stopEvent', {
+	const { form, save, load, commit } = useCommandSchema('stopEvent', {
 		onLoad() {
 			getFocus(document.getElementById('stopEvent-type'));
 		}
@@ -13,7 +13,7 @@ export function useStopEventCommandSchema() {
 		const type = read(document.getElementById('stopEvent-type')) ?? form.type;
 		switch (type) {
 			case 'current':
-				Command.save?.({ type });
+				commit({ type });
 				break;
 			case 'global': {
 				const eventId = read(document.getElementById('stopEvent-eventId')) ?? form.eventId;
@@ -21,7 +21,7 @@ export function useStopEventCommandSchema() {
 					getFocus(document.getElementById('stopEvent-eventId'));
 					return;
 				}
-				Command.save?.({ type, eventId });
+				commit({ type, eventId });
 				break;
 			}
 			case 'scene': {
@@ -31,7 +31,7 @@ export function useStopEventCommandSchema() {
 					getFocus(document.getElementById('stopEvent-eventType'));
 					return;
 				}
-				Command.save?.({ type, eventType });
+				commit({ type, eventType });
 				break;
 			}
 			default: {
@@ -42,7 +42,7 @@ export function useStopEventCommandSchema() {
 					getFocus(document.getElementById('stopEvent-eventType'));
 					return;
 				}
-				Command.save?.({
+				commit({
 					type,
 					[type]: target,
 					eventType

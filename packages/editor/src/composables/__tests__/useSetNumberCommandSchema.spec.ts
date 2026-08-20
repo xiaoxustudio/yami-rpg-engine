@@ -9,6 +9,15 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (value: unknown) => `[var:${JSON.stringify(value)}]`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -44,9 +53,6 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 		Window.close = vi.fn();
 		Data.teams = { list: [{ id: 'team0' }] } as never;
 		Data.createTeamItems = vi.fn(() => [{ name: 'Team 0', value: 'team0' }]) as never;
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.parseVariable = ((value: unknown) => `[var:${JSON.stringify(value)}]`) as never;
-		Command.removeTextTags = ((value: string) => value) as never;
 	});
 
 	const mountAll = async () => {

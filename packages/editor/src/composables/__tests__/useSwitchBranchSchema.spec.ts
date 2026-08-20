@@ -10,6 +10,19 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setStringColor: (value: unknown) => `[str:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`,
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -56,12 +69,6 @@ describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap
 		VariableGetter.isNone = (variable: { key: string }) => variable.key === '';
 		Window.open = vi.fn();
 		Window.close = vi.fn();
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
-		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-		Command.removeTextTags = ((value: string) => value) as never;
 		Command.words = {
 			push: (value: string) => words.push(value),
 			join: (separator?: string) => words.join(separator ?? '')
@@ -148,7 +155,6 @@ describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap
 	});
 
 	it('parse 组合条件文本（listData 去掉文本标签）', () => {
-		Command.removeTextTags = ((value: string) => value.replace(/\[num:\d+\]/g, '')) as never;
 		const branch = { conditions: [makeCondition(1), makeCondition(2)], commands: [] };
 		expect(SwitchBranch.parse!(branch as never)).toBe('[num:1][num:2]');
 	});

@@ -1,5 +1,5 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateParticles(verNum: number) {
@@ -12,8 +12,9 @@ function updateParticles(verNum: number) {
 			array[0] = std;
 			array[1] = dev;
 		};
-		for (const [guid, particle] of Object.entries<any>(Data.particles)) {
-			const meta = Data.manifest.guidMap[guid];
+		const { manifest, particles } = getDataStore().data;
+		for (const [guid, particle] of Object.entries<any>(particles!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -39,13 +40,14 @@ function updateParticles(verNum: number) {
 				convert(layer.scale.speed);
 				convert(layer.scale.accel);
 			}
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('particleLayer'));
-		for (const [guid, particle] of Object.entries<any>(Data.particles)) {
-			const meta = Data.manifest.guidMap[guid];
+		const { manifest, particles } = getDataStore().data;
+		for (const [guid, particle] of Object.entries<any>(particles!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -71,7 +73,7 @@ function updateParticles(verNum: number) {
 				}
 				layers[i] = dLayer;
 			}
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

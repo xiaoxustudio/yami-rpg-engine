@@ -137,6 +137,7 @@ import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -153,6 +154,8 @@ const local = useLocalStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneTilemapPage();
+
+const { bindInput } = useInspectorInput();
 
 const onLayerWrite = (value: unknown) => {
 	Inspector?.sceneTilemap?.layerWrite?.({ value });
@@ -233,8 +236,7 @@ onMounted(() => {
 	const elements = document.querySelectorAll(
 		'#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order, #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y, #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY, #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
+	bindInput(elements, editor, Scene);
 	document.getElementById('sceneTilemap-layer')?.addEventListener('input', editor.layerInput!);
 	document.querySelectorAll('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));

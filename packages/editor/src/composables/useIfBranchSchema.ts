@@ -1,6 +1,8 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { getWindowStore } from '@app/stores/window';
 import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { setOperatorColor } from '@app/composables/useCommandColor.ts';
+import { removeTextTags } from '@app/composables/useCommandParse.ts';
+import { commandState } from '@app/composables/useCommandState.ts';
 import {
 	IfCondition,
 	type IfConditionData
@@ -35,14 +37,14 @@ let commands: unknown[] | null = null;
 let instance: IfBranchShape | null = null;
 
 const parse = (branch: IfBranchData, listData?: boolean): string => {
-	const words = Command.words;
+	const words = commandState.words;
 	let joint;
 	switch (branch.mode) {
 		case 'all':
-			joint = Command.setOperatorColor!(' && ');
+			joint = setOperatorColor(' && ');
 			break;
 		case 'any':
-			joint = Command.setOperatorColor!(' || ');
+			joint = setOperatorColor(' || ');
 			break;
 	}
 	for (const condition of branch.conditions) {
@@ -50,7 +52,7 @@ const parse = (branch: IfBranchData, listData?: boolean): string => {
 	}
 	let string = words.join(joint);
 	if (listData) {
-		string = Command.removeTextTags!(string);
+		string = removeTextTags(string);
 	}
 	return string;
 };
@@ -60,7 +62,7 @@ const open = (branch: IfBranchData): void => {
 		IfCondition.target = target!;
 		IfCondition.open!();
 	} else {
-		Window.open!('if-branch');
+		getWindowStore().open('if-branch');
 		write(document.getElementById('if-branch-mode'), branch.mode);
 		write(document.getElementById('if-branch-conditions'), branch.conditions.slice());
 		getFocus(document.getElementById('if-branch-conditions'));
@@ -85,7 +87,7 @@ const save = (): unknown => {
 			return getFocus(element);
 		}
 		const savedCommands = commands;
-		Window.close!('if-branch');
+		getWindowStore().close('if-branch');
 		return { mode, conditions, commands: savedCommands };
 	}
 };

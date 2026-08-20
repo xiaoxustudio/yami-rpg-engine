@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/moveActor.ts';
+﻿import '@app/legacy/module/command/moveActor.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useMoveActorCommandSchema() {
-	const { form, save, load } = useCommandSchema('moveActor', {
+	const { form, save, load, commit } = useCommandSchema('moveActor', {
 		onLoad() {
 			getFocus(document.getElementById('moveActor-actor')!);
 		}
@@ -14,10 +14,10 @@ export function useMoveActorCommandSchema() {
 		const mode = read(document.getElementById('moveActor-mode')!) ?? form.mode;
 		switch (mode) {
 			case 'stop':
-				Command.save?.({ actor, mode });
+				commit({ actor, mode });
 				break;
 			case 'keep':
-				Command.save?.({
+				commit({
 					actor,
 					mode,
 					angle: read(document.getElementById('moveActor-angle')!) ?? form.angle
@@ -26,7 +26,7 @@ export function useMoveActorCommandSchema() {
 			case 'straight':
 			case 'navigate':
 			case 'navigate-bypass':
-				Command.save?.({
+				commit({
 					actor,
 					mode,
 					destination:
@@ -35,7 +35,7 @@ export function useMoveActorCommandSchema() {
 				});
 				break;
 			case 'teleport':
-				Command.save?.({
+				commit({
 					actor,
 					mode,
 					destination:

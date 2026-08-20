@@ -1,8 +1,9 @@
-import '@app/legacy/module/command/script.ts';
+﻿import '@app/legacy/module/command/script.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { Editor } from '@app/services/project/editor.ts';
 import { loadDtsFolder } from '@app/legacy/module/global.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
@@ -10,7 +11,7 @@ import { createGetter } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/utils/monaco';
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 
 interface ScriptEditor {
 	layout(options: { width: number; height: number }): void;
@@ -212,7 +213,7 @@ const save = async (): Promise<void> => {
 	} catch (error: unknown) {
 		const get = createGetter('confirmation');
 		let continued = false;
-		return Window.confirm!(
+		return getWindowStore().confirm(
 			{
 				message: `${(error as Error).message}\n${get('compileError')}`,
 				close: () => {
@@ -227,7 +228,7 @@ const save = async (): Promise<void> => {
 					click: () => {
 						continued = true;
 						setChangeState(false);
-						Command.save({ script });
+						commit({ script });
 					}
 				},
 				{
@@ -237,7 +238,7 @@ const save = async (): Promise<void> => {
 		);
 	}
 	setChangeState(false);
-	Command.save({ script });
+	commit({ script });
 };
 
 const initialize = (): void => {
@@ -247,7 +248,7 @@ const initialize = (): void => {
 		if (changed) {
 			event.preventDefault();
 			const get = createGetter('confirmation');
-			Window.confirm!(
+			getWindowStore().confirm(
 				{
 					message: get('closeUnsavedScript'),
 					close: () => {
@@ -259,7 +260,7 @@ const initialize = (): void => {
 						label: get('yes'),
 						click: () => {
 							setChangeState(false);
-							Window.close!('script');
+							getWindowStore().close('script');
 						}
 					},
 					{

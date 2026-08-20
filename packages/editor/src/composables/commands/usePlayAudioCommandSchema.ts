@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function usePlayAudioCommandSchema() {
-	const { form, save, load } = useCommandSchema('playAudio', {
+	const { form, save, load, commit } = useCommandSchema('playAudio', {
 		onLoad() {
 			getFocus(document.getElementById('playAudio-type'));
 		}
@@ -22,12 +22,12 @@ export function usePlayAudioCommandSchema() {
 			case 'bgs':
 			case 'cv':
 			case 'se':
-				Command.save!({ type, audio, volume });
+				commit({ type, audio, volume });
 				break;
 			case 'se-attenuated': {
 				const location =
 					read(document.getElementById('playAudio-location')) ?? form.location;
-				Command.save!({ type, audio, volume, location });
+				commit({ type, audio, volume, location });
 				break;
 			}
 		}

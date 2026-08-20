@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/changeActorSkill.ts';
+﻿import '@app/legacy/module/command/changeActorSkill.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useChangeActorSkillCommandSchema() {
-	const { form, save, load } = useCommandSchema('changeActorSkill', {
+	const { form, save, load, commit } = useCommandSchema('changeActorSkill', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorSkill-actor')!);
 		}
@@ -22,18 +22,18 @@ export function useChangeActorSkillCommandSchema() {
 					getFocus(document.getElementById('changeActorSkill-skillId')!);
 					return;
 				}
-				Command.save?.({ actor, operation, skillId });
+				commit({ actor, operation, skillId });
 				break;
 			}
 			case 'remove-instance':
-				Command.save?.({
+				commit({
 					actor,
 					operation,
 					skill: read(document.getElementById('changeActorSkill-skill')!) ?? form.skill
 				});
 				break;
 			case 'sort-by-order':
-				Command.save?.({ actor, operation });
+				commit({ actor, operation });
 				break;
 		}
 	};

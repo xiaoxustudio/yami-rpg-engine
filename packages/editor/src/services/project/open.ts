@@ -1,12 +1,12 @@
 import { SettingConfig } from '@app/legacy/module/settingconfig';
 import { Path } from '@app/utils/config';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { loadCustomCommandList } from '@app/legacy/command/command-custom.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Project } from '@app/legacy/data/project-settings-window.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
+import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { Editor } from './editor.ts';
@@ -36,6 +36,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 	await this.close!();
 
 	File.updateRoot!(path);
+	this.config!.project = path;
 
 	const get = createGetter('confirmation');
 
@@ -108,7 +109,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 		const verNum = Updater.getVersionNumber!(ver!);
 		await Updater.createLocalization!(verNum);
 		const loadData = Data.loadAll!();
-		const loadDir = Directory.read!();
+		const loadDir = getDirectoryTree()?.read();
 		await loadData;
 		await loadDir;
 		Data.inheritMetaData!();
@@ -120,7 +121,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 				: error instanceof SyntaxError
 					? 'Syntax error'
 					: 'Error';
-		Directory.close!();
+		getDirectoryTree()?.close();
 		Data.close!();
 		return Editor.hooks.onWindowConfirm(
 			{
@@ -143,14 +144,14 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 		await this.checkForProjectUpdates!();
 
 		Printer.loadDefault();
-		Command.custom.loadCommandList();
+		loadCustomCommandList();
 		Animation.Player.updateStep();
 		this.loadProject!();
 	} catch (error: unknown) {
 		Editor.hooks.onError(error);
 		const index = path.lastIndexOf('/') + 1;
 		const message = path.slice(index);
-		Directory.close!();
+		getDirectoryTree()?.close();
 		Data.close!();
 		Editor.hooks.onWindowConfirm(
 			{

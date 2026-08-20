@@ -133,7 +133,7 @@
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Variable } from '@app/legacy/variable/variable.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { parseMultiLineString } from '@app/composables/useCommandParse.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -176,7 +176,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 			initText = ` = ${node.value}`;
 			break;
 		case 'string':
-			initText = ` = "${Command.parseMultiLineString!(node.value)}"`;
+			initText = ` = "${parseMultiLineString(node.value)}"`;
 			break;
 		case 'object':
 			initText = '';

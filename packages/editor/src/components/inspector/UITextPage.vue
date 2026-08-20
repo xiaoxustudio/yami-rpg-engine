@@ -154,6 +154,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUITextPage } from '@app/composables/useUITextPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -170,6 +171,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUITextPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -233,22 +236,8 @@ onMounted(() => {
     #uiText-typeface, #uiText-effect-type, #uiText-effect-shadowOffsetX, #uiText-effect-shadowOffsetY,
     #uiText-effect-strokeWidth, #uiText-effect-color, #uiText-overflow, #uiText-blend`);
 	const sliders = document.querySelectorAll('#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider');
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(uiText, UI))
-		);
-	}
-	if (Inspector.sliderFocus && Inspector.sliderBlur) {
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-	}
+	bindInput(elements, uiText, UI);
+	bindSliders(sliders);
 
 	const el = document.getElementById('uiText-vue-mount');
 	if (el) {

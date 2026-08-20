@@ -340,6 +340,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -356,6 +357,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIButtonPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -471,22 +474,8 @@ onMounted(() => {
     #uiButton-hoverSound, #uiButton-clickSound`);
 	const sliders = document.querySelectorAll(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
     #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(uiButton, UI))
-		);
-	}
-	if (Inspector.sliderFocus && Inspector.sliderBlur) {
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-	}
+	bindInput(elements, uiButton, UI);
+	bindSliders(sliders);
 
 	const el = document.getElementById('uiButton-vue-mount');
 	if (el) {

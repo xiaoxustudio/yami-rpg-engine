@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface ColorForm {
@@ -50,7 +50,7 @@ const open = (
 ): void => {
 	callback = cb;
 	indexEnabled = enabled;
-	Window.open!('color');
+	getWindowStore().open('color');
 	const rgba = getRGBAFromHex(color);
 	const data: ColorForm = {
 		hex: simplifyHex(color),
@@ -82,7 +82,7 @@ const confirm = (): void => {
 	} else {
 		callback?.(getHexFromRGBA([data.r, data.g, data.b, data.a]));
 	}
-	Window.close!('color');
+	getWindowStore().close('color');
 };
 
 const onWindowClosed = (): void => {

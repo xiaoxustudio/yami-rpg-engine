@@ -27,6 +27,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSoundFramePage } from '@app/composables/useAnimSoundFramePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -39,25 +40,17 @@ const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimSoundFramePage();
 
+const { bindInput } = useInspectorInput();
+
 onMounted(() => {
 	const animSoundFrame = Inspector.animSoundFrame;
 	if (animSoundFrame) {
 		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		if (Inspector.inputBlur) {
-			(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-				el.addEventListener(
-					'blur',
-					Inspector.inputBlur!(animSoundFrame, Animation, (data: Record<string, unknown>) => {
-						data.type = 'inspector-frame-change';
-						data.motion = animSoundFrame.motion;
-						data.direction = Animation.direction;
-					})
-				)
-			);
-		}
+		bindInput(elements, animSoundFrame, Animation, (data: Record<string, unknown>) => {
+			data.type = 'inspector-frame-change';
+			data.motion = animSoundFrame.motion;
+			data.direction = Animation.direction;
+		});
 	}
 	const el = document.getElementById('animSoundFrame-vue-mount');
 	if (el) {

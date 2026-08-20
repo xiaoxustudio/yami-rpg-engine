@@ -2,8 +2,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScript-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileScript-info-grid">
-			<div class="text">{{ t('components.fileScript-name.label') || 'Name' }}</div><div class="text" id="fileScript-name"></div> <div class="text">{{ t('components.fileScript-size.label') || 'Size' }}</div
-			><div class="text" id="fileScript-size"></div>
+			<div class="text">{{ t('components.fileScript-name.label') || 'Name' }}</div><div class="text" id="fileScript-name">{{ form.name }}</div> <div class="text">{{ t('components.fileScript-size.label') || 'Size' }}</div
+			><div class="text" id="fileScript-size">{{ form.size }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -15,18 +15,19 @@
 </template>
 
 <script setup lang="ts">
-import '@app/legacy/inspector/file-script-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useInspectorStore } from '@app/stores/inspector';
+import { useFileScriptPage } from '@app/composables/useFileScriptPage';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
-const inspector = useInspectorStore();
 const { t } = useI18n();
+
+const { form, sync } = useFileScriptPage();
 
 const overviewEl = ref<HTMLElement | null>(null);
 const overviewMeta = ref<PluginMetaShape | null>(null);
@@ -44,5 +45,10 @@ onMounted(() => {
 	if (fileScript) {
 		window.addEventListener('localize', fileScript.windowLocalize);
 	}
+	const el = document.getElementById('fileScript');
+	if (el) {
+		attachElementApi(el, { update: sync });
+	}
+	sync();
 });
 </script>

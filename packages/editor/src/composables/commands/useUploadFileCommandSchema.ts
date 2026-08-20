@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useUploadFileCommandSchema() {
-	const { form, save, load } = useCommandSchema('uploadFile', {
+	const { form, save, load, commit } = useCommandSchema('uploadFile', {
 		onLoad() {
 			getFocus(document.getElementById('uploadFile-url'));
 		}
@@ -21,7 +21,7 @@ export function useUploadFileCommandSchema() {
 			getFocus(document.getElementById('uploadFile-path'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			url,
 			method: read(document.getElementById('uploadFile-method')) ?? form.method,
 			path,

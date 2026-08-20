@@ -1,19 +1,20 @@
 ﻿import '@app/legacy/module/command/return.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commandState } from '@app/composables/useCommandState.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useReturnCommandSchema() {
-	const { form, save, load } = useCommandSchema('return');
+	const { form, save, load, commit } = useCommandSchema('return');
 	const loadTypeItems = (type: string): void => {
 		const items = Command.cases.return.typeItems;
 		document.getElementById('return-type')?.loadItems?.([items[type] ?? items.none]);
 	};
 	const onLoad = (params: Record<string, unknown>): void => {
-		const type = (params.type ?? Command.returnType) as string;
+		const type = (params.type ?? commandState.returnType) as string;
 		const value = params.value ?? null;
-		loadTypeItems(Command.returnType);
+		loadTypeItems(commandState.returnType);
 		load({
 			...params,
 			type,
@@ -36,22 +37,22 @@ export function useReturnCommandSchema() {
 		const type = read(document.getElementById('return-type')) ?? form.type;
 		switch (type) {
 			case 'none':
-				Command.save?.({ type });
+				commit({ type });
 				break;
 			case 'boolean':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-boolean')) ?? form.boolean
 				});
 				break;
 			case 'number':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-number')) ?? form.number
 				});
 				break;
 			case 'string':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-string')) ?? form.string
 				});
@@ -62,53 +63,53 @@ export function useReturnCommandSchema() {
 					getFocus(document.getElementById('return-object'));
 					return;
 				}
-				Command.save?.({ type, value: variable });
+				commit({ type, value: variable });
 				break;
 			}
 			case 'actor':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-actor')) ?? form.actor
 				});
 				break;
 			case 'skill':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-skill')) ?? form.skill
 				});
 				break;
 			case 'state':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-state')) ?? form.state
 				});
 				break;
 			case 'equipment':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-equipment')) ?? form.equipment
 				});
 				break;
 			case 'item':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-item')) ?? form.item
 				});
 				break;
 			case 'trigger':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-trigger')) ?? form.trigger
 				});
 				break;
 			case 'light':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-light')) ?? form.light
 				});
 				break;
 			case 'element':
-				Command.save?.({
+				commit({
 					type,
 					value: read(document.getElementById('return-element')) ?? form.element
 				});

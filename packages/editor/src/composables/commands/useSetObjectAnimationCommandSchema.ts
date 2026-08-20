@@ -9,7 +9,7 @@ type ObjectRef = {
 };
 
 export function useSetObjectAnimationCommandSchema() {
-	const { form, save, load } = useCommandSchema('setObjectAnimation', {
+	const { form, save, load, commit } = useCommandSchema('setObjectAnimation', {
 		onLoad() {
 			getFocus(document.getElementById('setObjectAnimation-sort'));
 		}
@@ -78,7 +78,7 @@ export function useSetObjectAnimationCommandSchema() {
 			read(document.getElementById('setObjectAnimation-duration')) ?? form.duration;
 		const wait = read(document.getElementById('setObjectAnimation-wait')) ?? form.wait;
 		if ('set-tint|set-rgb|set-gray'.includes(operation as string)) {
-			Command.save?.({
+			commit({
 				sort,
 				object,
 				operation,
@@ -88,7 +88,7 @@ export function useSetObjectAnimationCommandSchema() {
 				wait
 			});
 		} else if (operation === 'set-opacity') {
-			Command.save?.({
+			commit({
 				sort,
 				object,
 				operation,
@@ -99,7 +99,7 @@ export function useSetObjectAnimationCommandSchema() {
 				wait
 			});
 		} else if (operation === 'set-offsetY') {
-			Command.save?.({
+			commit({
 				sort,
 				object,
 				operation,
@@ -110,7 +110,7 @@ export function useSetObjectAnimationCommandSchema() {
 				wait
 			});
 		} else if (operation === 'set-rotation') {
-			Command.save?.({
+			commit({
 				sort,
 				object,
 				operation,

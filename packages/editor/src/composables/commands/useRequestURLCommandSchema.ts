@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useRequestURLCommandSchema() {
-	const { form, save, load } = useCommandSchema('requestURL', {
+	const { form, save, load, commit } = useCommandSchema('requestURL', {
 		onLoad() {
 			getFocus(document.getElementById('requestURL-url'));
 		}
@@ -16,7 +16,7 @@ export function useRequestURLCommandSchema() {
 			getFocus(document.getElementById('requestURL-url'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			url,
 			method: read(document.getElementById('requestURL-method')) ?? form.method,
 			headers: read(document.getElementById('requestURL-header')) ?? form.headers,

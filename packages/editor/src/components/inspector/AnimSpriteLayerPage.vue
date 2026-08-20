@@ -14,6 +14,7 @@
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
@@ -26,6 +27,8 @@ const { t } = useI18n();
 const local = useLocalStore();
 
 const { form, sync, onParamInput } = useAnimSpriteLayerPage();
+
+const { bindInput } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -48,18 +51,11 @@ onMounted(() => {
 	]);
 
 	const elements = document.querySelectorAll('#animSpriteLayer-sprite, #animSpriteLayer-blend, #animSpriteLayer-light');
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(animSpriteLayer, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-layer-change';
-				data.motion = animSpriteLayer.motion;
-				data.direction = Animation.direction;
-			}))
-		);
-	}
+	bindInput(elements, animSpriteLayer, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-layer-change';
+		data.motion = animSpriteLayer.motion;
+		data.direction = Animation.direction;
+	});
 
 	const el = document.getElementById('animSpriteLayer-vue-mount');
 	if (el) {

@@ -7,7 +7,7 @@ import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema'
 import type { SetNumberOperand } from '@app/legacy/module/command/setNumber.ts';
 
 export function useSetNumberCommandSchema() {
-	const { form, save, load } = useCommandSchema('setNumber', {
+	const { form, save, load, commit } = useCommandSchema('setNumber', {
 		onLoad() {
 			getFocus(document.getElementById('setNumber-variable'));
 		}
@@ -28,7 +28,7 @@ export function useSetNumberCommandSchema() {
 			return;
 		}
 		operands[0].operation = 'add';
-		Command.save?.({ variable, operation, operands });
+		commit({ variable, operation, operands });
 	};
 	Command.cases.setNumber.customSave = onSave;
 	return { form, save: onSave, load };

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
 
@@ -59,7 +59,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 
 	const open = (target: PresetGetterTarget): void => {
 		callback = (getter: Record<string, unknown>) => target.input(getter);
-		Window.open!(domKey);
+		getWindowStore().open(domKey);
 
 		let presetId = PresetObject.getDefaultPresetId(presetCategory);
 		let variable = { type: 'local', key: '' };
@@ -106,7 +106,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 			}
 		}
 		callback?.(getter!);
-		Window.close!(domKey);
+		getWindowStore().close(domKey);
 	};
 
 	const onWindowClosed = (): void => {

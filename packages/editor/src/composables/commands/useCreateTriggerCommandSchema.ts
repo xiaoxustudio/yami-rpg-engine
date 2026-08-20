@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useCreateTriggerCommandSchema() {
-	const { form, save, load } = useCommandSchema('createTrigger', {
+	const { form, save, load, commit } = useCommandSchema('createTrigger', {
 		onLoad() {
 			getFocus(document.getElementById('createTrigger-triggerId'));
 		}
@@ -16,7 +16,7 @@ export function useCreateTriggerCommandSchema() {
 			getFocus(document.getElementById('createTrigger-triggerId'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			triggerId,
 			caster: read(document.getElementById('createTrigger-caster')) ?? form.caster,
 			origin: read(document.getElementById('createTrigger-origin')) ?? form.origin,

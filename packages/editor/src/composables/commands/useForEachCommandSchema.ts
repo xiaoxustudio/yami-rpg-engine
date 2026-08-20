@@ -1,6 +1,7 @@
-import '@app/legacy/module/command/forEach.ts';
+﻿import '@app/legacy/module/command/forEach.ts';
 import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
 
@@ -76,7 +77,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, list, variable, commands: children });
+			commit({ data, list, variable, commands: children });
 			break;
 		}
 		case 'skill':
@@ -88,7 +89,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, actor, variable, commands: children });
+			commit({ data, actor, variable, commands: children });
 			break;
 		}
 		case 'element': {
@@ -97,7 +98,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, element, variable, commands: children });
+			commit({ data, element, variable, commands: children });
 			break;
 		}
 		case 'member': {
@@ -105,7 +106,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, variable, commands: children });
+			commit({ data, variable, commands: children });
 			break;
 		}
 		case 'attribute': {
@@ -117,7 +118,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, groupId, variable, commands: children });
+			commit({ data, groupId, variable, commands: children });
 			break;
 		}
 		case 'enum': {
@@ -129,7 +130,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(document.getElementById('forEach-variable')!);
 			}
-			Command.save?.({ data, groupId, variable, commands: children });
+			commit({ data, groupId, variable, commands: children });
 			break;
 		}
 		case 'save': {
@@ -137,7 +138,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(saveIndex)) {
 				return getFocus(document.getElementById('forEach-saveIndex')!);
 			}
-			Command.save?.({ data, saveIndex, commands: children });
+			commit({ data, saveIndex, commands: children });
 			break;
 		}
 		case 'touch':
@@ -146,7 +147,7 @@ const save = (): unknown => {
 			if (VariableGetter.isNone!(touchId)) {
 				return getFocus(document.getElementById('forEach-touchId')!);
 			}
-			Command.save?.({ data, touchId, commands: children });
+			commit({ data, touchId, commands: children });
 			break;
 		}
 	}

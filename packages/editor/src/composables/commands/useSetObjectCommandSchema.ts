@@ -25,7 +25,7 @@ type SetObjectOperand = {
 };
 
 export function useSetObjectCommandSchema() {
-	const { form, save, load } = useCommandSchema('setObject', {
+	const { form, save, load, commit } = useCommandSchema('setObject', {
 		onLoad() {
 			getFocus(document.getElementById('setObject-variable'));
 		}
@@ -132,7 +132,7 @@ export function useSetObjectCommandSchema() {
 				break;
 			}
 		}
-		Command.save?.({ variable, operand });
+		commit({ variable, operand });
 	};
 	Command.cases.setObject.customLoad = onLoad;
 	Command.cases.setObject.customSave = onSave;

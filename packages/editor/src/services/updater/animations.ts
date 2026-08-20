@@ -1,5 +1,5 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 interface AnimLayer {
@@ -40,8 +40,8 @@ function updateAnimations(verNum: number) {
 				}
 			}
 		};
-		for (const [guid, animation] of Object.entries<any>(Data.animations)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
+			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -50,7 +50,7 @@ function updateAnimations(verNum: number) {
 					update(dirCase.layers);
 				}
 			}
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.139')) {
@@ -76,8 +76,8 @@ function updateAnimations(verNum: number) {
 				}
 			}
 		};
-		for (const [guid, animation] of Object.entries<any>(Data.animations)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
+			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -86,7 +86,7 @@ function updateAnimations(verNum: number) {
 					update(dirCase.layers);
 				}
 			}
-			File.planToSave!(meta);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

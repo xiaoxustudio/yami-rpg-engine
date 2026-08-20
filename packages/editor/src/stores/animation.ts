@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+import type { EditorProjectShape } from './editor';
 
 export const animationStateKeys = [
 	'state',
@@ -141,6 +142,22 @@ export const useAnimationStore = defineStore('animation', () => {
 		Animation?.requestRendering?.();
 	}
 
+	function saveToConfig(config: { colors?: Record<string, unknown> }) {
+		Animation?.saveToConfig?.(config);
+	}
+
+	function loadFromConfig(config: { colors?: Record<string, unknown> }) {
+		Animation?.loadFromConfig?.(config);
+	}
+
+	function saveToProject(project: EditorProjectShape) {
+		Animation?.saveToProject?.(project);
+	}
+
+	function loadFromProject(project: EditorProjectShape) {
+		Animation?.loadFromProject?.(project);
+	}
+
 	return {
 		state,
 		target,
@@ -177,7 +194,11 @@ export const useAnimationStore = defineStore('animation', () => {
 		setMotion,
 		setDirection,
 		planToSave,
-		requestRendering
+		requestRendering,
+		saveToConfig,
+		loadFromConfig,
+		saveToProject,
+		loadFromProject
 	};
 });
 

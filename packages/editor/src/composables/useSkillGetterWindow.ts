@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface SkillGetterForm {
@@ -44,7 +44,7 @@ const getFrame = (): SkillGetterFrame | null =>
 const open = (target: SkillGetterTarget, defaults?: Partial<SkillGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
 	pluginInput = target.isPluginInput === true;
-	Window.open!('skillGetter');
+	getWindowStore().open('skillGetter');
 
 	let actor = { type: 'trigger' };
 	let key = defaults?.key ?? '';
@@ -109,7 +109,7 @@ const confirm = (): void => {
 		getter = { getter: 'skill', ...getter };
 	}
 	callback?.(getter!);
-	Window.close!('skillGetter');
+	getWindowStore().close('skillGetter');
 };
 
 const onWindowClosed = (): void => {

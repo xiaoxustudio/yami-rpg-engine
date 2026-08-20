@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/setInventory.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { reactive } from 'vue';
 
 const form = reactive<Record<string, unknown>>({});
@@ -37,7 +38,7 @@ const save = (): void => {
 	switch (operation) {
 		case 'increase-money':
 		case 'decrease-money':
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				money: read(document.getElementById('setInventory-money')) ?? form.money
@@ -50,7 +51,7 @@ const save = (): void => {
 				getFocus(document.getElementById('setInventory-itemId'));
 				return;
 			}
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				itemId,
@@ -66,19 +67,19 @@ const save = (): void => {
 				getFocus(document.getElementById('setInventory-equipmentId'));
 				return;
 			}
-			Command.save?.({ actor, operation, equipmentId });
+			commit({ actor, operation, equipmentId });
 			break;
 		}
 		case 'gain-equipment-instance':
 		case 'lose-equipment-instance':
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				equipment: read(document.getElementById('setInventory-equipment')) ?? form.equipment
 			});
 			break;
 		case 'swap':
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				order1: read(document.getElementById('setInventory-order1')) ?? form.order1,
@@ -89,10 +90,10 @@ const save = (): void => {
 		case 'sort-by-order':
 		case 'reset':
 		case 'dereference':
-			Command.save?.({ actor, operation });
+			commit({ actor, operation });
 			break;
 		case 'reference':
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				refActor: read(document.getElementById('setInventory-refActor')) ?? form.refActor

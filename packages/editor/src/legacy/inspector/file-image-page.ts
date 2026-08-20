@@ -7,18 +7,27 @@ import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
 
 {
+	interface FileImageInfo {
+		name: string;
+		size: string;
+		resolution: string;
+	}
 	interface FileImageShape {
 		image: HTMLImageElement | null;
+		info: FileImageInfo | null;
+		update: (() => void) | null;
 		[k: string]: unknown;
 	}
 	const FileImage: FileImageShape = {
 		target: null,
 		meta: null,
 		symbol: null,
+		info: null,
 		image: null,
 		initialize: null,
 		open: null,
-		close: null
+		close: null,
+		update: null
 	};
 
 	FileImage.initialize = function () {};
@@ -28,13 +37,13 @@ import { Inspector } from './inspector.ts';
 			this.target = file;
 			this.meta = meta;
 
-			const elName = $('#fileImage-name');
-			const elSize = $('#fileImage-size');
-			const elResolution = $('#fileImage-resolution');
 			const size = Number((file.stats as unknown as { size: number }).size);
-			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize!(size);
-			elResolution.textContent = '';
+			this.info = {
+				name: file.basename + file.extname,
+				size: File.parseFileSize!(size),
+				resolution: ''
+			};
+			this.update!();
 
 			const image = this.image!;
 			hide(image);
@@ -60,7 +69,8 @@ import { Inspector } from './inspector.ts';
 					)?.updateImage?.();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
-					elResolution.textContent = `${width} x ${height}`;
+					this.info!.resolution = `${width} x ${height}`;
+					this.update!();
 				}
 			});
 		}
@@ -74,6 +84,12 @@ import { Inspector } from './inspector.ts';
 			this.symbol = null;
 			this.image!.src = '';
 		}
+	};
+
+	FileImage.update = function (this: typeof FileImage) {
+		const el = $('#fileImage');
+		if (!el) return;
+		(el as HTMLElement & { update?: () => void }).update?.();
 	};
 
 	Inspector.fileImage = FileImage;

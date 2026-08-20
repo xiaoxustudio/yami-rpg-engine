@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/showChoices.ts';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';
 
@@ -42,7 +43,7 @@ const save = (): unknown => {
 		return getFocus(document.getElementById('showChoices-choices'));
 	}
 	const parameters = read(document.getElementById('showChoices-parameters')) ?? form.parameters;
-	Command.save?.({ choices: list, parameters });
+	commit({ choices: list, parameters });
 };
 
 const windowClosed = (event: Event): void => {

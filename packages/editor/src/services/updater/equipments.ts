@@ -1,13 +1,13 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateEquipments(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const equipments = Data.equipments;
+		const { manifest, equipments } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEquipment'));
-		for (const [guid, sEquipment] of Object.entries<any>(equipments)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sEquipment] of Object.entries<any>(equipments!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -17,8 +17,8 @@ function updateEquipments(verNum: number) {
 					dEquipment[key] = sEquipment[key];
 				}
 			}
-			equipments[guid] = dEquipment;
-			File.planToSave!(meta);
+			equipments![guid] = dEquipment;
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

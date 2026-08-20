@@ -1,6 +1,6 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { removeTextTags, parseVariableTag } from '@app/composables/useCommandParse.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 
 export interface ChoicesForm {
@@ -34,11 +34,11 @@ let commands: unknown[] | null = null;
 let instance: ChoicesShape | null = null;
 
 const parse = (choice: ChoicesData): string => {
-	return Command.removeTextTags!(Command.parseVariableTag!(GameLocal.replace!(choice.content)));
+	return removeTextTags(parseVariableTag(GameLocal.replace!(choice.content)));
 };
 
 const open = (choice: ChoicesData = { content: '', commands: [] }): void => {
-	Window.open!('choice');
+	getWindowStore().open('choice');
 	const setForm = (
 		document.getElementById('choice') as
 			| (HTMLElement & { setForm?: (data: Partial<ChoicesForm>) => void })
@@ -57,7 +57,7 @@ const save = (): unknown => {
 	if (content === '') {
 		return getFocus(document.getElementById('choice-content'));
 	}
-	Window.close!('choice');
+	getWindowStore().close('choice');
 	return { content, commands };
 };
 

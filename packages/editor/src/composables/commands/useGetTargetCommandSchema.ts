@@ -1,6 +1,7 @@
-import '@app/legacy/module/command/getTarget.ts';
+﻿import '@app/legacy/module/command/getTarget.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { reactive } from 'vue';
 
@@ -39,7 +40,7 @@ const save = (): void => {
 		case 'nearest':
 		case 'farthest':
 		case 'random':
-			Command.save?.({ actor, selector, condition });
+			commit({ actor, selector, condition });
 			break;
 		case 'min-attribute-value':
 		case 'max-attribute-value': {
@@ -49,7 +50,7 @@ const save = (): void => {
 				getFocus(document.getElementById('getTarget-attribute')!);
 				return;
 			}
-			Command.save?.({ actor, selector, condition, attribute });
+			commit({ actor, selector, condition, attribute });
 			break;
 		}
 		case 'min-attribute-ratio':
@@ -65,7 +66,7 @@ const save = (): void => {
 				getFocus(document.getElementById('getTarget-divisor')!);
 				return;
 			}
-			Command.save?.({
+			commit({
 				actor,
 				selector,
 				condition,

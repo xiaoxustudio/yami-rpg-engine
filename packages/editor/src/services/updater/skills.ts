@@ -1,13 +1,13 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateSkills(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const skills = Data.skills;
+		const { manifest, skills } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileSkill'));
-		for (const [guid, sSkill] of Object.entries<any>(skills)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sSkill] of Object.entries<any>(skills!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -17,8 +17,8 @@ function updateSkills(verNum: number) {
 					dSkill[key] = sSkill[key];
 				}
 			}
-			skills[guid] = dSkill;
-			File.planToSave!(meta);
+			skills![guid] = dSkill;
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useWebSocketSendCommandSchema() {
-	const { form, save, load } = useCommandSchema('webSocketSend', {
+	const { form, save, load, commit } = useCommandSchema('webSocketSend', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketSend-id'));
 		}
@@ -23,7 +23,7 @@ export function useWebSocketSendCommandSchema() {
 			getFocus(elData);
 			return;
 		}
-		Command.save!({ id, data });
+		commit({ id, data });
 	};
 	Command.cases.webSocketSend.customSave = onSave;
 	return { form, save: onSave, load };

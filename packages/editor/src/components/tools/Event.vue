@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { removeTextTags, parseEventType } from '@app/composables/useCommandParse.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -53,7 +53,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	if (node.type !== 'common') {
 		typeName =
 			' : ' +
-			Command.removeTextTags!(Command.parseEventType!(node.filter + '-event', node.type!));
+			removeTextTags(parseEventType(node.filter + '-event', node.type!));
 	}
 	return [h('div', { class: 'event-init-text text' }, typeName)];
 };

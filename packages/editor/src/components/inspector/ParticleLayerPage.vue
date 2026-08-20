@@ -904,6 +904,7 @@ import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -918,6 +919,8 @@ const local = useLocalStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useParticleLayerPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.particleLayer;
@@ -1020,11 +1023,8 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider, #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider'
 	);
-	const blurHandler = Inspector.inputBlur ? Inspector.inputBlur(editor, Particle) : () => {};
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', blurHandler));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+bindInput(elements, editor, Particle);
+	bindSliders(sliders);
 	const refreshLocalizedItems = () => {
 		const getNames = (id: string, values: string[]) => {
 			const options = local.components?.[id]?.options;

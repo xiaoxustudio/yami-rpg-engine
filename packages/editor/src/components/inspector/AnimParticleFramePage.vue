@@ -102,6 +102,7 @@ import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -110,6 +111,8 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimParticleFramePage();
+
+const { bindInput } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.animParticleFrame;
@@ -123,16 +126,11 @@ onMounted(() => {
 	const elements = document.querySelectorAll(
 		'#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation, #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity, #animParticleFrame-scale, #animParticleFrame-speed'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(editor, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-frame-change';
-				data.motion = editor.motion;
-				data.direction = Animation.direction;
-			}))
-		);
-	}
+	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-frame-change';
+		data.motion = editor.motion;
+		data.direction = Animation.direction;
+	});
 
 	sync();
 });

@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/setMovementSpeed.ts';
+﻿import '@app/legacy/module/command/setMovementSpeed.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetMovementSpeedCommandSchema() {
-	const { form, save, load } = useCommandSchema('setMovementSpeed', {
+	const { form, save, load, commit } = useCommandSchema('setMovementSpeed', {
 		onLoad() {
 			getFocus(document.getElementById('setMovementSpeed-actor')!);
 		}
@@ -15,7 +15,7 @@ export function useSetMovementSpeedCommandSchema() {
 			read(document.getElementById('setMovementSpeed-property')!) ?? form.property;
 		switch (property) {
 			case 'base':
-				Command.save?.({
+				commit({
 					actor,
 					property,
 					base: read(document.getElementById('setMovementSpeed-base')!) ?? form.base
@@ -23,7 +23,7 @@ export function useSetMovementSpeedCommandSchema() {
 				break;
 			case 'factor':
 			case 'factor-temp':
-				Command.save?.({
+				commit({
 					actor,
 					property,
 					factor: read(document.getElementById('setMovementSpeed-factor')!) ?? form.factor

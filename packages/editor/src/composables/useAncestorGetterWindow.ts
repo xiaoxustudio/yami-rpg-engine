@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface AncestorGetterForm {
@@ -38,7 +38,7 @@ const getFrame = (): AncestorGetterFrame | null =>
 
 const open = (target: AncestorGetterTarget, defaults?: Partial<AncestorGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
-	Window.open!('ancestorGetter');
+	getWindowStore().open('ancestorGetter');
 
 	let presetId = defaults?.presetId ?? '';
 	let variable = { type: 'local', key: '' };
@@ -83,7 +83,7 @@ const confirm = (): void => {
 			break;
 	}
 	callback?.(getter!);
-	Window.close!('ancestorGetter');
+	getWindowStore().close('ancestorGetter');
 };
 
 const onWindowClosed = (): void => {

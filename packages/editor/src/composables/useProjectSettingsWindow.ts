@@ -2,8 +2,8 @@ import { reactive } from 'vue';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { getWindowStore } from '@app/stores/window';
+import { removeTextTags, parseFileName } from '@app/composables/useCommandParse.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
@@ -173,7 +173,7 @@ function initialize(): void {
 }
 
 function open(): void {
-	Window.open!('project-settings');
+	getWindowStore().open('project-settings');
 
 	getProjectStore().data = Object.clone(Data.config);
 	getProjectStore().target = getProjectStore().data;
@@ -212,7 +212,7 @@ function windowClose(event: Event): void {
 	if (changed) {
 		event.preventDefault();
 		const get = createGetter('confirmation');
-		Window.confirm!(
+		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedProjectSettings')
 			},
@@ -221,7 +221,7 @@ function windowClose(event: Event): void {
 					label: get('yes'),
 					click: () => {
 						changed = false;
-						Window.close!('project-settings');
+						getWindowStore().close('project-settings');
 					}
 				},
 				{
@@ -303,7 +303,7 @@ function confirm(event?: Event): void {
 		datachange.last = last;
 		window.dispatchEvent(datachange);
 	}
-	Window.close!('project-settings');
+	getWindowStore().close('project-settings');
 }
 
 const importedFonts: ImportedFonts = {
@@ -311,7 +311,7 @@ const importedFonts: ImportedFonts = {
 	filter: 'font',
 	initialize: function () {},
 	parse: function (this: ImportedFonts, fontId: string) {
-		return Command.removeTextTags(Command.parseFileName(fontId));
+		return removeTextTags(parseFileName(fontId));
 	},
 	open: function (fontId = '') {
 		this.fontId = fontId;
@@ -340,7 +340,7 @@ const languages: LanguagesInterface = {
 				}
 			}
 			this.target?.save?.();
-			Window.close!('language');
+			getWindowStore().close('language');
 		});
 	},
 	parse: function (this: LanguagesInterface, language: { name: string }) {
@@ -355,7 +355,7 @@ const languages: LanguagesInterface = {
 		write(document.getElementById('language-font'), language.font);
 		write(document.getElementById('language-scale'), language.scale);
 		getFocus(document.getElementById('language-name'));
-		Window.open!('language');
+		getWindowStore().open('language');
 	},
 	save: function () {
 		return {

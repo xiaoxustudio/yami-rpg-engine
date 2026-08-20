@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/changeActorEquipment.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { reactive } from 'vue';
 
@@ -48,7 +49,7 @@ const save = (): void => {
 				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
 			}
-			Command.save?.({ actor, operation, slot, equipmentId });
+			commit({ actor, operation, slot, equipmentId });
 			break;
 		}
 		case 'remove': {
@@ -59,7 +60,7 @@ const save = (): void => {
 				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
 			}
-			Command.save?.({ actor, operation, equipmentId });
+			commit({ actor, operation, equipmentId });
 			break;
 		}
 		case 'add-instance': {
@@ -68,7 +69,7 @@ const save = (): void => {
 				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				slot,
@@ -79,7 +80,7 @@ const save = (): void => {
 			break;
 		}
 		case 'remove-instance':
-			Command.save?.({
+			commit({
 				actor,
 				operation,
 				equipment:
@@ -93,7 +94,7 @@ const save = (): void => {
 				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
-			Command.save?.({ actor, operation, slot });
+			commit({ actor, operation, slot });
 			break;
 		}
 	}

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface RenameForm {
@@ -18,7 +18,7 @@ let callback: ((value: string) => void) | null = null;
 
 const open = (name: string, cb: (value: string) => void): void => {
 	callback = cb;
-	Window.open!('rename');
+	getWindowStore().open('rename');
 	Object.assign(form, { name });
 	const setForm = (
 		document.getElementById('rename') as
@@ -34,7 +34,7 @@ const confirm = (): void => {
 		document.getElementById('rename') as (HTMLElement & { getForm?: () => RenameForm }) | null
 	)?.getForm;
 	callback?.(getForm?.()?.name ?? '');
-	Window.close!('rename');
+	getWindowStore().close('rename');
 };
 
 const onWindowClosed = (): void => {

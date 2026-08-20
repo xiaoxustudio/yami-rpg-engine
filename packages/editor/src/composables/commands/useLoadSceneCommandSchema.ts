@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/loadScene.ts';
+﻿import '@app/legacy/module/command/loadScene.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useLoadSceneCommandSchema() {
-	const { form, save, load } = useCommandSchema('loadScene', {
+	const { form, save, load, commit } = useCommandSchema('loadScene', {
 		onLoad() {
 			getFocus(document.getElementById('loadScene-sceneId')!);
 		}
@@ -18,7 +18,7 @@ export function useLoadSceneCommandSchema() {
 		const transfer = read(document.getElementById('loadScene-transfer')!) ?? form.transfer;
 		switch (transfer) {
 			case true:
-				Command.save!({
+				commit({
 					sceneId,
 					transfer,
 					x: read(document.getElementById('loadScene-x')!) ?? form.x,
@@ -26,7 +26,7 @@ export function useLoadSceneCommandSchema() {
 				});
 				break;
 			case false:
-				Command.save!({ sceneId, transfer });
+				commit({ sceneId, transfer });
 				break;
 		}
 	};

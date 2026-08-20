@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/castSkill.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { reactive } from 'vue';
 
@@ -41,7 +42,7 @@ const save = (): void => {
 				getFocus(document.getElementById('castSkill-key'));
 				return;
 			}
-			Command.save?.({ actor, mode, key, wait });
+			commit({ actor, mode, key, wait });
 			break;
 		}
 		case 'by-id': {
@@ -50,11 +51,11 @@ const save = (): void => {
 				getFocus(document.getElementById('castSkill-skillId'));
 				return;
 			}
-			Command.save?.({ actor, mode, skillId, wait });
+			commit({ actor, mode, skillId, wait });
 			break;
 		}
 		case 'by-skill':
-			Command.save?.({
+			commit({
 				actor,
 				mode,
 				skill: read(document.getElementById('castSkill-skill')) ?? form.skill,
@@ -62,7 +63,7 @@ const save = (): void => {
 			});
 			break;
 		case 'by-variable':
-			Command.save?.({
+			commit({
 				actor,
 				mode,
 				keyVar: read(document.getElementById('castSkill-keyVar')) ?? form.keyVar,

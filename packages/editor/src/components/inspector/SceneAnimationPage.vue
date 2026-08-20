@@ -169,6 +169,7 @@ import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -185,6 +186,8 @@ const scene = useSceneStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneAnimationPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.sceneAnimation?.animationIdWrite?.({ value });
@@ -228,10 +231,8 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#sceneAnimation-angle-slider, #sceneAnimation-scale-slider, #sceneAnimation-speed-slider, #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
-	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	bindInput(elements, editor, Scene);
+	bindSliders(sliders);
 	document.querySelectorAll('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 

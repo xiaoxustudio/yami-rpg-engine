@@ -24,6 +24,7 @@ import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleLayerPage } from '@app/composables/useAnimParticleLayerPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -33,6 +34,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimParticleLayerPage();
+
+const { bindInput } = useInspectorInput();
 
 onMounted(() => {
 	const editor = Inspector.animParticleLayer;
@@ -70,16 +73,11 @@ onMounted(() => {
 	const elements = document.querySelectorAll(
 		'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
 	);
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(editor, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-layer-change';
-				data.motion = editor.motion;
-				data.direction = Animation.direction;
-			}))
-		);
-	}
+	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-layer-change';
+		data.motion = editor.motion;
+		data.direction = Animation.direction;
+	});
 
 	sync();
 });

@@ -68,6 +68,7 @@
 import '@app/legacy/inspector/element-window-page.ts';
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -81,6 +82,8 @@ const onParamInput = (event: Event) => {
 };
 
 const { t } = useI18n();
+
+const { bindInput } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -114,13 +117,6 @@ onMounted(() => {
     #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
     #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
     #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(uiWindow, UI))
-		);
-	}
+	bindInput(elements, uiWindow, UI);
 });
 </script>

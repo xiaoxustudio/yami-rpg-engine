@@ -12,6 +12,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSoundLayerPage } from '@app/composables/useAnimSoundLayerPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -23,6 +24,8 @@ const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimSoundLayerPage();
 
+const { bindInput } = useInspectorInput();
+
 onMounted(() => {
 	const animSoundLayer = Inspector.animSoundLayer;
 	if (animSoundLayer) {
@@ -32,21 +35,11 @@ onMounted(() => {
 				{ name: 'Default', value: 'default' },
 				{ name: 'Inherit', value: 'inherit' }
 			]);
-			el.addEventListener('focus', Inspector.inputFocus);
-		if (Inspector.inputBlur) {
-			el.addEventListener(
-				'blur',
-				Inspector.inputBlur!(
-					animSoundLayer,
-					Animation,
-					(data: { type: string; [k: string]: unknown }) => {
-						data.type = 'inspector-layer-change';
-						data.motion = animSoundLayer.motion;
-						data.direction = Animation.direction;
-					}
-				)
-			);
-		}
+			bindInput([el], animSoundLayer, Animation, (data: { type: string; [k: string]: unknown }) => {
+				data.type = 'inspector-layer-change';
+				data.motion = animSoundLayer.motion;
+				data.direction = Animation.direction;
+			});
 		}
 	}
 	const el = document.getElementById('animSoundLayer-vue-mount');

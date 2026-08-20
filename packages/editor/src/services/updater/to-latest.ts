@@ -1,6 +1,5 @@
 import { Path } from '@app/utils/config';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Updater } from './updater.ts';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
@@ -68,11 +67,11 @@ function updateToLatest(this: typeof Updater, version: string) {
 	const files = FS.readdirSync!(srcPluginDir, { withFileTypes: true });
 	for (const file of files) {
 		const guid = guidRegExp.exec(file.name)?.[0];
-		const meta = Data.manifest.guidMap[guid as string];
+		const meta = getDataStore().data.manifest!.guidMap[guid as string];
 		if (meta) {
 			const sPath = Path.resolve!(srcPluginDir, file.name);
-			const jsPath = File.path!(meta.path);
-			const tsPath = File.path!(meta.path.replace(jsExtname, '.ts'));
+			const jsPath = Path.resolve!(dstProjectDir, meta.path);
+			const tsPath = Path.resolve!(dstProjectDir, meta.path.replace(jsExtname, '.ts'));
 			FS.copyFileSync!(sPath, jsPath);
 			FS.renameSync!(jsPath, tsPath);
 		}

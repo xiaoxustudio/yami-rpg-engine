@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useControlButtonCommandSchema() {
-	const { form, save, load } = useCommandSchema('controlButton', {
+	const { form, save, load, commit } = useCommandSchema('controlButton', {
 		onLoad() {
 			getFocus(document.getElementById('controlButton-operation'));
 		}
@@ -14,13 +14,13 @@ export function useControlButtonCommandSchema() {
 			read(document.getElementById('controlButton-operation')) ?? form.operation;
 		switch (operation) {
 			case 'select-default':
-				Command.save!({ operation });
+				commit({ operation });
 				break;
 			case 'select':
 			case 'hover-mode':
 			case 'active-mode':
 			case 'normal-mode': {
-				Command.save!({
+				commit({
 					operation,
 					element: read(document.getElementById('controlButton-element')) ?? form.element
 				});

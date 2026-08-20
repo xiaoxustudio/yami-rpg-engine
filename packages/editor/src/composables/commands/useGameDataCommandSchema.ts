@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/gameData.ts';
+﻿import '@app/legacy/module/command/gameData.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useGameDataCommandSchema() {
-	const { form, save, load } = useCommandSchema('gameData', {
+	const { form, save, load, commit } = useCommandSchema('gameData', {
 		onLoad() {
 			getFocus(document.getElementById('gameData-operation')!);
 		}
@@ -16,12 +16,12 @@ export function useGameDataCommandSchema() {
 			case 'save': {
 				const variables =
 					read(document.getElementById('gameData-variables')!) ?? form.variables;
-				Command.save!({ operation, index, variables: variables.trim() });
+				commit({ operation, index, variables: variables.trim() });
 				break;
 			}
 			case 'load':
 			case 'delete': {
-				Command.save!({ operation, index });
+				commit({ operation, index });
 				break;
 			}
 		}

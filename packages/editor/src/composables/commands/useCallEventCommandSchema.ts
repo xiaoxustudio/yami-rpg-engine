@@ -39,7 +39,7 @@ interface CallEventResultEl {
 }
 
 export function useCallEventCommandSchema() {
-	const { form, load } = useCommandSchema('callEvent');
+	const { form, load, commit } = useCommandSchema('callEvent');
 	let parameters: CallEventParameter[] = [];
 	let eventResult: CallEventResultEl | null = null;
 	let pendingArgs: CallEventArg[] | null = [];
@@ -346,11 +346,11 @@ export function useCallEventCommandSchema() {
 					getFocus(eventResult?.input);
 					return;
 				}
-				Command.save?.({ type, eventId, eventArgs, eventResult: eventResultData });
+				commit({ type, eventId, eventArgs, eventResult: eventResultData });
 				break;
 			}
 			case 'inherited':
-				Command.save?.({ type });
+				commit({ type });
 				break;
 			case 'scene': {
 				const eventType = (read(document.getElementById('callEvent-eventType')) ??
@@ -359,7 +359,7 @@ export function useCallEventCommandSchema() {
 					getFocus(document.getElementById('callEvent-eventType'));
 					return;
 				}
-				Command.save?.({ type, eventType });
+				commit({ type, eventType });
 				break;
 			}
 			default: {
@@ -370,7 +370,7 @@ export function useCallEventCommandSchema() {
 					getFocus(document.getElementById('callEvent-eventType'));
 					return;
 				}
-				Command.save?.({ type, [type]: target, eventType });
+				commit({ type, [type]: target, eventType });
 				break;
 			}
 		}

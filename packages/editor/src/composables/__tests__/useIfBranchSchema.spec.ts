@@ -12,6 +12,18 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -70,13 +82,6 @@ describe('useIfBranchSchema（if 分支列表动态行：add/remove/swap + inser
 		Enum.getStringItems = vi.fn(() => []) as never;
 		Enum.getDefStringId = vi.fn(() => 'id0') as never;
 		Data.teams = { list: [{ id: 'team0' }] } as never;
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-		Command.parseVariable = ((variable: { key: string }, type: string) =>
-			`<var:${variable.key}:${type}>`) as never;
-		Command.removeTextTags = ((value: string) => value) as never;
 		Command.words = {
 			push: (value: string) => words.push(value),
 			join: (separator?: string) => words.join(separator ?? '')

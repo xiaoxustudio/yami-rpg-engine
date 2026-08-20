@@ -7,19 +7,30 @@ import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { Inspector } from './inspector.ts';
 
 {
+	interface FileVideoInfo {
+		name: string;
+		size: string;
+		duration: string;
+		resolution: string;
+		bitrate: string;
+	}
 	interface FileVideoShape {
 		video: HTMLVideoElement | null;
+		info: FileVideoInfo | null;
+		update: (() => void) | null;
 		[k: string]: unknown;
 	}
 	const FileVideo: FileVideoShape = {
 		target: null,
 		meta: null,
 		symbol: null,
+		info: null,
 		video: null,
 		initialize: null,
 		open: null,
 		close: null,
-		play: null
+		play: null,
+		update: null
 	};
 
 	FileVideo.initialize = function (this: typeof FileVideo) {};
@@ -29,17 +40,15 @@ import { Inspector } from './inspector.ts';
 			this.target = file;
 			this.meta = meta;
 
-			const elName = $('#fileVideo-name');
-			const elSize = $('#fileVideo-size');
-			const elDuration = $('#fileVideo-duration');
-			const elResolution = $('#fileVideo-resolution');
-			const elBitrate = $('#fileVideo-bitrate');
 			const size = Number((file.stats as unknown as { size: number }).size);
-			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize!(size);
-			elDuration.textContent = '';
-			elResolution.textContent = '';
-			elBitrate.textContent = '';
+			this.info = {
+				name: file.basename + file.extname,
+				size: File.parseFileSize!(size),
+				duration: '',
+				resolution: '',
+				bitrate: ''
+			};
+			this.update!();
 
 			const video = this.video!;
 			const path = file.path;
@@ -62,9 +71,10 @@ import { Inspector } from './inspector.ts';
 					const height = video.videoHeight;
 					const bitrate = Math.round(size / 128 / duration);
 					const formatTime = Inspector.fileAudio.formatTime;
-					elDuration.textContent = formatTime(duration);
-					elResolution.textContent = `${width} x ${height}`;
-					elBitrate.textContent = `${bitrate}Kbps`;
+					this.info!.duration = formatTime(duration);
+					this.info!.resolution = `${width} x ${height}`;
+					this.info!.bitrate = `${bitrate}Kbps`;
+					this.update!();
 				}
 			});
 		}
@@ -90,6 +100,12 @@ import { Inspector } from './inspector.ts';
 				video.currentTime = 0;
 			}
 		}
+	};
+
+	FileVideo.update = function (this: typeof FileVideo) {
+		const el = $('#fileVideo');
+		if (!el) return;
+		(el as HTMLElement & { update?: () => void }).update?.();
 	};
 
 	Inspector.fileVideo = FileVideo;

@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetSkillCommandSchema() {
-	const { form, save, load } = useCommandSchema('setSkill', {
+	const { form, save, load, commit } = useCommandSchema('setSkill', {
 		onLoad() {
 			getFocus(document.getElementById('setSkill-skill'));
 		}
@@ -16,7 +16,7 @@ export function useSetSkillCommandSchema() {
 			case 'set-cooldown':
 			case 'increase-cooldown':
 			case 'decrease-cooldown': {
-				Command.save!({
+				commit({
 					skill,
 					operation,
 					cooldown: read(document.getElementById('setSkill-cooldown')) ?? form.cooldown

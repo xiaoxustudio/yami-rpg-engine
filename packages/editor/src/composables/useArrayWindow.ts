@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
 
@@ -47,7 +47,7 @@ const getFrame = (windowId: string): ArrayFrame | null =>
 
 const open = (values: unknown[], cb: (value: unknown) => void): void => {
 	callback = cb;
-	Window.open!('arrayList');
+	getWindowStore().open('arrayList');
 	Object.assign(form, { values });
 	getFrame('arrayList')?.setForm?.({ values });
 	getFocus(document.getElementById('arrayList-list'));
@@ -56,7 +56,7 @@ const open = (values: unknown[], cb: (value: unknown) => void): void => {
 const confirm = (): void => {
 	changedState.value = false;
 	callback?.(getFrame('arrayList')?.getForm?.()?.values);
-	Window.close!('arrayList');
+	getWindowStore().close('arrayList');
 };
 
 const markChanged = (): void => {
@@ -67,7 +67,7 @@ const onWindowClose = (event: Event): void => {
 	if (changedState.value) {
 		event.preventDefault();
 		const get = createGetter('confirmation');
-		Window.confirm!(
+		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedData')
 			},
@@ -76,7 +76,7 @@ const onWindowClose = (event: Event): void => {
 					label: get('yes'),
 					click: () => {
 						changedState.value = false;
-						Window.close!('arrayList');
+						getWindowStore().close('arrayList');
 					}
 				},
 				{
@@ -92,7 +92,7 @@ const onWindowClosed = (): void => {
 };
 
 const openNumber = (value: number): void => {
-	Window.open!('arrayList-number');
+	getWindowStore().open('arrayList-number');
 	Object.assign(numberForm, { value });
 	getFrame('arrayList-number')?.setForm?.({ value });
 	getFocus(document.getElementById('arrayList-number-value'), 'all');
@@ -100,12 +100,12 @@ const openNumber = (value: number): void => {
 
 const confirmNumber = (): number => {
 	const value = getFrame('arrayList-number')?.getForm?.()?.value as number;
-	Window.close!('arrayList-number');
+	getWindowStore().close('arrayList-number');
 	return value;
 };
 
 const openString = (value: string): void => {
-	Window.open!('arrayList-string');
+	getWindowStore().open('arrayList-string');
 	Object.assign(stringForm, { value });
 	getFrame('arrayList-string')?.setForm?.({ value });
 	getFocus(document.getElementById('arrayList-string-value'), 'all');
@@ -113,7 +113,7 @@ const openString = (value: string): void => {
 
 const confirmString = (): string => {
 	const value = getFrame('arrayList-string')?.getForm?.()?.value as string;
-	Window.close!('arrayList-string');
+	getWindowStore().close('arrayList-string');
 	return value;
 };
 

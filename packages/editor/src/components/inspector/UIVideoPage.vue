@@ -23,6 +23,7 @@
 import '@app/legacy/inspector/element-video-page.ts';
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -32,6 +33,8 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
+
+const { bindInput } = useInspectorInput();
 
 const onParamInput = (event: Event) => {
 	const target = event?.target ?? document.activeElement;
@@ -70,7 +73,6 @@ onMounted(() => {
 	}
 
 	const elements = document.querySelectorAll('#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend');
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, UI)));
+	bindInput(elements, editor, UI);
 });
 </script>

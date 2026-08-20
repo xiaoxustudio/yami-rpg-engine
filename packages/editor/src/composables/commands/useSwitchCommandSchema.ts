@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/switch.ts';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { reactive } from 'vue';
 
@@ -39,11 +40,11 @@ const save = (): unknown => {
 	switch (read(document.getElementById('switch-default')) ?? form.default) {
 		case true: {
 			const commands = defaultCommands ?? [];
-			Command.save?.({ variable, branches, defaultCommands: commands });
+			commit({ variable, branches, defaultCommands: commands });
 			break;
 		}
 		case false:
-			Command.save?.({ variable, branches });
+			commit({ variable, branches });
 			break;
 	}
 };

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
 import { getVariable } from '@app/legacy/util/safe.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
@@ -144,7 +144,7 @@ const getTypeItems = (filter: string, prefix: string): VarTypeItem[] => {
 		case 'string':
 			return prefix === 'variableGetter2' ? types.object : types.all;
 		case 'object':
-			return !Window.isWindowOpen!('elementGetter') ? types.object : types.object2;
+			return !getWindowStore().isWindowOpen('elementGetter') ? types.object : types.object2;
 		case 'writable-boolean':
 		case 'writable-number':
 		case 'writable-string':
@@ -343,7 +343,7 @@ const open = (
 	}
 	getFrame(prefix)?.setForm?.(form);
 	getFocus(document.getElementById(`${prefix}-type`));
-	Window.open!(prefix);
+	getWindowStore().open(prefix);
 };
 
 const isNone = (variable: { key: string }): boolean => {
@@ -609,7 +609,7 @@ const confirmCore = (prefix: string): void => {
 		getter = { getter: 'variable', ...getter };
 	}
 	target?.input?.(getter!);
-	Window.close!(prefix);
+	getWindowStore().close(prefix);
 };
 
 const confirm = (): void => {

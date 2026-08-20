@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useDeleteElementCommandSchema() {
-	const { form, save, load } = useCommandSchema('deleteElement', {
+	const { form, save, load, commit } = useCommandSchema('deleteElement', {
 		onLoad() {
 			getFocus(document.getElementById('deleteElement-operation'));
 		}
@@ -15,14 +15,14 @@ export function useDeleteElementCommandSchema() {
 		switch (operation) {
 			case 'delete-element':
 			case 'delete-children': {
-				Command.save!({
+				commit({
 					operation,
 					element: read(document.getElementById('deleteElement-element')) ?? form.element
 				});
 				break;
 			}
 			case 'delete-all':
-				Command.save!({ operation });
+				commit({ operation });
 				break;
 		}
 	};

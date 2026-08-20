@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useFollowActorCommandSchema() {
-	const { form, save, load } = useCommandSchema('followActor', {
+	const { form, save, load, commit } = useCommandSchema('followActor', {
 		onLoad() {
 			getFocus(document.getElementById('followActor-actor'));
 		}
@@ -27,7 +27,7 @@ export function useFollowActorCommandSchema() {
 			: false;
 		switch (mode) {
 			case 'circle':
-				Command.save?.({
+				commit({
 					actor,
 					target,
 					mode,
@@ -42,7 +42,7 @@ export function useFollowActorCommandSchema() {
 				});
 				break;
 			case 'rectangle':
-				Command.save?.({
+				commit({
 					actor,
 					target,
 					mode,

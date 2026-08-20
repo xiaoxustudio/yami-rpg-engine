@@ -1,11 +1,11 @@
-import '@app/legacy/module/command/downloadFile.ts';
+﻿import '@app/legacy/module/command/downloadFile.ts';
 import { disable, enable, getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useDownloadFileCommandSchema() {
-	const { form, save, load } = useCommandSchema('downloadFile', {
+	const { form, save, load, commit } = useCommandSchema('downloadFile', {
 		onLoad() {
 			getFocus(document.getElementById('downloadFile-url')!);
 		}
@@ -24,7 +24,7 @@ export function useDownloadFileCommandSchema() {
 			getFocus(document.getElementById('downloadFile-url')!);
 			return;
 		}
-		Command.save?.({
+		commit({
 			url,
 			method: read(document.getElementById('downloadFile-method')!) ?? form.method,
 			headers: read(document.getElementById('downloadFile-header')!) ?? form.header,

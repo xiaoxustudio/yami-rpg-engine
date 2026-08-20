@@ -1,6 +1,5 @@
 import { getVariable, reportError } from '@app/legacy/util/safe.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
@@ -8,6 +7,17 @@ import { FileItem } from '@app/legacy/file/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { t } from '@app/i18n';
+import { commandState } from './useCommandState.ts';
+import {
+	setVariableColor,
+	setTextId,
+	setGlobalVariableColor,
+	setNumberColor,
+	setStringColor,
+	setFileColor,
+	setPresetColor,
+	setWeakColor
+} from './useCommandColor.ts';
 
 interface CommandObjectShape {
 	type: string;
@@ -30,12 +40,19 @@ interface TextContent {
 	[k: string]: any;
 }
 
-export function parseBlend(this: typeof Command, blend: string): string {
+interface CommandBridgeShape {
+	cases: Record<string, { parse(data: Record<string, unknown>): Record<string, unknown>[] }>;
+	custom: {
+		parse(id: string, parameters: Record<string, unknown>): Record<string, unknown>[];
+	};
+}
+
+export function parseBlend(blend: string): string {
 	return t('blend.' + blend);
 }
 
 export function fetchVariables(
-	this: typeof Command,
+	this: CommandBridgeShape,
 	commands: CommandNode[] & { eventId?: string }
 ): Array<{
 	name: string;
@@ -49,8 +66,8 @@ export function fetchVariables(
 	const eventId = commands.eventId ?? '';
 	const calledEvents: string[] = [eventId];
 	let eventIndex = 0;
-	this.returnType = Data.events[eventId]?.returnType ?? 'none';
-	this.saveVars = true;
+	commandState.returnType = Data.events[eventId]?.returnType ?? 'none';
+	commandState.saveVars = true;
 	const fetchParameters = (guid: string): void => {
 		const globalEvent = Data.events[guid];
 		if (!globalEvent) return;
@@ -70,10 +87,10 @@ export function fetchVariables(
 					varType = 'object';
 					break;
 			}
-			Command.variables.push({
+			commandState.variables.push({
 				name: key,
 				type: varType,
-				comment: this.eventName || '⭐️' + t(`eventParameterTypes.${type}`),
+				comment: commandState.eventName || '⭐️' + t(`eventParameterTypes.${type}`),
 				evIndex: eventIndex,
 				isLeftValue: true,
 				refCount: 0
@@ -84,7 +101,7 @@ export function fetchVariables(
 		for (const command of commands) {
 			const { id, params } = command;
 			if (id == null || id[0] === '!') continue;
-			Command.currentCommand = command;
+			commandState.currentCommand = command;
 			if (id === 'callEvent') {
 				if (params?.type === 'global' && calledEvents.append(params.eventId)) {
 					const file = Data.manifest.guidMap[params.eventId]?.file;
@@ -92,17 +109,17 @@ export function fetchVariables(
 						file instanceof FileItem &&
 						!(file as unknown as { data?: { namespace?: unknown } }).data?.namespace
 					) {
-						let lastEventName = this.eventName;
-						let lasteventIndex = this.eventIndex;
-						this.eventName = file.basename;
-						this.eventIndex = ++eventIndex;
+						let lastEventName = commandState.eventName;
+						let lasteventIndex = commandState.eventIndex;
+						commandState.eventName = file.basename;
+						commandState.eventIndex = ++eventIndex;
 						fetchParameters(params.eventId);
 						fetchVariables(
 							(file as unknown as { data?: { commands?: CommandNode[] } }).data
 								?.commands ?? []
 						);
-						this.eventName = lastEventName;
-						this.eventIndex = lasteventIndex;
+						commandState.eventName = lastEventName;
+						commandState.eventIndex = lasteventIndex;
 					}
 				}
 			}
@@ -122,20 +139,19 @@ export function fetchVariables(
 				}
 			}
 		}
-		Command.currentCommand = null;
+		commandState.currentCommand = null;
 	};
 	fetchParameters(eventId);
 	fetchVariables(commands);
-	const { variables } = this;
-	this.eventIndex = 0;
-	this.eventName = '';
-	this.saveVars = false;
-	this.variables = [];
+	const { variables } = commandState;
+	commandState.eventIndex = 0;
+	commandState.eventName = '';
+	commandState.saveVars = false;
+	commandState.variables = [];
 	return variables;
 }
 
 export function parseVariable(
-	this: typeof Command,
 	variable: CommandObjectShape,
 	valueType: string = '',
 	isLeftValue: boolean = false
@@ -143,82 +159,82 @@ export function parseVariable(
 	const key = variable.key;
 	switch (variable.type) {
 		case 'local': {
-			if (Command.saveVars) {
+			if (commandState.saveVars) {
 				if (key !== '') {
-					Command.variables.push({
+					commandState.variables.push({
 						name: key,
 						type: valueType,
-						comment: Command.eventName,
-						evIndex: Command.eventIndex,
+						comment: commandState.eventName,
+						evIndex: commandState.eventIndex,
 						isLeftValue: isLeftValue,
 						refCount: 0,
-						command: Command.currentCommand
+						command: commandState.currentCommand
 					});
 				}
 			}
-			let varName = Command.setVariableColor!(key || t('common.none'));
+			let varName = setVariableColor(key || t('common.none'));
 			if (valueType) {
-				const textId = Command.setTextId!(`local-${valueType}-${key}`);
+				const textId = setTextId(`local-${valueType}-${key}`);
 				varName = textId + varName;
 			}
 			return varName;
 		}
 		case 'global': {
-			let varName = Command.parseGlobalVariable!(key);
+			let varName = parseGlobalVariable(key);
 			if (valueType) {
 				const gVar = getVariable(variable.key);
 				const type = gVar ? typeof gVar.value : valueType;
-				const textId = Command.setTextId!(`global-${type}-${variable.key}`);
-				varName = textId + Command.setGlobalVariableColor!(varName);
+				const textId = setTextId(`global-${type}-${variable.key}`);
+				varName = textId + setGlobalVariableColor(varName);
 			}
 			return varName;
 		}
 		case 'self': {
-			let varName = Command.setVariableColor!(t('variable.self'));
+			let varName = setVariableColor(t('variable.self'));
 			if (valueType) {
-				const textId = Command.setTextId!(`self-${valueType}-unnamed`);
+				const textId = setTextId(`self-${valueType}-unnamed`);
 				varName = textId + varName;
 			}
 			return varName;
 		}
 		case 'actor': {
-			const actor = Command.parseActor!(variable.actor);
-			const attrName = Command.parseVariableAttr!('actor', key);
+			const actor = parseActor(variable.actor);
+			const attrName = parseVariableAttr('actor', key);
 			return typeof key === 'string'
 				? actor + Token('.') + attrName
 				: actor + Token('[') + attrName + Token(']');
 		}
 		case 'skill': {
-			const skill = Command.parseSkill!(variable.skill);
-			const attrName = Command.parseVariableAttr!('skill', key);
+			const skill = parseSkill(variable.skill);
+			const attrName = parseVariableAttr('skill', key);
 			return typeof key === 'string'
 				? skill + Token('.') + attrName
 				: skill + Token('[') + attrName + Token(']');
 		}
 		case 'state': {
-			const state = Command.parseState!(variable.state);
-			const attrName = Command.parseVariableAttr!('state', key);
+			const state = parseState(variable.state);
+			const attrName = parseVariableAttr('state', key);
 			return typeof key === 'string'
 				? state + Token('.') + attrName
 				: state + Token('[') + attrName + Token(']');
 		}
 		case 'equipment': {
-			const equipment = Command.parseEquipment!(variable.equipment);
-			const attrName = Command.parseVariableAttr!('equipment', key);
+			const equipment = parseEquipment(variable.equipment);
+			const attrName = parseVariableAttr('equipment', key);
 			return typeof key === 'string'
 				? equipment + Token('.') + attrName
 				: equipment + Token('[') + attrName + Token(']');
 		}
 		case 'item': {
-			const item = Command.parseItem!(variable.item);
-			const attrName = Command.parseVariableAttr!('item', key);
+			const item = parseItem(variable.item);
+			const attrName = parseVariableAttr('item', key);
 			return typeof key === 'string'
 				? item + Token('.') + attrName
 				: item + Token('[') + attrName + Token(']');
 		}
 		case 'element': {
-			const element = Command.parseElement!(variable.element);
-			const attrName = Command.parseVariableAttr!('element', key);
+			const element = parseElement(variable.element);
+			const attrName = parseVariableAttr('element', key);
 			return typeof key === 'string'
 				? element + Token('.') + attrName
 				: element + Token('[') + attrName + Token(']');
@@ -226,46 +242,40 @@ export function parseVariable(
 	}
 }
 
-export function parseGlobalVariable(this: typeof Command, id: string): string {
+export function parseGlobalVariable(id: string): string {
 	if (id === '') return Token('none');
 	const variable = getVariable(id);
-	return variable ? variable.name : Command.parseUnlinkedId!(id);
+	return variable ? variable.name : parseUnlinkedId(id);
 }
 
-export function parseAttributeGroup(this: typeof Command, groupKey: string): string {
+export function parseAttributeGroup(groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Attribute.getGroup!(groupKey);
 	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName!);
-	this.invalid = true;
-	return Command.parseUnlinkedId!(groupKey);
+	commandState.invalid = true;
+	return parseUnlinkedId(groupKey);
 }
 
 const _attrKeySpaceRegex = / +/g;
 
-export function parseAttributeKey(
-	this: typeof Command,
-	groupKey: string,
-	attrId: string,
-	valueType?: string
-): string {
+export function parseAttributeKey(groupKey: string, attrId: string, valueType?: string): string {
 	const attr = groupKey
 		? Attribute.getGroupAttribute!(groupKey, attrId)
 		: Attribute.getAttribute!(attrId);
 	if (attr) {
 		const type = valueType ?? (attr.type === 'enum' ? 'string' : attr.type);
-		const textId = Command.setTextId!(`attribute-${type}-${attr.key ?? attrId}-${attrId}`);
+		const textId = setTextId(`attribute-${type}-${attr.key ?? attrId}-${attrId}`);
 		return (
-			textId +
-			Command.setVariableColor!(GameLocal.replace!(attr.name.replace(_attrKeySpaceRegex, '')))
+			textId + setVariableColor(GameLocal.replace!(attr.name.replace(_attrKeySpaceRegex, '')))
 		);
 	}
-	this.invalid = true;
-	const textId = Command.setTextId!(`attribute-${valueType ?? 'any'}-${attrId}-${attrId}`);
-	return textId + Command.setVariableColor!(Command.parseUnlinkedId!(attrId));
+	commandState.invalid = true;
+	const textId = setTextId(`attribute-${valueType ?? 'any'}-${attrId}-${attrId}`);
+	return textId + setVariableColor(parseUnlinkedId(attrId));
 }
 
-export function parseAttributeTag(this: typeof Command, id: string, valueType?: string): string {
-	return Token('<') + Command.parseAttributeKey!('', id, valueType) + Token('>');
+export function parseAttributeTag(id: string, valueType?: string): string {
+	return Token('<') + parseAttributeKey('', id, valueType) + Token('>');
 }
 
 const _localVarRegex = /(?<=<)local:([\s\S]+?)(?=>)/g;
@@ -275,13 +285,13 @@ const _globalVarCtx = { type: 'global', key: '' };
 
 function _localVarReplacer(match: string, varKey: string): string {
 	_localVarCtx.key = varKey;
-	return Command.parseVariable!(_localVarCtx, 'any');
+	return parseVariable(_localVarCtx, 'any')!;
 }
 
 function _globalVarReplacer(match: string, delimiter: string, varKey: string): string {
 	_globalVarCtx.key = varKey;
 	const varSign = delimiter === '::' ? '@' : '';
-	return varSign + Command.parseVariable!(_globalVarCtx, 'any');
+	return varSign + parseVariable(_globalVarCtx, 'any');
 }
 
 export function parseVariableTag(string: string): string {
@@ -291,353 +301,313 @@ export function parseVariableTag(string: string): string {
 }
 
 export function parseVariableNumber(
-	this: typeof Command,
 	number: CommandObjectShape | number,
 	unit?: string
 ): string | undefined {
 	switch (typeof number) {
 		case 'number': {
-			const text = Command.setNumberColor!(number);
+			const text = setNumberColor(number);
 			return unit ? text + unit : text;
 		}
 		case 'object': {
-			const text = Command.parseVariable!(number, 'number');
+			const text = parseVariable(number, 'number');
 			return unit ? text + ' ' + unit : text;
 		}
 	}
 }
 
-export function parseVariableString(
-	this: typeof Command,
-	string: CommandObjectShape | string
-): string | undefined {
+export function parseVariableString(string: CommandObjectShape | string): string | undefined {
 	switch (typeof string) {
 		case 'string':
-			return Command.setStringColor!(`"${Command.parseMultiLineString!(string)}"`);
+			return setStringColor(`"${parseMultiLineString(string)}"`);
 		case 'object':
-			return Command.parseVariable!(string, 'string');
+			return parseVariable(string, 'string');
 	}
 }
 
 export function parseVariableTemplate(
-	this: typeof Command,
 	content: CommandObjectShape | string,
 	maxLength: number = 0
 ): string | undefined {
 	switch (typeof content) {
 		case 'string': {
-			const tag = Command.parseVariableTag!(GameLocal.replace!(content));
-			let string = Command.parseMultiLineString!(tag);
+			const tag = parseVariableTag(GameLocal.replace!(content));
+			let string = parseMultiLineString(tag);
 			if (maxLength !== 0 && string.length > maxLength) {
 				string = string.slice(0, maxLength) + '...';
 			}
-			return Command.setStringColor!(`"${string}"`, true);
+			return setStringColor(`"${string}"`, true);
 		}
 		case 'object':
-			return Command.parseVariable!(content, 'any');
+			return parseVariable(content, 'any');
 	}
 }
 
 export function parseVariableAttr(
-	this: typeof Command,
 	groupKey: string,
 	attrId: CommandObjectShape | string
 ): string | undefined {
 	switch (typeof attrId) {
 		case 'string':
-			return Command.parseAttributeKey!(groupKey, attrId);
+			return parseAttributeKey(groupKey, attrId);
 		case 'object':
-			return Command.parseVariable!(attrId, 'string');
+			return parseVariable(attrId, 'string');
 	}
 }
 
 export function parseVariableEnum(
-	this: typeof Command,
 	groupKey: string,
 	enumId: CommandObjectShape | string
 ): string | undefined {
 	switch (typeof enumId) {
 		case 'string':
-			return Command.parseGroupEnumString!(groupKey, enumId);
+			return parseGroupEnumString(groupKey, enumId);
 		case 'object':
-			return Command.parseVariable!(enumId, 'string');
+			return parseVariable(enumId, 'string');
 	}
 }
 
-export function parseVariableFile(
-	this: typeof Command,
-	fileId: CommandObjectShape | string
-): string | undefined {
+export function parseVariableFile(fileId: CommandObjectShape | string): string | undefined {
 	switch (typeof fileId) {
 		case 'string':
-			return Command.parseFileName!(fileId);
+			return parseFileName(fileId);
 		case 'object':
-			return Command.parseVariable!(fileId, 'string');
+			return parseVariable(fileId, 'string');
 	}
 }
 
-export function parseVariableTeam(
-	this: typeof Command,
-	id: CommandObjectShape | string
-): string | undefined {
+export function parseVariableTeam(id: CommandObjectShape | string): string | undefined {
 	switch (typeof id) {
 		case 'string':
-			return Command.parseTeam!(id);
+			return parseTeam(id);
 		case 'object':
-			return Command.parseVariable!(id, 'string');
+			return parseVariable(id, 'string');
 	}
 }
 
 const _newlineRegex = /\n/g;
 
-export function parseMultiLineString(this: typeof Command, string: string): string {
+export function parseMultiLineString(string: string): string {
 	return string.replace(_newlineRegex, '\\n');
 }
 
-export function parseSpriteName(
-	this: typeof Command,
-	animationId: string,
-	spriteId: string
-): string {
+export function parseSpriteName(animationId: string, spriteId: string): string {
 	if (spriteId === '') return Token('none');
 	const animation = Data.animations[animationId];
 	const sprite = animation?.sprites.find((a: { id: string; name: string }) => a.id === spriteId);
 	if (sprite) return sprite.name;
-	this.invalid = true;
-	return Command.parseUnlinkedId!(spriteId);
+	commandState.invalid = true;
+	return parseUnlinkedId(spriteId);
 }
 
-export function parseEventType(this: typeof Command, groupKey: string, eventType: string): string {
-	return t('eventTypes.' + eventType) || Command.parseGroupEnumString!(groupKey, eventType);
+export function parseEventType(groupKey: string, eventType: string): string {
+	return t('eventTypes.' + eventType) || parseGroupEnumString(groupKey, eventType);
 }
 
-export function parseEnumGroup(this: typeof Command, groupKey: string): string {
+export function parseEnumGroup(groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Enum.getGroup!(groupKey);
 	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName!);
-	this.invalid = true;
-	return Command.parseUnlinkedId!(groupKey);
+	commandState.invalid = true;
+	return parseUnlinkedId(groupKey);
 }
 
-export function parseEnumString(this: typeof Command, stringId: string): string {
+export function parseEnumString(stringId: string): string {
 	if (stringId === '') return Token('none');
 	const string = Enum.getString!(stringId);
 	if (string) {
-		const textId = Command.setTextId!(`enum-string-${string.value ?? stringId}-${stringId}`);
-		return textId + Command.setStringColor!(GameLocal.replace!(string.name));
+		const textId = setTextId(`enum-string-${string.value ?? stringId}-${stringId}`);
+		return textId + setStringColor(GameLocal.replace!(string.name));
 	}
-	this.invalid = true;
-	const textId = Command.setTextId!(`enum-string-${stringId}-${stringId}`);
-	return textId + Command.setStringColor!(Command.parseUnlinkedId!(stringId));
+	commandState.invalid = true;
+	const textId = setTextId(`enum-string-${stringId}-${stringId}`);
+	return textId + setStringColor(parseUnlinkedId(stringId));
 }
 
-export function parseEnumStringTag(this: typeof Command, stringId: string): string {
-	return Token('<') + Command.parseEnumString!(stringId) + Token('>');
+export function parseEnumStringTag(stringId: string): string {
+	return Token('<') + parseEnumString(stringId) + Token('>');
 }
 
-export function parseGroupEnumString(
-	this: typeof Command,
-	groupKey: string,
-	stringId: string
-): string {
+export function parseGroupEnumString(groupKey: string, stringId: string): string {
 	if (stringId === '') return Token('none');
 	const string = Enum.getGroupString!(groupKey, stringId);
-	const textId = Command.setTextId!(`enum-string-${stringId}-${stringId}`);
-	if (string) return textId + Command.setStringColor!(GameLocal.replace!(string.name));
-	this.invalid = true;
-	return textId + Command.setStringColor!(Command.parseUnlinkedId!(stringId));
+	const textId = setTextId(`enum-string-${stringId}-${stringId}`);
+	if (string) return textId + setStringColor(GameLocal.replace!(string.name));
+	commandState.invalid = true;
+	return textId + setStringColor(parseUnlinkedId(stringId));
 }
 
 export function parseListItem(
-	this: typeof Command,
 	variable: CommandObjectShape,
 	index: CommandObjectShape | number
 ): string {
-	const listName = Command.parseVariable!(variable, 'object');
-	const listIndex = Command.parseVariableNumber!(index);
+	const listName = parseVariable(variable, 'object');
+	const listIndex = parseVariableNumber(index);
 	return listName + Token('[') + listIndex + Token(']');
 }
 
-export function parseParameter(this: typeof Command, key: CommandObjectShape | string): string {
+export function parseParameter(key: CommandObjectShape | string): string {
 	const label = t('parameter.param');
-	const paramKey = Command.parseVariableString!(key);
+	const paramKey = parseVariableString(key);
 	return label + Token('(') + paramKey + Token(')');
 }
 
-export function parseActor(this: typeof Command, actor: CommandObjectShape): string | undefined {
+export function parseActor(actor: CommandObjectShape): string | undefined {
 	switch (actor.type) {
 		case 'trigger':
-			return Command.setTextId!('actor-object-trigger') + t('actor.trigger');
+			return setTextId('actor-object-trigger') + t('actor.trigger');
 		case 'caster':
-			return Command.setTextId!('actor-object-caster') + t('actor.caster');
+			return setTextId('actor-object-caster') + t('actor.caster');
 		case 'latest':
-			return Command.setTextId!('actor-object-latest') + t('actor.latest');
+			return setTextId('actor-object-latest') + t('actor.latest');
 		case 'target':
-			return Command.setTextId!('actor-object-target') + t('actor.target');
+			return setTextId('actor-object-target') + t('actor.target');
 		case 'player':
-			return Command.setTextId!('actor-object-player') + t('actor.player');
+			return setTextId('actor-object-player') + t('actor.player');
 		case 'member':
 			return (
-				Command.setTextId!('actor-object-member') +
+				setTextId('actor-object-member') +
 				t('actor.member') +
 				Token('[') +
-				Command.parseVariableNumber!(actor.memberId) +
+				parseVariableNumber(actor.memberId) +
 				Token(']')
 			);
 		case 'global':
-			return (
-				Command.setTextId!(`actor-object-${actor.actorId}`) +
-				Command.parseFileName!(actor.actorId)
-			);
+			return setTextId(`actor-object-${actor.actorId}`) + parseFileName(actor.actorId);
 		case 'by-id':
-			return Command.parsePresetObject!(actor.presetId);
+			return parsePresetObject(actor.presetId);
 		case 'variable': {
 			const label = t('actor.common');
-			const textId = Command.setTextId!('actor-object-variable');
-			const variable = Command.parseVariable!(actor.variable, 'object');
+			const textId = setTextId('actor-object-variable');
+			const variable = parseVariable(actor.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseSkill(this: typeof Command, skill: CommandObjectShape): string | undefined {
+export function parseSkill(skill: CommandObjectShape): string | undefined {
 	switch (skill.type) {
 		case 'trigger':
-			return Command.setTextId!('skill-object-trigger') + t('skill.trigger');
+			return setTextId('skill-object-trigger') + t('skill.trigger');
 		case 'latest':
-			return Command.setTextId!('skill-object-latest') + t('skill.latest');
+			return setTextId('skill-object-latest') + t('skill.latest');
 		case 'by-key': {
-			const actor = Command.parseActor!(skill.actor);
+			const actor = parseActor(skill.actor);
 			const label = t('skill.common');
-			const textId = Command.setTextId!('skill-object-by-key');
-			const key = Command.parseVariableEnum!('shortcut-key', skill.key);
+			const textId = setTextId('skill-object-by-key');
+			const key = parseVariableEnum('shortcut-key', skill.key);
 			return actor + Token(' -> ') + textId + label + Token('<') + key + Token('>');
 		}
 		case 'by-id': {
-			const actor = Command.parseActor!(skill.actor);
-			const file = Command.parseFileName!(skill.skillId);
+			const actor = parseActor(skill.actor);
+			const file = parseFileName(skill.skillId);
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
 			const label = t('skill.common');
-			const textId = Command.setTextId!('skill-object-variable');
-			const variable = Command.parseVariable!(skill.variable, 'object');
+			const textId = setTextId('skill-object-variable');
+			const variable = parseVariable(skill.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseState(this: typeof Command, state: CommandObjectShape): string | undefined {
+export function parseState(state: CommandObjectShape): string | undefined {
 	switch (state.type) {
 		case 'trigger':
-			return Command.setTextId!('state-object-trigger') + t('state.trigger');
+			return setTextId('state-object-trigger') + t('state.trigger');
 		case 'latest':
-			return Command.setTextId!('state-object-latest') + t('state.latest');
+			return setTextId('state-object-latest') + t('state.latest');
 		case 'by-id': {
-			const actor = Command.parseActor!(state.actor);
-			const file = Command.parseFileName!(state.stateId);
+			const actor = parseActor(state.actor);
+			const file = parseFileName(state.stateId);
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
 			const label = t('state.common');
-			const textId = Command.setTextId!('state-object-variable');
-			const variable = Command.parseVariable!(state.variable, 'object');
+			const textId = setTextId('state-object-variable');
+			const variable = parseVariable(state.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseEquipment(
-	this: typeof Command,
-	equipment: CommandObjectShape
-): string | undefined {
+export function parseEquipment(equipment: CommandObjectShape): string | undefined {
 	switch (equipment.type) {
 		case 'trigger':
-			return Command.setTextId!('equipment-object-trigger') + t('equipment.trigger');
+			return setTextId('equipment-object-trigger') + t('equipment.trigger');
 		case 'latest':
-			return Command.setTextId!('equipment-object-latest') + t('equipment.latest');
+			return setTextId('equipment-object-latest') + t('equipment.latest');
 		case 'by-slot': {
-			const actor = Command.parseActor!(equipment.actor);
+			const actor = parseActor(equipment.actor);
 			const label = t('equipment.common');
-			const textId = Command.setTextId!('equipment-object-by-slot');
-			const slot = Command.parseVariableEnum!('equipment-slot', equipment.slot);
+			const textId = setTextId('equipment-object-by-slot');
+			const slot = parseVariableEnum('equipment-slot', equipment.slot);
 			return actor + Token(' -> ') + textId + label + Token('<') + slot + Token('>');
 		}
 		case 'by-id-equipped':
 		case 'by-id-inventory': {
-			const actor = Command.parseActor!(equipment.actor);
-			const file = Command.parseFileName!(equipment.equipmentId);
-			const source = Command.setWeakColor!(t('equipment.' + equipment.type));
+			const actor = parseActor(equipment.actor);
+			const file = parseFileName(equipment.equipmentId);
+			const source = setWeakColor(t('equipment.' + equipment.type));
 			return actor + Token(' -> ') + file + ' ' + Token('(') + source + Token(')');
 		}
 		case 'variable': {
 			const label = t('equipment.common');
-			const textId = Command.setTextId!('equipment-object-variable');
-			const variable = Command.parseVariable!(equipment.variable, 'object');
+			const textId = setTextId('equipment-object-variable');
+			const variable = parseVariable(equipment.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseItem(this: typeof Command, item: CommandObjectShape): string | undefined {
+export function parseItem(item: CommandObjectShape): string | undefined {
 	switch (item.type) {
 		case 'trigger':
-			return Command.setTextId!('item-object-trigger') + t('item.trigger');
+			return setTextId('item-object-trigger') + t('item.trigger');
 		case 'latest':
-			return Command.setTextId!('item-object-latest') + t('item.latest');
+			return setTextId('item-object-latest') + t('item.latest');
 		case 'by-key': {
-			const actor = Command.parseActor!(item.actor);
+			const actor = parseActor(item.actor);
 			const label = t('item.common');
-			const textId = Command.setTextId!('item-object-by-key');
-			const key = Command.parseVariableEnum!('shortcut-key', item.key);
+			const textId = setTextId('item-object-by-key');
+			const key = parseVariableEnum('shortcut-key', item.key);
 			return actor + Token(' -> ') + textId + label + Token('<') + key + Token('>');
 		}
 		case 'by-id': {
-			const actor = Command.parseActor!(item.actor);
-			const file = Command.parseFileName!(item.itemId);
+			const actor = parseActor(item.actor);
+			const file = parseFileName(item.itemId);
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
 			const label = t('item.common');
-			const variable = Command.parseVariable!(item.variable, 'object');
-			const textId = Command.setTextId!('item-object-variable');
+			const variable = parseVariable(item.variable, 'object');
+			const textId = setTextId('item-object-variable');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parsePosition(
-	this: typeof Command,
-	position: CommandObjectShape
-): string | undefined {
+export function parsePosition(position: CommandObjectShape): string | undefined {
 	switch (position.type) {
 		case 'absolute': {
-			const x = Command.parseVariableNumber!(position.x);
-			const y = Command.parseVariableNumber!(position.y);
+			const x = parseVariableNumber(position.x);
+			const y = parseVariableNumber(position.y);
 			return t('position.common') + Token('(') + x + Token(', ') + y + Token(')');
 		}
 		case 'relative': {
-			const x = Command.parseVariableNumber!(position.x);
-			const y = Command.parseVariableNumber!(position.y);
+			const x = parseVariableNumber(position.x);
+			const y = parseVariableNumber(position.y);
 			return t('position.relative') + Token('(') + x + Token(', ') + y + Token(')');
 		}
 		case 'actor':
-			return (
-				t('position.common') + Token('(') + Command.parseActor!(position.actor) + Token(')')
-			);
+			return t('position.common') + Token('(') + parseActor(position.actor) + Token(')');
 		case 'trigger':
-			return (
-				t('position.common') +
-				Token('(') +
-				Command.parseTrigger!(position.trigger) +
-				Token(')')
-			);
+			return t('position.common') + Token('(') + parseTrigger(position.trigger) + Token(')');
 		case 'light':
-			return (
-				t('position.common') + Token('(') + Command.parseLight!(position.light) + Token(')')
-			);
+			return t('position.common') + Token('(') + parseLight(position.light) + Token(')');
 		case 'region': {
-			const region = Command.parseRegion!(position.region);
+			const region = parseRegion(position.region);
 			const mode = t('position.region.mode.' + position.mode);
 			return t('position.common') + Token('(') + region + Token(', ') + mode + Token(')');
 		}
@@ -645,7 +615,7 @@ export function parsePosition(
 			return (
 				t('position.common') +
 				Token('(') +
-				Command.parsePresetObject!(position.objectId) +
+				parsePresetObject(position.objectId) +
 				Token(')')
 			);
 		case 'mouse':
@@ -653,179 +623,166 @@ export function parsePosition(
 	}
 }
 
-export function parseAngle(this: typeof Command, angle: CommandObjectShape): string | undefined {
+export function parseAngle(angle: CommandObjectShape): string | undefined {
 	const type = angle.type;
 	const desc = t('angle.' + type);
 	switch (type) {
 		case 'position':
-			return `${desc} ${Command.parsePosition!(angle.position)}`;
+			return `${desc} ${parsePosition(angle.position)}`;
 		case 'absolute':
 		case 'relative':
 		case 'direction':
-			return `${desc} ${Command.parseVariableNumber!(angle.degrees, '°')}`;
+			return `${desc} ${parseVariableNumber(angle.degrees, '°')}`;
 		case 'random':
 			return desc;
 	}
 }
 
-export function parseTrigger(
-	this: typeof Command,
-	trigger: CommandObjectShape
-): string | undefined {
+export function parseTrigger(trigger: CommandObjectShape): string | undefined {
 	switch (trigger.type) {
 		case 'trigger':
-			return Command.setTextId!('trigger-object-trigger') + t('trigger.trigger');
+			return setTextId('trigger-object-trigger') + t('trigger.trigger');
 		case 'latest':
-			return Command.setTextId!('trigger-object-latest') + t('trigger.latest');
+			return setTextId('trigger-object-latest') + t('trigger.latest');
 		case 'variable': {
 			const label = t('trigger.common');
-			const textId = Command.setTextId!('trigger-object-variable');
-			const variable = Command.parseVariable!(trigger.variable, 'object');
+			const textId = setTextId('trigger-object-variable');
+			const variable = parseVariable(trigger.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseLight(this: typeof Command, light: CommandObjectShape): string | undefined {
+export function parseLight(light: CommandObjectShape): string | undefined {
 	switch (light.type) {
 		case 'trigger':
-			return Command.setTextId!('light-object-trigger') + t('light.trigger');
+			return setTextId('light-object-trigger') + t('light.trigger');
 		case 'latest':
-			return Command.setTextId!('light-object-latest') + t('light.latest');
+			return setTextId('light-object-latest') + t('light.latest');
 		case 'by-id':
-			return Command.parsePresetObject!(light.presetId);
+			return parsePresetObject(light.presetId);
 		case 'variable': {
 			const label = t('light.common');
-			const textId = Command.setTextId!('light-object-variable');
-			const variable = Command.parseVariable!(light.variable, 'object');
+			const textId = setTextId('light-object-variable');
+			const variable = parseVariable(light.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseRegion(this: typeof Command, region: CommandObjectShape): string | undefined {
+export function parseRegion(region: CommandObjectShape): string | undefined {
 	switch (region.type) {
 		case 'trigger':
-			return Command.setTextId!('region-object-trigger') + t('region.trigger');
+			return setTextId('region-object-trigger') + t('region.trigger');
 		case 'by-id':
-			return Command.parsePresetObject!(region.presetId);
+			return parsePresetObject(region.presetId);
 	}
 }
 
-export function parseTilemap(
-	this: typeof Command,
-	tilemap: CommandObjectShape
-): string | undefined {
+export function parseTilemap(tilemap: CommandObjectShape): string | undefined {
 	switch (tilemap.type) {
 		case 'trigger':
-			return Command.setTextId!('tilemap-object-trigger') + t('tilemap.trigger');
+			return setTextId('tilemap-object-trigger') + t('tilemap.trigger');
 		case 'by-id':
-			return Command.parsePresetObject!(tilemap.presetId);
+			return parsePresetObject(tilemap.presetId);
 		case 'variable':
-			return Command.parseVariable!(tilemap.variable, 'object');
+			return parseVariable(tilemap.variable, 'object');
 	}
 }
 
-export function parseObject(this: typeof Command, object: CommandObjectShape): string | undefined {
+export function parseObject(object: CommandObjectShape): string | undefined {
 	switch (object.type) {
 		case 'trigger':
-			return Command.setTextId!('preset-object-trigger') + t('object.trigger');
+			return setTextId('preset-object-trigger') + t('object.trigger');
 		case 'latest':
-			return Command.setTextId!('preset-object-latest') + t('object.latest');
+			return setTextId('preset-object-latest') + t('object.latest');
 		case 'by-id':
-			return Command.parsePresetObject!(object.presetId);
+			return parsePresetObject(object.presetId);
 		case 'variable': {
 			const label = t('object.common');
-			const textId = Command.setTextId!('preset-object-variable');
-			const variable = Command.parseVariable!(object.variable, 'object');
+			const textId = setTextId('preset-object-variable');
+			const variable = parseVariable(object.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parseElement(
-	this: typeof Command,
-	element: CommandObjectShape
-): string | undefined {
+export function parseElement(element: CommandObjectShape): string | undefined {
 	switch (element.type) {
 		case 'trigger':
-			return Command.setTextId!('element-object-trigger') + t('element.trigger');
+			return setTextId('element-object-trigger') + t('element.trigger');
 		case 'latest':
-			return Command.setTextId!('element-object-latest') + t('element.latest');
+			return setTextId('element-object-latest') + t('element.latest');
 		case 'by-id':
-			return Command.parsePresetElement!(element.presetId, false);
+			return parsePresetElement(element.presetId, false);
 		case 'by-ancestor-and-id': {
-			const ancestor = Command.parseElement!(element.ancestor);
-			const descendant = Command.parsePresetElement!(element.presetId, false);
+			const ancestor = parseElement(element.ancestor);
+			const descendant = parsePresetElement(element.presetId, false);
 			return ancestor + Token(' -> ') + descendant;
 		}
 		case 'by-index': {
-			const parent = Command.parseElement!(element.parent);
+			const parent = parseElement(element.parent);
 			const label = t('element.common');
-			const textId = Command.setTextId!('element-object-by-index');
-			const index = Command.parseVariableNumber!(element.index);
+			const textId = setTextId('element-object-by-index');
+			const index = parseVariableNumber(element.index);
 			const child = textId + label + Token('[') + index + Token(']');
 			return parent + Token(' -> ') + child;
 		}
 		case 'by-button-index': {
-			const focus = Command.parseElement!(element.focus);
+			const focus = parseElement(element.focus);
 			const label = t('element.button');
-			const textId = Command.setTextId!('element-object-by-button-index');
-			const index = Command.parseVariableNumber!(element.index);
+			const textId = setTextId('element-object-by-button-index');
+			const index = parseVariableNumber(element.index);
 			const child = textId + label + Token('[') + index + Token(']');
 			return focus + Token(' -> ') + child;
 		}
 		case 'selected-button': {
-			const focus = Command.parseElement!(element.focus);
+			const focus = parseElement(element.focus);
 			const button = t('element.selected-button');
-			const textId = Command.setTextId!('element-object-selected-button');
+			const textId = setTextId('element-object-selected-button');
 			return focus + Token(' -> ') + textId + button;
 		}
 		case 'focus':
-			return Command.setTextId!('element-object-focus') + t('element.focus');
+			return setTextId('element-object-focus') + t('element.focus');
 		case 'parent': {
 			const label = t('element.parent');
-			const textId = Command.setTextId!('element-object-parent');
-			const parent = Command.parseVariable!(element.variable, 'object');
+			const textId = setTextId('element-object-parent');
+			const parent = parseVariable(element.variable, 'object');
 			return textId + label + Token('(') + parent + Token(')');
 		}
 		case 'variable': {
 			const label = t('element.common');
-			const textId = Command.setTextId!('element-object-variable');
-			const variable = Command.parseVariable!(element.variable, 'object');
+			const textId = setTextId('element-object-variable');
+			const variable = parseVariable(element.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
 		}
 	}
 }
 
-export function parsePresetObject(this: typeof Command, presetId: string): string {
+export function parsePresetObject(presetId: string): string {
 	if (presetId === '') return Token('none');
 	const name = Data.scenePresets[presetId]?.data.name;
-	const textId = Command.setTextId!(`scene-object-${presetId}`);
+	const textId = setTextId(`scene-object-${presetId}`);
 	return typeof name === 'string'
-		? textId + Command.setPresetColor!(name)
-		: textId + Command.setPresetColor!(Command.parseUnlinkedId!(presetId));
+		? textId + setPresetColor(name)
+		: textId + setPresetColor(parseUnlinkedId(presetId));
 }
 
-export function parsePresetElement(
-	this: typeof Command,
-	presetId: string,
-	detailed: boolean = true
-): string {
+export function parsePresetElement(presetId: string, detailed: boolean = true): string {
 	if (presetId === '') return Token('none');
 	const uiId = Data.uiPresets[presetId]?.uiId ?? '';
 	const preset = Data.uiPresets[presetId]?.data;
-	const textId = Command.setTextId!(`ui-object-${presetId}`);
+	const textId = setTextId(`ui-object-${presetId}`);
 	let presetName = preset?.name;
 	if (presetName === undefined) {
-		this.invalid = true;
-		presetName = Command.setPresetColor!(Command.parseUnlinkedId!(presetId));
+		commandState.invalid = true;
+		presetName = setPresetColor(parseUnlinkedId(presetId));
 	} else if (presetName) {
-		presetName = Command.setPresetColor!(presetName);
+		presetName = setPresetColor(presetName);
 	}
 	switch (detailed) {
 		case true: {
-			const uiName = Command.parseFileName!(uiId);
+			const uiName = parseFileName(uiId);
 			return uiName + ' ' + Token('{') + textId + presetName + Token('}');
 		}
 		case false:
@@ -833,18 +790,18 @@ export function parsePresetElement(
 	}
 }
 
-export function parseTeam(this: typeof Command, id: string): string {
+export function parseTeam(id: string): string {
 	const team = Data.teams.map[id];
 	if (team) return team.name;
-	this.invalid = true;
-	return Command.parseUnlinkedId!(id);
+	commandState.invalid = true;
+	return parseUnlinkedId(id);
 }
 
-export function parseHexColor(this: typeof Command, hex: string): string {
-	return Command.setStringColor!('#' + hex);
+export function parseHexColor(hex: string): string {
+	return setStringColor('#' + hex);
 }
 
-export function parseActorSelector(this: typeof Command, selector: string): string | undefined {
+export function parseActorSelector(selector: string): string | undefined {
 	switch (selector) {
 		case 'enemy':
 		case 'friend':
@@ -856,16 +813,16 @@ export function parseActorSelector(this: typeof Command, selector: string): stri
 	}
 }
 
-export function parseFileName(this: typeof Command, id: string): string {
+export function parseFileName(id: string): string {
 	if (id === '') return Token('none');
 	const meta = Data.manifest.guidMap[id];
-	const textId = Command.setTextId!(`file-string-${id}`);
-	if (meta) return textId + Command.setFileColor!(File.parseMetaName!(meta));
-	this.invalid = true;
-	return textId + Command.setFileColor!(Command.parseUnlinkedId!(id));
+	const textId = setTextId(`file-string-${id}`);
+	if (meta) return textId + setFileColor(File.parseMetaName!(meta));
+	commandState.invalid = true;
+	return textId + setFileColor(parseUnlinkedId(id));
 }
 
-export function parseAudioType(this: typeof Command, type: string): string | undefined {
+export function parseAudioType(type: string): string | undefined {
 	switch (type) {
 		case 'bgm':
 			return 'BGM';
@@ -881,7 +838,7 @@ export function parseAudioType(this: typeof Command, type: string): string | und
 	}
 }
 
-export function parseWait(this: typeof Command, wait: boolean): string {
+export function parseWait(wait: boolean): string {
 	switch (wait) {
 		case false:
 			return '';
@@ -890,26 +847,21 @@ export function parseWait(this: typeof Command, wait: boolean): string {
 	}
 }
 
-export function parseEasing(
-	this: typeof Command,
-	easingId: string,
-	duration: number,
-	wait: boolean
-): string {
+export function parseEasing(easingId: string, duration: number, wait: boolean): string {
 	if (duration === 0) return '';
 	const easing = Data.easings.map[easingId];
-	const time = Command.parseVariableNumber!(duration, 'ms');
+	const time = parseVariableNumber(duration, 'ms');
 	const info = (easing?.name ?? `#${easingId}`) + Token(', ') + time;
 	return wait ? info + Token(', ') + t('transition.wait') : info;
 }
 
-export function parseUnlinkedId(this: typeof Command, name: string): string {
+export function parseUnlinkedId(name: string): string {
 	return name ? `#${name}` : '';
 }
 
 const _textTagRegex = /\$_(\S+?)_\$([\s\S]*?)\$_\/_\$/g;
 
-export function parseTextTags(this: typeof Command, contents: TextContent[]): TextContent[] {
+export function parseTextTags(contents: TextContent[]): TextContent[] {
 	let i = contents.length;
 	while (--i >= 0) {
 		const content = contents[i];
@@ -949,6 +901,6 @@ export function parseTextTags(this: typeof Command, contents: TextContent[]): Te
 
 const _removeTagRegex = /\$_textId_\$(?:\S+?)_\/_\$|\$_(?:\S+?)_\$/g;
 
-export function removeTextTags(this: typeof Command, string: string): string {
+export function removeTextTags(string: string): string {
 	return string.replace(_removeTagRegex, '');
 }

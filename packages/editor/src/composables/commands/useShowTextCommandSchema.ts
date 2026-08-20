@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useShowTextCommandSchema() {
-	const { form, save, load } = useCommandSchema('showText', {
+	const { form, save, load, commit } = useCommandSchema('showText', {
 		onLoad(params) {
 			const content = (params.content as string) ?? '';
 			if (content === '') {
@@ -20,7 +20,7 @@ export function useShowTextCommandSchema() {
 			getFocus(document.getElementById('showText-content'));
 			return;
 		}
-		Command.save?.({
+		commit({
 			target: read(document.getElementById('showText-target')) ?? form.target,
 			parameters: read(document.getElementById('showText-parameters')) ?? form.parameters,
 			content

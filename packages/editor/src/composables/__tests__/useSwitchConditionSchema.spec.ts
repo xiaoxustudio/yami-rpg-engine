@@ -8,6 +8,22 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
+vi.mock('@app/composables/useCommandColor.ts', () => ({
+	setNumberColor: (value: unknown) => `[num:${value}]`,
+	setBooleanColor: (value: unknown) => `[bool:${value}]`,
+	setStringColor: (value: unknown) => `[str:${value}]`,
+	setOperatorColor: (value: unknown) => `[op:${value}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+}));
+
+vi.mock('@app/composables/useCommandParse.ts', () => ({
+	parseMultiLineString: (value: unknown) => String(value),
+	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
+	parseAttributeTag: (id: string) => `<attr:${id}>`,
+	parseEnumStringTag: (id: string) => `<enum:${id}>`,
+	removeTextTags: (value: string) => value
+}));
+
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
@@ -37,17 +53,9 @@ describe('useSwitchConditionSchema（switch 条件窗口 composable：open/save/
 		Window.open = vi.fn();
 		Window.close = vi.fn();
 		Data.attribute = { context: { getAttribute: () => null } } as never;
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
-		Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
 		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
 		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-		Command.parseMultiLineString = ((value: unknown) => String(value)) as never;
-		Command.parseVariable = ((variable: { key: string }, type: string) =>
-			`<var:${variable.key}:${type}>`) as never;
-		Command.parseAttributeTag = ((id: string) => `<attr:${id}>`) as never;
-		Command.parseEnumStringTag = ((id: string) => `<enum:${id}>`) as never;
-		Command.removeTextTags = ((value: string) => value) as never;
+		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
 		SwitchCondition.target = target as never;
 	});
 

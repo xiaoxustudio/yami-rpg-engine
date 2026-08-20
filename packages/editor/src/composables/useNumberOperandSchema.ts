@@ -1,6 +1,29 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus, hide, read, show } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+import {
+	setNumberColor,
+	setScriptColor
+} from '@app/composables/useCommandColor.ts';
+import {
+	parseVariable,
+	parseVariableNumber,
+	parseVariableString,
+	parseVariableFile,
+	parseVariableEnum,
+	parsePosition,
+	parseActor,
+	parseSkill,
+	parseState,
+	parseEquipment,
+	parseItem,
+	parseTrigger,
+	parseTilemap,
+	parseElement,
+	parseListItem,
+	parseParameter,
+	parseTeam,
+	removeTextTags
+} from '@app/composables/useCommandParse.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
@@ -95,7 +118,7 @@ export interface NumberOperandShape {
 	parseObjectProperty: ((operand: NumberOperandData) => string | undefined) | null;
 	parseElementProperty: ((operand: NumberOperandData) => string) | null;
 	parseOther: ((operand: NumberOperandData) => string) | null;
-	parseOperand: ((operand: NumberOperandData) => string) | null;
+	parseOperand: ((operand: NumberOperandData) => string | undefined) | null;
 	parse:
 		| ((operand: NumberOperandData, data?: NumberOperandData[], index?: number) => string)
 		| null;
@@ -130,10 +153,10 @@ const parseMathMethod = (operand: NumberOperandData): string | undefined => {
 	const label = t('command.setNumber.math.' + method);
 	switch (method) {
 		case 'round': {
-			const varName = Command.parseVariable!(operand.variable, 'number');
+			const varName = parseVariable(operand.variable!, 'number');
 			const decimals = operand.decimals;
 			return `${label}${Token('(')}${varName}${
-				decimals ? `${Token(', ')}${Command.setNumberColor!(decimals)}` : ''
+				decimals ? `${Token(', ')}${setNumberColor(decimals)}` : ''
 			}${Token(')')}`;
 		}
 		case 'floor':
@@ -143,25 +166,25 @@ const parseMathMethod = (operand: NumberOperandData): string | undefined => {
 		case 'cos':
 		case 'sin':
 		case 'tan': {
-			const varName = Command.parseVariable!(operand.variable, 'number');
+			const varName = parseVariable(operand.variable!, 'number');
 			return `${label}${Token('(')}${varName}${Token(')')}`;
 		}
 		case 'random': {
-			const min = Command.setNumberColor!(0);
-			const max = Command.setNumberColor!(1);
+			const min = setNumberColor(0);
+			const max = setNumberColor(1);
 			return `${label}${Token('[')}${min}${Token(', ')}${max}${Token(')')}`;
 		}
 		case 'random-int': {
-			const min = Command.parseVariableNumber!(operand.min);
-			const max = Command.parseVariableNumber!(operand.max);
+			const min = parseVariableNumber(operand.min!);
+			const max = parseVariableNumber(operand.max!);
 			return `${label}${Token('[')}${min}${Token(', ')}${max}${Token(']')}`;
 		}
 		case 'distance':
 		case 'distance-x':
 		case 'distance-y':
 		case 'relative-angle': {
-			const start = Command.parsePosition!(operand.start);
-			const end = Command.parsePosition!(operand.end);
+			const start = parsePosition(operand.start!);
+			const end = parsePosition(operand.end!);
 			return `${label}${Token('(')}${start}${Token(', ')}${end}${Token(')')}`;
 		}
 	}
@@ -174,13 +197,13 @@ const parseStringMethod = (operand: NumberOperandData): string | undefined => {
 		case 'length':
 		case 'parse': {
 			const variable = operand.variable;
-			const varName = Command.parseVariable!(variable, 'string');
+			const varName = parseVariable(variable!, 'string');
 			return methodName + Token('(') + varName + Token(')');
 		}
 		case 'search': {
 			const { variable, search } = operand;
-			const varName = Command.parseVariable!(variable, 'string');
-			const searchName = Command.parseVariableString!(search);
+			const varName = parseVariable(variable!, 'string');
+			const searchName = parseVariableString(search!);
 			return methodName + Token('(') + varName + Token(', ') + searchName + Token(')');
 		}
 	}
@@ -211,33 +234,29 @@ const parseObjectProperty = (operand: NumberOperandData): string | undefined => 
 		case 'actor-animation-current-time':
 		case 'actor-animation-duration':
 		case 'actor-animation-progress':
-			return (
-				Command.parseActor!(operand.actor) +
-				Token(' -> ') +
-				property.replace('.', Token('.'))
-			);
+			return parseActor(operand.actor!) + Token(' -> ') + property.replace('.', Token('.'));
 		case 'actor-inventory-item-quantity':
 			return (
-				Command.parseActor!(operand.actor) +
+				parseActor(operand.actor!) +
 				Token(' -> ') +
-				Command.parseVariableFile!(operand.itemId) +
+				parseVariableFile(operand.itemId!) +
 				Token('.') +
 				property
 			);
 		case 'actor-inventory-equipment-quantity':
 			return (
-				Command.parseActor!(operand.actor) +
+				parseActor(operand.actor!) +
 				Token(' -> ') +
-				Command.parseVariableFile!(operand.equipmentId) +
+				parseVariableFile(operand.equipmentId!) +
 				Token('.') +
 				property
 			);
 		case 'actor-cooldown-time':
 		case 'actor-cooldown-duration':
 		case 'actor-cooldown-progress': {
-			const key = Command.parseVariableEnum!('cooldown-key', operand.key);
+			const key = parseVariableEnum('cooldown-key', operand.key!);
 			return (
-				Command.parseActor!(operand.actor) +
+				parseActor(operand.actor!) +
 				Token(' -> ') +
 				property +
 				Token('(') +
@@ -248,39 +267,39 @@ const parseObjectProperty = (operand: NumberOperandData): string | undefined => 
 		case 'skill-cooldown-time':
 		case 'skill-cooldown-duration':
 		case 'skill-cooldown-progress':
-			return Command.parseSkill!(operand.skill) + Token(' -> ') + property;
+			return parseSkill(operand.skill!) + Token(' -> ') + property;
 		case 'state-current-time':
 		case 'state-duration':
 		case 'state-progress':
-			return Command.parseState!(operand.state) + Token(' -> ') + property;
+			return parseState(operand.state!) + Token(' -> ') + property;
 		case 'equipment-order':
-			return Command.parseEquipment!(operand.equipment) + Token(' -> ') + property;
+			return parseEquipment(operand.equipment!) + Token(' -> ') + property;
 		case 'item-order':
 		case 'item-quantity':
-			return Command.parseItem!(operand.item) + Token(' -> ') + property;
+			return parseItem(operand.item!) + Token(' -> ') + property;
 		case 'trigger-speed':
 		case 'trigger-angle':
-			return Command.parseTrigger!(operand.trigger) + Token(' -> ') + property;
+			return parseTrigger(operand.trigger!) + Token(' -> ') + property;
 		case 'tilemap-width':
 		case 'tilemap-height':
-			return Command.parseTilemap!(operand.tilemap) + Token(' -> ') + property;
+			return parseTilemap(operand.tilemap!) + Token(' -> ') + property;
 		case 'tilemap-tag': {
 			return (
-				Command.parseTilemap!(operand.tilemap) +
+				parseTilemap(operand.tilemap!) +
 				Token(' -> ') +
 				property +
 				Token('(') +
-				Command.parsePosition!(operand.tilemapPosition) +
+				parsePosition(operand.tilemapPosition!) +
 				Token(')')
 			);
 		}
 		case 'list-length':
-			return Command.parseVariable!(operand.variable, 'object') + Token(' -> ') + property;
+			return parseVariable(operand.variable!, 'object') + Token(' -> ') + property;
 	}
 };
 
 const parseElementProperty = (operand: NumberOperandData): string => {
-	const element = Command.parseElement!(operand.element);
+	const element = parseElement(operand.element!);
 	const property = t('command.setNumber.element.' + operand.property);
 	return element + Token(' -> ') + property.replace('.', Token('.'));
 };
@@ -300,14 +319,14 @@ const parseOther = (operand: NumberOperandData): string => {
 			return (
 				head +
 				Token('[') +
-				Command.parseVariableNumber!(operand.touchId) +
+				parseVariableNumber(operand.touchId!) +
 				Token(']') +
 				Token('.') +
 				end
 			);
 		}
 		case 'actor-count':
-			return label + Token('(') + Command.parseTeam!(operand.teamId) + Token(')');
+			return label + Token('(') + parseTeam(operand.teamId!) + Token(')');
 		default:
 			return label.replace('.', Token('.'));
 	}
@@ -316,9 +335,9 @@ const parseOther = (operand: NumberOperandData): string => {
 const parseOperand = (operand: NumberOperandData) => {
 	switch (operand.type) {
 		case 'constant':
-			return Command.setNumberColor!(operand.value!.toString());
+			return setNumberColor(operand.value!.toString());
 		case 'variable':
-			return Command.parseVariable!(operand.variable, 'number');
+			return parseVariable(operand.variable!, 'number');
 		case 'math':
 			return parseMathMethod(operand)!;
 		case 'string':
@@ -328,11 +347,11 @@ const parseOperand = (operand: NumberOperandData) => {
 		case 'element':
 			return parseElementProperty(operand);
 		case 'list':
-			return Command.parseListItem!(operand.variable, operand.index);
+			return parseListItem(operand.variable!, operand.index!);
 		case 'parameter':
-			return Command.parseParameter!(operand.key);
+			return parseParameter(operand.key!);
 		case 'script':
-			return Command.setScriptColor!(operand.script);
+			return setScriptColor(operand.script!);
 		case 'other':
 			return parseOther(operand);
 	}
@@ -387,7 +406,7 @@ const parse = (
 				break;
 		}
 	}
-	let operandName = Command.removeTextTags!(parseOperand(operand));
+	let operandName = removeTextTags(parseOperand(operand)!);
 	const currentPriority = operation.includes('()');
 	const nextPriority = data![index! + 1]?.operation.includes('()');
 	if (!currentPriority && nextPriority) {
@@ -406,7 +425,7 @@ const open = (
 		value: 0
 	} as unknown as NumberOperandData
 ): void => {
-	Window.open!('setNumber-operand');
+	getWindowStore().open('setNumber-operand');
 
 	if (target!.start === 0) {
 		document.getElementById('setNumber-operation')!.save();
@@ -836,7 +855,7 @@ const save = (): unknown => {
 		}
 	}
 	document.getElementById('setNumber-operation')!.save();
-	Window.close!('setNumber-operand');
+	getWindowStore().close('setNumber-operand');
 	return operand;
 };
 

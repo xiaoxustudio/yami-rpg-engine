@@ -1,13 +1,13 @@
 import { GlobalPath, Path } from '@app/utils/config';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Log } from '@app/legacy/log/log-window.ts';
 import { Editor } from './editor.ts';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { Title } from '@app/legacy/title/title-bar.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { getAnimationStore } from '@app/stores/animation.ts';
+import { getSceneStore } from '@app/stores/scene.ts';
+import { getTitleStore } from '@app/stores/title.ts';
+import { useLogStore } from '@app/stores/log.ts';
+import { useParticleStore } from '@app/stores/particle.ts';
+import { useUIStore } from '@app/stores/ui.ts';
 
 type LayoutConfigShape = Parameters<NonNullable<typeof Layout.saveToConfig>>[0];
 
@@ -17,23 +17,23 @@ function saveConfig(this: typeof Editor) {
 		return;
 	}
 	try {
-		Title.saveToConfig!(config);
+		getTitleStore().saveToConfig(config);
 		Layout.saveToConfig!(config as LayoutConfigShape);
-		Scene.saveToConfig!(config);
-		UI.saveToConfig(config as { colors: Record<string, string> });
-		Animation.saveToConfig!(config);
-		Particle.saveToConfig!(config as { colors: Record<string, string> });
+		getSceneStore().saveToConfig(config);
+		useUIStore().saveToConfig(config as { colors: Record<string, string> });
+		getAnimationStore().saveToConfig(config);
+		useParticleStore().saveToConfig(config as { colors: Record<string, string> });
 
 		const json = JSON.stringify(config, null, 2);
 		const last = config.code;
 		if (json && json !== last) {
 			const path = Path.resolve!(GlobalPath, 'config.json');
 			FSP.writeFile!(path, json).catch((error: unknown) => {
-				Log.throw!(error);
+				useLogStore().logThrow(error);
 			});
 		}
 	} catch (error: unknown) {
-		Log.throw!(error);
+		useLogStore().logThrow(error);
 	}
 }
 
@@ -79,12 +79,12 @@ function loadConfig(this: typeof Editor) {
 		if (!Array.isArray(config.recent)) config.recent = [];
 		if (config.zoom === undefined) config.zoom = 1;
 	}
-	Title.loadFromConfig!(config!);
+	getTitleStore().loadFromConfig(config!);
 	Layout.loadFromConfig!(config! as LayoutConfigShape);
-	Scene.loadFromConfig!(config!);
-	UI.loadFromConfig(config! as { colors: Record<string, string> });
-	Animation.loadFromConfig!(config!);
-	Particle.loadFromConfig!(config! as { colors: Record<string, string> });
+	getSceneStore().loadFromConfig(config!);
+	useUIStore().loadFromConfig(config! as { colors: Record<string, string> });
+	getAnimationStore().loadFromConfig(config!);
+	useParticleStore().loadFromConfig(config! as { colors: Record<string, string> });
 }
 
 export function initProjectConfig(): void {

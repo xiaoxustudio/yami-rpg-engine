@@ -1,6 +1,7 @@
 ﻿import '@app/legacy/module/command/if.ts';
 import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
+import { commit } from '@app/composables/useCommandSchema';
 import { reactive } from 'vue';
 
 const form = reactive<Record<string, unknown>>({});
@@ -29,11 +30,11 @@ const save = (): unknown => {
 	switch (read(document.getElementById('if-else')) ?? form.else) {
 		case true: {
 			const commands = elseCommands ?? [];
-			Command.save?.({ branches, elseCommands: commands });
+			commit({ branches, elseCommands: commands });
 			break;
 		}
 		case false:
-			Command.save?.({ branches });
+			commit({ branches });
 			break;
 	}
 };

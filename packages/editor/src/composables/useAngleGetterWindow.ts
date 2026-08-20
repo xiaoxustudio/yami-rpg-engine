@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface AngleGetterForm {
@@ -38,7 +38,7 @@ const getFrame = (): AngleGetterFrame | null =>
 
 const open = (target: AngleGetterTarget): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
-	Window.open!('angleGetter');
+	getWindowStore().open('angleGetter');
 
 	let position = { type: 'actor', actor: { type: 'trigger' } };
 	let degrees = 0;
@@ -77,7 +77,7 @@ const confirm = (): void => {
 			break;
 	}
 	callback?.(getter!);
-	Window.close!('angleGetter');
+	getWindowStore().close('angleGetter');
 };
 
 const onWindowClosed = (): void => {

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface PositionGetterForm {
@@ -52,7 +52,7 @@ const getFrame = (): PositionGetterFrame | null =>
 const open = (target: PositionGetterTarget, defaults?: Partial<PositionGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
 	pluginInput = target.isPluginInput === true;
-	Window.open!('positionGetter');
+	getWindowStore().open('positionGetter');
 
 	let x = 0;
 	let y = 0;
@@ -136,7 +136,7 @@ const confirm = (): void => {
 		getter = { getter: 'position', ...getter };
 	}
 	callback?.(getter!);
-	Window.close!('positionGetter');
+	getWindowStore().close('positionGetter');
 };
 
 const onWindowClosed = (): void => {

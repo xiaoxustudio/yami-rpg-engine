@@ -1,11 +1,11 @@
-import '@app/legacy/module/command/playAnimation.ts';
+﻿import '@app/legacy/module/command/playAnimation.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function usePlayAnimationCommandSchema() {
-	const { form, save, load } = useCommandSchema('playAnimation', {
+	const { form, save, load, commit } = useCommandSchema('playAnimation', {
 		onLoad() {
 			getFocus(document.getElementById('playAnimation-mode')!);
 		}
@@ -37,7 +37,7 @@ export function usePlayAnimationCommandSchema() {
 		}
 		switch (mode) {
 			case 'position':
-				Command.save?.({
+				commit({
 					mode,
 					position:
 						read(document.getElementById('playAnimation-position')!) ?? form.position,
@@ -52,7 +52,7 @@ export function usePlayAnimationCommandSchema() {
 				});
 				break;
 			case 'actor':
-				Command.save?.({
+				commit({
 					mode,
 					actor: read(document.getElementById('playAnimation-actor')!) ?? form.actor,
 					animationId,

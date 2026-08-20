@@ -1,13 +1,13 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateActors(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const actors = Data.actors;
+		const { manifest, actors } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileActor'));
-		for (const [guid, sActor] of Object.entries<any>(actors)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sActor] of Object.entries<any>(actors!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -23,8 +23,8 @@ function updateActors(verNum: number) {
 						continue;
 				}
 			}
-			actors[guid] = dActor;
-			File.planToSave!(meta);
+			actors![guid] = dActor;
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface ElementGetterForm {
@@ -44,7 +44,7 @@ const getFrame = (): ElementGetterFrame | null =>
 const open = (target: ElementGetterTarget, defaults?: Partial<ElementGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
 	pluginInput = target.isPluginInput === true;
-	Window.open!('elementGetter');
+	getWindowStore().open('elementGetter');
 
 	let index = 0;
 	let presetId = defaults?.presetId ?? '';
@@ -129,7 +129,7 @@ const confirm = (): void => {
 		getter = { getter: 'element', ...getter };
 	}
 	callback?.(getter!);
-	Window.close!('elementGetter');
+	getWindowStore().close('elementGetter');
 };
 
 const onWindowClosed = (): void => {

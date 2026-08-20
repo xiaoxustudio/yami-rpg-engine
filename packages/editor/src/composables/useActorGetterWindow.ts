@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface ActorGetterForm {
@@ -44,7 +44,7 @@ const getFrame = (): ActorGetterFrame | null =>
 const open = (target: ActorGetterTarget, defaults?: Partial<ActorGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
 	pluginInput = target.isPluginInput === true;
-	Window.open!('actorGetter');
+	getWindowStore().open('actorGetter');
 
 	let memberId = 0;
 	let actorId = '';
@@ -110,7 +110,7 @@ const confirm = (): void => {
 		getter = { getter: 'actor', ...getter };
 	}
 	callback?.(getter!);
-	Window.close!('actorGetter');
+	getWindowStore().close('actorGetter');
 };
 
 const onWindowClosed = (): void => {

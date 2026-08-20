@@ -108,6 +108,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -123,6 +124,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIDialogBoxPage();
+
+const { bindInput, bindSliders } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -175,22 +178,8 @@ onMounted(() => {
     #uiDialogBox-typeface, #uiDialogBox-effect-type, #uiDialogBox-effect-shadowOffsetX, #uiDialogBox-effect-shadowOffsetY,
     #uiDialogBox-effect-strokeWidth, #uiDialogBox-effect-color, #uiDialogBox-blend`);
 	const sliders = document.querySelectorAll('#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider');
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(uiDialogBox, UI))
-		);
-	}
-	if (Inspector.sliderFocus && Inspector.sliderBlur) {
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-	}
+	bindInput(elements, uiDialogBox, UI);
+	bindSliders(sliders);
 
 	const el = document.getElementById('uiDialogBox-vue-mount');
 	if (el) {

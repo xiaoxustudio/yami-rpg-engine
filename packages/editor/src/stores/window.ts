@@ -44,6 +44,10 @@ export const useWindowStore = defineStore('window', () => {
 		return Window?.isWindowOpen?.(id) ?? false;
 	}
 
+	function getTopWindow() {
+		return Window?.getTopWindow?.();
+	}
+
 	function setPositionMode(mode: string) {
 		Window?.setPositionMode?.(mode);
 	}
@@ -79,6 +83,7 @@ export const useWindowStore = defineStore('window', () => {
 		close,
 		closeAll,
 		isWindowOpen,
+		getTopWindow,
 		setPositionMode,
 		saveActiveElement,
 		restoreActiveElement,

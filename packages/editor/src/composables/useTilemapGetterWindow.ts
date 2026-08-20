@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface TilemapGetterForm {
@@ -38,7 +38,7 @@ const getFrame = (): TilemapGetterFrame | null =>
 
 const open = (target: TilemapGetterTarget, defaults?: Partial<TilemapGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
-	Window.open!('tilemapGetter');
+	getWindowStore().open('tilemapGetter');
 
 	let presetId = defaults?.presetId ?? '';
 	let variable = { type: 'local', key: '' };
@@ -81,7 +81,7 @@ const confirm = (): void => {
 			break;
 	}
 	callback?.(getter!);
-	Window.close!('tilemapGetter');
+	getWindowStore().close('tilemapGetter');
 };
 
 const onWindowClosed = (): void => {

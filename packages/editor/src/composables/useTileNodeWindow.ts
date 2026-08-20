@@ -1,5 +1,5 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
@@ -144,7 +144,7 @@ const open = (
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
 	window.addEventListener('keydown', keydown);
-	Window.open!('autoTile-selectNode');
+	getWindowStore().open('autoTile-selectNode');
 
 	const screenBox = getDevicePixelClientBoxSize(screen);
 	const screenWidth = screenBox.width;
@@ -330,7 +330,7 @@ const keydown = (event: KeyboardEvent): void => {
 			}
 			Palette.explicit = true;
 			addClass(Palette.marquee, 'explicit');
-			Window.close!('autoTile-selectNode');
+			getWindowStore().close('autoTile-selectNode');
 			break;
 		}
 		case 'ArrowLeft':
@@ -442,7 +442,7 @@ const pointerup = (event: PointerEvent): void => {
 						}
 						Palette.explicit = true;
 						addClass(Palette.marquee, 'explicit');
-						Window.close!('autoTile-selectNode');
+						getWindowStore().close('autoTile-selectNode');
 					}
 				}
 				break;

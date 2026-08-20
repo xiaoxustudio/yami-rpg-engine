@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useGetObjectPropertyCommandSchema() {
-	const { form, save, load } = useCommandSchema('getObjectProperty', {
+	const { form, save, load, commit } = useCommandSchema('getObjectProperty', {
 		onLoad() {
 			getFocus(document.getElementById('getObjectProperty-variable'));
 		}
@@ -29,7 +29,7 @@ export function useGetObjectPropertyCommandSchema() {
 			getFocus(document.getElementById('getObjectProperty-list'));
 			return;
 		}
-		Command.save?.({ variable, saveVariable, properties });
+		commit({ variable, saveVariable, properties });
 	};
 	Command.cases.getObjectProperty.customSave = onSave;
 	return { form, save: onSave, load };

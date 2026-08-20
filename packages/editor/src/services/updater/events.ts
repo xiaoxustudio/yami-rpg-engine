@@ -1,12 +1,13 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { getDataStore } from '@app/stores/data';
+import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateLocalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const listMap = Updater.hooks.getLocalEvents();
+		const { manifest } = getDataStore().data;
 		for (const [guid, events] of Object.entries<any>(listMap)) {
-			const meta = Data.manifest.guidMap[guid];
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -16,17 +17,17 @@ function updateLocalEvents(verNum: number) {
 				event.enabled = true;
 				event.commands = commands;
 			}
-			File.planToSave!(meta, guid);
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }
 
 function updateGlobalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
-		const events = Data.events;
+		const { manifest, events } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEvent', 'global'));
-		for (const [guid, sEvent] of Object.entries<any>(events)) {
-			const meta = Data.manifest.guidMap[guid];
+		for (const [guid, sEvent] of Object.entries<any>(events!)) {
+			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
@@ -42,8 +43,8 @@ function updateGlobalEvents(verNum: number) {
 						continue;
 				}
 			}
-			events[guid] = dEvent;
-			File.planToSave!(meta);
+			events![guid] = dEvent;
+			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}
 	}
 }
@@ -51,7 +52,8 @@ function updateGlobalEvents(verNum: number) {
 function updateGlobalEvent(meta: unknown) {
 	const metaObj = meta as { guid: string };
 	const guid = metaObj.guid;
-	const sEvent = Data.events[guid];
+	const events = getDataStore().data.events;
+	const sEvent = events![guid];
 	if ('namespace' in sEvent || 'priority' in sEvent) return;
 	const dEvent = Updater.hooks.createInspectorSchema('fileEvent', 'global');
 	for (const key of Object.keys(dEvent)) {
@@ -65,8 +67,8 @@ function updateGlobalEvent(meta: unknown) {
 				continue;
 		}
 	}
-	Data.events[guid] = dEvent;
-	File.planToSave!(metaObj);
+	events![guid] = dEvent;
+	append(getDataStore().data.manifest!.changes as unknown[], metaObj);
 }
 
 export function initUpdaterEvents(): void {

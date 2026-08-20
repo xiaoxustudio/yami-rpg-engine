@@ -5,7 +5,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useWebSocketCloseCommandSchema() {
-	const { form, save, load } = useCommandSchema('webSocketClose', {
+	const { form, save, load, commit } = useCommandSchema('webSocketClose', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketClose-id'));
 		}
@@ -18,7 +18,7 @@ export function useWebSocketCloseCommandSchema() {
 			return;
 		}
 		const code = read(document.getElementById('webSocketClose-code')) ?? form.code;
-		Command.save!({
+		commit({
 			id,
 			code: code === '' ? '' : Number(code),
 			reason: read(document.getElementById('webSocketClose-reason')) ?? form.reason

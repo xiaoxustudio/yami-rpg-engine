@@ -56,6 +56,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -69,6 +70,8 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUITextBoxPage();
+
+const { bindInput } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
 	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
@@ -107,14 +110,7 @@ onMounted(() => {
     #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
     #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
     #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
-	(elements as unknown as HTMLElement[]).forEach((el) =>
-		el.addEventListener('focus', Inspector.inputFocus)
-	);
-	if (Inspector.inputBlur) {
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur!(uiTextBox, UI))
-		);
-	}
+	bindInput(elements, uiTextBox, UI);
 
 	const el = document.getElementById('uiTextBox-vue-mount');
 	if (el) {

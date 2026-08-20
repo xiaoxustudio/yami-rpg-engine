@@ -1,11 +1,11 @@
-import '@app/legacy/module/command/getMultipleActors.ts';
+﻿import '@app/legacy/module/command/getMultipleActors.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useGetMultipleActorsCommandSchema() {
-	const { form, save, load } = useCommandSchema('getMultipleActors', {
+	const { form, save, load, commit } = useCommandSchema('getMultipleActors', {
 		onLoad() {
 			getFocus(document.getElementById('getMultipleActors-variable')!);
 		}
@@ -62,7 +62,7 @@ export function useGetMultipleActorsCommandSchema() {
 				params2 = { selector };
 				break;
 		}
-		Command.save?.({ ...params1, ...params2, activation });
+		commit({ ...params1, ...params2, activation });
 	};
 	Command.cases.getMultipleActors.customSave = onSave;
 	return { form, save: onSave, load };

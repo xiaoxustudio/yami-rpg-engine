@@ -18,13 +18,14 @@ import { Inspector } from './inspector.ts';
 		target: null,
 		meta: null,
 		symbol: null,
+		info: null,
 		font: null,
 		previews: null,
 		initialize: null,
 		open: null,
 		close: null,
-		windowResize: null,
-		textInput: null
+		update: null,
+		windowResize: null
 	};
 
 	FileFont.initialize = function () {};
@@ -34,11 +35,12 @@ import { Inspector } from './inspector.ts';
 			this.target = file;
 			this.meta = meta;
 
-			const elName = $('#fileFont-name');
-			const elSize = $('#fileFont-size');
 			const size = Number(file.stats.size);
-			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize!(size);
+			this.info = {
+				name: file.basename + file.extname,
+				size: File.parseFileSize!(size)
+			};
+			this.update!();
 
 			const previews = this.previews;
 			const path = File.route!(file.path);
@@ -77,19 +79,18 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
+	FileFont.update = function (this: FileFontShape) {
+		const el = $('#fileFont');
+		if (!el) return;
+		(el as HTMLElement & { update?: () => void }).update?.();
+	};
+
 	FileFont.windowResize = function (this: FileFontShape) {
 		const previews = FileFont.previews;
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;
 			$('#fileFont-font-grid').style.fontSize = `${12 / dpr}px`;
-		}
-	};
-
-	FileFont.textInput = function (this: FileFontShape, event: InputEvent) {
-		const text = (event.target as HTMLInputElement).value;
-		for (const element of FileFont.previews) {
-			element.textContent = text;
 		}
 	};
 

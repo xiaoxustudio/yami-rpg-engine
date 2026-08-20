@@ -1,10 +1,10 @@
-import '@app/legacy/module/command/moveLight.ts';
+﻿import '@app/legacy/module/command/moveLight.ts';
 import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useMoveLightCommandSchema() {
-	const { form, save, load } = useCommandSchema('moveLight', {
+	const { form, save, load, commit } = useCommandSchema('moveLight', {
 		onLoad() {
 			getFocus(document.getElementById('moveLight-light')!);
 		}
@@ -16,7 +16,7 @@ export function useMoveLightCommandSchema() {
 			getFocus(document.getElementById('moveLight-properties')!);
 			return;
 		}
-		Command.save!({
+		commit({
 			light: read(document.getElementById('moveLight-light')!) ?? form.light,
 			properties,
 			easingId: read(document.getElementById('moveLight-easingId')!) ?? form.easingId,

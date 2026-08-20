@@ -1,5 +1,5 @@
 import { File } from '@app/legacy/file/file-system-core.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
+import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@app/services/updater/updater.ts';
 
@@ -43,7 +43,7 @@ async function checkForProjectUpdates(this: typeof Editor) {
 		await File.save!(false);
 		Editor.project!.version = ver2!;
 
-		Directory.update!();
+		getDirectoryTree()?.update();
 	}
 }
 

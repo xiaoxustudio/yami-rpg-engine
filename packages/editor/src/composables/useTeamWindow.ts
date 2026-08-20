@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/legacy/file/file-system-core.ts';
@@ -108,7 +108,7 @@ function initialize(): void {
 }
 
 function open(data?: unknown): void {
-	Window.open!('team');
+	getWindowStore().open('team');
 
 	unpackTeams();
 	getTeamStore().teams = Data.teams.map as unknown as Record<string, TeamData>;
@@ -226,7 +226,7 @@ function windowClose(event: Event): void {
 	if (changed) {
 		event.preventDefault();
 		const get = createGetter('confirmation');
-		Window.confirm!(
+		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedTeams')
 			},
@@ -235,7 +235,7 @@ function windowClose(event: Event): void {
 					label: get('yes'),
 					click: () => {
 						changed = false;
-						Window.close!('team');
+						getWindowStore().close('team');
 					}
 				},
 				{
@@ -414,7 +414,7 @@ function confirm(event?: Event): void {
 		datachange.key = 'teams';
 		window.dispatchEvent(datachange);
 	}
-	Window.close!('team');
+	getWindowStore().close('team');
 }
 
 function list_insert(this: TeamListElement, dItem: TeamData | null): void {
@@ -468,7 +468,7 @@ function list_delete(this: TeamListElement, item: TeamData): void {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = createGetter('confirmation');
-		Window.confirm!(
+		getWindowStore().confirm(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
 			},

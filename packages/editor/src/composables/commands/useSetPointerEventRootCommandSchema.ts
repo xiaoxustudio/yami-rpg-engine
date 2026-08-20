@@ -4,7 +4,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetPointerEventRootCommandSchema() {
-	const { form, save, load } = useCommandSchema('setPointerEventRoot', {
+	const { form, save, load, commit } = useCommandSchema('setPointerEventRoot', {
 		onLoad() {
 			getFocus(document.getElementById('setPointerEventRoot-operation'));
 		}
@@ -15,7 +15,7 @@ export function useSetPointerEventRootCommandSchema() {
 		switch (operation) {
 			case 'add':
 			case 'remove':
-				Command.save?.({
+				commit({
 					operation,
 					element:
 						read(document.getElementById('setPointerEventRoot-element')) ?? form.element
@@ -23,7 +23,7 @@ export function useSetPointerEventRootCommandSchema() {
 				break;
 			case 'remove-latest':
 			case 'reset':
-				Command.save?.({ operation });
+				commit({ operation });
 				break;
 		}
 	};
