@@ -1,7 +1,6 @@
 import '@app/inspector/animation-action-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface MotionForm {
 	mode: string;
@@ -34,7 +33,7 @@ export function useAnimMotionPage() {
 			Inspector.animMotion.update(
 				Inspector.animMotion.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

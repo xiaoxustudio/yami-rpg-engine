@@ -90,9 +90,9 @@ describe('useAnimMotionPage（animMotion inspector 页面 composable）', () => 
 			(target as unknown as Record<string, unknown>)[key] = value;
 		});
 		animMotion.target = makeMotion();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animMotion-loopStart';
-		el.read = () => 5;
+		page.form.loopStart = 5;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -106,9 +106,9 @@ describe('useAnimMotionPage（animMotion inspector 页面 composable）', () => 
 	it('onParamInput 直接落在控件元素上（checkbox）', () => {
 		const { wrapper, page } = mountPage();
 		animMotion.target = makeMotion();
-		const el = document.createElement('div') as HTMLElement & { read: () => boolean };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animMotion-loop';
-		el.read = () => false;
+		page.form.loop = false;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

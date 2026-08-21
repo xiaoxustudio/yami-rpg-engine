@@ -122,9 +122,9 @@ describe('useUIImagePage（uiElement inspector 页面 composable）', () => {
 			}
 		});
 		uiElement.target = makeElement();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Image 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiElement-name';
-		el.read = () => 'Image 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -157,9 +157,9 @@ describe('useUIImagePage（uiElement inspector 页面 composable）', () => {
 			}
 		});
 		uiElement.target = makeElement();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.x = 42;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiElement-transform-x';
-		el.read = () => 42;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

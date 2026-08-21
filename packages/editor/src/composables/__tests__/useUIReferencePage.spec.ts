@@ -86,9 +86,9 @@ describe('useUIReferencePage（uiReference inspector 页面 composable）', () =
 			}
 		);
 		uiReference.target = makeReference();
-		const el = document.createElement('div') as HTMLElement & { read: () => boolean };
+		page.form.synchronous = false;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiReference-synchronous';
-		el.read = () => false;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -102,9 +102,9 @@ describe('useUIReferencePage（uiReference inspector 页面 composable）', () =
 	it('onParamInput 直接落在控件元素上（prefabId）', () => {
 		const { wrapper, page } = mountPage();
 		uiReference.target = makeReference();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.prefabId = 'bbbbbbbbbbbbbbbb';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiReference-prefabId';
-		el.read = () => 'bbbbbbbbbbbbbbbb';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

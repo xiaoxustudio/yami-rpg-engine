@@ -1,7 +1,6 @@
 import '@app/inspector/animation-particle-frame-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface AnimParticleFrameForm {
 	x: number;
@@ -50,7 +49,7 @@ export function useAnimParticleFramePage() {
 			Inspector.animParticleFrame.update(
 				Inspector.animParticleFrame.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

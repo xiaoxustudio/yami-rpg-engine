@@ -1,7 +1,6 @@
 import '@app/inspector/file-trigger-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface TriggerForm {
 	selector: string;
@@ -99,10 +98,14 @@ export function useFileTriggerPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
+			const key = Inspector.getKey(element);
+			const formKey = key.startsWith('shape-')
+				? `shape${key[6].toUpperCase()}${key.slice(7)}`
+				: key;
 			Inspector.fileTrigger.update(
 				Inspector.fileTrigger.target,
-				Inspector.getKey(element),
-				read(element)
+				key,
+				(form as Record<string, unknown>)[formKey]
 			);
 		}
 		sync();

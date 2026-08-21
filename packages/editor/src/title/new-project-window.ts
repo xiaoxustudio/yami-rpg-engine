@@ -1,6 +1,7 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { reactive } from 'vue';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, getFocus, read, write } from '@app/utils/element-utils';
+import { disable, enable, getFocus } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Data } from '@app/data/data-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
@@ -17,12 +18,21 @@ import { Path } from '@app/utils/config';
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
+export interface NewProjectForm {
+	template: string;
+	folder: string;
+	location: string;
+}
+
+const form = reactive<NewProjectForm>({ template: '', folder: '', location: '' });
+
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type NewProjectMethod = ((...args: unknown[]) => unknown) | null;
 
 interface NewProjectShape {
 	state: NewProjectState;
 	timer: Timer | null;
+	form: NewProjectForm;
 	initialize: (() => void) | null;
 	open: NewProjectMethod;
 	check: NewProjectMethod;
@@ -46,6 +56,7 @@ interface NewProjectShape {
 export const NewProject: NewProjectShape = {
 	state: 'passed',
 	timer: null,
+	form,
 	initialize: null,
 	open: null,
 	check: null,
@@ -75,7 +86,6 @@ NewProject.initialize = function (this: typeof NewProject) {
 
 NewProject.open = function (this: typeof NewProject) {
 	Window.open!('newProject');
-	const write = getElementWriter('newProject');
 	const dialogs = Editor.config!.dialogs!;
 	const location = Path.normalize!(dialogs.new!);
 	const folder = this.getNewFolder!(location);
@@ -89,16 +99,14 @@ NewProject.open = function (this: typeof NewProject) {
 			template = 'arpg-ts-chinese';
 			break;
 	}
-	write('template', template);
-	write('folder', folder);
-	write('location', location);
+	Object.assign(form, { template, folder, location });
 	getFocus($('#newProject-template'));
 	this.check!();
 };
 
 NewProject.check = function (this: typeof NewProject) {
-	const folder = read($('#newProject-folder'));
-	const location = read($('#newProject-location'));
+	const folder = form.folder;
+	const location = form.location;
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
@@ -116,7 +124,7 @@ NewProject.check = function (this: typeof NewProject) {
 			this.state = 'passed';
 			$('#newProject-warning').textContent = '';
 		}
-		const template = read($('#newProject-template'));
+		const template = form.template;
 		if (template === 'minimized-project' && Editor.state === 'closed') {
 			disable($('#newProject-confirm'));
 		} else {
@@ -257,12 +265,11 @@ NewProject.folderBeforeinput = function (this: typeof NewProject, ...args: unkno
 
 NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) {
 	const event = args[0] as Event;
-	const el = $('#newProject-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
-	const oldName = read(el);
+	const oldName = form.folder;
 	const newName = oldName.replace(regexp, '');
 	if (oldName !== newName) {
-		write(el, newName);
+		form.folder = newName;
 	}
 	NewProject.check!();
 };
@@ -274,13 +281,12 @@ NewProject.locationInput = function (this: typeof NewProject, ...args: unknown[]
 
 NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) {
 	const event = args[0] as Event;
-	const input = $('#newProject-location');
 	File.showOpenDialog!({
-		defaultPath: read(input),
+		defaultPath: form.location,
 		properties: ['openDirectory']
 	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
-			write(input, filePaths[0]);
+			form.location = filePaths[0];
 			NewProject.check!();
 		}
 	});
@@ -288,9 +294,9 @@ NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) 
 
 NewProject.confirm = function (this: typeof NewProject, ...args: unknown[]) {
 	const event = args[0] as Event;
-	const template = read($('#newProject-template'));
-	const location = read($('#newProject-location'));
-	const folder = read($('#newProject-folder'));
+	const template = form.template;
+	const location = form.location;
+	const folder = form.folder;
 	const sPath =
 		template !== 'minimized-project'
 			? Path.resolve!(TemplatesPath, template)

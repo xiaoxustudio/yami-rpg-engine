@@ -108,9 +108,9 @@ describe('useSceneParticlePage（sceneParticle inspector 页面 composable）', 
 			}
 		);
 		sceneParticle.target = makeParticle();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Particle 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneParticle-name';
-		el.read = () => 'Particle 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -128,9 +128,9 @@ describe('useSceneParticlePage（sceneParticle inspector 页面 composable）', 
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneParticle.target = makeParticle();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.angle = 90;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneParticle-angle';
-		el.read = () => 90;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

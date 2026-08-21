@@ -1,7 +1,6 @@
 import '@app/inspector/element-dialog-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface DialogBoxForm {
 	content: string;
@@ -80,10 +79,13 @@ export function useUIDialogBoxPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
+			const key = Inspector.getKey(element);
 			Inspector.uiDialogBox.update(
 				Inspector.uiDialogBox.target,
-				Inspector.getKey(element),
-				read(element)
+				key,
+				key.startsWith('effect-')
+					? form.effect[key.slice('effect-'.length) as keyof DialogBoxForm['effect']]
+					: (form as Record<string, unknown>)[key]
 			);
 		}
 		sync();

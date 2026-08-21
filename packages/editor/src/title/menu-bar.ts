@@ -12,10 +12,9 @@ import {
 	hasClass,
 	rect,
 	removeClass,
-	setTooltip,
-	write
+	setTooltip
 } from '@app/utils/element-utils';
-import { h, render } from 'vue';
+import { h, reactive, render, watch } from 'vue';
 import { Path } from '@app/utils/config';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
@@ -88,6 +87,24 @@ interface MenubarShape {
 }
 
 type RecentTabMeta = { guid?: string; path: string; [k: string]: unknown };
+
+export interface ExportApkForm {
+	apkName: string;
+	apkIcon: string;
+	apkPackageName: string;
+	apkVersionName: string;
+	apkVersionCode: string;
+}
+
+export const exportApkForm = reactive<ExportApkForm>({
+	apkName: '',
+	apkIcon: '',
+	apkPackageName: '',
+	apkVersionName: '',
+	apkVersionCode: '1'
+});
+
+let stopExportApkFormWatch: (() => void) | null = null;
 
 export const Menubar: MenubarShape = {
 	// methods,
@@ -749,6 +766,10 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 						$('#export-apk').addEventListener(
 							'closed',
 							() => {
+								if (stopExportApkFormWatch) {
+									stopExportApkFormWatch();
+									stopExportApkFormWatch = null;
+								}
 								ApkBuilder.reset!();
 							},
 							{ once: true }
@@ -774,12 +795,6 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							}
 							FSP.writeFile!(pConfig, JSON.stringify(config), {});
 						};
-						const InputEvent = (e: Event, name: string) => {
-							(config as Record<string, string | number>)[name] = (
-								e.target as HTMLInputElement
-							).value;
-							apkConfigSave();
-						};
 						await new Promise(
 							async (
 								resolve: (value: unknown) => void,
@@ -801,33 +816,32 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							}
 						).then(() => {
 							// 初始化
-							write($('#export-apk-apkName'), config.appName);
-							$('#export-apk-apkName').addEventListener('input', (e: Event) =>
-								InputEvent(e, 'appName')
-							);
-							write($('#export-apk-apkIcon'), config.iconPath);
-							$('#export-apk-apkIcon').addEventListener('input', (e: Event) =>
-								InputEvent(e, 'iconPath')
-							);
+							Object.assign(exportApkForm, {
+								apkName: config.appName,
+								apkIcon: config.iconPath,
+								apkPackageName: config.packageName,
+								apkVersionName: config.versionName,
+								apkVersionCode: String(config.versionCode)
+							});
+							if (stopExportApkFormWatch) {
+								stopExportApkFormWatch();
+							}
+							stopExportApkFormWatch = watch(exportApkForm, () => {
+								Object.assign(config, {
+									appName: exportApkForm.apkName,
+									iconPath: exportApkForm.apkIcon,
+									packageName: exportApkForm.apkPackageName,
+									versionName: exportApkForm.apkVersionName,
+									versionCode: Number(exportApkForm.apkVersionCode)
+								});
+								apkConfigSave();
+							});
 							$('#export-apk-apkIcon').addEventListener('mouseenter', (e: Event) =>
 								setTooltip(
 									$('#export-apk-apkIcon'),
 									ApkBuilder.processPathOnly!(config.iconPath)
 								)
 							);
-							write($('#export-apk-apkPackageName'), config.packageName);
-							$('#export-apk-apkPackageName').addEventListener('input', (e: Event) =>
-								InputEvent(e, 'packageName')
-							);
-							write($('#export-apk-apkVersionName'), config.versionName);
-							$('#export-apk-apkVersionName').addEventListener('input', (e: Event) =>
-								InputEvent(e, 'versionName')
-							);
-							write($('#export-apk-apkVersionCode'), config.versionCode);
-							$('#export-apk-apkVersionCode').addEventListener('input', (e: Event) =>
-								InputEvent(e, 'versionCode')
-							);
-
 							$('#export-apk-button').addEventListener('click', (e: Event) => {
 								disable($('#export-apk-button'));
 								apkConfigSave();

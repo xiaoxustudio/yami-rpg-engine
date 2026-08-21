@@ -120,9 +120,9 @@ describe('useFileScenePage（fileScene inspector 页面 composable）', () => {
 		});
 		fileScene.target = makeScene();
 		Scene.ambient = { red: 255, green: 255, blue: 255, direct: 0 };
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileScene-ambient-red';
-		el.read = () => 100;
+		(page.form as Record<string, unknown>)['ambient-red'] = 100;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -136,9 +136,9 @@ describe('useFileScenePage（fileScene inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileScene.target = makeScene();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileScene-tileWidth';
-		el.read = () => 64;
+		page.form.tileWidth = 64;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

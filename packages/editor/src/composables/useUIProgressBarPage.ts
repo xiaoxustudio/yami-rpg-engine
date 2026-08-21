@@ -1,7 +1,6 @@
 import '@app/inspector/element-progress-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface ProgressBarForm {
 	image: string;
@@ -74,10 +73,14 @@ export function useUIProgressBarPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
+			const key = Inspector.getKey(element);
+			const colorMatch = key.match(/^color-(\d+)$/);
 			Inspector.uiProgressBar.update(
 				Inspector.uiProgressBar.target,
-				Inspector.getKey(element),
-				read(element)
+				key,
+				colorMatch
+					? form.color[Number(colorMatch[1])]
+					: (form as Record<string, unknown>)[key]
 			);
 		}
 		sync();

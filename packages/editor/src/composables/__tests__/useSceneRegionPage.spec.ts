@@ -97,9 +97,9 @@ describe('useSceneRegionPage（sceneRegion inspector 页面 composable）', () =
 			(region as unknown as Record<string, unknown>)[key] = value;
 		});
 		sceneRegion.target = makeRegion();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Region 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneRegion-name';
-		el.read = () => 'Region 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -113,9 +113,9 @@ describe('useSceneRegionPage（sceneRegion inspector 页面 composable）', () =
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneRegion.target = makeRegion();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.width = 8;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneRegion-width';
-		el.read = () => 8;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

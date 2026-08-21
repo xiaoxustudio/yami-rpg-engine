@@ -2,12 +2,12 @@ import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
-import { disable, enable, on, write } from '@app/utils/element-utils.ts';
+import { disable, enable, on } from '@app/utils/element-utils.ts';
 import { Path } from '@app/utils/config';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
-import { Deployment } from '@app/title/deploy-project-window.ts';
+import { Deployment, DeploymentForm } from '@app/title/deploy-project-window.ts';
 
 export const WebServer = new (class {
 	port = 5959;
@@ -78,7 +78,7 @@ export const WebServer = new (class {
 		const location = Path.join(path, '.preview');
 		return FSP.mkdir(path, { recursive: true })
 			.then((done: unknown) => {
-				write($('#deployment-platform'), 'web');
+				DeploymentForm.platform = 'web';
 				return Deployment.copyFilesTo!(location);
 			})
 			.finally(() => {

@@ -2,7 +2,6 @@ import { reactive } from 'vue';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { $ } from '@app/utils/dom';
-import { read } from '@app/utils/element-utils';
 
 interface AnimSoundFrameShape {
 	target: Record<string, unknown> | null;
@@ -103,7 +102,7 @@ export function useAnimSoundFramePage() {
 			Inspector.animSoundFrame.update(
 				Inspector.animSoundFrame.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

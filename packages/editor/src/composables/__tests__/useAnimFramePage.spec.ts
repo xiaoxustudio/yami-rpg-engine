@@ -198,9 +198,9 @@ describe('useAnimJointFramePage（animJointFrame inspector 页面 composable）'
 			}
 		);
 		animJointFrame.target = makeJointFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animJointFrame-x';
-		el.read = () => 99;
+		(page.form as Record<string, unknown>).x = 99;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -214,9 +214,9 @@ describe('useAnimJointFramePage（animJointFrame inspector 页面 composable）'
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimJointFramePage);
 		animJointFrame.target = makeJointFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animJointFrame-rotation';
-		el.read = () => 90;
+		(page.form as Record<string, unknown>).rotation = 90;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -276,9 +276,9 @@ describe('useAnimSpriteFramePage（animSpriteFrame inspector 页面 composable�
 			}
 		);
 		animSpriteFrame.target = makeSpriteFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSpriteFrame-anchorX';
-		el.read = () => '0.25';
+		(page.form as Record<string, unknown>).anchorX = '0.25';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -301,9 +301,9 @@ describe('useAnimSpriteFramePage（animSpriteFrame inspector 页面 composable�
 			}
 		);
 		animSpriteFrame.target = makeSpriteFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSpriteFrame-tint-2';
-		el.read = () => 128;
+		(page.form as Record<string, unknown>)['tint-2'] = 128;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -359,9 +359,9 @@ describe('useAnimParticleFramePage（animParticleFrame inspector 页面 composab
 			}
 		);
 		animParticleFrame.target = makeParticleFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animParticleFrame-speed';
-		el.read = () => 5;
+		(page.form as Record<string, unknown>).speed = 5;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -375,9 +375,9 @@ describe('useAnimParticleFramePage（animParticleFrame inspector 页面 composab
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimParticleFramePage);
 		animParticleFrame.target = makeParticleFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animParticleFrame-opacity';
-		el.read = () => 0.5;
+		(page.form as Record<string, unknown>).opacity = 0.5;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -428,9 +428,9 @@ describe('useAnimSoundFramePage（animSoundFrame inspector 页面 composable）'
 			}
 		);
 		animSoundFrame.target = makeSoundFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSoundFrame-volume';
-		el.read = () => 0.9;
+		(page.form as Record<string, unknown>).volume = 0.9;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -444,9 +444,9 @@ describe('useAnimSoundFramePage（animSoundFrame inspector 页面 composable）'
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimSoundFramePage);
 		animSoundFrame.target = makeSoundFrame();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSoundFrame-sound';
-		el.read = () => 'se.ogg';
+		(page.form as Record<string, unknown>).sound = 'se.ogg';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

@@ -1,7 +1,6 @@
 import '@app/inspector/scene-animation-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface AnimationForm {
 	name: string;
@@ -59,7 +58,7 @@ export function useSceneAnimationPage() {
 			Inspector.sceneAnimation.update(
 				Inspector.sceneAnimation.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

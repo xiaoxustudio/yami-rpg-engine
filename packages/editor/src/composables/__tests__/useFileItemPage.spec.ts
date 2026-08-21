@@ -88,9 +88,9 @@ describe('useFileItemPage（fileItem inspector 页面 composable）', () => {
 			(item as unknown as Record<string, unknown>)[key] = value;
 		});
 		fileItem.target = makeItem();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileItem-inherit';
-		el.read = () => 'item-2';
+		page.form.inherit = 'item-2';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -104,9 +104,9 @@ describe('useFileItemPage（fileItem inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileItem.target = makeItem();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileItem-icon';
-		el.read = () => 'icon-2';
+		page.form.icon = 'icon-2';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

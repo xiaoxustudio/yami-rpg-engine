@@ -88,9 +88,9 @@ describe('useFileSkillPage（fileSkill inspector 页面 composable）', () => {
 			(skill as unknown as Record<string, unknown>)[key] = value;
 		});
 		fileSkill.target = makeSkill();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileSkill-inherit';
-		el.read = () => 'skill-2';
+		page.form.inherit = 'skill-2';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -104,9 +104,9 @@ describe('useFileSkillPage（fileSkill inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileSkill.target = makeSkill();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileSkill-icon';
-		el.read = () => 'icon-2';
+		page.form.icon = 'icon-2';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

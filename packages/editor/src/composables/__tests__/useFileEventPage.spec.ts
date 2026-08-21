@@ -97,9 +97,9 @@ describe('useFileEventPage（fileEvent inspector 页面 composable）', () => {
 			(event as unknown as Record<string, unknown>)[key] = value;
 		});
 		fileEvent.target = makeEvent();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileEvent-returnType';
-		el.read = () => 'string';
+		page.form.returnType = 'string';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -113,9 +113,9 @@ describe('useFileEventPage（fileEvent inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileEvent.target = makeEvent();
-		const el = document.createElement('div') as HTMLElement & { read: () => boolean };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileEvent-enabled';
-		el.read = () => false;
+		page.form.enabled = false;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

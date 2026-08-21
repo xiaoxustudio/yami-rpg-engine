@@ -141,9 +141,9 @@ describe('useAnimSpriteLayerPage（animSpriteLayer inspector 页面 composable�
 			}
 		);
 		animSpriteLayer.target = makeSpriteLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSpriteLayer-blend';
-		el.read = () => 'additive';
+		(page.form as Record<string, unknown>).blend = 'additive';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -161,9 +161,9 @@ describe('useAnimSpriteLayerPage（animSpriteLayer inspector 页面 composable�
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimSpriteLayerPage);
 		animSpriteLayer.target = makeSpriteLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSpriteLayer-light';
-		el.read = () => 'global';
+		(page.form as Record<string, unknown>).light = 'global';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -219,9 +219,9 @@ describe('useAnimParticleLayerPage（animParticleLayer inspector 页面 composab
 			}
 		);
 		animParticleLayer.target = makeParticleLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animParticleLayer-position';
-		el.read = () => 'relative';
+		(page.form as Record<string, unknown>).position = 'relative';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -239,9 +239,9 @@ describe('useAnimParticleLayerPage（animParticleLayer inspector 页面 composab
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimParticleLayerPage);
 		animParticleLayer.target = makeParticleLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animParticleLayer-order';
-		el.read = () => 'before';
+		(page.form as Record<string, unknown>).order = 'before';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -292,9 +292,9 @@ describe('useAnimSoundLayerPage（animSoundLayer inspector 页面 composable）'
 			}
 		);
 		animSoundLayer.target = makeSoundLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSoundLayer-playbackRate';
-		el.read = () => 'inherit';
+		(page.form as Record<string, unknown>).playbackRate = 'inherit';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -312,9 +312,9 @@ describe('useAnimSoundLayerPage（animSoundLayer inspector 页面 composable）'
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage(useAnimSoundLayerPage);
 		animSoundLayer.target = makeSoundLayer();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'animSoundLayer-playbackRate';
-		el.read = () => 'inherit';
+		(page.form as Record<string, unknown>).playbackRate = 'inherit';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => (page.onParamInput as (event: Event) => void)(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

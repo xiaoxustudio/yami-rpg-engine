@@ -2,7 +2,6 @@ import { reactive } from 'vue';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { $ } from '@app/utils/dom';
-import { read } from '@app/utils/element-utils';
 
 interface AnimSoundLayerShape {
 	[k: string]: unknown;
@@ -106,7 +105,7 @@ export function useAnimSoundLayerPage() {
 			Inspector.animSoundLayer.update(
 				Inspector.animSoundLayer.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

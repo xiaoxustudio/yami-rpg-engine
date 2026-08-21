@@ -166,9 +166,9 @@ describe('useUIButtonPage（uiButton inspector 页面 composable）', () => {
 			(target as unknown as Record<string, unknown>)[key] = value;
 		});
 		uiButton.target = makeButton();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.size = 24;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiButton-size';
-		el.read = () => 24;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -182,9 +182,9 @@ describe('useUIButtonPage（uiButton inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		uiButton.target = makeButton();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.content = 'Click Me';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiButton-content';
-		el.read = () => 'Click Me';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

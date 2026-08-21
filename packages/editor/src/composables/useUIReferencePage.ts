@@ -2,7 +2,6 @@ import '@app/inspector/element-container-page.ts';
 import '@app/inspector/element-reference-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface ReferenceForm {
 	prefabId: string;
@@ -33,7 +32,7 @@ export function useUIReferencePage() {
 			Inspector.uiReference.update(
 				Inspector.uiReference.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

@@ -1,7 +1,6 @@
 import '@app/inspector/scene-parallax-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface ParallaxForm {
 	name: string;
@@ -74,10 +73,13 @@ export function useSceneParallaxPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
+			const key = Inspector.getKey(element);
 			Inspector.sceneParallax.update(
 				Inspector.sceneParallax.target,
-				Inspector.getKey(element),
-				read(element)
+				key,
+				key.startsWith('tint-')
+					? form.tint?.[Number(key.slice('tint-'.length))]
+					: (form as Record<string, unknown>)[key]
 			);
 		}
 		sync();

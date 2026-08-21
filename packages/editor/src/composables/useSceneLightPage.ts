@@ -1,7 +1,6 @@
 import '@app/inspector/scene-light-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface LightForm {
 	name: string;
@@ -65,7 +64,7 @@ export function useSceneLightPage() {
 			Inspector.sceneLight.update(
 				Inspector.sceneLight.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

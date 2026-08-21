@@ -103,9 +103,9 @@ describe('useSceneActorPage（sceneActor inspector 页面 composable）', () => 
 			(actor as unknown as Record<string, unknown>)[key] = value;
 		});
 		sceneActor.target = makeActor();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Actor 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneActor-name';
-		el.read = () => 'Actor 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -119,9 +119,9 @@ describe('useSceneActorPage（sceneActor inspector 页面 composable）', () => 
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneActor.target = makeActor();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.angle = 90;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneActor-angle';
-		el.read = () => 90;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

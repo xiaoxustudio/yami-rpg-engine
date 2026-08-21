@@ -1,7 +1,6 @@
 import '@app/inspector/file-event-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface EventForm {
 	type: string;
@@ -43,7 +42,7 @@ export function useFileEventPage() {
 			Inspector.fileEvent.update(
 				Inspector.fileEvent.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

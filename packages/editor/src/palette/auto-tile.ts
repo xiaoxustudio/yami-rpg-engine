@@ -160,9 +160,6 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 
 AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: AutoTileOpenParams) {
 	Window.open!('autoTile');
-	write($('#autoTile-image'), image);
-	write($('#autoTile-x'), x);
-	write($('#autoTile-y'), y);
 	getAutoTileStore().templates = Object.clone(Data.autotiles);
 	getAutoTileStore().nodeIndex = 0;
 	getAutoTileStore().frameIndex = 0;
@@ -890,13 +887,13 @@ AutoTile.canvasClick = function (this: typeof AutoTile, event: Event) {
 }.bind(AutoTile);
 
 AutoTile.imageInput = function (this: typeof AutoTile, event: Event) {
-	AutoTile.imageId = read($('#autoTile-image'));
+	AutoTile.imageId = getAutoTileStore().imageId;
 	AutoTile.image = null;
 	AutoTile.drawFrame!();
 };
 
 AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
-	const x = read($('#autoTile-x'));
+	const x = getAutoTileStore().offsetX;
 	if (AutoTile.offsetX !== x) {
 		AutoTile.offsetX = x;
 		AutoTile.drawFrame!();
@@ -904,7 +901,7 @@ AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
 };
 
 AutoTile.offsetYInput = function (this: typeof AutoTile, event: Event) {
-	const y = read($('#autoTile-y'));
+	const y = getAutoTileStore().offsetY;
 	if (AutoTile.offsetY !== y) {
 		AutoTile.offsetY = y;
 		AutoTile.drawFrame!();

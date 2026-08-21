@@ -5,11 +5,11 @@
 			<div class="box" id="export-apk-out">
 				<div class="grid-box" id="export-apk-grid">
 					<div class="text project-summary">应用配置</div>
-					<div class="text">应用名称</div><TextBox id="export-apk-apkName" />
-					<div class="text">应用图标</div><TextBox id="export-apk-apkIcon" />
-					<div class="text">应用包名</div><TextBox id="export-apk-apkPackageName" />
-					<div class="text">应用版本</div><TextBox id="export-apk-apkVersionName" />
-					<div class="text">应用版本号</div><TextBox id="export-apk-apkVersionCode" />
+					<div class="text">应用名称</div><TextBox id="export-apk-apkName" v-model="exportApkForm.apkName" />
+					<div class="text">应用图标</div><TextBox id="export-apk-apkIcon" v-model="exportApkForm.apkIcon" />
+					<div class="text">应用包名</div><TextBox id="export-apk-apkPackageName" v-model="exportApkForm.apkPackageName" />
+					<div class="text">应用版本</div><TextBox id="export-apk-apkVersionName" v-model="exportApkForm.apkVersionName" />
+					<div class="text">应用版本号</div><TextBox id="export-apk-apkVersionCode" v-model="exportApkForm.apkVersionCode" />
 				</div>
 				<div class="box" id="export-apk-PS">
 					<div class="text project-summary export-apk-major">PS（温馨提示）</div>
@@ -49,6 +49,7 @@ import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { exportApkForm } from '@app/title/menu-bar';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -129,9 +129,9 @@ describe('useSceneLightPage（sceneLight inspector 页面 composable）', () => 
 			(light as unknown as Record<string, unknown>)[key] = value;
 		});
 		sceneLight.target = makeLight();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Light 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneLight-name';
-		el.read = () => 'Light 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -145,9 +145,9 @@ describe('useSceneLightPage（sceneLight inspector 页面 composable）', () => 
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneLight.target = makeLight();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.x = 42;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneLight-x';
-		el.read = () => 42;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

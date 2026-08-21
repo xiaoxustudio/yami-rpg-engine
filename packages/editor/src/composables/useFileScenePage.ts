@@ -2,7 +2,6 @@ import '@app/inspector/file-scene-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { read } from '@app/utils/element-utils';
 
 interface FileSceneForm {
 	width: number;
@@ -41,7 +40,7 @@ export function useFileScenePage() {
 			Inspector.fileScene.update(
 				Inspector.fileScene.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

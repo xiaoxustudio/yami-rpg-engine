@@ -1,8 +1,18 @@
 import { $ } from '@app/utils/dom';
+import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
-import { write, getFocus, read, on } from '@app/utils/element-utils.ts';
+import { getFocus, on } from '@app/utils/element-utils.ts';
+
+export interface FrameGeneratorForm {
+	strideX: number;
+	strideY: number;
+	count: number;
+}
+
+const form = reactive<FrameGeneratorForm>({ strideX: 0, strideY: 0, count: 1 });
 
 export const FrameGenerator: Record<string, any> = {
+	form,
 	callback: null,
 	initialize: null,
 	open: null,
@@ -11,13 +21,9 @@ export const FrameGenerator: Record<string, any> = {
 };
 
 FrameGenerator.initialize = function (this: typeof FrameGenerator) {
-	const el = $('#autoTile-generateFrames-strideX');
-	if (!el) return;
-	write(el, 0);
-	const strideYEl = $('#autoTile-generateFrames-strideY');
-	if (strideYEl) write(strideYEl, 0);
-	const countEl = $('#autoTile-generateFrames-count');
-	if (countEl) write(countEl, 1);
+	form.strideX = 0;
+	form.strideY = 0;
+	form.count = 1;
 
 	const frameWindow = $('#autoTile-generateFrames');
 	if (frameWindow) on(frameWindow, 'closed', this.windowClosed);
@@ -39,9 +45,9 @@ FrameGenerator.windowClosed = function (this: typeof FrameGenerator, event: Even
 }.bind(FrameGenerator);
 
 FrameGenerator.confirm = function (this: typeof FrameGenerator, event: Event) {
-	const strideX = read($('#autoTile-generateFrames-strideX'));
-	const strideY = read($('#autoTile-generateFrames-strideY'));
-	const count = read($('#autoTile-generateFrames-count'));
+	const strideX = form.strideX;
+	const strideY = form.strideY;
+	const count = form.count;
 	if (strideX === 0 && strideY === 0) {
 		return getFocus($('#autoTile-generateFrames-strideX'));
 	}

@@ -1,7 +1,6 @@
 import '@app/inspector/element-text-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface TextForm {
 	direction: string;
@@ -89,10 +88,13 @@ export function useUITextPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
+			const key = Inspector.getKey(element);
 			Inspector.uiText.update(
 				Inspector.uiText.target,
-				Inspector.getKey(element),
-				read(element)
+				key,
+				key.startsWith('effect-')
+					? form.effect[key.slice('effect-'.length) as keyof TextForm['effect']]
+					: (form as Record<string, unknown>)[key]
 			);
 		}
 		sync();

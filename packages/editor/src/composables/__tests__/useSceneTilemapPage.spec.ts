@@ -129,9 +129,9 @@ describe('useSceneTilemapPage（sceneTilemap inspector 页面 composable）', ()
 			}
 		);
 		sceneTilemap.target = makeTilemap();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Tilemap 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneTilemap-name';
-		el.read = () => 'Tilemap 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -145,9 +145,9 @@ describe('useSceneTilemapPage（sceneTilemap inspector 页面 composable）', ()
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneTilemap.target = makeTilemap();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.width = 8;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneTilemap-width';
-		el.read = () => 8;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -163,9 +163,9 @@ describe('useSceneTilemapPage（sceneTilemap inspector 页面 composable）', ()
 			}
 		);
 		sceneTilemap.target = makeTilemap();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.height = 6;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneTilemap-height';
-		el.read = () => 6;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);

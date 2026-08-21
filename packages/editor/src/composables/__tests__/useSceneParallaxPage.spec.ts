@@ -139,9 +139,9 @@ describe('useSceneParallaxPage（sceneParallax inspector 页面 composable）', 
 			}
 		);
 		sceneParallax.target = makeParallax();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Parallax 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneParallax-name';
-		el.read = () => 'Parallax 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -165,9 +165,9 @@ describe('useSceneParallaxPage（sceneParallax inspector 页面 composable）', 
 			}
 		);
 		sceneParallax.target = makeParallax();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		(page.form.tint as number[])[1] = 66;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneParallax-tint-1';
-		el.read = () => 66;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

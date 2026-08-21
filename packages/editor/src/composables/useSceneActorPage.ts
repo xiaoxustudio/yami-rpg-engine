@@ -1,7 +1,6 @@
 import '@app/inspector/scene-actor-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface ActorForm {
 	name: string;
@@ -47,7 +46,7 @@ export function useSceneActorPage() {
 			Inspector.sceneActor.update(
 				Inspector.sceneActor.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

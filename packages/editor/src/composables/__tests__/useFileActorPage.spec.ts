@@ -124,9 +124,9 @@ describe('useFileActorPage（fileActor inspector 页面 composable）', () => {
 			(actor as unknown as Record<string, unknown>)[key] = value;
 		});
 		fileActor.target = makeActor();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.passage = 'water';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileActor-passage';
-		el.read = () => 'water';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -140,9 +140,9 @@ describe('useFileActorPage（fileActor inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileActor.target = makeActor();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.speed = 6;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileActor-speed';
-		el.read = () => 6;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

@@ -1,7 +1,6 @@
 import '@app/inspector/file-entity-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface EntityForm {
 	icon: string;
@@ -33,7 +32,7 @@ export function useFileStatePage() {
 			Inspector.fileState.update(
 				Inspector.fileState.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

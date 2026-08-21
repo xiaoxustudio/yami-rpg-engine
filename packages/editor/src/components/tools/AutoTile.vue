@@ -6,9 +6,9 @@
 				<div class="legend">{{ t('components.autoTile-general-grid.label') }}</div>
 				<div class="grid-box" id="autoTile-general-grid">
 					<div class="text">{{ t('components.autoTile-image.label') }}</div
-					><CustomBox id="autoTile-image" type="file" filter="image" @input="onImageInput" />
-					<div class="text">{{ t('components.autoTile-x.label') }}</div><NumberBox id="autoTile-x" min="0" max="255" @input="onOffsetXInput" />
-					<div class="text">{{ t('components.autoTile-y.label') }}</div><NumberBox id="autoTile-y" min="0" max="255" @input="onOffsetYInput" />
+					><CustomBox id="autoTile-image" type="file" filter="image" v-model="autoTileStore.imageId" @input="onImageInput" />
+					<div class="text">{{ t('components.autoTile-x.label') }}</div><NumberBox id="autoTile-x" min="0" max="255" v-model="autoTileStore.offsetX" @input="onOffsetXInput" />
+					<div class="text">{{ t('components.autoTile-y.label') }}</div><NumberBox id="autoTile-y" min="0" max="255" v-model="autoTileStore.offsetY" @input="onOffsetYInput" />
 				</div>
 			</div>
 			<div class="field-set input pad" id="autoTile-templates-fieldset">

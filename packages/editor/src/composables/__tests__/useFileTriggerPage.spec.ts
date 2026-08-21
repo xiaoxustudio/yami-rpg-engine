@@ -148,9 +148,9 @@ describe('useFileTriggerPage（fileTrigger inspector 页面 composable）', () =
 			}
 		);
 		fileTrigger.target = makeTrigger();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.selector = 'friend';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileTrigger-selector';
-		el.read = () => 'friend';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -164,9 +164,9 @@ describe('useFileTriggerPage（fileTrigger inspector 页面 composable）', () =
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileTrigger.target = makeTrigger();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.hitCount = 5;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileTrigger-hitCount';
-		el.read = () => 5;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

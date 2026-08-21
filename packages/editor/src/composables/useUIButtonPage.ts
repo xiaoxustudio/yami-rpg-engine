@@ -1,7 +1,6 @@
 import '@app/inspector/element-button-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface ButtonForm {
 	display: string;
@@ -140,11 +139,20 @@ export function useUIButtonPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
-			Inspector.uiButton.update(
-				Inspector.uiButton.target,
-				Inspector.getKey(element),
-				read(element)
-			);
+			const key = Inspector.getKey(element);
+			let value: unknown;
+			if (key.startsWith('textEffect-')) {
+				value =
+					form.textEffect[
+						key.slice('textEffect-'.length) as keyof ButtonForm['textEffect']
+					];
+			} else if (/^(normalTint|hoverTint|activeTint)-\d+$/.test(key)) {
+				const [group, index] = key.split('-');
+				value = form[group as 'normalTint' | 'hoverTint' | 'activeTint'][Number(index)];
+			} else {
+				value = (form as Record<string, unknown>)[key];
+			}
+			Inspector.uiButton.update(Inspector.uiButton.target, key, value);
 		}
 		sync();
 	};

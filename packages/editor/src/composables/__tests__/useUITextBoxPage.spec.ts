@@ -114,9 +114,9 @@ describe('useUITextBoxPage（uiTextBox inspector 页面 composable）', () => {
 			(target as unknown as Record<string, unknown>)[key] = value;
 		});
 		uiTextBox.target = makeTextBox();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.maxLength = 32;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiTextBox-maxLength';
-		el.read = () => 32;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -130,9 +130,9 @@ describe('useUITextBoxPage（uiTextBox inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		uiTextBox.target = makeTextBox();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.text = 'Hello';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiTextBox-text';
-		el.read = () => 'Hello';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

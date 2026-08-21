@@ -90,9 +90,9 @@ describe('useFileEquipmentPage（fileEquipment inspector 页面 composable）', 
 			}
 		);
 		fileEquipment.target = makeEquipment();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileEquipment-inherit';
-		el.read = () => 'equipment-2';
+		page.form.inherit = 'equipment-2';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -110,9 +110,9 @@ describe('useFileEquipmentPage（fileEquipment inspector 页面 composable）', 
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileEquipment.target = makeEquipment();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileEquipment-icon';
-		el.read = () => 'icon-2';
+		page.form.icon = 'icon-2';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

@@ -114,9 +114,9 @@ describe('useSceneAnimationPage（sceneAnimation inspector 页面 composable）'
 			}
 		);
 		sceneAnimation.target = makeAnimation();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.name = 'Animation 3';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneAnimation-name';
-		el.read = () => 'Animation 3';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -134,9 +134,9 @@ describe('useSceneAnimationPage（sceneAnimation inspector 页面 composable）'
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		sceneAnimation.target = makeAnimation();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.angle = 90;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'sceneAnimation-angle';
-		el.read = () => 90;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

@@ -76,7 +76,12 @@ export function useUIImagePage() {
 			if (new RegExp('^uiImage-').test(element.id)) {
 				Inspector.uiImage.update(Inspector.uiImage.target, key, read(element));
 			} else {
-				Inspector.uiElement.update(Inspector.uiElement.target, key, read(element));
+				const formKey = key.startsWith('transform-') ? key.slice('transform-'.length) : key;
+				Inspector.uiElement.update(
+					Inspector.uiElement.target,
+					key,
+					(form as Record<string, unknown>)[formKey]
+				);
 			}
 		}
 		sync();

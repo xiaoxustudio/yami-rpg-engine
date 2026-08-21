@@ -88,9 +88,9 @@ describe('useFileStatePage（fileState inspector 页面 composable）', () => {
 			(state as unknown as Record<string, unknown>)[key] = value;
 		});
 		fileState.target = makeState();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileState-inherit';
-		el.read = () => 'state-2';
+		page.form.inherit = 'state-2';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -104,9 +104,9 @@ describe('useFileStatePage（fileState inspector 页面 composable）', () => {
 	it('onParamInput 直接落在控件元素上', () => {
 		const { wrapper, page } = mountPage();
 		fileState.target = makeState();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'fileState-icon';
-		el.read = () => 'icon-2';
+		page.form.icon = 'icon-2';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

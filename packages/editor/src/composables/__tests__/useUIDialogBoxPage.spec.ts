@@ -125,9 +125,9 @@ describe('useUIDialogBoxPage（uiDialogBox inspector 页面 composable）', () =
 			}
 		);
 		uiDialogBox.target = makeDialogBox();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.size = 24;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiDialogBox-size';
-		el.read = () => 24;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -141,9 +141,9 @@ describe('useUIDialogBoxPage（uiDialogBox inspector 页面 composable）', () =
 	it('onParamInput 直接落在控件元素上（effect 字段）', () => {
 		const { wrapper, page } = mountPage();
 		uiDialogBox.target = makeDialogBox();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.effect.color = 'ff0000ff';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiDialogBox-effect-color';
-		el.read = () => 'ff0000ff';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

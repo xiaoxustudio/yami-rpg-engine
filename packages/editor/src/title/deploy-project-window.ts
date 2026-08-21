@@ -1,6 +1,6 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, getFocus, read, write } from '@app/utils/element-utils';
+import { disable, enable, getFocus } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -14,6 +14,7 @@ import { t } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
+import { reactive } from 'vue';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
 const _moduleURL = new URL(import.meta.url);
@@ -30,6 +31,18 @@ const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 type DeploymentState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
 type DeploymentPlatform = 'windows-x64' | 'mac-universal' | 'web';
+
+interface DeploymentForm {
+	platform: string;
+	folder: string;
+	location: string;
+}
+
+export const DeploymentForm = reactive<DeploymentForm>({
+	platform: 'windows-x64',
+	folder: '',
+	location: ''
+});
 
 type DeploymentFileItem = {
 	folder?: boolean;
@@ -72,6 +85,7 @@ interface DeploymentShape {
 	gamedir: string;
 	timer: Timer | null;
 	compress: boolean;
+	form: DeploymentForm;
 	initialize: (() => void) | null;
 	open: DeploymentMethod;
 	check: DeploymentMethod;
@@ -93,6 +107,7 @@ export const Deployment: DeploymentShape = {
 	gamedir: '',
 	timer: null,
 	compress: false,
+	form: DeploymentForm,
 	initialize: null,
 	open: null,
 	check: null,
@@ -123,20 +138,21 @@ Deployment.initialize = function (this: typeof Deployment) {
 
 Deployment.open = function (this: typeof Deployment) {
 	Window.open!('deployment');
-	const write = getElementWriter('deployment');
 	const dialogs = Editor.config!.dialogs!;
 	const location = Path.normalize!(dialogs.deploy!);
-	write('platform', 'windows-x64');
-	write('folder', 'Output');
-	write('location', location);
+	Object.assign(DeploymentForm, {
+		platform: 'windows-x64',
+		folder: 'Output',
+		location: location
+	});
 	getFocus($('#deployment-platform'));
 	this.check!();
 };
 
 Deployment.check = function (this: typeof Deployment) {
-	let folder = read($('#deployment-folder'));
-	const location = read($('#deployment-location'));
-	const platform = read($('#deployment-platform'));
+	let folder = DeploymentForm.folder;
+	const location = DeploymentForm.location;
+	const platform = DeploymentForm.platform;
 	if (platform == 'mac-universal') {
 		folder += '.app';
 	}
@@ -451,7 +467,7 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	Window.open!('copyProgress');
-	const platform = read($('#deployment-platform'));
+	const platform = DeploymentForm.platform;
 	const progressBar = $('#copyProgress-bar');
 	const progressInfo = $('#copyProgress-info');
 	const { extnameToTypeMap } = FolderItem;
@@ -612,12 +628,11 @@ Deployment.folderBeforeinput = function (this: typeof Deployment, event: InputEv
 };
 
 Deployment.folderInput = function (this: typeof Deployment, event: Event) {
-	const el = $('#deployment-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
-	const oldName = read(el);
+	const oldName = DeploymentForm.folder;
 	const newName = oldName.replace(regexp, '');
 	if (oldName !== newName) {
-		write(el, newName);
+		DeploymentForm.folder = newName;
 	}
 	Deployment.check!();
 };
@@ -627,22 +642,21 @@ Deployment.locationInput = function (this: typeof Deployment, event: Event) {
 };
 
 Deployment.chooseClick = function (this: typeof Deployment, event: Event) {
-	const input = $('#deployment-location');
 	File.showOpenDialog!({
-		defaultPath: read(input),
+		defaultPath: DeploymentForm.location,
 		properties: ['openDirectory']
 	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
-			write(input, filePaths[0]);
+			DeploymentForm.location = filePaths[0];
 			Deployment.check!();
 		}
 	});
 };
 
 Deployment.confirm = function (this: typeof Deployment, event: Event) {
-	const platform = read($('#deployment-platform'));
-	const location = read($('#deployment-location'));
-	const folder = read($('#deployment-folder'));
+	const platform = DeploymentForm.platform;
+	const location = DeploymentForm.location;
+	const folder = DeploymentForm.folder;
 	let path = Path.resolve!(location, folder);
 	Window.close!('deployment');
 	if (platform === 'mac-universal') {

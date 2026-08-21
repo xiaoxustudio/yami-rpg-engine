@@ -128,9 +128,9 @@ describe('useUIProgressBarPage（uiProgressBar inspector 页面 composable）', 
 			}
 		);
 		uiProgressBar.target = makeProgressBar();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.progress = 0.5;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiProgressBar-progress';
-		el.read = () => 0.5;
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
@@ -144,9 +144,9 @@ describe('useUIProgressBarPage（uiProgressBar inspector 页面 composable）', 
 	it('onParamInput 直接落在控件元素上（color 字段）', () => {
 		const { wrapper, page } = mountPage();
 		uiProgressBar.target = makeProgressBar();
-		const el = document.createElement('div') as HTMLElement & { read: () => number };
+		page.form.color[1] = 128;
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiProgressBar-color-1';
-		el.read = () => 128;
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

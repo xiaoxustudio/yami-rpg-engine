@@ -72,9 +72,9 @@ describe('useUIContainerPage（uiContainer inspector 页面 composable）', () =
 		);
 		uiContainer.target = {};
 		uiElement.target = {};
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		(page.form as Record<string, unknown>).pointerEvents = 'disabled';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiContainer-pointerEvents';
-		el.read = () => 'disabled';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

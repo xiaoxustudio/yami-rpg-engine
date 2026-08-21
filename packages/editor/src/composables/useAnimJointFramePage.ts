@@ -1,7 +1,6 @@
 import '@app/inspector/animation-bone-frame-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface AnimJointLayerShape {
 	[k: string]: unknown;
@@ -68,7 +67,7 @@ export function useAnimJointFramePage() {
 			Inspector.animJointFrame.update(
 				Inspector.animJointFrame.target,
 				Inspector.getKey(element),
-				read(element)
+				(form as Record<string, unknown>)[Inspector.getKey(element)]
 			);
 		}
 		sync();

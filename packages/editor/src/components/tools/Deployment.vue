@@ -3,16 +3,17 @@
 		<template #title><TitleBar>{{ t('components.deployment.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">{{ t('components.deployment-platform.label') }}</div><SelectBox id="deployment-platform" @input="onPlatformInput" />
+				<div class="text">{{ t('components.deployment-platform.label') }}</div><SelectBox id="deployment-platform" v-model="Deployment.form.platform" @input="onPlatformInput" />
 				<div class="text">{{ t('components.deployment-folder.label') }}</div
 				><TextBox
 					id="deployment-folder"
+					v-model="Deployment.form.folder"
 					@beforeinput="onFolderBeforeinput"
 					@input="onFolderInput"
 				/>
 				<div class="text">{{ t('components.deployment-location-box.label') }}</div>
 				<div class="flex-box" id="deployment-location-box">
-					<TextBox id="deployment-location" @input="onLocationInput" />
+					<TextBox id="deployment-location" v-model="Deployment.form.location" @input="onLocationInput" />
 					<button id="deployment-choose" @click="onChooseClick">…</button>
 				</div>
 				<div class="text">{{ t('components.deployment-compress.label') }}</div>
