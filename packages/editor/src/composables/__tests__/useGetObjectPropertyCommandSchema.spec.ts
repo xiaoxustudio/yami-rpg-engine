@@ -60,12 +60,10 @@ describe('useGetObjectPropertyCommandSchema（getObjectProperty 命令表单 com
 		const wrapper = mount(GetObjectProperty, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		Command.cases.getObjectProperty.customLoad!({
-			variable: { type: 'local', key: 'obj' },
+			variable: { type: 'global', key: 'g' },
 			saveVariable: { type: 'local', key: 'out' },
-			properties: []
+			properties: [{ text: 'x' }, { text: 'y' }]
 		});
-		getControl('getObjectProperty-variable').write({ type: 'global', key: 'g' });
-		getList('getObjectProperty-list').write([{ text: 'x' }, { text: 'y' }]);
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.getObjectProperty.save!();

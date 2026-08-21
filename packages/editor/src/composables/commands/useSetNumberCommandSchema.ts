@@ -119,8 +119,7 @@ export function useSetNumberCommandSchema() {
 		}
 		const operation = (read(document.getElementById('setNumber-operation')) ??
 			form.operation) as string;
-		const operands = (read(document.getElementById('setNumber-operands')) ??
-			form.operands) as SetNumberOperand[];
+		const operands = form.operands as SetNumberOperand[];
 		if (operands.length === 0) {
 			getFocus(document.getElementById('setNumber-operands'));
 			return;

@@ -119,8 +119,8 @@ export function useDownloadFileCommandSchema() {
 		commit({
 			url,
 			method: read(document.getElementById('downloadFile-method')!) ?? form.method,
-			headers: read(document.getElementById('downloadFile-header')!) ?? form.header,
-			data: read(document.getElementById('downloadFile-data')!) ?? form.data,
+			headers: form.header,
+			data: form.data,
 			callback: read(document.getElementById('downloadFile-callback')!) ?? form.callback,
 			rateCallback:
 				read(document.getElementById('downloadFile-rateCallback')!) ?? form.rateCallback,

@@ -7,18 +7,11 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
-
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const mockEventTypes = (): void => {
 	Enum.getMergedItems = vi.fn(() => [
@@ -46,6 +39,7 @@ describe('useRegisterEventCommandSchema (registerEvent target/operation linkage 
 
 	it('insert path: CommandSchema.insert opens registerEvent window and loads default form', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useRegisterEventCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -53,20 +47,21 @@ describe('useRegisterEventCommandSchema (registerEvent target/operation linkage 
 		};
 		CommandSchema.insert(target, 'registerEvent');
 		expect(Window.open).toHaveBeenCalledWith('registerEvent');
-		expect(getControl('registerEvent-target').read()).toBe('global');
-		expect(getControl('registerEvent-operation').read()).toBe('register');
-		expect(getControl('registerEvent-type').read()).toBe('autorun');
+		expect(form.target).toBe('global');
+		expect(form.operation).toBe('register');
+		expect(form.type).toBe('autorun');
 		wrapper.unmount();
 	});
 
 	it('targetWrite/operationWrite/typeWrite linkage: type items per target, priority enabled for key events', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useRegisterEventCommandSchema();
 		Command.cases.registerEvent.targetWrite!({ value: 'global' });
 		const type = document.getElementById('registerEvent-type') as unknown as {
 			dataItems?: Array<{ name: string; value: string }>;
 		};
 		expect(type.dataItems).toHaveLength(2);
-		expect(getControl('registerEvent-type').read()).toBe('keydown');
+		expect(form.type).toBe('keydown');
 		Command.cases.registerEvent.customLoad!({
 			target: 'global',
 			operation: 'register',
@@ -96,6 +91,7 @@ describe('useRegisterEventCommandSchema (registerEvent target/operation linkage 
 
 	it('edit path: CommandSchema.edit maps params to form, actor branch saves without namespace', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useRegisterEventCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -111,7 +107,7 @@ describe('useRegisterEventCommandSchema (registerEvent target/operation linkage 
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('registerEvent');
-		expect(getControl('registerEvent-actor').read()).toEqual({ type: 'player' });
+		expect(form.actor).toEqual({ type: 'player' });
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.registerEvent.save!();
@@ -126,6 +122,7 @@ describe('useRegisterEventCommandSchema (registerEvent target/operation linkage 
 
 	it('save validation: global/unregister with empty tag does not save, reset saves directly', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useRegisterEventCommandSchema();
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.registerEvent.customLoad!({

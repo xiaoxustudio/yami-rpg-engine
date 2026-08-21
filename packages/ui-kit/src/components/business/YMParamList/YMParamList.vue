@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import {
 	addClass,
@@ -51,6 +51,7 @@ interface Props {
 	filter?: string;
 	group?: string;
 	flexible?: boolean;
+	modelValue?: unknown;
 	historyFactory?: (list: ParamListElement) => ParamHistory;
 	menuPopup?: (options: MenuOptions, items: MenuItem[]) => void;
 	localize?: (key: string) => string;
@@ -193,6 +194,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
 	change: [value: unknown];
+	'update:modelValue': [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
@@ -1339,7 +1341,20 @@ onMounted(() => {
 		windowPointermove,
 		on
 	});
-	self.addEventListener('change', () => emit('change', readElement(self)));
+	self.addEventListener('change', () => {
+		const value = readElement(self);
+		emit('change', value);
+		emit('update:modelValue', value);
+	});
+	watch(
+		() => props.modelValue,
+		(value) => {
+			if (value !== undefined && self.object) {
+				write(value as (ParamDataItem | null)[]);
+			}
+		},
+		{ immediate: true }
+	);
 });
 </script>
 

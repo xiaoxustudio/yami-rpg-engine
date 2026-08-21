@@ -1,12 +1,12 @@
-﻿import { getElementReader, getElementWriter } from '@app/utils/dom';
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
-import { getFocus, hide, read, show, write } from '@app/utils/element-utils';
+import { getFocus, hide, show } from '@app/utils/element-utils';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
+import { reactive } from 'vue';
 
 type RegisterEventData = {
 	target: string;
@@ -124,6 +124,17 @@ Command.cases.registerEvent = new CommandSchema({
 let commands: unknown[] | null = null;
 let priorityEnabled = false;
 
+const form = reactive<RegisterEventData>({
+	target: 'global',
+	actor: { type: 'trigger' },
+	element: { type: 'trigger' },
+	operation: 'register',
+	type: 'autorun',
+	priority: false,
+	tag: '',
+	namespace: false
+});
+
 const switchTypeAndTagInput = (): void => {
 	const showElement = (input: HTMLElement) => {
 		show(input.previousElementSibling);
@@ -135,8 +146,8 @@ const switchTypeAndTagInput = (): void => {
 	};
 	const typeInput = document.getElementById('registerEvent-type')!;
 	const tagInput = document.getElementById('registerEvent-tag')!;
-	const target = read(document.getElementById('registerEvent-target'));
-	const operation = read(document.getElementById('registerEvent-operation'));
+	const target = form.target;
+	const operation = form.operation;
 	switch (target) {
 		case 'global':
 			switch (operation) {
@@ -189,9 +200,9 @@ const switchPriority = (): void => {
 		gamepadleftstickchange: true,
 		gamepadrightstickchange: true
 	};
-	const target = read(document.getElementById('registerEvent-target'));
-	const operation = read(document.getElementById('registerEvent-operation'));
-	const type = read(document.getElementById('registerEvent-type'));
+	const target = form.target;
+	const operation = form.operation;
+	const type = form.type;
 	const priority = document.getElementById('registerEvent-priority')!;
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
@@ -206,7 +217,7 @@ const switchPriority = (): void => {
 
 const switchNamespace = (): void => {
 	const namespace = document.getElementById('registerEvent-namespace')!;
-	const operation = read(document.getElementById('registerEvent-operation'));
+	const operation = form.operation;
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);
 		show(namespace);
@@ -220,14 +231,15 @@ const targetWrite = (event: { value: string }): void => {
 	const type = event.value;
 	const elEventType = document.getElementById('registerEvent-type')!;
 	const registerType = 'register_' + type;
-	const eventTypes = Enum.getMergedItems!(
-		EventEditor.types?.[registerType] ?? EventEditor.types?.all,
-		type + '-event'
-	);
+	const source = EventEditor.types?.[registerType] ?? EventEditor.types?.all;
+	if (!source) {
+		return;
+	}
+	const eventTypes = Enum.getMergedItems!(source, type + '-event');
 	switchTypeAndTagInput();
-	elEventType.loadItems(eventTypes);
-	elEventType.createTooltip();
-	write(elEventType, eventTypes[0].value);
+	elEventType?.loadItems?.(eventTypes);
+	elEventType?.createTooltip?.();
+	form.type = eventTypes[0].value;
 };
 
 const operationWrite = (): void => {
@@ -261,36 +273,36 @@ const load = ({
 	tag?: string;
 	commands?: unknown;
 } = {}): void => {
-	const write = getElementWriter('registerEvent');
-	write('target', target);
-	write('actor', actor);
-	write('element', element);
-	write('operation', operation);
-	write('type', type);
-	write('priority', priority);
-	write('namespace', namespace);
-	write('tag', tag);
+	Object.assign(form, {
+		target,
+		actor: actor as RegisterEventData['actor'],
+		element: element as RegisterEventData['element'],
+		operation,
+		type,
+		priority,
+		namespace,
+		tag
+	});
 	commands = children as unknown[];
 	switchNamespace();
 	getFocus(document.getElementById('registerEvent-target'));
 };
 
 const save = (): unknown => {
-	const read = getElementReader('registerEvent');
-	const target = read('target');
-	const operation = read('operation');
-	const type = read('type');
+	const target = form.target;
+	const operation = form.operation;
+	const type = form.type;
 	const children = commands;
-	const namespace = read('namespace');
+	const namespace = form.namespace;
 	switch (target) {
 		case 'global':
 			switch (operation) {
 				case 'register': {
-					let tag = read('tag');
+					let tag = form.tag;
 					if (typeof tag === 'string') {
 						tag = tag.trim();
 					}
-					const priority = priorityEnabled ? read('priority') : false;
+					const priority = priorityEnabled ? form.priority : false;
 					commit({
 						target,
 						operation,
@@ -303,7 +315,7 @@ const save = (): unknown => {
 					break;
 				}
 				case 'unregister': {
-					let tag = read('tag');
+					let tag = form.tag;
 					if (typeof tag === 'string' && (tag = tag.trim()) === '') {
 						return getFocus(document.getElementById('registerEvent-tag'));
 					}
@@ -316,7 +328,7 @@ const save = (): unknown => {
 			}
 			break;
 		case 'actor': {
-			const actor = read('actor');
+			const actor = form.actor;
 			switch (operation) {
 				case 'register':
 					commit({
@@ -338,7 +350,7 @@ const save = (): unknown => {
 			break;
 		}
 		case 'element': {
-			const element = read('element');
+			const element = form.element;
 			switch (operation) {
 				case 'register':
 					commit({
@@ -371,5 +383,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useRegisterEventCommandSchema() {
-	return { load, save, targetWrite, operationWrite, typeWrite };
+	return { form, load, save, targetWrite, operationWrite, typeWrite };
 }

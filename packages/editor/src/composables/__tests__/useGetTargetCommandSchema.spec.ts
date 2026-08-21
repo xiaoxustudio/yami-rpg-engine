@@ -6,18 +6,11 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
-
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const target = {
 	scrollAndResize: vi.fn(),
@@ -37,9 +30,14 @@ describe('useGetTargetCommandSchema（getTarget 命令表单 composable：insert
 		Window.close = vi.fn();
 	});
 
-	it('onMounted loadItems 填充 selector/condition 选项', async () => {
+	const mountWindow = async () => {
 		const wrapper = mount(GetTarget, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		return wrapper;
+	};
+
+	it('onMounted loadItems 填充 selector/condition 选项', async () => {
+		const wrapper = await mountWindow();
 		const selector = document.getElementById('getTarget-selector') as unknown as {
 			dataItems?: Array<{ name: string; value: string }>;
 		};
@@ -51,22 +49,22 @@ describe('useGetTargetCommandSchema（getTarget 命令表单 composable：insert
 		wrapper.unmount();
 	});
 
-	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
-		const wrapper = mount(GetTarget, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('insert 路径：打开窗口并 load 默认 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useGetTargetCommandSchema();
 		CommandSchema.insert(target, 'getTarget');
 		expect(Window.open).toHaveBeenCalledWith('getTarget');
-		expect(getControl('getTarget-actor').read()).toEqual({ type: 'trigger' });
-		expect(getControl('getTarget-selector').read()).toBe('enemy');
-		expect(getControl('getTarget-condition').read()).toBe('max-threat');
-		expect(getControl('getTarget-attribute').read()).toBe('atk');
-		expect(getControl('getTarget-divisor').read()).toBe('atk');
+		expect(form.actor).toEqual({ type: 'trigger' });
+		expect(form.selector).toBe('enemy');
+		expect(form.condition).toBe('max-threat');
+		expect(form.attribute).toBe('atk');
+		expect(form.divisor).toBe('atk');
 		wrapper.unmount();
 	});
 
-	it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
-		const wrapper = mount(GetTarget, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('edit 路径：handler.load 解构 params 到 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useGetTargetCommandSchema();
 		CommandSchema.edit(target, {
 			id: 'getTarget',
 			params: {
@@ -78,24 +76,24 @@ describe('useGetTargetCommandSchema（getTarget 命令表单 composable：insert
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('getTarget');
-		expect(getControl('getTarget-selector').read()).toBe('team');
-		expect(getControl('getTarget-condition').read()).toBe('max-attribute-ratio');
-		expect(getControl('getTarget-attribute').read()).toBe('atk');
-		expect(getControl('getTarget-divisor').read()).toBe('def');
+		expect(form.selector).toBe('team');
+		expect(form.condition).toBe('max-attribute-ratio');
+		expect(form.attribute).toBe('atk');
+		expect(form.divisor).toBe('def');
 		wrapper.unmount();
 	});
 
-	it('save 路径：用户改控件后经 Command.cases.getTarget.save 保存', async () => {
-		const wrapper = mount(GetTarget, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('save 路径：用户改 form 后经 Command.cases.getTarget.save 保存', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useGetTargetCommandSchema();
 		Command.cases.getTarget.customLoad!({
 			actor: { type: 'trigger' },
 			selector: 'enemy',
 			condition: 'max-threat'
 		});
-		getControl('getTarget-selector').input('friend');
-		getControl('getTarget-condition').input('min-attribute-value');
-		getControl('getTarget-attribute').input('def');
+		form.selector = 'friend';
+		form.condition = 'min-attribute-value';
+		form.attribute = 'def';
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.getTarget.save!();
@@ -109,8 +107,8 @@ describe('useGetTargetCommandSchema（getTarget 命令表单 composable：insert
 	});
 
 	it('save 路径：attribute 为空校验失败不保存', async () => {
-		const wrapper = mount(GetTarget, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+		const wrapper = await mountWindow();
+		const { form } = useGetTargetCommandSchema();
 		Command.cases.getTarget.customLoad!({
 			actor: { type: 'trigger' },
 			selector: 'enemy',

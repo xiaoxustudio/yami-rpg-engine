@@ -1,4 +1,4 @@
-﻿import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
+﻿import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
@@ -7,6 +7,11 @@ const IfBranch = useIfBranchSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';
+
+export interface IfForm {
+	branches?: unknown[];
+	else: boolean;
+}
 
 Command.cases.if = new CommandSchema({
 	name: 'if',
@@ -49,7 +54,9 @@ Command.cases.if = new CommandSchema({
 	}
 });
 
-const form = reactive<Record<string, unknown>>({});
+const form = reactive<IfForm>({
+	else: false
+});
 let elseCommands: unknown[] | null = null;
 
 const load = ({
@@ -59,20 +66,20 @@ const load = ({
 	branches?: unknown[];
 	elseCommands?: unknown;
 } = {}): void => {
-	form.branches = branches.slice();
-	form.else = !!value;
-	write(document.getElementById('if-branches'), form.branches);
-	write(document.getElementById('if-else'), form.else);
+	Object.assign(form, {
+		branches: branches.slice(),
+		else: !!value
+	});
 	elseCommands = value as unknown[] | null;
 	getFocus(document.getElementById('if-branches'));
 };
 
 const save = (): unknown => {
-	const branches = (read(document.getElementById('if-branches')) ?? form.branches) as unknown[];
+	const branches = form.branches ?? [];
 	if (branches.length === 0) {
 		return getFocus(document.getElementById('if-branches'));
 	}
-	switch (read(document.getElementById('if-else')) ?? form.else) {
+	switch (form.else) {
 		case true: {
 			const commands = elseCommands ?? [];
 			commit({ branches, elseCommands: commands });
@@ -86,7 +93,6 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	elseCommands = null;
-	clear(document.getElementById('if-branches'));
 };
 
 const schema = Command.cases.if;
@@ -95,5 +101,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useIfCommandSchema() {
-	return { load, save, windowClosed };
+	return { form, load, save, windowClosed };
 }

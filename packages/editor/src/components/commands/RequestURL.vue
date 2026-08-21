@@ -3,10 +3,10 @@
 	<template #title><TitleBar>{{ t('components.requestURL.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">URL</div><StringVar id="requestURL-url" v-model="form.url" /> <div class="text">Header</div
-			><ParamList id="requestURL-header" /> <div class="text">Method</div
+			<div class="text">URL</div			><StringVar id="requestURL-url" v-model="form.url" /> <div class="text">Header</div
+			><ParamList id="requestURL-header" v-model="form.headers" /> <div class="text">Method</div
 			><SelectBox id="requestURL-method" v-model="form.method" /> <div class="text">Data</div
-			><ParamList id="requestURL-data" /> <div class="text">CallBack</div
+			><ParamList id="requestURL-data" v-model="form.data" /> <div class="text">CallBack</div
 			><CustomBox id="requestURL-callback" type="file" filter="event" @input="onCallback" />
 		</div>
 	

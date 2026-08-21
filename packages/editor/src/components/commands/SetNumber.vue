@@ -10,7 +10,7 @@
 					filter="writable-number"
 					@input="onVariable"
 				/>
-				<div class="text">Expression</div><ParamList id="setNumber-operands" />
+				<div class="text">Expression</div><ParamList id="setNumber-operands" v-model="form.operands" />
 			</div>
 		
 	</WindowFrame>

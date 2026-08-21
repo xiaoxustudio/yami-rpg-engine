@@ -40,13 +40,16 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
 	write: [value: unknown];
 	input: [value: unknown];
+	'update:modelValue': [value: unknown];
 }>();
 
 const onWrite = (value: unknown) => {
 	emit('write', value);
+	emit('update:modelValue', value);
 };
 const onInput = (value: unknown) => {
 	emit('input', value);
+	emit('update:modelValue', value);
 };
 
 const getters = customBoxOptions.getters ?? null;

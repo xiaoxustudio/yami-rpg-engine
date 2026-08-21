@@ -100,7 +100,7 @@ export function useUploadFileCommandSchema() {
 			method: read(document.getElementById('uploadFile-method')) ?? form.method,
 			path,
 			field: read(document.getElementById('uploadFile-field')) ?? form.field,
-			headers: read(document.getElementById('uploadFile-header')) ?? form.header,
+			headers: form.header,
 			callback: read(document.getElementById('uploadFile-callback')) ?? form.callback,
 			rateCallback:
 				read(document.getElementById('uploadFile-rateCallback')) ?? form.rateCallback

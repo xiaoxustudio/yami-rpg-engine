@@ -1,4 +1,4 @@
-﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
 
@@ -8,6 +8,12 @@ import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';
+
+export interface SwitchForm {
+	variable: { type: string; key: string };
+	branches?: unknown[];
+	default: boolean;
+}
 
 Command.cases.switch = new CommandSchema({
 	name: 'switch',
@@ -56,7 +62,10 @@ Command.cases.switch = new CommandSchema({
 	}
 });
 
-const form = reactive<Record<string, unknown>>({});
+const form = reactive<SwitchForm>({
+	variable: { type: 'local', key: '' },
+	default: false
+});
 let defaultCommands: unknown[] | null = null;
 
 const load = ({
@@ -68,27 +77,25 @@ const load = ({
 	branches?: unknown[];
 	defaultCommands?: unknown;
 } = {}): void => {
-	form.variable = variable;
-	form.branches = branches.slice();
-	form.default = !!value;
-	write(document.getElementById('switch-variable'), form.variable);
-	write(document.getElementById('switch-branches'), form.branches);
-	write(document.getElementById('switch-default'), form.default);
+	Object.assign(form, {
+		variable,
+		branches: branches.slice(),
+		default: !!value
+	});
 	defaultCommands = value as unknown[] | null;
 	getFocus(document.getElementById('switch-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read(document.getElementById('switch-variable')) ?? form.variable;
+	const variable = form.variable;
 	if (VariableGetter.isNone!(variable)) {
 		return getFocus(document.getElementById('switch-variable'));
 	}
-	const branches = (read(document.getElementById('switch-branches')) ??
-		form.branches) as unknown[];
+	const branches = form.branches ?? [];
 	if (branches.length === 0) {
 		return getFocus(document.getElementById('switch-branches'));
 	}
-	switch (read(document.getElementById('switch-default')) ?? form.default) {
+	switch (form.default) {
 		case true: {
 			const commands = defaultCommands ?? [];
 			commit({ variable, branches, defaultCommands: commands });
@@ -102,7 +109,6 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	defaultCommands = null;
-	clear(document.getElementById('switch-branches'));
 };
 
 const schema = Command.cases.switch;
@@ -111,5 +117,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useSwitchCommandSchema() {
-	return { load, save, windowClosed };
+	return { form, load, save, windowClosed };
 }

@@ -1,4 +1,4 @@
-﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
+﻿import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -67,30 +67,24 @@ const load = ({
 	form.end = end;
 	form.easingId = easingId;
 	form.duration = duration;
-	write(document.getElementById('transition-variable'), form.variable);
-	write(document.getElementById('transition-start'), form.start);
-	write(document.getElementById('transition-end'), form.end);
-	write(document.getElementById('transition-easingId'), form.easingId);
-	write(document.getElementById('transition-duration'), form.duration);
 	commands = children as unknown[];
 	getFocus(document.getElementById('transition-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read(document.getElementById('transition-variable')) ?? form.variable;
+	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
 		return getFocus(document.getElementById('transition-variable'));
 	}
-	const duration = (read(document.getElementById('transition-duration')) ??
-		form.duration) as number;
+	const duration = form.duration as number;
 	if (duration === 0) {
 		return getFocus(document.getElementById('transition-duration'), 'all');
 	}
 	commit({
 		variable,
-		start: read(document.getElementById('transition-start')) ?? form.start,
-		end: read(document.getElementById('transition-end')) ?? form.end,
-		easingId: read(document.getElementById('transition-easingId')) ?? form.easingId,
+		start: form.start,
+		end: form.end,
+		easingId: form.easingId,
 		duration,
 		commands
 	});
@@ -111,5 +105,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useTransitionCommandSchema() {
-	return { load, save, open, windowClosed };
+	return { form, load, save, open, windowClosed };
 }

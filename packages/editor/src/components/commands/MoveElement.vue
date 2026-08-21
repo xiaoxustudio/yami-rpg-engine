@@ -4,7 +4,7 @@
 		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="moveElement-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="moveElement-properties" />
+				<div class="text">Properties</div><ParamList id="moveElement-properties" v-model="form.properties" />
 				<div class="text">Easing</div><SelectBox id="moveElement-easingId" name="easing" v-model="form.easingId" />
 				<div class="text">Duration</div
 				><NumberBox

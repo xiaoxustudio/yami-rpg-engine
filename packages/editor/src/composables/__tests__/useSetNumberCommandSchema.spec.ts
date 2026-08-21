@@ -97,13 +97,14 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 
 	it('save 路径：用户改控件后经 Command.cases.setNumber.save 保存', async () => {
 		const { commandWrapper, operandWrapper } = await mountAll();
+		const { form } = useSetNumberCommandSchema();
 		Command.cases.setNumber.customLoad!({
 			variable: { type: 'local', key: 'foo' },
 			operation: 'add',
 			operands: [{ operation: 'add', type: 'constant', value: 1 }]
 		});
 		getControl('setNumber-variable').write({ type: 'global', key: 'bar' });
-		getList('setNumber-operands').write([{ operation: 'add', type: 'constant', value: 2 }]);
+		form.operands = [{ operation: 'add', type: 'constant', value: 2 }];
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setNumber.save!();
@@ -133,12 +134,13 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 
 	it('save 路径：空 operands 校验失败不保存', async () => {
 		const { commandWrapper, operandWrapper } = await mountAll();
+		const { form } = useSetNumberCommandSchema();
 		Command.cases.setNumber.customLoad!({
 			variable: { type: 'local', key: 'foo' },
 			operation: 'set',
 			operands: [{ operation: 'add', type: 'constant', value: 0 }]
 		});
-		getList('setNumber-operands').write([]);
+		form.operands = [];
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setNumber.save!();

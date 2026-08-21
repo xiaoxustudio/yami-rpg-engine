@@ -5,18 +5,11 @@ import SetInventory from '@app/components/commands/SetInventory.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
-
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const target = {
 	scrollAndResize: vi.fn(),
@@ -31,9 +24,14 @@ describe('useSetInventoryCommandSchema（setInventory 命令表单 composable：
 		Window.close = vi.fn();
 	});
 
-	it('onMounted loadItems 填充 operation 选项', async () => {
+	const mountWindow = async () => {
 		const wrapper = mount(SetInventory, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		return wrapper;
+	};
+
+	it('onMounted loadItems 填充 operation 选项', async () => {
+		const wrapper = await mountWindow();
 		const operation = document.getElementById('setInventory-operation') as unknown as {
 			dataItems?: Array<{ name: string; value: string }>;
 		};
@@ -41,23 +39,23 @@ describe('useSetInventoryCommandSchema（setInventory 命令表单 composable：
 		wrapper.unmount();
 	});
 
-	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
-		const wrapper = mount(SetInventory, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('insert 路径：打开窗口并 load 默认 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useSetInventoryCommandSchema();
 		CommandSchema.insert(target, 'setInventory');
 		expect(Window.open).toHaveBeenCalledWith('setInventory');
-		expect(getControl('setInventory-actor').read()).toEqual({ type: 'trigger' });
-		expect(getControl('setInventory-operation').read()).toBe('increase-money');
-		expect(getControl('setInventory-money').read()).toBe(1);
-		expect(getControl('setInventory-quantity').read()).toBe(1);
-		expect(getControl('setInventory-order1').read()).toBe(0);
-		expect(getControl('setInventory-order2').read()).toBe(1);
+		expect(form.actor).toEqual({ type: 'trigger' });
+		expect(form.operation).toBe('increase-money');
+		expect(form.money).toBe(1);
+		expect(form.quantity).toBe(1);
+		expect(form.order1).toBe(0);
+		expect(form.order2).toBe(1);
 		wrapper.unmount();
 	});
 
-	it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
-		const wrapper = mount(SetInventory, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('edit 路径：handler.load 解构 params 到 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useSetInventoryCommandSchema();
 		CommandSchema.edit(target, {
 			id: 'setInventory',
 			params: {
@@ -68,23 +66,23 @@ describe('useSetInventoryCommandSchema（setInventory 命令表单 composable：
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('setInventory');
-		expect(getControl('setInventory-operation').read()).toBe('swap');
-		expect(getControl('setInventory-order1').read()).toBe(3);
-		expect(getControl('setInventory-order2').read()).toBe(7);
+		expect(form.operation).toBe('swap');
+		expect(form.order1).toBe(3);
+		expect(form.order2).toBe(7);
 		wrapper.unmount();
 	});
 
-	it('save 路径：用户改控件后经 Command.cases.setInventory.save 保存', async () => {
-		const wrapper = mount(SetInventory, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('save 路径：用户改 form 后经 Command.cases.setInventory.save 保存', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useSetInventoryCommandSchema();
 		Command.cases.setInventory.customLoad!({
 			actor: { type: 'trigger' },
 			operation: 'increase-money',
 			money: 1
 		});
-		getControl('setInventory-operation').input('increase-items');
-		getControl('setInventory-itemId').write('item1');
-		getControl('setInventory-quantity').write(5);
+		form.operation = 'increase-items';
+		form.itemId = 'item1';
+		form.quantity = 5;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setInventory.save!();
@@ -98,8 +96,8 @@ describe('useSetInventoryCommandSchema（setInventory 命令表单 composable：
 	});
 
 	it('save 路径：increase-items 空 itemId 校验失败不保存', async () => {
-		const wrapper = mount(SetInventory, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+		const wrapper = await mountWindow();
+		const { form } = useSetInventoryCommandSchema();
 		Command.cases.setInventory.customLoad!({
 			actor: { type: 'trigger' },
 			operation: 'increase-items',

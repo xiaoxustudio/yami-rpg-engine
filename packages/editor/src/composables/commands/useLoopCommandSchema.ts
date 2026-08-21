@@ -56,7 +56,7 @@ export function useLoopCommandSchema() {
 	const onSave = (): void => {
 		commit({
 			mode: read(document.getElementById('loop-mode')!) ?? form.mode,
-			conditions: read(document.getElementById('loop-conditions')!) ?? form.conditions,
+			conditions: form.conditions,
 			commands
 		});
 	};

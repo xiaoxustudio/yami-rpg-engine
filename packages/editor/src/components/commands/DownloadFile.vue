@@ -3,10 +3,10 @@
 	<template #title><TitleBar>{{ t('components.downloadFile.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">URL</div><StringVar id="downloadFile-url" v-model="form.url" /> <div class="text">Header</div
-			><ParamList id="downloadFile-header" /> <div class="text">Method</div
+			<div class="text">URL</div			><StringVar id="downloadFile-url" v-model="form.url" /> <div class="text">Header</div
+			><ParamList id="downloadFile-header" v-model="form.header" /> <div class="text">Method</div
 			><SelectBox id="downloadFile-method" v-model="form.method" /> <div class="text">Data</div
-			><ParamList id="downloadFile-data" /> <div class="text">CallBack</div
+			><ParamList id="downloadFile-data" v-model="form.data" /> <div class="text">CallBack</div
 			><CustomBox id="downloadFile-callback" type="file" filter="event" @input="onCallback" />
 			<div class="text">RateCallBack</div
 			><CustomBox id="downloadFile-rateCallback" type="file" filter="event" @input="onRateCallback" />

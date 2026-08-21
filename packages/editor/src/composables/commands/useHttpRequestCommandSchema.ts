@@ -134,8 +134,8 @@ export function useHttpRequestCommandSchema() {
 		commit({
 			url,
 			method: read(document.getElementById('httpRequest-method')!) ?? form.method,
-			headers: read(document.getElementById('httpRequest-header')!) ?? form.headers,
-			data: read(document.getElementById('httpRequest-data')!) ?? form.data,
+			headers: form.headers,
+			data: form.data,
 			callback: read(document.getElementById('httpRequest-callback')!) ?? form.callback,
 			timeout: timeout === '' ? '' : Number(timeout),
 			responseType:

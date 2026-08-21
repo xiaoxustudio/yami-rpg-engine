@@ -5,6 +5,7 @@ import ForEach from '@app/components/commands/ForEach.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
+import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -47,13 +48,14 @@ describe('useForEachCommandSchema (forEach command insert/edit/save paths)', () 
 		wrapper.unmount();
 	});
 
-	it('edit path: CommandSchema.edit maps params to form, customSave saves via getForm with commands', async () => {
+	it('edit path: CommandSchema.edit maps params to form, customSave saves via form with commands', async () => {
 		const wrapper = await mountWindow();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
 			save: vi.fn()
 		};
+		const { form } = useForEachCommandSchema();
 		CommandSchema.edit(target, {
 			id: 'forEach',
 			params: {
@@ -63,10 +65,11 @@ describe('useForEachCommandSchema (forEach command insert/edit/save paths)', () 
 				commands: [{ id: 'comment' }]
 			}
 		});
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('forEach');
-		expect(getControl('forEach-list').read()).toEqual({ type: 'local', key: 'items' });
-		expect(getControl('forEach-variable').read()).toEqual({ type: 'local', key: 'item' });
-		getControl('forEach-variable').input({ type: 'local', key: 'elem' });
+		expect(form.list).toEqual({ type: 'local', key: 'items' });
+		expect(form.variable).toEqual({ type: 'local', key: 'item' });
+		form.variable = { type: 'local', key: 'elem' };
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.forEach.save!();

@@ -1,4 +1,4 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -179,44 +179,28 @@ const load = (params: Record<string, unknown> = {}): void => {
 	document.getElementById('getActor-attribute')?.loadItems?.(attrItems);
 	document.getElementById('getActor-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), { ...params, selector, activation });
-	write(document.getElementById('getActor-variable'), form.variable);
-	write(document.getElementById('getActor-position'), form.position);
-	write(document.getElementById('getActor-area'), form.area);
-	write(document.getElementById('getActor-size'), form.size);
-	write(document.getElementById('getActor-radius'), form.radius);
-	write(document.getElementById('getActor-selector'), form.selector);
-	write(document.getElementById('getActor-teamId'), form.teamId);
-	write(document.getElementById('getActor-condition'), form.condition);
-	write(document.getElementById('getActor-attribute'), form.attribute);
-	write(document.getElementById('getActor-divisor'), form.divisor);
-	write(document.getElementById('getActor-activation'), form.activation);
-	write(document.getElementById('getActor-exclusion'), form.exclusion);
-	write(document.getElementById('getActor-exclusionActor'), form.exclusionActor);
-	write(document.getElementById('getActor-exclusionTeamId'), form.exclusionTeamId);
 	getFocus(document.getElementById('getActor-variable'));
 };
 
 const save = (): void => {
-	const variable = read(document.getElementById('getActor-variable')) ?? form.variable;
+	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
 		getFocus(document.getElementById('getActor-variable'));
 		return;
 	}
-	const position = read(document.getElementById('getActor-position')) ?? form.position;
-	const area = read(document.getElementById('getActor-area')) ?? form.area;
-	const size = read(document.getElementById('getActor-size')) ?? form.size;
-	const radius = read(document.getElementById('getActor-radius')) ?? form.radius;
-	const selector = read(document.getElementById('getActor-selector')) ?? form.selector;
-	const teamId = read(document.getElementById('getActor-teamId')) ?? form.teamId;
-	const condition = read(document.getElementById('getActor-condition')) ?? form.condition;
-	const attribute = read(document.getElementById('getActor-attribute')) ?? form.attribute;
-	const divisor = read(document.getElementById('getActor-divisor')) ?? form.divisor;
-	const activation = read(document.getElementById('getActor-activation')) ?? form.activation;
-	const exclusion = read(document.getElementById('getActor-exclusion')) ?? form.exclusion;
-	const exclusionActor =
-		read(document.getElementById('getActor-exclusionActor')) ?? form.exclusionActor;
-	const exclusionTeamId =
-		read(document.getElementById('getActor-exclusionTeamId')) ?? form.exclusionTeamId;
+	const position = form.position;
+	const area = form.area;
+	const size = form.size;
+	const radius = form.radius;
+	const selector = form.selector;
+	const teamId = form.teamId;
+	const condition = form.condition;
+	const attribute = form.attribute;
+	const divisor = form.divisor;
+	const activation = form.activation;
+	const exclusion = form.exclusion;
+	const exclusionActor = form.exclusionActor;
+	const exclusionTeamId = form.exclusionTeamId;
 	let params1;
 	let params2;
 	let params3;
@@ -286,5 +270,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useGetActorCommandSchema() {
-	return { load, save };
+	return { form, load, save };
 }

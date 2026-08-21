@@ -5,7 +5,7 @@
 		<div class="grid-box">
 			<div class="text">Variable</div
 			><CustomBox id="switch-variable" type="variable" filter="all" v-model="form.variable" />
-			<div class="text">Branches</div><ParamList id="switch-branches" />
+			<div class="text">Branches</div><ParamList id="switch-branches" v-model="form.branches" />
 		</div>
 		<CheckBox id="switch-default" v-model="form.default" class="standard"
 			><div class="text" id="switch-default-label">Default</div></CheckBox
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
@@ -34,12 +34,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const { t } = useI18n();
 
-const { save, windowClosed } = useSwitchCommandSchema();
-
-const form = reactive({
-	variable: { type: 'local', key: '' },
-	default: false
-});
+const { form, save, windowClosed } = useSwitchCommandSchema();
 
 const onConfirm = () => {
 	save();

@@ -1,4 +1,4 @@
-﻿import { getFocus, read } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
@@ -49,18 +49,17 @@ export function useMoveElementCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const properties =
-			read(document.getElementById('moveElement-properties')!) ?? form.properties;
+		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
 			getFocus(document.getElementById('moveElement-properties')!);
 			return;
 		}
 		commit({
-			element: read(document.getElementById('moveElement-element')!) ?? form.element,
+			element: form.element,
 			properties,
-			easingId: read(document.getElementById('moveElement-easingId')!) ?? form.easingId,
-			duration: read(document.getElementById('moveElement-duration')!) ?? form.duration,
-			wait: read(document.getElementById('moveElement-wait')!) ?? form.wait
+			easingId: form.easingId,
+			duration: form.duration,
+			wait: form.wait
 		});
 	};
 	Command.cases.moveElement.customSave = onSave;

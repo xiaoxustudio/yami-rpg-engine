@@ -5,8 +5,8 @@
 		<div class="grid-box">
 			<div class="text">URL</div><StringVar id="httpRequest-url" v-model="form.url" /> <div class="text">Method</div
 			><SelectBox id="httpRequest-method" v-model="form.method" /> <div class="text">Header</div
-			><ParamList id="httpRequest-header" /> <div class="text">Data</div
-			><ParamList id="httpRequest-data" /> <div class="text">TimeOut</div
+			><ParamList id="httpRequest-header" v-model="form.headers" /> <div class="text">Data</div
+			><ParamList id="httpRequest-data" v-model="form.data" /> <div class="text">TimeOut</div
 			><NumberBox id="httpRequest-timeout" v-model="form.timeout" /> <div class="text">ResponseType</div
 			><SelectBox id="httpRequest-responseType" v-model="form.responseType" /> <div class="text">WithCredentials</div
 			><CheckBox class="standard" id="httpRequest-withCredentials" v-model="form.withCredentials" />

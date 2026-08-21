@@ -9,6 +9,7 @@ import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSch
 
 const SwitchBranch = useSwitchBranchSchema();
 const SwitchCondition = useSwitchConditionSchema();
+import { useSwitchCommandSchema } from '@app/composables/commands/useSwitchCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -78,6 +79,7 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 			join: (separator?: string) => words.join(separator ?? '')
 		} as never;
 		words.length = 0;
+		useSwitchCommandSchema().form.branches = undefined;
 	});
 
 	const mountAll = async () => {
@@ -158,6 +160,7 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('switch');
+		await commandWrapper.vm.$nextTick();
 		const list = getList('switch-branches');
 		expect(list.read()).toHaveLength(2);
 		list.select(1);
@@ -165,6 +168,7 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 		expect(Window.open).toHaveBeenCalledWith('switch-branch');
 		getList('switch-branch-conditions').write([makeCondition(8)]);
 		SwitchBranch.confirm!(new Event('click'));
+		await commandWrapper.vm.$nextTick();
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.switch.save!();

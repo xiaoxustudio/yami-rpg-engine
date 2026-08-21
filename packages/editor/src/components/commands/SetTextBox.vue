@@ -4,7 +4,7 @@
 		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setTextBox-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setTextBox-properties" />
+				<div class="text">Properties</div><ParamList id="setTextBox-properties" v-model="form.properties" />
 			</div>
 		
 	</WindowFrame>

@@ -6,18 +6,11 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useCastSkillCommandSchema } from '@app/composables/commands/useCastSkillCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
-
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const target = {
 	scrollAndResize: vi.fn(),
@@ -34,9 +27,14 @@ describe('useCastSkillCommandSchema（castSkill 命令表单 composable：insert
 		Window.close = vi.fn();
 	});
 
-	it('onMounted loadItems 填充 mode/wait 选项', async () => {
+	const mountWindow = async () => {
 		const wrapper = mount(CastSkill, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		return wrapper;
+	};
+
+	it('onMounted loadItems 填充 mode/wait 选项', async () => {
+		const wrapper = await mountWindow();
 		const mode = document.getElementById('castSkill-mode') as unknown as {
 			dataItems?: Array<{ name: string; value: string }>;
 		};
@@ -48,21 +46,21 @@ describe('useCastSkillCommandSchema（castSkill 命令表单 composable：insert
 		wrapper.unmount();
 	});
 
-	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
-		const wrapper = mount(CastSkill, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('insert 路径：打开窗口并 load 默认 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useCastSkillCommandSchema();
 		CommandSchema.insert(target, 'castSkill');
 		expect(Window.open).toHaveBeenCalledWith('castSkill');
-		expect(getControl('castSkill-actor').read()).toEqual({ type: 'trigger' });
-		expect(getControl('castSkill-mode').read()).toBe('by-key');
-		expect(getControl('castSkill-key').read()).toBe('key1');
-		expect(getControl('castSkill-wait').read()).toBe(false);
+		expect(form.actor).toEqual({ type: 'trigger' });
+		expect(form.mode).toBe('by-key');
+		expect(form.key).toBe('key1');
+		expect(form.wait).toBe(false);
 		wrapper.unmount();
 	});
 
-	it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
-		const wrapper = mount(CastSkill, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('edit 路径：handler.load 解构 params 到 form', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useCastSkillCommandSchema();
 		CommandSchema.edit(target, {
 			id: 'castSkill',
 			params: {
@@ -73,24 +71,24 @@ describe('useCastSkillCommandSchema（castSkill 命令表单 composable：insert
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('castSkill');
-		expect(getControl('castSkill-mode').read()).toBe('by-variable');
-		expect(getControl('castSkill-keyVar').read()).toBe('var1');
-		expect(getControl('castSkill-wait').read()).toBe(true);
+		expect(form.mode).toBe('by-variable');
+		expect(form.keyVar).toBe('var1');
+		expect(form.wait).toBe(true);
 		wrapper.unmount();
 	});
 
-	it('save 路径：用户改控件后经 Command.cases.castSkill.save 保存', async () => {
-		const wrapper = mount(CastSkill, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
+	it('save 路径：用户改 form 后经 Command.cases.castSkill.save 保存', async () => {
+		const wrapper = await mountWindow();
+		const { form } = useCastSkillCommandSchema();
 		Command.cases.castSkill.customLoad!({
 			actor: { type: 'trigger' },
 			mode: 'by-key',
 			key: 'key1',
 			wait: false
 		});
-		getControl('castSkill-mode').input('by-skill');
-		getControl('castSkill-skill').input({ type: 'skill' });
-		getControl('castSkill-wait').input(true);
+		form.mode = 'by-skill';
+		form.skill = { type: 'skill' };
+		form.wait = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.castSkill.save!();

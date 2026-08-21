@@ -1,11 +1,12 @@
-﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { $, getElementReader } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
+import { reactive } from 'vue';
 
 export type ObjectPropertyItem = { text: string };
 
@@ -75,14 +76,19 @@ Command.cases.getObjectProperty = new CommandSchema({
 	}
 });
 
+export interface SetObjectPropertyForm {
+	variable: { type: string; key: string };
+	valueVariable: { type: string; key: string };
+	list?: ObjectPropertyItem[];
+}
+
+const setForm = reactive<SetObjectPropertyForm>({
+	variable: { type: 'local', key: '' },
+	valueVariable: { type: 'local', key: '' }
+});
+
 Command.cases.setObjectProperty = new CommandSchema({
 	name: 'setObjectProperty',
-	onInitialize() {
-		$('#setObjectProperty-list')?.bind?.(IndexBind);
-		$('#setObjectProperty')?.on?.('closed', () => {
-			clear($('#setObjectProperty-list'));
-		});
-	},
 	customParse({ variable, valueVariable, properties }: SetObjectPropertyCommandData) {
 		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of properties) {
@@ -103,25 +109,19 @@ Command.cases.setObjectProperty = new CommandSchema({
 		valueVariable = { type: 'local', key: '' },
 		properties = []
 	}) {
-		write($('#setObjectProperty-value-variable'), valueVariable);
-		write($('#setObjectProperty-variable'), variable);
+		Object.assign(setForm, { variable, valueVariable, list: properties });
 		getFocus($('#setObjectProperty-variable'));
-		const elementWriter = getElementWriter('setObjectProperty');
-		elementWriter('list', properties);
 	},
 	customSave() {
-		const elVariable = $('#setObjectProperty-variable');
-		const variable = read(elVariable);
+		const variable = setForm.variable;
 		if (VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
+			return getFocus($('#setObjectProperty-variable'));
 		}
-		const elvalueVariable = $('#setObjectProperty-value-variable');
-		const valueVariable = read(elvalueVariable);
+		const valueVariable = setForm.valueVariable;
 		if (VariableGetter.isNone!(valueVariable)) {
-			return getFocus(elvalueVariable);
+			return getFocus($('#setObjectProperty-value-variable'));
 		}
-		const elementReader = getElementReader('setObjectProperty');
-		const properties = elementReader('list');
+		const properties = setForm.list ?? [];
 		if (properties.length === 0) {
 			return getFocus($('#setObjectProperty-list'));
 		}
@@ -148,8 +148,7 @@ export function useGetObjectPropertyCommandSchema() {
 			getFocus(document.getElementById('getObjectProperty-save-variable'));
 			return;
 		}
-		const properties =
-			read(document.getElementById('getObjectProperty-list')) ?? form.properties;
+		const properties = form.properties as ObjectPropertyItem[];
 		if (properties.length === 0) {
 			getFocus(document.getElementById('getObjectProperty-list'));
 			return;
@@ -158,4 +157,13 @@ export function useGetObjectPropertyCommandSchema() {
 	};
 	Command.cases.getObjectProperty.customSave = onSave;
 	return { form, save: onSave, load };
+}
+
+export function useSetObjectPropertyCommandSchema() {
+	const load = (params: Record<string, unknown>): void => {
+		Command.cases.setObjectProperty.load!(params);
+	};
+	const save = (): unknown => Command.cases.setObjectProperty.save!();
+	Command.cases.setObjectProperty.onInitialize = (): void => {};
+	return { form: setForm, load, save };
 }

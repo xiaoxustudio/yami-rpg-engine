@@ -90,15 +90,12 @@ describe('useRequestURLCommandSchema（requestURL 命令表单 composable：inse
 		const wrapper = mount(RequestURL, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		Command.cases.requestURL.customLoad!({
-			url: '',
-			method: 'GET',
-			headers: [],
+			url: 'https://example.com',
+			method: 'PUT',
+			headers: [{ key: 'k', value: 'v' }],
 			data: [],
 			callback: ''
 		});
-		getControl('requestURL-url').write('https://example.com');
-		getControl('requestURL-method').input('PUT');
-		getList('requestURL-header').write([{ key: 'k', value: 'v' }]);
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.requestURL.save!();

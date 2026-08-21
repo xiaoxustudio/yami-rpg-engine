@@ -3,7 +3,7 @@ import { Token } from '@app/commands/token.ts';
 import { DialogBoxProperty } from '@app/commands/property-window/set-dialog-property-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setDialogBox = new CommandSchema({
@@ -38,14 +38,13 @@ export function useSetDialogBoxCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const properties =
-			read(document.getElementById('setDialogBox-properties')) ?? form.properties;
+		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
 			getFocus(document.getElementById('setDialogBox-properties'));
 			return;
 		}
 		commit({
-			element: read(document.getElementById('setDialogBox-element')) ?? form.element,
+			element: form.element,
 			properties
 		});
 	};

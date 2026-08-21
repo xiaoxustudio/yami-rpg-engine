@@ -8,15 +8,17 @@
 				id="getActor-variable"
 				type="variable"
 				filter="object"
+				v-model="form.variable"
 			/><div class="text">Position</div
-			><CustomBox id="getActor-position" type="position" /><div class="text">Area</div
-			><SelectBox id="getActor-area" /><div class="text">Size</div
+			><CustomBox id="getActor-position" type="position" v-model="form.position" /><div class="text">Area</div
+			><SelectBox id="getActor-area" v-model="form.area" /><div class="text">Size</div
 			><NumberVar
 				id="getActor-size"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
+				v-model="form.size"
 			/><div class="text">Radius</div
 			><NumberVar
 				id="getActor-radius"
@@ -24,26 +26,28 @@
 				max="256"
 				decimals="4"
 				unit="tile"
+				v-model="form.radius"
 			 /><div class="text">Selector</div
-			><SelectBox id="getActor-selector" /><div class="text">Team</div
-			><SelectVar id="getActor-teamId" /><div class="text">Condition</div
-			><SelectBox id="getActor-condition" /><div class="text">Attribute</div
-			><SelectBox id="getActor-attribute" /><div class="text">Attribute 2</div
-			><SelectBox id="getActor-divisor" /><div class="text">Activation</div
-			><SelectBox id="getActor-activation" /><div class="text">Exclusion</div
-			><SelectBox id="getActor-exclusion" /><div class="text">Exclusion Actor</div
+			><SelectBox id="getActor-selector" v-model="form.selector" /><div class="text">Team</div
+			><SelectVar id="getActor-teamId" v-model="form.teamId" /><div class="text">Condition</div
+			><SelectBox id="getActor-condition" v-model="form.condition" /><div class="text">Attribute</div
+			><SelectBox id="getActor-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div
+			><SelectBox id="getActor-divisor" v-model="form.divisor" /><div class="text">Activation</div
+			><SelectBox id="getActor-activation" v-model="form.activation" /><div class="text">Exclusion</div
+			><SelectBox id="getActor-exclusion" v-model="form.exclusion" /><div class="text">Exclusion Actor</div
 			><CustomBox
 				id="getActor-exclusionActor"
 				type="actor"
+				v-model="form.exclusionActor"
 			/><div class="text">Exclusion Team</div
-			><SelectVar id="getActor-exclusionTeamId" /></div>
+			><SelectVar id="getActor-exclusionTeamId" v-model="form.exclusionTeamId" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
 
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -59,21 +63,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save } = useGetActorCommandSchema();
-
-const form = reactive({
-	area: 'square',
-	size: 1,
-	radius: 1,
-	selector: 'enemy',
-	teamId: { type: 'local', key: '' },
-	condition: 'nearest',
-	attribute: '',
-	divisor: '',
-	activation: 'active',
-	exclusion: 'none',
-	exclusionTeamId: { type: 'local', key: '' }
-});
+const { form, save } = useGetActorCommandSchema();
 
 const onConfirm = () => {
 	save();

@@ -135,8 +135,8 @@ export function useRequestURLCommandSchema() {
 		commit({
 			url,
 			method: read(document.getElementById('requestURL-method')) ?? form.method,
-			headers: read(document.getElementById('requestURL-header')) ?? form.headers,
-			data: read(document.getElementById('requestURL-data')) ?? form.data,
+			headers: form.headers,
+			data: form.data,
 			callback: read(document.getElementById('requestURL-callback')) ?? form.callback
 		});
 	};

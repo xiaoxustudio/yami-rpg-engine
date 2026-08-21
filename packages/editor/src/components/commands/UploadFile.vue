@@ -7,7 +7,7 @@
 				><StringVar id="uploadFile-path" v-model="form.path" /> <div class="text">Method</div
 				><SelectBox id="uploadFile-method" v-model="form.method" /> <div class="text">Field</div
 				><StringVar id="uploadFile-field" v-model="form.field" /> <div class="text">Header</div
-				><ParamList id="uploadFile-header" /> <div class="text">CallBack</div
+				><ParamList id="uploadFile-header" v-model="form.header" /> <div class="text">CallBack</div
 				><CustomBox id="uploadFile-callback" type="file" filter="event" @input="onCallback" />
 				<div class="text">RateCallBack</div
 				><CustomBox id="uploadFile-rateCallback" type="file" filter="event" @input="onRateCallback" />

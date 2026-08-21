@@ -3,7 +3,7 @@
 	<template #title><TitleBar>{{ t('components.getTarget.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" /></div>
+			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" v-model="form.actor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" v-model="form.selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" v-model="form.condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" v-model="form.divisor" /></div>
 	
 </WindowFrame>
 </template>
@@ -22,7 +22,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save } = useGetTargetCommandSchema();
+const { form, save } = useGetTargetCommandSchema();
 
 const onConfirm = () => {
 	save();

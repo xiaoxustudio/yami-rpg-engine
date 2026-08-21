@@ -3,13 +3,14 @@
 	<template #title><TitleBar>{{ t('components.changeActorEquipment.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" /><div class="text">Equipment</div
+			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" v-model="form.actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" v-model="form.operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" v-model="form.slot" /><div class="text">Equipment</div
 			><CustomBox
 				id="changeActorEquipment-equipmentId"
 				type="file"
 				filter="equipment"
+				v-model="form.equipmentId"
 			 /><div class="text">Equipment</div
-			><CustomBox id="changeActorEquipment-equipment" type="equipment" /></div>
+			><CustomBox id="changeActorEquipment-equipment" type="equipment" v-model="form.equipment" /></div>
 	
 </WindowFrame>
 </template>
@@ -29,7 +30,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save } = useChangeActorEquipmentCommandSchema();
+const { form, save } = useChangeActorEquipmentCommandSchema();
 
 const onConfirm = () => {
 	save();

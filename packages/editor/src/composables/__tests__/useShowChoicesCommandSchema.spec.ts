@@ -6,6 +6,7 @@ import ChoiceWindow from '@app/components/tools/Choice.vue';
 import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 
 const Choices = useChoicesSchema();
+import { useShowChoicesCommandSchema } from '@app/composables/commands/useShowChoicesCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -66,6 +67,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		Command.removeTextTags = ((value: string) => value) as never;
 		Choices.target = null;
 		Choices.commands = null;
+		useShowChoicesCommandSchema().form.choices = undefined;
 	});
 
 	const mountAll = async () => {
@@ -110,6 +112,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		};
 		CommandSchema.insert(target, 'showChoices');
 		expect(Window.open).toHaveBeenCalledWith('showChoices');
+		await commandWrapper.vm.$nextTick();
 		const list = getList('showChoices-choices');
 		expect(list.read()).toHaveLength(2);
 		expect(list.read()).toEqual([makeChoice('showChoices.yes'), makeChoice('showChoices.no')]);
@@ -138,12 +141,14 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 			params: { choices, parameters: 'p1' }
 		});
 		expect(Window.open).toHaveBeenCalledWith('showChoices');
+		await commandWrapper.vm.$nextTick();
 		const list = getList('showChoices-choices');
 		list.select(1);
 		list.edit();
 		expect(Window.open).toHaveBeenCalledWith('choice');
 		getControl('choice-content').write('Nope');
 		Choices.confirm!(new Event('click'));
+		await commandWrapper.vm.$nextTick();
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.showChoices.save!();

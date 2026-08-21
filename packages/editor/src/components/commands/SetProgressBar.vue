@@ -4,7 +4,7 @@
 		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setProgressBar-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setProgressBar-properties" />
+				<div class="text">Properties</div><ParamList id="setProgressBar-properties" v-model="form.properties" />
 			</div>
 		
 	</WindowFrame>

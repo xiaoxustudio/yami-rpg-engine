@@ -8,16 +8,17 @@
 					id="setBoolean-variable"
 					type="variable"
 					filter="writable-boolean"
+					v-model="form.variable"
 				/>
-				<div class="text">Operation</div><SelectBox id="setBoolean-operation" />
-				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" @write="onWrite" />
-				<div class="text">Constant</div><SelectBox id="setBoolean-constant-value" />
+				<div class="text">Operation</div><SelectBox id="setBoolean-operation" v-model="form.operation" />
+				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" v-model="form['operand-type']" @write="onWrite" />
+				<div class="text">Constant</div><SelectBox id="setBoolean-constant-value" v-model="form['constant-value']" />
 				<div class="text">Variable</div
-				><CustomBox id="setBoolean-common-variable" type="variable" filter="all" />
+				><CustomBox id="setBoolean-common-variable" type="variable" filter="all" v-model="form['common-variable']" />
 				<div class="text">Index</div
-				><NumberVar id="setBoolean-list-index" min="0" max="1000000000" />
-				<div class="text">Param Name</div><StringVar id="setBoolean-parameter-key" />
-				<div class="text">Script</div><TextBox id="setBoolean-script" />
+				><NumberVar id="setBoolean-list-index" min="0" max="1000000000" v-model="form['list-index']" />
+				<div class="text">Param Name</div><StringVar id="setBoolean-parameter-key" v-model="form['parameter-key']" />
+				<div class="text">Script</div><TextBox id="setBoolean-script" v-model="form.script" />
 			</div>
 		
 	</WindowFrame>
@@ -39,7 +40,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save, writeHandler } = useSetBooleanCommandSchema();
+const { form, save, writeHandler } = useSetBooleanCommandSchema();
 
 const onWrite = (value: unknown) => {
 	writeHandler?.({ value: value as string });

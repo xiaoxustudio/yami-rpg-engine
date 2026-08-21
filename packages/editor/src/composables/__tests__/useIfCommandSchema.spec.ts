@@ -9,6 +9,7 @@ import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
 const IfBranch = useIfBranchSchema();
 const IfCondition = useIfConditionSchema();
+import { useIfCommandSchema } from '@app/composables/commands/useIfCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -91,6 +92,7 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 			join: (separator?: string) => words.join(separator ?? '')
 		} as never;
 		words.length = 0;
+		useIfCommandSchema().form.branches = undefined;
 	});
 
 	const mountAll = async () => {
@@ -172,6 +174,7 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 			params: { branches, elseCommands: [{ id: 'comment' }] }
 		});
 		expect(Window.open).toHaveBeenCalledWith('if');
+		await commandWrapper.vm.$nextTick();
 		const list = getList('if-branches');
 		expect(list.read()).toHaveLength(2);
 		list.select(1);
@@ -180,6 +183,7 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 		getControl('if-branch-mode').input('any');
 		getList('if-branch-conditions').write([makeCondition(9)]);
 		IfBranch.confirm!(new Event('click'));
+		await commandWrapper.vm.$nextTick();
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.if.save!();

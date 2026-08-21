@@ -1,4 +1,5 @@
 ﻿import { getFocus } from '@app/utils/element-utils.ts';
+import { reactive } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -115,6 +116,18 @@ Command.cases.forEach = new CommandSchema({
 
 let commands: unknown[] | null = null;
 
+const form = reactive<ForEachForm>({
+	data: 'list',
+	list: { type: 'local', key: '' },
+	actor: { type: 'trigger' },
+	element: { type: 'trigger' },
+	attributeGroupId: '',
+	enumGroupId: '',
+	variable: { type: 'local', key: '' },
+	saveIndex: { type: 'local', key: '' },
+	touchId: { type: 'local', key: '' }
+});
+
 const load = ({
 	data = 'list',
 	list = { type: 'local', key: '' },
@@ -146,12 +159,7 @@ const load = ({
 			enumGroupId = groupId;
 			break;
 	}
-	const setForm = (
-		document.getElementById('forEach')! as
-			| (HTMLElement & { setForm?: (data: Partial<ForEachForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({
+	Object.assign(form, {
 		data,
 		list: list as { type: string; key: string },
 		actor: actor as { type: string },
@@ -167,12 +175,6 @@ const load = ({
 };
 
 const save = (): unknown => {
-	const getForm = (
-		document.getElementById('forEach')! as
-			| (HTMLElement & { getForm?: () => ForEachForm })
-			| null
-	)?.getForm;
-	const form = getForm?.() ?? ({} as ForEachForm);
 	const data = form.data;
 	const children = commands;
 	switch (data) {
@@ -271,5 +273,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useForEachCommandSchema() {
-	return { load, save, windowClosed };
+	return { form, load, save, windowClosed };
 }

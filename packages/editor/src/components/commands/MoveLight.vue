@@ -4,7 +4,7 @@
 		
 			<div class="grid-box">
 				<div class="text">Light</div><CustomBox id="moveLight-light" type="light" @input="onLight" />
-				<div class="text">Properties</div><ParamList id="moveLight-properties" />
+				<div class="text">Properties</div><ParamList id="moveLight-properties" v-model="form.properties" />
 				<div class="text">Easing</div><SelectBox id="moveLight-easingId" name="easing" v-model="form.easingId" />
 				<div class="text">Duration</div
 				><NumberBox

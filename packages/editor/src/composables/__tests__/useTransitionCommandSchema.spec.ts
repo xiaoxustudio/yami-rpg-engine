@@ -7,18 +7,11 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
-
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 describe('useTransitionCommandSchema (transition command insert/edit/save paths)', () => {
 	beforeEach(() => {
@@ -41,6 +34,7 @@ describe('useTransitionCommandSchema (transition command insert/edit/save paths)
 
 	it('insert path: CommandSchema.insert opens transition window and loads default form', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useTransitionCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -48,16 +42,17 @@ describe('useTransitionCommandSchema (transition command insert/edit/save paths)
 		};
 		CommandSchema.insert(target, 'transition');
 		expect(Window.open).toHaveBeenCalledWith('transition');
-		expect(getControl('transition-variable').read()).toEqual({ type: 'local', key: '' });
-		expect(getControl('transition-start').read()).toBe(0);
-		expect(getControl('transition-end').read()).toBe(1);
-		expect(getControl('transition-easingId').read()).toBe('ease0');
-		expect(getControl('transition-duration').read()).toBe(1000);
+		expect(form.variable).toEqual({ type: 'local', key: '' });
+		expect(form.start).toBe(0);
+		expect(form.end).toBe(1);
+		expect(form.easingId).toBe('ease0');
+		expect(form.duration).toBe(1000);
 		wrapper.unmount();
 	});
 
 	it('edit path: CommandSchema.edit maps params to form, customSave saves with commands', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useTransitionCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -75,9 +70,9 @@ describe('useTransitionCommandSchema (transition command insert/edit/save paths)
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('transition');
-		expect(getControl('transition-variable').read()).toEqual({ type: 'local', key: 'v' });
-		expect(getControl('transition-duration').read()).toBe(500);
-		getControl('transition-end').write(30);
+		expect(form.variable).toEqual({ type: 'local', key: 'v' });
+		expect(form.duration).toBe(500);
+		form.end = 30;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.transition.save!();
@@ -121,8 +116,6 @@ describe('useTransitionCommandSchema (transition command insert/edit/save paths)
 
 	it('open loads easing items, windowClosed clears commands and easing items', async () => {
 		const wrapper = await mountWindow();
-		const { useTransitionCommandSchema } =
-			await import('@app/composables/commands/useTransitionCommandSchema');
 		const { open, windowClosed } = useTransitionCommandSchema();
 		open();
 		await wrapper.vm.$nextTick();

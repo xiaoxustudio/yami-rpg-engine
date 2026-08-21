@@ -2,7 +2,7 @@
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { commit } from '@app/composables/useCommandSchema';
 import { reactive } from 'vue';
 
@@ -97,50 +97,30 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	Object.assign(form, createDefault(), params);
-	write(document.getElementById('setInventory-actor'), form.actor);
-	write(document.getElementById('setInventory-operation'), form.operation);
-	write(document.getElementById('setInventory-money'), form.money);
-	write(document.getElementById('setInventory-itemId'), form.itemId);
-	write(document.getElementById('setInventory-quantity'), form.quantity);
-	write(document.getElementById('setInventory-equipmentId'), form.equipmentId);
-	write(document.getElementById('setInventory-equipment'), form.equipment);
-	write(document.getElementById('setInventory-order1'), form.order1);
-	write(document.getElementById('setInventory-order2'), form.order2);
-	write(document.getElementById('setInventory-refActor'), form.refActor);
 	getFocus(document.getElementById('setInventory-actor'));
 };
 
 const save = (): void => {
-	const actor = read(document.getElementById('setInventory-actor')) ?? form.actor;
-	const operation = read(document.getElementById('setInventory-operation')) ?? form.operation;
+	const actor = form.actor;
+	const operation = form.operation;
 	switch (operation) {
 		case 'increase-money':
 		case 'decrease-money':
-			commit({
-				actor,
-				operation,
-				money: read(document.getElementById('setInventory-money')) ?? form.money
-			});
+			commit({ actor, operation, money: form.money });
 			break;
 		case 'increase-items':
 		case 'decrease-items': {
-			const itemId = read(document.getElementById('setInventory-itemId')) ?? form.itemId;
+			const itemId = form.itemId;
 			if (itemId === '') {
 				getFocus(document.getElementById('setInventory-itemId'));
 				return;
 			}
-			commit({
-				actor,
-				operation,
-				itemId,
-				quantity: read(document.getElementById('setInventory-quantity')) ?? form.quantity
-			});
+			commit({ actor, operation, itemId, quantity: form.quantity });
 			break;
 		}
 		case 'gain-equipment':
 		case 'lose-equipment': {
-			const equipmentId =
-				read(document.getElementById('setInventory-equipmentId')) ?? form.equipmentId;
+			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
 				getFocus(document.getElementById('setInventory-equipmentId'));
 				return;
@@ -150,19 +130,10 @@ const save = (): void => {
 		}
 		case 'gain-equipment-instance':
 		case 'lose-equipment-instance':
-			commit({
-				actor,
-				operation,
-				equipment: read(document.getElementById('setInventory-equipment')) ?? form.equipment
-			});
+			commit({ actor, operation, equipment: form.equipment });
 			break;
 		case 'swap':
-			commit({
-				actor,
-				operation,
-				order1: read(document.getElementById('setInventory-order1')) ?? form.order1,
-				order2: read(document.getElementById('setInventory-order2')) ?? form.order2
-			});
+			commit({ actor, operation, order1: form.order1, order2: form.order2 });
 			break;
 		case 'sort':
 		case 'sort-by-order':
@@ -171,11 +142,7 @@ const save = (): void => {
 			commit({ actor, operation });
 			break;
 		case 'reference':
-			commit({
-				actor,
-				operation,
-				refActor: read(document.getElementById('setInventory-refActor')) ?? form.refActor
-			});
+			commit({ actor, operation, refActor: form.refActor });
 			break;
 	}
 };
@@ -186,5 +153,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useSetInventoryCommandSchema() {
-	return { load, save };
+	return { form, load, save };
 }

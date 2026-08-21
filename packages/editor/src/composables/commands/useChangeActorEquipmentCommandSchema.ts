@@ -1,4 +1,4 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -81,28 +81,20 @@ const load = (params: Record<string, unknown> = {}): void => {
 		.getElementById('changeActorEquipment-slot')
 		?.loadItems?.(Enum.getStringItems!('equipment-slot'));
 	Object.assign(form, createDefault(), params);
-	write(document.getElementById('changeActorEquipment-actor'), form.actor);
-	write(document.getElementById('changeActorEquipment-operation'), form.operation);
-	write(document.getElementById('changeActorEquipment-slot'), form.slot);
-	write(document.getElementById('changeActorEquipment-equipmentId'), form.equipmentId);
-	write(document.getElementById('changeActorEquipment-equipment'), form.equipment);
 	getFocus(document.getElementById('changeActorEquipment-actor'));
 };
 
 const save = (): void => {
-	const actor = read(document.getElementById('changeActorEquipment-actor')) ?? form.actor;
-	const operation =
-		read(document.getElementById('changeActorEquipment-operation')) ?? form.operation;
+	const actor = form.actor;
+	const operation = form.operation;
 	switch (operation) {
 		case 'add': {
-			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
+			const slot = form.slot;
 			if (slot === '') {
 				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
-			const equipmentId =
-				read(document.getElementById('changeActorEquipment-equipmentId')) ??
-				form.equipmentId;
+			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
 				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
@@ -111,9 +103,7 @@ const save = (): void => {
 			break;
 		}
 		case 'remove': {
-			const equipmentId =
-				read(document.getElementById('changeActorEquipment-equipmentId')) ??
-				form.equipmentId;
+			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
 				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
@@ -122,32 +112,19 @@ const save = (): void => {
 			break;
 		}
 		case 'add-instance': {
-			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
+			const slot = form.slot;
 			if (slot === '') {
 				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
-			commit({
-				actor,
-				operation,
-				slot,
-				equipment:
-					read(document.getElementById('changeActorEquipment-equipment')) ??
-					form.equipment
-			});
+			commit({ actor, operation, slot, equipment: form.equipment });
 			break;
 		}
 		case 'remove-instance':
-			commit({
-				actor,
-				operation,
-				equipment:
-					read(document.getElementById('changeActorEquipment-equipment')) ??
-					form.equipment
-			});
+			commit({ actor, operation, equipment: form.equipment });
 			break;
 		case 'remove-slot': {
-			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
+			const slot = form.slot;
 			if (slot === '') {
 				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
@@ -164,5 +141,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useChangeActorEquipmentCommandSchema() {
-	return { load, save };
+	return { form, load, save };
 }

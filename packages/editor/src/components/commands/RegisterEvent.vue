@@ -4,16 +4,16 @@
 	
 		<div class="grid-box">
 			<div class="text">Target</div
-			><SelectBox id="registerEvent-target" @write="onTargetWrite" /> <div class="text">Actor</div
-			><CustomBox id="registerEvent-actor" type="actor" /> <div class="text">Element</div
-			><CustomBox id="registerEvent-element" type="element" />
+			><SelectBox id="registerEvent-target" v-model="form.target" @write="onTargetWrite" /> <div class="text">Actor</div
+			><CustomBox id="registerEvent-actor" type="actor" v-model="form.actor" /> <div class="text">Element</div
+			><CustomBox id="registerEvent-element" type="element" v-model="form.element" />
 			<div class="text">Operation</div
-			><SelectBox id="registerEvent-operation" @write="onOperationWrite" />
-			<div class="text">Type</div><SelectBox id="registerEvent-type" @write="onTypeWrite" /> <div class="text">Priority</div
-			><CheckBox id="registerEvent-priority" class="standard large" />
+			><SelectBox id="registerEvent-operation" v-model="form.operation" @write="onOperationWrite" />
+			<div class="text">Type</div><SelectBox id="registerEvent-type" v-model="form.type" @write="onTypeWrite" /> <div class="text">Priority</div
+			><CheckBox id="registerEvent-priority" class="standard large" v-model="form.priority" />
 			<div class="text">Namespace</div
-			><CheckBox id="registerEvent-namespace" class="standard large" />
-			<div class="text">Tag Name</div><StringVar id="registerEvent-tag" />
+			><CheckBox id="registerEvent-namespace" class="standard large" v-model="form.namespace" />
+			<div class="text">Tag Name</div><StringVar id="registerEvent-tag" v-model="form.tag" />
 		</div>
 	
 </WindowFrame>
@@ -35,7 +35,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema();
+const { form, save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema();
 
 const onTargetWrite = (value: unknown) => {
 	targetWrite?.({ value: value as string });

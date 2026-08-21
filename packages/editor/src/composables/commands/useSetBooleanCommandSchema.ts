@@ -1,4 +1,4 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
@@ -132,37 +132,25 @@ const load = ({
 	form['list-index'] = listIndex;
 	form['parameter-key'] = parameterKey;
 	form.script = script;
-	write(document.getElementById('setBoolean-variable'), form.variable);
-	write(document.getElementById('setBoolean-operation'), form.operation);
-	write(document.getElementById('setBoolean-operand-type'), form['operand-type']);
-	write(document.getElementById('setBoolean-constant-value'), form['constant-value']);
-	write(document.getElementById('setBoolean-common-variable'), form['common-variable']);
-	write(document.getElementById('setBoolean-list-index'), form['list-index']);
-	write(document.getElementById('setBoolean-parameter-key'), form['parameter-key']);
-	write(document.getElementById('setBoolean-script'), form.script);
 	getFocus(document.getElementById('setBoolean-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read(document.getElementById('setBoolean-variable')) ?? form.variable;
+	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
 		return getFocus(document.getElementById('setBoolean-variable'));
 	}
-	const operation = read(document.getElementById('setBoolean-operation')) ?? form.operation;
-	const type = read(document.getElementById('setBoolean-operand-type')) ?? form['operand-type'];
+	const operation = form.operation;
+	const type = form['operand-type'];
 	let operand;
 	switch (type) {
 		case 'constant': {
-			const value =
-				read(document.getElementById('setBoolean-constant-value')) ??
-				form['constant-value'];
+			const value = form['constant-value'];
 			operand = { type, value };
 			break;
 		}
 		case 'variable': {
-			const commonVariable =
-				read(document.getElementById('setBoolean-common-variable')) ??
-				form['common-variable'];
+			const commonVariable = form['common-variable'] as { type: string; key: string };
 			if (VariableGetter.isNone!(commonVariable)) {
 				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
@@ -170,20 +158,16 @@ const save = (): unknown => {
 			break;
 		}
 		case 'list': {
-			const commonVariable =
-				read(document.getElementById('setBoolean-common-variable')) ??
-				form['common-variable'];
+			const commonVariable = form['common-variable'] as { type: string; key: string };
 			if (VariableGetter.isNone!(commonVariable)) {
 				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
-			const index =
-				read(document.getElementById('setBoolean-list-index')) ?? form['list-index'];
+			const index = form['list-index'];
 			operand = { type, variable: commonVariable, index };
 			break;
 		}
 		case 'parameter': {
-			const key =
-				read(document.getElementById('setBoolean-parameter-key')) ?? form['parameter-key'];
+			const key = form['parameter-key'];
 			if (key === '') {
 				return getFocus(document.getElementById('setBoolean-parameter-key'));
 			}
@@ -191,9 +175,7 @@ const save = (): unknown => {
 			break;
 		}
 		case 'script': {
-			const script = (
-				(read(document.getElementById('setBoolean-script')) ?? form.script) as string
-			).trim();
+			const script = (form.script as string).trim();
 			if (script === '') {
 				return getFocus(document.getElementById('setBoolean-script'));
 			}
@@ -211,5 +193,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useSetBooleanCommandSchema() {
-	return { load, save, writeHandler };
+	return { form, load, save, writeHandler };
 }

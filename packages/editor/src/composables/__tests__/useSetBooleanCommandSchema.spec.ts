@@ -6,6 +6,7 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
@@ -36,6 +37,7 @@ describe('useSetBooleanCommandSchema (setBoolean operand linkage + insert/edit/s
 
 	it('insert path: CommandSchema.insert opens setBoolean window and loads default form', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useSetBooleanCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -43,10 +45,10 @@ describe('useSetBooleanCommandSchema (setBoolean operand linkage + insert/edit/s
 		};
 		CommandSchema.insert(target, 'setBoolean');
 		expect(Window.open).toHaveBeenCalledWith('setBoolean');
-		expect(getControl('setBoolean-variable').read()).toEqual({ type: 'local', key: '' });
-		expect(getControl('setBoolean-operation').read()).toBe('set');
-		expect(getControl('setBoolean-operand-type').read()).toBe('constant');
-		expect(getControl('setBoolean-constant-value').read()).toBe(false);
+		expect(form.variable).toEqual({ type: 'local', key: '' });
+		expect(form.operation).toBe('set');
+		expect(form['operand-type']).toBe('constant');
+		expect(form['constant-value']).toBe(false);
 		wrapper.unmount();
 	});
 
@@ -63,6 +65,7 @@ describe('useSetBooleanCommandSchema (setBoolean operand linkage + insert/edit/s
 
 	it('edit path: CommandSchema.edit maps params to form, variable/list/parameter/script branches save', async () => {
 		const wrapper = await mountWindow();
+		const { form } = useSetBooleanCommandSchema();
 		const target = {
 			scrollAndResize: vi.fn(),
 			getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -79,10 +82,7 @@ describe('useSetBooleanCommandSchema (setBoolean operand linkage + insert/edit/s
 			}
 		});
 		expect(Window.open).toHaveBeenCalledWith('setBoolean');
-		expect(getControl('setBoolean-common-variable').read()).toEqual({
-			type: 'local',
-			key: 'other'
-		});
+		expect(form['common-variable']).toEqual({ type: 'local', key: 'other' });
 		Command.cases.setBoolean.save!();
 		expect(saved).toHaveBeenCalledWith({
 			variable: { type: 'local', key: 'flag' },

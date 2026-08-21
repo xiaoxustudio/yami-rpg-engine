@@ -1,4 +1,4 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -75,23 +75,16 @@ const createDefault = (): Record<string, unknown> => {
 const load = (params: Record<string, unknown> = {}): void => {
 	document.getElementById('castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 	Object.assign(form, createDefault(), params);
-	write(document.getElementById('castSkill-actor'), form.actor);
-	write(document.getElementById('castSkill-mode'), form.mode);
-	write(document.getElementById('castSkill-key'), form.key);
-	write(document.getElementById('castSkill-keyVar'), form.keyVar);
-	write(document.getElementById('castSkill-skillId'), form.skillId);
-	write(document.getElementById('castSkill-skill'), form.skill);
-	write(document.getElementById('castSkill-wait'), form.wait);
 	getFocus(document.getElementById('castSkill-actor'));
 };
 
 const save = (): void => {
-	const actor = read(document.getElementById('castSkill-actor')) ?? form.actor;
-	const mode = read(document.getElementById('castSkill-mode')) ?? form.mode;
-	const wait = read(document.getElementById('castSkill-wait')) ?? form.wait;
+	const actor = form.actor;
+	const mode = form.mode;
+	const wait = form.wait;
 	switch (mode) {
 		case 'by-key': {
-			const key = read(document.getElementById('castSkill-key')) ?? form.key;
+			const key = form.key;
 			if (key === '') {
 				getFocus(document.getElementById('castSkill-key'));
 				return;
@@ -100,7 +93,7 @@ const save = (): void => {
 			break;
 		}
 		case 'by-id': {
-			const skillId = read(document.getElementById('castSkill-skillId')) ?? form.skillId;
+			const skillId = form.skillId;
 			if (skillId === '') {
 				getFocus(document.getElementById('castSkill-skillId'));
 				return;
@@ -109,20 +102,10 @@ const save = (): void => {
 			break;
 		}
 		case 'by-skill':
-			commit({
-				actor,
-				mode,
-				skill: read(document.getElementById('castSkill-skill')) ?? form.skill,
-				wait
-			});
+			commit({ actor, mode, skill: form.skill, wait });
 			break;
 		case 'by-variable':
-			commit({
-				actor,
-				mode,
-				keyVar: read(document.getElementById('castSkill-keyVar')) ?? form.keyVar,
-				wait
-			});
+			commit({ actor, mode, keyVar: form.keyVar, wait });
 			break;
 	}
 };
@@ -133,5 +116,5 @@ schema.customSave = save;
 schema.onInitialize = (): void => {};
 
 export function useCastSkillCommandSchema() {
-	return { load, save };
+	return { form, load, save };
 }

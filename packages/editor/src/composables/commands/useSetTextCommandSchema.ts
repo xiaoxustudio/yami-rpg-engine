@@ -3,7 +3,7 @@ import { Token } from '@app/commands/token.ts';
 import { TextProperty } from '@app/commands/property-window/set-text-property-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setText = new CommandSchema({
@@ -38,8 +38,8 @@ export function useSetTextCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const properties = read(document.getElementById('setText-properties')) ?? form.properties;
-		if (properties.length === 0) {
+		const properties = form.properties as Array<{ key: string; value: unknown }>;
+		if (!properties || properties.length === 0) {
 			getFocus(document.getElementById('setText-properties'));
 			return;
 		}

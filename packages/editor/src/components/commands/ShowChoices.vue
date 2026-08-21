@@ -3,7 +3,7 @@
 	<template #title><TitleBar>{{ t('components.showChoices.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Choices</div><ParamList id="showChoices-choices" />
+			<div class="text">Choices</div><ParamList id="showChoices-choices" v-model="form.choices" />
 			<div class="text">Parameters</div><TextBox id="showChoices-parameters" v-model="form.parameters" />
 		</div>
 	
@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
@@ -27,9 +27,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const { t } = useI18n();
 
-const { save, windowClosed } = useShowChoicesCommandSchema();
-
-const form = reactive({ parameters: '' });
+const { form, save, windowClosed } = useShowChoicesCommandSchema();
 
 const onConfirm = () => {
 	save();

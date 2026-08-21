@@ -3,24 +3,24 @@
 	<template #title><TitleBar>{{ t('components.setInventory.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" />
-			<div class="text">Operation</div><SelectBox id="setInventory-operation" />
+			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" v-model="form.actor" />
+			<div class="text">Operation</div><SelectBox id="setInventory-operation" v-model="form.operation" />
 			<div class="text">Money</div
-			><NumberVar id="setInventory-money" min="1" max="100000000" />
+			><NumberVar id="setInventory-money" min="1" max="100000000" v-model="form.money" />
 			<div class="text">Item</div
-			><FileVar id="setInventory-itemId" type="file" filter="item" />
+			><FileVar id="setInventory-itemId" type="file" filter="item" v-model="form.itemId" />
 			<div class="text">Quantity</div
-			><NumberVar id="setInventory-quantity" min="1" max="10000" />
+			><NumberVar id="setInventory-quantity" min="1" max="10000" v-model="form.quantity" />
 			<div class="text">Equipment</div
-			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" />
+			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" v-model="form.equipmentId" />
 			<div class="text">Equipment</div
-			><CustomBox id="setInventory-equipment" type="equipment" />
+			><CustomBox id="setInventory-equipment" type="equipment" v-model="form.equipment" />
 			<div class="text">Order A</div
-			><NumberVar id="setInventory-order1" min="0" max="10000" />
+			><NumberVar id="setInventory-order1" min="0" max="10000" v-model="form.order1" />
 			<div class="text">Order B</div
-			><NumberVar id="setInventory-order2" min="0" max="10000" />
+			><NumberVar id="setInventory-order2" min="0" max="10000" v-model="form.order2" />
 			<div class="text">Global Actor</div
-			><CustomBox id="setInventory-refActor" type="actor" />
+			><CustomBox id="setInventory-refActor" type="actor" v-model="form.refActor" />
 		</div>
 	
 </WindowFrame>
@@ -42,7 +42,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save } = useSetInventoryCommandSchema();
+const { form, save } = useSetInventoryCommandSchema();
 
 const onConfirm = () => {
 	save();

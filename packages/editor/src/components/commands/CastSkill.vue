@@ -3,13 +3,13 @@
 		<template #title><TitleBar>{{ t('components.castSkill.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Actor</div><CustomBox id="castSkill-actor" type="actor" />
-				<div class="text">Mode</div><SelectBox id="castSkill-mode" /> <div class="text">Shortcut Key</div
-				><SelectBox id="castSkill-key" /> <div class="text">Shortcut Key</div
-				><StringVar id="castSkill-keyVar" /> <div class="text">Skill</div
-				><CustomBox id="castSkill-skillId" type="file" filter="skill" />
-				<div class="text">Skill</div><CustomBox id="castSkill-skill" type="skill" />
-				<div class="text">Wait</div><SelectBox id="castSkill-wait" name="wait" />
+				<div class="text">Actor</div><CustomBox id="castSkill-actor" type="actor" v-model="form.actor" />
+				<div class="text">Mode</div><SelectBox id="castSkill-mode" v-model="form.mode" /> <div class="text">Shortcut Key</div
+				><SelectBox id="castSkill-key" v-model="form.key" /> <div class="text">Shortcut Key</div
+				><StringVar id="castSkill-keyVar" v-model="form.keyVar" /> <div class="text">Skill</div
+				><CustomBox id="castSkill-skillId" type="file" filter="skill" v-model="form.skillId" />
+				<div class="text">Skill</div><CustomBox id="castSkill-skill" type="skill" v-model="form.skill" />
+				<div class="text">Wait</div><SelectBox id="castSkill-wait" name="wait" v-model="form.wait" />
 			</div>
 		
 	</WindowFrame>
@@ -30,7 +30,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { save } = useCastSkillCommandSchema();
+const { form, save } = useCastSkillCommandSchema();
 
 const onConfirm = () => {
 	save();

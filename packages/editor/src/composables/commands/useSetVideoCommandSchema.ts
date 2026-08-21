@@ -3,7 +3,7 @@ import { Token } from '@app/commands/token.ts';
 import { VideoProperty } from '@app/commands/property-window/set-video-property-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setVideo = new CommandSchema({
@@ -38,7 +38,7 @@ export function useSetVideoCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const properties = read(document.getElementById('setVideo-properties')) ?? form.properties;
+		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
 			getFocus(document.getElementById('setVideo-properties'));
 			return;

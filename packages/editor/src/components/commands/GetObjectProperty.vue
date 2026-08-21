@@ -10,7 +10,7 @@
 					filter="object"
 					@input="onVariable"
 				/>
-				<div class="text">getObjectProperty</div><ParamList id="getObjectProperty-list" />
+				<div class="text">getObjectProperty</div><ParamList id="getObjectProperty-list" v-model="form.properties" />
 				<div class="text">saveVariable</div
 				><CustomBox
 					id="getObjectProperty-save-variable"
