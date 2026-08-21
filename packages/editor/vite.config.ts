@@ -55,7 +55,7 @@ const copyStaticAssets = (outDir: string) => {
 	}
 };
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
 	root: '.',
 	base: './',
 
@@ -397,7 +397,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@app': resolve(__dirname, 'src'),
-			'@ui-kit': resolve(__dirname, '../ui-kit/dist/ui-kit.js')
+			'@ui-kit':
+				command === 'build'
+					? resolve(__dirname, '../ui-kit/dist/ui-kit.js')
+					: resolve(__dirname, '../ui-kit/src/index.ts')
 		}
 	},
 
@@ -415,4 +418,4 @@ export default defineConfig({
 	oxc: {
 		target: 'chrome150'
 	}
-});
+}));

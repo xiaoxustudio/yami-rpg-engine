@@ -2,8 +2,8 @@
 	"compilerOptions": {
 	  "paths": {
 	   "@app/*": ["./src/*"],
-	   "@ui-kit": ["../ui-kit/dist/index.d.ts"],
-	   "@ui-kit/*": ["../ui-kit/dist/*"]
+	   "@ui-kit": ["../ui-kit/src/index.ts"],
+	   "@ui-kit/*": ["../ui-kit/src/*"]
 	  },
 	 "target": "es2022",
 	 "module": "esnext",

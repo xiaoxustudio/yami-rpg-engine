@@ -215,7 +215,6 @@ export { default as YMFileBodyPane } from './components/business/YMFileBodyPane/
 export { default as YMFileBrowser } from './components/business/YMFileBrowser/YMFileBrowser.vue';
 export { default as YMFormButtons } from './components/basic/YMFormButtons/YMFormButtons.vue';
 export { default as YMConfirmation } from './components/business/YMConfirmation/YMConfirmation.vue';
-export type { ConfirmationItem as YMConfirmationItem } from './components/business/YMConfirmation/YMConfirmation.vue';
 export { default as YMRename } from './components/business/YMRename/YMRename.vue';
 export { default as YMZoom } from './components/business/YMZoom/YMZoom.vue';
 export { default as YMSetKey } from './components/business/YMSetKey/YMSetKey.vue';

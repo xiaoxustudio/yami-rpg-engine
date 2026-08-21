@@ -22,10 +22,14 @@ files.sort((a, b) => order(a).localeCompare(order(b)));
 // Vite 接管 CSS bundle：用 @import './css/...' 相对路径（Vite 兼容），
 // 不用 @import url(css/...)（Vite 不认 url() 形式，会炸）
 // ui-kit design tokens（--ym-*）最先加载，供组件 CSS Module 使用
+// --dist-css：生产构建（编辑器用 dist 产物）时引入 ui-kit 组件样式；
+// dev 模式走 ui-kit 源码别名，组件样式由 Vue SFC 运行时注入，不引入 dist CSS。
+const useDistCss = process.argv.includes('--dist-css');
+
 const imports = [
 	"@import '../../ui-kit/src/theme/tokens.css';",
 	"@import '../../ui-kit/src/styles/components.css';",
-	"@import '../../ui-kit/dist/ui-kit.css';",
+	...(useDistCss ? ["@import '../../ui-kit/dist/ui-kit.css';"] : []),
 	...files.map((f) => `@import './css/${f}';`)
 ].join('\n');
 
