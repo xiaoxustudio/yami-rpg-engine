@@ -2,7 +2,7 @@
 import { on } from '@app/utils/element-utils.ts';
 import { useTilemapGetterWindow } from '@app/composables/useTilemapGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape } from '@app/types/shapes.ts';
 
 interface TilemapTarget {
 	dataValue: {

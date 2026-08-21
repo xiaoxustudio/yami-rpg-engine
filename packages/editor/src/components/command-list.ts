@@ -6,7 +6,7 @@ import {
 	type CommandListApiOptions
 } from '@ui-kit';
 import type { MenuItem, MenuOptions } from '@ui-kit';
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { getVariable } from '@app/utils/safe';
 import { CommandHistory } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';

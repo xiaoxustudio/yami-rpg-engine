@@ -7,7 +7,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Log } from '@app/log/log-window.ts';
 import { History } from '@app/tools/history.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
-import { DynamicShape } from '@app/types/legacy-shapes.ts';
+import { DynamicShape } from '@app/types/shapes.ts';
 
 interface InspectorChange {
 	input: HTMLElement;

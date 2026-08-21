@@ -1,6 +1,6 @@
 import { $ } from '@app/utils/dom';
 import { useAngleGetterWindow } from '@app/composables/useAngleGetterWindow';
-import { AccessorBaseShape } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape } from '@app/types/shapes.ts';
 
 interface AngleTarget {
 	dataValue: {

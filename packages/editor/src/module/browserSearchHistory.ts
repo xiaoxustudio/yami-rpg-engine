@@ -1,4 +1,4 @@
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 
 export interface SearchHistoryDropdownApi {

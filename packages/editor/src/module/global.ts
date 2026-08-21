@@ -13,7 +13,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { EditDataInstance } from './editdata.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Resources } from './resource.ts';
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { NewProject } from '@app/title/new-project-window.ts';

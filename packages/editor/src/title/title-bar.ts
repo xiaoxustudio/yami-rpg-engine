@@ -22,7 +22,7 @@ import { getTitleStore } from '@app/stores/title';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
 import { Particle } from '@app/particle/particle-window.ts';
-import { DynamicShape } from '@app/types/legacy-shapes.ts';
+import { DynamicShape } from '@app/types/shapes.ts';
 import { t, createGetter } from '@app/i18n';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';

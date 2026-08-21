@@ -44,7 +44,7 @@ import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import type { DynamicShape } from '@app/types/legacy-shapes.ts';
+import type { DynamicShape } from '@app/types/shapes.ts';
 
 interface ControlPoint {
 	x: number;

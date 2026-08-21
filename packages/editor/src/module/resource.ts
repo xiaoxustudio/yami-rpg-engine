@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { GlobalPath, Path } from '@app/utils/config';
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { $ } from '@app/utils/dom';
 import { disable, enable, on, write } from '@app/utils/element-utils.ts';
 

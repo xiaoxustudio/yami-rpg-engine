@@ -2,7 +2,7 @@
 import { on } from '@app/utils/element-utils';
 import { useSkillGetterWindow } from '@app/composables/useSkillGetterWindow';
 import { Enum } from '@app/enum/enum-window.ts';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
 
 interface SkillGetterShape extends AccessorBaseShape {
 	checkDataForPlugin: ((data: unknown) => boolean) | null;

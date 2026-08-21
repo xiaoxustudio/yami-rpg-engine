@@ -1,4 +1,4 @@
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { Path } from '@app/utils/config';
 import { Animation } from '@app/animation/animation-window.ts';
 import { loadCustomCommandList } from '@app/commands/command-custom.ts';

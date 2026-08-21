@@ -1,7 +1,7 @@
 ﻿import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils';
 import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
 
 interface StateGetterShape extends AccessorBaseShape {
 	checkDataForPlugin: ((data: unknown) => boolean) | null;

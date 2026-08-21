@@ -7,7 +7,7 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { Menubar } from '@app/title/menu-bar.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { DynamicShape } from '@app/types/legacy-shapes.ts';
+import { DynamicShape } from '@app/types/shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 
 type WindowFrame = HTMLElement & {

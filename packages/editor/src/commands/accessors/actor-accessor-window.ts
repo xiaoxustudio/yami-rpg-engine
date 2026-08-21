@@ -1,7 +1,7 @@
 import { $ } from '@app/utils/dom';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
 
 interface ActorGetterShape extends AccessorBaseShape {
 	checkDataForPlugin: ((data: unknown) => boolean) | null;

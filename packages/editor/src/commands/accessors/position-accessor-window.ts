@@ -1,7 +1,7 @@
 import { $ } from '@app/utils/dom';
 import { usePositionGetterWindow } from '@app/composables/usePositionGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape } from '@app/types/shapes.ts';
 
 interface PositionGetterTarget {
 	dataValue: PositionData;

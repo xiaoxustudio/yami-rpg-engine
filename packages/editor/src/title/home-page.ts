@@ -1,4 +1,4 @@
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import { $ } from '@app/utils/dom';
 import { addClass, hasClass, rect, removeClass } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';

@@ -2,7 +2,7 @@ import { macRedoKey } from '@app/utils/event-accessors';
 import { Window } from '@app/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { SettingConfig } from '@app/services/project/settingconfig';
+import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import {

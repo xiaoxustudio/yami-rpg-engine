@@ -1,7 +1,7 @@
 import { $ } from '@app/utils/dom';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape } from '@app/types/shapes.ts';
 
 interface RegionTarget {
 	dataValue: {

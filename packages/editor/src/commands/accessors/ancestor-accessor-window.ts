@@ -2,7 +2,7 @@
 import { on } from '@app/utils/element-utils.ts';
 import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
 
 interface AncestorGetterShape extends AccessorBaseShape {
 	dependsOn: string[];

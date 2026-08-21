@@ -29,7 +29,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Home } from '@app/title/home-page.ts';
 import { Title } from '@app/title/title-bar.ts';
 import { UI } from '@app/ui/ui-window.ts';
-import { DynamicShape } from '@app/types/legacy-shapes.ts';
+import { DynamicShape } from '@app/types/shapes.ts';
 import { h, render, type VNode } from 'vue';
 
 interface LayoutScheme {
