@@ -25,6 +25,7 @@ files.sort((a, b) => order(a).localeCompare(order(b)));
 const imports = [
 	"@import '../../ui-kit/src/theme/tokens.css';",
 	"@import '../../ui-kit/src/styles/components.css';",
+	"@import '../../ui-kit/dist/ui-kit.css';",
 	...files.map((f) => `@import './css/${f}';`)
 ].join('\n');
 

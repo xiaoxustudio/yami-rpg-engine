@@ -18,22 +18,13 @@ let callback: ((key: string) => void) | null = null;
 
 const open = (key: string, cb: (key: string) => void): void => {
 	callback = cb;
-	getWindowStore().open('setKey');
 	Object.assign(form, { key });
-	const setForm = (
-		document.getElementById('setKey') as
-			| (HTMLElement & { setForm?: (data: Partial<SetKeyForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({ key });
+	getWindowStore().open('setKey');
 	getFocus(document.getElementById('setKey-key'), 'all');
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('setKey') as (HTMLElement & { getForm?: () => SetKeyForm }) | null
-	)?.getForm;
-	callback?.(getForm?.()?.key ?? '');
+	callback?.(form.key);
 	getWindowStore().close('setKey');
 };
 

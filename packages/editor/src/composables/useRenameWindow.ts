@@ -18,22 +18,13 @@ let callback: ((value: string) => void) | null = null;
 
 const open = (name: string, cb: (value: string) => void): void => {
 	callback = cb;
-	getWindowStore().open('rename');
 	Object.assign(form, { name });
-	const setForm = (
-		document.getElementById('rename') as
-			| (HTMLElement & { setForm?: (data: Partial<RenameForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({ name });
+	getWindowStore().open('rename');
 	getFocus(document.getElementById('rename-name'), 'all');
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('rename') as (HTMLElement & { getForm?: () => RenameForm }) | null
-	)?.getForm;
-	callback?.(getForm?.()?.name ?? '');
+	callback?.(form.name);
 	getWindowStore().close('rename');
 };
 

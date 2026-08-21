@@ -11,7 +11,7 @@
 	"scripts": {
 		"prepare": "husky",
 		"commitlint": "commitlint --config commitlint.config.js --edit ",
-		"dev": "pnpm -F @yami/editor dev",
+		"dev": "pnpm -F @yami/ui-kit build && pnpm -F @yami/editor dev",
 		"dev:ui": "pnpm -F @yami/ui-kit dev",
 		"build:vite": "pnpm -F @yami/editor build:vite",
 		"build:all": "pnpm -F @yami/editor build:all",

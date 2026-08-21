@@ -127,10 +127,7 @@ describe('text-capture 窗口表单桥接（Vue 双向绑定迁移回归）', ()
 	it('控件值变更在 getForm 时读回（TextBox/NumberBox/SelectBox）', async () => {
 		const wrapper = mount(Font, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
-		const box = document.getElementById('font-font') as unknown as HTMLElement & {
-			write(value: string): void;
-		};
-		box.write('sans-serif');
+		await wrapper.find('input').setValue('sans-serif');
 		await wrapper.vm.$nextTick();
 		expect(getFrame('font').getForm().font).toBe('sans-serif');
 		wrapper.unmount();

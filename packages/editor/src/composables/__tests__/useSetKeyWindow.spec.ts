@@ -9,19 +9,12 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getInputValue = (id: string): string => {
+	const el = document.getElementById(id) as HTMLElement & { input?: HTMLInputElement };
+	return el?.input?.value ?? '';
+};
 
 describe('useSetKeyWindow（按键窗口 composable：form 状态 + open/confirm/closed）', () => {
 	beforeEach(() => {
@@ -30,26 +23,28 @@ describe('useSetKeyWindow（按键窗口 composable：form 状态 + open/confirm
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、填充 form 并通过 v-model 填充控件', async () => {
 		const wrapper = mount(SetKey, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const setKey = useSetKeyWindow();
 		const callback = vi.fn();
 		setKey.open('w', callback);
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setKey');
 		expect(setKey.form.key).toBe('w');
-		expect(getFrame('setKey').getForm().key).toBe('w');
-		expect(getControl('setKey-key').read()).toBe('w');
+		expect(getInputValue('setKey-key')).toBe('w');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口', async () => {
+	it('confirm 经 form 读回控件值回调并关闭窗口', async () => {
 		const wrapper = mount(SetKey, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const setKey = useSetKeyWindow();
 		const callback = vi.fn();
 		setKey.open('w', callback);
-		getControl('setKey-key').write('a');
+		await wrapper.vm.$nextTick();
+		await wrapper.find('input').setValue('a');
+		await wrapper.vm.$nextTick();
 		setKey.confirm();
 		expect(callback).toHaveBeenCalledWith('a');
 		expect(Window.close).toHaveBeenCalledWith('setKey');

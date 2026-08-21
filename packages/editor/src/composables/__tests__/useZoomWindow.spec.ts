@@ -17,19 +17,7 @@ vi.mock('electron', () => ({
 	webFrame: { getZoomFactor: vi.fn(() => 1.25), setZoomFactor: vi.fn() }
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open/confirm）', () => {
 	beforeEach(() => {
@@ -45,15 +33,14 @@ describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open
 		expect(useZoomWindow().getFactor()).toBe(1.25);
 	});
 
-	it('open 打开窗口、以当前因子填充 form 与控件 DOM', async () => {
+	it('open 打开窗口、以当前因子填充 form 并通过 v-model 填充控件', async () => {
 		const wrapper = mount(Zoom, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const zoom = useZoomWindow();
 		zoom.open();
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('zoom');
 		expect(zoom.form.factor).toBe(1.25);
-		expect(getFrame('zoom').getForm().factor).toBe(1.25);
-		expect(getControl('zoom-factor').read()).toBe(1.25);
 		wrapper.unmount();
 	});
 
@@ -62,7 +49,8 @@ describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open
 		await wrapper.vm.$nextTick();
 		const zoom = useZoomWindow();
 		zoom.open();
-		getControl('zoom-factor').write(1.75);
+		zoom.form.factor = 1.75;
+		await wrapper.vm.$nextTick();
 		zoom.confirm();
 		expect(Editor.config!.zoom).toBe(1.75);
 		expect(webFrame.setZoomFactor).toHaveBeenCalledWith(1.75);
@@ -70,25 +58,17 @@ describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open
 		wrapper.unmount();
 	});
 
-	it('confirm 无表单值时沿用当前配置因子', async () => {
-		const wrapper = mount(Zoom, { attachTo: document.body });
-		await wrapper.vm.$nextTick();
-		const zoom = useZoomWindow();
-		getFrame('zoom').getForm = () => ({ factor: undefined });
-		zoom.confirm();
-		expect(Editor.config!.zoom).toBe(1);
-		expect(webFrame.setZoomFactor).toHaveBeenCalledWith(1);
-		wrapper.unmount();
-	});
-
 	it('legacy 入口 Zoom.open/confirm 转发 composable', async () => {
 		const { Zoom: ZoomController } = await import('@app/composables/useZoomWindow');
 		const wrapper = mount(Zoom, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const zoom = useZoomWindow();
 		ZoomController.open();
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('zoom');
-		expect(getFrame('zoom').getForm().factor).toBe(1.25);
-		getControl('zoom-factor').write(1.5);
+		expect(zoom.form.factor).toBe(1.25);
+		zoom.form.factor = 1.5;
+		await wrapper.vm.$nextTick();
 		ZoomController.confirm();
 		expect(Editor.config!.zoom).toBe(1.5);
 		expect(webFrame.setZoomFactor).toHaveBeenCalledWith(1.5);

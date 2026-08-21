@@ -65,7 +65,7 @@ export const read = (
 	if (el && 'read' in el && typeof el.read === 'function') {
 		return el.read();
 	}
-	return el?.dataValue;
+	return el && 'dataValue' in el ? el.dataValue : undefined;
 };
 
 export const write = (
@@ -74,8 +74,8 @@ export const write = (
 ): void => {
 	if (el && 'write' in el && typeof el.write === 'function') {
 		el.write(value);
-	} else if (el) {
-		el.dataValue = value;
+	} else if (el && 'dataValue' in el) {
+		(el as { dataValue: unknown }).dataValue = value;
 	}
 };
 

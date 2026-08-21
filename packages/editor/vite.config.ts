@@ -397,7 +397,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@app': resolve(__dirname, 'src'),
-			'@ui-kit': resolve(__dirname, '../ui-kit/src/index.ts')
+			'@ui-kit': resolve(__dirname, '../ui-kit/dist/ui-kit.js')
 		}
 	},
 

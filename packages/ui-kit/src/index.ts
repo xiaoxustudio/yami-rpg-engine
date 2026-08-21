@@ -180,6 +180,7 @@ export { useTheme } from './composables/useTheme';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
+export { EventBus } from './utils/event-bus';
 export { INTRGBA, CSSRGBA } from './utils/color';
 export {
 	TreeDataContext,
@@ -213,3 +214,11 @@ export { default as YMFileNavPane } from './components/business/YMFileNavPane/YM
 export { default as YMFileBodyPane } from './components/business/YMFileBodyPane/YMFileBodyPane.vue';
 export { default as YMFileBrowser } from './components/business/YMFileBrowser/YMFileBrowser.vue';
 export { default as YMFormButtons } from './components/basic/YMFormButtons/YMFormButtons.vue';
+export { default as YMConfirmation } from './components/business/YMConfirmation/YMConfirmation.vue';
+export type { ConfirmationItem as YMConfirmationItem } from './components/business/YMConfirmation/YMConfirmation.vue';
+export { default as YMRename } from './components/business/YMRename/YMRename.vue';
+export { default as YMZoom } from './components/business/YMZoom/YMZoom.vue';
+export { default as YMSetKey } from './components/business/YMSetKey/YMSetKey.vue';
+export { default as YMSetQuantity } from './components/business/YMSetQuantity/YMSetQuantity.vue';
+export { default as YMFont } from './components/business/YMFont/YMFont.vue';
+export { default as YMFontSize } from './components/business/YMFontSize/YMFontSize.vue';

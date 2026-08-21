@@ -19,24 +19,13 @@ let callback: ((value: number) => void) | null = null;
 
 const open = (quantity: number, maximum: number, cb: (value: number) => void): void => {
 	callback = cb;
-	getWindowStore().open('setQuantity');
 	Object.assign(form, { quantity, max: maximum });
-	const setForm = (
-		document.getElementById('setQuantity') as
-			| (HTMLElement & { setForm?: (data: Partial<SetQuantityForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({ quantity, max: maximum });
+	getWindowStore().open('setQuantity');
 	getFocus(document.getElementById('setQuantity-quantity'), 'all');
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('setQuantity') as
-			| (HTMLElement & { getForm?: () => SetQuantityForm })
-			| null
-	)?.getForm;
-	callback?.(getForm?.()?.quantity ?? 0);
+	callback?.(form.quantity);
 	getWindowStore().close('setQuantity');
 };
 

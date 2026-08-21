@@ -1,13 +1,13 @@
 <template>
-	<WindowFrame ref="frame" id="fontSize" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fontSize.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fontSize-size.label') }}</div
-				><NumberBox id="fontSize-size" min="10" max="400" unit="px" :model-value="form.size" />
-			</div>
-		
-	</WindowFrame>
+	<YMFontSize
+		ref="frame"
+		id="fontSize"
+		:model-value="form.size"
+		:label="t('components.fontSize-size.label')"
+		:title="t('components.fontSize.title')"
+		@update:model-value="form.size = $event"
+		@confirm="onConfirm"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -15,12 +15,10 @@ import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { FontSizeForm } from '@app/tools/text-capture.ts';
 import { Selection } from '@app/tools/text-capture.ts';
-import WindowFrame from '@app/components/common/WindowFrame.vue';
-import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
-import NumberBox from '@app/components/common/NumberBox.vue';
+import { YMFontSize } from '@ui-kit';
 
 const { t } = useI18n();
 
@@ -30,35 +28,13 @@ const form = reactive<FontSizeForm>({
 
 const setForm = (data: Partial<FontSizeForm>): void => {
 	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
 };
 
 const getForm = (): FontSizeForm => {
-	const data = { ...form } as FontSizeForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
-			| (HTMLElement & { read?: () => unknown })
-			| null;
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
+	return { ...form } as FontSizeForm;
 };
 
-const FIELD_BY_ID: Record<string, keyof FontSizeForm> = {
-	'fontSize-size': 'size'
-};
-
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const frame = ref<{ root: HTMLElement | null } | null>(null);
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

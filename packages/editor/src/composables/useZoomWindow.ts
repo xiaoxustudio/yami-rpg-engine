@@ -23,23 +23,11 @@ const open = (): void => {
 	const factor = getFactor();
 	getWindowStore().open('zoom');
 	Object.assign(form, { factor });
-	const setForm = (
-		document.getElementById('zoom') as
-			| (HTMLElement & { setForm?: (data: Partial<ZoomForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({ factor });
 	getFocus(document.getElementById('zoom-factor'), 'all');
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('zoom') as (HTMLElement & { getForm?: () => ZoomForm }) | null
-	)?.getForm;
-	const factor = getForm?.()?.factor;
-	if (factor !== undefined) {
-		Editor.config!.zoom = factor;
-	}
+	Editor.config!.zoom = form.factor;
 	getWindowStore().close('zoom');
 	webFrame.setZoomFactor(Editor.config!.zoom!);
 };
