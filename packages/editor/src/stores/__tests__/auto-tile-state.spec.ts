@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getAutoTileStore, autoTileStateKeys } from '@app/stores/autoTile';
-import { AutoTile } from '@app/legacy/palette/auto-tile.ts';
+import { AutoTile } from '@app/palette/auto-tile.ts';
 
 describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

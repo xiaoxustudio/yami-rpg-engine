@@ -1,14 +1,14 @@
 import { $ } from '@app/utils/dom';
 import { markRaw } from 'vue';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
-import { reportError } from '@app/legacy/util/safe.ts';
+import { reportError } from '@app/utils/safe';
 import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
 import { AncestorGetter } from '@app/commands/accessors/ancestor-accessor-window.ts';
 import { AngleGetter } from '@app/commands/accessors/angle-accessor-window.ts';
 import { Command, bindCommandSchema } from '@app/commands/command-object.ts';
 import { commandCases } from '@app/commands/command-registry.ts';
-import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';
+import { CommandSuggestion } from '@app/commands/command-tip.ts';
 import { ElementGetter } from '@app/commands/accessors/element-accessor-window.ts';
 import { EquipmentGetter } from '@app/commands/accessors/equipment-accessor-window.ts';
 import { ItemGetter } from '@app/commands/accessors/item-accessor-window.ts';
@@ -19,11 +19,11 @@ import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts'
 import { ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 import { SkillGetter } from '@app/commands/accessors/skill-accessor-window.ts';
 import { StateGetter } from '@app/commands/accessors/state-accessor-window.ts';
-import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
+import { TextSuggestion } from '@app/commands/text-tip.ts';
 import { TilemapGetter } from '@app/commands/accessors/tilemap-accessor-window.ts';
 import { TriggerGetter } from '@app/commands/accessors/trigger-accessor-window.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import { t } from '@app/i18n';
 
 interface CommandField {

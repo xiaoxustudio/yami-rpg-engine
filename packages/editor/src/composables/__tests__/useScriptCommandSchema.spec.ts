@@ -4,10 +4,10 @@ import { mount } from '@vue/test-utils';
 import ScriptWindow from '@app/components/commands/Script.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { ipcRenderer } from 'electron';
-import { loadDtsFolder } from '@app/legacy/module/global';
+import { loadDtsFolder } from '@app/module/global';
 
 const { modelMock, editorMock, monacoMock } = vi.hoisted(() => {
 	const modelMock: {
@@ -61,7 +61,7 @@ vi.mock('electron', () => ({
 	ipcRenderer: { invoke: vi.fn() }
 }));
 
-vi.mock('@app/legacy/module/global', () => ({
+vi.mock('@app/module/global', () => ({
 	loadDtsFolder: vi.fn(() => [])
 }));
 

@@ -5,8 +5,8 @@ import ArrayList from '@app/components/tools/ArrayList.vue';
 import ArrayListNumber from '@app/components/tools/ArrayListNumber.vue';
 import ArrayListString from '@app/components/tools/ArrayListString.vue';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { ArrayList as ArrayListController } from '@app/legacy/tools/array-window.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { ArrayList as ArrayListController } from '@app/composables/useArrayWindow';
 import '@app/utils/number';
 
 vi.mock('@app/stores/local', () => ({

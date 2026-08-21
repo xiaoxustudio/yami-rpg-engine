@@ -6,7 +6,7 @@ import {
 	type FlatMessages
 } from './convert';
 import { loadLanguage, loadLanguageList, resolveLanguage } from './loader';
-import { localizeDomComponents, type LocalComponentItem } from '@app/legacy/localize/dom-localizer';
+import { localizeDomComponents, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { getLocalStore } from '@app/stores/local';
 import { Editor } from '@app/services/project/editor';
 

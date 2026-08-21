@@ -1,6 +1,8 @@
 ﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
-import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
+import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
+
+const SwitchBranch = useSwitchBranchSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';

@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { SetQuantity, type SetQuantityForm } from '@app/legacy/tools/set-number-window.ts';
+import { useSetQuantityWindow, type SetQuantityForm } from '@app/composables/useSetQuantityWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -29,7 +29,8 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
 
-const form = reactive<SetQuantityForm>({ quantity: 1, max: 1 });
+const setQuantity = useSetQuantityWindow();
+const form = setQuantity.form;
 
 const setForm = (data: Partial<SetQuantityForm>): void => {
 	Object.assign(form, data);
@@ -73,13 +74,14 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onConfirm = () => {
-	SetQuantity?.confirm?.();
+	setQuantity.confirm();
 };
 
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
+		el.on('closed', () => setQuantity.onWindowClosed());
 	}
 
 

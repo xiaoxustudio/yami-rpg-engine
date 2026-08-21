@@ -14,14 +14,14 @@
 import { computed, ref } from 'vue';
 import { YMFileNavPane } from '@ui-kit';
 import { Path } from '@app/utils/config';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { Directory } from '@app/file/directory-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Menu } from '@app/legacy/components/menu-list.ts';
-import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
-import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
-import { FileItem } from '@app/legacy/file/file-item.ts';
-import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { Menu } from '@app/components/menu-list.ts';
+import { createTextBoxElement as createTextBoxFactory } from '@ui-kit';
+import { FileBrowserLinks } from '@app/types/file-browser-links.ts';
+import { FileItem } from '@app/services/file-system/file-item.ts';
+import { FolderItem } from '@app/services/file-system/file-item.ts';
 import { useToastService } from '@app/composables/useToastService';
 
 interface Props {

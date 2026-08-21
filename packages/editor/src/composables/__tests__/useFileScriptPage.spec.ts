@@ -7,7 +7,7 @@ const fileScript = vi.hoisted(() => ({
 	info: null as { name: string; size: string } | null
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileScript
 	}

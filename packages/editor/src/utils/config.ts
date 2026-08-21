@@ -25,7 +25,7 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 		.readFile(configFile, 'utf8')
 		.then((json) => JSON.parse(json))
 		.catch(() => {
-			return import('@app/legacy/file/file-system-core.ts').then(({ File }) => {
+			return import('@app/file/file-system-core.ts').then(({ File }) => {
 				return File.get!({
 					local: 'default.json',
 					type: 'json'

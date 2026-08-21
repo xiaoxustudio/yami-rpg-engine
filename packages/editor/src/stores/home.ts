@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Home } from '@app/legacy/title/home-page.ts';
+import { Home } from '@app/title/home-page.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

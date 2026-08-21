@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
-import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
+import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
+
+const SwitchCondition = useSwitchConditionSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${value}]`,

@@ -4,11 +4,11 @@ import { mount } from '@vue/test-utils';
 import ProjectSettings from '@app/components/tools/ProjectSettings.vue';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
 import { getProjectStore } from '@app/stores/project';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Log } from '@app/legacy/log/log-window.ts';
-import { Title } from '@app/legacy/title/title-bar.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Log } from '@app/log/log-window.ts';
+import { Title } from '@app/title/title-bar.ts';
 import { ipcRenderer } from 'electron';
 
 vi.mock('@app/stores/local', () => ({
@@ -20,7 +20,7 @@ vi.mock('electron', () => ({
 	shell: {}
 }));
 
-vi.mock('@app/legacy/file/file-system-core.ts', () => ({
+vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { planToSave: vi.fn(), root: '/mock/project' }
 }));
 
@@ -33,11 +33,11 @@ vi.mock('@app/i18n', () => ({
 	getContent: () => ''
 }));
 
-vi.mock('@app/legacy/log/log-window.ts', () => ({
+vi.mock('@app/log/log-window.ts', () => ({
 	Log: { clear: vi.fn() }
 }));
 
-vi.mock('@app/legacy/title/title-bar.ts', () => ({
+vi.mock('@app/title/title-bar.ts', () => ({
 	Title: { updateTitleName: vi.fn() }
 }));
 
@@ -54,20 +54,20 @@ vi.mock('@app/stores/selector.ts', () => ({
 	getSelectorInstance: () => null
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		getKey: (el: { key?: string; id: string }): string =>
 			el.key ?? el.id.slice(el.id.indexOf('-') + 1)
 	}
 }));
 
-vi.mock('@app/legacy/tools/property-list.ts', () => ({
+vi.mock('@app/tools/property-list.ts', () => ({
 	AttributeListInterface: class {
 		initialize(): void {}
 	}
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		config: null,
 		manifest: { project: { config: 'Data/config.json' } },
@@ -253,8 +253,7 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 	});
 
 	it('legacy Project 入口 open/confirm/startTSC/stopTSC 转发 composable', async () => {
-		const { Project: ProjectController } =
-			await import('@app/legacy/data/project-settings-window.ts');
+		const { Project: ProjectController } = await import('@app/data/project-settings-window.ts');
 		const { wrapper } = await mountAndInit();
 		vi.mocked(Data).config = makeConfig() as never;
 		ProjectController.initialize();

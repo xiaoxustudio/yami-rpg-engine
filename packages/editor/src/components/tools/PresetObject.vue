@@ -17,9 +17,9 @@
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { PresetObject } from '@app/composables/usePresetObjectWindow';
+import { Data } from '@app/data/data-object.ts';
+import { File } from '@app/file/file-system-core.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

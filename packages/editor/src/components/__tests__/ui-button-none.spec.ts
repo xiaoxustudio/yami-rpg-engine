@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

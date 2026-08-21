@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
-import { History } from '@app/legacy/tools/history.ts';
-import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
+﻿import { defineStore } from 'pinia';
+import { History } from '@app/tools/history.ts';
+import { UndoManager } from '@app/tools/undo-manager.ts';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';

@@ -14,11 +14,11 @@ vi.mock('@app/utils/element-utils', () => ({
 	setTooltip: vi.fn()
 }));
 
-vi.mock('@app/legacy/file/file-system-core', () => ({
+vi.mock('@app/file/file-system-core', () => ({
 	File: { get: vi.fn() }
 }));
 
-vi.mock('@app/legacy/scene/scene-window', () => ({
+vi.mock('@app/scene/scene-window', () => ({
 	Scene: {
 		brush: 'pencil',
 		switchBrush: vi.fn(),
@@ -54,7 +54,7 @@ vi.mock('@app/legacy/scene/scene-window', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/data/data-object', () => ({
+vi.mock('@app/data/data-object', () => ({
 	Data: {
 		manifest: { changed: false },
 		autotiles: { map: {} },
@@ -92,7 +92,7 @@ vi.mock('@app/stores/palette', () => ({
 
 import { PaletteEngine } from '@app/engine/palette/palette-engine.ts';
 import { getRelativeCoords } from '@app/utils/element-utils';
-import { Data } from '@app/legacy/data/data-object';
+import { Data } from '@app/data/data-object';
 import { getPaletteStore } from '@app/stores/palette';
 
 function createMockPalette(overrides: Record<string, any> = {}) {

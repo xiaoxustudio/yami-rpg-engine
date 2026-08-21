@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetText from '@app/components/commands/SetText.vue';
 import { Command, initCommandParseBridges } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 initCommandParseBridges();
 

@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ArrayList } from '@app/legacy/tools/array-window.ts';
 import { useArrayWindow, type ArrayForm } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -57,7 +56,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListChange = () => {
-	ArrayList?.listChange?.();
+	arrayWindow.markChanged();
 };
 
 onMounted(() => {

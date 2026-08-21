@@ -1,4 +1,4 @@
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 
 UI.Video = class VideoElement extends UI.Element {
 	video: string;

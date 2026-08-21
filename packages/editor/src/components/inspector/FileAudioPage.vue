@@ -74,8 +74,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { AudioManager } from '@app/audio/audio-manager.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';

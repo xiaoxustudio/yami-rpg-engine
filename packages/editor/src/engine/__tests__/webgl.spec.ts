@@ -127,11 +127,11 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => {
 	return { GL: mockGL };
 });
 
-vi.mock('@app/legacy/file/file-system-core.ts', () => ({
+vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { get: vi.fn() }
 }));
 
-vi.mock('@app/legacy/ui/ui-window.ts', () => {
+vi.mock('@app/ui/ui-window.ts', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),

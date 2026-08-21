@@ -1,4 +1,4 @@
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 

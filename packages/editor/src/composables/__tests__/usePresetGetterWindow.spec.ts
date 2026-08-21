@@ -7,7 +7,7 @@ import {
 	useLightGetterWindow,
 	useObjectGetterWindow
 } from '@app/composables/usePresetGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { LightGetter, ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -17,7 +17,14 @@ vi.mock('@app/stores/local', () => ({
 vi.mock('@app/composables/usePresetObjectWindow', () => ({
 	usePresetObjectWindow: () => ({
 		getDefaultPresetId: vi.fn(() => 'preset-1')
-	})
+	}),
+	PresetObject: {
+		getDefaultPresetId: vi.fn(() => 'preset-1'),
+		buildNodes: vi.fn(),
+		open: vi.fn(),
+		confirm: vi.fn(),
+		initialize: vi.fn()
+	}
 }));
 
 interface FormFrame extends HTMLElement {

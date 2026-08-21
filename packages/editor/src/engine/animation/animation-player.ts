@@ -1,10 +1,9 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Easing } from '@app/legacy/data/transition-window.ts';
-import { Particle, type ParticleEmitterShape } from '@app/legacy/particle/particle-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
+import { Easing } from '@app/data/transition-window.ts';
+import { Particle, type ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import {
@@ -12,7 +11,7 @@ import {
 	AnimationSprite,
 	AnimationImageMap,
 	AnimationTextureMap
-} from '@app/legacy/types/animation-player.ts';
+} from '@app/types/animation-player.ts';
 
 interface AnimationData {
 	sprites: Array<AnimationSprite & { image: string }>;
@@ -20,7 +19,7 @@ interface AnimationData {
 	[k: string]: any;
 }
 
-Animation.Player = class AnimationPlayer {
+export class AnimationPlayer {
 	visible!: boolean;
 	index!: number;
 	cycleIndex!: number;
@@ -805,7 +804,7 @@ Animation.Player = class AnimationPlayer {
 		emitter.speed = speed;
 		emitter.opacity = this.opacity;
 	}
-};
+}
 
 interface PlayerFrame {
 	start: number;

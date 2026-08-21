@@ -9,7 +9,7 @@ const fileImage = vi.hoisted(() => ({
 	info: null as { name: string; size: string; resolution: string } | null
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileImage
 	}

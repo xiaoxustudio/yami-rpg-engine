@@ -27,8 +27,8 @@ describe('usePointerObjectWindow（指针样式控制器 composable：region + o
 		expect(usePointerObjectWindow().region).toBe(getRegion());
 	});
 
-	it('legacy Cursor 入口 open/close 转发 composable', async () => {
-		const { Cursor } = await import('@app/legacy/tools/pointer-object.ts');
+	it('Cursor 单例 open/close 与 composable 一致', async () => {
+		const { Cursor } = await import('@app/composables/usePointerObjectWindow');
 		Cursor.open('cursor-wait');
 		expect(getRegion().classList.contains('cursor-wait')).toBe(true);
 		Cursor.close('cursor-wait');

@@ -1,7 +1,7 @@
 ﻿import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';

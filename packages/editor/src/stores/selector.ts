@@ -1,19 +1,19 @@
-﻿import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
 import type { MenuItem } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { shallowRef } from 'vue';
 import { $ } from '@app/utils/dom';
 import { clear, hasClass, seek } from '@app/utils/element-utils';
 import { getDataStore } from '@app/stores/data';
-import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
-import { Menu } from '@app/legacy/components/menu-list.ts';
+import { AudioManager } from '@app/audio/audio-manager.ts';
+import { Menu } from '@app/components/menu-list.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { Reference } from '@app/legacy/log/related-references.ts';
-import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { Reference } from '@app/log/related-references.ts';
+import { showInExplorerCommand } from '@app/utils/platform';
 import { createGetter } from '@app/i18n';
-import { EventBus } from '@app/legacy/module/eventbus.ts';
+import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
 
 export interface SelectorInstance {

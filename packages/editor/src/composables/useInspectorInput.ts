@@ -1,4 +1,4 @@
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 interface InputEditor {
 	target: unknown;

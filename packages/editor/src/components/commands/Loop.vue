@@ -17,7 +17,9 @@ import { useI18n } from 'vue-i18n';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+
+const IfCondition = useIfConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

@@ -12,22 +12,24 @@ import {
 	write,
 	dispatchResizeEvent
 } from '@app/utils/element-utils.ts';
-import { createDragAndDropHint } from '@app/legacy/components/drag-and-drop-hint.ts';
-import { createNavBar } from '@app/legacy/components/nav-bar.ts';
-import { createPageManager } from '@app/legacy/components/page-manager.ts';
-import type { PageManagerApi } from '@ui-kit';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import {
+	createDragAndDropHintElement as createDragAndDropHint,
+	createNavBarElement as createNavBar,
+	createPageManagerElement as createPageManager,
+	type PageManagerApi
+} from '@ui-kit';
+import { File } from '@app/file/file-system-core.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '../webgl/webgl-init.ts';
-import { Cursor } from '@app/legacy/tools/pointer-object.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { Home } from '@app/legacy/title/home-page.ts';
-import { Title } from '@app/legacy/title/title-bar.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
-import { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
+import { Cursor } from '@app/composables/usePointerObjectWindow';
+import { Animation } from '@app/animation/animation-window.ts';
+import { Palette } from '@app/palette/palette.ts';
+import { Particle } from '@app/particle/particle-window.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+import { Home } from '@app/title/home-page.ts';
+import { Title } from '@app/title/title-bar.ts';
+import { UI } from '@app/ui/ui-window.ts';
+import { DynamicShape } from '@app/types/legacy-shapes.ts';
 import { h, render, type VNode } from 'vue';
 
 interface LayoutScheme {

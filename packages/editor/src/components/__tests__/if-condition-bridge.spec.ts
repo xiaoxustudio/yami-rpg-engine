@@ -2,12 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
-import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+
+const IfCondition = useIfConditionSchema();
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import '@app/legacy/command/conditional-condition-window.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

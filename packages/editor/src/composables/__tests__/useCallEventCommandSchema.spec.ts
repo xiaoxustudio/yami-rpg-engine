@@ -4,11 +4,11 @@ import { mount } from '@vue/test-utils';
 import CallEvent from '@app/components/commands/CallEvent.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

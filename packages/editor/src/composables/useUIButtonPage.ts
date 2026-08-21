@@ -1,6 +1,6 @@
-import '@app/legacy/inspector/element-button-page.ts';
+import '@app/inspector/element-button-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import { read } from '@app/utils/element-utils';
 
 interface ButtonForm {

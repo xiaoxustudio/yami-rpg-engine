@@ -1,6 +1,6 @@
-import '@app/legacy/inspector/file-script-page.ts';
+import '@app/inspector/file-script-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 interface FileScriptForm {
 	name: string;

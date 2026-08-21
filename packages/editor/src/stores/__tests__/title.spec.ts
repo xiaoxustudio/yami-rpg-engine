@@ -1,6 +1,6 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { getTitleStore, titleStateKeys } from '@app/stores/title';
-import { Title } from '@app/legacy/title/title-bar.ts';
+import { Title } from '@app/title/title-bar.ts';
 
 describe('useTitleStore（Title 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

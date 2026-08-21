@@ -1,7 +1,7 @@
 ﻿import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';

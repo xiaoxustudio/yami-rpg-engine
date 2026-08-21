@@ -10,7 +10,7 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/scene/scene-window.ts', () => ({
+vi.mock('@app/scene/scene-window.ts', () => ({
 	Scene: {
 		createTiles: (width: number, height: number) => {
 			const tiles = new Uint32Array(width * height);

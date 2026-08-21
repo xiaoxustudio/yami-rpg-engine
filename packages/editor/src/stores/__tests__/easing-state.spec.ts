@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getEasingStore, easingStateKeys } from '@app/stores/easing';
-import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Easing } from '@app/data/transition-window.ts';
 
 describe('useEasingStore（Easing 窗口状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

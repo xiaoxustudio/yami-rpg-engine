@@ -29,7 +29,7 @@ import { useI18n } from 'vue-i18n';
 import { useShakeScreenCommandSchema } from '@app/composables/commands/useShakeScreenCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

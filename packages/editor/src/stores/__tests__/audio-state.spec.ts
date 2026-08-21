@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getAudioStore } from '@app/stores/audio';
-import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { AudioManager } from '@app/audio/audio-manager.ts';
 
 describe('useAudioStore（AudioManager 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

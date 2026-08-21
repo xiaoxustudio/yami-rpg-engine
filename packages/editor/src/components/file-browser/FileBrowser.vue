@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMFileBrowser
 		ref="ym"
 		:id="props.id"
@@ -25,24 +25,24 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { YMFileBrowser, type MenuItem, type MenuOptions } from '@ui-kit';
-import { Menu } from '@app/legacy/components/menu-list.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Menu } from '@app/components/menu-list.ts';
+import { Data } from '@app/data/data-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Reference } from '@app/legacy/log/related-references.ts';
+import { Reference } from '@app/log/related-references.ts';
 import { Editor } from '@app/services/project/editor.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
-import { FileItem } from '@app/legacy/file/file-item.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { Directory } from '@app/file/directory-object.ts';
+import { FileItem } from '@app/services/file-system/file-item.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { FolderItem } from '@app/services/file-system/file-item.ts';
 import { createGetter } from '@app/i18n';
 import { Path } from '@app/utils/config';
-import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
-import { setIconClip } from '@app/legacy/util/icon-clip.ts';
+import { createTextBoxElement as createTextBoxFactory } from '@ui-kit';
+import { setIconClip } from '@app/utils/icon-clip';
 import { getBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
 import { getSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
-import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import { useToastService } from '@app/composables/useToastService';
 
 interface Props {
@@ -52,7 +52,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const Clipboard = getGlobalClipboard();
+const Clipboard = GlobalClipboard;
 const toast = useToastService();
 
 const menuPopup = (options: MenuOptions, items: MenuItem[]) => Menu.popup(options, items);

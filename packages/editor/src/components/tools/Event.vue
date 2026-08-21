@@ -26,7 +26,7 @@
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { removeTextTags, parseEventType } from '@app/composables/useCommandParse.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

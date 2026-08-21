@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
-import { History } from '@app/legacy/tools/history.ts';
-import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
+import { History } from '@app/tools/history.ts';
+import { UndoManager } from '@app/tools/undo-manager.ts';
 
 export interface AttributeItemShape {
 	id: string;

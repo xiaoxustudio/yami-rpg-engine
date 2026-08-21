@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@app/legacy/scene/scene-window', () => ({
+vi.mock('@app/scene/scene-window', () => ({
 	Scene: {
 		state: 'closed',
 		showLight: false
@@ -53,7 +53,7 @@ vi.mock('@app/engine/webgl/webgl-init', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/data/transition-window', () => ({
+vi.mock('@app/data/transition-window', () => ({
 	Easing: {
 		get: vi.fn(() => (t: number) => t)
 	}

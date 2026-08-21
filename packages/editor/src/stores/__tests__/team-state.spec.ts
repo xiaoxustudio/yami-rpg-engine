@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getTeamStore, teamStateKeys } from '@app/stores/team';
-import { Team } from '@app/legacy/data/team-window.ts';
+import { Team } from '@app/data/team-window.ts';
 
 describe('useTeamStore（Team 窗口状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

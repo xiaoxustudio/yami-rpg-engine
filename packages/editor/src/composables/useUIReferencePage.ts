@@ -1,7 +1,7 @@
-import '@app/legacy/inspector/element-container-page.ts';
-import '@app/legacy/inspector/element-reference-page.ts';
+import '@app/inspector/element-container-page.ts';
+import '@app/inspector/element-reference-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import { read } from '@app/utils/element-utils';
 
 interface ReferenceForm {

@@ -1,6 +1,6 @@
 import { INTRGBA } from '@app/utils/color-utils';
-import { Printer } from '@app/legacy/printer/printer.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Printer } from '@app/printer/printer.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 

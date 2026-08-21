@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSceneStore, sceneStateKeys } from '@app/stores/scene';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 
 describe('useSceneStore（Scene 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

@@ -8,7 +8,7 @@ import TextEffect from '@app/components/tools/TextEffect.vue';
 import InsertImage from '@app/components/tools/InsertImage.vue';
 import LocalVariable from '@app/components/tools/LocalVariable.vue';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
@@ -202,7 +202,7 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 	});
 
 	it('legacy Selection 控制器 open/confirm 转发 composable 并执行 wrap', async () => {
-		const { Selection } = await import('@app/legacy/tools/text-capture.ts');
+		const { Selection } = await import('@app/tools/text-capture.ts');
 		const wrappers = await mountAll();
 		const insert = vi.fn();
 		const parent = document.createElement('div');

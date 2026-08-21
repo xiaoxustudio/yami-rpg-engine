@@ -1,6 +1,6 @@
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Easing } from '@app/data/transition-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 

@@ -16,12 +16,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMParamList, type MenuItem, type MenuOptions } from '@ui-kit';
-import { ParamListHistory } from '@app/legacy/components/param-history';
+import { ParamListHistory } from '@ui-kit';
 import { ctrl as ctrlText } from '@app/utils/event-accessors';
-import { Menu } from '@app/legacy/components/menu-list';
+import { Menu } from '@app/components/menu-list';
 import { createGetter } from '@app/i18n';
 import { attachElementApi } from '@app/utils/attach-element-api';
-import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
 interface Props {
 	id?: string;
@@ -43,7 +43,7 @@ interface ClipboardAdapter {
 	has(type: string): boolean;
 }
 const clipboard = ((): ClipboardAdapter | null => {
-	const C = getGlobalClipboard();
+	const C = GlobalClipboard;
 	if (!C) return null;
 	return {
 		write: (type: string, data: unknown): void => C.write(type, data),

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Localization } from '@app/legacy/local/local-window.ts';
+import { Localization } from '@app/local/local-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';

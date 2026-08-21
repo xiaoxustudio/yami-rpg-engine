@@ -1,7 +1,7 @@
 ﻿import { measureText } from '@app/utils/dom';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';

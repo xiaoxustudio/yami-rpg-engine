@@ -6,7 +6,6 @@ export default defineConfig({
 	plugins: [vue()],
 	resolve: {
 		alias: {
-			'@': resolve(__dirname, 'src/legacy'),
 			'@app': resolve(__dirname, 'src'),
 			'@ui-kit': resolve(__dirname, '../ui-kit/src/index.ts')
 		}

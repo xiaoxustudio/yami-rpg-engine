@@ -1,9 +1,9 @@
-﻿import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { Color } from '@app/tools/color-picker-window.ts';
 import { t } from '@app/i18n';
 
 type RenderOutlineOperation = 'add' | 'remove' | 'reset';

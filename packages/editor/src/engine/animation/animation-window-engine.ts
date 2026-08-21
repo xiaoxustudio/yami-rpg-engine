@@ -1,12 +1,18 @@
 import { getAnimationStore } from '@app/stores/animation';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
+import type { Animation } from '@app/animation/animation-window.ts';
 import { Timer } from '@app/utils/timer';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { ParticleEmitterShape } from '@app/legacy/particle/particle-window.ts';
+import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 
 export const AnimationWindowEngine: Record<string, any> = {};
+
+let animationWindow = null as unknown as typeof Animation;
+
+export function bindAnimationWindow(instance: typeof Animation): void {
+	animationWindow = instance;
+}
 
 type AnimationFrame = {
 	start: number;
@@ -113,7 +119,7 @@ AnimationWindowEngine.drawSpriteLayers = function (
 					const program = gl.spriteProgram.use();
 					const matrix = gl.matrix
 						.project(gl.flip, gl.width, gl.height)
-						.multiply(Animation.matrix);
+						.multiply(animationWindow.matrix);
 					gl.batchRenderer.setAttrSize(8);
 					gl.bindVertexArray(program.vao);
 					gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
@@ -137,7 +143,7 @@ AnimationWindowEngine.drawEmitters = function (this: typeof Animation) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'particle' && !layer.hidden && frame !== null) {
-			matrix.set(Animation.matrix).multiply(context.matrix);
+			matrix.set(animationWindow.matrix).multiply(context.matrix);
 			let vi = 0;
 			const x = matrix[6];
 			const y = matrix[7];
@@ -248,7 +254,7 @@ AnimationWindowEngine.drawFrontParticles = function (this: typeof Animation) {
 AnimationWindowEngine.drawCoordinateAxes = function (this: typeof Animation) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
-	const matrix = gl.matrix.set(Animation.matrix);
+	const matrix = gl.matrix.set(animationWindow.matrix);
 	// 避免缩放时虚线抖动
 	const L = -10000 / this.scaleX;
 	const T = -10000 / this.scaleY;
@@ -302,7 +308,7 @@ AnimationWindowEngine.drawJointNodes = function (this: typeof Animation) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'joint' && !layer.hidden && frame !== null) {
-			matrix.set(Animation.matrix).multiply(context.matrix);
+			matrix.set(animationWindow.matrix).multiply(context.matrix);
 			let vi = 0;
 			const x = matrix[6];
 			const y = matrix[7];
@@ -361,10 +367,10 @@ AnimationWindowEngine.drawJointArrows = function (this: typeof Animation) {
 			parent.frame !== null &&
 			!parent.layer.hidden
 		) {
-			matrix.set(Animation.matrix).multiply(parent.matrix);
+			matrix.set(animationWindow.matrix).multiply(parent.matrix);
 			const sx = matrix[6];
 			const sy = matrix[7];
-			matrix.set(Animation.matrix).multiply(context.matrix);
+			matrix.set(animationWindow.matrix).multiply(context.matrix);
 			const dx = matrix[6];
 			const dy = matrix[7];
 			if (sx === dx && sy === dy) {
@@ -425,7 +431,7 @@ AnimationWindowEngine.drawJointSpinner = function (this: typeof Animation) {
 	) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
-		const matrix = gl.matrix.set(Animation.matrix).multiply(context.matrix);
+		const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
 		let vi = 0;
 		const x = matrix[6];
 		const y = matrix[7];
@@ -536,7 +542,7 @@ AnimationWindowEngine.drawSpriteWireframe = function (
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const matrix = gl.matrix.set(Animation.matrix).multiply(context.matrix);
+	const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
 	const L = -(texture.width * context.anchorX + context.pivotX);
 	const T = -(texture.height * context.anchorY + context.pivotY);
 	const R = L + texture.width;
@@ -607,7 +613,7 @@ AnimationWindowEngine.drawEmitterWireframe = function (
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const matrix = gl.matrix.set(Animation.matrix).multiply(context.matrix);
+	const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
 	const L = emitter.outerLeft * emitter.scale;
 	const T = emitter.outerTop * emitter.scale;
 	const R = emitter.outerRight * emitter.scale;
@@ -674,7 +680,7 @@ AnimationWindowEngine.drawTargetAnchor = function (this: typeof Animation) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;
-		const matrix = gl.matrix.set(Animation.matrix).multiply(context.matrix);
+		const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
 		const x = matrix[6];
 		const y = matrix[7];
 		const crossColor = 0xff0000ff;
@@ -739,7 +745,9 @@ AnimationWindowEngine.drawSpriteControlPoints = function (this: typeof Animation
 		}
 		gl.blend = 'normal';
 		const program = gl.imageProgram.use();
-		const matrix = gl.matrix.project(gl.flip, gl.width, gl.height).multiply(Animation.matrix);
+		const matrix = gl.matrix
+			.project(gl.flip, gl.width, gl.height)
+			.multiply(animationWindow.matrix);
 		gl.bindVertexArray(program.vao);
 		gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
 		gl.uniform1i(program.u_LightMode, 0);
@@ -760,32 +768,32 @@ AnimationWindowEngine.requestAnimation = function (this: typeof Animation) {
 AnimationWindowEngine.updateAnimation = function (this: typeof Animation, deltaTime: number) {
 	deltaTime *= getAnimationStore().speed ?? 0;
 	if (getAnimationStore().playing) {
-		const { start, end } = Animation.getAnimationRange!();
-		const offset = deltaTime / Animation.Player.step;
-		let index = Math.max(Animation.animIndex + offset, start);
+		const { start, end } = animationWindow.getAnimationRange!();
+		const offset = deltaTime / animationWindow.Player.step;
+		let index = Math.max(animationWindow.animIndex + offset, start);
 		if (index >= end) {
 			if (getAnimationStore().loop && end > 0) {
 				do {
 					index += start - end;
 				} while (index >= end);
-				Animation.resetSoundContexts!();
+				animationWindow.resetSoundContexts!();
 			} else {
-				Animation.animIndex = index;
-				Animation.stop!();
+				animationWindow.animIndex = index;
+				animationWindow.stop!();
 				return;
 			}
 		}
-		Animation.animIndex = index;
-		Animation.loadFrames!(index);
-		Animation.emitParticles!(deltaTime);
-		Animation.updateSoundContexts!(index);
+		animationWindow.animIndex = index;
+		animationWindow.loadFrames!(index);
+		animationWindow.emitParticles!(deltaTime);
+		animationWindow.updateSoundContexts!(index);
 	}
-	Animation.updateParticles!(deltaTime);
+	animationWindow.updateParticles!(deltaTime);
 	// 不能保证加载帧的时候一定会请求渲染(尾帧截止) 所以在播放状态时再次请求渲染
-	if (getAnimationStore().playing || Animation.particleUpdating) {
-		Animation.requestRendering!();
+	if (getAnimationStore().playing || animationWindow.particleUpdating) {
+		animationWindow.requestRendering!();
 	} else {
-		Animation.stopAnimation!();
+		animationWindow.stopAnimation!();
 	}
 };
 
@@ -801,21 +809,21 @@ AnimationWindowEngine.requestRendering = function (this: typeof Animation) {
 
 AnimationWindowEngine.renderingFunction = function (this: typeof Animation) {
 	if (GL.width * GL.height !== 0) {
-		Animation.drawBackground!();
-		if (Animation.layers !== null) {
-			Animation.drawOnionskins!();
-			Animation.drawBackParticles!();
-			Animation.drawSpriteLayers!();
-			Animation.drawFrontParticles!();
-			Animation.drawCoordinateAxes!();
-			Animation.drawEmitters!();
-			Animation.drawJointNodes!();
-			Animation.drawJointArrows!();
-			Animation.drawJointSpinner!();
-			Animation.drawHoverWireframe!();
-			Animation.drawTargetWireframe!();
-			Animation.drawTargetAnchor!();
-			Animation.drawSpriteControlPoints!();
+		animationWindow.drawBackground!();
+		if (animationWindow.layers !== null) {
+			animationWindow.drawOnionskins!();
+			animationWindow.drawBackParticles!();
+			animationWindow.drawSpriteLayers!();
+			animationWindow.drawFrontParticles!();
+			animationWindow.drawCoordinateAxes!();
+			animationWindow.drawEmitters!();
+			animationWindow.drawJointNodes!();
+			animationWindow.drawJointArrows!();
+			animationWindow.drawJointSpinner!();
+			animationWindow.drawHoverWireframe!();
+			animationWindow.drawTargetWireframe!();
+			animationWindow.drawTargetAnchor!();
+			animationWindow.drawSpriteControlPoints!();
 		}
 	}
 };

@@ -44,3 +44,11 @@ const onWindowClosed = (): void => {
 export function useRenameWindow(): RenameWindow {
 	return { form, open, confirm, onWindowClosed };
 }
+
+export const Rename = {
+	callback: null as ((value: string) => void) | null,
+	initialize: (): void => undefined,
+	open,
+	windowClosed: onWindowClosed,
+	confirm
+};

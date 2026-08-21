@@ -1,9 +1,9 @@
 import { $, getElementWriter } from '@app/utils/dom';
 import { clear, disable, enable, hide, show } from '@app/utils/element-utils';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { EventListInterface } from '@app/legacy/tools/event-list.ts';
-import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { EventListInterface } from '@app/tools/event-list.ts';
+import { ScriptListInterface } from '@app/tools/script-list.ts';
+import { UI } from '@app/ui/ui-window.ts';
 
 {
 	interface UIElementShape {

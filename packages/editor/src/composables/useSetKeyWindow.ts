@@ -44,3 +44,11 @@ const onWindowClosed = (): void => {
 export function useSetKeyWindow(): SetKeyWindow {
 	return { form, open, confirm, onWindowClosed };
 }
+
+export const SetKey = {
+	callback: null as ((key: string) => void) | null,
+	initialize: (): void => undefined,
+	open,
+	windowClosed: onWindowClosed,
+	confirm
+};

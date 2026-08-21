@@ -24,7 +24,6 @@
 		"packages/editor/Project/Templates/**",
 		"packages/editor/index.html",
 		"packages/editor/Project/index.css",
-		"packages/editor/src/legacy/main/module-init.js",
 		"packages/editor/Project/Apk/**",
 		"packages/editor/Project/Fonts/**",
 		"packages/editor/Project/Images/**",

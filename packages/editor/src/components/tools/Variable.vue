@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Variable } from '@app/legacy/variable/variable.ts';
+import { Variable } from '@app/variable/variable.ts';
 import { parseMultiLineString } from '@app/composables/useCommandParse.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

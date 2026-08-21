@@ -1,11 +1,11 @@
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
-import { getVariable } from '@app/legacy/util/safe.ts';
-import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { TextSuggestion, TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
-import { selectBoxSetItemNames } from '@app/legacy/components/select-box.ts';
+import { getVariable } from '@app/utils/safe';
+import { Attribute } from '@app/attribute/attribute-window.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
+import { TextSuggestion, TextSuggestionTarget } from '@app/commands/text-tip.ts';
+import { selectBoxSetItemNames } from '@app/components/select-box.ts';
 
 type VarTypeItem = { name: string; value: string };
 

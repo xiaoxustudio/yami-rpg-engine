@@ -58,7 +58,7 @@ import { useSetAnimationComponentCommandSchema } from '@app/composables/commands
 import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

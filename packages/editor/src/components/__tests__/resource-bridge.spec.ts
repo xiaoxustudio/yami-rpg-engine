@@ -8,7 +8,7 @@ const resources = vi.hoisted(() => ({
 	openDirText: ''
 }));
 
-vi.mock('@app/legacy/module/resource', () => ({
+vi.mock('@app/module/resource', () => ({
 	Resources: resources
 }));
 

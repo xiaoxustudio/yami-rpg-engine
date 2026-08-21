@@ -8,8 +8,8 @@
 import { onMounted, ref } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { Log } from '@app/legacy/log/log-window.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { Log } from '@app/log/log-window.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { useToastService } from '@app/composables/useToastService';
 

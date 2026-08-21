@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMFileBodyPane
 		ref="ym"
 		:links="props.links"
@@ -22,22 +22,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { YMFileBodyPane } from '@ui-kit';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Menu } from '@app/legacy/components/menu-list.ts';
-import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
-import { Directory } from '@app/legacy/file/directory-object.ts';
-import { FileItem } from '@app/legacy/file/file-item.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { Menu } from '@app/components/menu-list.ts';
+import { createTextBoxElement as createTextBoxFactory } from '@ui-kit';
+import { Directory } from '@app/file/directory-object.ts';
+import { FileItem } from '@app/services/file-system/file-item.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { FolderItem } from '@app/legacy/file/folder-item.ts';
-import { Reference } from '@app/legacy/log/related-references.ts';
+import { FolderItem } from '@app/services/file-system/file-item.ts';
+import { Reference } from '@app/log/related-references.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { createGetter } from '@app/i18n';
 import { Path } from '@app/utils/config';
-import { setIconClip } from '@app/legacy/util/icon-clip.ts';
-import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
+import { setIconClip } from '@app/utils/icon-clip';
+import { FileBrowserLinks } from '@app/types/file-browser-links.ts';
 import { useToastService } from '@app/composables/useToastService';
 
 interface Props {

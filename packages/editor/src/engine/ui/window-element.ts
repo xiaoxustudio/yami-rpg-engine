@@ -1,5 +1,5 @@
 import { Timer } from '@app/utils/timer';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 

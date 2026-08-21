@@ -1,7 +1,7 @@
-﻿import { getWindowStore } from '@app/stores/window';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus, read, write } from '@app/utils/element-utils';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 
 export type PresetObjectNode = {
 	class: string;
@@ -200,6 +200,34 @@ function confirm(event?: Event): void {
 	target?.input?.(presetId);
 	getWindowStore().close('presetObject');
 }
+
+export const PresetObject: PresetObjectWindow = {
+	get scene() {
+		return scene;
+	},
+	get list() {
+		return list;
+	},
+	get searcher() {
+		return searcher;
+	},
+	get target() {
+		return target;
+	},
+	get nodes() {
+		return nodes;
+	},
+	initialize,
+	open,
+	buildNodes,
+	getDefaultPresetId,
+	windowClosed,
+	sceneIdWrite,
+	listOpen,
+	searcherKeydown,
+	searcherInput,
+	confirm
+};
 
 export function usePresetObjectWindow(): PresetObjectWindow {
 	return {

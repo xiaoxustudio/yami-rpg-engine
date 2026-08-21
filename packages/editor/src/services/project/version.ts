@@ -1,4 +1,4 @@
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@app/services/updater/updater.ts';

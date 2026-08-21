@@ -42,7 +42,7 @@ const copyStaticAssets = (outDir: string) => {
 		['default.json', 'default.json'],
 		['commands.json', 'commands.json'],
 		// packmeta 运行时由 global.ts 以 __dirname/Script/module/packmeta.json 读取，dest 保持原路径；源文件已随 src/ 迁移至项目根
-		['../src/legacy/module/packmeta.json', 'Script/module/packmeta.json']
+		['../src/module/packmeta.json', 'Script/module/packmeta.json']
 	];
 	// 创建module目录
 	mkdirSync(join(outDir, 'Script/module'), { recursive: true });
@@ -396,7 +396,6 @@ export default defineConfig({
 
 	resolve: {
 		alias: {
-			'@': resolve(__dirname, 'src/legacy'),
 			'@app': resolve(__dirname, 'src'),
 			'@ui-kit': resolve(__dirname, '../ui-kit/src/index.ts')
 		}

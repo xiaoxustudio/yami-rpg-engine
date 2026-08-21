@@ -1,6 +1,6 @@
-import '@app/legacy/inspector/file-video-page.ts';
+import '@app/inspector/file-video-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 interface FileVideoForm {
 	name: string;

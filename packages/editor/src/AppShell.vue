@@ -77,7 +77,7 @@ import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
 import { resolveLazyComponentsReady } from '@app/bootstrap';
 import { provideMenuService } from '@app/composables/useMenuService';
-import { Menu } from '@app/legacy/components/menu-list';
+import { Menu } from '@app/components/menu-list';
 
 provideMenuService({ getState: () => Menu.state });
 

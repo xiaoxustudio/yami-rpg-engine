@@ -4,11 +4,11 @@ import { mount } from '@vue/test-utils';
 import Team from '@app/components/tools/Team.vue';
 import { useTeamWindow } from '@app/composables/useTeamWindow';
 import { getTeamStore } from '@app/stores/team';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Menu } from '@app/legacy/components/menu-list.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Menu } from '@app/components/menu-list.ts';
 import type { TeamData } from '@app/composables/useTeamWindow';
 
 vi.mock('@app/stores/local', () => ({
@@ -21,7 +21,7 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/file/file-system-core.ts', () => ({
+vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { planToSave: vi.fn() }
 }));
 
@@ -33,23 +33,23 @@ vi.mock('@app/i18n', () => ({
 	getContent: () => ''
 }));
 
-vi.mock('@app/legacy/tools/color-picker-window.ts', () => ({
+vi.mock('@app/tools/color-picker-window.ts', () => ({
 	Color: { open: vi.fn() }
 }));
 
-vi.mock('@app/legacy/components/menu-list.ts', () => ({
+vi.mock('@app/components/menu-list.ts', () => ({
 	Menu: { popup: vi.fn() }
 }));
 
-vi.mock('@app/legacy/types/global-clipboard.ts', () => ({
-	getGlobalClipboard: () => ({
+vi.mock('@app/utils/clipboard', () => ({
+	GlobalClipboard: {
 		has: () => false,
 		read: () => undefined,
 		write: vi.fn()
-	})
+	}
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		teams: { list: [], relations: '', collisions: '', map: {}, selection: '' },
 		manifest: { project: { teams: 'Data/teams.json' } },
@@ -246,7 +246,7 @@ describe('useTeamWindow（队伍窗口 composable：数据加载 + 列表编辑 
 	});
 
 	it('legacy Team 入口 open/confirm/listChange 转发 composable', async () => {
-		const { Team: TeamController } = await import('@app/legacy/data/team-window.ts');
+		const { Team: TeamController } = await import('@app/data/team-window.ts');
 		const { wrapper } = await mountAndInit();
 		vi.mocked(Data).teams = makeTeamsData() as unknown as typeof Data.teams;
 		TeamController.initialize();

@@ -6,15 +6,15 @@ import {
 	usePresetElementWindow,
 	type PresetElementNode
 } from '@app/composables/usePresetElementWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { UI } from '@app/ui/ui-window.ts';
+import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		scenePresets: {} as Record<string, { sceneId: string; data: Record<string, unknown> }>,
 		uiPresets: {} as Record<string, { uiId: string; data: Record<string, unknown> }>,
@@ -24,7 +24,7 @@ vi.mock('@app/legacy/data/data-object.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/ui/ui-window.ts', () => ({
+vi.mock('@app/ui/ui-window.ts', () => ({
 	UI: { target: null, meta: { guid: 'ui-guid' }, hasPrefab: () => false }
 }));
 
@@ -281,9 +281,9 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		wrapper.unmount();
 	});
 
-	it('legacy PresetElement 入口 initialize/open/confirm 转发 composable', async () => {
+	it('PresetElement 单例入口 open/confirm 与 composable 一致', async () => {
 		const { PresetElement: PresetElementController } =
-			await import('@app/legacy/tools/preset-element-window.ts');
+			await import('@app/composables/usePresetElementWindow');
 		const { wrapper } = await mountAndInit();
 		vi.mocked(Data).uiPresets = { 'preset-1': { uiId: 'ui-1', data: {} } };
 		const input = vi.fn();

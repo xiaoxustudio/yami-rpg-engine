@@ -1,5 +1,5 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { Data } from '@app/data/data-object.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { BaseTexture } from './base-texture.ts';
 import { BatchRenderer } from './batch-renderer.ts';
 import { ImageTexture } from './image-texture.ts';

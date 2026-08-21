@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMNumberBox } from '@ui-kit';
-import { NumberHistory } from '@app/legacy/components/number-history';
+import { NumberHistory } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface NumberBoxElement extends HTMLElement {

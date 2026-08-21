@@ -1,8 +1,8 @@
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Easing } from '@app/data/transition-window.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 
 export type CurveState = 'closed' | 'open' | 'suspended';

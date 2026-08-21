@@ -3,15 +3,15 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetNumberCommandWindow from '@app/components/commands/SetNumber.vue';
 import SetNumberOperandWindow from '@app/components/tools/SetNumberOperand.vue';
-import {
-	NumberOperand,
-	type NumberOperandData
-} from '@app/legacy/command/set-value-operand-window.ts';
+import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
+import type { NumberOperandData } from '@app/composables/useNumberOperandSchema';
+
+const NumberOperand = useNumberOperandSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${value}]`,

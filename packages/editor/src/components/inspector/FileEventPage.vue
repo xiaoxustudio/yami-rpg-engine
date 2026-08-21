@@ -27,8 +27,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { attachElementApi } from '@app/utils/attach-element-api';

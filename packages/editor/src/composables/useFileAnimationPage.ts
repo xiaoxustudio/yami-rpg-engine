@@ -1,5 +1,5 @@
-import '@app/legacy/inspector/file-animation-page.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import '@app/inspector/file-animation-page.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 export function useFileAnimationPage() {
 	const sync = (): void => {

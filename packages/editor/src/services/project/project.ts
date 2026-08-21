@@ -1,4 +1,4 @@
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Editor } from './editor.ts';
 import { Sprite } from '@app/engine/sprite/sprite.ts';

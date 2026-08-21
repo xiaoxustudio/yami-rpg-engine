@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import VariableGetterWindow from '@app/components/tools/VariableGetter.vue';
 import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Attribute } from '@app/attribute/attribute-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

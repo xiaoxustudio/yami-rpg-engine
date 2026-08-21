@@ -39,15 +39,15 @@ vi.mock('@app/utils/timer', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/inspector/inspector', () => ({
+vi.mock('@app/inspector/inspector', () => ({
 	Inspector: { manager: { focusing: false } }
 }));
 
-vi.mock('@app/legacy/tools/pointer-object', () => ({
-	Cursor: { open: vi.fn(), close: vi.fn() }
+vi.mock('@app/composables/usePointerObjectWindow', () => ({
+	Cursor: { open: vi.fn(), close: vi.fn(), region: null }
 }));
 
-vi.mock('@app/legacy/animation/animation-window', () => ({
+vi.mock('@app/animation/animation-window', () => ({
 	Animation: {
 		timelineMarquee: { layer: { sprite: null }, x: 0 },
 		player: { textures: {} },
@@ -60,7 +60,7 @@ vi.mock('@app/legacy/animation/animation-window', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/palette/palette', () => ({
+vi.mock('@app/palette/palette', () => ({
 	Palette: { updateBackground: vi.fn() }
 }));
 

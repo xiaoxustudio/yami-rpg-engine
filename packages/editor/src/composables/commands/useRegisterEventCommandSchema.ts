@@ -1,8 +1,8 @@
 ﻿import { getElementReader, getElementWriter } from '@app/utils/dom';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 import { getFocus, hide, read, show, write } from '@app/utils/element-utils';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';

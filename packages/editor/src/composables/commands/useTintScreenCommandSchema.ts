@@ -1,6 +1,6 @@
 ﻿import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { getFocus, read, write } from '@app/utils/element-utils';

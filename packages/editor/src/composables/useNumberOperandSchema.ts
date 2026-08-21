@@ -23,8 +23,8 @@ import {
 } from '@app/composables/useCommandParse.ts';
 import { Token } from '@app/commands/token.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 import { t } from '@app/i18n';
 
 export interface OperandRefShape {

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
-import { Palette } from '@app/legacy/palette/palette.ts';
+import { Palette } from '@app/palette/palette.ts';
 import type { EditorProjectShape } from './editor';
 
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';

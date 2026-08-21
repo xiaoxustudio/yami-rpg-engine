@@ -3,10 +3,10 @@ import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import { getWindowStore, windowStateKeys } from '@app/stores/window';
-import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Variable } from '@app/legacy/variable/variable.ts';
-import { Window } from '@app/legacy/tools/window-object';
+import { Attribute } from '@app/attribute/attribute-window.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { Variable } from '@app/variable/variable.ts';
+import { Window } from '@app/tools/window-object';
 
 describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {

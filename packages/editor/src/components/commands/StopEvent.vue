@@ -26,8 +26,8 @@ import { useStopEventCommandSchema } from '@app/composables/commands/useStopEven
 import { $ } from '@app/utils/dom';
 import { write } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

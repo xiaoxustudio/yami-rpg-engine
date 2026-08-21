@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMSelectBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -20,8 +20,8 @@ import {
 	setTooltip as setTooltipElement,
 	dispatchChangeEvent
 } from '@app/utils/element-utils';
-import { Select } from '@app/legacy/components/select-list.ts';
-import { parseLocalTip } from '@app/legacy/localize/dom-localizer';
+import { Select } from '@app/components/select-list.ts';
+import { parseLocalTip } from '@app/localize/dom-localizer';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {

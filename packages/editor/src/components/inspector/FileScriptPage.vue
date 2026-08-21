@@ -21,8 +21,8 @@ import { useFileScriptPage } from '@app/composables/useFileScriptPage';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
 const { t } = useI18n();

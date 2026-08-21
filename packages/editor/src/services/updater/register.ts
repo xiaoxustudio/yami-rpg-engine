@@ -18,7 +18,7 @@ import { initUpdaterBackup } from './backup.ts';
 import { initUpdaterToLatest } from './to-latest.ts';
 import { initUpdaterIncremental } from './incremental.ts';
 import { initUpdaterVersionWarning } from './version-warning.ts';
-import { initUpdaterHooks } from '@app/legacy/update/updater-hooks.ts';
+import { initUpdaterHooks } from '@app/update/updater-hooks.ts';
 
 export function initUpdater(): void {
 	initUpdaterProject();

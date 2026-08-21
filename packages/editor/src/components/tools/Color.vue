@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="color" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.color.title') }}<div class="close" /></TitleBar></template>
 		
@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { Color } from '@app/tools/color-picker-window.ts';
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

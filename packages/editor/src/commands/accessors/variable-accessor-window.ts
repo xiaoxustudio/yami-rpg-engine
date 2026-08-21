@@ -1,4 +1,4 @@
-﻿import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/tools/window-object.ts';
 import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
 
 interface VariableGetterTarget {

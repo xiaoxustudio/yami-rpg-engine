@@ -1,6 +1,11 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard';
+
+export interface GlobalClipboardHost {
+	has(type: string): boolean;
+	read(type: string): any;
+	write(type: string, data: unknown): void;
+}
 
 export const GlobalClipboard: GlobalClipboardHost = {
 	has(format: string): boolean {

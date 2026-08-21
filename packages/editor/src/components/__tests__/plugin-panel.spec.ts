@@ -1,21 +1,21 @@
 import { describe, expect, it, vi, beforeAll, beforeEach } from 'vitest';
-vi.mock('@app/legacy/module/resource.ts', () => ({}));
+vi.mock('@app/module/resource.ts', () => ({}));
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import { applyLocaleData } from '@app/i18n';
-import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
+import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 
 const helper = vi.hoisted(() => ({
 	guidMap: {} as Record<string, { overview?: { plugin?: string } }>,
 	openURL: vi.fn()
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: { manifest: { guidMap: helper.guidMap } }
 }));
 
-vi.mock('@app/legacy/file/file-system-core.ts', () => ({
+vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { openURL: helper.openURL }
 }));
 

@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SkillGetter from '@app/components/tools/SkillGetter.vue';
 import { useSkillGetterWindow } from '@app/composables/useSkillGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { SkillGetter as SkillGetterController } from '@app/commands/accessors/skill-accessor-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

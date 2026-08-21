@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 

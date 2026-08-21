@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextArea } from '@ui-kit';
-import { TextHistory } from '@app/legacy/components/text-history';
+import { TextHistory } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
 import { attachElementApi } from '@app/utils/attach-element-api';
 

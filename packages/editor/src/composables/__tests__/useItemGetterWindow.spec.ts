@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ItemGetter from '@app/components/tools/ItemGetter.vue';
 import { useItemGetterWindow } from '@app/composables/useItemGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { ItemGetter as ItemGetterController } from '@app/commands/accessors/item-accessor-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Enum } from '@app/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

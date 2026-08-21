@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<div class="box" id="palette-head" @pointerdown="onHeadPointerdown">
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
@@ -116,12 +116,12 @@
 </template>
 
 <script setup lang="ts">
-import '@app/legacy/inspector/file-tileset-page.ts';
+import '@app/inspector/file-tileset-page.ts';
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { focus } from '@app/utils/element-utils';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { Palette } from '@app/palette/palette.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { usePaletteStore } from '@app/stores/palette';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';

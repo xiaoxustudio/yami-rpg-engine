@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import AutoTileSelectNode from '@app/components/tools/AutoTileSelectNode.vue';
 import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { Palette } from '@app/palette/palette.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 import { Timer } from '@app/utils/timer';
 import '@app/utils/math';
 
@@ -13,7 +13,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/palette/palette.ts', () => ({
+vi.mock('@app/palette/palette.ts', () => ({
 	Palette: {
 		tileset: { tileWidth: 32, tileHeight: 32 },
 		updateBackground: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock('@app/legacy/palette/palette.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/scene/scene-window.ts', () => ({
+vi.mock('@app/scene/scene-window.ts', () => ({
 	Scene: {
 		marquee: {
 			key: 'tile',
@@ -177,16 +177,6 @@ describe('useTileNodeWindow（自动图块节点选择窗口 composable：open/�
 		tileNode.open(nodes, document.createElement('img'), 0, 0);
 		window.dispatchEvent(new Event('dprchange'));
 		expect(Window.open).toHaveBeenCalledTimes(2);
-		wrapper.unmount();
-	});
-
-	it('legacy TileNode 入口 initialize/open 转发 composable', async () => {
-		const { TileNode: TileNodeController } =
-			await import('@app/legacy/palette/tile-node-window.ts');
-		const { wrapper } = await mountAndInit();
-		TileNodeController.open!(nodes, document.createElement('img'), 0, 0);
-		expect(Window.open).toHaveBeenCalledWith('autoTile-selectNode');
-		expect(useTileNodeWindow().nodes).toBe(nodes);
 		wrapper.unmount();
 	});
 });

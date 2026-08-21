@@ -21,7 +21,7 @@ vi.mock('@app/utils/element-utils', () => ({
 	css: () => ({ fontFamily: 'sans-serif' })
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		config: {
 			lightArea: {
@@ -42,7 +42,7 @@ vi.mock('@app/legacy/data/data-object.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/inspector/inspector', () => ({
+vi.mock('@app/inspector/inspector', () => ({
 	Inspector: { manager: { focusing: false }, uiElement: { target: null, write: vi.fn() } }
 }));
 
@@ -56,11 +56,11 @@ vi.mock('@app/utils/timer', () => ({
 	Timer: mockTimer
 }));
 
-vi.mock('@app/legacy/palette/palette', () => ({
+vi.mock('@app/palette/palette', () => ({
 	Palette: { updateBackground: vi.fn(), explicit: false }
 }));
 
-vi.mock('@app/legacy/animation/animation-window', () => ({
+vi.mock('@app/animation/animation-window', () => ({
 	Animation: {
 		timelineMarquee: { layer: { sprite: null }, x: 0 },
 		player: { textures: {} },
@@ -73,7 +73,7 @@ vi.mock('@app/legacy/animation/animation-window', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/ui/ui-window', () => {
+vi.mock('@app/ui/ui-window', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),
@@ -358,7 +358,7 @@ const { Scene } = vi.hoisted(() => ({
 	}
 }));
 
-vi.mock('@app/legacy/scene/scene-window.ts', () => ({ Scene }));
+vi.mock('@app/scene/scene-window.ts', () => ({ Scene }));
 
 import { SceneCameraEngine } from '@app/engine/scene/scene-camera-engine.ts';
 import { SceneSelectionEngine } from '@app/engine/scene/scene-selection-engine.ts';

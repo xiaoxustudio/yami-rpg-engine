@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="localVariable" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.localVariable.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { LocalVariableForm } from '@app/legacy/tools/text-capture.ts';
-import { Selection } from '@app/legacy/tools/text-capture.ts';
+import type { LocalVariableForm } from '@app/tools/text-capture.ts';
+import { Selection } from '@app/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

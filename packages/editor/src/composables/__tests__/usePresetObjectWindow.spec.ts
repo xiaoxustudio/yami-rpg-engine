@@ -6,19 +6,19 @@ import {
 	usePresetObjectWindow,
 	type PresetObjectNode
 } from '@app/composables/usePresetObjectWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/file/file-system-core.ts', () => ({
+vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { getPath: () => undefined, route: () => '' }
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		scenePresets: {} as Record<string, { sceneId: string; data: Record<string, unknown> }>,
 		uiPresets: {} as Record<string, { uiId: string; data: Record<string, unknown> }>,
@@ -28,7 +28,7 @@ vi.mock('@app/legacy/data/data-object.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/scene/scene-window.ts', () => ({
+vi.mock('@app/scene/scene-window.ts', () => ({
 	Scene: { target: null, meta: { guid: 'scene-guid' } }
 }));
 
@@ -283,9 +283,9 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 		wrapper.unmount();
 	});
 
-	it('legacy PresetObject 入口 initialize/open/confirm 转发 composable', async () => {
+	it('PresetObject 单例 open/confirm 与 composable 一致', async () => {
 		const { PresetObject: PresetObjectController } =
-			await import('@app/legacy/tools/scene-preset-window.ts');
+			await import('@app/composables/usePresetObjectWindow');
 		const { wrapper } = await mountAndInit();
 		vi.mocked(Data).scenePresets = { 'preset-1': { sceneId: 'scene-1', data: {} } };
 		const input = vi.fn();

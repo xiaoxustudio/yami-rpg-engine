@@ -14,8 +14,11 @@ import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
-import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
-import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+
+const IfBranch = useIfBranchSchema();
+const IfCondition = useIfConditionSchema();
 import { useIfCommandSchema } from '@app/composables/commands/useIfCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

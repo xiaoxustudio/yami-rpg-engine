@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import { PluginManager } from '@app/plugin/plugin.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

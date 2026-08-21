@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
-import { registerSearchHistoryDropdown, BrowserSearchHistory } from '@app/legacy/module/browserSearchHistory.ts';
+import { registerSearchHistoryDropdown, BrowserSearchHistory } from '@app/module/browserSearchHistory.ts';
 
 const visible = ref(false);
 const keywords = ref<string[]>([]);

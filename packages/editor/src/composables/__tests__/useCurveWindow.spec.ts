@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Easing } from '@app/data/transition-window.ts';
 import { Timer } from '@app/utils/timer';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/animation/animation-window.ts', () => ({
+vi.mock('@app/animation/animation-window.ts', () => ({
 	Animation: {
 		planToSave: vi.fn(),
 		history: { save: vi.fn() },
@@ -20,14 +20,14 @@ vi.mock('@app/legacy/animation/animation-window.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/data/data-object.ts', () => ({
+vi.mock('@app/data/data-object.ts', () => ({
 	Data: {
 		easings: { map: {} },
 		createEasingItems: vi.fn(() => [])
 	}
 }));
 
-vi.mock('@app/legacy/data/transition-window.ts', () => {
+vi.mock('@app/data/transition-window.ts', () => {
 	const curveMap = { count: 0, update: vi.fn() };
 	return {
 		Easing: {
@@ -239,7 +239,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 	});
 
 	it('legacy Curve 入口 initialize/open/close/load 转发 composable', async () => {
-		const { Curve: CurveController } = await import('@app/legacy/animation/curve-window.ts');
+		const { Curve: CurveController } = await import('@app/animation/curve-window.ts');
 		const page = getPage();
 		Object.defineProperty(page, 'clientWidth', { value: 300 });
 		getList().loadItems = vi.fn();

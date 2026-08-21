@@ -3,10 +3,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ShowChoicesCommandWindow from '@app/components/commands/ShowChoices.vue';
 import ChoiceWindow from '@app/components/tools/Choice.vue';
-import { Choices } from '@app/legacy/command/show-options-window.ts';
+import { useChoicesSchema } from '@app/composables/useChoicesSchema';
+
+const Choices = useChoicesSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${value}]`

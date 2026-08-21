@@ -47,3 +47,10 @@ const confirm = (): void => {
 export function useZoomWindow(): ZoomWindow {
 	return { form, getFactor, open, confirm };
 }
+
+export const Zoom = {
+	initialize: (): void => undefined,
+	getFactor,
+	open,
+	confirm
+};

@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMCommandList } from '@ui-kit';
-import { commandListOptions } from '@app/legacy/components/command-list';
-import { applyCommandListInstanceOverride, ensureUpdateCommandElementOverride } from '@app/legacy/module/eslints';
+import { commandListOptions } from '@app/components/command-list';
+import { applyCommandListInstanceOverride, ensureUpdateCommandElementOverride } from '@app/module/eslints';
 
 interface Props {
 	id?: string;

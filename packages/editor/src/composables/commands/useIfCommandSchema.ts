@@ -1,7 +1,9 @@
 ﻿import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
+import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
+
+const IfBranch = useIfBranchSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';

@@ -23,3 +23,15 @@ export function usePointerObjectWindow(): PointerObjectWindow {
 		close
 	};
 }
+
+export const Cursor: {
+	readonly region: HTMLElement;
+	open: (className: string) => void;
+	close: (className: string) => void;
+} = {
+	get region() {
+		return document.getElementById('cursor-region')!;
+	},
+	open,
+	close
+};

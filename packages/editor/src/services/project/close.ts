@@ -6,13 +6,13 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { getInspectorStore } from '@app/stores/inspector.ts';
 import { getProjectStore } from '@app/stores/project.ts';
 import { getUIStore } from '@app/stores/ui.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from './editor.ts';
-import { WebServer } from '@app/legacy/module/webserver.ts';
-import { Printer } from '@app/legacy/printer/printer.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { WebServer } from '@app/services/ipc/webserver.ts';
+import { Printer } from '@app/printer/printer.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 function close(this: typeof Editor, save = true) {

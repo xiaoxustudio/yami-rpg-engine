@@ -3,7 +3,7 @@ import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 type SetAnimationComponentData = {

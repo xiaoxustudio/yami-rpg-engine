@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Color from '@app/components/tools/Color.vue';
 import { useColorWindow } from '@app/composables/useColorWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { radioProxyMap } from '@app/legacy/components/radio-proxy';
+import { Window } from '@app/tools/window-object.ts';
+import { radioProxyMap } from '@ui-kit';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

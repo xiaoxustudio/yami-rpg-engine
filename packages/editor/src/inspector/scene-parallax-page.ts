@@ -1,0 +1,185 @@
+import { $, getElementWriter } from '@app/utils/dom';
+import { clear, write } from '@app/utils/element-utils';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+
+{
+	interface SceneParallaxShape {
+		target: SceneParallaxData | null;
+		update: ((parallax: SceneParallaxData, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
+	}
+	interface SceneParallaxData {
+		player: {
+			destroy(): void;
+			loadTexture(): void;
+			shiftX: number;
+			shiftY: number;
+		};
+		tint: Record<string, unknown>;
+		[k: string]: unknown;
+	}
+	const SceneParallax: SceneParallaxShape = {
+		owner: Scene,
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null
+	};
+
+	SceneParallax.initialize = function () {};
+
+	SceneParallax.create = function (this: typeof SceneParallax) {
+		return {
+			class: 'parallax',
+			name: 'Parallax',
+			enabled: true,
+			hidden: false,
+			locked: false,
+			presetId: '',
+			image: '',
+			layer: 'foreground',
+			order: 0,
+			light: 'raw',
+			blend: 'normal',
+			opacity: 1,
+			x: 0,
+			y: 0,
+			scaleX: 1,
+			scaleY: 1,
+			repeatX: 1,
+			repeatY: 1,
+			anchorX: 0,
+			anchorY: 0,
+			offsetX: 0,
+			offsetY: 0,
+			parallaxFactorX: 1,
+			parallaxFactorY: 1,
+			shiftSpeedX: 0,
+			shiftSpeedY: 0,
+			tint: [0, 0, 0, 0],
+			conditions: [],
+			events: [],
+			scripts: []
+		};
+	};
+
+	SceneParallax.open = function (this: typeof SceneParallax, parallax: SceneParallaxData) {
+		if (this.target !== parallax) {
+			this.target = parallax;
+
+			const write = getElementWriter('sceneParallax', parallax);
+			write('conditions');
+			write('events');
+			write('scripts');
+			($('#sceneParallax-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		}
+	};
+
+	SceneParallax.close = function (this: typeof SceneParallax) {
+		if (this.target) {
+			Scene.list.unselect(this.target);
+			Scene.updateTarget!();
+			this.target = null;
+			clear($('#sceneParallax-conditions'));
+			clear($('#sceneParallax-events'));
+			clear($('#sceneParallax-scripts'));
+			clear($('#sceneParallax-parameter-pane'));
+		}
+	};
+
+	SceneParallax.write = function (this: typeof SceneParallax, options: Record<string, unknown>) {
+		if (options.x !== undefined) {
+			write($('#sceneParallax-x'), options.x);
+		}
+		if (options.y !== undefined) {
+			write($('#sceneParallax-y'), options.y);
+		}
+	};
+
+	SceneParallax.update = function (
+		this: typeof SceneParallax,
+		parallax: SceneParallaxData,
+		key: string,
+		value: unknown
+	) {
+		Scene.planToSave!();
+		switch (key) {
+			case 'name':
+				if (parallax.name !== value) {
+					parallax.name = value;
+					Scene.updateTargetInfo!();
+					Scene.list.updateItemName(parallax);
+				}
+				break;
+			case 'image':
+				if (parallax.image !== value) {
+					parallax.image = value;
+					parallax.player.destroy();
+					parallax.player.loadTexture();
+					Scene.list.update();
+				}
+				break;
+			case 'layer':
+			case 'order':
+				if (parallax[key] !== value) {
+					parallax[key] = value;
+					Scene.loadObjects!();
+				}
+				break;
+			case 'light':
+			case 'blend':
+			case 'opacity':
+			case 'x':
+			case 'y':
+			case 'scaleX':
+			case 'scaleY':
+			case 'repeatX':
+			case 'repeatY':
+			case 'anchorX':
+			case 'anchorY':
+			case 'offsetX':
+			case 'offsetY':
+			case 'parallaxFactorX':
+			case 'parallaxFactorY':
+				if (parallax[key] !== value) {
+					parallax[key] = value;
+				}
+				break;
+			case 'shiftSpeedX':
+				if (parallax.shiftSpeedX !== value) {
+					parallax.shiftSpeedX = value;
+					if (value === 0) {
+						parallax.player.shiftX = 0;
+					}
+				}
+				break;
+			case 'shiftSpeedY':
+				if (parallax.shiftSpeedY !== value) {
+					parallax.shiftSpeedY = value;
+					if (value === 0) {
+						parallax.player.shiftY = 0;
+					}
+				}
+				break;
+			case 'tint-0':
+			case 'tint-1':
+			case 'tint-2':
+			case 'tint-3': {
+				const index = key.indexOf('-') + 1;
+				const color = key.slice(index);
+				if (parallax.tint[color] !== value) {
+					parallax.tint[color] = value;
+				}
+				break;
+			}
+		}
+		Scene.requestRendering!();
+	};
+
+	Inspector.sceneParallax = SceneParallax;
+}

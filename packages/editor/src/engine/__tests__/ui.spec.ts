@@ -17,7 +17,7 @@ if (!Array.prototype.remove) {
 	};
 }
 
-vi.mock('@app/legacy/inspector/inspector', () => ({
+vi.mock('@app/inspector/inspector', () => ({
 	Inspector: { manager: { focusing: false }, uiElement: { target: null, write: vi.fn() } }
 }));
 
@@ -48,15 +48,15 @@ vi.mock('@app/utils/dom', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/safe.ts', () => ({
+vi.mock('@app/utils/safe', () => ({
 	getVariable: () => ({ name: 'test' })
 }));
 
-vi.mock('@app/legacy/local/local-object.ts', () => ({
+vi.mock('@app/local/local-object.ts', () => ({
 	GameLocal: { replace: (v: string) => v }
 }));
 
-vi.mock('@app/legacy/printer/printer.ts', () => ({
+vi.mock('@app/printer/printer.ts', () => ({
 	Printer: {
 		font: 'Arial',
 		reset: vi.fn()
@@ -207,7 +207,7 @@ vi.mock('@app/stores/ui', () => ({
 	})
 }));
 
-vi.mock('@app/legacy/ui/ui-window.ts', () => {
+vi.mock('@app/ui/ui-window.ts', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),
@@ -294,7 +294,7 @@ import '@app/engine/ui/progress-bar-element.ts';
 import '@app/engine/ui/root-element.ts';
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 
-const { UI } = await import('@app/legacy/ui/ui-window.ts');
+const { UI } = await import('@app/ui/ui-window.ts');
 
 describe('UI.Element 构造与初始状态', () => {
 	it('默认参数创建元素', () => {

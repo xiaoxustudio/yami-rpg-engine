@@ -30,7 +30,7 @@ import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCam
 import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
 import { clear } from '@app/utils/element-utils';
-import { Data } from '@app/legacy/data/data-object.ts';
+import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

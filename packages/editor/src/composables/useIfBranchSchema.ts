@@ -3,10 +3,10 @@ import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { setOperatorColor } from '@app/composables/useCommandColor.ts';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
-import {
-	IfCondition,
-	type IfConditionData
-} from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+import type { IfConditionData } from '@app/composables/useIfConditionSchema';
+
+const IfCondition = useIfConditionSchema();
 
 interface IfBranchTarget {
 	save: () => unknown;

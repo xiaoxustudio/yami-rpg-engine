@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneActor-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
@@ -105,11 +105,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
-import { EventListInterface } from '@app/legacy/tools/event-list.ts';
-import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/tools/condition-list.ts';
+import { EventListInterface } from '@app/tools/event-list.ts';
+import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useSceneStore } from '@app/stores/scene';

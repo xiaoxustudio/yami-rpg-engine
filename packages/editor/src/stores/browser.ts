@@ -3,26 +3,26 @@ import { Editor } from '@app/services/project/editor.ts';
 import { shallowRef } from 'vue';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { getDataStore } from '@app/stores/data';
 import { Path } from '@app/utils/config';
-import { TemplatesPath } from '@app/legacy/module/global.ts';
-import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TemplatesPath } from '@app/module/global.ts';
+import { Menu } from '@app/components/menu-list.ts';
 import type { MenuItem } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';
-import { Title } from '@app/legacy/title/title-bar.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Title } from '@app/title/title-bar.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
 import { getInspectorStore } from '@app/stores/inspector.ts';
-import { Reference } from '@app/legacy/log/related-references.ts';
-import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
+import { Reference } from '@app/log/related-references.ts';
+import { showInExplorerCommand } from '@app/utils/platform';
 import { createGetter } from '@app/i18n';
 import { $ } from '@app/utils/dom';
 import { addClass, hasClass, removeClass, seek } from '@app/utils/element-utils';
 import { pinia } from './pinia';
-import type { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
-import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
+import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import child_process from 'node:child_process';
 
 export interface FileBrowserBody {
@@ -231,7 +231,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const { target } = event.raw;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
 		const get = createGetter('menuFileBrowser');
-		const Clipboard = getGlobalClipboard();
+		const Clipboard = GlobalClipboard;
 		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;
 		if ((seek(target, 'file-body-pane') as unknown as FileBrowserInstance) === Browser) {

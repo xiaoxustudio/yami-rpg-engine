@@ -20,12 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import '@app/legacy/inspector/element-video-page.ts';
+import '@app/inspector/element-video-page.ts';
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

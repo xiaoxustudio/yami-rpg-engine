@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import '@app/legacy/inspector/file-ui-page.ts';
+import '@app/inspector/file-ui-page.ts';
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

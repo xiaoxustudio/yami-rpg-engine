@@ -1,6 +1,6 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 type PlayerContextShape = Array<Record<string, unknown>> & { count?: number };

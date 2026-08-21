@@ -1,7 +1,7 @@
-import '@app/legacy/inspector/file-image-page.ts';
+import '@app/inspector/file-image-page.ts';
 import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 interface FileImageForm {
 	name: string;

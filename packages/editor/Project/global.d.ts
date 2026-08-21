@@ -1,6 +1,6 @@
 ﻿/// <reference types="vite/client" />
 
-// 鍏ㄥ眬绫诲瀷鎵╁睍澹版槑 鏈枃浠堕泦涓０鏄?src/legacy/util/ 鍚勬ā鍧楀鍐呯疆瀵硅薄 / window 鐨勬柊澧炴垚鍛樼被鍨? 閬垮厤 TS2339 / TS2551 鎶ラ敊銆傛墍鏈夋墿灞曞潎鏉ヨ嚜 util/*.ts 鐨勫疄闄呰繍琛屾椂鎸傝浇銆?
+// 鍏ㄥ眬绫诲瀷鎵╁睍澹版槑 鏈枃浠堕泦涓０鏄?src/utils/ 鍚勬ā鍧楀鍐呯疆瀵硅薄 / window 鐨勬柊澧炴垚鍛樼被鍨? 閬垮厤 TS2339 / TS2551 鎶ラ敊銆傛墍鏈夋墿灞曞潎鏉ヨ嚜 utils/*.ts 鐨勫疄闄呰繍琛屾椂鎸傝浇銆?
 
 // 娉細鏈枃浠朵繚鎸?ambient script锛堟棤椤跺眰 import/export锛夛紝interface 澹版槑鎵嶈兘鑷姩鍚堝苟鍒板叏灞€銆傛晠 EditorEvent 鍒悕鍦ㄦ鍐呰仈锛屼笉 import types/editor-event.ts锛堥《灞?import 浼氱牬鍧?ambient 璇箟锛夈€?
 type EditorEvent =

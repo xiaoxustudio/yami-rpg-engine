@@ -30,7 +30,7 @@ import { useLocalStore } from '@app/stores/local';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
-import { AttributeListInterface } from '@app/legacy/tools/property-list';
+import { AttributeListInterface } from '@app/tools/property-list';
 
 const { t } = useI18n();
 

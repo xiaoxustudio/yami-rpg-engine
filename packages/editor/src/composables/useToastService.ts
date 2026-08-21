@@ -1,5 +1,5 @@
 import { inject, provide, type InjectionKey } from 'vue';
-import { Toast } from '@app/legacy/components/toast';
+import { Toast } from '@app/components/toast';
 
 export interface ToastService {
 	show(message: string, type?: string, duration?: number): HTMLDivElement;

@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getToolStore } from '@app/stores/tool';
-import { registerTool, getToolInstance } from '@app/legacy/tools/tool-registry';
-import { ShortcutRegistry } from '@app/legacy/tools/shortcut-registry';
+import { registerTool, getToolInstance } from '@app/tools/tool-registry';
+import { ShortcutRegistry } from '@app/tools/shortcut-registry';
 
 describe('useToolStore（工具/快捷键注册表）', () => {
 	it('注册后可读取', () => {

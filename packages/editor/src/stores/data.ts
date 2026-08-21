@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
+import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { shallowReactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 

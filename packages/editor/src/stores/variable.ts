@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { shallowReactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
-import { History } from '@app/legacy/tools/history.ts';
-import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
+import { History } from '@app/tools/history.ts';
+import { UndoManager } from '@app/tools/undo-manager.ts';
 
 export interface VariableItemShape {
 	id?: string;
@@ -44,7 +44,7 @@ export const useVariableStore = defineStore('variable', () => {
 
 	async function initialize(): Promise<void> {
 		if (initialized.value) return;
-		const { Variable } = await import('@app/legacy/variable/variable.ts');
+		const { Variable } = await import('@app/variable/variable.ts');
 		if (initialized.value) return;
 		Variable?.initialize?.();
 		initialized.value = true;

@@ -2,15 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetNumberOperandWindow from '@app/components/tools/SetNumberOperand.vue';
-import {
-	NumberOperand,
-	type NumberOperandData
-} from '@app/legacy/command/set-value-operand-window.ts';
+import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
+import type { NumberOperandData } from '@app/composables/useNumberOperandSchema';
+
+const NumberOperand = useNumberOperandSchema();
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import '@app/legacy/command/set-value-operand-window.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

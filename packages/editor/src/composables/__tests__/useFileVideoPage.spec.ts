@@ -13,7 +13,7 @@ const fileVideo = vi.hoisted(() => ({
 	} | null
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileVideo
 	}

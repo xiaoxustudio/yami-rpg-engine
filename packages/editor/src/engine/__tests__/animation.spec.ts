@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 import '@app/utils/math';
 
-vi.mock('@app/legacy/data/data-object', () => ({
+vi.mock('@app/data/data-object', () => ({
 	Data: {
 		config: { animation: { frameRate: 60 } },
 		particles: {}
 	}
 }));
 
-vi.mock('@app/legacy/scene/scene-window', () => ({
+vi.mock('@app/scene/scene-window', () => ({
 	Scene: {
 		state: 'closed',
 		showLight: false,
@@ -96,14 +96,14 @@ vi.mock('@app/engine/webgl/webgl-init', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/ui/ui-window', () => ({
+vi.mock('@app/ui/ui-window', () => ({
 	UI: {
 		controlPointTexture: null,
 		requestRendering: vi.fn()
 	}
 }));
 
-vi.mock('@app/legacy/animation/animation-window', () => ({
+vi.mock('@app/animation/animation-window', () => ({
 	Animation: {
 		Player: null as any,
 		matrix: {
@@ -166,13 +166,13 @@ vi.mock('@app/legacy/animation/animation-window', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/data/transition-window', () => ({
+vi.mock('@app/data/transition-window', () => ({
 	Easing: {
 		get: vi.fn(() => (t: number) => t)
 	}
 }));
 
-vi.mock('@app/legacy/particle/particle-window', () => ({
+vi.mock('@app/particle/particle-window', () => ({
 	Particle: {
 		Emitter: vi.fn(() => ({
 			destroy: vi.fn(),
@@ -224,8 +224,10 @@ vi.mock('@app/stores/animation', () => ({
 	}))
 }));
 
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import '@app/engine/animation/animation-player.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { AnimationPlayer } from '@app/engine/animation/animation-player.ts';
+
+Animation.Player = AnimationPlayer;
 
 function createMockAnimationData(): any {
 	return {

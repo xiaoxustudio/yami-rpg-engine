@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextBox } from '@ui-kit';
-import { TextHistory } from '@app/legacy/components/text-history';
+import { TextHistory } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface TextBoxElement extends HTMLElement {

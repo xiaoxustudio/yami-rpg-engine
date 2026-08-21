@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ActorGetter from '@app/components/tools/ActorGetter.vue';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { ActorGetter as ActorGetterController } from '@app/commands/accessors/actor-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({

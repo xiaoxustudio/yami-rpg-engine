@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMSelectVar } from '@ui-kit';
-import { defVar } from '@app/legacy/components/select-var';
-import { Select } from '@app/legacy/components/select-list.ts';
+import { defVar } from '@app/components/select-var';
+import { Select } from '@app/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
 

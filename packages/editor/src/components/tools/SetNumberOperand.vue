@@ -173,8 +173,11 @@ import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on, clear } from '@app/utils/element-utils.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { NumberOperand, type NumberOperandForm } from '@app/legacy/command/set-value-operand-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
+import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
+
+const NumberOperand = useNumberOperandSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

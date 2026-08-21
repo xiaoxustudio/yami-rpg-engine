@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { ConditionListInterface } from '@app/tools/condition-list.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

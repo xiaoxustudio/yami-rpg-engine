@@ -901,8 +901,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { Particle } from '@app/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useLocalStore } from '@app/stores/local';

@@ -1,7 +1,7 @@
 ﻿import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils.ts';
 import { removeTextTags, parseVariableTag } from '@app/composables/useCommandParse.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { GameLocal } from '@app/local/local-object.ts';
 
 export interface ChoicesForm {
 	content: string;

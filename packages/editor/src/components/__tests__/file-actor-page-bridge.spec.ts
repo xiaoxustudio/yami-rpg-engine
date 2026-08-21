@@ -28,7 +28,7 @@ const fileActor = vi.hoisted(() => ({
 	listChange: vi.fn()
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileActor,
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)

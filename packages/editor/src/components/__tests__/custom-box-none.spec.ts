@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { customBoxOptions } from '@app/legacy/components/custom-box-opts.ts';
+import { customBoxOptions } from '@app/components/custom-box-opts.ts';
 
 vi.mock('@app/i18n', async (importOriginal) => {
 	const mod = await importOriginal<typeof import('@app/i18n')>();

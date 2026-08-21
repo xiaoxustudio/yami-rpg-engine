@@ -2,10 +2,10 @@
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
-import {
-	SwitchCondition,
-	type SwitchConditionData
-} from '@app/legacy/command/match-condition-window.ts';
+import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
+import type { SwitchConditionData } from '@app/composables/useSwitchConditionSchema';
+
+const SwitchCondition = useSwitchConditionSchema();
 
 interface SwitchBranchTarget {
 	save: () => SwitchConditionData;

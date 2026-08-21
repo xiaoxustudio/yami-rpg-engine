@@ -14,7 +14,9 @@ import {
 	parseVariable,
 	removeTextTags
 } from '@app/composables/useCommandParse.ts';
-import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+
+const IfCondition = useIfConditionSchema();
 import { Token } from '@app/commands/token.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { t } from '@app/i18n';

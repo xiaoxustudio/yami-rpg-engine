@@ -2,9 +2,9 @@ import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { getWindowStore } from '@app/stores/window';
 import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { Cursor } from '@app/legacy/tools/pointer-object.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+import { Cursor } from '@app/composables/usePointerObjectWindow';
+import { Palette } from '@app/palette/palette.ts';
 
 type TileNodeMarquee = HTMLElement & {
 	visible: boolean;

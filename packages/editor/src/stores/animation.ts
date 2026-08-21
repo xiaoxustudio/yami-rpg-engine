@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import type { EditorProjectShape } from './editor';

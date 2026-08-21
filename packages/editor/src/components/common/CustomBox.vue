@@ -1,4 +1,4 @@
-﻿<template>
+?<template>
 	<YMCustomBox
 		ref="ym"
 		:id="props.id"
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { YMCustomBox } from '@ui-kit';
-import { customBoxOptions } from '../../legacy/components/custom-box-opts';
+import { customBoxOptions } from '../custom-box-opts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {

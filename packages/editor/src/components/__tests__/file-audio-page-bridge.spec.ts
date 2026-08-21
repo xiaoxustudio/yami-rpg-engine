@@ -22,7 +22,7 @@ const fileAudio = vi.hoisted(() => ({
 	paramInput: vi.fn()
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: { fileAudio }
 }));
 

@@ -1,8 +1,8 @@
-﻿import { $ } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
-import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { Color } from '@app/tools/color-picker-window.ts';
 import { t, createGetter } from '@app/i18n';
 
 const dialogEffectRelate = [

@@ -4,8 +4,8 @@ import { mount } from '@vue/test-utils';
 import JumpToWindow from '@app/components/commands/JumpTo.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { EventEditor } from '@app/legacy/command/event-editor.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

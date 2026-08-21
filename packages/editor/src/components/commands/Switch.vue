@@ -20,8 +20,11 @@ import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
-import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
-import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
+import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
+import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
+
+const SwitchBranch = useSwitchBranchSchema();
+const SwitchCondition = useSwitchConditionSchema();
 import { useSwitchCommandSchema } from '@app/composables/commands/useSwitchCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

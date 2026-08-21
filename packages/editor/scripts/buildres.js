@@ -36,7 +36,7 @@ async function calculateMultipleHashes(filePath, algorithms = ['md5', 'sha1', 's
 	});
 }
 
-const packageJson = JSON.parse(fs.readFileSync('src/legacy/module/packmeta.json'));
+const packageJson = JSON.parse(fs.readFileSync('src/module/packmeta.json'));
 
 const tempaltePath = 'Project/Templates';
 

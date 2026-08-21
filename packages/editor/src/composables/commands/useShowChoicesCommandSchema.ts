@@ -1,7 +1,7 @@
 ﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { t } from '@app/i18n';

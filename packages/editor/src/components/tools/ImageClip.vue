@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="imageClip" @confirm="onConfirm">
 		<template #title><TitleBar
 			>Image Clip<div class="maximize"></div>
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ImageClip } from '@app/legacy/tools/image-crop-window.ts';
+import { ImageClip } from '@app/tools/image-crop-window.ts';
 import { useImageClipWindow, type ImageClipForm } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

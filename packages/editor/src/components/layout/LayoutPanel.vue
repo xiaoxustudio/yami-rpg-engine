@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
 			<div class="box" id="home-content">
@@ -400,16 +400,16 @@ import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
-import { Curve } from '@app/legacy/animation/curve-window.ts';
-import { Home } from '@app/legacy/title/home-page.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { setIconClip } from '@app/legacy/util/icon-clip.ts';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/scene/scene-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { Particle } from '@app/particle/particle-window.ts';
+import { Curve } from '@app/animation/curve-window.ts';
+import { Home } from '@app/title/home-page.ts';
+import { Data } from '@app/data/data-object.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { setIconClip } from '@app/utils/icon-clip';
+import { Inspector } from '@app/inspector/inspector.ts';
 
 interface SceneExtrasNode {
 	class?: string;

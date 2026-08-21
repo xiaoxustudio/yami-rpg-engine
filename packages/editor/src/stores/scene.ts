@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import type { EditorProjectShape } from './editor';

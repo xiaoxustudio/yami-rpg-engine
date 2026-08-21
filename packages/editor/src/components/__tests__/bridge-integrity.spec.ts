@@ -14,8 +14,31 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 describe('迁移桥接目标完整性（防迁移遗漏/拼写错误——9.101 审计固化）', () => {
-	it('所有 (window as any).Xxx?.method 桥接目标在 legacy 中存在', () => {
-		const legacyFiles = walk(join(ROOT, 'src', 'legacy'));
+	it('所有 (window as any).Xxx?.method 桥接目标在迁移后源码中存在', () => {
+		const legacyRoots = [
+			'animation',
+			'attribute',
+			'audio',
+			'components',
+			'data',
+			'enum',
+			'file',
+			'inspector',
+			'local',
+			'log',
+			'main',
+			'module',
+			'palette',
+			'particle',
+			'plugin',
+			'printer',
+			'title',
+			'tools',
+			'ui',
+			'utils',
+			'variable'
+		];
+		const legacyFiles = legacyRoots.flatMap((d) => walk(join(ROOT, 'src', d)));
 		const allLegacy = legacyFiles.map((p) => readFileSync(p, 'utf8')).join('\n');
 		const vueFiles = walk(join(ROOT, 'src', 'components'));
 		const missing: string[] = [];

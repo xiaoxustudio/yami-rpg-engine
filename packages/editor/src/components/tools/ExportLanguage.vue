@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { ExportLanguageForm } from '@app/legacy/local/export-language-window.ts';
+import type { ExportLanguageForm } from '@app/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

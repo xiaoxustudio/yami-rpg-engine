@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="insertImage" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.insertImage.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { InsertImageForm } from '@app/legacy/tools/text-capture.ts';
-import { Selection } from '@app/legacy/tools/text-capture.ts';
+import type { InsertImageForm } from '@app/tools/text-capture.ts';
+import { Selection } from '@app/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

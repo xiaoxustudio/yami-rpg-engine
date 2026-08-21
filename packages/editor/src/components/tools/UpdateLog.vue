@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { UpdateLog, type UpdateLogItem } from '@app/legacy/log/update-log-window.ts';
-import { markndownToHtml } from '@app/legacy/module/global.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { UpdateLog, type UpdateLogItem } from '@app/log/update-log-window.ts';
+import { markndownToHtml } from '@app/module/global.ts';
+import { File } from '@app/file/file-system-core.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

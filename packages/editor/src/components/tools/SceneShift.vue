@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 		<WindowFrame ref="frame" id="scene-shift" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.scene-shift.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { SceneShift, type SceneShiftForm } from '@app/legacy/scene/move-scene.ts';
+import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

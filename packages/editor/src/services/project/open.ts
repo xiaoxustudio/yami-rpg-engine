@@ -1,17 +1,17 @@
-import { SettingConfig } from '@app/legacy/module/settingconfig';
+import { SettingConfig } from '@app/services/project/settingconfig';
 import { Path } from '@app/utils/config';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { loadCustomCommandList } from '@app/legacy/command/command-custom.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Project } from '@app/legacy/data/project-settings-window.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
+import { Animation } from '@app/animation/animation-window.ts';
+import { loadCustomCommandList } from '@app/commands/command-custom.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Project } from '@app/data/project-settings-window.ts';
+import { File } from '@app/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { GameLocal } from '@app/local/local-object.ts';
 import { Editor } from './editor.ts';
-import { WebServer } from '@app/legacy/module/webserver.ts';
-import { Printer } from '@app/legacy/printer/printer.ts';
+import { WebServer } from '@app/services/ipc/webserver.ts';
+import { Printer } from '@app/printer/printer.ts';
 import { createGetter } from '@app/i18n';
 
 import { Updater } from '@app/services/updater/updater.ts';

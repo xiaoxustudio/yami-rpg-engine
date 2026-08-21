@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getProjectStore, projectStateKeys } from '@app/stores/project';
-import { Project } from '@app/legacy/data/project-settings-window.ts';
+import { Project } from '@app/data/project-settings-window.ts';
 
 describe('useProjectStore（Project 窗口状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

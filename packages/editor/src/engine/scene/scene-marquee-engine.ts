@@ -1,5 +1,5 @@
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Scene } from '@app/scene/scene-window.ts';
 
 export const SceneMarqueeEngine: Record<string, any> = {};
 // 选框 - 保存状态

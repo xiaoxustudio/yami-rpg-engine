@@ -17,7 +17,7 @@ const sceneRegion = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@app/legacy/inspector/inspector.ts', () => ({
+vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		sceneRegion,
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)

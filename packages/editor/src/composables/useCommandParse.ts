@@ -1,11 +1,11 @@
-import { getVariable, reportError } from '@app/legacy/util/safe.ts';
-import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { getVariable, reportError } from '@app/utils/safe';
+import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Token } from '@app/commands/token.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { FileItem } from '@app/legacy/file/file-item.ts';
-import { File } from '@app/legacy/file/file-system-core.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { FileItem } from '@app/services/file-system/file-item.ts';
+import { File } from '@app/file/file-system-core.ts';
+import { GameLocal } from '@app/local/local-object.ts';
 import { t } from '@app/i18n';
 import { commandState } from './useCommandState.ts';
 import {

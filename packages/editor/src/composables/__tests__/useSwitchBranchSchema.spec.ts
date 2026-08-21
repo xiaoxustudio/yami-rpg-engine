@@ -4,11 +4,14 @@ import { mount } from '@vue/test-utils';
 import SwitchCommandWindow from '@app/components/commands/Switch.vue';
 import SwitchBranchWindow from '@app/components/tools/SwitchBranch.vue';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
-import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
-import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
+import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
+import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
+
+const SwitchBranch = useSwitchBranchSchema();
+const SwitchCondition = useSwitchConditionSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${value}]`,

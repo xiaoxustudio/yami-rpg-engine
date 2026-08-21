@@ -1,5 +1,5 @@
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { UI } from '@app/ui/ui-window.ts';
 
 interface PrefabElementShape {
 	node: { presetId: unknown; [k: string]: unknown } | null;

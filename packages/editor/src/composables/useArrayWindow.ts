@@ -1,7 +1,10 @@
 import { reactive, ref } from 'vue';
+import { h, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { getFocus, on, read } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
+import { $ } from '@app/utils/dom';
+import { Command } from '@app/commands/command-object.ts';
 
 export interface ArrayForm {
 	values: unknown[];
@@ -45,7 +48,7 @@ let callback: ((value: unknown) => void) | null = null;
 const getFrame = (windowId: string): ArrayFrame | null =>
 	document.getElementById(windowId) as ArrayFrame | null;
 
-const open = (values: unknown[], cb: (value: unknown) => void): void => {
+const openForm = (values: unknown[], cb: (value: unknown) => void): void => {
 	callback = cb;
 	getWindowStore().open('arrayList');
 	Object.assign(form, { values });
@@ -53,7 +56,7 @@ const open = (values: unknown[], cb: (value: unknown) => void): void => {
 	getFocus(document.getElementById('arrayList-list'));
 };
 
-const confirm = (): void => {
+const confirmForm = (): void => {
 	changedState.value = false;
 	callback?.(getFrame('arrayList')?.getForm?.()?.values);
 	getWindowStore().close('arrayList');
@@ -91,7 +94,7 @@ const onWindowClosed = (): void => {
 	callback = null;
 };
 
-const openNumber = (value: number): void => {
+const openNumberForm = (value: number): void => {
 	getWindowStore().open('arrayList-number');
 	Object.assign(numberForm, { value });
 	getFrame('arrayList-number')?.setForm?.({ value });
@@ -104,7 +107,7 @@ const confirmNumber = (): number => {
 	return value;
 };
 
-const openString = (value: string): void => {
+const openStringForm = (value: string): void => {
 	getWindowStore().open('arrayList-string');
 	Object.assign(stringForm, { value });
 	getFrame('arrayList-string')?.setForm?.({ value });
@@ -125,14 +128,174 @@ export function useArrayWindow(): ArrayWindow {
 		get changed() {
 			return changedState.value;
 		},
-		open,
-		confirm,
+		open: openForm,
+		confirm: confirmForm,
 		markChanged,
 		onWindowClose,
 		onWindowClosed,
-		openNumber,
+		openNumber: openNumberForm,
 		confirmNumber,
-		openString,
+		openString: openStringForm,
 		confirmString
 	};
 }
+
+interface ArrayListTarget {
+	previousSibling: Node;
+	filter: string;
+	input?: (value: unknown) => void;
+	[k: string]: unknown;
+}
+
+interface ArrayListInterface {
+	parsers: Record<string, (value: unknown) => string>;
+	defaults: Record<string, number | string>;
+	windows: Record<string, string>;
+	inputs: Record<string, HTMLElement>;
+	initialize(list: HTMLElement): void;
+	parse(value: unknown, data: unknown, index: number): HTMLElement[];
+	open(value: unknown): void;
+	save(): unknown;
+}
+
+let targetState: ArrayListTarget | null = null;
+
+const parsers: Record<string, (value: unknown) => string> = {
+	number: (number: unknown) => (number as number | string).toString(),
+	string: (string: unknown) => Command.parseMultiLineString!(string as string)
+};
+
+const defaults: Record<string, number | string> = {
+	number: 0,
+	string: ''
+};
+
+const windows: Record<string, string> = {
+	number: 'arrayList-number',
+	string: 'arrayList-string'
+};
+
+const inputs: Record<string, HTMLElement> = {
+	get number() {
+		return $('#arrayList-number-value');
+	},
+	get string() {
+		return $('#arrayList-string-value');
+	}
+};
+
+const listInterface: ArrayListInterface = {
+	parsers,
+	defaults,
+	windows,
+	inputs,
+	initialize: function (this: unknown, list: HTMLElement) {
+		on($('#arrayList-number-confirm'), 'click', () => list.save());
+		on($('#arrayList-string-confirm'), 'click', () => list.save());
+	},
+	parse: function (value: unknown, data: unknown, index: number) {
+		const { filter } = targetState!;
+		const indexText = document.createElement('div');
+		render(
+			h(
+				'div',
+				{ class: 'array-index text' },
+				Number.padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':'
+			),
+			indexText
+		);
+		const valueText = document.createElement('div');
+		render(
+			h('div', { class: 'array-value text' }, listInterface.parsers[filter](value)),
+			valueText
+		);
+		return [
+			indexText.firstElementChild as HTMLElement,
+			valueText.firstElementChild as HTMLElement
+		];
+	},
+	open: function (value: unknown) {
+		const { filter } = targetState!;
+		value = value ?? listInterface.defaults[filter];
+		if (filter === 'number') {
+			openNumberForm(value as number);
+		} else {
+			openStringForm(value as string);
+		}
+	},
+	save: function () {
+		const { filter } = targetState!;
+		if (filter === 'number') {
+			return confirmNumber();
+		}
+		return confirmString();
+	}
+};
+
+const getList = (): HTMLElement => $('#arrayList-list');
+
+const initialize = (): void => {
+	const list = getList();
+	if (!list) return;
+	list.bind(listInterface);
+
+	$('#arrayList').addEventListener('close', windowClose);
+	$('#arrayList').addEventListener('closed', windowClosed);
+	on($('#arrayList-confirm'), 'click', confirm);
+};
+
+const open = (target: ArrayListTarget): void => {
+	targetState = target;
+	const label = target.previousSibling;
+	const alias = label.textContent;
+	$('#arrayList').setTitle(alias);
+	openForm(read(target).slice(), (value) => {
+		targetState?.input?.(value);
+	});
+};
+
+const windowClose = (event: Event): void => {
+	onWindowClose(event);
+};
+
+const windowClosed = (event: Event): void => {
+	targetState = null;
+	getList().clear();
+	onWindowClosed();
+};
+
+const listChange = (event?: Event): void => {
+	markChanged();
+};
+
+const confirm = (event: Event): void => {
+	confirmForm();
+};
+
+export const ArrayList: {
+	get list(): HTMLElement;
+	target: ArrayListTarget | null;
+	changed: boolean;
+	interface: ArrayListInterface;
+	initialize: (list?: HTMLElement) => void;
+	open: (target: ArrayListTarget) => void;
+	windowClose: (event: Event) => void;
+	windowClosed: (event: Event) => void;
+	listChange: (event?: Event) => void;
+	confirm: (event: Event) => void;
+} = {
+	get list() {
+		return getList();
+	},
+	target: null as ArrayListTarget | null,
+	get changed() {
+		return changedState.value;
+	},
+	interface: listInterface,
+	initialize,
+	open,
+	windowClose,
+	windowClosed,
+	listChange,
+	confirm
+};

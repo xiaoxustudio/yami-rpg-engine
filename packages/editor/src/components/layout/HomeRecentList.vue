@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { Home, type HomeRecentCard } from '@app/legacy/title/home-page.ts';
+import { Home, type HomeRecentCard } from '@app/title/home-page.ts';
 
 const cards = ref<HomeRecentCard[]>([]);
 

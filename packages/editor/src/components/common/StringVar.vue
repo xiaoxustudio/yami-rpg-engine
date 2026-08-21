@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { YMStringVar } from '@ui-kit';
-import { defVar } from '@app/legacy/components/string-var';
+import { defVar } from '@app/components/string-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
 

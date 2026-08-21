@@ -21,7 +21,7 @@ import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
 import { useLocalStore } from '@app/stores/local';
 import { pinia } from '@app/stores/pinia';
-import { setLocalElement, type LocalComponentItem } from '@app/legacy/localize/dom-localizer';
+import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {

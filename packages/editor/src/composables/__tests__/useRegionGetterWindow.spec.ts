@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import RegionGetter from '@app/components/tools/RegionGetter.vue';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { RegionGetter as RegionGetterController } from '@app/commands/accessors/region-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({

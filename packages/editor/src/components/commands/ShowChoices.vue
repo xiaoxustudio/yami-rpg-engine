@@ -16,7 +16,9 @@ import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
-import { Choices } from '@app/legacy/command/show-options-window.ts';
+import { useChoicesSchema } from '@app/composables/useChoicesSchema';
+
+const Choices = useChoicesSchema();
 import { useShowChoicesCommandSchema } from '@app/composables/commands/useShowChoicesCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

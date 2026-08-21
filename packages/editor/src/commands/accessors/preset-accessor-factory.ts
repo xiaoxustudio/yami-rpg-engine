@@ -3,7 +3,7 @@ import {
 	useLightGetterWindow,
 	useObjectGetterWindow
 } from '@app/composables/usePresetGetterWindow';
-import type { AccessorTarget } from '@app/legacy/types/legacy-shapes.ts';
+import type { AccessorTarget } from '@app/types/legacy-shapes.ts';
 
 interface PresetAccessorShape {
 	target: AccessorTarget | null;

@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMFileVar } from '@ui-kit';
-import { defVar } from '@app/legacy/components/file-var';
+import { defVar } from '@app/components/file-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
 

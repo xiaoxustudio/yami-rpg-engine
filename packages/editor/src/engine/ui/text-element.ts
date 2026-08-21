@@ -1,8 +1,8 @@
 import { CSSRGBA } from '@app/utils/color-utils';
-import { getVariable } from '@app/legacy/util/safe.ts';
-import { GameLocal } from '@app/legacy/local/local-object.ts';
-import { Printer } from '@app/legacy/printer/printer.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
+import { getVariable } from '@app/utils/safe';
+import { GameLocal } from '@app/local/local-object.ts';
+import { Printer } from '@app/printer/printer.ts';
+import { UI } from '@app/ui/ui-window.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

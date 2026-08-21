@@ -14,7 +14,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import CommonList from '@app/components/common/CommonList.vue';
-import { registerReferenceUpdate, type ReferenceItem } from '@app/legacy/log/related-references.ts';
+import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
 import { $ } from '@app/utils/dom';
 
 const inspector = useInspectorStore();

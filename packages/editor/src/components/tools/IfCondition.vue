@@ -247,8 +247,11 @@ import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { on, clear } from '@app/utils/element-utils.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { IfCondition, type IfConditionForm } from '@app/legacy/command/conditional-condition-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
+
+const IfCondition = useIfConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import GamepadBox from '@app/components/common/GamepadBox.vue';

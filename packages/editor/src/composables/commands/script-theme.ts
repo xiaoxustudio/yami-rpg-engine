@@ -1,6 +1,6 @@
 import { getMonaco } from '@app/utils/monaco';
 import { h, render } from 'vue';
-import { Title } from '@app/legacy/title/title-bar.ts';
+import { Title } from '@app/title/title-bar.ts';
 
 interface EditorThemeData {
 	base: 'vs' | 'vs-dark';

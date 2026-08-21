@@ -4,13 +4,16 @@ import { mount } from '@vue/test-utils';
 import IfCommandWindow from '@app/components/commands/If.vue';
 import IfBranchWindow from '@app/components/tools/IfBranch.vue';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
-import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
-import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+
+const IfBranch = useIfBranchSchema();
+const IfCondition = useIfConditionSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Data } from '@app/legacy/data/data-object.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { Data } from '@app/data/data-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${value}]`,

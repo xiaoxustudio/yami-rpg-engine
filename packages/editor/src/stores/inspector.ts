@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

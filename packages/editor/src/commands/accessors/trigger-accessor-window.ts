@@ -1,7 +1,7 @@
 ﻿import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useTriggerGetterWindow } from '@app/composables/useTriggerGetterWindow';
-import { AccessorBaseShape } from '@app/legacy/types/legacy-shapes.ts';
+import { AccessorBaseShape } from '@app/types/legacy-shapes.ts';
 
 interface TriggerTarget {
 	dataValue: {

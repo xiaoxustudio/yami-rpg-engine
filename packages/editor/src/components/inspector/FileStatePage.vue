@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileState-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileState-general-grid">
@@ -42,10 +42,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { EventListInterface } from '@app/legacy/tools/event-list.ts';
-import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
-import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { EventListInterface } from '@app/tools/event-list.ts';
+import { AttributeListInterface } from '@app/tools/property-list.ts';
+import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useFileStatePage } from '@app/composables/useFileStatePage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { attachElementApi } from '@app/utils/attach-element-api';

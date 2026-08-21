@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import AncestorGetter from '@app/components/tools/AncestorGetter.vue';
 import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
-import { Window } from '@app/legacy/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { AncestorGetter as AncestorGetterController } from '@app/commands/accessors/ancestor-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({

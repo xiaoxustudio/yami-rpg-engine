@@ -1,8 +1,29 @@
-import '@app/legacy/inspector/animation-bone-layer-page.ts';
-import '@app/legacy/inspector/animation-bone-frame-page.ts';
+import '@app/inspector/animation-bone-frame-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
 import { read } from '@app/utils/element-utils';
+
+interface AnimJointLayerShape {
+	[k: string]: unknown;
+}
+
+const AnimJointLayer: AnimJointLayerShape = {
+	create: null
+};
+
+AnimJointLayer.create = function (this: typeof AnimJointLayer) {
+	return {
+		class: 'joint',
+		name: 'Joint',
+		expanded: true,
+		hidden: false,
+		locked: false,
+		frames: [Inspector.animJointFrame.create()],
+		children: []
+	};
+};
+
+Inspector.animJointLayer = AnimJointLayer;
 
 interface AnimJointFrameForm {
 	x: number;

@@ -99,8 +99,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Inspector } from '@app/inspector/inspector.ts';
+import { Animation } from '@app/animation/animation-window.ts';
 import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { attachElementApi } from '@app/utils/attach-element-api';
