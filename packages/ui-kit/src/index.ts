@@ -177,6 +177,13 @@ export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';
 export { useTheme } from './composables/useTheme';
+export {
+	useMenuService,
+	provideMenuService,
+	MENU_SERVICE_KEY,
+	type MenuService
+} from './composables/useMenuService';
+export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
@@ -221,3 +228,6 @@ export { default as YMSetKey } from './components/business/YMSetKey/YMSetKey.vue
 export { default as YMSetQuantity } from './components/business/YMSetQuantity/YMSetQuantity.vue';
 export { default as YMFont } from './components/business/YMFont/YMFont.vue';
 export { default as YMFontSize } from './components/business/YMFontSize/YMFontSize.vue';
+export { default as YMArrayListNumber } from './components/business/YMArrayListNumber/YMArrayListNumber.vue';
+export { default as YMArrayListString } from './components/business/YMArrayListString/YMArrayListString.vue';
+export { default as YMRequestKeyValue } from './components/business/YMRequestKeyValue/YMRequestKeyValue.vue';

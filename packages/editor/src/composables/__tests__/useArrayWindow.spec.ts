@@ -93,28 +93,31 @@ describe('useArrayWindow（数组窗口 composable：form 状态 + open/confirm/
 		wrapper.unmount();
 	});
 
-	it('openNumber/confirmNumber 子窗口表单往返', async () => {
+	it('openNumber/confirmNumber 子窗口 v-model 往返', async () => {
 		const wrapper = mount(ArrayListNumber, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const arrayWindow = useArrayWindow();
 		arrayWindow.openNumber(42);
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('arrayList-number');
-		expect(getFrame('arrayList-number').getForm().value).toBe(42);
-		expect(getControl('arrayList-number-value').read()).toBe(42);
-		getControl('arrayList-number-value').write(99);
+		expect(arrayWindow.numberForm.value).toBe(42);
+		await wrapper.find('input').setValue('99');
+		await wrapper.vm.$nextTick();
 		expect(arrayWindow.confirmNumber()).toBe(99);
 		expect(Window.close).toHaveBeenCalledWith('arrayList-number');
 		wrapper.unmount();
 	});
 
-	it('openString/confirmString 子窗口表单往返', async () => {
+	it('openString/confirmString 子窗口 v-model 往返', async () => {
 		const wrapper = mount(ArrayListString, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const arrayWindow = useArrayWindow();
 		arrayWindow.openString('hello');
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('arrayList-string');
-		expect(getFrame('arrayList-string').getForm().value).toBe('hello');
-		getControl('arrayList-string-value').write('world');
+		expect(arrayWindow.stringForm.value).toBe('hello');
+		await wrapper.find('textarea, input').setValue('world');
+		await wrapper.vm.$nextTick();
 		expect(arrayWindow.confirmString()).toBe('world');
 		expect(Window.close).toHaveBeenCalledWith('arrayList-string');
 		wrapper.unmount();

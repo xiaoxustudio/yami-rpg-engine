@@ -97,12 +97,11 @@ const onWindowClosed = (): void => {
 const openNumberForm = (value: number): void => {
 	getWindowStore().open('arrayList-number');
 	Object.assign(numberForm, { value });
-	getFrame('arrayList-number')?.setForm?.({ value });
 	getFocus(document.getElementById('arrayList-number-value'), 'all');
 };
 
 const confirmNumber = (): number => {
-	const value = getFrame('arrayList-number')?.getForm?.()?.value as number;
+	const value = numberForm.value;
 	getWindowStore().close('arrayList-number');
 	return value;
 };
@@ -110,12 +109,11 @@ const confirmNumber = (): number => {
 const openStringForm = (value: string): void => {
 	getWindowStore().open('arrayList-string');
 	Object.assign(stringForm, { value });
-	getFrame('arrayList-string')?.setForm?.({ value });
 	getFocus(document.getElementById('arrayList-string-value'), 'all');
 };
 
 const confirmString = (): string => {
-	const value = getFrame('arrayList-string')?.getForm?.()?.value as string;
+	const value = stringForm.value;
 	getWindowStore().close('arrayList-string');
 	return value;
 };

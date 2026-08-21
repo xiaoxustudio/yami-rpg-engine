@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMFileBodyPane from '../../../../ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue';
+import { YMFileBodyPane } from '@ui-kit';
 
 interface FileBodyItemApi extends HTMLElement {
 	file: { name: string; meta?: { guid: string }; path: string };
