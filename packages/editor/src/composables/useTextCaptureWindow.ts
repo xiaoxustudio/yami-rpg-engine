@@ -81,22 +81,13 @@ const createTagWindow = <TForm extends object>(windowId: string) => {
 		callback = cb;
 		getWindowStore().open(windowId);
 		Object.assign(form, data);
-		const setForm = (
-			document.getElementById(windowId) as
-				| (HTMLElement & { setForm?: (data: Partial<TForm>) => void })
-				| null
-		)?.setForm;
-		setForm?.(data);
 		if (focusId) {
 			getFocus(document.getElementById(focusId), 'all');
 		}
 	};
 
 	const confirm = (validate: ((form: TForm) => string | null) | null): void => {
-		const getForm = (
-			document.getElementById(windowId) as (HTMLElement & { getForm?: () => TForm }) | null
-		)?.getForm;
-		const data = (getForm?.() ?? { ...form }) as TForm;
+		const data = form as TForm;
 		const focusId = validate?.(data);
 		if (focusId) {
 			getFocus(document.getElementById(focusId), 'all');

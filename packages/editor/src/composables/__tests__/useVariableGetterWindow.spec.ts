@@ -11,19 +11,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -39,7 +27,7 @@ describe('useVariableGetterWindow（变量访问器窗口 composable：form 状�
 		Window.isWindowOpen = vi.fn(() => false);
 	});
 
-	it('open 打开主窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开主窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(VariableGetterWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const variableGetter = useVariableGetterWindow();
@@ -48,20 +36,17 @@ describe('useVariableGetterWindow（变量访问器窗口 composable：form 状�
 		expect(Window.open).toHaveBeenCalledWith('variableGetter');
 		expect(variableGetter.form.type).toBe('local');
 		expect(variableGetter.form.commonKey).toBe('v1');
-		expect(getFrame('variableGetter').getForm().type).toBe('local');
-		expect(getControl('variableGetter-type').read()).toBe('local');
-		expect(getControl('variableGetter-common-key').read()).toBe('v1');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（local 路径）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（local 路径）', async () => {
 		const wrapper = mount(VariableGetterWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const variableGetter = useVariableGetterWindow();
 		const target = makeTarget(() => ({ type: 'local', key: 'v1' }));
 		variableGetter.open(target as never);
-		getControl('variableGetter-type').write('local');
-		getControl('variableGetter-common-key').write('v2');
+		variableGetter.form.type = 'local';
+		variableGetter.form.commonKey = 'v2';
 		variableGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({ type: 'local', key: 'v2' });
 		expect(Window.close).toHaveBeenCalledWith('variableGetter');
@@ -74,8 +59,8 @@ describe('useVariableGetterWindow（变量访问器窗口 composable：form 状�
 		const variableGetter = useVariableGetterWindow();
 		const target = makeTarget(() => ({ type: 'local', key: 'v1' }));
 		variableGetter.open(target as never);
-		getControl('variableGetter-type').write('local');
-		getControl('variableGetter-common-key').write('');
+		variableGetter.form.type = 'local';
+		variableGetter.form.commonKey = '';
 		variableGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -152,12 +137,13 @@ describe('useVariableGetterWindow（变量访问器窗口 composable：form 状�
 	it('legacy VariableGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(VariableGetterWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const variableGetter = useVariableGetterWindow();
 		const target = makeTarget(() => ({ type: 'local', key: 'v1' }));
 		VariableGetter.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('variableGetter');
-		expect(getControl('variableGetter-type').read()).toBe('local');
-		expect(getControl('variableGetter-common-key').read()).toBe('v1');
-		getControl('variableGetter-common-key').write('v2');
+		expect(variableGetter.form.type).toBe('local');
+		expect(variableGetter.form.commonKey).toBe('v1');
+		variableGetter.form.commonKey = 'v2';
 		VariableGetter.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({ type: 'local', key: 'v2' });
 		expect(Window.close).toHaveBeenCalledWith('variableGetter');

@@ -34,31 +34,22 @@ interface ArrayWindow {
 	confirmString: () => string;
 }
 
-type ArrayFrame = HTMLElement & {
-	setForm?: (data: Record<string, unknown>) => void;
-	getForm?: () => Record<string, unknown>;
-};
-
 const form = reactive<ArrayForm>({ values: [] });
 const numberForm = reactive<ArrayNumberForm>({ value: 0 });
 const stringForm = reactive<ArrayStringForm>({ value: '' });
 const changedState = ref(false);
 let callback: ((value: unknown) => void) | null = null;
 
-const getFrame = (windowId: string): ArrayFrame | null =>
-	document.getElementById(windowId) as ArrayFrame | null;
-
 const openForm = (values: unknown[], cb: (value: unknown) => void): void => {
 	callback = cb;
 	getWindowStore().open('arrayList');
 	Object.assign(form, { values });
-	getFrame('arrayList')?.setForm?.({ values });
 	getFocus(document.getElementById('arrayList-list'));
 };
 
 const confirmForm = (): void => {
 	changedState.value = false;
-	callback?.(getFrame('arrayList')?.getForm?.()?.values);
+	callback?.(form.values);
 	getWindowStore().close('arrayList');
 };
 

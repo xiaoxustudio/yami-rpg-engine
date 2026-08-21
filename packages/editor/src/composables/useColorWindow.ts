@@ -61,22 +61,11 @@ const open = (
 		index
 	};
 	Object.assign(form, data);
-	const setForm = (
-		document.getElementById('color') as
-			| (HTMLElement & { setForm?: (data: Partial<ColorForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.(
-		index !== null ? data : { hex: data.hex, r: data.r, g: data.g, b: data.b, a: data.a }
-	);
 	getFocus(document.getElementById('color-hex'), 'all');
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('color') as (HTMLElement & { getForm?: () => ColorForm }) | null
-	)?.getForm;
-	const data = getForm?.() ?? { ...form };
+	const data = form;
 	if (indexEnabled && data.index !== null) {
 		callback?.(data.index);
 	} else {

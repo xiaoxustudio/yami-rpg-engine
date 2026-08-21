@@ -11,19 +11,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -40,7 +28,7 @@ describe('useEquipmentGetterWindow（装备访问器窗口 composable：form 状
 		Enum.getDefStringId = vi.fn(() => 'body') as never;
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(EquipmentGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const equipmentGetter = useEquipmentGetterWindow();
@@ -53,21 +41,18 @@ describe('useEquipmentGetterWindow（装备访问器窗口 composable：form 状
 		expect(Window.open).toHaveBeenCalledWith('equipmentGetter');
 		expect(equipmentGetter.form.type).toBe('by-slot');
 		expect(equipmentGetter.form.slot).toBe('weapon');
-		expect(getFrame('equipmentGetter').getForm().type).toBe('by-slot');
-		expect(getControl('equipmentGetter-type').read()).toBe('by-slot');
-		expect(getControl('equipmentGetter-slot').read()).toBe('weapon');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id-equipped 含 actor/equipmentId）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id-equipped 含 actor/equipmentId）', async () => {
 		const wrapper = mount(EquipmentGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const equipmentGetter = useEquipmentGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id-equipped' }));
 		equipmentGetter.open(target as never);
-		getControl('equipmentGetter-type').write('by-id-equipped');
-		getControl('equipmentGetter-actor').write({ type: 'actor', key: 'a1' });
-		getControl('equipmentGetter-equipmentId').write('equip-2');
+		equipmentGetter.form.type = 'by-id-equipped';
+		equipmentGetter.form.actor = { type: 'actor', key: 'a1' } as { type: string; key?: string };
+		equipmentGetter.form.equipmentId = 'equip-2';
 		equipmentGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-id-equipped',
@@ -84,8 +69,8 @@ describe('useEquipmentGetterWindow（装备访问器窗口 composable：form 状
 		const equipmentGetter = useEquipmentGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-slot', slot: 'weapon' }));
 		equipmentGetter.open(target as never);
-		getControl('equipmentGetter-type').write('by-slot');
-		getControl('equipmentGetter-slot').write('');
+		equipmentGetter.form.type = 'by-slot';
+		equipmentGetter.form.slot = '';
 		equipmentGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -120,6 +105,7 @@ describe('useEquipmentGetterWindow（装备访问器窗口 composable：form 状
 	it('legacy EquipmentGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(EquipmentGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const equipmentGetter = useEquipmentGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'by-id-inventory',
 			actor: { type: 'trigger' },
@@ -127,9 +113,9 @@ describe('useEquipmentGetterWindow（装备访问器窗口 composable：form 状
 		}));
 		EquipmentGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('equipmentGetter');
-		expect(getControl('equipmentGetter-type').read()).toBe('by-id-inventory');
-		expect(getControl('equipmentGetter-equipmentId').read()).toBe('equip-1');
-		getControl('equipmentGetter-equipmentId').write('equip-2');
+		expect(equipmentGetter.form.type).toBe('by-id-inventory');
+		expect(equipmentGetter.form.equipmentId).toBe('equip-1');
+		equipmentGetter.form.equipmentId = 'equip-2';
 		EquipmentGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-id-inventory',

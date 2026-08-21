@@ -54,12 +54,11 @@ describe('useArrayWindow（数组窗口 composable：form 状态 + open/confirm/
 		arrayWindow.open([1, 2, 3], callback);
 		expect(Window.open).toHaveBeenCalledWith('arrayList');
 		expect(arrayWindow.form.values).toEqual([1, 2, 3]);
-		expect(getFrame('arrayList').getForm().values).toEqual([1, 2, 3]);
 		expect(getControl('arrayList-list').read()).toEqual([1, 2, 3]);
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回列表回调并关闭窗口，changed 重置', async () => {
+	it('confirm 经 form 读回列表回调并关闭窗口，changed 重置', async () => {
 		const wrapper = mount(ArrayList, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		bindList();
@@ -67,7 +66,7 @@ describe('useArrayWindow（数组窗口 composable：form 状态 + open/confirm/
 		const callback = vi.fn();
 		arrayWindow.open([1, 2, 3], callback);
 		arrayWindow.markChanged();
-		getControl('arrayList-list').write([7, 8]);
+		arrayWindow.form.values = [7, 8];
 		arrayWindow.confirm();
 		expect(callback).toHaveBeenCalledWith([7, 8]);
 		expect(Window.close).toHaveBeenCalledWith('arrayList');
@@ -160,7 +159,7 @@ describe('useArrayWindow（数组窗口 composable：form 状态 + open/confirm/
 		ArrayListController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('arrayList');
 		expect(getControl('arrayList-list').read()).toEqual([1, 2, 3]);
-		getControl('arrayList-list').write([5, 6]);
+		useArrayWindow().form.values = [5, 6];
 		ArrayListController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith([5, 6]);
 		expect(Window.close).toHaveBeenCalledWith('arrayList');

@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('useTilemapGetterWindow（瓦片地图访问器窗口 composable：form
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(TilemapGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const tilemapGetter = useTilemapGetterWindow();
@@ -46,20 +34,17 @@ describe('useTilemapGetterWindow（瓦片地图访问器窗口 composable：form
 		expect(Window.open).toHaveBeenCalledWith('tilemapGetter');
 		expect(tilemapGetter.form.type).toBe('by-id');
 		expect(tilemapGetter.form.presetId).toBe('tile-1');
-		expect(getFrame('tilemapGetter').getForm().type).toBe('by-id');
-		expect(getControl('tilemapGetter-type').read()).toBe('by-id');
-		expect(getControl('tilemapGetter-presetId').read()).toBe('tile-1');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（variable 含变量）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（variable 含变量）', async () => {
 		const wrapper = mount(TilemapGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const tilemapGetter = useTilemapGetterWindow();
 		const target = makeTarget(() => ({ type: 'variable' }));
 		tilemapGetter.open(target as never);
-		getControl('tilemapGetter-type').write('variable');
-		getControl('tilemapGetter-variable').write({ type: 'local', key: 'v1' });
+		tilemapGetter.form.type = 'variable';
+		tilemapGetter.form.variable = { type: 'local', key: 'v1' };
 		tilemapGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'variable',
@@ -78,8 +63,8 @@ describe('useTilemapGetterWindow（瓦片地图访问器窗口 composable：form
 			variable: { type: 'local', key: 'v1' }
 		}));
 		tilemapGetter.open(target as never);
-		getControl('tilemapGetter-type').write('variable');
-		getControl('tilemapGetter-variable').write({ type: 'local', key: '' });
+		tilemapGetter.form.type = 'variable';
+		tilemapGetter.form.variable = { type: 'local', key: '' };
 		tilemapGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -101,12 +86,13 @@ describe('useTilemapGetterWindow（瓦片地图访问器窗口 composable：form
 	it('legacy TilemapGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(TilemapGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const tilemapGetter = useTilemapGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'tile-1' }));
 		TilemapGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('tilemapGetter');
-		expect(getControl('tilemapGetter-type').read()).toBe('by-id');
-		expect(getControl('tilemapGetter-presetId').read()).toBe('tile-1');
-		getControl('tilemapGetter-presetId').write('tile-2');
+		expect(tilemapGetter.form.type).toBe('by-id');
+		expect(tilemapGetter.form.presetId).toBe('tile-1');
+		tilemapGetter.form.presetId = 'tile-2';
 		TilemapGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'tile-2' });
 		expect(Window.close).toHaveBeenCalledWith('tilemapGetter');

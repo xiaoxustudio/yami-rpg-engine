@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('useRegionGetterWindow（区域访问器窗口 composable：form 状态
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(RegionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const regionGetter = useRegionGetterWindow();
@@ -46,20 +34,17 @@ describe('useRegionGetterWindow（区域访问器窗口 composable：form 状态
 		expect(Window.open).toHaveBeenCalledWith('regionGetter');
 		expect(regionGetter.form.type).toBe('by-id');
 		expect(regionGetter.form.presetId).toBe('region-1');
-		expect(getFrame('regionGetter').getForm().type).toBe('by-id');
-		expect(getControl('regionGetter-type').read()).toBe('by-id');
-		expect(getControl('regionGetter-presetId').read()).toBe('region-1');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id 含 presetId）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id 含 presetId）', async () => {
 		const wrapper = mount(RegionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const regionGetter = useRegionGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'region-1' }));
 		regionGetter.open(target as never);
-		getControl('regionGetter-type').write('by-id');
-		getControl('regionGetter-presetId').write('region-9');
+		regionGetter.form.type = 'by-id';
+		regionGetter.form.presetId = 'region-9';
 		regionGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'region-9' });
 		expect(Window.close).toHaveBeenCalledWith('regionGetter');
@@ -72,8 +57,8 @@ describe('useRegionGetterWindow（区域访问器窗口 composable：form 状态
 		const regionGetter = useRegionGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'region-1' }));
 		regionGetter.open(target as never);
-		getControl('regionGetter-type').write('by-id');
-		getControl('regionGetter-presetId').write('');
+		regionGetter.form.type = 'by-id';
+		regionGetter.form.presetId = '';
 		regionGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -95,12 +80,13 @@ describe('useRegionGetterWindow（区域访问器窗口 composable：form 状态
 	it('legacy RegionGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(RegionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const regionGetter = useRegionGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'region-1' }));
 		RegionGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('regionGetter');
-		expect(getControl('regionGetter-type').read()).toBe('by-id');
-		expect(getControl('regionGetter-presetId').read()).toBe('region-1');
-		getControl('regionGetter-presetId').write('region-2');
+		expect(regionGetter.form.type).toBe('by-id');
+		expect(regionGetter.form.presetId).toBe('region-1');
+		regionGetter.form.presetId = 'region-2';
 		RegionGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'region-2' });
 		expect(Window.close).toHaveBeenCalledWith('regionGetter');

@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('useAncestorGetterWindow（祖先元素访问器窗口 composable：for
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(AncestorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const ancestorGetter = useAncestorGetterWindow();
@@ -45,19 +33,17 @@ describe('useAncestorGetterWindow（祖先元素访问器窗口 composable：for
 		ancestorGetter.open(target as never);
 		expect(Window.open).toHaveBeenCalledWith('ancestorGetter');
 		expect(ancestorGetter.form.type).toBe('latest');
-		expect(getFrame('ancestorGetter').getForm().type).toBe('latest');
-		expect(getControl('ancestorGetter-type').read()).toBe('latest');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id 含 presetId）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id 含 presetId）', async () => {
 		const wrapper = mount(AncestorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const ancestorGetter = useAncestorGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id' }));
 		ancestorGetter.open(target as never);
-		getControl('ancestorGetter-type').write('by-id');
-		getControl('ancestorGetter-presetId').write('preset-9');
+		ancestorGetter.form.type = 'by-id';
+		ancestorGetter.form.presetId = 'preset-9';
 		ancestorGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'preset-9' });
 		expect(Window.close).toHaveBeenCalledWith('ancestorGetter');
@@ -70,8 +56,8 @@ describe('useAncestorGetterWindow（祖先元素访问器窗口 composable：for
 		const ancestorGetter = useAncestorGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'preset-1' }));
 		ancestorGetter.open(target as never);
-		getControl('ancestorGetter-type').write('by-id');
-		getControl('ancestorGetter-presetId').write('');
+		ancestorGetter.form.type = 'by-id';
+		ancestorGetter.form.presetId = '';
 		ancestorGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -93,14 +79,15 @@ describe('useAncestorGetterWindow（祖先元素访问器窗口 composable：for
 	it('legacy AncestorGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(AncestorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const ancestorGetter = useAncestorGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'variable',
 			variable: { type: 'local', key: 'v1' }
 		}));
 		AncestorGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('ancestorGetter');
-		expect(getControl('ancestorGetter-type').read()).toBe('variable');
-		getControl('ancestorGetter-variable').write({ type: 'local', key: 'v2' });
+		expect(ancestorGetter.form.type).toBe('variable');
+		ancestorGetter.form.variable = { type: 'local', key: 'v2' };
 		AncestorGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'variable',

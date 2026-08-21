@@ -23,11 +23,6 @@ interface ElementGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type ElementGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<ElementGetterForm>) => void;
-	getForm?: () => ElementGetterForm;
-};
-
 const form = reactive<ElementGetterForm>({
 	type: 'trigger',
 	presetId: '',
@@ -37,9 +32,6 @@ const form = reactive<ElementGetterForm>({
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
-
-const getFrame = (): ElementGetterFrame | null =>
-	document.getElementById('elementGetter') as ElementGetterFrame | null;
 
 const open = (target: ElementGetterTarget, defaults?: Partial<ElementGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -80,12 +72,11 @@ const open = (target: ElementGetterTarget, defaults?: Partial<ElementGetterForm>
 			break;
 	}
 	Object.assign(form, { type: element.type, presetId, ancestor, index, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('elementGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

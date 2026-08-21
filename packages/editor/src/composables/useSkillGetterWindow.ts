@@ -23,11 +23,6 @@ interface SkillGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type SkillGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<SkillGetterForm>) => void;
-	getForm?: () => SkillGetterForm;
-};
-
 const form = reactive<SkillGetterForm>({
 	type: 'trigger',
 	actor: { type: 'trigger' },
@@ -37,9 +32,6 @@ const form = reactive<SkillGetterForm>({
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
-
-const getFrame = (): SkillGetterFrame | null =>
-	document.getElementById('skillGetter') as SkillGetterFrame | null;
 
 const open = (target: SkillGetterTarget, defaults?: Partial<SkillGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -65,12 +57,11 @@ const open = (target: SkillGetterTarget, defaults?: Partial<SkillGetterForm>): v
 			break;
 	}
 	Object.assign(form, { type: skill.type, actor, key, skillId, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('skillGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

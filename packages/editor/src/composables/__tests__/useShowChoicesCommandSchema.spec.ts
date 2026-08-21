@@ -119,7 +119,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		list.select(0);
 		list.insert();
 		expect(Window.open).toHaveBeenCalledWith('choice');
-		getControl('choice-content').write('Surprise');
+		Choices.form.content = 'Surprise';
 		Choices.confirm!(new Event('click'));
 		const data = list.read() as Array<{ content: string }>;
 		expect(data).toHaveLength(3);
@@ -146,7 +146,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		list.select(1);
 		list.edit();
 		expect(Window.open).toHaveBeenCalledWith('choice');
-		getControl('choice-content').write('Nope');
+		Choices.form.content = 'Nope';
 		Choices.confirm!(new Event('click'));
 		await commandWrapper.vm.$nextTick();
 		const saved = vi.fn();

@@ -32,11 +32,11 @@
 				<div class="box" id="color-viewer" />
 			</div>
 			<div class="grid-box" id="color-rgba-grid">
-				<div class="text">#</div><TextBox id="color-hex" :model-value="form.hex" @beforeinput="onHexBeforeinput" @input="onHexInput" /> <div class="text">R</div
-				><NumberBox id="color-r" min="0" max="255" :model-value="form.r" @input="onRgbaInput" /> <div class="text">G</div
-				><NumberBox id="color-g" min="0" max="255" :model-value="form.g" @input="onRgbaInput" /> <div class="text">B</div
-				><NumberBox id="color-b" min="0" max="255" :model-value="form.b" @input="onRgbaInput" /> <div class="text">A</div
-				><NumberBox id="color-a" min="0" max="255" :model-value="form.a" @input="onRgbaInput" />
+				<div class="text">#</div><TextBox id="color-hex" v-model="form.hex" @beforeinput="onHexBeforeinput" @input="onHexInput" /> <div class="text">R</div
+				><NumberBox id="color-r" min="0" max="255" v-model="form.r" @input="onRgbaInput" /> <div class="text">G</div
+				><NumberBox id="color-g" min="0" max="255" v-model="form.g" @input="onRgbaInput" /> <div class="text">B</div
+				><NumberBox id="color-b" min="0" max="255" v-model="form.b" @input="onRgbaInput" /> <div class="text">A</div
+				><NumberBox id="color-a" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
 			</div>
 		
 	</WindowFrame>
@@ -46,12 +46,11 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Color } from '@app/tools/color-picker-window.ts';
-import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
+import { useColorWindow } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -61,47 +60,13 @@ const { t } = useI18n();
 const color = useColorWindow();
 const form = color.form;
 
-const setForm = (data: Partial<ColorForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
-};
-
-const getForm = (): ColorForm => {
-	const data = { ...form } as ColorForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
-			| (HTMLElement & { read?: () => unknown })
-			| null;
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
-};
-
-const FIELD_BY_ID: Record<string, keyof ColorForm> = {
-	'color-hex': 'hex',
-	'color-r': 'r',
-	'color-g': 'g',
-	'color-b': 'b',
-	'color-a': 'a',
-	'color-index': 'index'
-};
-
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onIndexedInput = (value: number | string | boolean) => {
+	form.index = typeof value === 'string' && value !== '' ? parseInt(value, 10) : (value as number);
 	Color?.indexedColorInput?.({ value: String(value) });
 };
 const onRgbaInput = () => {
@@ -120,10 +85,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
 		el.on('closed', () => color.onWindowClosed());
 	}
-
-
 });
 </script>

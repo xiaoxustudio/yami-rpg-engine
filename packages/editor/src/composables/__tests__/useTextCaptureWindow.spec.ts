@@ -14,20 +14,6 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
-
 const mountAll = async (): Promise<ReturnType<typeof mount>[]> => {
 	const wrappers = [
 		mount(Font, { attachTo: document.body }),
@@ -55,8 +41,7 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		capture.font.open('Arial', callback);
 		expect(Window.open).toHaveBeenCalledWith('font');
 		expect(capture.font.form.font).toBe('Arial');
-		expect(getFrame('font').getForm().font).toBe('Arial');
-		getFrame('font').setForm({ font: 'Georgia' });
+		capture.font.form.font = 'Georgia';
 		capture.font.confirm();
 		expect(callback).toHaveBeenCalledWith({ font: 'Georgia' });
 		expect(Window.close).toHaveBeenCalledWith('font');
@@ -80,8 +65,8 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		const callback = vi.fn();
 		capture.fontSize.open(12, callback);
 		expect(Window.open).toHaveBeenCalledWith('fontSize');
-		expect(getFrame('fontSize').getForm().size).toBe(12);
-		getFrame('fontSize').setForm({ size: 24 });
+		expect(capture.fontSize.form.size).toBe(12);
+		capture.fontSize.form.size = 24;
 		capture.fontSize.confirm();
 		expect(callback).toHaveBeenCalledWith({ size: 24 });
 		expect(Window.close).toHaveBeenCalledWith('fontSize');
@@ -94,13 +79,9 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		const callback = vi.fn();
 		capture.textPosition.open({ axis: 'x', operation: 'set', value: 8 }, callback);
 		expect(Window.open).toHaveBeenCalledWith('textPosition');
-		expect(getFrame('textPosition').getForm()).toEqual({
-			axis: 'x',
-			operation: 'set',
-			value: 8
-		});
-		getControl('textPosition-operation').write('add');
-		getControl('textPosition-value').write(15);
+		expect(capture.textPosition.form).toEqual({ axis: 'x', operation: 'set', value: 8 });
+		capture.textPosition.form.operation = 'add';
+		capture.textPosition.form.value = 15;
 		capture.textPosition.confirm();
 		expect(callback).toHaveBeenCalledWith({ axis: 'x', operation: 'add', value: 15 });
 		expect(Window.close).toHaveBeenCalledWith('textPosition');
@@ -122,9 +103,9 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 			callback
 		);
 		expect(Window.open).toHaveBeenCalledWith('textEffect');
-		getControl('textEffect-type').write('stroke');
-		getControl('textEffect-strokeWidth').write(4);
-		getControl('textEffect-color').write('ff0000ff');
+		capture.textEffect.form.type = 'stroke';
+		capture.textEffect.form.strokeWidth = 4;
+		capture.textEffect.form.color = 'ff0000ff';
 		capture.textEffect.confirm();
 		expect(callback).toHaveBeenCalledWith({
 			type: 'stroke',
@@ -146,10 +127,10 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 			callback
 		);
 		expect(Window.open).toHaveBeenCalledWith('insertImage');
-		expect(getFrame('insertImage').getForm().image).toBe('pic.png');
-		getControl('insertImage-mode').write('image-size');
-		getControl('insertImage-width').write(32);
-		getControl('insertImage-height').write(16);
+		expect(capture.image.form.image).toBe('pic.png');
+		capture.image.form.mode = 'image-size';
+		capture.image.form.width = 32;
+		capture.image.form.height = 16;
 		capture.image.confirm();
 		expect(callback).toHaveBeenCalledWith({
 			mode: 'image-size',
@@ -182,8 +163,8 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		const callback = vi.fn();
 		capture.localVariable.open('hp', callback);
 		expect(Window.open).toHaveBeenCalledWith('localVariable');
-		expect(getControl('localVariable-key').read()).toBe('hp');
-		getControl('localVariable-key').write('mp');
+		expect(capture.localVariable.form.key).toBe('hp');
+		capture.localVariable.form.key = 'mp';
 		capture.localVariable.confirm();
 		expect(callback).toHaveBeenCalledWith({ key: 'mp' });
 		expect(Window.close).toHaveBeenCalledWith('localVariable');
@@ -214,8 +195,8 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		Selection.inserting = false;
 		Selection.font.open!({ font: 'Arial' });
 		expect(Window.open).toHaveBeenCalledWith('font');
-		expect(getFrame('font').getForm().font).toBe('Arial');
-		getFrame('font').setForm({ font: 'Georgia' });
+		expect(useTextCaptureWindow().font.form.font).toBe('Arial');
+		useTextCaptureWindow().font.form.font = 'Georgia';
 		Selection.font.confirm!({} as Event);
 		expect(insert).toHaveBeenCalledWith('<font:Georgia>');
 		expect(Window.close).toHaveBeenCalledWith('font');

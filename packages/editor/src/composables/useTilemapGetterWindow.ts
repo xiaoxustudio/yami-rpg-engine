@@ -21,20 +21,12 @@ interface TilemapGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type TilemapGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<TilemapGetterForm>) => void;
-	getForm?: () => TilemapGetterForm;
-};
-
 const form = reactive<TilemapGetterForm>({
 	type: 'trigger',
 	presetId: '',
 	variable: { type: 'local', key: '' }
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-const getFrame = (): TilemapGetterFrame | null =>
-	document.getElementById('tilemapGetter') as TilemapGetterFrame | null;
 
 const open = (target: TilemapGetterTarget, defaults?: Partial<TilemapGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -54,12 +46,11 @@ const open = (target: TilemapGetterTarget, defaults?: Partial<TilemapGetterForm>
 			break;
 	}
 	Object.assign(form, { type: tilemap.type, presetId, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('tilemapGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

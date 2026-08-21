@@ -20,19 +20,11 @@ interface TriggerGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type TriggerGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<TriggerGetterForm>) => void;
-	getForm?: () => TriggerGetterForm;
-};
-
 const form = reactive<TriggerGetterForm>({
 	type: 'trigger',
 	variable: { type: 'local', key: '' }
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-const getFrame = (): TriggerGetterFrame | null =>
-	document.getElementById('triggerGetter') as TriggerGetterFrame | null;
 
 const open = (target: TriggerGetterTarget): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -49,12 +41,11 @@ const open = (target: TriggerGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: trigger.type, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('triggerGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

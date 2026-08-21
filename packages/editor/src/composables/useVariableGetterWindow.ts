@@ -71,11 +71,6 @@ interface VariableGetterWindow {
 	typeInput: (event: Event & { value: string }) => void;
 }
 
-type VariableGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<VariableGetterForm>) => void;
-	getForm?: () => VariableGetterForm;
-};
-
 interface VariableGetterState {
 	target: VariableGetterTarget;
 	filter: string;
@@ -132,9 +127,6 @@ const types: VarTypeSet = {
 	writable: writableTypes,
 	deletable: deletableTypes
 };
-
-const getFrame = (prefix: string): VariableGetterFrame | null =>
-	document.getElementById(prefix) as VariableGetterFrame | null;
 
 const getTypeItems = (filter: string, prefix: string): VarTypeItem[] => {
 	switch (filter) {
@@ -341,7 +333,6 @@ const open = (
 			globalKey
 		});
 	}
-	getFrame(prefix)?.setForm?.(form);
 	getFocus(document.getElementById(`${prefix}-type`));
 	getWindowStore().open(prefix);
 };
@@ -516,7 +507,7 @@ const confirmCore = (prefix: string): void => {
 	const state = states[prefix];
 	if (!state) return;
 	const { target, filter } = state;
-	const data = getFrame(prefix)?.getForm?.() ?? form;
+	const data = form;
 	const type = data.type;
 	let getter: Record<string, unknown> | undefined;
 	let key: string;

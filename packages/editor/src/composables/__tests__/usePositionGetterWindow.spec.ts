@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('usePositionGetterWindow（位置访问器窗口 composable：form 状�
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(PositionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const positionGetter = usePositionGetterWindow();
@@ -47,21 +35,17 @@ describe('usePositionGetterWindow（位置访问器窗口 composable：form 状�
 		expect(positionGetter.form.type).toBe('absolute');
 		expect(positionGetter.form.x).toBe(3);
 		expect(positionGetter.form.y).toBe(-4);
-		expect(getFrame('positionGetter').getForm().type).toBe('absolute');
-		expect(getControl('positionGetter-type').read()).toBe('absolute');
-		expect(getControl('positionGetter-common-x').read()).toBe(3);
-		expect(getControl('positionGetter-common-y').read()).toBe(-4);
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（object 含 objectId）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（object 含 objectId）', async () => {
 		const wrapper = mount(PositionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const positionGetter = usePositionGetterWindow();
 		const target = makeTarget(() => ({ type: 'object', objectId: 'obj-1' }));
 		positionGetter.open(target as never);
-		getControl('positionGetter-type').write('object');
-		getControl('positionGetter-objectId').write('obj-9');
+		positionGetter.form.type = 'object';
+		positionGetter.form.objectId = 'obj-9';
 		positionGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({ type: 'object', objectId: 'obj-9' });
 		expect(Window.close).toHaveBeenCalledWith('positionGetter');
@@ -74,8 +58,8 @@ describe('usePositionGetterWindow（位置访问器窗口 composable：form 状�
 		const positionGetter = usePositionGetterWindow();
 		const target = makeTarget(() => ({ type: 'object', objectId: 'obj-1' }));
 		positionGetter.open(target as never);
-		getControl('positionGetter-type').write('object');
-		getControl('positionGetter-objectId').write('');
+		positionGetter.form.type = 'object';
+		positionGetter.form.objectId = '';
 		positionGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -110,6 +94,7 @@ describe('usePositionGetterWindow（位置访问器窗口 composable：form 状�
 	it('legacy PositionGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(PositionGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const positionGetter = usePositionGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'region',
 			region: { type: 'trigger' },
@@ -117,8 +102,8 @@ describe('usePositionGetterWindow（位置访问器窗口 composable：form 状�
 		}));
 		PositionGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('positionGetter');
-		expect(getControl('positionGetter-type').read()).toBe('region');
-		getControl('positionGetter-region-mode').write('random');
+		expect(positionGetter.form.type).toBe('region');
+		positionGetter.form.mode = 'random';
 		PositionGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'region',

@@ -22,11 +22,6 @@ interface StateGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type StateGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<StateGetterForm>) => void;
-	getForm?: () => StateGetterForm;
-};
-
 const form = reactive<StateGetterForm>({
 	type: 'trigger',
 	actor: { type: 'trigger' },
@@ -35,9 +30,6 @@ const form = reactive<StateGetterForm>({
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
-
-const getFrame = (): StateGetterFrame | null =>
-	document.getElementById('stateGetter') as StateGetterFrame | null;
 
 const open = (target: StateGetterTarget): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -58,12 +50,11 @@ const open = (target: StateGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: state.type, actor, stateId, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('stateGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

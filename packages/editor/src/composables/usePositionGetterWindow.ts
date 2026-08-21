@@ -27,11 +27,6 @@ interface PositionGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type PositionGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<PositionGetterForm>) => void;
-	getForm?: () => PositionGetterForm;
-};
-
 const form = reactive<PositionGetterForm>({
 	type: 'absolute',
 	x: 0,
@@ -45,9 +40,6 @@ const form = reactive<PositionGetterForm>({
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
-
-const getFrame = (): PositionGetterFrame | null =>
-	document.getElementById('positionGetter') as PositionGetterFrame | null;
 
 const open = (target: PositionGetterTarget, defaults?: Partial<PositionGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -97,12 +89,11 @@ const open = (target: PositionGetterTarget, defaults?: Partial<PositionGetterFor
 		mode,
 		objectId
 	});
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('positionGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'absolute':

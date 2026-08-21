@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('useActorGetterWindow（角色访问器窗口 composable：form 状态 
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(ActorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const actorGetter = useActorGetterWindow();
@@ -46,21 +34,17 @@ describe('useActorGetterWindow（角色访问器窗口 composable：form 状态 
 		expect(Window.open).toHaveBeenCalledWith('actorGetter');
 		expect(actorGetter.form.type).toBe('member');
 		expect(actorGetter.form.memberId).toBe(3);
-		expect(getFrame('actorGetter').getForm().type).toBe('member');
-		expect(getFrame('actorGetter').getForm().memberId).toBe(3);
-		expect(getControl('actorGetter-type').read()).toBe('member');
-		expect(getControl('actorGetter-memberId').read()).toBe(3);
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id 含 presetId）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id 含 presetId）', async () => {
 		const wrapper = mount(ActorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const actorGetter = useActorGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'preset-1' }));
 		actorGetter.open(target as never);
-		getControl('actorGetter-type').write('by-id');
-		getControl('actorGetter-presetId').write('preset-9');
+		actorGetter.form.type = 'by-id';
+		actorGetter.form.presetId = 'preset-9';
 		actorGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'preset-9' });
 		expect(Window.close).toHaveBeenCalledWith('actorGetter');
@@ -73,8 +57,8 @@ describe('useActorGetterWindow（角色访问器窗口 composable：form 状态 
 		const actorGetter = useActorGetterWindow();
 		const target = makeTarget(() => ({ type: 'global', actorId: 'actor-1' }));
 		actorGetter.open(target as never);
-		getControl('actorGetter-type').write('global');
-		getControl('actorGetter-actorId').write('');
+		actorGetter.form.type = 'global';
+		actorGetter.form.actorId = '';
 		actorGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -90,8 +74,8 @@ describe('useActorGetterWindow（角色访问器窗口 composable：form 状态 
 			variable: { type: 'local', key: 'v1' }
 		}));
 		actorGetter.open(target as never);
-		getControl('actorGetter-type').write('variable');
-		getControl('actorGetter-variable').write({ type: 'local', key: '' });
+		actorGetter.form.type = 'variable';
+		actorGetter.form.variable = { type: 'local', key: '' };
 		actorGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -126,12 +110,13 @@ describe('useActorGetterWindow（角色访问器窗口 composable：form 状态 
 	it('legacy ActorGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(ActorGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const actorGetter = useActorGetterWindow();
 		const target = makeTarget(() => ({ type: 'by-id', presetId: 'preset-1' }));
 		ActorGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('actorGetter');
-		expect(getControl('actorGetter-type').read()).toBe('by-id');
-		expect(getControl('actorGetter-presetId').read()).toBe('preset-1');
-		getControl('actorGetter-presetId').write('preset-2');
+		expect(actorGetter.form.type).toBe('by-id');
+		expect(actorGetter.form.presetId).toBe('preset-1');
+		actorGetter.form.presetId = 'preset-2';
 		ActorGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({ type: 'by-id', presetId: 'preset-2' });
 		expect(Window.close).toHaveBeenCalledWith('actorGetter');

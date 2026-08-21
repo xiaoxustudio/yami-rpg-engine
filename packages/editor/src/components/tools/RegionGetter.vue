@@ -6,7 +6,7 @@
 				<div class="text">{{ t('components.regionGetter-type.label') }}</div><SelectBox id="regionGetter-type" v-model="form.type" /> <div class="text">{{ t('components.regionGetter-presetId.label') }}</div
 				><CustomBox
 					id="regionGetter-presetId"
-					:model-value="form.presetId"
+					v-model="form.presetId"
 					type="preset-object"
 					filter="region"
 				/>
@@ -19,15 +19,11 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts';
-import {
-	useRegionGetterWindow,
-	type RegionGetterForm
-} from '@app/composables/useRegionGetterWindow';
+import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -35,37 +31,6 @@ const { t } = useI18n();
 
 const regionGetter = useRegionGetterWindow();
 const form = regionGetter.form;
-
-const FIELD_BY_ID: Record<string, keyof RegionGetterForm> = {
-	'regionGetter-type': 'type',
-	'regionGetter-presetId': 'presetId'
-};
-
-const setForm = (data: Partial<RegionGetterForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
-};
-
-const getForm = (): RegionGetterForm => {
-	const data = { ...form } as RegionGetterForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
-			| (HTMLElement & { read?: () => unknown })
-			| null;
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
-};
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
@@ -79,7 +44,6 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
 		el.on('closed', () => regionGetter.onWindowClosed());
 	}
 

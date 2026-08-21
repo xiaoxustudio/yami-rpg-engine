@@ -10,19 +10,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -37,7 +25,7 @@ describe('useTriggerGetterWindow（触发器访问器窗口 composable：form �
 		Window.close = vi.fn();
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(TriggerGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const triggerGetter = useTriggerGetterWindow();
@@ -49,13 +37,10 @@ describe('useTriggerGetterWindow（触发器访问器窗口 composable：form �
 		expect(Window.open).toHaveBeenCalledWith('triggerGetter');
 		expect(triggerGetter.form.type).toBe('variable');
 		expect(triggerGetter.form.variable).toEqual({ type: 'global', key: 'g1' });
-		expect(getFrame('triggerGetter').getForm().type).toBe('variable');
-		expect(getControl('triggerGetter-type').read()).toBe('variable');
-		expect(getControl('triggerGetter-variable').read()).toEqual({ type: 'global', key: 'g1' });
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（variable 含变量）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（variable 含变量）', async () => {
 		const wrapper = mount(TriggerGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const triggerGetter = useTriggerGetterWindow();
@@ -64,8 +49,8 @@ describe('useTriggerGetterWindow（触发器访问器窗口 composable：form �
 			variable: { type: 'local', key: 'v1' }
 		}));
 		triggerGetter.open(target as never);
-		getControl('triggerGetter-type').write('variable');
-		getControl('triggerGetter-variable').write({ type: 'local', key: 'v2' });
+		triggerGetter.form.type = 'variable';
+		triggerGetter.form.variable = { type: 'local', key: 'v2' };
 		triggerGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'variable',
@@ -84,8 +69,8 @@ describe('useTriggerGetterWindow（触发器访问器窗口 composable：form �
 			variable: { type: 'local', key: 'v1' }
 		}));
 		triggerGetter.open(target as never);
-		getControl('triggerGetter-type').write('variable');
-		getControl('triggerGetter-variable').write({ type: 'local', key: '' });
+		triggerGetter.form.type = 'variable';
+		triggerGetter.form.variable = { type: 'local', key: '' };
 		triggerGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -107,14 +92,15 @@ describe('useTriggerGetterWindow（触发器访问器窗口 composable：form �
 	it('legacy TriggerGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(TriggerGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const triggerGetter = useTriggerGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'variable',
 			variable: { type: 'local', key: 'v1' }
 		}));
 		TriggerGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('triggerGetter');
-		expect(getControl('triggerGetter-type').read()).toBe('variable');
-		getControl('triggerGetter-variable').write({ type: 'local', key: 'v3' });
+		expect(triggerGetter.form.type).toBe('variable');
+		triggerGetter.form.variable = { type: 'local', key: 'v3' };
 		TriggerGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'variable',

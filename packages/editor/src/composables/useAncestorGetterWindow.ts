@@ -21,20 +21,12 @@ interface AncestorGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type AncestorGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<AncestorGetterForm>) => void;
-	getForm?: () => AncestorGetterForm;
-};
-
 const form = reactive<AncestorGetterForm>({
 	type: 'trigger',
 	presetId: '',
 	variable: { type: 'local', key: '' }
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-const getFrame = (): AncestorGetterFrame | null =>
-	document.getElementById('ancestorGetter') as AncestorGetterFrame | null;
 
 const open = (target: AncestorGetterTarget, defaults?: Partial<AncestorGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -55,12 +47,11 @@ const open = (target: AncestorGetterTarget, defaults?: Partial<AncestorGetterFor
 			break;
 	}
 	Object.assign(form, { type: element.type, presetId, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('ancestorGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

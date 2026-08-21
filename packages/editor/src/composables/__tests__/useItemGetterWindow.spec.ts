@@ -11,19 +11,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -40,7 +28,7 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 		Enum.getDefStringId = vi.fn(() => 'space') as never;
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(ItemGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const itemGetter = useItemGetterWindow();
@@ -53,14 +41,10 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 		expect(Window.open).toHaveBeenCalledWith('itemGetter');
 		expect(itemGetter.form.type).toBe('by-key');
 		expect(itemGetter.form.key).toBe('enter');
-		expect(getFrame('itemGetter').getForm().type).toBe('by-key');
-		expect(getFrame('itemGetter').getForm().key).toBe('enter');
-		expect(getControl('itemGetter-type').read()).toBe('by-key');
-		expect(getControl('itemGetter-key').read()).toBe('enter');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id 含 actor）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id 含 actor）', async () => {
 		const wrapper = mount(ItemGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const itemGetter = useItemGetterWindow();
@@ -70,9 +54,9 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 			itemId: 'item-1'
 		}));
 		itemGetter.open(target as never);
-		getControl('itemGetter-type').write('by-id');
-		getControl('itemGetter-actor').write({ type: 'actor', key: 'a1' });
-		getControl('itemGetter-itemId').write('item-2');
+		itemGetter.form.type = 'by-id';
+		itemGetter.form.actor = { type: 'actor', key: 'a1' } as { type: string; key?: string };
+		itemGetter.form.itemId = 'item-2';
 		itemGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-id',
@@ -92,8 +76,8 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 			variable: { type: 'local', key: 'v1' }
 		}));
 		itemGetter.open(target as never);
-		getControl('itemGetter-type').write('variable');
-		getControl('itemGetter-variable').write({ type: 'local', key: '' });
+		itemGetter.form.type = 'variable';
+		itemGetter.form.variable = { type: 'local', key: '' };
 		itemGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -128,6 +112,7 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 	it('legacy ItemGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(ItemGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const itemGetter = useItemGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'by-key',
 			actor: { type: 'trigger' },
@@ -135,9 +120,9 @@ describe('useItemGetterWindow（物品访问器窗口 composable：form 状态 +
 		}));
 		ItemGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('itemGetter');
-		expect(getControl('itemGetter-type').read()).toBe('by-key');
-		expect(getControl('itemGetter-key').read()).toBe('enter');
-		getControl('itemGetter-key').write('space');
+		expect(itemGetter.form.type).toBe('by-key');
+		expect(itemGetter.form.key).toBe('enter');
+		itemGetter.form.key = 'space';
 		ItemGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-key',

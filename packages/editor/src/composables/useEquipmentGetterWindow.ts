@@ -23,11 +23,6 @@ interface EquipmentGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type EquipmentGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<EquipmentGetterForm>) => void;
-	getForm?: () => EquipmentGetterForm;
-};
-
 const form = reactive<EquipmentGetterForm>({
 	type: 'trigger',
 	actor: { type: 'trigger' },
@@ -37,9 +32,6 @@ const form = reactive<EquipmentGetterForm>({
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
-
-const getFrame = (): EquipmentGetterFrame | null =>
-	document.getElementById('equipmentGetter') as EquipmentGetterFrame | null;
 
 const open = (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -69,12 +61,11 @@ const open = (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterF
 			break;
 	}
 	Object.assign(form, { type: equipment.type, actor, slot, equipmentId, variable });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('equipmentGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

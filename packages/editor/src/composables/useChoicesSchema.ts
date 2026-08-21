@@ -1,4 +1,5 @@
-﻿import { getWindowStore } from '@app/stores/window';
+﻿import { reactive } from 'vue';
+import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils.ts';
 import { removeTextTags, parseVariableTag } from '@app/composables/useCommandParse.ts';
 import { GameLocal } from '@app/local/local-object.ts';
@@ -19,6 +20,7 @@ export interface ChoicesData {
 }
 
 export interface ChoicesShape {
+	form: ChoicesForm;
 	target: ChoicesTarget | null;
 	commands: unknown[] | null;
 	initialize: (() => void) | null;
@@ -29,6 +31,7 @@ export interface ChoicesShape {
 	confirm: ((event: Event) => void) | null;
 }
 
+const form = reactive<ChoicesForm>({ content: '' });
 let target: ChoicesTarget | null = null;
 let commands: unknown[] | null = null;
 let instance: ChoicesShape | null = null;
@@ -39,21 +42,13 @@ const parse = (choice: ChoicesData): string => {
 
 const open = (choice: ChoicesData = { content: '', commands: [] }): void => {
 	getWindowStore().open('choice');
-	const setForm = (
-		document.getElementById('choice') as
-			| (HTMLElement & { setForm?: (data: Partial<ChoicesForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.({ content: choice.content });
+	Object.assign(form, { content: choice.content });
 	getFocus(document.getElementById('choice-content'), 'all');
 	commands = choice.commands;
 };
 
 const save = (): unknown => {
-	const getForm = (
-		document.getElementById('choice') as (HTMLElement & { getForm?: () => ChoicesForm }) | null
-	)?.getForm;
-	const content = (getForm?.()?.content ?? '').trim();
+	const content = form.content.trim();
 	if (content === '') {
 		return getFocus(document.getElementById('choice-content'));
 	}
@@ -72,6 +67,7 @@ const confirm = (event: Event): void => {
 export function useChoicesSchema(): ChoicesShape {
 	if (!instance) {
 		instance = {
+			form,
 			get target() {
 				return target;
 			},

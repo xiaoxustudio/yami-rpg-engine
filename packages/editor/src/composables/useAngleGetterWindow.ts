@@ -21,20 +21,12 @@ interface AngleGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type AngleGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<AngleGetterForm>) => void;
-	getForm?: () => AngleGetterForm;
-};
-
 const form = reactive<AngleGetterForm>({
 	type: 'position',
 	position: { type: 'actor', actor: { type: 'trigger' } },
 	degrees: 0
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-const getFrame = (): AngleGetterFrame | null =>
-	document.getElementById('angleGetter') as AngleGetterFrame | null;
 
 const open = (target: AngleGetterTarget): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -56,12 +48,11 @@ const open = (target: AngleGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: angle.type, position, degrees });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('angleGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'position':

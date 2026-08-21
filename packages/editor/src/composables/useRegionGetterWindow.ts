@@ -20,19 +20,11 @@ interface RegionGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type RegionGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<RegionGetterForm>) => void;
-	getForm?: () => RegionGetterForm;
-};
-
 const form = reactive<RegionGetterForm>({
 	type: 'trigger',
 	presetId: ''
 });
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-const getFrame = (): RegionGetterFrame | null =>
-	document.getElementById('regionGetter') as RegionGetterFrame | null;
 
 const open = (target: RegionGetterTarget, defaults?: Partial<RegionGetterForm>): void => {
 	callback = (getter: Record<string, unknown>) => target.input(getter);
@@ -48,12 +40,11 @@ const open = (target: RegionGetterTarget, defaults?: Partial<RegionGetterForm>):
 			break;
 	}
 	Object.assign(form, { type: region.type, presetId });
-	getFrame()?.setForm?.(form);
 	getFocus(document.getElementById('regionGetter-type'));
 };
 
 const confirm = (): void => {
-	const data = getFrame()?.getForm?.() ?? form;
+	const data = form;
 	let getter: Record<string, unknown> | undefined;
 	switch (data.type) {
 		case 'trigger':

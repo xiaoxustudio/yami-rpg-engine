@@ -11,19 +11,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-interface ControlEl extends HTMLElement {
-	write(value: unknown): void;
-	read(): unknown;
-}
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,
@@ -40,7 +28,7 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 		Enum.getDefStringId = vi.fn(() => 'space') as never;
 	});
 
-	it('open 打开窗口、解析 read 数据填充 form 与控件 DOM 并写入回调', async () => {
+	it('open 打开窗口、解析 read 数据填充 form', async () => {
 		const wrapper = mount(SkillGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const skillGetter = useSkillGetterWindow();
@@ -53,14 +41,10 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 		expect(Window.open).toHaveBeenCalledWith('skillGetter');
 		expect(skillGetter.form.type).toBe('by-key');
 		expect(skillGetter.form.key).toBe('enter');
-		expect(getFrame('skillGetter').getForm().type).toBe('by-key');
-		expect(getFrame('skillGetter').getForm().key).toBe('enter');
-		expect(getControl('skillGetter-type').read()).toBe('by-key');
-		expect(getControl('skillGetter-key').read()).toBe('enter');
 		wrapper.unmount();
 	});
 
-	it('confirm 经 getForm 读回控件值回调并关闭窗口（by-id 含 actor）', async () => {
+	it('confirm 经 form 读回值回调并关闭窗口（by-id 含 actor）', async () => {
 		const wrapper = mount(SkillGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const skillGetter = useSkillGetterWindow();
@@ -70,9 +54,9 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 			skillId: 'skill-1'
 		}));
 		skillGetter.open(target as never);
-		getControl('skillGetter-type').write('by-id');
-		getControl('skillGetter-actor').write({ type: 'actor', key: 'a1' });
-		getControl('skillGetter-skillId').write('skill-2');
+		skillGetter.form.type = 'by-id';
+		skillGetter.form.actor = { type: 'actor', key: 'a1' } as { type: string; key?: string };
+		skillGetter.form.skillId = 'skill-2';
 		skillGetter.confirm();
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-id',
@@ -93,8 +77,8 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 			key: 'enter'
 		}));
 		skillGetter.open(target as never);
-		getControl('skillGetter-type').write('by-key');
-		getControl('skillGetter-key').write('');
+		skillGetter.form.type = 'by-key';
+		skillGetter.form.key = '';
 		skillGetter.confirm();
 		expect(target.input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -129,6 +113,7 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 	it('legacy SkillGetter.open/confirm 转发 composable 并回调 target.input', async () => {
 		const wrapper = mount(SkillGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const skillGetter = useSkillGetterWindow();
 		const target = makeTarget(() => ({
 			type: 'by-key',
 			actor: { type: 'trigger' },
@@ -136,9 +121,9 @@ describe('useSkillGetterWindow（技能访问器窗口 composable：form 状态 
 		}));
 		SkillGetterController.open!(target as never);
 		expect(Window.open).toHaveBeenCalledWith('skillGetter');
-		expect(getControl('skillGetter-type').read()).toBe('by-key');
-		expect(getControl('skillGetter-key').read()).toBe('enter');
-		getControl('skillGetter-key').write('space');
+		expect(skillGetter.form.type).toBe('by-key');
+		expect(skillGetter.form.key).toBe('enter');
+		skillGetter.form.key = 'space';
 		SkillGetterController.confirm!({} as Event);
 		expect(target.input).toHaveBeenCalledWith({
 			type: 'by-key',

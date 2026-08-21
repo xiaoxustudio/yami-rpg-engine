@@ -22,21 +22,10 @@ const open = (data: ImageClipForm, cb: (value: number[]) => void): void => {
 	callback = cb;
 	getWindowStore().open('imageClip');
 	Object.assign(form, data);
-	const setForm = (
-		document.getElementById('imageClip') as
-			| (HTMLElement & { setForm?: (data: Partial<ImageClipForm>) => void })
-			| null
-	)?.setForm;
-	setForm?.(data);
 };
 
 const confirm = (): void => {
-	const getForm = (
-		document.getElementById('imageClip') as
-			| (HTMLElement & { getForm?: () => ImageClipForm })
-			| null
-	)?.getForm;
-	const data = getForm?.() ?? { ...form };
+	const data = form;
 	callback?.([data.x, data.y, data.width, data.height]);
 	getWindowStore().close('imageClip');
 };
