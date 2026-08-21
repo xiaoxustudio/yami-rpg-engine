@@ -1,6 +1,7 @@
-import { getElementReader, getElementWriter } from '@app/utils/dom';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { $ } from '@app/utils/dom';
+import { getFocus, read, write } from '@app/utils/element-utils';
+import { reactive } from 'vue';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
 	setBooleanColor,
@@ -40,6 +41,28 @@ export interface SwitchConditionData {
 	button?: number;
 	variable?: { type: string; key: string };
 }
+
+export interface SwitchConditionForm {
+	type: SwitchConditionData['type'];
+	booleanValue: boolean;
+	numberValue: number;
+	stringValue: string;
+	attributeId: string;
+	stringId: string;
+	mouseButton: number;
+	variable: { type: string; key: string };
+}
+
+export const form = reactive<SwitchConditionForm>({
+	type: 'number',
+	booleanValue: false,
+	numberValue: 0,
+	stringValue: '',
+	attributeId: '',
+	stringId: '',
+	mouseButton: 0,
+	variable: { type: 'local', key: '' }
+});
 
 interface SwitchConditionTarget {
 	save: () => SwitchConditionData;
@@ -117,7 +140,6 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	let gamepadButton = -1;
 	let mouseButton = 0;
 	let variableVariable = { type: 'local', key: '' };
-	const write = getElementWriter('switch-condition');
 	switch (condition.type) {
 		case 'none':
 			break;
@@ -149,44 +171,45 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 			variableVariable = condition.variable!;
 			break;
 	}
-	write('type', condition.type);
-	write('boolean-value', booleanValue);
-	write('number-value', numberValue);
-	write('string-value', stringValue);
-	write('attribute-attributeId', attributeId);
-	write('enum-stringId', enumStringId);
-	write('keyboard-keycode', keyboardKeycode);
-	write('gamepad-button', gamepadButton);
-	write('mouse-button', mouseButton);
-	write('variable-variable', variableVariable);
+	Object.assign(form, {
+		type: condition.type,
+		booleanValue,
+		numberValue,
+		stringValue,
+		attributeId,
+		stringId: enumStringId,
+		mouseButton,
+		variable: variableVariable
+	});
+	write($('#switch-condition-keyboard-keycode'), keyboardKeycode);
+	write($('#switch-condition-gamepad-button'), gamepadButton);
 	getFocus(document.getElementById('switch-condition-type'));
 };
 
 const save = (): SwitchConditionData => {
-	const read = getElementReader('switch-condition');
-	const type = read('type') as SwitchConditionData['type'];
+	const type = form.type;
 	let condition: SwitchConditionData | undefined;
 	switch (type) {
 		case 'none':
 			condition = { type };
 			break;
 		case 'boolean': {
-			const value = read('boolean-value');
+			const value = form.booleanValue;
 			condition = { type, value };
 			break;
 		}
 		case 'number': {
-			const value = read('number-value');
+			const value = form.numberValue;
 			condition = { type, value };
 			break;
 		}
 		case 'string': {
-			const value = read('string-value');
+			const value = form.stringValue;
 			condition = { type, value };
 			break;
 		}
 		case 'attribute': {
-			const attributeId = read('attribute-attributeId') as string;
+			const attributeId = form.attributeId;
 			if (attributeId === '') {
 				return getFocus(
 					document.getElementById('switch-condition-attribute-attributeId')
@@ -196,7 +219,7 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'enum': {
-			const stringId = read('enum-stringId') as string;
+			const stringId = form.stringId;
 			if (stringId === '') {
 				return getFocus(
 					document.getElementById('switch-condition-enum-stringId')
@@ -206,7 +229,7 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'keyboard': {
-			const keycode = read('keyboard-keycode') as string;
+			const keycode = read($('#switch-condition-keyboard-keycode')) as string;
 			if (keycode === '') {
 				return getFocus(
 					document.getElementById('switch-condition-keyboard-keycode')
@@ -216,7 +239,7 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'gamepad': {
-			const button = read('gamepad-button') as number;
+			const button = read($('#switch-condition-gamepad-button')) as number;
 			if (button === -1) {
 				return getFocus(
 					document.getElementById('switch-condition-gamepad-button')
@@ -226,12 +249,12 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'mouse': {
-			const button = read('mouse-button');
+			const button = form.mouseButton;
 			condition = { type, button };
 			break;
 		}
 		case 'variable': {
-			const variable = read('variable-variable') as { type: string; key: string };
+			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(
 					document.getElementById('switch-condition-variable-variable')

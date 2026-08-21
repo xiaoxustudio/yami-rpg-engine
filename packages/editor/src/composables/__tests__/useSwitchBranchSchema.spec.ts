@@ -5,7 +5,10 @@ import SwitchCommandWindow from '@app/components/commands/Switch.vue';
 import SwitchBranchWindow from '@app/components/tools/SwitchBranch.vue';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
-import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
+import {
+	form as switchConditionForm,
+	useSwitchConditionSchema
+} from '@app/composables/useSwitchConditionSchema';
 
 const SwitchBranch = useSwitchBranchSchema();
 const SwitchCondition = useSwitchConditionSchema();
@@ -120,7 +123,7 @@ describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap
 		list.select(0);
 		list.insert();
 		expect(Window.open).toHaveBeenCalledWith('switch-condition');
-		getControl('switch-condition-number-value').write(5);
+		switchConditionForm.numberValue = 5;
 		SwitchCondition.confirm!(new Event('click'));
 		const data = list.read() as Array<{ conditions: { value: number }[] }>;
 		expect(data).toHaveLength(2);

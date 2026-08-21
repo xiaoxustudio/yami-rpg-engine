@@ -1,14 +1,16 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { $, getElementReader } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';
 
 export type ObjectPropertyItem = { text: string };
+
+export const indexForm = reactive<{ name: string }>({ name: '' });
 
 export const IndexBind = {
 	target: null as unknown as HTMLElement | null,
@@ -23,16 +25,10 @@ export const IndexBind = {
 	open(item: ObjectPropertyItem | null) {
 		Window.open!('ObjectProperty-index');
 		getFocus($('#ObjectProperty-index-name'));
-		if (item) {
-			write($('#ObjectProperty-index-name'), item.text);
-		} else {
-			write($('#ObjectProperty-index-name'), '');
-		}
+		indexForm.name = item?.text ?? '';
 	},
 	save() {
-		const elementReader = getElementReader('ObjectProperty-index');
-		const data = { text: elementReader('name') };
-		write($('#ObjectProperty-index-name'), '');
+		const data = { text: indexForm.name };
 		Window.close!('ObjectProperty-index');
 		return data;
 	},

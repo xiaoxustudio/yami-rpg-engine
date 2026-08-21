@@ -1,9 +1,10 @@
-﻿import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { createGetter } from '@app/i18n';
+import { reactive } from 'vue';
 
 interface PropertyKeyConfig {
 	name: string;
@@ -36,6 +37,7 @@ interface PropertyWindowConfig {
 
 interface PropertyWindow {
 	target: (Record<string, unknown> & { save?: (() => unknown) | null }) | null;
+	form: Record<string, unknown>;
 	initialize: (() => void) | null;
 	parse: ((data: { key: string; value: unknown }, listData?: boolean) => string) | null;
 	open: ((data?: { key: string; value: unknown }) => void) | null;
@@ -47,8 +49,11 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 	const { prefix, locale, keys, parseValue, parsers, init, openData, saveData, subRelates } =
 		config;
 
+	const form = reactive<Record<string, unknown>>({ key: '' });
+
 	const PropertyWindow: PropertyWindow = {
 		target: null,
+		form,
 		initialize: null,
 		parse: null,
 		open: null,
@@ -137,24 +142,19 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 			defaults[key] = value;
 		}
 
-		const write = getElementWriter(`${prefix}-property`, defaults);
-		write('key', key);
-		for (const k of keys) {
-			write(k.uiName ?? k.value);
-		}
+		Object.assign(form, defaults, { key });
 		getFocus($(`#${prefix}-property-key`));
 	};
 
 	PropertyWindow.save = function (this: PropertyWindow) {
-		const read = getElementReader(`${prefix}-property`);
-		const key = read('key');
+		const key = form.key as string;
 		let value;
 
 		if (saveData) {
-			value = saveData(key, read);
+			value = saveData(key, (k: string) => form[k]);
 		} else {
 			const keyObj = keys.find((k: PropertyKeyConfig) => k.value === key);
-			value = read(keyObj?.uiName ?? key);
+			value = form[keyObj?.uiName ?? key];
 		}
 
 		Window.close!(`${prefix}-property`);

@@ -1,5 +1,5 @@
-import { useColorWindow } from '@app/composables/useColorWindow';
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
+import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -217,21 +217,18 @@ Color.getCSSColorFromRGBA = function (this: typeof Color, ...args: unknown[]) {
 
 Color.writeRGBAToInputs = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b, a] = args[0] as [number, number, number, number];
-	const writer = getElementWriter('color');
 	const hex = this.getHexFromRGBA([r, g, b, a]);
-	writer('hex', this.simplifyHexColor(hex));
-	writer('r', r);
-	writer('g', g);
-	writer('b', b);
-	writer('a', a);
+	Object.assign(useColorWindow().form, {
+		hex: this.simplifyHexColor(hex),
+		r,
+		g,
+		b,
+		a
+	} as Partial<ColorForm>);
 };
 
 Color.readRGBAFromInputs = function (this: typeof Color) {
-	const reader = getElementReader('color');
-	const r = reader('r');
-	const g = reader('g');
-	const b = reader('b');
-	const a = reader('a');
+	const { r, g, b, a } = useColorWindow().form;
 	return [r, g, b, a];
 };
 
@@ -282,7 +279,7 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 			this.setPaletteCursor(x, y);
 
 			const rgb = this.getRGBFromPalette();
-			const a = read($('#color-a'));
+			const a = useColorWindow().form.a;
 			const rgba = [...rgb, a];
 			this.drawPillar(rgb);
 			this.setPillarCursor(0);
@@ -310,7 +307,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 			this.setPillarCursor(y);
 
 			const rgb = this.getRGBFromPillar();
-			const a = read($('#color-a'));
+			const a = useColorWindow().form.a;
 			const rgba = [...rgb, a];
 			this.writeRGBAToInputs(rgba);
 			this.drawViewer(rgba);
@@ -409,18 +406,17 @@ Color.hexBeforeinput = function (this: typeof Color, event: InputEvent) {
 };
 
 Color.hexInput = function (this: typeof Color, event: Event) {
-	const reader = getElementReader('color');
-	const writer = getElementWriter('color');
-	const oldHex = reader('hex');
+	const form = useColorWindow().form;
+	const oldHex = form.hex;
 	const newHex = oldHex.replace(/[^0-9a-f]/gi, '');
 	const [r, g, b, a] = this.getRGBAFromHex(newHex);
-	if (oldHex !== newHex) {
-		writer('hex', newHex);
-	}
-	writer('r', r);
-	writer('g', g);
-	writer('b', b);
-	writer('a', a);
+	Object.assign(form, {
+		hex: newHex,
+		r,
+		g,
+		b,
+		a
+	} as Partial<ColorForm>);
 	this.drawPillar([r, g, b]);
 	this.setPillarCursor(0);
 	this.drawViewer([r, g, b, a]);
@@ -428,14 +424,9 @@ Color.hexInput = function (this: typeof Color, event: Event) {
 }.bind(Color);
 
 Color.rgbaInput = function (this: typeof Color, event: Event) {
-	const reader = getElementReader('color');
-	const writer = getElementWriter('color');
-	const r = reader('r');
-	const g = reader('g');
-	const b = reader('b');
-	const a = reader('a');
+	const { r, g, b, a } = useColorWindow().form;
 	const hex = this.getHexFromRGBA([r, g, b, a]);
-	writer('hex', this.simplifyHexColor(hex));
+	useColorWindow().form.hex = this.simplifyHexColor(hex);
 	this.drawPillar([r, g, b]);
 	this.setPillarCursor(0);
 	this.drawViewer([r, g, b, a]);

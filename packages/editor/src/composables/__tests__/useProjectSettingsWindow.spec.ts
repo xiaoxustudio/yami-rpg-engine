@@ -141,12 +141,10 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 		expect(store.state).toBe('open');
 		expect(store.data).toEqual(makeConfig());
 		expect(store.target).toBe(store.data);
-		expect(getControl('config-window-title').read()).toBe('YAMI');
-		expect(getControl('config-window-width').read()).toBe(960);
-		expect(getControl('config-script-autoCompile').read()).toBe(true);
-		expect(getControl('config-localization-languages').read()).toEqual([
-			{ name: 'zh', font: '', scale: 1 }
-		]);
+		expect(settings.form.window.title).toBe('YAMI');
+		expect(settings.form.window.width).toBe(960);
+		expect(settings.form.script.autoCompile).toBe(true);
+		expect(settings.form.localization.languages).toEqual([{ name: 'zh', font: '', scale: 1 }]);
 		wrapper.unmount();
 	});
 
@@ -154,16 +152,16 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 		const { wrapper, settings } = await mountAndInit();
 		vi.mocked(Data).config = makeConfig() as never;
 		settings.open();
-		getControl('config-window-title').write('Edited');
+		settings.form.window.title = 'Edited';
+		expect(getProjectStore().data?.window.title).toBe('Edited');
+		settings.form.script.autoCompile = false;
+		expect(getProjectStore().data?.script.autoCompile).toBe(false);
+		getControl('config-window-title').write('From DOM');
 		document
 			.getElementById('config-window-title')!
 			.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(getProjectStore().data?.window.title).toBe('Edited');
-		getControl('config-script-autoCompile').write(false);
-		document
-			.getElementById('config-script-autoCompile')!
-			.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(getProjectStore().data?.script.autoCompile).toBe(false);
+		expect(getProjectStore().data?.window.title).toBe('From DOM');
+		expect(settings.form.window.title).toBe('From DOM');
 		wrapper.unmount();
 	});
 
@@ -171,10 +169,7 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 		const { wrapper, settings } = await mountAndInit();
 		vi.mocked(Data).config = makeConfig() as never;
 		settings.open();
-		getControl('config-window-title').write('Edited');
-		document
-			.getElementById('config-window-title')!
-			.dispatchEvent(new Event('input', { bubbles: true }));
+		settings.form.window.title = 'Edited';
 		document
 			.getElementById('project-settings')!
 			.dispatchEvent(new Event('change', { bubbles: true }));
@@ -254,13 +249,13 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 
 	it('legacy Project 入口 open/confirm/startTSC/stopTSC 转发 composable', async () => {
 		const { Project: ProjectController } = await import('@app/data/project-settings-window.ts');
-		const { wrapper } = await mountAndInit();
+		const { wrapper, settings } = await mountAndInit();
 		vi.mocked(Data).config = makeConfig() as never;
 		ProjectController.initialize();
 		ProjectController.open();
 		expect(Window.open).toHaveBeenCalledWith('project-settings');
 		expect(getProjectStore().state).toBe('open');
-		expect(getControl('config-window-title').read()).toBe('YAMI');
+		expect(settings.form.window.title).toBe('YAMI');
 		ProjectController.startTSC();
 		expect(ipcRenderer.send).toHaveBeenCalledWith('start-tsc', '/mock/project');
 		ProjectController.stopTSC();

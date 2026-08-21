@@ -3,21 +3,22 @@
 		<template #title><TitleBar>{{ t('components.setAnimation-property.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">{{ t('components.setAnimation-property-key.label') }}</div><SelectBox id="setAnimation-property-key" />
+				<div class="text">{{ t('components.setAnimation-property-key.label') }}</div><SelectBox id="setAnimation-property-key" v-model="form.key" />
 				<div class="text">{{ t('components.setAnimation-property-animation.label') }}</div
 				><CustomBox
 					id="setAnimation-property-animation"
 					type="file"
 					filter="animation"
+					v-model="form.animation"
 				/>
 				<div class="text">{{ t('components.setAnimation-property-actor.label') }}</div
-				><CustomBox id="setAnimation-property-actor" type="actor" />
+				><CustomBox id="setAnimation-property-actor" type="actor" v-model="form.actor" />
 				<div class="text">{{ t('components.setAnimation-property-motion.label') }}</div
-				><CustomBox id="setAnimation-property-motion" type="enum-string" />
+				><CustomBox id="setAnimation-property-motion" type="enum-string" v-model="form.motion" />
 				<div class="text">{{ t('components.setAnimation-property-angle.label') }}</div
-				><NumberVar id="setAnimation-property-angle" min="0" max="360" unit="deg" />
+				><NumberVar id="setAnimation-property-angle" min="0" max="360" unit="deg" v-model="form.angle" />
 				<div class="text">{{ t('components.setAnimation-property-frame.label') }}</div
-				><NumberVar id="setAnimation-property-frame" min="0" max="10000" />
+				><NumberVar id="setAnimation-property-frame" min="0" max="10000" v-model="form.frame" />
 			</div>
 		
 	</WindowFrame>
@@ -33,8 +34,11 @@ import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { AnimationProperty } from '@app/commands/property-window/set-animation-property-window';
 
 const { t } = useI18n();
+
+const form = AnimationProperty.form;
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

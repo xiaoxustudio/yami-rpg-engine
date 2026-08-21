@@ -3,7 +3,7 @@
 		<template #title><TitleBar>{{ t('components.ObjectProperty-index.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div><TextBox id="ObjectProperty-index-name" />
+				<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div><TextBox id="ObjectProperty-index-name" v-model="indexForm.name" />
 			</div>
 		
 	</WindowFrame>
@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { IndexBind } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
+import { IndexBind, indexForm } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

@@ -1,4 +1,5 @@
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { reactive } from 'vue';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus } from '@app/utils/element-utils';
 import { Attribute } from '@app/attribute/attribute-window.ts';
@@ -15,6 +16,22 @@ interface AttributeItemShape {
 	key: string;
 	value: string | number | boolean;
 }
+
+export interface AttributeForm {
+	key: string;
+	booleanValue: boolean;
+	numberValue: number;
+	stringValue: string;
+	enumValue: string;
+}
+
+export const form = reactive<AttributeForm>({
+	key: '',
+	booleanValue: false,
+	numberValue: 0,
+	stringValue: '',
+	enumValue: ''
+});
 
 export class AttributeListInterface implements IListInterface {
 	target!: HTMLElement | null;
@@ -116,22 +133,15 @@ export class AttributeListInterface implements IListInterface {
 		}
 		const key = item.key;
 		const type = Attribute.getGroupAttribute(this.group, key)?.type ?? typeof item.value;
-		const booleanValue = type === 'boolean' ? item.value : false;
-		const numberValue = type === 'number' ? item.value : 0;
-		const stringValue = type === 'string' ? item.value : '';
-		const enumValue = type === 'enum' ? item.value : '';
+		const booleanValue = type === 'boolean' ? (item.value as boolean) : false;
+		const numberValue = type === 'number' ? (item.value as number) : 0;
+		const stringValue = type === 'string' ? (item.value as string) : '';
+		const enumValue = type === 'enum' ? (item.value as string) : '';
 		const keyBox = $('#object-attribute-key');
 		keyBox.loadItems(Attribute.getAttributeItems(this.group, 'boolean number string'));
 		const invalid = !Attribute.getGroupAttribute(this.group, key);
 		if (invalid) AttributeListInterface.typeBox.write(type);
-		const write = getElementWriter('object-attribute');
-		write('key', key);
-		write('boolean-value', booleanValue);
-		write('number-value', numberValue);
-		write('string-value', stringValue);
-		if (enumValue) {
-			write('enum-value', enumValue);
-		}
+		Object.assign(form, { key, booleanValue, numberValue, stringValue, enumValue });
 		if (isNew || invalid) {
 			return getFocus($('#object-attribute-key'));
 		}
@@ -154,25 +164,24 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	save() {
-		const read = getElementReader('object-attribute');
 		const type = AttributeListInterface.typeBox.read();
-		const key = read('key');
+		const key = form.key;
 		if (key === '') {
 			return getFocus($('#object-attribute-key'));
 		}
 		let value;
 		switch (type) {
 			case 'boolean':
-				value = read('boolean-value');
+				value = form.booleanValue;
 				break;
 			case 'number':
-				value = read('number-value');
+				value = form.numberValue;
 				break;
 			case 'string':
-				value = read('string-value');
+				value = form.stringValue;
 				break;
 			case 'enum':
-				value = read('enum-value');
+				value = form.enumValue;
 				if (value === '') {
 					return getFocus($('#object-attribute-enum-value'));
 				}
@@ -227,7 +236,7 @@ export class AttributeListInterface implements IListInterface {
 			if (attr.type === 'enum') {
 				const enumBox = $('#object-attribute-enum-value');
 				enumBox.loadItems(Enum.getStringItems(attr.enum));
-				enumBox.write?.(Enum.getDefStringId(attr.enum));
+				form.enumValue = Enum.getDefStringId(attr.enum);
 			}
 		}
 	}

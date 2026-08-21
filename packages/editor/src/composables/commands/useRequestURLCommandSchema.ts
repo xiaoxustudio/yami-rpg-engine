@@ -1,16 +1,25 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { getElementReader, $ } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
+import { reactive } from 'vue';
 
 export type RequestKeyValue = {
 	key: string | { key: string };
 	value: string | { key: string };
 };
+
+export const requestKeyValueForm = reactive<{
+	key: string | { key: string };
+	value: string | { key: string };
+}>({
+	key: '',
+	value: ''
+});
 
 export const RequestkeyValueBind = {
 	target: null as unknown as (string & { save?: () => unknown }) | null,
@@ -24,19 +33,12 @@ export const RequestkeyValueBind = {
 	},
 	open(item: RequestKeyValue | null) {
 		Window.open!('request-keyValue');
-		if (!item) {
-			write($('#request-keyValue-value'), '');
-			write($('#request-keyValue-key'), '');
-			getFocus($('#request-keyValue-key'));
-		} else {
-			write($('#request-keyValue-value'), item.value);
-			write($('#request-keyValue-key'), item.key);
-			getFocus($('#request-keyValue-key'));
-		}
+		requestKeyValueForm.key = item?.key ?? '';
+		requestKeyValueForm.value = item?.value ?? '';
+		getFocus($('#request-keyValue-key'));
 	},
 	save() {
-		const read = getElementReader('request-keyValue');
-		const data = { key: read('key'), value: read('value') };
+		const data = { key: requestKeyValueForm.key, value: requestKeyValueForm.value };
 		const headers = read(this.target as unknown as string);
 		if (headers.some((item: RequestKeyValue) => item.key === data.key)) {
 			headers.splice(

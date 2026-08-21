@@ -1,4 +1,5 @@
-﻿import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+﻿import { reactive } from 'vue';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
@@ -17,6 +18,28 @@ interface ConditionData {
 	operation?: string;
 	value?: string | number | boolean;
 }
+
+export interface ConditionForm {
+	type: string;
+	key: string;
+	booleanOperation: string | undefined;
+	booleanValue: boolean;
+	numberOperation: string | undefined;
+	numberValue: number;
+	stringOperation: string | undefined;
+	stringValue: string;
+}
+
+export const form = reactive<ConditionForm>({
+	type: 'global-boolean',
+	key: '',
+	booleanOperation: 'equal',
+	booleanValue: true,
+	numberOperation: 'equal',
+	numberValue: 0,
+	stringOperation: 'equal',
+	stringValue: ''
+});
 
 export class ConditionListInterface implements IListInterface {
 	target!: HTMLElement | null;
@@ -111,9 +134,8 @@ export class ConditionListInterface implements IListInterface {
 	) {
 		Window.open!('condition');
 		ConditionListInterface.target = this.target;
-		const write = getElementWriter('condition');
 		let booleanOperation: string | undefined = 'equal';
-		let booleanValue: string | number | boolean | undefined = true;
+		let booleanValue = true;
 		let numberOperation: string | undefined = 'equal';
 		let numberValue = 0;
 		let stringOperation: string | undefined = 'equal';
@@ -135,20 +157,21 @@ export class ConditionListInterface implements IListInterface {
 				stringValue = condition.value as string;
 				break;
 		}
-		write('type', condition.type);
-		write('key', condition.key ?? '');
-		write('boolean-operation', booleanOperation);
-		write('boolean-value', booleanValue);
-		write('number-operation', numberOperation);
-		write('number-value', numberValue);
-		write('string-operation', stringOperation);
-		write('string-value', stringValue);
+		Object.assign(form, {
+			type: condition.type,
+			key: condition.key ?? '',
+			booleanOperation,
+			booleanValue,
+			numberOperation,
+			numberValue,
+			stringOperation,
+			stringValue
+		});
 		getFocus($('#condition-type'));
 	}
 
 	save() {
-		const read = getElementReader('condition');
-		const type = read('type');
+		const type = form.type;
 		const [varScope, varType] = type.split('-');
 		let key;
 		let operation;
@@ -156,7 +179,7 @@ export class ConditionListInterface implements IListInterface {
 		let condition;
 		switch (varScope) {
 			case 'global':
-				key = read('key');
+				key = form.key;
 				if (key === '') {
 					return getFocus($('#condition-key'));
 				}
@@ -164,16 +187,16 @@ export class ConditionListInterface implements IListInterface {
 		}
 		switch (varType) {
 			case 'boolean':
-				operation = read('boolean-operation');
-				value = read('boolean-value');
+				operation = form.booleanOperation;
+				value = form.booleanValue;
 				break;
 			case 'number':
-				operation = read('number-operation');
-				value = read('number-value');
+				operation = form.numberOperation;
+				value = form.numberValue;
 				break;
 			case 'string':
-				operation = read('string-operation');
-				value = read('string-value');
+				operation = form.stringOperation;
+				value = form.stringValue;
 				break;
 		}
 		switch (varScope) {

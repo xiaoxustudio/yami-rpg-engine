@@ -5,8 +5,8 @@ import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMStringVar from '../../basic/YMStringVar/YMStringVar.vue';
 
 interface Props {
-	keyValue?: string;
-	value?: string;
+	keyValue?: string | { key: string };
+	value?: string | { key: string };
 	keyLabel?: string;
 	valueLabel?: string;
 	title?: string;

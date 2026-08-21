@@ -37,8 +37,96 @@ type LanguagesInterface = {
 	target?: { save: () => void };
 };
 
+interface ProjectSettingsForm {
+	window: {
+		title: string;
+		width: number;
+		height: number;
+		display: string;
+	};
+	resolution: {
+		width: number;
+		height: number;
+		sceneScale: number;
+		uiScale: number;
+	};
+	scene: {
+		padding: number;
+		animationInterval: number;
+	};
+	tileArea: {
+		expansionTop: number;
+		expansionLeft: number;
+		expansionRight: number;
+		expansionBottom: number;
+	};
+	animationArea: {
+		expansionTop: number;
+		expansionLeft: number;
+		expansionRight: number;
+		expansionBottom: number;
+	};
+	lightArea: {
+		expansionTop: number;
+		expansionLeft: number;
+		expansionRight: number;
+		expansionBottom: number;
+	};
+	virtualAxis: {
+		up: number;
+		down: number;
+		left: number;
+		right: number;
+	};
+	collision: {
+		actor: {
+			enabled: boolean;
+		};
+		scene: {
+			enabled: boolean;
+			actorSize: number;
+		};
+		trigger: {
+			collideWithActorShape: boolean;
+		};
+	};
+	text: {
+		importedFonts: unknown[];
+		fontFamily: string;
+		highDefinition: boolean;
+	};
+	actor: {
+		tempAttributes: unknown[];
+	};
+	animation: {
+		frameRate: number;
+	};
+	soundAttenuation: {
+		distance: number;
+		easingId: string;
+	};
+	webgl: {
+		desynchronized: boolean;
+		textureMagFilter: string;
+		textureMinFilter: string;
+	};
+	script: {
+		autoCompile: boolean;
+	};
+	save: {
+		location: string;
+		subdir: string;
+	};
+	localization: {
+		languages: Array<{ name: string; font: string; scale: number }>;
+		default: string;
+	};
+	preload: string;
+	deadzone: number;
+}
+
 interface ProjectSettingsWindow {
-	form: Record<string, unknown>;
+	form: ProjectSettingsForm;
 	changed: boolean;
 	tscStarted: boolean;
 	importedFonts: ImportedFonts;
@@ -58,7 +146,30 @@ interface ProjectSettingsWindow {
 	confirm: (event?: Event) => void;
 }
 
-const form = reactive<Record<string, unknown>>({});
+const form = reactive<ProjectSettingsForm>({
+	window: { title: '', width: 0, height: 0, display: '' },
+	resolution: { width: 0, height: 0, sceneScale: 1, uiScale: 1 },
+	scene: { padding: 0, animationInterval: 100 },
+	tileArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
+	animationArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
+	lightArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
+	virtualAxis: { up: 0, down: 0, left: 0, right: 0 },
+	collision: {
+		actor: { enabled: true },
+		scene: { enabled: true, actorSize: 1 },
+		trigger: { collideWithActorShape: true }
+	},
+	text: { importedFonts: [], fontFamily: '', highDefinition: true },
+	actor: { tempAttributes: [] },
+	animation: { frameRate: 30 },
+	soundAttenuation: { distance: 10, easingId: '' },
+	webgl: { desynchronized: true, textureMagFilter: 'nearest', textureMinFilter: 'linear' },
+	script: { autoCompile: true },
+	save: { location: 'app-data', subdir: '' },
+	localization: { languages: [], default: '' },
+	preload: 'never',
+	deadzone: 0
+});
 let changed = false;
 let tscStarted = false;
 
@@ -185,12 +296,13 @@ function open(): void {
 		.loadItems(Data.createEasingItems());
 
 	const data = getProjectStore().data;
-	const setForm = (
-		document.getElementById('project-settings') as
-			| (HTMLElement & { setForm?: (data: Record<string, unknown>) => void })
-			| null
-	)?.setForm;
-	setForm?.(data);
+	if (data) {
+		Object.assign(form, data);
+		write(document.getElementById('config-virtualAxis-up'), data.virtualAxis.up);
+		write(document.getElementById('config-virtualAxis-down'), data.virtualAxis.down);
+		write(document.getElementById('config-virtualAxis-left'), data.virtualAxis.left);
+		write(document.getElementById('config-virtualAxis-right'), data.virtualAxis.right);
+	}
 }
 
 function startTSC(): void {

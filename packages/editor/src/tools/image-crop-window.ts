@@ -1,6 +1,6 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/utils/doubleclick';
 import { on, hide, show, hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -170,11 +170,7 @@ ImageClip.updateTitle = function (this: typeof ImageClip, ...args: unknown[]) {
 };
 
 ImageClip.updateMarquee = function (this: typeof ImageClip) {
-	const read = getElementReader('imageClip');
-	const x = read('x');
-	const y = read('y');
-	const width = read('width');
-	const height = read('height');
+	const { x, y, width, height } = useImageClipWindow().form;
 	this.marquee.select(x, y, width, height);
 };
 
@@ -185,16 +181,15 @@ ImageClip.shiftMarquee = function (this: typeof ImageClip, ...args: unknown[]) {
 	const iw = image.naturalWidth;
 	const ih = image.naturalHeight;
 	if (iw * ih === 0) return;
-	const read = getElementReader('imageClip');
-	const write = getElementWriter('imageClip');
-	const sx = read('x');
-	const sy = read('y');
-	const sw = read('width');
-	const sh = read('height');
+	const { form } = useImageClipWindow();
+	const sx = form.x;
+	const sy = form.y;
+	const sw = form.width;
+	const sh = form.height;
 	const dx = Math.clamp(sx + ox * sw, 0, iw - sw);
 	const dy = Math.clamp(sy + oy * sh, 0, ih - sh);
-	if (sx !== dx) write('x', dx);
-	if (sy !== dy) write('y', dy);
+	if (sx !== dx) form.x = dx;
+	if (sy !== dy) form.y = dy;
 	this.updateMarquee!();
 	this.scrollToMarquee!('active');
 };
@@ -308,16 +303,15 @@ ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerE
 			}
 			const marquee = this.marquee;
 			const coords = getRelativeCoords(event, marquee);
-			const read = getElementReader('imageClip');
-			const write = getElementWriter('imageClip');
+			const { form } = useImageClipWindow();
 			const x = coords.x / marquee.scaleX;
 			const y = coords.y / marquee.scaleY;
-			const cw = Math.max(read('width'), 1);
-			const ch = Math.max(read('height'), 1);
+			const cw = Math.max(form.width, 1);
+			const ch = Math.max(form.height, 1);
 			const cx = Math.floor(x / cw) * cw;
 			const cy = Math.floor(y / ch) * ch;
-			write('x', cx);
-			write('y', cy);
+			form.x = cx;
+			form.y = cy;
 			this.updateMarquee!();
 			break;
 		}

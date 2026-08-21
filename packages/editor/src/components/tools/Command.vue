@@ -25,8 +25,8 @@
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<div class="detail-grid" id="command-settings-grid">
-						<div class="text">{{ t('components.command-alias.label') }}</div><TextBox id="command-alias" @input="onParamInput" /> <div class="text">{{ t('components.command-keywords.label') }}</div
-					><TextBox id="command-keywords" @input="onParamInput" />
+						<div class="text">{{ t('components.command-alias.label') }}</div><TextBox id="command-alias" v-model="commandForm.alias" @input="onParamInput" /> <div class="text">{{ t('components.command-keywords.label') }}</div
+					><TextBox id="command-keywords" v-model="commandForm.keywords" @input="onParamInput" />
 					</div>
 				</DetailBox>
 			</div>
@@ -39,7 +39,7 @@ import { h, onMounted, ref, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
-import { CustomCommand } from '@app/commands/custom-command-window.ts';
+import { CustomCommand, commandForm } from '@app/commands/custom-command-window.ts';
 import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

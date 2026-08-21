@@ -4,28 +4,30 @@
 		<template #title><TitleBar>{{ t('components.switch-condition.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">{{ t('components.switch-condition-type.label') }}</div><SelectBox id="switch-condition-type" />
-				<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div><SelectBox id="switch-condition-boolean-value" />
+				<div class="text">{{ t('components.switch-condition-type.label') }}</div><SelectBox id="switch-condition-type" v-model="form.type" />
+				<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div><SelectBox id="switch-condition-boolean-value" v-model="form.booleanValue" />
 				<div class="text">{{ t('components.switch-condition-number-value.label') }}</div
 				><NumberBox
 					id="switch-condition-number-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
+					v-model="form.numberValue"
 				/>
-				<div class="text">{{ t('components.switch-condition-string-value.label') }}</div><TextArea id="switch-condition-string-value" />
+				<div class="text">{{ t('components.switch-condition-string-value.label') }}</div><TextArea id="switch-condition-string-value" v-model="form.stringValue" />
 				<div class="text">{{ t('components.switch-condition-attribute-attributeId.label') }}</div
-				><CustomBox id="switch-condition-attribute-attributeId" type="attribute" />
+				><CustomBox id="switch-condition-attribute-attributeId" type="attribute" v-model="form.attributeId" />
 				<div class="text">{{ t('components.switch-condition-enum-stringId.label') }}</div
-				><CustomBox id="switch-condition-enum-stringId" type="enum-string" />
+				><CustomBox id="switch-condition-enum-stringId" type="enum-string" v-model="form.stringId" />
 				<div class="text">{{ t('components.switch-condition-keyboard-keycode.label') }}</div><KeyboardBox id="switch-condition-keyboard-keycode" />
 				<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div><GamepadBox id="switch-condition-gamepad-button" />
-				<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div><SelectBox id="switch-condition-mouse-button" />
+				<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div><SelectBox id="switch-condition-mouse-button" v-model="form.mouseButton" />
 				<div class="text">{{ t('components.switch-condition-variable-variable.label') }}</div
 				><CustomBox
 					id="switch-condition-variable-variable"
 					type="variable"
 					filter="all"
+					v-model="form.variable"
 				/>
 			</div>
 		
@@ -49,6 +51,7 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { form } from '@app/composables/useSwitchConditionSchema';
 
 const { t } = useI18n();
 

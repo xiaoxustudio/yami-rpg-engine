@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
@@ -12,6 +12,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { PluginManager } from '@app/plugin/plugin.ts';
 import { createGetter } from '@app/i18n';
 import { GlobalClipboard } from '@app/utils/clipboard';
+import { reactive } from 'vue';
 import type { EditorProjectShape } from '@app/stores/editor';
 
 import { ctrl } from '@app/utils/event-accessors';
@@ -25,6 +26,11 @@ export interface CustomCommandData {
 	keywords: string;
 	parameters?: Record<string, unknown>;
 }
+
+export const commandForm = reactive<{ alias: string; keywords: string }>({
+	alias: '',
+	keywords: ''
+});
 
 // 自定义指令列表元素契约
 interface CustomCommandList {
@@ -231,9 +237,8 @@ CustomCommand.load = async function (
 		this.loadOverview!();
 		const data = this.list.read();
 		if (data) {
-			const write = getElementWriter('command', data as unknown as Record<string, unknown>);
-			write('alias');
-			write('keywords');
+			commandForm.alias = data.alias;
+			commandForm.keywords = data.keywords;
 			show(this.settingsPane);
 		}
 	}
@@ -439,19 +444,8 @@ CustomCommand.paramInput = function (
 ): void {
 	CustomCommand.changed = true;
 	const data = CustomCommand.list.read()!;
-	let element = (event?.target ?? document.activeElement) as HTMLElement | null;
-	while (element instanceof Element && !/^command-(alias|keywords)$/.test(element.id)) {
-		element = element.parentElement;
-	}
-	const input = element as (HTMLElement & { read(): string }) | null;
-	switch (input?.id) {
-		case 'command-alias':
-			(data as CustomCommandData).alias = input.read();
-			break;
-		case 'command-keywords':
-			(data as CustomCommandData).keywords = input.read();
-			break;
-	}
+	data.alias = commandForm.alias;
+	data.keywords = commandForm.keywords;
 };
 
 CustomCommand.confirm = function (this: CustomCommandShape, event: Event): void {
