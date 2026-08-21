@@ -5,7 +5,7 @@
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setCooldown-actor" type="actor" @input="onActor" />
 			<div class="text">Operation</div><SelectBox id="setCooldown-operation" v-model="form.operation" />
-			<div class="text">Cooldown Key</div><SelectVar id="setCooldown-key" />
+			<div class="text">Cooldown Key</div><SelectVar id="setCooldown-key" v-model="form.key" />
 			<div class="text">Cooldown Time</div
 			><NumberVar id="setCooldown-cooldown" min="1" max="3600000" unit="ms" v-model="form.cooldown" />
 		</div>

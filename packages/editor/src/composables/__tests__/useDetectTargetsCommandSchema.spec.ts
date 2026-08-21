@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import DetectTargets from '@app/components/commands/DetectTargets.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -90,15 +91,16 @@ describe('useDetectTargetsCommandSchema（detectTargets 命令表单 composable�
 	it('save 路径：用户改控件后经 Command.cases.detectTargets.save 保存', async () => {
 		const wrapper = mount(DetectTargets, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useDetectTargetsCommandSchema();
 		Command.cases.detectTargets.customLoad!({
 			actor: { type: 'trigger' },
 			distance: 2,
 			selector: 'enemy',
 			inSight: false
 		});
-		getControl('detectTargets-distance').write(5);
-		getControl('detectTargets-selector').input('team');
-		getControl('detectTargets-inSight').input(true);
+		form.distance = 5;
+		form.selector = 'team';
+		form.inSight = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.detectTargets.save!();

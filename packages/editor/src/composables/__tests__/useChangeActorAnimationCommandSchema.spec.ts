@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import ChangeActorAnimation from '@app/components/commands/ChangeActorAnimation.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useChangeActorAnimationCommandSchema } from '@app/composables/commands/useChangeActorAnimationCommandSchema';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -71,11 +72,12 @@ describe('useChangeActorAnimationCommandSchema（changeActorAnimation 命令表�
 	it('save 路径：用户改控件后经 Command.cases.changeActorAnimation.save 保存', async () => {
 		const wrapper = mount(ChangeActorAnimation, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useChangeActorAnimationCommandSchema();
 		Command.cases.changeActorAnimation.customLoad!({
 			actor: { type: 'trigger' },
 			animationId: 'anim1.json'
 		});
-		getControl('changeActorAnimation-animationId').write('anim2.json');
+		form.animationId = 'anim2.json';
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.changeActorAnimation.save!();

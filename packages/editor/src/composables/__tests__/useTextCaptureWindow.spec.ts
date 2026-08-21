@@ -55,8 +55,8 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		capture.font.open('Arial', callback);
 		expect(Window.open).toHaveBeenCalledWith('font');
 		expect(capture.font.form.font).toBe('Arial');
-		expect(getControl('font-font').read()).toBe('Arial');
-		getControl('font-font').write('Georgia');
+		expect(getFrame('font').getForm().font).toBe('Arial');
+		getFrame('font').setForm({ font: 'Georgia' });
 		capture.font.confirm();
 		expect(callback).toHaveBeenCalledWith({ font: 'Georgia' });
 		expect(Window.close).toHaveBeenCalledWith('font');
@@ -81,7 +81,7 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		capture.fontSize.open(12, callback);
 		expect(Window.open).toHaveBeenCalledWith('fontSize');
 		expect(getFrame('fontSize').getForm().size).toBe(12);
-		getControl('fontSize-size').write(24);
+		getFrame('fontSize').setForm({ size: 24 });
 		capture.fontSize.confirm();
 		expect(callback).toHaveBeenCalledWith({ size: 24 });
 		expect(Window.close).toHaveBeenCalledWith('fontSize');
@@ -215,7 +215,7 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		Selection.font.open!({ font: 'Arial' });
 		expect(Window.open).toHaveBeenCalledWith('font');
 		expect(getFrame('font').getForm().font).toBe('Arial');
-		getControl('font-font').write('Georgia');
+		getFrame('font').setForm({ font: 'Georgia' });
 		Selection.font.confirm!({} as Event);
 		expect(insert).toHaveBeenCalledWith('<font:Georgia>');
 		expect(Window.close).toHaveBeenCalledWith('font');

@@ -101,6 +101,7 @@ describe('useAddAnimationComponentCommandSchema（addAnimationComponent 命令�
 	it('save 路径：用户改控件后经 Command.cases.addAnimationComponent.save 保存', async () => {
 		const wrapper = mount(AddAnimationComponent, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useAddAnimationComponentCommandSchema();
 		Command.cases.addAnimationComponent.customLoad!({
 			actor: { type: 'trigger' },
 			animationId: 'anim1.json',
@@ -110,8 +111,8 @@ describe('useAddAnimationComponentCommandSchema（addAnimationComponent 命令�
 			priority: 0,
 			offsetY: 0
 		});
-		getControl('addAnimationComponent-priority').write(3);
-		getControl('addAnimationComponent-offsetY').write(-2);
+		form.priority = 3;
+		form.offsetY = -2;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.addAnimationComponent.save!();

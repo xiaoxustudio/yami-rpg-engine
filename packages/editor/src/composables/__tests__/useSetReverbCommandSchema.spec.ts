@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetReverb from '@app/components/commands/SetReverb.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
@@ -82,6 +83,7 @@ describe('useSetReverbCommandSchema（setReverb 命令表单 composable：insert
 	it('save 路径：用户改控件后经 Command.cases.setReverb.save 保存', async () => {
 		const wrapper = mount(SetReverb, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetReverbCommandSchema();
 		Command.cases.setReverb.customLoad!({
 			type: 'bgm',
 			dry: 1,
@@ -90,10 +92,10 @@ describe('useSetReverbCommandSchema（setReverb 命令表单 composable：insert
 			duration: 0,
 			wait: false
 		});
-		getControl('setReverb-type').input('cv');
-		getControl('setReverb-dry').write(0.8);
-		getControl('setReverb-duration').write(500);
-		getControl('setReverb-wait').input(true);
+		form.type = 'cv';
+		form.dry = 0.8;
+		form.duration = 500;
+		form.wait = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setReverb.save!();

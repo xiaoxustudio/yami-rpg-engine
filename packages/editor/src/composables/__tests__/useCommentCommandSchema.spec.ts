@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import Comment from '@app/components/commands/Comment.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useCommentCommandSchema } from '@app/composables/commands/useCommentCommandSchema';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -63,8 +64,9 @@ describe('useCommentCommandSchema（comment 命令表单 composable：insert/edi
 	it('save 路径：用户输入后经 Command.cases.comment.save 保存', async () => {
 		const wrapper = mount(Comment, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useCommentCommandSchema();
 		Command.cases.comment.customLoad!({ comment: '' });
-		getControl('comment-comment').write('hello');
+		form.comment = 'hello';
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.comment.save!();

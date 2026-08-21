@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetAngle from '@app/components/commands/SetAngle.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
@@ -80,9 +81,10 @@ describe('useSetAngleCommandSchema（setAngle 命令表单 composable：insert/e
 		wrapper.unmount();
 	});
 
-	it('save 路径：用户改控件后经 Command.cases.setAngle.save 保存', async () => {
+	it('save 路径：用户改 form 后经 Command.cases.setAngle.save 保存', async () => {
 		const wrapper = mount(SetAngle, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetAngleCommandSchema();
 		Command.cases.setAngle.customLoad!({
 			actor: { type: 'trigger' },
 			angle: { type: 'absolute', degrees: 0 },
@@ -90,9 +92,9 @@ describe('useSetAngleCommandSchema（setAngle 命令表单 composable：insert/e
 			duration: 0,
 			wait: false
 		});
-		getControl('setAngle-angle').write({ type: 'absolute', degrees: 180 });
-		getControl('setAngle-duration').write(1000);
-		getControl('setAngle-wait').input(true);
+		form.angle = { type: 'absolute', degrees: 180 };
+		form.duration = 1000;
+		form.wait = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setAngle.save!();

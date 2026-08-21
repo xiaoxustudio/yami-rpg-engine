@@ -5,7 +5,7 @@ import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMStringVar from '../../basic/YMStringVar/YMStringVar.vue';
 
 interface Props {
-	key?: string;
+	keyValue?: string;
 	value?: string;
 	keyLabel?: string;
 	valueLabel?: string;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	key: '',
+	keyValue: '',
 	value: '',
 	keyLabel: '',
 	valueLabel: '',
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	'update:key': [value: string];
+	'update:keyValue': [value: string];
 	'update:value': [value: string];
 	confirm: [];
 	closed: [];
@@ -50,8 +50,8 @@ onMounted(() => {
 			<div class="text">{{ props.keyLabel }}</div>
 			<YMStringVar
 				id="request-keyValue-key"
-				:model-value="props.key"
-				@update:model-value="emit('update:key', String($event))"
+				:model-value="props.keyValue"
+				@update:model-value="emit('update:keyValue', String($event))"
 			/>
 			<div class="text">{{ props.valueLabel }}</div>
 			<YMStringVar

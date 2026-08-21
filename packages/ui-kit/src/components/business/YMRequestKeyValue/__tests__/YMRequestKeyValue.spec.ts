@@ -5,7 +5,7 @@ import YMRequestKeyValue from '../YMRequestKeyValue.vue';
 describe('YMRequestKeyValue', () => {
 	it('renders title and both var inputs', () => {
 		const wrapper = mount(YMRequestKeyValue, {
-			props: { title: 'Header', key: 'k', value: 'v' }
+			props: { title: 'Header', keyValue: 'k', value: 'v' }
 		});
 		expect(wrapper.text()).toContain('Header');
 		const inputs = wrapper.findAll('input');
@@ -13,15 +13,15 @@ describe('YMRequestKeyValue', () => {
 		wrapper.unmount();
 	});
 
-	it('emits update:key and update:value on input', async () => {
+	it('emits update:keyValue and update:value on input', async () => {
 		const wrapper = mount(YMRequestKeyValue, {
-			props: { key: 'a', value: 'b' }
+			props: { keyValue: 'a', value: 'b' }
 		});
 		const inputs = wrapper.findAll('input');
 		if (inputs.length >= 1) {
 			await inputs[0].setValue('x');
 		}
-		expect(wrapper.emitted('update:key') || wrapper.emitted('update:value')).toBeTruthy();
+		expect(wrapper.emitted('update:keyValue') || wrapper.emitted('update:value')).toBeTruthy();
 		wrapper.unmount();
 	});
 });

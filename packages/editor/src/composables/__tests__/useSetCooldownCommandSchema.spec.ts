@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetCooldown from '@app/components/commands/SetCooldown.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 
@@ -11,21 +12,13 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
-
 const target = {
 	scrollAndResize: vi.fn(),
 	getSelectionPosition: () => ({ x: 100, y: 100 }),
 	save: vi.fn()
 };
 
-describe('useSetCooldownCommandSchema（setCooldown 命令表单 composable：insert/edit/save 路径）', () => {
+describe('useSetCooldownCommandSchema（setCooldown 命令表单 composable：form 状态 + insert/edit/save）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		Enum.getStringItems = vi.fn(() => [{ name: 'Skill 1', value: 'skill1' }]) as never;
@@ -44,21 +37,24 @@ describe('useSetCooldownCommandSchema（setCooldown 命令表单 composable：in
 		wrapper.unmount();
 	});
 
-	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+	it('insert 路径：打开窗口并 load 默认 form（v-model 驱动控件）', async () => {
 		const wrapper = mount(SetCooldown, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetCooldownCommandSchema();
 		CommandSchema.insert(target, 'setCooldown');
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setCooldown');
-		expect(getControl('setCooldown-actor').read()).toEqual({ type: 'trigger' });
-		expect(getControl('setCooldown-operation').read()).toBe('set');
-		expect(getControl('setCooldown-key').read()).toBe('skill1');
-		expect(getControl('setCooldown-cooldown').read()).toBe(1);
+		expect(form.actor).toEqual({ type: 'trigger' });
+		expect(form.operation).toBe('set');
+		expect(form.key).toBe('skill1');
+		expect(form.cooldown).toBe(0);
 		wrapper.unmount();
 	});
 
-	it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
+	it('edit 路径：handler.load 解构 params 到 form（v-model 驱动控件）', async () => {
 		const wrapper = mount(SetCooldown, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetCooldownCommandSchema();
 		CommandSchema.edit(target, {
 			id: 'setCooldown',
 			params: {
@@ -68,25 +64,27 @@ describe('useSetCooldownCommandSchema（setCooldown 命令表单 composable：in
 				cooldown: 500
 			}
 		});
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setCooldown');
-		expect(getControl('setCooldown-actor').read()).toEqual({ type: 'trigger' });
-		expect(getControl('setCooldown-operation').read()).toBe('increase');
-		expect(getControl('setCooldown-key').read()).toBe('skill1');
-		expect(getControl('setCooldown-cooldown').read()).toBe(500);
+		expect(form.actor).toEqual({ type: 'trigger' });
+		expect(form.operation).toBe('increase');
+		expect(form.key).toBe('skill1');
+		expect(form.cooldown).toBe(500);
 		wrapper.unmount();
 	});
 
-	it('save 路径：用户改控件后经 Command.cases.setCooldown.save 保存', async () => {
+	it('save 路径：用户改 form 后经 Command.cases.setCooldown.save 保存', async () => {
 		const wrapper = mount(SetCooldown, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetCooldownCommandSchema();
 		Command.cases.setCooldown.customLoad!({
 			actor: { type: 'trigger' },
 			operation: 'set',
 			key: 'skill1',
 			cooldown: 0
 		});
-		getControl('setCooldown-operation').input('decrease');
-		getControl('setCooldown-cooldown').write(300);
+		form.operation = 'decrease';
+		form.cooldown = 300;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setCooldown.save!();

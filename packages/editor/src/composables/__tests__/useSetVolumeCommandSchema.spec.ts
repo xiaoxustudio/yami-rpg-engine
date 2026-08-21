@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetVolume from '@app/components/commands/SetVolume.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetVolumeCommandSchema } from '@app/composables/useSetVolumeCommandSchema';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
@@ -66,6 +67,7 @@ describe('useSetVolumeCommandSchema（setVolume 命令表单 composable：insert
 	it('save 路径：用户改控件后经 Command.cases.setVolume.save 保存', async () => {
 		const wrapper = mount(SetVolume, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetVolumeCommandSchema();
 		Command.cases.setVolume.customLoad!({
 			type: 'bgm',
 			volume: 1,
@@ -73,10 +75,10 @@ describe('useSetVolumeCommandSchema（setVolume 命令表单 composable：insert
 			duration: 0,
 			wait: false
 		});
-		getControl('setVolume-type').input('cv');
-		getControl('setVolume-volume').write(0.8);
-		getControl('setVolume-duration').write(500);
-		getControl('setVolume-wait').input(true);
+		form.type = 'cv';
+		form.volume = 0.8;
+		form.duration = 500;
+		form.wait = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setVolume.save!();

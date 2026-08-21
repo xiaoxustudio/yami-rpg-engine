@@ -5,6 +5,7 @@ import SetNumber from '@app/components/commands/SetNumber.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetNumberCommandSchema } from '@app/composables/commands/useSetNumberCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -63,20 +64,21 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 		return { commandWrapper, operandWrapper };
 	};
 
-	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+	it('insert 路径：打开窗口并 load 默认 form', async () => {
 		const { commandWrapper, operandWrapper } = await mountAll();
+		const { form } = useSetNumberCommandSchema();
 		CommandSchema.insert(target, 'setNumber');
+		await commandWrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setNumber');
-		expect(getControl('setNumber-variable').read()).toEqual({ type: 'local', key: '' });
-		expect(getList('setNumber-operands').read()).toEqual([
-			{ operation: 'add', type: 'constant', value: 0 }
-		]);
+		expect(form.variable).toEqual({ type: 'local', key: '' });
+		expect(form.operands).toEqual([{ operation: 'add', type: 'constant', value: 0 }]);
 		commandWrapper.unmount();
 		operandWrapper.unmount();
 	});
 
-	it('edit 路径：customLoad 解构 params 到控件 DOM', async () => {
+	it('edit 路径：customLoad 解构 params 到 form', async () => {
 		const { commandWrapper, operandWrapper } = await mountAll();
+		const { form } = useSetNumberCommandSchema();
 		const operands = [
 			{ operation: 'add', type: 'constant', value: 5 },
 			{ operation: 'add', type: 'variable', variable: { type: 'local', key: 'v' } }
@@ -85,9 +87,10 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 			id: 'setNumber',
 			params: { variable: { type: 'local', key: 'foo' }, operation: 'set', operands }
 		});
+		await commandWrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setNumber');
-		expect(getControl('setNumber-variable').read()).toEqual({ type: 'local', key: 'foo' });
-		expect(getList('setNumber-operands').read()).toEqual(operands);
+		expect(form.variable).toEqual({ type: 'local', key: 'foo' });
+		expect(form.operands).toEqual(operands);
 		commandWrapper.unmount();
 		operandWrapper.unmount();
 	});

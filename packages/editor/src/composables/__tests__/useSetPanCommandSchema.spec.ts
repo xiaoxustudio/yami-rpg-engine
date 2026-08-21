@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetPan from '@app/components/commands/SetPan.vue';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
@@ -80,6 +81,7 @@ describe('useSetPanCommandSchema（setPan 命令表单 composable：insert/edit/
 	it('save 路径：用户改控件后经 Command.cases.setPan.save 保存', async () => {
 		const wrapper = mount(SetPan, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
+		const { form } = useSetPanCommandSchema();
 		Command.cases.setPan.customLoad!({
 			type: 'bgm',
 			pan: 0,
@@ -87,10 +89,10 @@ describe('useSetPanCommandSchema（setPan 命令表单 composable：insert/edit/
 			duration: 0,
 			wait: false
 		});
-		getControl('setPan-type').input('cv');
-		getControl('setPan-pan').write(0.5);
-		getControl('setPan-duration').write(500);
-		getControl('setPan-wait').input(true);
+		form.type = 'cv';
+		form.pan = 0.5;
+		form.duration = 500;
+		form.wait = true;
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.setPan.save!();

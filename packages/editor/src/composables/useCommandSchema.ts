@@ -38,7 +38,7 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 		let invalid = false;
 		for (const field of fields) {
 			const control = document.getElementById(`${name}-${field.domId ?? field.key}`);
-			const value = read(control) ?? form[field.key];
+			const value = form[field.key] ?? read(control);
 			if (field.required && (value === '' || value === undefined)) {
 				invalid = true;
 				focusTarget = control;
