@@ -222,6 +222,7 @@ onBeforeUnmount(() => {
 .background {
 	position: absolute;
 	inset: 0;
+	background-color: #ffffff;
 	background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
 		linear-gradient(-45deg, #ccc 25%, transparent 25%),
 		linear-gradient(45deg, transparent 75%, #ccc 75%),
@@ -232,6 +233,14 @@ onBeforeUnmount(() => {
 		0 4px,
 		4px -4px,
 		-4px 0;
+}
+
+:global(:root.dark) .background {
+	background-color: #202020;
+	background-image: linear-gradient(45deg, #545454 25%, transparent 25%),
+		linear-gradient(-45deg, #545454 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #545454 75%),
+		linear-gradient(-45deg, transparent 75%, #545454 75%);
 }
 
 .foreground {

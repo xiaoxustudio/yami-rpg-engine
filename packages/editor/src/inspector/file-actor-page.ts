@@ -375,6 +375,9 @@ import { t } from '@app/i18n';
 
 	FileActor.inventory = {
 		initialize: function (this, list: ListShape) {
+			FileActor.inventory.loadTypeItems();
+		},
+		loadTypeItems: function () {
 			const invTypeEl = $('#fileActor-inventory-type');
 			if (!invTypeEl) return;
 			invTypeEl.loadItems([
@@ -446,6 +449,7 @@ import { t } from '@app/i18n';
 		},
 		open: function ({ type = 'item', id = '', quantity = 1, money = 1 } = {}) {
 			Window.open!('fileActor-inventory-goods');
+			FileActor.inventory.loadTypeItems();
 			const itemId = type === 'item' ? id : '';
 			const equipmentId = type === 'equipment' ? id : '';
 			Object.assign(fileActorInventoryForm, {

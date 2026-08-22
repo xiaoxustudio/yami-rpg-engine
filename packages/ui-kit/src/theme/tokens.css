@@ -15,6 +15,10 @@
 	--ym-color-text-unit: #808080;
 	--ym-color-text-disabled: #c0c0c0;
 	--ym-color-text-error: #ff0000;
+	--ym-color-text-accelerator-selected: rgba(255, 255, 255, 0.5);
+	--ym-color-text-suggestion-comment: rgba(0, 0, 0, 0.25);
+	--ym-color-text-suggestion-ref-count: rgba(160, 255, 160, 0.9);
+	--border-color: #b0b0b0;
 
 	/* 交互状态 */
 	--ym-color-selected: #2080d0;
@@ -27,6 +31,8 @@
 	--ym-color-input-bg-disabled: #f0f0f0;
 	--ym-color-input-border: #a0a0a0;
 	--ym-color-input-border-focus: #0050a0;
+	--ym-check-mark-color: #0060ac;
+	--ym-radio-mark-color: #0060ac;
 
 	/* 按钮 */
 	--ym-color-button-bg: #ffffff;
@@ -39,6 +45,7 @@
 	--ym-color-tooltip-bg: #ffffff;
 	--ym-color-tooltip-border: #000000;
 	--ym-color-overlay: rgba(0, 0, 0, 0.45);
+	--ym-color-on-overlay: #ffffff;
 
 	/* 滚动条 */
 	--ym-scrollbar-track-bg: rgba(0, 0, 0, 0.05);
@@ -46,9 +53,9 @@
 	--ym-scrollbar-thumb-bg-hover: rgba(0, 0, 0, 0.2);
 
 	/* 圆角 */
-	--ym-radius-sm: 4px;
-	--ym-radius-md: 6px;
-	--ym-radius-lg: 8px;
+	--ym-radius-sm: 2px;
+	--ym-radius-md: 4px;
+	--ym-radius-lg: 6px;
 
 	/* 间距 */
 	--ym-space-1: 4px;
@@ -115,6 +122,12 @@
 
 /* 暗色主题（对齐编辑器 .dark） */
 :root.dark {
+	--ym-color-primary: #084872;
+	--ym-color-primary-hover: #0a5688;
+	--ym-color-on-primary: #ffffff;
+	--ym-color-danger: #c0504c;
+	--ym-color-danger-hover: #a94442;
+
 	--ym-color-surface: #303030;
 	--ym-color-surface-hover: #383838;
 	--ym-color-border: #181818;
@@ -123,6 +136,11 @@
 	--ym-color-text-unit: #808080;
 	--ym-color-text-disabled: #606060;
 	--ym-color-text-error: #ffc0cb;
+
+	--ym-color-text-accelerator-selected: rgba(255, 255, 255, 0.3);
+	--ym-color-text-suggestion-comment: rgba(255, 255, 255, 0.2);
+	--ym-color-text-suggestion-ref-count: rgba(160, 255, 160, 0.35);
+	--border-color: #181818;
 
 	--ym-color-selected: #084872;
 	--ym-color-selection: rgba(8, 72, 114, 0.996);
@@ -133,6 +151,8 @@
 	--ym-color-input-bg-disabled: #404040;
 	--ym-color-input-border: #080808;
 	--ym-color-input-border-focus: #0080ff;
+	--ym-check-mark-color: #0060ac;
+	--ym-radio-mark-color: #0060ac;
 
 	--ym-color-button-bg: #484848;
 	--ym-color-button-bg-hover: #505050;
@@ -317,7 +337,11 @@
 	--selected-background-blur: rgba(0, 0, 0, 0.1);
 	--selection-background: rgba(32, 128, 192, 0.996);
 	--drop-target-background: rgba(32, 128, 192, 0.4);
-	--grid-background: url(../Images/grid_light.png);
+	--grid-background:
+		linear-gradient(45deg, #ccc 25%, transparent 25%),
+		linear-gradient(-45deg, #ccc 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #ccc 75%),
+		linear-gradient(-45deg, transparent 75%, #ccc 75%);
 	--node-icon-color: rgba(0, 0, 0, 0.2);
 	--node-icon-color-highlight: rgba(0, 0, 0, 0.8);
 	--node-icon-border: 1px solid var(--text-color);
@@ -514,7 +538,11 @@
 	--selected-background-blur: rgba(255, 255, 255, 0.1);
 	--selection-background: rgba(8, 72, 114, 0.996);
 	--drop-target-background: rgba(8, 72, 114, 0.4);
-	--grid-background: url(../Images/grid_dark.png);
+	--grid-background:
+		linear-gradient(45deg, #545454 25%, transparent 25%),
+		linear-gradient(-45deg, #545454 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #545454 75%),
+		linear-gradient(-45deg, transparent 75%, #545454 75%);
 	--node-icon-color: rgba(255, 255, 255, 0.1);
 	--node-icon-color-highlight: rgba(255, 255, 255, 0.6);
 	--node-icon-border: 1px solid var(--text-color);

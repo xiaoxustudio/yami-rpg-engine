@@ -90,7 +90,7 @@ const ym = ref<{
 	restore(): void;
 	enable(): void;
 	disable(): void;
-	loadItems(items: unknown[]): void;
+	loadItems(items: unknown[]): HTMLElement;
 	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
 	clear(): HTMLElement;
 	enableHiddenMode(): HTMLElement;
@@ -117,7 +117,8 @@ const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const loadItems = (items: unknown[]): void => ym.value?.loadItems(items);
+const loadItems = (items: unknown[]): HTMLElement =>
+	ym.value?.loadItems(items) as HTMLElement;
 const setItemNames = (
 	options: Record<string, string | { name?: string; tip?: string }>
 ): void => {

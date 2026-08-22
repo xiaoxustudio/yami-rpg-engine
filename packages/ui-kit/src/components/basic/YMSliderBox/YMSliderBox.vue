@@ -137,7 +137,7 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	bottom: 0;
 	width: 100%;
 	height: 4px;
-	background-color: var(--ym-color-text-unit);
+	background-color: var(--slider-bar-background);
 	border: 1px solid var(--ym-color-input-border);
 	border-radius: var(--ym-radius-sm);
 }
@@ -145,7 +145,7 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 .filler {
 	position: absolute;
 	height: 100%;
-	background-color: var(--ym-color-primary);
+	background-color: var(--slider-filler-background);
 }
 
 .input {
@@ -156,5 +156,32 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	border: none;
 	background-color: transparent;
 	appearance: none;
+}
+
+.input:global(::-webkit-slider-runnable-track) {
+	background: transparent;
+	border: none;
+}
+
+.input:global(::-webkit-slider-thumb) {
+	width: 16px;
+	height: 16px;
+	background-color: var(--slider-thumb-background);
+	border: 1px solid var(--ym-color-input-border);
+	border-radius: 8px;
+	appearance: none;
+}
+
+.input:global(::-moz-range-track) {
+	background: transparent;
+	border: none;
+}
+
+.input:global(::-moz-range-thumb) {
+	width: 14px;
+	height: 14px;
+	background-color: var(--slider-thumb-background);
+	border: 1px solid var(--ym-color-input-border);
+	border-radius: 8px;
 }
 </style>

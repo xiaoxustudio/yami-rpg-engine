@@ -112,7 +112,7 @@ const onKeydown = (event: KeyboardEvent): void => {
 	font-family: var(--ym-font-sans);
 	text-align: center;
 	line-height: 16px;
-	color: var(--ym-color-primary);
+	color: var(--ym-check-mark-color);
 	opacity: 0;
 }
 

@@ -51,7 +51,7 @@ const iconHtml = computed(() => {
 
 .icon {
 	color: var(--ym-color-text-unit);
-	opacity: 0.8;
+	opacity: 0.25;
 }
 
 .text {

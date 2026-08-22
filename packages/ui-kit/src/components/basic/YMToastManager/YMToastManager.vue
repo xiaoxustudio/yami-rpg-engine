@@ -61,7 +61,7 @@ defineExpose({ show, dismiss, root });
 	border-radius: var(--ym-radius-sm);
 	color: var(--ym-color-text);
 	font-family: var(--ym-font-sans);
-	font-size: var(--ym-font-size-md);
+	font-size: var(--ym-font-size-sm);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	opacity: 0;
 	transform: translateY(8px);

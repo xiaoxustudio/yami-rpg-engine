@@ -222,6 +222,7 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	static keyWrite(event: { value: string }) {
+		if (!event.value) return;
 		let group = this.target?.getAttribute?.('group') as unknown as string;
 		if (!group && this.target) {
 			let match = this.target.id.match(/^config-(.+)-tempAttributes$/);
@@ -230,7 +231,12 @@ export class AttributeListInterface implements IListInterface {
 			}
 			group = match ? match[1].toLowerCase() : '';
 		}
-		const attr = Attribute.getGroupAttribute(group, event.value);
+		let attr;
+		try {
+			attr = Attribute.getGroupAttribute(group, event.value);
+		} catch {
+			return;
+		}
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);
 			if (attr.type === 'enum') {

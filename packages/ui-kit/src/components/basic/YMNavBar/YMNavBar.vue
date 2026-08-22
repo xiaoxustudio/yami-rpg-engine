@@ -127,26 +127,28 @@ defineExpose({ read, write, unselect, on, root });
 .bar {
 	display: flex;
 	align-items: center;
-	gap: var(--ym-space-1);
-	background-color: var(--ym-color-surface);
-	border-bottom: 1px solid var(--ym-color-border);
-	padding: 0 var(--ym-space-2);
+	height: 25px;
+	line-height: 24px;
+	background-color: var(--nav-bar-background);
+	border-bottom: var(--nav-bar-border);
 	user-select: none;
 }
 
 .bar :global(:where(.nav-item)) {
-	padding: var(--ym-space-1) var(--ym-space-3);
+	height: 24px;
+	padding: 0 10px;
+	background-color: var(--nav-item-background);
+	border-right: var(--nav-bar-border);
 	cursor: pointer;
-	border-radius: var(--ym-radius-sm);
 	white-space: nowrap;
 }
 
 .bar :global(:where(.nav-item)):hover {
-	background-color: var(--ym-color-surface-hover);
+	background-color: var(--nav-item-background-hover);
 }
 
 .bar :global(:where(.nav-item.selected)) {
-	background-color: var(--ym-color-selected);
-	color: var(--ym-color-on-primary);
+	height: 25px;
+	background-color: var(--nav-item-background-selected);
 }
 </style>

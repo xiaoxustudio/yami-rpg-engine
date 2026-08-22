@@ -1,13 +1,36 @@
-﻿import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+﻿import { $ } from '@app/utils/dom';
+import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
 import { on } from '@app/utils/element-utils.ts';
 import { Editor } from '@app/services/project/editor.ts';
 
+export interface ObjectFolderForm {
+	tilemap: string;
+	actor: string;
+	region: string;
+	light: string;
+	animation: string;
+	particle: string;
+	parallax: string;
+}
+
+const form = reactive<ObjectFolderForm>({
+	tilemap: '',
+	actor: '',
+	region: '',
+	light: '',
+	animation: '',
+	particle: '',
+	parallax: ''
+});
+
 export const ObjectFolder: {
+	form: ObjectFolderForm;
 	initialize: (() => void) | null;
 	open: (() => void) | null;
 	confirm: ((event: Event) => void) | null;
 } = {
+	form,
 	initialize: null,
 	open: null,
 	confirm: null
@@ -22,26 +45,26 @@ ObjectFolder.open = function (this: typeof ObjectFolder) {
 	Window.open!('object-folder');
 	const data = (Editor.project!.scene as { defaultFolders: Record<string, unknown> })
 		.defaultFolders;
-	const write = getElementWriter('object-folder', data);
-	write('tilemap');
-	write('actor');
-	write('region');
-	write('light');
-	write('animation');
-	write('particle');
-	write('parallax');
+	Object.assign(form, {
+		tilemap: data.tilemap ?? '',
+		actor: data.actor ?? '',
+		region: data.region ?? '',
+		light: data.light ?? '',
+		animation: data.animation ?? '',
+		particle: data.particle ?? '',
+		parallax: data.parallax ?? ''
+	} as ObjectFolderForm);
 };
 
 ObjectFolder.confirm = function (this: typeof ObjectFolder, event: Event) {
-	const read = getElementReader('object-folder');
 	(Editor.project!.scene as { defaultFolders: Record<string, unknown> }).defaultFolders = {
-		tilemap: read('tilemap'),
-		actor: read('actor'),
-		region: read('region'),
-		light: read('light'),
-		animation: read('animation'),
-		particle: read('particle'),
-		parallax: read('parallax')
+		tilemap: form.tilemap,
+		actor: form.actor,
+		region: form.region,
+		light: form.light,
+		animation: form.animation,
+		particle: form.particle,
+		parallax: form.parallax
 	};
 	Window.close!('object-folder');
 };

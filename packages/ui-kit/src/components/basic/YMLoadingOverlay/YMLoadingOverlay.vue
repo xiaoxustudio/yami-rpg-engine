@@ -56,14 +56,14 @@ watch(
 .spinner {
 	width: 40px;
 	height: 40px;
-	border: 4px solid color-mix(in srgb, var(--ym-color-text-inverse) 25%, transparent);
-	border-top-color: var(--ym-color-text-inverse);
+	border: 4px solid color-mix(in srgb, var(--ym-color-on-overlay) 25%, transparent);
+	border-top-color: var(--ym-color-on-overlay);
 	border-radius: 50%;
 	animation: ym-loading-spin 0.8s linear infinite;
 }
 
 .text {
-	color: var(--ym-color-text-inverse);
+	color: var(--ym-color-on-overlay);
 	font-size: var(--ym-font-size-md);
 }
 

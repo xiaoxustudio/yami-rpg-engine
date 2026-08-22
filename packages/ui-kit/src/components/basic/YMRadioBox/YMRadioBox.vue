@@ -136,8 +136,12 @@ defineExpose({ root, select });
 .radioMark::before {
 	content: ' ';
 	position: absolute;
-	inset: 0;
-	background-color: var(--ym-color-primary);
+	margin: -1px;
+	padding: 3px;
+	width: 10px;
+	height: 10px;
+	background-clip: content-box;
+	background-color: var(--ym-radio-mark-color);
 	border-radius: 50%;
 	opacity: 0;
 }

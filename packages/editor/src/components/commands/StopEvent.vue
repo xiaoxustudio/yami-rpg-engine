@@ -42,11 +42,12 @@ const onTypeWrite = (value: unknown) => {
 	if (type === 'current') {
 		return;
 	}
+	const source = EventEditor.types?.[type] ?? EventEditor.types?.all;
+	if (!source) {
+		return;
+	}
 	const elEventType = $('#stopEvent-eventType');
-	const eventTypes = Enum.getMergedItems!(
-		EventEditor.types?.[type] ?? EventEditor.types?.all,
-		type + '-event'
-	);
+	const eventTypes = Enum.getMergedItems!(source, type + '-event');
 	elEventType?.loadItems?.(eventTypes);
 	elEventType?.createTooltip?.();
 	write(elEventType, eventTypes[0].value);

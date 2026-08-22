@@ -336,6 +336,9 @@ onMounted(() => {
 	height: 100%;
 	background-color: transparent;
 	border: none;
+	font-family: var(--ym-font-sans);
+	font-size: var(--ym-font-size-sm);
+	color: var(--ym-color-text);
 }
 
 :global(::-webkit-inner-spin-button) {

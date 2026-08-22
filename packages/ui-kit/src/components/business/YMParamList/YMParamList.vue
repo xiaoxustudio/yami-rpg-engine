@@ -1388,4 +1388,8 @@ onMounted(() => {
 :global(:where(.param-item.weak)) {
 	color: var(--ym-color-text-disabled);
 }
+
+:global(:where(.param-item.weak.selected)) {
+	color: var(--ym-color-text-accelerator-selected);
+}
 </style>

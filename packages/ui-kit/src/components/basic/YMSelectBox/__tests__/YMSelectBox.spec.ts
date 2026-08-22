@@ -89,4 +89,83 @@ describe('YMSelectBox', () => {
 		vm.restore();
 		expect(vm.read()).toBe('a');
 	});
+
+	it('relate hides unrelated fields after mount when modelValue pre-set', async () => {
+		const wrapper = mount(YMSelectBox, {
+			props: { items, modelValue: 'b' },
+			attachTo: document.body
+		});
+		await wrapper.vm.$nextTick();
+		const el = wrapper.element as unknown as SelectBoxApi;
+		const la = document.createElement('div');
+		la.className = 'text';
+		la.textContent = 'A';
+		document.body.appendChild(la);
+		const ta = document.createElement('div');
+		document.body.appendChild(ta);
+		const lb = document.createElement('div');
+		lb.className = 'text';
+		lb.textContent = 'B';
+		document.body.appendChild(lb);
+		const tb = document.createElement('div');
+		document.body.appendChild(tb);
+		el.enableHiddenMode();
+		el.relate([
+			{ case: 'a', targets: [ta] },
+			{ case: 'b', targets: [tb] }
+		]);
+		await wrapper.vm.$nextTick();
+		expect(tb.style.display).not.toBe('none');
+		expect(lb.style.display).not.toBe('none');
+		expect(ta.style.display).toBe('none');
+		expect(la.style.display).toBe('none');
+		el.input('a');
+		await wrapper.vm.$nextTick();
+		expect(ta.style.display).not.toBe('none');
+		expect(la.style.display).not.toBe('none');
+		expect(tb.style.display).toBe('none');
+		expect(lb.style.display).toBe('none');
+		la.remove();
+		ta.remove();
+		lb.remove();
+		tb.remove();
+		wrapper.unmount();
+	});
+
+	it('relate hides/shows targets by current value after setup', () => {
+		const wrapper = mount(YMSelectBox, { props: { items } });
+		const el = wrapper.element as unknown as SelectBoxApi;
+		const makeLabel = (text: string) => {
+			const label = document.createElement('div');
+			label.className = 'text';
+			label.textContent = text;
+			document.body.appendChild(label);
+			return label;
+		};
+		const la = makeLabel('A');
+		const ta = document.createElement('div');
+		document.body.appendChild(ta);
+		const lb = makeLabel('B');
+		const tb = document.createElement('div');
+		document.body.appendChild(tb);
+		el.enableHiddenMode();
+		el.write('b');
+		el.relate([
+			{ case: 'a', targets: [ta] },
+			{ case: 'b', targets: [tb] }
+		]);
+		expect(tb.style.display).not.toBe('none');
+		expect(ta.style.display).toBe('none');
+		expect(la.style.display).toBe('none');
+		expect(lb.style.display).not.toBe('none');
+		el.write('a');
+		expect(ta.style.display).not.toBe('none');
+		expect(tb.style.display).toBe('none');
+		expect(la.style.display).not.toBe('none');
+		expect(lb.style.display).toBe('none');
+		la.remove();
+		ta.remove();
+		lb.remove();
+		tb.remove();
+	});
 });

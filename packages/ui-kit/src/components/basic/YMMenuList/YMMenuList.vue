@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
 	padding: 4px 0;
 	line-height: 16px;
 	background-color: var(--ym-color-popup-bg);
-	outline: 1px solid var(--ym-color-border);
+	outline: 1px solid var(--ym-color-input-border);
 	overflow: hidden;
 	pointer-events: auto;
 }
@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
 	left: 10px;
 	width: calc(100% - 20px);
 	height: 1px;
-	background-color: var(--ym-color-border);
+	background-color: var(--menu-separator-background);
 	border: none;
 	pointer-events: none;
 }

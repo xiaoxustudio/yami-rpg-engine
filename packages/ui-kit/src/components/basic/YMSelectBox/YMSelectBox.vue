@@ -235,13 +235,14 @@ const hideChildNodes = (): void => {
 	}
 };
 
-const loadItems = (items: unknown[]): void => {
-	if (!Array.isArray(items)) return;
+const loadItems = (items: unknown[]): HTMLElement => {
+	if (!Array.isArray(items)) return root.value as HTMLElement;
 	dataItems = items as SelectItem[];
 	if (root.value) (root.value as SelectBoxApi).dataItems = items as SelectItem[];
 	if (dataValue !== null && dataValue !== undefined) {
 		update();
 	}
+	return root.value as HTMLElement;
 };
 
 const setItemNames = (
@@ -289,6 +290,9 @@ const enableHiddenMode = (): HTMLElement => {
 const relate = (entries: unknown): void => {
 	relations = entries as RelationEntry[];
 	if (root.value) (root.value as SelectBoxApi).relations = entries as RelationEntry[];
+	if (dataValue !== undefined) {
+		toggleRelatedElements();
+	}
 };
 
 const toggleRelatedElements = (): void => {
@@ -565,15 +569,19 @@ onBeforeUnmount(() => {
 	max-height: 240px;
 	overflow-y: auto;
 	background-color: var(--ym-color-popup-bg);
-	border: 1px solid var(--ym-color-border);
-	border-radius: var(--ym-radius-sm);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	outline: 1px solid var(--ym-color-input-border);
+	border: none;
 }
 
 .popup :global(:where(.select-item)) {
-	padding: var(--ym-space-1) var(--ym-space-3);
+	display: block;
+	padding: 0 var(--ym-space-1);
+	height: 20px;
+	line-height: 20px;
 	cursor: pointer;
-	white-space: nowrap;
+	white-space: pre;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .popup :global(:where(.select-item:hover)),

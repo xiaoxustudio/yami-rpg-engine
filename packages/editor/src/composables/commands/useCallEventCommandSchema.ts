@@ -486,10 +486,9 @@ export function useCallEventCommandSchema() {
 		const type = event.value;
 		if (type !== 'inherited') {
 			const elEventType = document.getElementById('callEvent-eventType')!;
-			const eventTypes = Enum.getMergedItems!(
-				EventEditor.types?.[type] ?? EventEditor.types?.all,
-				type + '-event'
-			);
+			const source = EventEditor.types?.[type] ?? EventEditor.types?.all;
+			if (!source) return;
+			const eventTypes = Enum.getMergedItems!(source, type + '-event');
 			elEventType.loadItems(eventTypes);
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
@@ -504,16 +503,18 @@ export function useCallEventCommandSchema() {
 		clearGlobalEventElements();
 		const id = event.value;
 		if (id) {
-			const flags = {} as Record<string, boolean>;
-			const globalEvent = Data.events[id];
-			for (const parameter of globalEvent.parameters) {
-				if (parameter.key in flags) {
-					continue;
+			const globalEvent = Data.events?.[id];
+			if (globalEvent) {
+				const flags = {} as Record<string, boolean>;
+				for (const parameter of globalEvent.parameters) {
+					if (parameter.key in flags) {
+						continue;
+					}
+					flags[parameter.key] = true;
+					createParameterElements(parameter);
 				}
-				flags[parameter.key] = true;
-				createParameterElements(parameter);
+				createEventResultElements(globalEvent.returnType);
 			}
-			createEventResultElements(globalEvent.returnType);
 		}
 		resizeWindow();
 	};

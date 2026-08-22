@@ -46,18 +46,21 @@ const onClick = (event: MouseEvent) => {
 
 <style module>
 .base {
+	position: relative;
+	width: auto;
+	height: auto;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: var(--ym-space-2);
-	padding: var(--ym-space-2) var(--ym-space-4);
-	border: 1px solid var(--ym-color-border);
+	padding: 0 var(--ym-space-3);
+	border: 1px solid var(--ym-color-input-border);
 	border-radius: var(--ym-radius-sm);
-	background: var(--ym-color-surface);
+	background: var(--ym-color-button-bg);
 	color: var(--ym-color-text);
 	font-family: var(--ym-font-sans);
-	font-size: var(--ym-font-size-md);
-	line-height: 1.4;
+	font-size: var(--ym-font-size-sm);
+	line-height: 18px;
 	cursor: pointer;
 	user-select: none;
 	transition:
@@ -67,12 +70,16 @@ const onClick = (event: MouseEvent) => {
 }
 
 .base:hover:not(.disabled) {
-	background: var(--ym-color-surface-hover);
+	background: var(--ym-color-button-bg-hover);
+}
+
+.base:active:not(.disabled) {
+	background: var(--ym-color-button-bg-active);
 }
 
 .primary {
-	background: var(--ym-color-primary);
-	border-color: var(--ym-color-primary);
+	background: var(--ym-color-selected);
+	border-color: var(--ym-color-selected);
 	color: var(--ym-color-on-primary);
 }
 
@@ -91,17 +98,18 @@ const onClick = (event: MouseEvent) => {
 }
 
 .sm {
-	padding: var(--ym-space-1) var(--ym-space-2);
+	padding: 0 var(--ym-space-2);
 	font-size: var(--ym-font-size-sm);
 }
 
 .lg {
-	padding: var(--ym-space-3) var(--ym-space-6);
-	font-size: var(--ym-font-size-lg);
+	padding: 0 var(--ym-space-6);
+	font-size: var(--ym-font-size-sm);
 }
 
 .disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
+	pointer-events: none;
+	color: var(--ym-color-text-disabled);
+	background: var(--ym-color-button-bg-disabled);
 }
 </style>

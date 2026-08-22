@@ -84,7 +84,7 @@ const onPointerdown = (event: PointerEvent): void => {
 }
 
 .switchItem:global(:where(.one)) {
-	background-color: var(--ym-color-primary);
+	background-color: var(--ym-color-selected);
 }
 
 .switchItem:global(:where(.two)) {

@@ -3,34 +3,24 @@
 		<template #title><TitleBar>{{ t('components.object-folder.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">{{ t('components.object-folder-tilemap.label') }}</div><TextBox id="object-folder-tilemap" /> <div class="text">{{ t('components.object-folder-actor.label') }}</div
-				><TextBox id="object-folder-actor" /> <div class="text">{{ t('components.object-folder-region.label') }}</div
-				><TextBox id="object-folder-region" /> <div class="text">{{ t('components.object-folder-light.label') }}</div
-				><TextBox id="object-folder-light" /> <div class="text">{{ t('components.object-folder-animation.label') }}</div
-				><TextBox id="object-folder-animation" /> <div class="text">{{ t('components.object-folder-particle.label') }}</div
-				><TextBox id="object-folder-particle" /> <div class="text">{{ t('components.object-folder-parallax.label') }}</div
-				><TextBox id="object-folder-parallax" />
+				<div class="text">{{ t('components.object-folder-tilemap.label') }}</div><TextBox id="object-folder-tilemap" v-model="ObjectFolder.form.tilemap" /> <div class="text">{{ t('components.object-folder-actor.label') }}</div
+				><TextBox id="object-folder-actor" v-model="ObjectFolder.form.actor" /> <div class="text">{{ t('components.object-folder-region.label') }}</div
+				><TextBox id="object-folder-region" v-model="ObjectFolder.form.region" /> <div class="text">{{ t('components.object-folder-light.label') }}</div
+				><TextBox id="object-folder-light" v-model="ObjectFolder.form.light" /> <div class="text">{{ t('components.object-folder-animation.label') }}</div
+				><TextBox id="object-folder-animation" v-model="ObjectFolder.form.animation" /> <div class="text">{{ t('components.object-folder-particle.label') }}</div
+				><TextBox id="object-folder-particle" v-model="ObjectFolder.form.particle" /> <div class="text">{{ t('components.object-folder-parallax.label') }}</div
+				><TextBox id="object-folder-parallax" v-model="ObjectFolder.form.parallax" />
 			</div>
 		
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ObjectFolder } from '@app/scene/default-object-folder.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
-onMounted(() => {
-
-
-});
 </script>

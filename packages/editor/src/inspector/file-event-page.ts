@@ -25,6 +25,7 @@ import { t } from '@app/i18n';
 	interface FileEventList {
 		save(): void;
 		on?(type: string, listener: (event: Event) => void): void;
+		loadTypeItems?(): void;
 		[k: string]: unknown;
 	}
 
@@ -186,7 +187,12 @@ import { t } from '@app/i18n';
 
 	FileEvent.parameters = {
 		initialize: function (this: FileEventList, list: FileEventList) {
-			$('#fileEvent-parameter-type').loadItems([
+			FileEvent.parameters.loadTypeItems();
+		},
+		loadTypeItems: function () {
+			const el = $('#fileEvent-parameter-type');
+			if (!el) return;
+			el.loadItems([
 				{ name: 'Boolean', value: 'boolean' },
 				{ name: 'Number', value: 'number' },
 				{ name: 'String', value: 'string' },
@@ -210,6 +216,7 @@ import { t } from '@app/i18n';
 			note = ''
 		}: { type?: string; key?: string; note?: string } = {}) {
 			Window.open!('fileEvent-parameter');
+			FileEvent.parameters.loadTypeItems();
 			Object.assign(fileEventParameterForm, { type, key, note });
 			getFocus($('#fileEvent-parameter-type'));
 		},
