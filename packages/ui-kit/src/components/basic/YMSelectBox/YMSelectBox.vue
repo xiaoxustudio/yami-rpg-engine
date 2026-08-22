@@ -591,5 +591,58 @@ onBeforeUnmount(() => {
 	background-color: var(--ym-color-selected);
 	color: var(--ym-color-on-primary);
 }
+
+:global(:where(.select-box)) {
+	display: block;
+	position: relative;
+	width: auto;
+	min-width: 60px;
+	height: 20px;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+:global(:where(.select-box:not(.disabled)::before)) {
+	content: '';
+	position: absolute;
+	right: 4px;
+	top: 7px;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 4px solid var(--text-color);
+}
+
+:global(:where(.select-box.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+:global(:where(.select-box:hover)) {
+	background-color: var(--input-background-hover);
+}
+
+:global(:where(.select-box:focus)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.select-box-text)) {
+	display: inline-block;
+	vertical-align: top;
+	padding: 0 4px;
+	width: calc(100% - 16px);
+	line-height: 18px;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+}
+
+:global(:where(.select-box-text.invalid)) {
+	color: var(--text-color-error);
+}
 </style>
 

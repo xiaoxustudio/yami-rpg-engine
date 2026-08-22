@@ -48,3 +48,10 @@ onMounted(() => {
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#arrayList-string) {
+	width: 300px;
+	height: 122px;
+}
+</style>

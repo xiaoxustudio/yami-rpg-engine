@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { radioGroups, type RadioGroupMember } from './group';
 
@@ -104,24 +104,24 @@ defineExpose({ root, select });
 </template>
 
 <style module>
-.radioBox {
+:global(:where(.radio-box)) {
 	display: inline-block;
 	white-space: nowrap;
 	cursor: pointer;
 	user-select: none;
 }
 
-.radioBox:global(:where(.standard)) {
+:global(:where(.radio-box.standard)) {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-.radioBox:global(:where(.standard)):focus .radioMark {
+:global(:where(.radio-box.standard:focus > .radio-mark)) {
 	border-color: var(--ym-color-input-border-focus);
 }
 
-.radioMark {
+:global(:where(.radio-mark)) {
 	display: inline-block;
 	position: relative;
 	vertical-align: top;
@@ -133,7 +133,7 @@ defineExpose({ root, select });
 	border-radius: 50%;
 }
 
-.radioMark::before {
+:global(.radio-mark::before) {
 	content: ' ';
 	position: absolute;
 	margin: -1px;
@@ -146,11 +146,15 @@ defineExpose({ root, select });
 	opacity: 0;
 }
 
-.radioBox:global(:where(.selected)) .radioMark::before {
+:global(.radio-box.selected > .radio-mark::before) {
 	opacity: 1;
 }
 
-.radioBox:global(:where(.disabled)) {
+:global(.radio-box:active > .radio-mark::before) {
+	opacity: 0.5;
+}
+
+:global(:where(.radio-box.disabled)) {
 	pointer-events: none;
 	opacity: 0.5;
 }

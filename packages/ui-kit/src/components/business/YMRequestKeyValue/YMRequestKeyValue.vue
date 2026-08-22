@@ -62,3 +62,10 @@ onMounted(() => {
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#request-keyValue) {
+	width: 324px;
+	height: 120px;
+}
+</style>

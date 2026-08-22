@@ -79,24 +79,4 @@ onMounted(() => {
 .box {
 	display: block;
 }
-
-.box:global([open]) > :global(:where(.detail-summary))::before {
-	content: '';
-	display: block;
-	position: absolute;
-	margin: 6px 3px;
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-top: 8px solid var(--folder-mark-color);
-}
-
-.box:global(:not([open])) > :global(:where(.detail-summary))::before {
-	content: '';
-	display: block;
-	position: absolute;
-	margin: 5px 4px;
-	border-top: 5px solid transparent;
-	border-bottom: 5px solid transparent;
-	border-left: 8px solid var(--folder-mark-color);
-}
 </style>

@@ -124,31 +124,61 @@ defineExpose({ read, write, unselect, on, root });
 </template>
 
 <style module>
-.bar {
+:global(:where(.nav-bar)) {
 	display: flex;
+	position: absolute;
 	align-items: center;
+	width: 100%;
 	height: 25px;
 	line-height: 24px;
+	font-family: var(--font-family-title);
 	background-color: var(--nav-bar-background);
 	border-bottom: var(--nav-bar-border);
 	user-select: none;
 }
 
-.bar :global(:where(.nav-item)) {
+:global(:where(.nav-item)) {
 	height: 24px;
 	padding: 0 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	background-color: var(--nav-item-background);
 	border-right: var(--nav-bar-border);
 	cursor: pointer;
 	white-space: nowrap;
 }
 
-.bar :global(:where(.nav-item)):hover {
+:global(:where(.nav-item:hover)),
+:global(:where(.nav-item.hover)) {
 	background-color: var(--nav-item-background-hover);
 }
 
-.bar :global(:where(.nav-item.selected)) {
+:global(:where(.nav-item.selected)) {
 	height: 25px;
 	background-color: var(--nav-item-background-selected);
+}
+
+:global(:where(.nav-item.drag-entered)) {
+	background-color: rgba(0, 255, 0, 0.25);
+	z-index: 1;
+}
+
+:global(:where(.nav-icon)) {
+	display: inline-block;
+	margin-right: 2px;
+	width: 1em;
+	height: 24px;
+	text-align: center;
+	font-family: var(--font-family-symbol);
+	pointer-events: none;
+}
+
+:global(:where(.nav-text)) {
+	display: inline;
+	pointer-events: none;
+}
+
+:global(:where(.text)) {
+	display: inline;
 }
 </style>

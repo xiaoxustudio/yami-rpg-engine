@@ -1385,11 +1385,71 @@ onMounted(() => {
 	background-color: var(--ym-color-selected);
 }
 
-:global(:where(.param-item.weak)) {
-	color: var(--ym-color-text-disabled);
+:global(:where(.param-item.one-column)) {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-:global(:where(.param-item.weak.selected)) {
-	color: var(--ym-color-text-accelerator-selected);
+:global(:where(.text-0-of-2, .text-1-of-2)) {
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	pointer-events: none;
+}
+
+:global(:where(.param-item.invalid, .text-0-of-2.invalid, .text-1-of-2.invalid)) {
+	color: var(--text-color-error);
+}
+
+:global(:where(.param-item.weak, .text-0-of-2.weak, .text-1-of-2.weak)) {
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.param-item.weak.selected, .selected > .text-0-of-2.weak, .selected > .text-1-of-2.weak)) {
+	color: var(--text-color-accelerator-selected);
+}
+
+:global(:where(.script-edit-button)) {
+	flex-shrink: 0;
+	margin-right: 0;
+	width: 20px;
+	text-align: center;
+	font-size: 1.2em;
+	font-family: var(--font-family-symbol);
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.selected > .script-edit-button)) {
+	color: var(--text-color-accelerator-selected);
+}
+
+:global(:where(.script-edit-button:hover)) {
+	color: var(--text-color-rename);
+}
+
+:global(:where(.param-list.dragover)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.param-item:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(.array-index)) {
+	padding-right: 10px;
+	pointer-events: none;
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.selected > .array-index)) {
+	color: var(--text-color-accelerator-selected);
+}
+
+:global(:where(.array-value)) {
+	flex-grow: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	pointer-events: none;
 }
 </style>

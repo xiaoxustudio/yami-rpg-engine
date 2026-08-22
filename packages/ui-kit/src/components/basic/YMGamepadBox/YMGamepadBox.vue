@@ -183,9 +183,33 @@ defineExpose({ read, write, enable, disable, getFocus, root });
 <style module>
 .box {
 	display: block;
+	position: relative;
+	width: auto;
+	height: 20px;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+
+.box:global(:where(.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+.box:focus-within {
+	border-color: var(--input-border-color-focus);
 }
 
 .input {
+	position: absolute;
+	margin: 0;
+	padding: 4px;
 	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	border: none;
 }
 </style>

@@ -123,5 +123,8 @@ defineExpose({ read, write, update, clear, root });
 .box {
 	display: block;
 	overflow: hidden;
+	padding: 1px;
+	border: var(--input-border);
+	border-radius: 2px;
 }
 </style>

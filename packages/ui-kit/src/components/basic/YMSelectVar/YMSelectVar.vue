@@ -215,4 +215,20 @@ onMounted(() => {
 	position: relative;
 	display: block;
 }
+
+:global(:where(.select-var)::before) {
+	position: absolute;
+	font-family: var(--font-family-mono);
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.select-var.constant)::before) {
+	content: 'enum';
+	margin-left: -2.6em;
+}
+
+:global(:where(.select-var.variable)::before) {
+	content: 'var';
+	margin-left: -2em;
+}
 </style>

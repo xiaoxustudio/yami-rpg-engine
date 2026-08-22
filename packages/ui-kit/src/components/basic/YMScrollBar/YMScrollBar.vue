@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import './scrollbar.css';
 
 interface Props {
 	id?: string;
@@ -328,3 +327,81 @@ defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root
 <template>
 	<div ref="root" class="scroll-bar" :id="props.id" />
 </template>
+
+<style module>
+:global(.scroll-bar) {
+	display: none;
+}
+
+:global(.scroll-bar.visible) {
+	display: block;
+}
+
+:global(.scroll-bar.horizontal) {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 12px;
+}
+
+:global(.scroll-bar.horizontal.with-corner) {
+	width: calc(100% - 12px);
+}
+
+:global(.scroll-bar.vertical) {
+	position: absolute;
+	right: 0;
+	width: 12px;
+	height: 100%;
+}
+
+:global(.scroll-bar.vertical.with-corner) {
+	height: calc(100% - 12px);
+}
+
+:global(.scroll-thumb) {
+	position: absolute;
+	opacity: 1;
+	visibility: visible;
+	transition-property: opacity, visibility;
+	transition-delay: 0.4s;
+	transition-duration: 0.8s;
+}
+
+:global(.scroll-bar:hover > .scroll-thumb),
+:global(.scroll-bar:active > .scroll-thumb),
+:global(.scroll-bar.dragging > .scroll-thumb) {
+	transition-delay: 0s;
+	transition-duration: 0.2s;
+}
+
+:global(.scroll-thumb-inner) {
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	background-color: var(--custom-scrollbar-thumb-background);
+	border: var(--custom-scrollbar-thumb-border);
+	border-radius: 2px;
+	pointer-events: none;
+}
+
+:global(.scroll-thumb:hover > .scroll-thumb-inner),
+:global(.scroll-thumb:active > .scroll-thumb-inner) {
+	background-color: var(--custom-scrollbar-thumb-background-hover);
+}
+
+:global(.scroll-corner) {
+	display: none;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 12px;
+	height: 12px;
+}
+
+:global(.scroll-corner.visible) {
+	display: block;
+}
+</style>

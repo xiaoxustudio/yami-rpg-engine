@@ -1999,3 +1999,385 @@ onBeforeUnmount(() => {
 
 defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 </script>
+
+<style module>
+:global(:where(.file-body-pane)) {
+	position: absolute;
+	left: 18%;
+	right: 0;
+	top: 24px;
+	height: calc(100% - 24px);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+:global(:where(.file-body-pane.horizontal)) {
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+:global(:where(file-body-item)) {
+	border-radius: 2px;
+}
+
+:global(:where(file-body-item:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(file-body-item.drop-target)) {
+	background-color: var(--drop-target-background);
+}
+
+:global(:where(.file-body-content:focus > file-body-item.selected)) {
+	color: white;
+	background-color: var(--selected-background);
+}
+
+:global(:where(.file-body-content:not(:focus) > file-body-item:not(:focus-within).selected)) {
+	background-color: var(--selected-background-blur);
+}
+
+:global(:where(.file-body-content.alt > .file-item)) {
+	cursor: pointer;
+}
+
+:global(:where(.file-body-content.alt > .file-item:hover)) {
+	background-color: var(--command-global-event-link-background);
+}
+
+:global(:where(file-body-icon)) {
+	display: block;
+	pointer-events: none;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+
+:global(:where(:focus > .selected > file-body-icon.icon-folder)) {
+	background-color: var(--folder-icon-color-selected);
+}
+
+:global(:where(file-body-icon.icon-folder)) {
+	background-color: var(--folder-icon-color);
+	mask-image: url(../../../Images/folder_folded.png);
+	-webkit-mask-image: url(../../../Images/folder_folded.png);
+	mask-size: 100%;
+	-webkit-mask-size: 100%;
+}
+
+:global(:where(file-body-icon.icon-file-scene)) {
+	background-image: url(../../../Images/file_scene.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-ui)) {
+	background-image: url(../../../Images/file_ui.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-animation)) {
+	background-image: url(../../../Images/file_animation.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-particle)) {
+	background-image: url(../../../Images/file_particle.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-actor)) {
+	background-image: url(../../../Images/file_actor.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-cube)) {
+	background-image: url(../../../Images/file_cube.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-trigger)) {
+	background-image: url(../../../Images/file_trigger.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-tileset)) {
+	background-image: url(../../../Images/file_tileset.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-font)) {
+	background-image: url(../../../Images/file_font.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-event)) {
+	font-family: var(--font-family-bold);
+	font-weight: bold;
+	text-align: center;
+	color: green;
+	background-image: url(../../../Images/file_other.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-icon.icon-file-event.disabled)) {
+	opacity: 0.25;
+}
+
+:global(:where(file-body-icon.icon-file-script)) {
+	color: #004080;
+}
+
+:global(:where(file-body-icon.icon-file-audio)) {
+	font-family: var(--font-family-symbol);
+	color: #008080;
+}
+
+:global(:where(file-body-icon.icon-file-video)) {
+	font-family: var(--font-family-symbol);
+	color: #000000;
+}
+
+:global(:where(file-body-icon.icon-file-other)) {
+	font-family: var(--font-family-bold);
+	font-weight: bold;
+	text-align: center;
+	color: #404040;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+	background-image: url(../../../Images/file_other.png);
+	opacity: 0.8;
+}
+
+:global(:where(file-body-name)) {
+	display: -webkit-box;
+	height: 30px;
+	overflow: hidden;
+	white-space: break-spaces;
+	text-overflow: ellipsis;
+	word-break: break-word;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+:global(:where(.file-body-text-box)) {
+	display: inline-block;
+	position: static;
+	width: 100%;
+	text-indent: 0;
+	border-color: var(--input-border-color) !important;
+}
+
+:global(:where(.file-body-text-box-input)) {
+	position: static;
+	padding: 2px;
+	text-align: inherit;
+	vertical-align: top;
+	color: var(--text-color-rename);
+}
+
+:global(:where(.file-body-content.list)) {
+	display: block;
+	position: relative;
+	padding: 0;
+	text-align: left;
+	/* width: 100%; */
+	height: 100%;
+	font-size: 1em;
+	line-height: 20px;
+	/* background-color: green; */
+}
+
+:global(:where(.file-body-content.list > file-body-item)) {
+	position: absolute;
+	width: 240px;
+	height: 20px;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+}
+
+:global(:where(.file-body-content.list > file-body-item > file-body-icon)) {
+	display: inline-block;
+	vertical-align: top;
+	margin: 2px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	image-rendering: auto !important;
+	/* background: green; */
+	/* pointer-events: none; */
+	/* background-position: center; */
+	/* background-repeat: no-repeat; */
+	/* background-size: 100%; */
+}
+
+:global(:where(.file-body-content.list > file-body-item > file-body-icon.icon-file-event)) {
+	padding-top: 1px;
+	font-size: 0.5em;
+}
+
+:global(:where(.file-body-content.list > file-body-item > file-body-icon.icon-file-other)) {
+	padding-top: 1px;
+	font-size: 0.4em;
+}
+
+:global(:where(.file-body-content.list > file-body-item > file-body-name)) {
+	display: inline-block;
+	vertical-align: top;
+	width: 220px;
+	height: 20px;
+	white-space: pre;
+	/* background-color: red; */
+}
+
+:global(:where(.file-body-content.small)) {
+	display: block;
+	position: relative;
+	padding: 0;
+	text-align: center;
+	justify-content: space-evenly;
+	grid-column-gap: 2px;
+	grid-row-gap: 2px;
+	grid-template-columns: repeat(auto-fill, 40px);
+	grid-template-rows: repeat(auto-fill, 72px);
+	font-size: 0.9em;
+	line-height: 15px;
+}
+
+/* 必须指定file-body-item的宽度，否则可能是0px高度 */
+:global(:where(.file-body-content.small > file-body-item)) {
+	position: absolute;
+	width: 40px;
+	height: 72px;
+}
+
+:global(:where(.file-body-content.small > file-body-item > file-body-icon)) {
+	margin: 4px;
+	width: 32px;
+	height: 32px;
+	line-height: 32px;
+}
+
+:global(:where(.file-body-content.small > file-body-item > file-body-icon.icon-file-event)) {
+	padding-top: 2px;
+	font-size: 1em;
+}
+
+:global(:where(.file-body-content.small > file-body-item > file-body-icon.icon-file-other)) {
+	padding-top: 2px;
+	font-size: 0.8em;
+}
+
+:global(:where(.file-body-content.medium)) {
+	display: block;
+	position: relative;
+	padding: 0;
+	text-align: center;
+	justify-content: space-evenly;
+	grid-column-gap: 2px;
+	grid-row-gap: 2px;
+	grid-template-columns: repeat(auto-fill, 72px);
+	grid-template-rows: repeat(auto-fill, 104px);
+	font-size: 1em;
+	line-height: 15px;
+}
+
+:global(:where(.file-body-content.medium > file-body-item)) {
+	position: absolute;
+	width: 72px;
+	height: 104px;
+}
+
+:global(:where(.file-body-content.medium > file-body-item > file-body-icon)) {
+	margin: 4px;
+	width: 64px;
+	height: 64px;
+	line-height: 64px;
+}
+
+:global(:where(.file-body-content.medium > file-body-item > file-body-icon.icon-file-event)) {
+	padding-top: 4px;
+	font-size: 2em;
+}
+
+:global(:where(.file-body-content.medium > file-body-item > file-body-icon.icon-file-other)) {
+	padding-top: 4px;
+	font-size: 1.6em;
+}
+
+:global(:where(.file-body-content.large)) {
+	display: block;
+	position: relative;
+	padding: 0;
+	text-align: center;
+	justify-content: space-evenly;
+	grid-column-gap: 2px;
+	grid-row-gap: 2px;
+	grid-template-columns: repeat(auto-fill, 136px);
+	grid-template-rows: repeat(auto-fill, 168px);
+	font-size: 1em;
+	line-height: 15px;
+}
+
+:global(:where(.file-body-content.large > file-body-item)) {
+	position: absolute;
+	width: 136px;
+	height: 168px;
+}
+
+:global(:where(.file-body-content.large > file-body-item > file-body-icon)) {
+	margin: 4px;
+	width: 128px;
+	height: 128px;
+	line-height: 128px;
+}
+
+:global(:where(.file-body-content.large > file-body-item > file-body-icon.icon-file-event)) {
+	padding-top: 8px;
+	font-size: 4em;
+}
+
+:global(:where(.file-body-content.large > file-body-item > file-body-icon.icon-file-other)) {
+	padding-top: 8px;
+	font-size: 3.2em;
+}
+
+:global(:where(.file-body-content.huge)) {
+	display: block;
+	position: relative;
+	padding: 0;
+	text-align: center;
+	justify-content: space-evenly;
+	grid-column-gap: 2px;
+	grid-row-gap: 2px;
+	grid-template-columns: repeat(auto-fill, 264px);
+	grid-template-rows: repeat(auto-fill, 296px);
+	font-size: 1em;
+	line-height: 15px;
+}
+
+:global(:where(.file-body-content.huge > file-body-item)) {
+	position: absolute;
+	width: 264px;
+	height: 296px;
+}
+
+:global(:where(.file-body-content.huge > file-body-item > file-body-icon)) {
+	margin: 4px;
+	width: 256px;
+	height: 256px;
+	line-height: 256px;
+}
+
+:global(:where(.file-body-content.huge > file-body-item > file-body-icon.icon-file-event)) {
+	padding-top: 16px;
+	font-size: 8em;
+}
+
+:global(:where(.file-body-content.huge > file-body-item > file-body-icon.icon-file-other)) {
+	padding-top: 16px;
+	font-size: 6.4em;
+}
+</style>

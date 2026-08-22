@@ -1,6 +1,15 @@
 @import '../theme/tokens.css';
 @import './components.css';
 
+body {
+	margin: 0;
+	font-size: var(--font-size-normal);
+	font-family: var(--font-family-normal);
+	font-feature-settings: 'tnum', 'zero';
+	color: var(--text-color);
+	user-select: none;
+}
+
 .hidden {
 	display: none !important;
 }

@@ -358,6 +358,58 @@ onMounted(initializeApi);
 .input {
 	width: 100%;
 }
+
+:global(:where(.text-box)) {
+	display: block;
+	position: relative;
+	width: auto;
+	height: 20px;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+:global(:where(.text-box.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+:global(:where(.text-box:focus-within)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.text-box-input)) {
+	position: absolute;
+	margin: 0;
+	padding: 4px;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	border: none;
+}
+
+:global(:where(.close-button)) {
+	position: absolute;
+	right: 0;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	font-size: 10px;
+	text-align: center;
+	color: var(--tab-close-color);
+}
+
+:global(:where(.close-button:hover)) {
+	color: var(--tab-close-color-hover);
+}
+
+:global(:where(.close-button:active)) {
+	color: var(--tab-close-color-active);
+}
 </style>
 
 

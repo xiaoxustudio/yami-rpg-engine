@@ -54,3 +54,10 @@ onMounted(() => {
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#zoom) {
+	width: 324px;
+	height: 98px;
+}
+</style>

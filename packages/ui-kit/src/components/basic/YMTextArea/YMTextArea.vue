@@ -195,5 +195,69 @@ onMounted(() => {
 .input {
 	width: 100%;
 }
+
+:global(:where(.text-area)) {
+	display: block;
+	position: relative;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+
+:global(:where(.text-area.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+:global(:where(.text-area:focus-within)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.text-area > textarea)) {
+	display: block;
+	position: absolute;
+	margin: 0;
+	padding: 4px;
+	width: 100%;
+	height: 100%;
+	font-size: 1em;
+	font-family: var(--font-family-mono);
+	overflow-x: hidden;
+	overflow-y: auto;
+	cursor: auto;
+	resize: none;
+	word-break: break-all;
+	color: var(--text-color);
+	background-color: transparent;
+	border: none;
+}
+
+:global(:where(.text-area > textarea.inputting)) {
+	margin-top: 4px;
+	padding-top: 0;
+	padding-bottom: 0;
+	height: calc(100% - 8px);
+}
+
+:global(:where(.field-set > .text-area)) {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	border: none;
+	border-radius: 0;
+}
+
+:global(:where(.field-set > .text-area > textarea)) {
+	padding: 10px;
+}
+
+:global(:where(.field-set > .text-area > textarea.inputting)) {
+	margin-top: 10px;
+	height: calc(100% - 20px);
+}
 </style>
 

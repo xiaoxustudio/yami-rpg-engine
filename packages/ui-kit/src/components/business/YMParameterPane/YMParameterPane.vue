@@ -1053,4 +1053,94 @@ onBeforeUnmount(() => {
 	display: block;
 	padding-bottom: 60px;
 }
+
+:global(:where(.repeatable-group)) {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+:global(:where(.repeatable-group-rows)) {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+:global(:where(.repeatable-group-row)) {
+	display: flex;
+	align-items: flex-start;
+	gap: 4px;
+	padding: 4px;
+	border: 1px solid var(--border-color);
+	border-radius: 2px;
+}
+
+:global(:where(.repeatable-group-row .repeatable-group-remove)) {
+	position: relative;
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+:global(:where(.repeatable-group .add-row-btn)) {
+	position: relative;
+	width: auto;
+	padding: 2px 12px;
+	height: 22px;
+}
+
+:global(:where(.detail-grid)) {
+	display: grid;
+	margin: 4px 4px 4px 10px;
+	grid-gap: 4px;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+:global(:where(.detail-grid > .text)) {
+	line-height: 20px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+:global(:where(.param-affix)) {
+	position: absolute;
+	padding: 0 4px;
+	line-height: 18px;
+	font-family: var(--font-family-mono);
+	color: var(--text-color-unit);
+	pointer-events: none;
+	user-select: none;
+}
+
+:global(:where(.param-affix.left)) {
+	left: 0;
+}
+
+:global(:where(.param-affix.right)) {
+	right: 0;
+}
+
+:global(:where(.deprecated-banner)) {
+	padding: 6px 10px;
+	margin: 4px 4px 0;
+	font-size: 11px;
+	color: #e8a33d;
+	background: rgba(232, 163, 61, 0.1);
+	border: 1px solid rgba(232, 163, 61, 0.3);
+	border-radius: 2px;
+}
+
+:global(:where(.validate-error)) {
+	outline: 1px solid var(--text-color-error);
+	outline-offset: -1px;
+}
+
+:global(:where(.repeatable-group-row .detail-grid)) {
+	grid-template-columns: auto 1fr;
+	margin: 0;
+	flex: 1;
+	min-width: 0;
+}
 </style>

@@ -707,3 +707,23 @@ onBeforeUnmount(() => {
 
 defineExpose({ update, searchFiles, backToParentFolder, el });
 </script>
+
+<style module>
+:global(:where(.file-browser)) {
+	position: absolute;
+}
+
+:global(:where(.file-browser.hide-nav-pane > .file-nav-pane)) {
+	display: none;
+}
+
+:global(:where(.file-browser.hide-nav-pane > .file-head-pane)) {
+	left: 0;
+}
+
+:global(:where(.file-browser.hide-nav-pane > .file-body-pane)) {
+	left: 0;
+	top: 24px;
+	height: calc(100% - 24px);
+}
+</style>

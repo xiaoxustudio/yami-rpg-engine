@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ref, watch } from 'vue';
 
 interface Props {
@@ -71,24 +71,24 @@ const onKeydown = (event: KeyboardEvent): void => {
 </template>
 
 <style module>
-.checkBox {
+:global(:where(.check-box)) {
 	display: inline-block;
 	white-space: nowrap;
 	cursor: pointer;
 	user-select: none;
 }
 
-.checkBox:global(:where(.standard)) {
+:global(:where(.check-box.standard)) {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-.checkBox:global(:where(.standard)):focus .checkMark {
+:global(:where(.check-box.standard:focus > .check-mark)) {
 	border-color: var(--ym-color-input-border-focus);
 }
 
-.checkMark {
+:global(:where(.check-mark)) {
 	display: inline-block;
 	position: relative;
 	vertical-align: top;
@@ -100,7 +100,7 @@ const onKeydown = (event: KeyboardEvent): void => {
 	border-radius: var(--ym-radius-sm);
 }
 
-.checkMark::before {
+:global(.check-mark::before) {
 	content: '\2713';
 	position: absolute;
 	left: 0;
@@ -116,28 +116,32 @@ const onKeydown = (event: KeyboardEvent): void => {
 	opacity: 0;
 }
 
-.checkBox:global(:where(.selected)) .checkMark::before {
+:global(.check-box.selected > .check-mark::before) {
 	opacity: 1;
 }
 
-.checkBox:global(:where(.large)) {
+:global(.check-box.selected:active > .check-mark::before) {
+	opacity: 0.5;
+}
+
+:global(:where(.check-box.standard.large)) {
 	padding: 0;
 	line-height: 20px;
 }
 
-.checkBox:global(:where(.large)) .checkMark {
+:global(:where(.check-box.standard.large > .check-mark)) {
 	width: 20px;
 	height: 20px;
 }
 
-.checkBox:global(:where(.large)) .checkMark::before {
+:global(.check-box.standard.large > .check-mark::before) {
 	width: 20px;
 	height: 20px;
 	line-height: 20px;
 	font-size: 1.5em;
 }
 
-.checkBox:global(:where(.disabled)) {
+:global(:where(.check-box.disabled)) {
 	pointer-events: none;
 	opacity: 0.5;
 }

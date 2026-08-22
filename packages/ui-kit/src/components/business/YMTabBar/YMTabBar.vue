@@ -640,19 +640,81 @@ onMounted(() => {
 }
 
 :global(:where(.tab-item)) {
-	display: inline-block;
+	display: flex;
 	position: relative;
+	width: 200px;
+	line-height: 28px;
+	font-family: var(--font-family-symbol), var(--font-family-title);
+	justify-content: space-between;
+	background-color: var(--tab-item-background);
+	border-right: var(--tab-item-border);
+	-webkit-app-region: no-drag;
 	white-space: pre;
 	cursor: default;
+}
+
+:global(:where(.tab-text)) {
+	flex-grow: 1;
+	width: 0;
+	text-indent: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	pointer-events: none;
+}
+
+:global(:where(.tab-item:first-child)) {
+	border-left: var(--tab-item-border);
+}
+
+:global(:where(.tab-item:not(.selected):hover)) {
+	background-color: var(--tab-item-background-hover);
+}
+
+:global(:where(.tab-item.selected)) {
+	color: var(--toolbar-item-color-highlight);
+	background-color: var(--tab-item-background-selected);
 }
 
 :global(:where(.tab-close)) {
 	position: absolute;
 	right: 0;
+	margin: 4px;
 	width: 16px;
 	height: 16px;
+	line-height: 16px;
+	font-size: 10px;
 	text-align: center;
+	color: var(--tab-close-color);
 	pointer-events: auto;
 	cursor: pointer;
+	border-radius: 50%;
+}
+
+:global(:where(.tab-close:hover)) {
+	color: var(--tab-close-color-hover);
+	background-color: var(--titlebar-button-background-hover);
+}
+
+:global(:where(.tab-close:active)) {
+	color: var(--tab-close-color-active);
+	background-color: var(--titlebar-button-background-active);
+}
+
+:global(:where(#title-tabBar)) {
+	flex-grow: 1;
+	display: flex;
+	width: 240px;
+	height: 28px;
+	overflow: hidden;
+	visibility: hidden;
+}
+
+:global(:where(#title-tabBar.visible)) {
+	visibility: visible;
+}
+
+:global(:where(.tab-bar.dragging)) {
+	-webkit-app-region: no-drag;
 }
 </style>

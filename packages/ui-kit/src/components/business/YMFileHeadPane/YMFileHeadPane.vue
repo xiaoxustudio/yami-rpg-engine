@@ -310,3 +310,141 @@ onMounted(() => {
 
 defineExpose({ updateAddress, el });
 </script>
+
+<style module>
+:global(:where(.file-head-pane)) {
+	display: flex;
+	position: absolute;
+	flex: 1 0 auto;
+	top: 0;
+	left: 18%;
+	right: 0;
+	height: 24px;
+	overflow: hidden;
+	background-color: var(--group-head-background);
+}
+
+:global(:where(.file-head-address)) {
+	flex: 1 0 0;
+	margin: 2px 0;
+	height: 20px;
+	line-height: 20px;
+	font-weight: bold;
+	font-family: var(--font-family-bold);
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+	text-indent: 2px;
+	/* background-color: green; */
+}
+
+:global(.file-head-address::before) {
+	content: '';
+	position: absolute;
+	margin-left: -3px;
+	width: 0;
+	height: 20px;
+	border-left: var(--nav-bar-border);
+}
+
+:global(:where(file-head-address-folder)) {
+	display: inline-block;
+	vertical-align: top;
+	padding: 0 2px;
+	text-indent: 0;
+	/* background-color: green; */
+}
+
+:global(:where(file-head-address-arrow)) {
+	display: inline-block;
+	vertical-align: top;
+	width: 20px;
+	height: 20px;
+	text-indent: 0;
+	border-color: var(--folder-mark-color);
+	/* background-color: red; */
+}
+
+:global(:where(file-head-address-link)) {
+	display: inline-block;
+	vertical-align: top;
+	text-align: center;
+	width: 20px;
+	height: 20px;
+	text-indent: 0;
+	color: var(--folder-mark-color);
+	/* background-color: red; */
+}
+
+:global(:where(file-head-address-text)) {
+	display: block;
+	padding: 0 2px;
+	width: 100%;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+	/* background-color: red; */
+}
+
+:global(:where(file-head-address-folder.drop-target)) {
+	background-color: var(--drop-target-background);
+}
+
+:global(:where(file-head-address-folder:hover,
+file-head-address-arrow:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(file-head-address-folder:active,
+file-head-address-arrow:active,
+file-head-address-arrow.active)) {
+	color: white;
+	border-color: white;
+	background-color: var(--selected-background);
+}
+
+:global(file-head-address-arrow::before) {
+	content: '';
+	display: block;
+	position: absolute;
+	margin: 6px 7px;
+	border-top: 4px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-left-width: 6px;
+	border-left-style: solid;
+	border-left-color: inherit;
+	/* background-color: blue; */
+}
+
+:global(:where(.upper-level-directory)) {
+	flex: 0 0 auto;
+	margin: 2px 0 2px 2px;
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	font-size: 1.2em;
+	font-family: var(--font-family-symbol);
+}
+
+:global(:where(.upper-level-directory:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(.upper-level-directory:active)) {
+	color: white;
+	background-color: var(--selected-background);
+}
+
+:global(:where(.file-head-searcher)) {
+	flex: 0 1 auto;
+	margin: 2px;
+	width: 300px;
+}
+
+:global(:where(.file-head-view)) {
+	flex: 0 1 80px;
+	margin: 2px 4px 2px 2px;
+	/* background-color: red; */
+}
+</style>

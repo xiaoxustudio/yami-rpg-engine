@@ -57,7 +57,6 @@ frames.remove = (element: HTMLElement) => {
 		return false;
 	}
 	frames.splice(index, 1);
-	element.remove();
 	element.classList.remove('open');
 	return true;
 };

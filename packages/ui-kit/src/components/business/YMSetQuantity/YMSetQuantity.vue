@@ -55,3 +55,10 @@ onMounted(() => {
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#setQuantity) {
+	width: 324px;
+	height: 98px;
+}
+</style>

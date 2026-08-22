@@ -100,4 +100,24 @@ defineExpose({ toggle, on, root });
 .summary:hover {
 	filter: brightness(1.04);
 }
+
+:global(.detail-box[open]) > .summary::before {
+	content: '';
+	display: block;
+	position: absolute;
+	margin: 6px 3px;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 8px solid var(--folder-mark-color);
+}
+
+:global(.detail-box:not([open])) > .summary::before {
+	content: '';
+	display: block;
+	position: absolute;
+	margin: 5px 4px;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 8px solid var(--folder-mark-color);
+}
 </style>

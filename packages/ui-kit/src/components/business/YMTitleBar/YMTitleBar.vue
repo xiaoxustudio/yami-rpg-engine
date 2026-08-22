@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
@@ -31,7 +31,7 @@ const pointerdown = (event: PointerEvent): void => {
 		return;
 	}
 	if (dragging) {
-		// 防模块级 dragging 残留（拖拽中 pointerup 丢失时阻断后续所有窗口拖拽）
+		// 闃叉ā鍧楃骇 dragging 娈嬬暀锛堟嫋鎷戒腑 pointerup 涓㈠け鏃堕樆鏂悗缁墍鏈夌獥鍙ｆ嫋鎷斤級
 		(dragging as PointerEvent & { cancel?(event?: Event): void }).cancel?.();
 		dragging = null;
 	}
@@ -163,17 +163,3 @@ onMounted(() => {
 		<slot />
 	</div>
 </template>
-
-<style module>
-:global(:where(.title-bar)) {
-	display: block;
-	position: relative;
-	padding: 0 5px;
-	width: 100%;
-	height: 28px;
-	line-height: 28px;
-	background-color: var(--titlebar-background);
-	user-select: none;
-	cursor: default;
-}
-</style>

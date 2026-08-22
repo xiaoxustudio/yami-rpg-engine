@@ -63,6 +63,8 @@ onBeforeUnmount(() => {
 
 :global(node-item) {
 	display: block;
+	position: relative;
+	padding-right: 32px;
 	height: 20px;
 	line-height: 20px;
 	overflow: hidden;
@@ -113,5 +115,317 @@ onBeforeUnmount(() => {
 	position: absolute;
 	pointer-events: none;
 	z-index: 0;
+}
+
+:global(.tree-list:not(.dragging) > node-item:hover) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(.tree-list:focus > node-item.selected) {
+	color: white;
+	background-color: var(--selected-background);
+}
+
+:global(.tree-list:not(:focus) > node-item.selected) {
+	background-color: var(--selected-background-blur);
+}
+
+:global(node-item.highlight) {
+	color: var(--toolbar-item-color-highlight) !important;
+}
+
+:global(node-item.hint) {
+	color: var(--text-color-inverse);
+}
+
+:global(node-item.plain) {
+	padding: 0 10px;
+}
+
+:global(node-item.weak) {
+	color: var(--text-color-variable-init);
+}
+
+:global(node-item.weak.selected) {
+	color: var(--text-color-accelerator-selected) !important;
+}
+
+:global(node-item.weak > node-icon) {
+	opacity: 0.3;
+}
+
+:global(folder-mark::before) {
+	content: '';
+	display: block;
+	position: absolute;
+	margin: 5px 4px;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 8px solid var(--folder-mark-color);
+}
+
+:global(folder-mark.expanded::before) {
+	margin: 6px 3px;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 8px solid var(--folder-mark-color);
+	border-bottom: none;
+}
+
+:global(:focus > .selected > node-icon.icon-folder),
+:global(:focus > .selected > node-icon.icon-ui-image),
+:global(:focus > .selected > node-icon.icon-ui-text),
+:global(:focus > .selected > node-icon.icon-ui-textbox),
+:global(:focus > .selected > node-icon.icon-ui-dialogbox),
+:global(:focus > .selected > node-icon.icon-ui-progressbar),
+:global(:focus > .selected > node-icon.icon-ui-video),
+:global(:focus > .selected > node-icon.icon-ui-window),
+:global(:focus > .selected > node-icon.icon-ui-container),
+:global(:focus > .selected > node-icon.icon-ui-reference) {
+	background-color: white;
+}
+
+:global(node-icon.icon-folder) {
+	background-color: var(--folder-icon-color);
+	-webkit-mask-image: url(../../../Images/folder_folded.png);
+	mask-image: url(../../../Images/folder_folded.png);
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+:global(node-icon.icon-folder.expanded) {
+	-webkit-mask-image: url(../../../Images/folder_expanded.png);
+	mask-image: url(../../../Images/folder_expanded.png);
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+:global(node-icon.icon-particle-image) {
+	margin: 3px 3px 3px 1px;
+	width: 14px;
+	height: 14px;
+	image-rendering: auto !important;
+}
+
+:global(:where(.icon-file)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/file_common.png);
+	mask-image: url(../../../Images/file_common.png);
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+:global(:where(.icon-conditional, .icon-eventEnabled, .icon-scriptEnabled, .icon-loop)) {
+	margin: 3px -2px 3px 4px;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+	font-size: 10px;
+	font-weight: bold;
+	font-family: Arial, var(--font-family-symbol);
+	background-color: var(--node-bubble-background);
+	border-radius: 25%;
+}
+
+:global(:where(.icon-conditional)) {
+	color: var(--icon-conditional-color);
+}
+
+:global(:where(.icon-eventEnabled)) {
+	color: var(--icon-eventEnabled-color);
+}
+
+:global(:where(.icon-scriptEnabled)) {
+	color: var(--icon-scriptEnabled-color);
+}
+
+:global(:where(.icon-loop)) {
+	color: var(--icon-loop-color);
+}
+
+:global(:where(.icon-scene-region)) {
+	margin: 4px 4px 4px 2px;
+	width: 12px;
+	height: 12px;
+	border: var(--node-icon-border);
+}
+
+:global(:where(.icon-scene-parallax)) {
+	margin: 3px 3px 3px 1px;
+	width: 14px;
+	height: 14px;
+	background-size: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: var(--parallax-icon-background);
+}
+
+:global(:where(.icon-ui-image)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 0;
+	mask-position: 0 0;
+}
+
+:global(:where(.icon-ui-text)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -100%;
+	mask-position: 0 -100%;
+}
+
+:global(:where(.icon-ui-textbox)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -200%;
+	mask-position: 0 -200%;
+}
+
+:global(:where(.icon-ui-dialogbox)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -300%;
+	mask-position: 0 -300%;
+}
+
+:global(:where(.icon-ui-progressbar)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -400%;
+	mask-position: 0 -400%;
+}
+
+:global(:where(.icon-ui-button)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -500%;
+	mask-position: 0 -500%;
+}
+
+:global(:where(.icon-ui-animation)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -600%;
+	mask-position: 0 -600%;
+}
+
+:global(:where(.icon-ui-video)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -700%;
+	mask-position: 0 -700%;
+}
+
+:global(:where(.icon-ui-window)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -800%;
+	mask-position: 0 -800%;
+}
+
+:global(:where(.icon-ui-container)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -900%;
+	mask-position: 0 -900%;
+}
+
+:global(:where(.icon-ui-reference)) {
+	background-color: var(--file-icon-color);
+	-webkit-mask-image: url(../../../Images/ui_components.png);
+	mask-image: url(../../../Images/ui_components.png);
+	-webkit-mask-size: 100% 1100%;
+	mask-size: 100% 1100%;
+	-webkit-mask-position: 0 -1000%;
+	mask-position: 0 -1000%;
+}
+
+:global(:where(.icon-ui-reference-active)) {
+	background-color: var(--reference-icon-color) !important;
+}
+
+:global(:where(.icon-ui-set-as-prefab)) {
+	background-color: var(--prefab-icon-color) !important;
+}
+
+:global(visibility-icon) {
+	position: absolute;
+	right: 16px;
+	width: 16px;
+	height: 20px;
+	text-indent: 2px;
+	font-family: var(--font-family-symbol);
+	color: var(--node-icon-color);
+}
+
+:global(lock-icon) {
+	position: absolute;
+	right: 0;
+	width: 16px;
+	height: 20px;
+	text-indent: 2px;
+	font-family: var(--font-family-symbol);
+	color: var(--node-icon-color);
+}
+
+:global(:where(.node-icon-highlight)) {
+	color: var(--node-icon-color-highlight);
+}
+
+:global(visibility-icon:hover),
+:global(lock-icon:hover) {
+	color: var(--text-color);
+}
+
+:global(:where(.node-list-text-box)) {
+	display: inline-block;
+	position: absolute;
+	text-indent: 0;
+	border-color: var(--input-border-color) !important;
+}
+
+:global(:where(.node-list-text-box-input)) {
+	position: static;
+	padding: 2px;
+	text-align: inherit;
+	vertical-align: top;
+	color: var(--text-color-rename);
+}
+
+:global(.field-set > .tree-list) {
+	position: absolute;
+	padding: 10px 0;
+	width: 100%;
+	height: 100%;
 }
 </style>

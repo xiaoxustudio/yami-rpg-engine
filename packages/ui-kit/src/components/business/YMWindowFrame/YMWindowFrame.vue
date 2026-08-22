@@ -409,6 +409,7 @@ onMounted(() => {
 	on('resize', () => emit('resize'));
 	on('maximize', () => emit('maximize'));
 	on('unmaximize', () => emit('unmaximize'));
+	element.addEventListener('cancel', () => close());
 });
 
 onUnmounted(() => {
@@ -433,7 +434,7 @@ onUnmounted(() => {
 <style module>
 :global(:where(.window-frame)) {
 	display: none;
-	position: absolute;
+	position: fixed;
 	box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
 	background-color: var(--window-background);
 	outline: var(--window-outline);

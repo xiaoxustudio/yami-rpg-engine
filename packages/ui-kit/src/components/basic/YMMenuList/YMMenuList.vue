@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { createMenuApi, type MenuApi, type MenuItem, type MenuOptions } from './menu-api';
 
@@ -107,6 +107,8 @@ onBeforeUnmount(() => {
 :global(:where(.menu-accelerator)) {
 	position: absolute;
 	right: 24px;
+	font-family: var(--font-family-accelerator);
+	color: var(--text-color-disabled);
 	pointer-events: none;
 }
 
@@ -130,5 +132,39 @@ onBeforeUnmount(() => {
 	background-color: var(--menu-separator-background);
 	border: none;
 	pointer-events: none;
+}
+
+:global(:where(.menu-item.id)) {
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.menu-item.id.selected)) {
+	color: var(--text-color-accelerator-selected);
+}
+
+:global(:where(.menu-item.id > .menu-label)) {
+	width: 100px;
+	overflow: visible;
+}
+
+:global(:where(.menu-icon.color-icon)) {
+	position: absolute;
+	left: 4px;
+	margin: 2px;
+	width: 12px;
+	height: 12px;
+	border: var(--node-icon-border);
+	pointer-events: none;
+}
+
+:global(.menu-icon.color-icon.transparent::before) {
+	content: '';
+	position: absolute;
+	top: 4px;
+	width: 10px;
+	height: 2px;
+	background-color: red;
+	transform-origin: center;
+	transform: rotate(-45deg);
 }
 </style>

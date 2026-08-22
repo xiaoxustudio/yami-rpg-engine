@@ -317,8 +317,57 @@ onMounted(initializeApi);
 :global(:where(.custom-box)) {
 	display: block;
 	position: relative;
+	width: auto;
+	height: 20px;
 	min-width: 60px;
 	cursor: pointer;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+:global(:where(.custom-box:not(.disabled)::before)) {
+	content: '...';
+	position: absolute;
+	right: 0;
+	width: 16px;
+	height: 18px;
+	line-height: 18px;
+	text-align: center;
+}
+
+:global(:where(.custom-box.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+:global(:where(.custom-box:hover)) {
+	background-color: var(--input-background-hover);
+}
+
+:global(:where(.custom-box:focus)),
+:global(:where(.custom-box.dragover)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.custom-box-text)) {
+	display: inline-block;
+	vertical-align: top;
+	padding: 0 4px;
+	width: calc(100% - 16px);
+	height: 100%;
+	line-height: 18px;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+}
+
+:global(:where(.custom-box-text.invalid)) {
+	color: var(--text-color-error);
 }
 </style>
 

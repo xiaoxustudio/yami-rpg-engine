@@ -829,3 +829,83 @@ onBeforeUnmount(() => {
 
 defineExpose({ load, update, select, unselect, clear, getSelections, el });
 </script>
+
+<style module>
+:global(:where(.file-nav-pane)) {
+	position: absolute;
+	width: 18%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	border-right: var(--nav-bar-border);
+}
+
+:global(:where(file-nav-item)) {
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+}
+
+:global(:where(file-nav-item:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(file-nav-item.drop-target)) {
+	background-color: var(--drop-target-background);
+}
+
+:global(:where(.file-nav-pane:focus > file-nav-item.selected)) {
+	color: white;
+	background-color: var(--selected-background);
+}
+
+:global(:where(.file-nav-pane:not(:focus) > file-nav-item.selected)) {
+	background-color: var(--selected-background-blur);
+}
+
+:global(:where(file-nav-icon)) {
+	display: inline-block;
+	vertical-align: top;
+	margin: 2px 2px 2px 0;
+	width: 16px;
+	height: 16px;
+}
+
+:global(:where(:focus > .selected > file-nav-icon.icon-folder)) {
+	background-color: white;
+}
+
+:global(:where(file-nav-icon.icon-folder)) {
+	background-color: var(--folder-icon-color);
+	-webkit-mask-image: url(../../../Images/folder_folded.png);
+	mask-image: url(../../../Images/folder_folded.png);
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+:global(:where(file-nav-icon.icon-folder.expanded)) {
+	background-color: var(--folder-icon-color);
+	-webkit-mask-image: url(../../../Images/folder_expanded.png);
+	mask-image: url(../../../Images/folder_expanded.png);
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+
+:global(:where(.file-nav-text-box)) {
+	display: inline-block;
+	position: absolute;
+	text-indent: 0;
+	border-color: var(--input-border-color) !important;
+}
+
+:global(:where(.file-nav-text-box-input)) {
+	position: static;
+	padding: 2px;
+	text-align: inherit;
+	vertical-align: top;
+	color: var(--text-color-rename);
+}
+</style>

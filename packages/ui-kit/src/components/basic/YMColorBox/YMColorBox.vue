@@ -259,4 +259,48 @@ onBeforeUnmount(() => {
 	border-radius: var(--ym-radius-sm);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
+
+:global(:where(.color-box)) {
+	display: block;
+	position: relative;
+	padding: 1px;
+	width: auto;
+	height: 20px;
+	background-color: var(--input-background);
+	border: var(--input-border);
+	border-radius: 2px;
+}
+
+:global(:where(.color-box:focus)) {
+	border-color: var(--input-border-color-focus);
+}
+
+:global(:where(.color-box.disabled)) {
+	pointer-events: none;
+	background-color: var(--input-background-disabled);
+}
+
+:global(:where(.color-box-background)) {
+	position: absolute;
+	padding: 1px;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-origin: content-box;
+	background-clip: content-box;
+	background-image: var(--grid-background);
+	background-size: 8px;
+}
+
+:global(:where(.color-box-foreground)) {
+	position: absolute;
+	padding: 1px;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-origin: content-box;
+	background-clip: content-box;
+}
 </style>

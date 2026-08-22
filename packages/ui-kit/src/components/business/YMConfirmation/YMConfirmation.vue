@@ -62,3 +62,10 @@ defineExpose({ focusFirstButton });
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#confirmation) {
+	width: 304px;
+	height: 98px;
+}
+</style>

@@ -229,4 +229,23 @@ onMounted(() => {
 	position: relative;
 	display: block;
 }
+
+:global(:where(.string-var) > .text-box) {
+	width: 100%;
+}
+
+:global(:where(.string-var)::before) {
+	position: absolute;
+	margin-left: -2em;
+	font-family: var(--font-family-mono);
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.string-var.constant)::before) {
+	content: 'str';
+}
+
+:global(:where(.string-var.variable)::before) {
+	content: ' var';
+}
 </style>

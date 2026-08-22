@@ -414,4 +414,39 @@ onMounted(() => {
 	overflow-y: auto;
 	user-select: none;
 }
+
+:global(:where(.common-list)) {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+:global(:where(common-item)) {
+	display: block;
+	padding: 0 10px;
+	height: 20px;
+	line-height: 20px;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
+}
+
+:global(:where(common-item:hover)) {
+	background-color: var(--list-item-background-hover);
+}
+
+:global(:where(.common-list:focus > common-item.selected)) {
+	color: white;
+	background-color: var(--selected-background);
+}
+
+:global(:where(.common-list:not(:focus) > common-item.selected)) {
+	background-color: var(--selected-background-blur);
+}
+
+:global(:where(.field-set > .common-list)) {
+	position: absolute;
+	padding: 10px 0;
+	width: 100%;
+	height: 100%;
+}
 </style>

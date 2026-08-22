@@ -117,19 +117,19 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 </template>
 
 <style module>
-.box {
+:global(:where(.slider-box)) {
 	position: relative;
 	display: block;
 	width: 100%;
 	height: 20px;
 }
 
-.box:global(:where(.disabled)) {
+:global(:where(.slider-box.disabled)) {
 	opacity: 0.5;
 	pointer-events: none;
 }
 
-.bar {
+:global(:where(.slider-bar)) {
 	position: absolute;
 	margin-top: auto;
 	margin-bottom: auto;
@@ -142,13 +142,13 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	border-radius: var(--ym-radius-sm);
 }
 
-.filler {
+:global(:where(.slider-filler)) {
 	position: absolute;
 	height: 100%;
 	background-color: var(--slider-filler-background);
 }
 
-.input {
+:global(:where(.slider-input)) {
 	position: absolute;
 	margin: 0;
 	width: 100%;
@@ -158,12 +158,12 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	appearance: none;
 }
 
-.input:global(::-webkit-slider-runnable-track) {
+:global(:where(.slider-input)::-webkit-slider-runnable-track) {
 	background: transparent;
 	border: none;
 }
 
-.input:global(::-webkit-slider-thumb) {
+:global(:where(.slider-input)::-webkit-slider-thumb) {
 	width: 16px;
 	height: 16px;
 	background-color: var(--slider-thumb-background);
@@ -172,12 +172,20 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	appearance: none;
 }
 
-.input:global(::-moz-range-track) {
+:global(:where(.slider-input)::-webkit-slider-thumb:hover) {
+	background-color: var(--slider-thumb-background-hover);
+}
+
+:global(:where(.slider-input)::-webkit-slider-thumb:active) {
+	background-color: var(--slider-thumb-background-active);
+}
+
+:global(:where(.slider-input)::-moz-range-track) {
 	background: transparent;
 	border: none;
 }
 
-.input:global(::-moz-range-thumb) {
+:global(:where(.slider-input)::-moz-range-thumb) {
 	width: 14px;
 	height: 14px;
 	background-color: var(--slider-thumb-background);

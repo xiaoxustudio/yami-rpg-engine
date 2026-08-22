@@ -40,4 +40,13 @@ onMounted(() => {
 	position: absolute;
 	pointer-events: none;
 }
+
+:global(:where(.drag-and-drop-hint.for-tab)),
+:global(:where(.drag-and-drop-hint.for-list)) {
+	background-color: var(--node-hint-background);
+}
+
+:global(:where(.drag-and-drop-hint.for-group)) {
+	background-color: rgba(0, 128, 255, 0.25);
+}
 </style>

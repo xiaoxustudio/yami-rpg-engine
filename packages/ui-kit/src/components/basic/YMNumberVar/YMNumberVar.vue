@@ -255,4 +255,24 @@ onMounted(() => {
 	position: relative;
 	display: block;
 }
+
+:global(:where(.number-var) > .number-box) {
+	width: 100%;
+}
+
+:global(:where(.number-var)::before) {
+	position: absolute;
+	margin-left: -2em;
+	line-height: 20px;
+	font-family: var(--font-family-mono);
+	color: var(--text-color-disabled);
+}
+
+:global(:where(.number-var.constant)::before) {
+	content: 'num';
+}
+
+:global(:where(.number-var.variable)::before) {
+	content: ' var';
+}
 </style>

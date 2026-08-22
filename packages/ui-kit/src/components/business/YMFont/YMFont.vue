@@ -55,3 +55,10 @@ defineExpose({ root: computed(() => frame.value?.root ?? null) });
 		</div>
 	</YMWindowFrame>
 </template>
+
+<style module>
+:global(#font) {
+	width: 324px;
+	height: 98px;
+}
+</style>
