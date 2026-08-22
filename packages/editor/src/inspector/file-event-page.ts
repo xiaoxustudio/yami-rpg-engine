@@ -1,4 +1,5 @@
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { reactive } from 'vue';
+import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, show, write } from '@app/utils/element-utils';
@@ -209,20 +210,16 @@ import { t } from '@app/i18n';
 			note = ''
 		}: { type?: string; key?: string; note?: string } = {}) {
 			Window.open!('fileEvent-parameter');
-			const write = getElementWriter('fileEvent-parameter');
-			write('type', type);
-			write('key', key);
-			write('note', note);
+			Object.assign(fileEventParameterForm, { type, key, note });
 			getFocus($('#fileEvent-parameter-type'));
 		},
 		save: function () {
-			const read = getElementReader('fileEvent-parameter');
-			const type = read('type');
-			const key = read('key').trim();
+			const type = fileEventParameterForm.type;
+			const key = fileEventParameterForm.key.trim();
 			if (!key) {
 				return getFocus($('#fileEvent-parameter-key'));
 			}
-			const note = read('note').trim();
+			const note = fileEventParameterForm.note.trim();
 			Window.close!('fileEvent-parameter');
 			return { type, key, note };
 		}
@@ -230,3 +227,14 @@ import { t } from '@app/i18n';
 
 	Inspector.fileEvent = FileEvent;
 }
+
+export interface FileEventParameterForm {
+	type: string;
+	key: string;
+	note: string;
+}
+export const fileEventParameterForm = reactive<FileEventParameterForm>({
+	type: 'number',
+	key: '',
+	note: ''
+});

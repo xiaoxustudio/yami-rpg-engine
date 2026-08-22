@@ -1,4 +1,5 @@
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { reactive } from 'vue';
+import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { addClass, getFocus, removeClass } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -134,11 +135,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			} = {}
 		) {
 			Window.open!('fileAnimation-sprite');
-			const write = getElementWriter('fileAnimation-sprite');
-			write('name', name);
-			write('image', image);
-			write('hframes', hframes);
-			write('vframes', vframes);
+			Object.assign(fileAnimationSpriteForm, { name, image, hframes, vframes });
 			this.spriteId = id;
 			if (!name) {
 				getFocus($('#fileAnimation-sprite-name'));
@@ -147,14 +144,13 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			}
 		},
 		save: function (this: { spriteId: string }) {
-			const read = getElementReader('fileAnimation-sprite');
-			const name = read('name').trim();
+			const name = fileAnimationSpriteForm.name.trim();
 			if (!name) {
 				return getFocus($('#fileAnimation-sprite-name'));
 			}
-			const image = read('image');
-			const hframes = read('hframes');
-			const vframes = read('vframes');
+			const image = fileAnimationSpriteForm.image;
+			const hframes = fileAnimationSpriteForm.hframes;
+			const vframes = fileAnimationSpriteForm.vframes;
 			const id = this.spriteId;
 			Window.close!('fileAnimation-sprite');
 			return { name, id, image, hframes, vframes };
@@ -179,3 +175,16 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 	Inspector.fileAnimation = FileAnimation;
 }
+
+export interface FileAnimationSpriteForm {
+	name: string;
+	image: string;
+	hframes: number;
+	vframes: number;
+}
+export const fileAnimationSpriteForm = reactive<FileAnimationSpriteForm>({
+	name: '',
+	image: '',
+	hframes: 1,
+	vframes: 1
+});

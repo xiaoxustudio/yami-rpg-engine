@@ -1,7 +1,8 @@
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { reactive } from 'vue';
+import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@app/utils/element-utils';
+import { clear, getFocus, read } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -267,9 +268,7 @@ import { t } from '@app/i18n';
 			const animationId = FileActor.target.animationId;
 			const items = Animation.getSpriteListItems!(animationId);
 			$('#fileActor-sprite-id').loadItems(items);
-			const write = getElementWriter('fileActor-sprite');
-			write('id', id);
-			write('image', image);
+			Object.assign(fileActorSpriteForm, { id, image });
 			if (!id) {
 				getFocus($('#fileActor-sprite-id'));
 			} else {
@@ -277,12 +276,11 @@ import { t } from '@app/i18n';
 			}
 		},
 		save: function () {
-			const read = getElementReader('fileActor-sprite');
-			const id = read('id');
+			const id = fileActorSpriteForm.id;
 			if (!id) {
 				return getFocus($('#fileActor-sprite-id'));
 			}
-			const image = read('image');
+			const image = fileActorSpriteForm.image;
 			Window.close!('fileActor-sprite');
 			return { id, image };
 		}
@@ -314,18 +312,17 @@ import { t } from '@app/i18n';
 			const elSkillKey = $('#fileActor-skill-key');
 			const items = Enum.getStringItems!('shortcut-key', true);
 			elSkillKey.loadItems(items);
-			write(elSkillId, id);
-			write(elSkillKey, key);
+			Object.assign(fileActorSkillForm, { id, key });
 			getFocus(elSkillId);
 		},
 		save: function () {
 			const elSkillId = $('#fileActor-skill-id');
 			const elSkillKey = $('#fileActor-skill-key');
-			const id = read(elSkillId);
+			const id = fileActorSkillForm.id;
 			if (!id) {
 				return getFocus(elSkillId);
 			}
-			const key = read(elSkillKey);
+			const key = fileActorSkillForm.key;
 			Window.close!('fileActor-skill');
 			return { id, key };
 		}
@@ -357,18 +354,17 @@ import { t } from '@app/i18n';
 			const elEquipmentKey = $('#fileActor-equipment-slot');
 			const items = Enum.getStringItems!('equipment-slot');
 			elEquipmentKey.loadItems(items);
-			write(elEquipmentId, id);
-			write(elEquipmentKey, slot);
+			Object.assign(fileActorEquipmentForm, { id, slot });
 			getFocus(elEquipmentId);
 		},
 		save: function () {
 			const elEquipmentId = $('#fileActor-equipment-id');
 			const elKey = $('#fileActor-equipment-slot');
-			const id = read(elEquipmentId);
+			const id = fileActorEquipmentForm.id;
 			if (!id) {
 				return getFocus(elEquipmentId);
 			}
-			const slot = read(elKey);
+			const slot = fileActorEquipmentForm.slot;
 			if (!slot) {
 				return getFocus(elKey);
 			}
@@ -450,35 +446,35 @@ import { t } from '@app/i18n';
 		},
 		open: function ({ type = 'item', id = '', quantity = 1, money = 1 } = {}) {
 			Window.open!('fileActor-inventory-goods');
-			const write = getElementWriter('fileActor-inventory');
 			const itemId = type === 'item' ? id : '';
 			const equipmentId = type === 'equipment' ? id : '';
-			write('type', type);
-			write('item-id', itemId);
-			write('item-quantity', quantity);
-			write('equipment-id', equipmentId);
-			write('money', money);
+			Object.assign(fileActorInventoryForm, {
+				type,
+				itemId,
+				itemQuantity: quantity,
+				equipmentId,
+				money
+			});
 			getFocus($('#fileActor-inventory-type'));
 		},
 		save: function () {
-			const read = getElementReader('fileActor-inventory');
-			const type = read('type');
+			const type = fileActorInventoryForm.type;
 			let goods;
 			switch (type) {
 				case 'item':
 					goods = {
 						type: 'item',
-						id: read('item-id'),
-						quantity: read('item-quantity')
+						id: fileActorInventoryForm.itemId,
+						quantity: fileActorInventoryForm.itemQuantity
 					};
 					if (!goods.id) return getFocus($('#fileActor-inventory-item-id'));
 					break;
 				case 'equipment':
-					goods = { type: 'equipment', id: read('equipment-id') };
+					goods = { type: 'equipment', id: fileActorInventoryForm.equipmentId };
 					if (!goods.id) return getFocus($('#fileActor-inventory-equipment-id'));
 					break;
 				case 'money':
-					goods = { type: 'money', money: read('money') };
+					goods = { type: 'money', money: fileActorInventoryForm.money };
 					break;
 			}
 			Window.close!('fileActor-inventory-goods');
@@ -488,3 +484,36 @@ import { t } from '@app/i18n';
 
 	Inspector.fileActor = FileActor;
 }
+
+export interface FileActorSpriteForm {
+	id: string;
+	image: string;
+}
+export const fileActorSpriteForm = reactive<FileActorSpriteForm>({ id: '', image: '' });
+
+export interface FileActorSkillForm {
+	id: string;
+	key: string;
+}
+export const fileActorSkillForm = reactive<FileActorSkillForm>({ id: '', key: '' });
+
+export interface FileActorEquipmentForm {
+	id: string;
+	slot: string;
+}
+export const fileActorEquipmentForm = reactive<FileActorEquipmentForm>({ id: '', slot: '' });
+
+export interface FileActorInventoryForm {
+	type: string;
+	itemId: string;
+	itemQuantity: number;
+	equipmentId: string;
+	money: number;
+}
+export const fileActorInventoryForm = reactive<FileActorInventoryForm>({
+	type: 'item',
+	itemId: '',
+	itemQuantity: 1,
+	equipmentId: '',
+	money: 1
+});
