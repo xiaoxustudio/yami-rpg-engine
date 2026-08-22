@@ -41,3 +41,28 @@ const dispatch = (type: string, event: MouseEvent): void => {
 		>{{ cancelLabel }}</button
 	>
 </template>
+
+<style module>
+:global(:where(button[name="confirm"])) {
+	right: 108px;
+	bottom: 10px;
+}
+
+:global(:where(button[name="cancel"])) {
+	right: 10px;
+	bottom: 10px;
+}
+
+:global(:where(.window-frame:has(button[name="apply"]) button[name="confirm"])) {
+	right: 206px;
+}
+
+:global(:where(.window-frame:has(button[name="apply"]) button[name="cancel"])) {
+	right: 108px;
+}
+
+:global(:where(button[name="apply"])) {
+	right: 10px;
+	bottom: 10px;
+}
+</style>

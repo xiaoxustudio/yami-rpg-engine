@@ -320,7 +320,7 @@ onMounted(() => {
 		{ name: 'Mod', value: 'mod' }
 	]);
 
-	$('#setNumber-operand-operation').loadItems([
+	$('#setNumber-operand-operation')?.loadItems([
 		{ name: 'Add', value: 'add' },
 		{ name: 'Sub', value: 'sub' },
 		{ name: 'Mul', value: 'mul' },
@@ -333,7 +333,7 @@ onMounted(() => {
 		{ name: '(Mod)', value: 'mod()' }
 	]);
 
-	$('#setNumber-operand-type').loadItems([
+	$('#setNumber-operand-type')?.loadItems([
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' },
 		{ name: 'Math', value: 'math' },
@@ -391,7 +391,7 @@ onMounted(() => {
 			{ case: 'other', targets: [$('#setNumber-operand-other-data')] }
 		]);
 
-	$('#setNumber-operand-math-method').loadItems([
+	$('#setNumber-operand-math-method')?.loadItems([
 		{ name: 'Round', value: 'round' },
 		{ name: 'Floor', value: 'floor' },
 		{ name: 'Ceil', value: 'ceil' },
@@ -435,7 +435,7 @@ onMounted(() => {
 			}
 		]);
 
-	$('#setNumber-operand-string-method').loadItems([
+	$('#setNumber-operand-string-method')?.loadItems([
 		{ name: 'Get Length', value: 'length' },
 		{ name: 'Parse Number', value: 'parse' },
 		{ name: 'Get Index of Substring', value: 'search' }
@@ -457,7 +457,7 @@ onMounted(() => {
 			}
 		]);
 
-	$('#setNumber-operand-object-property').loadItems([
+	$('#setNumber-operand-object-property')?.loadItems([
 		{ name: 'Actor - X', value: 'actor-x' },
 		{ name: 'Actor - Y', value: 'actor-y' },
 		{ name: 'Actor - UI X', value: 'actor-ui-x' },
@@ -602,7 +602,7 @@ onMounted(() => {
 			}
 		]);
 
-	$('#setNumber-operand-element-property').loadItems([
+	$('#setNumber-operand-element-property')?.loadItems([
 		{ name: 'Element - X', value: 'element-x' },
 		{ name: 'Element - Y', value: 'element-y' },
 		{ name: 'Element - Width', value: 'element-width' },
@@ -643,7 +643,7 @@ onMounted(() => {
 		{ name: 'Dialog Box - Print End Y', value: 'dialogBox-printEndY' }
 	]);
 
-	$('#setNumber-operand-other-data').loadItems([
+	$('#setNumber-operand-other-data')?.loadItems([
 		{ name: 'Event Trigger Mouse Button', value: 'trigger-button' },
 		{ name: 'Event Trigger Wheel Delta Y', value: 'trigger-wheel-y' },
 		{
@@ -721,7 +721,7 @@ onMounted(() => {
 		]);
 
 	on($('#setNumber-operand'), 'open', () => {
-		$('#setNumber-operand-other-teamId').loadItems(Data.createTeamItems!());
+		$('#setNumber-operand-other-teamId')?.loadItems(Data.createTeamItems!());
 	});
 
 	on($('#setNumber-operand'), 'closed', () => {

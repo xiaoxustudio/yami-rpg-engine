@@ -168,6 +168,11 @@ onMounted(() => {
 :global(:where(.title-bar)) {
 	display: block;
 	position: relative;
+	padding: 0 5px;
+	width: 100%;
+	height: 28px;
+	line-height: 28px;
+	background-color: var(--titlebar-background);
 	user-select: none;
 	cursor: default;
 }

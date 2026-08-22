@@ -329,6 +329,7 @@ const toggleRelatedElements = (): void => {
 };
 
 const enableElement = (element: ToggleableElement): void => {
+	if (!element) return;
 	if (typeof element.enable === 'function') {
 		element.enable();
 	} else {
@@ -347,6 +348,7 @@ const enableElement = (element: ToggleableElement): void => {
 };
 
 const disableElement = (element: ToggleableElement): void => {
+	if (!element) return;
 	if (typeof element.disable === 'function') {
 		element.disable();
 	} else {

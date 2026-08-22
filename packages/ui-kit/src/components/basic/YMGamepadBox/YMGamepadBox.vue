@@ -182,7 +182,7 @@ defineExpose({ read, write, enable, disable, getFocus, root });
 
 <style module>
 .box {
-	display: inline-block;
+	display: block;
 }
 
 .input {

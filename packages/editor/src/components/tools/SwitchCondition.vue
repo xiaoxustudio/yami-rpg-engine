@@ -105,12 +105,12 @@ onMounted(() => {
 		}
 	]);
 
-	$('#switch-condition-boolean-value').loadItems([
+	$('#switch-condition-boolean-value')?.loadItems([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
 
-	$('#switch-condition-mouse-button').loadItems([
+	$('#switch-condition-mouse-button')?.loadItems([
 		{ name: 'Left Button', value: 0 },
 		{ name: 'Middle Button', value: 1 },
 		{ name: 'Right Button', value: 2 },

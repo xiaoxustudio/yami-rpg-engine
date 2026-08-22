@@ -483,12 +483,12 @@ onMounted(() => {
 		{ case: 'other', targets: [$('#if-condition-other-key')] }
 	]);
 
-	$('#if-condition-boolean-operation').loadItems([
+	$('#if-condition-boolean-operation')?.loadItems([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' }
 	]);
 
-	$('#if-condition-boolean-operand-type').loadItems([
+	$('#if-condition-boolean-operand-type')?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' }
@@ -504,12 +504,12 @@ onMounted(() => {
 			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
 		]);
 
-	$('#if-condition-boolean-constant-value').loadItems([
+	$('#if-condition-boolean-constant-value')?.loadItems([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
 
-	$('#if-condition-number-operation').loadItems([
+	$('#if-condition-number-operation')?.loadItems([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: '>=', value: 'greater-or-equal' },
@@ -518,7 +518,7 @@ onMounted(() => {
 		{ name: '<', value: 'less' }
 	]);
 
-	$('#if-condition-number-operand-type').loadItems([
+	$('#if-condition-number-operand-type')?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' }
@@ -534,14 +534,14 @@ onMounted(() => {
 			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
 		]);
 
-	$('#if-condition-string-operation').loadItems([
+	$('#if-condition-string-operation')?.loadItems([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: 'Include', value: 'include' },
 		{ name: 'Exclude', value: 'exclude' }
 	]);
 
-	$('#if-condition-string-operand-type').loadItems([
+	$('#if-condition-string-operand-type')?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' },
@@ -562,7 +562,7 @@ onMounted(() => {
 			{ case: 'enum', targets: [$('#if-condition-string-enum-stringId')] }
 		]);
 
-	$('#if-condition-object-operation').loadItems([
+	$('#if-condition-object-operation')?.loadItems([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: 'Is Actor', value: 'is-actor' },
@@ -584,7 +584,7 @@ onMounted(() => {
 			}
 		]);
 
-	$('#if-condition-object-operand-type').loadItems([
+	$('#if-condition-object-operand-type')?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Actor', value: 'actor' },
 		{ name: 'Skill', value: 'skill' },
@@ -614,7 +614,7 @@ onMounted(() => {
 			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
 		]);
 
-	$('#if-condition-actor-operation').loadItems([
+	$('#if-condition-actor-operation')?.loadItems([
 		{ name: 'Present and Active', value: 'present-active' },
 		{ name: 'Present', value: 'present' },
 		{ name: 'Absent', value: 'absent' },
@@ -671,7 +671,7 @@ onMounted(() => {
 			}
 		]);
 
-	$('#if-condition-element-operation').loadItems([
+	$('#if-condition-element-operation')?.loadItems([
 		{ name: 'Present', value: 'present' },
 		{ name: 'Absent', value: 'absent' },
 		{ name: 'Visible', value: 'visible' },
@@ -683,21 +683,21 @@ onMounted(() => {
 		{ name: 'Dialog Box - is Complete', value: 'dialogbox-is-complete' }
 	]);
 
-	$('#if-condition-keyboard-state').loadItems([
+	$('#if-condition-keyboard-state')?.loadItems([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-gamepad-state').loadItems([
+	$('#if-condition-gamepad-state')?.loadItems([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-mouse-button').loadItems([
+	$('#if-condition-mouse-button')?.loadItems([
 		{ name: 'Left Button', value: 0 },
 		{ name: 'Middle Button', value: 1 },
 		{ name: 'Right Button', value: 2 },
@@ -705,19 +705,19 @@ onMounted(() => {
 		{ name: 'Forward Button', value: 4 }
 	]);
 
-	$('#if-condition-mouse-state').loadItems([
+	$('#if-condition-mouse-state')?.loadItems([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-list-operation').loadItems([
+	$('#if-condition-list-operation')?.loadItems([
 		{ name: 'Include', value: 'include' },
 		{ name: 'Exclude', value: 'exclude' }
 	]);
 
-	$('#if-condition-other-key').loadItems([
+	$('#if-condition-other-key')?.loadItems([
 		{ name: 'Mouse has entered the window', value: 'mouse-entered' },
 		{ name: 'Mouse has left the window', value: 'mouse-left' },
 		{ name: 'Game is paused', value: 'game-is-paused' },
@@ -735,7 +735,7 @@ onMounted(() => {
 	]);
 
 	$('#if-condition')?.on?.('open', () => {
-		$('#if-condition-actor-teamId').loadItems(Data.createTeamItems!());
+		$('#if-condition-actor-teamId')?.loadItems(Data.createTeamItems!());
 	});
 
 	$('#if-condition')?.on?.('closed', () => {

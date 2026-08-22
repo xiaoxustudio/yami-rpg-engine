@@ -100,6 +100,7 @@ export function usePlayAnimationCommandSchema() {
 		}
 	});
 	const writeHandler = (event: { value: string }): void => {
+		if (!event.value) return;
 		const elMotion = document.getElementById('playAnimation-motion')!;
 		elMotion?.loadItems?.(Animation.getMotionListItems!(event.value));
 		elMotion?.write2?.(read(elMotion));

@@ -142,7 +142,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	document.getElementById('setNumber-operand-common-variable')!.filter = filter;
+	const el = document.getElementById('setNumber-operand-common-variable');
+	if (el) el.filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {

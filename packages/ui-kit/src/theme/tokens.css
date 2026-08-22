@@ -179,45 +179,45 @@
  * --------------------------------
  */
 :root {
-	--1dpx: 1px;
-	--2dpx: 2px;
-	--3dpx: 3px;
-	--16dpx: 16px;
+	--1dpx: var(--ym-dpx-1);
+	--2dpx: var(--ym-dpx-2);
+	--3dpx: var(--ym-dpx-3);
+	--16dpx: var(--ym-dpx-16);
 }
 
 @media (min-resolution: 1.25dppx) {
 	:root {
-		--1dpx: 0.8px;
-		--2dpx: 1.6px;
-		--3dpx: 2.4px;
-		--16dpx: 12.8px;
+		--1dpx: var(--ym-dpx-1);
+		--2dpx: var(--ym-dpx-2);
+		--3dpx: var(--ym-dpx-3);
+		--16dpx: var(--ym-dpx-16);
 	}
 }
 
 @media (min-resolution: 1.5dppx) {
 	:root {
-		--1dpx: 0.666667px;
-		--2dpx: 1.333333px;
-		--3dpx: 2px;
-		--16dpx: 10.666667px;
+		--1dpx: var(--ym-dpx-1);
+		--2dpx: var(--ym-dpx-2);
+		--3dpx: var(--ym-dpx-3);
+		--16dpx: var(--ym-dpx-16);
 	}
 }
 
 @media (min-resolution: 1.75dppx) {
 	:root {
-		--1dpx: 0.571429px;
-		--2dpx: 1.142857px;
-		--3dpx: 1.714286px;
-		--16dpx: 9.142857px;
+		--1dpx: var(--ym-dpx-1);
+		--2dpx: var(--ym-dpx-2);
+		--3dpx: var(--ym-dpx-3);
+		--16dpx: var(--ym-dpx-16);
 	}
 }
 
 @media (min-resolution: 2dppx) {
 	:root {
-		--1dpx: 0.5px;
-		--2dpx: 1px;
-		--3dpx: 1.5px;
-		--16dpx: 8px;
+		--1dpx: var(--ym-dpx-1);
+		--2dpx: var(--ym-dpx-2);
+		--3dpx: var(--ym-dpx-3);
+		--16dpx: var(--ym-dpx-16);
 	}
 }
 
@@ -238,17 +238,17 @@
 		0 1px rgba(0, 0, 0, 0.75);
 	--marquee-background: rgba(0, 192, 255, 0.4);
 	--marquee-border: 1px solid #ffffff;
-	--text-color: #000000;
+	--text-color: var(--ym-color-text);
 	--text-color-active: #000080;
-	--text-color-inverse: #ffffff;
-	--text-color-unit: #808080;
+	--text-color-inverse: var(--ym-color-text-inverse);
+	--text-color-unit: var(--ym-color-text-unit);
 	--text-color-rename: #000000;
-	--text-color-disabled: #c0c0c0;
-	--text-color-error: #ff0000;
+	--text-color-disabled: var(--ym-color-text-disabled);
+	--text-color-error: var(--ym-color-text-error);
 	--text-color-variable-init: #b0b0b0; /*RGB格式文本更粗*/
-	--text-color-accelerator-selected: rgba(255, 255, 255, 0.5);
-	--text-color-suggestion-comment: rgba(0, 0, 0, 0.25);
-	--text-color-suggestion-ref-count: rgba(160, 255, 160, 0.9);
+	--text-color-accelerator-selected: var(--ym-color-text-accelerator-selected);
+	--text-color-suggestion-comment: var(--ym-color-text-suggestion-comment);
+	--text-color-suggestion-ref-count: var(--ym-color-text-suggestion-ref-count);
 	--text-color-strong: #000080;
 	--home-title-color: rgba(0, 0, 0, 0.25);
 	--window-title-color-for-mac: #4a4847;
@@ -263,10 +263,10 @@
 	--workspace-background: #b0b0b0;
 	--recent-card-background: #ffffff;
 	--recent-card-stat-color: #606060;
-	--scrollbar-track-background: rgba(0, 0, 0, 0.05);
+	--scrollbar-track-background: var(--ym-scrollbar-track-bg);
 	--scrollbar-track-border: var(--1dpx) solid rgba(0, 0, 0, 0.1);
-	--scrollbar-thumb-background: rgba(0, 0, 0, 0.15);
-	--scrollbar-thumb-background-hover: rgba(0, 0, 0, 0.2);
+	--scrollbar-thumb-background: var(--ym-scrollbar-thumb-bg);
+	--scrollbar-thumb-background-hover: var(--ym-scrollbar-thumb-bg-hover);
 	--custom-scrollbar-thumb-background: rgba(255, 255, 255, 0.25);
 	--custom-scrollbar-thumb-background-hover: rgba(255, 255, 255, 0.36);
 	--custom-scrollbar-thumb-border: 1px solid #ffffff;
@@ -286,7 +286,7 @@
 	--summary-background-hover: #f0f0f0;
 	--summary-border-dark: 1px solid #b0b0b0;
 	--summary-border-light: 1px solid #d8d8d8;
-	--window-background: #f0f0f0;
+	--window-background: var(--ym-color-surface);
 	--window-outline: var(--1dpx) solid rgba(0, 0, 0, 0.25);
 	--title-background: #d0d0d0;
 	--tab-item-background: #d8d8d8;
@@ -304,20 +304,20 @@
 	--titlebar-close-background-active: rgba(232, 17, 35, 0.6);
 	--fieldset-background: #e8e8e8;
 	--fieldset-border: 1px solid #b0b0b0;
-	--button-background: #ffffff;
-	--button-background-hover: #e4f0fa;
-	--button-background-active: #cce4f8;
-	--button-background-disabled: #f0f0f0;
-	--input-background: #ffffff;
-	--input-background-hover: #e4f0fa;
-	--input-background-disabled: #f0f0f0;
+	--button-background: var(--ym-color-button-bg);
+	--button-background-hover: var(--ym-color-button-bg-hover);
+	--button-background-active: var(--ym-color-button-bg-active);
+	--button-background-disabled: var(--ym-color-button-bg-disabled);
+	--input-background: var(--ym-color-input-bg);
+	--input-background-hover: var(--ym-color-input-bg-hover);
+	--input-background-disabled: var(--ym-color-input-bg-disabled);
 	--input-border: 1px solid #a0a0a0;
 	--input-border-dark: 1px solid #a0a0a0;
 	--input-border-light: 1px solid #d0d0d0;
 	--input-border-color: #a0a0a0;
-	--input-border-color-focus: #0050a0;
-	--select-list-background: #ffffff;
-	--tooltip-background: #ffffff;
+	--input-border-color-focus: var(--ym-color-input-border-focus);
+	--select-list-background: var(--ym-color-popup-bg);
+	--tooltip-background: var(--ym-color-tooltip-bg);
 	--tooltip-border: 1px solid #000000;
 	--suggestion-widget-background: #f8f8f8;
 	--slider-thumb-background: #ffffff;
@@ -325,18 +325,18 @@
 	--slider-thumb-background-active: #e0e0e0;
 	--slider-bar-background: #b0b0b0;
 	--slider-filler-background: #ffffff;
-	--check-box-mark-color: #0060ac;
-	--radio-box-mark-color: #0060ac;
+	--check-box-mark-color: var(--ym-check-mark-color);
+	--radio-box-mark-color: var(--ym-radio-mark-color);
 	--number-box-label-red: #ff0000;
 	--number-box-label-green: #00c000;
 	--number-box-label-blue: #0000ff;
 	--selector-browser-background: #f0f0f0;
 	--selector-browser-border: 1px solid #c0c0c0;
 	--viewer-background: #d8d8d8;
-	--selected-background: #2080d0;
+	--selected-background: var(--ym-color-selected);
 	--selected-background-blur: rgba(0, 0, 0, 0.1);
-	--selection-background: rgba(32, 128, 192, 0.996);
-	--drop-target-background: rgba(32, 128, 192, 0.4);
+	--selection-background: var(--ym-color-selection);
+	--drop-target-background: var(--ym-color-drop-target);
 	--grid-background:
 		linear-gradient(45deg, #ccc 25%, transparent 25%),
 		linear-gradient(-45deg, #ccc 25%, transparent 25%),
@@ -439,17 +439,17 @@
  * --------------------------------
  */
 :root.dark {
-	--text-color: #d8d8d8;
+	--text-color: var(--ym-color-text);
 	--text-color-active: #ffffff;
-	--text-color-inverse: #000000;
-	--text-color-unit: #808080;
+	--text-color-inverse: var(--ym-color-text-inverse);
+	--text-color-unit: var(--ym-color-text-unit);
 	--text-color-rename: #ffffff;
-	--text-color-disabled: #606060;
-	--text-color-error: #ffc0cb;
+	--text-color-disabled: var(--ym-color-text-disabled);
+	--text-color-error: var(--ym-color-text-error);
 	--text-color-variable-init: rgba(255, 255, 255, 0.3); /* RGBA格式文本更粗 */
-	--text-color-accelerator-selected: rgba(255, 255, 255, 0.3);
-	--text-color-suggestion-comment: rgba(255, 255, 255, 0.2);
-	--text-color-suggestion-ref-count: rgba(160, 255, 160, 0.35);
+	--text-color-accelerator-selected: var(--ym-color-text-accelerator-selected);
+	--text-color-suggestion-comment: var(--ym-color-text-suggestion-comment);
+	--text-color-suggestion-ref-count: var(--ym-color-text-suggestion-ref-count);
 	--text-color-strong: #b0e0e6;
 	--home-title-color: rgba(255, 255, 255, 0.25);
 	--window-title-color-for-mac: #aba3a1;
@@ -464,10 +464,10 @@
 	--workspace-background: #181818;
 	--recent-card-background: #000000;
 	--recent-card-stat-color: #a0a0a0;
-	--scrollbar-track-background: rgba(0, 0, 0, 0.1);
+	--scrollbar-track-background: var(--ym-scrollbar-track-bg);
 	--scrollbar-track-border: var(--1dpx) solid rgba(0, 0, 0, 0.2);
-	--scrollbar-thumb-background: rgba(255, 255, 255, 0.2);
-	--scrollbar-thumb-background-hover: rgba(255, 255, 255, 0.24);
+	--scrollbar-thumb-background: var(--ym-scrollbar-thumb-bg);
+	--scrollbar-thumb-background-hover: var(--ym-scrollbar-thumb-bg-hover);
 	--custom-scrollbar-thumb-background: rgba(0, 0, 0, 0.25);
 	--custom-scrollbar-thumb-background-hover: rgba(0, 0, 0, 0.36);
 	--custom-scrollbar-thumb-border: 1px solid #000000;
@@ -487,7 +487,7 @@
 	--summary-background-hover: #404040;
 	--summary-border-dark: 1px solid #181818;
 	--summary-border-light: 1px solid #282828;
-	--window-background: #303030;
+	--window-background: var(--ym-color-surface);
 	--window-outline: var(--1dpx) solid rgba(0, 0, 0, 0.5);
 	--title-background: #202020;
 	--tab-item-background: #202020;
@@ -505,20 +505,20 @@
 	--titlebar-close-background-active: rgba(232, 17, 35, 0.6);
 	--fieldset-background: #383838;
 	--fieldset-border: 1px solid #181818;
-	--button-background: #484848;
-	--button-background-hover: #505050;
-	--button-background-active: #303840;
-	--button-background-disabled: #404040;
-	--input-background: #18191a;
-	--input-background-hover: #282828;
-	--input-background-disabled: #404040;
+	--button-background: var(--ym-color-button-bg);
+	--button-background-hover: var(--ym-color-button-bg-hover);
+	--button-background-active: var(--ym-color-button-bg-active);
+	--button-background-disabled: var(--ym-color-button-bg-disabled);
+	--input-background: var(--ym-color-input-bg);
+	--input-background-hover: var(--ym-color-input-bg-hover);
+	--input-background-disabled: var(--ym-color-input-bg-disabled);
 	--input-border: 1px solid #080808;
 	--input-border-dark: 1px solid #000000;
 	--input-border-light: 1px solid #101010;
 	--input-border-color: #101010;
-	--input-border-color-focus: #0080ff;
-	--select-list-background: #202020;
-	--tooltip-background: #3c3c3c;
+	--input-border-color-focus: var(--ym-color-input-border-focus);
+	--select-list-background: var(--ym-color-popup-bg);
+	--tooltip-background: var(--ym-color-tooltip-bg);
 	--tooltip-border: 1px solid #000000;
 	--suggestion-widget-background: #202020;
 	--slider-thumb-background: #484848;
@@ -526,18 +526,18 @@
 	--slider-thumb-background-active: #303030;
 	--slider-bar-background: #18191a;
 	--slider-filler-background: #c0c0c0;
-	--check-box-mark-color: #0060ac;
-	--radio-box-mark-color: #0060ac;
+	--check-box-mark-color: var(--ym-check-mark-color);
+	--radio-box-mark-color: var(--ym-radio-mark-color);
 	--number-box-label-red: #ff0000;
 	--number-box-label-green: #00ff00;
 	--number-box-label-blue: #0000ff;
 	--selector-browser-background: #202020;
 	--selector-browser-border: 1px solid #181818;
 	--viewer-background: #181818;
-	--selected-background: #084872;
+	--selected-background: var(--ym-color-selected);
 	--selected-background-blur: rgba(255, 255, 255, 0.1);
-	--selection-background: rgba(8, 72, 114, 0.996);
-	--drop-target-background: rgba(8, 72, 114, 0.4);
+	--selection-background: var(--ym-color-selection);
+	--drop-target-background: var(--ym-color-drop-target);
 	--grid-background:
 		linear-gradient(45deg, #545454 25%, transparent 25%),
 		linear-gradient(-45deg, #545454 25%, transparent 25%),

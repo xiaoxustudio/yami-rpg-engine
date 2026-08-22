@@ -121,7 +121,7 @@ defineExpose({ read, write, update, clear, root });
 
 <style module>
 .box {
-	display: inline-block;
+	display: block;
 	overflow: hidden;
 }
 </style>

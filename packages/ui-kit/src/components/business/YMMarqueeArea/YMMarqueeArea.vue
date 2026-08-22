@@ -133,4 +133,9 @@ onMounted(() => {
 	position: absolute;
 	overflow: hidden;
 }
+
+:global(:where(.marquee-area > .selection)) {
+	position: absolute;
+	pointer-events: none;
+}
 </style>

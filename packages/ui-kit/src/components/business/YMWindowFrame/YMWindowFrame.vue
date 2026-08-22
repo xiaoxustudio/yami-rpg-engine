@@ -434,11 +434,28 @@ onUnmounted(() => {
 :global(:where(.window-frame)) {
 	display: none;
 	position: absolute;
+	box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
+	background-color: var(--window-background);
+	outline: var(--window-outline);
 	overflow: hidden;
 }
 
 :global(:where(.window-frame.open)) {
 	display: block;
+	pointer-events: auto;
+}
+
+:global(:where(.window-frame.blur)) {
+	pointer-events: none;
+}
+
+:global(:where(.window-frame.translucent)) {
+	filter: opacity(75%);
+}
+
+:global(:where(.window-frame.maximized)) {
+	width: 100% !important;
+	height: 100% !important;
 }
 
 :global(:where(.window-frame > .content-frame)) {
