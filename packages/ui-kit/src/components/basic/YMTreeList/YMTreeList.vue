@@ -92,6 +92,7 @@ onBeforeUnmount(() => {
 	height: 16px;
 	line-height: 16px;
 	font-size: 14px;
+	font-family: var(--font-family-symbol);
 	text-indent: 0;
 	text-align: center;
 	pointer-events: none;
@@ -183,6 +184,128 @@ onBeforeUnmount(() => {
 :global(:focus > .selected > node-icon.icon-ui-container),
 :global(:focus > .selected > node-icon.icon-ui-reference) {
 	background-color: white;
+}
+
+:global(node-icon.icon-boolean),
+:global(node-icon.icon-number),
+:global(node-icon.icon-string),
+:global(node-icon.icon-object),
+:global(node-icon.icon-any),
+:global(node-icon.icon-label) {
+	margin: 6px 6px 6px 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+:global(node-icon.icon-boolean) {
+	background-color: var(--variable-color-boolean);
+}
+
+:global(node-icon.icon-number) {
+	background-color: var(--variable-color-number);
+}
+
+:global(node-icon.icon-string) {
+	background-color: var(--variable-color-string);
+}
+
+:global(node-icon.icon-object) {
+	background-color: var(--variable-color-object);
+}
+
+:global(node-icon.icon-any) {
+	background-color: var(--variable-color-any);
+}
+
+:global(node-icon.icon-label) {
+	background-color: var(--command-color-label);
+}
+
+:global(node-icon.icon-note) {
+	position: absolute;
+	margin: 2px;
+	right: 0;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	color: var(--text-color-variable-init);
+}
+
+:global(.selected > node-icon.icon-note) {
+	color: var(--text-color-accelerator-selected);
+}
+
+:global(:where(.icon-command)) {
+	margin: 6px 6px 6px 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+:global(:where(.icon-command.message)),
+:global(:where(.icon-command.ui)) {
+	background-color: var(--command-color-element);
+}
+
+:global(:where(.icon-command.message-comment)) {
+	background-color: var(--command-color-comment);
+}
+
+:global(:where(.icon-command.variable)) {
+	background-color: var(--command-color-variable);
+}
+
+:global(:where(.icon-command.flow)) {
+	background-color: var(--command-color-flow);
+}
+
+:global(:where(.icon-command.flow-label)) {
+	background-color: var(--command-color-label);
+}
+
+:global(:where(.icon-command.flow-wait)) {
+	background-color: var(--command-color-wait);
+}
+
+:global(:where(.icon-command.object)) {
+	background-color: var(--command-color-object);
+}
+
+:global(:where(.icon-command.audio)) {
+	background-color: var(--command-color-audio);
+}
+
+:global(:where(.icon-command.actor)) {
+	background-color: var(--command-color-actor);
+}
+
+:global(:where(.icon-command.skill)) {
+	background-color: var(--command-color-skill);
+}
+
+:global(:where(.icon-command.inventory)) {
+	background-color: var(--command-color-inventory);
+}
+
+:global(:where(.icon-command.scene)) {
+	background-color: var(--command-color-scene);
+}
+
+:global(:where(.icon-command.network)) {
+	background-color: var(--command-color-network);
+}
+
+:global(:where(.icon-command.system)) {
+	background-color: var(--command-color-system);
+}
+
+:global(:where(.icon-command.system-javascript)) {
+	background-color: var(--command-color-text);
+}
+
+:global(:where(.icon-command.custom)) {
+	background-color: var(--command-color-custom);
 }
 
 :global(node-icon.icon-folder) {

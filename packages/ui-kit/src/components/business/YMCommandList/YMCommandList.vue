@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
 	color: var(--command-color-mark-minor);
 }
 
-:global(:where(.command-item:hover)) {
+:global(:where(.command-item:not(.selected):hover)) {
 	background-color: var(--list-item-background-hover);
 }
 

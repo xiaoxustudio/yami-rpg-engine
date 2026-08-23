@@ -1367,13 +1367,22 @@ onMounted(() => {
 	display: block;
 	width: 100%;
 	height: 100%;
+	overflow-x: hidden;
 	overflow-y: auto;
+	font-family: var(--font-family-mono);
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
 	user-select: none;
 }
 
 :global(:where(.param-item)) {
 	display: flex;
 	position: relative;
+	padding: 0 10px;
 	height: 20px;
 	line-height: 20px;
 	white-space: pre;
@@ -1412,7 +1421,7 @@ onMounted(() => {
 
 :global(:where(.script-edit-button)) {
 	flex-shrink: 0;
-	margin-right: 0;
+	margin-right: -10px;
 	width: 20px;
 	text-align: center;
 	font-size: 1.2em;
@@ -1432,7 +1441,7 @@ onMounted(() => {
 	border-color: var(--input-border-color-focus);
 }
 
-:global(:where(.param-item:hover)) {
+:global(:where(.param-item:not(.selected):hover)) {
 	background-color: var(--list-item-background-hover);
 }
 
