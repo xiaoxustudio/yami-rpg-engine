@@ -29,12 +29,24 @@ import {
 	type DragAndDropHintApi
 } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
 
+const isSSR = typeof document === 'undefined';
+
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	const host = document.createElement('div');
+	const host = isSSR ? (null as unknown as HTMLDivElement) : document.createElement('div');
 	render(vnode, host);
 	const element = host.firstElementChild as HTMLElement;
 	host.removeChild(element);
 	return element;
+};
+
+type TextBox = HTMLDivElement & {
+	input: HTMLInputElement;
+	hiddenNodes: HTMLElement[] | null;
+	lastText: string;
+	read: () => string;
+	write: (value: string) => void;
+	getFocus: (mode: string | null) => HTMLInputElement;
+	fitContent: () => void;
 };
 
 export const treeListStatics = {
@@ -80,6 +92,9 @@ export const treeListStatics = {
 	})(),
 
 	padding: (function IIFE() {
+		if (isSSR) {
+			return null as unknown as HTMLDivElement & { count?: number };
+		}
 		const padding: HTMLDivElement & { count?: number } = document.createElement('div');
 		addClass(padding, 'box');
 		padding.style.display = 'block';
@@ -88,15 +103,10 @@ export const treeListStatics = {
 	})(),
 
 	textBox: (function IIFE() {
-		const textBox = document.createElement('div') as HTMLDivElement & {
-			input: HTMLInputElement;
-			hiddenNodes: HTMLElement[] | null;
-			lastText: string;
-			read: () => string;
-			write: (value: string) => void;
-			getFocus: (mode: string | null) => HTMLInputElement;
-			fitContent: () => void;
-		};
+		if (isSSR) {
+			return null as unknown as TextBox;
+		}
+		const textBox = document.createElement('div') as TextBox;
 		addClass(textBox, 'text-box');
 		addClass(textBox, 'node-list-text-box');
 		const input = document.createElement('input');

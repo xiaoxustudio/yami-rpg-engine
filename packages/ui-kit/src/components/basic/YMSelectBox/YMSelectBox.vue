@@ -604,7 +604,6 @@ onBeforeUnmount(() => {
 	border-right: var(--input-border-light);
 	border-bottom: var(--input-border-light);
 	border-radius: 2px;
-	overflow: hidden;
 }
 
 :global(:where(.select-box:not(.disabled)::before)) {

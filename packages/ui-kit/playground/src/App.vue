@@ -1,32 +1,60 @@
-<script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import {
-	YMButton,
-	YMCheckBox,
-	YMSwitchItem,
-	YMEmptyState,
-	YMLoadingOverlay,
-	YMConfirmation,
-	YMRename,
-	YMZoom,
-	YMSetKey,
-	YMSetQuantity,
-	ThemeProvider
-} from '@ui-kit';
-
-const click = (msg: string) => () => {
-	console.log('[ui-kit playground] click:', msg);
-};
-
-const checked = ref(false);
-const switchValue = ref(0);
-const loadingVisible = ref(false);
-
-const confirmationIndex = ref(-1);
-const renameValue = ref('untitled');
-const zoomValue = ref(1);
-const setKeyValue = ref('');
-const setQuantityValue = ref(1);
+﻿<script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+import { ThemeProvider } from '@ui-kit';
+import YMButtonDemo from './demos/basic/YMButton.demo.vue';
+import YMCheckBoxDemo from './demos/basic/YMCheckBox.demo.vue';
+import YMRadioBoxDemo from './demos/basic/YMRadioBox.demo.vue';
+import YMSwitchItemDemo from './demos/basic/YMSwitchItem.demo.vue';
+import YMTextBoxDemo from './demos/basic/YMTextBox.demo.vue';
+import YMTextAreaDemo from './demos/basic/YMTextArea.demo.vue';
+import YMNumberBoxDemo from './demos/basic/YMNumberBox.demo.vue';
+import YMSliderBoxDemo from './demos/basic/YMSliderBox.demo.vue';
+import YMSelectBoxDemo from './demos/basic/YMSelectBox.demo.vue';
+import YMSelectListDemo from './demos/basic/YMSelectList.demo.vue';
+import YMMenuListDemo from './demos/basic/YMMenuList.demo.vue';
+import YMColorBoxDemo from './demos/basic/YMColorBox.demo.vue';
+import YMCommonListDemo from './demos/basic/YMCommonList.demo.vue';
+import YMTreeListDemo from './demos/basic/YMTreeList.demo.vue';
+import YMScrollBarDemo from './demos/basic/YMScrollBar.demo.vue';
+import YMDetailBoxDemo from './demos/basic/YMDetailBox.demo.vue';
+import YMDetailSummaryDemo from './demos/basic/YMDetailSummary.demo.vue';
+import YMEmptyStateDemo from './demos/basic/YMEmptyState.demo.vue';
+import YMLoadingOverlayDemo from './demos/basic/YMLoadingOverlay.demo.vue';
+import YMToastManagerDemo from './demos/basic/YMToastManager.demo.vue';
+import YMPageManagerDemo from './demos/basic/YMPageManager.demo.vue';
+import YMNavBarDemo from './demos/basic/YMNavBar.demo.vue';
+import YMFormButtonsDemo from './demos/basic/YMFormButtons.demo.vue';
+import YMFilterBoxDemo from './demos/basic/YMFilterBox.demo.vue';
+import YMKeyboardBoxDemo from './demos/basic/YMKeyboardBox.demo.vue';
+import YMGamepadBoxDemo from './demos/basic/YMGamepadBox.demo.vue';
+import YMNumberVarDemo from './demos/basic/YMNumberVar.demo.vue';
+import YMStringVarDemo from './demos/basic/YMStringVar.demo.vue';
+import YMTextAreaVarDemo from './demos/basic/YMTextAreaVar.demo.vue';
+import YMSelectVarDemo from './demos/basic/YMSelectVar.demo.vue';
+import YMFileVarDemo from './demos/basic/YMFileVar.demo.vue';
+import YMWindowFrameDemo from './demos/business/YMWindowFrame.demo.vue';
+import YMTitleBarDemo from './demos/business/YMTitleBar.demo.vue';
+import YMTabBarDemo from './demos/business/YMTabBar.demo.vue';
+import YMConfirmationDemo from './demos/business/YMConfirmation.demo.vue';
+import YMRenameDemo from './demos/business/YMRename.demo.vue';
+import YMZoomDemo from './demos/business/YMZoom.demo.vue';
+import YMSetKeyDemo from './demos/business/YMSetKey.demo.vue';
+import YMSetQuantityDemo from './demos/business/YMSetQuantity.demo.vue';
+import YMFontDemo from './demos/business/YMFont.demo.vue';
+import YMFontSizeDemo from './demos/business/YMFontSize.demo.vue';
+import YMRequestKeyValueDemo from './demos/business/YMRequestKeyValue.demo.vue';
+import YMArrayListNumberDemo from './demos/business/YMArrayListNumber.demo.vue';
+import YMArrayListStringDemo from './demos/business/YMArrayListString.demo.vue';
+import YMCustomBoxDemo from './demos/business/YMCustomBox.demo.vue';
+import YMParamListDemo from './demos/business/YMParamList.demo.vue';
+import YMParameterPaneDemo from './demos/business/YMParameterPane.demo.vue';
+import YMCommandListDemo from './demos/business/YMCommandList.demo.vue';
+import YMMarqueeAreaDemo from './demos/business/YMMarqueeArea.demo.vue';
+import YMDragAndDropHintDemo from './demos/business/YMDragAndDropHint.demo.vue';
+import YMFileBrowserDemo from './demos/business/YMFileBrowser.demo.vue';
+import YMFileHeadPaneDemo from './demos/business/YMFileHeadPane.demo.vue';
+import YMFileNavPaneDemo from './demos/business/YMFileNavPane.demo.vue';
+import YMFileBodyPaneDemo from './demos/business/YMFileBodyPane.demo.vue';
 
 interface WindowFrameHost {
 	positionMode?: string;
@@ -73,42 +101,6 @@ const mockWindow: WindowFrameHost = {
 	}
 };
 
-type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
-
-const openDialog = (id: string) => {
-	(document.getElementById(id) as FrameElement | null)?.open?.();
-};
-
-const closeDialog = (id: string) => {
-	(document.getElementById(id) as FrameElement | null)?.close?.();
-};
-
-const onConfirmationConfirm = (index: number) => {
-	confirmationIndex.value = index;
-	console.log('[ui-kit playground] confirmation confirm:', index);
-	closeDialog('confirmation');
-};
-
-const onRenameConfirm = () => {
-	console.log('[ui-kit playground] rename confirm:', renameValue.value);
-	closeDialog('rename');
-};
-
-const onZoomConfirm = () => {
-	console.log('[ui-kit playground] zoom confirm:', zoomValue.value);
-	closeDialog('zoom');
-};
-
-const onSetKeyConfirm = () => {
-	console.log('[ui-kit playground] setKey confirm:', setKeyValue.value);
-	closeDialog('setKey');
-};
-
-const onSetQuantityConfirm = () => {
-	console.log('[ui-kit playground] setQuantity confirm:', setQuantityValue.value);
-	closeDialog('setQuantity');
-};
-
 onMounted(() => {
 	(window as Window & { Window?: WindowFrameHost }).Window = mockWindow;
 });
@@ -122,136 +114,72 @@ onUnmounted(() => {
 	<ThemeProvider>
 		<div class="page">
 			<h1>@yami/ui-kit Playground</h1>
-			<section>
-				<h2>YMButton</h2>
-				<div class="row">
-					<YMButton variant="primary" @click="click('primary')">Primary</YMButton>
-					<YMButton variant="default" @click="click('default')">Default</YMButton>
-					<YMButton variant="danger" @click="click('danger')">Danger</YMButton>
-				</div>
-				<div class="row">
-					<YMButton size="sm">Small</YMButton>
-					<YMButton size="md">Medium</YMButton>
-					<YMButton size="lg">Large</YMButton>
-				</div>
-				<div class="row">
-					<YMButton disabled>Disabled</YMButton>
-				</div>
-			</section>
-			<section>
-				<h2>YMCheckBox</h2>
-				<div class="row">
-					<YMCheckBox v-model="checked">Normal {{ checked }}</YMCheckBox>
-					<YMCheckBox standard>Standard</YMCheckBox>
-					<YMCheckBox standard large>Standard Large</YMCheckBox>
-					<YMCheckBox disabled>Disabled</YMCheckBox>
-				</div>
-			</section>
-			<section>
-				<h2>YMSwitchItem</h2>
-				<div class="row">
-					<YMSwitchItem v-model="switchValue" :length="4" />
-					<span class="hint">value: {{ switchValue }}</span>
-				</div>
-			</section>
-			<section>
-				<h2>YMEmptyState</h2>
-				<YMEmptyState message="No data found" icon="" />
-			</section>
-			<section>
-				<h2>YMLoadingOverlay</h2>
-				<div class="row">
-					<YMButton variant="primary" @click="loadingVisible = !loadingVisible">
-						Toggle Loading
-					</YMButton>
-					<YMLoadingOverlay :visible="loadingVisible" text="Loading..." />
-				</div>
-			</section>
-			<section>
-				<h2>YMConfirmation</h2>
-				<p class="desc">A confirmation window with up to 3 buttons, centered on screen.</p>
-				<div class="row">
-					<YMButton variant="primary" @click="openDialog('confirmation')">Open Confirmation</YMButton>
-					<span class="hint">last choice: {{ confirmationIndex }}</span>
-				</div>
-				<YMConfirmation
-					message="Are you sure you want to delete this item?"
-					:items="[{ label: 'Delete' }, { label: 'Cancel' }, { label: 'Details' }]"
-					@confirm="onConfirmationConfirm"
-				/>
-			</section>
-			<section>
-				<h2>YMRename</h2>
-				<p class="desc">Rename window with a text input bound via v-model.</p>
-				<div class="row">
-					<YMButton variant="primary" @click="openDialog('rename')">Open Rename</YMButton>
-					<span class="hint">value: {{ renameValue }}</span>
-				</div>
-				<YMRename v-model="renameValue" label="Name" title="Rename" @confirm="onRenameConfirm" />
-			</section>
-			<section>
-				<h2>YMZoom</h2>
-				<p class="desc">Zoom window with a numeric factor bound via v-model.</p>
-				<div class="row">
-					<YMButton variant="primary" @click="openDialog('zoom')">Open Zoom</YMButton>
-					<span class="hint">value: {{ zoomValue }}</span>
-				</div>
-				<YMZoom v-model="zoomValue" label="Factor" title="Zoom" @confirm="onZoomConfirm" />
-			</section>
-			<section>
-				<h2>YMSetKey</h2>
-				<p class="desc">Set-key window with a text input bound via v-model.</p>
-				<div class="row">
-					<YMButton variant="primary" @click="openDialog('setKey')">Open Set Key</YMButton>
-					<span class="hint">value: {{ setKeyValue }}</span>
-				</div>
-				<YMSetKey v-model="setKeyValue" label="Key" title="Set Key" @confirm="onSetKeyConfirm" />
-			</section>
-			<section>
-				<h2>YMSetQuantity</h2>
-				<p class="desc">Set-quantity window with a numeric value bound via v-model.</p>
-				<div class="row">
-					<YMButton variant="primary" @click="openDialog('setQuantity')">Open Set Quantity</YMButton>
-					<span class="hint">value: {{ setQuantityValue }}</span>
-				</div>
-				<YMSetQuantity
-					v-model="setQuantityValue"
-					:max="99"
-					label="Quantity"
-					title="Set Quantity"
-					@confirm="onSetQuantityConfirm"
-				/>
-			</section>
+			<YMButtonDemo />
+			<YMCheckBoxDemo />
+			<YMRadioBoxDemo />
+			<YMSwitchItemDemo />
+			<YMTextBoxDemo />
+			<YMTextAreaDemo />
+			<YMNumberBoxDemo />
+			<YMSliderBoxDemo />
+			<YMSelectBoxDemo />
+			<YMSelectListDemo />
+			<YMMenuListDemo />
+			<YMColorBoxDemo />
+			<YMCommonListDemo />
+			<YMTreeListDemo />
+			<YMScrollBarDemo />
+			<YMDetailBoxDemo />
+			<YMDetailSummaryDemo />
+			<YMEmptyStateDemo />
+			<YMLoadingOverlayDemo />
+			<YMToastManagerDemo />
+			<YMPageManagerDemo />
+			<YMNavBarDemo />
+			<YMFormButtonsDemo />
+			<YMFilterBoxDemo />
+			<YMKeyboardBoxDemo />
+			<YMGamepadBoxDemo />
+			<YMNumberVarDemo />
+			<YMStringVarDemo />
+			<YMTextAreaVarDemo />
+			<YMSelectVarDemo />
+			<YMFileVarDemo />
+			<YMWindowFrameDemo />
+			<YMTitleBarDemo />
+			<YMTabBarDemo />
+			<YMConfirmationDemo />
+			<YMRenameDemo />
+			<YMZoomDemo />
+			<YMSetKeyDemo />
+			<YMSetQuantityDemo />
+			<YMFontDemo />
+			<YMFontSizeDemo />
+			<YMRequestKeyValueDemo />
+			<YMArrayListNumberDemo />
+			<YMArrayListStringDemo />
+			<YMCustomBoxDemo />
+			<YMParamListDemo />
+			<YMParameterPaneDemo />
+			<YMCommandListDemo />
+			<YMMarqueeAreaDemo />
+			<YMDragAndDropHintDemo />
+			<YMFileBrowserDemo />
+			<YMFileHeadPaneDemo />
+			<YMFileNavPaneDemo />
+			<YMFileBodyPaneDemo />
 		</div>
 	</ThemeProvider>
 </template>
 
 <style scoped>
 .page {
-	max-width: 720px;
+	max-width: 960px;
 	margin: 0 auto;
 	padding: 32px;
 	font-family: var(--ym-font-sans);
 	color: var(--ym-color-text);
 	background: var(--ym-color-surface);
 	min-height: 100vh;
-}
-
-.row {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin: 8px 0;
-}
-
-.hint {
-	color: var(--ym-color-text);
-}
-
-.desc {
-	color: var(--ym-color-text);
-	opacity: 0.7;
-	font-size: 0.9em;
-	margin: 4px 0;
 }
 </style>

@@ -1,1 +1,6 @@
 @import '../../src/styles/index.css';
+
+@font-face {
+	font-family: Awesome;
+	src: url('./assets/fonts/font_awesome.woff2');
+}

@@ -57,4 +57,11 @@ onMounted(() => {
 	width: 300px;
 	height: 98px;
 }
+
+:global(#arrayList-number-value) {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 280px;
+}
 </style>

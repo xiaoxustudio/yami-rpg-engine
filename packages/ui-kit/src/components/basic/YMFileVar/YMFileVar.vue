@@ -211,6 +211,11 @@ onMounted(() => {
 </template>
 
 <style module>
+:global(:where(.file-var-variable)) {
+	width: 100%;
+	min-width: 0;
+}
+
 :global(:where(.file-var)) {
 	position: relative;
 	display: block;

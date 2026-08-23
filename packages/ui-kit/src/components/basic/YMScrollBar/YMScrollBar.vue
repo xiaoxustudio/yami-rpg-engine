@@ -59,6 +59,8 @@ const roundTo = (value: number, decimals: number): number => {
 
 const rectOf = (el: HTMLElement): DOMRect => el.getBoundingClientRect();
 
+const relate = (a: PointerEvent, b: PointerEvent): boolean => a.pointerId === b.pointerId;
+
 const updateHorizontalThumb = (left: number, width: number): void => {
 	const thumb = state.thumb;
 	if (!thumb) return;
@@ -251,27 +253,30 @@ const windowPointermove = (event: PointerEvent): void => {
 			const element = root.value;
 			if (!target || !element) break;
 			switch (state.type) {
-				case 'horizontal':
-					if (element.clientWidth !== 0) {
+				case 'horizontal': {
+					const denom =
+						element.clientWidth > 0 ? element.clientWidth : target.clientWidth;
+					if (denom > 0) {
 						target.scrollLeft =
 							dragging.scrollLeft +
-							((event.clientX - dragging.clientX) * target.scrollWidth) /
-								element.clientWidth;
+							((event.clientX - dragging.clientX) * target.scrollWidth) / denom;
 					}
 					break;
-				case 'vertical':
-					if (element.clientHeight !== 0) {
+				}
+				case 'vertical': {
+					const denom =
+						element.clientHeight > 0 ? element.clientHeight : target.clientHeight;
+					if (denom > 0) {
 						target.scrollTop =
 							dragging.scrollTop +
-							((event.clientY - dragging.clientY) * target.scrollHeight) /
-								element.clientHeight;
+							((event.clientY - dragging.clientY) * target.scrollHeight) / denom;
 					}
 					break;
+				}
 			}
 			break;
 		}
 		case 'repeat':
-			state.dragging = event as typeof dragging;
 			state.dragging.mode = 'repeat';
 			break;
 	}
@@ -292,6 +297,7 @@ const pointerdown = (event: PointerEvent): void => {
 		state.dragging.mode = 'scroll';
 		state.dragging.scrollLeft = target.scrollLeft;
 		state.dragging.scrollTop = target.scrollTop;
+		state.dragging.relate = (e: PointerEvent) => relate(event, e);
 		window.addEventListener('pointerup', windowPointerup);
 		window.addEventListener('pointermove', windowPointermove);
 	} else {
@@ -306,6 +312,7 @@ const pointerdown = (event: PointerEvent): void => {
 		}
 		state.dragging = event as unknown as DragState;
 		state.dragging.mode = 'repeat';
+		state.dragging.relate = (e: PointerEvent) => relate(event, e);
 		window.addEventListener('pointerup', windowPointerup);
 		window.addEventListener('pointermove', windowPointermove);
 	}

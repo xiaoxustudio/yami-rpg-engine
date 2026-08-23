@@ -1076,14 +1076,14 @@ onBeforeUnmount(() => {
 	border-radius: 2px;
 }
 
-:global(:where(.repeatable-group-row .repeatable-group-remove)) {
+:global(.repeatable-group-row .repeatable-group-remove) {
 	position: relative;
 	width: 20px;
 	height: 20px;
 	flex-shrink: 0;
 }
 
-:global(:where(.repeatable-group .add-row-btn)) {
+:global(.repeatable-group .add-row-btn) {
 	position: relative;
 	width: auto;
 	padding: 2px 12px;

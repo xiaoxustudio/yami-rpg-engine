@@ -21,7 +21,10 @@
 		"jsx": "preserve",
 		"useDefineForClassFields": true,
 		"forceConsistentCasingInFileNames": true,
-		"types": []
+		"types": [],
+		"paths": {
+			"@ui-kit": ["./src/index.ts"]
+		}
 	},
 	"include": [
 		"src/**/*.ts",

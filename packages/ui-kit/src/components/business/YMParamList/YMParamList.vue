@@ -1372,7 +1372,7 @@ onMounted(() => {
 }
 
 :global(:where(.param-item)) {
-	display: block;
+	display: flex;
 	position: relative;
 	height: 20px;
 	line-height: 20px;

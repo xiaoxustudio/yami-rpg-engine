@@ -225,6 +225,11 @@ onMounted(() => {
 </template>
 
 <style module>
+:global(:where(.string-var-variable)) {
+	width: 100%;
+	min-width: 0;
+}
+
 :global(:where(.string-var)) {
 	position: relative;
 	display: block;

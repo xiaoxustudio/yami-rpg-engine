@@ -53,7 +53,7 @@ const onPointerdown = (event: PointerEvent): void => {
 	<div
 		ref="root"
 		class="switch-item"
-		:class="[stateClasses[value], { disabled }]"
+		:class="[$style.switchItem, stateClasses[value], { disabled }]"
 		:tabindex="disabled ? undefined : 0"
 		@pointerdown="onPointerdown"
 		@keydown="

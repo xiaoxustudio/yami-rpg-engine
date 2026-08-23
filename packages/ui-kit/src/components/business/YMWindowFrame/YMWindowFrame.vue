@@ -114,7 +114,11 @@ const computePosition = (): void => {
 		case 'overlap': {
 			const frames = getWindow()?.frames ?? [];
 			const parent = frames[frames.length - 2];
-			overlap(parent);
+			if (parent && parent instanceof HTMLElement) {
+				overlap(parent);
+			} else {
+				center();
+			}
 			break;
 		}
 	}
