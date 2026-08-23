@@ -32,7 +32,7 @@ describe('YMTreeList data 为空时的 update 健壮性（unpackOpenEvents 时�
 		el.update();
 		data = [{ id: 'a1', name: 'Event A', children: [] }];
 		expect(() => el.update()).not.toThrow();
-		expect(el.querySelectorAll('node-item').length).toBe(1);
+		expect(el.querySelectorAll('.node-item').length).toBe(1);
 		wrapper.unmount();
 	});
 });

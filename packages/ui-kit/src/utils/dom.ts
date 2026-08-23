@@ -42,11 +42,11 @@ export const show = (el: HTMLElement | null | undefined): HTMLElement => {
 
 export const seek = (el: EventTarget | null, tagName: string, count = 1): HTMLElement => {
 	let element: HTMLElement = el as HTMLElement;
+	const classMode = tagName.startsWith('.');
+	const matches = (target: HTMLElement): boolean =>
+		classMode ? hasClass(target, tagName.slice(1)) : target.tagName === tagName.toUpperCase();
 	while (count-- > 0) {
-		if (
-			element.tagName !== tagName.toUpperCase() &&
-			element.parentNode instanceof HTMLElement
-		) {
+		if (!matches(element) && element.parentNode instanceof HTMLElement) {
 			element = element.parentNode;
 			continue;
 		}

@@ -36,10 +36,10 @@ const updateItems = (items: ReferenceItem[]): void => {
 		const host = document.createElement('div');
 		render(
 			h(
-				'common-item',
+				'div',
 				{
 					'.dataValue': item,
-					class: { 'reference-comment': item.type === 'comment' }
+					class: { 'common-item': true, 'reference-comment': item.type === 'comment' }
 				},
 				nodes
 			),

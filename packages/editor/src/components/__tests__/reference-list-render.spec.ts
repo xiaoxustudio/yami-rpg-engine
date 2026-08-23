@@ -33,7 +33,7 @@ describe('相关引用列表 Vue 渲染（引用计数徽标回归保护）', ()
 			{ type: 'path', text: 'path2 : #guid2' }
 		]);
 		await wrapper.vm.$nextTick();
-		const items = list.querySelectorAll('common-item');
+		const items = list.querySelectorAll('.common-item');
 		expect(items.length).toBe(3);
 		expect(items[0].classList.contains('reference-comment')).toBe(true);
 		const badge = items[1].querySelector('.reference-count');
@@ -62,7 +62,7 @@ describe('相关引用列表 Vue 渲染（引用计数徽标回归保护）', ()
 		await wrapper.vm.$nextTick();
 		ReferenceLegacy.update?.([{ type: 'path', text: 'c : #3', count: 5 }]);
 		await wrapper.vm.$nextTick();
-		const items = list.querySelectorAll('common-item');
+		const items = list.querySelectorAll('.common-item');
 		expect(items.length).toBe(1);
 		expect(items[0].textContent).toContain('c : #3');
 		expect(items[0].querySelector('.reference-count')?.textContent).toBe('5');

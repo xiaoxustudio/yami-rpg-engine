@@ -15,7 +15,7 @@ interface CommonListElement extends HTMLElement {
 }
 
 const createItem = (value: unknown): HTMLElement => {
-	const el = document.createElement('common-item');
+	const el = document.createElement('div');
 	el.className = 'common-item';
 	(el as HTMLElement & { dataValue?: unknown }).dataValue = value;
 	el.textContent = String(value);

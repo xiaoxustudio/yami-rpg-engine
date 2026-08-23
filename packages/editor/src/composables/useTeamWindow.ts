@@ -300,7 +300,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				});
 			}
 			if (hasClass(event.target, 'team-relation-mark')) {
-				const element = (event.target as HTMLElement).closest('node-item') as HTMLElement;
+				const element = (event.target as HTMLElement).closest('.node-item') as HTMLElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.relations[teamB.id] ^= 1;
@@ -311,7 +311,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				changed = true;
 			}
 			if (hasClass(event.target, 'team-collision-mark')) {
-				const element = (event.target as HTMLElement).closest('node-item') as HTMLElement;
+				const element = (event.target as HTMLElement).closest('.node-item') as HTMLElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.collisions[teamB.id] ^= 1;

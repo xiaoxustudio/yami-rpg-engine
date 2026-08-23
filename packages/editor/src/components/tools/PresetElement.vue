@@ -41,7 +41,7 @@ interface PresetIconNode {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as PresetIconNode;
 	if (node.class === 'folder') {
-		return [h('node-icon', { class: 'icon-folder' })];
+		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
 	const classes = {
 		image: 'icon-ui-image',
@@ -74,7 +74,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	if (UI.hasPrefab?.(node)) {
 		iconClasses.push('icon-ui-set-as-prefab');
 	}
-	return [h('node-icon', { class: iconClasses })];
+	return [h('span', { class: ['node-icon', iconClasses ]})];
 };
 
 const onUiIdWrite = (value: unknown) => {

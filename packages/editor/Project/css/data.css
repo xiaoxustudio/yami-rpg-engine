@@ -18,7 +18,7 @@
 	font-family: var(--font-family-mono);
 }
 
-#team-list > common-item {
+#team-list > .common-item {
 	padding-right: 26px;
 }
 
@@ -99,12 +99,12 @@
 	padding-right: 20px;
 }
 
-node-icon.icon-boolean,
-node-icon.icon-number,
-node-icon.icon-string,
-node-icon.icon-object,
-node-icon.icon-any,
-node-icon.icon-label {
+.node-icon.icon-boolean,
+.node-icon.icon-number,
+.node-icon.icon-string,
+.node-icon.icon-object,
+.node-icon.icon-any,
+.node-icon.icon-label {
 	margin: 6px 6px 6px 4px;
 	width: 8px;
 	height: 8px;
@@ -119,27 +119,27 @@ node-icon.icon-label {
 	color: var(--temporary-variable-color);
 }
 
-node-icon.icon-boolean {
+.node-icon.icon-boolean {
 	background-color: var(--variable-color-boolean);
 }
 
-node-icon.icon-number {
+.node-icon.icon-number {
 	background-color: var(--variable-color-number);
 }
 
-node-icon.icon-string {
+.node-icon.icon-string {
 	background-color: var(--variable-color-string);
 }
 
-node-icon.icon-object {
+.node-icon.icon-object {
 	background-color: var(--variable-color-object);
 }
 
-node-icon.icon-any {
+.node-icon.icon-any {
 	background-color: var(--variable-color-any);
 }
 
-node-icon.icon-label {
+.node-icon.icon-label {
 	background-color: var(--command-color-label);
 }
 
@@ -152,7 +152,7 @@ node-icon.icon-label {
 	color: var(--text-color-accelerator-selected);
 }
 
-node-icon.icon-note {
+.node-icon.icon-note {
 	position: absolute;
 	margin: 2px;
 	right: 0;
@@ -162,7 +162,7 @@ node-icon.icon-note {
 	color: var(--text-color-variable-init);
 }
 
-.selected > node-icon.icon-note {
+.selected > .node-icon.icon-note {
 	color: var(--text-color-accelerator-selected);
 }
 
@@ -243,7 +243,7 @@ node-icon.icon-note {
 	color: var(--text-color-accelerator-selected);
 }
 
-node-icon.icon-note {
+.node-icon.icon-note {
 	position: absolute;
 	margin: 2px;
 	right: 0;
@@ -253,7 +253,7 @@ node-icon.icon-note {
 	color: var(--text-color-variable-init);
 }
 
-.selected > node-icon.icon-note {
+.selected > .node-icon.icon-note {
 	color: var(--text-color-accelerator-selected);
 }
 
@@ -331,7 +331,7 @@ node-icon.icon-note {
 	color: var(--text-color-accelerator-selected);
 }
 
-node-icon.icon-note {
+.node-icon.icon-note {
 	position: absolute;
 	margin: 2px;
 	right: 0;
@@ -341,7 +341,7 @@ node-icon.icon-note {
 	color: var(--text-color-variable-init);
 }
 
-.selected > node-icon.icon-note {
+.selected > .node-icon.icon-note {
 	color: var(--text-color-accelerator-selected);
 }
 

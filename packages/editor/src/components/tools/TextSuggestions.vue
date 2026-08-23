@@ -15,7 +15,7 @@ const local = useLocalStore();
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { icon?: string };
 	if (!node.icon) return [];
-	return [h('node-icon', { class: node.icon })];
+	return [h('span', { class: ['node-icon', node.icon ]})];
 };
 
 onMounted(() => {

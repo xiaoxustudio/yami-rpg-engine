@@ -70,7 +70,7 @@ const nodeExtras = (item: unknown): VNode[] => {
 			h('div', { class: 'enum-init-text text' }, value ? ` = ${GameLocal.replace(value)}` : '')
 		);
 		if (node.note) {
-			nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+			nodes.push(h('span', { class: ['node-icon', 'icon-note'], },  '\uf27b'));
 		}
 	}
 	return nodes;
@@ -79,7 +79,7 @@ const nodeExtras = (item: unknown): VNode[] => {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	return [
-		h('node-icon', { class: node.class === 'folder' ? 'icon-folder' : 'icon-string' })
+		h('span', { class: ['node-icon', node.class === 'folder' ? 'icon-folder' : 'icon-string'] })
 	];
 };
 

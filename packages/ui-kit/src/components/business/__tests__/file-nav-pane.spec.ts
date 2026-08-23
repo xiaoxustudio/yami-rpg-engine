@@ -125,11 +125,13 @@ describe('YMFileNavPane', () => {
 		const sub = makeFile('Sub');
 		const file = makeFile('Folder', [sub]);
 		const el = wrapper.element as unknown as FileNavPaneElement;
-		const element = document.createElement('file-nav-item') as unknown as HTMLElement & {
+		const element = document.createElement('div') as unknown as HTMLElement & {
 			[k: string]: unknown;
 		};
+		element.classList.add('file-nav-item');
 		element.file = file;
-		const folderMark = document.createElement('folder-mark');
+		const folderMark = document.createElement('span');
+		folderMark.classList.add('folder-mark');
 		element.appendChild(folderMark);
 		el.appendChild(element);
 		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });

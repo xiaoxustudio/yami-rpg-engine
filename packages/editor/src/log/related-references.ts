@@ -1,6 +1,6 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { on, addClass, removeClass, clear } from '@app/utils/element-utils.ts';
+import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { t, createGetter } from '@app/i18n';
@@ -879,7 +879,7 @@ Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLE
 				const element = event.target as HTMLElement & {
 					item?: { id?: string; presetId?: string };
 				};
-				if (element.tagName === 'NODE-ITEM') {
+				if (hasClass(element, 'node-item')) {
 					const item = element.item;
 					const guid = item!.id ?? item!.presetId;
 					if (guid) {

@@ -339,7 +339,14 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 	for (let i = 0; i < length; i++) {
 		const index = i.toString().padStart(digits, '0');
 		const host = document.createElement('div');
-		render(h('common-item', { '.dataValue': i }, `#${index}${i === cover ? ' !' : ''}`), host);
+		render(
+			h(
+				'div',
+				{ class: 'common-item', '.dataValue': i },
+				`#${index}${i === cover ? ' !' : ''}`
+			),
+			host
+		);
 		const element = host.firstElementChild as HTMLElement;
 		host.removeChild(element);
 		list.appendElement(element);
@@ -420,7 +427,7 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileSto
 		const y = frame >> 8;
 		const index = i.toString().padStart(digits, '0');
 		const host = document.createElement('div');
-		render(h('common-item', { '.dataValue': i }, `#${index}: ${x},${y}`), host);
+		render(h('div', { class: 'common-item', '.dataValue': i }, `#${index}: ${x},${y}`), host);
 		const element = host.firstElementChild as HTMLElement;
 		host.removeChild(element);
 		list.appendElement(element);
@@ -877,7 +884,7 @@ AutoTile.framesKeydown = function (this: typeof AutoTile, event: KeyboardEvent) 
 
 AutoTile.framesDoubleclick = function (this: typeof AutoTile, event: MouseEvent) {
 	const element = event.target as HTMLElement;
-	if (element.tagName === 'COMMON-ITEM' && hasClass(element, 'selected')) {
+	if (hasClass(element, 'common-item') && hasClass(element, 'selected')) {
 		this.editFrame();
 	}
 }.bind(AutoTile);

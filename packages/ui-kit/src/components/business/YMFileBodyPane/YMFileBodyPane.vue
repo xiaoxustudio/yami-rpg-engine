@@ -687,7 +687,8 @@ function createFolderElement(file: FileBodyFile): FileBodyItemApi {
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-body-item') as FileBodyItemApi;
+		element = document.createElement('div') as unknown as FileBodyItemApi;
+		addClass(element, 'file-body-item');
 		element.file = file;
 		element.context = context;
 		context.element = element;
@@ -702,10 +703,10 @@ function createFolderElement(file: FileBodyFile): FileBodyItemApi {
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
-		const fileIcon = renderElement(h('file-body-icon', { class: 'icon-folder' }));
+		const fileIcon = renderElement(h('span', { class: ['file-body-icon', 'icon-folder'] }));
 		element.appendChild(fileIcon);
 
-		const nameBox = renderElement(h('file-body-name'));
+		const nameBox = renderElement(h('span', { class: 'file-body-name' }));
 		nameBox.textContent = element.file.name;
 		element.appendChild(nameBox);
 
@@ -720,7 +721,8 @@ function createFileElement(file: FileBodyFile): FileBodyItemApi {
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-body-item') as FileBodyItemApi;
+		element = document.createElement('div') as unknown as FileBodyItemApi;
+		addClass(element, 'file-body-item');
 		addClass(element, 'file-item');
 		element.file = file;
 		element.context = context;
@@ -737,7 +739,7 @@ function updateFileElement(element: FileBodyItemApi): void {
 		const fileIcon = createIcon(file);
 		element.appendChild(fileIcon);
 
-		const nameBox = renderElement(h('file-body-name'));
+		const nameBox = renderElement(h('span', { class: 'file-body-name' }));
 		nameBox.textContent = file.basename;
 		element.appendChild(nameBox);
 
@@ -757,7 +759,7 @@ function updateFileElement(element: FileBodyItemApi): void {
 
 function createIcon(file: FileBodyFile): HTMLElement {
 	const node = el.value as FileBodyPaneApi;
-	const icon = renderElement(h('file-body-icon'));
+	const icon = renderElement(h('span', { class: 'file-body-icon' }));
 	switch (file.type) {
 		case 'actor': {
 			const data = file.data;
@@ -1566,10 +1568,10 @@ function pointerdown(event: PointerEvent): void {
 					unselect();
 				}
 			} else {
-				if (element.tagName === 'FILE-BODY-ICON' || element.tagName === 'FILE-BODY-NAME') {
+				if (hasClass(element, 'file-body-icon') || hasClass(element, 'file-body-name')) {
 					element = element.parentNode as HTMLElement;
 				}
-			if (element.tagName === 'FILE-BODY-ITEM') {
+			if (hasClass(element, 'file-body-item')) {
 				if (event.altKey && (element as FileBodyItemApi).file instanceof FileItem) {
 					Reference?.openRelated((element as FileBodyItemApi).file.meta!.guid);
 					event.preventDefault();
@@ -1651,7 +1653,7 @@ function pointerdown(event: PointerEvent): void {
 							if (
 								Menu?.() === 'closed' &&
 								document.activeElement === content &&
-								(event.target as HTMLElement).tagName === 'FILE-BODY-NAME'
+								(event.target as HTMLElement).classList.contains('file-body-name')
 							) {
 								timer.target = event.target as HTMLElement;
 							}
@@ -1699,10 +1701,10 @@ function pointerup(event: PointerEvent): void {
 function doubleclick(event: Event): void {
 	const node = el.value as FileBodyPaneApi;
 	let element = event.target as HTMLElement;
-	if (element.tagName === 'FILE-BODY-ICON' || element.tagName === 'FILE-BODY-NAME') {
+	if (hasClass(element, 'file-body-icon') || hasClass(element, 'file-body-name')) {
 		element = element.parentNode as HTMLElement;
 	}
-	if (element.tagName === 'FILE-BODY-ITEM') {
+	if (hasClass(element, 'file-body-item')) {
 		event.preventDefault();
 		cancelRenaming();
 		openFile((element as FileBodyItemApi).file);
@@ -2016,24 +2018,24 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	overflow-y: hidden;
 }
 
-:global(:where(file-body-item)) {
+:global(:where(.file-body-item)) {
 	border-radius: 2px;
 }
 
-:global(:where(file-body-item:hover)) {
+:global(:where(.file-body-item:hover)) {
 	background-color: var(--list-item-background-hover);
 }
 
-:global(:where(file-body-item.drop-target)) {
+:global(:where(.file-body-item.drop-target)) {
 	background-color: var(--drop-target-background);
 }
 
-:global(:where(.file-body-content:focus > file-body-item.selected)) {
+:global(:where(.file-body-content:focus > .file-body-item.selected)) {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-:global(:where(.file-body-content:not(:focus) > file-body-item:not(:focus-within).selected)) {
+:global(:where(.file-body-content:not(:focus) > .file-body-item:not(:focus-within).selected)) {
 	background-color: var(--selected-background-blur);
 }
 
@@ -2045,7 +2047,7 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	background-color: var(--command-global-event-link-background);
 }
 
-:global(:where(file-body-icon)) {
+:global(:where(.file-body-icon)) {
 	display: block;
 	pointer-events: none;
 	background-position: center;
@@ -2053,11 +2055,11 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	background-size: 100%;
 }
 
-:global(:where(:focus > .selected > file-body-icon.icon-folder)) {
+:global(:where(:focus > .selected > .file-body-icon.icon-folder)) {
 	background-color: var(--folder-icon-color-selected);
 }
 
-:global(:where(file-body-icon.icon-folder)) {
+:global(:where(.file-body-icon.icon-folder)) {
 	background-color: var(--folder-icon-color);
 	mask-image: url(../../../Images/folder_folded.png);
 	-webkit-mask-image: url(../../../Images/folder_folded.png);
@@ -2065,52 +2067,52 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	-webkit-mask-size: 100%;
 }
 
-:global(:where(file-body-icon.icon-file-scene)) {
+:global(:where(.file-body-icon.icon-file-scene)) {
 	background-image: url(../../../Images/file_scene.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-ui)) {
+:global(:where(.file-body-icon.icon-file-ui)) {
 	background-image: url(../../../Images/file_ui.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-animation)) {
+:global(:where(.file-body-icon.icon-file-animation)) {
 	background-image: url(../../../Images/file_animation.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-particle)) {
+:global(:where(.file-body-icon.icon-file-particle)) {
 	background-image: url(../../../Images/file_particle.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-actor)) {
+:global(:where(.file-body-icon.icon-file-actor)) {
 	background-image: url(../../../Images/file_actor.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-cube)) {
+:global(:where(.file-body-icon.icon-file-cube)) {
 	background-image: url(../../../Images/file_cube.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-trigger)) {
+:global(:where(.file-body-icon.icon-file-trigger)) {
 	background-image: url(../../../Images/file_trigger.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-tileset)) {
+:global(:where(.file-body-icon.icon-file-tileset)) {
 	background-image: url(../../../Images/file_tileset.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-font)) {
+:global(:where(.file-body-icon.icon-file-font)) {
 	background-image: url(../../../Images/file_font.png);
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-event)) {
+:global(:where(.file-body-icon.icon-file-event)) {
 	font-family: var(--font-family-bold);
 	font-weight: bold;
 	text-align: center;
@@ -2119,25 +2121,25 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	opacity: 0.8;
 }
 
-:global(:where(file-body-icon.icon-file-event.disabled)) {
+:global(:where(.file-body-icon.icon-file-event.disabled)) {
 	opacity: 0.25;
 }
 
-:global(:where(file-body-icon.icon-file-script)) {
+:global(:where(.file-body-icon.icon-file-script)) {
 	color: #004080;
 }
 
-:global(:where(file-body-icon.icon-file-audio)) {
+:global(:where(.file-body-icon.icon-file-audio)) {
 	font-family: var(--font-family-symbol);
 	color: #008080;
 }
 
-:global(:where(file-body-icon.icon-file-video)) {
+:global(:where(.file-body-icon.icon-file-video)) {
 	font-family: var(--font-family-symbol);
 	color: #000000;
 }
 
-:global(:where(file-body-icon.icon-file-other)) {
+:global(:where(.file-body-icon.icon-file-other)) {
 	font-family: var(--font-family-bold);
 	font-weight: bold;
 	text-align: center;
@@ -2149,7 +2151,7 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	opacity: 0.8;
 }
 
-:global(:where(file-body-name)) {
+:global(:where(.file-body-name)) {
 	display: -webkit-box;
 	height: 30px;
 	overflow: hidden;
@@ -2189,7 +2191,7 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	/* background-color: green; */
 }
 
-:global(:where(.file-body-content.list > file-body-item)) {
+:global(:where(.file-body-content.list > .file-body-item)) {
 	position: absolute;
 	width: 240px;
 	height: 20px;
@@ -2198,7 +2200,7 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	text-overflow: ellipsis;
 }
 
-:global(:where(.file-body-content.list > file-body-item > file-body-icon)) {
+:global(:where(.file-body-content.list > .file-body-item > .file-body-icon)) {
 	display: inline-block;
 	vertical-align: top;
 	margin: 2px;
@@ -2213,17 +2215,17 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	/* background-size: 100%; */
 }
 
-:global(:where(.file-body-content.list > file-body-item > file-body-icon.icon-file-event)) {
+:global(:where(.file-body-content.list > .file-body-item > .file-body-icon.icon-file-event)) {
 	padding-top: 1px;
 	font-size: 0.5em;
 }
 
-:global(:where(.file-body-content.list > file-body-item > file-body-icon.icon-file-other)) {
+:global(:where(.file-body-content.list > .file-body-item > .file-body-icon.icon-file-other)) {
 	padding-top: 1px;
 	font-size: 0.4em;
 }
 
-:global(:where(.file-body-content.list > file-body-item > file-body-name)) {
+:global(:where(.file-body-content.list > .file-body-item > .file-body-name)) {
 	display: inline-block;
 	vertical-align: top;
 	width: 220px;
@@ -2246,26 +2248,26 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	line-height: 15px;
 }
 
-/* 必须指定file-body-item的宽度，否则可能是0px高度 */
-:global(:where(.file-body-content.small > file-body-item)) {
+/* 必须指定.file-body-item的宽度，否则可能是0px高度 */
+:global(:where(.file-body-content.small > .file-body-item)) {
 	position: absolute;
 	width: 40px;
 	height: 72px;
 }
 
-:global(:where(.file-body-content.small > file-body-item > file-body-icon)) {
+:global(:where(.file-body-content.small > .file-body-item > .file-body-icon)) {
 	margin: 4px;
 	width: 32px;
 	height: 32px;
 	line-height: 32px;
 }
 
-:global(:where(.file-body-content.small > file-body-item > file-body-icon.icon-file-event)) {
+:global(:where(.file-body-content.small > .file-body-item > .file-body-icon.icon-file-event)) {
 	padding-top: 2px;
 	font-size: 1em;
 }
 
-:global(:where(.file-body-content.small > file-body-item > file-body-icon.icon-file-other)) {
+:global(:where(.file-body-content.small > .file-body-item > .file-body-icon.icon-file-other)) {
 	padding-top: 2px;
 	font-size: 0.8em;
 }
@@ -2284,25 +2286,25 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	line-height: 15px;
 }
 
-:global(:where(.file-body-content.medium > file-body-item)) {
+:global(:where(.file-body-content.medium > .file-body-item)) {
 	position: absolute;
 	width: 72px;
 	height: 104px;
 }
 
-:global(:where(.file-body-content.medium > file-body-item > file-body-icon)) {
+:global(:where(.file-body-content.medium > .file-body-item > .file-body-icon)) {
 	margin: 4px;
 	width: 64px;
 	height: 64px;
 	line-height: 64px;
 }
 
-:global(:where(.file-body-content.medium > file-body-item > file-body-icon.icon-file-event)) {
+:global(:where(.file-body-content.medium > .file-body-item > .file-body-icon.icon-file-event)) {
 	padding-top: 4px;
 	font-size: 2em;
 }
 
-:global(:where(.file-body-content.medium > file-body-item > file-body-icon.icon-file-other)) {
+:global(:where(.file-body-content.medium > .file-body-item > .file-body-icon.icon-file-other)) {
 	padding-top: 4px;
 	font-size: 1.6em;
 }
@@ -2321,25 +2323,25 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	line-height: 15px;
 }
 
-:global(:where(.file-body-content.large > file-body-item)) {
+:global(:where(.file-body-content.large > .file-body-item)) {
 	position: absolute;
 	width: 136px;
 	height: 168px;
 }
 
-:global(:where(.file-body-content.large > file-body-item > file-body-icon)) {
+:global(:where(.file-body-content.large > .file-body-item > .file-body-icon)) {
 	margin: 4px;
 	width: 128px;
 	height: 128px;
 	line-height: 128px;
 }
 
-:global(:where(.file-body-content.large > file-body-item > file-body-icon.icon-file-event)) {
+:global(:where(.file-body-content.large > .file-body-item > .file-body-icon.icon-file-event)) {
 	padding-top: 8px;
 	font-size: 4em;
 }
 
-:global(:where(.file-body-content.large > file-body-item > file-body-icon.icon-file-other)) {
+:global(:where(.file-body-content.large > .file-body-item > .file-body-icon.icon-file-other)) {
 	padding-top: 8px;
 	font-size: 3.2em;
 }
@@ -2358,25 +2360,25 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	line-height: 15px;
 }
 
-:global(:where(.file-body-content.huge > file-body-item)) {
+:global(:where(.file-body-content.huge > .file-body-item)) {
 	position: absolute;
 	width: 264px;
 	height: 296px;
 }
 
-:global(:where(.file-body-content.huge > file-body-item > file-body-icon)) {
+:global(:where(.file-body-content.huge > .file-body-item > .file-body-icon)) {
 	margin: 4px;
 	width: 256px;
 	height: 256px;
 	line-height: 256px;
 }
 
-:global(:where(.file-body-content.huge > file-body-item > file-body-icon.icon-file-event)) {
+:global(:where(.file-body-content.huge > .file-body-item > .file-body-icon.icon-file-event)) {
 	padding-top: 16px;
 	font-size: 8em;
 }
 
-:global(:where(.file-body-content.huge > file-body-item > file-body-icon.icon-file-other)) {
+:global(:where(.file-body-content.huge > .file-body-item > .file-body-icon.icon-file-other)) {
 	padding-top: 16px;
 	font-size: 6.4em;
 }

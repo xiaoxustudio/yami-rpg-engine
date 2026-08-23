@@ -447,7 +447,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	): NodeElement {
 		let element: NodeElement | undefined = item.element;
 		if (element === undefined) {
-			element = document.createElement('node-item') as NodeElement;
+			element = document.createElement('div') as unknown as NodeElement;
+			addClass(element, 'node-item');
 			element.item = item;
 			Object.defineProperty(item, 'element', {
 				configurable: true,
@@ -470,7 +471,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			let markVisible = false;
 			let markIndent = getListConfig(this).foldable ? 16 : 0;
 			if (item!.children instanceof Array) {
-				folderMark = renderElement(h('folder-mark'));
+				folderMark = renderElement(h('span', { class: 'folder-mark' }));
 				markVisible = true;
 				markIndent = 0;
 				element.appendChild(folderMark);
@@ -584,8 +585,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		item: TreeItem
 	): HTMLElement {
 		const icon = renderElement(
-			h('node-icon', {
-				class: item.class === 'folder' ? 'icon-folder' : 'icon-file'
+			h('span', {
+				class: ['node-icon', item.class === 'folder' ? 'icon-folder' : 'icon-file']
 			})
 		);
 		return icon;
@@ -1397,14 +1398,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		switch (event.button) {
 			case 0: {
 				const element = event.target as NodeElement;
-				if (element.tagName === 'FOLDER-MARK') {
+				if (hasClass(element, 'folder-mark')) {
 					event.preventDefault();
 					const { item } = element.parentNode as NodeElement;
 					item!.expanded = !item!.expanded;
 					this.update();
 					dispatchChangeEvent(this);
 				} else {
-					if (element.tagName === 'NODE-ITEM') {
+					if (hasClass(element, 'node-item')) {
 						if (!hasClass(element, 'selected')) {
 							this.select(element.item);
 						} else if (
@@ -1420,8 +1421,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				break;
 			}
 			case 2: {
-				const element = seek(event.target, 'node-item');
-				if (element.tagName === 'NODE-ITEM' && !hasClass(element, 'selected')) {
+				const element = seek(event.target, '.node-item');
+				if (hasClass(element, 'node-item') && !hasClass(element, 'selected')) {
 					this.select((element as NodeItemElement).item);
 				}
 				break;
@@ -1443,8 +1444,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				break;
 			case 2:
 				if (this.popupEventEnabled && document.activeElement === this) {
-					const element = seek(event.target, 'node-item');
-					if (element.tagName === 'NODE-ITEM' && hasClass(element, 'selected')) {
+					const element = seek(event.target, '.node-item');
+					if (hasClass(element, 'node-item') && hasClass(element, 'selected')) {
 						const popup: PopupEvent = new Event('popup') as PopupEvent;
 						popup.value = (element as NodeItemElement).item;
 						popup.clientX = event.clientX;
@@ -1464,7 +1465,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	doubleclick: function (this: any, event: MouseEvent): void {
 		const element = event.target as NodeItemElement;
-		if (element.tagName === 'NODE-ITEM') {
+		if (hasClass(element, 'node-item')) {
 			this.cancelRenaming();
 			const item = element.item!;
 			if (item.class === 'folder') {
@@ -1537,9 +1538,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				return;
 			}
 			dragging.offsetY = event.offsetY;
-			const element = seek(event.target, 'node-item');
+			const element = seek(event.target, '.node-item');
 			const hint = show(dragging.hint) as DragAndDropHintApi;
-			if (element.tagName === 'NODE-ITEM') {
+			if (hasClass(element, 'node-item')) {
 				const sItem = dragging.target.item;
 				const dItem = (element as NodeItemElement).item!;
 				if (this.contain(sItem, dItem)) {

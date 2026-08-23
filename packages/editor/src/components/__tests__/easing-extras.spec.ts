@@ -44,7 +44,7 @@ describe('Easing 列表经 tree-api 渲染（updateNodeElement 覆写清理后�
 		expect(itemEl?.querySelector('.tree-node-extras .variable-init-text')?.textContent).toBe(
 			' = p1'
 		);
-		expect(itemEl?.querySelector('node-icon.icon-file')).toBeTruthy();
+		expect(itemEl?.querySelector('.node-icon.icon-file')).toBeTruthy();
 		wrapper.unmount();
 	});
 });

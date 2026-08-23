@@ -205,9 +205,10 @@ describe('useTeamWindow（队伍窗口 composable：数据加载 + 列表编辑 
 		const teamB = store.data![1];
 		const listEl = document.getElementById('team-list') as unknown as TeamListElement;
 		vi.spyOn(listEl, 'read').mockReturnValue(teamA);
-		const nodeItem = document.createElement('node-item') as HTMLElement & {
+		const nodeItem = document.createElement('div') as unknown as HTMLElement & {
 			item?: TeamData;
 		};
+		nodeItem.classList.add('node-item');
 		nodeItem.item = teamB;
 		const mark = document.createElement('div');
 		mark.className = 'team-relation-mark';

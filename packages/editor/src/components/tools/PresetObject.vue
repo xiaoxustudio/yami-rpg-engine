@@ -47,7 +47,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as PresetIconNode;
 	switch (node.class) {
 		case 'folder':
-			return [h('node-icon', { class: 'icon-folder' })];
+			return [h('span', { class: ['node-icon', 'icon-folder'] })];
 		case 'actor': {
 			const team = Data.teams?.map?.[node.teamId ?? ''];
 			const hex = team ? team.color : 'ffffffff';
@@ -55,7 +55,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 			const g = parseInt(hex.slice(2, 4), 16);
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			return [h('node-icon', { style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } }, '\uf2c0')];
+			return [h('span', { class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },  '\uf2c0')];
 		}
 		case 'region': {
 			const hex = node.color ?? '';
@@ -64,40 +64,38 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
 			return [
-				h('node-icon', {
-					class: 'icon-scene-region',
+				h('span', {
+					class: ['node-icon', 'icon-scene-region'],
 					style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})` }
 				})
 			];
 		}
 		case 'light':
 			return [
-				h(
-					'node-icon',
-					{ style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } },
+				h('span', { class: 'node-icon', style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } }, 
 					'\uf006'
 				)
 			];
 		case 'animation':
-			return [h('node-icon', {}, '\uf110')];
+			return [h('span', { class: 'node-icon',},  '\uf110')];
 		case 'particle':
-			return [h('node-icon', {}, '\uf2dc')];
+			return [h('span', { class: 'node-icon',},  '\uf2dc')];
 		case 'parallax': {
 			const path = File.getPath?.(node.image);
 			if (path) {
 				return [
-					h('node-icon', {
-						class: 'icon-scene-parallax',
+					h('span', {
+						class: ['node-icon', 'icon-scene-parallax'],
 						style: { backgroundImage: CSS.encodeURL(File.route!(path)) }
 					})
 				];
 			}
-			return [h('node-icon', {}, '\uf1c5')];
+			return [h('span', { class: 'node-icon',},  '\uf1c5')];
 		}
 		case 'tilemap':
-			return [h('node-icon', {}, '\uf00a')];
+			return [h('span', { class: 'node-icon',},  '\uf00a')];
 		default:
-			return [h('node-icon', { class: 'icon-file' })];
+			return [h('span', { class: ['node-icon', 'icon-file'] })];
 	}
 };
 

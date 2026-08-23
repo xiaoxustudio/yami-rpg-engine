@@ -14,8 +14,8 @@ const local = useLocalStore();
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	return [
-		h('node-icon', {
-			class: node.class === 'folder' ? 'icon-folder' : `icon-command ${node.class ?? ''}`
+		h('span', {
+			class: ['node-icon', node.class === 'folder' ? 'icon-folder' : `icon-command ${node.class ?? ''}`]
 		})
 	];
 };

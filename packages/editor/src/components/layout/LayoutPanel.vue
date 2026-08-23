@@ -512,33 +512,29 @@ const sceneNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 				element?.classList.add('weak');
 			}
 			nodes.push(
-				h('node-icon', { class: 'icon-conditional' }, condition === 'conditional' ? '?' : '!')
+				h('span', { class: ['node-icon', 'icon-conditional'], },  condition === 'conditional' ? '?' : '!')
 			);
 		}
 	}
 	if (node.events instanceof Array && node.events.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-eventEnabled' }, 'E'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'], },  'E'));
 	}
 	if (node.scripts instanceof Array && node.scripts.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-scriptEnabled' }, '\uf121'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'], },  '\uf121'));
 	}
 	nodes.push(
-		h(
-			'visibility-icon',
-			{
-				class: { 'node-icon-highlight': !!node.hidden },
+		h('span', {
+				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onSceneVisibilityPointerdown(node, container)
-			},
+			}, 
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	);
 	nodes.push(
-		h(
-			'lock-icon',
-			{
-				class: { 'node-icon-highlight': !!node.locked },
+		h('span', {
+				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onSceneLockPointerdown(node, container)
-			},
+			}, 
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	);
@@ -549,7 +545,7 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 	const node = item as SceneExtrasNode;
 	switch (node.class) {
 		case 'folder':
-			return [h('node-icon', { class: 'icon-folder' })];
+			return [h('span', { class: ['node-icon', 'icon-folder'], })];
 		case 'actor': {
 			const team = Data.teams?.map?.[node.teamId ?? ''];
 			const hex = team ? team.color : 'ffffffff';
@@ -557,7 +553,7 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 			const g = parseInt(hex.slice(2, 4), 16);
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			return [h('node-icon', { style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } }, '\uf2c0')];
+			return [h('span', { class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },  '\uf2c0')];
 		}
 		case 'region': {
 			const hex = node.color ?? '';
@@ -566,40 +562,38 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
 			return [
-				h('node-icon', {
-					class: 'icon-scene-region',
+				h('span', {
+					class: ['node-icon', 'icon-scene-region'],
 					style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})` }
 				})
 			];
 		}
 		case 'light':
 			return [
-				h(
-					'node-icon',
-					{ style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } },
+				h('span', { class: 'node-icon', style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } }, 
 					'\uf006'
 				)
 			];
 		case 'animation':
-			return [h('node-icon', {}, '\uf110')];
+			return [h('span', { class: 'node-icon',},  '\uf110')];
 		case 'particle':
-			return [h('node-icon', {}, '\uf2dc')];
+			return [h('span', { class: 'node-icon',},  '\uf2dc')];
 		case 'parallax': {
 			const path = File.getPath?.(node.image);
 			if (path) {
 				return [
-					h('node-icon', {
-						class: 'icon-scene-parallax',
+					h('span', {
+						class: ['node-icon', 'icon-scene-parallax'],
 						style: { backgroundImage: CSS.encodeURL(File.route!(path)) }
 					})
 				];
 			}
-			return [h('node-icon', {}, '\uf1c5')];
+			return [h('span', { class: 'node-icon',},  '\uf1c5')];
 		}
 		case 'tilemap':
-			return [h('node-icon', {}, '\uf00a')];
+			return [h('span', { class: 'node-icon',},  '\uf00a')];
 		default:
-			return [h('node-icon', { class: 'icon-file' })];
+			return [h('span', { class: ['node-icon', 'icon-file'], })];
 	}
 };
 
@@ -659,31 +653,27 @@ const uiNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 		element?.classList.remove('weak');
 	} else {
 		element?.classList.add('weak');
-		nodes.push(h('node-icon', { class: 'icon-conditional' }, '!'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-conditional'], },  '!'));
 	}
 	if (node.events instanceof Array && node.events.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-eventEnabled' }, 'E'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'], },  'E'));
 	}
 	if (node.scripts instanceof Array && node.scripts.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-scriptEnabled' }, '\uf121'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'], },  '\uf121'));
 	}
 	nodes.push(
-		h(
-			'visibility-icon',
-			{
-				class: { 'node-icon-highlight': !!node.hidden },
+		h('span', {
+				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onUiVisibilityPointerdown(node, container)
-			},
+			}, 
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	);
 	nodes.push(
-		h(
-			'lock-icon',
-			{
-				class: { 'node-icon-highlight': !!node.locked },
+		h('span', {
+				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onUiLockPointerdown(node, container)
-			},
+			}, 
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	);
@@ -723,19 +713,19 @@ const uiNodeIcon = (item: unknown): VNode[] => {
 	if (UI.hasPrefab?.(node)) {
 		iconClasses.push('icon-ui-set-as-prefab');
 	}
-	return [h('node-icon', { class: iconClasses })];
+	return [h('span', { class: ['node-icon', iconClasses], })];
 };
 
 const animationNodeExtras = (item: unknown): VNode[] => {
 	const node = item as { loop?: boolean };
 	if (node.loop) {
-		return [h('node-icon', { class: 'icon-loop' }, '\uf112')];
+		return [h('span', { class: ['node-icon', 'icon-loop'], },  '\uf112')];
 	}
 	return [];
 };
 
 const animationNodeIcon = (item: unknown): VNode[] => {
-	return [h('node-icon', { class: 'icon-string' })];
+	return [h('span', { class: ['node-icon', 'icon-string'], })];
 };
 
 const onLayerVisibilityPointerdown =
@@ -780,20 +770,16 @@ const onLayerLockPointerdown =
 const layerNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as LayerExtrasNode;
 	return [
-		h(
-			'visibility-icon',
-			{
-				class: { 'node-icon-highlight': !!node.hidden },
+		h('span', {
+				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onLayerVisibilityPointerdown(node, container)
-			},
+			}, 
 			node.hidden ? '\uf070' : '\uf06e'
 		),
-		h(
-			'lock-icon',
-			{
-				class: { 'node-icon-highlight': !!node.locked },
+		h('span', {
+				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onLayerLockPointerdown(node, container)
-			},
+			}, 
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	];
@@ -807,7 +793,7 @@ const layerNodeIcon = (item: unknown): VNode[] => {
 		particle: 'anim-layer-particle',
 		sound: 'anim-layer-sound'
 	} as Record<string, string>;
-	return [h('node-icon', { class: classes[node.class ?? ''] })];
+	return [h('span', { class: ['node-icon', classes[node.class] ?? ''] })];
 };
 
 const onParticleVisibilityPointerdown =
@@ -831,13 +817,11 @@ const onParticleVisibilityPointerdown =
 const particleNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as LayerExtrasNode;
 	return [
-		h(
-			'visibility-icon',
-			{
+		h('span', {
 				style: { right: '0' },
-				class: { 'node-icon-highlight': !!node.hidden },
+				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onParticleVisibilityPointerdown(node, container)
-			},
+			}, 
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	];
@@ -848,14 +832,14 @@ const particleNodeIcon = (item: unknown, container: HTMLElement): VNode[] => {
 	const path = File.getPath?.(node.image);
 	if (path) {
 		queueMicrotask(() => {
-			const icon = container.querySelector('node-icon') as HTMLElement | null;
+			const icon = container.querySelector('.node-icon') as HTMLElement | null;
 			if (icon) {
 				setIconClip(icon, path, 0, 0, -(node.sprite?.hframes ?? 1), -(node.sprite?.vframes ?? 1));
 			}
 		});
-		return [h('node-icon', { class: 'icon-particle-image' })];
+		return [h('span', { class: ['node-icon', 'icon-particle-image'], })];
 	}
-	return [h('node-icon', {}, '\uf2dc')];
+	return [h('span', { class: 'node-icon',},  '\uf2dc')];
 };
 
 const dirs = ref<string[]>([]);

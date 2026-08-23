@@ -184,7 +184,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	}
 	nodes.push(h('div', { class: 'variable-init-text text' }, initText));
 	if (node.note) {
-		nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-note'] },  '\uf27b'));
 	}
 	return nodes;
 };
@@ -198,9 +198,9 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 		object: 'icon-object'
 	};
 	if (node.class === 'folder') {
-		return [h('node-icon', { class: 'icon-folder' })];
+		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
-	return [h('node-icon', { class: (classes as Record<string, string>)[typeof node.value] })];
+	return [h('span', { class: ['node-icon', (classes as Record<string, string>)[typeof node.value]] })];
 };
 
 const onListSelect = (event: Event) => {

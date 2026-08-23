@@ -63,7 +63,7 @@ describe('YMFileNavPane', () => {
 		mockHeight(el);
 		el.load!(folderA);
 		expect(el.elements!.count).toBeGreaterThan(0);
-		const items = Array.from(el.querySelectorAll('file-nav-item'));
+		const items = Array.from(el.querySelectorAll('.file-nav-item'));
 		expect(items.length).toBeGreaterThan(0);
 		expect(items[0].textContent).toContain('A');
 	});
@@ -79,7 +79,7 @@ describe('YMFileNavPane', () => {
 		el.load!(folderA);
 		el.select!(folderA);
 		expect(el.getSelections!()).toEqual([folderA]);
-		const item = el.querySelector('file-nav-item') as HTMLElement;
+		const item = el.querySelector('.file-nav-item') as HTMLElement;
 		expect(item.classList.contains('selected')).toBe(true);
 	});
 

@@ -34,7 +34,7 @@ export function updateCommandElement(
 	});
 
 	const host = document.createElement('div');
-	render(h('command-mark-major', { class: 'command-mark-major' }), host);
+	render(h('span', { class: 'command-mark-major' }), host);
 	const pre = host.firstElementChild as HTMLElement;
 	host.removeChild(pre);
 	element.insertBefore(pre, element.firstElementChild);
@@ -44,7 +44,7 @@ export function updateCommandElement(
 	for (let i = element.dataIndent; i >= 0; i--) {
 		const lineHost = document.createElement('div');
 		render(
-			h('command-line', {
+			h('span', {
 				class: 'command-line',
 				style: { marginLeft: this.computeTextIndent!(i) }
 			}),

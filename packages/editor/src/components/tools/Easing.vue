@@ -141,9 +141,9 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	if (node.class === 'folder') {
-		return [h('node-icon', { class: 'icon-folder' })];
+		return [h('span', { class: ['node-icon', 'icon-folder'], })];
 	}
-	return [h('node-icon', { class: ['icon-command', 'flow'] })];
+	return [h('span', { class: ['node-icon', ['icon-command', 'flow']], })];
 };
 
 const local = useLocalStore();

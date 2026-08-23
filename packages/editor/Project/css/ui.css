@@ -1130,19 +1130,19 @@
 	visibility: hidden;
 }
 
-#event-open-list.alt > node-item.global-event {
+#event-open-list.alt > .node-item.global-event {
 	cursor: pointer;
 }
 
-#event-open-list.alt > node-item.global-event:hover {
+#event-open-list.alt > .node-item.global-event:hover {
 	background-color: var(--command-global-event-link-background);
 }
 
-node-item.local-event {
+.node-item.local-event {
 	color: var(--command-color-identifier);
 }
 
-node-item.related-event {
+.node-item.related-event {
 	text-decoration: underline var(--command-color-audio);
 }
 

@@ -42,7 +42,8 @@ function mountPane() {
 }
 
 function appendItem(content: HTMLElement): FileBodyItemApi {
-	const item = document.createElement('file-body-item') as unknown as FileBodyItemApi;
+	const item = document.createElement('div') as unknown as FileBodyItemApi;
+	item.classList.add('file-body-item');
 	item.classList.add('selected');
 	item.file = { name: 'a.png', path: 'a.png' };
 	content.appendChild(item);

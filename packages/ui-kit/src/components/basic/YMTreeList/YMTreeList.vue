@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
 	user-select: none;
 }
 
-:global(node-item) {
+:global(.node-item) {
 	display: block;
 	position: relative;
 	padding-right: 32px;
@@ -72,19 +72,19 @@ onBeforeUnmount(() => {
 	text-overflow: ellipsis;
 }
 
-:global(node-item.selected) {
+:global(.node-item.selected) {
 	color: var(--ym-color-on-primary);
 	background-color: var(--ym-color-selected);
 }
 
-:global(folder-mark) {
+:global(.folder-mark) {
 	display: inline-block;
 	vertical-align: top;
 	width: 16px;
 	height: 20px;
 }
 
-:global(node-icon) {
+:global(.node-icon) {
 	display: inline-block;
 	vertical-align: top;
 	margin: 2px 2px 2px 0;
@@ -118,44 +118,44 @@ onBeforeUnmount(() => {
 	z-index: 0;
 }
 
-:global(.tree-list:not(.dragging) > node-item:hover) {
+:global(.tree-list:not(.dragging) > .node-item:hover) {
 	background-color: var(--list-item-background-hover);
 }
 
-:global(.tree-list:focus > node-item.selected) {
+:global(.tree-list:focus > .node-item.selected) {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-:global(.tree-list:not(:focus) > node-item.selected) {
+:global(.tree-list:not(:focus) > .node-item.selected) {
 	background-color: var(--selected-background-blur);
 }
 
-:global(node-item.highlight) {
+:global(.node-item.highlight) {
 	color: var(--toolbar-item-color-highlight) !important;
 }
 
-:global(node-item.hint) {
+:global(.node-item.hint) {
 	color: var(--text-color-inverse);
 }
 
-:global(node-item.plain) {
+:global(.node-item.plain) {
 	padding: 0 10px;
 }
 
-:global(node-item.weak) {
+:global(.node-item.weak) {
 	color: var(--text-color-variable-init);
 }
 
-:global(node-item.weak.selected) {
+:global(.node-item.weak.selected) {
 	color: var(--text-color-accelerator-selected) !important;
 }
 
-:global(node-item.weak > node-icon) {
+:global(.node-item.weak > .node-icon) {
 	opacity: 0.3;
 }
 
-:global(folder-mark::before) {
+:global(.folder-mark::before) {
 	content: '';
 	display: block;
 	position: absolute;
@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
 	border-left: 8px solid var(--folder-mark-color);
 }
 
-:global(folder-mark.expanded::before) {
+:global(.folder-mark.expanded::before) {
 	margin: 6px 3px;
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
@@ -173,56 +173,56 @@ onBeforeUnmount(() => {
 	border-bottom: none;
 }
 
-:global(:focus > .selected > node-icon.icon-folder),
-:global(:focus > .selected > node-icon.icon-ui-image),
-:global(:focus > .selected > node-icon.icon-ui-text),
-:global(:focus > .selected > node-icon.icon-ui-textbox),
-:global(:focus > .selected > node-icon.icon-ui-dialogbox),
-:global(:focus > .selected > node-icon.icon-ui-progressbar),
-:global(:focus > .selected > node-icon.icon-ui-video),
-:global(:focus > .selected > node-icon.icon-ui-window),
-:global(:focus > .selected > node-icon.icon-ui-container),
-:global(:focus > .selected > node-icon.icon-ui-reference) {
+:global(:focus > .selected > .node-icon.icon-folder),
+:global(:focus > .selected > .node-icon.icon-ui-image),
+:global(:focus > .selected > .node-icon.icon-ui-text),
+:global(:focus > .selected > .node-icon.icon-ui-textbox),
+:global(:focus > .selected > .node-icon.icon-ui-dialogbox),
+:global(:focus > .selected > .node-icon.icon-ui-progressbar),
+:global(:focus > .selected > .node-icon.icon-ui-video),
+:global(:focus > .selected > .node-icon.icon-ui-window),
+:global(:focus > .selected > .node-icon.icon-ui-container),
+:global(:focus > .selected > .node-icon.icon-ui-reference) {
 	background-color: white;
 }
 
-:global(node-icon.icon-boolean),
-:global(node-icon.icon-number),
-:global(node-icon.icon-string),
-:global(node-icon.icon-object),
-:global(node-icon.icon-any),
-:global(node-icon.icon-label) {
+:global(.node-icon.icon-boolean),
+:global(.node-icon.icon-number),
+:global(.node-icon.icon-string),
+:global(.node-icon.icon-object),
+:global(.node-icon.icon-any),
+:global(.node-icon.icon-label) {
 	margin: 6px 6px 6px 4px;
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
 }
 
-:global(node-icon.icon-boolean) {
+:global(.node-icon.icon-boolean) {
 	background-color: var(--variable-color-boolean);
 }
 
-:global(node-icon.icon-number) {
+:global(.node-icon.icon-number) {
 	background-color: var(--variable-color-number);
 }
 
-:global(node-icon.icon-string) {
+:global(.node-icon.icon-string) {
 	background-color: var(--variable-color-string);
 }
 
-:global(node-icon.icon-object) {
+:global(.node-icon.icon-object) {
 	background-color: var(--variable-color-object);
 }
 
-:global(node-icon.icon-any) {
+:global(.node-icon.icon-any) {
 	background-color: var(--variable-color-any);
 }
 
-:global(node-icon.icon-label) {
+:global(.node-icon.icon-label) {
 	background-color: var(--command-color-label);
 }
 
-:global(node-icon.icon-note) {
+:global(.node-icon.icon-note) {
 	position: absolute;
 	margin: 2px;
 	right: 0;
@@ -232,7 +232,7 @@ onBeforeUnmount(() => {
 	color: var(--text-color-variable-init);
 }
 
-:global(.selected > node-icon.icon-note) {
+:global(.selected > .node-icon.icon-note) {
 	color: var(--text-color-accelerator-selected);
 }
 
@@ -308,7 +308,7 @@ onBeforeUnmount(() => {
 	background-color: var(--command-color-custom);
 }
 
-:global(node-icon.icon-folder) {
+:global(.node-icon.icon-folder) {
 	background-color: var(--folder-icon-color);
 	-webkit-mask-image: url(../../../Images/folder_folded.png);
 	mask-image: url(../../../Images/folder_folded.png);
@@ -316,14 +316,14 @@ onBeforeUnmount(() => {
 	mask-size: 100%;
 }
 
-:global(node-icon.icon-folder.expanded) {
+:global(.node-icon.icon-folder.expanded) {
 	-webkit-mask-image: url(../../../Images/folder_expanded.png);
 	mask-image: url(../../../Images/folder_expanded.png);
 	-webkit-mask-size: 100%;
 	mask-size: 100%;
 }
 
-:global(node-icon.icon-particle-image) {
+:global(.node-icon.icon-particle-image) {
 	margin: 3px 3px 3px 1px;
 	width: 14px;
 	height: 14px;
@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
 	background-color: var(--prefab-icon-color) !important;
 }
 
-:global(visibility-icon) {
+:global(.visibility-icon) {
 	position: absolute;
 	right: 16px;
 	width: 16px;
@@ -511,7 +511,7 @@ onBeforeUnmount(() => {
 	color: var(--node-icon-color);
 }
 
-:global(lock-icon) {
+:global(.lock-icon) {
 	position: absolute;
 	right: 0;
 	width: 16px;
@@ -525,8 +525,8 @@ onBeforeUnmount(() => {
 	color: var(--node-icon-color-highlight);
 }
 
-:global(visibility-icon:hover),
-:global(lock-icon:hover) {
+:global(.visibility-icon:hover),
+:global(.lock-icon:hover) {
 	color: var(--text-color);
 }
 

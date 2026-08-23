@@ -312,7 +312,7 @@ const pointerdown = (event: PointerEvent): void => {
 		case 0:
 		case 2: {
 			const element = event.target as HTMLElement;
-			if (element.tagName === 'COMMON-ITEM' && !hasClass(element, 'selected')) {
+			if (hasClass(element, 'common-item') && !hasClass(element, 'selected')) {
 				select(element);
 			}
 			break;
@@ -326,8 +326,8 @@ const pointerup = (event: PointerEvent): void => {
 	switch (event.button) {
 		case 2:
 			if (popupEventEnabled && document.activeElement === el) {
-				const element = seek(event.target as HTMLElement, 'common-item');
-				if (element && element.tagName === 'COMMON-ITEM' && hasClass(element, 'selected')) {
+const element = seek(event.target as HTMLElement, '.common-item');
+			if (element && hasClass(element, 'common-item') && hasClass(element, 'selected')) {
 					const popup = new Event('popup') as Event & {
 						value: unknown;
 						clientX: number;
@@ -420,7 +420,7 @@ onMounted(() => {
 	overflow-y: auto;
 }
 
-:global(:where(common-item)) {
+:global(:where(.common-item)) {
 	display: block;
 	padding: 0 10px;
 	height: 20px;
@@ -430,16 +430,16 @@ onMounted(() => {
 	text-overflow: ellipsis;
 }
 
-:global(:where(common-item:hover)) {
+:global(:where(.common-item:hover)) {
 	background-color: var(--list-item-background-hover);
 }
 
-:global(:where(.common-list:focus > common-item.selected)) {
+:global(:where(.common-list:focus > .common-item.selected)) {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-:global(:where(.common-list:not(:focus) > common-item.selected)) {
+:global(:where(.common-list:not(:focus) > .common-item.selected)) {
 	background-color: var(--selected-background-blur);
 }
 

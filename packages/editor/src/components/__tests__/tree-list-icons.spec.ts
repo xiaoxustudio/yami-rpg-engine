@@ -36,9 +36,9 @@ const makeData = (): IconsData[] => [
 ];
 
 const iconClasses = (el: IconsListEl): string[] =>
-	Array.from(el.querySelectorAll('.tree-node-icon node-icon')).map((icon) => {
+	Array.from(el.querySelectorAll('.tree-node-icon .node-icon')).map((icon) => {
 		const target = icon as HTMLElement;
-		return target.className;
+		return target.className.replace(/^node-icon\s*/, '');
 	});
 
 describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', () => {
@@ -53,10 +53,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const nodeIconRenderer = (item: unknown): VNode[] => {
 			const node = item as { class?: string; type?: string };
 			if (node.class === 'folder') {
-				return [h('node-icon', { class: 'icon-folder' })];
+				return [h('span', { class: ['node-icon', 'icon-folder'] })];
 			}
 			return [
-				h('node-icon', { class: (classes as Record<string, string>)[node.type ?? ''] })
+				h('span', {
+					class: ['node-icon', (classes as Record<string, string>)[node.type ?? '']]
+				})
 			];
 		};
 		const wrapper = mount(TreeList, {
@@ -85,10 +87,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const nodeIconRenderer = (item: unknown): VNode[] => {
 			const node = item as { class?: string; type?: string };
 			if (node.class === 'folder') {
-				return [h('node-icon', { class: 'icon-folder' })];
+				return [h('span', { class: ['node-icon', 'icon-folder'] })];
 			}
 			return [
-				h('node-icon', { class: (classes as Record<string, string>)[node.type ?? ''] })
+				h('span', {
+					class: ['node-icon', (classes as Record<string, string>)[node.type ?? '']]
+				})
 			];
 		};
 		const wrapper = mount(TreeList, {
@@ -111,7 +115,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const nodeIconRenderer = (item: unknown): VNode[] => {
 			const node = item as { class?: string };
 			return [
-				h('node-icon', { class: node.class === 'folder' ? 'icon-folder' : 'icon-string' })
+				h('span', {
+					class: ['node-icon', node.class === 'folder' ? 'icon-folder' : 'icon-string']
+				})
 			];
 		};
 		const wrapper = mount(TreeList, {
@@ -138,10 +144,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const nodeIconRenderer = (item: unknown): VNode[] => {
 			const node = item as { class?: string; value?: unknown };
 			if (node.class === 'folder') {
-				return [h('node-icon', { class: 'icon-folder' })];
+				return [h('span', { class: ['node-icon', 'icon-folder'] })];
 			}
 			return [
-				h('node-icon', { class: (classes as Record<string, string>)[typeof node.value] })
+				h('span', {
+					class: ['node-icon', (classes as Record<string, string>)[typeof node.value]]
+				})
 			];
 		};
 		const data: IconsData[] = [
@@ -173,16 +181,16 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		};
 		mockHeight(el);
 		el.createIcon = () => {
-			const icon = document.createElement('node-icon');
-			icon.className = 'icon-custom';
+			const icon = document.createElement('span');
+			icon.className = 'node-icon icon-custom';
 			return icon;
 		};
 		const data = makeData();
 		el.bind(() => data);
 		el.update();
 		expect(el.querySelectorAll('.tree-node-icon').length).toBe(0);
-		expect(el.querySelectorAll('node-item node-icon').length).toBe(3);
-		expect(el.querySelectorAll('node-item node-icon.icon-custom').length).toBe(3);
+		expect(el.querySelectorAll('.node-item .node-icon').length).toBe(3);
+		expect(el.querySelectorAll('.node-item .node-icon.icon-custom').length).toBe(3);
 		wrapper.unmount();
 	});
 
@@ -190,7 +198,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const nodeIconRenderer = (item: unknown): VNode[] => {
 			const node = item as { class?: string };
 			return [
-				h('node-icon', { class: node.class === 'folder' ? 'icon-folder' : 'icon-string' })
+				h('span', {
+					class: ['node-icon', node.class === 'folder' ? 'icon-folder' : 'icon-string']
+				})
 			];
 		};
 		const wrapper = mount(TreeList, {
@@ -224,7 +234,7 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			};
 			switch (node.class) {
 				case 'folder':
-					return [h('node-icon', { class: 'icon-folder' })];
+					return [h('span', { class: ['node-icon', 'icon-folder'] })];
 				case 'actor': {
 					const team = teams[node.teamId ?? ''];
 					const hex = team?.color ?? 'ffffffff';
@@ -234,8 +244,11 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 					const a = parseInt(hex.slice(6, 8), 16) / 255;
 					return [
 						h(
-							'node-icon',
-							{ style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },
+							'span',
+							{
+								class: 'node-icon',
+								style: { color: `rgba(${r}, ${g}, ${b}, ${a})` }
+							},
 							'\uf2c0'
 						)
 					];
@@ -247,8 +260,8 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 					const b = parseInt(hex.slice(4, 6), 16);
 					const a = parseInt(hex.slice(6, 8), 16) / 255;
 					return [
-						h('node-icon', {
-							class: 'icon-scene-region',
+						h('span', {
+							class: ['node-icon', 'icon-scene-region'],
 							style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})` }
 						})
 					];
@@ -256,23 +269,24 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 				case 'light':
 					return [
 						h(
-							'node-icon',
+							'span',
 							{
+								class: 'node-icon',
 								style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` }
 							},
 							'\uf006'
 						)
 					];
 				case 'animation':
-					return [h('node-icon', {}, '\uf110')];
+					return [h('span', { class: 'node-icon' }, '\uf110')];
 				case 'particle':
-					return [h('node-icon', {}, '\uf2dc')];
+					return [h('span', { class: 'node-icon' }, '\uf2dc')];
 				case 'parallax':
-					return [h('node-icon', {}, '\uf1c5')];
+					return [h('span', { class: 'node-icon' }, '\uf1c5')];
 				case 'tilemap':
-					return [h('node-icon', {}, '\uf00a')];
+					return [h('span', { class: 'node-icon' }, '\uf00a')];
 				default:
-					return [h('node-icon', { class: 'icon-file' })];
+					return [h('span', { class: ['node-icon', 'icon-file'] })];
 			}
 		};
 		const data = [
@@ -303,13 +317,15 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		el.bind(() => data);
 		el.update();
-		const icons = Array.from(el.querySelectorAll('.tree-node-icon node-icon')) as HTMLElement[];
+		const icons = Array.from(
+			el.querySelectorAll('.tree-node-icon .node-icon')
+		) as HTMLElement[];
 		expect(icons).toHaveLength(9);
-		expect(icons[0].className).toBe('icon-folder');
+		expect(icons[0].className).toBe('node-icon icon-folder');
 		expect(icons[1].style.color).toBe('rgb(255, 0, 0)');
 		expect(icons[1].textContent).toBe('\uf2c0');
 		expect(icons[2].style.color).toBe('rgb(255, 255, 255)');
-		expect(icons[3].className).toBe('icon-scene-region');
+		expect(icons[3].className).toBe('node-icon icon-scene-region');
 		expect(icons[3].style.backgroundColor).toBe('rgb(255, 0, 255)');
 		expect(icons[4].style.color).toBe('rgb(255, 0, 128)');
 		expect(icons[4].textContent).toBe('\uf006');
@@ -333,7 +349,13 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			const g = parseInt(hex.slice(2, 4), 16);
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			return [h('node-icon', { style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } }, '\uf2c0')];
+			return [
+				h(
+					'span',
+					{ class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },
+					'\uf2c0'
+				)
+			];
 		};
 		const data = [{ id: 'a1', name: 'Actor', class: 'actor', teamId: 't1', children: [] }];
 		const wrapper = mount(TreeList, {
@@ -347,7 +369,7 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		el.update();
 		(data[0] as { teamId: string }).teamId = 't2';
 		el.update();
-		const icon = el.querySelector('.tree-node-icon node-icon') as HTMLElement;
+		const icon = el.querySelector('.tree-node-icon .node-icon') as HTMLElement;
 		expect(icon.style.color).toBe('rgb(0, 255, 0)');
 		wrapper.unmount();
 	});
@@ -361,8 +383,8 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			const b = parseInt(color.slice(4, 6), 16);
 			const a = parseInt(color.slice(6, 8), 16) / 255;
 			return [
-				h('node-icon', {
-					class: 'team-icon',
+				h('span', {
+					class: ['node-icon', 'team-icon'],
 					style: {
 						backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`,
 						pointerEvents: 'auto'
@@ -383,9 +405,11 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		el.bind(() => data);
 		el.update();
-		const icons = Array.from(el.querySelectorAll('.tree-node-icon node-icon')) as HTMLElement[];
+		const icons = Array.from(
+			el.querySelectorAll('.tree-node-icon .node-icon')
+		) as HTMLElement[];
 		expect(icons).toHaveLength(2);
-		expect(icons[0].className).toBe('team-icon');
+		expect(icons[0].className).toBe('node-icon team-icon');
 		expect(icons[0].style.backgroundColor).toBe('rgb(255, 0, 0)');
 		expect(icons[0].style.pointerEvents).toBe('auto');
 		expect(icons[1].style.backgroundColor).toBe('rgb(0, 255, 0)');
@@ -401,8 +425,8 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			const b = parseInt(color.slice(4, 6), 16);
 			const a = parseInt(color.slice(6, 8), 16) / 255;
 			return [
-				h('node-icon', {
-					class: 'team-icon',
+				h('span', {
+					class: ['node-icon', 'team-icon'],
 					style: {
 						backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`,
 						pointerEvents: 'auto'
@@ -422,7 +446,7 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		el.update();
 		(data[0] as { color: string }).color = '00ff00ff';
 		el.update();
-		const icon = el.querySelector('.tree-node-icon node-icon') as HTMLElement;
+		const icon = el.querySelector('.tree-node-icon .node-icon') as HTMLElement;
 		expect(icon.style.backgroundColor).toBe('rgb(0, 255, 0)');
 		wrapper.unmount();
 	});
@@ -432,23 +456,23 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			plugin: (item: unknown): VNode[] => {
 				const node = item as { class?: string };
 				if (node.class === 'folder') {
-					return [h('node-icon', { class: 'icon-folder' })];
+					return [h('span', { class: ['node-icon', 'icon-folder'] })];
 				}
-				return [h('node-icon', { class: ['icon-command', 'custom'] })];
+				return [h('span', { class: ['node-icon', ['icon-command', 'custom']] })];
 			},
 			command: (item: unknown): VNode[] => {
 				const node = item as { class?: string };
 				if (node.class === 'folder') {
-					return [h('node-icon', { class: 'icon-folder' })];
+					return [h('span', { class: ['node-icon', 'icon-folder'] })];
 				}
-				return [h('node-icon', { class: ['icon-command', 'custom'] })];
+				return [h('span', { class: ['node-icon', ['icon-command', 'custom']] })];
 			},
 			easing: (item: unknown): VNode[] => {
 				const node = item as { class?: string };
 				if (node.class === 'folder') {
-					return [h('node-icon', { class: 'icon-folder' })];
+					return [h('span', { class: ['node-icon', 'icon-folder'] })];
 				}
-				return [h('node-icon', { class: ['icon-command', 'flow'] })];
+				return [h('span', { class: ['node-icon', ['icon-command', 'flow']] })];
 			}
 		};
 		for (const [key, renderer] of Object.entries(renderers)) {
@@ -465,7 +489,7 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			mockHeight(el);
 			el.bind(() => data);
 			el.update();
-			const icons = el.querySelectorAll('.tree-node-icon node-icon');
+			const icons = el.querySelectorAll('.tree-node-icon .node-icon');
 			expect(icons.length).toBe(2);
 			expect(icons[0].className).toContain('icon-folder');
 			expect(icons[1].className).toContain('icon-command');

@@ -28,7 +28,7 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		];
 		AutoTile.nodeIndex = 0;
 		AutoTile.createNodeItems();
-		const items = list.querySelectorAll('common-item');
+		const items = list.querySelectorAll('.common-item');
 		expect(items.length).toBe(3);
 		expect(items[0].textContent).toBe('#0');
 		expect(items[1].textContent).toBe('#1 !');
@@ -42,7 +42,7 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		AutoTile.frames = [0, 0x0102, 0x0302];
 		AutoTile.frameIndex = 0;
 		AutoTile.createFrameItems();
-		const items = list.querySelectorAll('common-item');
+		const items = list.querySelectorAll('.common-item');
 		expect(items.length).toBe(3);
 		expect(items[0].textContent).toBe('#0: 0,0');
 		expect(items[1].textContent).toBe('#1: 2,1');

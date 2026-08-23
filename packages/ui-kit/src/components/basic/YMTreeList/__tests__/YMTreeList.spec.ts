@@ -95,7 +95,7 @@ describe('YMTreeList', () => {
 		el.bind(() => data);
 		el.update();
 		expect(el.elements.count).toBe(4);
-		expect(el.querySelectorAll('node-item').length).toBe(4);
+		expect(el.querySelectorAll('.node-item').length).toBe(4);
 		const folder = el.elements[0];
 		expect(folder.textIndent).toBe(0);
 		expect(el.elements[1].textIndent).toBe(12);

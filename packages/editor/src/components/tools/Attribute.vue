@@ -122,7 +122,7 @@ const nodeExtras = (item: unknown): VNode[] => {
 			nodes.push(h('div', { class: 'attribute-init-text text' }, ` = ${node.key}`));
 		}
 		if (node.note) {
-			nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+			nodes.push(h('span', { class: ['node-icon', 'icon-note'], },  '\uf27b'));
 		}
 	}
 	return nodes;
@@ -138,9 +138,9 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 		object: 'icon-object'
 	};
 	if (node.class === 'folder') {
-		return [h('node-icon', { class: 'icon-folder' })];
+		return [h('span', { class: ['node-icon', 'icon-folder'], })];
 	}
-	return [h('node-icon', { class: (classes as Record<string, string>)[node.type ?? ''] })];
+	return [h('span', { class: ['node-icon', (classes as Record<string, string>)[node.type ?? '']] })];
 };
 
 const onListSelect = (event: Event) => {

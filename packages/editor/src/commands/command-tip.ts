@@ -397,7 +397,7 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 	const element = event.target as HTMLElement & {
 		item: CommandSuggestionItem;
 	};
-	if (element.tagName === 'NODE-ITEM' && element.item.class !== 'folder') {
+	if (hasClass(element, 'node-item') && element.item.class !== 'folder') {
 		const pointerup = (event: PointerEvent) => {
 			if (this.pressing === pointerup) {
 				this.pressing = null;

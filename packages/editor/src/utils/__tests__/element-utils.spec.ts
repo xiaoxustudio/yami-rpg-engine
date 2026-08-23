@@ -36,13 +36,14 @@ describe('element-utils 低依赖工具（回归保护）', () => {
 	});
 
 	it('seek walks up to nth ancestor of tag', () => {
-		const item = document.createElement('node-item');
+		const item = document.createElement('div');
+		item.classList.add('node-item');
 		item.setAttribute('data-i', '0');
 		const inner = document.createElement('div');
 		item.appendChild(inner);
 		const deep = document.createElement('span');
 		inner.appendChild(deep);
-		const found = seek(deep, 'node-item', 2);
+		const found = seek(deep, '.node-item', 2);
 		expect(found).toBe(item);
 	});
 

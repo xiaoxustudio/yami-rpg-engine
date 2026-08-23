@@ -26,31 +26,31 @@ const sceneNodeExtras = (item: unknown): VNode[] => {
 	const node = item as SceneItemLike;
 	const nodes: VNode[] = [];
 	if (node.conditions instanceof Array && node.enabled === false) {
-		nodes.push(h('node-icon', { class: 'icon-conditional' }, '!'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-conditional'] }, '!'));
 	} else if (
 		node.conditions instanceof Array &&
 		node.enabled !== false &&
 		node.conditions.length !== 0
 	) {
-		nodes.push(h('node-icon', { class: 'icon-conditional' }, '?'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-conditional'] }, '?'));
 	}
 	if (node.events instanceof Array && node.events.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-eventEnabled' }, 'E'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'] }, 'E'));
 	}
 	if (node.scripts instanceof Array && node.scripts.length !== 0) {
-		nodes.push(h('node-icon', { class: 'icon-scriptEnabled' }, '\uf121'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'] }, '\uf121'));
 	}
 	nodes.push(
 		h(
-			'visibility-icon',
-			{ class: { 'node-icon-highlight': !!node.hidden } },
+			'span',
+			{ class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }] },
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	);
 	nodes.push(
 		h(
-			'lock-icon',
-			{ class: { 'node-icon-highlight': !!node.locked } },
+			'span',
+			{ class: ['lock-icon', { 'node-icon-highlight': !!node.locked }] },
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	);
@@ -95,8 +95,8 @@ describe('scene 列表图标渲染（事件/脚本/条件/可见性/锁定）', 
 		expect(el.querySelector('.icon-eventEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-scriptEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-conditional')).toBeTruthy();
-		expect(el.querySelector('visibility-icon')).toBeTruthy();
-		expect(el.querySelector('lock-icon')).toBeTruthy();
+		expect(el.querySelector('.visibility-icon')).toBeTruthy();
+		expect(el.querySelector('.lock-icon')).toBeTruthy();
 		const itemEl = data[0].element as HTMLElement | undefined;
 		expect(itemEl?.querySelector('.icon-eventEnabled')?.textContent).toBe('E');
 		wrapper.unmount();

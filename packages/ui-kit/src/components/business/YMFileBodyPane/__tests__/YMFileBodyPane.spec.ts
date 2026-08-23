@@ -78,7 +78,8 @@ describe('YMFileBodyPane', () => {
 		});
 		const el = wrapper.element as BodyElement;
 		const file = new FileItem('/a/ev', 'ev');
-		const item = document.createElement('file-body-item');
+		const item = document.createElement('div');
+		item.classList.add('file-body-item');
 		file.context.element = item;
 		el.select!(file);
 		expect(el.selections).toEqual([file]);
@@ -91,7 +92,8 @@ describe('YMFileBodyPane', () => {
 		});
 		const el = wrapper.element as BodyElement;
 		const file = new FileItem('/a/ev', 'ev');
-		const item = document.createElement('file-body-item');
+		const item = document.createElement('div');
+		item.classList.add('file-body-item');
 		file.context.element = item;
 		el.select!(file);
 		el.unselect!();
@@ -107,7 +109,8 @@ describe('YMFileBodyPane', () => {
 		let value: unknown;
 		el.on!('select', (e: Event) => (value = (e as Event & { value?: unknown }).value));
 		const file = new FileItem('/a/ev', 'ev');
-		const item = document.createElement('file-body-item');
+		const item = document.createElement('div');
+		item.classList.add('file-body-item');
 		file.context.element = item;
 		el.select!(file);
 		expect(value).toEqual([file]);

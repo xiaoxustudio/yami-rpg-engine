@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
 import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { write } from '@app/utils/element-utils';
+import { write, hasClass } from '@app/utils/element-utils';
 import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/file/file-system-core.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -1382,7 +1382,7 @@ EventEditor.windowPointermove = function (this: EventEditorShape, event: Pointer
 EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEvent) {
 	if (event.altKey && event.button === 0) {
 		const element = event.target as HTMLElement & { item: EventListItem };
-		if (element.tagName === 'NODE-ITEM') {
+		if (hasClass(element, 'node-item')) {
 			const item = element.item;
 			if (item.id) {
 				// 阻止focus后快捷键不被禁用的情况

@@ -15,7 +15,7 @@ interface FileBrowserNode extends HTMLElement {
 }
 
 function appendItem(content: HTMLElement): HTMLElement & { file: { name: string; path: string } } {
-	const item = document.createElement('file-body-item') as HTMLElement & {
+	const item = document.createElement('div') as unknown as HTMLElement & {
 		file: { name: string; path: string };
 	};
 	item.classList.add('selected');

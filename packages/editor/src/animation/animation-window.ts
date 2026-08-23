@@ -4188,7 +4188,7 @@ Animation.listPointerdown = function (this: typeof Animation, event: PointerEven
 	switch (event.button) {
 		case 0: {
 			const element = event.target as HTMLElement & { item?: AnimationMotion };
-			if (element.tagName === 'NODE-ITEM' && hasClass(element, 'selected')) {
+			if (hasClass(element, 'node-item') && hasClass(element, 'selected')) {
 				Inspector.open!('animMotion', element.item);
 			}
 			break;
@@ -4401,12 +4401,10 @@ Animation.layerListPointerdown = function (this: typeof Animation, event: Pointe
 	switch (event.button) {
 		case 0: {
 			const element = event.target as HTMLElement & { item?: AnimationLayer };
-			switch (element.tagName) {
-				case 'NODE-ITEM':
-					if (hasClass(element, 'selected')) {
-						Animation.openLayer!(element.item);
-					}
-					break;
+			if (hasClass(element, 'node-item')) {
+				if (hasClass(element, 'selected')) {
+					Animation.openLayer!(element.item);
+				}
 			}
 			break;
 		}

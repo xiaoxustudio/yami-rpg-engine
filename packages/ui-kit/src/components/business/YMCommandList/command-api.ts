@@ -474,7 +474,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				if (content.fold !== undefined) {
-					(li as CommandItemElement).fold = renderElement(h('command-fold'));
+					(li as CommandItemElement).fold = renderElement(
+						h('span', { class: 'command-fold' })
+					);
 					addClass((li as CommandItemElement).fold!, 'command-fold');
 					li.appendChild((li as CommandItemElement).fold!);
 				}
@@ -620,12 +622,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		element.style.textIndent = this.computeTextIndent(element.dataIndent);
 
 		if (element.dataKey) {
-			const mark = renderElement(h('command-mark-major'));
+			const mark = renderElement(h('span', { class: 'command-mark-major' }));
 			addClass(mark, 'command-mark-major');
 			mark.textContent = '>';
 			element.insertBefore(mark, element.firstElementChild);
 		} else {
-			const mark = renderElement(h('command-mark-minor'));
+			const mark = renderElement(h('span', { class: 'command-mark-minor' }));
 			addClass(mark, 'command-mark-minor');
 			mark.textContent = ':';
 			element.insertBefore(mark, element.firstElementChild);

@@ -249,7 +249,8 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 	const context = file.getContext(el.value!);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-nav-item') as unknown as FolderElement;
+		element = document.createElement('div') as unknown as FolderElement;
+		addClass(element, 'file-nav-item');
 		element.file = file;
 		element.context = context;
 		context.element = element;
@@ -267,10 +268,10 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
 	if (!element.textNode) {
-		const folderMark = renderElement(h('folder-mark'));
+		const folderMark = renderElement(h('span', { class: 'folder-mark' }));
 		element.appendChild(folderMark);
 
-		const fileIcon = renderElement(h('file-nav-icon', { class: 'icon-folder' }));
+		const fileIcon = renderElement(h('span', { class: ['file-nav-icon', 'icon-folder'] }));
 		element.appendChild(fileIcon);
 
 		const textNode = document.createTextNode(file.name);
@@ -534,7 +535,7 @@ function pointerdown(event: PointerEvent): void {
 		case 0:
 		case 2: {
 			let element = event.target as HTMLElement;
-			if (element.tagName === 'FOLDER-MARK') {
+			if (hasClass(element, 'folder-mark')) {
 				event.preventDefault();
 				if (event.button === 0) {
 					const file = (element.parentNode as FolderElement).file;
@@ -543,10 +544,10 @@ function pointerdown(event: PointerEvent): void {
 					update();
 				}
 			} else {
-				if (element.tagName === 'FILE-NAV-ICON') {
+				if (hasClass(element, 'file-nav-icon')) {
 					element = element.parentNode as HTMLElement;
 				}
-				if (element.tagName === 'FILE-NAV-ITEM') {
+				if (hasClass(element, 'file-nav-item')) {
 					const sels = selections;
 					const length = sels.length;
 					if ((event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey && length !== 0) {
@@ -634,10 +635,10 @@ function pointerup(event: PointerEvent): void {
 function doubleclick(event: Event): void {
 	const node = el.value!;
 	let element = event.target as HTMLElement;
-	if (element.tagName === 'FILE-NAV-ICON') {
+	if (hasClass(element, 'file-nav-icon')) {
 		element = element.parentNode as HTMLElement;
 	}
-	if (element.tagName === 'FILE-NAV-ITEM') {
+	if (hasClass(element, 'file-nav-item')) {
 		cancelRenaming();
 		const folder = (element as FolderElement).file;
 		if (folder.subfolders.length !== 0) {
@@ -840,7 +841,7 @@ defineExpose({ load, update, select, unselect, clear, getSelections, el });
 	border-right: var(--nav-bar-border);
 }
 
-:global(:where(file-nav-item)) {
+:global(:where(.file-nav-item)) {
 	display: block;
 	height: 20px;
 	line-height: 20px;
@@ -849,24 +850,24 @@ defineExpose({ load, update, select, unselect, clear, getSelections, el });
 	text-overflow: ellipsis;
 }
 
-:global(:where(file-nav-item:hover)) {
+:global(:where(.file-nav-item:hover)) {
 	background-color: var(--list-item-background-hover);
 }
 
-:global(:where(file-nav-item.drop-target)) {
+:global(:where(.file-nav-item.drop-target)) {
 	background-color: var(--drop-target-background);
 }
 
-:global(:where(.file-nav-pane:focus > file-nav-item.selected)) {
+:global(:where(.file-nav-pane:focus > .file-nav-item.selected)) {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-:global(:where(.file-nav-pane:not(:focus) > file-nav-item.selected)) {
+:global(:where(.file-nav-pane:not(:focus) > .file-nav-item.selected)) {
 	background-color: var(--selected-background-blur);
 }
 
-:global(:where(file-nav-icon)) {
+:global(:where(.file-nav-icon)) {
 	display: inline-block;
 	vertical-align: top;
 	margin: 2px 2px 2px 0;
@@ -874,11 +875,11 @@ defineExpose({ load, update, select, unselect, clear, getSelections, el });
 	height: 16px;
 }
 
-:global(:where(:focus > .selected > file-nav-icon.icon-folder)) {
+:global(:where(:focus > .selected > .file-nav-icon.icon-folder)) {
 	background-color: white;
 }
 
-:global(:where(file-nav-icon.icon-folder)) {
+:global(:where(.file-nav-icon.icon-folder)) {
 	background-color: var(--folder-icon-color);
 	-webkit-mask-image: url(../../../Images/folder_folded.png);
 	mask-image: url(../../../Images/folder_folded.png);
@@ -886,7 +887,7 @@ defineExpose({ load, update, select, unselect, clear, getSelections, el });
 	mask-size: 100%;
 }
 
-:global(:where(file-nav-icon.icon-folder.expanded)) {
+:global(:where(.file-nav-icon.icon-folder.expanded)) {
 	background-color: var(--folder-icon-color);
 	-webkit-mask-image: url(../../../Images/folder_expanded.png);
 	mask-image: url(../../../Images/folder_expanded.png);

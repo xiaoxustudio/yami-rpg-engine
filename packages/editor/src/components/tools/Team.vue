@@ -69,8 +69,8 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	const b = parseInt(color.slice(4, 6), 16);
 	const a = parseInt(color.slice(6, 8), 16) / 255;
 	return [
-		h('node-icon', {
-			class: 'team-icon',
+		h('span', {
+			class: ['node-icon', 'team-icon'],
 			style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, pointerEvents: 'auto' }
 		})
 	];

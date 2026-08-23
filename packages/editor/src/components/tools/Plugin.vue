@@ -91,9 +91,9 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	if (node.class === 'folder') {
-		return [h('node-icon', { class: 'icon-folder' })];
+		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
-	return [h('node-icon', { class: ['icon-command', 'custom'] })];
+	return [h('span', { class: ['node-icon', ['icon-command', 'custom']] })];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {

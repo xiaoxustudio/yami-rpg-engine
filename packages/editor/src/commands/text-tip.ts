@@ -273,7 +273,7 @@ TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Even
 		item: TextSuggestionItem;
 		tagName: string;
 	};
-	if (element.tagName === 'NODE-ITEM') {
+	if (hasClass(element, 'node-item')) {
 		event.preventDefault();
 		const pressing = this.pressing;
 		const pointerup = (event: PointerEvent): void => {

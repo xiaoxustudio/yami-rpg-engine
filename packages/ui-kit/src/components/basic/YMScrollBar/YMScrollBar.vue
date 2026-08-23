@@ -277,7 +277,7 @@ const windowPointermove = (event: PointerEvent): void => {
 			break;
 		}
 		case 'repeat':
-			state.dragging.mode = 'repeat';
+			state.dragging!.mode = 'repeat';
 			break;
 	}
 };

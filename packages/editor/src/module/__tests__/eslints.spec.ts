@@ -33,12 +33,12 @@ describe('eslints updateCommandElement Vue 渲染（command-mark-major / command
 		const fakeThis = createFakeThis();
 		updateCommandElement.call(fakeThis, element);
 
-		const marks = element.querySelectorAll('command-mark-major');
+		const marks = element.querySelectorAll('.command-mark-major');
 		expect(marks.length).toBe(1);
 		expect(marks[0].classList.contains('command-mark-major')).toBe(true);
 		expect(element.pre).toBe(marks[0]);
 
-		const lines = element.querySelectorAll('command-line');
+		const lines = element.querySelectorAll('.command-line');
 		expect(lines.length).toBe(4);
 		expect(element.lines.length).toBe(4);
 		lines.forEach((line, i) => {
@@ -59,7 +59,7 @@ describe('eslints updateCommandElement Vue 渲染（command-mark-major / command
 		const fakeThis = createFakeThis();
 		updateCommandElement.call(fakeThis, element);
 
-		expect(element.querySelectorAll('command-line').length).toBe(1);
+		expect(element.querySelectorAll('.command-line').length).toBe(1);
 		expect(element.children[0]).toBe(element.lines[0]);
 		expect(element.children[1]).toBe(element.pre);
 	});
@@ -73,7 +73,7 @@ describe('eslints updateCommandElement Vue 渲染（command-mark-major / command
 		element.dataIndent = 1;
 		updateCommandElement.call(fakeThis, element);
 
-		expect(element.querySelectorAll('command-mark-major').length).toBe(1);
+		expect(element.querySelectorAll('.command-mark-major').length).toBe(1);
 		expect(element.pre).not.toBe(oldPre);
 		expect(element.lines.length).toBe(2);
 		element.lines.forEach((line, i) => {
