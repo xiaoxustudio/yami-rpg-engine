@@ -296,4 +296,20 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		expect(Window.frames).toHaveLength(0);
 		expect(document.body.style.pointerEvents).toBe('inherit');
 	});
+
+	it('组件 cancel 事件直接关闭（不经 Window.close）时也能恢复模态', () => {
+		const frame = makeFrame('inner-close');
+		const pointerenter = vi.fn();
+		const enableFocusable = vi.fn();
+		Title.pointerenter = pointerenter;
+		Layout.enableFocusableElements = enableFocusable;
+		frame.open();
+		expect(Window.frames).toEqual([frame]);
+		expect(document.body.style.pointerEvents).toBe('none');
+		frame.close();
+		expect(Window.frames).toHaveLength(0);
+		expect(document.body.style.pointerEvents).toBe('inherit');
+		expect(pointerenter).toHaveBeenCalledTimes(1);
+		expect(enableFocusable).toHaveBeenCalledTimes(1);
+	});
 });

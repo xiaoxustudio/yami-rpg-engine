@@ -87,19 +87,8 @@ Window.open = function (this: typeof Window, id: string) {
 	if (!frames.includes(element)) {
 		if (frames.length > 0) {
 			frames[frames.length - 1].blur();
-		} else {
-			document.body.style.pointerEvents = 'none';
-			Title.pointermove!({ target: null });
-			Window.saveActiveElement!();
-			Layout.disableFocusableElements();
-			document.activeElement!.blur();
-			window.removeEventListener('keydown', Menubar.keydown!);
-			window.removeEventListener('keydown', Scene.keydown);
-			window.removeEventListener('keydown', UI.keydown);
-			window.removeEventListener('keydown', Animation.keydown);
-			window.removeEventListener('keydown', Particle.keydown!);
-			window.addEventListener('keydown', Window.keydown!);
 		}
+		(element as WindowFrame).open();
 
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		if (!Title.target) {
@@ -119,7 +108,6 @@ Window.open = function (this: typeof Window, id: string) {
 				}
 			});
 		}
-		(element as WindowFrame).open();
 		this.afterChange?.();
 	}
 };
@@ -144,17 +132,6 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		try {
 			if (frames.length > 0) {
 				frames[frames.length - 1].focus();
-			} else {
-				document.body.style.pointerEvents = 'inherit';
-				Title.pointerenter!();
-				Window.restoreActiveElement!();
-				Layout.enableFocusableElements();
-				window.addEventListener('keydown', Menubar.keydown!);
-				window.addEventListener('keydown', Scene.keydown);
-				window.addEventListener('keydown', UI.keydown);
-				window.addEventListener('keydown', Animation.keydown);
-				window.addEventListener('keydown', Particle.keydown!);
-				window.removeEventListener('keydown', Window.keydown!);
 			}
 		} catch (error) {
 			console.error('[window] close restore error:', error);
@@ -343,5 +320,61 @@ for (const key of windowBridgeKeys) {
 		configurable: true
 	});
 }
+
+const activateModalMode = (): void => {
+	document.body.style.pointerEvents = 'none';
+	Title.pointermove!({ target: null });
+	Window.saveActiveElement!();
+	Layout.disableFocusableElements();
+	document.activeElement!.blur();
+	window.removeEventListener('keydown', Menubar.keydown!);
+	window.removeEventListener('keydown', Scene.keydown);
+	window.removeEventListener('keydown', UI.keydown);
+	window.removeEventListener('keydown', Animation.keydown);
+	window.removeEventListener('keydown', Particle.keydown!);
+	window.addEventListener('keydown', Window.keydown!);
+};
+
+const deactivateModalMode = (): void => {
+	document.body.style.pointerEvents = 'inherit';
+	Title.pointerenter!();
+	Window.restoreActiveElement!();
+	Layout.enableFocusableElements();
+	window.addEventListener('keydown', Menubar.keydown!);
+	window.addEventListener('keydown', Scene.keydown);
+	window.addEventListener('keydown', UI.keydown);
+	window.addEventListener('keydown', Animation.keydown);
+	window.addEventListener('keydown', Particle.keydown!);
+	window.removeEventListener('keydown', Window.keydown!);
+};
+
+const frames = Window.frames;
+Object.defineProperty(frames, 'append', {
+	configurable: true,
+	value: (element: HTMLElement) => {
+		if (frames.includes(element)) {
+			return false;
+		}
+		if (frames.length === 0) {
+			activateModalMode();
+		}
+		frames.push(element);
+		return true;
+	}
+});
+Object.defineProperty(frames, 'remove', {
+	configurable: true,
+	value: (element: HTMLElement) => {
+		const index = frames.indexOf(element);
+		if (index === -1) {
+			return false;
+		}
+		frames.splice(index, 1);
+		if (frames.length === 0) {
+			deactivateModalMode();
+		}
+		return true;
+	}
+});
 
 (window as unknown as { Window: typeof Window }).Window = Window;
