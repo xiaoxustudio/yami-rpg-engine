@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMNumberBox from '../YMNumberBox/YMNumberBox.vue';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -47,6 +47,11 @@ interface NumberVarApi extends HTMLElement {
 const mode = ref<'constant' | 'variable'>('constant');
 const numValue = ref(0);
 const varValue = ref<any>(null);
+
+const displayValue = computed(() => {
+	const value = varValue.value;
+	return value && typeof value === 'object' ? value.key : value;
+});
 const pluginInput = ref(false);
 
 const read = (): unknown => {
@@ -244,7 +249,7 @@ onMounted(() => {
 		<div v-show="mode !== 'constant'" class="number-var-variable">
 			<slot name="variable" :value="varValue" />
 			<div v-if="!$slots.variable" class="number-var-value">
-				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
+				{{ displayValue }}
 			</div>
 		</div>
 	</div>

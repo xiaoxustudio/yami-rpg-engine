@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMParameterPane
 		ref="ym"
 		:id="props.id"
@@ -40,7 +40,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const controls = {
 	checkBox: () => createCheckBoxElement(true),

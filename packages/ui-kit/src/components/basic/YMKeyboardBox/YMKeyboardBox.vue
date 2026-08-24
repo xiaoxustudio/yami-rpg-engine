@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -6,7 +6,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);

@@ -20,6 +20,22 @@ const toast = useToastService();
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
 const rootEl = ref<HTMLElement | null>(null);
 
+// 日志消息允许的样式 span（供点击跳转 VSCode 使用），其余 HTML 一律转义防注入
+const escapeHtml = (value: unknown): string =>
+	String(value ?? '').replace(/[&<>"']/g, (c) =>
+		c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;'
+	);
+
+const sanitizeLogMessage = (message: unknown): string =>
+	escapeHtml(message).replace(
+		/&lt;span class=&quot;(log-path|log-strong|log-num|log-weak)&quot;&gt;|&lt;\/span&gt;/g,
+		(tag) => {
+			if (tag === '&lt;/span&gt;') return '</span>';
+			const match = tag.match(/log-(?:path|strong|num|weak)/);
+			return `<span class="${match![0]}">`;
+		}
+	);
+
 const update = (): void => {
 	const next = Log.list.slice();
 	const prev = items.value;
@@ -27,11 +43,11 @@ const update = (): void => {
 		const newest = next.slice(prev.length);
 		for (const item of newest) {
 			if (item.type === 'error') {
-				toast.show(item.message, 'error');
+				toast.show(escapeHtml(item.message), 'error');
 			}
 		}
 	}
-	items.value = next;
+	items.value = next.map((item) => ({ ...item, message: sanitizeLogMessage(item.message) }));
 };
 
 const onMessageClick = (event: MouseEvent): void => {

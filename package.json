@@ -27,7 +27,6 @@
 		"build:universalexe": "pnpm -F @yami/editor build:universalexe",
 		"start:prod": "pnpm -F @yami/editor start:prod",
 		"typecheck": "pnpm -F @yami/editor typecheck",
-		"typecheck:strict": "pnpm -F @yami/editor typecheck:strict",
 		"lint": "oxlint -c ./.oxlintrc.json packages/editor",
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor",
 		"format": "oxfmt -c ./.oxfmtrc.json packages/editor",
@@ -42,15 +41,5 @@
 		"oxlint": "^1.75.0",
 		"oxlint-tsgolint": "^7.0.2001"
 	},
-	"packageManager": "pnpm@10.13.1",
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"electron",
-			"sharp"
-		],
-		"overrides": {
-			"electron-builder-squirrel-windows": "25.1.8",
-			"dmg-builder": "25.1.8"
-		}
-	}
+	"packageManager": "pnpm@12.0.0-rc.9+sha512.8919de615394189e5f1ebf999b78839366952de76d8f2b12eedba282efb7f8c91250c5718247c479938f86168e73765968e94fb62b3603ab481a334061201979"
 }

@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
@@ -11,7 +11,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLDivElement | null>(null);
 

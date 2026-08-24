@@ -2,12 +2,41 @@ import fs from 'fs';
 import { promises as fsp } from 'fs';
 import path from 'path';
 import { parseString, Builder } from 'xml2js';
-import util from 'util';
-import { exec, type ChildProcess } from 'child_process';
-const execPromise = util.promisify(exec);
+import { spawn, type ChildProcess } from 'child_process';
 import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
 import { CHANNELS } from '../src/services/ipc/channels.ts';
+
+// 参数数组式执行外部命令，避免 shell 字符串拼接的注入面
+function runProcess(command: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
+	return new Promise((resolve, reject) => {
+		const child = spawn(command, args);
+		let stdout = '';
+		let stderr = '';
+		child.stdout?.on('data', (chunk: Buffer) => {
+			stdout += chunk.toString();
+		});
+		child.stderr?.on('data', (chunk: Buffer) => {
+			stderr += chunk.toString();
+		});
+		child.on('error', (err) => {
+			reject(err);
+		});
+		child.on('close', (code) => {
+			if (code === 0) {
+				resolve({ stdout, stderr });
+			} else {
+				const err = new Error(`${command} failed with exit code ${code}`) as Error & {
+					stderr?: string;
+					stdout?: string;
+				};
+				err.stderr = stderr;
+				err.stdout = stdout;
+				reject(err);
+			}
+		});
+	});
+}
 
 let isBuilding = false;
 let currentChildProcess: ChildProcess | null = null;
@@ -247,33 +276,55 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 }
 
 async function decompileApk(config: ApkConfig): Promise<{ success: boolean; error?: string }> {
-	const cmd = `java -jar "${config.apktoolPath}" d "${config.apkPath}" -o "${config.outputDir}" -f --only-main-classes`;
-
 	return new Promise((resolve) => {
-		const child = exec(cmd, (error, stdout, stderr) => {
+		const child = spawn('java', [
+			'-jar',
+			config.apktoolPath,
+			'd',
+			config.apkPath,
+			'-o',
+			config.outputDir,
+			'-f',
+			'--only-main-classes'
+		]);
+		currentChildProcess = child;
+		let stderr = '';
+		child.stderr?.on('data', (chunk: Buffer) => {
+			stderr += chunk.toString();
+		});
+		child.on('error', (error) => {
 			currentChildProcess = null;
-			if (error) {
+			resolve({
+				success: false,
+				error: `反编译失败: ${error.message}`
+			});
+		});
+		child.on('close', (code) => {
+			currentChildProcess = null;
+			if (code === 0) {
+				resolve({ success: true });
+			} else {
 				resolve({
 					success: false,
-					error: `反编译失败: ${(error as Error & { stderr?: string }).stderr || (error as Error).message}`
+					error: `反编译失败: ${stderr || `exit code ${code}`}`
 				});
-			} else {
-				resolve({ success: true });
 			}
 		});
-
-		currentChildProcess = child;
 
 		// 监听中止信号
-		abortController!.signal.addEventListener('abort', () => {
-			if (child) {
-				child.kill('SIGINT');
-				resolve({
-					success: false,
-					error: '构建已被用户中断'
-				});
-			}
-		});
+		abortController!.signal.addEventListener(
+			'abort',
+			() => {
+				if (child) {
+					child.kill('SIGINT');
+					resolve({
+						success: false,
+						error: '构建已被用户中断'
+					});
+				}
+			},
+			{ once: true }
+		);
 	});
 }
 
@@ -588,10 +639,16 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 
 async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?: string }> {
 	console.log('重新编译APK...');
-	const cmd = `java -jar "${config.apktoolPath}" b "${config.outputDir}" -o "${config.newApkPath}"`;
 
 	try {
-		const { stdout, stderr } = await execPromise(cmd);
+		const { stdout, stderr } = await runProcess('java', [
+			'-jar',
+			config.apktoolPath,
+			'b',
+			config.outputDir,
+			'-o',
+			config.newApkPath
+		]);
 
 		if (stderr && (stderr.includes('W:') || stderr.includes('error:'))) {
 			// 非致命警告不中断构建
@@ -639,10 +696,13 @@ async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error
 	const alignedTempPath = `${config.newApkPath}.aligned`;
 
 	// -f 强制覆盖；4 按4字节对齐
-	const cmd = `"${config.zipalignPath}" -f 4 "${config.newApkPath}" "${alignedTempPath}"`;
-
 	try {
-		const { stdout, stderr } = await execPromise(cmd);
+		const { stdout, stderr } = await runProcess(config.zipalignPath, [
+			'-f',
+			'4',
+			config.newApkPath,
+			alignedTempPath
+		]);
 
 		await fs.promises.unlink(config.newApkPath);
 		await fs.promises.rename(alignedTempPath, config.newApkPath);
@@ -658,16 +718,43 @@ async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error
 }
 
 async function signApk(config: ApkConfig): Promise<{ success: boolean; error?: string }> {
-	const signCmd = `${config.apksignerPath} sign --ks "${config.jksPath}" --ks-pass pass:"${config.keyStorePassword}" --key-pass pass:"${config.keyPassword}" --ks-key-alias ${config.keyAlias} --out "${config.signedApkPath}" "${config.newApkPath}"`;
+	const apksignerArgs = [
+		'sign',
+		'--ks',
+		config.jksPath,
+		'--ks-pass',
+		`pass:${config.keyStorePassword}`,
+		'--key-pass',
+		`pass:${config.keyPassword}`,
+		'--ks-key-alias',
+		config.keyAlias,
+		'--out',
+		config.signedApkPath,
+		config.newApkPath
+	];
 
-	const jarsignerCmd = `jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore "${config.jksPath}" -storepass "${config.keyStorePassword}" -keypass "${config.keyPassword}" "${config.newApkPath}" ${config.keyAlias}`;
+	const jarsignerArgs = [
+		'-verbose',
+		'-sigalg',
+		'SHA1withRSA',
+		'-digestalg',
+		'SHA1',
+		'-keystore',
+		config.jksPath,
+		'-storepass',
+		config.keyStorePassword,
+		'-keypass',
+		config.keyPassword,
+		config.newApkPath,
+		config.keyAlias
+	];
 
 	try {
-		const { stdout, stderr } = await execPromise(signCmd);
+		await runProcess(config.apksignerPath, apksignerArgs);
 	} catch (apksignerError) {
 		try {
-			console.log(`执行命令: ${jarsignerCmd}`);
-			const { stdout, stderr } = await execPromise(jarsignerCmd);
+			console.log(`执行命令: jarsigner ${jarsignerArgs.join(' ')}`);
+			await runProcess('jarsigner', jarsignerArgs);
 
 			await fs.promises.rename(config.newApkPath, config.signedApkPath);
 		} catch (jarsignerError) {
@@ -690,8 +777,11 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 	console.log('验证APK签名...');
 
 	try {
-		const verifyCmd = `${config.apksignerPath} verify -v "${config.signedApkPath}"`;
-		const { stdout, stderr } = await execPromise(verifyCmd);
+		const { stdout, stderr } = await runProcess(config.apksignerPath, [
+			'verify',
+			'-v',
+			config.signedApkPath
+		]);
 
 		if (stdout.includes('Verified')) {
 			console.log('✅ APK签名验证成功');

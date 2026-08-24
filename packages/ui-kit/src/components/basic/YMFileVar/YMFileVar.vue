@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
@@ -24,6 +24,11 @@ const root = ref<HTMLElement | null>(null);
 const mode = ref<'constant' | 'variable'>('constant');
 const fileValue = ref('');
 const varValue = ref<{ key?: string } | null>(null);
+
+const displayValue = computed(() => {
+	const value = varValue.value;
+	return value && typeof value === 'object' ? value.key : value;
+});
 
 const read = (): string | { key?: string } | null => {
 	switch (mode.value) {
@@ -204,7 +209,7 @@ onMounted(() => {
 		<div v-show="mode !== 'constant'" class="file-var-variable">
 			<slot name="variable" :value="varValue" :on-input="onVarInput" />
 			<div v-if="!$slots.variable" class="file-var-value">
-				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
+				{{ displayValue }}
 			</div>
 		</div>
 	</div>

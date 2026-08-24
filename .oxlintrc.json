@@ -41,10 +41,10 @@
 				}
 			}
 		],
-		"typescript/no-explicit-any": "off",
+		"typescript/no-explicit-any": "warn",
 		"typescript/no-namespace": "off",
 		"typescript/no-non-null-assertion": "off",
-		"eslint/no-console": "off",
+		"eslint/no-console": "warn",
 		"eslint/no-empty": ["warn", { "allowEmptyCatch": true }]
 	},
 	"overrides": [

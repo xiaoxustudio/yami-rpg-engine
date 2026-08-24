@@ -16,7 +16,7 @@ interface DetailSummaryElement extends HTMLElement {
 	): void;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<DetailSummaryElement | null>(null);
 const box = inject<DetailBoxContext | null>(DetailBoxKey, null);

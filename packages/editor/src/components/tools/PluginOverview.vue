@@ -26,16 +26,16 @@
 		</template>
 		<template v-if="detailed && meta.parameters.length">
 			{{ hasAnyOverview ? '\n\n' : '' }}
-			<div v-for="parameter in meta.parameters" :key="parameter.key" class="plugin-wrap text">
-				<div class="plugin-key text">{{ langMap?.get(parameter.alias) ?? parameter.key }}</div>
-				<div class="plugin-label text">: </div>
-				<template v-for="(segment, index) in typeSegments(parameter)" :key="index">
-					<div v-if="segment.separator" class="plugin-label text">|</div>
-					<div class="plugin-type text">{{ segment.text }}</div>
-				</template>
-				<div v-if="parameter.key in states" class="plugin-label text">?</div>
-				<div v-if="parameter.desc" class="plugin-param-desc text">{{ langMap?.get(parameter.desc) }}</div>
-			</div>
+				<div v-for="parameter in meta.parameters" :key="parameter.key" class="plugin-wrap text">
+					<div class="plugin-key text">{{ langMap?.get(parameter.alias) ?? parameter.key }}</div>
+					<div class="plugin-label text">: </div>
+					<template v-for="(segment, index) in parameterSegments.get(parameter.key) ?? []" :key="index">
+						<div v-if="segment.separator" class="plugin-label text">|</div>
+						<div class="plugin-type text">{{ segment.text }}</div>
+					</template>
+					<div v-if="parameter.key in states" class="plugin-label text">?</div>
+					<div v-if="parameter.desc" class="plugin-param-desc text">{{ langMap?.get(parameter.desc) }}</div>
+				</div>
 		</template>
 		<span v-if="!hasAnyContent">No Description</span>
 	</div>
@@ -86,6 +86,15 @@ const deprecatedText = computed(() => {
 });
 
 const requireText = computed(() => get('requireMissing') + missing.value.map((req) => req.plugin).join(', '));
+
+// 参数类型分段为纯函数，预计算避免模板 v-for 内每次重渲染都重复执行
+const parameterSegments = computed(() => {
+	const map = new Map<string, { separator: boolean; text: string }[]>();
+	for (const parameter of props.meta?.parameters ?? []) {
+		map.set(parameter.key, typeSegments(parameter));
+	}
+	return map;
+});
 
 const typeSegments = (parameter: ParameterShape): { separator: boolean; text: string }[] => {
 	const { type, filter } = parameter;

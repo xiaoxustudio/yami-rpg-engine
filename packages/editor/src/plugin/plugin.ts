@@ -841,7 +841,9 @@ PluginManager.parseMeta = (function IIFE() {
 						} else {
 							validate.pattern = new RegExp(val);
 						}
-					} catch (e) {}
+					} catch (e) {
+						console.warn('插件校验正则无效，已忽略', val);
+					}
 					break;
 				}
 				case 'notEmpty':

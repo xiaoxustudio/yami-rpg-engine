@@ -5,7 +5,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const emit = defineEmits<{
 	switch: [last: unknown, value: unknown];

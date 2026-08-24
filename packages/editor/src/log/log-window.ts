@@ -54,8 +54,11 @@ export const Log: LogShape = {
 	openVSCode: null as ((file: string, line: number, column: number) => void) | null
 };
 
+let tickInterval: ReturnType<typeof setInterval> | null = null;
+
 Log.initialize = function () {
-	setInterval(this.tick!, 1000);
+	if (tickInterval) return;
+	tickInterval = setInterval(this.tick!, 1000);
 
 	window.addEventListener('error', this.catchError!);
 	window.addEventListener('unhandledrejection', this.catchRejection!);

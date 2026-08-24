@@ -19,11 +19,11 @@
 						</div>
 					</template>
 					<template v-else>
-						<template v-for="(item, index) in items" :key="index">
-							<div v-if="item.title" class="update-log-title text" v-html="md(item.title)"></div>
-							<div v-if="item.major" class="update-log-major text" v-html="md(item.major)"></div>
-							<div v-if="item.minor" class="update-log-minor text" v-html="md(item.minor)"></div>
-						</template>
+					<template v-for="(item, index) in items" :key="index">
+						<div v-if="item.title" class="update-log-title text" v-html="item.titleHtml"></div>
+						<div v-if="item.major" class="update-log-major text" v-html="item.majorHtml"></div>
+						<div v-if="item.minor" class="update-log-minor text" v-html="item.minorHtml"></div>
+					</template>
 					</template>
 				</div>
 			</div>
@@ -67,22 +67,25 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const mode = ref<string>('internal');
-const items = ref<UpdateLogItem[]>([]);
+const items = ref<Array<UpdateLogItem & { titleHtml?: string; majorHtml?: string; minorHtml?: string }>>([]);
+
+const md = (text: string): string => markndownToHtml(text);
 
 const refresh = () => {
 	mode.value = UpdateLog.currentMode ?? 'internal';
-	if (mode.value === 'internal') {
-		items.value = UpdateLog.internalItems ?? [];
-	} else {
-		items.value = UpdateLog.communityItems ?? [];
-	}
+	const raw =
+		mode.value === 'internal' ? UpdateLog.internalItems : UpdateLog.communityItems;
+	items.value = (raw ?? []).map((item) => ({
+		...item,
+		titleHtml: item.title ? md(item.title) : '',
+		majorHtml: item.major ? md(item.major) : '',
+		minorHtml: item.minor ? md(item.minor) : ''
+	}));
 };
 
 const tabInternal = computed(() => local.get('menuOpenYami.update-log-tab-internal'));
 const tabCommunity = computed(() => local.get('menuOpenYami.update-log-tab-community'));
 const tabDonation = computed(() => local.get('menuOpenYami.update-log-tab-donation'));
-
-const md = (text: string): string => markndownToHtml(text);
 
 const onTabsClick = (event: MouseEvent) => {
 	UpdateLog?.tabsClick?.(event);

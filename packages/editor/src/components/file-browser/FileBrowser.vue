@@ -50,7 +50,7 @@ interface Props {
 	bridge?: 'browser' | 'selector';
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const Clipboard = GlobalClipboard;
 const toast = useToastService();

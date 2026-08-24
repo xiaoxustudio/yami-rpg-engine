@@ -7,7 +7,7 @@ interface Props {
 	height?: number | string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLElement | null>(null);
 

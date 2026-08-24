@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMTextArea from '../YMTextArea/YMTextArea.vue';
 
 interface Props {
@@ -36,6 +36,11 @@ interface TextAreaVarApi extends HTMLElement {
 const mode = ref<'constant' | 'variable'>('constant');
 const textValue = ref('');
 const varValue = ref<any>(null);
+
+const displayValue = computed(() => {
+	const value = varValue.value;
+	return value && typeof value === 'object' ? value.key : value;
+});
 
 const read = (): unknown => {
 	switch (mode.value) {
@@ -218,7 +223,7 @@ onMounted(() => {
 		<div v-show="mode !== 'constant'" class="text-area-var-variable">
 			<slot name="variable" :value="varValue" />
 			<div v-if="!$slots.variable" class="text-area-var-value">
-				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
+				{{ displayValue }}
 			</div>
 		</div>
 	</div>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMKeyboardBox ref="ym" :id="props.id" />
 </template>
 
@@ -26,7 +26,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const emit = defineEmits<{
 	input: [value: number];

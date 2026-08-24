@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMDetailSummary ref="ym" :id="props.id">
 		<slot />
 	</YMDetailSummary>
@@ -22,7 +22,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const ym = ref<{ root: HTMLElement | null; toggle(): void; on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMFilterBox ref="ym" :id="props.id" :width="props.width" :height="props.height" />
 </template>
 
@@ -20,7 +20,7 @@ interface Props {
 	height?: number | string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const ym = ref<{
 	root: HTMLElement | null;

@@ -58,11 +58,11 @@ function startTSC(projectDir: string) {
 		cwd: projectDir
 	});
 	tscProcess = process;
-	process.stdout.on('data', (data: Buffer | string) => {
+	process.stdout?.on('data', (data: Buffer | string) => {
 		const editor = (globalThis as any).editor;
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});
-	process.stderr.on('data', (data: Buffer | string) => {
+	process.stderr?.on('data', (data: Buffer | string) => {
 		const editor = (globalThis as any).editor;
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});

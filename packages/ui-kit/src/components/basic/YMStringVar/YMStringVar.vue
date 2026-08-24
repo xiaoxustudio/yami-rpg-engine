@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMTextBox from '../YMTextBox/YMTextBox.vue';
 
 interface Props {
@@ -36,6 +36,11 @@ interface StringVarApi extends HTMLElement {
 const mode = ref<'constant' | 'variable'>('constant');
 const strValue = ref('');
 const varValue = ref<any>(null);
+
+const displayValue = computed(() => {
+	const value = varValue.value;
+	return value && typeof value === 'object' ? value.key : value;
+});
 
 const read = (): unknown => {
 	switch (mode.value) {
@@ -218,7 +223,7 @@ onMounted(() => {
 		<div v-show="mode !== 'constant'" class="string-var-variable">
 			<slot name="variable" :value="varValue" />
 			<div v-if="!$slots.variable" class="string-var-value">
-				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
+				{{ displayValue }}
 			</div>
 		</div>
 	</div>

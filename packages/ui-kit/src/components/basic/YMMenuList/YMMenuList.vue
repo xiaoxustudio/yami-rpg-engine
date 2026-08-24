@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { createMenuApi, type MenuApi, type MenuItem, type MenuOptions } from './menu-api';
 
@@ -6,7 +6,7 @@ interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLElement | null>(null);
 

@@ -27,8 +27,7 @@
 		"build:vite": "pnpm -F @yami/ui-kit build && node scripts/build-css.js --dist-css && vite build",
 		"build:all": "pnpm run build:vite",
 		"start:prod": "pnpm run build:all && electron . --dirname=.",
-		"typecheck": "tsc --noEmit",
-		"typecheck:strict": "tsc --noEmit -p tsconfig.strict.json"
+		"typecheck": "tsc --noEmit -p tsconfig.strict.json"
 	},
 	"dependencies": {
 		"@vueuse/core": "^14.3.0",
@@ -70,7 +69,6 @@
 		"oxlint-tsgolint": "^7.0.2001",
 		"vite": "^8.1.5",
 		"vite-plugin-electron": "^1.1.0",
-		"vite-plugin-electron-renderer": "^1.0.0",
 		"vite-plugin-vue-devtools": "^8.2.1",
 		"vitest": "^4.1.10",
 		"vue-tsc": "^3.3.9",

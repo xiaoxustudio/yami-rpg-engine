@@ -152,7 +152,15 @@ ipcMain.on(CHANNELS.on.openPath, (event, targetPath) => {
 
 // 使用VSCode打开脚本
 ipcMain.on(CHANNELS.on.openVscode, (event, scriptPath, line, column) => {
-	const url = `${path.normalize(scriptPath)}:${line}:${column}`;
+	if (typeof scriptPath !== 'string' || scriptPath.length === 0 || scriptPath.includes('\0')) {
+		return;
+	}
+	const normalized = path.normalize(scriptPath);
+	if (!path.isAbsolute(normalized)) {
+		return;
+	}
+	// 剔除会污染 vscode:// URI 的片段/查询字符，防止协议参数注入
+	const url = `${normalized}:${Number(line) || 0}:${Number(column) || 0}`.replace(/[?#]/g, '');
 	shell.openExternal(`vscode://file/${url}`);
 });
 

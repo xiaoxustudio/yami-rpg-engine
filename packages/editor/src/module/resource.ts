@@ -3,6 +3,7 @@ import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { GlobalPath, Path } from '@app/utils/config';
 import { SettingConfig } from '@app/services/project/setting-config';
+import { PING_SLOW_MS, PING_WARN_MS } from '@app/constants/editor.ts';
 import { $ } from '@app/utils/dom';
 import { disable, enable, on, write } from '@app/utils/element-utils.ts';
 
@@ -231,9 +232,9 @@ export const Resources = new (class {
 		if (this.nodePingText) {
 			if (ping >= 0) {
 				let color = '#4caf50';
-				if (ping > 1000) {
+				if (ping > PING_WARN_MS) {
 					color = '#f44336';
-				} else if (ping > 500) {
+				} else if (ping > PING_SLOW_MS) {
 					color = '#ff9800';
 				}
 				this.nodePingText.textContent = `Ping: ${ping}ms`;

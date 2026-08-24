@@ -1,6 +1,7 @@
 import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
+import { ANIM_GRID_X, ANIM_GRID_Y } from '@app/constants/editor.ts';
 import { $ } from '@app/utils/dom';
 import {
 	addClass,
@@ -1997,13 +1998,13 @@ Animation.getFrameCoords = (function IIFE() {
 	return function (this: typeof Animation, event: PointerEvent, clamp: boolean = false) {
 		const list = this.outerTimelineList;
 		const coords = getRelativeCoords(event, list);
-		let x = Math.floor(coords.x / 16);
-		let y = Math.floor(coords.y / 20);
+		let x = Math.floor(coords.x / ANIM_GRID_X);
+		let y = Math.floor(coords.y / ANIM_GRID_Y);
 		if (clamp) {
-			const sl = list.scrollLeft / 16;
-			const st = list.scrollTop / 20;
-			const sr = list.clientWidth / 16 + sl;
-			const sb = list.clientHeight / 20 + st;
+			const sl = list.scrollLeft / ANIM_GRID_X;
+			const st = list.scrollTop / ANIM_GRID_Y;
+			const sr = list.clientWidth / ANIM_GRID_X + sl;
+			const sb = list.clientHeight / ANIM_GRID_Y + st;
 			x = Math.clamp(x, Math.floor(sl), Math.ceil(sr) - 1);
 			y = Math.clamp(y, Math.floor(st), Math.ceil(sb) - 1);
 		}

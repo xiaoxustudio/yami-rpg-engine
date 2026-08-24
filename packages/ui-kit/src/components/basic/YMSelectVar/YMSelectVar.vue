@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMSelectBox from '../YMSelectBox/YMSelectBox.vue';
 
 interface Props {
@@ -40,6 +40,11 @@ interface SelectVarApi extends HTMLElement {
 const mode = ref<'constant' | 'variable'>('constant');
 const selectValue = ref<any>(null);
 const varValue = ref<any>(null);
+
+const displayValue = computed(() => {
+	const value = varValue.value;
+	return value && typeof value === 'object' ? value.key : value;
+});
 
 const read = (): unknown => {
 	switch (mode.value) {
@@ -204,7 +209,7 @@ onMounted(() => {
 		<div v-show="mode !== 'constant'" class="select-var-variable">
 			<slot name="variable" :value="varValue" />
 			<div v-if="!$slots.variable" class="select-var-value">
-				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
+				{{ displayValue }}
 			</div>
 		</div>
 	</div>

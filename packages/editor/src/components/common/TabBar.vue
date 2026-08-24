@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMTabBar ref="ym" :id="props.id" :update-app-region="updateAppRegion" />
 </template>
 
@@ -27,7 +27,7 @@ interface TabItemData {
 	[k: string]: unknown;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const emit = defineEmits<{
 	select: [event: Event & { value?: TabItemData }];

@@ -8,8 +8,6 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import type { Connect, ViteDevServer, IndexHtmlTransformContext } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-const isCustomElement = () => false;
-
 type BundleEntry = {
 	type: string;
 	fileName?: string;
@@ -59,7 +57,7 @@ export default defineConfig(({ command }) => ({
 	base: './',
 
 	plugins: [
-		vue({ template: { compilerOptions: { isCustomElement } } }),
+		vue(),
 		vueDevTools(),
 		{
 			name: 'electron-renderer-resolve',
@@ -331,8 +329,7 @@ export default defineConfig(({ command }) => ({
 		emptyOutDir: true,
 		rolldownOptions: {
 			input: {
-				main: resolve(__dirname, 'index.html'),
-				vue: resolve(__dirname, 'vue.html')
+				main: resolve(__dirname, 'index.html')
 			},
 			external: [
 				'electron',
@@ -406,15 +403,7 @@ export default defineConfig(({ command }) => ({
 	publicDir: false,
 
 	optimizeDeps: {
-		include: ['axios', 'vue', 'pinia'],
+		include: ['vue', 'pinia'],
 		exclude: ['electron']
-	},
-
-	define: {
-		'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
-	},
-
-	oxc: {
-		target: 'chrome150'
 	}
 }));

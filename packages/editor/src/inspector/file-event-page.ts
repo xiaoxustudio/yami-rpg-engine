@@ -187,7 +187,7 @@ import { t } from '@app/i18n';
 
 	FileEvent.parameters = {
 		initialize: function (this: FileEventList, list: FileEventList) {
-			FileEvent.parameters.loadTypeItems();
+			FileEvent.parameters.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
 			const el = $('#fileEvent-parameter-type');
@@ -216,7 +216,7 @@ import { t } from '@app/i18n';
 			note = ''
 		}: { type?: string; key?: string; note?: string } = {}) {
 			Window.open!('fileEvent-parameter');
-			FileEvent.parameters.loadTypeItems();
+			FileEvent.parameters.loadTypeItems?.();
 			Object.assign(fileEventParameterForm, { type, key, note });
 			getFocus($('#fileEvent-parameter-type'));
 		},

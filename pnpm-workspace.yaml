@@ -1,5 +1,14 @@
 packages:
   - "packages/*"
 
+allowBuilds:
+  core-js: true
+  electron: true
+  sharp: true
+
+overrides:
+  electron-builder-squirrel-windows: 25.1.8
+  dmg-builder: 25.1.8
+
 catalog:
   typescript: ^5.9.3
