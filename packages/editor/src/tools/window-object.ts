@@ -85,11 +85,7 @@ Window.open = function (this: typeof Window, id: string) {
 
 	const { activeElement } = document;
 	if (!frames.includes(element)) {
-		if (frames.length > 0) {
-			frames[frames.length - 1].blur();
-		}
 		(element as WindowFrame).open();
-
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		if (!Title.target) {
 			Title.target = $('#title');
@@ -129,13 +125,6 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		}
 		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
-		try {
-			if (frames.length > 0) {
-				frames[frames.length - 1].focus();
-			}
-		} catch (error) {
-			console.error('[window] close restore error:', error);
-		}
 		window.scrollTo(0, 0);
 		if (getWindowStore().overlapRoot === element) {
 			this.setPositionMode!('center');
@@ -355,8 +344,14 @@ Object.defineProperty(frames, 'append', {
 		if (frames.includes(element)) {
 			return false;
 		}
-		if (frames.length === 0) {
-			activateModalMode();
+		try {
+			if (frames.length === 0) {
+				activateModalMode();
+			} else {
+				frames[frames.length - 1].blur();
+			}
+		} catch (error) {
+			console.error('[window] frames.append error:', error);
 		}
 		frames.push(element);
 		return true;
@@ -370,8 +365,14 @@ Object.defineProperty(frames, 'remove', {
 			return false;
 		}
 		frames.splice(index, 1);
-		if (frames.length === 0) {
-			deactivateModalMode();
+		try {
+			if (frames.length === 0) {
+				deactivateModalMode();
+			} else {
+				frames[frames.length - 1].focus();
+			}
+		} catch (error) {
+			console.error('[window] frames.remove restore error:', error);
 		}
 		return true;
 	}
