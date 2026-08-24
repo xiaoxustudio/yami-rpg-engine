@@ -31,7 +31,6 @@
 		"typecheck:strict": "tsc --noEmit -p tsconfig.strict.json"
 	},
 	"dependencies": {
-		"@typescript/typescript-win32-x64": "7.1.0-dev.20260811.1",
 		"@vueuse/core": "^14.3.0",
 		"axios": "^1.19.0",
 		"exceljs": "^4.4.0",
@@ -45,7 +44,7 @@
 		"qrcode": "^1.5.4",
 		"sharp": "^0.34.5",
 		"steamworks.js": "^0.4.0",
-		"typescript": "7.1.0-dev.20260811.1",
+		"typescript": "catalog:",
 		"uglify-js": "^3.19.3",
 		"vue": "^3.6.0-rc.3",
 		"vue-i18n": "^11.4.8",

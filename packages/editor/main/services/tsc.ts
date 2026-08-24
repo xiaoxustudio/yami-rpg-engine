@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import { CHANNELS } from '../../src/services/ipc/channels.ts';
 import fs from 'fs';
-import { spawn, type ChildProcess } from 'child_process';
+import { fork, spawn, type ChildProcess } from 'child_process';
 import path from 'path';
 
 // 模块所在目录（dist-electron/），不依赖 import.meta.url 或 CJS __dirname 全局
@@ -47,9 +47,14 @@ function startTSC(projectDir: string) {
 		stopTSC(() => startTSC(projectDir));
 		return;
 	}
-	const tsgoExe = getTsgoExePath();
-	const process = spawn(tsgoExe, ['--watch'], {
-		stdio: ['ignore', 'pipe', 'pipe'],
+	let tscExe = null;
+	try {
+		tscExe = getTsgoExePath();
+	} catch {
+		tscExe = require.resolve('typescript/lib/tsc');
+	}
+	const process = fork(tscExe, ['--watch'], {
+		stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
 		cwd: projectDir
 	});
 	tscProcess = process;
