@@ -6,6 +6,9 @@ import { h, render } from 'vue';
 let _origUpdateCommandElement:
 	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
 	| undefined;
+let _origResize: ((...args: unknown[]) => unknown) | undefined;
+// 缩进线生成后（updateCommandElement 内）批量重算显示状态，避免滚动新渲染行没有样式
+const lineClassesScheduled = new WeakSet<object>();
 // command-list 内 command-item 元素运行时挂载的扩展字段
 interface CommandItemElement extends HTMLElement {
 	pre: HTMLElement;
@@ -96,13 +99,80 @@ export function updateCommandElement(
 		element.eventBinding = true;
 	}
 
+	if (list && !lineClassesScheduled.has(list)) {
+		lineClassesScheduled.add(list);
+		queueMicrotask(() => {
+			lineClassesScheduled.delete(list);
+			applyLineClasses(list);
+		});
+	}
+
 	return ret;
 }
 
+// 计算每条缩进线的显示状态：折叠块 header 短竖线、块结束标记（footer）L 形收尾、其余内容行隐藏
+function applyLineClasses(list: CommandListShape): void {
+	if (!(list as { lineClassEnabled?: boolean }).lineClassEnabled) return;
+	// 反向遍历：每条竖线「延续 / 收尾」取决于其后是否还有同层/更深内容；
+	// 块结束标记（footer）做 L 形收尾；顶层不可折叠指令与普通内容行不显示折叠线
+	let nextIndent = Infinity;
+	for (let i = list.count - 1; i >= 0; i--) {
+		const e = list[i];
+		if (!e?.lines) continue;
+		const d = e.dataIndent;
+		const isReal = e.dataItem != null;
+		// 最深线（行自身的折叠线）
+		const deepest = e.lines[d];
+		if (deepest) {
+			deepest.classList.remove('line-start', 'line-end', 'line-hide');
+			if (isReal) {
+				if (e.fold) {
+					deepest.classList.add('line-start');
+				} else if (e.mark === 'footer') {
+					deepest.classList.add('line-end');
+				} else if (e.mark !== 'option') {
+					deepest.classList.add('line-hide');
+				}
+				// mark === 'option'：折叠区块内部行（如 else），保留竖线（不添加任何类）
+			} else {
+				deepest.classList.add('line-hide');
+			}
+		}
+		// 父级线（i < d）：表示第 i 层块的存续线
+		for (let indent = 0; indent < d; indent++) {
+			const line = e.lines[indent];
+			if (!line) continue;
+			line.classList.remove('line-start', 'line-end', 'line-hide');
+			if (!isReal) continue;
+			if (nextIndent !== Infinity && nextIndent >= indent) {
+				continue;
+			}
+			line.classList.add('line-end');
+		}
+		if (isReal) {
+			nextIndent = d;
+		}
+	}
+}
+
+function resize(this: { elements: CommandListShape }, ...args: unknown[]): unknown {
+	const ret = _origResize?.apply(this, args);
+	applyLineClasses(this.elements);
+	return ret;
+}
+
+export function ensureResizeOverride(): void {
+	if (_origResize) return;
+	_origResize = CommandList.prototype.resize;
+	CommandList.prototype.resize = resize;
+}
+
 export function ensureUpdateCommandElementOverride(): void {
-	if (_origUpdateCommandElement) return;
-	_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
-	CommandList.prototype.updateCommandElement = updateCommandElement;
+	if (!_origUpdateCommandElement) {
+		_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
+		CommandList.prototype.updateCommandElement = updateCommandElement;
+	}
+	ensureResizeOverride();
 }
 
 export function initEslints(): void {
@@ -127,10 +197,8 @@ export function applyCommandListInstanceOverride(
 		return this.elements[this.active].pre.getBoundingClientRect();
 	};
 	on(commandList, 'update', function (this: { elements: { dataIndent: number }[] }) {
-		const list = this.elements as unknown as {
-			count: number;
-			[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
-		};
+		const list = this.elements as unknown as CommandListShape;
+		(list as { lineClassEnabled?: boolean }).lineClassEnabled = true;
 		for (let i = 0; i < list.count; i++) {
 			const e = list[i];
 			if (e.fold) {
@@ -147,6 +215,7 @@ export function applyCommandListInstanceOverride(
 			}
 			e.classList.add(e.mark as unknown as string);
 		}
+		applyLineClasses(list);
 	});
 }
 

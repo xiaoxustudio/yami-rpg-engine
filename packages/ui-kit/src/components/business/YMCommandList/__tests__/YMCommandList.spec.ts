@@ -217,4 +217,31 @@ describe('YMCommandList', () => {
 		expect(el.read()).toBe(null);
 		expect(el.elements.count).toBe(0);
 	});
+
+	it('fold 元素渲染为 span.command-fold 且 pointerdown 命中折叠切换', () => {
+		const options = makeOptions();
+		options.command.parse = ((item: Record<string, unknown>) => {
+			const cmds = item.commands as unknown[] | undefined;
+			if (cmds && cmds.length) {
+				return [{ fold: true }, { children: cmds }];
+			}
+			return [{ color: 'normal' }, { text: String(item.id) }];
+		}) as CommandListApiOptions['command']['parse'];
+		const el = createCommandListElement(options) as CommandListElement;
+		mockHeight(el);
+		el.write([{ id: 'block', params: {}, commands: [{ id: 'a', params: {} }] }]);
+
+		const fold = el.querySelector('.command-fold') as HTMLElement | null;
+		expect(fold).toBeTruthy();
+		expect(fold?.tagName).toBe('SPAN');
+		expect(fold?.classList.contains('command-fold')).toBe(true);
+
+		const li = fold?.closest('.command-item') as
+			| (HTMLElement & { dataItem?: { folded?: boolean } })
+			| null;
+		expect(li).toBeTruthy();
+		const foldedBefore = !!li?.dataItem?.folded;
+		fold?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(!!li?.dataItem?.folded).toBe(!foldedBefore);
+	});
 });

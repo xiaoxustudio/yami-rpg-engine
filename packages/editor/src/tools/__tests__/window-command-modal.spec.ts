@@ -37,7 +37,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 			slots: { default: '<div class="content">X</div>' },
 			attachTo: document.body
 		});
-		Window.open('showText');
+		Window.open!('showText');
 		expect(document.body.style.pointerEvents).toBe('none');
 		expect(Window.frames).toHaveLength(1);
 
@@ -59,8 +59,8 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 			attachTo: document.body
 		});
 		const el = document.getElementById('showText2')!;
-		el.addEventListener('confirm', () => Window.close('showText2'));
-		Window.open('showText2');
+		el.addEventListener('confirm', () => Window.close!('showText2'));
+		Window.open!('showText2');
 		expect(document.body.style.pointerEvents).toBe('none');
 
 		const confirm = el.querySelector('button[name="confirm"]') as HTMLButtonElement;
@@ -83,9 +83,9 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 			slots: { default: '<div class="content">CMD</div>' },
 			attachTo: document.body
 		});
-		Window.open('event');
+		Window.open!('event');
 		expect(document.body.style.pointerEvents).toBe('none');
-		Window.open('showText3');
+		Window.open!('showText3');
 		expect(Window.frames).toHaveLength(2);
 
 		const eventEl = document.getElementById('event')!;
@@ -119,7 +119,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 		});
 		const el = document.getElementById('loopCmd')!;
 		for (let i = 0; i < 2; i++) {
-			Window.open('loopCmd');
+			Window.open!('loopCmd');
 			expect(document.body.style.pointerEvents).toBe('none');
 			expect(Window.frames).toHaveLength(1);
 			const cancel = el.querySelector('button[name="cancel"]') as HTMLButtonElement;

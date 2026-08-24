@@ -93,18 +93,18 @@ onBeforeUnmount(() => {
 	border-left: 1px solid var(--command-line-color);
 }
 
-:global(:where(.command-item.header .command-line:last-of-type)) {
+:global(:where(.command-line.line-start)) {
 	top: 18px;
 }
 
-:global(:where(.command-item.item .command-line:last-of-type)) {
-	visibility: hidden;
-}
-
-:global(:where(.command-item.footer .command-line:last-of-type)) {
+:global(:where(.command-line.line-end)) {
 	bottom: 10px;
 	width: 6px;
 	border-bottom: 1px solid var(--command-line-color);
+}
+
+:global(:where(.command-line.line-hide)) {
+	visibility: hidden;
 }
 
 :global(:where(.command-item.header .command-mark-major)) {
@@ -119,8 +119,12 @@ onBeforeUnmount(() => {
 	visibility: hidden;
 }
 
-:global(:where(.command-item > span)) {
+:global(:where(.command-item > span:not(.command-fold))) {
 	pointer-events: none;
+}
+
+:global(:where(.command-fold)) {
+	pointer-events: auto;
 }
 
 :global(:where(.command-text)),
