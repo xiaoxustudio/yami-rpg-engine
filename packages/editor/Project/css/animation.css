@@ -104,7 +104,7 @@
 	/* background-color: green; */
 }
 
-anim-dir {
+.anim-dir {
 	margin: 4px 0 0 4px;
 	width: 32px;
 	height: 32px;
@@ -117,11 +117,11 @@ anim-dir {
 	opacity: 0.25;
 }
 
-anim-dir:hover {
+.anim-dir:hover {
 	opacity: 0.5;
 }
 
-anim-dir.selected {
+.anim-dir.selected {
 	opacity: 1;
 }
 

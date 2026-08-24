@@ -19,34 +19,34 @@
 	display: block;
 }
 
-log-item {
+.log-item {
 	display: block;
 	white-space: pre;
 	user-select: text;
 }
 
-log-item.error {
+.log-item.error {
 	color: var(--text-color-error);
 }
 
-log-path {
+.log-path {
 	cursor: pointer;
 	color: var(--command-color-file);
 }
 
-log-path:hover {
+.log-path:hover {
 	background-color: var(--command-global-event-link-background);
 }
 
-log-num {
+.log-num {
 	color: var(--command-color-number);
 }
 
-log-weak {
+.log-weak {
 	color: var(--command-color-weak);
 }
 
-log-strong {
+.log-strong {
 	text-decoration: underline wavy var(--command-color-invalid-wave);
 }
 

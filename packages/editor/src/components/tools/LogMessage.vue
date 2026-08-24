@@ -1,6 +1,6 @@
 ﻿<template>
 	<div ref="rootEl" class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
-		<log-item v-for="(item, index) in items" :key="index" :class="item.type" v-html="item.message" />
+		<div class="log-item" v-for="(item, index) in items" :key="index" :class="item.type" v-html="item.message" />
 	</div>
 </template>
 
@@ -35,7 +35,7 @@ const update = (): void => {
 };
 
 const onMessageClick = (event: MouseEvent): void => {
-	const path = (event.target as HTMLElement).closest?.('log-path') as HTMLElement | null;
+	const path = (event.target as HTMLElement).closest?.('.log-path') as HTMLElement | null;
 	if (!path) return;
 	const LINE = path.nextElementSibling;
 	const COLUMN = LINE?.nextElementSibling;

@@ -8,8 +8,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import type { Connect, ViteDevServer, IndexHtmlTransformContext } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-const isCustomElement = (tag: string) =>
-	tag === 'log-item' || tag === 'anim-dir' || tag === 'tooltip-line';
+const isCustomElement = () => false;
 
 type BundleEntry = {
 	type: string;

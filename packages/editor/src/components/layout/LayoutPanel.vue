@@ -207,12 +207,13 @@
 						></MarqueeArea>
 					</div>
 					<div ref="dirListEl" class="box" id="animation-dirList" v-show="dirs.length > 1">
-						<anim-dir
+						<div
+							class="anim-dir"
 							v-for="(dir, index) in dirs"
 							:key="index"
 							:class="{ selected: index === direction }"
 							@pointerdown="onDirPointerdown(index)"
-						>{{ dir }}</anim-dir>
+						>{{ dir }}</div>
 					</div>
 				</div>
 			</div>

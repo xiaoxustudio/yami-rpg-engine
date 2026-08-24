@@ -35,7 +35,7 @@ const lastAction = ref('(none)');
 
 const buildItem = (item: DemoItem): HTMLElement => {
 	const host = document.createElement('div');
-	render(h('common-item', { '.dataValue': item }, item.label), host);
+	render(h('div', { class: 'common-item', '.dataValue': item }, item.label), host);
 	const el = host.firstElementChild as HTMLElement;
 	host.removeChild(el);
 	return el;

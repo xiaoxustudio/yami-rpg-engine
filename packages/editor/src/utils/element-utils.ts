@@ -283,7 +283,7 @@ export const setTooltip = (function IIFE() {
 			if (match[0].startsWith('<b>')) {
 				nodes.push(h('b', {}, match[0].slice(3, -4)));
 			} else {
-				nodes.push(h('tooltip-line'));
+				nodes.push(h('div', { class: 'tooltip-line' }));
 			}
 			index = pattern.lastIndex;
 		}

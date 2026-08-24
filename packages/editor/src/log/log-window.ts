@@ -150,12 +150,12 @@ Log.tscLog = function (event: unknown, tscMessage: unknown) {
 			(match: string, path: string, line: string, column: string) => {
 				const index = path.lastIndexOf('/');
 				if (index !== -1) {
-					path = `${path.slice(0, index + 1)}<log-strong>${path.slice(index + 1)}</log-strong>`;
+					path = `${path.slice(0, index + 1)}<span class="log-strong">${path.slice(index + 1)}</span>`;
 				}
-				return `<log-path>${path}</log-path>(<log-num>${line}</log-num>,<log-num>${column}</log-num>)`;
+				return `<span class="log-path">${path}</span>(<span class="log-num">${line}</span>,<span class="log-num">${column}</span>)`;
 			}
 		);
-		message = message.replace(/(error TS\d+)/g, '<log-weak>$1</log-weak>');
+		message = message.replace(/(error TS\d+)/g, '<span class="log-weak">$1</span>');
 		duration = Infinity;
 	} else if (message.includes('Watching for file changes')) {
 		duration = Infinity;
