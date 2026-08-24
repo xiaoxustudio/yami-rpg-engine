@@ -8,6 +8,9 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import type { Connect, ViteDevServer, IndexHtmlTransformContext } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
+// ESM 配置下替代 CJS 的 __dirname（Node 20.11+）
+const __dirname = import.meta.dirname;
+
 type BundleEntry = {
 	type: string;
 	fileName?: string;
