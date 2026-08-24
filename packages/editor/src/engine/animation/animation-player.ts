@@ -5,6 +5,7 @@ import { UI } from '@app/ui/ui-window.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { Particle, type ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
+import { OPACITY_BYTE } from '@app/constants/editor.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import {
 	AnimationMotion,
@@ -412,7 +413,7 @@ export class AnimationPlayer {
 		}
 		const vi = response[0] * 8;
 		const mode = AnimationPlayer.lightSamplingModes[light ?? 'raw'];
-		const alpha = Math.round(context.opacity * 255);
+		const alpha = Math.round(context.opacity * OPACITY_BYTE);
 		const param = response[1] | (alpha << 8) | (mode << 16);
 		const redGreen = tint[0] + (tint[1] << 16) + 0x00ff00ff;
 		const blueGray = tint[2] + (tint[3] << 16) + 0x00ff00ff;

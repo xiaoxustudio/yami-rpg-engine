@@ -2,49 +2,33 @@
 import { on } from '@app/utils/element-utils.ts';
 import { useTilemapGetterWindow } from '@app/composables/useTilemapGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape } from '@app/types/shapes.ts';
+import type { AccessorTarget } from '@app/types/shapes.ts';
+import { createAccessor } from './accessor-factory.ts';
 
-interface TilemapTarget {
-	dataValue: {
-		type: string;
-		presetId: string;
-		variable: { type: string; key: string };
-	};
-	read?: () => { type: string; presetId: string; variable: { type: string; key: string } };
-	input: (getter: Record<string, unknown>) => void;
-	isPluginInput?: boolean;
-}
-
-export const TilemapGetter: AccessorBaseShape = {
-	target: null,
-	initialize: null,
-	open: null,
-	confirm: null
-};
-
-TilemapGetter.initialize = function (this: typeof TilemapGetter) {
-	if (!$('#tilemapGetter-type')) return;
-	$('#tilemapGetter-type').loadItems([
-		{ name: 'Event Trigger Tilemap', value: 'trigger' },
-		{ name: 'By Tilemap ID', value: 'by-id' },
-		{ name: 'Variable', value: 'variable' }
-	]);
-
-	$('#tilemapGetter-type')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'by-id', targets: [$('#tilemapGetter-presetId')] },
-			{ case: 'variable', targets: [$('#tilemapGetter-variable')] }
+export const TilemapGetter = createAccessor({
+	initialize() {
+		if (!$('#tilemapGetter-type')) return;
+		$('#tilemapGetter-type').loadItems([
+			{ name: 'Event Trigger Tilemap', value: 'trigger' },
+			{ name: 'By Tilemap ID', value: 'by-id' },
+			{ name: 'Variable', value: 'variable' }
 		]);
 
-	on($('#tilemapGetter-confirm'), 'click', this.confirm!);
-};
+		$('#tilemapGetter-type')
+			.enableHiddenMode()
+			.relate([
+				{ case: 'by-id', targets: [$('#tilemapGetter-presetId')] },
+				{ case: 'variable', targets: [$('#tilemapGetter-variable')] }
+			]);
 
-TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget) {
-	this.target = target;
-	useTilemapGetterWindow().open(target, { presetId: PresetObject.getDefaultPresetId('tilemap') });
-};
-
-TilemapGetter.confirm = function (this: typeof TilemapGetter, event: Event) {
-	useTilemapGetterWindow().confirm();
-};
+		on($('#tilemapGetter-confirm'), 'click', this.confirm!);
+	},
+	open(target: AccessorTarget) {
+		useTilemapGetterWindow().open(target, {
+			presetId: PresetObject.getDefaultPresetId('tilemap')
+		});
+	},
+	confirm() {
+		useTilemapGetterWindow().confirm();
+	}
+});

@@ -2,6 +2,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
+import { PARTICLE_APPEAR_TIMEOUT_MS } from '@app/constants/editor.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 
 export const ParticleEngine: Record<string, any> = {};
@@ -1147,7 +1148,11 @@ class ParticleElement {
 			return;
 		}
 
-		if (this.appeared || this.elapsed > 500 || this.elapsed >= this.lifetime) {
+		if (
+			this.appeared ||
+			this.elapsed > PARTICLE_APPEAR_TIMEOUT_MS ||
+			this.elapsed >= this.lifetime
+		) {
 			this.appeared = false;
 			return false;
 		}

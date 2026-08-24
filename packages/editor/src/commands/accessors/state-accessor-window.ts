@@ -1,60 +1,38 @@
 ﻿import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils';
 import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
+import type { AccessorTarget } from '@app/types/shapes.ts';
+import { createAccessor } from './accessor-factory.ts';
 
-interface StateGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: unknown) => boolean) | null;
-	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
-}
-
-export const StateGetter: StateGetterShape = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
-};
-
-StateGetter.initialize = function (this: StateGetterShape) {
-	if (!$('#stateGetter-type')) return;
-	$('#stateGetter-type').loadItems([
-		{ name: 'Event Trigger State', value: 'trigger' },
-		{ name: 'Latest State', value: 'latest' },
-		{ name: 'By State ID', value: 'by-id' },
-		{ name: 'Variable', value: 'variable' }
-	]);
-
-	$('#stateGetter-type')
-		.enableHiddenMode()
-		.relate([
-			{
-				case: 'by-id',
-				targets: [$('#stateGetter-actor'), $('#stateGetter-stateId')]
-			},
-			{ case: 'variable', targets: [$('#stateGetter-variable')] }
+export const StateGetter = createAccessor({
+	initialize() {
+		if (!$('#stateGetter-type')) return;
+		$('#stateGetter-type').loadItems([
+			{ name: 'Event Trigger State', value: 'trigger' },
+			{ name: 'Latest State', value: 'latest' },
+			{ name: 'By State ID', value: 'by-id' },
+			{ name: 'Variable', value: 'variable' }
 		]);
 
-	on($('#stateGetter-confirm'), 'click', this.confirm!);
-};
+		$('#stateGetter-type')
+			.enableHiddenMode()
+			.relate([
+				{
+					case: 'by-id',
+					targets: [$('#stateGetter-actor'), $('#stateGetter-stateId')]
+				},
+				{ case: 'variable', targets: [$('#stateGetter-variable')] }
+			]);
 
-StateGetter.open = function (this: StateGetterShape, target: AccessorTarget) {
-	this.target = target;
-	useStateGetterWindow().open(target);
-};
-
-StateGetter.checkDataForPlugin = function (this: StateGetterShape, data: unknown) {
-	if (data instanceof Object) {
-		return (data as { getter?: string }).getter === 'state';
+		on($('#stateGetter-confirm'), 'click', this.confirm!);
+	},
+	open(target: AccessorTarget) {
+		useStateGetterWindow().open(target);
+	},
+	checkDataForPlugin: (data: unknown) =>
+		data instanceof Object && (data as { getter?: string }).getter === 'state',
+	createDefaultForPlugin: () => ({ getter: 'state', type: 'trigger' }),
+	confirm() {
+		useStateGetterWindow().confirm();
 	}
-	return false;
-};
-
-StateGetter.createDefaultForPlugin = function (this: StateGetterShape) {
-	return { getter: 'state', type: 'trigger' };
-};
-
-StateGetter.confirm = function (this: StateGetterShape, event: Event) {
-	useStateGetterWindow().confirm();
-};
+});

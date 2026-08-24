@@ -14,6 +14,6 @@ export interface AccessorBaseShape {
 	initialize: (() => void) | null;
 	open: ((target: AccessorTarget) => void) | null;
 	confirm: ((event: Event) => void) | null;
-	checkDataForPlugin?: ((data: Record<string, unknown>) => boolean) | null;
+	checkDataForPlugin?: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin?: (() => { getter: string; type: string }) | null;
 }

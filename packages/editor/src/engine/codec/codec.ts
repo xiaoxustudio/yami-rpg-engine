@@ -1,5 +1,6 @@
 import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '../webgl/webgl-init.ts';
+import { CODEC_GROUP_BITS, CODEC_PRINT_OFFSET } from '@app/constants/editor.ts';
 
 // undefined按位运算等价于0，因此不会产生NaN
 
@@ -400,12 +401,12 @@ Codec.decodeTeamData = function (code: Uint8Array | string, length: number) {
 
 Codec.encodeClone = function (array: Uint8Array, index: number, count: number): number {
 	const bits = Math.ceil(Math.log2(count + 1));
-	const bytes = Math.ceil(bits / 5);
+	const bytes = Math.ceil(bits / CODEC_GROUP_BITS);
 	for (let i = 0; i < bytes; i++) {
 		const n = bytes - i - 1;
 		const head = n !== 0 ? 1 : 0;
-		const code = (head << 5) | ((count >> (n * 5)) & 0b011111);
-		array[index++] = code + 35;
+		const code = (head << CODEC_GROUP_BITS) | ((count >> (n * CODEC_GROUP_BITS)) & 0b011111);
+		array[index++] = code + CODEC_PRINT_OFFSET;
 	}
 	return index;
 };

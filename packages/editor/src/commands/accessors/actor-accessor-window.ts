@@ -1,64 +1,42 @@
 import { $ } from '@app/utils/dom';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { AccessorBaseShape, AccessorTarget } from '@app/types/shapes.ts';
+import type { AccessorTarget } from '@app/types/shapes.ts';
+import { createAccessor } from './accessor-factory.ts';
 
-interface ActorGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: unknown) => boolean) | null;
-	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
-}
-
-export const ActorGetter: ActorGetterShape = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
-};
-
-ActorGetter.initialize = function (this: ActorGetterShape) {
-	if (!$('#actorGetter-type')) return;
-	$('#actorGetter-type').loadItems([
-		{ name: 'Event Trigger Actor', value: 'trigger' },
-		{ name: 'Skill Caster', value: 'caster' },
-		{ name: 'Latest Actor', value: 'latest' },
-		{ name: 'Target Actor', value: 'target' },
-		{ name: 'Player Actor', value: 'player' },
-		{ name: 'Party Member', value: 'member' },
-		{ name: 'Global Actor', value: 'global' },
-		{ name: 'By Actor ID', value: 'by-id' },
-		{ name: 'Variable', value: 'variable' }
-	]);
-
-	$('#actorGetter-type')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'member', targets: [$('#actorGetter-memberId')] },
-			{ case: 'global', targets: [$('#actorGetter-actorId')] },
-			{ case: 'by-id', targets: [$('#actorGetter-presetId')] },
-			{ case: 'variable', targets: [$('#actorGetter-variable')] }
+export const ActorGetter = createAccessor({
+	initialize() {
+		if (!$('#actorGetter-type')) return;
+		$('#actorGetter-type').loadItems([
+			{ name: 'Event Trigger Actor', value: 'trigger' },
+			{ name: 'Skill Caster', value: 'caster' },
+			{ name: 'Latest Actor', value: 'latest' },
+			{ name: 'Target Actor', value: 'target' },
+			{ name: 'Player Actor', value: 'player' },
+			{ name: 'Party Member', value: 'member' },
+			{ name: 'Global Actor', value: 'global' },
+			{ name: 'By Actor ID', value: 'by-id' },
+			{ name: 'Variable', value: 'variable' }
 		]);
-};
 
-ActorGetter.open = function (this: ActorGetterShape, target: AccessorTarget) {
-	this.target = target;
-	useActorGetterWindow().open(target, {
-		presetId: PresetObject.getDefaultPresetId('actor')
-	});
-};
-
-ActorGetter.checkDataForPlugin = function (this: ActorGetterShape, data: unknown) {
-	if (data instanceof Object) {
-		return (data as { getter?: string }).getter === 'actor';
+		$('#actorGetter-type')
+			.enableHiddenMode()
+			.relate([
+				{ case: 'member', targets: [$('#actorGetter-memberId')] },
+				{ case: 'global', targets: [$('#actorGetter-actorId')] },
+				{ case: 'by-id', targets: [$('#actorGetter-presetId')] },
+				{ case: 'variable', targets: [$('#actorGetter-variable')] }
+			]);
+	},
+	open(target: AccessorTarget) {
+		useActorGetterWindow().open(target, {
+			presetId: PresetObject.getDefaultPresetId('actor')
+		});
+	},
+	checkDataForPlugin: (data: unknown) =>
+		data instanceof Object && (data as { getter?: string }).getter === 'actor',
+	createDefaultForPlugin: () => ({ getter: 'actor', type: 'trigger' }),
+	confirm() {
+		useActorGetterWindow().confirm();
 	}
-	return false;
-};
-
-ActorGetter.createDefaultForPlugin = function (this: ActorGetterShape) {
-	return { getter: 'actor', type: 'trigger' };
-};
-
-ActorGetter.confirm = function (this: ActorGetterShape, event: Event) {
-	useActorGetterWindow().confirm();
-};
+});

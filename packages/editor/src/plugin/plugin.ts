@@ -22,7 +22,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { getLocalStore } from '@app/stores/local';
+import { LanguageMap } from './language-map.ts';
 import { t, createGetter } from '@app/i18n';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
@@ -85,14 +85,6 @@ type OptionParameterShape = {
 	options?: (string | number | boolean)[];
 	parent?: OptionParameterShape | null;
 	wrap?: { priority: number };
-	[k: string]: unknown;
-};
-
-type LanguagePackShape = {
-	name: string;
-	code?: string;
-	base?: string;
-	map?: Record<string, string>;
 	[k: string]: unknown;
 };
 
@@ -336,7 +328,6 @@ PluginManager.parseMeta = (function IIFE() {
 	const spacing = /\s+/;
 	const strExp = /(?:'[^']*'|"[^"]")(?=\s*,?)/g;
 	const langName = /^([a-zA-Z-]+)(?:\s+extends\s+([a-zA-Z-]+))?/;
-	const langProp = /(#\S+)\s+([\s\S]+?)(?=\s+#|$)/g;
 	const parseInitialValue = () => {
 		switch (type) {
 			case 'boolean':
@@ -1011,88 +1002,6 @@ PluginManager.parseMeta = (function IIFE() {
 					states[key] = actives.includes(key);
 				}
 			}
-		}
-	}
-
-	class LanguageMap {
-		language: string;
-		active: Record<string, string>;
-		packs: LanguagePackShape[];
-		constructor() {
-			this.language = '';
-			this.active = {};
-			this.packs = [];
-		}
-
-		update() {
-			if (this.language !== getLocalStore().language) {
-				this.language = getLocalStore().language;
-				const packs = this.packs;
-				let active = packs[0];
-				let matchedWeight = 0;
-				const sKeys = getLocalStore().language.split('-');
-				for (const pack of packs) {
-					const dKeys = pack.name.split('-');
-					if (sKeys[0] === dKeys[0]) {
-						let weight = 0;
-						for (let sKey of sKeys) {
-							if (dKeys.includes(sKey)) {
-								weight++;
-							}
-						}
-						if (matchedWeight < weight) {
-							matchedWeight = weight;
-							active = pack;
-						}
-					}
-				}
-				if (active) {
-					this.parse(active);
-					this.active = active.map!;
-				}
-			}
-			return this;
-		}
-
-		parse(pack: LanguagePackShape) {
-			const code = pack.code;
-			if (code !== undefined) {
-				delete pack.code;
-				let match;
-				const base = pack.base;
-				const map = (pack.map = {} as Record<string, string>);
-				while ((match = langProp.exec(code))) {
-					map[match[1]] = match[2];
-				}
-				if (!base) return;
-				for (const pack of this.packs) {
-					if (pack.name === base) {
-						this.parse(pack);
-						// 避免循环继承报错
-						try {
-							Object.setPrototypeOf(map, pack.map!);
-						} catch (error: unknown) {}
-					}
-				}
-			}
-		}
-
-		get(key: string) {
-			if (key && key[0] === '#') {
-				return this.active[key] ?? key;
-			}
-			return key;
-		}
-
-		append(pack: LanguagePackShape) {
-			const { name } = pack;
-			const { packs } = this;
-			for (const pack of packs) {
-				if (pack.name === name) {
-					return;
-				}
-			}
-			packs.push(pack);
 		}
 	}
 
