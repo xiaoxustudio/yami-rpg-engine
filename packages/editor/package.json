@@ -10,7 +10,6 @@
 	"main": "dist-electron/main.js",
 	"scripts": {
 		"test": "vitest run",
-		"buildcss": "node scripts/build-css.js",
 		"buildres": "node scripts/buildres.js",
 		"buildtime": "node scripts/buildRuntime.js",
 		"build:win": "pnpm run build:all && electron-builder --dir --win --x64",
@@ -23,8 +22,8 @@
 		"build:macArmexe": "pnpm run build:all && electron-builder --mac --arm64",
 		"build:universal": "pnpm run build:all && electron-builder --dir --mac --universal",
 		"build:universalexe": "pnpm run build:all && electron-builder --mac --universal",
-		"dev": "node scripts/build-css.js && vite",
-		"build:vite": "pnpm -F @yami/ui-kit build && node scripts/build-css.js --dist-css && vite build",
+		"dev": "pnpm -F @yami/ui-kit exec vite build && vite",
+		"build:vite": "pnpm -F @yami/ui-kit exec vite build && vite build",
 		"build:all": "pnpm run build:vite",
 		"start:prod": "pnpm run build:all && electron . --dirname=.",
 		"typecheck": "tsc --noEmit -p tsconfig.strict.json"

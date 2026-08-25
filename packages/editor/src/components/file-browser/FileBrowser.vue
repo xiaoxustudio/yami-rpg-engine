@@ -192,7 +192,6 @@ const registerNode = (node: HTMLElement | null): void => {
 				target as { read(): string; filter?: string; input?(value?: unknown): void },
 				allowNone
 			);
-		selectorNode.close = () => selector.close();
 		return;
 	}
 	const browserNode = node as unknown as FileBrowserInstance;
@@ -202,7 +201,6 @@ const registerNode = (node: HTMLElement | null): void => {
 			target as { read(): string; filter?: string; input?(value?: unknown): void },
 			allowNone
 		);
-	browserNode.close = () => selector.close();
 };
 
 watch(
