@@ -369,6 +369,15 @@ spacing {
 	border-radius: 50%;
 }
 
+/* 指令列表（command suggestions / command 窗口）内的节点图标固定 8x8，
+   避免 .node-icon 16px 基础尺寸覆盖 .icon-command 圆点 */
+.node-icon.icon-command {
+	margin: 6px 6px 6px 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
 .icon-command.message,
 .icon-command.ui {
 	background-color: var(--command-color-element);

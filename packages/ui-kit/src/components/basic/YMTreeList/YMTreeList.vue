@@ -338,7 +338,10 @@ onBeforeUnmount(() => {
 	mask-size: 100%;
 }
 
-:global(:where(.icon-conditional, .icon-eventEnabled, .icon-scriptEnabled, .icon-loop)) {
+:global(.tree-node-extras .node-icon.icon-conditional),
+:global(.tree-node-extras .node-icon.icon-eventEnabled),
+:global(.tree-node-extras .node-icon.icon-scriptEnabled),
+:global(.tree-node-extras .node-icon.icon-loop) {
 	margin: 3px -2px 3px 4px;
 	width: 14px;
 	height: 14px;
