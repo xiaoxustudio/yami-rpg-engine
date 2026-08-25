@@ -92,7 +92,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { useAutoTileStore } from '@app/stores/autoTile';
+import { useAutoTileStore } from '@app/stores/auto-tile';
 import SwitchItem from '@app/components/common/SwitchItem.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

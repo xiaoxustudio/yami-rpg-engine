@@ -1545,7 +1545,7 @@ EventEditor.apply = function (this: EventEditorShape, _event: Event) {
 }.bind(EventEditor);
 
 const eventEditorBridgeKeys = ['closing'] as const;
-import { getEventEditorStore } from '@app/stores/eventEditor';
+import { getEventEditorStore } from '@app/stores/event-editor';
 
 for (const key of eventEditorBridgeKeys) {
 	Object.defineProperty(EventEditor, key, {

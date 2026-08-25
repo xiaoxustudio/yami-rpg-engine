@@ -18,7 +18,7 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { GameLocal } from '@app/local/local-object.ts';
-import { SearchString } from '@app/stores/searchString';
+import { SearchString } from '@app/stores/search-string';
 import { getLocalStore } from '@app/stores/local';
 import { t, createGetter } from '@app/i18n';
 import { setTooltip } from '@app/utils/element-utils.ts';

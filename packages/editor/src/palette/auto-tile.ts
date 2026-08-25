@@ -957,7 +957,7 @@ const autoTileBridgeKeys = [
 	'imageId',
 	'changed'
 ] as const;
-import { getAutoTileStore } from '@app/stores/autoTile';
+import { getAutoTileStore } from '@app/stores/auto-tile';
 
 for (const key of autoTileBridgeKeys) {
 	Object.defineProperty(AutoTile, key, {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getSearchStringStore, searchStringStateKeys } from '@app/stores/searchString';
+import { getSearchStringStore, searchStringStateKeys } from '@app/stores/search-string';
 
 describe('useSearchStringStore（SearchString 搜索状态桥接）', () => {
 	it('初始状态默认值', () => {

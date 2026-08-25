@@ -2,7 +2,7 @@ import '@app/main/register.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { initCommandColorBridges, initCommandParseBridges } from '@app/commands/command-object.ts';
 import { initUpdater } from '@app/services/updater/register.ts';
-import { initBrowserSearchHistory } from '@app/module/browserSearchHistory.ts';
+import { initBrowserSearchHistory } from '@app/module/browser-search-history.ts';
 import { initEslints } from '@app/module/eslints.ts';
 import { initEditorService } from '@app/services/project/init.ts';
 import { configureFileItemDisplay } from '@app/services/file-system/file-item.ts';

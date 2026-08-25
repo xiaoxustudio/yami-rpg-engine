@@ -552,7 +552,7 @@ CustomCommand.list_restoreSelection = function (this: CustomCommandList): void {
 };
 
 const customCommandBridgeKeys = ['state', 'commands'] as const;
-import { getCustomCommandStore } from '@app/stores/customCommand';
+import { getCustomCommandStore } from '@app/stores/custom-command';
 
 for (const key of customCommandBridgeKeys) {
 	Object.defineProperty(CustomCommand, key, {

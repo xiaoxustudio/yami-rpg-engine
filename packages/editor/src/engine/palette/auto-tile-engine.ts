@@ -1,7 +1,7 @@
 import { drawAndFitImage } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
 import { getPaletteStore } from '@app/stores/palette';
-import { getAutoTileStore } from '@app/stores/autoTile';
+import { getAutoTileStore } from '@app/stores/auto-tile';
 import type { AutoTile } from '@app/palette/auto-tile.ts';
 
 type AutoTileNodeData = {

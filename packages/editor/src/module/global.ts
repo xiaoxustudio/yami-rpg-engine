@@ -223,10 +223,10 @@ export function find_dItem(
 	fn: (dItem?: SelectionItem, insertBefore?: boolean) => unknown
 ) {
 	const self = this as { selections?: SelectionItem[] };
-	var list = self.selections || [];
-	var cur = list[list.length - 1];
-	var next = cur?.element?.nextSibling?.item;
-	var insertBefore = false;
+	const list = self.selections || [];
+	const cur = list[list.length - 1];
+	const next = cur?.element?.nextSibling?.item;
+	let insertBefore = false;
 
 	if (!cur) {
 		return fn();
@@ -271,7 +271,7 @@ EventBus.once('editor_loaded', () => {
 						break;
 				}
 
-				var insertBefore = false;
+				let insertBefore = false;
 				if (dItem === 'auto') {
 					find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 						dItem = a;

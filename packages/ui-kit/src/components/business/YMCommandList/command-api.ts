@@ -1605,7 +1605,6 @@ try {
 	}
 	const event = new EventHandler(Command.compile(commands));
 	EventHandler.call(event);
-	console.log('✓ 指令执行完成');
 } catch (err) {
 	console.error('✗ 执行出错:', err.message);
 }`;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCustomCommandStore, customCommandStateKeys } from '@app/stores/customCommand';
+import { getCustomCommandStore, customCommandStateKeys } from '@app/stores/custom-command';
 import { CustomCommand } from '@app/commands/custom-command-window.ts';
 
 describe('useCustomCommandStore（CustomCommand 状态反转：store 为源）', () => {

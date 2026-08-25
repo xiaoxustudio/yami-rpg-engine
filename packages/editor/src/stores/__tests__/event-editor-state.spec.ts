@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eventEditorStateKeys, getEventEditorStore } from '@app/stores/eventEditor';
+import { eventEditorStateKeys, getEventEditorStore } from '@app/stores/event-editor';
 
 describe('useEventEditorStore（EventEditor 编辑会话状态桥接）', () => {
 	it('初始状态默认值', () => {
