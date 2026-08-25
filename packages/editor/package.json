@@ -1,155 +1,155 @@
 {
-	"name": "@yami/editor",
-	"version": "1.0.0",
-	"description": "2D Game Editor",
-	"author": "Yami",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/yami-pro/yami-rpg-editor.git"
-	},
-	"main": "dist-electron/main.js",
-	"scripts": {
-		"test": "vitest run",
-		"buildres": "node scripts/buildres.js",
-		"buildtime": "node scripts/buildRuntime.js",
-		"build:win": "pnpm run build:all && electron-builder --dir --win --x64",
-		"build:winexe": "pnpm run build:all && electron-builder --win --x64",
-		"build:linux": "pnpm run build:all && electron-builder --dir --linux --x64",
-		"build:linuxexe": "pnpm run build:all && electron-builder --linux --x64",
-		"build:mac": "pnpm run build:all && electron-builder --dir --mac --x64",
-		"build:macexe": "pnpm run build:all && electron-builder --mac --x64",
-		"build:macArm": "pnpm run build:all && electron-builder --dir --mac --arm64",
-		"build:macArmexe": "pnpm run build:all && electron-builder --mac --arm64",
-		"build:universal": "pnpm run build:all && electron-builder --dir --mac --universal",
-		"build:universalexe": "pnpm run build:all && electron-builder --mac --universal",
-		"dev": "pnpm -F @yami/ui-kit build && vite",
-		"build:vite": "pnpm -F @yami/ui-kit build && vite build",
-		"build:all": "pnpm run build:vite",
-		"start:prod": "pnpm run build:all && electron . --dirname=.",
-		"typecheck": "tsc --noEmit -p tsconfig.strict.json"
-	},
-	"dependencies": {
-		"@vueuse/core": "^14.3.0",
-		"axios": "^1.19.0",
-		"exceljs": "^4.4.0",
-		"fs-extra": "^11.3.5",
-		"koa": "^3.2.1",
-		"markdown-it": "^14.2.0",
-		"mime-types": "^3.0.2",
-		"mitt": "^3.0.1",
-		"monaco-editor": "^0.55.1",
-		"pinia": "^4.0.2",
-		"qrcode": "^1.5.4",
-		"sharp": "^0.34.5",
-		"steamworks.js": "^0.4.0",
-		"typescript": "catalog:",
-		"uglify-js": "^3.19.3",
-		"vue": "^3.6.0-rc.3",
-		"vue-i18n": "^11.4.8",
-		"xml2js": "^0.6.2",
-		"yauzl": "^3.3.1"
-	},
-	"devDependencies": {
-		"@types/fs-extra": "^11.0.4",
-		"@types/node": "^22.19.19",
-		"@types/uglify-js": "^3.17.5",
-		"@vitejs/plugin-legacy": "^8.2.1",
-		"@vitejs/plugin-vue": "^6.0.8",
-		"@vue/test-utils": "^2.4.11",
-		"@yami/ui-kit": "workspace:*",
-		"archiver": "^7.0.1",
-		"concurrently": "^10.0.3",
-		"cross-env": "^10.1.0",
-		"electron": "^20.3.12",
-		"electron-builder": "^25.1.8",
-		"jsdom": "^30.0.1",
-		"oxfmt": "^0.60.0",
-		"oxlint": "^1.75.0",
-		"oxlint-tsgolint": "^7.0.2001",
-		"vite": "^8.1.5",
-		"vite-plugin-electron": "^1.1.0",
-		"vite-plugin-vue-devtools": "^8.2.1",
-		"vitest": "^4.1.10",
-		"vue-tsc": "^3.3.9",
-		"wait-on": "^9.0.10"
-	},
-	"build": {
-		"appId": "com.open.yami.rpgeditor",
-		"electronVersion": "43.2.0",
-		"directories": {
-			"buildResources": "Assets",
-			"output": "./build"
-		},
-		"files": [
-			{
-				"from": "dist",
-				"to": "dist",
-				"filter": [
-					"**",
-					"!config.json",
-					"!Templates/**/*",
-					"!Apk/**/*"
-				]
-			},
-			"dist-electron/**",
-			"main/*.ts",
-			"package.json"
-		],
-		"extraResources": [
-			{
-				"from": "node_modules/typescript",
-				"to": "app/node_modules/typescript"
-			},
-			{
-				"from": "node_modules/@typescript/typescript-win32-x64",
-				"to": "app/node_modules/@typescript/typescript-win32-x64"
-			},
-			{
-				"from": "dist/Templates/electron-win-x64/resources/app/node_modules",
-				"to": "app/Templates/electron-win-x64/resources/app/node_modules"
-			},
-			{
-				"from": "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules",
-				"to": "app/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
-			}
-		],
-		"asar": false,
-		"asarUnpack": [
-			"node_modules/typescript",
-			"dist/Templates/electron-win-x64/resources/app/node_modules",
-			"dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
-		],
-		"extraFiles": [],
-		"nsis": {
-			"oneClick": false,
-			"allowElevation": true,
-			"allowToChangeInstallationDirectory": true,
-			"shortcutName": "Open Yami RPG Editor",
-			"createDesktopShortcut": true,
-			"createStartMenuShortcut": true
-		},
-		"win": {
-			"icon": "icon.ico",
-			"executableName": "Open Yami RPG Editor",
-			"verifyUpdateCodeSignature": false,
-			"target": [
-				"nsis"
-			]
-		},
-		"mac": {
-			"icon": "icon.icns",
-			"x64ArchFiles": "*",
-			"target": [
-				"dmg",
-				"zip"
-			]
-		},
-		"linux": {
-			"target": [
-				"AppImage",
-				"deb"
-			]
-		}
-	},
-	"productName": "Yami RPG Editor"
+  "name": "@yami/editor",
+  "version": "1.0.0",
+  "description": "2D Game Editor",
+  "author": "Yami",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yami-pro/yami-rpg-editor.git"
+  },
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "test": "vitest run",
+    "buildres": "node scripts/buildres.js",
+    "buildtime": "node scripts/buildRuntime.js",
+    "build:win": "pnpm run build:all && electron-builder --dir --win --x64",
+    "build:winexe": "pnpm run build:all && electron-builder --win --x64",
+    "build:linux": "pnpm run build:all && electron-builder --dir --linux --x64",
+    "build:linuxexe": "pnpm run build:all && electron-builder --linux --x64",
+    "build:mac": "pnpm run build:all && electron-builder --dir --mac --x64",
+    "build:macexe": "pnpm run build:all && electron-builder --mac --x64",
+    "build:macArm": "pnpm run build:all && electron-builder --dir --mac --arm64",
+    "build:macArmexe": "pnpm run build:all && electron-builder --mac --arm64",
+    "build:universal": "pnpm run build:all && electron-builder --dir --mac --universal",
+    "build:universalexe": "pnpm run build:all && electron-builder --mac --universal",
+    "dev": "cross-env VITE_SERVE=true pnpm -F @yami/ui-kit exec vite build && cross-env VITE_SERVE=true vite",
+    "build:vite": "cross-env VITE_SERVE=false pnpm -F @yami/ui-kit build && cross-env VITE_SERVE=false vite build",
+    "build:all": "pnpm run build:vite",
+    "start:prod": "pnpm run build:all && electron . --dirname=.",
+    "typecheck": "tsc --noEmit -p tsconfig.strict.json"
+  },
+  "dependencies": {
+    "@vueuse/core": "^14.3.0",
+    "axios": "^1.19.0",
+    "exceljs": "^4.4.0",
+    "fs-extra": "^11.3.5",
+    "koa": "^3.2.1",
+    "markdown-it": "^14.2.0",
+    "mime-types": "^3.0.2",
+    "mitt": "^3.0.1",
+    "monaco-editor": "^0.55.1",
+    "pinia": "^4.0.2",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.34.5",
+    "steamworks.js": "^0.4.0",
+    "typescript": "catalog:",
+    "uglify-js": "^3.19.3",
+    "vue": "^3.6.0-rc.3",
+    "vue-i18n": "^11.4.8",
+    "xml2js": "^0.6.2",
+    "yauzl": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.19.19",
+    "@types/uglify-js": "^3.17.5",
+    "@vitejs/plugin-legacy": "^8.2.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "@yami/ui-kit": "workspace:*",
+    "archiver": "^7.0.1",
+    "concurrently": "^10.0.3",
+    "cross-env": "^10.1.0",
+    "electron": "^20.3.12",
+    "electron-builder": "^25.1.8",
+    "jsdom": "^30.0.1",
+    "oxfmt": "^0.60.0",
+    "oxlint": "^1.75.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "vite": "^8.1.5",
+    "vite-plugin-electron": "^1.1.0",
+    "vite-plugin-vue-devtools": "^8.2.1",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.9",
+    "wait-on": "^9.0.10"
+  },
+  "build": {
+    "appId": "com.open.yami.rpgeditor",
+    "electronVersion": "43.2.0",
+    "directories": {
+      "buildResources": "Assets",
+      "output": "./build"
+    },
+    "files": [
+      {
+        "from": "dist",
+        "to": "dist",
+        "filter": [
+          "**",
+          "!config.json",
+          "!Templates/**/*",
+          "!Apk/**/*"
+        ]
+      },
+      "dist-electron/**",
+      "main/*.ts",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/typescript",
+        "to": "app/node_modules/typescript"
+      },
+      {
+        "from": "node_modules/@typescript/typescript-win32-x64",
+        "to": "app/node_modules/@typescript/typescript-win32-x64"
+      },
+      {
+        "from": "dist/Templates/electron-win-x64/resources/app/node_modules",
+        "to": "app/Templates/electron-win-x64/resources/app/node_modules"
+      },
+      {
+        "from": "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules",
+        "to": "app/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
+      }
+    ],
+    "asar": false,
+    "asarUnpack": [
+      "node_modules/typescript",
+      "dist/Templates/electron-win-x64/resources/app/node_modules",
+      "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
+    ],
+    "extraFiles": [],
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Open Yami RPG Editor",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "win": {
+      "icon": "icon.ico",
+      "executableName": "Open Yami RPG Editor",
+      "verifyUpdateCodeSignature": false,
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "icon": "icon.icns",
+      "x64ArchFiles": "*",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "productName": "Yami RPG Editor"
 }
