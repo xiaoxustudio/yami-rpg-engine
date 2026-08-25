@@ -37,6 +37,7 @@ interface LayoutScheme {
 	split?: string;
 	children?: LayoutScheme[];
 	tabs?: string[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -734,11 +735,11 @@ Layout.loadFromConfig = function (config: { layout?: Record<string, LayoutScheme
 	this.layout = config.layout ?? {};
 };
 
-Layout.windowResize = function (event: EditorEvent) {
+Layout.windowResize = function (_event: EditorEvent) {
 	Layout.updateGroups!();
 };
 
-Layout.windowLocalize = function (event: EditorEvent) {
+Layout.windowLocalize = function (_event: EditorEvent) {
 	if (Layout.manager.active !== null) {
 		for (const group of Layout.getKeyGroups!()) {
 			dispatchResizeEvent(group.manager.active);
@@ -922,7 +923,7 @@ Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 	}
 };
 
-Layout.navDragend = function (event: EditorEvent) {
+Layout.navDragend = function (_event: EditorEvent) {
 	const { dragging } = getLayoutStore();
 	if (dragging) {
 		window.removeEventListener('dragenter', Layout.navDragover!);
@@ -1120,7 +1121,7 @@ Layout.navDrop = function (event: EditorEvent) {
 	}
 };
 
-Layout.regionDragleave = function (this: typeof Layout, event: EditorEvent) {
+Layout.regionDragleave = function (this: typeof Layout, _event: EditorEvent) {
 	const { dragging } = getLayoutStore();
 	if (dragging && dragging.location && dragging.location.trigger === this) {
 		Layout.updateHint!(null);
@@ -1420,7 +1421,9 @@ import { getLayoutStore } from '@app/stores/layout';
 for (const key of layoutBridgeKeys) {
 	Object.defineProperty(Layout, key, {
 		get: () => getLayoutStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getLayoutStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

@@ -247,17 +247,17 @@ const windowClose = (event: Event): void => {
 	onWindowClose(event);
 };
 
-const windowClosed = (event: Event): void => {
+const windowClosed = (_event: Event): void => {
 	targetState = null;
 	getList().clear();
 	onWindowClosed();
 };
 
-const listChange = (event?: Event): void => {
+const listChange = (_event?: Event): void => {
 	markChanged();
 };
 
-const confirm = (event: Event): void => {
+const confirm = (_event: Event): void => {
 	confirmForm();
 };
 

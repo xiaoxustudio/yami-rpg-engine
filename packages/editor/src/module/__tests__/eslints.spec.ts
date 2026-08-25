@@ -195,12 +195,15 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 					return [
 						{ fold: true },
 						{ color: 'normal' },
+						// oxlint-disable-next-line no-base-to-string
 						{ text: String(item.id) },
 						{ children: cmds },
 						{ color: 'normal' },
+						// oxlint-disable-next-line no-base-to-string
 						{ text: String(item.id) + '.end' }
 					];
 				}
+				// oxlint-disable-next-line no-base-to-string
 				return [{ color: 'normal' }, { text: String(item.id) }];
 			},
 			fetchVariables: () => [],

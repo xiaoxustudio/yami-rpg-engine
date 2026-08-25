@@ -3,6 +3,7 @@ import { PluginManager } from '@app/plugin/plugin.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
+// oxlint-disable-next-line no-explicit-any
 type PluginItemShape = { id: string; enabled: boolean; [k: string]: any };
 
 export const pluginStateKeys = ['plugins'] as const;
@@ -11,7 +12,7 @@ export const usePluginStore = defineStore('plugin', () => {
 	const plugins = shallowRef<PluginItemShape[] | Record<string, PluginItemShape>>([]);
 
 	function load() {
-		PluginManager?.load?.();
+		void PluginManager?.load?.();
 	}
 
 	function reload() {

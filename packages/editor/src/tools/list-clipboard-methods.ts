@@ -16,7 +16,7 @@ interface ListWithElements {
 	elements?: Array<HTMLElement & { item: ListItem }> & { count?: number };
 	addNodeTo?: (item: ListItem, dItem: unknown) => void;
 	deleteNode?: (item: ListItem) => void;
-	select?: (item: ListItem | unknown) => void;
+	select?: (item: unknown) => void;
 	copy?: (item: ListItem) => void;
 	paste?: (dItem: unknown) => void;
 	delete?: (item: ListItem) => void;

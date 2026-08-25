@@ -30,6 +30,7 @@ function updateScenes(verNum: number) {
 				}
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, scene] of Object.entries<any>(scenes!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
@@ -40,6 +41,7 @@ function updateScenes(verNum: number) {
 	};
 	if (verNum < Updater.getVersionNumber!('1.0.116')) {
 		const { manifest, scenes } = getDataStore().data;
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, scene] of Object.entries<any>(scenes!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

@@ -218,7 +218,7 @@ Sprite.open = function (this: typeof Sprite, target: { spriteX: number; spriteY:
 		if (Animation.timelineMarquee.layer.sprite) {
 			this.state = 'loading';
 			this.target = target;
-			this.loadImage();
+			void this.loadImage();
 		}
 	}
 };
@@ -599,7 +599,7 @@ Sprite.loadFromProject = function (this: typeof Sprite, project: EditorProjectSh
 	this.setZoom(sprite.zoom);
 };
 
-Sprite.windowResize = function (this: typeof Sprite, event: Event) {
+Sprite.windowResize = function (this: typeof Sprite, _event: Event) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -626,11 +626,11 @@ Sprite.themechange = function (this: typeof Sprite, event: Event) {
 	this.requestRendering();
 }.bind(Sprite);
 
-Sprite.zoomFocus = function (event: Event) {
+Sprite.zoomFocus = function (_event: Event) {
 	Sprite.screen.focus();
 };
 
-Sprite.zoomInput = function (this: HTMLElement, event: Event) {
+Sprite.zoomInput = function (this: HTMLElement, _event: Event) {
 	Sprite.setZoom(read(this));
 };
 
@@ -689,7 +689,7 @@ Sprite.screenWheel = function (this: typeof Sprite, event: WheelEvent) {
 	}
 }.bind(Sprite);
 
-Sprite.screenUserscroll = function (this: typeof Sprite, event: Event) {
+Sprite.screenUserscroll = function (this: typeof Sprite, _event: Event) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;

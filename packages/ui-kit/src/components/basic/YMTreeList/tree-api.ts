@@ -188,6 +188,7 @@ export const treeListStatics = {
 			textBox.dispatchEvent(new FocusEvent('blur'));
 		});
 
+		// oxlint-disable-next-line no-explicit-any
 		textBox.addEventListener('blur', function (this: any) {
 			const element = this.parentNode;
 			const list = element.parentNode;
@@ -282,6 +283,7 @@ const cloneNode = (node: TreeItem): TreeItem => {
 	return copy as TreeItem;
 };
 
+// oxlint-disable-next-line no-explicit-any
 export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	bind: function (
 		this: HTMLElement & { [k: string]: unknown },
@@ -306,6 +308,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	update: function (this: any): void {
 		const { elements } = this;
 		elements.start = -1;
@@ -334,6 +337,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.resize();
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	refresh: function (this: any): void {
 		this.deleteNodeElements(this.data);
 		this.update();
@@ -347,6 +351,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	updateOnResize: function (this: any, element: NodeElement): void {
 		if (element.changed) {
 			element.changed = false;
@@ -354,6 +359,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	createFlatItems: function (this: any, data: TreeItem[]): void {
 		const elements = this.elements;
 		const length = data.length;
@@ -364,6 +370,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createIndentedItems: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		data: TreeItem[],
 		parent: TreeItem | null,
@@ -384,6 +391,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	searchNodes: function (this: any, keyword: string | RegExp): void {
 		const { data } = this;
 		if (!data) return;
@@ -410,6 +418,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.update();
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	searchNodesDebounced: function (this: any, keyword: string | RegExp): void {
 		(this._searchNodesDebounced ??= debounce(
 			(kw: string | RegExp) => this.searchNodes(kw),
@@ -418,6 +427,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	searchNodesAlgorithm: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		data: TreeItem[],
 		keyword: RegExp,
@@ -464,6 +474,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return element;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	updateNodeElement: function (this: any, element: NodeElement): void {
 		const { item } = element;
 		if (!element.textNode) {
@@ -566,6 +577,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	deleteNodeElements: function (this: any, data: TreeItem[]): void {
 		const length = data.length;
 		for (let i = 0; i < length; i++) {
@@ -592,6 +604,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return icon;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	createText: function (this: any, item: TreeItem): Text {
 		return document.createTextNode(this.parseName(item));
 	},
@@ -600,6 +613,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return item.name;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	updateItemName: function (this: any, item: TreeItem): void {
 		if (item?.element?.textNode) {
 			const element = item.element;
@@ -663,6 +677,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return false;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	renameNode: function (this: any, item: TreeItem | null, newName: string): void {
 		if (item) {
 			item.name = newName;
@@ -670,6 +685,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	resetItemName: function (this: any, item: TreeItem | null): void {
 		if (item) {
 			item.name = this.generateCopyName(item);
@@ -687,6 +703,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			flags[sibling.name] = true;
 		}
 		const name = item.name.replace(/\s\d+$/, '');
+		// oxlint-disable-next-line no-constant-condition
 		for (let i = 1; true; i++) {
 			const newName = `${name} ${i}`;
 			if (!flags[newName]) {
@@ -695,6 +712,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	duplicate: function (this: any, item: TreeItem): void {
 		const copy = cloneNode(item);
 		copy.name = this.generateUniqueName(item);
@@ -708,6 +726,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	addNodeTo: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		sItem: TreeItem,
 		dItem: TreeItem | null | undefined,
@@ -764,7 +783,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.dispatchEvent(record);
 			}
 
-			!sItem.parent && getListConfig(this).onCreate?.(sItem);
+			if (!sItem.parent) getListConfig(this).onCreate?.(sItem);
 			this.update();
 			this.select(sItem);
 			this.scrollToSelection();
@@ -772,6 +791,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	deleteNode: function (this: any, item: TreeItem): void {
 		const items = item.parent!.children!;
 		if (items instanceof Array) {
@@ -797,6 +817,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	removeItemTo: function (this: any, sItem: TreeItem, dItem: TreeItem | null | undefined): void {
 		if (sItem === dItem || (getListConfig(this).lockDirectory && dItem === this.root)) {
 			return;
@@ -843,6 +864,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	removeItemToInsert: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		sItem: TreeItem,
 		dItem: TreeItem | null | undefined
@@ -890,6 +912,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	restore: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		operation: string,
 		response: { type: string; [k: string]: unknown }
@@ -961,7 +984,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				this.update();
-				operation === 'undo' && this.select(item);
+				if (operation === 'undo') this.select(item);
 				this.scrollToSelection();
 				dispatchChangeEvent(this);
 				break;
@@ -1018,6 +1041,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	select: function (this: any, item: TreeItem | null | undefined): void {
 		if (item instanceof Object && this.read() !== item) {
 			this.unselect();
@@ -1033,6 +1057,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectWithNoEvent: function (this: any, item: TreeItem | null | undefined): void {
 		const enabled = this.selectEventEnabled;
 		this.selectEventEnabled = false;
@@ -1065,6 +1090,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	unselectIn: function (this: any, item: TreeItem): void {
 		const targets = [];
 		for (let target of this.selections) {
@@ -1082,6 +1108,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectRelative: function (this: any, direction: string): void {
 		const elements = this.elements;
 		const count = elements.count;
@@ -1113,6 +1140,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	expandSelection: function (this: any): void {
 		const item = this.read();
 		if (item !== null && item.expanded !== undefined && item.element !== undefined) {
@@ -1122,6 +1150,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	expandToSelection: function (this: any, update = true): void {
 		const item = this.read();
 		if (item !== null) {
@@ -1129,6 +1158,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	expandToItem: function (this: any, item: TreeItem | null | undefined, update = true): void {
 		item = item!.parent!;
 		if (!item) return;
@@ -1146,6 +1176,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollToSelection: function (this: any, mode = 'active'): void {
 		const selection = this.read();
 		if (selection && hasScrollBar(this)) {
@@ -1178,6 +1209,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollToHome: function (this: any): void {
 		const element = this.elements[0];
 		if (element instanceof HTMLElement) {
@@ -1186,6 +1218,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scroll(0, 0);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollToEnd: function (this: any): void {
 		const elements = this.elements;
 		const index = elements.count - 1;
@@ -1196,6 +1229,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scroll(0, this.scrollHeight);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pageUp: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
@@ -1209,6 +1243,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scrollBy(0, -scrollLines * 20);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pageDown: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
@@ -1222,6 +1257,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scrollBy(0, +scrollLines * 20);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	getElementIndexOfSelection: function (this: any, defIndex: number): number {
 		const item = this.read();
 		return item ? this.elements.indexOf(item.element) : defIndex;
@@ -1287,6 +1323,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	clear: function (this: any): HTMLElement {
 		if (this.display === 'search') {
 			this.display = 'normal';
@@ -1332,6 +1369,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	keydown: function (this: any, event: KeyboardEvent & { cmdOrCtrlKey: boolean }): void {
 		if (!this.data) {
 			return;
@@ -1392,6 +1430,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pointerdown: function (this: any, event: PointerEvent): void {
 		this.dragend();
 		this.cancelRenaming();
@@ -1430,6 +1469,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pointerup: function (this: any, event: PointerEvent): void {
 		if (this.dragging || !this.data) {
 			return;
@@ -1463,6 +1503,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
 		const element = event.target as NodeItemElement;
 		if (hasClass(element, 'node-item')) {
@@ -1478,6 +1519,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	dragstart: function (this: any, event: TreeListDragEvent): void {
 		if (
 			getListConfig(this).removable &&
@@ -1502,7 +1544,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	dragend: function (this: any, event?: DragEvent): void {
+	// oxlint-disable-next-line no-explicit-any
+	dragend: function (this: any, _event?: DragEvent): void {
 		if (this.dragging) {
 			removeClass(this, 'dragging');
 			removeClass(this.dragging.hint.target, 'hint');
@@ -1529,6 +1572,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	dragover: function (this: any, event: TreeListDragEvent): void {
 		const { dragging } = this;
 		if (dragging) {
@@ -1614,6 +1658,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	drop: function (this: any, event: DragEvent): void {
 		const { dragging } = this;
 		if (!dragging) {
@@ -1652,7 +1697,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.dragend();
 	},
 
-	dataChange: function (this: any, event: Event): void {
+	// oxlint-disable-next-line no-explicit-any
+	dataChange: function (this: any, _event: Event): void {
 		if (this.display === 'search') {
 			this.searchNodes(this.keyword);
 		}
@@ -1660,6 +1706,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 };
 
 export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions): HTMLElement {
+	// oxlint-disable-next-line no-explicit-any
 	const list = el as HTMLElement & { [k: string]: any };
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;

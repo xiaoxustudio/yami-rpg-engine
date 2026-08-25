@@ -64,7 +64,7 @@ Command.cases.changeActorPortrait = new CommandSchema({
 });
 
 export function useChangeActorPortraitCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('changeActorPortrait', {
+	const { form, load, commit } = useCommandSchema('changeActorPortrait', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorPortrait-actor'));
 		}

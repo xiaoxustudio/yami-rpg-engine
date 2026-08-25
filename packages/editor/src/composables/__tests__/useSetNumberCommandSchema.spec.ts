@@ -11,7 +11,8 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	setNumberColor: (value: unknown) => `[num:${value}]`
+	// oxlint-disable-next-line no-base-to-string
+	setNumberColor: (value: unknown) => `[num:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
@@ -34,7 +35,7 @@ interface ControlEl extends HTMLElement {
 	input(value: unknown): void;
 }
 
-const getList = (id: string): ParamListElement =>
+const _getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 

@@ -48,7 +48,7 @@ Command.cases.renderOutline = new CommandSchema({
 });
 
 export function useRenderOutlineCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('renderOutline', {
+	const { form, load, commit } = useCommandSchema('renderOutline', {
 		onLoad() {
 			getFocus(document.getElementById('renderOutline-operation'));
 		}

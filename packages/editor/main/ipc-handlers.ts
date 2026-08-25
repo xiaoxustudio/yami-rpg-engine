@@ -14,13 +14,15 @@ const writeFile = async (filePath: string, text: string, check?: boolean) => {
 	return FSP.writeFile(filePath, text);
 };
 
+// oxlint-disable-next-line no-explicit-any
 export const promises: Promise<any>[] = [];
+// oxlint-disable-next-line no-explicit-any
 const protectPromise = function (promise: Promise<any>) {
 	promises.push(promise);
-	promise.finally(() => {
+	void promise.finally(() => {
 		const index = promises.indexOf(promise);
 		if (index !== -1) {
-			promises.splice(index, 1);
+			void promises.splice(index, 1);
 		}
 	});
 	return promise;
@@ -147,7 +149,7 @@ ipcMain.on(CHANNELS.on.toggleFullScreen, (event) => {
 });
 
 ipcMain.on(CHANNELS.on.openPath, (event, targetPath) => {
-	shell.openPath(path.normalize(targetPath));
+	void shell.openPath(path.normalize(targetPath));
 });
 
 // 使用VSCode打开脚本
@@ -161,7 +163,7 @@ ipcMain.on(CHANNELS.on.openVscode, (event, scriptPath, line, column) => {
 	}
 	// 剔除会污染 vscode:// URI 的片段/查询字符，防止协议参数注入
 	const url = `${normalized}:${Number(line) || 0}:${Number(column) || 0}`.replace(/[?#]/g, '');
-	shell.openExternal(`vscode://file/${url}`);
+	void shell.openExternal(`vscode://file/${url}`);
 });
 
 ipcMain.on(CHANNELS.on.showItemInFolder, (event, filePath) => {
@@ -297,6 +299,7 @@ ipcMain.handle(CHANNELS.invoke.relaunchApp, async (event) => {
 
 ipcMain.handle(CHANNELS.invoke.buildApk, (event, config) => {
 	const send = (data: { done: boolean; msg: string }) => {
+		// oxlint-disable-next-line no-explicit-any
 		const editor = (globalThis as any).editor;
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.apkLog, data);
 	};
@@ -308,7 +311,7 @@ ipcMain.handle(CHANNELS.invoke.buildApk, (event, config) => {
 		return;
 	}
 	try {
-		apkProcessor.main({
+		void apkProcessor.main({
 			config,
 			onProgress: (step: string, percentage: number, isError?: boolean) => {
 				if (isError) {
@@ -331,7 +334,8 @@ ipcMain.handle(CHANNELS.invoke.buildApk, (event, config) => {
 	} catch (err) {
 		send({
 			done: true,
-			msg: `错误: ${err}`
+			// oxlint-disable-next-line no-base-to-string
+			msg: `错误: ${String(err)}`
 		});
 	}
 });

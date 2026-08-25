@@ -67,6 +67,7 @@ interface VariableModule {
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
 	_listMethodsLoaded: boolean;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -147,7 +148,7 @@ function ensureDomBound() {
 	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
 	if (!Variable._listMethodsLoaded) {
 		Variable._listMethodsLoaded = true;
-		import('./list-methods.ts');
+		void import('./list-methods.ts');
 	}
 	Variable.list.saveScroll = Variable.list_saveScroll;
 	Variable.list.restoreScroll = Variable.list_restoreScroll;

@@ -80,6 +80,7 @@ export class TextureManager {
 
 	clear() {
 		const { gl, map, images } = this;
+		// oxlint-disable-next-line no-explicit-any
 		for (const texture of Object.values<any>(map)) {
 			if (texture.protected === undefined) {
 				delete map[texture.index];
@@ -90,6 +91,7 @@ export class TextureManager {
 				}
 			}
 		}
+		// oxlint-disable-next-line no-explicit-any
 		for (const texture of Object.values<any>(images)) {
 			if (texture.protected === undefined) {
 				delete images[texture.guid];
@@ -110,6 +112,7 @@ export class TextureManager {
 	}
 
 	restore() {
+		// oxlint-disable-next-line no-explicit-any
 		for (const texture of Object.values<any>(this.map)) {
 			if (texture.onRestore) {
 				texture.onRestore(texture);

@@ -81,8 +81,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 			this.history = new ParamHistory(FileAnimation, FileAnimation.owner as never, list);
 
-			// 闂備焦褰冪粔宄懊归崶顒€绀夐柕濞у嫭姣庣紓浣瑰劤濠€閬嶅箖?- 闂佽　鍋撻柣鐔告緲缂嶄礁霉濠婂喚鍎庢繛?
-			list.on('change', (event: Event) => {
+			list.on('change', (_event: Event) => {
 				if (Animation.sprites) {
 					if (Animation.sprites.listItems) {
 						Animation.sprites.listItems = undefined;

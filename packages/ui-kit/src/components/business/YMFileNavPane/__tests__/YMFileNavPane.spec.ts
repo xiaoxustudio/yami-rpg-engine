@@ -32,6 +32,7 @@ const mockHeight = (el: HTMLElement): void => {
 };
 
 interface NavElement extends HTMLElement {
+	load?: (...files: FileItem[]) => void;
 	select?: (...files: FileItem[]) => void;
 	unselect?: () => void;
 	clear?: () => HTMLElement;

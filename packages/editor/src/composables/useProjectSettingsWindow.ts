@@ -344,7 +344,7 @@ function windowClose(event: Event): void {
 	}
 }
 
-function windowClosed(event: Event): void {
+function windowClosed(_event: Event): void {
 	getProjectStore().state = 'closed';
 	getProjectStore().target = null;
 	getProjectStore().data = null;
@@ -370,11 +370,11 @@ function projectChange(
 	}
 }
 
-function dataChange(event: Event): void {
+function dataChange(_event: Event): void {
 	changed = true;
 }
 
-function paramInput(this: HTMLElement, event: Event): void {
+function paramInput(this: HTMLElement, _event: Event): void {
 	const key = Inspector.getKey(this);
 	const value = read(this);
 	const keys = key.split('-');
@@ -398,7 +398,7 @@ function filterDuplicateLanguages(): void {
 	local.languages = languages;
 }
 
-function confirm(event?: Event): void {
+function confirm(_event?: Event): void {
 	if (changed) {
 		changed = false;
 		filterDuplicateLanguages();

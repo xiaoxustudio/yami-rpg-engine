@@ -20,6 +20,7 @@ Command.cases.tintImage = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
+	// oxlint-disable-next-line no-explicit-any
 	parseTint(mode: 'full' | 'rgb' | 'gray', [red, green, blue, gray]: [any, any, any, any]) {
 		const label = t('command.tintImage.' + mode);
 		const _red = Command.setNumberColor!(red);
@@ -83,7 +84,7 @@ Command.cases.tintImage = new CommandSchema({
 });
 
 export function useTintImageCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('tintImage', {
+	const { form, load, commit } = useCommandSchema('tintImage', {
 		onLoad() {
 			getFocus(document.getElementById('tintImage-element'));
 		}

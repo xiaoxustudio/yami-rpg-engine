@@ -48,6 +48,7 @@ interface VariableGetterTarget {
 		item?: { type: string };
 		element?: { type: string };
 	};
+	// oxlint-disable-next-line no-explicit-any
 	read?: () => any;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;

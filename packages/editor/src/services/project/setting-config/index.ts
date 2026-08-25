@@ -12,6 +12,7 @@ import { settingSchema, buildDefaultConfig } from './schema.ts';
 export const path = nodePath;
 
 export const SettingConfig = new (class {
+	// oxlint-disable-next-line no-explicit-any
 	config: Record<string, any> = {};
 	private _rendered = false;
 	private _localizeBound = false;

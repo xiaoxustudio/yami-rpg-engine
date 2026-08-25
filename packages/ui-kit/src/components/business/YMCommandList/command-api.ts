@@ -58,8 +58,11 @@ interface DataLookupAdapter {
 	attribute(id: string): { name: string } | null | undefined;
 	enumString(id: string): { name: string } | null | undefined;
 	gameLocalReplace(text: string): string;
+	// oxlint-disable-next-line no-explicit-any
 	guidMap?: Record<string, any> | (() => Record<string, any>);
+	// oxlint-disable-next-line no-explicit-any
 	scenePresets?: Record<string, any> | (() => Record<string, any>);
+	// oxlint-disable-next-line no-explicit-any
 	uiPresets?: Record<string, any> | (() => Record<string, any>);
 }
 
@@ -221,11 +224,13 @@ export const commandListStatics = {
 	}
 };
 
+// oxlint-disable-next-line no-explicit-any
 export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
 		return this.data as CommandData | null;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	write: function (this: any, data: CommandData): void {
 		const options = this.__options;
 		this.data = data;
@@ -237,11 +242,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				value: options.commandHistory ? new options.commandHistory(this) : null
 			});
 		}
-		Promise.resolve().then(() => {
+		void Promise.resolve().then(() => {
 			this.scrollTop = 0;
 		});
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	update: function (this: any): void {
 		this.analyzeVariables();
 
@@ -263,7 +269,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.resize();
 	},
 
-	resize: function (this: any, ...args: unknown[]): void {
+	// oxlint-disable-next-line no-explicit-any
+	resize: function (this: any, ..._args: unknown[]): void {
 		commonListResize(this);
 
 		this.scheduleCheckVariables();
@@ -273,6 +280,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	updateOnResize: function (this: any, element: CommandItemElement): void {
 		if (element.contents !== null) {
 			this.updateCommandElement(element);
@@ -280,6 +288,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createFoldedCommandBuffer: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		buffer: CommandBuffer,
 		indent: number,
@@ -300,6 +309,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createItems: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		commands: CommandList,
 		indent: number,
@@ -537,7 +547,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						}
 					}
 					const slength = Math.min(lines, MAX_LINES + 1);
-					const items = new Array(slength);
+					const items = Array.from<CommandItemElement>({ length: slength });
 					items[0] = li;
 					for (let i = 1; i < slength; i++) {
 						li = document.createElement('div') as unknown as CommandItemElement;
@@ -617,6 +627,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return buffer;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	updateCommandElement: function (this: any, element: CommandItemElement): void {
 		const options = this.__options;
 		element.style.textIndent = this.computeTextIndent(element.dataIndent);
@@ -703,10 +714,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					text.name = id;
 					addClass(text, varType + '-type');
 					addClass(text, 'command-text-identifier');
+					// oxlint-disable-next-line unbound-method
 					text.onpointerenter = commandListStatics.textPointerenter as unknown as (
 						this: GlobalEventHandlers,
 						ev: PointerEvent
+						// oxlint-disable-next-line no-explicit-any
 					) => any;
+					// oxlint-disable-next-line unbound-method
 					text.onpointerleave = commandListStatics.textPointerleave;
 				}
 				if (content.tooltip) {
@@ -758,6 +772,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	deleteCommandBuffers: function (this: any, commands: CommandData[]): void {
 		for (const command of commands) {
 			const { buffer } = command;
@@ -856,6 +871,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	select: function (this: any, start: number, end: number = start): void {
 		if (start > end) {
 			[start, end] = [end, start];
@@ -907,6 +923,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.reselect();
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectMultiple: function (this: any, active: number): void {
 		const origin = this.origin;
 		this.select(origin, active);
@@ -914,6 +931,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.active = clamp(active, this.start, this.end);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectAll: function (this: any): void {
 		this.select(0, Infinity);
 		this.active = this.getRangeByIndex(this.end)[0];
@@ -936,6 +954,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	reselect: function (this: any): void {
 		if (this.focusing && this.start !== null) {
 			const { selections } = this;
@@ -952,6 +971,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectUp: function (this: any): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -970,6 +990,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectDown: function (this: any): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -999,6 +1020,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pageUp: function (this: any, select: boolean): void {
 		let anchor = this.anchor;
 		if (anchor === null) {
@@ -1018,6 +1040,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pageDown: function (this: any, select: boolean): void {
 		let anchor = this.anchor;
 		if (anchor === null) {
@@ -1040,6 +1063,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectMultipleTo: function (this: any, index: number): void {
 		if (this.start !== null) {
 			this.selectMultiple(index);
@@ -1067,6 +1091,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectMultipleUp: function (this: any): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1112,6 +1137,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	selectMultipleDown: function (this: any): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1154,6 +1180,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollToSelection: function (this: any, mode = 'active'): void {
 		if (this.start !== null) {
 			let scrollTop;
@@ -1192,6 +1219,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollAndResize: function (this: any): void {
 		const scrolltop = this.scrollTop;
 		this.scrollToSelection('active');
@@ -1268,6 +1296,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return element.dataParent?.buffer?.enabled ?? true;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	insert: function (this: any, id = ''): void {
 		const options = this.__options;
 		if (this.start !== null) {
@@ -1281,7 +1310,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	edit: function (this: any, data?: CommandData): void {
+	// oxlint-disable-next-line no-explicit-any
+	edit: function (this: any, _data?: CommandData): void {
 		const options = this.__options;
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1305,6 +1335,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	fold: function (this: any, element?: CommandItemElement): void {
 		if (element === undefined && this.start !== null) {
 			const elements = this.elements;
@@ -1330,6 +1361,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	unfoldCommand: function (this: any, command: CommandData | null): void {
 		let changed = false;
 		const commands: CommandData[] = [];
@@ -1350,6 +1382,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	reselectAfterFolding: function (this: any): void {
 		let head;
 		let foot;
@@ -1375,6 +1408,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	toggle: function (this: any): void {
 		if (this.start !== null) {
 			const { elements, start, end } = this;
@@ -1468,6 +1502,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	copy: function (this: any): void {
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
@@ -1485,6 +1520,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	copyAsText: function (this: any): void {
 		const options = this.__options;
 		if (this.start !== null) {
@@ -1520,10 +1556,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 				string += '\n';
 			}
-			navigator.clipboard.writeText(string.trim());
+			void navigator.clipboard.writeText(string.trim());
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	copyAsJSCode: function (this: any): void {
 		if (this.start !== null) {
 			const { start, end, elements } = this;
@@ -1551,7 +1588,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 
 			let jsCode = this.generateExecutableCode(commands);
-			navigator.clipboard.writeText(jsCode);
+			void navigator.clipboard.writeText(jsCode);
 		}
 	},
 
@@ -1575,6 +1612,7 @@ try {
 		return code;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	paste: function (this: any): void {
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
@@ -1606,6 +1644,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	delete: function (this: any): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1636,18 +1675,21 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	undo: function (this: any): void {
 		if (!this.dragging && this.history.canUndo()) {
 			this.history.restore('undo');
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	redo: function (this: any): void {
 		if (!this.dragging && this.history.canRedo()) {
 			this.history.restore('redo');
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	save: function (this: any, command: CommandData): void {
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1712,6 +1754,7 @@ try {
 		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	clear: function (this: any): HTMLElement {
 		this.unselect();
 		this.textContent = '';
@@ -1731,6 +1774,7 @@ try {
 		return this;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	analyzeVariables: function (this: any): {
 		varList: VariableItem[];
 		varMap: Record<string, VariableItem>;
@@ -1835,6 +1879,7 @@ try {
 		return { varList, varMap };
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scheduleCheckVariables: function (this: any): void {
 		if (this._checkVariablesScheduled) return;
 		this._checkVariablesScheduled = true;
@@ -2008,18 +2053,22 @@ try {
 		return undefined;
 	},
 
-	listFocus: function (this: any, event: FocusEvent): void {
+	// oxlint-disable-next-line no-explicit-any
+	listFocus: function (this: any, _event: FocusEvent): void {
 		if (!this.focusing) {
 			this.focusing = true;
-			this.start !== null ? this.reselect() : this.select(0);
+			if (this.start !== null) this.reselect();
+			else this.select(0);
 		}
 	},
 
-	listBlur: function (this: any, event: FocusEvent): void {
+	// oxlint-disable-next-line no-explicit-any
+	listBlur: function (this: any, _event: FocusEvent): void {
 		if (this.dragging) {
 			this.windowPointerup(this.dragging);
 		}
 		if (this.focusing) {
+			// oxlint-disable-next-line no-this-alias
 			let element = this;
 			while ((element = element.parentNode)) {
 				if (element.nodeType !== Node.ELEMENT_NODE) {
@@ -2039,6 +2088,7 @@ try {
 	},
 
 	findString: function (
+		// oxlint-disable-next-line no-explicit-any
 		this: any,
 		str: string | RegExp,
 		elements: CommandItemElement[],
@@ -2093,6 +2143,7 @@ try {
 						const realNode = item.map(
 							(v: CommandData) => v.buffer![0] as CommandItemElement
 						);
+						// oxlint-disable-next-line no-map-spread
 						const _subfind = this.findString(str, realNode, searchMode).map(
 							(v: FindResult) => ({
 								...v,
@@ -2145,6 +2196,7 @@ try {
 		return findList;
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	scrollToRow: function (this: any, targetIndex: number, position: string = 'center'): void {
 		const count = this.elements.count;
 		const rowHeight = 20;
@@ -2174,6 +2226,7 @@ try {
 		this.resize(this);
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	keydown: function (this: any, event: KeyboardEvent): void {
 		const options = this.__options;
 		if (cmdOrCtrlKey(event)) {
@@ -2314,6 +2367,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pointerdown: function (this: any, event: ListPointerEvent): void {
 		const options = this.__options;
 		if (this.dragging) {
@@ -2394,6 +2448,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	pointerup: function (this: any, event: ListPointerEvent): void {
 		const options = this.__options;
 		if (this.dragging) {
@@ -2559,6 +2614,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
 		if (this.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
 			const elements = this.elements;
@@ -2570,6 +2626,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	windowPointerup: function (this: any, event: PointerEvent): void {
 		const { dragging } = this;
 		if (relate(dragging, event)) {
@@ -2584,6 +2641,7 @@ try {
 		}
 	},
 
+	// oxlint-disable-next-line no-explicit-any
 	windowPointermove: function (this: any, event: PointerEvent): void {
 		const { dragging } = this;
 		if (relate(dragging, event)) {
@@ -2609,7 +2667,8 @@ try {
 		}
 	},
 
-	windowVariableChange: function (this: any, event: Event): void {
+	// oxlint-disable-next-line no-explicit-any
+	windowVariableChange: function (this: any, _event: Event): void {
 		if (this.read()) {
 			this.scheduleCheckVariables();
 		}
@@ -2620,6 +2679,7 @@ export function createCommandListApi(
 	el: HTMLElement,
 	options: CommandListApiOptions = {}
 ): HTMLElement {
+	// oxlint-disable-next-line no-explicit-any
 	const list = el as HTMLElement & { [k: string]: any };
 	list.__options = options;
 

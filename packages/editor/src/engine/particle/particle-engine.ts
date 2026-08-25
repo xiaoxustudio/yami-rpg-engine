@@ -5,6 +5,7 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { PARTICLE_APPEAR_TIMEOUT_MS } from '@app/constants/editor.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const ParticleEngine: Record<string, any> = {};
 
 interface ParticleEmitterData {
@@ -23,6 +24,7 @@ interface ParticleLayerData {
 		height?: number;
 		radius?: number;
 	} & Record<string, unknown>;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -38,12 +40,14 @@ interface OuterRect {
 
 interface ParticleElementRef {
 	initialize: () => void;
+	// oxlint-disable-next-line no-explicit-any
 	update: (deltaTime: number) => any;
 	updateMethods: () => void;
 	draw: (vi: number) => void;
 	scaleFactor: number;
 	spriteX: number;
 	spriteY: number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -56,6 +60,7 @@ interface ParticleEmitterShape {
 	startY: number;
 	layers: ParticleLayerShape[];
 	matrix: Matrix | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -74,6 +79,7 @@ interface ParticleLayerShape {
 	stocks: number;
 	elements: ParticleElementRef[] & { count: number };
 	reserves: ParticleElementRef[] & { count: number };
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -125,6 +131,7 @@ interface ParticleElementLayerData {
 		vframes: number;
 		interval: number;
 	};
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -134,12 +141,14 @@ interface ParticleEmitterRef {
 	startX: number;
 	startY: number;
 	matrix: Matrix | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
 export interface ParticleElementLayer {
 	emitter: ParticleEmitterRef;
 	data: ParticleElementLayerData;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -161,7 +170,7 @@ class ParticleEmitter {
 		let alwaysEmit = false;
 		const sLayers = data.layers;
 		const sLength = sLayers.length;
-		const dLayers = new Array(sLength);
+		const dLayers = Array.from<ParticleLayerShape>({ length: sLength });
 		for (let i = 0; i < sLength; i++) {
 			const sLayer = sLayers[i];
 			// 如果有一个粒子层的发射区域是屏幕边缘，设为总是发射和绘制
@@ -255,7 +264,7 @@ class ParticleEmitter {
 		}
 		const sLayers = this.data.layers;
 		const sLength = sLayers.length;
-		const dLayers = new Array(sLength);
+		const dLayers = Array.from<ParticleLayerShape>({ length: sLength });
 		for (let i = 0; i < sLength; i++) {
 			const sLayer = sLayers[i];
 			let dLayer = map.get(sLayer);
@@ -980,29 +989,39 @@ class ParticleElement {
 		// 给不同的发射区域设置特有的方法
 		switch (area.type) {
 			case 'point':
+				// oxlint-disable-next-line unbound-method
 				this.setStartPosition = this.setStartPositionPoint;
+				// oxlint-disable-next-line unbound-method
 				this.postProcessing = this.postProcessingCommon;
 				break;
 			case 'rectangle':
+				// oxlint-disable-next-line unbound-method
 				this.setStartPosition = this.setStartPositionRectangle;
+				// oxlint-disable-next-line unbound-method
 				this.postProcessing = this.postProcessingCommon;
 				break;
 			case 'circle':
+				// oxlint-disable-next-line unbound-method
 				this.setStartPosition = this.setStartPositionCircle;
+				// oxlint-disable-next-line unbound-method
 				this.postProcessing = this.postProcessingCommon;
 				break;
 			case 'edge':
+				// oxlint-disable-next-line unbound-method
 				this.setStartPosition = this.setStartPositionEdge;
+				// oxlint-disable-next-line unbound-method
 				this.postProcessing = this.postProcessingEdge;
 				break;
 		}
 		// 给不同的颜色模式设置特有的方法
 		switch (color.mode) {
 			case 'fixed':
+				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorFixed;
 				this.updateColor = Function.empty;
 				break;
 			case 'random':
+				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorRandom;
 				this.updateColor = Function.empty;
 				break;
@@ -1011,10 +1030,13 @@ class ParticleElement {
 					this.color.start = new Uint8Array(4);
 					this.color.end = new Uint8Array(4);
 				}
+				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorEasing;
+				// oxlint-disable-next-line unbound-method
 				this.updateColor = this.updateColorEasing;
 				break;
 			case 'texture':
+				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorTexture;
 				this.updateColor = Function.empty;
 				break;
@@ -1252,6 +1274,7 @@ class ParticleElement {
 		color[3] = 255;
 	}
 
+	// oxlint-disable-next-line no-explicit-any
 	static stage: { matrix: Matrix; requestRendering: () => void; [k: string]: any };
 
 	static sharedFloat64Array = new Float64Array(4);

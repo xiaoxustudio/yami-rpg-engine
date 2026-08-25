@@ -93,6 +93,7 @@ const on = (
 defineExpose({ bind, rewrite, update, clear, on, root });
 
 onMounted(() => {
+// oxlint-disable-next-line no-explicit-any
 const el = root.value as HTMLElement & Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', any>;
 	if (!el) return;
 	attachElementApi(el, { bind, rewrite, update, clear, on });

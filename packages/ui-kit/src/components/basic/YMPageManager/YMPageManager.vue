@@ -58,8 +58,8 @@ const switchover = (value: unknown): void => {
 				event.value = value;
 				element.dispatchEvent(event);
 			}
-			active && dispatchResizeEvent(active);
-			target && dispatchResizeEvent(target);
+			if (active) dispatchResizeEvent(active);
+			if (target) dispatchResizeEvent(target);
 		}
 	}
 };

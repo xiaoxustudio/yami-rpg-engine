@@ -413,7 +413,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('save 路径：attribute 为空校验失败不保存', async () => {
 			const wrapper = await mountWindow();
-			const { form } = useGetTargetCommandSchema();
+			useGetTargetCommandSchema();
 			Command.cases.getTarget.customLoad!({
 				actor: { type: 'trigger' },
 				selector: 'enemy',
@@ -982,7 +982,7 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：mode 从控件读取并连同 conditions/commands 保存', async () => {
 			const wrapper = mount(Loop, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
-			const { form } = useLoopCommandSchema();
+			useLoopCommandSchema();
 			Command.cases.loop.customLoad!({
 				mode: 'all',
 				conditions: [],
@@ -1576,7 +1576,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('save validation: global/unregister with empty tag does not save, reset saves directly', async () => {
 			const wrapper = await mountWindow();
-			const { form } = useRegisterEventCommandSchema();
+			useRegisterEventCommandSchema();
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.registerEvent.customLoad!({

@@ -53,7 +53,7 @@ Command.cases.useItem = new CommandSchema({
 });
 
 export function useUseItemCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('useItem', {
+	const { form, load, commit } = useCommandSchema('useItem', {
 		onLoad() {
 			document
 				.getElementById('useItem-key')

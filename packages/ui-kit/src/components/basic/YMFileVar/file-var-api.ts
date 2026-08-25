@@ -112,7 +112,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	const getFocus = function (mode?: string): void {
+	const getFocus = function (_mode?: string): void {
 		switch (box.mode) {
 			case 'constant':
 				return box.fileBox.focus();
@@ -168,7 +168,9 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	});
 
 	box._initialized = true;
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('pointerdown', box.pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {

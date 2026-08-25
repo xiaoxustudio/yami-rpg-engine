@@ -17,6 +17,7 @@ Command.cases.tintScreen = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
+	// oxlint-disable-next-line no-explicit-any
 	parseTint([red, green, blue, gray]: [any, any, any, any]) {
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
@@ -57,7 +58,7 @@ Command.cases.tintScreen = new CommandSchema({
 });
 
 export function useTintScreenCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('tintScreen', {
+	const { form, load, commit } = useCommandSchema('tintScreen', {
 		onLoad() {
 			getFocus(document.getElementById('tintScreen-tint-0'), 'all');
 		}

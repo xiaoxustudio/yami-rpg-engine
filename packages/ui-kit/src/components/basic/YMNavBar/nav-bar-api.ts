@@ -104,6 +104,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	};
 
+	// oxlint-disable-next-line unbound-method
 	el.addEventListener('pointerdown', nav.pointerdown as EventListener);
 
 	const elements = el.childNodes;

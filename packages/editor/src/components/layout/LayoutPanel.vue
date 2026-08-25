@@ -447,6 +447,7 @@ interface LayerExtrasNode {
 	locked?: boolean;
 }
 
+// oxlint-disable-next-line no-explicit-any
 type ExtrasListElement = HTMLElement & { [k: string]: any };
 
 const onSceneVisibilityPointerdown =

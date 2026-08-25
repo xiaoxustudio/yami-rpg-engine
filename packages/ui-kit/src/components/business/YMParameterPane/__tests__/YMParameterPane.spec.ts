@@ -130,7 +130,7 @@ const makeTypeRegistry = (): {
 	};
 } => ({
 	get: (type: string) => ({
-		create: (_pane: HTMLElement, param: unknown) => {
+		create: (_pane: HTMLElement, _param: unknown) => {
 			const label = document.createElement('div');
 			label.classList.add('text');
 			const input = makeInput();

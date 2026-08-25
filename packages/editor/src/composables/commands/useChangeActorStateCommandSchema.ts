@@ -48,7 +48,7 @@ Command.cases.changeActorState = new CommandSchema({
 });
 
 export function useChangeActorStateCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('changeActorState', {
+	const { form, load, commit } = useCommandSchema('changeActorState', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorState-actor'));
 		}

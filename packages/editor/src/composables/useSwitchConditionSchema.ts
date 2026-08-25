@@ -268,7 +268,7 @@ const save = (): SwitchConditionData => {
 	return condition!;
 };
 
-const confirm = (event: Event): SwitchConditionData => {
+const confirm = (_event: Event): SwitchConditionData => {
 	return target!.save();
 };
 

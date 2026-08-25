@@ -9,7 +9,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { ipcRenderer } from 'electron';
 import { loadDtsFolder } from '@app/module/global';
 
-const { modelMock, editorMock, monacoMock } = vi.hoisted(() => {
+const { modelMock, monacoMock } = vi.hoisted(() => {
 	const modelMock: {
 		value: string;
 		getValue(): string;

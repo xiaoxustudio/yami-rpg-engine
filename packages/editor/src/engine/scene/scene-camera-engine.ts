@@ -3,6 +3,7 @@ import { Data } from '@app/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneCameraEngine: Record<string, any> = {};
 SceneCameraEngine.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };

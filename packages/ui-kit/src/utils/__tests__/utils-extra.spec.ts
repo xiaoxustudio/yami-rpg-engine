@@ -41,7 +41,9 @@ describe('TreeDataContext', () => {
 
 	it('createNoneItem uses localize adapter', () => {
 		const ctx = new TreeDataContext(data, 'items', {
-			get: (k) => (k === 'common.none' ? '无' : k)
+			language: '',
+			get: (k) => (k === 'common.none' ? '无' : k),
+			createGetter: () => () => ''
 		});
 		expect(ctx.createNoneItem().name).toBe('无');
 		const plain = new TreeDataContext(data, 'items');

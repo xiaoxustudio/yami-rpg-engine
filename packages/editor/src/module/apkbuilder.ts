@@ -27,7 +27,7 @@ export const ApkBuilder = new (class {
 		this.logs.length = 0;
 		this.notifyLogContent();
 		const config = this.process!(cfg);
-		ipcRenderer.invoke(CHANNELS.invoke.buildApk, config);
+		void ipcRenderer.invoke(CHANNELS.invoke.buildApk, config);
 	}
 	notifyLogContent() {
 		($('#export-apk-content') as HTMLElement & { update?: () => void }).update?.();
@@ -47,7 +47,7 @@ export const ApkBuilder = new (class {
 		this.logs = [];
 	}
 	stopBuild() {
-		ipcRenderer.invoke(CHANNELS.invoke.stopBuildApk).then(() => {
+		void ipcRenderer.invoke(CHANNELS.invoke.stopBuildApk).then(() => {
 			this.reset!();
 		});
 	}

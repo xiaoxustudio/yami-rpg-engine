@@ -68,7 +68,7 @@ export class LanguageMap {
 					// 避免循环继承报错
 					try {
 						Object.setPrototypeOf(map, pack.map!);
-					} catch (error: unknown) {}
+					} catch (_error: unknown) {}
 				}
 			}
 		}

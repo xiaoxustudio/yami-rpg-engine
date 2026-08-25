@@ -21,14 +21,14 @@ Command.cases.httpRequest = new CommandSchema({
 	],
 	customParse({
 		url = '',
-		method = 'GET',
-		headers = [],
-		data = [],
-		callback = '',
-		timeout = '',
-		responseType = 'json',
+		method,
+		headers,
+		data,
+		callback,
+		timeout,
+		responseType,
 		withCredentials = false,
-		authUser = '',
+		authUser,
 		authPass = ''
 	}: {
 		url: unknown;
@@ -119,7 +119,7 @@ Command.cases.httpRequest = new CommandSchema({
 });
 
 export function useHttpRequestCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('httpRequest', {
+	const { form, load, commit } = useCommandSchema('httpRequest', {
 		onLoad() {
 			getFocus(document.getElementById('httpRequest-url')!);
 		}

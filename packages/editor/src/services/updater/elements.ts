@@ -32,6 +32,7 @@ function updateElements(verNum: number) {
 				}
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, sUi] of Object.entries<any>(ui!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

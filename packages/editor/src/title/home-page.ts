@@ -35,6 +35,7 @@ interface RecentProject {
 	name: string;
 	path: string;
 	date: string | number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -65,6 +66,7 @@ interface HomeShape {
 	startClick: ((this: typeof Home, event: Event) => void) | null;
 	recentClick: ((this: typeof Home, event: Event) => void) | null;
 	recentPointerup: ((this: typeof Home, event: Event) => void) | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -110,7 +112,7 @@ Home.updateCenterPosition = function (this: typeof Home) {
 	}
 };
 
-Home.windowResize = function (this: typeof Home, event: Event) {
+Home.windowResize = function (this: typeof Home, _event: Event) {
 	// 不支持page(home):resize事件 先用window:resize代替
 	Home.updateCenterPosition!();
 };
@@ -401,7 +403,7 @@ Home.readFileList = (function IIFE() {
 	};
 })();
 
-Home.windowLocalize = function (this: typeof Home, event: Event) {
+Home.windowLocalize = function (this: typeof Home, _event: Event) {
 	if (Layout.manager?.index === 'home') {
 		Home.parseRecentProjects!();
 	}
@@ -427,6 +429,7 @@ for (const key of homeBridgeKeys) {
 	Object.defineProperty(Home, key, {
 		get: () => getHomeStore()[key],
 		set: (value: unknown) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getHomeStore() as unknown as Record<(typeof homeBridgeKeys)[number], any>)[key] =
 				value;
 		},

@@ -19,6 +19,9 @@ describe('YMSelectBox setItemNames 兼容性', () => {
 		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		el.loadItems([{ name: 'A', value: 'a' }]);
 		el.setItemNames({ a: '改名' });
-		expect(el.read()?.dataItems?.[0]?.name ?? el.dataItems?.[0]?.name).toBe('改名');
+		const dataItems =
+			(el.read() as { dataItems?: Array<{ name: string }> } | null)?.dataItems ??
+			(el as unknown as { dataItems?: Array<{ name: string }> }).dataItems;
+		expect(dataItems?.[0]?.name).toBe('改名');
 	});
 });

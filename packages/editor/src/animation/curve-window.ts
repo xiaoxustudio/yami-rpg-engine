@@ -18,7 +18,7 @@ interface CurveShape {
 	canvas: CurveCanvas | null;
 	target: CurveFrame | null;
 	index: number | null | '';
-	curveMap: unknown | null;
+	curveMap: unknown;
 	initialize: (() => void) | null;
 	open: (() => void) | null;
 	load: CurveMethod;

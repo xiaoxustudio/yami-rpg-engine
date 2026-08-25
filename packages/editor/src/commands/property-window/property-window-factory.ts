@@ -15,8 +15,6 @@ interface PropertyKeyConfig {
 	targets?: string[];
 }
 
-type ParserFn = (value: unknown, get: (key: string) => string, name: string) => string;
-
 interface PropertyWindowConfig {
 	prefix: string;
 	locale: string;
@@ -161,7 +159,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		return { key, value };
 	};
 
-	PropertyWindow.confirm = function (this: PropertyWindow, event: Event) {
+	PropertyWindow.confirm = function (this: PropertyWindow, _event: Event) {
 		return PropertyWindow.target?.save?.() as { key: string; value: unknown };
 	};
 

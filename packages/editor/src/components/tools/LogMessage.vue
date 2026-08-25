@@ -47,6 +47,7 @@ const update = (): void => {
 			}
 		}
 	}
+	// oxlint-disable-next-line no-map-spread
 	items.value = next.map((item) => ({ ...item, message: sanitizeLogMessage(item.message) }));
 };
 

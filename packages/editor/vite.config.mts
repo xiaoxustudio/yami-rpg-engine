@@ -245,6 +245,7 @@ export default defineConfig(({ command }) => ({
 					const c = bundle[name];
 					// oxlint-disable-next-line unicorn/prefer-string-starts-ends-with
 					if (c.type !== 'asset' || !/\.html$/.test(c.fileName || '')) continue;
+					// oxlint-disable-next-line no-base-to-string
 					const html = String(c.source ?? '');
 					const scripts = [...html.matchAll(/src="\.\/assets\/([^"]+\.js)"/g)].map(
 						(m) => m[1]

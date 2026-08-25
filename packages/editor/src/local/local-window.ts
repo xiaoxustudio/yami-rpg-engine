@@ -118,6 +118,7 @@ interface LocalizationShape {
 	close: (() => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -348,7 +349,7 @@ Localization.createId = function () {
 	let id;
 	do {
 		id = GUID.generate64bit();
-	} while (!!this.idMap![id]);
+	} while (this.idMap![id]);
 	return id;
 };
 
@@ -444,7 +445,7 @@ Localization.unpackLocalization = (function IIFE() {
 	}
 	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
 		const length = items?.length ?? 0;
-		const copies = new Array(length);
+		const copies = Array.from<LocalizationItem>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
@@ -468,7 +469,7 @@ Localization.unpackLocalization = (function IIFE() {
 Localization.packLocalization = (function IIFE() {
 	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
 		const length = items?.length ?? 0;
-		const copies = new Array(length);
+		const copies = Array.from<LocalizationItem>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
@@ -521,7 +522,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 	}
 }.bind(Localization);
 
-Localization.windowClosed = function (this: LocalizationShape, event: Event) {
+Localization.windowClosed = function (this: LocalizationShape, _event: Event) {
 	getLocalizationStore().state = 'closed';
 	this.data = null;
 	this.idMap = null;
@@ -692,7 +693,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				navigator.clipboard.writeText(item.id);
+				void navigator.clipboard.writeText(item.id);
 			}
 		});
 		items.push({
@@ -763,7 +764,7 @@ Localization.searcherInput = function (this: TextBox, event: InputEvent) {
 	Localization.list!.searchNodesDebounced(text);
 };
 
-Localization.confirm = function (this: LocalizationShape, event?: Event) {
+Localization.confirm = function (this: LocalizationShape, _event?: Event) {
 	if (this.target) {
 		const item = read(this.list);
 		if (item?.id === undefined) {
@@ -778,7 +779,7 @@ Localization.confirm = function (this: LocalizationShape, event?: Event) {
 	Window.close!('localization');
 }.bind(Localization);
 
-Localization.apply = function (this: LocalizationShape, event?: Event) {
+Localization.apply = function (this: LocalizationShape, _event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -800,8 +801,8 @@ Localization.fromExcel = async function (this: LocalizationShape, event: Event) 
 	Localization.apply();
 }.bind(Localization);
 
-Localization.toExcel = function (this: LocalizationShape, event?: Event) {
-	ipcRenderer.invoke(CHANNELS.invoke.toExcel, {
+Localization.toExcel = function (this: LocalizationShape, _event?: Event) {
+	void ipcRenderer.invoke(CHANNELS.invoke.toExcel, {
 		langs: this.languages,
 		list: Data.localization.list
 	});

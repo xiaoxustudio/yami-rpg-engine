@@ -67,12 +67,6 @@ vi.mock('@app/palette/palette', () => ({
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import '@app/utils/css';
 
-function createEl(id: string): HTMLElement {
-	const el = document.createElement('div');
-	el.id = id;
-	return el;
-}
-
 function initSpriteDOM() {
 	const body = document.createElement('div');
 	body.id = 'sprite-body';

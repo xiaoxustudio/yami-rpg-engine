@@ -61,7 +61,7 @@ Command.cases.setShortcut = new CommandSchema({
 });
 
 export function useSetShortcutCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setShortcut', {
+	const { form, load, commit } = useCommandSchema('setShortcut', {
 		onLoad() {
 			const items = Enum.getStringItems!('shortcut-key');
 			document.getElementById('setShortcut-key')?.loadItems?.(items);

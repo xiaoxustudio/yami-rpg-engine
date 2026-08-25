@@ -34,7 +34,7 @@ Variable.unpackVariables = (function IIFE() {
 	}
 	const clone = (items: VariableNode[]): Array<VariableNode | ReferencedFolder> => {
 		const length = items.length;
-		const copies = new Array(length);
+		const copies = Array.from<VariableNode | ReferencedFolder>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
 			if (item.class !== 'folder') {
@@ -62,7 +62,7 @@ interface PackedVariableNode {
 Variable.packVariables = (function IIFE() {
 	const clone = (items: VariableNode[]): PackedVariableNode[] => {
 		const length = items.length;
-		const copies: PackedVariableNode[] = new Array(length) as PackedVariableNode[];
+		const copies: PackedVariableNode[] = Array.from({ length: length }) as PackedVariableNode[];
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
 			if (item.class !== 'folder') {

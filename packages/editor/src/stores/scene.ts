@@ -18,6 +18,7 @@ export const sceneStateKeys = [
 
 export const useSceneStore = defineStore('scene', () => {
 	const state = shallowRef<string>('closed');
+	// oxlint-disable-next-line no-explicit-any
 	const target = shallowRef<any>(null);
 	const mode = shallowRef<string | null>(null);
 	const tilemap = shallowRef<unknown>(null);

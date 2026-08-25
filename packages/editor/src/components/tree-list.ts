@@ -13,6 +13,7 @@ interface TreeListStaticsType {
 	createParents: typeof treeListStatics.createParents;
 	deleteCaches: typeof treeListStatics.deleteCaches;
 	textBox: HTMLElement & { input: HTMLInputElement };
+	// oxlint-disable-next-line no-explicit-any
 	prototype: Record<string, (...args: any[]) => any>;
 }
 
@@ -25,6 +26,7 @@ export const TreeList: TreeListStaticsType = {
 };
 
 export interface TreeListElement extends HTMLElement {
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

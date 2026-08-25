@@ -286,7 +286,7 @@ const getDevicePixelClientBoxSize = (element: HTMLElement): { width: number; hei
 	return { width, height };
 };
 
-const dprchange = (event: Event): void => {
+const dprchange = (_event: Event): void => {
 	if (nodes !== null) {
 		const marquee = getMarquee();
 		const { x, y, width, height } = marquee;
@@ -368,7 +368,7 @@ const keydown = (event: KeyboardEvent): void => {
 	}
 };
 
-const screenScroll = (event: Event): void => {
+const screenScroll = (_event: Event): void => {
 	updateTransform();
 	updateBackground();
 	requestRendering();

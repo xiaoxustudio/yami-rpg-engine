@@ -136,7 +136,7 @@ function getDefaultPresetId(className = 'any'): string {
 	return '';
 }
 
-function windowClosed(event: Event): void {
+function windowClosed(_event: Event): void {
 	target = null;
 	nodes = null;
 	searcher.write!('');
@@ -158,7 +158,7 @@ function sceneIdWrite(event: Event & { value?: string }): void {
 	}
 }
 
-function listOpen(event: Event): void {
+function listOpen(_event: Event): void {
 	confirm();
 }
 
@@ -191,7 +191,7 @@ function searcherInput(event: { value?: string }): void {
 	}
 }
 
-function confirm(event?: Event): void {
+function confirm(_event?: Event): void {
 	const node = list.read();
 	const presetId = node?.presetId;
 	if (!presetId) {

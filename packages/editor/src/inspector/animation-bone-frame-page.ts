@@ -56,7 +56,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 	AnimJointFrame.write = function (
 		this: typeof AnimJointFrame,
-		options: Record<string, unknown>
+		_options: Record<string, unknown>
 	) {
 		($('#animJointFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};

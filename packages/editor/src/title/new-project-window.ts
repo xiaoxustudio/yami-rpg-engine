@@ -214,7 +214,7 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 			}
 			this.timer = new Timer({
 				duration: Infinity,
-				update: (timer: Timer) => {
+				update: (_timer: Timer) => {
 					const percent = Math.round((count / total) * 100);
 					progressBar.style.width = `${percent}%`;
 					progressInfo.textContent = info;
@@ -239,6 +239,7 @@ NewProject.writeData = function (this: typeof NewProject, ...args: unknown[]) {
 
 NewProject.getNewFolder = function (this: typeof NewProject, ...args: unknown[]) {
 	const location = args[0] as string;
+	// oxlint-disable-next-line no-constant-condition
 	for (let i = 1; true; i++) {
 		const folder = `Project${i}`;
 		if (!FS.existsSync!(Path.resolve!(location, folder))) {
@@ -248,7 +249,7 @@ NewProject.getNewFolder = function (this: typeof NewProject, ...args: unknown[])
 };
 
 NewProject.templateInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const event = args[0] as Event;
+	const _event = args[0] as Event;
 	NewProject.check!();
 };
 
@@ -264,7 +265,7 @@ NewProject.folderBeforeinput = function (this: typeof NewProject, ...args: unkno
 };
 
 NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const event = args[0] as Event;
+	const _event = args[0] as Event;
 	const regexp = /[\\/:*?"<>|"]/g;
 	const oldName = form.folder;
 	const newName = oldName.replace(regexp, '');
@@ -275,12 +276,12 @@ NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) 
 };
 
 NewProject.locationInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const event = args[0] as Event;
+	const _event = args[0] as Event;
 	NewProject.check!();
 };
 
 NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) {
-	const event = args[0] as Event;
+	const _event = args[0] as Event;
 	File.showOpenDialog!({
 		defaultPath: form.location,
 		properties: ['openDirectory']
@@ -293,7 +294,7 @@ NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) 
 };
 
 NewProject.confirm = function (this: typeof NewProject, ...args: unknown[]) {
-	const event = args[0] as Event;
+	const _event = args[0] as Event;
 	const template = form.template;
 	const location = form.location;
 	const folder = form.folder;
@@ -304,13 +305,13 @@ NewProject.confirm = function (this: typeof NewProject, ...args: unknown[]) {
 	const dPath = Path.resolve!(location, folder);
 	Window.close!('newProject');
 	FSP.mkdir!(dPath, { recursive: true })
-		.then((done: boolean) => {
+		.then((_done: boolean) => {
 			return template === 'minimized-project' ? Data.createReferencedFileIDMap!() : undefined;
 		})
 		.then((idFilter: unknown) => {
 			return NewProject.copyFilesTo!(sPath, dPath, idFilter);
 		})
-		.then((done: boolean) => {
+		.then((_done: boolean) => {
 			return NewProject.writeData!(dPath);
 		})
 		.finally(() => {

@@ -107,7 +107,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		}
 	};
 
-	const mouseclick = (event: Event): void => {
+	const mouseclick = (_event: Event): void => {
 		if (!hasClass(box, 'selected')) {
 			box.proxy?.input(box.dataValue);
 		} else if (box.proxy?.cancelable) {

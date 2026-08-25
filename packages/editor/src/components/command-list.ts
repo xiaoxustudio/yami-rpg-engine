@@ -79,15 +79,20 @@ interface CommandListStaticsType {
 	unhighlightTexts: () => void;
 	textPointerenter: (event: PointerEvent) => void;
 	textPointerleave: (event: PointerEvent) => void;
+	// oxlint-disable-next-line no-explicit-any
 	prototype: Record<string, (...args: any[]) => any>;
 }
 
 export const CommandList: CommandListStaticsType = {
 	alphabetCode: commandListStatics.alphabetCode,
 	highlightedTexts: commandListStatics.highlightedTexts,
+	// oxlint-disable-next-line unbound-method
 	highlightTexts: commandListStatics.highlightTexts,
+	// oxlint-disable-next-line unbound-method
 	unhighlightTexts: commandListStatics.unhighlightTexts,
+	// oxlint-disable-next-line unbound-method
 	textPointerenter: commandListStatics.textPointerenter,
+	// oxlint-disable-next-line unbound-method
 	textPointerleave: commandListStatics.textPointerleave,
 	prototype: commandListPrototype
 };

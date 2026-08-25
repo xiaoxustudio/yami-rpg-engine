@@ -46,7 +46,7 @@ Variable.redo = function (this: typeof Variable) {
 	getVariableStore().redo();
 };
 
-Variable.confirm = function (this: typeof Variable, event?: Event) {
+Variable.confirm = function (this: typeof Variable, _event?: Event) {
 	const target = this.target;
 	if (target instanceof Object) {
 		const variable = getVariableStore().state.selected;
@@ -72,7 +72,7 @@ Variable.confirm = function (this: typeof Variable, event?: Event) {
 	Window.close!('variable');
 }.bind(Variable);
 
-Variable.apply = function (this: typeof Variable, event: Event) {
+Variable.apply = function (this: typeof Variable, _event: Event) {
 	if (this.changed) {
 		this.changed = false;
 

@@ -8,6 +8,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 {
 	interface FileScriptShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	const FileScript: FileScriptShape = {
@@ -70,7 +71,7 @@ export default class Plugin {
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};
 
-	FileScript.windowLocalize = function (this, event: Event) {
+	FileScript.windowLocalize = function (this, _event: Event) {
 		if (FileScript.target) {
 			const { target, meta } = FileScript;
 			FileScript.target = null;

@@ -99,19 +99,32 @@ import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
 interface Props {
 	id?: string;
 	menuPopup?: (options: MenuOptions, items: MenuItem[]) => void;
+	// oxlint-disable-next-line no-explicit-any
 	directoryApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	fileSystemApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	pathUtil?: any;
+	// oxlint-disable-next-line no-explicit-any
 	localize?: any;
+	// oxlint-disable-next-line no-explicit-any
 	fileClasses?: { FileItem: any; FolderItem: any };
 	menuState?: () => string;
+	// oxlint-disable-next-line no-explicit-any
 	createTextBox?: () => any;
+	// oxlint-disable-next-line no-explicit-any
 	dataApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	windowApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	glApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	clipboardApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	referenceApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	editorApi?: any;
+	// oxlint-disable-next-line no-explicit-any
 	setIconClip?: any;
 	onBrowserMount?: () => void;
 	onSelectorMount?: () => void;
@@ -174,6 +187,7 @@ let dragging: DragEvent | PointerEvent | null = null;
 let filters: unknown[] | null = null;
 let backupFolders: unknown[] = [];
 let searchResults: unknown[] = [];
+// oxlint-disable-next-line no-explicit-any
 let links: any = {};
 
 function update(): void {
@@ -289,8 +303,10 @@ function close(): void {
 	if (directory) {
 		directory = null;
 		restoreDisplay();
+		// oxlint-disable-next-line no-unsafe-optional-chaining
 		(navEl.value?.el as unknown as FileNavApi).clear?.();
 		(headEl.value as unknown as FileHeadApi)?.el?.querySelector?.('.file-head-address');
+		// oxlint-disable-next-line no-unsafe-optional-chaining
 		(bodyEl.value?.el as unknown as FileBodyApi).clear?.();
 	}
 }

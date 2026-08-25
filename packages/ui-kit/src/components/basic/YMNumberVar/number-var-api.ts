@@ -195,7 +195,9 @@ export function attachNumberVarApi(
 	});
 
 	box._initialized = true;
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('pointerdown', box.pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {

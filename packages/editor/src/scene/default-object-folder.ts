@@ -56,7 +56,7 @@ ObjectFolder.open = function (this: typeof ObjectFolder) {
 	} as ObjectFolderForm);
 };
 
-ObjectFolder.confirm = function (this: typeof ObjectFolder, event: Event) {
+ObjectFolder.confirm = function (this: typeof ObjectFolder, _event: Event) {
 	(Editor.project!.scene as { defaultFolders: Record<string, unknown> }).defaultFolders = {
 		tilemap: form.tilemap,
 		actor: form.actor,

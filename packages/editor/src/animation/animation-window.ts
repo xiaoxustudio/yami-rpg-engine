@@ -49,9 +49,8 @@ import { AnimationWindowEngine } from '@app/engine/animation/animation-window-en
 
 const Clipboard = GlobalClipboard;
 
-type AnimationState = 'closed' | 'open';
-
 // DOM 元素字段：运行时挂载大量扩展方法（.hide()/.show()/.update()/.write()/.on() 等），统一用 HTMLElement & {[ k: string ]: any} 兜底，避免穷举
+// oxlint-disable-next-line no-explicit-any
 type AnimationElement = HTMLElement & { [k: string]: any };
 
 type AnimationFrame = {
@@ -111,6 +110,7 @@ type AnimationFileContext = {
 		motions: AnimationMotion[];
 		[k: string]: unknown;
 	};
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 type AnimationFrameData = { copies: AnimationFrame[]; length: number };
@@ -212,6 +212,7 @@ interface AnimationShape {
 	innerPointerArea: AnimationElement;
 	pointer: AnimationElement;
 	// editor + animation properties（运行时挂载具体值，统一 any | null）
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -455,26 +456,39 @@ export const Animation: AnimationShape = {
 	Player: null
 };
 
+// oxlint-disable-next-line no-explicit-any
 Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
 Animation.list.page = $('#animation-motion');
 Animation.list.head = $('#animation-list-head');
+// oxlint-disable-next-line no-explicit-any
 Animation.list.copy = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.list.paste = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.list.delete = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.list.updateHead = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.list.parseName = null as unknown as (...args: unknown[]) => any;
 getListConfig(Animation.list).onDelete = null as unknown as (item: unknown) => void;
 
+// oxlint-disable-next-line no-explicit-any
 Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.layerList.copy = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
 Animation.timeline.head = $('#animation-timeline-head');
+// oxlint-disable-next-line no-explicit-any
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 
 // outerTimelineList properties
@@ -566,7 +580,7 @@ Animation.initialize = function (this: typeof Animation) {
 	this.outerPointerArea = $('#animation-timeline-pointer-area-outer');
 	this.innerPointerArea = $('#animation-timeline-pointer-area-inner');
 	this.pointer = $('#animation-timeline-pointer');
-	this.screen && addSetScrollMethod(this.screen);
+	if (this.screen) addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);
 	hide(this.timelineCursor);
@@ -612,7 +626,7 @@ Animation.initialize = function (this: typeof Animation) {
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer: Timer) => {
+		update: (_timer: Timer) => {
 			if (getAnimationStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
@@ -2103,7 +2117,7 @@ Animation.getSpriteListItems = function (this: typeof Animation, animationId: st
 	if (items === undefined) {
 		const length = sprites.length;
 		const digits = Number.computeIndexDigits(length);
-		items = new Array(length + 1);
+		items = Array.from({ length: length + 1 });
 		items[0] = { name: 'No Image', value: '' };
 		for (let i = 0; i < length; i++) {
 			const index = i.toString().padStart(digits, '0');
@@ -2173,12 +2187,10 @@ Animation.updatePointerArea = function (this: typeof Animation) {
 	const list = this.outerTimelineList;
 	const area = this.outerPointerArea;
 	if (list.clientWidth !== 0) {
-		list.clientWidth < list.scrollWidth
-			? addClass(area, 'has-horiz-scrollbar')
-			: removeClass(area, 'has-horiz-scrollbar');
-		list.clientHeight < list.scrollHeight
-			? addClass(area, 'has-vert-scrollbar')
-			: removeClass(area, 'has-vert-scrollbar');
+		if (list.clientWidth < list.scrollWidth) addClass(area, 'has-horiz-scrollbar');
+		else removeClass(area, 'has-horiz-scrollbar');
+		if (list.clientHeight < list.scrollHeight) addClass(area, 'has-vert-scrollbar');
+		else removeClass(area, 'has-vert-scrollbar');
 	}
 };
 
@@ -2796,7 +2808,7 @@ Animation.extendFrame = function (this: typeof Animation) {
 	if (marquee.y === -1 || !marquee.isExtendable()) {
 		return;
 	}
-	const { layer, x, y, length } = marquee;
+	const { layer, x, y: _y, length } = marquee;
 	const ex = x + length;
 	const frames = layer.frames;
 	const fLength = frames.length;
@@ -3376,7 +3388,7 @@ Animation.requestRefreshingList = function (this: typeof Animation) {
 		const list = this.list;
 		if (!list.refreshing) {
 			list.refreshing = true;
-			Promise.resolve().then(() => {
+			void Promise.resolve().then(() => {
 				list.refreshing = false;
 				list.refresh();
 			});
@@ -3500,13 +3512,13 @@ Animation.loadFromProject = function (
 	this.setZoom!(animation.zoom);
 };
 
-Animation.webglRestored = function (this: typeof Animation, event: Event) {
+Animation.webglRestored = function (this: typeof Animation, _event: Event) {
 	if (getAnimationStore().state === 'open') {
 		Animation.requestRendering!();
 	}
 };
 
-Animation.windowResize = function (this: typeof Animation, event: Event) {
+Animation.windowResize = function (this: typeof Animation, _event: Event) {
 	this.updateHead!();
 	if (getAnimationStore().state === 'open') {
 		this.resize!();
@@ -3515,7 +3527,7 @@ Animation.windowResize = function (this: typeof Animation, event: Event) {
 	}
 }.bind(Animation);
 
-Animation.themechange = function (this: typeof Animation, event: Event) {
+Animation.themechange = function (this: typeof Animation, _event: Event) {
 	this.requestRendering!();
 }.bind(Animation);
 
@@ -3527,7 +3539,7 @@ Animation.datachange = function (this: typeof Animation, event: Event & { key: s
 	}
 }.bind(Animation);
 
-Animation.enumchange = function (this: typeof Animation, event: Event) {
+Animation.enumchange = function (this: typeof Animation, _event: Event) {
 	this.requestRefreshingList!();
 }.bind(Animation);
 
@@ -3603,11 +3615,11 @@ Animation.switchPointerdown = function (this: typeof Animation, event: PointerEv
 	}
 };
 
-Animation.zoomFocus = function (this: typeof Animation, event: Event) {
+Animation.zoomFocus = function (this: typeof Animation, _event: Event) {
 	Animation.screen.focus();
 };
 
-Animation.zoomInput = function (this: typeof Animation, event: Event) {
+Animation.zoomInput = function (this: typeof Animation, _event: Event) {
 	Animation.setZoom!(read(this));
 };
 
@@ -3753,7 +3765,7 @@ Animation.screenWheel = function (this: typeof Animation, event: WheelEvent) {
 	}
 }.bind(Animation);
 
-Animation.screenUserscroll = function (this: typeof Animation, event: Event) {
+Animation.screenUserscroll = function (this: typeof Animation, _event: Event) {
 	if (getAnimationStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -3762,7 +3774,7 @@ Animation.screenUserscroll = function (this: typeof Animation, event: Event) {
 	}
 }.bind(Animation);
 
-Animation.screenBlur = function (this: typeof Animation, event: Event) {
+Animation.screenBlur = function (this: typeof Animation, _event: Event) {
 	this.translationKeyup!();
 	this.pointerup!();
 	// this.marqueePointerleave!()
@@ -3916,14 +3928,14 @@ Animation.marqueePointermove = function (this: typeof Animation, event: PointerE
 	}
 }.bind(Animation);
 
-Animation.marqueePointerleave = function (this: typeof Animation, event: Event) {
+Animation.marqueePointerleave = function (this: typeof Animation, _event: Event) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		this.setHover!(null);
 	}
 }.bind(Animation);
 
-Animation.marqueeDoubleclick = function (this: typeof Animation, event: Event) {
+Animation.marqueeDoubleclick = function (this: typeof Animation, _event: Event) {
 	if (getAnimationStore().target) {
 		this.screenBlur!();
 		this.revealTarget!();
@@ -4317,16 +4329,16 @@ Animation.listPopup = function (
 	);
 };
 
-Animation.listChange = function (this: typeof Animation, event: Event) {
+Animation.listChange = function (this: typeof Animation, _event: Event) {
 	Animation.planToSave!();
 };
 
-Animation.listPageResize = function (this: typeof Animation, event: Event) {
+Animation.listPageResize = function (this: typeof Animation, _event: Event) {
 	Animation.list.updateHead();
 	Animation.list.resize();
 };
 
-Animation.timelinePageResize = function (this: typeof Animation, event: Event) {
+Animation.timelinePageResize = function (this: typeof Animation, _event: Event) {
 	Animation.updatePointerArea!();
 	Animation.timeline.updateHead();
 	Animation.layerList.resize();
@@ -4357,7 +4369,7 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 	}
 };
 
-Animation.layerListScroll = function (this: typeof Animation, event: Event) {
+Animation.layerListScroll = function (this: typeof Animation, _event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
 	this.lastScrollTop = scrollTop;
@@ -4564,7 +4576,7 @@ Animation.layerListPopup = function (
 	);
 };
 
-Animation.layerListChange = function (this: typeof Animation, event: Event) {
+Animation.layerListChange = function (this: typeof Animation, _event: Event) {
 	Animation.planToSave!();
 };
 
@@ -4650,7 +4662,7 @@ Animation.outerTimelineListKeydown = function (this: typeof Animation, event: Ke
 	}
 };
 
-Animation.outerTimelineListScroll = function (this: typeof Animation, event: Event) {
+Animation.outerTimelineListScroll = function (this: typeof Animation, _event: Event) {
 	const { scrollLeft, scrollTop } = this;
 	if (this.lastScrollLeft !== scrollLeft) {
 		this.lastScrollLeft = scrollLeft;
@@ -4682,7 +4694,7 @@ Animation.outerTimelineListScroll = function (this: typeof Animation, event: Eve
 	}
 };
 
-Animation.outerTimelineListBlur = function (this: typeof Animation, event: Event) {
+Animation.outerTimelineListBlur = function (this: typeof Animation, _event: Event) {
 	Animation.outerTimelineListPointerup!();
 };
 
@@ -4945,9 +4957,8 @@ Animation.outerTimelineListPointermove = function (this: typeof Animation, event
 				const x = Math.clamp(coords.x, 0, right);
 				const y = Math.clamp(coords.y, 0, bottom);
 				Animation.updateMarqueeShift!(x, y);
-				dragging.layer.class === marquee.layer?.class
-					? removeClass(marquee, 'disabled')
-					: addClass(marquee, 'disabled');
+				if (dragging.layer.class === marquee.layer?.class) removeClass(marquee, 'disabled');
+				else addClass(marquee, 'disabled');
 				break;
 			}
 			case 'ready-to-scroll': {
@@ -4982,13 +4993,12 @@ Animation.innerTimelineListPointermove = function (this: typeof Animation, event
 	const list = Animation.innerTimelineList;
 	const ex = Animation.frameMax;
 	const ey = list.childNodes.length;
-	x >= 0 && x < ex && y >= 0 && y < ey
-		? Animation.updateCursor!(x, y)
-		: Animation.updateCursor!(-1, -1);
+	if (x >= 0 && x < ex && y >= 0 && y < ey) Animation.updateCursor!(x, y);
+	else Animation.updateCursor!(-1, -1);
 	Animation.timelineCursor.pointerevent = event;
 };
 
-Animation.innerTimelineListPointerleave = function (this: typeof Animation, event: Event) {
+Animation.innerTimelineListPointerleave = function (this: typeof Animation, _event: Event) {
 	Animation.timelineCursor.pointerevent = null;
 	Animation.updateCursor!(-1, -1);
 };
@@ -5243,7 +5253,9 @@ const animationBridgeKeys = [
 for (const key of animationBridgeKeys) {
 	Object.defineProperty(Animation, key, {
 		get: () => getAnimationStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getAnimationStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

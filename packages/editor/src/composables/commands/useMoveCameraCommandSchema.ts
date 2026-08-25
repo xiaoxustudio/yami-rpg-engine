@@ -50,7 +50,7 @@ Command.cases.moveCamera = new CommandSchema({
 });
 
 export function useMoveCameraCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('moveCamera', {
+	const { form, load, commit } = useCommandSchema('moveCamera', {
 		onLoad() {
 			getFocus(document.getElementById('moveCamera-mode')!);
 		}

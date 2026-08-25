@@ -28,7 +28,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 		if (!FS.statSync!(path).isFile()) {
 			throw new Error('Invalid project path');
 		}
-	} catch (error: unknown) {
+	} catch (_error: unknown) {
 		Layout.manager.switch('home');
 		return;
 	}
@@ -143,8 +143,8 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 
 		await this.checkForProjectUpdates!();
 
-		Printer.loadDefault();
-		loadCustomCommandList();
+		void Printer.loadDefault();
+		void loadCustomCommandList();
 		Animation.Player.updateStep();
 		this.loadProject!();
 	} catch (error: unknown) {

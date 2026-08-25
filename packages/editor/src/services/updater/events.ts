@@ -6,6 +6,7 @@ function updateLocalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const listMap = Updater.hooks.getLocalEvents();
 		const { manifest } = getDataStore().data;
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, events] of Object.entries<any>(listMap)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
@@ -26,6 +27,7 @@ function updateGlobalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, events } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEvent', 'global'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, sEvent] of Object.entries<any>(events!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

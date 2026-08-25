@@ -11,6 +11,7 @@ type FileEntityData = {
 	attributes: unknown[];
 	events: unknown[];
 	scripts: unknown[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 
@@ -99,7 +100,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.listChange = function (this: FileEntityPage, event: Event) {
+	entity.listChange = function (this: FileEntityPage, _event: Event) {
 		File.planToSave!(entity.meta);
 	};
 

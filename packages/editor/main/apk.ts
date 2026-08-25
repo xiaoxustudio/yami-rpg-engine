@@ -111,7 +111,9 @@ async function copyFolderAsync(source: string, destination: string): Promise<voi
 }
 
 function sendLog(msg: string, percentage: number | null = null, isError: boolean = false): void {
+	// oxlint-disable-next-line no-explicit-any
 	if ((globalThis as any).editor && typeof (globalThis as any).editor.send === 'function') {
+		// oxlint-disable-next-line no-explicit-any
 		(globalThis as any).editor.send(CHANNELS.send.apkLog, {
 			done: isError,
 			msg: percentage !== null ? `[${percentage}%] ${msg}` : msg
@@ -365,7 +367,7 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 		const newXml = builder.buildObject(result);
 		await fs.promises.writeFile(manifestPath, newXml);
 
-		const modifiedXml = await fs.promises.readFile(manifestPath, 'utf8');
+		const _modifiedXml = await fs.promises.readFile(manifestPath, 'utf8');
 
 		return { success: true };
 	} catch (err) {
@@ -389,6 +391,7 @@ async function modifyStrings(config: ApkConfig): Promise<{ success: boolean; err
 				const stringsPath = path.join(resDir, dirent.name, 'strings.xml');
 
 				if (fileExists(stringsPath)) {
+					// oxlint-disable-next-line no-await-in-loop
 					await updateStringsFile(stringsPath, config);
 				}
 			}
@@ -404,39 +407,35 @@ async function modifyStrings(config: ApkConfig): Promise<{ success: boolean; err
 }
 
 async function updateStringsFile(stringsPath: string, config: ApkConfig): Promise<void> {
-	try {
-		const xml = await fs.promises.readFile(stringsPath, 'utf8');
-		const result = await parseXml(xml);
+	const xml = await fs.promises.readFile(stringsPath, 'utf8');
+	const result = await parseXml(xml);
 
-		const resources = result.resources;
-		let found = false;
+	const resources = result.resources;
+	let found = false;
 
-		if (resources.string) {
-			resources.string.forEach((item: { $: { name?: string }; _?: string }) => {
-				if (item.$.name === 'app_name') {
-					item._ = config.appName;
-					found = true;
-				} else if (item.$.name === 'title_activity_yami') {
-					item._ = config.appName;
-				}
-			});
-		}
-
-		// 如果没有找到app_name，创建一个
-		if (!found) {
-			if (!resources.string) resources.string = [];
-			resources.string.push({
-				$: { name: 'app_name' },
-				_: config.appName
-			});
-		}
-
-		const builder = new Builder();
-		const newXml = builder.buildObject(result);
-		await fs.promises.writeFile(stringsPath, newXml);
-	} catch (err) {
-		throw err;
+	if (resources.string) {
+		resources.string.forEach((item: { $: { name?: string }; _?: string }) => {
+			if (item.$.name === 'app_name') {
+				item._ = config.appName;
+				found = true;
+			} else if (item.$.name === 'title_activity_yami') {
+				item._ = config.appName;
+			}
+		});
 	}
+
+	// 如果没有找到app_name，创建一个
+	if (!found) {
+		if (!resources.string) resources.string = [];
+		resources.string.push({
+			$: { name: 'app_name' },
+			_: config.appName
+		});
+	}
+
+	const builder = new Builder();
+	const newXml = builder.buildObject(result);
+	await fs.promises.writeFile(stringsPath, newXml);
 }
 
 async function replaceIconsWithSharp(
@@ -478,16 +477,19 @@ async function replaceIconsWithSharp(
 			const dirName = path.basename(dirPath);
 			const targetSize = ICON_SIZES[dirName] || 192;
 
+			// oxlint-disable-next-line no-await-in-loop
 			const files = await fs.promises.readdir(dirPath);
 			for (const file of files) {
 				if (file.startsWith('ic_launcher')) {
 					const filePath = path.join(dirPath, file);
+					// oxlint-disable-next-line no-await-in-loop
 					await fs.promises.unlink(filePath);
 				}
 			}
 
 			const destPath = path.join(dirPath, 'ic_launcher.png');
 
+			// oxlint-disable-next-line no-await-in-loop
 			await sourceImage
 				.resize(targetSize, targetSize, {
 					fit: 'contain',
@@ -516,10 +518,12 @@ async function removeAdaptiveIconConfigs(config: ApkConfig): Promise<void> {
 		if (dir.includes('anydpi')) {
 			const anydpiPath = path.join(resDir, dir);
 
+			// oxlint-disable-next-line no-await-in-loop
 			const files = await fs.promises.readdir(anydpiPath);
 			for (const file of files) {
 				if (file === 'ic_launcher.xml' || file === 'ic_launcher_round.xml') {
 					const filePath = path.join(anydpiPath, file);
+					// oxlint-disable-next-line no-await-in-loop
 					await fs.promises.unlink(filePath);
 				}
 			}
@@ -538,10 +542,12 @@ async function removeRoundIcons(config: ApkConfig): Promise<{ success: boolean; 
 			if (dir.startsWith('drawable') || dir.startsWith('mipmap')) {
 				if (!fs.existsSync(dirPath)) continue;
 
+				// oxlint-disable-next-line no-await-in-loop
 				const files = await fs.promises.readdir(dirPath);
 
 				for (const file of files) {
 					if (file.includes('_round')) {
+						// oxlint-disable-next-line no-await-in-loop
 						await fs.promises.unlink(path.join(dirPath, file));
 						console.log(`已删除圆形图标: ${path.join(dirPath, file)}`);
 					}
@@ -641,7 +647,7 @@ async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?
 	console.log('重新编译APK...');
 
 	try {
-		const { stdout, stderr } = await runProcess('java', [
+		const { stdout: _stdout, stderr } = await runProcess('java', [
 			'-jar',
 			config.apktoolPath,
 			'b',
@@ -697,7 +703,7 @@ async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error
 
 	// -f 强制覆盖；4 按4字节对齐
 	try {
-		const { stdout, stderr } = await runProcess(config.zipalignPath, [
+		const { stdout: _stdout, stderr: _stderr } = await runProcess(config.zipalignPath, [
 			'-f',
 			'4',
 			config.newApkPath,
@@ -777,7 +783,7 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 	console.log('验证APK签名...');
 
 	try {
-		const { stdout, stderr } = await runProcess(config.apksignerPath, [
+		const { stdout, stderr: _stderr } = await runProcess(config.apksignerPath, [
 			'verify',
 			'-v',
 			config.signedApkPath
@@ -793,6 +799,7 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 	}
 }
 
+// oxlint-disable-next-line no-explicit-any
 function parseXml(xml: string): Promise<any> {
 	return new Promise((resolve, reject) => {
 		parseString(xml, (err: Error | null, result: unknown) => {

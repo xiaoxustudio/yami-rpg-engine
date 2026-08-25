@@ -879,7 +879,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('save 路径：increase-items 空 itemId 校验失败不保存', async () => {
 			const wrapper = await mountWindow();
-			const { form } = useSetInventoryCommandSchema();
+			useSetInventoryCommandSchema();
 			Command.cases.setInventory.customLoad!({
 				actor: { type: 'trigger' },
 				operation: 'increase-items',
@@ -1438,7 +1438,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染分辨率 + 缩放文本', () => {
 			setWords();
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setResolution.parse!({
 				width: 1920,
 				height: 1080,
@@ -1756,7 +1757,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 skill + 操作文本', () => {
 			setWords();
 			Command.parseSkill = vi.fn((s: { type: string }) => `SK:${s.type}`) as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setSkill.parse!({
 				skill: { type: 'trigger' },
 				operation: 'set-cooldown',
@@ -1849,7 +1851,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 state + 操作文本', () => {
 			setWords();
 			Command.parseState = vi.fn((s: { type: string }) => `ST:${s.type}`) as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setState.parse!({
 				state: { type: 'trigger' },
 				operation: 'set-time',

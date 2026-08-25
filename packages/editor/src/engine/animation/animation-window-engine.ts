@@ -6,6 +6,7 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const AnimationWindowEngine: Record<string, any> = {};
 
 let animationWindow = null as unknown as typeof Animation;

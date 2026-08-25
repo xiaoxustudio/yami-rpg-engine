@@ -11,6 +11,7 @@ export interface FrameGeneratorForm {
 
 const form = reactive<FrameGeneratorForm>({ strideX: 0, strideY: 0, count: 1 });
 
+// oxlint-disable-next-line no-explicit-any
 export const FrameGenerator: Record<string, any> = {
 	form,
 	callback: null,
@@ -40,11 +41,11 @@ FrameGenerator.open = function (
 	getFocus($('#autoTile-generateFrames-strideX'), 'all');
 };
 
-FrameGenerator.windowClosed = function (this: typeof FrameGenerator, event: Event) {
+FrameGenerator.windowClosed = function (this: typeof FrameGenerator, _event: Event) {
 	this.callback = null;
 }.bind(FrameGenerator);
 
-FrameGenerator.confirm = function (this: typeof FrameGenerator, event: Event) {
+FrameGenerator.confirm = function (this: typeof FrameGenerator, _event: Event) {
 	const strideX = form.strideX;
 	const strideY = form.strideY;
 	const count = form.count;

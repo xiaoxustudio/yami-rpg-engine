@@ -170,6 +170,8 @@ export class ImageTexture extends Texture {
 	}
 }
 
+// oxlint-disable-next-line unbound-method
 ImageTexture.prototype.on = BaseTexture.prototype.on;
 
+// oxlint-disable-next-line unbound-method
 ImageTexture.prototype.reply = BaseTexture.prototype.reply;

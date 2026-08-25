@@ -101,6 +101,7 @@ interface EnumModule {
 	searcherInput: (this: TextBox, event: InputEvent) => void;
 	confirm: (this: typeof Enum, event?: Event) => void;
 	apply: (this: typeof Enum, event?: Event) => void;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -473,7 +474,7 @@ Enum.unpackEnumeration = (function IIFE() {
 	}
 	const clone = (items: EnumItem[] | null | undefined): EnumItem[] => {
 		const length = items!.length;
-		const copies = new Array(length);
+		const copies = Array.from<EnumItem | ReferencedFolder>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			getEnumStore().state.idMap![item.id] = true;
@@ -483,7 +484,7 @@ Enum.unpackEnumeration = (function IIFE() {
 				copies[i] = new ReferencedFolder(item);
 			}
 		}
-		return copies;
+		return copies as EnumItem[];
 	};
 	return function (this: typeof Enum) {
 		getEnumStore().state.idMap = {} as Record<string, boolean>;
@@ -498,7 +499,7 @@ Enum.unpackEnumeration = (function IIFE() {
 Enum.packEnumeration = (function IIFE() {
 	const clone = (items: EnumItem[] | null | undefined): EnumItem[] => {
 		const length = items!.length;
-		const copies = new Array(length);
+		const copies = Array.from<EnumItem>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
@@ -551,7 +552,7 @@ Enum.windowClose = function (this: typeof Enum, event: Event) {
 	}
 }.bind(Enum);
 
-Enum.windowClosed = function (this: typeof Enum, event: Event) {
+Enum.windowClosed = function (this: typeof Enum, _event: Event) {
 	getEnumStore().close();
 	write(this.searcher, '');
 	clear(this.list);
@@ -736,7 +737,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				navigator.clipboard.writeText(item.id);
+				void navigator.clipboard.writeText(item.id);
 			}
 		});
 	}
@@ -839,7 +840,7 @@ Enum.searcherInput = function (this: TextBox, event: InputEvent) {
 	Enum.list!.searchNodesDebounced(text);
 };
 
-Enum.confirm = function (this: typeof Enum, event?: Event) {
+Enum.confirm = function (this: typeof Enum, _event?: Event) {
 	switch (getEnumStore().state.mode) {
 		case 'normal':
 			this.apply();
@@ -866,7 +867,7 @@ Enum.confirm = function (this: typeof Enum, event?: Event) {
 	Window.close!('enum');
 }.bind(Enum);
 
-Enum.apply = function (this: typeof Enum, event?: Event) {
+Enum.apply = function (this: typeof Enum, _event?: Event) {
 	if (getEnumStore().state.changed) {
 		getEnumStore().state.changed = false;
 

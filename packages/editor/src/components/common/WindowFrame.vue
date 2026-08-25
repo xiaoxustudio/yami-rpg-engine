@@ -89,6 +89,7 @@ defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolut
 
 onMounted(() => {
 	const el = root.value as HTMLElement &
+		// oxlint-disable-next-line no-explicit-any
 		Record<'open' | 'close' | 'maximize' | 'unmaximize' | 'focus' | 'blur' | 'setTitle' | 'absolute' | 'setPosition' | 'on', any>;
 	if (!el) return;
 	attachElementApi(el, { open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on });

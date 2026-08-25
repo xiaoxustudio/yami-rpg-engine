@@ -6,6 +6,7 @@ function updateEquipments(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, equipments } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEquipment'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, sEquipment] of Object.entries<any>(equipments!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

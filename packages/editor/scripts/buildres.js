@@ -91,7 +91,7 @@ const zipBuild = async (src, targetSrc) => {
 	}
 };
 
-(async () => {
+void (async () => {
 	const promiseArray = resArray.map(async (v) => {
 		console.log(`⌛ 开始处理: ${v.path}`);
 		await zipBuild(v.realPath, path.resolve('build', 'resources', `${v.path}_pack.zip`));
@@ -100,6 +100,7 @@ const zipBuild = async (src, targetSrc) => {
 	await Promise.all(promiseArray);
 
 	const packageArray = await Promise.all(
+		// oxlint-disable-next-line no-map-spread
 		resArray.map(async (v) => {
 			const zipPath = path.resolve('build', 'resources', `${v.path}_pack.zip`);
 			return {

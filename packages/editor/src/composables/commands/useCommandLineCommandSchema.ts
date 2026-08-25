@@ -48,7 +48,6 @@ Command.cases.commandLine = new CommandSchema({
 							]
 						: [])
 				);
-				break;
 			case 'has':
 			case 'rm':
 			case 'get':
@@ -87,7 +86,7 @@ Command.cases.commandLine = new CommandSchema({
 });
 
 export function useCommandLineCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('commandLine');
+	const { form, load, commit } = useCommandSchema('commandLine');
 	const onSave = (): void => {
 		const key = read(document.getElementById('commandLine-key')) ?? form.key;
 		if (

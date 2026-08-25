@@ -3,6 +3,7 @@ import { Timer } from '@app/utils/timer';
 import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneAnimateEngine: Record<string, any> = {};
 SceneAnimateEngine.requestAnimation = function (this: typeof Scene) {
 	if (this.state === 'open' && this.showAnimation) {

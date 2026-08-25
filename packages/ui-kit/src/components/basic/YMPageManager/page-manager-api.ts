@@ -46,8 +46,8 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 			if (active !== target) {
 				manager.index = value;
 				manager.active = target;
-				active && removeClass(active, 'visible');
-				target && addClass(target, 'visible');
+				if (active) removeClass(active, 'visible');
+				if (target) addClass(target, 'visible');
 				if (manager.switchEventEnabled) {
 					const event = new Event('switch') as Event & {
 						last: string | null;
@@ -57,8 +57,8 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 					event.value = value;
 					el.dispatchEvent(event);
 				}
-				active && dispatchResizeEvent(active);
-				target && dispatchResizeEvent(target);
+				if (active) dispatchResizeEvent(active);
+				if (target) dispatchResizeEvent(target);
 			}
 		}
 	};

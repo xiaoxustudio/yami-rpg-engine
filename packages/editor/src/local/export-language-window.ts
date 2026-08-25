@@ -86,7 +86,7 @@ ExportLanguage.stringifyLanguagePack = function (
 ) {
 	const entries = Object.entries(map);
 	const length = entries.length;
-	const strings = new Array(length);
+	const strings = Array.from({ length: length });
 	for (let i = 0; i < length; i++) {
 		const [id, text] = entries[i];
 		strings[i] = '$' + id + '\n' + text;
@@ -94,7 +94,7 @@ ExportLanguage.stringifyLanguagePack = function (
 	return strings.join('\n\n');
 };
 
-ExportLanguage.confirm = function (this: typeof ExportLanguage, event: Event) {
+ExportLanguage.confirm = function (this: typeof ExportLanguage, _event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
 	const getForm = (

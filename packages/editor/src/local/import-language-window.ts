@@ -88,7 +88,7 @@ ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string
 	return map;
 };
 
-ImportLanguage.confirm = function (this: typeof ImportLanguage, event: Event) {
+ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 	const get = createGetter('confirmation');
 	const filename = Path.basename!(ImportLanguage.filePath);
 	const language = read($('#importLanguage-language'));

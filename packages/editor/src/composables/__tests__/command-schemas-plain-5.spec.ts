@@ -576,8 +576,10 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 tilemap + 坐标/图集文本', () => {
 			setWords();
 			Command.parseTilemap = vi.fn(() => 'TM') as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
-			Command.parseFileName = vi.fn((v: unknown) => `F:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			const contents = Command.cases.setTile.parse!({
 				tilemap: { type: 'trigger' },
 				tilemapX: 1,
@@ -754,7 +756,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + 操作/时长文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerDuration.parse!({
 				trigger: { type: 'trigger' },
 				operation: 'set',
@@ -854,7 +857,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + motion 文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			Command.parseEnumString = vi.fn((v: unknown) => `EN:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseEnumString = vi.fn((v: unknown) => `EN:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerMotion.parse!({
 				trigger: { type: 'trigger' },
 				motion: 'active'
@@ -932,7 +936,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + speed 文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerSpeed.parse!({
 				trigger: { type: 'trigger' },
 				speed: 0
@@ -1173,7 +1178,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 actor + weight 文本', () => {
 			setWords();
 			Command.parseActor = vi.fn((a: { type: string }) => `A:${a.type}`) as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setWeight.parse!({
 				actor: { type: 'trigger' },
 				weight: 0
@@ -1347,7 +1353,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 zoom + easing 文本', () => {
 			setWords();
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			Command.parseEasing = vi.fn(() => 'EASING') as never;
 			const contents = Command.cases.setZoomFactor.parse!({
 				zoom: 1,
@@ -1460,7 +1467,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染模式 + 强度 + 缓动文本', () => {
 			setWords();
-			Command.setNumberColor = vi.fn((v: unknown) => `C:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.setNumberColor = vi.fn((v: unknown) => `C:${String(v)}`) as never;
 			Command.parseEasing = vi.fn(() => 'EASING') as never;
 			const contents = Command.cases.shakeScreen.parse!({
 				mode: 'random',
@@ -1765,7 +1773,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染音频类型文本', () => {
 			setWords();
-			Command.parseAudioType = vi.fn((v: unknown) => `AT:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseAudioType = vi.fn((v: unknown) => `AT:${String(v)}`) as never;
 			const contents = Command.cases.stopAudio.parse!({ type: 'bgm' });
 			expect(contents).toContainEqual({ text: 'AT:bgm' });
 		});

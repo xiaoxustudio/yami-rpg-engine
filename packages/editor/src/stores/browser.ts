@@ -92,7 +92,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		directory.value = Browser?.directory ?? null;
 	}
 
-	function pageResize(event: Event) {
+	function pageResize(_event: Event) {
 		const Browser = getBrowser();
 		if (!Browser?.body) return;
 		updateNavVisibility();

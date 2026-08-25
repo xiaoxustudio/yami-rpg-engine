@@ -40,7 +40,7 @@ const loadItems = (id: string, items: { name: string; value: string }[]) => {
 
 const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
 	const el = document.getElementById(id) as unknown as { relate?: (targets: (HTMLElement | null)[]) => void } | null;
-	el?.relate?.(config.map(c => c.targets).flat());
+	el?.relate?.(config.flatMap(c => c.targets));
 };
 
 onMounted(() => {

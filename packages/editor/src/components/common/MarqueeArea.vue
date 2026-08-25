@@ -34,6 +34,7 @@ const select = (x?: number, y?: number, width?: number, height?: number): void =
 defineExpose({ save, restore, resize, clear, select, root });
 
 onMounted(() => {
+	// oxlint-disable-next-line no-explicit-any
 	const el = root.value as HTMLElement & Record<'save' | 'restore' | 'resize' | 'clear' | 'select', any>;
 	if (!el) return;
 	attachElementApi(el, { save, restore, resize, clear, select });

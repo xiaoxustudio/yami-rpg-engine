@@ -37,6 +37,7 @@ export const BrowserSearchHistory: BrowserSearchHistoryShape = {
 BrowserSearchHistory.initialize = function (this: BrowserSearchHistoryShape) {
 	const browser = getBrowserInstance();
 	if (!browser) return;
+	// oxlint-disable-next-line unbound-method
 	const initialize = browser.initialize;
 	browser.initialize = function () {
 		initialize?.call(this);

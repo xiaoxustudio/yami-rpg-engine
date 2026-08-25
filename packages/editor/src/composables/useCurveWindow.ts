@@ -319,7 +319,7 @@ const stopRendering = (): void => {
 	Timer.removeUpdater!('sharedRendering2', renderingFunction as (deltaTime: number) => void);
 };
 
-const windowResize = (event?: Event): void => {
+const windowResize = (_event?: Event): void => {
 	if (page!.clientWidth === 0) {
 		return suspend();
 	}
@@ -399,7 +399,7 @@ const easingIdInput = (event: Event): void => {
 	updateTimeline(target!);
 };
 
-const settingsPointerdown = (event: PointerEvent): void => {
+const settingsPointerdown = (_event: PointerEvent): void => {
 	Easing.open!();
 };
 

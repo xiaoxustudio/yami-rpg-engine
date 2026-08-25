@@ -61,7 +61,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 	AnimParticleFrame.write = function (
 		this: typeof AnimParticleFrame,
-		options: Record<string, unknown>
+		_options: Record<string, unknown>
 	) {
 		($('#animParticleFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};

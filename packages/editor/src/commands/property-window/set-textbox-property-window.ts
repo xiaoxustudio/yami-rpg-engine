@@ -24,6 +24,7 @@ export const TextBoxProperty = createPropertyWindow({
 		]);
 	},
 	parsers: {
+		// oxlint-disable-next-line no-base-to-string
 		type: (value, get) => get('type.' + value),
 		text: (value) => {
 			let text = value;

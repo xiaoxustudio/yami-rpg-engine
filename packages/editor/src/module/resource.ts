@@ -291,6 +291,7 @@ export const Resources = new (class {
 		setNoResourceObj(isNoResource());
 		return (
 			NoResourceObj &&
+			// oxlint-disable-next-line no-explicit-any
 			Object.values<any>(NoResourceObj).every((v) => (typeof v === 'boolean' ? v : v.check))
 		);
 	}
@@ -434,7 +435,7 @@ export const Resources = new (class {
 				write(textbox, '');
 			}
 			// 判断目录下是否有zip文件，有则删除它节省空间
-			if (fs.existsSync(targetPath)) fs.unlink(targetPath);
+			if (fs.existsSync(targetPath)) void fs.unlink(targetPath);
 		};
 		const get = createGetter('confirmation');
 

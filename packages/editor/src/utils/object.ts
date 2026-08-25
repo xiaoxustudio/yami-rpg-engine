@@ -33,7 +33,7 @@ Object.clone = (function IIFE() {
 		let copy: unknown[] | Record<PropertyKey, unknown>;
 		if (isArray(object)) {
 			const arr = object as unknown[];
-			copy = new Array(arr.length);
+			copy = Array.from({ length: arr.length });
 			seen.set(object as object, copy);
 			for (let i = 0; i < arr.length; i++) {
 				const value = arr[i];

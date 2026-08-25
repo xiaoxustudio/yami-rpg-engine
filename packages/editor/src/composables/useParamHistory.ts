@@ -83,6 +83,7 @@ export class ParamHistory {
 }
 
 export function registerParamHistoryProcessors() {
+	// oxlint-disable-next-line no-explicit-any
 	const processors = History.processors as Record<string, (operation: string, data: any) => void>;
 	processors['inspector-param-insert'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;

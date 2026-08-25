@@ -11,6 +11,7 @@ interface WindowProxyShape {
 	matrix: Matrix;
 	opacity: number;
 	children: never[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -86,9 +87,11 @@ UI.Window = class WindowElement extends UI.Element {
 					delete (this as unknown as { resize?: unknown }).resize;
 					break;
 				case 'horizontal-grid':
+					// oxlint-disable-next-line unbound-method
 					this.resize = WindowElement.horizontalGridResize;
 					break;
 				case 'vertical-grid':
+					// oxlint-disable-next-line unbound-method
 					this.resize = WindowElement.verticalGridResize;
 					break;
 			}
@@ -238,7 +241,7 @@ UI.Window = class WindowElement extends UI.Element {
 		this._calculateScrollArea();
 	}
 
-	requestResizing = ((IIFE) => {
+	requestResizing = ((_IIFE) => {
 		const timer = new Timer({
 			duration: 0,
 			callback: () => this.resize()

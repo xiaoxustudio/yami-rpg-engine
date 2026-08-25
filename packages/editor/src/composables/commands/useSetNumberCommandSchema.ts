@@ -105,7 +105,7 @@ Command.cases.setNumber = new CommandSchema({
 });
 
 export function useSetNumberCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setNumber', {
+	const { form, load, commit } = useCommandSchema('setNumber', {
 		onLoad() {
 			getFocus(document.getElementById('setNumber-variable'));
 		}

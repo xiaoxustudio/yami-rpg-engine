@@ -1030,7 +1030,9 @@ bindInput(elements, editor, Particle);
 			const options = local.components?.[id]?.options;
 			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
 		};
+		// oxlint-disable-next-line no-explicit-any
 		(document.getElementById('particleLayer-blend') as any)?.loadItems?.(getNames('particleLayer-blend', ['normal', 'additive', 'subtract']));
+		// oxlint-disable-next-line no-explicit-any
 		(document.getElementById('particleLayer-light') as any)?.loadItems?.(getNames('particleLayer-light', ['raw', 'global', 'ambient']));
 	};
 	window.addEventListener('localize', refreshLocalizedItems);

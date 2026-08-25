@@ -132,8 +132,6 @@ export const Meta = (function IIFE() {
 		}
 
 		tryFixGuid(data: Record<string, unknown>) {
-			if (data.guid === undefined) {
-			}
 			guidDescriptor.value = this.guid;
 			Object.defineProperty(data, 'guid', guidDescriptor);
 		}

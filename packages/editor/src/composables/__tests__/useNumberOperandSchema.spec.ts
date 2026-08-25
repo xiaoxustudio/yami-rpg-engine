@@ -14,19 +14,27 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	setNumberColor: (value: unknown) => `[num:${value}]`,
-	setStringColor: (value: unknown) => `[str:${value}]`,
-	setScriptColor: (value: unknown) => `[script:${value}]`,
-	setOperatorColor: (value: unknown) => `[op:${value}]`,
-	setDelimiterColor: (value: unknown) => `[dl:${value}]`,
-	setBooleanColor: (value: unknown) => `[bool:${value}]`
+	// oxlint-disable-next-line no-base-to-string
+	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	setStringColor: (value: unknown) => `[str:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	setScriptColor: (value: unknown) => `[script:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
 	parseVariableNumber: (value: unknown) =>
-		`[vnum:${typeof value === 'object' ? (value as { key: string }).key : value}]`,
-	parseVariableString: (value: unknown) => `[vstr:${value}]`,
+		// oxlint-disable-next-line no-base-to-string
+		`[vnum:${String(typeof value === 'object' ? (value as { key: string }).key : value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseVariableString: (value: unknown) => `[vstr:${String(value)}]`,
 	parseVariableFile: (id: string) => `<vfile:${id}>`,
 	parseVariableEnum: (group: string, key: string) => `<venum:${group}:${key}>`,
 	parsePosition: (position: { type: string }) => `<pos:${position.type}>`,
@@ -94,9 +102,12 @@ describe('useNumberOperandSchema（数值操作数窗口 composable：parse 树�
 		Enum.getStringItems = vi.fn(() => []) as never;
 		Enum.getDefStringId = vi.fn(() => 'id0') as never;
 		Data.teams = { list: [{ id: 'team0' }] } as never;
-		Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
-		Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
-		Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
+		// oxlint-disable-next-line no-base-to-string
+		Command.setOperatorColor = ((value: unknown) => `[op:${String(value)}]`) as never;
+		// oxlint-disable-next-line no-base-to-string
+		Command.setDelimiterColor = ((value: unknown) => `[dl:${String(value)}]`) as never;
+		// oxlint-disable-next-line no-base-to-string
+		Command.setBooleanColor = ((value: unknown) => `[bool:${String(value)}]`) as never;
 		NumberOperand.target = null;
 	});
 

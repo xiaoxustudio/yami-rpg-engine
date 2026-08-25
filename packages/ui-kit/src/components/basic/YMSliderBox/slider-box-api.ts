@@ -128,7 +128,9 @@ export function attachSliderBoxApi(
 			number.input instanceof HTMLInputElement &&
 			typeof number.write === 'function'
 		) {
+			// oxlint-disable-next-line unbound-method
 			const writeSlider = slider.write;
+			// oxlint-disable-next-line unbound-method
 			const writeNumber = number.write;
 
 			const sliderPointerdown = () => {
@@ -137,12 +139,12 @@ export function attachSliderBoxApi(
 
 			const sliderInput = (event?: Event) => {
 				writeNumber.call(number, read(slider));
-				event && number.dispatchEvent(new Event('input'));
+				if (event) number.dispatchEvent(new Event('input'));
 			};
 
 			const numberInput = (event?: Event) => {
 				writeSlider.call(slider, read(number));
-				event && slider.dispatchEvent(new Event('input'));
+				if (event) slider.dispatchEvent(new Event('input'));
 			};
 
 			slider.synchronizer = target;
@@ -230,7 +232,9 @@ export function attachSliderBoxApi(
 	});
 
 	box._initialized = true;
+	// oxlint-disable-next-line unbound-method
 	input.addEventListener('wheel', box.inputWheel, { passive: true });
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('input', box.sliderInput);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {

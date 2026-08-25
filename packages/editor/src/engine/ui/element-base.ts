@@ -3,6 +3,7 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 interface UIElementShape {
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -21,6 +22,7 @@ interface UIParentShape {
 	opacity: number;
 	matrix: Matrix;
 	children: UIElementShape[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -206,10 +208,10 @@ UI.Element = class UIElement {
 
 	appendChild(element: UIElementShape) {
 		if (element && this.children.append(element)) {
-			element.parent instanceof UI.Element && element.parent!.children.remove(element);
+			if (element.parent instanceof UI.Element) element.parent!.children.remove(element);
 			element.parent = this;
 			if (this.connected) {
-				!element.connected && element.connect();
+				if (!element.connected) element.connect();
 				element.resize();
 			}
 		}
@@ -227,7 +229,7 @@ UI.Element = class UIElement {
 			element.parent = this;
 			this.children.splice(index, 0, element);
 			if (this.connected) {
-				!element.connected && element.connect();
+				if (!element.connected) element.connect();
 				element.resize();
 			}
 			UI.root.tryUpdateReferenceElements(this);

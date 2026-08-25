@@ -48,6 +48,7 @@ export class FileItem {
 	path: string;
 	type: string;
 	stats: { isDirectory(): boolean; ino?: string | number; mtimeMs?: number } | null;
+	// oxlint-disable-next-line no-explicit-any
 	promise?: Promise<any> | null;
 	contexts: Map<string, unknown> | null;
 
@@ -197,6 +198,7 @@ export class FileItem {
 		for (const path of paths) {
 			this.guidConflictPaths.append(path);
 		}
+		// oxlint-disable-next-line unbound-method
 		display?.request(this.warnGuidConflicts);
 	}
 
@@ -224,6 +226,7 @@ export class FileItem {
 		for (const path of paths) {
 			this.oversizeImagePaths.append(path);
 		}
+		// oxlint-disable-next-line unbound-method
 		display?.request(this.warnOversizeImages);
 	}
 
@@ -329,7 +332,8 @@ export class FolderItem {
 		const path = this.hooks.path(dir);
 		const files = await FSP.readdir(path, { withFileTypes: true });
 		const length = files.length;
-		const promises = new Array(length);
+		type StatPromise = Promise<unknown> & { path?: string };
+		const promises = Array.from<StatPromise>({ length: length });
 		const children = [];
 		const subfolders = [];
 		const bigint = FolderItem.bigint;
@@ -360,12 +364,17 @@ export class FolderItem {
 		const { extnameToTypeMap } = FolderItem;
 		for (let i = 0; i < length; i++) {
 			const promise = promises[i];
+			// oxlint-disable-next-line no-await-in-loop
 			const response = await promise;
 			if (promise?.path === undefined) {
 				continue;
 			}
 			const path = promise.path;
-			const stats = response;
+			const stats = response as {
+				isDirectory(): boolean;
+				ino?: string | number;
+				mtimeMs?: number;
+			};
 			let item = map[path];
 			if (item === undefined || item.stats?.mtimeMs !== stats.mtimeMs) {
 				const name = files[i].name;

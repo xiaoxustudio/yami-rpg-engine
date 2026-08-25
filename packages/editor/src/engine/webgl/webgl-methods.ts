@@ -1617,7 +1617,7 @@ GL.createImageTexture = function (
 	image: HTMLImageElement | HTMLCanvasElement | null,
 	options: Record<string, unknown> = {}
 ) {
-	const { gl } = GL;
+	const { gl: _gl } = GL;
 	const magFilter = options.magFilter ?? this.NEAREST;
 	const minFilter = options.minFilter ?? this.LINEAR;
 	const guid = image instanceof Image ? (image as unknown as { guid?: string }).guid : image;
@@ -1677,12 +1677,14 @@ GL.createImageTexture = function (
 				texture.reply('error');
 			}
 		};
-		image instanceof Image
-			? initialize(image)
-			: File.get!({
-					guid: guid,
-					type: 'image'
-				}).then(initialize);
+		if (image instanceof Image) {
+			initialize(image);
+		} else {
+			File.get!({
+				guid: guid,
+				type: 'image'
+			}).then(initialize);
+		}
 	}
 	texture.refCount++;
 	return texture;
@@ -1693,7 +1695,7 @@ interface TextureFBOShape extends Texture {
 }
 
 GL.createTextureFBO = function (texture: TextureFBOShape) {
-	const { gl } = GL;
+	const { gl: _gl } = GL;
 	const fbo = this.createFramebuffer();
 	this.bindFramebuffer(this.FRAMEBUFFER, fbo);
 

@@ -31,6 +31,7 @@ const getControl = (id: string): ControlEl => document.getElementById(id) as unk
 const bindList = (): void => {
 	getControl('arrayList-list').bind({
 		initialize: () => undefined,
+		// oxlint-disable-next-line no-base-to-string
 		parse: (item: unknown) => String(item),
 		open: () => undefined,
 		save: () => undefined

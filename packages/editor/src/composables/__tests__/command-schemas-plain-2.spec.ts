@@ -239,10 +239,13 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 actor 文本', () => {
 			setWords();
-			Command.parseFileName = vi.fn((v: unknown) => `F:${v}`) as never;
-			Command.parseTeam = vi.fn((v: unknown) => `T:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseTeam = vi.fn((v: unknown) => `T:${String(v)}`) as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.createActor.parse!({
 				actorId: 'a1',
 				teamId: 'team0',
@@ -426,8 +429,10 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 actor 文本', () => {
 			setWords();
-			Command.parseFileName = vi.fn((v: unknown) => `F:${v}`) as never;
-			Command.parseTeam = vi.fn((v: unknown) => `T:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseTeam = vi.fn((v: unknown) => `T:${String(v)}`) as never;
 			const contents = Command.cases.createGlobalActor.parse!({
 				actorId: 'a1',
 				teamId: 'team0'
@@ -533,7 +538,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 preset 文本', () => {
 			setWords();
-			Command.parsePresetObject = vi.fn((v: unknown) => `P:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parsePresetObject = vi.fn((v: unknown) => `P:${String(v)}`) as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
 			const contents = Command.cases.createObject.parse!({
 				presetId: 'p1',
@@ -658,11 +664,13 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 trigger 文本', () => {
 			setWords();
-			Command.parseVariableFile = vi.fn((v: unknown) => `F:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableFile = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			Command.parseActor = vi.fn(() => 'ACTOR') as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
 			Command.parseAngle = vi.fn(() => 'ANG') as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.createTrigger.parse!({
 				triggerId: 't1',
 				caster: { type: 'trigger' },
@@ -1060,7 +1068,8 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 tilemap 文本', () => {
 			setWords();
 			Command.parseTilemap = vi.fn(() => 'TM') as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.deleteTile.parse!({
 				tilemap: { type: 'trigger' },
 				tilemapX: 1,
@@ -1333,7 +1342,8 @@ vi.mock('@app/stores/local', () => ({
 			Command.parseActor = vi.fn(
 				(a: unknown) => `A:${(a as { type: string }).type}`
 			) as never;
-			Command.parseActorSelector = vi.fn((v: unknown) => `S:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseActorSelector = vi.fn((v: unknown) => `S:${String(v)}`) as never;
 			const contents = Command.cases.discardTargets.parse!({
 				actor: { type: 'trigger' },
 				selector: 'any',
@@ -1885,8 +1895,10 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 save 操作文本', () => {
 			setWords();
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
-			Command.setVariableColor = vi.fn((v: unknown) => `V:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.setVariableColor = vi.fn((v: unknown) => `V:${String(v)}`) as never;
 			const contents = Command.cases.gameData.parse!({
 				operation: 'save',
 				index: 1,
@@ -2045,7 +2057,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('save 路径：ratio divisor 未选校验失败不保存', async () => {
 			const wrapper = await mountWindow();
-			const { form } = useGetActorCommandSchema();
+			useGetActorCommandSchema();
 			Command.cases.getActor.customLoad!({
 				variable: { type: 'local', key: 'foo' },
 				position: { type: 'absolute', x: 1, y: 2 },

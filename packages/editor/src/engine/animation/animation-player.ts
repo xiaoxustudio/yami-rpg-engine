@@ -17,6 +17,7 @@ import {
 interface AnimationData {
 	sprites: Array<AnimationSprite & { image: string }>;
 	motions: Array<AnimationMotion & { id: string }>;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -662,6 +663,7 @@ export class AnimationPlayer {
 					pivotY: 0,
 					opacity: 0,
 					update: null,
+					// oxlint-disable-next-line unbound-method
 					reset: AnimationPlayer.contextReset
 				};
 			}
@@ -670,12 +672,15 @@ export class AnimationPlayer {
 			context.layer = layer;
 			switch (layer.class) {
 				case 'joint':
+					// oxlint-disable-next-line unbound-method
 					context.update = AnimationPlayer.contextUpdate;
 					break;
 				case 'sprite':
+					// oxlint-disable-next-line unbound-method
 					context.update = AnimationPlayer.contextUpdateSprite;
 					break;
 				case 'particle':
+					// oxlint-disable-next-line unbound-method
 					context.update = AnimationPlayer.contextUpdateParticle;
 					break;
 				case 'sound':
@@ -832,6 +837,7 @@ interface PlayerLayer {
 	class: string;
 	children: PlayerLayer[];
 	frames: PlayerFrame[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -856,5 +862,6 @@ interface PlayerContext {
 	update: ((frame: PlayerFrame, time?: number, next?: PlayerFrame) => void) | null;
 	reset: () => void;
 	emitter?: ParticleEmitterShape;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }

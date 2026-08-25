@@ -47,7 +47,7 @@ AnimSoundFrame.close = function (this: typeof AnimSoundFrame) {
 	}
 };
 
-AnimSoundFrame.write = function (this: typeof AnimSoundFrame, options: Record<string, unknown>) {
+AnimSoundFrame.write = function (this: typeof AnimSoundFrame, _options: Record<string, unknown>) {
 	($('#animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 };
 

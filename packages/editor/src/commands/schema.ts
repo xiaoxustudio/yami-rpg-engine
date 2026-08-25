@@ -63,6 +63,7 @@ interface CommandSchemaConfig {
 	save?: () => unknown;
 	customSave?: () => unknown;
 	noWindow?: boolean;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -79,6 +80,7 @@ export class CommandSchema {
 	customLoad;
 	customSave;
 	noWindow;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 
 	constructor(config: CommandSchemaConfig) {
@@ -86,11 +88,16 @@ export class CommandSchema {
 		this.fields = config.fields ?? [];
 		this.children = config.children ?? false;
 		this.confirmId = config.confirmId ?? `${config.name}-confirm`;
+		// oxlint-disable-next-line unbound-method
 		this.onParse = config.onParse;
+		// oxlint-disable-next-line unbound-method
 		this.onLoad = config.onLoad;
+		// oxlint-disable-next-line unbound-method
 		this.onSave = config.onSave;
 		this.onInitialize = config.initialize ?? config.onInitialize;
+		// oxlint-disable-next-line unbound-method
 		this.customParse = config.parse ?? config.customParse;
+		// oxlint-disable-next-line unbound-method
 		this.customLoad = config.load ?? config.customLoad;
 		this.customSave = config.save ?? config.customSave;
 		this.noWindow = config.noWindow ?? false;
@@ -388,7 +395,7 @@ export class CommandSchema {
 		target?.save?.({ id, params });
 		const handler = CommandSchema._resolve(id);
 		if (handler !== undefined) {
-			!handler.noWindow && Window.close!(id);
+			if (!handler.noWindow) Window.close!(id);
 		} else {
 			Window.close!('scriptCommand');
 		}

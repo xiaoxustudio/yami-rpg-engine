@@ -13,6 +13,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { UI } from '@app/ui/ui-window.ts';
 
+// oxlint-disable-next-line no-explicit-any
 type FileMethod = (...args: any[]) => any;
 
 export const File: {
@@ -147,7 +148,7 @@ File.get = function (descriptor) {
 						if (type === 'json') {
 							try {
 								resolve(JSON.parse(content));
-							} catch (parseError) {
+							} catch (_parseError) {
 								// 非 JSON 文件回退包装对象，避免 Object.defineProperty 对字符串抛错
 								resolve({ code: content });
 							}
@@ -155,7 +156,7 @@ File.get = function (descriptor) {
 							resolve(content);
 						}
 					}
-				} catch (error: unknown) {
+				} catch (_error: unknown) {
 					reject(new URIError(path));
 				}
 			});
@@ -167,7 +168,7 @@ File.getPath = function (guid) {
 };
 
 File.save = function (hint = true) {
-	Data.saveManifest();
+	void Data.saveManifest();
 
 	const { guidMap, changes } = Data.manifest;
 	for (const meta of changes) {
@@ -247,6 +248,7 @@ File.getFileName = (function IIFE() {
 		let path = `${dir}/${base}${ext}`;
 		let route = File.path?.(path);
 		if (FS.existsSync(route)) {
+			// oxlint-disable-next-line no-constant-condition
 			for (let i = 1; true; i++) {
 				path = `${dir}/${base} ${i}${ext}`;
 				route = File.path?.(path);
@@ -296,7 +298,7 @@ File.openPath = function (path) {
 
 File.openURL = function (url) {
 	if (url) {
-		shell.openExternal(url);
+		void shell.openExternal(url);
 	}
 };
 

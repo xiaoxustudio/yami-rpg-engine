@@ -32,7 +32,7 @@ Command.cases.webSocketSend = new CommandSchema({
 });
 
 export function useWebSocketSendCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('webSocketSend', {
+	const { form, load, commit } = useCommandSchema('webSocketSend', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketSend-id'));
 		}

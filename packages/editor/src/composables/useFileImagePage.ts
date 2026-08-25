@@ -61,7 +61,7 @@ export function useFileImagePage() {
 		}
 	};
 
-	const windowResize = (event: Event): void => {
+	const windowResize = (_event: Event): void => {
 		const fileImage = Inspector.fileImage;
 		if (fileImage?.target !== null && fileImage?.symbol === null) {
 			updateImage();

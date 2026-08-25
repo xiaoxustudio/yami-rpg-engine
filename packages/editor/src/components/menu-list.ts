@@ -32,16 +32,27 @@ export function attachMenuListApi(el: HTMLElement): void {
 		get: () => menu.state,
 		configurable: true
 	});
+	// oxlint-disable-next-line unbound-method
 	box.popup = menu.popup;
+	// oxlint-disable-next-line unbound-method
 	box.computeMenuWidth = menu.computeMenuWidth;
+	// oxlint-disable-next-line unbound-method
 	box.close = menu.close;
+	// oxlint-disable-next-line unbound-method
 	box.clear = menu.clear;
+	// oxlint-disable-next-line unbound-method
 	box.createItem = menu.createItem as unknown as (...args: unknown[]) => unknown;
+	// oxlint-disable-next-line unbound-method
 	box.select = menu.select;
+	// oxlint-disable-next-line unbound-method
 	box.unselect = menu.unselect;
+	// oxlint-disable-next-line unbound-method
 	box.reselect = menu.reselect;
+	// oxlint-disable-next-line unbound-method
 	box.popupSubmenu = menu.popupSubmenu;
+	// oxlint-disable-next-line unbound-method
 	box.closeSubmenu = menu.closeSubmenu;
+	// oxlint-disable-next-line unbound-method
 	box.pointerenter = menu.pointerenter;
 }
 

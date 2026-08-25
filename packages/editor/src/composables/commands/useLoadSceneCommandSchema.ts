@@ -37,7 +37,7 @@ Command.cases.loadScene = new CommandSchema({
 });
 
 export function useLoadSceneCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('loadScene', {
+	const { form, load, commit } = useCommandSchema('loadScene', {
 		onLoad() {
 			getFocus(document.getElementById('loadScene-sceneId')!);
 		}

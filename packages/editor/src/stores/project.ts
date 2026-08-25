@@ -5,15 +5,11 @@ import { pinia } from './pinia';
 
 export const projectStateKeys = ['state', 'target', 'data'] as const;
 
-type ProjectDataShape = {
-	window: { title: string };
-	localization: { languages: Array<{ name: string; font: string; scale: number }> };
-	[k: string]: unknown;
-};
-
 export const useProjectStore = defineStore('project', () => {
 	const state = shallowRef<string>('closed');
+	// oxlint-disable-next-line no-explicit-any
 	const target = shallowRef<any>(null);
+	// oxlint-disable-next-line no-explicit-any
 	const data = shallowRef<any>(null);
 
 	function initialize() {

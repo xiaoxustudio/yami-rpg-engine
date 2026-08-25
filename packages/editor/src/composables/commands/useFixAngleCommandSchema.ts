@@ -20,6 +20,7 @@ Command.cases.fixAngle = new CommandSchema({
 	customParse({ actor, fixed }: FixAngleData) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
+			// oxlint-disable-next-line no-base-to-string
 			.push(t('command.fixAngle.fixed.' + fixed));
 		return [
 			{ color: 'actor' },

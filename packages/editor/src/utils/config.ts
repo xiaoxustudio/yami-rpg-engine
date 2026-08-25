@@ -40,7 +40,7 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 					};
 					return ipcRenderer
 						.invoke(CHANNELS.invoke.getDirPath, 'documents')
-						.catch((error) => 'C:')
+						.catch((_error) => 'C:')
 						.then((docPath) => {
 							const dialogs = config.dialogs as Record<string, string> | undefined;
 							for (const key of Object.keys(dialogs ?? {})) {

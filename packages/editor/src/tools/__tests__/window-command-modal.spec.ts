@@ -124,6 +124,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 			expect(Window.frames).toHaveLength(1);
 			const cancel = el.querySelector('button[name="cancel"]') as HTMLButtonElement;
 			cancel.click();
+			// oxlint-disable-next-line no-await-in-loop
 			await nextTick();
 			expect(Window.frames).toHaveLength(0);
 			expect(document.body.style.pointerEvents).toBe('inherit');

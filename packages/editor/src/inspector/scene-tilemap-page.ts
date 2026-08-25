@@ -195,7 +195,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneTilemap.layerInput = function (this: typeof SceneTilemap, event: Event) {
+	SceneTilemap.layerInput = function (this: typeof SceneTilemap, _event: Event) {
 		if (Inspector.manager.focusing === this) {
 			const lightBox = SceneTilemap.lightBox!;
 			const value = read(lightBox);

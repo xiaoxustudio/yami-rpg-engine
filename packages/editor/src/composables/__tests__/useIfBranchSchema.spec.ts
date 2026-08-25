@@ -16,10 +16,10 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	setNumberColor: (value: unknown) => `[num:${value}]`,
-	setOperatorColor: (value: unknown) => `[op:${value}]`,
-	setBooleanColor: (value: unknown) => `[bool:${value}]`,
-	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
+	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
+	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({

@@ -122,7 +122,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: unknown }, event: Event) {
+	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: unknown }, _event: Event) {
 		UIWindow.update!(UIWindow.target as UIWindowData, Inspector.getKey!(this), read(this));
 	};
 

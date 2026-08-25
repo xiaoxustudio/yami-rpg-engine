@@ -76,6 +76,7 @@ export class History extends Array implements IArrayHistory {
 		return this !== null && this.index + 1 < this.length;
 	}
 
+	// oxlint-disable-next-line no-explicit-any
 	static processors: Record<string, (operation: string, data: any) => void> = {};
 }
 

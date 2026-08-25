@@ -4,9 +4,12 @@ import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
 export const useInspectorStore = defineStore('inspector', () => {
+	// oxlint-disable-next-line no-explicit-any
 	const inspector = shallowRef<any>(Inspector ?? null);
 
+	// oxlint-disable-next-line no-explicit-any
 	const fileActorTarget = shallowRef<any>(null);
+	// oxlint-disable-next-line no-explicit-any
 	const fileActorMeta = shallowRef<any>(null);
 
 	function getInspector() {

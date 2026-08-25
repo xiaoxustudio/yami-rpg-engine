@@ -43,7 +43,7 @@ Command.cases.moveElement = new CommandSchema({
 });
 
 export function useMoveElementCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('moveElement', {
+	const { form, load, commit } = useCommandSchema('moveElement', {
 		onLoad() {
 			getFocus(document.getElementById('moveElement-element')!);
 		}

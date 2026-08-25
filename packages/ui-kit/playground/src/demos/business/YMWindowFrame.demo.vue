@@ -9,7 +9,7 @@ const maximizeDialog = (id: string) => (document.getElementById(id) as FrameElem
 
 const closeAll = () => {
 	const frames = (window as Window & { Window?: { frames?: HTMLElement[] } }).Window?.frames ?? [];
-	for (const frame of [...frames]) {
+	for (const frame of frames) {
 		frame.classList.remove('open');
 	}
 	frames.length = 0;

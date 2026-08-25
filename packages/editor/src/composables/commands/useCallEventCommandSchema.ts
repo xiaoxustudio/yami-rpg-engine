@@ -79,6 +79,7 @@ Command.cases.callEvent = new CommandSchema({
 	parseEventArgInput(arg: CallEventArg) {
 		switch (arg.type) {
 			case 'boolean':
+				// oxlint-disable-next-line no-base-to-string
 				return Command.setBooleanColor!(arg.value!.toString());
 			case 'number':
 				return Command.parseVariableNumber!(arg.value);
@@ -494,7 +495,8 @@ export function useCallEventCommandSchema() {
 			write(elEventType, eventTypes[0].value);
 		}
 		for (const element of document.querySelectorAll('.call-event-component')) {
-			type === 'global' ? show(element) : hide(element);
+			if (type === 'global') show(element);
+			else hide(element);
 		}
 		resizeWindow();
 	};
@@ -518,7 +520,7 @@ export function useCallEventCommandSchema() {
 		}
 		resizeWindow();
 	};
-	const eventIdInput = (event: { value: string }): void => {
+	const eventIdInput = (_event: { value: string }): void => {
 		if (pendingArgs) {
 			writeEventArgs(pendingArgs);
 		}

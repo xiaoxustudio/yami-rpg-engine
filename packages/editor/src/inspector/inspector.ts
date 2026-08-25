@@ -123,6 +123,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 
 	// this.manager.switch('fileTrigger')
 
+	// oxlint-disable-next-line no-explicit-any
 	const processors = History.processors as Record<string, (operation: string, data: any) => void>;
 	processors['inspector-change'] = (operation: string, data: InspectorChangeData) => {
 		const { editor, target, changes } = data;
@@ -298,7 +299,7 @@ Inspector.getKey = function (
 
 Inspector.inspectorResize = (function IIFE() {
 	const resize = new Event('resize');
-	return function (this: typeof Inspector, event: Event) {
+	return function (this: typeof Inspector, _event: Event) {
 		const page = Inspector.manager.active;
 		if (page instanceof HTMLElement) {
 			page.dispatchEvent(resize);
@@ -378,7 +379,7 @@ Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) 
 	}
 };
 
-Inspector.inputFocus = function (this: HTMLElement, event: Event) {
+Inspector.inputFocus = function (this: HTMLElement, _event: Event) {
 	if (Window.activeElement === null) {
 		const { manager } = Inspector;
 		if (manager.focusing !== null) {
@@ -396,7 +397,7 @@ Inspector.inputBlur = function (
 	owner: { history: History | null },
 	callback: ((data: InspectorChangeData) => void) | null = null
 ) {
-	return function (this: HTMLElement & { changes?: InspectorChange[] }, event: Event) {
+	return function (this: HTMLElement & { changes?: InspectorChange[] }, _event: Event) {
 		if (Window.activeElement === null) {
 			// 鍥犳闇€瑕佸垽鏂璵anager.focusing
 			const { manager } = Inspector;
@@ -440,14 +441,14 @@ Inspector.inputBlur = function (
 
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
-	return function (this: HTMLElement & { synchronizer: HTMLElement }, event: Event) {
+	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
 		this.synchronizer.dispatchEvent(focus);
 	};
 })();
 
 Inspector.sliderBlur = (function IIFE() {
 	const blur = new FocusEvent('blur');
-	return function (this: HTMLElement & { synchronizer: HTMLElement }, event: Event) {
+	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
 		this.synchronizer.dispatchEvent(blur);
 	};
 })();

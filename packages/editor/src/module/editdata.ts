@@ -160,8 +160,7 @@ export const EditDataInstance = new (class {
 		let hasChanges = false;
 
 		if (Array.isArray(this.currentContent)) {
-			for (const ind in this.currentContent) {
-				const item: EditDataContentItem = this.currentContent[ind as unknown as number];
+			for (const [ind, item] of this.currentContent.entries()) {
 				const { node, value } = item;
 				if (!(ind in (parse as object))) continue;
 				const changeContent = (parse as Record<string | number, unknown>)[ind] as Record<
@@ -215,14 +214,14 @@ export const EditDataInstance = new (class {
 		const options = this.colorOptions;
 		options.theme = Title.theme;
 		(this.createTheme as (theme: string) => void)(Title.theme);
-		monaco.editor.colorizeElement(text, options);
+		void monaco.editor.colorizeElement(text, options);
 		let index = setInterval(() => {
 			if (text.children.length !== 0) {
 				clearInterval(index);
 				const nodes = text.childNodes;
 				const nLength = nodes.length;
 				const sLength = nLength >> 1;
-				const spans = new Array(sLength);
+				const spans = Array.from<Node>({ length: sLength });
 				for (let i = 0; i < nLength; i += 2) {
 					spans[i >> 1] = nodes[i];
 				}

@@ -47,7 +47,7 @@ Command.cases.loop = new CommandSchema({
 let commands: unknown = null;
 
 export function useLoopCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('loop', {
+	const { form, load, commit } = useCommandSchema('loop', {
 		onLoad(params) {
 			commands = params.commands ?? [];
 			getFocus(document.getElementById('loop-conditions')!);

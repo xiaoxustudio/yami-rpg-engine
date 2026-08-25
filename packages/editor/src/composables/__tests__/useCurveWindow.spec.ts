@@ -199,7 +199,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 	});
 
 	it('themechange 切换画布配色', async () => {
-		const { curve } = await mountAndInit();
+		const { curve: _curve } = await mountAndInit();
 		const event = new Event('themechange') as Event & { value?: string };
 		event.value = 'dark';
 		window.dispatchEvent(event);

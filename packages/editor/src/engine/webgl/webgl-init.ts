@@ -1,4 +1,5 @@
 // @type {WebGLRenderingContext}
+// oxlint-disable-next-line no-explicit-any
 export let GL: any;
 
 interface BackgroundColor {
@@ -50,7 +51,7 @@ interface WebGLPrototypeBufferData {
 	});
 
 	// 侦听WebGL上下文恢复事件
-	canvas.addEventListener('webglcontextrestored', function (event) {
+	canvas.addEventListener('webglcontextrestored', function (_event) {
 		GL.restore();
 	});
 
@@ -70,7 +71,7 @@ interface WebGLPrototypeBufferData {
 		// 回退到WebGL1(Win7 DirectX9以及旧移动设备)
 		GL = canvas.getContext('webgl', options);
 
-		const element_index_uint = GL.getExtension('OES_element_index_uint');
+		const _element_index_uint = GL.getExtension('OES_element_index_uint');
 
 		const vertex_array_object = GL.getExtension('OES_vertex_array_object');
 		GL.createVertexArray = vertex_array_object.createVertexArrayOES.bind(vertex_array_object);
@@ -83,6 +84,7 @@ interface WebGLPrototypeBufferData {
 		GL.MAX = blend_minmax.MAX_EXT;
 
 		const prototype = WebGLRenderingContext.prototype;
+		// oxlint-disable-next-line unbound-method
 		(prototype as unknown as WebGLPrototypeBufferData)._bufferData = prototype.bufferData;
 		(prototype as unknown as WebGLPrototypeBufferData).bufferData = function (
 			target: GLenum,

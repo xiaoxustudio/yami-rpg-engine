@@ -107,7 +107,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 });
 
 export function useSetAnimationComponentCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setAnimationComponent', {
+	const { form, load, commit } = useCommandSchema('setAnimationComponent', {
 		onLoad() {
 			getFocus(document.getElementById('setAnimationComponent-actor'));
 		}

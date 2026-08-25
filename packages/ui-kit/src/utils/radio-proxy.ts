@@ -68,6 +68,7 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 		for (const element of elements) {
 			if (element.dataValue === value) {
 				addClass(element as HTMLElement, 'selected');
+				// oxlint-disable-next-line no-explicit-any
 				proxy.dataValue = value as string | number | boolean | Record<string, any> | null;
 			} else {
 				removeClass(element as HTMLElement, 'selected');

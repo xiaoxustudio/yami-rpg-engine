@@ -39,11 +39,11 @@ SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	getFocus($('#scene-shift-x'), 'all');
 };
 
-SceneShift.windowClosed = function (event: Event) {
+SceneShift.windowClosed = function (_event: Event) {
 	SceneShift.callback = null;
 };
 
-SceneShift.confirm = function (event: Event) {
+SceneShift.confirm = function (_event: Event) {
 	const getForm = ($('#scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null)
 		?.getForm;
 	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);

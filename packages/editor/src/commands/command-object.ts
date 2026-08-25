@@ -84,6 +84,7 @@ import * as CommandColor from '@app/composables/useCommandColor.ts';
 import { WordList } from '@app/composables/useWordList.ts';
 import * as CommandParse from '@app/composables/useCommandParse.ts';
 
+// oxlint-disable-next-line no-explicit-any
 type CommandMethod = (...args: any[]) => any;
 
 interface CommandCustomShape {
@@ -491,10 +492,16 @@ Command.forEachCommand = forEachCommand;
 Command.WordList = WordList as unknown as typeof Command.WordList;
 
 export function bindCommandSchema(Schema: typeof CommandSchema): void {
+	// oxlint-disable-next-line unbound-method
 	Command.initialize = Schema.initAll;
+	// oxlint-disable-next-line unbound-method
 	Command.insert = Schema.insert;
+	// oxlint-disable-next-line unbound-method
 	Command.open = Schema.open;
+	// oxlint-disable-next-line unbound-method
 	Command.edit = Schema.edit;
+	// oxlint-disable-next-line unbound-method
 	Command.save = Schema.save;
+	// oxlint-disable-next-line unbound-method
 	Command.parse = Schema.parse;
 }

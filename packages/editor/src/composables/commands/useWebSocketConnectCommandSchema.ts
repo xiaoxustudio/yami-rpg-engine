@@ -19,11 +19,11 @@ Command.cases.webSocketConnect = new CommandSchema({
 	customParse({
 		url = '',
 		id = '',
-		protocols = '',
-		onOpen = '',
-		onMessage = '',
-		onError = '',
-		onClose = ''
+		_protocols = '',
+		_onOpen = '',
+		_onMessage = '',
+		_onError = '',
+		_onClose = ''
 	}) {
 		return [
 			{ color: 'network' },
@@ -45,7 +45,7 @@ Command.cases.webSocketConnect = new CommandSchema({
 });
 
 export function useWebSocketConnectCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('webSocketConnect', {
+	const { form, load, commit } = useCommandSchema('webSocketConnect', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketConnect-url'));
 		}

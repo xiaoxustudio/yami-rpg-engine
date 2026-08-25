@@ -32,7 +32,7 @@ Command.cases.setDialogBox = new CommandSchema({
 });
 
 export function useSetDialogBoxCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setDialogBox', {
+	const { form, load, commit } = useCommandSchema('setDialogBox', {
 		onLoad() {
 			getFocus(document.getElementById('setDialogBox-element'));
 		}

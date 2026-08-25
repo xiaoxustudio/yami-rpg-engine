@@ -43,7 +43,7 @@ Command.cases.moveLight = new CommandSchema({
 });
 
 export function useMoveLightCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('moveLight', {
+	const { form, load, commit } = useCommandSchema('moveLight', {
 		onLoad() {
 			getFocus(document.getElementById('moveLight-light')!);
 		}

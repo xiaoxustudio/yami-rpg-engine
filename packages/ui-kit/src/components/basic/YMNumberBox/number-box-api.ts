@@ -72,7 +72,7 @@ const whiteList = new Set([
 ]);
 
 const inputKeydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
-	!whiteList.has(event.code) && !event.cmdOrCtrlKey && event.preventDefault();
+	if (!whiteList.has(event.code) && !event.cmdOrCtrlKey) event.preventDefault();
 };
 
 const clamp = (value: number, min: number, max: number): number =>

@@ -3,6 +3,7 @@ import { UI } from '@app/ui/ui-window.ts';
 
 {
 	interface UIContainerShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	interface UIContainerData {

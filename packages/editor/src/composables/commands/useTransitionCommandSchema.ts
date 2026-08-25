@@ -90,7 +90,7 @@ const save = (): unknown => {
 	});
 };
 
-const windowClosed = (event: Event): void => {
+const windowClosed = (_event: Event): void => {
 	commands = null;
 	clear(document.getElementById('transition-easingId'));
 };

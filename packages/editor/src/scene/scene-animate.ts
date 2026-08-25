@@ -47,21 +47,23 @@ Scene.switchLayer = (function IIFE() {
 		const marquee = this.marquee;
 		switch ((this.layer = layer)) {
 			case 'object':
-				typeof marquee?.switch === 'function' && marquee.switch('object');
+				if (typeof marquee?.switch === 'function') marquee.switch('object');
 				this.updateTargetInfo!();
 				break;
 			case 'tilemap':
-				typeof marquee?.switch === 'function' &&
+				if (typeof marquee?.switch === 'function') {
 					marquee.switch(this.brush === 'eraser' ? 'eraser' : 'tile');
-				typeof marquee?.clear === 'function' && marquee.clear();
+				}
+				if (typeof marquee?.clear === 'function') marquee.clear();
 				break;
 			case 'terrain':
-				typeof marquee?.switch === 'function' &&
+				if (typeof marquee?.switch === 'function') {
 					marquee.switch(this.brush === 'eraser' ? 'eraser' : 'terrain');
-				typeof marquee?.clear === 'function' && marquee.clear();
+				}
+				if (typeof marquee?.clear === 'function') marquee.clear();
 				break;
 		}
-		typeof marquee?.resize === 'function' && marquee.resize();
+		if (typeof marquee?.resize === 'function') marquee.resize();
 		if (this.state === 'open') {
 			Scene.requestRendering!();
 		}
@@ -98,18 +100,19 @@ Scene.switchBrush = (function IIFE() {
 		const marquee = this.marquee;
 		switch ((this.brush = brush)) {
 			case 'eraser':
-				typeof marquee?.switch === 'function' && marquee.switch('eraser');
+				if (typeof marquee?.switch === 'function') marquee.switch('eraser');
 				break;
 			case 'pencil':
 			case 'rect':
 			case 'oval':
 			case 'fill':
-				typeof marquee?.switch === 'function' &&
+				if (typeof marquee?.switch === 'function') {
 					marquee.switch(this.layer === 'terrain' ? 'terrain' : 'tile');
+				}
 				break;
 		}
-		typeof marquee?.clear === 'function' && marquee.clear();
-		typeof marquee?.resize === 'function' && marquee.resize();
+		if (typeof marquee?.clear === 'function') marquee.clear();
+		if (typeof marquee?.resize === 'function') marquee.resize();
 	};
 })();
 

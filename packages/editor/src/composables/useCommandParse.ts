@@ -21,6 +21,7 @@ import {
 
 interface CommandObjectShape {
 	type: string;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -28,6 +29,7 @@ interface CommandNode {
 	id: string;
 	params?: CommandObjectShape;
 	children?: CommandNode[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -37,6 +39,7 @@ interface TextContent {
 	tooltip?: string;
 	class?: string;
 	color?: string;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

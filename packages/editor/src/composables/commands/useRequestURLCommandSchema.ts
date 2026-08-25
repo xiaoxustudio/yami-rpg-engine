@@ -69,9 +69,9 @@ Command.cases.requestURL = new CommandSchema({
 	],
 	customParse({
 		url = '',
-		method = 'GET',
-		headers = [],
-		data = [],
+		method,
+		headers,
+		data,
 		callback = ''
 	}: {
 		url: unknown;
@@ -123,7 +123,7 @@ Command.cases.requestURL = new CommandSchema({
 });
 
 export function useRequestURLCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('requestURL', {
+	const { form, load, commit } = useCommandSchema('requestURL', {
 		onLoad() {
 			getFocus(document.getElementById('requestURL-url'));
 		}

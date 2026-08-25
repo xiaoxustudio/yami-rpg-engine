@@ -30,9 +30,13 @@ type ScriptFile = {
 };
 
 interface DataModule {
+	// oxlint-disable-next-line no-explicit-any
 	loadAll: () => Promise<any>;
+	// oxlint-disable-next-line no-explicit-any
 	loadMeta: () => Promise<any>;
+	// oxlint-disable-next-line no-explicit-any
 	loadFile: (filename: string) => Promise<any>;
+	// oxlint-disable-next-line no-explicit-any
 	loadScene: (guid: string) => Promise<any>;
 	close: () => void;
 	createEasingItems: () => Array<{ name: string; value: string }>;
@@ -57,6 +61,7 @@ interface DataModule {
 	parseGUID: (meta: { path: string }) => string;
 	loadScript: (file: ScriptFile) => Promise<void>;
 	jsonReplacer: (key: string, value: unknown) => unknown;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -87,9 +92,13 @@ export const Data: DataModule = {
 	animations: null,
 	particles: null,
 	tilesets: null,
+	// oxlint-disable-next-line no-explicit-any
 	loadAll: null as unknown as () => Promise<any>,
+	// oxlint-disable-next-line no-explicit-any
 	loadMeta: null as unknown as () => Promise<any>,
+	// oxlint-disable-next-line no-explicit-any
 	loadFile: null as unknown as (filename: string) => Promise<any>,
+	// oxlint-disable-next-line no-explicit-any
 	loadScene: null as unknown as (guid: string) => Promise<any>,
 	close: null as unknown as () => void,
 	createEasingItems: null as unknown as () => Array<{ name: string; value: string }>,
@@ -206,6 +215,7 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 		type: 'text'
 	}).then((code: string) => {
 		try {
+			// oxlint-disable-next-line no-explicit-any
 			return Codec.decodeScene!((scenes[guid] = code as any));
 		} catch (error: unknown) {
 			(error as Error).message = `${path}\n${(error as Error).message}`;
@@ -409,12 +419,14 @@ Data.createReferencedFileIDMap = function (this: typeof Data) {
 	while ((match = guid.exec(code))) {
 		markToMap(match[1]);
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const event of Object.values<any>(this.events)) {
 		if (event.type !== 'common') {
 			markToMap(event.guid);
 		}
 	}
 	const guidInScript = /"[0-9a-f]{16}"|'[0-9a-f]{16}'/g;
+	// oxlint-disable-next-line no-explicit-any
 	for (const meta of Object.values<any>(this.scripts)) {
 		if (meta.guid in usedMap) {
 			const code = meta.code;
@@ -744,7 +756,7 @@ Data.loadScript = async function (this: typeof Data, file: ScriptFile) {
 				PluginManager.parseMeta!(meta, code);
 				return (scripts[guid] = meta);
 			})
-			.catch((error: unknown) => {
+			.catch((_error: unknown) => {
 				delete scripts[guid];
 			});
 	}

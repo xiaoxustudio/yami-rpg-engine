@@ -109,7 +109,7 @@ export const measureText = (function IIFE() {
 			document.body.appendChild(container);
 			container.textContent = 'a';
 			lineHeight = container.offsetHeight;
-			Promise.resolve().then(() => {
+			void Promise.resolve().then(() => {
 				appended = false;
 				container.textContent = '';
 				container.remove();
@@ -156,6 +156,7 @@ function $(selector: string): HTMLElement | NodeListOf<HTMLElement> {
 export { $ };
 
 export const getElementReader = function (prefix: string) {
+	// oxlint-disable-next-line no-explicit-any
 	return function (suffix: string): any {
 		const element = $(`#${prefix}-${suffix}`) as HTMLElement & { read?: () => unknown };
 		if (!element) {

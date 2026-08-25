@@ -18,12 +18,12 @@ Command.cases.uploadFile = new CommandSchema({
 	],
 	customParse({
 		url = '',
-		method = 'POST',
+		method,
 		path = '',
-		field = 'file',
-		headers = [],
-		callback = '',
-		rateCallback = ''
+		field,
+		headers,
+		callback,
+		rateCallback
 	}: {
 		url: unknown;
 		method: string;
@@ -79,7 +79,7 @@ Command.cases.uploadFile = new CommandSchema({
 });
 
 export function useUploadFileCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('uploadFile', {
+	const { form, load, commit } = useCommandSchema('uploadFile', {
 		onLoad() {
 			getFocus(document.getElementById('uploadFile-url'));
 		}

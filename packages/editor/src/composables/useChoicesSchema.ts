@@ -56,11 +56,11 @@ const save = (): unknown => {
 	return { content, commands };
 };
 
-const windowClosed = (event: Event): void => {
+const windowClosed = (_event: Event): void => {
 	commands = null;
 };
 
-const confirm = (event: Event): void => {
+const confirm = (_event: Event): void => {
 	target?.save?.();
 };
 

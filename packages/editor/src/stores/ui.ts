@@ -8,6 +8,7 @@ export const uiStateKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'
 interface UINodeShape {
 	class: string;
 	children: UINodeShape[];
+	// oxlint-disable-next-line no-explicit-any
 	[key: string]: any;
 }
 

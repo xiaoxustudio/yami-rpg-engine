@@ -32,6 +32,7 @@ type EasingDrag = {
 	clientY: number;
 	pointStartX: number;
 	pointStartY: number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 type CurveMapInstance = Float64Array & {
@@ -66,6 +67,7 @@ export const Easing = {
 	data: null as unknown as EasingData[] | null,
 	list: null as
 		| (HTMLElement & {
+				// oxlint-disable-next-line no-explicit-any
 				read: () => Record<string, any>;
 				rename: (item: EasingData | null) => void;
 				restoreSelection: () => void;
@@ -181,6 +183,7 @@ Easing.initialize = () => {
 	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => getEasingStore().data);
+	// oxlint-disable-next-line unbound-method
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	$('#easing-mode').loadItems([
@@ -807,7 +810,7 @@ Easing.windowClose = function (this: typeof Easing, event: Event) {
 	}
 };
 
-Easing.windowClosed = function (this: typeof Easing, event: Event) {
+Easing.windowClosed = function (this: typeof Easing, _event: Event) {
 	getEasingStore().state = 'closed';
 	getEasingStore().target = null;
 	this.list!.saveSelection();
@@ -823,7 +826,7 @@ Easing.windowClosed = function (this: typeof Easing, event: Event) {
 	this.stopRendering();
 }.bind(Easing);
 
-Easing.dprchange = function (this: typeof Easing, event: Event) {
+Easing.dprchange = function (this: typeof Easing, _event: Event) {
 	if (getEasingStore().data !== null) {
 		this.updateCanvases();
 		this.requestRendering();
@@ -853,7 +856,7 @@ Easing.themechange = function (this: typeof Easing, event: Event & { value?: str
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.dataChange = function (this: typeof Easing, event: Event) {
+Easing.dataChange = function (this: typeof Easing, _event: Event) {
 	this.changed = true;
 }.bind(Easing);
 
@@ -956,7 +959,7 @@ Easing.listPopup = function (
 	);
 };
 
-Easing.modeSelect = function (this: typeof Easing, event: Event) {
+Easing.modeSelect = function (this: typeof Easing, _event: Event) {
 	this.updatePoints();
 	const points = this.points!;
 	const easingMap = this.easingMap!;
@@ -1022,7 +1025,7 @@ Easing.modeSelect = function (this: typeof Easing, event: Event) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.pointInput = function (this: HTMLElement, event: Event) {
+Easing.pointInput = function (this: HTMLElement, _event: Event) {
 	const key = Inspector.getKey(this);
 	const value = read(this);
 	const keys = key.split('-');
@@ -1131,7 +1134,7 @@ Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 	}
 }.bind(Easing);
 
-Easing.curveBlur = function (this: typeof Easing, event: Event) {
+Easing.curveBlur = function (this: typeof Easing, _event: Event) {
 	this.pointerup();
 	if (this.activePoint !== null) {
 		this.activePoint = null;
@@ -1185,11 +1188,11 @@ Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 	}
 }.bind(Easing);
 
-Easing.reverseInput = function (this: HTMLElement, event: Event) {
+Easing.reverseInput = function (this: HTMLElement, _event: Event) {
 	Easing.reverse = read(this);
 };
 
-Easing.durationInput = function (this: HTMLElement, event: Event) {
+Easing.durationInput = function (this: HTMLElement, _event: Event) {
 	Easing.duration = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'playing') {
@@ -1199,7 +1202,7 @@ Easing.durationInput = function (this: HTMLElement, event: Event) {
 	}
 };
 
-Easing.delayInput = function (this: HTMLElement, event: Event) {
+Easing.delayInput = function (this: HTMLElement, _event: Event) {
 	Easing.delay = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'waiting') {
@@ -1209,7 +1212,7 @@ Easing.delayInput = function (this: HTMLElement, event: Event) {
 	}
 };
 
-Easing.confirm = function (this: typeof Easing, event: Event) {
+Easing.confirm = function (this: typeof Easing, _event: Event) {
 	if (this.changed) {
 		this.changed = false;
 		this.clear();

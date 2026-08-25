@@ -117,6 +117,7 @@ interface AttributeWindowShape {
 	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onResume: (this: typeof Attribute, item: AttributeItem) => void;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -514,7 +515,7 @@ Attribute.unpackAttribute = (function IIFE() {
 	}
 	const clone = (items: AttributeItem[] | null | undefined): AttributeItem[] => {
 		const length = items!.length;
-		const copies = new Array(length);
+		const copies = Array.from<AttributeItem | ReferencedFolder>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			getAttributeStore().state.idMap![item.id] = true;
@@ -524,7 +525,7 @@ Attribute.unpackAttribute = (function IIFE() {
 				copies[i] = new ReferencedFolder(item);
 			}
 		}
-		return copies;
+		return copies as AttributeItem[];
 	};
 	return function (this: typeof Attribute) {
 		getAttributeStore().state.idMap = {};
@@ -541,7 +542,7 @@ Attribute.unpackAttribute = (function IIFE() {
 Attribute.packAttribute = (function IIFE() {
 	const clone = (items: AttributeItem[] | null | undefined): AttributeItem[] => {
 		const length = items!.length;
-		const copies = new Array(length);
+		const copies = Array.from<AttributeItem>({ length: length });
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
@@ -605,7 +606,7 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 	}
 }.bind(Attribute);
 
-Attribute.windowClosed = function (this: typeof Attribute, event: Event) {
+Attribute.windowClosed = function (this: typeof Attribute, _event: Event) {
 	getAttributeStore().close();
 	write(this.searcher, '');
 	clear(this.list);
@@ -792,7 +793,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				navigator.clipboard.writeText(item.id);
+				void navigator.clipboard.writeText(item.id);
 			}
 		});
 	}
@@ -926,7 +927,7 @@ Attribute.searcherInput = function (this: TextBox, event: InputEvent) {
 	Attribute.list!.searchNodesDebounced(text);
 };
 
-Attribute.confirm = function (this: typeof Attribute, event?: Event) {
+Attribute.confirm = function (this: typeof Attribute, _event?: Event) {
 	switch (getAttributeStore().state.mode) {
 		case 'normal':
 			this.apply();
@@ -953,7 +954,7 @@ Attribute.confirm = function (this: typeof Attribute, event?: Event) {
 	Window.close!('attribute');
 }.bind(Attribute);
 
-Attribute.apply = function (this: typeof Attribute, event?: Event) {
+Attribute.apply = function (this: typeof Attribute, _event?: Event) {
 	if (getAttributeStore().state.changed) {
 		getAttributeStore().state.changed = false;
 

@@ -34,7 +34,9 @@ export const VideoProperty = createPropertyWindow({
 	parsers: {
 		video: (value) => Command.parseFileName(value),
 		playbackRate: (value) => Command.parseVariableNumber(value),
+		// oxlint-disable-next-line no-base-to-string
 		loop: (value, get) => get('loop.' + value),
+		// oxlint-disable-next-line no-base-to-string
 		flip: (value, get) => get('flip.' + value),
 		blend: (value) => Command.parseBlend(value)
 	}

@@ -89,7 +89,7 @@ Command.cases.setObject = new CommandSchema({
 });
 
 export function useSetObjectCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setObject', {
+	const { form, load, commit } = useCommandSchema('setObject', {
 		onLoad() {
 			getFocus(document.getElementById('setObject-variable'));
 		}

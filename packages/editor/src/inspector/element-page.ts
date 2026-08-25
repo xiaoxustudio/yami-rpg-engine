@@ -7,6 +7,7 @@ import { UI } from '@app/ui/ui-window.ts';
 
 {
 	interface UIElementShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	interface UIElementTransform {
@@ -255,7 +256,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		}
 	}.bind(UIElement);
 
-	UIElement.alignmentClick = function (this: HTMLElement, event: Event) {
+	UIElement.alignmentClick = function (this: HTMLElement, _event: Event) {
 		let x;
 		let y;
 		switch (this.getAttribute('value')) {

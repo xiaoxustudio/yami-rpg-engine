@@ -28,6 +28,7 @@ import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
+// oxlint-disable-next-line no-explicit-any
 type TitleMethod = ((...args: any[]) => any) | null;
 
 interface TitleMeta {
@@ -159,7 +160,7 @@ export const Title: TitleShape = {
 Title.initialize = function (this: TitleShape) {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar') as unknown as TitleTabBarShape;
-	ipcRenderer?.invoke?.(CHANNELS.invoke.updateMaxMinIcon).then((mode: string) => {
+	void ipcRenderer?.invoke?.(CHANNELS.invoke.updateMaxMinIcon).then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
 				this.windowMaximize!(event);
@@ -402,7 +403,7 @@ Title.playGame = async function (this: TitleShape) {
 
 		ipcRenderer.send(CHANNELS.on.createPlayerWindow, File.root);
 
-		ipcRenderer.once(CHANNELS.send.playerWindowClosed, (event: IpcRendererEvent) => {
+		ipcRenderer.once(CHANNELS.send.playerWindowClosed, (_event: IpcRendererEvent) => {
 			removeClass(element, 'selected');
 			getTitleStore().setPlaying(false);
 		});
@@ -433,9 +434,9 @@ Title.loadFromConfig = function (this: TitleShape, config: EditorConfigShape) {
 Title.saveToProject = function (this: TitleShape, project: EditorProjectShape) {
 	const items = this.tabBar.data;
 	const length = items.length;
-	const tabs = new Array(length);
+	const tabs = Array.from<string>({ length: length });
 	for (let i = 0; i < length; i++) {
-		tabs[i] = items[i].meta.guid;
+		tabs[i] = items[i].meta.guid ?? '';
 	}
 	project.openTabs = tabs;
 
@@ -500,7 +501,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	Layout.manager.switch('directory');
 };
 
-Title.windowBeforeClose = function (this: TitleShape, event: Event) {
+Title.windowBeforeClose = function (this: TitleShape, _event: Event) {
 	if ((Window.frames?.length ?? 0) === 0) {
 		ipcRenderer.send(CHANNELS.on.preventCloseWindow);
 		Title.askWhetherToSave!(() => {
@@ -509,22 +510,22 @@ Title.windowBeforeClose = function (this: TitleShape, event: Event) {
 	}
 };
 
-Title.windowMaximize = function (this: TitleShape, event: Event) {
+Title.windowMaximize = function (this: TitleShape, _event: Event) {
 	getTitleStore().maximized = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowUnmaximize = function (this: TitleShape, event: Event) {
+Title.windowUnmaximize = function (this: TitleShape, _event: Event) {
 	getTitleStore().maximized = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowEnterFullScreen = function (this: TitleShape, event: Event) {
+Title.windowEnterFullScreen = function (this: TitleShape, _event: Event) {
 	getTitleStore().fullscreen = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowLeaveFullScreen = function (this: TitleShape, event: Event) {
+Title.windowLeaveFullScreen = function (this: TitleShape, _event: Event) {
 	getTitleStore().fullscreen = false;
 	this.updateBodyClass!();
 }.bind(Title);
@@ -542,7 +543,7 @@ Title.windowDrop = function (this: TitleShape, event: DragEvent) {
 	}
 }.bind(Title);
 
-Title.windowDirchange = function (this: TitleShape, event: Event) {
+Title.windowDirchange = function (this: TitleShape, _event: Event) {
 	const { tabBar } = Title;
 	if (!tabBar?.data) return;
 	for (const item of tabBar.data) {
@@ -557,14 +558,14 @@ Title.windowDirchange = function (this: TitleShape, event: Event) {
 	}
 };
 
-Title.windowLocalize = function (this: TitleShape, event: Event) {
+Title.windowLocalize = function (this: TitleShape, _event: Event) {
 	const text = Title.tabBar.dirItem?.tab?.text;
 	if (text instanceof HTMLElement) {
 		text.textContent = t('common.directory');
 	}
 };
 
-Title.pointerenter = function (this: TitleShape, event: Event) {
+Title.pointerenter = function (this: TitleShape, _event: Event) {
 	const { target } = this;
 	if (!target) return;
 	if (!target.active) {
@@ -598,7 +599,7 @@ Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 	}
 }.bind(Title);
 
-Title.tabBarPointerdown = function (this: TitleShape, event: Event) {
+Title.tabBarPointerdown = function (this: TitleShape, _event: Event) {
 	switch (this.read!()?.type) {
 		case 'scene':
 			Layout.readyToFocus(Scene.screen);
@@ -660,6 +661,7 @@ Title.tabBarClosed = function (this: TitleShape, event: Event & { closedItems: T
 				Animation.destroy!(context);
 				break;
 			case 'particle':
+				// oxlint-disable-next-line no-explicit-any
 				Particle.destroy!(context as any);
 				break;
 		}
@@ -717,19 +719,19 @@ Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
 	);
 };
 
-Title.playClick = function (this: TitleShape, event: MouseEvent) {
+Title.playClick = function (this: TitleShape, _event: MouseEvent) {
 	Title.playGame!();
 };
 
-Title.minimizeClick = function (this: TitleShape, event: MouseEvent) {
+Title.minimizeClick = function (this: TitleShape, _event: MouseEvent) {
 	ipcRenderer.send(CHANNELS.on.minimizeWindow);
 };
 
-Title.maximizeClick = function (this: TitleShape, event: MouseEvent) {
+Title.maximizeClick = function (this: TitleShape, _event: MouseEvent) {
 	ipcRenderer.send(CHANNELS.on.maximizeWindow);
 };
 
-Title.closeClick = function (this: TitleShape, event: MouseEvent) {
+Title.closeClick = function (this: TitleShape, _event: MouseEvent) {
 	Title.windowBeforeClose!();
 };
 
@@ -739,6 +741,7 @@ for (const key of titleStateKeys) {
 	Object.defineProperty(Title, key, {
 		get: () => getTitleStore()[key],
 		set: (value: unknown) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getTitleStore() as unknown as Record<(typeof titleStateKeys)[number], any>)[key] =
 				value;
 		},

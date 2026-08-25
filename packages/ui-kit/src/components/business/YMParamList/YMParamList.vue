@@ -888,7 +888,8 @@ const listFocus = (event: Event): void => {
 	const self = el!;
 	if (!self.focusing) {
 		self.focusing = true;
-		self.start !== null ? reselect() : select(0);
+		if (self.start !== null) reselect();
+		else select(0);
 	}
 };
 
@@ -976,11 +977,13 @@ const keydown = (event: KeyboardEvent): void => {
 				break;
 			case 'ArrowUp':
 				event.preventDefault();
-				event.shiftKey ? selectMultipleUp() : selectUp();
+				if (event.shiftKey) selectMultipleUp();
+				else selectUp();
 				break;
 			case 'ArrowDown':
 				event.preventDefault();
-				event.shiftKey ? selectMultipleDown() : selectDown();
+				if (event.shiftKey) selectMultipleDown();
+				else selectDown();
 				break;
 			default:
 				return;

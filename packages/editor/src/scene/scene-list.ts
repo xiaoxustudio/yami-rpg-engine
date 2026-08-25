@@ -11,7 +11,9 @@ import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {
 	class: string;
+	// oxlint-disable-next-line no-explicit-any
 	element: HTMLElement & { [k: string]: any };
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 

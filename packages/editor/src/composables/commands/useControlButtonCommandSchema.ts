@@ -30,7 +30,7 @@ Command.cases.controlButton = new CommandSchema({
 });
 
 export function useControlButtonCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('controlButton', {
+	const { form, load, commit } = useCommandSchema('controlButton', {
 		onLoad() {
 			getFocus(document.getElementById('controlButton-operation'));
 		}

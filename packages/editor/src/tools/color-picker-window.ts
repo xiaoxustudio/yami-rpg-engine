@@ -179,7 +179,7 @@ Color.getRGBFromPalette = function (this: typeof Color) {
 	const y = Math.round(this.paletteY);
 	const canvas = $('#color-palette-canvas');
 	const context = canvas.getContext('2d');
-	const [r, g, b, a] = context.getImageData(x, y, 1, 1).data;
+	const [r, g, b, _a] = context.getImageData(x, y, 1, 1).data;
 	return [r, g, b];
 };
 
@@ -187,7 +187,7 @@ Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
 	const canvas = $('#color-pillar-canvas');
 	const context = canvas.getContext('2d');
-	const [r, g, b, a] = context.getImageData(0, y, 1, 1).data;
+	const [r, g, b, _a] = context.getImageData(0, y, 1, 1).data;
 	return [r, g, b];
 };
 
@@ -254,7 +254,7 @@ Color.simplifyHexColor = (function IIFE() {
 	};
 })();
 
-Color.windowClosed = function (this: typeof Color, event: Event) {
+Color.windowClosed = function (this: typeof Color, _event: Event) {
 	$('#color-index').reset();
 	if (this.dragging) {
 		this.pointerup(this.dragging);
@@ -405,7 +405,7 @@ Color.hexBeforeinput = function (this: typeof Color, event: InputEvent) {
 	}
 };
 
-Color.hexInput = function (this: typeof Color, event: Event) {
+Color.hexInput = function (this: typeof Color, _event: Event) {
 	const form = useColorWindow().form;
 	const oldHex = form.hex;
 	const newHex = oldHex.replace(/[^0-9a-f]/gi, '');
@@ -423,7 +423,7 @@ Color.hexInput = function (this: typeof Color, event: Event) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.rgbaInput = function (this: typeof Color, event: Event) {
+Color.rgbaInput = function (this: typeof Color, _event: Event) {
 	const { r, g, b, a } = useColorWindow().form;
 	const hex = this.getHexFromRGBA([r, g, b, a]);
 	useColorWindow().form.hex = this.simplifyHexColor(hex);
@@ -433,6 +433,6 @@ Color.rgbaInput = function (this: typeof Color, event: Event) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.confirm = function (this: typeof Color, event: Event) {
+Color.confirm = function (this: typeof Color, _event: Event) {
 	useColorWindow().confirm();
 };

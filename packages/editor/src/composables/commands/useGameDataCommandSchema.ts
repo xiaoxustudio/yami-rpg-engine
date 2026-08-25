@@ -45,7 +45,7 @@ Command.cases.gameData = new CommandSchema({
 });
 
 export function useGameDataCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('gameData', {
+	const { form, load, commit } = useCommandSchema('gameData', {
 		onLoad() {
 			getFocus(document.getElementById('gameData-operation')!);
 		}

@@ -748,7 +748,8 @@ vi.mock('@app/stores/local', () => ({
 			setWords();
 			Command.parseActor = vi.fn((a: { type: string }) => `A:${a.type}`) as never;
 			Command.parseAngle = vi.fn(() => 'ANG') as never;
-			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			Command.parseEasing = vi.fn(() => 'EASING') as never;
 			const contents = Command.cases.translateActor.parse!({
 				actor: { type: 'trigger' },
@@ -839,7 +840,8 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 scene 文件文本', () => {
 			setWords();
-			Command.parseVariableFile = vi.fn((v: unknown) => `F:${v}`) as never;
+			// oxlint-disable-next-line no-base-to-string
+			Command.parseVariableFile = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			const contents = Command.cases.unloadSubscene.parse!({ sceneId: 'subscene1' });
 			expect(contents).toContainEqual({ text: 'F:subscene1' });
 		});

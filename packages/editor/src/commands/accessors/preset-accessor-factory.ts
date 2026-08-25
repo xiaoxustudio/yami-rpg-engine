@@ -39,7 +39,7 @@ function createPresetAccessor(
 		getWindow().open(target);
 	};
 
-	accessor.confirm = function (this: PresetAccessorShape, event: Event) {
+	accessor.confirm = function (this: PresetAccessorShape, _event: Event) {
 		getWindow().confirm();
 	};
 

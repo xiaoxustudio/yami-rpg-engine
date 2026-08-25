@@ -48,7 +48,7 @@ Command.cases.changeActorSkill = new CommandSchema({
 });
 
 export function useChangeActorSkillCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('changeActorSkill', {
+	const { form, load, commit } = useCommandSchema('changeActorSkill', {
 		onLoad() {
 			getFocus(document.getElementById('changeActorSkill-actor')!);
 		}

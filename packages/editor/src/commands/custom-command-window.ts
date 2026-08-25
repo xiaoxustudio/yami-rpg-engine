@@ -60,6 +60,7 @@ interface CustomCommandList {
 	data: CustomCommandData[];
 }
 
+// oxlint-disable-next-line no-explicit-any
 type CustomCommandMethod = ((...args: any[]) => any) | null;
 
 interface CustomCommandShape {
@@ -121,6 +122,7 @@ interface CustomCommandShape {
 	list_paste: CustomCommandMethod;
 	list_saveSelection: CustomCommandMethod;
 	list_restoreSelection: CustomCommandMethod;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -295,7 +297,7 @@ CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): v
 	}
 }.bind(CustomCommand);
 
-CustomCommand.windowClosed = function (this: CustomCommandShape, event: Event): void {
+CustomCommand.windowClosed = function (this: CustomCommandShape, _event: Event): void {
 	this.list.saveSelection!();
 	this.data = null;
 	this.list.clear();
@@ -346,7 +348,7 @@ CustomCommand.listKeydown = function (
 };
 
 CustomCommand.listSelect = function (event: Event & { value: CustomCommandData }): void {
-	CustomCommand.load!(event.value);
+	void CustomCommand.load!(event.value);
 };
 
 CustomCommand.listUnselect = function (): void {
@@ -440,7 +442,7 @@ CustomCommand.listOpen = function (
 
 CustomCommand.paramInput = function (
 	this: CustomCommandShape,
-	event: Event & { target?: EventTarget | null }
+	_event: Event & { target?: EventTarget | null }
 ): void {
 	CustomCommand.changed = true;
 	const data = CustomCommand.list.read()!;
@@ -559,6 +561,7 @@ for (const key of customCommandBridgeKeys) {
 			(
 				getCustomCommandStore() as unknown as Record<
 					(typeof customCommandBridgeKeys)[number],
+					// oxlint-disable-next-line no-explicit-any
 					any
 				>
 			)[key] = value;

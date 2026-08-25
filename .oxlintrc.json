@@ -2,8 +2,8 @@
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"options": {
 		"typeAware": true,
-		"typeCheck": false,
-		"maxWarnings": 5000
+		"typeCheck": true,
+		"maxWarnings": 0
 	},
 	"categories": {
 		"correctness": "warn",
@@ -41,11 +41,24 @@
 				}
 			}
 		],
-		"typescript/no-explicit-any": "warn",
 		"typescript/no-namespace": "off",
 		"typescript/no-non-null-assertion": "off",
-		"eslint/no-console": "warn",
-		"eslint/no-empty": ["warn", { "allowEmptyCatch": true }]
+		"eslint/no-console": ["warn", { "allow": ["error", "warn"] }],
+		"eslint/no-empty": ["warn", { "allowEmptyCatch": true }],
+		"eslint/no-unused-expressions": "warn",
+		"eslint/no-await-in-loop": "warn",
+		"eslint/no-constant-condition": "warn",
+		"eslint/no-unsafe-optional-chaining": "warn",
+		"typescript/no-explicit-any": "warn",
+		"typescript/no-useless-default-assignment": "warn",
+		"typescript/no-base-to-string": "warn",
+		"typescript/unbound-method": "warn",
+		"typescript/restrict-template-expressions": "warn",
+		"typescript/no-this-alias": "warn",
+		"typescript/no-redundant-type-constituents": "warn",
+		"typescript/no-implied-eval": "warn",
+		"unicorn/no-new-array": "warn",
+		"oxc/no-map-spread": "warn"
 	},
 	"overrides": [
 		{
@@ -72,6 +85,25 @@
 			},
 			"rules": {
 				"eslint/no-undef": "off"
+			}
+		},
+		{
+			"files": ["packages/editor/main/**/*.ts", "packages/editor/scripts/**/*.js"],
+			"rules": {
+				"eslint/no-console": "off"
+			}
+		},
+		{
+			"files": ["**/*.d.ts", "**/global.d.ts"],
+			"rules": {
+				"typescript/no-explicit-any": "off"
+			}
+		},
+		{
+			"files": ["**/*.spec.ts", "**/__tests__/**/*.ts"],
+			"rules": {
+				"typescript/unbound-method": "off",
+				"typescript/no-explicit-any": "off"
 			}
 		}
 	]

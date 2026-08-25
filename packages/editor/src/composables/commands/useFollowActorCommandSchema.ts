@@ -92,7 +92,7 @@ Command.cases.followActor = new CommandSchema({
 });
 
 export function useFollowActorCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('followActor', {
+	const { form, load, commit } = useCommandSchema('followActor', {
 		onLoad() {
 			getFocus(document.getElementById('followActor-actor'));
 		}

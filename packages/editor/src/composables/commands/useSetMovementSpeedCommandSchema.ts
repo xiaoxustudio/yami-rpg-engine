@@ -46,7 +46,7 @@ Command.cases.setMovementSpeed = new CommandSchema({
 });
 
 export function useSetMovementSpeedCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setMovementSpeed', {
+	const { form, load, commit } = useCommandSchema('setMovementSpeed', {
 		onLoad() {
 			getFocus(document.getElementById('setMovementSpeed-actor')!);
 		}

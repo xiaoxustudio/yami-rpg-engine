@@ -35,6 +35,7 @@ interface TextAreaVarApi extends HTMLElement {
 
 const mode = ref<'constant' | 'variable'>('constant');
 const textValue = ref('');
+// oxlint-disable-next-line no-explicit-any
 const varValue = ref<any>(null);
 
 const displayValue = computed(() => {

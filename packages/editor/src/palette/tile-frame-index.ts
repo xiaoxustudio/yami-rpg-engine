@@ -7,6 +7,7 @@ import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 
+// oxlint-disable-next-line no-explicit-any
 export const TileFrame: Record<string, any> = {
 	get window() {
 		return $('#autoTile-frameIndex');
@@ -198,7 +199,7 @@ TileFrame.getDevicePixelClientBoxSize = function (this: typeof TileFrame, elemen
 	return { width, height };
 };
 
-TileFrame.dprchange = function (this: typeof TileFrame, event: Event) {
+TileFrame.dprchange = function (this: typeof TileFrame, _event: Event) {
 	if (this.hframes !== null) {
 		const marquee = this.marquee;
 		const { x, y, width, height } = marquee;
@@ -207,7 +208,7 @@ TileFrame.dprchange = function (this: typeof TileFrame, event: Event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.windowClosed = function (this: typeof TileFrame, event: Event) {
+TileFrame.windowClosed = function (this: typeof TileFrame, _event: Event) {
 	this.hframes = null;
 	this.vframes = null;
 	this.image.src = '';
@@ -323,7 +324,7 @@ TileFrame.marqueePointermove = function (this: typeof TileFrame, event: PointerE
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerleave = function (this: typeof TileFrame, event: Event) {
+TileFrame.marqueePointerleave = function (this: typeof TileFrame, _event: Event) {
 	const info = this.info;
 	info.x = -1;
 	info.y = -1;

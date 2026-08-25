@@ -6,6 +6,7 @@ function updateTriggers(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, triggers } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileTrigger'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, sTrigger] of Object.entries<any>(triggers!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

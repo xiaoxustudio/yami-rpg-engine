@@ -137,6 +137,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 
 	lockTransform() {
 		if (this.prefab) {
+			// oxlint-disable-next-line no-this-alias
 			const parent = this;
 			const transform = this.transform;
 			this.prefab.transform = new (class Transform {

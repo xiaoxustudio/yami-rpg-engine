@@ -8,6 +8,7 @@ import { File } from './file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { DirectoryTree, registerDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 
+// oxlint-disable-next-line no-explicit-any
 type DirectoryMethod = (...args: any[]) => any;
 
 export const Directory: {
@@ -76,7 +77,7 @@ export const Directory: {
 			redirectMeta: (meta, file) => meta.redirect(file),
 			onTextureLoad: (guid: string) => GL.textureManager.updateImage(guid),
 			onLoadScript: (file) => {
-				Data.loadScript(
+				void Data.loadScript(
 					file as unknown as {
 						meta?: { guid: string; code?: string };
 						promise?: Promise<unknown> | null;

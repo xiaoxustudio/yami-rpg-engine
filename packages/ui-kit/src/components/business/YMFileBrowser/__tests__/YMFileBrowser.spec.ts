@@ -83,7 +83,7 @@ describe('YMFileBrowser', () => {
 
 	it('exposes api on root element', async () => {
 		const container = makeContainer();
-		const wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
+		const _wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
 		await nextTick();
 		const el = container as BrowserElement;
 		expect(typeof el.update).toBe('function');
@@ -95,7 +95,7 @@ describe('YMFileBrowser', () => {
 
 	it('getFilePaths maps relative and absolute paths', async () => {
 		const container = makeContainer();
-		const wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
+		const _wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
 		await nextTick();
 		const el = container as BrowserElement;
 		const files = [new FileItem('/a/ev', 'ev')];

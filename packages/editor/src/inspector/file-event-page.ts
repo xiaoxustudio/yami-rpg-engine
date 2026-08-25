@@ -19,6 +19,7 @@ import { t } from '@app/i18n';
 		description: string;
 		parameters: unknown[];
 		commands: unknown[];
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 
@@ -181,12 +182,12 @@ import { t } from '@app/i18n';
 		}
 	};
 
-	FileEvent.listChange = function (this: FileEventPage, event: Event) {
+	FileEvent.listChange = function (this: FileEventPage, _event: Event) {
 		File.planToSave!(FileEvent.meta);
 	};
 
 	FileEvent.parameters = {
-		initialize: function (this: FileEventList, list: FileEventList) {
+		initialize: function (this: FileEventList, _list: FileEventList) {
 			FileEvent.parameters.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
@@ -207,7 +208,7 @@ import { t } from '@app/i18n';
 				{ name: 'Element', value: 'element' }
 			]);
 		},
-		parse: function ({ type, key, note }: { type: string; key: string; note: string }) {
+		parse: function ({ type, key }: { type: string; key: string; note: string }) {
 			return [{ content: key }, { content: t('eventParameterTypes.' + type) }];
 		},
 		open: function ({

@@ -7,10 +7,10 @@ const testWindow = window as unknown as { __opened?: unknown };
 
 const makeProps = (overrides: Record<string, unknown> = {}) => ({
 	getters: {
-		actor: (el: HTMLElement) => {
+		actor: (_el: HTMLElement) => {
 			testWindow.__opened = 'actor';
 		},
-		file: (el: HTMLElement) => {
+		file: (_el: HTMLElement) => {
 			testWindow.__opened = 'file';
 		}
 	},
@@ -116,9 +116,11 @@ describe('无数据时显示 None（null/undefined/空串）', () => {
 	const parserProps = {
 		parsers: {
 			file: (value: unknown) => ({
+				// oxlint-disable-next-line no-base-to-string
 				text: value == null || value === '' ? 'None' : String(value)
 			}),
 			actor: (value: unknown) => ({
+				// oxlint-disable-next-line no-base-to-string
 				text: value == null || value === '' ? 'None' : String(value)
 			})
 		}

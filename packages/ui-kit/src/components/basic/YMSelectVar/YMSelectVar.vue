@@ -38,7 +38,9 @@ interface SelectVarApi extends HTMLElement {
 }
 
 const mode = ref<'constant' | 'variable'>('constant');
+// oxlint-disable-next-line no-explicit-any
 const selectValue = ref<any>(null);
+// oxlint-disable-next-line no-explicit-any
 const varValue = ref<any>(null);
 
 const displayValue = computed(() => {

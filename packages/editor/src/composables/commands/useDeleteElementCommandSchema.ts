@@ -36,7 +36,7 @@ Command.cases.deleteElement = new CommandSchema({
 });
 
 export function useDeleteElementCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('deleteElement', {
+	const { form, load, commit } = useCommandSchema('deleteElement', {
 		onLoad() {
 			getFocus(document.getElementById('deleteElement-operation'));
 		}

@@ -94,7 +94,7 @@ Command.cases.playAnimation = new CommandSchema({
 });
 
 export function usePlayAnimationCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('playAnimation', {
+	const { form, load, commit } = useCommandSchema('playAnimation', {
 		onLoad() {
 			getFocus(document.getElementById('playAnimation-mode')!);
 		}

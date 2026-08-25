@@ -138,6 +138,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		onWindow('pointerover', menu.windowPointerover);
 		onWindow('pointerout', menu.windowPointerout);
 		onWindow('keydown', menu.windowKeydown, { capture: true });
+		// oxlint-disable-next-line unbound-method
 		el.addEventListener('pointerenter', menu.pointerenter);
 	}
 
@@ -178,6 +179,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			offWindow('pointerover', menu.windowPointerover);
 			offWindow('pointerout', menu.windowPointerout);
 			offWindow('keydown', menu.windowKeydown, { capture: true });
+			// oxlint-disable-next-line unbound-method
 			el.removeEventListener('pointerenter', menu.pointerenter);
 		}
 	}
@@ -350,7 +352,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	function pointerenter(event: PointerEvent): void {
+	function pointerenter(_event: PointerEvent): void {
 		(menu.parent as unknown as MenuApi)?.select(menu.parentMenuItem as HTMLElement);
 	}
 
@@ -374,7 +376,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 							popupSubmenu(0);
 							(menu.submenu as MenuApi | null)?.reselect(1);
 						} else {
-							node.click && node.click();
+							if (node.click) node.click();
 							let m: MenuApi | null = menu;
 							while (m!.parent) {
 								m = m!.parent;

@@ -132,7 +132,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 });
 
 export function useSetObjectAnimationCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setObjectAnimation', {
+	const { form, load, commit } = useCommandSchema('setObjectAnimation', {
 		onLoad() {
 			getFocus(document.getElementById('setObjectAnimation-sort'));
 		}

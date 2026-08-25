@@ -40,6 +40,7 @@ function updateAnimations(verNum: number) {
 				}
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
 			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {
@@ -76,6 +77,7 @@ function updateAnimations(verNum: number) {
 				}
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
 			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {

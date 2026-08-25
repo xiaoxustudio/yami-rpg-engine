@@ -3,6 +3,7 @@ import { CHANNELS } from '@app/services/ipc/channels.ts';
 
 export interface GlobalClipboardHost {
 	has(type: string): boolean;
+	// oxlint-disable-next-line no-explicit-any
 	read(type: string): any;
 	write(type: string, data: unknown): void;
 }

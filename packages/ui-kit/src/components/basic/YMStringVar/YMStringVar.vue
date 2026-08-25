@@ -35,6 +35,7 @@ interface StringVarApi extends HTMLElement {
 
 const mode = ref<'constant' | 'variable'>('constant');
 const strValue = ref('');
+// oxlint-disable-next-line no-explicit-any
 const varValue = ref<any>(null);
 
 const displayValue = computed(() => {

@@ -147,6 +147,7 @@ type EventCommandListShape = HTMLElement & {
 	deleteCommandBuffers(commands: EventCommands): void;
 };
 
+// oxlint-disable-next-line no-explicit-any
 type EventEditorMethod = ((...args: any[]) => any) | null;
 
 interface EventEditorShape {
@@ -163,6 +164,7 @@ interface EventEditorShape {
 	closing: boolean;
 	data: EventListItem[] | null;
 	caches: EventCommands[];
+	// oxlint-disable-next-line no-explicit-any
 	types: Record<string, any[]>;
 	_initialized?: boolean;
 	initialize: (() => void) | null;
@@ -213,6 +215,7 @@ export const EventEditor: EventEditorShape = {
 	closing: false,
 	data: null,
 	caches: [],
+	// oxlint-disable-next-line no-explicit-any
 	types: null as unknown as Record<string, any[]>,
 	initialize: null,
 	openLocalEvent: null,
@@ -537,6 +540,7 @@ EventEditor.initialize = function (this: EventEditorShape) {
 		preload: { name: 'Preload', value: 'preload', tip: '' }
 	};
 	this.types = {
+		// oxlint-disable-next-line no-explicit-any
 		all: Object.values<any>(types),
 		global: [
 			types.common,
@@ -852,6 +856,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 		}
 		return false;
 	};
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, event] of Object.entries<any>(Data.events)) {
 		if (find(event)) {
 			references.push({
@@ -860,6 +865,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			});
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, actor] of Object.entries<any>(Data.actors)) {
 		for (const event of actor.events) {
 			if (find(event)) {
@@ -871,6 +877,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, skill] of Object.entries<any>(Data.skills)) {
 		for (const event of skill.events) {
 			if (find(event)) {
@@ -882,6 +889,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, trigger] of Object.entries<any>(Data.triggers)) {
 		for (const event of trigger.events) {
 			if (find(event)) {
@@ -893,6 +901,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, item] of Object.entries<any>(Data.items)) {
 		for (const event of item.events) {
 			if (find(event)) {
@@ -904,6 +913,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, equipment] of Object.entries<any>(Data.equipments)) {
 		for (const event of equipment.events) {
 			if (find(event)) {
@@ -915,6 +925,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, state] of Object.entries<any>(Data.states)) {
 		for (const event of state.events) {
 			if (find(event)) {
@@ -926,6 +937,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const preset of Object.values<any>(Data.scenePresets)) {
 		for (const event of preset.data.events) {
 			if (find(event)) {
@@ -938,6 +950,7 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 			}
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const preset of Object.values<any>(Data.uiPresets)) {
 		for (const event of preset.data.events) {
 			if (find(event)) {
@@ -955,46 +968,55 @@ EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: strin
 
 EventEditor.getAllLocalEvents = function (this: EventEditorShape) {
 	const listMap = {} as Record<string, unknown[]>;
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, actor] of Object.entries<any>(Data.actors)) {
 		if (actor.events.length !== 0) {
 			listMap[id] = actor.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, skill] of Object.entries<any>(Data.skills)) {
 		if (skill.events.length !== 0) {
 			listMap[id] = skill.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, trigger] of Object.entries<any>(Data.triggers)) {
 		if (trigger.events.length !== 0) {
 			listMap[id] = trigger.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, item] of Object.entries<any>(Data.items)) {
 		if (item.events.length !== 0) {
 			listMap[id] = item.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, equipment] of Object.entries<any>(Data.equipments)) {
 		if (equipment.events.length !== 0) {
 			listMap[id] = equipment.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, state] of Object.entries<any>(Data.states)) {
 		if (state.events.length !== 0) {
 			listMap[id] = state.events;
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const [id, scene] of Object.entries<any>(Data.scenes)) {
 		if (scene.events.length !== 0) {
 			listMap[id] = scene.events.slice();
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const { sceneId, data } of Object.values<any>(Data.scenePresets)) {
 		if (data.events.length !== 0) {
 			(listMap[sceneId] ??= []).push(...data.events);
 		}
 	}
+	// oxlint-disable-next-line no-explicit-any
 	for (const { uiId, data } of Object.values<any>(Data.uiPresets)) {
 		if (data.events.length !== 0) {
 			(listMap[uiId] ??= []).push(...data.events);
@@ -1235,7 +1257,7 @@ EventEditor.getGlobalEventName = function (this: EventEditorShape, id: string) {
 	return Data.manifest.guidMap[id]?.file.basename ?? '';
 };
 
-EventEditor.windowLocalize = function (this: EventEditorShape, event: Event) {
+EventEditor.windowLocalize = function (this: EventEditorShape, _event: Event) {
 	const types = EventEditor.types;
 	const getType = createGetter('eventTypes');
 	const getTip = createGetter('eventTips');
@@ -1296,7 +1318,7 @@ EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
 	this.closing = false;
 }.bind(EventEditor);
 
-EventEditor.windowClosed = function (this: EventEditorShape, event: Event) {
+EventEditor.windowClosed = function (this: EventEditorShape, _event: Event) {
 	this.clearAllEventClasses!(...(this.data ?? []));
 	this.packOpenEvents!();
 	this.data = null;
@@ -1306,7 +1328,7 @@ EventEditor.windowClosed = function (this: EventEditorShape, event: Event) {
 	window.removeEventListener('keydown', this.windowKeydown!);
 }.bind(EventEditor);
 
-EventEditor.windowResize = function (this: EventEditorShape, event: Event) {
+EventEditor.windowResize = function (this: EventEditorShape, _event: Event) {
 	const { list, commandList } = EventEditor;
 	const parent = commandList.parentNode as HTMLElement;
 	const outerHeight = parent.clientHeight;
@@ -1463,7 +1485,7 @@ EventEditor.typeInput = function (this: EventEditorShape, event: Event) {
 	EventEditor.list.updateItemName!(item);
 };
 
-EventEditor.commandListChange = function (this: EventEditorShape, event: Event) {
+EventEditor.commandListChange = function (this: EventEditorShape, _event: Event) {
 	if (EventEditor.closing) return;
 	const item = read(EventEditor.list);
 	if (!item.changed) {
@@ -1473,21 +1495,21 @@ EventEditor.commandListChange = function (this: EventEditorShape, event: Event) 
 	}
 };
 
-EventEditor.commandListUpdate = function (this: EventEditorShape, event: Event) {
+EventEditor.commandListUpdate = function (this: EventEditorShape, _event: Event) {
 	EventEditor.resizeGutter!();
 	EventEditor.updateGutter!();
 };
 
-EventEditor.commandListScroll = function (this: EventEditorShape, event: Event) {
+EventEditor.commandListScroll = function (this: EventEditorShape, _event: Event) {
 	EventEditor.updateGutter!();
 };
 
-EventEditor.confirm = function (this: EventEditorShape, event: Event) {
+EventEditor.confirm = function (this: EventEditorShape, _event: Event) {
 	this.apply!();
 	Window.close!('event');
 }.bind(EventEditor);
 
-EventEditor.apply = function (this: EventEditorShape, event: Event) {
+EventEditor.apply = function (this: EventEditorShape, _event: Event) {
 	for (const item of this.data!) {
 		switch (item.class) {
 			case 'global':
@@ -1528,7 +1550,9 @@ import { getEventEditorStore } from '@app/stores/eventEditor';
 for (const key of eventEditorBridgeKeys) {
 	Object.defineProperty(EventEditor, key, {
 		get: () => getEventEditorStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getEventEditorStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

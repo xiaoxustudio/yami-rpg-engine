@@ -182,7 +182,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	}
 
-	function inputInput(event: Event): void {
+	function inputInput(_event: Event): void {
 		if (!target) {
 			target = el;
 			timer.add();

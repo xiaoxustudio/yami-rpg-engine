@@ -21,6 +21,7 @@ Command.cases.webSocketClose = new CommandSchema({
 			{ text: id }
 		];
 		if (code !== '' && code !== null && code !== undefined) {
+			// oxlint-disable-next-line no-base-to-string
 			head.push({ text: ' , ' }, { text: String(code) });
 		}
 		if (reason) {
@@ -31,7 +32,7 @@ Command.cases.webSocketClose = new CommandSchema({
 });
 
 export function useWebSocketCloseCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('webSocketClose', {
+	const { form, load, commit } = useCommandSchema('webSocketClose', {
 		onLoad() {
 			getFocus(document.getElementById('webSocketClose-id'));
 		}

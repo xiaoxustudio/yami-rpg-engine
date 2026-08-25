@@ -75,6 +75,7 @@ const refresh = () => {
 	mode.value = UpdateLog.currentMode ?? 'internal';
 	const raw =
 		mode.value === 'internal' ? UpdateLog.internalItems : UpdateLog.communityItems;
+	// oxlint-disable-next-line no-map-spread
 	items.value = (raw ?? []).map((item) => ({
 		...item,
 		titleHtml: item.title ? md(item.title) : '',

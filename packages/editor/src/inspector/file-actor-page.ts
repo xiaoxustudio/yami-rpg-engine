@@ -36,6 +36,7 @@ import { t } from '@app/i18n';
 		on(event: string, listener: (event: Event) => void): void;
 	};
 	interface FileActorShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	const FileActor: FileActorShape = {
@@ -231,14 +232,13 @@ import { t } from '@app/i18n';
 		elMoveMotion.write2(read(elMoveMotion));
 	};
 
-	FileActor.listChange = function (this: FileActorShape, event: Event) {
+	FileActor.listChange = function (this: FileActorShape, _event: Event) {
 		File.planToSave!(FileActor.meta);
 	};
 
 	FileActor.sprites = {
 		initialize: function (this, list: ListShape) {
-			// 闂備焦褰冪粔宄懊归崶顒€鎹堕柣鎴炆戦悵顖炴偡濞嗘劕绗╅燑帮躬瀹曟繈濡歌閺?- 闂佽　鍋撻柣鐔告緲缂嶄礁霉濠婂喚鍎庢繛?
-			list.on('change', (event: Event) => {
+			list.on('change', (_event: Event) => {
 				const guid = FileActor.meta.guid;
 				if (Scene.actors instanceof Array) {
 					for (const actor of Scene.actors) {
@@ -287,7 +287,7 @@ import { t } from '@app/i18n';
 	};
 
 	FileActor.skills = {
-		initialize: function (this, list: ListShape) {},
+		initialize: function (this, _list: ListShape) {},
 		parse: function ({ id, key }: { id: string; key: string }) {
 			Command.invalid = false;
 			const skillName = Command.parseFileName!(id);
@@ -317,7 +317,7 @@ import { t } from '@app/i18n';
 		},
 		save: function () {
 			const elSkillId = $('#fileActor-skill-id');
-			const elSkillKey = $('#fileActor-skill-key');
+			const _elSkillKey = $('#fileActor-skill-key');
 			const id = fileActorSkillForm.id;
 			if (!id) {
 				return getFocus(elSkillId);
@@ -329,7 +329,7 @@ import { t } from '@app/i18n';
 	};
 
 	FileActor.equipments = {
-		initialize: function (this, list: ListShape) {},
+		initialize: function (this, _list: ListShape) {},
 		parse: function ({ id, slot }: { id: string; slot: string }) {
 			Command.invalid = false;
 			const equipmentName = Command.parseFileName!(id);
@@ -374,7 +374,7 @@ import { t } from '@app/i18n';
 	};
 
 	FileActor.inventory = {
-		initialize: function (this, list: ListShape) {
+		initialize: function (this, _list: ListShape) {
 			FileActor.inventory.loadTypeItems();
 		},
 		loadTypeItems: function () {

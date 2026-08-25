@@ -106,11 +106,13 @@ export function attachCustomBoxApi(
 	const applyParse = (value: unknown): void => {
 		const type = getType();
 		if (!type) {
+			// oxlint-disable-next-line no-base-to-string
 			text.textContent = value == null ? '' : String(value);
 			return;
 		}
 		const parser = props.parsers?.[type];
 		if (!parser) {
+			// oxlint-disable-next-line no-base-to-string
 			text.textContent = value == null ? '' : String(value);
 			return;
 		}
@@ -186,13 +188,12 @@ export function attachCustomBoxApi(
 		}
 	};
 
-	const click = (event?: Event): void => {
+	const click = (_event?: Event): void => {
 		const type = getType();
 		if (!type) return;
 		const getter = props.getters?.[type];
 		if (!getter) return;
 		getter(box);
-		event;
 	};
 
 	const keydown = (event: KeyboardEvent): void => {
@@ -232,8 +233,7 @@ export function attachCustomBoxApi(
 		}
 	};
 
-	const drop = (event: DragEvent): void => {
-		event;
+	const drop = (_event: DragEvent): void => {
 		const browser = getBrowser();
 		const file = browser?.body?.activeFile;
 		if (file) {

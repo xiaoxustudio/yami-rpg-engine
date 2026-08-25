@@ -119,7 +119,7 @@ export function attachSelectVarApi(
 		box.selectBox.loadItems(items);
 	};
 
-	const getFocus = function (mode: unknown): void {
+	const getFocus = function (_mode: unknown): void {
 		switch (box.mode) {
 			case 'constant':
 				return box.selectBox.focus();
@@ -181,7 +181,9 @@ export function attachSelectVarApi(
 	});
 
 	box._initialized = true;
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
+	// oxlint-disable-next-line unbound-method
 	box.addEventListener('pointerdown', box.pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {

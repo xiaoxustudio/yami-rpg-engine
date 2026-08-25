@@ -35,6 +35,7 @@ interface SceneListExtensions {
 	paste:
 		| ((
 				dItem: SceneListItem | 'auto' | null,
+				// oxlint-disable-next-line no-explicit-any
 				callback: ((item: any) => void) | undefined
 		  ) => void)
 		| null;
@@ -62,11 +63,15 @@ interface SceneShape {
 	info: HTMLElement;
 	screen: HTMLElement & { updateScrollbars: () => void };
 	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
+	// oxlint-disable-next-line no-explicit-any
 	marquee: HTMLElement & { [k: string]: any };
 	// searcher 运行时挂载 .deleteInputContent/.input 等扩展（scene-list.ts:97 调用）
+	// oxlint-disable-next-line no-explicit-any
 	searcher: HTMLElement & { [k: string]: any };
+	// oxlint-disable-next-line no-explicit-any
 	list: HTMLElement & SceneListExtensions & { [k: string]: any };
 	// editor properties（运行时挂载具体值，统一 any | null）
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -128,6 +133,7 @@ export const Scene: SceneShape = {
 	body: hide($('#scene-body')),
 	info: $('#scene-info'),
 	screen: $('#scene-screen') as HTMLElement & { updateScrollbars: () => void },
+	// oxlint-disable-next-line no-explicit-any
 	marquee: $('#scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
 	searcher: $('#scene-searcher'),
 	list: ($('#scene-list') as unknown as never) || ({} as never),
@@ -395,10 +401,14 @@ Scene.marquee.tiles = null;
 Scene.marquee.terrain = null;
 Scene.marquee.previewTiles = false;
 Scene.marquee.pointerevent = null;
+// oxlint-disable-next-line no-explicit-any
 Scene.marquee.save = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.switch = null;
+// oxlint-disable-next-line no-explicit-any
 Scene.marquee.resize = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.marquee.clear = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.marquee.select = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.selectInPencilMode = null;
 Scene.marquee.selectInRectMode = null;
@@ -408,18 +418,28 @@ Scene.marquee.getTiles = null;
 
 Scene.list.page = $('#scene-object');
 Scene.list.head = $('#scene-list-head');
+// oxlint-disable-next-line no-explicit-any
 Scene.list.copy = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.paste = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.duplicate = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.delete = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.toggle = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.createFolder = null as unknown as (...args: unknown[]) => any;
 Scene.list.createTilemapShortcutItems = null;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.restoreRecursiveStates = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.setRecursiveStates = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateFolderState = null;
 Scene.list.canSwitchState = null;
+// oxlint-disable-next-line no-explicit-any
 Scene.list.updateHead = null as unknown as (...args: unknown[]) => any;
 getListConfig(Scene.list).onCreate = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onRemove = null as unknown as (item: unknown) => void;
@@ -440,17 +460,18 @@ Scene.initialize = function (this: SceneShape) {
 	this.searcher = $('#scene-searcher');
 	const oldList = this.list;
 	this.list = $('#scene-list') as unknown as HTMLElement &
+		// oxlint-disable-next-line no-explicit-any
 		SceneListExtensions & { [k: string]: any };
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
 	this.list.page = $('#scene-object');
 	this.list.head = $('#scene-list-head');
-	this.screen && addScrollbars(this.screen);
+	if (this.screen) addScrollbars(this.screen);
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer: Timer) => {
+		update: (_timer: Timer) => {
 			if (getSceneStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const meta = this.meta;
@@ -1224,8 +1245,9 @@ Scene.computeObjectShifting = function (this: SceneShape, ox: number, oy: number
 	for (const key of keys) {
 		length += this[key].length;
 	}
+	// oxlint-disable-next-line unbound-method
 	const clamp = Math.clamp;
-	const targets = new Array(length);
+	const targets = Array.from({ length: length });
 	const posX = new Float64Array(length);
 	const posY = new Float64Array(length);
 	for (const key of keys) {
@@ -1292,6 +1314,7 @@ Scene.create = function (this: SceneShape, kind: string, x: number, y: number) {
 	const dItem = this.getDefaultObjectFolder!(kind);
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
+	// oxlint-disable-next-line no-explicit-any
 	const editor = (Inspector as Record<string, any>)[key];
 	const object = editor.create();
 	object.x = x;
@@ -1465,7 +1488,9 @@ import { getSceneStore } from '@app/stores/scene';
 for (const key of sceneBridgeKeys) {
 	Object.defineProperty(Scene, key, {
 		get: () => getSceneStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getSceneStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

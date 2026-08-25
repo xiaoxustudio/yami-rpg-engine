@@ -8,14 +8,14 @@
 		window.addEventListener('pointerup', pointerup);
 	};
 
-	const dragend = function (event: EditorEvent): void {
+	const dragend = function (_event: EditorEvent): void {
 		if (dragging) {
 			dragging = false;
 			window.removeEventListener('pointerup', pointerup);
 		}
 	};
 
-	const pointerup = function (event: EditorEvent): void {
+	const pointerup = function (_event: EditorEvent): void {
 		if (dragging) {
 			dragging = false;
 			window.removeEventListener('pointerup', pointerup);
@@ -46,7 +46,7 @@
 		event.preventDefault();
 	};
 
-	const drop = function (event: EditorEvent): void {
+	const drop = function (_event: EditorEvent): void {
 		if (osdragging) {
 			osdragging = false;
 			window.dispatchEvent(new DragEvent('os-dragend'));

@@ -116,7 +116,7 @@ Command.custom = {
 			return wrap;
 		};
 
-		const parameterPane = this.parameterPane;
+		const _parameterPane = this.parameterPane;
 		this.parameterPane.clear = function (this: ParameterPane): void {
 			this.metas = [];
 			const { wraps } = this;
@@ -134,7 +134,7 @@ Command.custom = {
 			window.removeEventListener('script-change', this.scriptChange);
 		};
 
-		this.windowFrame.addEventListener('closed', (event: Event) => {
+		this.windowFrame.addEventListener('closed', (_event: Event) => {
 			this.loadedScript.parameters = null;
 			clear(this.parameterPane);
 		});
@@ -177,7 +177,8 @@ Command.custom = {
 					words.push(Command.parseVariableNumber!(value));
 					continue;
 				case 'string':
-					words.push(Command.setStringColor!(`"${value}"`));
+					// oxlint-disable-next-line no-base-to-string
+					words.push(Command.setStringColor!(`"${String(value)}"`));
 					continue;
 				case 'option': {
 					const index = parameter.options!.indexOf(value);
@@ -294,9 +295,8 @@ Command.custom = {
 		this.windowY = Window.absolutePos.y;
 		this.parameterPane.update();
 		const selector = Layout.focusableSelector;
-		this.parameterPane.querySelector(selector)
-			? getFocus(this.parameterPane.querySelector(selector))
-			: undefined;
+		const focusable = this.parameterPane.querySelector(selector);
+		if (focusable) getFocus(focusable);
 		this.windowFrame.setTitle(this.commandNameMap![id]);
 	},
 
@@ -306,9 +306,9 @@ Command.custom = {
 
 	loadCommandList: loadCustomCommandList,
 
-	windowLocalize: function (event: Event): void {
+	windowLocalize: function (_event: Event): void {
 		if (Command.custom.commandNameMap) {
-			loadCustomCommandList();
+			void loadCustomCommandList();
 		}
 	}
 };
@@ -336,6 +336,7 @@ export async function loadCustomCommandList(): Promise<void> {
 		const id = command.id;
 		let meta = Data.scripts[id];
 		if (meta instanceof Promise) {
+			// oxlint-disable-next-line no-await-in-loop
 			meta = await meta;
 		}
 		if (!meta || id in commandNameMap) {

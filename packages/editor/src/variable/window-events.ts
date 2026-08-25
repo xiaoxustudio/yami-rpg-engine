@@ -30,7 +30,7 @@ Variable.windowClose = function (this: typeof Variable, event: Event) {
 	}
 }.bind(Variable);
 
-Variable.windowClosed = function (this: typeof Variable, event: Event) {
+Variable.windowClosed = function (this: typeof Variable, _event: Event) {
 	getVariableStore().close();
 	write(this.searcher, '');
 	clear(this.list);

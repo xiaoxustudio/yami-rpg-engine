@@ -238,6 +238,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchEvents = () => {
 		pushComment(get('event'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const event of Object.values<any>(Data.events)) {
 			const path = getPathOfGuid(event.guid);
 			if (event.type === 'common') {
@@ -290,6 +291,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 				searchUIElements(node.children, path);
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const ui of Object.values<any>(Data.ui)) {
 			const path = getPathOfGuid(ui.guid);
 			pushToOuterMap(path, ui.guid);
@@ -332,6 +334,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 				searchLocalScripts(node.scripts, path);
 			}
 		};
+		// oxlint-disable-next-line no-explicit-any
 		for (const scene of Object.values<any>(Data.scenes)) {
 			const path = getPathOfGuid(scene.guid);
 			pushToOuterMap(path, scene.guid);
@@ -342,6 +345,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchActors = () => {
 		pushComment(get('actor'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const actor of Object.values<any>(Data.actors)) {
 			const path = getPathOfGuid(actor.guid);
 			pushToOuterMap(path, actor.guid);
@@ -361,6 +365,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchSkills = () => {
 		pushComment(get('skill'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const skill of Object.values<any>(Data.skills)) {
 			const path = getPathOfGuid(skill.guid);
 			pushToOuterMap(path, skill.guid);
@@ -372,6 +377,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchTriggers = () => {
 		pushComment(get('trigger'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const trigger of Object.values<any>(Data.triggers)) {
 			const path = getPathOfGuid(trigger.guid);
 			pushToOuterMap(path, trigger.guid);
@@ -384,6 +390,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchItems = () => {
 		pushComment(get('item'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const item of Object.values<any>(Data.items)) {
 			const path = getPathOfGuid(item.guid);
 			pushToOuterMap(path, item.guid);
@@ -395,6 +402,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchEquipments = () => {
 		pushComment(get('equipment'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const equipment of Object.values<any>(Data.equipments)) {
 			const path = getPathOfGuid(equipment.guid);
 			pushToOuterMap(path, equipment.guid);
@@ -406,6 +414,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchStates = () => {
 		pushComment(get('state'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const state of Object.values<any>(Data.states)) {
 			const path = getPathOfGuid(state.guid);
 			pushToOuterMap(path, state.guid);
@@ -417,6 +426,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchAnimations = () => {
 		pushComment(get('animation'));
+		// oxlint-disable-next-line no-explicit-any
 		const animations = Object.values<any>(Data.animations);
 		for (const animation of animations) {
 			const path = getPathOfGuid(animation.guid);
@@ -450,6 +460,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchParticles = () => {
 		pushComment(get('particle'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const particle of Object.values<any>(Data.particles)) {
 			const path = getPathOfGuid(particle.guid);
 			pushToOuterMap(path, particle.guid);
@@ -471,6 +482,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 		for (const template of Data.autotiles) {
 			ignoreMap[template.id] = true;
 		}
+		// oxlint-disable-next-line no-explicit-any
 		for (const tileset of Object.values<any>(Data.tilesets)) {
 			const path = getPathOfGuid(tileset.guid);
 			pushToOuterMap(path, tileset.guid);
@@ -600,6 +612,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchScripts = () => {
 		pushComment(get('script'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const script of Object.values<any>(Data.scripts)) {
 			const path = getPathOfGuid(script.guid);
 			pushToOuterMap(path, script.guid);
@@ -762,7 +775,7 @@ Reference.findInvalid = function () {
 	return filtered;
 };
 
-Reference.openInvalid = function (this: typeof Reference, guid?: string) {
+Reference.openInvalid = function (this: typeof Reference, _guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findInvalid!());
 } as unknown as ((...args: unknown[]) => void) | null;
@@ -786,7 +799,7 @@ Reference.findUnused = function () {
 	return filtered;
 };
 
-Reference.openUnused = function (this: typeof Reference, guid?: string) {
+Reference.openUnused = function (this: typeof Reference, _guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findUnused!());
 } as unknown as ((...args: unknown[]) => void) | null;
@@ -800,7 +813,7 @@ Reference.update = function (items: ReferenceItem[]) {
 	referenceUpdateHandler?.(items);
 } as unknown as ((...args: unknown[]) => void) | null;
 
-Reference.windowClosed = function (event: Event) {
+Reference.windowClosed = function (_event: Event) {
 	clear($('#reference-list'));
 } as unknown as ((...args: unknown[]) => void) | null;
 
@@ -817,7 +830,7 @@ Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | 
 					label: `ID: ${item.id}`,
 					style: 'id',
 					click: () => {
-						navigator.clipboard.writeText(item.id!);
+						void navigator.clipboard.writeText(item.id!);
 					}
 				}
 			]

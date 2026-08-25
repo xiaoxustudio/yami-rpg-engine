@@ -58,6 +58,7 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 // ******************************** 菜单栏对象 ********************************
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
+// oxlint-disable-next-line no-explicit-any
 type MenubarMethod = ((...args: any[]) => any) | null;
 
 interface MenubarShape {
@@ -83,6 +84,7 @@ interface MenubarShape {
 	pointerup: MenubarMethod;
 	pointerover: MenubarMethod;
 	hrefClick: MenubarMethod;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -745,14 +747,14 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 				{
 					label: get('resource'),
 					click: () => {
-						Resources.open();
+						void Resources.open();
 					}
 				},
 				{
 					label: get('qr'),
 					enabled: open,
 					click: () => {
-						WebServer.open!();
+						void WebServer.open!();
 					}
 				},
 				{
@@ -795,26 +797,17 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							}
 							FSP.writeFile!(pConfig, JSON.stringify(config), {});
 						};
-						await new Promise(
-							async (
-								resolve: (value: unknown) => void,
-								reject: (reason?: unknown) => void
-							) => {
-								if (FS.existsSync!(pConfig)) {
-									resolve(
-										(config = JSON.parse(
-											(await FSP.readFile!(pConfig)).toString()
-										))
-									);
-								} else {
-									// 配置不存在
-									if (!FS.existsSync!(Path.dirname!(pConfig))) {
-										FS.mkdirSync!(Path.dirname!(pConfig));
-									}
-									resolve(FSP.writeFile!(pConfig, JSON.stringify(config)));
+						await (async () => {
+							if (FS.existsSync!(pConfig)) {
+								config = JSON.parse((await FSP.readFile!(pConfig)).toString());
+							} else {
+								// 配置不存在
+								if (!FS.existsSync!(Path.dirname!(pConfig))) {
+									FS.mkdirSync!(Path.dirname!(pConfig));
 								}
+								await FSP.writeFile!(pConfig, JSON.stringify(config));
 							}
-						).then(() => {
+						})().then(() => {
 							// 初始化
 							Object.assign(exportApkForm, {
 								apkName: config.appName,
@@ -836,13 +829,13 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 								});
 								apkConfigSave();
 							});
-							$('#export-apk-apkIcon').addEventListener('mouseenter', (e: Event) =>
+							$('#export-apk-apkIcon').addEventListener('mouseenter', (_e: Event) =>
 								setTooltip(
 									$('#export-apk-apkIcon'),
 									ApkBuilder.processPathOnly!(config.iconPath)
 								)
 							);
-							$('#export-apk-button').addEventListener('click', (e: Event) => {
+							$('#export-apk-button').addEventListener('click', (_e: Event) => {
 								disable($('#export-apk-button'));
 								apkConfigSave();
 								SettingConfig.load(); // 更新配置
@@ -931,7 +924,7 @@ Menubar.createLanguageItems = function (this: typeof Menubar) {
 			}
 		}
 	];
-	loadLanguageList().then(
+	void loadLanguageList().then(
 		(languages: Array<{ key: string; alias: string; filename: string }>) => {
 			const active = getLocalStore().active;
 			if (languages.length !== 0) {

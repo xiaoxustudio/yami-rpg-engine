@@ -49,7 +49,7 @@ Command.cases.setFocus = new CommandSchema({
 });
 
 export function useSetFocusCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setFocus', {
+	const { form, load, commit } = useCommandSchema('setFocus', {
 		onLoad() {
 			getFocus(document.getElementById('setFocus-operation'));
 		}

@@ -3,6 +3,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Palette } from '@app/palette/palette.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneEditEngine: Record<string, any> = {};
 
 type TileBuffer = Uint32Array & { width: number; height: number; rowOffset: number };

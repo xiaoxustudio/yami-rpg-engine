@@ -17,7 +17,7 @@ export const useConfirmationStore = defineStore('confirmation', () => {
 		items.value = itemsValue;
 		closeCallback.value = options.close ?? null;
 		open.value = true;
-		nextTick(() => {
+		void nextTick(() => {
 			Window?.open?.('confirmation');
 		});
 	}

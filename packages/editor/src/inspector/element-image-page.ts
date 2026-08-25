@@ -126,7 +126,7 @@ import { read } from '@app/utils/element-utils.ts';
 		UI.requestRendering!();
 	};
 
-	UIImage.paramInput = function (this: typeof UIImage, event: Event) {
+	UIImage.paramInput = function (this: typeof UIImage, _event: Event) {
 		UIImage.update!(UIImage.target as UIImageData, Inspector.getKey!(this), read(this));
 	};
 

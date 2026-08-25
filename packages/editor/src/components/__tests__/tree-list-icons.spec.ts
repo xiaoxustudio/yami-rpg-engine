@@ -484,6 +484,7 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 				props: { id: 'icons-cmd-' + key, nodeIconRenderer: renderer },
 				attachTo: document.body
 			});
+			// oxlint-disable-next-line no-await-in-loop
 			await wrapper.vm.$nextTick();
 			const el = wrapper.element as unknown as IconsListEl;
 			mockHeight(el);

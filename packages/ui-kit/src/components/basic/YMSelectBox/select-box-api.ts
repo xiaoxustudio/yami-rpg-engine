@@ -16,7 +16,7 @@ export interface SelectItem {
 }
 
 export interface RelationEntry {
-	case: unknown | unknown[];
+	case: unknown;
 	targets: HTMLElement[];
 }
 

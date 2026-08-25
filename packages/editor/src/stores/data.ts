@@ -145,6 +145,7 @@ export interface DataShape {
 	localization: LocalizationShape | null;
 	plugins: Record<string, unknown> | null;
 	commands: DataListShape | null;
+	// oxlint-disable-next-line no-explicit-any
 	config: Record<string, any> | null;
 }
 

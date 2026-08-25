@@ -39,7 +39,7 @@ Command.cases.block = new CommandSchema({
 let commands: unknown = null;
 
 export function useBlockCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('block', {
+	const { form, load, commit } = useCommandSchema('block', {
 		onLoad(params) {
 			commands = params.commands ?? [];
 			getFocus(document.getElementById('block-note')!);

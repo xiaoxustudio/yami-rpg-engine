@@ -22,6 +22,7 @@ export type {
 } from '@app/composables/useTextCaptureWindow';
 
 interface TagController {
+	// oxlint-disable-next-line no-explicit-any
 	open: (params?: any) => void;
 	confirm?: (event: Event) => void;
 	initialize?: () => void;
@@ -429,7 +430,7 @@ Selection.inputPointerdown = function (this: SelectionShape, event: PointerEvent
 Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
 		case 2:
-			navigator.clipboard.readText().then((clipText: string) => {
+			void navigator.clipboard.readText().then((clipText: string) => {
 				const element = event.target as EventTargetElement;
 				if (document.activeElement === element) {
 					const start = element.selectionStart;
@@ -658,7 +659,7 @@ Selection.font = {
 			});
 		});
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().font.confirm();
 	}
 };
@@ -690,7 +691,7 @@ Selection.fontSize = {
 			});
 		});
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().fontSize.confirm();
 	}
 };
@@ -723,7 +724,7 @@ Selection.textPosition = {
 			});
 		});
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().textPosition.confirm();
 	}
 };
@@ -785,7 +786,7 @@ Selection.textEffect = {
 			}
 		);
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().textEffect.confirm();
 	}
 };
@@ -859,7 +860,7 @@ Selection.image = {
 			});
 		});
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().image.confirm();
 	}
 };
@@ -880,7 +881,7 @@ Selection.localVariable = {
 			});
 		});
 	},
-	confirm: function (event: Event) {
+	confirm: function (_event: Event) {
 		useTextCaptureWindow().localVariable.confirm();
 	}
 };

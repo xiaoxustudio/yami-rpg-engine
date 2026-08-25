@@ -126,7 +126,7 @@ Command.cases.setObjectProperty = new CommandSchema({
 });
 
 export function useGetObjectPropertyCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('getObjectProperty', {
+	const { form, load, commit } = useCommandSchema('getObjectProperty', {
 		onLoad() {
 			getFocus(document.getElementById('getObjectProperty-variable'));
 		}

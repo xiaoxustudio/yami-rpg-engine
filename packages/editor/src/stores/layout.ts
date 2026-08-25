@@ -35,7 +35,9 @@ export const layoutStateKeys = [
 ] as const;
 
 export const useLayoutStore = defineStore('layout', () => {
+	// oxlint-disable-next-line no-explicit-any
 	const dragging = shallowRef<any>(null);
+	// oxlint-disable-next-line no-explicit-any
 	const resizing = shallowRef<any>(null);
 	const focusableSelector = shallowRef<string | null>(null);
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);

@@ -6,6 +6,7 @@ function updateSkills(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, skills } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileSkill'));
+		// oxlint-disable-next-line no-explicit-any
 		for (const [guid, sSkill] of Object.entries<any>(skills!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {

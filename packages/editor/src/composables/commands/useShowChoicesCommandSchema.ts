@@ -79,7 +79,7 @@ const createDefaultChoices = (): unknown[] => {
 const form = reactive<ShowChoicesForm>({
 	parameters: ''
 });
-let choices: unknown[] | null = null;
+let _choices: unknown[] | null = null;
 
 const load = ({
 	choices: list = createDefaultChoices(),
@@ -89,7 +89,7 @@ const load = ({
 	parameters?: string;
 } = {}): void => {
 	Object.assign(form, { choices: list.slice(), parameters });
-	choices = list;
+	_choices = list;
 	getFocus(document.getElementById('showChoices-choices'));
 };
 
@@ -102,8 +102,8 @@ const save = (): unknown => {
 	commit({ choices: list, parameters });
 };
 
-const windowClosed = (event: Event): void => {
-	choices = null;
+const windowClosed = (_event: Event): void => {
+	_choices = null;
 };
 
 const schema = Command.cases.showChoices;

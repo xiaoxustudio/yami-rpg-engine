@@ -51,7 +51,7 @@ Command.cases.setEvent = new CommandSchema({
 });
 
 export function useSetEventCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setEvent', {
+	const { form, load, commit } = useCommandSchema('setEvent', {
 		onLoad() {
 			getFocus(document.getElementById('setEvent-operation')!);
 		}

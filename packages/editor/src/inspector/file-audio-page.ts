@@ -10,6 +10,7 @@ import { Timer } from '@app/utils/timer';
 
 {
 	interface FileAudioShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	interface AudioParams {
@@ -85,7 +86,7 @@ import { Timer } from '@app/utils/timer';
 				removeClass(this.progress, 'visible');
 				// 婵烇絽娲︾换鍕汲閳ь剟鎮楅悽娈挎敯缂佺粯鍨垮畷鍫曟倷閸偆鏆犻梺鍛婎焽閸犲酣锝為幁娓瀘mise闂佹眹鍔岀€氼剛妲愰埡鍛仺?婵炲濮伴崕鎵矚閸洖鐭楁い鏍ㄧ懁缁ㄤ即鏌涘▎鎰缂佸顥撻幉鎾晲閸モ晛鐏ｉ梻鍌氾攻婵炲﹪銆傞崼鏇炴瀬闁绘鐗嗙粊锕傛煟閵娿儱顏柟濂告敱閹?
 				const promise = (this.promise = AudioManager.getWaveform!(meta!.guid));
-				promise.then((url) => {
+				void promise.then((url) => {
 					if (this.promise === promise) {
 						this.promise = null;
 						this.progress.style.webkitMaskImage = url;
@@ -98,7 +99,7 @@ import { Timer } from '@app/utils/timer';
 			this.requestAnimation!();
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve: () => void) => {
+			void new Promise<void>((resolve: () => void) => {
 				if (isNaN(audio.duration)) {
 					audio.addEventListener(
 						'loadedmetadata',
@@ -141,7 +142,7 @@ import { Timer } from '@app/utils/timer';
 		if (this.target !== null) {
 			const { audio } = AudioManager.player!;
 			if (audio.paused) {
-				audio.play();
+				void audio.play();
 			} else {
 				audio.currentTime = 0;
 			}
@@ -205,6 +206,7 @@ import { Timer } from '@app/utils/timer';
 	};
 
 	FileAudio.formatTime = function (this: typeof FileAudio, time: number) {
+		// oxlint-disable-next-line unbound-method
 		const pad = Number.padZero;
 		const length = Math.floor(time);
 		const hours = Math.floor(length / 3600);
@@ -362,13 +364,13 @@ import { Timer } from '@app/utils/timer';
 		}
 	}.bind(FileAudio);
 
-	FileAudio.windowResize = function (this: typeof FileAudio, event: Event) {
+	FileAudio.windowResize = function (this: typeof FileAudio, _event: Event) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
 			FileAudio.updateCanvas();
 		}
 	};
 
-	FileAudio.paramInput = function (this: typeof FileAudio, event: Event) {
+	FileAudio.paramInput = function (this: typeof FileAudio, _event: Event) {
 		const read = getElementReader('fileAudio');
 		const params = {
 			volume: read('volume'),
@@ -412,7 +414,7 @@ import { Timer } from '@app/utils/timer';
 		}
 	};
 
-	FileAudio.progressPointerleave = function (this: typeof FileAudio, event: PointerEvent) {
+	FileAudio.progressPointerleave = function (this: typeof FileAudio, _event: PointerEvent) {
 		const { pointer, pointerTimeInfo } = FileAudio;
 		if (pointer.time !== -1) {
 			pointer.time = -1;

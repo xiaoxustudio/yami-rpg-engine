@@ -31,6 +31,7 @@ export interface CommandSuggestionItem {
 	item?: CommandSuggestionItem;
 }
 
+// oxlint-disable-next-line no-explicit-any
 type ListMethod = ((...args: any[]) => any) | null;
 
 interface CommandSuggestionList {
@@ -308,7 +309,7 @@ CommandSuggestion.select = function (item: CommandSuggestionItem): void {
 	Command.open!(item.value);
 };
 
-CommandSuggestion.windowLocalize = function (event: Event): void {
+CommandSuggestion.windowLocalize = function (_event: Event): void {
 	// 用重置textContent代替clear来保留选中项
 	const { list, data } = CommandSuggestion;
 	if (list.initialized) {
@@ -318,7 +319,7 @@ CommandSuggestion.windowLocalize = function (event: Event): void {
 	}
 };
 
-CommandSuggestion.windowClose = function (event: Event): void {
+CommandSuggestion.windowClose = function (_event: Event): void {
 	// 但是异步触发的scroll事件因为列表被隐藏而不会刷新列表项
 	CommandSuggestion.searcher.deleteInputContent();
 	hide(CommandSuggestion.list);
@@ -411,7 +412,7 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 	}
 };
 
-CommandSuggestion.listUpdate = function (event: Event): void {
+CommandSuggestion.listUpdate = function (_event: Event): void {
 	const MAX_LINES = 30;
 	const { x, y } = CommandSuggestion.widget;
 	const space = window.innerHeight - y - 20;

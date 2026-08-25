@@ -160,7 +160,7 @@ Command.cases.showText = new CommandSchema({
 });
 
 export function useShowTextCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('showText', {
+	const { form, load, commit } = useCommandSchema('showText', {
 		onLoad(params) {
 			const content = (params.content as string) ?? '';
 			if (content === '') {

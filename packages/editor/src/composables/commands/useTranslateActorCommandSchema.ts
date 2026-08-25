@@ -45,7 +45,7 @@ Command.cases.translateActor = new CommandSchema({
 });
 
 export function useTranslateActorCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('translateActor', {
+	const { form, load, commit } = useCommandSchema('translateActor', {
 		onLoad() {
 			getFocus(document.getElementById('translateActor-actor'));
 		}

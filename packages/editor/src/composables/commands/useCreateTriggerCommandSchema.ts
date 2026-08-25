@@ -52,7 +52,7 @@ Command.cases.createTrigger = new CommandSchema({
 });
 
 export function useCreateTriggerCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('createTrigger', {
+	const { form, load, commit } = useCommandSchema('createTrigger', {
 		onLoad() {
 			getFocus(document.getElementById('createTrigger-triggerId'));
 		}

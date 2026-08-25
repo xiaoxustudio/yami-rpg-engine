@@ -8,6 +8,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 {
 	interface FileSceneShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	interface FileSceneData {

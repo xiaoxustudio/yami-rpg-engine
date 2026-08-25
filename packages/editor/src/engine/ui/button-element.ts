@@ -38,7 +38,7 @@ interface ShadowImageShape {
 	border: number;
 	tint: number[];
 	visible: boolean;
-	parent: InstanceType<typeof UI.Element> | null;
+	parent: InstanceType<typeof UI.Element>;
 	connected: boolean;
 	resize(): void;
 	draw(): void;
@@ -59,7 +59,7 @@ interface ShadowTextShape {
 	typeface: string;
 	effect: unknown;
 	visible: boolean;
-	parent: InstanceType<typeof UI.Element> | null;
+	parent: InstanceType<typeof UI.Element>;
 	connected: boolean;
 	updateTextContent(): void;
 	updatePrinter(): void;

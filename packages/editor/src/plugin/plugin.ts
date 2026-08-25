@@ -147,6 +147,7 @@ interface PluginManagerShape {
 	list_restoreSelection: (() => void) | null;
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
 	reload: (() => void) | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -210,25 +211,41 @@ function ensureDomBound() {
 	PluginManager.overview = $('#plugin-overview');
 	PluginManager.parameterPane = $('#plugin-parameter-pane');
 	hide(PluginManager.parameterPane);
+	// oxlint-disable-next-line no-explicit-any
 	list.insert = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.toggle = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.copy = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.paste = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.delete = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.saveSelection = null as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
 	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
 		...args: unknown[]
+		// oxlint-disable-next-line no-explicit-any
 	) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.edit = PluginManager.list_edit as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.insert = PluginManager.list_insert as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.toggle = PluginManager.list_toggle as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.copy = PluginManager.list_copy as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.paste = PluginManager.list_paste as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.delete = PluginManager.list_delete as unknown as (...args: unknown[]) => any;
+	// oxlint-disable-next-line no-explicit-any
 	list.saveSelection = PluginManager.list_saveSelection as unknown as (...args: unknown[]) => any;
 	list.restoreSelection = PluginManager.list_restoreSelection as unknown as (
 		...args: unknown[]
+		// oxlint-disable-next-line no-explicit-any
 	) => any;
 }
 
@@ -241,6 +258,7 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
+	// oxlint-disable-next-line unbound-method
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	if (this.parameterPane) {
@@ -832,7 +850,7 @@ PluginManager.parseMeta = (function IIFE() {
 						} else {
 							validate.pattern = new RegExp(val);
 						}
-					} catch (e) {
+					} catch (_e) {
 						console.warn('插件校验正则无效，已忽略', val);
 					}
 					break;
@@ -977,9 +995,8 @@ PluginManager.parseMeta = (function IIFE() {
 			const { options } = owner;
 			for (const value of values) {
 				if (options!.includes(value)) {
-					map[value as string] === undefined
-						? (map[value as string] = [key])
-						: map[value as string].push(key);
+					if (map[value as string] === undefined) map[value as string] = [key];
+					else map[value as string].push(key);
 				}
 			}
 		}
@@ -1502,7 +1519,7 @@ PluginManager.windowClose = function (this: typeof PluginManager, event: Event) 
 	}
 }.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
 
-PluginManager.windowClosed = function (this: typeof PluginManager, event: Event) {
+PluginManager.windowClosed = function (this: typeof PluginManager, _event: Event) {
 	(this.list as TreeListElement).saveSelection();
 	this.data = null;
 	clear(this.list);
@@ -1570,15 +1587,15 @@ PluginManager.listSelect = function (
 	this: typeof PluginManager,
 	event: Event & { value?: PluginItemShape }
 ) {
-	PluginManager.load!(event.value!);
+	void PluginManager.load!(event.value!);
 } as unknown as ((...args: unknown[]) => void) | null;
 
 // 列表 - 取消选择事件
-PluginManager.listUnselect = function (this: typeof PluginManager, event: Event) {
+PluginManager.listUnselect = function (this: typeof PluginManager, _event: Event) {
 	PluginManager.unload!();
 } as unknown as ((...args: unknown[]) => void) | null;
 
-PluginManager.listChange = function (this: typeof PluginManager, event: Event) {
+PluginManager.listChange = function (this: typeof PluginManager, _event: Event) {
 	PluginManager.changed = true;
 } as unknown as ((...args: unknown[]) => void) | null;
 
@@ -1687,7 +1704,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 	};
 })() as unknown as ((...args: unknown[]) => void) | null;
 
-PluginManager.parameterPaneUpdate = function (this: TreeListElement, event: Event) {
+PluginManager.parameterPaneUpdate = function (this: TreeListElement, _event: Event) {
 	if (this.wraps.length !== 0) {
 		show(this);
 	} else {
@@ -1695,7 +1712,7 @@ PluginManager.parameterPaneUpdate = function (this: TreeListElement, event: Even
 	}
 } as unknown as ((...args: unknown[]) => void) | null;
 
-PluginManager.confirm = function (this: typeof PluginManager, event: Event) {
+PluginManager.confirm = function (this: typeof PluginManager, _event: Event) {
 	this.apply!();
 	Window.close!('plugin');
 }.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
@@ -1844,6 +1861,7 @@ for (const key of pluginBridgeKeys) {
 	Object.defineProperty(PluginManager, key, {
 		get: () => getPluginStore()[key],
 		set: (value: unknown) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getPluginStore() as unknown as Record<(typeof pluginBridgeKeys)[number], any>)[key] =
 				value;
 		},

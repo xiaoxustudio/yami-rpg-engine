@@ -190,6 +190,7 @@ export function applyCommandListInstanceOverride(
 		'prototype' in commandList && commandList.prototype
 			? (commandList as typeof CommandList).prototype
 			: (commandList as HTMLElement);
+	// oxlint-disable-next-line no-explicit-any
 	(prototype as HTMLElement & Record<string, any>).getSelectionPosition = function (this: {
 		elements: { pre: HTMLElement }[];
 		active: number;

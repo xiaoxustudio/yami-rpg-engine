@@ -48,6 +48,7 @@ type AutoTileOpenParams = {
 	y: number;
 };
 
+// oxlint-disable-next-line no-explicit-any
 export const AutoTile: Record<string, any> = {
 	canvas: null,
 	templateList: null,
@@ -472,7 +473,7 @@ AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
 	}
 }.bind(AutoTile);
 
-AutoTile.windowClosed = function (this: typeof AutoTile, event: Event) {
+AutoTile.windowClosed = function (this: typeof AutoTile, _event: Event) {
 	getAutoTileStore().templates = null;
 	getAutoTileStore().template = null;
 	this.nodes = null;
@@ -485,7 +486,7 @@ AutoTile.windowClosed = function (this: typeof AutoTile, event: Event) {
 	clear(this.frameList);
 }.bind(AutoTile);
 
-AutoTile.dprchange = function (this: typeof AutoTile, event: Event) {
+AutoTile.dprchange = function (this: typeof AutoTile, _event: Event) {
 	if (this.nodes !== null) {
 		this.updateCanvas();
 		this.drawFrame();
@@ -528,7 +529,7 @@ AutoTile.templatesSelect = function (
 	this.createNodeItems();
 }.bind(AutoTile);
 
-AutoTile.templatesChange = function (this: typeof AutoTile, event: Event) {
+AutoTile.templatesChange = function (this: typeof AutoTile, _event: Event) {
 	getAutoTileStore().changed = true;
 }.bind(AutoTile);
 
@@ -736,7 +737,7 @@ AutoTile.nodesKeydown = function (this: typeof AutoTile, event: KeyboardEvent) {
 	}
 };
 
-AutoTile.ruleNeighborInput = function (this: typeof AutoTile, event: Event) {
+AutoTile.ruleNeighborInput = function (this: typeof AutoTile, _event: Event) {
 	const read = getElementReader('autoTile-rule');
 	const rule =
 		read('0') |
@@ -889,17 +890,17 @@ AutoTile.framesDoubleclick = function (this: typeof AutoTile, event: MouseEvent)
 	}
 }.bind(AutoTile);
 
-AutoTile.canvasClick = function (this: typeof AutoTile, event: Event) {
+AutoTile.canvasClick = function (this: typeof AutoTile, _event: Event) {
 	this.editFrame();
 }.bind(AutoTile);
 
-AutoTile.imageInput = function (this: typeof AutoTile, event: Event) {
+AutoTile.imageInput = function (this: typeof AutoTile, _event: Event) {
 	AutoTile.imageId = getAutoTileStore().imageId;
 	AutoTile.image = null;
 	AutoTile.drawFrame!();
 };
 
-AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
+AutoTile.offsetXInput = function (this: typeof AutoTile, _event: Event) {
 	const x = getAutoTileStore().offsetX;
 	if (AutoTile.offsetX !== x) {
 		AutoTile.offsetX = x;
@@ -907,7 +908,7 @@ AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
 	}
 };
 
-AutoTile.offsetYInput = function (this: typeof AutoTile, event: Event) {
+AutoTile.offsetYInput = function (this: typeof AutoTile, _event: Event) {
 	const y = getAutoTileStore().offsetY;
 	if (AutoTile.offsetY !== y) {
 		AutoTile.offsetY = y;
@@ -915,7 +916,7 @@ AutoTile.offsetYInput = function (this: typeof AutoTile, event: Event) {
 	}
 };
 
-AutoTile.confirm = function (this: typeof AutoTile, event: Event) {
+AutoTile.confirm = function (this: typeof AutoTile, _event: Event) {
 	if (getAutoTileStore().changed) {
 		getAutoTileStore().changed = false;
 		const templates = getAutoTileStore().templates;
@@ -961,7 +962,9 @@ import { getAutoTileStore } from '@app/stores/autoTile';
 for (const key of autoTileBridgeKeys) {
 	Object.defineProperty(AutoTile, key, {
 		get: () => getAutoTileStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getAutoTileStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

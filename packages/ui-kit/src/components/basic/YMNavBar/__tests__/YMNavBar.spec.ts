@@ -45,7 +45,7 @@ describe('YMNavBar', () => {
 
 	it('selects nav-item on pointerdown and emits select', async () => {
 		const wrapper = mountNav();
-		const vm = wrapper.vm as unknown as NavBarApi;
+		const _vm = wrapper.vm as unknown as NavBarApi;
 		const el = wrapper.element as unknown as NavBarApi;
 		el.on('select', () => {});
 		pointerdown(wrapper.findAll('.nav-item')[1].element);

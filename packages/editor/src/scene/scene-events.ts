@@ -23,6 +23,7 @@ import type { MenuItem } from '@ui-kit';
 type SceneItem = {
 	class: string;
 	element: HTMLElement;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 
@@ -41,13 +42,13 @@ type DragEventItem = PointerEvent & {
 
 type ScrollableScreen = HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
 
-Scene.webglRestored = function (this: typeof Scene, event: Event) {
+Scene.webglRestored = function (this: typeof Scene, _event: Event) {
 	if (Scene.state === 'open') {
 		Scene.requestRendering!();
 	}
 };
 
-Scene.windowResize = function (this: typeof Scene, event: Event) {
+Scene.windowResize = function (this: typeof Scene, _event: Event) {
 	this.updateHead();
 	if (this.state === 'open') {
 		this.resize();
@@ -55,11 +56,11 @@ Scene.windowResize = function (this: typeof Scene, event: Event) {
 	}
 }.bind(Scene);
 
-Scene.themechange = function (this: typeof Scene, event: Event) {
+Scene.themechange = function (this: typeof Scene, _event: Event) {
 	this.requestRendering();
 }.bind(Scene);
 
-Scene.dprchange = function (this: typeof Scene, event: Event) {
+Scene.dprchange = function (this: typeof Scene, _event: Event) {
 	if (this.state === 'open') {
 		this.updateFont();
 	}
@@ -98,9 +99,8 @@ Scene.keydown = function (this: typeof Scene, event: KeyboardEvent) {
 					Scene.closeTilemap!();
 					break;
 				case 'Backquote':
-					Scene.layer !== 'object'
-						? Scene.switchLayer!('object')
-						: Scene.switchLayer!('terrain');
+					if (Scene.layer !== 'object') Scene.switchLayer!('object');
+					else Scene.switchLayer!('terrain');
 					break;
 				case 'Digit1':
 					Scene.openTilemap!(Scene.tilemaps.shortcuts[1]);
@@ -205,11 +205,11 @@ Scene.brushPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	}
 };
 
-Scene.zoomFocus = function (this: HTMLElement, event: Event) {
+Scene.zoomFocus = function (this: HTMLElement, _event: Event) {
 	Scene.screen.focus();
 };
 
-Scene.zoomInput = function (this: HTMLElement, event: Event) {
+Scene.zoomInput = function (this: HTMLElement, _event: Event) {
 	Scene.setZoom!(read(this));
 };
 
@@ -471,7 +471,7 @@ Scene.screenWheel = function (this: typeof Scene, event: WheelEvent) {
 	}
 }.bind(Scene);
 
-Scene.screenUserscroll = function (this: typeof Scene, event: Event) {
+Scene.screenUserscroll = function (this: typeof Scene, _event: Event) {
 	if (this.state === 'open') {
 		const screen = this.screen as ScrollableScreen;
 		screen.rawScrollLeft = screen.scrollLeft;
@@ -483,7 +483,7 @@ Scene.screenUserscroll = function (this: typeof Scene, event: Event) {
 	}
 }.bind(Scene);
 
-Scene.screenBlur = function (this: typeof Scene, event: FocusEvent) {
+Scene.screenBlur = function (this: typeof Scene, _event: FocusEvent) {
 	this.shiftKeyup();
 	this.translationKeyup();
 	this.pointerup();
@@ -526,7 +526,7 @@ Scene.screenDragover = function (this: HTMLElement, event: DragEvent) {
 	}
 };
 
-Scene.screenDrop = function (this: HTMLElement, event: DragEvent) {
+Scene.screenDrop = function (this: HTMLElement, _event: DragEvent) {
 	if (Scene.previewObject) {
 		const kind = Scene.previewObject.class;
 		const folder = Scene.getDefaultObjectFolder!(kind);
@@ -756,7 +756,7 @@ Scene.marqueePointermove = function (this: typeof Scene, event: PointerEvent) {
 	}
 }.bind(Scene);
 
-Scene.marqueePointerleave = function (this: typeof Scene, event: PointerEvent) {
+Scene.marqueePointerleave = function (this: typeof Scene, _event: PointerEvent) {
 	if (this.marquee.pointerevent !== null) {
 		this.marquee.pointerevent = null;
 		if (!this.dragging && !(this.layer === 'object' && this.target !== null)) {
@@ -1171,7 +1171,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				label: get('copy-id'),
 				enabled: selected,
 				click: () => {
-					navigator.clipboard.writeText(target.presetId);
+					void navigator.clipboard.writeText(target.presetId);
 				}
 			},
 			{
@@ -1611,7 +1611,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			label: get('copy-id'),
 			enabled: !!item,
 			click: () => {
-				navigator.clipboard.writeText(item.presetId);
+				void navigator.clipboard.writeText(item.presetId);
 			}
 		}
 	);
@@ -1729,11 +1729,11 @@ Scene.listRename = function (
 	}
 };
 
-Scene.listChange = function (this: typeof Scene, event: Event) {
+Scene.listChange = function (this: typeof Scene, _event: Event) {
 	Scene.planToSave!();
 };
 
-Scene.listPageResize = function (this: typeof Scene, event: Event) {
+Scene.listPageResize = function (this: typeof Scene, _event: Event) {
 	Scene.list.updateHead!();
 	Scene.list.resize();
 };

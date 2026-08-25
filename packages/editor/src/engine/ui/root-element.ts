@@ -4,6 +4,7 @@ import { UI } from '@app/ui/ui-window.ts';
 interface PrefabElementShape {
 	node: { presetId: unknown; [k: string]: unknown } | null;
 	parent: unknown;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

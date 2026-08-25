@@ -70,8 +70,10 @@ if (typeof (NodeList.prototype as unknown as Record<string, unknown>).on !== 'fu
 }
 
 export function on(
+	// oxlint-disable-next-line no-explicit-any
 	el: any,
 	type: string,
+	// oxlint-disable-next-line no-explicit-any
 	listener: (event: any) => void,
 	options?: AddEventListenerOptions
 ): void {
@@ -95,8 +97,10 @@ export function on(
 }
 
 export function off(
+	// oxlint-disable-next-line no-explicit-any
 	el: any,
 	type: string,
+	// oxlint-disable-next-line no-explicit-any
 	listener: (event: any) => void,
 	options?: EventListenerOptions
 ): void {
@@ -120,18 +124,21 @@ export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
 	return el.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function show(el: Record<string, any> | null | undefined): HTMLElement {
 	if (!el) return el as unknown as HTMLElement;
 	removeClass(el, 'hidden');
 	return el as unknown as HTMLElement;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function hide(el: Record<string, any> | null | undefined): HTMLElement {
 	if (!el) return el as unknown as HTMLElement;
 	addClass(el, 'hidden');
 	return el as unknown as HTMLElement;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function addClass(el: Record<string, any> | null | undefined, className: string): boolean {
 	if (!el) return false;
 	if (!el.classList) {
@@ -146,6 +153,7 @@ export function addClass(el: Record<string, any> | null | undefined, className: 
 }
 
 export function removeClass(
+	// oxlint-disable-next-line no-explicit-any
 	el: Record<string, any> | null | undefined,
 	className: string
 ): boolean {
@@ -161,15 +169,18 @@ export function removeClass(
 	return false;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function hasClass(el: Record<string, any> | null | undefined, className: string): boolean {
 	if (!el || !el.classList) return false;
 	return el.classList.contains(className);
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function enable(el: Record<string, any> | null | undefined): void {
 	removeClass(el, 'disabled');
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function disable(el: Record<string, any> | null | undefined): void {
 	addClass(el, 'disabled');
 }
@@ -193,6 +204,7 @@ export function css(el: Element): CSSStyleDeclaration {
 	return getComputedStyle(el);
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function rect(el: Record<string, any> | null | undefined): DOMRect {
 	return el!.getBoundingClientRect();
 }
@@ -203,6 +215,7 @@ export function clear(el: Node | null | undefined): HTMLElement {
 	return el as HTMLElement;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function read(el: unknown): any {
 	if (el == null) {
 		return undefined;
@@ -225,6 +238,7 @@ export function write(el: unknown, value: unknown): void {
 }
 
 export function getFocus(
+	// oxlint-disable-next-line no-explicit-any
 	el: Record<string, any> | null | undefined,
 	mode: string | null = null
 ): void {
@@ -267,7 +281,7 @@ export const setTooltip = (function IIFE() {
 	const capture = { capture: true };
 	let state: string = 'closed';
 	let target: HTMLElement | null = null;
-	let rect: DOMRect | null = null;
+	let _rect: DOMRect | null = null;
 	let timeStamp: number = 0;
 	let clientX: number = 0;
 	let clientY: number = 0;
@@ -322,7 +336,7 @@ export const setTooltip = (function IIFE() {
 					const y = Math.min(clientY + 15, bottom);
 					tooltip.style.left = `${x}px`;
 					tooltip.style.top = `${y}px`;
-					rect = tooltip.getBoundingClientRect();
+					_rect = tooltip.getBoundingClientRect();
 				}
 			}
 		});
@@ -333,7 +347,7 @@ export const setTooltip = (function IIFE() {
 			case 'waiting':
 			case 'open':
 				state = 'closed';
-				rect = null;
+				_rect = null;
 				timer?.remove();
 				removeClass(tooltip, 'open');
 				window.removeEventListener('keydown', close, capture);
@@ -351,6 +365,7 @@ export const setTooltip = (function IIFE() {
 			case 'closed':
 				if (target !== this) {
 					state = 'waiting';
+					// oxlint-disable-next-line no-this-alias
 					target = this;
 					const t = (timer ??= createTimer());
 					t.elapsed = 0;
@@ -390,7 +405,7 @@ export const setTooltip = (function IIFE() {
 		}
 	};
 
-	tooltip.addEventListener('pointerleave', (event: PointerEvent) => {
+	tooltip.addEventListener('pointerleave', (_event: PointerEvent) => {
 		target = null;
 		close();
 	});
@@ -434,6 +449,7 @@ const changeEvents = [
 	new Event('change', { bubbles: true }),
 	new Event('change', { bubbles: true })
 ];
+// oxlint-disable-next-line no-explicit-any
 export function dispatchChangeEvent(el: Record<string, any>, index: number = 0): void {
 	el.dispatchEvent(changeEvents[index]);
 }
@@ -447,6 +463,7 @@ export function hasScrollBar(el: HTMLElement): boolean {
 	return el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function isInContent(el: Record<string, any>, event: MouseEvent): boolean {
 	const coords = getRelativeCoords(event, el);
 	const x = coords.x - el.scrollLeft;
@@ -616,6 +633,7 @@ export function listenDraggingScrollbarEvent(
 
 export function getRelativeCoords(
 	event: Event,
+	// oxlint-disable-next-line no-explicit-any
 	el: Record<string, any> | null | undefined
 ): { x: number; y: number } {
 	const rect = el!.getBoundingClientRect();

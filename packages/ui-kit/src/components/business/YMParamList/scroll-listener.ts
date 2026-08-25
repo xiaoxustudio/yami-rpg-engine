@@ -5,7 +5,7 @@ export interface ScrollListenerApi {
 	removeScrollListener(): void;
 }
 
-const clamp = (value: number, min: number, max: number): number =>
+const _clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
 export function attachScrollListener(el: HTMLElement): ScrollListenerApi {

@@ -34,6 +34,7 @@ export const ProgressBarProperty = createPropertyWindow({
 	},
 	parsers: {
 		image: (value) => Command.parseFileName(value),
+		// oxlint-disable-next-line no-base-to-string
 		display: (value, get) => get('display.' + value),
 		blend: (value) => Command.parseBlend(value),
 		progress: (value) => Command.parseVariableNumber(value),

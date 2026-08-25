@@ -19,13 +19,13 @@ Command.cases.downloadFile = new CommandSchema({
 	],
 	customParse({
 		url = '',
-		method = 'GET',
-		headers = [],
-		data = [],
-		callback = '',
-		rateCallback = '',
+		method,
+		headers,
+		data,
+		callback,
+		rateCallback,
 		isBackground = false,
-		isBackgroundPath = ''
+		isBackgroundPath
 	}: {
 		url: unknown;
 		method: string;
@@ -97,7 +97,7 @@ Command.cases.downloadFile = new CommandSchema({
 });
 
 export function useDownloadFileCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('downloadFile', {
+	const { form, load, commit } = useCommandSchema('downloadFile', {
 		onLoad() {
 			getFocus(document.getElementById('downloadFile-url')!);
 		}

@@ -59,7 +59,7 @@ Command.cases.moveActor = new CommandSchema({
 });
 
 export function useMoveActorCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('moveActor', {
+	const { form, load, commit } = useCommandSchema('moveActor', {
 		onLoad() {
 			getFocus(document.getElementById('moveActor-actor')!);
 		}

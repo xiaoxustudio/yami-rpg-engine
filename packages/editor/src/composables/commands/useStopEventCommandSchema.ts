@@ -90,7 +90,7 @@ Command.cases.stopEvent = new CommandSchema({
 });
 
 export function useStopEventCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('stopEvent', {
+	const { form, load, commit } = useCommandSchema('stopEvent', {
 		onLoad() {
 			getFocus(document.getElementById('stopEvent-type'));
 		}

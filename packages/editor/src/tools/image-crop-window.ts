@@ -103,7 +103,7 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 		image.src = File.route!(path);
 
 		const symbol = (this.symbol = Symbol());
-		new Promise((resolve: (img: HTMLImageElement) => void) => {
+		void new Promise((resolve: (img: HTMLImageElement) => void) => {
 			const intervalIndex = setInterval(() => {
 				if (image.naturalWidth !== 0) {
 					if (this.symbol === symbol) {
@@ -237,14 +237,14 @@ ImageClip.startDragging = function (this: typeof ImageClip, event: CropDrag) {
 	window.addEventListener('pointermove', this.pointermove);
 };
 
-ImageClip.dprchange = function (this: typeof ImageClip, event: Event) {
+ImageClip.dprchange = function (this: typeof ImageClip, _event: Event) {
 	if (!hasClass(this.image, 'hidden')) {
 		this.updateImage!();
 		this.updateMarquee!();
 	}
 }.bind(ImageClip);
 
-ImageClip.windowClosed = function (this: typeof ImageClip, event: Event) {
+ImageClip.windowClosed = function (this: typeof ImageClip, _event: Event) {
 	if (this.dragging) {
 		this.pointerup!(this.dragging);
 	}
@@ -256,7 +256,7 @@ ImageClip.windowClosed = function (this: typeof ImageClip, event: Event) {
 	useImageClipWindow().onWindowClosed();
 }.bind(ImageClip);
 
-ImageClip.windowResize = function (this: typeof ImageClip, event: Event) {
+ImageClip.windowResize = function (this: typeof ImageClip, _event: Event) {
 	if (!hasClass(this.image, 'hidden')) {
 		this.updateImage!();
 	}
@@ -353,10 +353,10 @@ ImageClip.pointermove = function (this: typeof ImageClip, event: PointerEvent) {
 	}
 }.bind(ImageClip);
 
-ImageClip.paramInput = function (this: typeof ImageClip, event: Event) {
+ImageClip.paramInput = function (this: typeof ImageClip, _event: Event) {
 	ImageClip.updateMarquee();
 };
 
-ImageClip.confirm = function (this: typeof ImageClip, event: Event) {
+ImageClip.confirm = function (this: typeof ImageClip, _event: Event) {
 	useImageClipWindow().confirm();
 };

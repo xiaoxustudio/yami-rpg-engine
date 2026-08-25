@@ -409,7 +409,7 @@ EventBus.once('editor_loaded', () => {
 			.map((v) => Data.tilesets[v])
 			.filter((v) => v.type === 'auto');
 		const countMap: Record<string, number> = {};
-		const data = this.data;
+		const _data = this.data;
 		for (let i = 0; i < autoList.length; i++) {
 			const tiles = autoList[i].tiles;
 			for (let j = 0; j < tiles.length; j++) {

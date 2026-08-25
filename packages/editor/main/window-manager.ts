@@ -57,11 +57,11 @@ export const createEditorWindow = function (
 
 	if (useViteDev) {
 		// Vite dev 模式：载 dev server URL，HMR + 模块解析由 Vite 接管
-		editor.loadURL(viteDevUrl);
+		void editor.loadURL(viteDevUrl);
 	} else {
 		// prod 模式：载 dist/index.html（vite build 产物）
 		const indexPath = path.resolve(dirname, 'dist/index.html');
-		editor.loadFile(indexPath);
+		void editor.loadFile(indexPath);
 	}
 
 	editor.on('maximize', () => editor.send(CHANNELS.send.maximize));
@@ -114,6 +114,7 @@ export const createEditorWindow = function (
 		}
 	});
 
+	// oxlint-disable-next-line no-explicit-any
 	(globalThis as any).editor = editor;
 };
 
@@ -159,7 +160,7 @@ export const createPlayerWindow = function (
 
 	player.setMenuBarVisibility(false);
 
-	player.loadFile(`${projectDir}index.html`);
+	void player.loadFile(`${projectDir}index.html`);
 
 	player.once('ready-to-show', () => {
 		player.show();

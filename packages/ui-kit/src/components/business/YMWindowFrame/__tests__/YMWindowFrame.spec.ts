@@ -125,11 +125,10 @@ describe('YMWindowFrame', () => {
 		expect(W.frames.includes(el)).toBe(true);
 		expect(el.style.zIndex).toBe('1');
 		el.close();
-		W;
 	});
 
 	it('close removes open class and dispatches closed when enabled', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
@@ -139,11 +138,10 @@ describe('YMWindowFrame', () => {
 		expect(result).toBe(true);
 		expect(el.classList.contains('open')).toBe(false);
 		expect(closed).toBe(true);
-		W;
 	});
 
 	it('close can be cancelled by close event', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
@@ -151,11 +149,10 @@ describe('YMWindowFrame', () => {
 		const result = el.close();
 		expect(result).toBe(false);
 		expect(el.classList.contains('open')).toBe(true);
-		W;
 	});
 
 	it('maximize and unmaximize toggle class and events', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
@@ -169,11 +166,10 @@ describe('YMWindowFrame', () => {
 		el.unmaximize();
 		expect(el.classList.contains('maximized')).toBe(false);
 		expect(unmaximized).toBe(1);
-		W;
 	});
 
 	it('blur and focus manage focusable tabindex', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, {
 			attachTo: document.body,
 			props: { focusableSelector: 'input' },
@@ -190,11 +186,10 @@ describe('YMWindowFrame', () => {
 		el.focus();
 		expect(el.classList.contains('blur')).toBe(false);
 		expect(input.tabIndex).toBe(original);
-		W;
 	});
 
 	it('setTitle replaces first text node of title bar', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, {
 			attachTo: document.body,
 			slots: {
@@ -204,11 +199,10 @@ describe('YMWindowFrame', () => {
 		const el = wrapper.element as unknown as WindowFrameElement;
 		el.setTitle('New Title');
 		expect(wrapper.element.querySelector('.title-bar').textContent).toContain('New Title');
-		W;
 	});
 
 	it('applies localization via localize adapter', () => {
-		const W = mockWindow();
+		const _W = mockWindow();
 		const applied: [string, unknown][] = [];
 		const localize = {
 			components: { testWindow: { text: 'Localized' } },
@@ -221,6 +215,5 @@ describe('YMWindowFrame', () => {
 		});
 		expect(applied.length).toBe(1);
 		expect(applied[0][0]).toBe('testWindow');
-		W;
 	});
 });

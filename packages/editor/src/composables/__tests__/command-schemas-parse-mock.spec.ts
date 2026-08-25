@@ -56,23 +56,40 @@ import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/u
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (value: unknown) => `[var:${(value as { key?: string })?.key ?? ''}]`,
-	parseGlobalVariable: (value: unknown) => `[gvar:${value}]`,
-	parseVariableNumber: (value: unknown, unit = '') => `[num:${value}]${unit}`,
-	parseVariableString: (value: unknown) => `[str:${value}]`,
-	parseVariableFile: (value: unknown) => `[file:${value}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseGlobalVariable: (value: unknown) => `[gvar:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseVariableNumber: (value: unknown, unit = '') => `[num:${String(value)}]${unit}`,
+	// oxlint-disable-next-line no-base-to-string
+	parseVariableString: (value: unknown) => `[str:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseVariableFile: (value: unknown) => `[file:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
 	parseMultiLineString: (value: unknown) => String(value),
-	parseActor: (value: unknown) => `[actor:${(value as { type?: string })?.type ?? value}]`,
-	parseEnumString: (value: unknown) => `[enum:${value}]`,
-	parseFileName: (value: unknown) => `[file:${value}]`,
-	parseAudioType: (value: unknown) => `[audio:${value}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseActor: (value: unknown) =>
+		`[actor:${String((value as { type?: string })?.type ?? value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseEnumString: (value: unknown) => `[enum:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseFileName: (value: unknown) => `[file:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseAudioType: (value: unknown) => `[audio:${String(value)}]`,
 	parseWait: (value: unknown) => (value ? '[wait]' : ''),
-	parseEasing: (value: unknown) => `[easing:${value}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseEasing: (value: unknown) => `[easing:${String(value)}]`,
 	parsePosition: (value: unknown) => `[pos:${(value as { type?: string })?.type}]`,
-	parseElement: (value: unknown) => `[element:${(value as { type?: string })?.type ?? value}]`,
-	parseItem: (value: unknown) => `[item:${(value as { type?: string })?.type ?? value}]`,
-	parseHexColor: (value: unknown) => `[hex:${value}]`,
-	parseAttributeGroup: (value: unknown) => `[attrGroup:${value}]`,
-	parseEnumGroup: (value: unknown) => `[enumGroup:${value}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseElement: (value: unknown) =>
+		`[element:${String((value as { type?: string })?.type ?? value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseItem: (value: unknown) => `[item:${String((value as { type?: string })?.type ?? value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseHexColor: (value: unknown) => `[hex:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseAttributeGroup: (value: unknown) => `[attrGroup:${String(value)}]`,
+	// oxlint-disable-next-line no-base-to-string
+	parseEnumGroup: (value: unknown) => `[enumGroup:${String(value)}]`,
 	parseTextTags: (value: unknown) => value,
 	removeTextTags: (value: unknown) => value,
 	parseBlend: () => undefined,

@@ -7,6 +7,7 @@ export function getVariable(id: string | number | null | undefined): VariableNod
 }
 
 export function reportError(err: unknown, context?: string): void {
+	// oxlint-disable-next-line no-base-to-string
 	const message = `[Yami] ${context ?? '运行时错误'}: ${(err as Error)?.message ?? err}`;
 	console.error(message, err);
 	if (typeof window !== 'undefined') {
@@ -14,6 +15,7 @@ export function reportError(err: unknown, context?: string): void {
 	}
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function debounce<T extends (...args: any[]) => void>(
 	fn: T,
 	delay = 150
@@ -35,6 +37,7 @@ export function debounce<T extends (...args: any[]) => void>(
 	return debounced;
 }
 
+// oxlint-disable-next-line no-explicit-any
 export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T & { cancel(): void } {
 	let handle: number | undefined;
 	let lastArgs: unknown[];

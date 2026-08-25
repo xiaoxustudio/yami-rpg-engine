@@ -85,7 +85,9 @@ const mockContext = new Proxy(
 );
 HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): typeof mockContext {
 	return mockContext;
+	// oxlint-disable-next-line no-explicit-any
 } as any;
 
 // legacy 原型扩展（RadioBox 等包装层依赖——regexp.ts 未随测试加载）
+// oxlint-disable-next-line no-explicit-any
 (RegExp as any).number = /^-?\d+(?:\.\d+)?$/;

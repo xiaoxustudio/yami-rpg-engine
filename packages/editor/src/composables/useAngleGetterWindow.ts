@@ -9,6 +9,7 @@ export interface AngleGetterForm {
 }
 
 interface AngleGetterTarget {
+	// oxlint-disable-next-line no-explicit-any
 	read?: () => any;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;

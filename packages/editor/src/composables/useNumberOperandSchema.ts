@@ -857,7 +857,7 @@ const save = (): unknown => {
 	return operand;
 };
 
-const confirm = (event: Event): unknown => {
+const confirm = (_event: Event): unknown => {
 	return target!.save();
 };
 

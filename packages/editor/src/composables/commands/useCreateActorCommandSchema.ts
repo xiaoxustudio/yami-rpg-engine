@@ -39,7 +39,7 @@ Command.cases.createActor = new CommandSchema({
 });
 
 export function useCreateActorCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('createActor', {
+	const { form, load, commit } = useCommandSchema('createActor', {
 		onLoad() {
 			getFocus(document.getElementById('createActor-actorId')!, 'all');
 		}

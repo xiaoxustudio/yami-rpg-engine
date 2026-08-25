@@ -208,7 +208,7 @@ function addressPointerdown(event: PointerEvent) {
 									const { folders, target } = element;
 									const elementRect = rect(element);
 									const length = Math.min(folders.length, MAX_MENU_ITEMS);
-									const menuItems = new Array(length);
+									const menuItems = Array.from({ length: length });
 									const click = function (this: MenuItem) {
 										nav.load(this.folder);
 										nav.scrollToSelection('middle');
@@ -292,9 +292,11 @@ onMounted(() => {
 	const viewRoot = viewEl.value?.root;
 	const viewInputEl = viewEl.value?.input ?? viewRoot?.querySelector('input');
 	if (viewRoot) {
+		// oxlint-disable-next-line no-explicit-any
 		const viewApi = viewEl.value as unknown as Record<string, any>;
 		for (const key of ['read', 'write', 'updateFiller', 'bar', 'filler']) {
 			if (viewApi?.[key] !== undefined) {
+				// oxlint-disable-next-line no-explicit-any
 				(viewRoot as unknown as Record<string, any>)[key] = viewApi[key];
 			}
 		}

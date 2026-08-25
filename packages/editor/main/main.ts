@@ -83,6 +83,7 @@ const createMenuTemplate = function () {
 		file.submenu.push({
 			label: 'FullScreen',
 			accelerator: 'F11',
+			// oxlint-disable-next-line no-explicit-any
 			role: 'toggleFullScreen' as any
 		});
 	}

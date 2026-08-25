@@ -24,10 +24,11 @@ export const WebServer = new (class {
 		return ipcRenderer.sendSync(CHANNELS.on.getServerState);
 	}
 	start(path: string) {
-		ipcRenderer.invoke(CHANNELS.invoke.startServer, {
+		void ipcRenderer.invoke(CHANNELS.invoke.startServer, {
 			port: this.port,
 			path
 		});
+		// oxlint-disable-next-line unbound-method
 		window.addEventListener('beforeunload', this.stop);
 		this.load!();
 	}
@@ -39,7 +40,8 @@ export const WebServer = new (class {
 	}
 	stop() {
 		if (!this.enable) return;
-		ipcRenderer.invoke(CHANNELS.invoke.stopServer);
+		void ipcRenderer.invoke(CHANNELS.invoke.stopServer);
+		// oxlint-disable-next-line unbound-method
 		window.removeEventListener('beforeunload', this.stop);
 		this.load!();
 	}
@@ -77,7 +79,7 @@ export const WebServer = new (class {
 		const path = Path.dirname(projectPath);
 		const location = Path.join(path, '.preview');
 		return FSP.mkdir(path, { recursive: true })
-			.then((done: unknown) => {
+			.then((_done: unknown) => {
 				DeploymentForm.platform = 'web';
 				return Deployment.copyFilesTo!(location);
 			})

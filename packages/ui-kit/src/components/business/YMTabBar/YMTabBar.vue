@@ -308,6 +308,7 @@ const closeTabsToTheRight = (item: TabItem): void => {
 const find = (meta: TabItemMeta): TabItem | undefined => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
+	// oxlint-disable-next-line no-explicit-any
 	for (const node of el.childNodes as unknown as NodeListOf<any>) {
 		if (node.item && node.item.meta === meta) {
 			return node.item;

@@ -59,10 +59,12 @@ function startTSC(projectDir: string) {
 	});
 	tscProcess = process;
 	process.stdout?.on('data', (data: Buffer | string) => {
+		// oxlint-disable-next-line no-explicit-any
 		const editor = (globalThis as any).editor;
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});
 	process.stderr?.on('data', (data: Buffer | string) => {
+		// oxlint-disable-next-line no-explicit-any
 		const editor = (globalThis as any).editor;
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});

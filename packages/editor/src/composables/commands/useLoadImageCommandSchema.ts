@@ -80,7 +80,7 @@ Command.cases.loadImage = new CommandSchema({
 });
 
 export function useLoadImageCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('loadImage', {
+	const { form, load, commit } = useCommandSchema('loadImage', {
 		onLoad() {
 			document
 				.getElementById('loadImage-key')

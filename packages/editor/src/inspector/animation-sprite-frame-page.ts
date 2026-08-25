@@ -72,7 +72,7 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 
 	AnimSpriteFrame.write = function (
 		this: typeof AnimSpriteFrame,
-		options: Record<string, unknown>
+		_options: Record<string, unknown>
 	) {
 		($('#animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};

@@ -1,6 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneMarqueeEngine: Record<string, any> = {};
 // 选框 - 保存状态
 SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key = 'default') {

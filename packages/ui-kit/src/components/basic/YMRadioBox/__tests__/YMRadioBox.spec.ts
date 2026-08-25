@@ -44,7 +44,7 @@ describe('YMRadioBox', () => {
 
 	it('does not affect radios in other groups', async () => {
 		const other = mount(YMRadioBox, { props: { name: 'h', value: 1 } });
-		const { first, second } = mountGroup();
+		const { first } = mountGroup();
 		pointerdown(first.element, 0);
 		await first.vm.$nextTick();
 		await other.vm.$nextTick();

@@ -12,11 +12,13 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	setNumberColor: (value: unknown) => `[num:${value}]`
+	// oxlint-disable-next-line no-base-to-string
+	setNumberColor: (value: unknown) => `[num:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
-	parseVariableTag: (value: unknown) => `<tag:${value}>`,
+	// oxlint-disable-next-line no-base-to-string
+	parseVariableTag: (value: unknown) => `<tag:${String(value)}>`,
 	removeTextTags: (value: string) => value
 }));
 
@@ -62,8 +64,10 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		setActivePinia(createPinia());
 		Window.open = vi.fn();
 		Window.close = vi.fn();
-		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
-		Command.parseVariableTag = ((value: unknown) => `<tag:${value}>`) as never;
+		// oxlint-disable-next-line no-base-to-string
+		Command.setNumberColor = ((value: unknown) => `[num:${String(value)}]`) as never;
+		// oxlint-disable-next-line no-base-to-string
+		Command.parseVariableTag = ((value: unknown) => `<tag:${String(value)}>`) as never;
 		Command.removeTextTags = ((value: string) => value) as never;
 		Choices.target = null;
 		Choices.commands = null;

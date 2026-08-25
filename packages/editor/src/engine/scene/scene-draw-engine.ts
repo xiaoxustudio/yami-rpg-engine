@@ -8,6 +8,7 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneDrawEngine: Record<string, any> = {};
 
 SceneDrawEngine.drawScene = function (this: typeof Scene) {

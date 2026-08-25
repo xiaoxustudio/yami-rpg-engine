@@ -1,6 +1,5 @@
 import ExcelJS from 'exceljs';
 import { dialog } from 'electron';
-import { CHANNELS } from '../../src/services/ipc/channels.ts';
 import type { ToExcelBody } from '../../src/services/ipc/channels.ts';
 import { getWindowFromEvent } from '../window-manager.ts';
 import type { IpcMainInvokeEvent } from '../types/main.ts';
@@ -36,7 +35,7 @@ export const toExcel = async (event: IpcMainInvokeEvent, { langs, list }: ToExce
 		id?: unknown;
 		contents?: Record<string, unknown>;
 	};
-	const transformList = (DataList: TranslationItem[], parentID?: string, isDir?: boolean) => {
+	const transformList = (DataList: TranslationItem[], parentID?: string, _isDir?: boolean) => {
 		for (let item of DataList) {
 			if (item?.class) {
 				const id = generate64bit();
@@ -62,7 +61,7 @@ export const toExcel = async (event: IpcMainInvokeEvent, { langs, list }: ToExce
 	};
 	transformList(list as TranslationItem[]);
 	const window = getWindowFromEvent(event);
-	dialog
+	void dialog
 		.showSaveDialog(window, {
 			title: '保存到Excel',
 			filters: [{ name: 'Excel(翻译文件)', extensions: ['xlsx'] }]
@@ -96,6 +95,7 @@ export const fromExcel = async (event: IpcMainInvokeEvent) => {
 		const headerRow = worksheet.getRow(1);
 		const colMap: Record<string, number> = {};
 		headerRow.eachCell((cell, colNumber) => {
+			// oxlint-disable-next-line no-base-to-string
 			const value = String(cell.value || '').trim();
 			if (value) colMap[value] = colNumber;
 		});

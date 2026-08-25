@@ -102,7 +102,7 @@ Command.cases.setList = new CommandSchema({
 						if (values !== '') {
 							values += Token(', ');
 						}
-						values += Command.setStringColor!(`"${string}"`);
+						values += Command.setStringColor!(`"${String(string)}"`);
 					}
 					values = Command.parseMultiLineString!(values);
 				}
@@ -196,7 +196,7 @@ Command.cases.setList = new CommandSchema({
 });
 
 export function useSetListCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setList', {
+	const { form, load, commit } = useCommandSchema('setList', {
 		onLoad() {
 			getFocus(document.getElementById('setList-variable'));
 		}

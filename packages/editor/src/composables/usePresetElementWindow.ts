@@ -93,7 +93,7 @@ function open(openTarget: PresetElementTarget): void {
 
 function buildNodes(sourceNodes: PresetElementNode[]): PresetElementNode[] {
 	const length = sourceNodes.length;
-	const built = new Array<PresetElementNode>(length);
+	const built = Array.from<PresetElementNode>({ length: length });
 	for (let i = 0; i < length; i++) {
 		const node = sourceNodes[i];
 		built[i] = {
@@ -111,7 +111,7 @@ function getDefaultPresetId(): string {
 	return UI.target?.presetId ?? '';
 }
 
-function windowClosed(event: Event): void {
+function windowClosed(_event: Event): void {
 	target = null;
 	nodes = null;
 	list.clear();
@@ -131,7 +131,7 @@ function uiIdWrite(event: Event & { value?: string }): void {
 	}
 }
 
-function listOpen(event: Event): void {
+function listOpen(_event: Event): void {
 	confirm();
 }
 
@@ -166,7 +166,7 @@ function searcherInput(event: { value?: string }): void {
 	}
 }
 
-function confirm(event?: Event): void {
+function confirm(_event?: Event): void {
 	const uiId = ui.read();
 	if (!uiId) {
 		return getFocus(ui);

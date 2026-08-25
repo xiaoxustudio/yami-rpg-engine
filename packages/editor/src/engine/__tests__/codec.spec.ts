@@ -109,7 +109,7 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const code = Codec.encodeTiles!(emptyTiles);
 		const decoded = Codec.decodeTiles!(code, width, height);
 		expect(decoded.length).toBe(width * height);
-		expect(Array.from(decoded)).toEqual(new Array(width * height).fill(0));
+		expect(Array.from(decoded)).toEqual(Array.from({ length: width * height }).fill(0));
 	});
 
 	it('单个非零 tile 编解码往返', () => {
@@ -128,7 +128,7 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const tiles = new Uint32Array(width).fill(value);
 		const code = Codec.encodeTiles!(tiles);
 		const decoded = Codec.decodeTiles!(code, width, height);
-		expect(Array.from(decoded)).toEqual(new Array(width).fill(value));
+		expect(Array.from(decoded)).toEqual(Array.from({ length: width }).fill(value));
 	});
 
 	it('混合零与非零 tile 编解码往返', () => {
@@ -153,7 +153,7 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const code = Codec.encodeTerrains!(empty);
 		const decoded = Codec.decodeTerrains!(code, width, height);
 		expect(decoded.length).toBe(width * height);
-		expect(Array.from(decoded)).toEqual(new Array(width * height).fill(0));
+		expect(Array.from(decoded)).toEqual(Array.from({ length: width * height }).fill(0));
 	});
 
 	it('单个非零 terrain 编解码往返', () => {
@@ -171,7 +171,7 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const terrains = new Uint8Array(width).fill(5);
 		const code = Codec.encodeTerrains!(terrains);
 		const decoded = Codec.decodeTerrains!(code, width, height);
-		expect(Array.from(decoded)).toEqual(new Array(width).fill(5));
+		expect(Array.from(decoded)).toEqual(Array.from({ length: width }).fill(5));
 	});
 
 	it('混合地形值编解码往返', () => {

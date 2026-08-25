@@ -357,7 +357,7 @@ export function createSelectListApi(
 		}
 	};
 
-	const windowResize = (event?: Event): void => {
+	const windowResize = (_event?: Event): void => {
 		const MAX_LINES = 30;
 		const r = rect(box.target!);
 		const rl = r.left;
@@ -377,7 +377,7 @@ export function createSelectListApi(
 		box.style.zIndex = `${getWindowFramesLength()}`;
 	};
 
-	const windowBlur = (event: Event): void => {
+	const windowBlur = (_event: Event): void => {
 		close();
 	};
 

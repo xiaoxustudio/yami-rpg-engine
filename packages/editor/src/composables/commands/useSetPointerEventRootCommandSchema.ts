@@ -31,7 +31,7 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 });
 
 export function useSetPointerEventRootCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setPointerEventRoot', {
+	const { form, load, commit } = useCommandSchema('setPointerEventRoot', {
 		onLoad() {
 			getFocus(document.getElementById('setPointerEventRoot-operation'));
 		}

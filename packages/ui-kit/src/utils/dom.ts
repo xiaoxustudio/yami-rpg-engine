@@ -120,7 +120,7 @@ export const isInContent = (el: HTMLElement, event: PointerEvent): boolean => {
 const changeEvent = new Event('change');
 export const dispatchChangeEvent = (
 	el: { dispatchEvent: (event: Event) => unknown },
-	index = 0
+	_index = 0
 ): void => {
 	el.dispatchEvent(changeEvent);
 };

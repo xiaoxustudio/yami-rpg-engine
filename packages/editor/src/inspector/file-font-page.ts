@@ -12,6 +12,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		path: string;
 	}
 	interface FileFontShape {
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	const FileFont: FileFontShape = {
@@ -53,7 +54,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 				document.fonts.delete(this.font);
 			}
 			const symbol = (this.symbol = Symbol());
-			font.load().then(() => {
+			void font.load().then(() => {
 				if (this.symbol === symbol) {
 					this.symbol = null;
 					this.font = font;

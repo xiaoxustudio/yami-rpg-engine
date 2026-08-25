@@ -2,8 +2,10 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Vector } from '@app/engine/webgl/vector2.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const SceneSelectionEngine: Record<string, any> = {};
 
+// oxlint-disable-next-line no-explicit-any
 type SceneObjectShape = { hidden?: boolean; locked?: boolean; [k: string]: any };
 type SceneSelectionThis = {
 	actors: SceneObjectShape[];

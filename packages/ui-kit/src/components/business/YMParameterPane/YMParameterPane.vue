@@ -124,6 +124,7 @@ interface RepeatableGroupInput extends HTMLElement {
 	setTooltip: () => void;
 	parameters: Record<string, unknown> | null;
 	key: string | null;
+	// oxlint-disable-next-line no-explicit-any
 	read: () => any[];
 	write: (value: Array<Record<string, unknown>>) => void;
 }
@@ -132,6 +133,7 @@ interface Props {
 	id?: string;
 	controls?: PaneControlFactory | null;
 	typeRegistry?: { get(type: string): TypeRegistryConfig | undefined } | null;
+	// oxlint-disable-next-line no-explicit-any
 	dataManifest?: (() => { guidMap: Record<string, any> } | null) | null;
 	plugin?: PluginAdapter | null;
 	localize?: ((key: string) => string) | null;
@@ -160,6 +162,7 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 const headPadRef = ref<HTMLElement | null>(null);
 
+// oxlint-disable-next-line no-explicit-any
 let el: HTMLElement & { [k: string]: any } | null = null;
 
 const paneState = {
@@ -196,6 +199,7 @@ const paneStateFields = [
 	'updateEventEnabled'
 ] as const;
 
+// oxlint-disable-next-line no-explicit-any
 const attachStateAccessors = (self: HTMLElement & { [k: string]: any }): void => {
 	for (const key of paneStateFields) {
 		Object.defineProperty(self, key, {
@@ -239,6 +243,7 @@ const createControl = (kind: keyof PaneControlFactory): HTMLElement | null => {
 const getTypeConfig = (type: string): TypeRegistryConfig | undefined =>
 	props.typeRegistry?.get(type);
 
+// oxlint-disable-next-line no-explicit-any
 const getManifest = (): { guidMap: Record<string, any> } | null =>
 	props.dataManifest ? props.dataManifest() : null;
 
@@ -286,7 +291,7 @@ const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 		for (const { input } of wrap.children) {
 			if (input.key === key) {
 				write(input, parameters[key]);
-				self.scriptList && dispatchChangeEvent(self.scriptList);
+				if (self.scriptList) dispatchChangeEvent(self.scriptList);
 				if (input.branched) {
 					getPlugin()?.reconstruct(script);
 					self.updateParamDisplay(wrap.box);
@@ -327,6 +332,7 @@ const update = (): void => {
 			self.appendChild(banner);
 		}
 		const groupOrder: string[] = [];
+		// oxlint-disable-next-line no-explicit-any
 		const groupMap = new Map<string, any[]>();
 		for (const parameter of paramList) {
 			const g = parameter.group || '';
@@ -406,7 +412,7 @@ const update = (): void => {
 		}
 	}
 	if (changed) {
-		self.scriptList && dispatchChangeEvent(self.scriptList);
+		if (self.scriptList) dispatchChangeEvent(self.scriptList);
 	}
 	if (self.updateEventEnabled) {
 		dispatchUpdateEvent(self);
@@ -477,7 +483,7 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 	switch (wrap.tag) {
 		case 'check-box':
 		case 'text-box':
-			read(wrap.input) !== value && write(wrap.input, value);
+			if (read(wrap.input) !== value) write(wrap.input, value);
 			break;
 		case 'number-box':
 			if (read(wrap.input) !== value) {
@@ -495,7 +501,7 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 			break;
 		case 'keyboard-box':
 		case 'color-box':
-			read(wrap.input) !== value && write(wrap.input, value);
+			if (read(wrap.input) !== value) write(wrap.input, value);
 			break;
 		case 'select-box':
 		case 'custom-box':
@@ -696,6 +702,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	input.read = function () {
 		const result: Array<Record<string, unknown>> = [];
 		for (const rowEl of rowsEl.children) {
+			// oxlint-disable-next-line no-explicit-any
 			const data: Record<string, any> = {};
 			for (const { param, input } of (rowEl as HTMLElement & { wraps: RepeatableRowWrap[] }).wraps) {
 				data[param.key] = read(input);
@@ -708,6 +715,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 		rowsEl.innerHTML = '';
 		let arr = value;
 		if (!arr || arr.length === 0) {
+			// oxlint-disable-next-line no-explicit-any
 			const empty: Record<string, any> = {};
 			for (const subParam of template) {
 				empty[subParam.key] = subParam.value;
@@ -757,6 +765,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	};
 	addBtn.onclick = function (e: MouseEvent) {
 		e.stopPropagation();
+		// oxlint-disable-next-line no-explicit-any
 		const empty: Record<string, any> = {};
 		for (const subParam of template) {
 			empty[subParam.key] = subParam.value;
@@ -888,7 +897,7 @@ const componentChange = (event: Event): void => {
 		}
 	}
 	parameters[key] = read(element);
-	scriptList && dispatchChangeEvent(scriptList, 1);
+	if (scriptList) dispatchChangeEvent(scriptList, 1);
 	const grid = element.parentNode as HTMLElement;
 	const detail = grid.parentNode as DetailBoxElement | null;
 	if (detail?.meta) {
@@ -983,6 +992,7 @@ defineExpose({
 });
 
 onMounted(() => {
+	// oxlint-disable-next-line no-explicit-any
 	const self = root.value as HTMLElement & { [k: string]: any };
 	if (!self) return;
 	el = self;

@@ -42,7 +42,7 @@ Command.cases.playAudio = new CommandSchema({
 });
 
 export function usePlayAudioCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('playAudio', {
+	const { form, load, commit } = useCommandSchema('playAudio', {
 		onLoad() {
 			getFocus(document.getElementById('playAudio-type'));
 		}

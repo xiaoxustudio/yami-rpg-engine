@@ -27,6 +27,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			radius?: unknown;
 			centralAngle?: unknown;
 		};
+		// oxlint-disable-next-line no-explicit-any
 		[k: string]: any;
 	}
 	const FileTrigger: FileTriggerShape = {
@@ -194,7 +195,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		write(elMotion, read(elMotion));
 	};
 
-	FileTrigger.listChange = function (this: typeof FileTrigger, event: Event) {
+	FileTrigger.listChange = function (this: typeof FileTrigger, _event: Event) {
 		File.planToSave!(FileTrigger.meta);
 	};
 

@@ -37,7 +37,7 @@ interface ControlEl extends HTMLElement {
 	read(): unknown;
 }
 
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
+const _getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
 
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 

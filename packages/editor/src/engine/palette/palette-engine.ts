@@ -7,6 +7,7 @@ import { Timer } from '@app/utils/timer';
 import { getPaletteStore } from '@app/stores/palette';
 import type { Palette } from '@app/palette/palette.ts';
 
+// oxlint-disable-next-line no-explicit-any
 export const PaletteEngine: Record<string, any> = {};
 
 interface MarkPosition {

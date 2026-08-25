@@ -94,7 +94,7 @@ Command.cases.return = new CommandSchema({
 });
 
 export function useReturnCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('return');
+	const { form, load, commit } = useCommandSchema('return');
 	const loadTypeItems = (type: string): void => {
 		const items = Command.cases.return.typeItems;
 		document.getElementById('return-type')?.loadItems?.([items[type] ?? items.none]);

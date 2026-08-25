@@ -19,6 +19,7 @@ interface LightData {
 	measureOffsetY?: number;
 	measureWidth?: number;
 	measureHeight?: number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

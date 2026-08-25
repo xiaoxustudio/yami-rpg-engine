@@ -40,7 +40,7 @@ Command.cases.setSkill = new CommandSchema({
 });
 
 export function useSetSkillCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setSkill', {
+	const { form, load, commit } = useCommandSchema('setSkill', {
 		onLoad() {
 			getFocus(document.getElementById('setSkill-skill'));
 		}

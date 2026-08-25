@@ -22,6 +22,7 @@ interface AudioManagerShape {
 	playMusic: ((name: string) => void) | null;
 	stopMusic: (() => void) | null;
 	playSound: ((name: string) => void) | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -134,6 +135,7 @@ for (const key of audioBridgeKeys) {
 	Object.defineProperty(AudioManager, key, {
 		get: () => getAudioStore()[key],
 		set: (value: unknown) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getAudioStore() as unknown as Record<(typeof audioBridgeKeys)[number], any>)[key] =
 				value;
 		},

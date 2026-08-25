@@ -39,6 +39,7 @@ export interface IfConditionTarget {
 export interface IfConditionOperandShape {
 	type: string;
 	stringId?: string;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -57,6 +58,7 @@ export interface IfConditionData {
 	quantity?: number;
 	shortcutKey?: string;
 	teamId?: string;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -930,7 +932,7 @@ const save = (): unknown => {
 	return condition;
 };
 
-const confirm = (event: Event): unknown => {
+const confirm = (_event: Event): unknown => {
 	return target!.save();
 };
 

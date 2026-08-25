@@ -19,7 +19,7 @@ Command.cases.deleteVariable = new CommandSchema({
 });
 
 export function useDeleteVariableCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('deleteVariable', {
+	const { form, load, commit } = useCommandSchema('deleteVariable', {
 		onLoad() {
 			getFocus(document.getElementById('deleteVariable-variable'));
 		}

@@ -13,6 +13,7 @@ interface TextSuggestionItem {
 	element?: HTMLElement & { item: TextSuggestionItem };
 }
 
+// oxlint-disable-next-line no-explicit-any
 type ListMethod = ((...args: any[]) => any) | null;
 
 interface TextSuggestionList {
@@ -213,14 +214,14 @@ TextSuggestion.createData = function (this: TextSuggestionShape): void {
 	}
 };
 
-TextSuggestion.textBoxFocus = function (this: TextSuggestionTarget, event: Event): void {
+TextSuggestion.textBoxFocus = function (this: TextSuggestionTarget, _event: Event): void {
 	const text = this.read?.().trim() ?? '';
 	TextSuggestion.open!(this);
 	TextSuggestion.list.searchNodes(text);
 	TextSuggestion.list.selectDefaultCommand!();
 };
 
-TextSuggestion.textBoxBlur = function (this: TextSuggestionTarget, event: Event): void {
+TextSuggestion.textBoxBlur = function (this: TextSuggestionTarget, _event: Event): void {
 	TextSuggestion.close!();
 };
 
@@ -289,7 +290,7 @@ TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Even
 	}
 };
 
-TextSuggestion.listUpdate = function (this: TextSuggestionList, event: Event): void {
+TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): void {
 	const MAX_LINES = 30;
 	const r = rect(TextSuggestion.target!);
 	const rl = r.left;

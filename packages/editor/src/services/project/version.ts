@@ -43,7 +43,7 @@ async function checkForProjectUpdates(this: typeof Editor) {
 		await File.save!(false);
 		Editor.project!.version = ver2!;
 
-		getDirectoryTree()?.update();
+		void getDirectoryTree()?.update();
 	}
 }
 

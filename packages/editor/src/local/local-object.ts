@@ -44,7 +44,7 @@ interface LanguageSettings {
 }
 
 GameLocal.initialize = function () {
-	this.setLanguage(Data.config.localization.default);
+	void this.setLanguage(Data.config.localization.default);
 
 	window.addEventListener('datachange', this.datachange);
 };
@@ -148,13 +148,13 @@ GameLocal.datachange = function (event: {
 			GameLocal.reloadLanguages();
 			// 如果是自动语言，随着语言列表的变化重新加载
 			if (now.default === 'auto') {
-				GameLocal.setLanguage(now.default);
+				void GameLocal.setLanguage(now.default);
 				return;
 			}
 		}
 		// 默认语言改变时重新设置语言
 		if (last.default !== now.default) {
-			GameLocal.setLanguage(now.default);
+			void GameLocal.setLanguage(now.default);
 			return;
 		}
 		const selector = (lang: LanguageSettings) => lang.name === GameLocal.active;

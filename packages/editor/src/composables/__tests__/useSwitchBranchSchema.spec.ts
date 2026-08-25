@@ -17,11 +17,11 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	setNumberColor: (value: unknown) => `[num:${value}]`,
-	setStringColor: (value: unknown) => `[str:${value}]`,
-	setBooleanColor: (value: unknown) => `[bool:${value}]`,
-	setOperatorColor: (value: unknown) => `[op:${value}]`,
-	setDelimiterColor: (value: unknown) => `[dl:${value}]`
+	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
+	setStringColor: (value: unknown) => `[str:${String(value)}]`,
+	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`,
+	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
+	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
@@ -62,7 +62,7 @@ interface ControlEl extends HTMLElement {
 
 const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const _getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const words: string[] = [];
 

@@ -72,6 +72,7 @@ export interface SelectorInstance {
 
 export const useSelectorStore = defineStore('selector', () => {
 	const state = shallowRef<string>('closed');
+	// oxlint-disable-next-line no-explicit-any
 	const target = shallowRef<any>(null);
 	const allowNone = shallowRef<boolean>(true);
 	const audioPlayed = shallowRef<boolean>(false);
@@ -185,7 +186,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		}
 	}
 
-	function confirm(event?: Event) {
+	function confirm(_event?: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		if (Selector.dragging) return;
@@ -225,7 +226,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.setViewIndex?.(view as number);
 	}
 
-	function windowClosed(event: Event) {
+	function windowClosed(_event: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		state.value = 'closed';
@@ -247,7 +248,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		}
 	}
 
-	function windowResize(event: Event) {
+	function windowResize(_event: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		Selector.nav?.resize?.();
@@ -373,7 +374,7 @@ export const useSelectorStore = defineStore('selector', () => {
 						{
 							label: get('copy-id'),
 							click: () => {
-								navigator.clipboard.writeText(file.meta!.guid);
+								void navigator.clipboard.writeText(file.meta!.guid);
 							}
 						},
 						{

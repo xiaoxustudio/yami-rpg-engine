@@ -215,7 +215,9 @@ const searchStringBridgeKeys = ['index', 'searchMode'] as const;
 for (const key of searchStringBridgeKeys) {
 	Object.defineProperty(SearchString, key, {
 		get: () => getSearchStringStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getSearchStringStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

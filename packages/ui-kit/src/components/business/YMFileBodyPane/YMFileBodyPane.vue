@@ -99,6 +99,7 @@ interface FileBrowserLinks {
 		scrollToSelection(mode: string): void;
 	};
 	body?: HTMLElement | null;
+	// oxlint-disable-next-line no-explicit-any
 	[key: string]: any;
 }
 
@@ -199,6 +200,7 @@ interface Props {
 		saveFiles(files: FileBodyFile[]): Promise<void>;
 		readdir(paths: string[]): Promise<FileBodyFile[]>;
 		assets: FileBodyFile | null;
+		// oxlint-disable-next-line no-explicit-any
 		inoMap: Record<string, any>;
 	};
 	fileSystemApi?: {
@@ -215,8 +217,11 @@ interface Props {
 		}): Promise<{ filePaths: string[] }>;
 		showSaveDialog(options: { defaultPath?: string }): Promise<{ filePath?: string }>;
 		mkdir(p: string, options?: { recursive?: boolean }): Promise<void>;
+		// oxlint-disable-next-line no-explicit-any
 		copyFile(src: string, dst: string): Promise<any>;
+		// oxlint-disable-next-line no-explicit-any
 		stat(p: string, bigint?: boolean): Promise<any>;
+		// oxlint-disable-next-line no-explicit-any
 		rename(oldPath: string, newPath: string): Promise<any>;
 		existsSync(p: string): boolean;
 		addOversizeImagePaths(p: string): void;
@@ -229,6 +234,7 @@ interface Props {
 		basename(p: string, ext?: string): string;
 		resolve(...paths: string[]): string;
 	};
+	// oxlint-disable-next-line no-explicit-any
 	fileClasses?: { FileItem: any; FolderItem: any };
 	setIconClip?: (
 		icon: HTMLElement,
@@ -238,6 +244,7 @@ interface Props {
 		cw: number,
 		ch: number
 	) => void;
+	// oxlint-disable-next-line no-explicit-any
 	createTextBox?: () => any;
 }
 
@@ -400,7 +407,8 @@ function updateViewMode(): void {
 	}
 	if (viewMode !== mode) {
 		const node = el.value as FileBodyPaneApi;
-		mode === 'list' ? addClass(node, 'horizontal') : removeClass(node, 'horizontal');
+		if (mode === 'list') addClass(node, 'horizontal');
+		else removeClass(node, 'horizontal');
 		const content = contentEl.value as FileBodyContentApi;
 		removeClass(content, viewMode!);
 		addClass(content, mode!);
@@ -422,7 +430,7 @@ function getFiles(): FileBodyFile[] {
 			length += folder.children.length;
 		}
 		let i = 0;
-		const items = new Array(length);
+		const items = Array.from({ length: length });
 		for (const folder of folders) {
 			for (const item of folder.children) {
 				items[i++] = item;
@@ -888,7 +896,7 @@ function activateFile(file: FileBodyFile): void {
 		addClass(context.element!, 'selected');
 		for (const f of selections) {
 			const c = f.getContext(node);
-			c.element && removeClass(c.element, 'selected');
+			if (c.element) removeClass(c.element, 'selected');
 		}
 	}
 	const pointerup = (event: PointerEvent) => {
@@ -909,7 +917,7 @@ function deactivateFile(): void {
 			removeClass(context.element!, 'selected');
 			for (const f of selections) {
 				const c = f.getContext(node);
-				c.element && addClass(c.element, 'selected');
+				if (c.element) addClass(c.element, 'selected');
 			}
 		}
 		activeFile = null;
@@ -931,7 +939,7 @@ function select(...files: FileBodyFile[]): void {
 	selections = files;
 	for (const file of files) {
 		const context = file.getContext(node);
-		context.element && addClass(context.element, 'selected');
+		if (context.element) addClass(context.element, 'selected');
 	}
 	if (selectEventEnabled) {
 		const select = new Event('select') as FileBodyEvent;
@@ -944,7 +952,7 @@ function selectAll(): void {
 	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
-	const files = new Array(count);
+	const files = Array.from({ length: count });
 	for (let i = 0; i < count; i++) {
 		files[i] = els[i]!.file;
 	}
@@ -1232,7 +1240,7 @@ function deleteFiles(): void {
 	const node = el.value as FileBodyPaneApi;
 	const files: FileBodyFile[] = [];
 	const { selections: sels } = { selections };
-	if (!sels.includes(Directory?.assets!)) {
+	if (!sels.includes(Directory?.assets ?? null)) {
 		const els = elements;
 		for (const file of sels) {
 			const { element } = file.getContext(node);
@@ -1768,6 +1776,7 @@ function createTextBox(): FileBodyTextBox {
 	addClass(tb, 'file-body-text-box');
 	addClass(tb.input, 'file-body-text-box-input');
 
+	// oxlint-disable-next-line no-explicit-any
 	tb.addEventListener('keydown', function (this: any, event: KeyboardEvent) {
 		event.stopPropagation();
 		switch (event.code) {
@@ -1793,6 +1802,7 @@ function createTextBox(): FileBodyTextBox {
 		}
 	});
 
+	// oxlint-disable-next-line no-explicit-any
 	tb.addEventListener('input', function (this: any, event: Event) {
 		if (this.style.width !== '') {
 			this.fitContent();
@@ -1886,6 +1896,7 @@ onMounted(() => {
 
 	content.range = new Uint32Array(2);
 	Object.defineProperty(content, 'countPerLine', {
+		// oxlint-disable-next-line no-explicit-any
 		get: function (this: any) {
 			return elements.count < this.scrollCount
 				? this.normalCountPerLine

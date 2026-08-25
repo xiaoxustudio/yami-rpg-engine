@@ -185,6 +185,7 @@ export class DirectoryTree {
 			}
 			for (let i = 0; i < length; i++) {
 				try {
+					// oxlint-disable-next-line no-await-in-loop
 					const stats = await statPromises[i];
 					const path = paths[i];
 					const name = Path.basename(path);
@@ -219,7 +220,7 @@ export class DirectoryTree {
 	): Promise<boolean> {
 		return checkExist(this.hooks.file.path(dirPath), dir).then(
 			() => true,
-			(error: unknown) => false
+			(_error: unknown) => false
 		);
 	}
 
@@ -279,7 +280,7 @@ export class DirectoryTree {
 		}
 	}
 
-	windowFocus(event: FocusEvent): void {
+	windowFocus(_event: FocusEvent): void {
 		setTimeout(() => this.update(), 100);
 	}
 }
@@ -344,11 +345,11 @@ async function trash(
 	files: Array<FileItem | FolderItem>,
 	hooks: DirectoryTreeHooks
 ): Promise<unknown> {
-	const { invoke } = ipcRenderer ?? ({} as unknown as Pick<typeof ipcRenderer, 'invoke'>);
+	const renderer = ipcRenderer ?? ({} as unknown as Pick<typeof ipcRenderer, 'invoke'>);
 	const promises: Array<Promise<unknown>> = [];
 	for (const file of files) {
 		const path = hooks.file.path(file.path);
-		promises.push(invoke(CHANNELS.invoke.trashItem, path));
+		promises.push(renderer.invoke(CHANNELS.invoke.trashItem, path));
 	}
 	if (promises.length !== 0) {
 		return Promise.all(promises);
@@ -413,7 +414,7 @@ async function copy(
 		existings[path] = true;
 		promises.push(
 			(existed ? Promise.resolve() : FSP.stat(path))
-				.then((stats: { isDirectory(): boolean } | undefined) => {
+				.then((_stats: { isDirectory(): boolean } | undefined) => {
 					for (let i = 2; ; i++) {
 						path = `${dirPath}/${base}${suffix} (${i})${ext}`;
 						if (existings[path]) {

@@ -56,6 +56,7 @@ type DeploymentFileItem = {
 };
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
+// oxlint-disable-next-line no-explicit-any
 type DeploymentMethod = ((...args: any[]) => any) | null;
 
 interface DeploymentManifest {
@@ -77,6 +78,7 @@ interface DeploymentManifest {
 	fonts: unknown[];
 	script: unknown[];
 	others: unknown[];
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -264,7 +266,7 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 			path: `${tsOutDir}Script`
 		}
 	);
-	const fileIdMap = await Data.createReferencedFileIDMap!();
+	const fileIdMap = Data.createReferencedFileIDMap!();
 	const manifest: DeploymentManifest = {
 		ui: {},
 		scenes: {},
@@ -568,7 +570,7 @@ Deployment.compressJavaScript = function (
 	let uglifyJS: typeof uglifyJs | null;
 	try {
 		uglifyJS = uglifyJs;
-	} catch (e) {
+	} catch (_e) {
 		uglifyJS = null;
 	}
 
@@ -613,7 +615,7 @@ Deployment.compressJavaScript = function (
 	});
 };
 
-Deployment.platformInput = function (this: typeof Deployment, event: Event) {
+Deployment.platformInput = function (this: typeof Deployment, _event: Event) {
 	Deployment.check!();
 };
 
@@ -627,7 +629,7 @@ Deployment.folderBeforeinput = function (this: typeof Deployment, event: InputEv
 	}
 };
 
-Deployment.folderInput = function (this: typeof Deployment, event: Event) {
+Deployment.folderInput = function (this: typeof Deployment, _event: Event) {
 	const regexp = /[\\/:*?"<>|"]/g;
 	const oldName = DeploymentForm.folder;
 	const newName = oldName.replace(regexp, '');
@@ -637,11 +639,11 @@ Deployment.folderInput = function (this: typeof Deployment, event: Event) {
 	Deployment.check!();
 };
 
-Deployment.locationInput = function (this: typeof Deployment, event: Event) {
+Deployment.locationInput = function (this: typeof Deployment, _event: Event) {
 	Deployment.check!();
 };
 
-Deployment.chooseClick = function (this: typeof Deployment, event: Event) {
+Deployment.chooseClick = function (this: typeof Deployment, _event: Event) {
 	File.showOpenDialog!({
 		defaultPath: DeploymentForm.location,
 		properties: ['openDirectory']
@@ -653,7 +655,7 @@ Deployment.chooseClick = function (this: typeof Deployment, event: Event) {
 	});
 };
 
-Deployment.confirm = function (this: typeof Deployment, event: Event) {
+Deployment.confirm = function (this: typeof Deployment, _event: Event) {
 	const platform = DeploymentForm.platform;
 	const location = DeploymentForm.location;
 	const folder = DeploymentForm.folder;

@@ -51,7 +51,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			image.src = path;
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve: () => void, reject: () => void) => {
+			void new Promise<void>((resolve: () => void, reject: () => void) => {
 				const intervalIndex = setInterval(() => {
 					if (image.naturalWidth !== 0) {
 						clearInterval(intervalIndex);

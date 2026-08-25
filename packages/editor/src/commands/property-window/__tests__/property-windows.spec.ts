@@ -30,16 +30,25 @@ vi.mock('@app/commands/token.ts', () => ({
 
 vi.mock('@app/commands/command-object.ts', () => ({
 	Command: {
-		parseVariableTemplate: vi.fn((value: unknown) => `<tmpl:${value}>`),
-		parseVariableString: vi.fn((value: unknown) => `<str:${value}>`),
-		parseVariableNumber: vi.fn((value: unknown) => `<num:${value}>`),
-		setNumberColor: vi.fn((value: unknown) => `<num:${value}>`),
-		setStringColor: vi.fn((value: unknown) => `<str:${value}>`),
-		parseHexColor: vi.fn((value: unknown) => `<hex:${value}>`),
-		parseBlend: vi.fn((value: unknown) => `<blend:${value}>`),
-		parseFileName: vi.fn((value: unknown) => `<file:${value}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseVariableTemplate: vi.fn((value: unknown) => `<tmpl:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseVariableString: vi.fn((value: unknown) => `<str:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseVariableNumber: vi.fn((value: unknown) => `<num:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		setNumberColor: vi.fn((value: unknown) => `<num:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		setStringColor: vi.fn((value: unknown) => `<str:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseHexColor: vi.fn((value: unknown) => `<hex:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseBlend: vi.fn((value: unknown) => `<blend:${String(value)}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseFileName: vi.fn((value: unknown) => `<file:${String(value)}>`),
 		parseActor: vi.fn((value: { type: string }) => `<actor:${value.type}>`),
-		parseEnumString: vi.fn((value: unknown) => `<enum:${value}>`),
+		// oxlint-disable-next-line no-base-to-string
+		parseEnumString: vi.fn((value: unknown) => `<enum:${String(value)}>`),
 		removeTextTags: vi.fn((value: string) => `<clean:${value}>`)
 	},
 	commandState: {}
@@ -50,6 +59,7 @@ vi.mock('@app/tools/window-object.ts', () => ({
 }));
 
 vi.mock('@app/tools/color-picker-window.ts', () => ({
+	// oxlint-disable-next-line no-base-to-string
 	Color: { simplifyHexColor: vi.fn((hex: unknown) => String(hex)) }
 }));
 
@@ -63,7 +73,9 @@ describe('createPropertyWindow（属性窗口工厂核心契约）', () => {
 			{ name: 'Flag', value: 'flag', uiName: 'flagUi', default: false }
 		],
 		parsers: {
+			// oxlint-disable-next-line no-base-to-string
 			name: (value: unknown): string => `name:${String(value)}`,
+			// oxlint-disable-next-line no-base-to-string
 			count: (value: unknown): string => `cnt:${String(value)}`
 		}
 	});
@@ -72,6 +84,7 @@ describe('createPropertyWindow（属性窗口工厂核心契约）', () => {
 		prefix: 'vp',
 		locale: 'command.testValue',
 		keys: [{ name: 'X', value: 'x', default: 0 }],
+		// oxlint-disable-next-line no-base-to-string
 		parseValue: (key: string, value: unknown): string => `parse:${key}:${String(value)}`
 	});
 
@@ -196,6 +209,7 @@ describe('createPropertyWindow（属性窗口工厂核心契约）', () => {
 			keys: [{ name: 'Effect', value: 'effect', default: 'none' }],
 			parsers: {
 				effect: (value: unknown, get: (key: string) => string, name: string): string =>
+					// oxlint-disable-next-line no-base-to-string
 					`${name}|${get('effect.xx')}|${String(value)}`
 			}
 		});

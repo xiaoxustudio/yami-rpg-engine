@@ -13,6 +13,7 @@ interface VariableGetterTarget {
 		item?: { type: string };
 		element?: { type: string };
 	};
+	// oxlint-disable-next-line no-explicit-any
 	read?: () => any;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
@@ -152,11 +153,11 @@ VariableGetter.typeInput = function (
 	useVariableGetterWindow().typeInput(event);
 };
 
-VariableGetter.confirm = function (this: VariableGetterShape, event: Event): void {
+VariableGetter.confirm = function (this: VariableGetterShape, _event: Event): void {
 	useVariableGetterWindow().confirm();
 };
 
-VariableGetter.confirm2 = function (this: VariableGetterShape, event: Event): void {
+VariableGetter.confirm2 = function (this: VariableGetterShape, _event: Event): void {
 	useVariableGetterWindow().confirm2();
 };
 

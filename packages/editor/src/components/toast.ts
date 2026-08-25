@@ -34,6 +34,7 @@ window.addEventListener('yami:error', ((
 	if (typeof detail === 'string') {
 		Toast.error(detail);
 	} else {
+		// oxlint-disable-next-line no-base-to-string
 		Toast.error(detail.message || String(detail));
 	}
 }) as EventListener);

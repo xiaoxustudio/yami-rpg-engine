@@ -33,6 +33,7 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import { Timer } from '@app/utils/timer';
 import { h, render } from 'vue';
 
+// oxlint-disable-next-line no-explicit-any
 export const Palette: Record<string, any> = {
 	page: null,
 	head: null,
@@ -287,6 +288,7 @@ Palette.initialize = function (this: typeof Palette) {
 
 Palette.open = function (
 	this: typeof Palette,
+	// oxlint-disable-next-line no-explicit-any
 	meta: { guid: string; path?: string } & Record<string, any>
 ) {
 	if (!meta || meta === this.meta) {
@@ -396,8 +398,8 @@ Palette.setSize = function (this: typeof Palette, width: number, height: number)
 	if (!tileset) return;
 	switch (tileset.type) {
 		case 'normal': {
-			const dPriorities = new Array(length).fill(0);
-			const dTerrains = new Array(length).fill(0);
+			const dPriorities = Array.from({ length: length }).fill(0);
+			const dTerrains = Array.from({ length: length }).fill(0);
 			const dro = width;
 			const sPriorities = tileset.priorities;
 			const sTerrains = tileset.terrains;
@@ -419,9 +421,9 @@ Palette.setSize = function (this: typeof Palette, width: number, height: number)
 			break;
 		}
 		case 'auto': {
-			const dTiles = new Array(length).fill(0);
-			const dPriorities = new Array(length).fill(0);
-			const dTerrains = new Array(length).fill(0);
+			const dTiles = Array.from({ length: length }).fill(0);
+			const dPriorities = Array.from({ length: length }).fill(0);
+			const dTerrains = Array.from({ length: length }).fill(0);
 			const dro = width;
 			const sTiles = tileset.tiles;
 			const sPriorities = tileset.priorities;
@@ -595,7 +597,7 @@ Palette.resize = function (this: typeof Palette) {
 		this.marquee.style.height = `${innerHeight / dpr}px`;
 		this.marquee.scaleX = scaledTileWidth / dpr;
 		this.marquee.scaleY = scaledTileHeight / dpr;
-		this.marquee.visible && getPaletteStore().mode === 'normal' && this.marquee.select();
+		if (this.marquee.visible && getPaletteStore().mode === 'normal') this.marquee.select();
 
 		const canvasWidth = Math.min(innerWidth, screenWidth);
 		const canvasHeight = Math.min(innerHeight, screenHeight);
@@ -748,9 +750,8 @@ Palette.skipScrollEvent = (function IIFE() {
 		if (getPaletteStore().scrollable) {
 			off(Palette.screen, 'scroll', Palette.screenUserscroll);
 			// 在动画队列中调用此方法就不需要了
-			window.event?.type === 'resize'
-				? requestAnimationFrame(restoreDelay)
-				: requestAnimationFrame(restore);
+			if (window.event?.type === 'resize') requestAnimationFrame(restoreDelay);
+			else requestAnimationFrame(restore);
 		}
 	};
 })();
@@ -776,13 +777,13 @@ Palette.switchPriority = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'priority') {
 		if (enabled) {
 			addClass(this.itemPriority, 'selected');
-			this.marquee.visible && hide(this.marquee.selection);
+			if (this.marquee.visible) hide(this.marquee.selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemPriority, 'selected');
-			this.marquee.visible && show(this.marquee.selection);
+			if (this.marquee.visible) show(this.marquee.selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -799,13 +800,13 @@ Palette.switchTag = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'tag') {
 		if (enabled) {
 			addClass(this.itemTag, 'selected');
-			this.marquee.visible && hide(this.marquee.selection);
+			if (this.marquee.visible) hide(this.marquee.selection);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemTag, 'selected');
-			this.marquee.visible && show(this.marquee.selection);
+			if (this.marquee.visible) show(this.marquee.selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -822,13 +823,13 @@ Palette.switchTerrain = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'terrain') {
 		if (enabled) {
 			addClass(this.itemTerrain, 'selected');
-			this.marquee.visible && hide(this.marquee.selection);
+			if (this.marquee.visible) hide(this.marquee.selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemTerrain, 'selected');
-			this.marquee.visible && show(this.marquee.selection);
+			if (this.marquee.visible) show(this.marquee.selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -845,13 +846,13 @@ Palette.switchEdit = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'edit') {
 		if (enabled) {
 			addClass(this.itemEdit, 'selected');
-			this.marquee.visible && hide(this.marquee.selection);
+			if (this.marquee.visible) hide(this.marquee.selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemEdit, 'selected');
-			this.marquee.visible && show(this.marquee.selection);
+			if (this.marquee.visible) show(this.marquee.selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -877,7 +878,7 @@ Palette.loadFromProject = function (this: typeof Palette, project: EditorProject
 	this.setZoom(palette.zoom);
 };
 
-Palette.windowResize = function (this: typeof Palette, event: Event) {
+Palette.windowResize = function (this: typeof Palette, _event: Event) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -1030,7 +1031,7 @@ Palette.screenWheel = (function IIFE() {
 	let timerIsWorking = false;
 	const timer = new Timer({
 		duration: 400,
-		callback: (timer: Timer) => {
+		callback: (_timer: Timer) => {
 			timerIsWorking = false;
 			Palette.screen.endScrolling();
 		}
@@ -1052,7 +1053,7 @@ Palette.screenWheel = (function IIFE() {
 	}.bind(Palette);
 })();
 
-Palette.screenUserscroll = function (this: typeof Palette, event: Event) {
+Palette.screenUserscroll = function (this: typeof Palette, _event: Event) {
 	if (getPaletteStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -1063,7 +1064,7 @@ Palette.screenUserscroll = function (this: typeof Palette, event: Event) {
 	}
 }.bind(Palette);
 
-Palette.screenBlur = function (this: typeof Palette, event: Event) {
+Palette.screenBlur = function (this: typeof Palette, _event: Event) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
@@ -1302,7 +1303,7 @@ Palette.marqueePointermove = function (this: typeof Palette, event: PointerEvent
 	}
 }.bind(Palette);
 
-Palette.marqueePointerleave = function (this: typeof Palette, event: PointerEvent) {
+Palette.marqueePointerleave = function (this: typeof Palette, _event: PointerEvent) {
 	if (getPaletteStore().activeIndex !== null) {
 		getPaletteStore().activeIndex = null;
 		this.updateInfo(null);
@@ -1492,9 +1493,9 @@ Palette.pointermove = function (this: typeof Palette, event: PointerEvent) {
 				const { x, y } = this.getTileCoords(event);
 				const active = sx === x && sy === y;
 				if (dragging.active !== active) {
-					(dragging.active = active)
-						? this.marquee.customSelect('source')
-						: this.marquee.customUnselect('source');
+					dragging.active = active;
+					if (active) this.marquee.customSelect('source');
+					else this.marquee.customUnselect('source');
 				}
 				break;
 			}
@@ -1555,7 +1556,9 @@ import { getPaletteStore } from '@app/stores/palette';
 for (const key of paletteBridgeKeys) {
 	Object.defineProperty(Palette, key, {
 		get: () => getPaletteStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getPaletteStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

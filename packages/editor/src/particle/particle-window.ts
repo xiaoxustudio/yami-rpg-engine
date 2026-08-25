@@ -39,9 +39,8 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { ParticleEngine, type ParticleElementLayer } from '@app/engine/particle/particle-engine.ts';
 
-type ParticleState = 'closed' | 'open';
-
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
+// oxlint-disable-next-line no-explicit-any
 type ParticleMethod = ((...args: any[]) => any) | null;
 
 type ParticleEmitterDataShape = {
@@ -68,16 +67,19 @@ type ParticleElementShape = {
 	anchorY: number;
 	rotationAngle: number;
 	scaleFactor: number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 
 export interface ParticleLayerShape {
 	data: { name?: string; hidden?: boolean } & Record<string, unknown>;
+	// oxlint-disable-next-line no-explicit-any
 	elements: Array<Record<string, any>> & { count: number };
 	unitWidth: number;
 	unitHeight: number;
 	texture: unknown;
 	draw: (opacity?: number) => void;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -99,6 +101,7 @@ export interface ParticleEmitterShape {
 	updateEasing: () => void;
 	clear: () => void;
 	destroy: () => void;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -278,6 +281,7 @@ interface ParticleShape {
 	};
 	Element: {
 		new (layer: ParticleElementLayer): ParticleElementShape;
+		// oxlint-disable-next-line no-explicit-any
 		stage: Record<string, any>;
 	};
 }
@@ -400,6 +404,7 @@ export const Particle: ParticleShape = {
 	},
 	Element: null as unknown as {
 		new (layer: ParticleElementLayer): ParticleElementShape;
+		// oxlint-disable-next-line no-explicit-any
 		stage: Record<string, any>;
 	}
 };
@@ -408,9 +413,13 @@ Particle.Emitter = ParticleEngine.Emitter;
 Particle.Layer = ParticleEngine.Layer;
 Particle.Element = ParticleEngine.Element;
 
+// oxlint-disable-next-line no-explicit-any
 Particle.list.create = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Particle.list.copy = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Particle.list.paste = null as unknown as (...args: unknown[]) => any;
+// oxlint-disable-next-line no-explicit-any
 Particle.list.delete = null as unknown as (...args: unknown[]) => any;
 getListConfig(Particle.list).onCreate = null as unknown as (item: unknown) => void;
 getListConfig(Particle.list).onRemove = null as unknown as (item: unknown) => void;
@@ -436,11 +445,11 @@ Particle.initialize = function () {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.screen && addSetScrollMethod(this.screen);
+	if (this.screen) addSetScrollMethod(this.screen);
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer) => {
+		update: (_timer) => {
 			if (getParticleStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale!;
@@ -1353,13 +1362,13 @@ Particle.loadFromProject = function (project: EditorProjectShape) {
 	this.setZoom!(particle.zoom);
 };
 
-Particle.webglRestored = function (event: Event) {
+Particle.webglRestored = function (_event: Event) {
 	if (getParticleStore().state === 'open') {
 		Particle.requestRendering!();
 	}
 };
 
-Particle.windowResize = function (this: ParticleShape, event: Event) {
+Particle.windowResize = function (this: ParticleShape, _event: Event) {
 	this.updateHead!();
 	if (getParticleStore().state === 'open') {
 		this.resize!();
@@ -1368,7 +1377,7 @@ Particle.windowResize = function (this: ParticleShape, event: Event) {
 	}
 }.bind(Particle);
 
-Particle.themechange = function (this: ParticleShape, event: Event) {
+Particle.themechange = function (this: ParticleShape, _event: Event) {
 	this.requestRendering!();
 }.bind(Particle);
 
@@ -1463,15 +1472,15 @@ Particle.controlPointerdown = function (event: PointerEvent) {
 	}
 };
 
-Particle.speedInput = function (this: HTMLElement, event: Event) {
+Particle.speedInput = function (this: HTMLElement, _event: Event) {
 	getParticleStore().speed = read(this);
 };
 
-Particle.zoomFocus = function (event: Event) {
+Particle.zoomFocus = function (_event: Event) {
 	Particle.screen.focus();
 };
 
-Particle.zoomInput = function (this: HTMLElement, event: Event) {
+Particle.zoomInput = function (this: HTMLElement, _event: Event) {
 	Particle.setZoom!(read(this));
 };
 
@@ -1510,7 +1519,7 @@ Particle.screenWheel = function (this: ParticleShape, event: WheelEvent) {
 	}
 }.bind(Particle);
 
-Particle.screenUserscroll = function (this: ParticleShape, event: Event) {
+Particle.screenUserscroll = function (this: ParticleShape, _event: Event) {
 	if (getParticleStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -1519,7 +1528,7 @@ Particle.screenUserscroll = function (this: ParticleShape, event: Event) {
 	}
 }.bind(Particle);
 
-Particle.screenBlur = function (this: ParticleShape, event: Event) {
+Particle.screenBlur = function (this: ParticleShape, _event: Event) {
 	// this.translationKeyup() this.pointerup()
 	this.marqueePointerleave!();
 }.bind(Particle);
@@ -1575,7 +1584,7 @@ Particle.marqueePointermove = function (this: ParticleShape, event: PointerEvent
 	}
 }.bind(Particle);
 
-Particle.marqueePointerleave = function (this: ParticleShape, event: PointerEvent) {
+Particle.marqueePointerleave = function (this: ParticleShape, _event: PointerEvent) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		if (this.emitter?.active) {
@@ -1806,7 +1815,7 @@ Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent)
 	);
 };
 
-Particle.listChange = function (event: Event) {
+Particle.listChange = function (_event: Event) {
 	Particle.planToSave!();
 };
 
@@ -1882,7 +1891,9 @@ const particleBridgeKeys = [
 for (const key of particleBridgeKeys) {
 	Object.defineProperty(Particle, key, {
 		get: () => getParticleStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getParticleStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

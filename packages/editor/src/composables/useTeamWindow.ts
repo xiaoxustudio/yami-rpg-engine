@@ -14,6 +14,7 @@ import { createGetter } from '@app/i18n';
 import '@app/utils/number';
 import '@app/utils/object';
 import { getTeamStore } from '@app/stores/team';
+import type { TeamDataShape } from '@app/stores/team';
 
 const Clipboard = GlobalClipboard;
 
@@ -23,6 +24,7 @@ export type TeamData = {
 	color: string;
 	relations: Record<string, number>;
 	collisions: Record<string, number>;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 
@@ -98,6 +100,7 @@ function initialize(): void {
 	getListConfig(listElement).foldable = false;
 	getListConfig(listElement).renamable = true;
 	listElement.bind(() => getTeamStore().data);
+	// oxlint-disable-next-line unbound-method
 	getListConfig(listElement).updaters.push(listElement.updateTextNode);
 
 	on(document.getElementById('team'), 'close', windowClose);
@@ -107,7 +110,7 @@ function initialize(): void {
 	on(document.getElementById('team-confirm'), 'click', confirm);
 }
 
-function open(data?: unknown): void {
+function open(_data?: unknown): void {
 	getWindowStore().open('team');
 
 	unpackTeams();
@@ -164,7 +167,7 @@ function unpackTeams(): void {
 	const length = items.length;
 	const sRelations = Codec.decodeTeamData!(Data.teams.relations, length);
 	const sCollisions = Codec.decodeTeamData!(Data.teams.collisions, length);
-	const copies = new Array(length);
+	const copies = Array.from<TeamDataShape>({ length: length });
 	const a = length * 2;
 	for (let i = 0; i < length; i++) {
 		const item = items[i];
@@ -197,7 +200,9 @@ function unpackTeams(): void {
 function packTeams(): void {
 	const items = getTeamStore().data!;
 	const length = items.length;
-	const copies = new Array(length);
+	const copies = Array.from<Omit<TeamDataShape, 'relations' | 'collisions'>>({
+		length: length
+	});
 	const dRelations = GL.arrays[0].uint8;
 	const dCollisions = GL.arrays[1].uint8;
 	let ri = 0;
@@ -216,7 +221,7 @@ function packTeams(): void {
 			color: item.color
 		};
 	}
-	Data.teams.list = copies;
+	Data.teams.list = copies as TeamDataShape[];
 	Data.teams.relations = Codec.encodeTeamData!(new Uint8Array(dRelations.buffer, 0, ri));
 	Data.teams.collisions = Codec.encodeTeamData!(new Uint8Array(dCollisions.buffer, 0, ri));
 	Data.createTeamMap();
@@ -246,7 +251,7 @@ function windowClose(event: Event): void {
 	}
 }
 
-function windowClosed(event: Event): void {
+function windowClosed(_event: Event): void {
 	getTeamStore().state = 'closed';
 	getTeamStore().teams = null;
 	getTeamStore().data = null;
@@ -325,7 +330,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	}
 }
 
-function listSelect(event: Event): void {
+function listSelect(_event: Event): void {
 	const listElement = list!;
 	let rendered = false;
 	for (const team of listElement.data) {
@@ -342,7 +347,7 @@ function listSelect(event: Event): void {
 	}
 }
 
-function listChange(event?: Event): void {
+function listChange(_event?: Event): void {
 	changed = true;
 }
 
@@ -405,7 +410,7 @@ function listPopup(event: PointerEvent & { value?: TeamData | null }): void {
 	);
 }
 
-function confirm(event?: Event): void {
+function confirm(_event?: Event): void {
 	if (changed) {
 		changed = false;
 		packTeams();

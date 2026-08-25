@@ -72,9 +72,13 @@ export class ScriptListInterface implements IScriptListInterface {
 		}
 
 		list.addEventListener('pointerdown', ScriptListInterface.listPointerdown);
+		// oxlint-disable-next-line unbound-method
 		list.addEventListener('dragenter', ScriptListInterface.listDragenter);
+		// oxlint-disable-next-line unbound-method
 		list.addEventListener('dragleave', ScriptListInterface.listDragleave);
+		// oxlint-disable-next-line unbound-method
 		list.addEventListener('dragover', ScriptListInterface.listDragover);
+		// oxlint-disable-next-line unbound-method
 		list.addEventListener('drop', ScriptListInterface.listDrop);
 	}
 
@@ -179,7 +183,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		}
 	}
 
-	static listDrop(this: ScriptListElement, event: Event) {
+	static listDrop(this: ScriptListElement, _event: Event) {
 		const file = getBrowserInstance()?.body?.activeFile;
 		if (file instanceof FileItem) {
 			const script = PluginManager.createData();

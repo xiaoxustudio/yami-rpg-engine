@@ -55,7 +55,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			video.src = File.route!(path);
 
 			const symbol = (this.symbol = Symbol());
-			new Promise((resolve: (val: unknown) => void) => {
+			void new Promise((resolve: (val: unknown) => void) => {
 				video.addEventListener(
 					'loadedmetadata',
 					() => {
@@ -95,7 +95,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			AudioManager.player!.stop();
 			const video = this.video!;
 			if (video.paused) {
-				video.play();
+				void video.play();
 			} else {
 				video.currentTime = 0;
 			}

@@ -28,6 +28,7 @@ export interface EditorConfigShape {
 		export?: string;
 	};
 	scriptEditor?: { mode?: string; path?: string };
+	// oxlint-disable-next-line no-explicit-any
 	[key: string]: any;
 }
 
@@ -47,6 +48,7 @@ export interface EditorProjectShape {
 	openTabs?: string[];
 	activeTab?: string;
 	selector?: { view?: number };
+	// oxlint-disable-next-line no-explicit-any
 	[key: string]: any;
 }
 

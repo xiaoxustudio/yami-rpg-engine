@@ -16,6 +16,7 @@ type AutoTileTemplateData = {
 	nodes: AutoTileNodeData[];
 };
 
+// oxlint-disable-next-line no-explicit-any
 export const AutoTileEngine: Record<string, any> = {};
 
 AutoTileEngine.shiftTemplateFrames = function (

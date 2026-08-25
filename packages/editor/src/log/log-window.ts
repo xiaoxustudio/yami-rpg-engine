@@ -25,6 +25,7 @@ interface LogShape {
 	displayDonationList: ((...args: unknown[]) => void) | null;
 	parseCommunityReleases: ((...args: unknown[]) => void) | null;
 	openVSCode: ((file: string, line: number, column: number) => void) | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -58,6 +59,7 @@ let tickInterval: ReturnType<typeof setInterval> | null = null;
 
 Log.initialize = function () {
 	if (tickInterval) return;
+	// oxlint-disable-next-line no-implied-eval
 	tickInterval = setInterval(this.tick!, 1000);
 
 	window.addEventListener('error', this.catchError!);

@@ -90,9 +90,11 @@ interface UIShape {
 	paddingLeft: number;
 	paddingTop: number;
 	inspectorTypeMap: Record<string, string>;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
+// oxlint-disable-next-line no-explicit-any
 type UINodeShape = { class: string; children: UINodeShape[]; [k: string]: any };
 
 interface UIContextShape {
@@ -108,6 +110,7 @@ interface UIContextShape {
 	fontChanged?: boolean;
 	languageChanged?: boolean;
 	scalingChanged?: boolean;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -323,7 +326,7 @@ UI.initialize = function (this: UIShape) {
 	}
 	this.list.page = $('#ui-element');
 	this.list.head = $('#ui-list-head');
-	this.screen && addScrollbars(this.screen);
+	if (this.screen) addScrollbars(this.screen);
 
 	const points = {
 		rotate: {
@@ -373,7 +376,7 @@ UI.initialize = function (this: UIShape) {
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer: Timer) => {
+		update: (_timer: Timer) => {
 			if (getUIStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
@@ -1432,13 +1435,13 @@ UI.loadFromProject = function (this: UIShape, project: { ui: { zoom: number } })
 	this.setZoom!(ui.zoom);
 };
 
-UI.webglRestored = function (this: UIShape, event: Event) {
+UI.webglRestored = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
 		UI.requestRendering!();
 	}
 };
 
-UI.windowResize = function (this: UIShape, event: Event) {
+UI.windowResize = function (this: UIShape, _event: Event) {
 	this.updateHead!();
 	if (getUIStore().state === 'open') {
 		this.resize!();
@@ -1447,11 +1450,11 @@ UI.windowResize = function (this: UIShape, event: Event) {
 	}
 }.bind(UI);
 
-UI.themechange = function (this: UIShape, event: Event) {
+UI.themechange = function (this: UIShape, _event: Event) {
 	this.requestRendering!();
 }.bind(UI);
 
-UI.localizationchange = function (this: UIShape, event: Event) {
+UI.localizationchange = function (this: UIShape, _event: Event) {
 	this.updateAllTexts!();
 }.bind(UI);
 
@@ -1507,11 +1510,11 @@ UI.shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.zoomFocus = function (this: UIShape, event: Event) {
+UI.zoomFocus = function (this: UIShape, _event: Event) {
 	UI.screen.focus();
 };
 
-UI.zoomInput = function (this: UIShape, event: Event & { value?: number }) {
+UI.zoomInput = function (this: UIShape, _event: Event & { value?: number }) {
 	UI.setZoom!(read(this));
 };
 
@@ -1682,7 +1685,7 @@ UI.screenWheel = function (this: UIShape, event: WheelEvent) {
 	}
 }.bind(UI);
 
-UI.screenUserscroll = function (this: UIShape, event: Event) {
+UI.screenUserscroll = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -1693,7 +1696,7 @@ UI.screenUserscroll = function (this: UIShape, event: Event) {
 	}
 }.bind(UI);
 
-UI.screenBlur = function (this: UIShape, event: FocusEvent) {
+UI.screenBlur = function (this: UIShape, _event: FocusEvent) {
 	this.translationKeyup!();
 	this.pointerup!();
 	// this.marqueePointerleave!()
@@ -1817,14 +1820,14 @@ UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	}
 }.bind(UI);
 
-UI.marqueePointerleave = function (this: UIShape, event: UIPointerEvent) {
+UI.marqueePointerleave = function (this: UIShape, _event: UIPointerEvent) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		this.setHover!(null);
 	}
 }.bind(UI);
 
-UI.marqueeDoubleclick = function (this: UIShape, event: UIPointerEvent) {
+UI.marqueeDoubleclick = function (this: UIShape, _event: UIPointerEvent) {
 	if (getUIStore().target) {
 		this.screenBlur!();
 		this.revealTarget!();
@@ -2203,7 +2206,7 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 			label: get('copy-id'),
 			enabled: selected,
 			click: () => {
-				navigator.clipboard.writeText(target!.presetId);
+				void navigator.clipboard.writeText(target!.presetId);
 			}
 		},
 		{
@@ -2493,7 +2496,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 			label: get('copy-id'),
 			enabled: selected,
 			click: () => {
-				navigator.clipboard.writeText(item.presetId);
+				void navigator.clipboard.writeText(item.presetId);
 			}
 		}
 	);
@@ -2562,11 +2565,11 @@ UI.listRename = function (
 	});
 };
 
-UI.listChange = function (this: UIShape, event: Event) {
+UI.listChange = function (this: UIShape, _event: Event) {
 	UI.planToSave!();
 };
 
-UI.listPageResize = function (this: UIShape, event: Event) {
+UI.listPageResize = function (this: UIShape, _event: Event) {
 	UI.list.updateHead();
 	UI.list.resize();
 };
@@ -2679,7 +2682,9 @@ import { getUIStore } from '@app/stores/ui';
 for (const key of uiBridgeKeys) {
 	Object.defineProperty(UI, key, {
 		get: () => getUIStore()[key],
+		// oxlint-disable-next-line no-explicit-any
 		set: (value: any) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getUIStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true

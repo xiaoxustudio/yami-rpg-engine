@@ -37,14 +37,14 @@ Command.cases.script = new CommandSchema({
 		const options = this.colorOptions;
 		options.theme = Title.theme;
 		await this.createTheme!(Title.theme);
-		monaco.editor.colorizeElement(text, options);
+		void monaco.editor.colorizeElement(text, options);
 		let index = setInterval(() => {
 			if (text.children.length !== 0) {
 				clearInterval(index);
 				const nodes = text.childNodes;
 				const nLength = nodes.length;
 				const sLength = nLength >> 1;
-				const spans = new Array(sLength);
+				const spans = Array.from<Node>({ length: sLength });
 				for (let i = 0; i < nLength; i += 2) {
 					spans[i >> 1] = nodes[i];
 				}
@@ -243,7 +243,7 @@ let editor: ScriptEditor | null = null;
 let model: ScriptModel | null = null;
 let versionId = 0;
 let changed = false;
-let created = false;
+let _created = false;
 let bound = false;
 let typesDispose: unknown[] = [];
 
@@ -354,7 +354,7 @@ const createEditor = async (): Promise<void> => {
 				case 'Enter':
 					browserEvent.preventDefault();
 					browserEvent.stopPropagation();
-					save();
+					void save();
 					break;
 			}
 		}
@@ -375,7 +375,7 @@ const createEditor = async (): Promise<void> => {
 			}
 		}
 	);
-	created = true;
+	_created = true;
 };
 
 const load = async (params: Record<string, unknown> = {}): Promise<void> => {
@@ -405,6 +405,7 @@ const save = async (): Promise<void> => {
 	try {
 		const currentLanguage = editor.getModel()!.getLanguageId();
 		if (currentLanguage === 'javascript') {
+			// oxlint-disable-next-line no-implied-eval
 			new Function(script);
 		} else {
 			const result = (await ipcRenderer.invoke(CHANNELS.invoke.tscFile, script)) as {

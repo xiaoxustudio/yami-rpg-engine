@@ -2,6 +2,7 @@ export interface UpdaterHooks {
 	getProjectPath: () => string | null;
 	getProject: () => Record<string, unknown> | null;
 	getLocalEvents: () => Record<string, unknown[]>;
+	// oxlint-disable-next-line no-explicit-any
 	createInspectorSchema: (type: string, arg?: string) => any;
 	getUiInspectorType: (className: string) => string;
 	getLanguage: () => string;

@@ -80,10 +80,11 @@ export class EventListInterface implements IListInterface {
 		const { editor, owner } = this;
 		if (editor && owner) {
 			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
+			// oxlint-disable-next-line unbound-method
 			this.history!.save = EventListInterface.historySave;
 		}
 
-		window.addEventListener('localize', (event: Event) => {
+		window.addEventListener('localize', (_event: Event) => {
 			if (list.data) list.update();
 		});
 	}

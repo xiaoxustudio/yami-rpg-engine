@@ -107,7 +107,7 @@ const save = (): unknown => {
 	}
 };
 
-const windowClosed = (event: Event): void => {
+const windowClosed = (_event: Event): void => {
 	defaultCommands = null;
 };
 

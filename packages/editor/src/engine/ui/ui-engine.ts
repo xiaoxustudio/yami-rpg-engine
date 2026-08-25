@@ -10,6 +10,7 @@ import type { History } from '@app/tools/history.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import type { StageColor } from '@app/utils/stage-color';
 
+// oxlint-disable-next-line no-explicit-any
 export const UIEngine: Record<string, any> = {};
 
 interface ControlPoint {
@@ -56,6 +57,7 @@ interface UIShape {
 	paddingLeft: number;
 	paddingTop: number;
 	inspectorTypeMap: Record<string, string>;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -178,7 +180,8 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 					instancesCtor: instances?.constructor?.name,
 					instancesProto: Object.getPrototypeOf(instances)?.constructor?.name,
 					instancesContent: Array.isArray(instances)
-						? instances.map((e: unknown) => `${typeof e}:${e}`)
+						? // oxlint-disable-next-line no-base-to-string
+							instances.map((e: unknown) => `${typeof e}:${String(e)}`)
 						: String(instances),
 					instancesSetType: typeof instances.set,
 					instancesSetName: instances.set?.name,

@@ -9,6 +9,7 @@ interface TreeNode {
 }
 
 interface TreeListApi extends HTMLElement {
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

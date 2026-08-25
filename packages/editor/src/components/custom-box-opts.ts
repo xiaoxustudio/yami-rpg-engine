@@ -34,6 +34,7 @@ interface GetterElement {
 	input(...args: unknown[]): void;
 	filter: string | null;
 	previousSibling: Node | null;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
@@ -45,6 +46,7 @@ const parseText = (
 		return { text: t('common.none') };
 	}
 	if (!parse) {
+		// oxlint-disable-next-line no-base-to-string
 		return { text: String(value) };
 	}
 	const parsed = parse(value);
@@ -119,8 +121,10 @@ export const customBoxOptions: CustomBoxApiOptions = {
 				clip == null || clip === '' || (Array.isArray(clip) && clip.length === 0)
 					? t('common.none')
 					: Array.isArray(clip)
-						? (clip as unknown[]).join(', ')
-						: String(clip)
+						? // oxlint-disable-next-line no-base-to-string
+							(clip as unknown[]).join(', ')
+						: // oxlint-disable-next-line no-base-to-string
+							String(clip)
 		}),
 		variable: (variable: unknown) => {
 			const data = variable as { type?: string; key?: unknown } | null | undefined;
@@ -133,7 +137,8 @@ export const customBoxOptions: CustomBoxApiOptions = {
 					| undefined;
 				const parsed = parseVariable
 					? Command.removeTextTags!(parseVariable(data))
-					: String(data.key);
+					: // oxlint-disable-next-line no-base-to-string
+						String(data.key);
 				return { text: parsed ?? '' };
 			}
 			return { text: t('common.none') };
@@ -218,7 +223,8 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		array: (array: unknown) => ({
 			text:
 				(array as unknown[]).length !== 0
-					? (Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
+					? // oxlint-disable-next-line no-base-to-string
+						(Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
 						t('common.empty'))
 					: t('common.empty')
 		}),

@@ -46,10 +46,12 @@ interface Param {
 
 interface RegistryEntry {
 	component: string;
+	// oxlint-disable-next-line no-explicit-any
 	create(...args: any[]): any;
 }
 
 export interface TypeRegistryApi {
+	// oxlint-disable-next-line no-explicit-any
 	types: Record<string, any>;
 	register(type: string, config: unknown): void;
 	get(type: string): RegistryEntry;

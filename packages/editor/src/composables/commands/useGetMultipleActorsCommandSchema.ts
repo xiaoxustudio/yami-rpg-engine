@@ -77,7 +77,7 @@ Command.cases.getMultipleActors = new CommandSchema({
 });
 
 export function useGetMultipleActorsCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('getMultipleActors', {
+	const { form, load, commit } = useCommandSchema('getMultipleActors', {
 		onLoad() {
 			getFocus(document.getElementById('getMultipleActors-variable')!);
 		}

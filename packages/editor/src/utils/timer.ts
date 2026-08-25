@@ -37,6 +37,7 @@ export class Timer {
 	duration: number;
 	update: (timer: Timer) => boolean | void;
 	callback: (timer: Timer) => boolean | void;
+	// oxlint-disable-next-line no-explicit-any
 	target!: any;
 	running!: boolean;
 	speedX!: number;
@@ -247,6 +248,4 @@ Timer.removeUpdater = function (
 	if (updaters[key] === updater) {
 		updaters[key] = null;
 	}
-
-	null as string | null;
 };

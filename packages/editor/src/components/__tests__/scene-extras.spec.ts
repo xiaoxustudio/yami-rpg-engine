@@ -91,7 +91,7 @@ describe('scene 列表图标渲染（事件/脚本/条件/可见性/锁定）', 
 		el.bind(() => data);
 		el.update();
 		await wrapper.vm.$nextTick();
-		const extrasEls = el.querySelectorAll('.tree-node-extras');
+		const _extrasEls = el.querySelectorAll('.tree-node-extras');
 		expect(el.querySelector('.icon-eventEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-scriptEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-conditional')).toBeTruthy();

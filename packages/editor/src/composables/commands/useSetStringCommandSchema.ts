@@ -6,6 +6,7 @@ import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
+// oxlint-disable-next-line no-explicit-any
 export type SetStringOperand = Record<string, any>;
 
 Command.cases.setString = new CommandSchema({
@@ -257,7 +258,7 @@ Command.cases.setString = new CommandSchema({
 });
 
 export function useSetStringCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setString', {
+	const { form, load, commit } = useCommandSchema('setString', {
 		onLoad() {
 			getFocus(document.getElementById('setString-variable'));
 		}

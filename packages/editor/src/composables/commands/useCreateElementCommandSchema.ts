@@ -75,7 +75,7 @@ Command.cases.createElement = new CommandSchema({
 });
 
 export function useCreateElementCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('createElement', {
+	const { form, load, commit } = useCommandSchema('createElement', {
 		onLoad() {
 			getFocus(document.getElementById('createElement-operation')!, 'all');
 		}

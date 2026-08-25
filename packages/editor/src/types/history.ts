@@ -50,6 +50,7 @@ export interface IOwnedHistory extends IEditableHistory {
 // 历史数据基础契约。 各 History 类的 stack 元素都至少含 type 字段（'insert'/'replace'/'delete'/'toggle'/'custom'）， 用于 restore 分支判断。其余字段（array/index/items/commands/value 等）按场景扩展。
 export interface HistoryData {
 	type: string;
+	// oxlint-disable-next-line no-explicit-any
 	[key: string]: any;
 }
 

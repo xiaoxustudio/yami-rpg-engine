@@ -11,6 +11,7 @@ type CanvasTextContext = CanvasRenderingContext2D & {
 	paddingItalic?: number;
 	paddingVertical?: number;
 	size?: number;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 };
 
@@ -94,6 +95,7 @@ export class Printer {
 
 	constructor(texture: PrinterTexture) {
 		texture.base!.printer = this;
+		// oxlint-disable-next-line unbound-method
 		texture.base!.onRestore = Printer.restoreTexture;
 		this.texture = texture;
 		this.images = [] as Array<ImageElementShape> & { changed?: boolean };
@@ -622,7 +624,7 @@ export class Printer {
 				case '-':
 				case '\n':
 				case '<':
-					while (++i < length && content[i] === char) {}
+					while (++i < length && content[i] === char);
 					wrapEnd = i;
 					break outer;
 			}
@@ -1050,7 +1052,7 @@ export class Printer {
 
 		this.commandCount = 0;
 		this.commandMaximum = 100;
-		this.commands = new Array(this.commandMaximum);
+		this.commands = Array.from({ length: this.commandMaximum });
 
 		this.drawingMethods = {
 			none: 'drawText',
@@ -1059,6 +1061,7 @@ export class Printer {
 			outline: 'drawTextWithOutline'
 		};
 
+		// oxlint-disable-next-line unbound-method
 		window.addEventListener('datachange', this.datachange);
 	}
 
@@ -1122,12 +1125,12 @@ export class Printer {
 									).name = name;
 								}
 							},
-							(error: unknown) => {
+							(_error: unknown) => {
 								importing.remove(name);
 							}
 						);
 					},
-					(error: unknown) => {
+					(_error: unknown) => {
 						importing.remove(name);
 					}
 				)
@@ -1239,7 +1242,7 @@ export class Printer {
 
 	static restoreTexture(base: { restoreNormalTexture(): void; printer: Printer }) {
 		base.restoreNormalTexture();
-		Promise.resolve().then(() => {
+		void Promise.resolve().then(() => {
 			const { content } = base.printer;
 			base.printer.reset();
 			base.printer.draw(content);
@@ -1325,7 +1328,7 @@ export class Printer {
 			const path = File.getPath!(guid);
 			const name = path.match(/([^/]+)\.\S+\.\S+$/)?.[1];
 			if (name) {
-				this.importFonts!([guid]).then(() => {
+				void this.importFonts!([guid]).then(() => {
 					this.font = `${name}, ${fontFamily}`;
 					UI.updateElementFont();
 				});
@@ -1370,7 +1373,7 @@ export class Printer {
 			if ((Printer.imported as unknown as { signature: string }).signature !== signature) {
 				(Printer.imported as unknown as { signature: string }).signature = signature;
 				Printer.clearFonts();
-				Printer.importFonts(importedFonts);
+				void Printer.importFonts(importedFonts);
 			}
 
 			const { highDefinition } = Data.config.text;
@@ -1389,6 +1392,7 @@ for (const key of printerBridgeKeys) {
 	Object.defineProperty(Printer, key, {
 		get: () => getPrinterStore()[key],
 		set: (value: unknown) => {
+			// oxlint-disable-next-line no-explicit-any
 			(getPrinterStore() as unknown as Record<(typeof printerBridgeKeys)[number], any>)[key] =
 				value;
 		},

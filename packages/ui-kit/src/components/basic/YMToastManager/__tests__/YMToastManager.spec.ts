@@ -22,7 +22,7 @@ describe('YMToastManager', () => {
 		vm.show('Msg', 'info', 0);
 		await wrapper.vm.$nextTick();
 		const close = wrapper.find('.toast-close');
-		close.trigger('click');
+		void close.trigger('click');
 		await new Promise((r) => setTimeout(r, 250));
 		expect(wrapper.find('.toast').exists()).toBe(false);
 	});

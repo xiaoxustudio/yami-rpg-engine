@@ -46,6 +46,7 @@ interface NumberVarApi extends HTMLElement {
 
 const mode = ref<'constant' | 'variable'>('constant');
 const numValue = ref(0);
+// oxlint-disable-next-line no-explicit-any
 const varValue = ref<any>(null);
 
 const displayValue = computed(() => {

@@ -62,8 +62,11 @@ export class NumberHistory implements IEditableHistory {
 		this.index = -1;
 		this.lastValue = '';
 
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('keydown', this.inputKeydown);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('input', this.inputInput as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('blur', this.inputBlur);
 	}
 
@@ -108,7 +111,7 @@ export class NumberHistory implements IEditableHistory {
 			NumberHistory.restoring = true;
 			input.select();
 			document.execCommand('insertText', false, value);
-			operation === 'undo' && input.select();
+			if (operation === 'undo') input.select();
 			NumberHistory.restoring = false;
 			HistoryTimer.finish();
 
@@ -136,11 +139,11 @@ export class NumberHistory implements IEditableHistory {
 			switch (event.code) {
 				case 'KeyZ':
 					if (!macRedoKey(event)) {
-						this.history.canUndo() && this.history.restore('undo');
+						if (this.history.canUndo()) this.history.restore('undo');
 						break;
 					}
 				case 'KeyY':
-					this.history.canRedo() && this.history.restore('redo');
+					if (this.history.canRedo()) this.history.restore('redo');
 					break;
 			}
 		}
@@ -180,7 +183,7 @@ export class NumberHistory implements IEditableHistory {
 		}
 	}
 
-	inputBlur(event: FocusEvent) {
+	inputBlur(_event: FocusEvent) {
 		HistoryTimer.finish();
 	}
 }
@@ -234,11 +237,17 @@ export class TextHistory implements IEditableHistory {
 
 		input.replace = TextHistory.inputReplace;
 
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('keydown', this.inputKeydown as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('beforeinput', this.inputBeforeinput as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('input', this.inputInput as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('blur', this.inputBlur as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('compositionstart', this.inputCompositionstart as EventListener);
+		// oxlint-disable-next-line unbound-method
 		input.addEventListener('compositionend', this.inputCompositionEnd as EventListener);
 	}
 
@@ -415,11 +424,11 @@ export class TextHistory implements IEditableHistory {
 			switch (event.code) {
 				case 'KeyZ':
 					if (!macRedoKey(event)) {
-						this.history.canUndo() && this.history.restore('undo');
+						if (this.history.canUndo()) this.history.restore('undo');
 						break;
 					}
 				case 'KeyY':
-					this.history.canRedo() && this.history.restore('redo');
+					if (this.history.canRedo()) this.history.restore('redo');
 					break;
 			}
 		}
@@ -496,7 +505,7 @@ export class TextHistory implements IEditableHistory {
 		}
 	}
 
-	inputBlur(event: FocusEvent) {
+	inputBlur(_event: FocusEvent) {
 		HistoryTimer.finish();
 	}
 
@@ -562,6 +571,7 @@ export class CommandHistory implements ICapacityHistory {
 		unfoldCommand(parent: unknown): void;
 		select(start: number, end?: number): void;
 		scrollToSelection(mode?: string): void;
+		// oxlint-disable-next-line no-explicit-any
 		update(...args: any[]): void;
 		dispatchChangeEvent(): void;
 		getRangeByData(data: unknown): [number, number];

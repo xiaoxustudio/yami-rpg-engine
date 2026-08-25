@@ -15,6 +15,7 @@ interface LocalComponentShape {
 	label?: string;
 	content?: string;
 	tip?: string;
+	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 

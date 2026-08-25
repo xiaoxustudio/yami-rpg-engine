@@ -7,7 +7,7 @@ import { pinia } from './pinia';
 
 export const teamStateKeys = ['state', 'teams', 'data'] as const;
 
-type TeamDataShape = {
+export type TeamDataShape = {
 	id: string;
 	name: string;
 	color: string;

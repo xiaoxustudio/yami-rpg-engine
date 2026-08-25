@@ -46,7 +46,7 @@ Command.cases.setTile = new CommandSchema({
 });
 
 export function useSetTileCommandSchema() {
-	const { form, save, load, commit } = useCommandSchema('setTile', {
+	const { form, load, commit } = useCommandSchema('setTile', {
 		onLoad() {
 			getFocus(document.getElementById('setTile-tilemap'));
 		}

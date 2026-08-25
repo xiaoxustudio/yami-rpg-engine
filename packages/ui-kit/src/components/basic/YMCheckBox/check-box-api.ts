@@ -69,7 +69,8 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 
 	const write = function (value: boolean): void {
 		dataValue = !!value;
-		dataValue ? addClass(box, 'selected') : removeClass(box, 'selected');
+		if (dataValue) addClass(box, 'selected');
+		else removeClass(box, 'selected');
 		if (!hasClass(box, 'disabled')) {
 			toggleRelatedElements();
 		}
@@ -154,7 +155,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	const mouseclick = function (event: Event): void {
+	const mouseclick = function (_event: Event): void {
 		box.input(!box.read());
 	};
 
