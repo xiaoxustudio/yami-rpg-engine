@@ -606,7 +606,7 @@ onBeforeUnmount(() => {
 	border-radius: 2px;
 }
 
-:global(:where(.select-box:not(.disabled)::before)) {
+:global(:where(.select-box:not(.disabled)))::before {
 	content: '';
 	position: absolute;
 	right: 4px;

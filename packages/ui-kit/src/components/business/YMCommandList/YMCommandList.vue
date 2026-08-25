@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
 	display: inline;
 }
 
-:global(:where(.command-item.item .command-mark-major:before)) {
+:global(:where(.command-item.item .command-mark-major))::before {
 	content: '>';
 }
 

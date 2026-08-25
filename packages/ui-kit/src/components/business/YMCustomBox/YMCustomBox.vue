@@ -330,7 +330,7 @@ onMounted(initializeApi);
 	overflow: hidden;
 }
 
-:global(:where(.custom-box:not(.disabled)::before)) {
+:global(:where(.custom-box:not(.disabled)))::before {
 	content: '...';
 	position: absolute;
 	right: 0;
