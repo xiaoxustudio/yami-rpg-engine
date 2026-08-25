@@ -1,0 +1,30 @@
+{
+	"name": "@yami/export-electron",
+	"version": "1.0.0",
+	"description": "Yami RPG Player 应用壳子包（electron-vite）",
+	"author": "Yami",
+	"main": "./out/main/index.js",
+	"scripts": {
+		"build": "electron-vite build",
+		"build:watch": "electron-vite build --watch",
+		"typecheck": "tsc --noEmit -p tsconfig.node.json",
+		"build:win": "electron-vite build && electron-builder --dir --win --x64",
+		"build:winpkg": "electron-vite build && electron-builder --win --x64",
+		"build:mac": "electron-vite build && electron-builder --dir --mac --universal",
+		"build:macpkg": "electron-vite build && electron-builder --mac --universal",
+		"install:templates": "node scripts/install-templates.js",
+		"build:template": "electron-vite build && electron-builder --dir --win --x64 && node scripts/install-templates.js",
+		"build:template:mac": "electron-vite build && electron-builder --dir --mac --universal && node scripts/install-templates.js"
+	},
+	"dependencies": {
+		"steamworks.js": "^0.4.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.19.19",
+		"electron": "^20.3.12",
+		"electron-builder": "^25.1.8",
+		"electron-vite": "^5.0.0",
+		"typescript": "catalog:",
+		"vite": "^7.0.0"
+	}
+}

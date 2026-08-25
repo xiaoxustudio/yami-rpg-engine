@@ -1,0 +1,23 @@
+appId: com.yami.game
+productName: Yami RPG Player
+directories:
+    buildResources: build
+    output: dist
+files:
+    - out/**
+    - package.json
+asar: false
+npmRebuild: false
+electronLanguages:
+    - en
+    - zh_CN
+    - zh_TW
+win:
+    executableName: Game
+    target:
+        - dir
+mac:
+    target:
+        - dir
+    category: public.app-category.games
+    identity: null

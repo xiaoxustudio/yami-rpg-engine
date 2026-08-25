@@ -11,7 +11,8 @@
   "scripts": {
     "test": "vitest run",
     "buildres": "node scripts/buildres.js",
-    "buildtime": "node scripts/buildRuntime.js",
+    "build:runtime": "pnpm -F @yami/export-electron build:template",
+    "build:runtime:mac": "pnpm -F @yami/export-electron build:template:mac",
     "build:win": "pnpm run build:all && electron-builder --dir --win --x64",
     "build:winexe": "pnpm run build:all && electron-builder --win --x64",
     "build:linux": "pnpm run build:all && electron-builder --dir --linux --x64",
@@ -103,21 +104,11 @@
       {
         "from": "node_modules/@typescript/typescript-win32-x64",
         "to": "app/node_modules/@typescript/typescript-win32-x64"
-      },
-      {
-        "from": "dist/Templates/electron-win-x64/resources/app/node_modules",
-        "to": "app/Templates/electron-win-x64/resources/app/node_modules"
-      },
-      {
-        "from": "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules",
-        "to": "app/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
       }
     ],
     "asar": false,
     "asarUnpack": [
-      "node_modules/typescript",
-      "dist/Templates/electron-win-x64/resources/app/node_modules",
-      "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
+      "node_modules/typescript"
     ],
     "extraFiles": [],
     "nsis": {

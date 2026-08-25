@@ -26,10 +26,12 @@
 		"packages/editor/Project/Apk/**",
 		"packages/editor/Project/Fonts/**",
 		"packages/editor/Project/Images/**",
-		"packages/editor/Project/Locales/**"
+		"packages/editor/Project/Locales/**",
+		"packages/export-electron/node_modules/**",
+		"packages/export-electron/out/**",
+		"packages/export-electron/dist/**"
 	],
-	"rules": {
-		"eslint/no-unused-vars": [
+	"rules": {		"eslint/no-unused-vars": [
 			"warn",
 			{
 				"argsIgnorePattern": "^_",
@@ -85,6 +87,17 @@
 			},
 			"rules": {
 				"eslint/no-undef": "off"
+			}
+		},
+		{
+			"files": ["packages/export-electron/scripts/**/*.js"],
+			"env": {
+				"node": true,
+				"commonjs": true
+			},
+			"rules": {
+				"eslint/no-undef": "off",
+				"eslint/no-console": "off"
 			}
 		},
 		{

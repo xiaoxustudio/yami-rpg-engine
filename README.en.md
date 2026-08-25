@@ -37,8 +37,17 @@ If you like this software, please support the official version on Steam: [Yami R
 pnpm install
 ```
 
-Extract "Runtime/electron-packages.zip" to the "Project" directory as game deployment dependencies.
-Some files exceed 100MB, so they have been split into multiple volumes.
+Build and install the player shell (electron game runtime) as game deployment dependencies:
+
+```shell
+# Windows player shell
+pnpm run build:runtime
+
+# macOS player shell (run on macOS)
+pnpm run build:runtime:mac
+```
+
+The artifacts are installed to `Project/Templates/electron-win-x64` / `electron-mac-universal.app`.
 
 ## Run
 

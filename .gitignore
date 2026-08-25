@@ -1,8 +1,8 @@
 # ignore
 node_modules/
 Project/config.json
-Project/Templates/electron-win-x64/
-Project/Templates/electron-mac-universal.app/
+packages/editor/Project/Templates/electron-win-x64/
+packages/editor/Project/Templates/electron-mac-universal.app/
 Project/Apk/decompiled/
 Project/Templates/arpg-ts-english/Dist
 Project/Templates/arpg-ts-chinese/Dist

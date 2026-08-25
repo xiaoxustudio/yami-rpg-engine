@@ -37,8 +37,17 @@ PS：目前项目多语言只维护`中文`、`english`语言包，其他语言�
 pnpm install
 ```
 
-将“Runtime/electron-packages.zip”解压到“Project”中，作为游戏部署的依赖项。
-由于部分文件超过 100MB，已将其拆分为多个卷。
+构建并安装播放器壳子（electron 游戏运行时），作为游戏部署的依赖项：
+
+```shell
+# Windows 播放器壳子
+pnpm run build:runtime
+
+# macOS 播放器壳子（需在 macOS 上执行）
+pnpm run build:runtime:mac
+```
+
+产物会安装到 `Project/Templates/electron-win-x64` / `electron-mac-universal.app`。
 
 ## 运行
 
