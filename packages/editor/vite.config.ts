@@ -29,7 +29,7 @@ export default defineConfig({
 		vue(),
 		...(isServe ? [vueDevTools()] : []),
 		electronRendererResolve(),
-		copyStaticAssets(import.meta.url),
+		copyStaticAssets(fileToPath('.')),
 		sourcemapStub(),
 		localFileProxy(),
 		lazyMonacoFix(),
@@ -43,7 +43,8 @@ export default defineConfig({
 					lib: {
 						entry: {
 							main: fileToPath('main/main.ts'),
-							apk: fileToPath('main/apk.ts')
+							apk: fileToPath('main/apk.ts'),
+							preload: fileToPath('main/preload.ts')
 						},
 						formats: ['cjs']
 					},

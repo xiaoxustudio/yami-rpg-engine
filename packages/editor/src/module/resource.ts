@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { GlobalPath, Path } from '@app/utils/config';
 import { SettingConfig } from '@app/services/project/setting-config';
@@ -103,9 +102,7 @@ export const Resources = new (class {
 		(this.window as HTMLElement & { update?: () => void }).update?.();
 
 		on($('#resource-check-version'), 'click', () => this.checkVersion());
-		on($('#resource-open-dir'), 'click', () =>
-			ipcRenderer.send(CHANNELS.on.openPath, GlobalPath)
-		);
+		on($('#resource-open-dir'), 'click', () => YamiIpc.send.openPath(GlobalPath));
 
 		void this.updateNodeInfo();
 	}

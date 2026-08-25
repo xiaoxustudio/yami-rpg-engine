@@ -6,7 +6,6 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
-import { ipcRenderer } from 'electron';
 import { loadDtsFolder } from '@app/module/global';
 
 const { modelMock, monacoMock } = vi.hoisted(() => {
@@ -57,10 +56,6 @@ vi.mock('@app/utils/monaco', () => ({
 	getMonaco: vi.fn(() => Promise.resolve(monacoMock))
 }));
 
-vi.mock('electron', () => ({
-	ipcRenderer: { invoke: vi.fn() }
-}));
-
 vi.mock('@app/module/global', () => ({
 	loadDtsFolder: vi.fn(() => [])
 }));
@@ -82,7 +77,7 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 		Editor.config = { project: 'C:/projects/test.gam' };
 		modelMock.value = '';
 		vi.mocked(loadDtsFolder).mockClear();
-		vi.mocked(ipcRenderer.invoke).mockClear();
+		vi.mocked(window.yami!.invoke.tscFile).mockClear();
 		vi.mocked(monacoMock.editor.create).mockClear();
 		vi.mocked(monacoMock.editor.setModelLanguage).mockClear();
 	});
@@ -155,12 +150,12 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 		});
 		await flush();
 		modelMock.getLanguageId = () => 'typescript';
-		vi.mocked(ipcRenderer.invoke).mockResolvedValue({ res: 'const a = 1;' });
+		vi.mocked(window.yami!.invoke.tscFile).mockResolvedValue({ res: 'const a = 1;' });
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.script.save!();
 		await flush();
-		expect(ipcRenderer.invoke).toHaveBeenCalledWith('tsc-file', 'const a: number = 1;');
+		expect(window.yami!.invoke.tscFile).toHaveBeenCalledWith('const a: number = 1;');
 		expect(saved).toHaveBeenCalledWith({ script: 'const a = 1;' });
 		wrapper.unmount();
 	});
@@ -174,7 +169,7 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 		});
 		await flush();
 		modelMock.getLanguageId = () => 'typescript';
-		vi.mocked(ipcRenderer.invoke).mockResolvedValue({ error: 'bad syntax' });
+		vi.mocked(window.yami!.invoke.tscFile).mockResolvedValue({ error: 'bad syntax' });
 		const saved = vi.fn();
 		Command.save = saved;
 		Command.cases.script.save!();

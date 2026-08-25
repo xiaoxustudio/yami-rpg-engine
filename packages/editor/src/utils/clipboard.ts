@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 
 export interface GlobalClipboardHost {
 	has(type: string): boolean;
@@ -10,12 +9,12 @@ export interface GlobalClipboardHost {
 
 export const GlobalClipboard: GlobalClipboardHost = {
 	has(format: string): boolean {
-		return ipcRenderer.sendSync(CHANNELS.on.clipboardHas, format) as boolean;
+		return YamiIpc.sync.clipboardHas(format);
 	},
 	read(format: string): unknown {
-		return ipcRenderer.sendSync(CHANNELS.on.clipboardRead, format);
+		return YamiIpc.sync.clipboardRead(format);
 	},
 	write(format: string, object: unknown): void {
-		ipcRenderer.sendSync(CHANNELS.on.clipboardWrite, format, object);
+		YamiIpc.sync.clipboardWrite(format, object);
 	}
 };

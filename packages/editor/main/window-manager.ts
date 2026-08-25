@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import type { IpcMainEvent, IpcMainInvokeEvent, BrowserWindowExtension } from './types/main.ts';
 import { CHANNELS } from '../src/services/ipc/channels.ts';
 import * as apkProcessor from './apk.ts';
@@ -25,12 +25,18 @@ export const createEditorWindow = function (
 			nodeIntegration: true,
 			contextIsolation: false,
 			sandbox: false,
+			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
 			additionalArguments: ['--disable-security-warnings', ...(debug ? ['--debug-mode'] : [])]
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
 
 	editor.setMenuBarVisibility(process.platform === 'darwin');
+
+	editor.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+	editor.webContents.on('will-navigate', (event) => {
+		event.preventDefault();
+	});
 
 	editor.webContents.on('console-message', (event, level, message, line, sourceId) => {
 		const levelStr = ['log', 'warning', 'error'][level] || 'log';
@@ -152,6 +158,7 @@ export const createPlayerWindow = function (
 			nodeIntegration: true,
 			contextIsolation: false,
 			sandbox: false,
+			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
 			additionalArguments: ['--disable-security-warnings', '--debug-mode']
 		}
@@ -159,6 +166,11 @@ export const createPlayerWindow = function (
 	player.config = window;
 
 	player.setMenuBarVisibility(false);
+
+	player.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+	player.webContents.on('will-navigate', (event) => {
+		event.preventDefault();
+	});
 
 	void player.loadFile(`${projectDir}index.html`);
 

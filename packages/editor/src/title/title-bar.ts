@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import type { IpcRendererEvent } from 'electron';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -160,7 +159,7 @@ export const Title: TitleShape = {
 Title.initialize = function (this: TitleShape) {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar') as unknown as TitleTabBarShape;
-	void ipcRenderer?.invoke?.(CHANNELS.invoke.updateMaxMinIcon).then((mode: string) => {
+	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
 				this.windowMaximize!(event);
@@ -203,11 +202,11 @@ Title.initialize = function (this: TitleShape) {
 	this.tabBar.on('pointerdown', this.tabBarPointerdown);
 	// select/closed/popup 事件经 Vue 模板转发（AppShell @select/@closed/@popup → Title.tabBar*）
 
-	ipcRenderer?.on?.(CHANNELS.send.beforeCloseWindow, this.windowBeforeClose!);
-	ipcRenderer?.on?.(CHANNELS.send.maximize, this.windowMaximize!);
-	ipcRenderer?.on?.(CHANNELS.send.unmaximize, this.windowUnmaximize!);
-	ipcRenderer?.on?.(CHANNELS.send.enterFullScreen, this.windowEnterFullScreen!);
-	ipcRenderer?.on?.(CHANNELS.send.leaveFullScreen, this.windowLeaveFullScreen!);
+	YamiIpc.events.on(CHANNELS.send.beforeCloseWindow, this.windowBeforeClose!);
+	YamiIpc.events.on(CHANNELS.send.maximize, this.windowMaximize!);
+	YamiIpc.events.on(CHANNELS.send.unmaximize, this.windowUnmaximize!);
+	YamiIpc.events.on(CHANNELS.send.enterFullScreen, this.windowEnterFullScreen!);
+	YamiIpc.events.on(CHANNELS.send.leaveFullScreen, this.windowLeaveFullScreen!);
 	NewProject.initialize!();
 	Deployment.initialize!();
 };
@@ -401,9 +400,9 @@ Title.playGame = async function (this: TitleShape) {
 
 		await File.save!(false);
 
-		ipcRenderer.send(CHANNELS.on.createPlayerWindow, File.root);
+		YamiIpc.send.createPlayerWindow(File.root);
 
-		ipcRenderer.once(CHANNELS.send.playerWindowClosed, (_event: IpcRendererEvent) => {
+		YamiIpc.events.once(CHANNELS.send.playerWindowClosed, () => {
 			removeClass(element, 'selected');
 			getTitleStore().setPlaying(false);
 		});
@@ -503,7 +502,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 
 Title.windowBeforeClose = function (this: TitleShape, _event: Event) {
 	if ((Window.frames?.length ?? 0) === 0) {
-		ipcRenderer.send(CHANNELS.on.preventCloseWindow);
+		YamiIpc.send.preventCloseWindow();
 		Title.askWhetherToSave!(() => {
 			Editor.quit!();
 		});
@@ -724,11 +723,11 @@ Title.playClick = function (this: TitleShape, _event: MouseEvent) {
 };
 
 Title.minimizeClick = function (this: TitleShape, _event: MouseEvent) {
-	ipcRenderer.send(CHANNELS.on.minimizeWindow);
+	YamiIpc.send.minimizeWindow();
 };
 
 Title.maximizeClick = function (this: TitleShape, _event: MouseEvent) {
-	ipcRenderer.send(CHANNELS.on.maximizeWindow);
+	YamiIpc.send.maximizeWindow();
 };
 
 Title.closeClick = function (this: TitleShape, _event: MouseEvent) {

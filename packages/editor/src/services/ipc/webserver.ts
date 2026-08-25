@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
 import { disable, enable, on } from '@app/utils/element-utils.ts';
@@ -21,10 +20,10 @@ export const WebServer = new (class {
 		on($('#qr-close-button'), 'click', () => this.stop!());
 	}
 	get enable() {
-		return ipcRenderer.sendSync(CHANNELS.on.getServerState);
+		return YamiIpc.sync.getServerState();
 	}
 	start(path: string) {
-		void ipcRenderer.invoke(CHANNELS.invoke.startServer, {
+		void YamiIpc.invoke.startServer({
 			port: this.port,
 			path
 		});
@@ -33,14 +32,14 @@ export const WebServer = new (class {
 		this.load!();
 	}
 	toDataUrl(url: string) {
-		return ipcRenderer.invoke(CHANNELS.invoke.toQrcode, url);
+		return YamiIpc.invoke.toQrcode(url);
 	}
 	getIp() {
-		return ipcRenderer.invoke(CHANNELS.invoke.getLocalIp);
+		return YamiIpc.invoke.getLocalIp();
 	}
 	stop() {
 		if (!this.enable) return;
-		void ipcRenderer.invoke(CHANNELS.invoke.stopServer);
+		void YamiIpc.invoke.stopServer();
 		// oxlint-disable-next-line unbound-method
 		window.removeEventListener('beforeunload', this.stop);
 		this.load!();
@@ -60,11 +59,11 @@ export const WebServer = new (class {
 		const ips = await WebServer.getIp();
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
-		this.setContent!(url, await WebServer.toDataUrl(url));
+		this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
 		on($('#qr-update-button'), 'click', async () => {
 			index = index >= ips.length - 1 ? 0 : ++index;
 			url = `http://${ips[index]}:${WebServer.port}`;
-			this.setContent!(url, await WebServer.toDataUrl(url));
+			this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
 		});
 		this.load!();
 	}

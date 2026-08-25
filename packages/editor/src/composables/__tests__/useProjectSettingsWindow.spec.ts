@@ -9,7 +9,6 @@ import { File } from '@app/file/file-system-core.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { ipcRenderer } from 'electron';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
@@ -128,7 +127,8 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 		vi.mocked(File.planToSave!).mockClear();
 		vi.mocked(Log.clear!).mockClear();
 		vi.mocked(Title.updateTitleName!).mockClear();
-		vi.mocked(ipcRenderer.send).mockClear();
+		vi.mocked(window.yami!.send.startTsc).mockClear();
+		vi.mocked(window.yami!.send.stopTsc).mockClear();
 		useProjectSettingsWindow().stopTSC();
 	});
 
@@ -234,17 +234,17 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 			key: 'config',
 			last: { script: { autoCompile: false } }
 		} as never);
-		expect(ipcRenderer.send).toHaveBeenCalledWith('start-tsc', '/mock/project');
+		expect(window.yami!.send.startTsc).toHaveBeenCalledWith('/mock/project');
 		vi.mocked(Data).config = { script: { autoCompile: false } } as never;
 		settings.projectChange({
 			key: 'config',
 			last: { script: { autoCompile: true } }
 		} as never);
-		expect(ipcRenderer.send).toHaveBeenCalledWith('stop-tsc');
+		expect(window.yami!.send.stopTsc).toHaveBeenCalled();
 		expect(Log.clear).toHaveBeenCalled();
-		vi.mocked(ipcRenderer.send).mockClear();
+		vi.mocked(window.yami!.send.startTsc).mockClear();
 		settings.projectChange({ key: 'other', last: {} } as never);
-		expect(ipcRenderer.send).not.toHaveBeenCalled();
+		expect(window.yami!.send.startTsc).not.toHaveBeenCalled();
 	});
 
 	it('legacy Project 入口 open/confirm/startTSC/stopTSC 转发 composable', async () => {
@@ -257,9 +257,9 @@ describe('useProjectSettingsWindow（项目设置窗口 composable：表单填�
 		expect(getProjectStore().state).toBe('open');
 		expect(settings.form.window.title).toBe('YAMI');
 		ProjectController.startTSC();
-		expect(ipcRenderer.send).toHaveBeenCalledWith('start-tsc', '/mock/project');
+		expect(window.yami!.send.startTsc).toHaveBeenCalledWith('/mock/project');
 		ProjectController.stopTSC();
-		expect(ipcRenderer.send).toHaveBeenCalledWith('stop-tsc');
+		expect(window.yami!.send.stopTsc).toHaveBeenCalled();
 		ProjectController.confirm(new Event('click'));
 		expect(Window.close).toHaveBeenCalledWith('project-settings');
 		wrapper.unmount();

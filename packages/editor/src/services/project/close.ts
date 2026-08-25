@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getAudioStore } from '@app/stores/audio.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
@@ -48,7 +47,7 @@ function quit(this: typeof Editor) {
 	this.saveProject!();
 	this.saveManifest!();
 	WebServer.stop();
-	ipcRenderer.send(CHANNELS.on.forceCloseWindow);
+	YamiIpc.send.forceCloseWindow();
 }
 
 export function initProjectClose(): void {

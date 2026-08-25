@@ -1,5 +1,4 @@
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Path } from '@app/utils/config';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
@@ -345,11 +344,10 @@ async function trash(
 	files: Array<FileItem | FolderItem>,
 	hooks: DirectoryTreeHooks
 ): Promise<unknown> {
-	const renderer = ipcRenderer ?? ({} as unknown as Pick<typeof ipcRenderer, 'invoke'>);
 	const promises: Array<Promise<unknown>> = [];
 	for (const file of files) {
 		const path = hooks.file.path(file.path);
-		promises.push(renderer.invoke(CHANNELS.invoke.trashItem, path));
+		promises.push(YamiIpc.invoke.trashItem(path));
 	}
 	if (promises.length !== 0) {
 		return Promise.all(promises);

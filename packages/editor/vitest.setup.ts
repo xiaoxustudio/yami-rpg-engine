@@ -1,6 +1,62 @@
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
 
+// preload 桥 mock：测试环境无 preload，提供 window.yami 全量 vi.fn 占位
+window.yami = {
+	invoke: {
+		startServer: vi.fn(),
+		stopServer: vi.fn(),
+		toQrcode: vi.fn(),
+		getLocalIp: vi.fn(),
+		toExcel: vi.fn(),
+		fromExcel: vi.fn(),
+		getDirPath: vi.fn(),
+		writeFile: vi.fn(),
+		waitWriteFile: vi.fn(),
+		buildApk: vi.fn(),
+		stopBuildApk: vi.fn(),
+		tscFile: vi.fn(),
+		updateMaxMinIcon: vi.fn(),
+		showOpenDialog: vi.fn(),
+		showSaveDialog: vi.fn(),
+		trashItem: vi.fn(),
+		relaunchApp: vi.fn()
+	},
+	sync: {
+		getServerState: vi.fn(),
+		getDirPathSync: vi.fn(),
+		clipboardHas: vi.fn(),
+		clipboardRead: vi.fn(),
+		clipboardWrite: vi.fn(),
+		isBuildingApk: vi.fn(),
+		getCommandLineSwitch: vi.fn(),
+		hasCommandLineSwitch: vi.fn()
+	},
+	send: {
+		minimizeWindow: vi.fn(),
+		maximizeWindow: vi.fn(),
+		closeWindow: vi.fn(),
+		preventCloseWindow: vi.fn(),
+		forceCloseWindow: vi.fn(),
+		toggleFullScreen: vi.fn(),
+		openPath: vi.fn(),
+		openVscode: vi.fn(),
+		showItemInFolder: vi.fn(),
+		createPlayerWindow: vi.fn(),
+		setDevicePixelRatio: vi.fn(),
+		openDevTools: vi.fn(),
+		setDisplayMode: vi.fn(),
+		startTsc: vi.fn(),
+		stopTsc: vi.fn(),
+		addCommandLineSwitch: vi.fn(),
+		removeCommandLineSwitch: vi.fn()
+	},
+	events: {
+		on: vi.fn(),
+		once: vi.fn()
+	}
+};
+
 // 编辑器 legacy 模块顶层副作用依赖的通用 DOM 元素（jsdom 默认不存在）
 for (const id of ['tooltip', 'window-ambient']) {
 	if (!document.getElementById(id)) {

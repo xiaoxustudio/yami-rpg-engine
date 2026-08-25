@@ -1,4 +1,4 @@
-﻿import { ipcRenderer } from 'electron';
+﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { $ } from '@app/utils/dom';
 import { enable } from '@app/utils/element-utils.ts';
@@ -18,7 +18,7 @@ interface ApkLogEntry {
 export const ApkBuilder = new (class {
 	logs: ApkLogEntry[] = [];
 	constructor() {
-		ipcRenderer?.on?.(CHANNELS.send.apkLog, (_: unknown, log: ApkLogEntry) => {
+		YamiIpc.events.on(CHANNELS.send.apkLog, (_: unknown, log: ApkLogEntry) => {
 			this.logs.push(log);
 			this.apkLog!(log);
 		});
@@ -27,7 +27,7 @@ export const ApkBuilder = new (class {
 		this.logs.length = 0;
 		this.notifyLogContent();
 		const config = this.process!(cfg);
-		void ipcRenderer.invoke(CHANNELS.invoke.buildApk, config);
+		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
 		($('#export-apk-content') as HTMLElement & { update?: () => void }).update?.();
@@ -47,12 +47,12 @@ export const ApkBuilder = new (class {
 		this.logs = [];
 	}
 	stopBuild() {
-		void ipcRenderer.invoke(CHANNELS.invoke.stopBuildApk).then(() => {
+		void YamiIpc.invoke.stopBuildApk().then(() => {
 			this.reset!();
 		});
 	}
 	isBuilding() {
-		return ipcRenderer.sendSync(CHANNELS.on.isBuildingApk);
+		return YamiIpc.sync.isBuildingApk();
 	}
 	processPathOnly(line: string) {
 		const pathPrefix = Path.resolve!(Path.dirname!(Editor.config!.project!), 'apk');

@@ -1,8 +1,7 @@
-import { ipcRenderer } from 'electron';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import nodePath from 'node:path';
 import os from 'node:os';
 import nodeFs from 'node:fs';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
 import type { EditorConfigShape } from '@app/stores/editor';
 export const Path: typeof nodePath & { slash: (path: string) => string } =
 	nodePath as typeof nodePath & { slash: (path: string) => string };
@@ -38,13 +37,13 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 						mode: 'by-file-extension',
 						path: ''
 					};
-					return ipcRenderer
-						.invoke(CHANNELS.invoke.getDirPath, 'documents')
+					return YamiIpc.invoke
+						.getDirPath('documents')
 						.catch((_error) => 'C:')
 						.then((docPath) => {
 							const dialogs = config.dialogs as Record<string, string> | undefined;
 							for (const key of Object.keys(dialogs ?? {})) {
-								if (dialogs) dialogs[key] = Path.slash(docPath);
+								if (dialogs) dialogs[key] = Path.slash(docPath ?? 'C:');
 							}
 							return config;
 						});

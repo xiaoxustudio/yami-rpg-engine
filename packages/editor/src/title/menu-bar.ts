@@ -1,7 +1,6 @@
 import { macRedoKey } from '@app/utils/event-accessors';
 import { Window } from '@app/tools/window-object.ts';
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
 import { $ } from '@app/utils/dom';
@@ -144,7 +143,7 @@ Menubar.initialize = function (this: typeof Menubar) {
 
 // 开关全屏模式
 Menubar.toggleFullScreen = function (this: typeof Menubar) {
-	ipcRenderer.send(CHANNELS.on.toggleFullScreen);
+	YamiIpc.send.toggleFullScreen();
 };
 
 // 弹出文件菜单
@@ -980,7 +979,8 @@ Menubar.revealSaveDirectory = async function (this: typeof Menubar) {
 	let saveDir;
 	const { location, subdir } = Data.config.save;
 	if (location !== 'local') {
-		const dirname = await ipcRenderer.invoke(CHANNELS.invoke.getDirPath, location);
+		const dirname = await YamiIpc.invoke.getDirPath(location);
+		if (!dirname) return;
 		const folder = this.sanitizeFolderName!(subdir);
 		saveDir = Path.resolve!(dirname, folder);
 	} else {

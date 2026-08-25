@@ -1,6 +1,6 @@
 import { createTextAreaElement, getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
 import {
 	on,
@@ -33,7 +33,6 @@ import { bindListClipboardMethods } from '@app/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@app/components/tree-list.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
-import { ipcRenderer } from 'electron';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
 interface LocalizationItem {
@@ -791,7 +790,7 @@ Localization.apply = function (this: LocalizationShape, _event?: Event) {
 }.bind(Localization);
 
 Localization.fromExcel = async function (this: LocalizationShape, event: Event) {
-	const items = await ipcRenderer.invoke(CHANNELS.invoke.fromExcel);
+	const items = await YamiIpc.invoke.fromExcel();
 	if (JSON.stringify(items) == JSON.stringify(Data.localization.list) || !items.length) return;
 	Data.localization.list = items;
 	Localization.windowClose(event);
@@ -802,8 +801,8 @@ Localization.fromExcel = async function (this: LocalizationShape, event: Event) 
 }.bind(Localization);
 
 Localization.toExcel = function (this: LocalizationShape, _event?: Event) {
-	void ipcRenderer.invoke(CHANNELS.invoke.toExcel, {
-		langs: this.languages,
+	void YamiIpc.invoke.toExcel({
+		langs: this.languages ?? [],
 		list: Data.localization.list
 	});
 }.bind(Localization);

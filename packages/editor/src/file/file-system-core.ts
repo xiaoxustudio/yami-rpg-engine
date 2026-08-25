@@ -1,7 +1,7 @@
-import { ipcRenderer, shell } from 'electron';
+import { shell } from 'electron';
 import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Path } from '@app/utils/config';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -188,7 +188,7 @@ File.save = function (hint = true) {
 	}
 
 	// 未处理写入失败的情况
-	return ipcRenderer.invoke(CHANNELS.invoke.waitWriteFile);
+	return YamiIpc.invoke.waitWriteFile();
 };
 
 File.saveFile = function (meta) {
@@ -293,7 +293,7 @@ File.getImageResolution = (function IIFE() {
 })();
 
 File.openPath = function (path) {
-	ipcRenderer.send(CHANNELS.on.openPath, path);
+	YamiIpc.send.openPath(path);
 };
 
 File.openURL = function (url) {
@@ -303,15 +303,15 @@ File.openURL = function (url) {
 };
 
 File.showInExplorer = function (path) {
-	ipcRenderer.send(CHANNELS.on.showItemInFolder, path);
+	YamiIpc.send.showItemInFolder(path);
 };
 
 File.showOpenDialog = function (options) {
-	return ipcRenderer.invoke(CHANNELS.invoke.showOpenDialog, options);
+	return YamiIpc.invoke.showOpenDialog(options);
 };
 
 File.showSaveDialog = function (options) {
-	return ipcRenderer.invoke(CHANNELS.invoke.showSaveDialog, options);
+	return YamiIpc.invoke.showSaveDialog(options);
 };
 
 File.parseMetaName = function (meta: { path: string }) {

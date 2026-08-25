@@ -1,7 +1,7 @@
 ﻿import { $ } from '@app/utils/dom';
 import { Editor } from '@app/services/project/editor.ts';
 
-import { ipcRenderer } from 'electron';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 
 interface LogShape {
@@ -64,7 +64,7 @@ Log.initialize = function () {
 
 	window.addEventListener('error', this.catchError!);
 	window.addEventListener('unhandledrejection', this.catchRejection!);
-	ipcRenderer?.on?.(CHANNELS.send.tscLog, this.tscLog!);
+	YamiIpc.events.on(CHANNELS.send.tscLog, this.tscLog!);
 };
 
 Log.throw = function (error: unknown) {
@@ -138,7 +138,7 @@ Log.catchRejection = function (event: unknown) {
 };
 
 Log.openVSCode = function (file: string, line: number, column: number) {
-	ipcRenderer.send(CHANNELS.on.openVscode, file, line, column);
+	YamiIpc.send.openVscode(file, line, column);
 };
 
 Log.tscLog = function (event: unknown, tscMessage: unknown) {

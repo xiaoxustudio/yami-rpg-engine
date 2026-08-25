@@ -31,6 +31,11 @@ const useViteDev = !!devServerUrl;
 
 const extensionPath = path.join('./extension');
 app.on('ready', () => {
+	// 拒绝一切权限请求（摄像头/麦克风/地理位置等）
+	session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
+		callback(false);
+	});
+	session.defaultSession.setPermissionCheckHandler(() => false);
 	createEditorMenu();
 	createEditorWindow(debug, dirname, useViteDev, VITE_DEV_URL);
 	const isExtension = fs.existsSync(extensionPath);

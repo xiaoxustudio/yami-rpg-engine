@@ -1,6 +1,5 @@
 import { reactive } from 'vue';
-import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getWindowStore } from '@app/stores/window';
 import { removeTextTags, parseFileName } from '@app/composables/useCommandParse.ts';
@@ -308,14 +307,14 @@ function open(): void {
 function startTSC(): void {
 	if (!tscStarted) {
 		tscStarted = true;
-		ipcRenderer.send(CHANNELS.on.startTsc, File.root);
+		YamiIpc.send.startTsc(File.root);
 	}
 }
 
 function stopTSC(): void {
 	if (tscStarted) {
 		tscStarted = false;
-		ipcRenderer.send(CHANNELS.on.stopTsc);
+		YamiIpc.send.stopTsc();
 		Log.clear!();
 	}
 }

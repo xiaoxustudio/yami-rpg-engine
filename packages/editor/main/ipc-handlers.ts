@@ -9,7 +9,13 @@ import { startTSC, stopTSC, compileTscFile } from './services/tsc.ts';
 import { getWindowFromEvent, createPlayerWindow } from './window-manager.ts';
 import * as apkProcessor from './apk.ts';
 
-const writeFile = async (filePath: string, text: string, check?: boolean) => {
+const writeFile = async (filePath: string, text: string | Uint8Array, check?: boolean) => {
+	if (typeof filePath !== 'string' || filePath.length === 0 || filePath.includes('\0')) {
+		throw new Error('invalid file path');
+	}
+	if (!path.isAbsolute(path.normalize(filePath))) {
+		throw new Error('file path must be absolute');
+	}
 	if (check) await FSP.stat(filePath);
 	return FSP.writeFile(filePath, text);
 };
@@ -33,7 +39,7 @@ ipcMain.on(CHANNELS.on.getServerState, (event) => {
 });
 
 ipcMain.handle(CHANNELS.invoke.startServer, (event, config) => {
-	startServer(event, config);
+	return startServer(event, config);
 });
 
 ipcMain.handle(CHANNELS.invoke.toQrcode, (event, url) => {
@@ -98,7 +104,11 @@ ipcMain.on(CHANNELS.on.clipboardHas, (event, format: string) => {
 ipcMain.on(CHANNELS.on.clipboardRead, (event, format: string) => {
 	const buffer = clipboard.readBuffer(format);
 	const string = buffer.toString();
-	event.returnValue = string ? JSON.parse(string) : null;
+	try {
+		event.returnValue = string ? JSON.parse(string) : null;
+	} catch {
+		event.returnValue = null;
+	}
 });
 ipcMain.on(CHANNELS.on.clipboardWrite, (event, format: string, object: unknown) => {
 	const string = JSON.stringify(object);
@@ -149,6 +159,9 @@ ipcMain.on(CHANNELS.on.toggleFullScreen, (event) => {
 });
 
 ipcMain.on(CHANNELS.on.openPath, (event, targetPath) => {
+	if (typeof targetPath !== 'string' || targetPath.length === 0 || targetPath.includes('\0')) {
+		return;
+	}
 	void shell.openPath(path.normalize(targetPath));
 });
 
@@ -167,6 +180,9 @@ ipcMain.on(CHANNELS.on.openVscode, (event, scriptPath, line, column) => {
 });
 
 ipcMain.on(CHANNELS.on.showItemInFolder, (event, filePath) => {
+	if (typeof filePath !== 'string' || filePath.length === 0 || filePath.includes('\0')) {
+		return;
+	}
 	shell.showItemInFolder(path.normalize(filePath));
 });
 
@@ -215,8 +231,9 @@ ipcMain.on(CHANNELS.on.setDevicePixelRatio, (event, ratio) => {
 		window as BrowserWindow &
 			BrowserWindowExtension & { config?: { width: number; height: number } }
 	).config;
-	const width = Math.round(config!.width / ratio);
-	const height = Math.round(config!.height / ratio);
+	if (!config) return;
+	const width = Math.round(config.width / ratio);
+	const height = Math.round(config.height / ratio);
 	const x = bounds.x + ((bounds.width - width) >> 1);
 	const y = bounds.y + ((bounds.height - height) >> 1);
 	// electron bug：非100%缩放时，窗口位置不能完美地被设置

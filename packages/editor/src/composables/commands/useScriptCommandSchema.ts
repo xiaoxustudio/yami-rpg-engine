@@ -1,5 +1,4 @@
-﻿import { ipcRenderer } from 'electron';
-import { CHANNELS } from '@app/services/ipc/channels.ts';
+﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
@@ -408,10 +407,7 @@ const save = async (): Promise<void> => {
 			// oxlint-disable-next-line no-implied-eval
 			new Function(script);
 		} else {
-			const result = (await ipcRenderer.invoke(CHANNELS.invoke.tscFile, script)) as {
-				error?: unknown;
-				res?: string;
-			};
+			const result = await YamiIpc.invoke.tscFile(script);
 			if (result.error) {
 				throw result.error;
 			}

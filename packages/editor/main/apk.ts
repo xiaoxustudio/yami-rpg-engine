@@ -56,9 +56,9 @@ const defaultConfig = {
 
 	isSign: true,
 	jksPath: '@/release.jks',
-	keyStorePassword: '123456',
+	keyStorePassword: '',
 	keyAlias: 'xuran',
-	keyPassword: '123456',
+	keyPassword: '',
 	apksignerPath: '@/apksigner.bat',
 	signedApkPath: '$/app-debug-signed.apk',
 	zipalignPath: '@/zipalign.exe',
@@ -161,8 +161,19 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 		onProgress?.('文件验证通过', currentProgress);
 		sendLog('文件验证通过', currentProgress);
 
-		if (fs.existsSync(config.outputDir)) {
-			await fs.promises.rm(config.outputDir, {
+		// 递归删除前强制输出目录位于项目 apk 目录内，阻断任意路径删除
+		const projectApkRoot = path.resolve(config.projectPath || '', 'apk');
+		const outputDirResolved = path.resolve(config.outputDir);
+		if (
+			outputDirResolved === projectApkRoot ||
+			!outputDirResolved.startsWith(projectApkRoot + path.sep)
+		) {
+			sendLog(`输出目录必须在项目 apk 目录内: ${projectApkRoot}`, currentProgress, true);
+			return false;
+		}
+
+		if (fs.existsSync(outputDirResolved)) {
+			await fs.promises.rm(outputDirResolved, {
 				recursive: true,
 				force: true
 			});
@@ -256,6 +267,14 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 		sendLog('APK对齐处理完成', currentProgress);
 
 		if (config.isSign) {
+			if (!fileExists(config.jksPath)) {
+				sendLog(`签名文件不存在: ${config.jksPath}`, currentProgress, true);
+				return false;
+			}
+			if (!config.keyStorePassword || !config.keyPassword) {
+				sendLog('签名口令未设置', currentProgress, true);
+				return false;
+			}
 			const signResult = await signApk(config);
 			if (!signResult.success) {
 				sendLog(signResult.error ?? '', currentProgress, true);
