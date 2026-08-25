@@ -208,7 +208,7 @@ function addressPointerdown(event: PointerEvent) {
 									const { folders, target } = element;
 									const elementRect = rect(element);
 									const length = Math.min(folders.length, MAX_MENU_ITEMS);
-									const menuItems = Array.from({ length: length });
+									const menuItems = Array.from<MenuItem>({ length });
 									const click = function (this: MenuItem) {
 										nav.load(this.folder);
 										nav.scrollToSelection('middle');

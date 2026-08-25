@@ -430,7 +430,7 @@ function getFiles(): FileBodyFile[] {
 			length += folder.children.length;
 		}
 		let i = 0;
-		const items = Array.from({ length: length });
+		const items = Array.from<FileBodyFile>({ length });
 		for (const folder of folders) {
 			for (const item of folder.children) {
 				items[i++] = item;
@@ -952,7 +952,7 @@ function selectAll(): void {
 	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
-	const files = Array.from({ length: count });
+	const files = Array.from<FileBodyFile>({ length: count });
 	for (let i = 0; i < count; i++) {
 		files[i] = els[i]!.file;
 	}
@@ -1240,7 +1240,7 @@ function deleteFiles(): void {
 	const node = el.value as FileBodyPaneApi;
 	const files: FileBodyFile[] = [];
 	const { selections: sels } = { selections };
-	if (!sels.includes(Directory?.assets ?? null)) {
+	if (!sels.some((s) => s === Directory?.assets)) {
 		const els = elements;
 		for (const file of sels) {
 			const { element } = file.getContext(node);
