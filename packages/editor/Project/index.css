@@ -1,7 +1,6 @@
 /* 样式入口文件（手动维护，新增 Project/css 模块后需在此补入 @import） */
-@import '../../ui-kit/src/theme/tokens.css';
-@import '../../ui-kit/src/styles/components.css';
-@import '../../ui-kit/dist/ui-kit.css';
+/* @ui-kit/styles.css 由 vite alias 解析：dev 走 ui-kit/src（热更），prod 走构建产物 */
+@import '@ui-kit/styles.css';
 @import './css/foundation.css';
 @import './css/animation.css';
 @import './css/command.css';

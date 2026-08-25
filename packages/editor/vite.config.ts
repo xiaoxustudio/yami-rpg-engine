@@ -20,6 +20,10 @@ const uiKitAlias =
 	process.env.VITE_UI_KIT === 'dist' || !isServe
 		? fileToPath('../ui-kit/dist/ui-kit.js')
 		: fileToPath('../ui-kit/src/index.ts');
+const uiKitStylesAlias =
+	process.env.VITE_UI_KIT === 'dist' || !isServe
+		? fileToPath('../ui-kit/src/styles/prod.css')
+		: fileToPath('../ui-kit/src/styles/index.css');
 
 export default defineConfig({
 	root: '.',
@@ -167,6 +171,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@app': fileToPath('src'),
+			'@ui-kit/styles.css': uiKitStylesAlias,
 			'@ui-kit': uiKitAlias
 		}
 	},
