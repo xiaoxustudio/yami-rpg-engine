@@ -248,7 +248,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-settings-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { settings } = data;
@@ -258,7 +258,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-name-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { item, value } = data;
@@ -275,7 +275,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-key-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { item, value } = data;
@@ -292,7 +292,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-type-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { item, value } = data;
@@ -309,7 +309,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-enum-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { item, value } = data;
@@ -325,7 +325,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-note-change'] = (
-		operation: string,
+		_operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { item, value } = data;

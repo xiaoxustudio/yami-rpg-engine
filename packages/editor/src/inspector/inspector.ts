@@ -155,7 +155,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 		Animation.selectFrame(target);
 	};
 	processors['script-parameter-change'] = (
-		operation: string,
+		_operation: string,
 		data: InspectorScriptParameterData
 	) => {
 		const { editor, target, meta, list, parameters, key, value } = data;

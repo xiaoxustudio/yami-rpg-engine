@@ -252,14 +252,14 @@ Enum.initialize = function (this: typeof Enum) {
 		}
 		getEnumStore().state.changed = true;
 	};
-	History.processors['enum-settings-change'] = (operation: string, data: EnumHistoryData) => {
+	History.processors['enum-settings-change'] = (_operation: string, data: EnumHistoryData) => {
 		const { settings } = data;
 		data.settings = getEnumStore().state.settings!;
 		getEnumStore().state.settings = settings;
 		list.update();
 		getEnumStore().state.changed = true;
 	};
-	History.processors['enum-name-change'] = (operation: string, data: EnumHistoryData) => {
+	History.processors['enum-name-change'] = (_operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
 		data.value = item.name;
 		item.name = value;
@@ -273,7 +273,7 @@ Enum.initialize = function (this: typeof Enum) {
 		}
 		getEnumStore().state.changed = true;
 	};
-	History.processors['enum-value-change'] = (operation: string, data: EnumHistoryData) => {
+	History.processors['enum-value-change'] = (_operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
 		data.value = item.value!;
 		item.value = value;
@@ -287,7 +287,7 @@ Enum.initialize = function (this: typeof Enum) {
 		}
 		getEnumStore().state.changed = true;
 	};
-	History.processors['enum-note-change'] = (operation: string, data: EnumHistoryData) => {
+	History.processors['enum-note-change'] = (_operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
 		data.value = item.note!;
 		item.note = value;

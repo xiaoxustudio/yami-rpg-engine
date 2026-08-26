@@ -22,5 +22,5 @@ export const TransformProperty = createPropertyWindow({
 		{ name: 'Skew Y', value: 'skewY', default: 0 },
 		{ name: 'Opacity', value: 'opacity', default: 1 }
 	],
-	parseValue: (key, value) => Command.parseVariableNumber(value)
+	parseValue: (_key, value) => Command.parseVariableNumber(value)
 });

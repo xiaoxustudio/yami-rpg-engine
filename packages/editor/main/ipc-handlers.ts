@@ -40,7 +40,7 @@ ipcMain.handle(CHANNELS.invoke.startServer, (event, config) => {
 	return startServer(event, config);
 });
 
-ipcMain.handle(CHANNELS.invoke.toQrcode, (event, url) => {
+ipcMain.handle(CHANNELS.invoke.toQrcode, (_event, url) => {
 	return toQrcode(url);
 });
 
@@ -74,7 +74,7 @@ ipcMain.on(CHANNELS.on.getDirPathSync, (event, location) => {
 	}
 });
 
-ipcMain.handle(CHANNELS.invoke.getDirPath, (event, location) => {
+ipcMain.handle(CHANNELS.invoke.getDirPath, (_event, location) => {
 	switch (location) {
 		case 'app-data':
 			return app.getPath('appData');
@@ -87,7 +87,7 @@ ipcMain.handle(CHANNELS.invoke.getDirPath, (event, location) => {
 	}
 });
 
-ipcMain.handle(CHANNELS.invoke.writeFile, (event, filePath, text, check) => {
+ipcMain.handle(CHANNELS.invoke.writeFile, (_event, filePath, text, check) => {
 	return protectPromise(writeFile(filePath, text, check));
 });
 
@@ -156,7 +156,7 @@ ipcMain.on(CHANNELS.on.toggleFullScreen, (event) => {
 	window.setFullScreen(!window.isFullScreen());
 });
 
-ipcMain.on(CHANNELS.on.openPath, (event, targetPath) => {
+ipcMain.on(CHANNELS.on.openPath, (_event, targetPath) => {
 	if (typeof targetPath !== 'string' || targetPath.length === 0 || targetPath.includes('\0')) {
 		return;
 	}
@@ -164,7 +164,7 @@ ipcMain.on(CHANNELS.on.openPath, (event, targetPath) => {
 });
 
 // 使用VSCode打开脚本
-ipcMain.on(CHANNELS.on.openVscode, (event, scriptPath, line, column) => {
+ipcMain.on(CHANNELS.on.openVscode, (_event, scriptPath, line, column) => {
 	if (typeof scriptPath !== 'string' || scriptPath.length === 0 || scriptPath.includes('\0')) {
 		return;
 	}
@@ -177,7 +177,7 @@ ipcMain.on(CHANNELS.on.openVscode, (event, scriptPath, line, column) => {
 	void shell.openExternal(`vscode://file/${url}`);
 });
 
-ipcMain.on(CHANNELS.on.showItemInFolder, (event, filePath) => {
+ipcMain.on(CHANNELS.on.showItemInFolder, (_event, filePath) => {
 	if (typeof filePath !== 'string' || filePath.length === 0 || filePath.includes('\0')) {
 		return;
 	}
@@ -211,7 +211,7 @@ ipcMain.handle(CHANNELS.invoke.showSaveDialog, (event, options) => {
 	return dialog.showSaveDialog(window, options);
 });
 
-ipcMain.handle(CHANNELS.invoke.trashItem, (event, filePath) => {
+ipcMain.handle(CHANNELS.invoke.trashItem, (_event, filePath) => {
 	return shell.trashItem(path.normalize(filePath));
 });
 
@@ -274,7 +274,7 @@ ipcMain.on(CHANNELS.on.getCommandLineSwitch, (event, name) => {
 	event.returnValue = app.commandLine.getSwitchValue(name);
 });
 
-ipcMain.on(CHANNELS.on.addCommandLineSwitch, (event, name, value) => {
+ipcMain.on(CHANNELS.on.addCommandLineSwitch, (_event, name, value) => {
 	if (value) {
 		app.commandLine.appendSwitch(name, value);
 	} else {
@@ -282,7 +282,7 @@ ipcMain.on(CHANNELS.on.addCommandLineSwitch, (event, name, value) => {
 	}
 });
 
-ipcMain.on(CHANNELS.on.removeCommandLineSwitch, (event, name) => {
+ipcMain.on(CHANNELS.on.removeCommandLineSwitch, (_event, name) => {
 	app.commandLine.removeSwitch(name);
 });
 
@@ -362,7 +362,7 @@ ipcMain.handle(CHANNELS.invoke.stopBuildApk, () => {
 	apkProcessor.abortBuild();
 });
 
-ipcMain.on(CHANNELS.on.startTsc, (event, projectDir) => {
+ipcMain.on(CHANNELS.on.startTsc, (_event, projectDir) => {
 	startTSC(path.normalize(projectDir));
 });
 
@@ -370,6 +370,6 @@ ipcMain.on(CHANNELS.on.stopTsc, () => {
 	stopTSC();
 });
 
-ipcMain.handle(CHANNELS.invoke.tscFile, async (event, code) => {
+ipcMain.handle(CHANNELS.invoke.tscFile, async (_event, code) => {
 	return compileTscFile(code);
 });

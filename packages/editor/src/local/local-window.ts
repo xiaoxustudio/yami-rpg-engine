@@ -243,7 +243,7 @@ Localization.initialize = function () {
 		this.changed = true;
 	};
 	History.processors['localization-content-change'] = (
-		operation: string,
+		_operation: string,
 		data: LocalizationHistoryData
 	) => {
 		const { item, language, content } = data;

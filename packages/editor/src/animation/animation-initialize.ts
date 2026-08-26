@@ -252,7 +252,7 @@ Animation.initialize = function (this: typeof Animation) {
 		list.restore(operation, response);
 	};
 	History.processors['animation-motion-id-change'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryMotionId
 	) => {
 		const { motion, id } = data;
@@ -264,7 +264,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-motion-mode-change'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryMotionMode
 	) => {
 		const { motion, direction, mode, dirCases } = data;
@@ -370,7 +370,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-easing-change'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryEasing
 	) => {
 		const { motion, direction, target, easingId } = data;
@@ -388,7 +388,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-target-shift'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryTargetShift
 	) => {
 		const { editor, motion, direction, target, x, y } = data;
@@ -407,7 +407,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-target-resize'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryTargetResize
 	) => {
 		const { editor, motion, direction, target, scaleX, scaleY } = data;
@@ -426,7 +426,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-target-rotate'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryTargetRotate
 	) => {
 		const { editor, motion, direction, target, rotation } = data;
@@ -443,7 +443,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.planToSave!();
 	};
 	History.processors['animation-target-index'] = (
-		operation: string,
+		_operation: string,
 		data: AnimationHistoryTargetIndex
 	) => {
 		const { motion, direction, target, hindex, vindex } = data;

@@ -116,7 +116,6 @@ Command.custom = {
 			return wrap;
 		};
 
-		const _parameterPane = this.parameterPane;
 		this.parameterPane.clear = function (this: ParameterPane): void {
 			this.metas = [];
 			const { wraps } = this;

@@ -154,7 +154,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			Window.close!('fileAnimation-sprite');
 			return { name, id, image, hframes, vframes };
 		},
-		onPaste: function (this: typeof FileAnimation, list: HTMLElement, copies: unknown[]) {
+		onPaste: function (this: typeof FileAnimation, _list: HTMLElement, copies: unknown[]) {
 			const exclusions = (
 				FileAnimation.interface as { createExclusionMap: () => Record<string, boolean> }
 			).createExclusionMap();

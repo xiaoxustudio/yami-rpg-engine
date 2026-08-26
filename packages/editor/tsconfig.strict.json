@@ -7,6 +7,8 @@
 		"strictBindCallApply": true,
 		"strictPropertyInitialization": true,
 		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"paths": {
 			"@app/*": ["./src/*"],
 			"@ui-kit": ["../ui-kit/src/index.ts"],
@@ -20,7 +22,6 @@
 		"dist/**",
 		"dist-electron/**",
 		"build/**",
-		"Unused/**",
 		"jsons/**"
 	]
 }

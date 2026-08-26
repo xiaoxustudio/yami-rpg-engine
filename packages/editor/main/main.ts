@@ -9,9 +9,6 @@ import { createEditorWindow } from './window-manager.ts';
 import { promises } from './ipc-handlers.ts';
 import { setDebugMode } from './log.ts';
 
-// 模块所在目录（dist-electron/），不依赖 import.meta.url 或 CJS __dirname 全局
-const __dirname = path.resolve(app.getAppPath(), 'dist-electron');
-
 // 含 --dirname 参数时表示 Node.js 调试模式，重定向根目录并开启调试
 let debug = false;
 let dirname = app.getAppPath();

@@ -7,6 +7,7 @@ import { Particle, type ParticleEmitterShape } from '@app/particle/particle-wind
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { OPACITY_BYTE } from '@app/constants/editor.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { debounce } from '@app/utils/safe';
 import {
 	AnimationMotion,
 	AnimationSprite,
@@ -20,6 +21,9 @@ interface AnimationData {
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
+
+const debouncedSceneRender = debounce(() => Scene.requestRendering(), 60);
+const debouncedUiRender = debounce(() => UI.requestRendering(), 60);
 
 export class AnimationPlayer {
 	visible!: boolean;
@@ -466,6 +470,15 @@ export class AnimationPlayer {
 			if (sprite !== undefined && imageId) {
 				const texture = new ImageTexture(imageId);
 				textures![spriteId] = null;
+				if (texture.complete) {
+					const { floor, max } = Math;
+					const { base } = texture;
+					const { hframes, vframes } = sprite;
+					texture.width = floor(max(base!.width / hframes, 1));
+					texture.height = floor(max(base!.height / vframes, 1));
+					textures![spriteId] = texture;
+					return texture;
+				}
 				texture.on('load', () => {
 					if (this.textures === textures) {
 						const { floor, max } = Math;
@@ -477,17 +490,14 @@ export class AnimationPlayer {
 						texture.height = height;
 						textures![spriteId] = texture;
 						if (this.isUIComponent) {
-							UI.requestRendering!();
+							debouncedUiRender();
 						} else {
-							Scene.requestRendering!();
+							debouncedSceneRender();
 						}
 					} else {
 						texture.destroy();
 					}
 				});
-				if (texture.complete) {
-					return texture;
-				}
 			}
 			return null;
 		}

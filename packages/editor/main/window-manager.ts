@@ -39,7 +39,7 @@ export const createEditorWindow = function (
 		event.preventDefault();
 	});
 
-	editor.webContents.on('console-message', (event, level, message, line, sourceId) => {
+	editor.webContents.on('console-message', (_event, level, message, line, sourceId) => {
 		const levelStr = ['log', 'warning', 'error'][level] || 'log';
 		const tag = `[renderer:${levelStr}]`;
 		const loc = `${sourceId}:${line}`;

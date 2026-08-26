@@ -3,10 +3,13 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { PARTICLE_APPEAR_TIMEOUT_MS } from '@app/constants/editor.ts';
+import { debounce } from '@app/utils/safe';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 
 // oxlint-disable-next-line no-explicit-any
 export const ParticleEngine: Record<string, any> = {};
+
+const debouncedStageRender = debounce(() => Scene.requestRendering(), 60);
 
 interface ParticleEmitterData {
 	layers: ParticleLayerData[];
@@ -556,7 +559,6 @@ class ParticleLayer {
 			if (texture.complete) {
 				this.texture = texture;
 				this.calculateElementSize!();
-				ParticleElement.stage.requestRendering();
 				delete (this as unknown as Record<string, unknown>).draw;
 				return;
 			}
@@ -565,7 +567,7 @@ class ParticleLayer {
 				if (this.texture === texture) {
 					this.texture = texture;
 					this.calculateElementSize!();
-					ParticleElement.stage.requestRendering();
+					debouncedStageRender();
 					delete (this as unknown as Record<string, unknown>).draw;
 				} else {
 					texture.destroy();

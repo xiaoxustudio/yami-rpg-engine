@@ -21,7 +21,7 @@ const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientWidth', { value: 300, configurable: true });
 };
 
-const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+const nodeExtras = (_item: unknown, container: HTMLElement): VNode[] => {
 	container.parentElement?.classList.add('plugin-item');
 	return [];
 };

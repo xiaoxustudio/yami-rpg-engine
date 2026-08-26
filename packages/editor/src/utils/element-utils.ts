@@ -282,7 +282,6 @@ export const setTooltip = (function IIFE() {
 	const capture = { capture: true };
 	let state: string = 'closed';
 	let target: HTMLElement | null = null;
-	let _rect: DOMRect | null = null;
 	let timeStamp: number = 0;
 	let clientX: number = 0;
 	let clientY: number = 0;
@@ -337,7 +336,6 @@ export const setTooltip = (function IIFE() {
 					const y = Math.min(clientY + 15, bottom);
 					tooltip.style.left = `${x}px`;
 					tooltip.style.top = `${y}px`;
-					_rect = tooltip.getBoundingClientRect();
 				}
 			}
 		});
@@ -348,7 +346,6 @@ export const setTooltip = (function IIFE() {
 			case 'waiting':
 			case 'open':
 				state = 'closed';
-				_rect = null;
 				timer?.remove();
 				removeClass(tooltip, 'open');
 				window.removeEventListener('keydown', close, capture);

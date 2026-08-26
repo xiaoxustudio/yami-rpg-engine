@@ -248,8 +248,7 @@ NewProject.getNewFolder = function (this: typeof NewProject, ...args: unknown[])
 	}
 };
 
-NewProject.templateInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const _event = args[0] as Event;
+NewProject.templateInput = function (this: typeof NewProject, ..._args: unknown[]) {
 	NewProject.check!();
 };
 
@@ -264,8 +263,7 @@ NewProject.folderBeforeinput = function (this: typeof NewProject, ...args: unkno
 	}
 };
 
-NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const _event = args[0] as Event;
+NewProject.folderInput = function (this: typeof NewProject, ..._args: unknown[]) {
 	const regexp = /[\\/:*?"<>|"]/g;
 	const oldName = form.folder;
 	const newName = oldName.replace(regexp, '');
@@ -275,13 +273,11 @@ NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) 
 	NewProject.check!();
 };
 
-NewProject.locationInput = function (this: typeof NewProject, ...args: unknown[]) {
-	const _event = args[0] as Event;
+NewProject.locationInput = function (this: typeof NewProject, ..._args: unknown[]) {
 	NewProject.check!();
 };
 
-NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) {
-	const _event = args[0] as Event;
+NewProject.chooseClick = function (this: typeof NewProject, ..._args: unknown[]) {
 	File.showOpenDialog!({
 		defaultPath: form.location,
 		properties: ['openDirectory']
@@ -293,8 +289,7 @@ NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) 
 	});
 };
 
-NewProject.confirm = function (this: typeof NewProject, ...args: unknown[]) {
-	const _event = args[0] as Event;
+NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 	const template = form.template;
 	const location = form.location;
 	const folder = form.folder;

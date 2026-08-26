@@ -40,15 +40,8 @@ type PresetElementListEl = HTMLElement & {
 	elements: Array<{ item: { class: string } }> & { count: number };
 };
 
-interface SearcherEl extends HTMLElement {
-	write(value: string): void;
-}
-
 const getList = (): PresetElementListEl =>
 	document.getElementById('presetElement-list') as unknown as PresetElementListEl;
-
-const _getSearcher = (): SearcherEl =>
-	document.getElementById('presetElement-searcher') as unknown as SearcherEl;
 
 const getUiControl = (): HTMLElement & { read(): string } =>
 	document.getElementById('presetElement-uiId') as unknown as HTMLElement & { read(): string };

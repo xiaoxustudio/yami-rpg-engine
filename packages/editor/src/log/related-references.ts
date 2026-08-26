@@ -170,7 +170,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	const pushToUsedMap2 = (path: string, name: string, guid: string | undefined) => {
 		if (guid) pushToUsedMap(`${path}/${name}`, guid);
 	};
-	let pushToInnerMap = (path: string, guid: string | undefined) => {
+	let pushToInnerMap = (_path: string, guid: string | undefined) => {
 		if (guid) innerMap[guid] = true;
 	};
 	let pushToOuterMap = (path: string, guid: string, fileGuid?: string) => {

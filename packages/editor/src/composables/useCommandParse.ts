@@ -286,12 +286,12 @@ const _globalVarRegex = /(?<=<)global(::?)([0-9a-f]{16})(?=>)/g;
 const _localVarCtx = { type: 'local', key: '' };
 const _globalVarCtx = { type: 'global', key: '' };
 
-function _localVarReplacer(match: string, varKey: string): string {
+function _localVarReplacer(_match: string, varKey: string): string {
 	_localVarCtx.key = varKey;
 	return parseVariable(_localVarCtx, 'any')!;
 }
 
-function _globalVarReplacer(match: string, delimiter: string, varKey: string): string {
+function _globalVarReplacer(_match: string, delimiter: string, varKey: string): string {
 	_globalVarCtx.key = varKey;
 	const varSign = delimiter === '::' ? '@' : '';
 	return varSign + parseVariable(_globalVarCtx, 'any');

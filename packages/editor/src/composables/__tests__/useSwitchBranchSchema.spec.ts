@@ -54,15 +54,8 @@ interface ParamListElement extends HTMLElement {
 	clear(): HTMLElement;
 }
 
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
 const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
-const _getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const words: string[] = [];
 

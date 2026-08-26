@@ -158,19 +158,19 @@ UI.Reference = class ReferenceElement extends UI.Element {
 				get x() {
 					return 0;
 				}
-				set x(value: number) {}
+				set x(_value: number) {}
 				get x2() {
 					return 0;
 				}
-				set x2(value: number) {}
+				set x2(_value: number) {}
 				get y() {
 					return 0;
 				}
-				set y(value: number) {}
+				set y(_value: number) {}
 				get y2() {
 					return 0;
 				}
-				set y2(value: number) {}
+				set y2(_value: number) {}
 				get width() {
 					return 0;
 				}
@@ -254,67 +254,67 @@ UI.Reference = class ReferenceElement extends UI.Element {
 				get anchorX() {
 					return 0;
 				}
-				set anchorX(value: number) {}
+				set anchorX(_value: number) {}
 				get anchorY() {
 					return 0;
 				}
-				set anchorY(value: number) {}
+				set anchorY(_value: number) {}
 				get x() {
 					return 0;
 				}
-				set x(value: number) {}
+				set x(_value: number) {}
 				get x2() {
 					return 0;
 				}
-				set x2(value: number) {}
+				set x2(_value: number) {}
 				get y() {
 					return 0;
 				}
-				set y(value: number) {}
+				set y(_value: number) {}
 				get y2() {
 					return 0;
 				}
-				set y2(value: number) {}
+				set y2(_value: number) {}
 				get width() {
 					return 0;
 				}
-				set width(value: number) {}
+				set width(_value: number) {}
 				get width2() {
 					return 1;
 				}
-				set width2(value: number) {}
+				set width2(_value: number) {}
 				get height() {
 					return 0;
 				}
-				set height(value: number) {}
+				set height(_value: number) {}
 				get height2() {
 					return 1;
 				}
-				set height2(value: number) {}
+				set height2(_value: number) {}
 				get rotation() {
 					return 0;
 				}
-				set rotation(value: number) {}
+				set rotation(_value: number) {}
 				get scaleX() {
 					return 1;
 				}
-				set scaleX(value: number) {}
+				set scaleX(_value: number) {}
 				get scaleY() {
 					return 1;
 				}
-				set scaleY(value: number) {}
+				set scaleY(_value: number) {}
 				get skewX() {
 					return 0;
 				}
-				set skewX(value: number) {}
+				set skewX(_value: number) {}
 				get skewY() {
 					return 0;
 				}
-				set skewY(value: number) {}
+				set skewY(_value: number) {}
 				get opacity() {
 					return 1;
 				}
-				set opacity(value: number) {}
+				set opacity(_value: number) {}
 			})();
 		}
 		if (Inspector.uiElement.target === this.node) {

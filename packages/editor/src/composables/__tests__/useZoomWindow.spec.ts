@@ -17,8 +17,6 @@ vi.mock('electron', () => ({
 	webFrame: { getZoomFactor: vi.fn(() => 1.25), setZoomFactor: vi.fn() }
 }));
 
-const _getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
-
 describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open/confirm）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());

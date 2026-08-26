@@ -18,5 +18,5 @@ export const LightProperty = createPropertyWindow({
 		{ name: 'Green', value: 'green', default: 0 },
 		{ name: 'Blue', value: 'blue', default: 0 }
 	],
-	parseValue: (key, value) => Command.parseVariableNumber(value)
+	parseValue: (_key, value) => Command.parseVariableNumber(value)
 });

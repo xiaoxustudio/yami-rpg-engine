@@ -14,5 +14,5 @@ export const WindowProperty = createPropertyWindow({
 		{ name: 'Padding X', value: 'paddingX', default: 0 },
 		{ name: 'Padding Y', value: 'paddingY', default: 0 }
 	],
-	parseValue: (key, value) => Command.parseVariableNumber(value)
+	parseValue: (_key, value) => Command.parseVariableNumber(value)
 });

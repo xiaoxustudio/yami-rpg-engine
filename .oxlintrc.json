@@ -18,7 +18,6 @@
 		"packages/editor/dist/**",
 		"packages/editor/dist-electron/**",
 		"packages/editor/build/**",
-		"packages/editor/Unused/**",
 		"packages/editor/jsons/**",
 		"packages/editor/Project/Templates/**",
 		"packages/editor/index.html",

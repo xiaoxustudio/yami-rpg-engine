@@ -5,9 +5,6 @@ export interface ScrollListenerApi {
 	removeScrollListener(): void;
 }
 
-const _clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
 export function attachScrollListener(el: HTMLElement): ScrollListenerApi {
 	let target = el;
 	let highSpeed = 0;
@@ -105,7 +102,12 @@ export function attachScrollListener(el: HTMLElement): ScrollListenerApi {
 	};
 
 	return {
-		addScrollListener(mode: string, speed: number, shift: boolean, updater?: () => void): void {
+		addScrollListener(
+			mode: string,
+			speed: number,
+			_shift: boolean,
+			updater?: () => void
+		): void {
 			highSpeed = speed;
 			lowSpeed = speed / 3;
 			switch (mode) {

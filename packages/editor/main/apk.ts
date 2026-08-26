@@ -387,7 +387,7 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 		const newXml = builder.buildObject(result);
 		await fs.promises.writeFile(manifestPath, newXml);
 
-		const _modifiedXml = await fs.promises.readFile(manifestPath, 'utf8');
+		await fs.promises.readFile(manifestPath, 'utf8');
 
 		return { success: true };
 	} catch (err) {

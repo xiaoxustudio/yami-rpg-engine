@@ -231,7 +231,7 @@ UI.initialize = function (this: UIShape) {
 		UI.planToSave!();
 	};
 	History.processors['ui-target-anchor'] = (
-		operation: string,
+		_operation: string,
 		data: { editor: DynamicShape; target: UINodeShape; anchorX: number; anchorY: number }
 	) => {
 		const { editor, target, anchorX, anchorY } = data;
@@ -250,7 +250,7 @@ UI.initialize = function (this: UIShape) {
 		UI.planToSave!();
 	};
 	History.processors['ui-target-shift'] = (
-		operation: string,
+		_operation: string,
 		data: { editor: DynamicShape; target: UINodeShape; x: number; y: number }
 	) => {
 		const { editor, target, x, y } = data;
@@ -269,7 +269,7 @@ UI.initialize = function (this: UIShape) {
 		UI.planToSave!();
 	};
 	History.processors['ui-target-resize'] = (
-		operation: string,
+		_operation: string,
 		data: { editor: DynamicShape; target: UINodeShape; width: number; height: number }
 	) => {
 		const { editor, target, width, height } = data;
@@ -288,7 +288,7 @@ UI.initialize = function (this: UIShape) {
 		UI.planToSave!();
 	};
 	History.processors['ui-target-rotate'] = (
-		operation: string,
+		_operation: string,
 		data: { editor: DynamicShape; target: UINodeShape; rotation: number }
 	) => {
 		const { editor, target, rotation } = data;

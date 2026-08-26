@@ -16,15 +16,7 @@ Command.cases.webSocketConnect = new CommandSchema({
 		{ key: 'onError', default: '' },
 		{ key: 'onClose', default: '' }
 	],
-	customParse({
-		url = '',
-		id = '',
-		_protocols = '',
-		_onOpen = '',
-		_onMessage = '',
-		_onError = '',
-		_onClose = ''
-	}) {
+	customParse({ url = '', id = '' }) {
 		return [
 			{ color: 'network' },
 			{ text: t('command.webSocketConnect') },

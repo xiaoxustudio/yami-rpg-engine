@@ -317,7 +317,6 @@ import { t } from '@app/i18n';
 		},
 		save: function () {
 			const elSkillId = $('#fileActor-skill-id');
-			const _elSkillKey = $('#fileActor-skill-key');
 			const id = fileActorSkillForm.id;
 			if (!id) {
 				return getFocus(elSkillId);

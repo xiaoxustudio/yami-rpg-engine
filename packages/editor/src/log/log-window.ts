@@ -141,7 +141,7 @@ Log.openVSCode = function (file: string, line: number, column: number) {
 	YamiIpc.send.openVscode(file, line, column);
 };
 
-Log.tscLog = function (event: unknown, tscMessage: unknown) {
+Log.tscLog = function (_event: unknown, tscMessage: unknown) {
 	let duration = 6;
 	let message = (tscMessage as string).replace('[2J[3J[H', '').trim();
 	if (message.includes('Starting')) {
@@ -152,7 +152,7 @@ Log.tscLog = function (event: unknown, tscMessage: unknown) {
 	} else if (message.includes('error TS')) {
 		message = message.replace(
 			/^([^\s]+\.ts)\((\d+),(\d+)\)/gm,
-			(match: string, path: string, line: string, column: string) => {
+			(_match: string, path: string, line: string, column: string) => {
 				const index = path.lastIndexOf('/');
 				if (index !== -1) {
 					path = `${path.slice(0, index + 1)}<span class="log-strong">${path.slice(index + 1)}</span>`;

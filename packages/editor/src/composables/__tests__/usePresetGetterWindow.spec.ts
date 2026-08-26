@@ -27,17 +27,10 @@ vi.mock('@app/composables/usePresetObjectWindow', () => ({
 	}
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
 interface ControlEl extends HTMLElement {
 	write(value: unknown): void;
 	read(): unknown;
 }
-
-const _getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
 
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 

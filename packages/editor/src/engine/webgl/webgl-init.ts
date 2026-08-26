@@ -61,8 +61,9 @@ interface WebGLPrototypeBufferData {
 		depth: true,
 		stencil: false,
 		premultipliedAlpha: false,
-		preserveDrawingBuffer: false,
-		desynchronized: true
+		// 事件驱动渲染：保留缓冲避免事件间隙/页面重绘时展示已清空的缓冲导致闪烁；
+		// preserveDrawingBuffer 与 desynchronized 语义冲突（保留缓冲需走常规合成），故不开启 desynchronized
+		preserveDrawingBuffer: true
 	};
 
 	// 优先使用WebGL2(Win10 DirectX11)
@@ -71,7 +72,7 @@ interface WebGLPrototypeBufferData {
 		// 回退到WebGL1(Win7 DirectX9以及旧移动设备)
 		GL = canvas.getContext('webgl', options);
 
-		const _element_index_uint = GL.getExtension('OES_element_index_uint');
+		GL.getExtension('OES_element_index_uint');
 
 		const vertex_array_object = GL.getExtension('OES_vertex_array_object');
 		GL.createVertexArray = vertex_array_object.createVertexArrayOES.bind(vertex_array_object);

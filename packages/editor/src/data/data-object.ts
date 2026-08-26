@@ -205,7 +205,7 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 
 	const meta = this.manifest.guidMap[guid];
 	if (!meta) {
-		return new Promise<never>((resolve, reject) => {
+		return new Promise<never>((_resolve, reject) => {
 			reject(new URIError('Metadata is undefined.'));
 		});
 	}

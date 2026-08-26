@@ -234,7 +234,7 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-name-change'] = (
-		operation: string,
+		_operation: string,
 		data: { item: { name: unknown }; value: unknown }
 	) => {
 		const { item, value } = data;
@@ -251,7 +251,7 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-sort-change'] = (
-		operation: string,
+		_operation: string,
 		data: {
 			item: { sort: unknown; value: unknown };
 			value: { sort: unknown; value: unknown };
@@ -279,7 +279,7 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-type-change'] = (
-		operation: string,
+		_operation: string,
 		data: { item: { value: unknown }; value: unknown }
 	) => {
 		const { item, value } = data;
@@ -298,7 +298,7 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-value-change'] = (
-		operation: string,
+		_operation: string,
 		data: { item: { value: unknown }; value: unknown }
 	) => {
 		const { item, value } = data;
@@ -315,7 +315,7 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-note-change'] = (
-		operation: string,
+		_operation: string,
 		data: { item: { note: unknown }; value: unknown }
 	) => {
 		const { item, value } = data;

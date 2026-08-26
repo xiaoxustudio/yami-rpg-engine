@@ -243,7 +243,6 @@ let editor: ScriptEditor | null = null;
 let model: ScriptModel | null = null;
 let versionId = 0;
 let changed = false;
-let _created = false;
 let bound = false;
 let typesDispose: unknown[] = [];
 
@@ -375,7 +374,6 @@ const createEditor = async (): Promise<void> => {
 			}
 		}
 	);
-	_created = true;
 };
 
 const load = async (params: Record<string, unknown> = {}): Promise<void> => {

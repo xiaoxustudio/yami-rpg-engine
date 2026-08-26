@@ -676,7 +676,7 @@ Scene.initialize = function (this: SceneShape) {
 		Scene.planToSave!();
 	};
 	History.processors['scene-resize'] = (
-		operation: string,
+		_operation: string,
 		data: {
 			editor: { target: unknown };
 			width: number;
@@ -703,7 +703,7 @@ Scene.initialize = function (this: SceneShape) {
 		Scene.planToSave!();
 	};
 	History.processors['scene-tilemap-resize'] = (
-		operation: string,
+		_operation: string,
 		data: {
 			editor: { target: unknown };
 			tilemap: {
@@ -737,7 +737,7 @@ Scene.initialize = function (this: SceneShape) {
 		Scene.planToSave!();
 	};
 	History.processors['scene-tilemap-shortcut'] = (
-		operation: string,
+		_operation: string,
 		data: { tilemap: { shortcut: unknown }; shortcut: unknown }
 	) => {
 		const { tilemap, shortcut } = data;
@@ -824,7 +824,7 @@ Scene.initialize = function (this: SceneShape) {
 		Scene.planToSave!();
 	};
 	History.processors['scene-target-shift'] = (
-		operation: string,
+		_operation: string,
 		data: {
 			editor: { target: unknown };
 			target: { x: number; y: number };
@@ -846,7 +846,7 @@ Scene.initialize = function (this: SceneShape) {
 		Scene.planToSave!();
 	};
 	History.processors['scene-target-redirect'] = (
-		operation: string,
+		_operation: string,
 		data: {
 			editor: { target: unknown };
 			target: { angle: number; player: { setAngle(angle: number): void } };

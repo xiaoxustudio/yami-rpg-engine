@@ -56,7 +56,7 @@ vi.mock('@app/stores/local', () => ({
 	describe('useStopEventCommandSchema（stopEvent 命令表单 composable：insert/edit/save 路径）', () => {
 		beforeEach(() => {
 			setActivePinia(createPinia());
-			Enum.getMergedItems = vi.fn((source: unknown, group: string) => [
+			Enum.getMergedItems = vi.fn((_source: unknown, group: string) => [
 				{ name: group, value: group + '-type1' }
 			]) as never;
 			EventEditor.types = { actor: { autorun: {} } } as never;

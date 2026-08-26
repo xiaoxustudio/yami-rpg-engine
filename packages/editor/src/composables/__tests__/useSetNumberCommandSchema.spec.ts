@@ -24,19 +24,12 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-interface ParamListElement extends HTMLElement {
-	read(): unknown[] | null;
-	write(data: unknown[]): void;
-}
-
 interface ControlEl extends HTMLElement {
 	read(): unknown;
 	write(value: unknown): void;
 	input(value: unknown): void;
 }
 
-const _getList = (id: string): ParamListElement =>
-	document.getElementById(id) as unknown as ParamListElement;
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
 const target = {

@@ -35,7 +35,6 @@
 		"dist/**",
 		"dist-electron/**",
 		"build/**",
-		"Unused/**",
 		"jsons/**"
 	]
 }
