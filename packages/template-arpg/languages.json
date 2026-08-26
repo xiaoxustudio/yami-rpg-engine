@@ -1,0 +1,6 @@
+{
+  "languages": [
+    { "id": "zh-CN", "resource": "arpg-ts-chinese" },
+    { "id": "en-US", "resource": "arpg-ts-english" }
+  ]
+}

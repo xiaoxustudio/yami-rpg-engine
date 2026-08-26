@@ -1,0 +1,18 @@
+{
+  "name": "@yami/template-arpg",
+  "version": "1.0.22",
+  "description": "ARPG TS 游戏项目模板（多语言）",
+  "private": true,
+  "scripts": {
+    "build": "vite build --mode zh-CN",
+    "build:zh-cn": "vite build --mode zh-CN",
+    "build:en-us": "vite build --mode en-US",
+    "build:all": "vite build --mode zh-CN && vite build --mode en-US"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/node": "22.20.1",
+    "archiver": "^7.0.1",
+    "vite": "^8.1.5"
+  }
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "path": "arpg-ts-chinese",
+    "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\template-arpg\\out\\arpg-ts-chinese",
+    "version": "1.0.22",
+    "md5": "d021d11b8ee19ace0d254df66ea3af8c",
+    "sha1": "ba6ac9fa9e9ba31cecdff9d70337c9b908f72c57",
+    "sha256": "3359562b436fe9e4eb0df8050665800a999a2527b71f59e16188d3d5f8feef00"
+  },
+  {
+    "path": "arpg-ts-english",
+    "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\template-arpg\\out\\arpg-ts-english",
+    "version": "1.0.22",
+    "md5": "3b6f33cbc8e7cf232784341fec467f9a",
+    "sha1": "ff703e0905e71f8eec2e5b4fad6c6ec51823e284",
+    "sha256": "9f1b84669fd80eba56a2309cb9318566e1e9aa936363225f530a60532431eeef"
+  },
+  {
+    "path": "script",
+    "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\script\\template",
+    "version": "1.0.0",
+    "md5": "dbbcfa16dc764296c5749ecb806dbc3a",
+    "sha1": "1889239b729e5d77af2bc163f0b42f086484349f",
+    "sha256": "83577daf4fa43f8fa4d2048619924cd1632d38ec9846b0df54fce05762be2d2e"
+  },
+  {
+    "path": "Apk",
+    "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\editor\\Project\\Apk",
+    "version": "",
+    "md5": "5ea1d2037c87190a6da0ddd1354213fb",
+    "sha1": "1167cf91012a0b2617901d3a979b80295f52ec13",
+    "sha256": "8c473c3ef629c0c729104410044d36039cebbe5402953ed10ac0a7aa061a070e"
+  }
+]

@@ -29,7 +29,13 @@
 		"packages/editor/Project/Locales/**",
 		"packages/export-electron/node_modules/**",
 		"packages/export-electron/out/**",
-		"packages/export-electron/dist/**"
+		"packages/export-electron/dist/**",
+		"packages/template-arpg/runtime/**",
+		"packages/template-arpg/languages/**",
+		"packages/template-arpg/out/**",
+		"packages/template-arpg/build/**",
+		"packages/script/template/**",
+		"build/**"
 	],
 	"rules": {		"eslint/no-unused-vars": [
 			"warn",
@@ -90,7 +96,32 @@
 			}
 		},
 		{
+			"files": ["scripts/**/*.js"],
+			"env": {
+				"node": true,
+				"commonjs": true
+			},
+			"rules": {
+				"eslint/no-undef": "off",
+				"eslint/no-console": "off"
+			}
+		},
+		{
 			"files": ["packages/export-electron/scripts/**/*.js"],
+			"env": {
+				"node": true,
+				"commonjs": true
+			},
+			"rules": {
+				"eslint/no-undef": "off",
+				"eslint/no-console": "off"
+			}
+		},
+		{
+			"files": [
+				"packages/script/scripts/**/*.js",
+				"packages/template-arpg/vite.config.ts"
+			],
 			"env": {
 				"node": true,
 				"commonjs": true

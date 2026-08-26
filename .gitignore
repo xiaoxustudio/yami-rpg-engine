@@ -4,10 +4,6 @@ Project/config.json
 packages/editor/Project/Templates/electron-win-x64/
 packages/editor/Project/Templates/electron-mac-universal.app/
 Project/Apk/decompiled/
-Project/Templates/arpg-ts-english/Dist
-Project/Templates/arpg-ts-chinese/Dist
-Project/Templates/arpg-ts-english/*.bak
-Project/Templates/arpg-ts-chinese/*.bak
 package-lock.json
 pnpm-lock.yaml
 .DS_Store

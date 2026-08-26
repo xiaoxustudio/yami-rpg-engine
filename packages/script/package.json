@@ -1,0 +1,13 @@
+{
+  "name": "@yami/script",
+  "version": "1.0.0",
+  "description": "Yami 脚本骨架模板",
+  "private": true,
+  "files": ["template"],
+  "scripts": {
+    "pack": "node scripts/pack.js"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1"
+  }
+}

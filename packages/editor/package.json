@@ -10,7 +10,6 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "test": "vitest run",
-    "buildres": "node scripts/buildres.js",
     "build:runtime": "pnpm -F @yami/export-electron build:template",
     "build:runtime:mac": "pnpm -F @yami/export-electron build:template:mac",
     "build:win": "pnpm run build:all && electron-builder --dir --win --x64",
