@@ -1487,12 +1487,12 @@ PluginManager.checkValidate = function (
 
 PluginManager.saveToProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
-	plugin.detailed = this.detailed;
+	plugin!.detailed = this.detailed;
 } as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.loadFromProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
-	this.detailed = plugin.detailed;
+	this.detailed = plugin!.detailed!;
 } as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.windowClose = function (this: typeof PluginManager, event: Event) {

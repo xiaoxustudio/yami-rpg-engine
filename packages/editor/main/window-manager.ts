@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import type { IpcMainEvent, IpcMainInvokeEvent, BrowserWindowExtension } from './types/main.ts';
 import { CHANNELS } from '../src/services/ipc/channels.ts';
 import * as apkProcessor from './apk.ts';
+import { setEditorWindow } from './window-registry.ts';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -27,7 +28,7 @@ export const createEditorWindow = function (
 			sandbox: false,
 			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
-			additionalArguments: ['--disable-security-warnings', ...(debug ? ['--debug-mode'] : [])]
+			additionalArguments: debug ? ['--debug-mode'] : []
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
 
@@ -120,8 +121,8 @@ export const createEditorWindow = function (
 		}
 	});
 
-	// oxlint-disable-next-line no-explicit-any
-	(globalThis as any).editor = editor;
+	setEditorWindow(editor);
+	editor.on('closed', () => setEditorWindow(null));
 };
 
 export const createPlayerWindow = function (
@@ -160,7 +161,7 @@ export const createPlayerWindow = function (
 			sandbox: false,
 			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
-			additionalArguments: ['--disable-security-warnings', '--debug-mode']
+			additionalArguments: ['--debug-mode']
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
 	player.config = window;

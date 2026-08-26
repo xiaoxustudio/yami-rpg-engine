@@ -15,8 +15,7 @@ export function reportError(err: unknown, context?: string): void {
 	}
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: unknown[]) => void>(
 	fn: T,
 	delay = 150
 ): T & { cancel(): void } {
@@ -37,8 +36,7 @@ export function debounce<T extends (...args: any[]) => void>(
 	return debounced;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T & { cancel(): void } {
+export function rafThrottle<T extends (...args: unknown[]) => void>(fn: T): T & { cancel(): void } {
 	let handle: number | undefined;
 	let lastArgs: unknown[];
 	const throttled = function (this: unknown, ...args: unknown[]) {

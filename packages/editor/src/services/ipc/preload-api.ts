@@ -74,10 +74,8 @@ export interface YamiSendApi {
 }
 
 export interface YamiEventApi {
-	// oxlint-disable-next-line no-explicit-any
-	on(channel: SendChannel, listener: (...args: any[]) => void): void;
-	// oxlint-disable-next-line no-explicit-any
-	once(channel: SendChannel, listener: (...args: any[]) => void): void;
+	on(channel: SendChannel, listener: (...args: unknown[]) => void): void;
+	once(channel: SendChannel, listener: (...args: unknown[]) => void): void;
 }
 
 export interface YamiBridgeApi {

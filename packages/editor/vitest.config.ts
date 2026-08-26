@@ -11,11 +11,29 @@ export default defineConfig({
 		}
 	},
 	test: {
-		environment: 'jsdom',
-		setupFiles: ['./vitest.setup.ts'],
-		include: ['src/**/*.spec.ts'],
-		// 组件挂载类测试较多，全量并行时偶发超过默认 5s 超时（与逻辑无关）
-		testTimeout: 20000,
-		hookTimeout: 20000
+		projects: [
+			{
+				extends: true,
+				test: {
+					name: 'src',
+					environment: 'jsdom',
+					setupFiles: ['./vitest.setup.ts'],
+					include: ['src/**/*.spec.ts'],
+					// 组件挂载类测试较多，全量并行时偶发超过默认 5s 超时（与逻辑无关）
+					testTimeout: 20000,
+					hookTimeout: 20000
+				}
+			},
+			{
+				extends: true,
+				test: {
+					name: 'main',
+					environment: 'node',
+					include: ['main/**/*.spec.ts'],
+					testTimeout: 20000,
+					hookTimeout: 20000
+				}
+			}
+		]
 	}
 });

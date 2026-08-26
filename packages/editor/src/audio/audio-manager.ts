@@ -135,8 +135,7 @@ for (const key of audioBridgeKeys) {
 	Object.defineProperty(AudioManager, key, {
 		get: () => getAudioStore()[key],
 		set: (value: unknown) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getAudioStore() as unknown as Record<(typeof audioBridgeKeys)[number], any>)[key] =
+			(getAudioStore() as unknown as Record<(typeof audioBridgeKeys)[number], unknown>)[key] =
 				value;
 		},
 		configurable: true

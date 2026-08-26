@@ -1550,10 +1550,8 @@ import { getEventEditorStore } from '@app/stores/event-editor';
 for (const key of eventEditorBridgeKeys) {
 	Object.defineProperty(EventEditor, key, {
 		get: () => getEventEditorStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getEventEditorStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getEventEditorStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

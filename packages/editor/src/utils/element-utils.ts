@@ -124,64 +124,59 @@ export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
 	return el.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function show(el: Record<string, any> | null | undefined): HTMLElement {
-	if (!el) return el as unknown as HTMLElement;
-	removeClass(el, 'hidden');
+export function show(el: unknown): HTMLElement {
+	const target = el as { classList?: DOMTokenList } | null | undefined;
+	if (!target) return el as unknown as HTMLElement;
+	removeClass(target, 'hidden');
 	return el as unknown as HTMLElement;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function hide(el: Record<string, any> | null | undefined): HTMLElement {
-	if (!el) return el as unknown as HTMLElement;
-	addClass(el, 'hidden');
+export function hide(el: unknown): HTMLElement {
+	const target = el as { classList?: DOMTokenList } | null | undefined;
+	if (!target) return el as unknown as HTMLElement;
+	addClass(target, 'hidden');
 	return el as unknown as HTMLElement;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function addClass(el: Record<string, any> | null | undefined, className: string): boolean {
-	if (!el) return false;
-	if (!el.classList) {
+export function addClass(el: unknown, className: string): boolean {
+	const target = el as { classList?: DOMTokenList } | null | undefined;
+	if (!target) return false;
+	if (!target.classList) {
 		console.error('[addClass] el has no classList:', el, 'stack:', new Error().stack);
 		return false;
 	}
-	if (!el.classList.contains(className)) {
-		el.classList.add(className);
+	if (!target.classList.contains(className)) {
+		target.classList.add(className);
 		return true;
 	}
 	return false;
 }
 
-export function removeClass(
-	// oxlint-disable-next-line no-explicit-any
-	el: Record<string, any> | null | undefined,
-	className: string
-): boolean {
-	if (!el) return false;
-	if (!el.classList) {
+export function removeClass(el: unknown, className: string): boolean {
+	const target = el as { classList?: DOMTokenList } | null | undefined;
+	if (!target) return false;
+	if (!target.classList) {
 		console.error('[removeClass] el has no classList:', el, 'stack:', new Error().stack);
 		return false;
 	}
-	if (el.classList.contains(className)) {
-		el.classList.remove(className);
+	if (target.classList.contains(className)) {
+		target.classList.remove(className);
 		return true;
 	}
 	return false;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function hasClass(el: Record<string, any> | null | undefined, className: string): boolean {
-	if (!el || !el.classList) return false;
-	return el.classList.contains(className);
+export function hasClass(el: unknown, className: string): boolean {
+	const target = el as { classList?: DOMTokenList } | null | undefined;
+	if (!target || !target.classList) return false;
+	return target.classList.contains(className);
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function enable(el: Record<string, any> | null | undefined): void {
+export function enable(el: unknown): void {
 	removeClass(el, 'disabled');
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function disable(el: Record<string, any> | null | undefined): void {
+export function disable(el: unknown): void {
 	addClass(el, 'disabled');
 }
 
@@ -204,9 +199,8 @@ export function css(el: Element): CSSStyleDeclaration {
 	return getComputedStyle(el);
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function rect(el: Record<string, any> | null | undefined): DOMRect {
-	return el!.getBoundingClientRect();
+export function rect(el: unknown): DOMRect {
+	return (el as Element).getBoundingClientRect();
 }
 
 export function clear(el: Node | null | undefined): HTMLElement {
@@ -237,26 +231,33 @@ export function write(el: unknown, value: unknown): void {
 	}
 }
 
-export function getFocus(
-	// oxlint-disable-next-line no-explicit-any
-	el: Record<string, any> | null | undefined,
-	mode: string | null = null
-): void {
+export function getFocus(el: unknown, mode: string | null = null): void {
+	const target = el as
+		| {
+				focus?(): void;
+				select?(): void;
+				value?: string;
+				selectionStart?: number;
+				selectionEnd?: number;
+				scrollLeft?: number;
+		  }
+		| null
+		| undefined;
 	setTimeout(() => {
-		if (!el || typeof el.focus !== 'function') return;
-		el.focus();
+		if (!target || typeof target.focus !== 'function') return;
+		target.focus();
 		switch (mode) {
 			case 'all':
-				if (typeof el.select === 'function') {
-					el.select();
-					el.scrollLeft = 0;
+				if (typeof target.select === 'function') {
+					target.select();
+					target.scrollLeft = 0;
 				}
 				break;
 			case 'end':
-				if (typeof el.selectionStart === 'number') {
-					const endIndex = el.value!.length;
-					el.selectionStart = endIndex;
-					el.selectionEnd = endIndex;
+				if (typeof target.selectionStart === 'number') {
+					const endIndex = target.value!.length;
+					target.selectionStart = endIndex;
+					target.selectionEnd = endIndex;
 				}
 				break;
 		}
@@ -449,9 +450,8 @@ const changeEvents = [
 	new Event('change', { bubbles: true }),
 	new Event('change', { bubbles: true })
 ];
-// oxlint-disable-next-line no-explicit-any
-export function dispatchChangeEvent(el: Record<string, any>, index: number = 0): void {
-	el.dispatchEvent(changeEvents[index]);
+export function dispatchChangeEvent(el: unknown, index: number = 0): void {
+	(el as EventTarget).dispatchEvent(changeEvents[index]);
 }
 
 const updateEvent = new Event('update');
@@ -463,12 +463,17 @@ export function hasScrollBar(el: HTMLElement): boolean {
 	return el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export function isInContent(el: Record<string, any>, event: MouseEvent): boolean {
-	const coords = getRelativeCoords(event, el);
-	const x = coords.x - el.scrollLeft;
-	const y = coords.y - el.scrollTop;
-	return x >= 0 && x < el.clientWidth && y >= 0 && y < el.clientHeight;
+export function isInContent(el: unknown, event: MouseEvent): boolean {
+	const target = el as {
+		scrollLeft: number;
+		scrollTop: number;
+		clientWidth: number;
+		clientHeight: number;
+	};
+	const coords = getRelativeCoords(event, target);
+	const x = coords.x - target.scrollLeft;
+	const y = coords.y - target.scrollTop;
+	return x >= 0 && x < target.clientWidth && y >= 0 && y < target.clientHeight;
 }
 
 function renderElement(vnode: VNode): HTMLElement {
@@ -631,15 +636,12 @@ export function listenDraggingScrollbarEvent(
 	on(el, 'pointerdown', pointerdown, options as AddEventListenerOptions);
 }
 
-export function getRelativeCoords(
-	event: Event,
-	// oxlint-disable-next-line no-explicit-any
-	el: Record<string, any> | null | undefined
-): { x: number; y: number } {
-	const rect = el!.getBoundingClientRect();
+export function getRelativeCoords(event: Event, el: unknown): { x: number; y: number } {
+	const target = el as Element;
+	const rect = target.getBoundingClientRect();
 	return {
-		x: event.clientX - rect.left - el!.clientLeft + el!.scrollLeft,
-		y: event.clientY - rect.top - el!.clientTop + el!.scrollTop
+		x: event.clientX - rect.left - target.clientLeft + target.scrollLeft,
+		y: event.clientY - rect.top - target.clientTop + target.scrollTop
 	};
 }
 

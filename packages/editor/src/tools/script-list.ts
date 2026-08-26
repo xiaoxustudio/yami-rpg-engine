@@ -3,6 +3,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
 import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
+import { collect } from '@app/utils/event-scope';
 import { Command } from '@app/commands/command-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
@@ -45,6 +46,8 @@ interface ScriptListElement {
 	classList: DOMTokenList;
 }
 
+const listScopes = new WeakMap<ScriptListElement, { off(): void }>();
+
 export class ScriptListInterface implements IScriptListInterface {
 	target!: (HTMLElement & { [k: string]: unknown }) | null;
 	type!: string;
@@ -71,15 +74,18 @@ export class ScriptListInterface implements IScriptListInterface {
 			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
 		}
 
-		list.addEventListener('pointerdown', ScriptListInterface.listPointerdown);
+		listScopes.get(list)?.off();
+		const scope = collect(list);
+		scope.on('pointerdown', ScriptListInterface.listPointerdown as EventListener);
 		// oxlint-disable-next-line unbound-method
-		list.addEventListener('dragenter', ScriptListInterface.listDragenter);
+		scope.on('dragenter', ScriptListInterface.listDragenter as EventListener);
 		// oxlint-disable-next-line unbound-method
-		list.addEventListener('dragleave', ScriptListInterface.listDragleave);
+		scope.on('dragleave', ScriptListInterface.listDragleave as EventListener);
 		// oxlint-disable-next-line unbound-method
-		list.addEventListener('dragover', ScriptListInterface.listDragover);
+		scope.on('dragover', ScriptListInterface.listDragover as EventListener);
 		// oxlint-disable-next-line unbound-method
-		list.addEventListener('drop', ScriptListInterface.listDrop);
+		scope.on('drop', ScriptListInterface.listDrop as EventListener);
+		listScopes.set(list, scope);
 	}
 
 	parse(script: ScriptData): unknown[] {

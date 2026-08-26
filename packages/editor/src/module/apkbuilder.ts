@@ -18,9 +18,9 @@ interface ApkLogEntry {
 export const ApkBuilder = new (class {
 	logs: ApkLogEntry[] = [];
 	constructor() {
-		YamiIpc.events.on(CHANNELS.send.apkLog, (_: unknown, log: ApkLogEntry) => {
-			this.logs.push(log);
-			this.apkLog!(log);
+		YamiIpc.events.on(CHANNELS.send.apkLog, (_: unknown, log: unknown) => {
+			this.logs.push(log as ApkLogEntry);
+			this.apkLog!(log as ApkLogEntry);
 		});
 	}
 	build(cfg: ApkConfig) {

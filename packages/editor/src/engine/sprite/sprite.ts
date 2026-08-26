@@ -590,13 +590,13 @@ Sprite.saveToProject = function (this: typeof Sprite, project: EditorProjectShap
 	const { sprite } = project;
 	const zoom = this.zoom;
 	if (zoom !== null) {
-		sprite.zoom = zoom;
+		sprite!.zoom = zoom;
 	}
 };
 
 Sprite.loadFromProject = function (this: typeof Sprite, project: EditorProjectShape) {
 	const { sprite } = project;
-	this.setZoom(sprite.zoom);
+	this.setZoom(sprite!.zoom!);
 };
 
 Sprite.windowResize = function (this: typeof Sprite, _event: Event) {

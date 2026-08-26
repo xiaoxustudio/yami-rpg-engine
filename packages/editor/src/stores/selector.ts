@@ -72,8 +72,7 @@ export interface SelectorInstance {
 
 export const useSelectorStore = defineStore('selector', () => {
 	const state = shallowRef<string>('closed');
-	// oxlint-disable-next-line no-explicit-any
-	const target = shallowRef<any>(null);
+	const target = shallowRef<unknown>(null);
 	const allowNone = shallowRef<boolean>(true);
 	const audioPlayed = shallowRef<boolean>(false);
 	const lastDir = shallowRef<string>('Assets');

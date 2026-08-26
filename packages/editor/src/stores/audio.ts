@@ -5,8 +5,7 @@ import { pinia } from './pinia';
 
 export const useAudioStore = defineStore('audio', () => {
 	const state = shallowRef<string>('closed');
-	// oxlint-disable-next-line no-explicit-any
-	const music = shallowRef<any>(null);
+	const music = shallowRef<{ name: string } | null>(null);
 
 	function initialize() {
 		AudioManager?.initialize?.();

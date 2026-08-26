@@ -37,8 +37,7 @@ export class Timer {
 	duration: number;
 	update: (timer: Timer) => boolean | void;
 	callback: (timer: Timer) => boolean | void;
-	// oxlint-disable-next-line no-explicit-any
-	target!: any;
+	target!: unknown;
 	running!: boolean;
 	speedX!: number;
 	speedY!: number;

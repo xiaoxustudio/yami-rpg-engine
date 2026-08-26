@@ -53,6 +53,7 @@ import SetPlayerActor from '@app/components/commands/SetPlayerActor.vue';
 import { useSetPlayerActorCommandSchema } from '@app/composables/commands/useSetPlayerActorCommandSchema';
 import SetPointerEventRoot from '@app/components/commands/SetPointerEventRoot.vue';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
+import '@app/animation/register.ts';
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (value: unknown) => `[var:${(value as { key?: string })?.key ?? ''}]`,

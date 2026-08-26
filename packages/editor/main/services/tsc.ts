@@ -3,6 +3,7 @@ import { CHANNELS } from '../../src/services/ipc/channels.ts';
 import fs from 'fs';
 import { fork, spawn, type ChildProcess } from 'child_process';
 import path from 'path';
+import { getEditorWindow } from '../window-registry.ts';
 
 // 模块所在目录（dist-electron/），不依赖 import.meta.url 或 CJS __dirname 全局
 const __dirname = path.resolve(app.getAppPath(), 'dist-electron');
@@ -59,13 +60,11 @@ function startTSC(projectDir: string) {
 	});
 	tscProcess = process;
 	process.stdout?.on('data', (data: Buffer | string) => {
-		// oxlint-disable-next-line no-explicit-any
-		const editor = (globalThis as any).editor;
+		const editor = getEditorWindow();
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});
 	process.stderr?.on('data', (data: Buffer | string) => {
-		// oxlint-disable-next-line no-explicit-any
-		const editor = (globalThis as any).editor;
+		const editor = getEditorWindow();
 		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.tscLog, data.toString());
 	});
 }

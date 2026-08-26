@@ -81,13 +81,11 @@ const send: YamiSendApi = {
 };
 
 const events: YamiEventApi = {
-	// oxlint-disable-next-line no-explicit-any
-	on: (channel: SendChannel, listener: (...args: any[]) => void) => {
+	on: (channel: SendChannel, listener: (...args: unknown[]) => void) => {
 		if (!isSendChannel(channel)) return;
 		ipcRenderer.on(channel, (...args: unknown[]) => listener(...args));
 	},
-	// oxlint-disable-next-line no-explicit-any
-	once: (channel: SendChannel, listener: (...args: any[]) => void) => {
+	once: (channel: SendChannel, listener: (...args: unknown[]) => void) => {
 		if (!isSendChannel(channel)) return;
 		ipcRenderer.once(channel, (...args: unknown[]) => listener(...args));
 	}
@@ -95,10 +93,9 @@ const events: YamiEventApi = {
 
 const api: YamiBridgeApi = { invoke, sync, send, events };
 
-try {
+if (process.contextIsolated) {
 	contextBridge.exposeInMainWorld('yami', api);
-} catch {
-	// contextIsolation:false 时 contextBridge 不可用，直接挂载到页面 window
-	// oxlint-disable-next-line no-explicit-any
-	(window as any).yami = api;
+} else {
+	// contextIsolation:false（编辑器依赖渲染进程 Node 桥）时 contextBridge 不可用，直接挂载
+	window.yami = api;
 }

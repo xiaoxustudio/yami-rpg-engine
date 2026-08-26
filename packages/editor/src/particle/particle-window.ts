@@ -1348,18 +1348,18 @@ Particle.loadFromConfig = function (config: ParticleConfigShape) {
 
 Particle.saveToProject = function (project: EditorProjectShape) {
 	const { particle } = project;
-	particle.wireframe = getParticleStore().showWireframe ?? particle.wireframe;
-	particle.anchor = getParticleStore().showAnchor ?? particle.anchor;
-	particle.speed = getParticleStore().speed ?? particle.speed;
-	particle.zoom = getParticleStore().zoom ?? particle.zoom;
+	particle!.wireframe = getParticleStore().showWireframe ?? particle!.wireframe;
+	particle!.anchor = getParticleStore().showAnchor ?? particle!.anchor;
+	particle!.speed = getParticleStore().speed ?? particle!.speed;
+	particle!.zoom = getParticleStore().zoom ?? particle!.zoom;
 };
 
 Particle.loadFromProject = function (project: EditorProjectShape) {
 	const { particle } = project;
-	this.switchWireframe!(particle.wireframe);
-	this.switchAnchor!(particle.anchor);
-	this.setSpeed!(particle.speed);
-	this.setZoom!(particle.zoom);
+	this.switchWireframe!(particle!.wireframe!);
+	this.switchAnchor!(particle!.anchor!);
+	this.setSpeed!(particle!.speed!);
+	this.setZoom!(particle!.zoom!);
 };
 
 Particle.webglRestored = function (_event: Event) {
@@ -1891,10 +1891,8 @@ const particleBridgeKeys = [
 for (const key of particleBridgeKeys) {
 	Object.defineProperty(Particle, key, {
 		get: () => getParticleStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getParticleStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getParticleStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

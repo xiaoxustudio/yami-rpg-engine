@@ -525,6 +525,11 @@ Localization.windowClosed = function (this: LocalizationShape, _event: Event) {
 	getLocalizationStore().state = 'closed';
 	this.data = null;
 	this.idMap = null;
+	if (this.inputs) {
+		for (const input of Object.values(this.inputs)) {
+			Selection.removeEventListeners(input as HTMLTextAreaElement);
+		}
+	}
 	this.inputs = null;
 	UndoManager.setActive(this._previousActive);
 	this._previousActive = null;

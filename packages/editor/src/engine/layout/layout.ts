@@ -1421,10 +1421,8 @@ import { getLayoutStore } from '@app/stores/layout';
 for (const key of layoutBridgeKeys) {
 	Object.defineProperty(Layout, key, {
 		get: () => getLayoutStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getLayoutStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getLayoutStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

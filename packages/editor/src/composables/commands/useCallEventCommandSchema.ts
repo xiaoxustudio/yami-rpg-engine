@@ -273,6 +273,9 @@ export function useCallEventCommandSchema() {
 	};
 	const clearGlobalEventElements = (): void => {
 		for (const { label, input } of parameters) {
+			if (input.strBox) {
+				Selection.removeEventListeners!(input.strBox as HTMLTextAreaElement);
+			}
 			label.remove();
 			input.remove();
 		}

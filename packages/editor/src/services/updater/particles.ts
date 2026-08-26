@@ -2,6 +2,20 @@ import { getDataStore } from '@app/stores/data';
 import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
+interface ParticleLayerShape {
+	anchor: Record<string, number[]>;
+	movement: Record<string, number[]>;
+	rotation: Record<string, number[]>;
+	hRotation: Record<string, number[]>;
+	scale: Record<string, number[]>;
+	[key: string]: unknown;
+}
+
+interface ParticleShape {
+	layers: ParticleLayerShape[];
+	[key: string]: unknown;
+}
+
 function updateParticles(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.95')) {
 		const convert = (array: number[]) => {
@@ -13,8 +27,9 @@ function updateParticles(verNum: number) {
 			array[1] = dev;
 		};
 		const { manifest, particles } = getDataStore().data;
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, particle] of Object.entries<any>(particles!)) {
+		for (const [guid, particle] of Object.entries(
+			particles! as Record<string, ParticleShape>
+		)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -47,8 +62,9 @@ function updateParticles(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('particleLayer'));
 		const { manifest, particles } = getDataStore().data;
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, particle] of Object.entries<any>(particles!)) {
+		for (const [guid, particle] of Object.entries(
+			particles! as Record<string, ParticleShape>
+		)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -65,15 +81,15 @@ function updateParticles(verNum: number) {
 					switch (key) {
 						case 'sprite':
 							if (typeof sLayer.hframes === 'number') {
-								dLayer[key].hframes = sLayer.hframes;
+								(dLayer[key] as { hframes?: unknown }).hframes = sLayer.hframes;
 							}
 							if (typeof sLayer.vframes === 'number') {
-								dLayer[key].vframes = sLayer.vframes;
+								(dLayer[key] as { vframes?: unknown }).vframes = sLayer.vframes;
 							}
 							continue;
 					}
 				}
-				layers[i] = dLayer;
+				layers[i] = dLayer as ParticleLayerShape;
 			}
 			append(getDataStore().data.manifest!.changes as unknown[], meta);
 		}

@@ -36,8 +36,7 @@ export const paletteStateKeys: (keyof PaletteShape)[] = [
 export const usePaletteStore = defineStore('palette', () => {
 	const state = shallowRef<string>('closed');
 	const mode = shallowRef<string>('normal');
-	// oxlint-disable-next-line no-explicit-any
-	const zoom = shallowRef<any>(null);
+	const zoom = shallowRef<number | null>(null);
 	const showGrid = shallowRef<boolean>(true);
 	const scrollable = shallowRef<boolean>(false);
 	const activeIndex = shallowRef<number | null>(null);

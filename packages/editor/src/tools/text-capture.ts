@@ -1,5 +1,6 @@
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { $ } from '@app/utils/dom';
+import { collect } from '@app/utils/event-scope';
 import type { TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { getFocus } from '@app/utils/element-utils';
 import { ctrl } from '@app/utils/event-accessors';
@@ -89,6 +90,7 @@ interface SelectionShape {
 	saveContext: (this: SelectionShape) => void;
 	restoreContext: (this: SelectionShape) => void;
 	addEventListeners: (this: SelectionShape, element: EventListenerElement) => void;
+	removeEventListeners: (this: SelectionShape, element: EventListenerElement) => void;
 	match: (this: SelectionShape) => { tag: TagName; params: Record<string, unknown> } | undefined;
 	insert: (this: SelectionShape, tag: TagName) => void;
 	edit: (this: SelectionShape) => void;
@@ -129,6 +131,7 @@ export const Selection: SelectionShape = {
 	saveContext: null as unknown as SelectionShape['saveContext'],
 	restoreContext: null as unknown as SelectionShape['restoreContext'],
 	addEventListeners: null as unknown as SelectionShape['addEventListeners'],
+	removeEventListeners: null as unknown as SelectionShape['removeEventListeners'],
 	match: null as unknown as SelectionShape['match'],
 	insert: null as unknown as SelectionShape['insert'],
 	edit: null as unknown as SelectionShape['edit'],
@@ -150,6 +153,8 @@ export const Selection: SelectionShape = {
 	dynamicGlobalVariable: null as unknown as TagController,
 	localization: null as unknown as TagController
 };
+
+const listenerScopes = new WeakMap<EventListenerElement, { off(): void }>();
 
 Selection.initialize = function (this: SelectionShape) {
 	if (!$('#font-confirm')) return;
@@ -194,10 +199,17 @@ Selection.restoreContext = function (this: SelectionShape) {
 };
 
 Selection.addEventListeners = function (this: SelectionShape, element: EventListenerElement) {
-	element.addEventListener('keydown', this.inputKeydown as EventListener);
-	element.addEventListener('keyup', this.inputKeyup as EventListener);
-	element.addEventListener('pointerdown', this.inputPointerdown as EventListener);
-	element.addEventListener('pointerup', this.inputPointerup as EventListener);
+	const scope = collect(element as EventTarget);
+	scope.on('keydown', this.inputKeydown as EventListener);
+	scope.on('keyup', this.inputKeyup as EventListener);
+	scope.on('pointerdown', this.inputPointerdown as EventListener);
+	scope.on('pointerup', this.inputPointerup as EventListener);
+	listenerScopes.set(element, scope);
+};
+
+Selection.removeEventListeners = function (this: SelectionShape, element: EventListenerElement) {
+	listenerScopes.get(element)?.off();
+	listenerScopes.delete(element);
 };
 
 Selection.match = function (this: SelectionShape) {

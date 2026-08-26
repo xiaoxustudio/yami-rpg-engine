@@ -37,8 +37,9 @@ Command.cases.script = new CommandSchema({
 		options.theme = Title.theme;
 		await this.createTheme!(Title.theme);
 		void monaco.editor.colorizeElement(text, options);
+		let attempts = 0;
 		let index = setInterval(() => {
-			if (text.children.length !== 0) {
+			if (text.children.length !== 0 || ++attempts >= 200) {
 				clearInterval(index);
 				const nodes = text.childNodes;
 				const nLength = nodes.length;

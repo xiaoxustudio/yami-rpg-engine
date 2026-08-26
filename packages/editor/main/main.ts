@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { createEditorWindow } from './window-manager.ts';
 import { promises } from './ipc-handlers.ts';
+import { setDebugMode } from './log.ts';
 
 // 模块所在目录（dist-electron/），不依赖 import.meta.url 或 CJS __dirname 全局
 const __dirname = path.resolve(app.getAppPath(), 'dist-electron');
@@ -28,6 +29,7 @@ for (const arg of process.argv) {
 const devServerUrl = process.argv.find((arg) => arg.startsWith('--dev-server-url='))?.split('=')[1];
 const VITE_DEV_URL = devServerUrl || 'http://localhost:5173';
 const useViteDev = !!devServerUrl;
+setDebugMode(debug);
 
 const extensionPath = path.join('./extension');
 app.on('ready', () => {
@@ -36,6 +38,16 @@ app.on('ready', () => {
 		callback(false);
 	});
 	session.defaultSession.setPermissionCheckHandler(() => false);
+
+	// 全局防线：所有 webContents 一律禁止弹窗，禁止导航到非本地/dev 地址
+	app.on('web-contents-created', (_event, contents) => {
+		contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+		contents.on('will-navigate', (event, url) => {
+			const allowed = url.startsWith('file://') || url.startsWith(VITE_DEV_URL);
+			if (!allowed) event.preventDefault();
+		});
+	});
+
 	createEditorMenu();
 	createEditorWindow(debug, dirname, useViteDev, VITE_DEV_URL);
 	const isExtension = fs.existsSync(extensionPath);
@@ -88,8 +100,7 @@ const createMenuTemplate = function () {
 		file.submenu.push({
 			label: 'FullScreen',
 			accelerator: 'F11',
-			// oxlint-disable-next-line no-explicit-any
-			role: 'toggleFullScreen' as any
+			role: 'toggleFullScreen' as 'togglefullscreen'
 		});
 	}
 	file.submenu.push({

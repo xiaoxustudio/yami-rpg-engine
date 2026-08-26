@@ -11,6 +11,11 @@ interface UiNode {
 	[key: string]: unknown;
 }
 
+interface UiShape {
+	nodes: UiNode[];
+	[key: string]: unknown;
+}
+
 function updateElements(verNum: number) {
 	const replaceUIElement = (replacer: (node: UiNode) => UiNode | undefined) => {
 		const { manifest, ui } = getDataStore().data;
@@ -32,8 +37,7 @@ function updateElements(verNum: number) {
 				}
 			}
 		};
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, sUi] of Object.entries<any>(ui!)) {
+		for (const [guid, sUi] of Object.entries(ui! as Record<string, UiShape>)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -62,7 +66,7 @@ function updateElements(verNum: number) {
 							continue;
 					}
 				}
-				return dNode;
+				return dNode as UiNode;
 			}
 		});
 	}
@@ -100,7 +104,7 @@ function updateElements(verNum: number) {
 						dNode[key] = sNode[key];
 					}
 				}
-				return dNode;
+				return dNode as UiNode;
 			}
 		});
 	}

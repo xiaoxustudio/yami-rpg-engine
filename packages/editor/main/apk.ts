@@ -6,6 +6,8 @@ import { spawn, type ChildProcess } from 'child_process';
 import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
 import { CHANNELS } from '../src/services/ipc/channels.ts';
+import { getEditorWindow } from './window-registry.ts';
+import { debugLog } from './log.ts';
 
 // 参数数组式执行外部命令，避免 shell 字符串拼接的注入面
 function runProcess(command: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
@@ -100,7 +102,7 @@ async function copyFolderAsync(source: string, destination: string): Promise<voi
 					await copyFolderAsync(sourcePath, destPath);
 				} else {
 					await fsp.copyFile(sourcePath, destPath);
-					console.log(`📄 已复制: ${item}`);
+					debugLog(`📄 已复制: ${item}`);
 				}
 			})
 		);
@@ -111,10 +113,9 @@ async function copyFolderAsync(source: string, destination: string): Promise<voi
 }
 
 function sendLog(msg: string, percentage: number | null = null, isError: boolean = false): void {
-	// oxlint-disable-next-line no-explicit-any
-	if ((globalThis as any).editor && typeof (globalThis as any).editor.send === 'function') {
-		// oxlint-disable-next-line no-explicit-any
-		(globalThis as any).editor.send(CHANNELS.send.apkLog, {
+	const editor = getEditorWindow();
+	if (editor && !editor.isDestroyed()) {
+		editor.send(CHANNELS.send.apkLog, {
 			done: isError,
 			msg: percentage !== null ? `[${percentage}%] ${msg}` : msg
 		});
@@ -460,7 +461,7 @@ async function updateStringsFile(stringsPath: string, config: ApkConfig): Promis
 async function replaceIconsWithSharp(
 	config: ApkConfig
 ): Promise<{ success: boolean; error?: string }> {
-	console.log('使用sharp处理并替换应用图标...');
+	debugLog('使用sharp处理并替换应用图标...');
 
 	try {
 		const resDir = path.join(config.outputDir, 'res');
@@ -490,7 +491,7 @@ async function replaceIconsWithSharp(
 		if (iconDirs.length === 0) {
 			throw new Error('未找到任何图标目录（mipmap/drawable），无法替换图标');
 		}
-		console.log(`找到图标目录: ${iconDirs.join(', ')}`);
+		debugLog(`找到图标目录: ${iconDirs.join(', ')}`);
 
 		for (const dirPath of iconDirs) {
 			const dirName = path.basename(dirPath);
@@ -519,7 +520,7 @@ async function replaceIconsWithSharp(
 
 		await removeAdaptiveIconConfigs(config);
 
-		console.log('所有图标目录处理完成');
+		debugLog('所有图标目录处理完成');
 		return { success: true };
 	} catch (err) {
 		return {
@@ -568,7 +569,7 @@ async function removeRoundIcons(config: ApkConfig): Promise<{ success: boolean; 
 					if (file.includes('_round')) {
 						// oxlint-disable-next-line no-await-in-loop
 						await fs.promises.unlink(path.join(dirPath, file));
-						console.log(`已删除圆形图标: ${path.join(dirPath, file)}`);
+						debugLog(`已删除圆形图标: ${path.join(dirPath, file)}`);
 					}
 				}
 			}
@@ -594,7 +595,7 @@ async function fixResourceReferences(
 
 		const stylesPath = path.join(config.outputDir, 'res', 'values', 'styles.xml');
 		if (fs.existsSync(stylesPath)) {
-			console.log('检查 styles.xml 中的圆形图标引用...');
+			debugLog('检查 styles.xml 中的圆形图标引用...');
 			await cleanStylesXml(stylesPath);
 		}
 
@@ -640,21 +641,16 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 	const result = await parseXml(xml);
 
 	if (result.resources && result.resources.public) {
-		result.resources.public = result.resources.public.filter(
-			(item: { $: { name: string; type?: string } }) => {
-				const name = item.$.name;
-				const type = item.$.type;
+		result.resources.public = result.resources.public.filter((item) => {
+			const name = item.$.name;
+			const type = item.$.type;
 
-				// 只保留ic_launcher的资源映射，删除其他 launcher 相关资源
-				if (name === 'ic_launcher' && (type === 'mipmap' || type === 'drawable')) {
-					return true;
-				}
-				return !(
-					name.includes('ic_launcher') &&
-					(type === 'mipmap' || type === 'drawable')
-				);
+			// 只保留ic_launcher的资源映射，删除其他 launcher 相关资源
+			if (name === 'ic_launcher' && (type === 'mipmap' || type === 'drawable')) {
+				return true;
 			}
-		);
+			return !(name.includes('ic_launcher') && (type === 'mipmap' || type === 'drawable'));
+		});
 	}
 
 	const builder = new Builder();
@@ -663,7 +659,7 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 }
 
 async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?: string }> {
-	console.log('重新编译APK...');
+	debugLog('重新编译APK...');
 
 	try {
 		const { stdout: _stdout, stderr } = await runProcess('java', [
@@ -681,7 +677,7 @@ async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?
 				!stderr.includes('failed linking references') &&
 				!stderr.includes('Exception in thread "main"')
 			) {
-				console.log('重新编译成功（有警告）');
+				debugLog('重新编译成功（有警告）');
 				return { success: true };
 			}
 
@@ -709,7 +705,7 @@ async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?
 }
 
 async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error?: string }> {
-	console.log('执行zipalign对齐处理...');
+	debugLog('执行zipalign对齐处理...');
 
 	if (!fileExists(config.zipalignPath)) {
 		return {
@@ -732,7 +728,7 @@ async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error
 		await fs.promises.unlink(config.newApkPath);
 		await fs.promises.rename(alignedTempPath, config.newApkPath);
 
-		console.log('✅ zipalign对齐处理完成');
+		debugLog('✅ zipalign对齐处理完成');
 		return { success: true };
 	} catch (error) {
 		return {
@@ -778,7 +774,7 @@ async function signApk(config: ApkConfig): Promise<{ success: boolean; error?: s
 		await runProcess(config.apksignerPath, apksignerArgs);
 	} catch (apksignerError) {
 		try {
-			console.log(`执行命令: jarsigner ${jarsignerArgs.join(' ')}`);
+			debugLog(`执行命令: jarsigner ${jarsignerArgs.join(' ')}`);
 			await runProcess('jarsigner', jarsignerArgs);
 
 			await fs.promises.rename(config.newApkPath, config.signedApkPath);
@@ -799,7 +795,7 @@ async function signApk(config: ApkConfig): Promise<{ success: boolean; error?: s
 }
 
 async function verifySignature(config: ApkConfig): Promise<void> {
-	console.log('验证APK签名...');
+	debugLog('验证APK签名...');
 
 	try {
 		const { stdout, stderr: _stderr } = await runProcess(config.apksignerPath, [
@@ -809,7 +805,7 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 		]);
 
 		if (stdout.includes('Verified')) {
-			console.log('✅ APK签名验证成功');
+			debugLog('✅ APK签名验证成功');
 		} else {
 			console.warn('⚠️ APK签名验证结果不确定');
 		}
@@ -818,12 +814,27 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 	}
 }
 
-// oxlint-disable-next-line no-explicit-any
-function parseXml(xml: string): Promise<any> {
+interface XmlElement {
+	$: Record<string, string>;
+	_?: string;
+	string?: XmlElement[];
+	style?: XmlElement[];
+	public?: XmlElement[];
+	item?: XmlElement[];
+	application?: XmlElement | XmlElement[];
+	[key: string]: unknown;
+}
+
+interface XmlRoot extends XmlElement {
+	manifest: XmlElement;
+	resources: XmlElement;
+}
+
+function parseXml(xml: string): Promise<XmlRoot> {
 	return new Promise((resolve, reject) => {
 		parseString(xml, (err: Error | null, result: unknown) => {
 			if (err) reject(err);
-			else resolve(result);
+			else resolve(result as XmlRoot);
 		});
 	});
 }

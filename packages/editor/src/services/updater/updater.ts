@@ -1,9 +1,10 @@
+import type { DataEntryShape } from '@app/stores/data';
+
 export interface UpdaterHooks {
 	getProjectPath: () => string | null;
 	getProject: () => Record<string, unknown> | null;
 	getLocalEvents: () => Record<string, unknown[]>;
-	// oxlint-disable-next-line no-explicit-any
-	createInspectorSchema: (type: string, arg?: string) => any;
+	createInspectorSchema: (type: string, arg?: string) => DataEntryShape;
 	getUiInspectorType: (className: string) => string;
 	getLanguage: () => string;
 	openUpdateLog: (messages?: unknown[]) => void;

@@ -869,13 +869,13 @@ Palette.saveToProject = function (this: typeof Palette, project: EditorProjectSh
 	const { palette } = project;
 	const zoom = getPaletteStore().zoom;
 	if (zoom !== null) {
-		palette.zoom = zoom;
+		palette!.zoom = zoom;
 	}
 };
 
 Palette.loadFromProject = function (this: typeof Palette, project: EditorProjectShape) {
 	const { palette } = project;
-	this.setZoom(palette.zoom);
+	this.setZoom(palette!.zoom!);
 };
 
 Palette.windowResize = function (this: typeof Palette, _event: Event) {
@@ -1013,11 +1013,11 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 			}
 			case 'Minus':
 			case 'NumpadSubtract':
-				Palette.setZoom(getPaletteStore().zoom - 1);
+				Palette.setZoom(getPaletteStore().zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				Palette.setZoom(getPaletteStore().zoom + 1);
+				Palette.setZoom(getPaletteStore().zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -1047,7 +1047,7 @@ Palette.screenWheel = (function IIFE() {
 		} else {
 			event.preventDefault();
 			if (event.deltaY !== 0 && this.dragging === null) {
-				this.setZoom(getPaletteStore().zoom + (event.deltaY > 0 ? -1 : 1));
+				this.setZoom(getPaletteStore().zoom! + (event.deltaY > 0 ? -1 : 1));
 			}
 		}
 	}.bind(Palette);
@@ -1556,10 +1556,8 @@ import { getPaletteStore } from '@app/stores/palette';
 for (const key of paletteBridgeKeys) {
 	Object.defineProperty(Palette, key, {
 		get: () => getPaletteStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getPaletteStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getPaletteStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

@@ -2,12 +2,17 @@ import { getDataStore } from '@app/stores/data';
 import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
+interface LocalEventShape {
+	commands?: unknown;
+	enabled?: unknown;
+	[key: string]: unknown;
+}
+
 function updateLocalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const listMap = Updater.hooks.getLocalEvents();
 		const { manifest } = getDataStore().data;
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, events] of Object.entries<any>(listMap)) {
+		for (const [guid, events] of Object.entries(listMap as Record<string, LocalEventShape[]>)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -27,8 +32,7 @@ function updateGlobalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, events } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEvent', 'global'));
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, sEvent] of Object.entries<any>(events!)) {
+		for (const [guid, sEvent] of Object.entries(events!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);

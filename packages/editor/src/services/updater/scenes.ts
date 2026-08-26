@@ -9,6 +9,13 @@ interface SceneObject {
 	[key: string]: unknown;
 }
 
+interface SceneShape {
+	objects: SceneObject[];
+	ambient: Record<string, unknown>;
+	contrast?: unknown;
+	[key: string]: unknown;
+}
+
 function updateScenes(verNum: number) {
 	const replaceSceneObject = (replacer: (object: SceneObject) => SceneObject | undefined) => {
 		const { manifest, scenes } = getDataStore().data;
@@ -30,8 +37,7 @@ function updateScenes(verNum: number) {
 				}
 			}
 		};
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, scene] of Object.entries<any>(scenes!)) {
+		for (const [guid, scene] of Object.entries(scenes! as Record<string, SceneShape>)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -41,8 +47,7 @@ function updateScenes(verNum: number) {
 	};
 	if (verNum < Updater.getVersionNumber!('1.0.116')) {
 		const { manifest, scenes } = getDataStore().data;
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, scene] of Object.entries<any>(scenes!)) {
+		for (const [guid, scene] of Object.entries(scenes! as Record<string, SceneShape>)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -63,7 +68,7 @@ function updateScenes(verNum: number) {
 						dLight[key] = sLight[key];
 					}
 				}
-				return dLight;
+				return dLight as SceneObject;
 			}
 		});
 	}
@@ -78,7 +83,7 @@ function updateScenes(verNum: number) {
 						dActor[key] = sActor[key];
 					}
 				}
-				return dActor;
+				return dActor as SceneObject;
 			}
 		});
 	}

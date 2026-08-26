@@ -3,8 +3,7 @@ import { PluginManager } from '@app/plugin/plugin.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
-// oxlint-disable-next-line no-explicit-any
-type PluginItemShape = { id: string; enabled: boolean; [k: string]: any };
+type PluginItemShape = { id: string; enabled: boolean; [k: string]: unknown };
 
 export const pluginStateKeys = ['plugins'] as const;
 

@@ -29,6 +29,7 @@ import '@app/engine/ui/reference-element.ts';
 import { AnimationPlayer } from '@app/engine/animation/animation-player.ts';
 import { bindAnimationWindow } from '@app/engine/animation/animation-window-engine.ts';
 import { Animation } from '@app/animation/animation-window.ts';
+import '@app/animation/register.ts';
 import '@app/particle/particle-window.ts';
 import '@app/commands/command-custom.ts';
 import '@app/main/editor-hooks.ts';

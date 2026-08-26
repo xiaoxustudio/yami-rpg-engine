@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Animation } from '@app/animation/animation-window.ts';
+import '@app/animation/register.ts';
 import { getAnimationStore } from '@app/stores/animation';
 
 describe('animation-window 控件值桥接（Animation ↔ animation store 双向绑定）', () => {

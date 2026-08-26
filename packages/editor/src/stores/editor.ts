@@ -28,8 +28,7 @@ export interface EditorConfigShape {
 		export?: string;
 	};
 	scriptEditor?: { mode?: string; path?: string };
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 // Editor.project 结构（宽类型起步——字段随迁移细化）
@@ -48,8 +47,11 @@ export interface EditorProjectShape {
 	openTabs?: string[];
 	activeTab?: string;
 	selector?: { view?: number };
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	sprite?: { zoom?: number };
+	palette?: { zoom?: number };
+	particle?: { wireframe?: boolean; anchor?: boolean; speed?: number; zoom?: number };
+	plugin?: { detailed?: boolean };
+	[key: string]: unknown;
 }
 
 export const useEditorStore = defineStore('editor', () => {

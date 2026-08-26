@@ -17,22 +17,25 @@ export const animationStateKeys = [
 type AnimationFrameShape = {
 	start: number;
 	end: number;
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	x?: number;
+	y?: number;
+	rotation?: number;
+	scaleX?: number;
+	scaleY?: number;
+	[key: string]: unknown;
 };
 
 type AnimationMotionShape = {
 	id: string;
 	mode: string;
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	dirCases?: Record<string, unknown>[];
+	[key: string]: unknown;
 };
 
 type AnimationContextShape = {
 	meta: { guid: string; path: string } & Record<string, unknown>;
 	animation: { mode: string; motions: AnimationMotionShape[] } & Record<string, unknown>;
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	[key: string]: unknown;
 };
 
 export const useAnimationStore = defineStore('animation', () => {

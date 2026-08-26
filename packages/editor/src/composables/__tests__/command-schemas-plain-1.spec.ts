@@ -42,6 +42,7 @@ import Comment from '@app/components/commands/Comment.vue';
 import { useCommentCommandSchema } from '@app/composables/commands/useCommentCommandSchema';
 import ControlButton from '@app/components/commands/ControlButton.vue';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
+import '@app/animation/register.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

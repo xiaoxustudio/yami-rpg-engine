@@ -20,10 +20,8 @@ const writeFile = async (filePath: string, text: string | Uint8Array, check?: bo
 	return FSP.writeFile(filePath, text);
 };
 
-// oxlint-disable-next-line no-explicit-any
-export const promises: Promise<any>[] = [];
-// oxlint-disable-next-line no-explicit-any
-const protectPromise = function (promise: Promise<any>) {
+export const promises: Promise<unknown>[] = [];
+const protectPromise = function (promise: Promise<unknown>) {
 	promises.push(promise);
 	void promise.finally(() => {
 		const index = promises.indexOf(promise);
@@ -316,9 +314,8 @@ ipcMain.handle(CHANNELS.invoke.relaunchApp, async (event) => {
 
 ipcMain.handle(CHANNELS.invoke.buildApk, (event, config) => {
 	const send = (data: { done: boolean; msg: string }) => {
-		// oxlint-disable-next-line no-explicit-any
-		const editor = (globalThis as any).editor;
-		if (editor && !editor.isDestroyed()) editor.send(CHANNELS.send.apkLog, data);
+		const sender = event.sender;
+		if (!sender.isDestroyed()) sender.send(CHANNELS.send.apkLog, data);
 	};
 	if (apkProcessor.isBuilding()) {
 		send({

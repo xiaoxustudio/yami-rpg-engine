@@ -2682,10 +2682,8 @@ import { getUIStore } from '@app/stores/ui';
 for (const key of uiBridgeKeys) {
 	Object.defineProperty(UI, key, {
 		get: () => getUIStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getUIStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getUIStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

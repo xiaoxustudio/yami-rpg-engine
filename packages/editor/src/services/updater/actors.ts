@@ -6,8 +6,7 @@ function updateActors(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { manifest, actors } = getDataStore().data;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileActor'));
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, sActor] of Object.entries<any>(actors!)) {
+		for (const [guid, sActor] of Object.entries(actors!)) {
 			const meta = manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);

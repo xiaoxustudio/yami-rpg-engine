@@ -1488,10 +1488,8 @@ import { getSceneStore } from '@app/stores/scene';
 for (const key of sceneBridgeKeys) {
 	Object.defineProperty(Scene, key, {
 		get: () => getSceneStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getSceneStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getSceneStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

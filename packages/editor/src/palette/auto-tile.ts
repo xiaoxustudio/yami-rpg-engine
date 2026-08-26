@@ -962,10 +962,8 @@ import { getAutoTileStore } from '@app/stores/auto-tile';
 for (const key of autoTileBridgeKeys) {
 	Object.defineProperty(AutoTile, key, {
 		get: () => getAutoTileStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getAutoTileStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getAutoTileStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

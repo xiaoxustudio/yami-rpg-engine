@@ -9,6 +9,21 @@ interface AnimLayer {
 	[key: string]: unknown;
 }
 
+interface AnimDirCase {
+	layers: AnimLayer[];
+	[key: string]: unknown;
+}
+
+interface AnimMotion {
+	dirCases: AnimDirCase[];
+	[key: string]: unknown;
+}
+
+interface AnimationShape {
+	motions: AnimMotion[];
+	[key: string]: unknown;
+}
+
 function updateAnimations(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.37')) {
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('animSpriteFrame'));
@@ -40,8 +55,9 @@ function updateAnimations(verNum: number) {
 				}
 			}
 		};
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
+		for (const [guid, animation] of Object.entries(
+			getDataStore().data.animations! as Record<string, AnimationShape>
+		)) {
 			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
@@ -71,14 +87,15 @@ function updateAnimations(verNum: number) {
 								dLayer[key] = sLayer[key];
 							}
 						}
-						layers[i] = dLayer;
+						layers[i] = dLayer as AnimLayer;
 						continue;
 					}
 				}
 			}
 		};
-		// oxlint-disable-next-line no-explicit-any
-		for (const [guid, animation] of Object.entries<any>(getDataStore().data.animations!)) {
+		for (const [guid, animation] of Object.entries(
+			getDataStore().data.animations! as Record<string, AnimationShape>
+		)) {
 			const meta = getDataStore().data.manifest!.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);

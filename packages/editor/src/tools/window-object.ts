@@ -303,10 +303,8 @@ import { getWindowStore } from '@app/stores/window';
 for (const key of windowBridgeKeys) {
 	Object.defineProperty(Window, key, {
 		get: () => getWindowStore()[key],
-		// oxlint-disable-next-line no-explicit-any
-		set: (value: any) => {
-			// oxlint-disable-next-line no-explicit-any
-			(getWindowStore() as unknown as Record<string, any>)[key] = value;
+		set: (value: unknown) => {
+			(getWindowStore() as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});
