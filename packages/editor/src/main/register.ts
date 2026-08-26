@@ -30,10 +30,15 @@ import { AnimationPlayer } from '@app/engine/animation/animation-player.ts';
 import { bindAnimationWindow } from '@app/engine/animation/animation-window-engine.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import '@app/animation/register.ts';
+import '@app/ui/register.ts';
 import '@app/particle/particle-window.ts';
+import '@app/particle/register.ts';
 import '@app/commands/command-custom.ts';
+import '@app/commands/event-editor-register.ts';
 import '@app/main/editor-hooks.ts';
+import '@app/plugin/register.ts';
 import '@app/main/initialize.ts';
 
 Animation.Player = AnimationPlayer;
 bindAnimationWindow(Animation);
+import '@app/palette/register.ts';
