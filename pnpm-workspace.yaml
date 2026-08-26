@@ -13,3 +13,4 @@ overrides:
 
 catalog:
   typescript: ^6.0.3
+  electron: 43.2.0

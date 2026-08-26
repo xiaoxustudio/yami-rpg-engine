@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.19",
-		"electron": "^20.3.12",
+		"electron": "catalog:",
 		"electron-builder": "^25.1.8",
 		"electron-vite": "^5.0.0",
 		"typescript": "catalog:",
