@@ -27,6 +27,8 @@
 		"build:universalexe": "pnpm -F @yami/editor build:universalexe",
 		"start:prod": "pnpm -F @yami/editor start:prod",
 		"pack:resources": "node scripts/pack-resources.js",
+		"debug:template": "node scripts/debug-template.js",
+		"debug:template:watch": "node scripts/debug-template.js --watch",
 		"typecheck": "pnpm -F @yami/editor typecheck",
 		"lint": "oxlint -c ./.oxlintrc.json packages/editor",
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor",

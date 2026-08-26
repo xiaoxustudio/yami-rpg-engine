@@ -6,7 +6,7 @@ import type { MenuItemConstructorOptions } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
-// 如果启动时包含 --dirname 参数
+// 如果启动时包含 --dirname 参数或 YAMI_PLAYER_DIR 环境变量
 // 表示应用运行在 Node.js 调试模式中
 // 重定向根目录并开启应用的调试模式
 let debug = false;
@@ -19,6 +19,10 @@ for (const arg of process.argv) {
 		debug = true;
 		break;
 	}
+}
+if (!debug && process.env.YAMI_PLAYER_DIR) {
+	dirname = path.resolve(dirname, process.env.YAMI_PLAYER_DIR);
+	debug = true;
 }
 
 // 开启叠加渲染模式，支持在游戏中启用 steam ui
@@ -177,12 +181,26 @@ const createPlayerWindow = function (): PlayerWindow {
 	// 隐藏菜单栏
 	player.setMenuBarVisibility(false);
 
+	// debug 模式转发渲染进程控制台到主进程 stdout
+	if (debug) {
+		player.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+			const levelStr = ['log', 'warning', 'error'][level] ?? 'log';
+			console.warn(`[player:${levelStr}] ${message} (${sourceId}:${line})`);
+		});
+		player.webContents.on('render-process-gone', (_event, details) => {
+			console.error(`[player] render-process-gone: ${details.reason}`);
+		});
+	}
+
 	// 加载页面文件
 	void player.loadFile(path.resolve(dirname, 'index.html'));
 
 	// 设置窗口模式
 	player.once('ready-to-show', () => {
 		player.show();
+		if (debug) {
+			player.webContents.openDevTools();
+		}
 		switch (window.display) {
 			case 'windowed':
 				break;

@@ -94,6 +94,10 @@ function assembleAndPackPlugin(): Plugin {
 			fs.rmSync(assembleDir, { recursive: true, force: true });
 			copyDirRecursive(resolve(ROOT, 'runtime'), assembleDir);
 			copyDirRecursive(resolve(ROOT, `languages/${target.id}`), assembleDir);
+			console.log(`assembled: ${target.resource} -> ${assembleDir}`);
+
+			// YAMI_DEV_ASSEMBLE=1：仅组装（调试用，跳过 zip/哈希，速度快）
+			if (process.env.YAMI_DEV_ASSEMBLE === '1') return;
 
 			const zipPath = resolve(ROOT, `build/${target.resource}_pack.zip`);
 			await zipFolder(assembleDir, zipPath);

@@ -5,6 +5,8 @@
 	"author": "Yami",
 	"main": "./out/main/index.js",
 	"scripts": {
+		"dev": "electron-vite dev --sourcemap",
+		"dev:inspect": "electron-vite dev --sourcemap --inspect",
 		"build": "electron-vite build",
 		"build:watch": "electron-vite build --watch",
 		"typecheck": "tsc --noEmit -p tsconfig.node.json",

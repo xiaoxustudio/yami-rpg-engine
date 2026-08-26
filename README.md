@@ -49,6 +49,24 @@ pnpm run build:runtime:mac
 
 产物会安装到 `Project/Templates/electron-win-x64` / `electron-mac-universal.app`。
 
+## 调试模板与播放器
+
+```shell
+# 组装 template-arpg（中文）→ tsc 编译 Dist → 启动播放器 dev（自动开 DevTools）
+pnpm debug:template --lang=zh-CN
+
+# 监听模式：修改 runtime/ 或 languages/<lang>/ 后自动重组装 + 重编译（播放器 DevTools 手动刷新）
+pnpm debug:template:watch --lang=en-US
+
+# 仅快速组装（不打 zip，用于单独迭代模板内容）
+pnpm -F @yami/template-arpg dev:assemble:zh-cn
+
+# 主进程调试（V8 inspector）
+pnpm debug:template --inspect
+```
+
+`--lang` 支持 `zh-CN` / `en-US`；`--player-only` 可跳过组装直接复用已有 `out/` 产物。
+
 ## 运行
 
 ```shell

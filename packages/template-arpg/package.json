@@ -7,7 +7,11 @@
     "build": "vite build --mode zh-CN",
     "build:zh-cn": "vite build --mode zh-CN",
     "build:en-us": "vite build --mode en-US",
-    "build:all": "vite build --mode zh-CN && vite build --mode en-US"
+    "build:all": "vite build --mode zh-CN && vite build --mode en-US",
+    "dev:assemble:zh-cn": "node scripts/dev-assemble.js --lang=zh-CN",
+    "dev:assemble:en-us": "node scripts/dev-assemble.js --lang=en-US",
+    "dev:assemble:watch:zh-cn": "node scripts/dev-assemble.js --lang=zh-CN --watch --compile",
+    "dev:assemble:watch:en-us": "node scripts/dev-assemble.js --lang=en-US --watch --compile"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.3",

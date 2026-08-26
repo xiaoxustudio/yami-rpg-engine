@@ -120,6 +120,7 @@
 		{
 			"files": [
 				"packages/script/scripts/**/*.js",
+				"packages/template-arpg/scripts/**/*.js",
 				"packages/template-arpg/vite.config.ts"
 			],
 			"env": {
