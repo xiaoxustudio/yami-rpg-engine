@@ -46,7 +46,7 @@ Palette.editTagAt = function (this: typeof Palette, x: number, y: number) {
 		tags[i] = tag;
 		this.updateInfo();
 		this.requestRendering();
-		Scene.requestRendering();
+		Scene.requestRendering!();
 		File.planToSave!(this.meta);
 	});
 };

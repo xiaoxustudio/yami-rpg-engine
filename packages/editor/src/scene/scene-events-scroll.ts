@@ -75,7 +75,7 @@ Scene.screenUserscroll = function (this: typeof Scene, _event: Event) {
 		screen.rawScrollLeft = screen.scrollLeft;
 		screen.rawScrollTop = screen.scrollTop;
 		this.updateTransform();
-		this.requestRendering();
+		this.requestRendering!();
 		this.marquee.resize();
 		screen.updateScrollbars();
 	}

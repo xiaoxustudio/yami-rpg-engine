@@ -621,7 +621,7 @@ PaletteEngine.flipTiles = function (this: typeof Palette) {
 		return;
 	}
 	if (marquee.visible) {
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	}
 	const tilesetMap = marquee.tilesetMap;
 	const tilesets = Data.tilesets;

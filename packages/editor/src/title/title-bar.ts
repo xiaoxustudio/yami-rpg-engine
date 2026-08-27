@@ -651,7 +651,7 @@ Title.tabBarClosed = function (this: TitleShape, event: Event & { closedItems: T
 	for (const context of closedItems) {
 		switch (context.type) {
 			case 'scene':
-				Scene.destroy!(context);
+				Scene.destroy!(context as never);
 				break;
 			case 'ui':
 				UI.destroy!(context);

@@ -124,7 +124,7 @@ Scene.marqueePointerdown = function (this: typeof Scene, event: DragEventItem) {
 							screen.rawScrollLeft = screen.scrollLeft;
 							screen.rawScrollTop = screen.scrollTop;
 							this.updateTransform();
-							this.requestRendering();
+							this.requestRendering!();
 							screen.updateScrollbars();
 							this.pointermove(event.latest);
 						});
@@ -552,43 +552,43 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 					{
 						label: get('create.actor'),
 						click: () => {
-							this.create('actor', x + 0.5, y + 0.5);
+							this.create!('actor', x + 0.5, y + 0.5);
 						}
 					},
 					{
 						label: get('create.region'),
 						click: () => {
-							this.create('region', x + 0.5, y + 0.5);
+							this.create!('region', x + 0.5, y + 0.5);
 						}
 					},
 					{
 						label: get('create.light'),
 						click: () => {
-							this.create('light', x + 0.5, y + 0.5);
+							this.create!('light', x + 0.5, y + 0.5);
 						}
 					},
 					{
 						label: get('create.animation'),
 						click: () => {
-							this.create('animation', x + 0.5, y + 0.5);
+							this.create!('animation', x + 0.5, y + 0.5);
 						}
 					},
 					{
 						label: get('create.particle'),
 						click: () => {
-							this.create('particle', x + 0.5, y + 0.5);
+							this.create!('particle', x + 0.5, y + 0.5);
 						}
 					},
 					{
 						label: get('create.parallax'),
 						click: () => {
-							this.create('parallax', x, y);
+							this.create!('parallax', x, y);
 						}
 					},
 					{
 						label: get('create.tilemap'),
 						click: () => {
-							this.create('tilemap', x, y);
+							this.create!('tilemap', x, y);
 						}
 					}
 				]
@@ -598,7 +598,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				accelerator: '/',
 				enabled: selected,
 				click: () => {
-					this.toggle();
+					this.toggle!();
 				}
 			},
 			{
@@ -609,7 +609,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				accelerator: ctrl('X'),
 				enabled: selected,
 				click: () => {
-					this.copy();
+					this.copy!();
 					this.delete();
 				}
 			},
@@ -618,7 +618,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					this.copy();
+					this.copy!();
 				}
 			},
 			{
@@ -626,7 +626,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste(x, y);
+					this.paste!(x, y);
 				}
 			},
 			{
@@ -634,7 +634,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				accelerator: ctrl('D'),
 				enabled: selected,
 				click: () => {
-					this.duplicate();
+					this.duplicate!();
 				}
 			},
 			{
@@ -718,7 +718,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 					startPosition.sceneId = '';
 					startPosition.x = 0;
 					startPosition.y = 0;
-					this.requestRendering();
+					this.requestRendering!();
 					File.planToSave!(Data.manifest.project.config);
 				}
 			});
@@ -730,7 +730,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 					startPosition.sceneId = this.meta.guid;
 					startPosition.x = x + 0.5;
 					startPosition.y = y + 0.5;
-					this.requestRendering();
+					this.requestRendering!();
 					File.planToSave!(Data.manifest.project.config);
 				}
 			});

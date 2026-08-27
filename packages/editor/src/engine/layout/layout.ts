@@ -751,8 +751,8 @@ Layout.pageSwitch = function (event: EditorEvent) {
 	try {
 		switch (event.last) {
 			case 'scene':
-				Scene.save();
-				Scene.close();
+				Scene.save!();
+				Scene.close!();
 				break;
 			case 'ui':
 				UI.save();

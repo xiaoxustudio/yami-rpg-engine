@@ -12,7 +12,7 @@ Scene.setTarget = function (this: typeof Scene, target: { class: string } | null
 		this.target = target;
 		this.updateTargetInfo();
 		this.updateTargetItem();
-		this.requestRendering();
+		this.requestRendering!();
 		if (target) {
 			const map = this.inspectorTypeMap;
 			const key = map[target.class];
@@ -33,7 +33,7 @@ Scene.openTilemap = function (this: typeof Scene, tilemap: unknown) {
 		}
 		this.switchLayer('tilemap');
 		this.computeActiveTilemapId();
-		this.requestRendering();
+		this.requestRendering!();
 		this.marquee.resize();
 	}
 };
@@ -126,7 +126,7 @@ Scene.shiftTarget = function (this: typeof Scene, x: number, y: number) {
 	const key = map[target?.class];
 	const editor = Inspector[key];
 	if (editor !== undefined && (target.x !== x || target.y !== y)) {
-		this.planToSave();
+		this.planToSave!();
 		const history = this.history;
 		const index = history.index;
 		const length = history.length;
@@ -150,7 +150,7 @@ Scene.shiftTarget = function (this: typeof Scene, x: number, y: number) {
 		target.y = y;
 		this.updateTargetInfo();
 		this.updateTargetEditor();
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
@@ -160,7 +160,7 @@ Scene.redirectTarget = function (this: typeof Scene, angle: number) {
 	const key = map[target?.class];
 	const editor = Inspector[key];
 	if (editor !== undefined && target.angle !== angle) {
-		this.planToSave();
+		this.planToSave!();
 		const history = this.history;
 		const index = history.index;
 		const length = history.length;
@@ -179,7 +179,7 @@ Scene.redirectTarget = function (this: typeof Scene, angle: number) {
 				angle: target.angle
 			});
 		}
-		this.requestRendering();
+		this.requestRendering!();
 		target.angle = angle;
 		target.player.setAngle(Math.radians(angle));
 		if (editor.target === target) {

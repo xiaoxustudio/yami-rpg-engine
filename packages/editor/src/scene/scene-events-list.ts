@@ -34,26 +34,26 @@ Scene.listKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 		switch (event.code) {
 			case 'KeyX':
 				if (isFile) {
-					this.copy(item);
+					this.copy!(item);
 					this.delete(item);
 				}
 				break;
 			case 'KeyC':
 				if (isFile) {
-					this.copy(item);
+					this.copy!(item);
 				}
 				break;
 			case 'KeyV':
-				this.paste('auto');
+				this.paste!('auto' as never);
 				break;
 			case 'KeyD':
-				this.duplicate(item);
+				this.duplicate!(item);
 				break;
 		}
 	} else {
 		switch (event.code) {
 			case 'Slash':
-				this.toggle(item);
+				this.toggle!(item);
 				break;
 			case 'Delete':
 				this.delete(item);

@@ -83,14 +83,14 @@ Scene.setSize = function (this: typeof Scene, width: number, height: number) {
 	this.width = width;
 	this.height = height;
 	this.resize();
-	this.requestRendering();
+	this.requestRendering!();
 };
 
 Scene.setTileSize = function (this: typeof Scene, tileWidth: number, tileHeight: number) {
 	this.tileWidth = tileWidth;
 	this.tileHeight = tileHeight;
 	this.resize();
-	this.requestRendering();
+	this.requestRendering!();
 };
 
 Scene.setTilemapSize = function (

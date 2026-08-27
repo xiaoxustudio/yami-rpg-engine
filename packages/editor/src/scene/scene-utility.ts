@@ -56,7 +56,7 @@ Scene.saveToConfig = function (this: typeof Scene, config: EditorConfigShape) {
 
 Scene.loadFromConfig = function (this: typeof Scene, config: EditorConfigShape) {
 	this.background = new StageColor(config.colors!.sceneBackground!, () =>
-		this.requestRendering()
+		this.requestRendering!()
 	);
 };
 

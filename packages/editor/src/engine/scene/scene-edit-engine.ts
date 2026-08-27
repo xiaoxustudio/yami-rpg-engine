@@ -31,9 +31,9 @@ SceneEditEngine.edit = function (
 			break;
 	}
 
-	this.requestRendering();
+	this.requestRendering!();
 
-	this.planToSave();
+	this.planToSave!();
 };
 
 SceneEditEngine.editInPencilMode = function (

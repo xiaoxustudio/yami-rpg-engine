@@ -9,7 +9,7 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 // oxlint-disable-next-line no-explicit-any
 export const ParticleEngine: Record<string, any> = {};
 
-const debouncedStageRender = debounce(() => Scene.requestRendering(), 60);
+const debouncedStageRender = debounce(() => Scene.requestRendering!(), 60);
 
 interface ParticleEmitterData {
 	layers: ParticleLayerData[];

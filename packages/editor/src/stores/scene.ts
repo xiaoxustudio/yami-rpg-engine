@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import { Scene } from '@app/scene/scene-window.ts';
+import type { SceneContextShape } from '@app/scene/scene-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
-import type { EditorProjectShape } from './editor';
+import type { EditorConfigShape, EditorProjectShape } from './editor';
 
 export const sceneStateKeys = [
 	'state',
@@ -36,7 +37,7 @@ export const useSceneStore = defineStore('scene', () => {
 		initialized.value = true;
 	}
 
-	function open(target: unknown) {
+	function open(target: SceneContextShape) {
 		Scene?.open?.(target);
 	}
 
@@ -52,7 +53,7 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.requestRendering?.();
 	}
 
-	function load(context: unknown) {
+	function load(context: SceneContextShape) {
 		Scene?.load?.(context);
 	}
 
@@ -60,7 +61,7 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.save?.();
 	}
 
-	function destroy(context: unknown) {
+	function destroy(context: SceneContextShape) {
 		Scene?.destroy?.(context);
 	}
 
@@ -68,7 +69,7 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.copy?.();
 	}
 
-	function paste(x: number, y: number) {
+	function paste(x?: number, y?: number) {
 		Scene?.paste?.(x, y);
 	}
 
@@ -96,11 +97,11 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.redo?.();
 	}
 
-	function saveToConfig(config: { colors?: Record<string, unknown> }) {
+	function saveToConfig(config: EditorConfigShape) {
 		Scene?.saveToConfig?.(config);
 	}
 
-	function loadFromConfig(config: { colors?: Record<string, unknown> }) {
+	function loadFromConfig(config: EditorConfigShape) {
 		Scene?.loadFromConfig?.(config);
 	}
 

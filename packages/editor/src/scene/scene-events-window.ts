@@ -11,12 +11,12 @@ Scene.windowResize = function (this: typeof Scene, _event: Event) {
 	this.updateHead();
 	if (this.state === 'open') {
 		this.resize();
-		this.requestRendering();
+		this.requestRendering!();
 	}
 }.bind(Scene);
 
 Scene.themechange = function (this: typeof Scene, _event: Event) {
-	this.requestRendering();
+	this.requestRendering!();
 }.bind(Scene);
 
 Scene.dprchange = function (this: typeof Scene, _event: Event) {
@@ -177,17 +177,17 @@ Scene.screenKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
-					this.copy();
+					this.copy!();
 					this.delete();
 					break;
 				case 'KeyC':
-					this.copy();
+					this.copy!();
 					break;
 				case 'KeyV':
-					this.paste();
+					this.paste!();
 					break;
 				case 'KeyD':
-					this.duplicate();
+					this.duplicate!();
 					break;
 				case 'ArrowLeft':
 				case 'ArrowUp':
@@ -247,7 +247,7 @@ Scene.screenKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 					}
 					break;
 				case 'Slash':
-					this.toggle();
+					this.toggle!();
 					break;
 				case 'Delete':
 					this.delete();

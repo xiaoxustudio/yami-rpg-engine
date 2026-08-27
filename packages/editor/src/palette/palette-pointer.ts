@@ -355,7 +355,7 @@ Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 					const step = event.button === 0 ? 1 : 9;
 					priorities[i] = (priorities[i] + step) % 10;
 					this.requestRendering();
-					Scene.requestRendering();
+					Scene.requestRendering!();
 					File.planToSave!(this.meta);
 				}
 				break;
@@ -374,7 +374,7 @@ Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 				this.screen.endScrolling();
 				this.screen.removeScrollListener();
 				this.requestRendering();
-				Scene.requestRendering();
+				Scene.requestRendering!();
 				Scene.marquee.style.pointerEvents = 'inherit';
 				File.planToSave!(this.meta);
 				break;

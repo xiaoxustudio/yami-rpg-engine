@@ -22,7 +22,7 @@ interface AnimationData {
 	[k: string]: any;
 }
 
-const debouncedSceneRender = debounce(() => Scene.requestRendering(), 60);
+const debouncedSceneRender = debounce(() => Scene.requestRendering!(), 60);
 const debouncedUiRender = debounce(() => UI.requestRendering(), 60);
 
 export class AnimationPlayer {

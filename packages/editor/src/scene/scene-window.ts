@@ -21,6 +21,7 @@ import { History } from '@app/tools/history.ts';
 import { UndoManager } from '@app/tools/undo-manager.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
 // 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
 interface SceneListItem {
@@ -70,6 +71,25 @@ interface SceneShape {
 	searcher: HTMLElement & { [k: string]: any };
 	// oxlint-disable-next-line no-explicit-any
 	list: HTMLElement & SceneListExtensions & { [k: string]: any };
+	initialize: (() => void) | null;
+	open: ((context: SceneContextShape) => void) | null;
+	close: (() => void) | null;
+	load: ((context: SceneContextShape) => void) | null;
+	save: (() => void) | null;
+	destroy: ((context: SceneContextShape) => void) | null;
+	copy: ((item?: unknown) => void) | null;
+	paste: ((x?: number, y?: number) => void) | null;
+	duplicate: ((item?: unknown) => void) | null;
+	create: ((kind: string, x: number, y: number) => void) | null;
+	toggle: ((item?: unknown) => void) | null;
+	undo: (() => void) | null;
+	redo: (() => void) | null;
+	planToSave: (() => void) | null;
+	requestRendering: (() => void) | null;
+	saveToConfig: ((config: EditorConfigShape) => void) | null;
+	loadFromConfig: ((config: EditorConfigShape) => void) | null;
+	saveToProject: ((project: EditorProjectShape) => void) | null;
+	loadFromProject: ((project: EditorProjectShape) => void) | null;
 	// editor properties（运行时挂载具体值，统一 any | null）
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
@@ -118,7 +138,7 @@ interface SceneEditorShape {
 	[k: string]: unknown;
 }
 
-interface SceneContextShape {
+export interface SceneContextShape {
 	meta: Record<string, unknown> & { guid: string; path: string };
 	scene?: SceneDataShape;
 	editor?: SceneEditorShape;

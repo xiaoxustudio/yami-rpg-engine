@@ -32,7 +32,7 @@
 		"typecheck": "pnpm -F @yami/editor typecheck",
 		"lint": "oxlint -c ./.oxlintrc.json packages/editor",
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor",
-		"format": "oxfmt -c ./.oxfmtrc.json packages/editor",
+		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor",
 		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
 	},
 	"devDependencies": {

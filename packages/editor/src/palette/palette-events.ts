@@ -233,7 +233,7 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 						marquee.select(mx, my, mw, mh);
 						Palette.selectTiles(mx, my, mw, mh);
 						Palette.scrollToSelection(true);
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 					return;
 				}
@@ -261,7 +261,7 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 					marquee.originY += y - my;
 					Palette.selectTiles(x, y, mw, mh);
 					Palette.scrollToSelection(false);
-					Scene.requestRendering();
+					Scene.requestRendering!();
 				}
 				break;
 			}

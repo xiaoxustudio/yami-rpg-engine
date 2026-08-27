@@ -65,7 +65,7 @@ EventBus.once('editor_loaded', () => {
 				}
 				callback?.(copy);
 				this.addNodeTo(copy, dItem, insertBefore);
-				Scene.requestRendering();
+				Scene.requestRendering!();
 			}
 		};
 

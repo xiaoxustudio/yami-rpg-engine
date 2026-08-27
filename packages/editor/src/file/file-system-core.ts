@@ -194,7 +194,7 @@ File.save = function (hint = true) {
 File.saveFile = function (meta) {
 	switch (meta) {
 		case Scene.meta:
-			Scene.save();
+			Scene.save!();
 			break;
 		case UI.meta:
 			UI.save();

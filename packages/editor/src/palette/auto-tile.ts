@@ -943,7 +943,7 @@ AutoTile.confirm = function (this: typeof AutoTile, _event: Event) {
 	}
 	File.planToSave!(Palette.meta);
 	Palette.requestRendering();
-	Scene.requestRendering();
+	Scene.requestRendering!();
 	Window.close!('autoTile');
 }.bind(AutoTile);
 
