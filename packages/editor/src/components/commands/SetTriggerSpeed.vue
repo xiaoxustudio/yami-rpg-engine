@@ -1,26 +1,28 @@
 <template>
 	<WindowFrame id="setTriggerSpeed" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setTriggerSpeed.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Trigger</div
-				><CustomBox id="setTriggerSpeed-trigger" type="trigger" @input="onTrigger" /> <div class="text">Speed</div
-				><NumberVar
-					id="setTriggerSpeed-speed"
-					min="0"
-					max="512"
-					decimals="4"
-					unit="t/s"
-					v-model="form.speed"
-				 />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTriggerSpeed.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Trigger</div>
+			<CustomBox id="setTriggerSpeed-trigger" type="trigger" @input="onTrigger" />
+			<div class="text">Speed</div>
+			<NumberVar
+				id="setTriggerSpeed-speed"
+				min="0"
+				max="512"
+				decimals="4"
+				unit="t/s"
+				v-model="form.speed"
+			/>
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useSetTriggerSpeedCommandSchema } from '@app/composables/commands/useSetTriggerSpeedCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -39,5 +41,4 @@ const onTrigger = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

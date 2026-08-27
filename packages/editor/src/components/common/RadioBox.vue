@@ -75,9 +75,7 @@ const isSelected = ref(false);
 
 const attrs = useAttrs();
 const isStandard = computed(
-	() =>
-		props.standard ||
-		(typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
+	() => props.standard || (typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
 );
 
 const read = (): number | string | boolean | null | undefined => state.proxy?.read();
@@ -120,7 +118,10 @@ const onSelect = (): void => {
 
 defineExpose({ read, write, input, enable, disable, relate, on, root });
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as RadioBoxElement | null;

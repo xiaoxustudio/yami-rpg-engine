@@ -1,88 +1,85 @@
 <template>
 	<WindowFrame id="setList" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setList.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="setList-variable"
-					type="variable"
-					filter="object"
-					:model-value="form.variable"
-					@input="onVariable"
-				/>
-				<div class="text">Operation</div
-				><SelectBox id="setList-operation" v-model="form.operation" />
-				<div class="text">Numbers</div
-				><CustomBox
-					id="setList-numbers"
-					type="array"
-					filter="number"
-					:model-value="form.numbers ?? []"
-					@input="onNumbers"
-				/>
-				<div class="text">Strings</div
-				><CustomBox
-					id="setList-strings"
-					type="array"
-					filter="string"
-					:model-value="form.strings ?? []"
-					@input="onStrings"
-				/>
-				<div class="text">Index</div
-				><NumberVar
-					id="setList-index"
-					min="0"
-					max="1000000000"
-					v-model="form.index"
-				/>
-				<div class="text">Boolean</div
-				><SelectBox id="setList-boolean" v-model="form.boolean" /> <div class="text">Number</div
-				><NumberBox
-					id="setList-number"
-					min="-1000000000"
-					max="1000000000"
-					decimals="10"
-					v-model="form.number"
-				/>
-				<div class="text">String</div
-				><TextArea id="setList-string" v-model="form.string" /> 				<div class="text">Variable</div
-				><CustomBox
-					id="setList-operand"
-					type="variable"
-					filter="all"
-					:model-value="form.operand"
-					@input="onOperand"
-				/>
-				<div class="text">Separator</div
-				><TextAreaVar id="setList-separator" v-model="form.separator" />
-				<div class="text">Attribute Group</div
-				><CustomBox
-					id="setList-attribute-groupId"
-					type="attribute-group"
-					:model-value="form.attributeGroupId"
-					@input="onAttributeGroupId"
-				/>
-				<div class="text">Enum Group</div
-				><CustomBox
-					id="setList-enum-groupId"
-					type="enum-group"
-					:model-value="form.enumGroupId"
-					@input="onEnumGroupId"
-				/> <div class="text">Actor</div
-				><CustomBox
-					id="setList-actor"
-					type="actor"
-					:model-value="form.actor"
-					@input="onActor"
-				/> <div class="text">Default</div
-				><CheckBox
-					id="setList-index-skip-check"
-					class="standard"
-					v-model="form.indexSkipCheck"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setList.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setList-variable"
+				type="variable"
+				filter="object"
+				:model-value="form.variable"
+				@input="onVariable"
+			/>
+			<div class="text">Operation</div>
+			<SelectBox id="setList-operation" v-model="form.operation" />
+			<div class="text">Numbers</div>
+			<CustomBox
+				id="setList-numbers"
+				type="array"
+				filter="number"
+				:model-value="form.numbers ?? []"
+				@input="onNumbers"
+			/>
+			<div class="text">Strings</div>
+			<CustomBox
+				id="setList-strings"
+				type="array"
+				filter="string"
+				:model-value="form.strings ?? []"
+				@input="onStrings"
+			/>
+			<div class="text">Index</div>
+			<NumberVar id="setList-index" min="0" max="1000000000" v-model="form.index" />
+			<div class="text">Boolean</div>
+			<SelectBox id="setList-boolean" v-model="form.boolean" />
+			<div class="text">Number</div>
+			<NumberBox
+				id="setList-number"
+				min="-1000000000"
+				max="1000000000"
+				decimals="10"
+				v-model="form.number"
+			/>
+			<div class="text">String</div>
+			<TextArea id="setList-string" v-model="form.string" />
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setList-operand"
+				type="variable"
+				filter="all"
+				:model-value="form.operand"
+				@input="onOperand"
+			/>
+			<div class="text">Separator</div>
+			<TextAreaVar id="setList-separator" v-model="form.separator" />
+			<div class="text">Attribute Group</div>
+			<CustomBox
+				id="setList-attribute-groupId"
+				type="attribute-group"
+				:model-value="form.attributeGroupId"
+				@input="onAttributeGroupId"
+			/>
+			<div class="text">Enum Group</div>
+			<CustomBox
+				id="setList-enum-groupId"
+				type="enum-group"
+				:model-value="form.enumGroupId"
+				@input="onEnumGroupId"
+			/>
+			<div class="text">Actor</div>
+			<CustomBox id="setList-actor" type="actor" :model-value="form.actor" @input="onActor" />
+			<div class="text">Default</div>
+			<CheckBox
+				id="setList-index-skip-check"
+				class="standard"
+				v-model="form.indexSkipCheck"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -172,19 +169,11 @@ onMounted(() => {
 			},
 			{
 				case: 'set-number',
-				targets: [
-					$('#setList-index'),
-					$('#setList-index-skip-check'),
-					$('#setList-number')
-				]
+				targets: [$('#setList-index'), $('#setList-index-skip-check'), $('#setList-number')]
 			},
 			{
 				case: 'set-string',
-				targets: [
-					$('#setList-index'),
-					$('#setList-index-skip-check'),
-					$('#setList-string')
-				]
+				targets: [$('#setList-index'), $('#setList-index-skip-check'), $('#setList-string')]
 			},
 			{
 				case: 'set-variable',

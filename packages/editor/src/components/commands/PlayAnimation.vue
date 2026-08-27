@@ -1,55 +1,64 @@
 <template>
 	<WindowFrame id="playAnimation" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.playAnimation.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Mode</div><SelectBox id="playAnimation-mode" v-model="form.mode" /> <div class="text">Position</div
-				><CustomBox id="playAnimation-position" type="position" @input="onPosition" /> <div class="text">Actor</div
-				><CustomBox id="playAnimation-actor" type="actor" @input="onActor" /> <div class="text">Animation</div
-				><CustomBox
-					id="playAnimation-animationId"
-					type="file"
-					filter="animation"
-					@write="onWrite"
-				 />
-				<div class="text">Motion</div><SelectBox id="playAnimation-motion" v-model="form.motion" />
-				<div class="text">Rotatable</div><SelectBox id="playAnimation-rotatable" v-model="form.rotatable" />
-				<div class="text">Priority</div
-				><NumberBox id="playAnimation-priority" min="-100" max="100" v-model="form.priority" />
-				<div class="text">Offset Y</div
-				><NumberVar
-					id="playAnimation-offsetY"
-					min="-1000000000"
-					max="1000000000"
-					unit="px"
-					v-model="form.offsetY"
-				 />
-				<div class="text">Angle</div
-				><NumberVar
-					id="playAnimation-angle"
-					min="-360"
-					max="360"
-					decimals="4"
-					unit="deg"
-					v-model="form.angle"
-				 />
-				<div class="text">Speed</div
-				><NumberVar
-					id="playAnimation-speed"
-					min="0.1"
-					max="10"
-					step="0.1"
-					decimals="4"
-					v-model="form.speed"
-				 />
-				<div class="text">Wait</div><SelectBox id="playAnimation-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.playAnimation.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Mode</div>
+			<SelectBox id="playAnimation-mode" v-model="form.mode" />
+			<div class="text">Position</div>
+			<CustomBox id="playAnimation-position" type="position" @input="onPosition" />
+			<div class="text">Actor</div>
+			<CustomBox id="playAnimation-actor" type="actor" @input="onActor" />
+			<div class="text">Animation</div>
+			<CustomBox
+				id="playAnimation-animationId"
+				type="file"
+				filter="animation"
+				@write="onWrite"
+			/>
+			<div class="text">Motion</div>
+			<SelectBox id="playAnimation-motion" v-model="form.motion" />
+			<div class="text">Rotatable</div>
+			<SelectBox id="playAnimation-rotatable" v-model="form.rotatable" />
+			<div class="text">Priority</div>
+			<NumberBox id="playAnimation-priority" min="-100" max="100" v-model="form.priority" />
+			<div class="text">Offset Y</div>
+			<NumberVar
+				id="playAnimation-offsetY"
+				min="-1000000000"
+				max="1000000000"
+				unit="px"
+				v-model="form.offsetY"
+			/>
+			<div class="text">Angle</div>
+			<NumberVar
+				id="playAnimation-angle"
+				min="-360"
+				max="360"
+				decimals="4"
+				unit="deg"
+				v-model="form.angle"
+			/>
+			<div class="text">Speed</div>
+			<NumberVar
+				id="playAnimation-speed"
+				min="0.1"
+				max="10"
+				step="0.1"
+				decimals="4"
+				v-model="form.speed"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="playAnimation-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';
@@ -104,5 +113,4 @@ onMounted(() => {
 	const animationId = read($('#playAnimation-animationId'));
 	if (animationId) writeHandler({ value: animationId });
 });
-
 </script>

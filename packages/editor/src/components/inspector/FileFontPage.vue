@@ -2,12 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileFont-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-info-grid">
-			<div class="text">{{ t('components.fileFont-name.label') || 'Name' }}</div><div class="text" id="fileFont-name">{{ form.name }}</div> <div class="text">{{ t('components.fileFont-size.label') || 'Size' }}</div
-			><div class="text" id="fileFont-size">{{ form.size }}</div>
+			<div class="text">{{ t('components.fileFont-name.label') || 'Name' }}</div>
+			<div class="text" id="fileFont-name">{{ form.name }}</div>
+			<div class="text">{{ t('components.fileFont-size.label') || 'Size' }}</div>
+			<div class="text" id="fileFont-size">{{ form.size }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileFont-font-detail" open>
-		<DetailSummary>{{ t('components.fileFont-font-grid.label') || 'Font Preview' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileFont-font-grid.label') || 'Font Preview'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileFont-font-grid">
 			<TextBox id="fileFont-content" v-model="form.text" />
 			<div class="text fileFont-preview" id="fileFont-12px">{{ form.text }}</div>

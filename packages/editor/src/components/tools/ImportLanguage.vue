@@ -1,11 +1,15 @@
 <template>
 	<WindowFrame id="importLanguage">
-		<template #title><TitleBar>{{ t('components.importLanguage.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.importLanguage-language.label') }}</div><SelectBox id="importLanguage-language" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.importLanguage.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.importLanguage-language.label') }}</div>
+			<SelectBox id="importLanguage-language" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -23,8 +27,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

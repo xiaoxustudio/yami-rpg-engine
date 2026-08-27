@@ -1,12 +1,17 @@
 <template>
 	<WindowFrame id="if-branch" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.if-branch.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.if-branch-mode.label') }}</div><SelectBox id="if-branch-mode" /> <div class="text">{{ t('components.if-branch-conditions.label') }}</div
-				><ParamList id="if-branch-conditions" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.if-branch.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.if-branch-mode.label') }}</div>
+			<SelectBox id="if-branch-mode" />
+			<div class="text">{{ t('components.if-branch-conditions.label') }}</div>
+			<ParamList id="if-branch-conditions" />
+		</div>
 	</WindowFrame>
 </template>
 

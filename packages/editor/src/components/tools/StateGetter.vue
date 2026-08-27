@@ -1,16 +1,27 @@
 ﻿<template>
 	<!-- 状态访问器窗口 -->
 	<WindowFrame ref="frame" id="stateGetter">
-		<template #title><TitleBar>{{ t('components.stateGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.stateGetter-type.label') }}</div><SelectBox id="stateGetter-type" v-model="form.type" /> <div class="text">{{ t('components.stateGetter-actor.label') }}</div
-				><CustomBox id="stateGetter-actor" type="actor" v-model="form.actor" /> <div class="text">{{ t('components.stateGetter-stateId.label') }}</div
-				><CustomBox id="stateGetter-stateId" type="file" filter="state" v-model="form.stateId" />
-				<div class="text">{{ t('components.stateGetter-variable.label') }}</div
-				><CustomBox id="stateGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.stateGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.stateGetter-type.label') }}</div>
+			<SelectBox id="stateGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.stateGetter-actor.label') }}</div>
+			<CustomBox id="stateGetter-actor" type="actor" v-model="form.actor" />
+			<div class="text">{{ t('components.stateGetter-stateId.label') }}</div>
+			<CustomBox id="stateGetter-stateId" type="file" filter="state" v-model="form.stateId" />
+			<div class="text">{{ t('components.stateGetter-variable.label') }}</div>
+			<CustomBox
+				id="stateGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -40,7 +51,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => stateGetter.onWindowClosed());
 	}
-
-
 });
 </script>

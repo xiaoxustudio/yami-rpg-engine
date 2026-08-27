@@ -1,19 +1,22 @@
 <template>
 	<!-- 队伍窗口 -->
 	<WindowFrame id="team">
-		<template #title><TitleBar>{{ t('components.team.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set input pad" id="team-list-fieldset">
-				<TreeList
-					id="team-list"
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@popup="onListPopup"
-					@change="onListChange"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.team.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="team-list-fieldset">
+			<TreeList
+				id="team-list"
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@popup="onListPopup"
+				@change="onListChange"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -86,6 +89,5 @@ const onListChange = (event: Event & { value?: unknown }) => {
 	Team?.listChange?.(event);
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

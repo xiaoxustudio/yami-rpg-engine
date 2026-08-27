@@ -1,26 +1,41 @@
 <template>
-<WindowFrame id="httpRequest" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.httpRequest.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="httpRequest" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.httpRequest.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">URL</div><StringVar id="httpRequest-url" v-model="form.url" /> <div class="text">Method</div
-			><SelectBox id="httpRequest-method" v-model="form.method" /> <div class="text">Header</div
-			><ParamList id="httpRequest-header" v-model="form.headers" /> <div class="text">Data</div
-			><ParamList id="httpRequest-data" v-model="form.data" /> <div class="text">TimeOut</div
-			><NumberBox id="httpRequest-timeout" v-model="form.timeout" /> <div class="text">ResponseType</div
-			><SelectBox id="httpRequest-responseType" v-model="form.responseType" /> <div class="text">WithCredentials</div
-			><CheckBox class="standard" id="httpRequest-withCredentials" v-model="form.withCredentials" />
-			<div class="text">AuthUser</div><StringVar id="httpRequest-authUser" v-model="form.authUser" />
-			<div class="text">AuthPass</div><StringVar id="httpRequest-authPass" v-model="form.authPass" />
-			<div class="text">CallBack</div
-			><CustomBox id="httpRequest-callback" type="file" filter="event" @input="onCallback" />
+			<div class="text">URL</div>
+			<StringVar id="httpRequest-url" v-model="form.url" />
+			<div class="text">Method</div>
+			<SelectBox id="httpRequest-method" v-model="form.method" />
+			<div class="text">Header</div>
+			<ParamList id="httpRequest-header" v-model="form.headers" />
+			<div class="text">Data</div>
+			<ParamList id="httpRequest-data" v-model="form.data" />
+			<div class="text">TimeOut</div>
+			<NumberBox id="httpRequest-timeout" v-model="form.timeout" />
+			<div class="text">ResponseType</div>
+			<SelectBox id="httpRequest-responseType" v-model="form.responseType" />
+			<div class="text">WithCredentials</div>
+			<CheckBox
+				class="standard"
+				id="httpRequest-withCredentials"
+				v-model="form.withCredentials"
+			/>
+			<div class="text">AuthUser</div>
+			<StringVar id="httpRequest-authUser" v-model="form.authUser" />
+			<div class="text">AuthPass</div>
+			<StringVar id="httpRequest-authPass" v-model="form.authPass" />
+			<div class="text">CallBack</div>
+			<CustomBox id="httpRequest-callback" type="file" filter="event" @input="onCallback" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHttpRequestCommandSchema } from '@app/composables/commands/useHttpRequestCommandSchema';
@@ -66,5 +81,4 @@ onMounted(() => {
 	$('#httpRequest-header')?.bind?.(RequestkeyValueBind);
 	$('#httpRequest-data')?.bind?.(RequestkeyValueBind);
 });
-
 </script>

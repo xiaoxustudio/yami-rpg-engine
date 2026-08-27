@@ -1,17 +1,19 @@
 <template>
-<WindowFrame id="block" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.block.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="block" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.block.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<TextBox id="block-note" v-model="form.note" />
 		<CheckBox id="block-asynchronous" class="standard" v-model="form.asynchronous"
 			><div class="text" id="block-asynchronous-label">Asynchronous</div></CheckBox
 		>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';
@@ -34,5 +36,4 @@ onMounted(() => {
 		reset();
 	});
 });
-
 </script>

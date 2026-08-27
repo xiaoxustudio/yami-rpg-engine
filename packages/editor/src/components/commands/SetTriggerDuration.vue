@@ -1,27 +1,29 @@
 <template>
 	<WindowFrame id="setTriggerDuration" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setTriggerDuration.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Trigger</div
-				><CustomBox id="setTriggerDuration-trigger" type="trigger" @input="onTrigger" />
-				<div class="text">Operation</div><SelectBox id="setTriggerDuration-operation" v-model="form.operation" />
-				<div class="text">Duration</div
-				><NumberVar
-					id="setTriggerDuration-duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				 />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTriggerDuration.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Trigger</div>
+			<CustomBox id="setTriggerDuration-trigger" type="trigger" @input="onTrigger" />
+			<div class="text">Operation</div>
+			<SelectBox id="setTriggerDuration-operation" v-model="form.operation" />
+			<div class="text">Duration</div>
+			<NumberVar
+				id="setTriggerDuration-duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTriggerDurationCommandSchema } from '@app/composables/commands/useSetTriggerDurationCommandSchema';
@@ -51,5 +53,4 @@ onMounted(() => {
 		{ name: 'Decrease', value: 'decrease' }
 	]);
 });
-
 </script>

@@ -1,18 +1,21 @@
 <template>
-<WindowFrame id="transferGlobalActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.transferGlobalActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="transferGlobalActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.transferGlobalActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="transferGlobalActor-actor" type="actor" @input="onActor" />
-			<div class="text">Position</div
-			><CustomBox id="transferGlobalActor-position" type="position" @input="onPosition" />
+			<div class="text">Actor</div>
+			<CustomBox id="transferGlobalActor-actor" type="actor" @input="onActor" />
+			<div class="text">Position</div>
+			<CustomBox id="transferGlobalActor-position" type="position" @input="onPosition" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useTransferGlobalActorCommandSchema } from '@app/composables/commands/useTransferGlobalActorCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -34,5 +37,4 @@ const onPosition = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

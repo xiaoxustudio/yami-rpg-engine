@@ -1,22 +1,24 @@
 <template>
 	<WindowFrame id="deleteVariable" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.deleteVariable.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="deleteVariable-variable"
-					type="variable"
-					filter="deletable"
-					@input="onVariable"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.deleteVariable.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="deleteVariable-variable"
+				type="variable"
+				filter="deletable"
+				@input="onVariable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useDeleteVariableCommandSchema } from '@app/composables/commands/useDeleteVariableCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -34,5 +36,4 @@ const onVariable = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

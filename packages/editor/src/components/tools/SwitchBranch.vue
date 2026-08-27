@@ -1,12 +1,16 @@
 <template>
 	<!-- 匹配 - 分支 -->
 	<WindowFrame id="switch-branch" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.switch-branch.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.switch-branch-conditions.label') }}</div><ParamList id="switch-branch-conditions" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.switch-branch.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.switch-branch-conditions.label') }}</div>
+			<ParamList id="switch-branch-conditions" />
+		</div>
 	</WindowFrame>
 </template>
 

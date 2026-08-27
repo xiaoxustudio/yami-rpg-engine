@@ -1,5 +1,11 @@
 ﻿<template>
-	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" :render-node-extras="renderNodeExtras" :render-node-icon="props.nodeIconRenderer ? renderNodeIcon : undefined" />
+	<YMTreeList
+		ref="ym"
+		:id="props.id"
+		:padded="props.padded"
+		:render-node-extras="renderNodeExtras"
+		:render-node-icon="props.nodeIconRenderer ? renderNodeIcon : undefined"
+	/>
 </template>
 
 <script setup lang="ts">

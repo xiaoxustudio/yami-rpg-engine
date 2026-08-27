@@ -22,7 +22,12 @@ import { YMParameterPane } from '@ui-kit';
 import { createCheckBox as createCheckBoxElement } from '@app/components/check-box';
 import { createColorBox as createColorBoxElement } from '@app/components/color-box';
 import { createKeyboardBox as createKeyboardBoxElement } from '@app/components/keyboard-box';
-import { customBoxFactory, numberBoxFactory, selectBoxFactory, textBoxFactory } from '@app/components/var-factories';
+import {
+	customBoxFactory,
+	numberBoxFactory,
+	selectBoxFactory,
+	textBoxFactory
+} from '@app/components/var-factories';
 import { createDetailBox as createDetailBoxElement } from '@app/components/detail-box';
 import { createDetailSummary } from '@app/components/detail-summary';
 import { createNumberVar as createNumberVarElement } from '@app/components/number-var';
@@ -60,8 +65,7 @@ const plugin = computed(() => PluginManager);
 const localize = (key: string): string => t(key);
 const selection = computed(() => Selection);
 const selectList = computed(() => Select);
-const measureText = (text: string, font: string): { width: number } =>
-	measureTextUtil(text, font);
+const measureText = (text: string, font: string): { width: number } => measureTextUtil(text, font);
 const setTooltip = (el: HTMLElement, tip: string): void => setTooltipUtil(el, tip);
 
 const ym = ref<{
@@ -93,10 +97,9 @@ const on = (
 defineExpose({ bind, rewrite, update, clear, on, root });
 
 onMounted(() => {
-// oxlint-disable-next-line no-explicit-any
-const el = root.value as HTMLElement & Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', any>;
+	const el = root.value as HTMLElement &
+		Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', unknown>;
 	if (!el) return;
 	attachElementApi(el, { bind, rewrite, update, clear, on });
 });
 </script>
-

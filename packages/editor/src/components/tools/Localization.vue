@@ -1,25 +1,28 @@
 <template>
 	<WindowFrame id="localization" show-apply mode="center" @apply="onApply">
-		<template #title><TitleBar>{{ t('components.localization.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="field-set input pad" id="localization-list-fieldset">
-				<div class="legend">{{ t('components.localization-list.label') }}</div>
-				<TreeList
-					id="localization-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@record="onListRecord"
-					@open="onListOpen"
-					@popup="onListPopup"
-				/>
-			</div>
-			<div class="box" id="localization-inspector" />
-			<TextBox id="localization-searcher" name="search" />
-			<button id="localization-from-excel" name="from-excel">from-excel</button>
-			<button id="localization-to-excel" name="to-excel">to-excel</button>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.localization.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="localization-list-fieldset">
+			<div class="legend">{{ t('components.localization-list.label') }}</div>
+			<TreeList
+				id="localization-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@record="onListRecord"
+				@open="onListOpen"
+				@popup="onListPopup"
+			/>
+		</div>
+		<div class="box" id="localization-inspector" />
+		<TextBox id="localization-searcher" name="search" />
+		<button id="localization-from-excel" name="from-excel">from-excel</button>
+		<button id="localization-to-excel" name="to-excel">to-excel</button>
 	</WindowFrame>
 </template>
 
@@ -69,7 +72,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	return [
-		h('span', { class: ['node-icon', node.class === 'folder' ? 'icon-folder' : 'icon-string' ]})
+		h('span', { class: ['node-icon', node.class === 'folder' ? 'icon-folder' : 'icon-string'] })
 	];
 };
 
@@ -90,8 +93,5 @@ const onApply = () => {
 	Localization?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

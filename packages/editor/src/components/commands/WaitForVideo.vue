@@ -1,16 +1,19 @@
 <template>
 	<WindowFrame id="waitForVideo" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.waitForVideo.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="waitForVideo-element" type="element" @input="onElement" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.waitForVideo.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="waitForVideo-element" type="element" @input="onElement" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useWaitForVideoCommandSchema } from '@app/composables/commands/useWaitForVideoCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,5 +31,4 @@ const onElement = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

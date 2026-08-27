@@ -105,7 +105,10 @@ const onPointerdown = (event: PointerEvent): void => {
 };
 
 const onKeydown = (event: KeyboardEvent): void => {
-	if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
+	if (
+		(event.code === 'Enter' || event.code === 'NumpadEnter') &&
+		!(event.ctrlKey || event.metaKey)
+	) {
 		event.stopPropagation();
 		const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
 		if (selectBox) Select.open(selectBox);

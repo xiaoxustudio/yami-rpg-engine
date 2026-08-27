@@ -1,11 +1,15 @@
 <template>
 	<WindowFrame id="setTileTag">
-		<template #title><TitleBar>{{ t('components.setTileTag.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.setTileTag-tag.label') }}</div><NumberBox id="setTileTag-tag" min="0" max="99999" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTileTag.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.setTileTag-tag.label') }}</div>
+			<NumberBox id="setTileTag-tag" min="0" max="99999" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -23,8 +27,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

@@ -74,9 +74,7 @@ const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const attrs = useAttrs();
 const isStandard = computed(
-	() =>
-		props.standard ||
-		(typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
+	() => props.standard || (typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
 );
 
 const read = (): boolean => state.dataValue;
@@ -169,8 +167,14 @@ const on = (
 
 defineExpose({ read, write, input, enable, disable, relate, on, root });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as CheckBoxElement | null;

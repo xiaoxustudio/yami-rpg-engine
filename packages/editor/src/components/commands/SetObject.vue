@@ -1,39 +1,62 @@
 <template>
 	<WindowFrame id="setObject" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setObject.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox id="setObject-variable" type="variable" filter="object" @input="onVariable" />
-				<div class="text">Type</div><SelectBox id="setObject-operand-type" v-model="form['operand-type']" /> <div class="text">Actor</div
-				><CustomBox id="setObject-operand-actor" type="actor" @input="onOperandActor" /> <div class="text">Skill</div
-				><CustomBox id="setObject-operand-skill" type="skill" @input="onOperandSkill" /> <div class="text">State</div
-				><CustomBox id="setObject-operand-state" type="state" @input="onOperandState" />
-				<div class="text">Equipment</div
-				><CustomBox id="setObject-operand-equipment" type="equipment" @input="onOperandEquipment" />
-				<div class="text">Item</div><CustomBox id="setObject-operand-item" type="item" @input="onOperandItem" />
-				<div class="text">Trigger</div
-				><CustomBox id="setObject-operand-trigger" type="trigger" @input="onOperandTrigger" />
-				<div class="text">Light</div><CustomBox id="setObject-operand-light" type="light" @input="onOperandLight" />
-				<div class="text">Object</div><CustomBox id="setObject-operand-object" type="object" @input="onOperandObject" />
-				<div class="text">Element</div
-				><CustomBox id="setObject-operand-element" type="element" @input="onOperandElement" />
-				<div class="text">Variable</div
-				><CustomBox
-					id="setObject-operand-variable"
-					type="variable"
-					filter="object"
-					@input="onOperandVariable"
-				/>
-				<div class="text">Index</div
-				><NumberVar id="setObject-operand-list-index" min="0" max="1000000000" v-model="form['operand-list-index']" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setObject.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setObject-variable"
+				type="variable"
+				filter="object"
+				@input="onVariable"
+			/>
+			<div class="text">Type</div>
+			<SelectBox id="setObject-operand-type" v-model="form['operand-type']" />
+			<div class="text">Actor</div>
+			<CustomBox id="setObject-operand-actor" type="actor" @input="onOperandActor" />
+			<div class="text">Skill</div>
+			<CustomBox id="setObject-operand-skill" type="skill" @input="onOperandSkill" />
+			<div class="text">State</div>
+			<CustomBox id="setObject-operand-state" type="state" @input="onOperandState" />
+			<div class="text">Equipment</div>
+			<CustomBox
+				id="setObject-operand-equipment"
+				type="equipment"
+				@input="onOperandEquipment"
+			/>
+			<div class="text">Item</div>
+			<CustomBox id="setObject-operand-item" type="item" @input="onOperandItem" />
+			<div class="text">Trigger</div>
+			<CustomBox id="setObject-operand-trigger" type="trigger" @input="onOperandTrigger" />
+			<div class="text">Light</div>
+			<CustomBox id="setObject-operand-light" type="light" @input="onOperandLight" />
+			<div class="text">Object</div>
+			<CustomBox id="setObject-operand-object" type="object" @input="onOperandObject" />
+			<div class="text">Element</div>
+			<CustomBox id="setObject-operand-element" type="element" @input="onOperandElement" />
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setObject-operand-variable"
+				type="variable"
+				filter="object"
+				@input="onOperandVariable"
+			/>
+			<div class="text">Index</div>
+			<NumberVar
+				id="setObject-operand-list-index"
+				min="0"
+				max="1000000000"
+				v-model="form['operand-list-index']"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectCommandSchema } from '@app/composables/commands/useSetObjectCommandSchema';
@@ -136,5 +159,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

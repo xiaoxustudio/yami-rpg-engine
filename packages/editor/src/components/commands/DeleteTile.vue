@@ -1,20 +1,23 @@
 <template>
 	<WindowFrame id="deleteTile" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.deleteTile.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Tilemap</div><CustomBox id="deleteTile-tilemap" type="tilemap" @input="onTilemap" />
-				<div class="text">Tilemap X</div
-				><NumberVar id="deleteTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
-				<div class="text">Tilemap Y</div
-				><NumberVar id="deleteTile-tilemapY" min="0" max="511" v-model="form.tilemapY" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.deleteTile.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Tilemap</div>
+			<CustomBox id="deleteTile-tilemap" type="tilemap" @input="onTilemap" />
+			<div class="text">Tilemap X</div>
+			<NumberVar id="deleteTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
+			<div class="text">Tilemap Y</div>
+			<NumberVar id="deleteTile-tilemapY" min="0" max="511" v-model="form.tilemapY" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useDeleteTileCommandSchema } from '@app/composables/commands/useDeleteTileCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -33,5 +36,4 @@ const onTilemap = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

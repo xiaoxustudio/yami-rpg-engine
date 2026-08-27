@@ -1,11 +1,15 @@
 <template>
 	<WindowFrame ref="frame" id="localVariable" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.localVariable.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.localVariable-key.label') }}</div><TextBox id="localVariable-key" v-model="form.key" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.localVariable.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.localVariable-key.label') }}</div>
+			<TextBox id="localVariable-key" v-model="form.key" />
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,32 +1,36 @@
 <template>
 	<WindowFrame id="setAmbientLight" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setAmbientLight.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Red</div
-				><NumberVar id="setAmbientLight-red" min="0" max="255" step="5" v-model="form.red" />
-				<div class="text">Green</div
-				><NumberVar id="setAmbientLight-green" min="0" max="255" step="5" v-model="form.green" />
-				<div class="text">Blue</div
-				><NumberVar id="setAmbientLight-blue" min="0" max="255" step="5" v-model="form.blue" />
-				<div class="text">Easing</div><SelectBox id="setAmbientLight-easingId" name="easing" v-model="form.easingId" />
-				<div class="text">Duration</div
-				><NumberVar
-					id="setAmbientLight-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				 />
-				<div class="text">Wait</div><SelectBox id="setAmbientLight-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setAmbientLight.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Red</div>
+			<NumberVar id="setAmbientLight-red" min="0" max="255" step="5" v-model="form.red" />
+			<div class="text">Green</div>
+			<NumberVar id="setAmbientLight-green" min="0" max="255" step="5" v-model="form.green" />
+			<div class="text">Blue</div>
+			<NumberVar id="setAmbientLight-blue" min="0" max="255" step="5" v-model="form.blue" />
+			<div class="text">Easing</div>
+			<SelectBox id="setAmbientLight-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberVar
+				id="setAmbientLight-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setAmbientLight-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAmbientLightCommandSchema } from '@app/composables/commands/useSetAmbientLightCommandSchema';
@@ -58,5 +62,4 @@ onMounted(() => {
 		clear($('#setAmbientLight-easingId'));
 	});
 });
-
 </script>

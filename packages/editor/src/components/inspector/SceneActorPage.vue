@@ -1,20 +1,34 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneActor-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.sceneActor-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
-			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div><TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div><SelectBox id="sceneActor-type" v-model="form.type" @input="onParamInput" @write="onTypeWrite"></SelectBox>
-			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div
-			><CustomBox
+			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div>
+			<TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
+			<SelectBox
+				id="sceneActor-type"
+				v-model="form.type"
+				@input="onParamInput"
+				@write="onTypeWrite"
+			></SelectBox>
+			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div>
+			<CustomBox
 				id="sceneActor-actorId"
 				:model-value="form.actorId"
 				type="file"
 				filter="actor"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div><SelectBox id="sceneActor-teamId" v-model="form.teamId" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div>
+			<SelectBox
+				id="sceneActor-teamId"
+				v-model="form.teamId"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div>
+			<NumberBox
 				id="sceneActor-x"
 				v-model="form.x"
 				min="-128"
@@ -23,8 +37,8 @@
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div>
+			<NumberBox
 				id="sceneActor-y"
 				v-model="form.y"
 				min="-128"
@@ -33,8 +47,8 @@
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div
-			><div class="flex-box" id="sceneActor-angle-box">
+			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div>
+			<div class="flex-box" id="sceneActor-angle-box">
 				<SliderBox
 					id="sceneActor-angle-slider"
 					v-model="form.angle"
@@ -53,8 +67,8 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div
-			><div class="flex-box" id="sceneActor-scale-box">
+			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div>
+			<div class="flex-box" id="sceneActor-scale-box">
 				<SliderBox
 					id="sceneActor-scale-slider"
 					v-model="form.scale"
@@ -75,12 +89,10 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneActor-conditions.label') || 'Conditions' }}</DetailSummary>
-		<ParamList
-			id="sceneActor-conditions"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneActor-conditions.label') || 'Conditions'
+		}}</DetailSummary>
+		<ParamList id="sceneActor-conditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneActor-events.label') || 'Events' }}</DetailSummary>
@@ -93,11 +105,7 @@
 	</DetailBox>
 	<DetailBox id="sceneActor-scripts-detail" open>
 		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="sceneActor-scripts"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<ParamList id="sceneActor-scripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneActor-parameter-pane"></ParameterPane>
 </template>
@@ -144,7 +152,9 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elType = document.getElementById('sceneActor-type') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elType = document.getElementById('sceneActor-type') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elType?.loadItems) {
 		elType.loadItems([
 			{ name: 'Local Actor', value: 'local' },
@@ -152,15 +162,23 @@ onMounted(() => {
 		]);
 	}
 
-	document.getElementById('sceneActor-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document
+		.getElementById('sceneActor-conditions')
+		?.bind?.(new ConditionListInterface(editor, Scene));
 	document.getElementById('sceneActor-events')?.bind?.(new EventListInterface(editor, Scene));
-	document.getElementById('sceneActor-scripts')?.bind?.(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
-	document.getElementById('sceneActor-parameter-pane')?.bind?.(document.getElementById('sceneActor-scripts'));
+	document
+		.getElementById('sceneActor-scripts')
+		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
+	document
+		.getElementById('sceneActor-parameter-pane')
+		?.bind?.(document.getElementById('sceneActor-scripts'));
 
-	document.getElementById('sceneActor-angle-slider')?.synchronize?.(document.getElementById('sceneActor-angle'));
-	document.getElementById('sceneActor-scale-slider')?.synchronize?.(document.getElementById('sceneActor-scale'));
+	document
+		.getElementById('sceneActor-angle-slider')
+		?.synchronize?.(document.getElementById('sceneActor-angle'));
+	document
+		.getElementById('sceneActor-scale-slider')
+		?.synchronize?.(document.getElementById('sceneActor-scale'));
 
 	window.addEventListener('datachange', editor.datachange as unknown as EventListener);
 	const elements = document.querySelectorAll(
@@ -169,7 +187,8 @@ onMounted(() => {
 	const sliders = document.querySelectorAll('#sceneActor-angle-slider, #sceneActor-scale-slider');
 	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
-	document.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
+	document
+		.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

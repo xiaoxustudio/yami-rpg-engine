@@ -1,17 +1,21 @@
 <template>
-<WindowFrame id="setLoop" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setLoop.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setLoop" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setLoop.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="setLoop-type" v-model="form.type" /> <div class="text">Loop</div
-			><SelectBox id="setLoop-loop" v-model="form.loop" />
+			<div class="text">Type</div>
+			<SelectBox id="setLoop-type" v-model="form.type" />
+			<div class="text">Loop</div>
+			<SelectBox id="setLoop-loop" v-model="form.loop" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetLoopCommandSchema } from '@app/composables/commands/useSetLoopCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		{ name: get('loop') || 'Loop', value: true }
 	]);
 });
-
 </script>

@@ -1,15 +1,16 @@
 <template>
 	<WindowFrame id="copyProgress" no-buttons>
-		<template #title><TitleBar>{{ t('components.copyProgress.title') }}</TitleBar></template>
-		
-			<div class="flex-box" id="copyProgress-flex">
-				<div class="text">{{ t('components.copyProgress-box.label') }}</div>
-				<div class="box" id="copyProgress-box">
-					<div class="box" id="copyProgress-bar" />
-				</div>
-				<div class="text" id="copyProgress-info" />
+		<template #title
+			><TitleBar>{{ t('components.copyProgress.title') }}</TitleBar></template
+		>
+
+		<div class="flex-box" id="copyProgress-flex">
+			<div class="text">{{ t('components.copyProgress-box.label') }}</div>
+			<div class="box" id="copyProgress-box">
+				<div class="box" id="copyProgress-bar" />
 			</div>
-		
+			<div class="text" id="copyProgress-info" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -26,8 +27,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

@@ -1,19 +1,42 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileState-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileState-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileState-general-grid">
-			<div class="text">{{ t('components.fileState-icon.label') || 'Icon' }}</div
-			><CustomBox id="fileState-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ t('components.fileState-clip.label') || 'Clip' }}</div
-			><CustomBox id="fileState-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileState-icon" />
-			<div class="text">{{ t('components.fileState-inherit.label') || 'Inherit' }}</div
-			><CustomBox id="fileState-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="state" />
+			<div class="text">{{ t('components.fileState-icon.label') || 'Icon' }}</div>
+			<CustomBox
+				id="fileState-icon"
+				:model-value="form.icon"
+				@input="onParamInput"
+				type="file"
+				filter="image"
+			/>
+			<div class="text">{{ t('components.fileState-clip.label') || 'Clip' }}</div>
+			<CustomBox
+				id="fileState-clip"
+				:model-value="form.clip"
+				@input="onParamInput"
+				type="clip"
+				image="fileState-icon"
+			/>
+			<div class="text">{{ t('components.fileState-inherit.label') || 'Inherit' }}</div>
+			<CustomBox
+				id="fileState-inherit"
+				:model-value="form.inherit"
+				@input="onParamInput"
+				type="file"
+				filter="state"
+			/>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileState-attributes.label') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileState-attributes.label') || 'Attributes'
+		}}</DetailSummary>
 		<ParamList
-			id="fileState-attributes" @change="onListChange"
+			id="fileState-attributes"
+			@change="onListChange"
 			class="inspector-list"
 			group="state"
 			flexible
@@ -22,7 +45,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileState-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
-			id="fileState-events" @change="onListChange"
+			id="fileState-events"
+			@change="onListChange"
 			class="inspector-list"
 			filter="state"
 			flexible
@@ -30,11 +54,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileState-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="fileState-scripts" @change="onListChange"
-			class="inspector-list"
-			flexible
-		/>
+		<ParamList id="fileState-scripts" @change="onListChange" class="inspector-list" flexible />
 	</DetailBox>
 	<ParameterPane id="fileState-parameter-pane" />
 </template>
@@ -76,7 +96,9 @@ onMounted(() => {
 	document.getElementById('fileState-attributes')?.bind?.(new AttributeListInterface());
 	document.getElementById('fileState-events')?.bind?.(new EventListInterface(editor));
 	document.getElementById('fileState-scripts')?.bind?.(new ScriptListInterface());
-	document.getElementById('fileState-parameter-pane')?.bind?.(document.getElementById('fileState-scripts'));
+	document
+		.getElementById('fileState-parameter-pane')
+		?.bind?.(document.getElementById('fileState-scripts'));
 
 	sync();
 });

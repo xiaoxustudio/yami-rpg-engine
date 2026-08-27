@@ -1,23 +1,30 @@
 <template>
-<WindowFrame id="discardTargets" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.discardTargets.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="discardTargets" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.discardTargets.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="discardTargets-actor" type="actor" @input="onActor" /><div class="text">Selector</div><SelectBox id="discardTargets-selector" v-model="form.selector" /><div class="text">Distance</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="discardTargets-actor" type="actor" @input="onActor" />
+			<div class="text">Selector</div>
+			<SelectBox id="discardTargets-selector" v-model="form.selector" />
+			<div class="text">Distance</div>
+			<NumberVar
 				id="discardTargets-distance"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
 				v-model="form.distance"
-			 /></div>
-	
-</WindowFrame>
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDiscardTargetsCommandSchema } from '@app/composables/commands/useDiscardTargetsCommandSchema';
@@ -50,5 +57,4 @@ onMounted(() => {
 		{ name: 'Any', value: 'any' }
 	]);
 });
-
 </script>

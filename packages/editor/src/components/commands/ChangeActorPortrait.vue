@@ -1,22 +1,35 @@
 <template>
-<WindowFrame id="changeActorPortrait" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorPortrait.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorPortrait" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorPortrait.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" @input="onActor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" v-model="form.mode" /><div class="text">Portrait</div
-			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" @input="onPortrait" /><div class="text">Clip</div
-			><CustomBox
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorPortrait-actor" type="actor" @input="onActor" />
+			<div class="text">Mode</div>
+			<SelectBox id="changeActorPortrait-mode" v-model="form.mode" />
+			<div class="text">Portrait</div>
+			<CustomBox
+				id="changeActorPortrait-portrait"
+				type="file"
+				filter="image"
+				@input="onPortrait"
+			/>
+			<div class="text">Clip</div>
+			<CustomBox
 				id="changeActorPortrait-clip"
 				type="clip"
 				image="changeActorPortrait-portrait"
 				@input="onClip"
-			 /></div>
-	
-</WindowFrame>
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorPortraitCommandSchema } from '@app/composables/commands/useChangeActorPortraitCommandSchema';
@@ -68,5 +81,4 @@ onMounted(() => {
 			{ case: 'clip', targets: [$('#changeActorPortrait-clip')] }
 		]);
 });
-
 </script>

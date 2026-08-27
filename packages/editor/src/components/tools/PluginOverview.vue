@@ -3,18 +3,22 @@
 		<template v-if="overview.plugin">
 			<div class="plugin-title text">
 				<div class="plugin-name text">{{ langMap?.get(overview.plugin) }}</div>
-				<div v-if="overview.version" class="plugin-version text">{{ ' ver' + overview.version }}</div>
+				<div v-if="overview.version" class="plugin-version text">
+					{{ ' ver' + overview.version }}
+				</div>
 				<div v-if="deprecatedText" class="plugin-deprecated text">{{ deprecatedText }}</div>
 			</div>
 		</template>
 		<template v-if="overview.author">
 			{{ hasTitle ? '\n' : '' }}
-			<div class="plugin-label text">{{ get('author') }}: </div>
+			<div class="plugin-label text">{{ get('author') }}:</div>
 			<div
 				class="plugin-type text"
 				:class="{ 'plugin-link': !!overview.link }"
 				@click="onLinkClick"
-			>{{ overview.author }}</div>
+			>
+				{{ overview.author }}
+			</div>
 		</template>
 		<template v-if="overview.desc">
 			{{ hasTitleOrAuthor ? '\n\n' : '' }}
@@ -26,16 +30,23 @@
 		</template>
 		<template v-if="detailed && meta.parameters.length">
 			{{ hasAnyOverview ? '\n\n' : '' }}
-				<div v-for="parameter in meta.parameters" :key="parameter.key" class="plugin-wrap text">
-					<div class="plugin-key text">{{ langMap?.get(parameter.alias) ?? parameter.key }}</div>
-					<div class="plugin-label text">: </div>
-					<template v-for="(segment, index) in parameterSegments.get(parameter.key) ?? []" :key="index">
-						<div v-if="segment.separator" class="plugin-label text">|</div>
-						<div class="plugin-type text">{{ segment.text }}</div>
-					</template>
-					<div v-if="parameter.key in states" class="plugin-label text">?</div>
-					<div v-if="parameter.desc" class="plugin-param-desc text">{{ langMap?.get(parameter.desc) }}</div>
+			<div v-for="parameter in meta.parameters" :key="parameter.key" class="plugin-wrap text">
+				<div class="plugin-key text">
+					{{ langMap?.get(parameter.alias) ?? parameter.key }}
 				</div>
+				<div class="plugin-label text">:</div>
+				<template
+					v-for="(segment, index) in parameterSegments.get(parameter.key) ?? []"
+					:key="index"
+				>
+					<div v-if="segment.separator" class="plugin-label text">|</div>
+					<div class="plugin-type text">{{ segment.text }}</div>
+				</template>
+				<div v-if="parameter.key in states" class="plugin-label text">?</div>
+				<div v-if="parameter.desc" class="plugin-param-desc text">
+					{{ langMap?.get(parameter.desc) }}
+				</div>
+			</div>
 		</template>
 		<span v-if="!hasAnyContent">No Description</span>
 	</div>
@@ -82,10 +93,14 @@ const hasAnyContent = computed(
 const deprecatedText = computed(() => {
 	const deprecated = overview.value.deprecated;
 	if (!deprecated) return '';
-	return typeof deprecated === 'string' ? get('deprecated') + ': ' + deprecated : get('deprecated');
+	return typeof deprecated === 'string'
+		? get('deprecated') + ': ' + deprecated
+		: get('deprecated');
 });
 
-const requireText = computed(() => get('requireMissing') + missing.value.map((req) => req.plugin).join(', '));
+const requireText = computed(
+	() => get('requireMissing') + missing.value.map((req) => req.plugin).join(', ')
+);
 
 // 参数类型分段为纯函数，预计算避免模板 v-for 内每次重渲染都重复执行
 const parameterSegments = computed(() => {

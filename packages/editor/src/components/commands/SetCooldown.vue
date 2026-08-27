@@ -1,20 +1,31 @@
 <template>
-<WindowFrame id="setCooldown" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setCooldown.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setCooldown" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setCooldown.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setCooldown-actor" type="actor" @input="onActor" />
-			<div class="text">Operation</div><SelectBox id="setCooldown-operation" v-model="form.operation" />
-			<div class="text">Cooldown Key</div><SelectVar id="setCooldown-key" v-model="form.key" />
-			<div class="text">Cooldown Time</div
-			><NumberVar id="setCooldown-cooldown" min="1" max="3600000" unit="ms" v-model="form.cooldown" />
+			<div class="text">Actor</div>
+			<CustomBox id="setCooldown-actor" type="actor" @input="onActor" />
+			<div class="text">Operation</div>
+			<SelectBox id="setCooldown-operation" v-model="form.operation" />
+			<div class="text">Cooldown Key</div>
+			<SelectVar id="setCooldown-key" v-model="form.key" />
+			<div class="text">Cooldown Time</div>
+			<NumberVar
+				id="setCooldown-cooldown"
+				min="1"
+				max="3600000"
+				unit="ms"
+				v-model="form.cooldown"
+			/>
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';
@@ -47,5 +58,4 @@ onMounted(() => {
 		{ name: get('decrease') || 'Decrease', value: 'decrease' }
 	]);
 });
-
 </script>

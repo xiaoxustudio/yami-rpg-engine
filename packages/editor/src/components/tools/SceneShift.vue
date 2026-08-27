@@ -1,24 +1,17 @@
 <template>
-		<WindowFrame ref="frame" id="scene-shift" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.scene-shift.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.scene-shift-x.label') }}</div
-				><NumberBox
-					id="scene-shift-x"
-					min="-512"
-					max="512"
-					:model-value="form.x"
-				/>
-				<div class="text">{{ t('components.scene-shift-y.label') }}</div
-				><NumberBox
-					id="scene-shift-y"
-					min="-512"
-					max="512"
-					:model-value="form.y"
-				/>
-			</div>
-		
+	<WindowFrame ref="frame" id="scene-shift" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.scene-shift.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.scene-shift-x.label') }}</div>
+			<NumberBox id="scene-shift-x" min="-512" max="512" :model-value="form.x" />
+			<div class="text">{{ t('components.scene-shift-y.label') }}</div>
+			<NumberBox id="scene-shift-y" min="-512" max="512" :model-value="form.y" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -82,7 +75,5 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
 	}
-
-
 });
 </script>

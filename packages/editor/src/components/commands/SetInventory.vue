@@ -1,33 +1,42 @@
 <template>
-<WindowFrame id="setInventory" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setInventory.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setInventory" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setInventory.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" v-model="form.actor" />
-			<div class="text">Operation</div><SelectBox id="setInventory-operation" v-model="form.operation" />
-			<div class="text">Money</div
-			><NumberVar id="setInventory-money" min="1" max="100000000" v-model="form.money" />
-			<div class="text">Item</div
-			><FileVar id="setInventory-itemId" type="file" filter="item" v-model="form.itemId" />
-			<div class="text">Quantity</div
-			><NumberVar id="setInventory-quantity" min="1" max="10000" v-model="form.quantity" />
-			<div class="text">Equipment</div
-			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" v-model="form.equipmentId" />
-			<div class="text">Equipment</div
-			><CustomBox id="setInventory-equipment" type="equipment" v-model="form.equipment" />
-			<div class="text">Order A</div
-			><NumberVar id="setInventory-order1" min="0" max="10000" v-model="form.order1" />
-			<div class="text">Order B</div
-			><NumberVar id="setInventory-order2" min="0" max="10000" v-model="form.order2" />
-			<div class="text">Global Actor</div
-			><CustomBox id="setInventory-refActor" type="actor" v-model="form.refActor" />
+			<div class="text">Actor</div>
+			<CustomBox id="setInventory-actor" type="actor" v-model="form.actor" />
+			<div class="text">Operation</div>
+			<SelectBox id="setInventory-operation" v-model="form.operation" />
+			<div class="text">Money</div>
+			<NumberVar id="setInventory-money" min="1" max="100000000" v-model="form.money" />
+			<div class="text">Item</div>
+			<FileVar id="setInventory-itemId" type="file" filter="item" v-model="form.itemId" />
+			<div class="text">Quantity</div>
+			<NumberVar id="setInventory-quantity" min="1" max="10000" v-model="form.quantity" />
+			<div class="text">Equipment</div>
+			<FileVar
+				id="setInventory-equipmentId"
+				type="file"
+				filter="equipment"
+				v-model="form.equipmentId"
+			/>
+			<div class="text">Equipment</div>
+			<CustomBox id="setInventory-equipment" type="equipment" v-model="form.equipment" />
+			<div class="text">Order A</div>
+			<NumberVar id="setInventory-order1" min="0" max="10000" v-model="form.order1" />
+			<div class="text">Order B</div>
+			<NumberVar id="setInventory-order2" min="0" max="10000" v-model="form.order2" />
+			<div class="text">Global Actor</div>
+			<CustomBox id="setInventory-refActor" type="actor" v-model="form.refActor" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
@@ -57,8 +66,14 @@ onMounted(() => {
 		{ name: get('decrease-items') || 'Decrease Items', value: 'decrease-items' },
 		{ name: get('gain-equipment') || 'Gain Equipment', value: 'gain-equipment' },
 		{ name: get('lose-equipment') || 'Lose Equipment', value: 'lose-equipment' },
-		{ name: get('gain-equipment-instance') || 'Gain Equipment', value: 'gain-equipment-instance' },
-		{ name: get('lose-equipment-instance') || 'Lose Equipment', value: 'lose-equipment-instance' },
+		{
+			name: get('gain-equipment-instance') || 'Gain Equipment',
+			value: 'gain-equipment-instance'
+		},
+		{
+			name: get('lose-equipment-instance') || 'Lose Equipment',
+			value: 'lose-equipment-instance'
+		},
 		{ name: get('swap') || 'Swap Order of Items', value: 'swap' },
 		{ name: get('sort') || 'Sort Simply', value: 'sort' },
 		{ name: get('sort-by-order') || 'Sort by Filename', value: 'sort-by-order' },
@@ -92,5 +107,4 @@ onMounted(() => {
 			{ case: 'reference', targets: [$('#setInventory-refActor')] }
 		]);
 });
-
 </script>

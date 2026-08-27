@@ -1,31 +1,52 @@
 <template>
 	<WindowFrame id="setBoolean" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setBoolean.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="setBoolean-variable"
-					type="variable"
-					filter="writable-boolean"
-					v-model="form.variable"
-				/>
-				<div class="text">Operation</div><SelectBox id="setBoolean-operation" v-model="form.operation" />
-				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" v-model="form['operand-type']" @write="onWrite" />
-				<div class="text">Constant</div><SelectBox id="setBoolean-constant-value" v-model="form['constant-value']" />
-				<div class="text">Variable</div
-				><CustomBox id="setBoolean-common-variable" type="variable" filter="all" v-model="form['common-variable']" />
-				<div class="text">Index</div
-				><NumberVar id="setBoolean-list-index" min="0" max="1000000000" v-model="form['list-index']" />
-				<div class="text">Param Name</div><StringVar id="setBoolean-parameter-key" v-model="form['parameter-key']" />
-				<div class="text">Script</div><TextBox id="setBoolean-script" v-model="form.script" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setBoolean.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setBoolean-variable"
+				type="variable"
+				filter="writable-boolean"
+				v-model="form.variable"
+			/>
+			<div class="text">Operation</div>
+			<SelectBox id="setBoolean-operation" v-model="form.operation" />
+			<div class="text">Type</div>
+			<SelectBox
+				id="setBoolean-operand-type"
+				v-model="form['operand-type']"
+				@write="onWrite"
+			/>
+			<div class="text">Constant</div>
+			<SelectBox id="setBoolean-constant-value" v-model="form['constant-value']" />
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setBoolean-common-variable"
+				type="variable"
+				filter="all"
+				v-model="form['common-variable']"
+			/>
+			<div class="text">Index</div>
+			<NumberVar
+				id="setBoolean-list-index"
+				min="0"
+				max="1000000000"
+				v-model="form['list-index']"
+			/>
+			<div class="text">Param Name</div>
+			<StringVar id="setBoolean-parameter-key" v-model="form['parameter-key']" />
+			<div class="text">Script</div>
+			<TextBox id="setBoolean-script" v-model="form.script" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
@@ -91,5 +112,4 @@ onMounted(() => {
 		{ name: 'True', value: true }
 	]);
 });
-
 </script>

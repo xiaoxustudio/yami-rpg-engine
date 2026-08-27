@@ -1,17 +1,21 @@
 <template>
-<WindowFrame id="jumpTo" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.jumpTo.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="jumpTo" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.jumpTo.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Operation</div><SelectBox id="jumpTo-operation" v-model="form.operation" />
-			<div class="text">Label Name</div><TextBox id="jumpTo-label" v-model="form.label" />
+			<div class="text">Operation</div>
+			<SelectBox id="jumpTo-operation" v-model="form.operation" />
+			<div class="text">Label Name</div>
+			<TextBox id="jumpTo-label" v-model="form.label" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
@@ -36,10 +40,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	TextSuggestion.listen!(
-		$('#jumpTo-label') as unknown as TextSuggestionTarget,
-		loadLabels
-	);
+	TextSuggestion.listen!($('#jumpTo-label') as unknown as TextSuggestionTarget, loadLabels);
 	$('#jumpTo-operation')?.loadItems?.([
 		{ name: 'Jump to Label', value: 'jump' },
 		{ name: 'Save and Jump to Label', value: 'save-jump' },
@@ -49,5 +50,4 @@ onMounted(() => {
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
 });
-
 </script>

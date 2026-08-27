@@ -1,32 +1,43 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneParticle-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.sceneParticle-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
-			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div><TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ t('components.sceneParticle-particleId.label') || 'Particle' }}</div
-			><CustomBox
-				id="sceneParticle-particleId" :model-value="form.particleId" @input="onParamInput"
+			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div>
+			<TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">
+				{{ t('components.sceneParticle-particleId.label') || 'Particle' }}
+			</div>
+			<CustomBox
+				id="sceneParticle-particleId"
+				:model-value="form.particleId"
+				@input="onParamInput"
 				type="file"
 				filter="particle"
 			></CustomBox>
-			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div
-			><NumberBox
-				id="sceneParticle-x" v-model="form.x" @input="onParamInput"
+			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div>
+			<NumberBox
+				id="sceneParticle-x"
+				v-model="form.x"
+				@input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div
-			><NumberBox
-				id="sceneParticle-y" v-model="form.y" @input="onParamInput"
+			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div>
+			<NumberBox
+				id="sceneParticle-y"
+				v-model="form.y"
+				@input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneParticle-angle-box.label') || 'Angle' }}</div
-			><div class="flex-box" id="sceneParticle-angle-box">
+			<div class="text">{{ t('components.sceneParticle-angle-box.label') || 'Angle' }}</div>
+			<div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
 					v-model="form.angle"
@@ -35,7 +46,9 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-angle" v-model="form.angle" @input="onParamInput"
+					id="sceneParticle-angle"
+					v-model="form.angle"
+					@input="onParamInput"
 					min="-360"
 					max="360"
 					step="45"
@@ -43,8 +56,8 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneParticle-scale-box.label') || 'Scale' }}</div
-			><div class="flex-box" id="sceneParticle-scale-box">
+			<div class="text">{{ t('components.sceneParticle-scale-box.label') || 'Scale' }}</div>
+			<div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
 					v-model="form.scale"
@@ -53,15 +66,17 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-scale" v-model="form.scale" @input="onParamInput"
+					id="sceneParticle-scale"
+					v-model="form.scale"
+					@input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneParticle-speed-box.label') || 'Speed' }}</div
-			><div class="flex-box" id="sceneParticle-speed-box">
+			<div class="text">{{ t('components.sceneParticle-speed-box.label') || 'Speed' }}</div>
+			<div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
 					v-model="form.speed"
@@ -70,15 +85,19 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-speed" v-model="form.speed" @input="onParamInput"
+					id="sceneParticle-speed"
+					v-model="form.speed"
+					@input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneParticle-opacity-box.label') || 'Opacity' }}</div
-			><div class="flex-box" id="sceneParticle-opacity-box">
+			<div class="text">
+				{{ t('components.sceneParticle-opacity-box.label') || 'Opacity' }}
+			</div>
+			<div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
 					v-model="form.opacity"
@@ -87,15 +106,19 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-opacity" v-model="form.opacity" @input="onParamInput"
+					id="sceneParticle-opacity"
+					v-model="form.opacity"
+					@input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneParticle-priority-box.label') || 'Priority' }}</div
-			><div class="flex-box" id="sceneParticle-priority-box">
+			<div class="text">
+				{{ t('components.sceneParticle-priority-box.label') || 'Priority' }}
+			</div>
+			<div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"
 					v-model="form.priority"
@@ -104,7 +127,9 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-priority" v-model="form.priority" @input="onParamInput"
+					id="sceneParticle-priority"
+					v-model="form.priority"
+					@input="onParamInput"
 					min="-512"
 					max="512"
 				></NumberBox>
@@ -112,12 +137,10 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneParticle-conditions.label') || 'Conditions' }}</DetailSummary>
-		<ParamList
-			id="sceneParticle-conditions"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneParticle-conditions.label') || 'Conditions'
+		}}</DetailSummary>
+		<ParamList id="sceneParticle-conditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneParticle-events.label') || 'Events' }}</DetailSummary>
@@ -129,12 +152,10 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneParticle-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="sceneParticle-scripts"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneParticle-scripts.label') || 'Scripts'
+		}}</DetailSummary>
+		<ParamList id="sceneParticle-scripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneParticle-parameter-pane"></ParameterPane>
 </template>
@@ -189,11 +210,21 @@ onMounted(() => {
 		const parameterPane = document.getElementById('sceneParticle-parameter-pane');
 		parameterPane?.bind?.(scripts);
 
-		document.getElementById('sceneParticle-angle-slider')?.synchronize?.(document.getElementById('sceneParticle-angle'));
-		document.getElementById('sceneParticle-scale-slider')?.synchronize?.(document.getElementById('sceneParticle-scale'));
-		document.getElementById('sceneParticle-speed-slider')?.synchronize?.(document.getElementById('sceneParticle-speed'));
-		document.getElementById('sceneParticle-opacity-slider')?.synchronize?.(document.getElementById('sceneParticle-opacity'));
-		document.getElementById('sceneParticle-priority-slider')?.synchronize?.(document.getElementById('sceneParticle-priority'));
+		document
+			.getElementById('sceneParticle-angle-slider')
+			?.synchronize?.(document.getElementById('sceneParticle-angle'));
+		document
+			.getElementById('sceneParticle-scale-slider')
+			?.synchronize?.(document.getElementById('sceneParticle-scale'));
+		document
+			.getElementById('sceneParticle-speed-slider')
+			?.synchronize?.(document.getElementById('sceneParticle-speed'));
+		document
+			.getElementById('sceneParticle-opacity-slider')
+			?.synchronize?.(document.getElementById('sceneParticle-opacity'));
+		document
+			.getElementById('sceneParticle-priority-slider')
+			?.synchronize?.(document.getElementById('sceneParticle-priority'));
 
 		const elements = document.querySelectorAll(
 			'#sceneParticle-name, #sceneParticle-particleId, #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle, #sceneParticle-scale, #sceneParticle-speed, #sceneParticle-opacity, #sceneParticle-priority'
@@ -205,7 +236,9 @@ onMounted(() => {
 		bindSliders(sliders);
 
 		document
-			.querySelectorAll('#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts')
+			.querySelectorAll(
+				'#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts'
+			)
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneParticlePage] init skipped:', (e as Error)?.message);

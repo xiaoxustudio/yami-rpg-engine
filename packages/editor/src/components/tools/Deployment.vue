@@ -1,26 +1,38 @@
 <template>
 	<WindowFrame id="deployment" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.deployment.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.deployment-platform.label') }}</div><SelectBox id="deployment-platform" v-model="Deployment.form.platform" @input="onPlatformInput" />
-				<div class="text">{{ t('components.deployment-folder.label') }}</div
-				><TextBox
-					id="deployment-folder"
-					v-model="Deployment.form.folder"
-					@beforeinput="onFolderBeforeinput"
-					@input="onFolderInput"
+		<template #title
+			><TitleBar
+				>{{ t('components.deployment.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.deployment-platform.label') }}</div>
+			<SelectBox
+				id="deployment-platform"
+				v-model="Deployment.form.platform"
+				@input="onPlatformInput"
+			/>
+			<div class="text">{{ t('components.deployment-folder.label') }}</div>
+			<TextBox
+				id="deployment-folder"
+				v-model="Deployment.form.folder"
+				@beforeinput="onFolderBeforeinput"
+				@input="onFolderInput"
+			/>
+			<div class="text">{{ t('components.deployment-location-box.label') }}</div>
+			<div class="flex-box" id="deployment-location-box">
+				<TextBox
+					id="deployment-location"
+					v-model="Deployment.form.location"
+					@input="onLocationInput"
 				/>
-				<div class="text">{{ t('components.deployment-location-box.label') }}</div>
-				<div class="flex-box" id="deployment-location-box">
-					<TextBox id="deployment-location" v-model="Deployment.form.location" @input="onLocationInput" />
-					<button id="deployment-choose" @click="onChooseClick">…</button>
-				</div>
-				<div class="text">{{ t('components.deployment-compress.label') }}</div>
-			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
+				<button id="deployment-choose" @click="onChooseClick">…</button>
 			</div>
-			<div class="text" id="deployment-warning" />
-		
+			<div class="text">{{ t('components.deployment-compress.label') }}</div>
+			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
+		</div>
+		<div class="text" id="deployment-warning" />
 	</WindowFrame>
 </template>
 
@@ -66,6 +78,5 @@ const onConfirm = () => {
 	toast.show('Deployment started', 'info');
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

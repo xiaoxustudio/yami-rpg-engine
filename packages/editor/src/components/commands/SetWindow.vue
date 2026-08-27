@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setWindow" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setWindow.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setWindow-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setWindow-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setWindow.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setWindow-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setWindow-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetWindowCommandSchema } from '@app/composables/commands/useSetWindowCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setWindow-properties'));
 	});
 });
-
 </script>

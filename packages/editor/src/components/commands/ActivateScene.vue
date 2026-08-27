@@ -1,16 +1,19 @@
 <template>
 	<WindowFrame id="activateScene" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.activateScene.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Scene</div><SelectBox id="activateScene-pointer" v-model="form.pointer" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.activateScene.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Scene</div>
+			<SelectBox id="activateScene-pointer" v-model="form.pointer" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useActivateSceneCommandSchema } from '@app/composables/commands/useActivateSceneCommandSchema';
@@ -33,5 +36,4 @@ onMounted(() => {
 		{ name: 'Scene B', value: 1 }
 	]);
 });
-
 </script>

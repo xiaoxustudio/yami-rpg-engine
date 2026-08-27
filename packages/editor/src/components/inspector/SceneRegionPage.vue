@@ -1,35 +1,47 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneRegion-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.sceneRegion-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
-			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div><TextBox id="sceneRegion-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div><ColorBox id="sceneRegion-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div
-			><NumberBox
-				id="sceneRegion-x" v-model="form.x" @input="onParamInput"
+			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div>
+			<TextBox id="sceneRegion-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div>
+			<ColorBox id="sceneRegion-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div>
+			<NumberBox
+				id="sceneRegion-x"
+				v-model="form.x"
+				@input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div
-			><NumberBox
-				id="sceneRegion-y" v-model="form.y" @input="onParamInput"
+			<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div>
+			<NumberBox
+				id="sceneRegion-y"
+				v-model="form.y"
+				@input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div
-			><NumberBox
-				id="sceneRegion-width" v-model="form.width" @input="onParamInput"
+			<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div>
+			<NumberBox
+				id="sceneRegion-width"
+				v-model="form.width"
+				@input="onParamInput"
 				min="0"
 				max="512"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div
-			><NumberBox
-				id="sceneRegion-height" v-model="form.height" @input="onParamInput"
+			<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div>
+			<NumberBox
+				id="sceneRegion-height"
+				v-model="form.height"
+				@input="onParamInput"
 				min="0"
 				max="512"
 				decimals="4"
@@ -37,12 +49,10 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneRegion-conditions.label') || 'Conditions' }}</DetailSummary>
-		<ParamList
-			id="sceneRegion-conditions"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneRegion-conditions.label') || 'Conditions'
+		}}</DetailSummary>
+		<ParamList id="sceneRegion-conditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-events.label') || 'Events' }}</DetailSummary>
@@ -55,11 +65,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="sceneRegion-scripts"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<ParamList id="sceneRegion-scripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneRegion-parameter-pane"></ParameterPane>
 </template>

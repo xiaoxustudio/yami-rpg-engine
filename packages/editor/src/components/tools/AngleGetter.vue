@@ -1,21 +1,26 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="angleGetter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.angleGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.angleGetter-type.label') }}</div><SelectBox id="angleGetter-type" v-model="form.type" /> <div class="text">{{ t('components.angleGetter-position-position.label') }}</div
-				><CustomBox id="angleGetter-position-position" type="position" v-model="form.position" />
-				<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div
-				><NumberVar
-					id="angleGetter-common-degrees"
-					min="-36000"
-					max="36000"
-					decimals="4"
-					unit="deg"
-					v-model="form.degrees"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.angleGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.angleGetter-type.label') }}</div>
+			<SelectBox id="angleGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.angleGetter-position-position.label') }}</div>
+			<CustomBox id="angleGetter-position-position" type="position" v-model="form.position" />
+			<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div>
+			<NumberVar
+				id="angleGetter-common-degrees"
+				min="-36000"
+				max="36000"
+				decimals="4"
+				unit="deg"
+				v-model="form.degrees"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -51,7 +56,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => angleGetter.onWindowClosed());
 	}
-
-
 });
 </script>

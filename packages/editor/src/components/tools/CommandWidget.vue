@@ -15,8 +15,5 @@ import TextBox from '@app/components/common/TextBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

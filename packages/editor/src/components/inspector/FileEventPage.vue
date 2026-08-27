@@ -1,25 +1,59 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileEvent-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileEvent-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileEvent-general-grid">
-			<div class="text">{{ t('components.fileEvent-type.label') || 'Type' }}</div><SelectBox id="fileEvent-type" :model-value="form.type" @input="onParamInput" @write="onTypeWrite" />
-			<div class="text">{{ t('components.fileEvent-enabled.label') || 'Enabled' }}</div
-			><CheckBox id="fileEvent-enabled" class="standard large" :model-value="form.enabled" @input="onParamInput" />
-			<div class="text">{{ t('components.fileEvent-priority.label') || 'Priority' }}</div
-			><CheckBox id="fileEvent-priority" class="standard large" :model-value="form.priority" @input="onParamInput" />
-			<div class="text">{{ t('components.fileEvent-namespace.label') || 'Namespace' }}</div
-			><CheckBox id="fileEvent-namespace" class="standard large" :model-value="form.namespace" @input="onParamInput" />
-			<div class="text">{{ t('components.fileEvent-returnType.label') || 'Return Type' }}</div
-			><SelectBox id="fileEvent-returnType" :model-value="form.returnType" @input="onParamInput" />
-			<div class="text">{{ t('components.fileEvent-description.label') || 'Description' }}</div><TextArea id="fileEvent-description" :model-value="form.description" @input="onParamInput" />
+			<div class="text">{{ t('components.fileEvent-type.label') || 'Type' }}</div>
+			<SelectBox
+				id="fileEvent-type"
+				:model-value="form.type"
+				@input="onParamInput"
+				@write="onTypeWrite"
+			/>
+			<div class="text">{{ t('components.fileEvent-enabled.label') || 'Enabled' }}</div>
+			<CheckBox
+				id="fileEvent-enabled"
+				class="standard large"
+				:model-value="form.enabled"
+				@input="onParamInput"
+			/>
+			<div class="text">{{ t('components.fileEvent-priority.label') || 'Priority' }}</div>
+			<CheckBox
+				id="fileEvent-priority"
+				class="standard large"
+				:model-value="form.priority"
+				@input="onParamInput"
+			/>
+			<div class="text">{{ t('components.fileEvent-namespace.label') || 'Namespace' }}</div>
+			<CheckBox
+				id="fileEvent-namespace"
+				class="standard large"
+				:model-value="form.namespace"
+				@input="onParamInput"
+			/>
+			<div class="text">
+				{{ t('components.fileEvent-returnType.label') || 'Return Type' }}
+			</div>
+			<SelectBox
+				id="fileEvent-returnType"
+				:model-value="form.returnType"
+				@input="onParamInput"
+			/>
+			<div class="text">
+				{{ t('components.fileEvent-description.label') || 'Description' }}
+			</div>
+			<TextArea
+				id="fileEvent-description"
+				:model-value="form.description"
+				@input="onParamInput"
+			/>
 		</div>
 		<DetailBox open>
-			<DetailSummary>{{ t('components.fileEvent-parameters.label') || 'Parameters' }}</DetailSummary>
-			<ParamList
-				id="fileEvent-parameters"
-				class="inspector-list"
-				flexible
-			/>
+			<DetailSummary>{{
+				t('components.fileEvent-parameters.label') || 'Parameters'
+			}}</DetailSummary>
+			<ParamList id="fileEvent-parameters" class="inspector-list" flexible />
 		</DetailBox>
 	</DetailBox>
 </template>
@@ -58,14 +92,18 @@ onMounted(() => {
 	}
 
 	if (EventEditor.types) {
-		const elType = document.getElementById('fileEvent-type') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+		const elType = document.getElementById('fileEvent-type') as
+			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+			| null;
 		if (elType?.loadItems) {
 			elType.loadItems(EventEditor.types.global);
 		}
 		EventEditor.types.relatedElements.push(document.getElementById('fileEvent-type'));
 	}
 
-	const elReturnType = document.getElementById('fileEvent-returnType') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elReturnType = document.getElementById('fileEvent-returnType') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elReturnType?.loadItems) {
 		elReturnType.loadItems([
 			{ name: 'None', value: 'none' },

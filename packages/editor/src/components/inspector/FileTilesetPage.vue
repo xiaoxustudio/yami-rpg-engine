@@ -31,12 +31,7 @@
 				value="edit"
 				:class="{ selected: palette.mode === 'edit' }"
 			></div>
-			<div
-				id="palette-flip"
-				class="item toolbar-item"
-				value="flip"
-				hotkey="F"
-			></div>
+			<div id="palette-flip" class="item toolbar-item" value="flip" hotkey="F"></div>
 		</div>
 		<SliderBox
 			id="palette-zoom"
@@ -68,48 +63,77 @@
 		<div class="text" id="palette-info">{{ paletteInfo }}</div>
 	</div>
 	<DetailBox id="fileTileset-general-detail" open>
-		<DetailSummary>{{ t('components.fileTileset-general-grid.label') || 'Tileset' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileTileset-general-grid.label') || 'Tileset'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">
-			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div
-			><CustomBox id="fileTileset-image" type="file" filter="image" @input="onParamInput" />
-			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div
-			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" @change="onParamChange" />
-			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div
-			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" @change="onParamChange" />
-			<div class="text">{{ t('components.fileTileset-tileWidth.label') || 'Tile Width' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div>
+			<CustomBox id="fileTileset-image" type="file" filter="image" @input="onParamInput" />
+			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div>
+			<NumberBox
+				id="fileTileset-width"
+				min="1"
+				max="256"
+				unit="tile"
+				@change="onParamChange"
+			/>
+			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div>
+			<NumberBox
+				id="fileTileset-height"
+				min="1"
+				max="256"
+				unit="tile"
+				@change="onParamChange"
+			/>
+			<div class="text">
+				{{ t('components.fileTileset-tileWidth.label') || 'Tile Width' }}
+			</div>
+			<NumberBox
 				id="fileTileset-tileWidth"
 				min="16"
 				max="256"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			/>
-			<div class="text">{{ t('components.fileTileset-tileHeight.label') || 'Tile Height' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.fileTileset-tileHeight.label') || 'Tile Height' }}
+			</div>
+			<NumberBox
 				id="fileTileset-tileHeight"
 				min="16"
 				max="256"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			/>
-			<div class="text">{{ t('components.fileTileset-globalOffsetX.label') || 'Tile Offset X' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.fileTileset-globalOffsetX.label') || 'Tile Offset X' }}
+			</div>
+			<NumberBox
 				id="fileTileset-globalOffsetX"
 				min="-256"
 				max="256"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			/>
-			<div class="text">{{ t('components.fileTileset-globalOffsetY.label') || 'Tile Offset Y' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.fileTileset-globalOffsetY.label') || 'Tile Offset Y' }}
+			</div>
+			<NumberBox
 				id="fileTileset-globalOffsetY"
 				min="-256"
 				max="256"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			/>
-			<div class="text">{{ t('components.fileTileset-globalPriority.label') || 'Tile Priority' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.fileTileset-globalPriority.label') || 'Tile Priority' }}
+			</div>
+			<NumberBox
 				id="fileTileset-globalPriority"
 				min="-10"
 				max="10"
-				decimals="4" @input="onParamInput"
+				decimals="4"
+				@input="onParamInput"
 			/>
 		</div>
 	</DetailBox>

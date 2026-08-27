@@ -1,35 +1,39 @@
 <template>
 	<WindowFrame id="setGameSpeed" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setGameSpeed.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Speed</div
-				><NumberVar
-					id="setGameSpeed-speed"
-					min="0"
-					max="10"
-					step="0.1"
-					decimals="4"
-					v-model="form.speed"
-				/>
-				<div class="text">Easing</div><SelectBox id="setGameSpeed-easingId" name="easing" v-model="form.easingId" />
-				<div class="text">Duration</div
-				><NumberVar
-					id="setGameSpeed-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				/>
-				<div class="text">Wait</div><SelectBox id="setGameSpeed-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setGameSpeed.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Speed</div>
+			<NumberVar
+				id="setGameSpeed-speed"
+				min="0"
+				max="10"
+				step="0.1"
+				decimals="4"
+				v-model="form.speed"
+			/>
+			<div class="text">Easing</div>
+			<SelectBox id="setGameSpeed-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberVar
+				id="setGameSpeed-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setGameSpeed-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetGameSpeedCommandSchema } from '@app/composables/commands/useSetGameSpeedCommandSchema';
@@ -61,5 +65,4 @@ onMounted(() => {
 		clear($('#setGameSpeed-easingId'));
 	});
 });
-
 </script>

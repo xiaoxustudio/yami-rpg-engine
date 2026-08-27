@@ -1,56 +1,51 @@
 ﻿<template>
-<WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.forEach.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.forEach.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Data</div
-			><SelectBox id="forEach-data" v-model="form.data" /> <div class="text">List Variable</div
-			><CustomBox
-				id="forEach-list"
-				type="variable"
-				filter="object"
-				v-model="form.list"
-			/>
-			<div class="text">Actor</div
-			><CustomBox id="forEach-actor" type="actor" v-model="form.actor" />
-			<div class="text">Parent Element</div
-			><CustomBox id="forEach-element" type="element" v-model="form.element" />
-			<div class="text">Attribute Group</div
-			><CustomBox
+			<div class="text">Data</div>
+			<SelectBox id="forEach-data" v-model="form.data" />
+			<div class="text">List Variable</div>
+			<CustomBox id="forEach-list" type="variable" filter="object" v-model="form.list" />
+			<div class="text">Actor</div>
+			<CustomBox id="forEach-actor" type="actor" v-model="form.actor" />
+			<div class="text">Parent Element</div>
+			<CustomBox id="forEach-element" type="element" v-model="form.element" />
+			<div class="text">Attribute Group</div>
+			<CustomBox
 				id="forEach-attribute-groupId"
 				type="attribute-group"
 				v-model="form.attributeGroupId"
 			/>
-			<div class="text">Enum Group</div
-			><CustomBox
-				id="forEach-enum-groupId"
-				type="enum-group"
-				v-model="form.enumGroupId"
-			/>
-			<div class="text">Write to Variable</div
-			><CustomBox
+			<div class="text">Enum Group</div>
+			<CustomBox id="forEach-enum-groupId" type="enum-group" v-model="form.enumGroupId" />
+			<div class="text">Write to Variable</div>
+			<CustomBox
 				id="forEach-variable"
 				type="variable"
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">Write Save Index</div
-			><CustomBox
+			<div class="text">Write Save Index</div>
+			<CustomBox
 				id="forEach-saveIndex"
 				type="variable"
 				filter="number"
 				v-model="form.saveIndex"
 			/>
-			<div class="text">Touch Id</div
-			><CustomBox
+			<div class="text">Touch Id</div>
+			<CustomBox
 				id="forEach-touchId"
 				type="variable"
 				filter="number"
 				v-model="form.touchId"
 			/>
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">

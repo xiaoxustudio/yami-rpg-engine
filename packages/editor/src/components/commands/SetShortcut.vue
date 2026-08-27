@@ -1,22 +1,29 @@
 <template>
-<WindowFrame id="setShortcut" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setShortcut.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setShortcut" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setShortcut.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setShortcut-actor" type="actor" @input="onActor" />
-			<div class="text">Operation</div><SelectBox id="setShortcut-operation" v-model="form.operation" />
-			<div class="text">Shortcut Key</div><SelectVar id="setShortcut-key" v-model="form.key" />
-			<div class="text">Shortcut Key 2</div><SelectVar id="setShortcut-key2" v-model="form.key2" />
-			<div class="text">Item</div><FileVar id="setShortcut-itemId" type="file" filter="item" v-model="form.itemId" />
-			<div class="text">Skill</div
-			><FileVar id="setShortcut-skillId" type="file" filter="skill" v-model="form.skillId" />
+			<div class="text">Actor</div>
+			<CustomBox id="setShortcut-actor" type="actor" @input="onActor" />
+			<div class="text">Operation</div>
+			<SelectBox id="setShortcut-operation" v-model="form.operation" />
+			<div class="text">Shortcut Key</div>
+			<SelectVar id="setShortcut-key" v-model="form.key" />
+			<div class="text">Shortcut Key 2</div>
+			<SelectVar id="setShortcut-key2" v-model="form.key2" />
+			<div class="text">Item</div>
+			<FileVar id="setShortcut-itemId" type="file" filter="item" v-model="form.itemId" />
+			<div class="text">Skill</div>
+			<FileVar id="setShortcut-skillId" type="file" filter="skill" v-model="form.skillId" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetShortcutCommandSchema } from '@app/composables/commands/useSetShortcutCommandSchema';
@@ -61,5 +68,4 @@ onMounted(() => {
 			{ case: 'swap-shortcuts', targets: [$('#setShortcut-key2')] }
 		]);
 });
-
 </script>

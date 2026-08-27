@@ -1,13 +1,22 @@
 <template>
 	<WindowFrame id="fileActor-equipment" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fileActor-equipment.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fileActor-equipment-id.label') }}</div
-				><CustomBox id="fileActor-equipment-id" type="file" filter="equipment" v-model="form.id" />
-				<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div><SelectBox id="fileActor-equipment-slot" v-model="form.slot" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.fileActor-equipment.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.fileActor-equipment-id.label') }}</div>
+			<CustomBox
+				id="fileActor-equipment-id"
+				type="file"
+				filter="equipment"
+				v-model="form.id"
+			/>
+			<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div>
+			<SelectBox id="fileActor-equipment-slot" v-model="form.slot" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -34,8 +43,5 @@ const onConfirm = () => {
 	Inspector?.fileActor?.equipments?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setImage" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setImage.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setImage-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setImage-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setImage.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setImage-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setImage-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetImageCommandSchema } from '@app/composables/commands/useSetImageCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setImage-properties'));
 	});
 });
-
 </script>

@@ -1,10 +1,11 @@
 <template>
 	<WindowFrame id="pauseGame">
-		<template #title><TitleBar>Pause Game<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Pause Game
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
-	
 </template>
 
 <script lang="ts">

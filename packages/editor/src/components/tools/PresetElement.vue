@@ -1,16 +1,23 @@
 <template>
-		<WindowFrame id="presetElement" mode="center" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.presetElement.title') }}<div class="close"></div></TitleBar></template>
-		
-			<CustomBox
-				id="presetElement-uiId"
-				type="file"
-				filter="ui"
-				@write="onUiIdWrite"
-			/>
-			<TreeList id="presetElement-list" :node-icon-renderer="nodeIconRenderer" @open="onListOpen" />
-			<TextBox id="presetElement-searcher" name="search" @input="onSearcherInput" @compositionend="onSearcherInput" />
-		
+	<WindowFrame id="presetElement" mode="center" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.presetElement.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<CustomBox id="presetElement-uiId" type="file" filter="ui" @write="onUiIdWrite" />
+		<TreeList
+			id="presetElement-list"
+			:node-icon-renderer="nodeIconRenderer"
+			@open="onListOpen"
+		/>
+		<TextBox
+			id="presetElement-searcher"
+			name="search"
+			@input="onSearcherInput"
+			@compositionend="onSearcherInput"
+		/>
 	</WindowFrame>
 </template>
 
@@ -61,9 +68,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 		const preset = Data.uiPresets?.[node.prefabId ?? ''];
 		const presetClass = classes[preset?.data?.class ?? ''];
 		iconClass =
-			presetClass && presetClass !== 'icon-ui-reference'
-				? presetClass
-				: 'icon-ui-reference';
+			presetClass && presetClass !== 'icon-ui-reference' ? presetClass : 'icon-ui-reference';
 	} else {
 		iconClass = classes[node.class ?? ''] ?? 'icon-ui-reference';
 	}
@@ -74,7 +79,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	if (UI.hasPrefab?.(node)) {
 		iconClasses.push('icon-ui-set-as-prefab');
 	}
-	return [h('span', { class: ['node-icon', iconClasses ]})];
+	return [h('span', { class: ['node-icon', iconClasses] })];
 };
 
 const onUiIdWrite = (value: unknown) => {
@@ -96,6 +101,5 @@ const onConfirm = () => {
 
 const local = useLocalStore();
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

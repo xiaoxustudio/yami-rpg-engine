@@ -1,5 +1,11 @@
 <template>
-	<div class="box" id="home-recent-list" tabindex="-1" @click="onRecentClick" @pointerup="onRecentPointerup">
+	<div
+		class="box"
+		id="home-recent-list"
+		tabindex="-1"
+		@click="onRecentClick"
+		@pointerup="onRecentPointerup"
+	>
 		<div class="item home-list-label" id="home-recent-label">Recent</div>
 		<div
 			v-for="(card, index) in cards"
@@ -15,7 +21,9 @@
 			</div>
 			<div class="home-recent-path text">{{ card.pathText }}</div>
 			<div class="box home-recent-stat">
-				<div v-for="(text, i) in card.stats" :key="i" class="home-recent-data text">{{ text }}</div>
+				<div v-for="(text, i) in card.stats" :key="i" class="home-recent-data text">
+					{{ text }}
+				</div>
 			</div>
 		</div>
 	</div>

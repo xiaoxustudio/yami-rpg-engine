@@ -1,5 +1,10 @@
 ﻿<template>
-	<YMZoom v-model="form.factor" :title="t('components.zoom.title')" :label="t('components.zoom-factor.label')" @confirm="onConfirm" />
+	<YMZoom
+		v-model="form.factor"
+		:title="t('components.zoom.title')"
+		:label="t('components.zoom-factor.label')"
+		@confirm="onConfirm"
+	/>
 </template>
 
 <script setup lang="ts">

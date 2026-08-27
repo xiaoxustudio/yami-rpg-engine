@@ -1,9 +1,12 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="arrayList" mode="center">
-		<template #title><TitleBar>Array<div class="close" /></TitleBar></template>
-		
-			<ParamList id="arrayList-list" @change="onListChange" />
-		
+		<template #title
+			><TitleBar
+				>Array
+				<div class="close" /></TitleBar
+		></template>
+
+		<ParamList id="arrayList-list" @change="onListChange" />
 	</WindowFrame>
 </template>
 

@@ -1,14 +1,19 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="lightGetter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.lightGetter.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.lightGetter-type.label') }}</div><SelectBox id="lightGetter-type" /> <div class="text">{{ t('components.lightGetter-presetId.label') }}</div
-				><CustomBox id="lightGetter-presetId" type="preset-object" filter="light" />
-				<div class="text">{{ t('components.lightGetter-variable.label') }}</div
-				><CustomBox id="lightGetter-variable" type="variable" filter="object" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.lightGetter.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.lightGetter-type.label') }}</div>
+			<SelectBox id="lightGetter-type" />
+			<div class="text">{{ t('components.lightGetter-presetId.label') }}</div>
+			<CustomBox id="lightGetter-presetId" type="preset-object" filter="light" />
+			<div class="text">{{ t('components.lightGetter-variable.label') }}</div>
+			<CustomBox id="lightGetter-variable" type="variable" filter="object" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -16,7 +21,10 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { LightGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
-import { useLightGetterWindow, type PresetGetterForm } from '@app/composables/usePresetGetterWindow';
+import {
+	useLightGetterWindow,
+	type PresetGetterForm
+} from '@app/composables/usePresetGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

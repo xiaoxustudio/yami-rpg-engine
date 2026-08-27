@@ -1,15 +1,23 @@
 <template>
-<WindowFrame id="renderOutline" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.renderOutline.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="renderOutline" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.renderOutline.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Operation</div><SelectBox id="renderOutline-operation" v-model="form.operation" /><div class="text">Actor</div><CustomBox id="renderOutline-actor" type="actor" @input="onActor" /><div class="text">Color</div><ColorBox id="renderOutline-color" v-model="form.color" /></div>
-	
-</WindowFrame>
+			<div class="text">Operation</div>
+			<SelectBox id="renderOutline-operation" v-model="form.operation" />
+			<div class="text">Actor</div>
+			<CustomBox id="renderOutline-actor" type="actor" @input="onActor" />
+			<div class="text">Color</div>
+			<ColorBox id="renderOutline-color" v-model="form.color" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
@@ -50,5 +58,4 @@ onMounted(() => {
 			{ case: 'remove', targets: [$('#renderOutline-actor')] }
 		]);
 });
-
 </script>

@@ -1,29 +1,36 @@
 <template>
 	<WindowFrame id="moveCamera" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.moveCamera.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Mode</div><SelectBox id="moveCamera-mode" v-model="form.mode" /> <div class="text">Position</div
-				><CustomBox id="moveCamera-position" type="position" @input="onPosition" /> <div class="text">Actor</div
-				><CustomBox id="moveCamera-actor" type="actor" @input="onActor" /> <div class="text">Easing</div
-				><SelectBox id="moveCamera-easingId" name="easing" v-model="form.easingId" /> <div class="text">Duration</div
-				><NumberBox
-					id="moveCamera-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				 />
-				<div class="text">Wait</div><SelectBox id="moveCamera-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.moveCamera.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Mode</div>
+			<SelectBox id="moveCamera-mode" v-model="form.mode" />
+			<div class="text">Position</div>
+			<CustomBox id="moveCamera-position" type="position" @input="onPosition" />
+			<div class="text">Actor</div>
+			<CustomBox id="moveCamera-actor" type="actor" @input="onActor" />
+			<div class="text">Easing</div>
+			<SelectBox id="moveCamera-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberBox
+				id="moveCamera-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="moveCamera-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
@@ -76,5 +83,4 @@ onMounted(() => {
 		clear($('#moveCamera-easingId'));
 	});
 });
-
 </script>

@@ -1,8 +1,10 @@
 <template>
 	<WindowFrame id="reset">
-		<template #title><TitleBar>Reset<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Reset
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
 </template>
 

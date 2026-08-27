@@ -1,56 +1,76 @@
 <template>
-<WindowFrame id="followActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.followActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="followActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.followActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="followActor-actor" type="actor" @input="onActor" /><div class="text">Target</div><CustomBox id="followActor-target" type="actor" @input="onTarget" /><div class="text">Mode</div><SelectBox id="followActor-mode" v-model="form.mode" /><div class="text">Min Distance</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="followActor-actor" type="actor" @input="onActor" />
+			<div class="text">Target</div>
+			<CustomBox id="followActor-target" type="actor" @input="onTarget" />
+			<div class="text">Mode</div>
+			<SelectBox id="followActor-mode" v-model="form.mode" />
+			<div class="text">Min Distance</div>
+			<NumberVar
 				id="followActor-minDist"
 				min="0"
 				max="16"
 				decimals="4"
 				unit="tile"
 				v-model="form.minDist"
-			 /><div class="text">Max Distance</div
-			><NumberVar
+			/>
+			<div class="text">Max Distance</div>
+			<NumberVar
 				id="followActor-maxDist"
 				min="0"
 				max="20"
 				decimals="4"
 				unit="tile"
 				v-model="form.maxDist"
-			 /><div class="text">Offset Ratio</div
-			><NumberBox
+			/>
+			<div class="text">Offset Ratio</div>
+			<NumberBox
 				id="followActor-offset"
 				min="-0.8"
 				max="0.8"
 				decimals="4"
 				unit="r"
 				v-model="form.offset"
-			 /><div class="text">Vert Distance</div
-			><NumberBox
+			/>
+			<div class="text">Vert Distance</div>
+			<NumberBox
 				id="followActor-vertDist"
 				min="0"
 				max="4"
 				decimals="4"
 				unit="tile"
 				v-model="form.vertDist"
-			 /><div class="text">Buffer Distance</div
-			><NumberBox
+			/>
+			<div class="text">Buffer Distance</div>
+			<NumberBox
 				id="followActor-bufferDist"
 				min="0"
 				max="4"
 				decimals="4"
 				unit="tile"
 				v-model="form.bufferDist"
-			 /><div class="text">Navigate</div><SelectBox id="followActor-navigate" v-model="form.navigate" /><div class="text">Bypass Actors</div><SelectBox id="followActor-bypass" v-model="form.bypass" /><div class="text">Once</div><SelectBox id="followActor-once" v-model="form.once" /><div class="text">Wait</div
-			><SelectBox id="followActor-wait" name="wait" v-model="form.wait" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Navigate</div>
+			<SelectBox id="followActor-navigate" v-model="form.navigate" />
+			<div class="text">Bypass Actors</div>
+			<SelectBox id="followActor-bypass" v-model="form.bypass" />
+			<div class="text">Once</div>
+			<SelectBox id="followActor-once" v-model="form.once" />
+			<div class="text">Wait</div>
+			<SelectBox id="followActor-wait" name="wait" v-model="form.wait" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
@@ -114,5 +134,4 @@ onMounted(() => {
 		{ name: 'No', value: false }
 	]);
 });
-
 </script>

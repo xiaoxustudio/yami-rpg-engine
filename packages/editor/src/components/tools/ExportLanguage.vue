@@ -1,12 +1,17 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="exportLanguage">
-		<template #title><TitleBar>{{ t('components.exportLanguage.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.exportLanguage-first.label') }}</div><SelectBox id="exportLanguage-first" v-model="form.first" />
-				<div class="text">{{ t('components.exportLanguage-second.label') }}</div><SelectBox id="exportLanguage-second" v-model="form.second" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.exportLanguage.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.exportLanguage-first.label') }}</div>
+			<SelectBox id="exportLanguage-first" v-model="form.first" />
+			<div class="text">{{ t('components.exportLanguage-second.label') }}</div>
+			<SelectBox id="exportLanguage-second" v-model="form.second" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -66,7 +71,5 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
 	}
-
-
 });
 </script>

@@ -1,30 +1,33 @@
 <template>
 	<WindowFrame id="getObjectProperty" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.getObjectProperty.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="getObjectProperty-variable"
-					type="variable"
-					filter="object"
-					@input="onVariable"
-				/>
-				<div class="text">getObjectProperty</div><ParamList id="getObjectProperty-list" v-model="form.properties" />
-				<div class="text">saveVariable</div
-				><CustomBox
-					id="getObjectProperty-save-variable"
-					type="variable"
-					filter="object"
-					@input="onSaveVariable"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.getObjectProperty.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="getObjectProperty-variable"
+				type="variable"
+				filter="object"
+				@input="onVariable"
+			/>
+			<div class="text">getObjectProperty</div>
+			<ParamList id="getObjectProperty-list" v-model="form.properties" />
+			<div class="text">saveVariable</div>
+			<CustomBox
+				id="getObjectProperty-save-variable"
+				type="variable"
+				filter="object"
+				@input="onSaveVariable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
@@ -58,5 +61,4 @@ onMounted(() => {
 		clear($('#getObjectProperty-list'));
 	});
 });
-
 </script>

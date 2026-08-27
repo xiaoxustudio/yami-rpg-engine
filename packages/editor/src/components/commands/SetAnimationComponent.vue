@@ -1,57 +1,88 @@
 <template>
-<WindowFrame id="setAnimationComponent" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setAnimationComponent.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setAnimationComponent" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setAnimationComponent.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div
-			><CustomBox id="setAnimationComponent-actor" type="actor" @input="onActor" /><div class="text">Animation</div
-			><CustomBox
+			<div class="text">Actor</div>
+			<CustomBox id="setAnimationComponent-actor" type="actor" @input="onActor" />
+			<div class="text">Animation</div>
+			<CustomBox
 				id="setAnimationComponent-animationId"
 				type="file"
 				filter="animation"
 				@input="onAnimationId"
 				@write="onAnimationIdWrite"
-			 /><div class="text">Motion</div><SelectBox id="setAnimationComponent-motion" v-model="form.motion" /><div class="text">Operation</div><SelectBox id="setAnimationComponent-operation" v-model="form.operation" /><div class="text">Angle</div
-			><CustomBox id="setAnimationComponent-angle" type="angle" @input="onAngle" /><div class="text">Scale</div
-			><NumberVar
+			/>
+			<div class="text">Motion</div>
+			<SelectBox id="setAnimationComponent-motion" v-model="form.motion" />
+			<div class="text">Operation</div>
+			<SelectBox id="setAnimationComponent-operation" v-model="form.operation" />
+			<div class="text">Angle</div>
+			<CustomBox id="setAnimationComponent-angle" type="angle" @input="onAngle" />
+			<div class="text">Scale</div>
+			<NumberVar
 				id="setAnimationComponent-scale"
 				min="0"
 				max="10"
 				step="0.1"
 				decimals="4"
 				v-model="form.scale"
-			 /><div class="text">Speed</div
-			><NumberVar
+			/>
+			<div class="text">Speed</div>
+			<NumberVar
 				id="setAnimationComponent-speed"
 				min="0"
 				max="10"
 				step="0.1"
 				decimals="4"
 				v-model="form.speed"
-			 /><div class="text">Opacity</div
-			><NumberVar
+			/>
+			<div class="text">Opacity</div>
+			<NumberVar
 				id="setAnimationComponent-opacity"
 				min="0"
 				max="1"
 				step="0.05"
 				decimals="4"
 				v-model="form.opacity"
-			 /><div class="text">Priority</div
-			><NumberBox id="setAnimationComponent-priority" min="-100" max="100" v-model="form.priority" /><div class="text">Offset Y</div
-			><NumberBox
+			/>
+			<div class="text">Priority</div>
+			<NumberBox
+				id="setAnimationComponent-priority"
+				min="-100"
+				max="100"
+				v-model="form.priority"
+			/>
+			<div class="text">Offset Y</div>
+			<NumberBox
 				id="setAnimationComponent-offsetY"
 				min="-100"
 				max="100"
 				unit="px"
 				v-model="form.offsetY"
-			 /><div class="text">Sprite Name</div><SelectBox id="setAnimationComponent-spriteId" v-model="form.spriteId" /><div class="text">Image</div
-			><CustomBox id="setAnimationComponent-image" type="file" filter="image" @input="onImage" /><div class="text">Play Motion</div><SelectBox id="setAnimationComponent-playMotion" v-model="form.playMotion" /><div class="text">Wait</div><SelectBox id="setAnimationComponent-wait" name="wait" v-model="form.wait" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Sprite Name</div>
+			<SelectBox id="setAnimationComponent-spriteId" v-model="form.spriteId" />
+			<div class="text">Image</div>
+			<CustomBox
+				id="setAnimationComponent-image"
+				type="file"
+				filter="image"
+				@input="onImage"
+			/>
+			<div class="text">Play Motion</div>
+			<SelectBox id="setAnimationComponent-playMotion" v-model="form.playMotion" />
+			<div class="text">Wait</div>
+			<SelectBox id="setAnimationComponent-wait" name="wait" v-model="form.wait" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
@@ -152,17 +183,11 @@ onMounted(() => {
 			},
 			{
 				case: 'set-sprite',
-				targets: [
-					$('#setAnimationComponent-spriteId'),
-					$('#setAnimationComponent-image')
-				]
+				targets: [$('#setAnimationComponent-spriteId'), $('#setAnimationComponent-image')]
 			},
 			{
 				case: 'play-motion',
-				targets: [
-					$('#setAnimationComponent-playMotion'),
-					$('#setAnimationComponent-wait')
-				]
+				targets: [$('#setAnimationComponent-playMotion'), $('#setAnimationComponent-wait')]
 			}
 		]);
 	$('#setAnimationComponent-wait')?.loadItems?.([
@@ -170,5 +195,4 @@ onMounted(() => {
 		{ name: 'No', value: false }
 	]);
 });
-
 </script>

@@ -1,22 +1,31 @@
 <template>
-<WindowFrame id="changeThreat" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeThreat.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeThreat" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeThreat.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeThreat-actor" type="actor" @input="onActor" /><div class="text">Target</div><CustomBox id="changeThreat-target" type="actor" @input="onTarget" /><div class="text">Operation</div><SelectBox id="changeThreat-operation" v-model="form.operation" /><div class="text">Threat</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="changeThreat-actor" type="actor" @input="onActor" />
+			<div class="text">Target</div>
+			<CustomBox id="changeThreat-target" type="actor" @input="onTarget" />
+			<div class="text">Operation</div>
+			<SelectBox id="changeThreat-operation" v-model="form.operation" />
+			<div class="text">Threat</div>
+			<NumberVar
 				id="changeThreat-threat"
 				min="0"
 				max="1000000000"
 				decimals="4"
 				v-model="form.threat"
-			 /></div>
-	
-</WindowFrame>
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeThreatCommandSchema } from '@app/composables/commands/useChangeThreatCommandSchema';
@@ -51,5 +60,4 @@ onMounted(() => {
 		{ name: get('decrease') || 'Decrease', value: 'decrease' }
 	]);
 });
-
 </script>

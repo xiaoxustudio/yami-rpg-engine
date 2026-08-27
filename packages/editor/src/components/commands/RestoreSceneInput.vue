@@ -1,8 +1,10 @@
 <template>
 	<WindowFrame id="restoreSceneInput">
-		<template #title><TitleBar>Restore Scene Input<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Restore Scene Input
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
 </template>
 

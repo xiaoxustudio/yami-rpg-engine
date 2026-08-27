@@ -1,5 +1,10 @@
 <template>
-	<TreeList id="command-suggestions" class="hidden" :node-extras="nodeExtras" :node-icon-renderer="nodeIconRenderer" />
+	<TreeList
+		id="command-suggestions"
+		class="hidden"
+		:node-extras="nodeExtras"
+		:node-icon-renderer="nodeIconRenderer"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -15,7 +20,10 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	return [
 		h('span', {
-			class: ['node-icon', node.class === 'folder' ? 'icon-folder' : `icon-command ${node.class ?? ''}`]
+			class: [
+				'node-icon',
+				node.class === 'folder' ? 'icon-folder' : `icon-command ${node.class ?? ''}`
+			]
 		})
 	];
 };
@@ -38,8 +46,5 @@ const nodeExtras = (item: unknown): VNode[] => {
 	return nodes;
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

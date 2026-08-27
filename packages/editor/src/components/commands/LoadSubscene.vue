@@ -1,19 +1,23 @@
 <template>
 	<WindowFrame id="loadSubscene" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.loadSubscene.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Scene</div
-				><FileVar id="loadSubscene-sceneId" type="file" filter="scene" v-model="form.sceneId" />
-				<div class="text">Shift X</div><NumberVar id="loadSubscene-shiftX" min="0" max="512" v-model="form.shiftX" />
-				<div class="text">Shift Y</div><NumberVar id="loadSubscene-shiftY" min="0" max="512" v-model="form.shiftY" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.loadSubscene.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Scene</div>
+			<FileVar id="loadSubscene-sceneId" type="file" filter="scene" v-model="form.sceneId" />
+			<div class="text">Shift X</div>
+			<NumberVar id="loadSubscene-shiftX" min="0" max="512" v-model="form.shiftX" />
+			<div class="text">Shift Y</div>
+			<NumberVar id="loadSubscene-shiftY" min="0" max="512" v-model="form.shiftY" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useLoadSubsceneCommandSchema } from '@app/composables/commands/useLoadSubsceneCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,5 +32,4 @@ const { form, save } = useLoadSubsceneCommandSchema();
 const onConfirm = () => {
 	save();
 };
-
 </script>

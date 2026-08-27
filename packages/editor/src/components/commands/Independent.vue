@@ -1,9 +1,11 @@
 <template>
-<WindowFrame id="independent">
-	<template #title><TitleBar>Independent<div class="close" /></TitleBar></template>
-	
-	
-</WindowFrame>
+	<WindowFrame id="independent">
+		<template #title
+			><TitleBar
+				>Independent
+				<div class="close" /></TitleBar
+		></template>
+	</WindowFrame>
 </template>
 
 <script lang="ts">

@@ -1,19 +1,21 @@
 <template>
 	<WindowFrame id="setTriggerMotion" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setTriggerMotion.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Trigger</div
-				><CustomBox id="setTriggerMotion-trigger" type="trigger" @input="onTrigger" />
-				<div class="text">Motion</div
-				><CustomBox id="setTriggerMotion-motion" type="enum-string" @input="onMotion" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTriggerMotion.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Trigger</div>
+			<CustomBox id="setTriggerMotion-trigger" type="trigger" @input="onTrigger" />
+			<div class="text">Motion</div>
+			<CustomBox id="setTriggerMotion-motion" type="enum-string" @input="onMotion" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useSetTriggerMotionCommandSchema } from '@app/composables/commands/useSetTriggerMotionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -35,5 +37,4 @@ const onMotion = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

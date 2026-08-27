@@ -1,14 +1,15 @@
 <template>
-		<WindowFrame id="selector" mode="center">
-		<template #title><TitleBar
-			>{{ t('components.selector.title') }}<div class="maximize"></div>
-			<div class="close"></div>
-		</TitleBar></template>
-		
-			<div class="file-browser" id="selector-browser">
-				<FileBrowser bridge="selector" />
-			</div>
-		
+	<WindowFrame id="selector" mode="center">
+		<template #title
+			><TitleBar
+				>{{ t('components.selector.title') }}
+				<div class="maximize"></div>
+				<div class="close"></div> </TitleBar
+		></template>
+
+		<div class="file-browser" id="selector-browser">
+			<FileBrowser bridge="selector" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -26,8 +27,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

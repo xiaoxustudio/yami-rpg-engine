@@ -1,16 +1,20 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.uiReference-properties-grid.label') || 'Reference Properties' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.uiReference-properties-grid.label') || 'Reference Properties'
+		}}</DetailSummary>
 		<div class="detail-grid" id="uiReference-properties-grid">
-			<div class="text">{{ t('components.uiReference-prefabId.label') || 'Prefab' }}</div
-			><CustomBox
+			<div class="text">{{ t('components.uiReference-prefabId.label') || 'Prefab' }}</div>
+			<CustomBox
 				id="uiReference-prefabId"
 				:model-value="form.prefabId"
 				type="preset-element"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ t('components.uiReference-synchronous.label') || 'Synchronous' }}</div
-			><CheckBox
+			<div class="text">
+				{{ t('components.uiReference-synchronous.label') || 'Synchronous' }}
+			</div>
+			<CheckBox
 				id="uiReference-synchronous"
 				:model-value="form.synchronous"
 				class="standard large"

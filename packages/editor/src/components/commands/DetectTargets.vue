@@ -1,23 +1,32 @@
 <template>
-<WindowFrame id="detectTargets" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.detectTargets.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="detectTargets" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.detectTargets.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="detectTargets-actor" type="actor" @input="onActor" /><div class="text">Distance</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="detectTargets-actor" type="actor" @input="onActor" />
+			<div class="text">Distance</div>
+			<NumberVar
 				id="detectTargets-distance"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
 				v-model="form.distance"
-			 /><div class="text">Selector</div><SelectBox id="detectTargets-selector" v-model="form.selector" /><div class="text">In Sight</div><SelectBox id="detectTargets-inSight" v-model="form.inSight" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Selector</div>
+			<SelectBox id="detectTargets-selector" v-model="form.selector" />
+			<div class="text">In Sight</div>
+			<SelectBox id="detectTargets-inSight" v-model="form.inSight" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';
@@ -54,5 +63,4 @@ onMounted(() => {
 		{ name: 'Disabled', value: false }
 	]);
 });
-
 </script>

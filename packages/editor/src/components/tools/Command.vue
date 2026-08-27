@@ -1,36 +1,45 @@
 <template>
 	<WindowFrame id="command" show-apply @apply="onApply">
-		<template #title><TitleBar>{{ t('components.command.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set input pad" id="command-list-fieldset">
-				<div class="legend">{{ t('components.command-list.label') }}</div>
-				<TreeList
-					id="command-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@popup="onListPopup"
-					@open="onListOpen"
-					@change="onListChange"
-				/>
-			</div>
-			<div class="box" id="command-inspector">
-				<DetailBox id="command-overview-detail" open>
-					<DetailSummary>Overview</DetailSummary>
+		<template #title
+			><TitleBar
+				>{{ t('components.command.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="command-list-fieldset">
+			<div class="legend">{{ t('components.command-list.label') }}</div>
+			<TreeList
+				id="command-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@popup="onListPopup"
+				@open="onListOpen"
+				@change="onListChange"
+			/>
+		</div>
+		<div class="box" id="command-inspector">
+			<DetailBox id="command-overview-detail" open>
+				<DetailSummary>Overview</DetailSummary>
 				<div class="box" id="command-overview" @update="syncOverview">
 					<PluginOverview :meta="overviewMeta" detailed />
 				</div>
 			</DetailBox>
-				<DetailBox id="command-settings-detail" open>
-					<DetailSummary>Settings</DetailSummary>
-					<div class="detail-grid" id="command-settings-grid">
-						<div class="text">{{ t('components.command-alias.label') }}</div><TextBox id="command-alias" v-model="commandForm.alias" @input="onParamInput" /> <div class="text">{{ t('components.command-keywords.label') }}</div
-					><TextBox id="command-keywords" v-model="commandForm.keywords" @input="onParamInput" />
-					</div>
-				</DetailBox>
-			</div>
-		
+			<DetailBox id="command-settings-detail" open>
+				<DetailSummary>Settings</DetailSummary>
+				<div class="detail-grid" id="command-settings-grid">
+					<div class="text">{{ t('components.command-alias.label') }}</div>
+					<TextBox id="command-alias" v-model="commandForm.alias" @input="onParamInput" />
+					<div class="text">{{ t('components.command-keywords.label') }}</div>
+					<TextBox
+						id="command-keywords"
+						v-model="commandForm.keywords"
+						@input="onParamInput"
+					/>
+				</div>
+			</DetailBox>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -90,9 +99,9 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };
 	if (node.class === 'folder') {
-		return [h('span', { class: ['node-icon', 'icon-folder'], })];
+		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
-	return [h('span', { class: ['node-icon', ['icon-command', 'custom']], })];
+	return [h('span', { class: ['node-icon', ['icon-command', 'custom']] })];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {
@@ -116,8 +125,5 @@ const onApply = () => {
 	CustomCommand?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

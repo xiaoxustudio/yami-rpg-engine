@@ -1,24 +1,38 @@
 <template>
-<WindowFrame id="setMovementSpeed" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setMovementSpeed.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setMovementSpeed" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setMovementSpeed.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setMovementSpeed-actor" type="actor" @input="onActor" /><div class="text">Property</div><SelectBox id="setMovementSpeed-property" v-model="form.property" /><div class="text">Base Speed</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="setMovementSpeed-actor" type="actor" @input="onActor" />
+			<div class="text">Property</div>
+			<SelectBox id="setMovementSpeed-property" v-model="form.property" />
+			<div class="text">Base Speed</div>
+			<NumberVar
 				id="setMovementSpeed-base"
 				min="0"
 				max="32"
 				decimals="4"
 				unit="t/s"
 				v-model="form.base"
-			 /><div class="text">Speed Factor</div
-			><NumberVar id="setMovementSpeed-factor" min="0" max="4" decimals="4" v-model="form.factor" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Speed Factor</div>
+			<NumberVar
+				id="setMovementSpeed-factor"
+				min="0"
+				max="4"
+				decimals="4"
+				v-model="form.factor"
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
@@ -59,5 +73,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

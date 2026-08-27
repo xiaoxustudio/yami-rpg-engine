@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setText" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setText.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setText-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setText-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setText.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setText-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setText-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTextCommandSchema } from '@app/composables/commands/useSetTextCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setText-properties'));
 	});
 });
-
 </script>

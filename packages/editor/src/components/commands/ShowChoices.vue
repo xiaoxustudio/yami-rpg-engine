@@ -1,17 +1,21 @@
 <template>
-<WindowFrame id="showChoices" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.showChoices.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="showChoices" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.showChoices.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Choices</div><ParamList id="showChoices-choices" v-model="form.choices" />
-			<div class="text">Parameters</div><TextBox id="showChoices-parameters" v-model="form.parameters" />
+			<div class="text">Choices</div>
+			<ParamList id="showChoices-choices" v-model="form.choices" />
+			<div class="text">Parameters</div>
+			<TextBox id="showChoices-parameters" v-model="form.parameters" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
@@ -37,5 +41,4 @@ onMounted(() => {
 	$('#showChoices-choices')?.bind?.(Choices);
 	on($('#showChoices'), 'closed', () => windowClosed(new Event('closed')));
 });
-
 </script>

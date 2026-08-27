@@ -1,12 +1,15 @@
 <template>
 	<WindowFrame ref="frame" id="autoTile-selectNode" no-buttons>
-		<template #title><TitleBar>{{ t('components.autoTile-selectNode.title') }}<div class="close" /></TitleBar></template>
-		
-			<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
-			<div class="box" id="autoTile-selectNode-screen">
-				<MarqueeArea id="autoTile-selectNode-marquee" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.autoTile-selectNode.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
+		<div class="box" id="autoTile-selectNode-screen">
+			<MarqueeArea id="autoTile-selectNode-marquee" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -34,7 +37,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => tileNode.windowClosed());
 	}
-
-
 });
 </script>

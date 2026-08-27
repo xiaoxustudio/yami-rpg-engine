@@ -1,8 +1,10 @@
 <template>
 	<WindowFrame id="deleteScene">
-		<template #title><TitleBar>Delete Scene<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Delete Scene
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
 </template>
 

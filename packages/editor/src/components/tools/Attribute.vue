@@ -1,85 +1,104 @@
 <template>
 	<WindowFrame id="attribute" show-apply @apply="onApply">
-		<template #title><TitleBar>{{ t('components.attribute.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set input pad" id="attribute-list-fieldset">
-				<div class="legend">{{ t('components.attribute-list.label') }}</div>
-				<TreeList
-					id="attribute-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@record="onListRecord"
-					@open="onListOpen"
-					@popup="onListPopup"
-				/>
-			</div>
-			<div class="field-set" id="attribute-properties-fieldset">
-				<div class="legend">{{ t('components.attribute-properties-flex.label') }}</div>
-				<div class="flex-box" id="attribute-properties-flex">
-					<div class="flex-item"
-						><div class="text">{{ t('components.attribute-name.label') }}</div
-						><TextBox id="attribute-name" menu="tag-localization" @input="onNameInput" /></div>
-					<div class="flex-item"><div class="text">{{ t('components.attribute-key.label') }}</div><TextBox id="attribute-key" @input="onKeyInput" /></div>
-					<div class="flex-item" id="attribute-type-box"
-						><div class="text">{{ t('components.attribute-type-boolean.label') }}</div>
-						<RadioBox
-							id="attribute-type-boolean"
-							name="attribute-type"
-							class="standard"
-							value="boolean"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="attribute-type-boolean-label">{{ t('components.attribute-type-boolean-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="attribute-type-number"
-							name="attribute-type"
-							class="standard"
-							value="number"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="attribute-type-number-label">{{ t('components.attribute-type-number-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="attribute-type-string"
-							name="attribute-type"
-							class="standard"
-							value="string"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="attribute-type-string-label">{{ t('components.attribute-type-string-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="attribute-type-enum"
-							name="attribute-type"
-							class="standard"
-							value="enum"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="attribute-type-enum-label">{{ t('components.attribute-type-enum-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="attribute-type-object"
-							name="attribute-type"
-							class="standard"
-							value="object"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="attribute-type-object-label"
-								>{{ t('components.attribute-type-object-label.content') }}</div
-							></RadioBox
-						>
-					</div>
-					<div class="flex-item" id="attribute-enum-box"
-						><div class="text">{{ t('components.attribute-enum.label') }}</div>
-						<CustomBox id="attribute-enum" type="enum-group" /></div>
-					<div class="flex-item"><div class="text">{{ t('components.attribute-note.label') }}</div><TextArea id="attribute-note" /></div>
+		<template #title
+			><TitleBar
+				>{{ t('components.attribute.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="attribute-list-fieldset">
+			<div class="legend">{{ t('components.attribute-list.label') }}</div>
+			<TreeList
+				id="attribute-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@record="onListRecord"
+				@open="onListOpen"
+				@popup="onListPopup"
+			/>
+		</div>
+		<div class="field-set" id="attribute-properties-fieldset">
+			<div class="legend">{{ t('components.attribute-properties-flex.label') }}</div>
+			<div class="flex-box" id="attribute-properties-flex">
+				<div class="flex-item">
+					<div class="text">{{ t('components.attribute-name.label') }}</div>
+					<TextBox id="attribute-name" menu="tag-localization" @input="onNameInput" />
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.attribute-key.label') }}</div>
+					<TextBox id="attribute-key" @input="onKeyInput" />
+				</div>
+				<div class="flex-item" id="attribute-type-box">
+					<div class="text">{{ t('components.attribute-type-boolean.label') }}</div>
+					<RadioBox
+						id="attribute-type-boolean"
+						name="attribute-type"
+						class="standard"
+						value="boolean"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="attribute-type-boolean-label">
+							{{ t('components.attribute-type-boolean-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="attribute-type-number"
+						name="attribute-type"
+						class="standard"
+						value="number"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="attribute-type-number-label">
+							{{ t('components.attribute-type-number-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="attribute-type-string"
+						name="attribute-type"
+						class="standard"
+						value="string"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="attribute-type-string-label">
+							{{ t('components.attribute-type-string-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="attribute-type-enum"
+						name="attribute-type"
+						class="standard"
+						value="enum"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="attribute-type-enum-label">
+							{{ t('components.attribute-type-enum-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="attribute-type-object"
+						name="attribute-type"
+						class="standard"
+						value="object"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="attribute-type-object-label">
+							{{ t('components.attribute-type-object-label.content') }}
+						</div></RadioBox
+					>
+				</div>
+				<div class="flex-item" id="attribute-enum-box">
+					<div class="text">{{ t('components.attribute-enum.label') }}</div>
+					<CustomBox id="attribute-enum" type="enum-group" />
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.attribute-note.label') }}</div>
+					<TextArea id="attribute-note" />
 				</div>
 			</div>
-			<TextBox id="attribute-searcher" name="search" />
-		
+		</div>
+		<TextBox id="attribute-searcher" name="search" />
 	</WindowFrame>
 </template>
 
@@ -122,7 +141,7 @@ const nodeExtras = (item: unknown): VNode[] => {
 			nodes.push(h('div', { class: 'attribute-init-text text' }, ` = ${node.key}`));
 		}
 		if (node.note) {
-			nodes.push(h('span', { class: ['node-icon', 'icon-note'], },  '\uf27b'));
+			nodes.push(h('span', { class: ['node-icon', 'icon-note'] }, '\uf27b'));
 		}
 	}
 	return nodes;
@@ -138,9 +157,11 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 		object: 'icon-object'
 	};
 	if (node.class === 'folder') {
-		return [h('span', { class: ['node-icon', 'icon-folder'], })];
+		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
-	return [h('span', { class: ['node-icon', (classes as Record<string, string>)[node.type ?? '']] })];
+	return [
+		h('span', { class: ['node-icon', (classes as Record<string, string>)[node.type ?? '']] })
+	];
 };
 
 const onListSelect = (event: Event) => {
@@ -180,8 +201,5 @@ const onApply = () => {
 	Attribute?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

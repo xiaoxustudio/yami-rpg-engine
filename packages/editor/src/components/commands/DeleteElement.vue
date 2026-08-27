@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="deleteElement" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.deleteElement.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="deleteElement-operation" v-model="form.operation" />
-				<div class="text">Element</div><CustomBox id="deleteElement-element" type="element" @input="onElement" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.deleteElement.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="deleteElement-operation" v-model="form.operation" />
+			<div class="text">Element</div>
+			<CustomBox id="deleteElement-element" type="element" @input="onElement" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDeleteElementCommandSchema } from '@app/composables/commands/useDeleteElementCommandSchema';
@@ -50,5 +54,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

@@ -1,19 +1,42 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileItem-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileItem-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileItem-general-grid">
-			<div class="text">{{ t('components.fileItem-icon.label') || 'Icon' }}</div
-			><CustomBox id="fileItem-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ t('components.fileItem-clip.label') || 'Clip' }}</div
-			><CustomBox id="fileItem-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileItem-icon" />
-			<div class="text">{{ t('components.fileItem-inherit.label') || 'Inherit' }}</div
-			><CustomBox id="fileItem-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="item" />
+			<div class="text">{{ t('components.fileItem-icon.label') || 'Icon' }}</div>
+			<CustomBox
+				id="fileItem-icon"
+				:model-value="form.icon"
+				@input="onParamInput"
+				type="file"
+				filter="image"
+			/>
+			<div class="text">{{ t('components.fileItem-clip.label') || 'Clip' }}</div>
+			<CustomBox
+				id="fileItem-clip"
+				:model-value="form.clip"
+				@input="onParamInput"
+				type="clip"
+				image="fileItem-icon"
+			/>
+			<div class="text">{{ t('components.fileItem-inherit.label') || 'Inherit' }}</div>
+			<CustomBox
+				id="fileItem-inherit"
+				:model-value="form.inherit"
+				@input="onParamInput"
+				type="file"
+				filter="item"
+			/>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileItem-attributes.label') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileItem-attributes.label') || 'Attributes'
+		}}</DetailSummary>
 		<ParamList
-			id="fileItem-attributes" @change="onListChange"
+			id="fileItem-attributes"
+			@change="onListChange"
 			class="inspector-list"
 			group="item"
 			flexible
@@ -22,7 +45,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileItem-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
-			id="fileItem-events" @change="onListChange"
+			id="fileItem-events"
+			@change="onListChange"
 			class="inspector-list"
 			filter="item"
 			flexible
@@ -30,11 +54,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileItem-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="fileItem-scripts" @change="onListChange"
-			class="inspector-list"
-			flexible
-		/>
+		<ParamList id="fileItem-scripts" @change="onListChange" class="inspector-list" flexible />
 	</DetailBox>
 	<ParameterPane id="fileItem-parameter-pane" />
 </template>
@@ -76,7 +96,9 @@ onMounted(() => {
 	document.getElementById('fileItem-attributes')?.bind?.(new AttributeListInterface());
 	document.getElementById('fileItem-events')?.bind?.(new EventListInterface(editor));
 	document.getElementById('fileItem-scripts')?.bind?.(new ScriptListInterface());
-	document.getElementById('fileItem-parameter-pane')?.bind?.(document.getElementById('fileItem-scripts'));
+	document
+		.getElementById('fileItem-parameter-pane')
+		?.bind?.(document.getElementById('fileItem-scripts'));
 
 	sync();
 });

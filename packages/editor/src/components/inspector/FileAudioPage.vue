@@ -1,11 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileAudio-info-grid.label') || 'File Info' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileAudio-info-grid.label') || 'File Info'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
-			<div class="text">{{ t('components.fileAudio-name.label') || 'Name' }}</div><div class="text" id="fileAudio-name">{{ form.name }}</div> <div class="text">{{ t('components.fileAudio-size.label') || 'Size' }}</div
-			><div class="text" id="fileAudio-size">{{ form.size }}</div> <div class="text">{{ t('components.fileAudio-duration.label') || 'Duration' }}</div
-			><div class="text" id="fileAudio-duration">{{ form.duration }}</div> <div class="text">{{ t('components.fileAudio-bitrate.label') || 'Bitrate' }}</div
-			><div class="text" id="fileAudio-bitrate">{{ form.bitrate }}</div>
+			<div class="text">{{ t('components.fileAudio-name.label') || 'Name' }}</div>
+			<div class="text" id="fileAudio-name">{{ form.name }}</div>
+			<div class="text">{{ t('components.fileAudio-size.label') || 'Size' }}</div>
+			<div class="text" id="fileAudio-size">{{ form.size }}</div>
+			<div class="text">{{ t('components.fileAudio-duration.label') || 'Duration' }}</div>
+			<div class="text" id="fileAudio-duration">{{ form.duration }}</div>
+			<div class="text">{{ t('components.fileAudio-bitrate.label') || 'Bitrate' }}</div>
+			<div class="text" id="fileAudio-bitrate">{{ form.bitrate }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -13,48 +19,30 @@
 		<div class="detail-grid" id="fileAudio-mixer-grid">
 			<div class="text">{{ t('components.fileAudio-volume-box.label') || 'Volume' }}</div>
 			<div class="flex-box" id="fileAudio-volume-box">
-				<SliderBox
-					id="fileAudio-volume" @input="onParamInput"
-					min="0"
-					max="1"
-					step="0.1"
-				/>
+				<SliderBox id="fileAudio-volume" @input="onParamInput" min="0" max="1" step="0.1" />
 				<div class="text" id="fileAudio-volume-info">{{ form.volume * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-pan-box.label') || 'Pan' }}</div>
 			<div class="flex-box" id="fileAudio-pan-box">
-				<SliderBox
-					id="fileAudio-pan" @input="onParamInput"
-					min="-1"
-					max="1"
-					step="0.1"
-				/>
+				<SliderBox id="fileAudio-pan" @input="onParamInput" min="-1" max="1" step="0.1" />
 				<div class="text" id="fileAudio-pan-info">{{ form.pan * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-dry-box.label') || 'Reverb - Dry' }}</div>
 			<div class="flex-box" id="fileAudio-dry-box">
-				<SliderBox
-					id="fileAudio-dry" @input="onParamInput"
-					min="0"
-					max="1"
-					step="0.1"
-				/>
+				<SliderBox id="fileAudio-dry" @input="onParamInput" min="0" max="1" step="0.1" />
 				<div class="text" id="fileAudio-dry-info">{{ form.dry * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-wet-box.label') || 'Reverb - Wet' }}</div>
 			<div class="flex-box" id="fileAudio-wet-box">
-				<SliderBox
-					id="fileAudio-wet" @input="onParamInput"
-					min="0"
-					max="1"
-					step="0.1"
-				/>
+				<SliderBox id="fileAudio-wet" @input="onParamInput" min="0" max="1" step="0.1" />
 				<div class="text" id="fileAudio-wet-info">{{ form.wet * 100 }}%</div>
 			</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileAudio-progress-box.label') || 'Progress' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileAudio-progress-box.label') || 'Progress'
+		}}</DetailSummary>
 		<div class="box" id="fileAudio-progress-box">
 			<div class="box" id="fileAudio-progress">
 				<div class="box" id="fileAudio-progress-filler"></div>
@@ -65,7 +53,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox id="fileAudio-frequency-detail" open>
-		<DetailSummary>{{ t('components.fileAudio-frequency-canvas.label') || 'Frequency' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileAudio-frequency-canvas.label') || 'Frequency'
+		}}</DetailSummary>
 		<canvas id="fileAudio-frequency-canvas" width="0" height="0"></canvas>
 	</DetailBox>
 </template>
@@ -115,7 +105,9 @@ onMounted(() => {
 		window.addEventListener('themechange', fileAudio.themechange);
 		const el = document.getElementById('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
-		document.getElementById('fileAudio-frequency-detail')?.addEventListener('toggle', fileAudio.windowResize);
+		document
+			.getElementById('fileAudio-frequency-detail')
+			?.addEventListener('toggle', fileAudio.windowResize);
 		progress.addEventListener('pointerdown', fileAudio.progressPointerdown);
 		progress.addEventListener('pointermove', fileAudio.progressPointermove);
 		progress.addEventListener('pointerleave', fileAudio.progressPointerleave);

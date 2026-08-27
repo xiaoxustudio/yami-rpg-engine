@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setTerrain" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setTerrain.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Position</div><CustomBox id="setTerrain-position" type="position" @input="onPosition" />
-				<div class="text">Terrain</div><SelectBox id="setTerrain-terrain" v-model="form.terrain" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTerrain.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Position</div>
+			<CustomBox id="setTerrain-position" type="position" @input="onPosition" />
+			<div class="text">Terrain</div>
+			<SelectBox id="setTerrain-terrain" v-model="form.terrain" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTerrainCommandSchema } from '@app/composables/commands/useSetTerrainCommandSchema';
@@ -40,5 +44,4 @@ onMounted(() => {
 		{ name: 'Wall', value: 'wall' }
 	]);
 });
-
 </script>

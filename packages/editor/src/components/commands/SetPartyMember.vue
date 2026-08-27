@@ -1,16 +1,21 @@
 <template>
-<WindowFrame id="setPartyMember" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setPartyMember.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setPartyMember" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setPartyMember.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Operation</div><SelectBox id="setPartyMember-operation" v-model="form.operation" /><div class="text">Global Actor</div
-			><CustomBox id="setPartyMember-actor" type="actor" @input="onActor" /></div>
-	
-</WindowFrame>
+			<div class="text">Operation</div>
+			<SelectBox id="setPartyMember-operation" v-model="form.operation" />
+			<div class="text">Global Actor</div>
+			<CustomBox id="setPartyMember-actor" type="actor" @input="onActor" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPartyMemberCommandSchema } from '@app/composables/commands/useSetPartyMemberCommandSchema';
@@ -40,5 +45,4 @@ onMounted(() => {
 		{ name: get('remove') || 'Remove', value: 'remove' }
 	]);
 });
-
 </script>

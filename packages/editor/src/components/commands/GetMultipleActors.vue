@@ -1,42 +1,62 @@
 <template>
-<WindowFrame id="getMultipleActors" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.getMultipleActors.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="getMultipleActors" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.getMultipleActors.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Write to List</div
-			><CustomBox
+			<div class="text">Write to List</div>
+			<CustomBox
 				id="getMultipleActors-variable"
 				type="variable"
 				filter="object"
 				@input="onVariable"
-			 /><div class="text">Position</div
-			><CustomBox id="getMultipleActors-position" type="position" @input="onPosition" /><div class="text">Area</div><SelectBox id="getMultipleActors-area" v-model="form.area" @write="onArea" /><div class="text">Width</div
-			><NumberVar
+			/>
+			<div class="text">Position</div>
+			<CustomBox id="getMultipleActors-position" type="position" @input="onPosition" />
+			<div class="text">Area</div>
+			<SelectBox id="getMultipleActors-area" v-model="form.area" @write="onArea" />
+			<div class="text">Width</div>
+			<NumberVar
 				id="getMultipleActors-width"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
 				v-model="form.width"
-			 /><div class="text">Height</div
-			><NumberVar
+			/>
+			<div class="text">Height</div>
+			<NumberVar
 				id="getMultipleActors-height"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
 				v-model="form.height"
-			 /><div class="text">Radius</div
-			><NumberVar
+			/>
+			<div class="text">Radius</div>
+			<NumberVar
 				id="getMultipleActors-radius"
 				min="0"
 				max="256"
 				decimals="4"
 				unit="tile"
 				v-model="form.radius"
-			 /><div class="text">Selector</div><SelectBox id="getMultipleActors-selector" v-model="form.selector" @write="onSelector" /><div class="text">Team</div><SelectVar id="getMultipleActors-teamId" v-model="form.teamId" /><div class="text">Activation</div><SelectBox id="getMultipleActors-activation" v-model="form.activation" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Selector</div>
+			<SelectBox
+				id="getMultipleActors-selector"
+				v-model="form.selector"
+				@write="onSelector"
+			/>
+			<div class="text">Team</div>
+			<SelectVar id="getMultipleActors-teamId" v-model="form.teamId" />
+			<div class="text">Activation</div>
+			<SelectBox id="getMultipleActors-activation" v-model="form.activation" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">

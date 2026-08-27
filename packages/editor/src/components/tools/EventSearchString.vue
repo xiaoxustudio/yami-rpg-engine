@@ -1,18 +1,24 @@
 <template>
 	<WindowFrame id="event-search-string" no-buttons>
-		<template #title><TitleBar>{{ t('components.event-search-string.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text"></div><TextBox id="event-search-string-search" /> <div class="text"></div
-				><CheckBox id="event-search-string-case-insensitive" class="standard" />
-				<div class="text"></div><CheckBox id="event-search-string-regex" class="standard" />
-				<div class="text"></div
-				><CheckBox id="event-search-string-match-line" class="standard" />
-				<div class="text" id="event-search-string-log"></div>
-			</div>
-			<button id="event-search-string-previous" name="previous">上一个</button>
-			<button id="event-search-string-next" name="next">下一个</button>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.event-search-string.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text"></div>
+			<TextBox id="event-search-string-search" />
+			<div class="text"></div>
+			<CheckBox id="event-search-string-case-insensitive" class="standard" />
+			<div class="text"></div>
+			<CheckBox id="event-search-string-regex" class="standard" />
+			<div class="text"></div>
+			<CheckBox id="event-search-string-match-line" class="standard" />
+			<div class="text" id="event-search-string-log"></div>
+		</div>
+		<button id="event-search-string-previous" name="previous">上一个</button>
+		<button id="event-search-string-next" name="next">下一个</button>
 	</WindowFrame>
 </template>
 
@@ -31,8 +37,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

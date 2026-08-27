@@ -1,22 +1,30 @@
 <template>
-<WindowFrame id="changeActorSprite" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorSprite.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorSprite" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorSprite.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorSprite-actor" type="actor" @input="onActor" /><div class="text">Animation</div
-			><CustomBox
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorSprite-actor" type="actor" @input="onActor" />
+			<div class="text">Animation</div>
+			<CustomBox
 				id="changeActorSprite-animationId"
 				type="file"
 				filter="animation"
 				@write="onWrite"
-			 /><div class="text">Sprite Name</div><SelectBox id="changeActorSprite-spriteId" v-model="form.spriteId" /><div class="text">Sprite</div
-			><CustomBox id="changeActorSprite-image" type="file" filter="image" @input="onImage" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Sprite Name</div>
+			<SelectBox id="changeActorSprite-spriteId" v-model="form.spriteId" />
+			<div class="text">Sprite</div>
+			<CustomBox id="changeActorSprite-image" type="file" filter="image" @input="onImage" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSpriteCommandSchema } from '@app/composables/commands/useChangeActorSpriteCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -43,5 +51,4 @@ const onWrite = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

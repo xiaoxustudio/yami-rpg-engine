@@ -1,16 +1,29 @@
 <template>
 	<WindowFrame id="autoTile-generateFrames">
-		<template #title><TitleBar>{{ t('components.autoTile-generateFrames.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.autoTile-generateFrames-strideX.label') }}</div
-				><NumberBox id="autoTile-generateFrames-strideX" min="-128" max="128" v-model="form.strideX" />
-				<div class="text">{{ t('components.autoTile-generateFrames-strideY.label') }}</div
-				><NumberBox id="autoTile-generateFrames-strideY" min="-128" max="128" v-model="form.strideY" />
-				<div class="text">{{ t('components.autoTile-generateFrames-count.label') }}</div
-				><NumberBox id="autoTile-generateFrames-count" min="1" max="255" v-model="form.count" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.autoTile-generateFrames.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.autoTile-generateFrames-strideX.label') }}</div>
+			<NumberBox
+				id="autoTile-generateFrames-strideX"
+				min="-128"
+				max="128"
+				v-model="form.strideX"
+			/>
+			<div class="text">{{ t('components.autoTile-generateFrames-strideY.label') }}</div>
+			<NumberBox
+				id="autoTile-generateFrames-strideY"
+				min="-128"
+				max="128"
+				v-model="form.strideY"
+			/>
+			<div class="text">{{ t('components.autoTile-generateFrames-count.label') }}</div>
+			<NumberBox id="autoTile-generateFrames-count" min="1" max="255" v-model="form.count" />
+		</div>
 	</WindowFrame>
 </template>
 

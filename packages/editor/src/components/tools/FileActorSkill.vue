@@ -1,13 +1,17 @@
 <template>
 	<WindowFrame id="fileActor-skill" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fileActor-skill.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fileActor-skill-id.label') }}</div
-				><CustomBox id="fileActor-skill-id" type="file" filter="skill" v-model="form.id" />
-				<div class="text">{{ t('components.fileActor-skill-key.label') }}</div><SelectBox id="fileActor-skill-key" v-model="form.key" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.fileActor-skill.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.fileActor-skill-id.label') }}</div>
+			<CustomBox id="fileActor-skill-id" type="file" filter="skill" v-model="form.id" />
+			<div class="text">{{ t('components.fileActor-skill-key.label') }}</div>
+			<SelectBox id="fileActor-skill-key" v-model="form.key" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -34,8 +38,5 @@ const onConfirm = () => {
 	Inspector?.fileActor?.skills?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

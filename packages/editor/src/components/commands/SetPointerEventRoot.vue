@@ -1,18 +1,21 @@
 <template>
 	<WindowFrame id="setPointerEventRoot" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setPointerEventRoot.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="setPointerEventRoot-operation" v-model="form.operation" />
-				<div class="text">Element</div
-				><CustomBox id="setPointerEventRoot-element" type="element" @input="onElement" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setPointerEventRoot.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="setPointerEventRoot-operation" v-model="form.operation" />
+			<div class="text">Element</div>
+			<CustomBox id="setPointerEventRoot-element" type="element" @input="onElement" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
@@ -50,5 +53,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

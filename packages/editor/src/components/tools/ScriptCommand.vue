@@ -1,13 +1,16 @@
 <template>
-		<WindowFrame id="scriptCommand" @confirm="onConfirm">
-		<template #title><TitleBar>Custom Command<div class="close"></div></TitleBar></template>
-		
-			<ParameterPane id="scriptCommand-parameter-pane">
-				<DetailBox id="scriptCommand-parameter-detail" open>
-					<div class="detail-grid" id="scriptCommand-parameter-grid" />
-				</DetailBox>
-			</ParameterPane>
-		
+	<WindowFrame id="scriptCommand" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>Custom Command
+				<div class="close"></div></TitleBar
+		></template>
+
+		<ParameterPane id="scriptCommand-parameter-pane">
+			<DetailBox id="scriptCommand-parameter-detail" open>
+				<div class="detail-grid" id="scriptCommand-parameter-grid" />
+			</DetailBox>
+		</ParameterPane>
 	</WindowFrame>
 </template>
 
@@ -28,8 +31,5 @@ const onConfirm = () => {
 	Command?.custom?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

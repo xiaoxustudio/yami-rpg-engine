@@ -1,6 +1,18 @@
 ﻿<template>
-	<div ref="rootEl" class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
-		<div class="log-item" v-for="(item, index) in items" :key="index" :class="item.type" v-html="item.message" />
+	<div
+		ref="rootEl"
+		class="box"
+		id="log-message"
+		:class="{ open: items.length !== 0 }"
+		@click="onMessageClick"
+	>
+		<div
+			class="log-item"
+			v-for="(item, index) in items"
+			:key="index"
+			:class="item.type"
+			v-html="item.message"
+		/>
 	</div>
 </template>
 
@@ -23,7 +35,15 @@ const rootEl = ref<HTMLElement | null>(null);
 // 日志消息允许的样式 span（供点击跳转 VSCode 使用），其余 HTML 一律转义防注入
 const escapeHtml = (value: unknown): string =>
 	String(value ?? '').replace(/[&<>"']/g, (c) =>
-		c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;'
+		c === '&'
+			? '&amp;'
+			: c === '<'
+				? '&lt;'
+				: c === '>'
+					? '&gt;'
+					: c === '"'
+						? '&quot;'
+						: '&#39;'
 	);
 
 const sanitizeLogMessage = (message: unknown): string =>
@@ -67,7 +87,5 @@ onMounted(() => {
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();
-
-
 });
 </script>

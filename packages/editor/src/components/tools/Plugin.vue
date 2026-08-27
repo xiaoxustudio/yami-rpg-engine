@@ -1,35 +1,38 @@
 <template>
-		<WindowFrame id="plugin" show-apply @apply="onApply">
-		<template #title><TitleBar>{{ t('components.plugin.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="field-set input pad" id="plugin-list-fieldset">
-				<div class="legend">{{ t('components.plugin-list.label') }}</div>
-				<TreeList
-					id="plugin-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@popup="onListPopup"
-					@open="onListOpen"
-					@change="onListChange"
-				/>
-			</div>
-			<div class="box" id="plugin-inspector">
-				<DetailBox id="plugin-overview-detail" open>
-					<DetailSummary>Overview</DetailSummary>
-					<div class="box" id="plugin-overview" @update="syncOverview">
-						<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
-					</div>
-				</DetailBox>
-				<ParameterPane id="plugin-parameter-pane">
+	<WindowFrame id="plugin" show-apply @apply="onApply">
+		<template #title
+			><TitleBar
+				>{{ t('components.plugin.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="plugin-list-fieldset">
+			<div class="legend">{{ t('components.plugin-list.label') }}</div>
+			<TreeList
+				id="plugin-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@popup="onListPopup"
+				@open="onListOpen"
+				@change="onListChange"
+			/>
+		</div>
+		<div class="box" id="plugin-inspector">
+			<DetailBox id="plugin-overview-detail" open>
+				<DetailSummary>Overview</DetailSummary>
+				<div class="box" id="plugin-overview" @update="syncOverview">
+					<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
+				</div>
+			</DetailBox>
+			<ParameterPane id="plugin-parameter-pane">
 				<DetailBox id="plugin-parameter-detail" open>
 					<DetailSummary>Parameters</DetailSummary>
 					<div class="detail-grid" id="plugin-parameter-grid" />
 				</DetailBox>
 			</ParameterPane>
-			</div>
-		
+		</div>
 	</WindowFrame>
 </template>
 
@@ -109,13 +112,9 @@ const onListOpen = (event: Event & { value?: unknown }) => {
 	PluginManager?.listOpen?.(event);
 };
 
-
 const onApply = () => {
 	PluginManager?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

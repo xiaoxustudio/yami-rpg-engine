@@ -1,36 +1,39 @@
 <template>
 	<WindowFrame id="setZoomFactor" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setZoomFactor.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Zoom Factor</div
-				><NumberVar
-					id="setZoomFactor-zoom"
-					min="1"
-					max="8"
-					step="0.1"
-					decimals="4"
-					v-model="form.zoom"
-				 />
-				<div class="text">Easing</div><SelectBox id="setZoomFactor-easingId" name="easing" v-model="form.easingId" />
-				<div class="text">Duration</div
-				><NumberVar
-					id="setZoomFactor-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				 />
-				<div class="text">Wait</div><SelectBox id="setZoomFactor-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setZoomFactor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Zoom Factor</div>
+			<NumberVar
+				id="setZoomFactor-zoom"
+				min="1"
+				max="8"
+				step="0.1"
+				decimals="4"
+				v-model="form.zoom"
+			/>
+			<div class="text">Easing</div>
+			<SelectBox id="setZoomFactor-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberVar
+				id="setZoomFactor-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setZoomFactor-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetZoomFactorCommandSchema } from '@app/composables/commands/useSetZoomFactorCommandSchema';
@@ -62,5 +65,4 @@ onMounted(() => {
 		clear($('#setZoomFactor-easingId'));
 	});
 });
-
 </script>

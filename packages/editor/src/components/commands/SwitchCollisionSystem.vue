@@ -1,16 +1,19 @@
 <template>
 	<WindowFrame id="switchCollisionSystem" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.switchCollisionSystem.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="switchCollisionSystem-operation" v-model="form.operation" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.switchCollisionSystem.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="switchCollisionSystem-operation" v-model="form.operation" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSwitchCollisionSystemCommandSchema } from '@app/composables/commands/useSwitchCollisionSystemCommandSchema';
@@ -35,5 +38,4 @@ onMounted(() => {
 		{ name: 'Disable Scene Collision', value: 'disable-scene-collision' }
 	]);
 });
-
 </script>

@@ -1,14 +1,16 @@
 <template>
-<WindowFrame id="comment" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.comment.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="comment" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.comment.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<TextArea id="comment-comment" v-model="form.comment" />
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useCommentCommandSchema } from '@app/composables/commands/useCommentCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -22,5 +24,4 @@ const { form, save } = useCommentCommandSchema();
 const onConfirm = () => {
 	save();
 };
-
 </script>

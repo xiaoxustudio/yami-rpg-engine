@@ -1,18 +1,23 @@
 <template>
 	<WindowFrame id="setTeamRelation" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setTeamRelation.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Team A</div><SelectBox id="setTeamRelation-teamId1" v-model="form.teamId1" />
-				<div class="text">Team B</div><SelectBox id="setTeamRelation-teamId2" v-model="form.teamId2" />
-				<div class="text">Relation</div><SelectBox id="setTeamRelation-relation" v-model="form.relation" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTeamRelation.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Team A</div>
+			<SelectBox id="setTeamRelation-teamId1" v-model="form.teamId1" />
+			<div class="text">Team B</div>
+			<SelectBox id="setTeamRelation-teamId2" v-model="form.teamId2" />
+			<div class="text">Relation</div>
+			<SelectBox id="setTeamRelation-relation" v-model="form.relation" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTeamRelationCommandSchema } from '@app/composables/commands/useSetTeamRelationCommandSchema';
@@ -46,5 +51,4 @@ onMounted(() => {
 		clear($('#setTeamRelation-teamId2'));
 	});
 });
-
 </script>

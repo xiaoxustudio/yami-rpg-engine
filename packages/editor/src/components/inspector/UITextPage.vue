@@ -1,8 +1,15 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.uiText-properties-grid.label') || 'Text Properties' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.uiText-properties-grid.label') || 'Text Properties'
+		}}</DetailSummary>
 		<div class="detail-grid" id="uiText-properties-grid">
-			<div class="text">{{ t('components.uiText-direction.label') || 'Direction' }}</div><SelectBox id="uiText-direction" v-model="form.direction" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiText-direction.label') || 'Direction' }}</div>
+			<SelectBox
+				id="uiText-direction"
+				v-model="form.direction"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiText-align-box.label') || 'Align' }}</div>
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
@@ -54,11 +61,12 @@
 					><div class="text">&#xf038;</div></RadioBox
 				>
 			</div>
-			<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div
-			><TextArea
+			<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div>
+			<TextArea
 				id="uiText-content"
 				v-model="form.content"
-				menu="tag-global-var tag-dynamic-global-var tag-localization" @input="onParamInput"
+				menu="tag-global-var tag-dynamic-global-var tag-localization"
+				@input="onParamInput"
 			></TextArea>
 			<div class="text">{{ t('components.uiText-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiText-size-box">
@@ -75,10 +83,13 @@
 					min="10"
 					max="400"
 					step="1"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.uiText-lineSpacing-box.label') || 'Line Spacing' }}</div>
+			<div class="text">
+				{{ t('components.uiText-lineSpacing-box.label') || 'Line Spacing' }}
+			</div>
 			<div class="flex-box" id="uiText-lineSpacing-box">
 				<SliderBox
 					id="uiText-lineSpacing-slider"
@@ -93,10 +104,13 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.uiText-letterSpacing-box.label') || 'Letter Spacing' }}</div>
+			<div class="text">
+				{{ t('components.uiText-letterSpacing-box.label') || 'Letter Spacing' }}
+			</div>
 			<div class="flex-box" id="uiText-letterSpacing-box">
 				<SliderBox
 					id="uiText-letterSpacing-slider"
@@ -111,41 +125,75 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div><ColorBox id="uiText-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div><TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
-			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div><SelectBox id="uiText-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.uiText-effect-type.label') || 'Effect' }}</div><SelectBox id="uiText-effect-type" v-model="form.effect.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div>
+			<ColorBox id="uiText-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
+			<TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
+			<SelectBox
+				id="uiText-typeface"
+				v-model="form.typeface"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.uiText-effect-type.label') || 'Effect' }}</div>
+			<SelectBox
+				id="uiText-effect-type"
+				v-model="form.effect.type"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">
+				{{ t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X' }}
+			</div>
+			<NumberBox
 				id="uiText-effect-shadowOffsetX"
 				v-model="form.effect.shadowOffsetX"
 				min="-9"
 				max="9"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y' }}
+			</div>
+			<NumberBox
 				id="uiText-effect-shadowOffsetY"
 				v-model="form.effect.shadowOffsetY"
 				min="-9"
 				max="9"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.uiText-effect-strokeWidth.label') || 'Stroke Width' }}</div
-			><NumberBox
+			<div class="text">
+				{{ t('components.uiText-effect-strokeWidth.label') || 'Stroke Width' }}
+			</div>
+			<NumberBox
 				id="uiText-effect-strokeWidth"
 				v-model="form.effect.strokeWidth"
 				min="1"
 				max="20"
-				unit="px" @input="onParamInput"
+				unit="px"
+				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.uiText-effect-color.label') || 'Effect Color' }}</div
-			><ColorBox id="uiText-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ t('components.uiText-overflow.label') || 'Overflow' }}</div
-			><SelectBox id="uiText-overflow" v-model="form.overflow" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.uiText-blend.label') || 'Blend' }}</div
-			><SelectBox id="uiText-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<div class="text">
+				{{ t('components.uiText-effect-color.label') || 'Effect Color' }}
+			</div>
+			<ColorBox
+				id="uiText-effect-color"
+				v-model="form.effect.color"
+				@input="onParamInput"
+			></ColorBox>
+			<div class="text">{{ t('components.uiText-overflow.label') || 'Overflow' }}</div>
+			<SelectBox
+				id="uiText-overflow"
+				v-model="form.overflow"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.uiText-blend.label') || 'Blend' }}</div>
+			<SelectBox id="uiText-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -175,17 +223,30 @@ const { form, sync, onParamInput } = useUITextPage();
 const { bindInput, bindSliders } = useInspectorInput();
 
 const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	const el = document.getElementById(id) as unknown as {
+		loadItems?: (items: { name: string; value: string }[]) => void;
+	} | null;
 	el?.loadItems?.(items);
 };
 
-const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
-	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+const relate = (
+	id: string,
+	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
+) => {
+	const el = document.getElementById(id) as unknown as {
+		enableHiddenMode?: () => {
+			relate: (
+				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
+			) => void;
+		};
+	} | null;
 	if (el) el.enableHiddenMode()?.relate(config);
 };
 
 const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const slider = document.getElementById(sliderId) as unknown as {
+		synchronize?: (el: HTMLElement | null) => void;
+	} | null;
 	const input = document.getElementById(inputId);
 	slider?.synchronize?.(input);
 };
@@ -226,16 +287,32 @@ onMounted(() => {
 	synchronize('uiText-lineSpacing-slider', 'uiText-lineSpacing');
 	synchronize('uiText-letterSpacing-slider', 'uiText-letterSpacing');
 	relate('uiText-effect-type', [
-		{ case: 'shadow', targets: [document.getElementById('uiText-effect-shadowOffsetX'), document.getElementById('uiText-effect-shadowOffsetY'), document.getElementById('uiText-effect-color')] },
-		{ case: 'stroke', targets: [document.getElementById('uiText-effect-strokeWidth'), document.getElementById('uiText-effect-color')] },
+		{
+			case: 'shadow',
+			targets: [
+				document.getElementById('uiText-effect-shadowOffsetX'),
+				document.getElementById('uiText-effect-shadowOffsetY'),
+				document.getElementById('uiText-effect-color')
+			]
+		},
+		{
+			case: 'stroke',
+			targets: [
+				document.getElementById('uiText-effect-strokeWidth'),
+				document.getElementById('uiText-effect-color')
+			]
+		},
 		{ case: 'outline', targets: [document.getElementById('uiText-effect-color')] }
 	]);
 
-	const elements = document.querySelectorAll(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
+	const elements =
+		document.querySelectorAll(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
     #uiText-content, #uiText-size, #uiText-lineSpacing, #uiText-letterSpacing, #uiText-color, #uiText-font,
     #uiText-typeface, #uiText-effect-type, #uiText-effect-shadowOffsetX, #uiText-effect-shadowOffsetY,
     #uiText-effect-strokeWidth, #uiText-effect-color, #uiText-overflow, #uiText-blend`);
-	const sliders = document.querySelectorAll('#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider');
+	const sliders = document.querySelectorAll(
+		'#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider'
+	);
 	bindInput(elements, uiText, UI);
 	bindSliders(sliders);
 

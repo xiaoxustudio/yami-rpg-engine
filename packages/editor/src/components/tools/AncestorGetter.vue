@@ -1,14 +1,24 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="ancestorGetter">
-		<template #title><TitleBar>{{ t('components.ancestorGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.ancestorGetter-type.label') }}</div><SelectBox id="ancestorGetter-type" v-model="form.type" /> <div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div
-				><CustomBox id="ancestorGetter-presetId" type="preset-element" v-model="form.presetId" />
-				<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div
-				><CustomBox id="ancestorGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.ancestorGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.ancestorGetter-type.label') }}</div>
+			<SelectBox id="ancestorGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div>
+			<CustomBox id="ancestorGetter-presetId" type="preset-element" v-model="form.presetId" />
+			<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div>
+			<CustomBox
+				id="ancestorGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -38,7 +48,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => ancestorGetter.onWindowClosed());
 	}
-
-
 });
 </script>

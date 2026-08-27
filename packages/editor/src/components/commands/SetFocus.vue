@@ -1,19 +1,25 @@
 <template>
 	<WindowFrame id="setFocus" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setFocus.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="setFocus-operation" v-model="form.operation" />
-				<div class="text">Element</div><CustomBox id="setFocus-element" type="element" @input="onElement" />
-				<div class="text">Mode</div><SelectBox id="setFocus-mode" v-model="form.mode" /> <div class="text">Cancelable</div
-				><CheckBox id="setFocus-cancelable" class="standard large" v-model="form.cancelable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setFocus.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="setFocus-operation" v-model="form.operation" />
+			<div class="text">Element</div>
+			<CustomBox id="setFocus-element" type="element" @input="onElement" />
+			<div class="text">Mode</div>
+			<SelectBox id="setFocus-mode" v-model="form.mode" />
+			<div class="text">Cancelable</div>
+			<CheckBox id="setFocus-cancelable" class="standard large" v-model="form.cancelable" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
@@ -55,14 +61,9 @@ onMounted(() => {
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [
-					$('#setFocus-element'),
-					$('#setFocus-mode'),
-					$('#setFocus-cancelable')
-				]
+				targets: [$('#setFocus-element'), $('#setFocus-mode'), $('#setFocus-cancelable')]
 			},
 			{ case: 'remove', targets: [$('#setFocus-element')] }
 		]);
 });
-
 </script>

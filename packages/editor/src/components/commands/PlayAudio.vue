@@ -1,21 +1,32 @@
 <template>
-<WindowFrame id="playAudio" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.playAudio.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="playAudio" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.playAudio.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="playAudio-type" v-model="form.type" /> <div class="text">Audio</div
-			><CustomBox id="playAudio-audio" type="file" filter="audio" @input="onAudio" />
-			<div class="text">Volume</div
-			><NumberBox id="playAudio-volume" min="0" max="1" step="0.1" decimals="4" v-model="form.volume" />
-			<div class="text">Sound Location</div
-			><CustomBox id="playAudio-location" type="position" @input="onLocation" />
+			<div class="text">Type</div>
+			<SelectBox id="playAudio-type" v-model="form.type" />
+			<div class="text">Audio</div>
+			<CustomBox id="playAudio-audio" type="file" filter="audio" @input="onAudio" />
+			<div class="text">Volume</div>
+			<NumberBox
+				id="playAudio-volume"
+				min="0"
+				max="1"
+				step="0.1"
+				decimals="4"
+				v-model="form.volume"
+			/>
+			<div class="text">Sound Location</div>
+			<CustomBox id="playAudio-location" type="position" @input="onLocation" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAudioCommandSchema } from '@app/composables/commands/usePlayAudioCommandSchema';
@@ -54,5 +65,4 @@ onMounted(() => {
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: 'se-attenuated', targets: [$('#playAudio-location')] }]);
 });
-
 </script>

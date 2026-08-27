@@ -1,28 +1,41 @@
 <template>
-<WindowFrame id="setPan" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setPan.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setPan" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setPan.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="setPan-type" v-model="form.type" /> <div class="text">Pan</div
-			><NumberVar id="setPan-pan" min="-1" max="1" step="0.1" decimals="4" v-model="form.pan" />
-			<div class="text">Easing</div><SelectBox id="setPan-easingId" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div
-			><NumberBox
+			<div class="text">Type</div>
+			<SelectBox id="setPan-type" v-model="form.type" />
+			<div class="text">Pan</div>
+			<NumberVar
+				id="setPan-pan"
+				min="-1"
+				max="1"
+				step="0.1"
+				decimals="4"
+				v-model="form.pan"
+			/>
+			<div class="text">Easing</div>
+			<SelectBox id="setPan-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberBox
 				id="setPan-duration"
 				name="duration"
 				min="0"
 				max="3600000"
 				unit="ms"
 				v-model="form.duration"
-			 />
-			<div class="text">Wait</div><SelectBox id="setPan-wait" name="wait" v-model="form.wait" />
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setPan-wait" name="wait" v-model="form.wait" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
@@ -61,5 +74,4 @@ onMounted(() => {
 		clear($('#setPan-easingId'));
 	});
 });
-
 </script>

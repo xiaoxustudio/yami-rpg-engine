@@ -1,19 +1,21 @@
 ﻿<template>
 	<DetailBox id="animSpriteFrame-properties-detail" open>
-		<DetailSummary>{{ t('components.animSpriteFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.animSpriteFrame-properties-grid.label') || 'Frame'
+		}}</DetailSummary>
 		<div class="detail-grid" id="animSpriteFrame-properties-grid">
-			<div class="text">{{ t('components.animSpriteFrame-anchor-box.label') || 'Anchor' }}</div>
-			<div
-				id="animSpriteFrame-anchor-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div class="text">
+				{{ t('components.animSpriteFrame-anchor-box.label') || 'Anchor' }}
+			</div>
+			<div id="animSpriteFrame-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-anchorX"
 					v-model="form.anchorX"
 					min="-10"
 					max="10"
 					step="0.1"
-					decimals="4" @input="onParamInput"
+					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
@@ -21,21 +23,20 @@
 					min="-10"
 					max="10"
 					step="0.1"
-					decimals="4" @input="onParamInput"
+					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.animSpriteFrame-pivot-box.label') || 'Pivot' }}</div>
-			<div
-				id="animSpriteFrame-pivot-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div id="animSpriteFrame-pivot-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-pivotX"
 					v-model="form.pivotX"
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
@@ -43,21 +44,22 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-position-box.label') || 'Position' }}</div>
-			<div
-				id="animSpriteFrame-position-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div class="text">
+				{{ t('components.animSpriteFrame-position-box.label') || 'Position' }}
+			</div>
+			<div id="animSpriteFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-x"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
@@ -65,35 +67,34 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px" @input="onParamInput"
+					unit="px"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-rotation-box.label') || 'Rotation' }}</div>
-			<div
-				id="animSpriteFrame-rotation-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div class="text">
+				{{ t('components.animSpriteFrame-rotation-box.label') || 'Rotation' }}
+			</div>
+			<div id="animSpriteFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-rotation"
 					v-model="form.rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
-					unit="deg" @input="onParamInput"
+					unit="deg"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.animSpriteFrame-scale-box.label') || 'Scale' }}</div>
-			<div
-				id="animSpriteFrame-scale-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div id="animSpriteFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-scaleX"
 					v-model="form.scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4" @input="onParamInput"
+					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
@@ -101,24 +102,27 @@
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4" @input="onParamInput"
+					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-opacity-box.label') || 'Opacity' }}</div>
-			<div
-				id="animSpriteFrame-opacity-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div class="text">
+				{{ t('components.animSpriteFrame-opacity-box.label') || 'Opacity' }}
+			</div>
+			<div id="animSpriteFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-opacity"
 					v-model="form.opacity"
 					min="0"
 					max="1"
 					step="0.05"
-					decimals="4" @input="onParamInput"
+					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red' }}</div>
+			<div class="text">
+				{{ t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red' }}
+			</div>
 			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
@@ -135,7 +139,9 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green' }}</div>
+			<div class="text">
+				{{ t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green' }}
+			</div>
 			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
@@ -152,7 +158,9 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue' }}</div>
+			<div class="text">
+				{{ t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue' }}
+			</div>
 			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
@@ -169,7 +177,9 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale' }}</div>
+			<div class="text">
+				{{ t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale' }}
+			</div>
 			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
@@ -260,7 +270,9 @@ const onMarqueePointerdown = (event: PointerEvent) => {
 };
 
 const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const slider = document.getElementById(sliderId) as unknown as {
+		synchronize?: (el: HTMLElement | null) => void;
+	} | null;
 	const input = document.getElementById(inputId);
 	slider?.synchronize?.(input);
 };

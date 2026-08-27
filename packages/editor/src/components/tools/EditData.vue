@@ -1,13 +1,14 @@
 <template>
 	<WindowFrame id="edit-data">
-		<template #title><TitleBar
-			>{{ t('components.edit-data.title') }}<div class="text hidden" id="edit-data-mark">✱</div>
-			<div class="maximize" id="edit-data-maximize" />
-			<div class="close" />
-		</TitleBar></template>
-		
-			<div class="box" id="edit-data-current"> </div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.edit-data.title') }}
+				<div class="text hidden" id="edit-data-mark">✱</div>
+				<div class="maximize" id="edit-data-maximize" />
+				<div class="close" /> </TitleBar
+		></template>
+
+		<div class="box" id="edit-data-current"></div>
 	</WindowFrame>
 </template>
 
@@ -24,8 +25,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

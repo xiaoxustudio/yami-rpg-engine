@@ -11,7 +11,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { RequestkeyValueBind, requestKeyValueForm } from '@app/composables/commands/useRequestURLCommandSchema';
+import {
+	RequestkeyValueBind,
+	requestKeyValueForm
+} from '@app/composables/commands/useRequestURLCommandSchema';
 import { YMRequestKeyValue } from '@ui-kit';
 
 const { t } = useI18n();

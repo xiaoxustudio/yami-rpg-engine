@@ -1,12 +1,22 @@
 <template>
 	<WindowFrame id="fileActor-sprite" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fileActor-sprite.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div><SelectBox id="fileActor-sprite-id" v-model="form.id" /> <div class="text">{{ t('components.fileActor-sprite-image.label') }}</div
-				><CustomBox id="fileActor-sprite-image" type="file" filter="image" v-model="form.image" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.fileActor-sprite.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
+			<SelectBox id="fileActor-sprite-id" v-model="form.id" />
+			<div class="text">{{ t('components.fileActor-sprite-image.label') }}</div>
+			<CustomBox
+				id="fileActor-sprite-image"
+				type="file"
+				filter="image"
+				v-model="form.image"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -33,8 +43,5 @@ const onConfirm = () => {
 	Inspector?.fileActor?.sprites?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

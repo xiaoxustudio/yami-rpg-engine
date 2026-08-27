@@ -1,42 +1,42 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.uiAnimation-properties-grid.label') || 'Animation Properties' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.uiAnimation-properties-grid.label') || 'Animation Properties'
+		}}</DetailSummary>
 		<div class="detail-grid" id="uiAnimation-properties-grid">
-			<div class="text">{{ t('components.uiAnimation-animation.label') || 'Animation' }}</div
-			><CustomBox
+			<div class="text">{{ t('components.uiAnimation-animation.label') || 'Animation' }}</div>
+			<CustomBox
 				id="uiAnimation-animation"
 				type="file"
 				filter="animation"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div><SelectBox id="uiAnimation-motion" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.uiAnimation-autoplay.label') || 'Autoplay' }}</div
-			><CheckBox
+			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div>
+			<SelectBox id="uiAnimation-motion" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiAnimation-autoplay.label') || 'Autoplay' }}</div>
+			<CheckBox
 				id="uiAnimation-autoplay"
 				class="standard large"
 				@input="onParamInput"
 			></CheckBox>
-			<div class="text">{{ t('components.uiAnimation-rotatable.label') || 'Rotatable' }}</div
-			><CheckBox
+			<div class="text">{{ t('components.uiAnimation-rotatable.label') || 'Rotatable' }}</div>
+			<CheckBox
 				id="uiAnimation-rotatable"
 				class="standard large"
 				@input="onParamInput"
 			></CheckBox>
-			<div class="text">{{ t('components.uiAnimation-angle.label') || 'Angle' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.uiAnimation-angle.label') || 'Angle' }}</div>
+			<NumberBox
 				id="uiAnimation-angle"
 				min="0"
 				max="360"
 				unit="deg"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.uiAnimation-frame.label') || 'Frame' }}</div
-			><NumberBox id="uiAnimation-frame" min="0" max="10000" @input="onParamInput"></NumberBox>
+			<div class="text">{{ t('components.uiAnimation-frame.label') || 'Frame' }}</div>
+			<NumberBox id="uiAnimation-frame" min="0" max="10000" @input="onParamInput"></NumberBox>
 			<div class="text">{{ t('components.uiAnimation-offset-box.label') || 'Offset' }}</div>
-			<div
-				id="uiAnimation-offset-box"
-				class="box uiElement-grid-box with-2-columns"
-			>
+			<div id="uiAnimation-offset-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiAnimation-offsetX"
 					min="-10000"

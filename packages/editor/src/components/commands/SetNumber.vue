@@ -1,18 +1,22 @@
 <template>
 	<WindowFrame id="setNumber" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setNumber.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="setNumber-variable"
-					type="variable"
-					filter="writable-number"
-					@input="onVariable"
-				/>
-				<div class="text">Expression</div><ParamList id="setNumber-operands" v-model="form.operands" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setNumber.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setNumber-variable"
+				type="variable"
+				filter="writable-number"
+				@input="onVariable"
+			/>
+			<div class="text">Expression</div>
+			<ParamList id="setNumber-operands" v-model="form.operands" />
+		</div>
 	</WindowFrame>
 </template>
 

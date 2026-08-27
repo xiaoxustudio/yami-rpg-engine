@@ -1,131 +1,154 @@
 <template>
 	<!-- 鍙橀噺绐楀彛 -->
 	<WindowFrame id="variable" show-apply mode="center" @apply="onApply">
-		<template #title><TitleBar>{{ t('components.variable.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set input pad" id="variable-list-fieldset">
-				<div class="legend">{{ t('components.variable-list.label') }}</div>
-				<TreeList
-					id="variable-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@record="onListRecord"
-					@popup="onListPopup"
-					@open="onListOpen"
-				/>
-			</div>
-			<div class="field-set" id="variable-properties-fieldset">
-				<div class="legend">{{ t('components.variable-properties-flex.label') }}</div>
-				<div class="flex-box" id="variable-properties-flex">
-					<div class="flex-item"><div class="text">{{ t('components.variable-name.label') }}</div><TextBox id="variable-name" @input="onNameInput" /></div>
-					<div class="flex-item"
-						><div class="text">{{ t('components.variable-sort-normal.label') }}</div>
-						<RadioBox
-							id="variable-sort-normal"
-							name="variable-sort"
-							class="standard"
-							value="0"
-							@input="onSortInput"
-							@write="onSortWrite"
-							><div class="text" id="variable-sort-normal-label">{{ t('components.variable-sort-normal-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="variable-sort-shared"
-							name="variable-sort"
-							class="standard"
-							value="1"
-							@input="onSortInput"
-							@write="onSortWrite"
-							><div class="text" id="variable-sort-shared-label">{{ t('components.variable-sort-shared-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="variable-sort-temporary"
-							name="variable-sort"
-							class="standard"
-							value="2"
-							@input="onSortInput"
-							@write="onSortWrite"
-							><div class="text" id="variable-sort-temporary-label">{{ t('components.variable-sort-temporary-label.content') }}</div></RadioBox
-						>
-					</div>
-					<div class="flex-item"
-						><div class="text">{{ t('components.variable-type-boolean.label') }}</div>
-						<RadioBox
-							id="variable-type-boolean"
-							name="variable-type"
-							class="standard"
-							value="boolean"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="variable-type-boolean-label">{{ t('components.variable-type-boolean-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="variable-type-number"
-							name="variable-type"
-							class="standard"
-							value="number"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="variable-type-number-label">{{ t('components.variable-type-number-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="variable-type-string"
-							name="variable-type"
-							class="standard"
-							value="string"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="variable-type-string-label">{{ t('components.variable-type-string-label.content') }}</div></RadioBox
-						>
-						<RadioBox
-							id="variable-type-object"
-							name="variable-type"
-							class="standard"
-							value="object"
-							@input="onTypeInput"
-							@write="onTypeWrite"
-							><div class="text" id="variable-type-object-label">{{ t('components.variable-type-object-label.content') }}</div></RadioBox
-						>
-					</div>
-					<div class="flex-item" id="variable-value-box"
-						><div class="text">{{ t('components.variable-value-manager.label') }}</div>
-						<PageManager id="variable-value-manager">
-							<div class="page-frame" value="boolean">
-								<RadioBox
-									id="variable-value-boolean-false"
-									name="variable-value-boolean"
-									class="standard"
-									value="false"
-									>False</RadioBox
-								>
-								<RadioBox
-									id="variable-value-boolean-true"
-									name="variable-value-boolean"
-									class="standard"
-									value="true"
-									>True</RadioBox
-								>
-							</div>
-							<div class="page-frame" value="number">
-								<NumberBox
-									id="variable-value-number"
-									min="-1000000000"
-									max="1000000000"
-									decimals="10"
-								/>
-							</div>
-							<div class="page-frame" value="string">
-								<TextArea id="variable-value-string" />
-							</div>
-						</PageManager>
-					</div>
-					<div class="flex-item"><div class="text">{{ t('components.variable-note.label') }}</div><TextArea id="variable-note" /></div>
+		<template #title
+			><TitleBar
+				>{{ t('components.variable.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="variable-list-fieldset">
+			<div class="legend">{{ t('components.variable-list.label') }}</div>
+			<TreeList
+				id="variable-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@record="onListRecord"
+				@popup="onListPopup"
+				@open="onListOpen"
+			/>
+		</div>
+		<div class="field-set" id="variable-properties-fieldset">
+			<div class="legend">{{ t('components.variable-properties-flex.label') }}</div>
+			<div class="flex-box" id="variable-properties-flex">
+				<div class="flex-item">
+					<div class="text">{{ t('components.variable-name.label') }}</div>
+					<TextBox id="variable-name" @input="onNameInput" />
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.variable-sort-normal.label') }}</div>
+					<RadioBox
+						id="variable-sort-normal"
+						name="variable-sort"
+						class="standard"
+						value="0"
+						@input="onSortInput"
+						@write="onSortWrite"
+						><div class="text" id="variable-sort-normal-label">
+							{{ t('components.variable-sort-normal-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="variable-sort-shared"
+						name="variable-sort"
+						class="standard"
+						value="1"
+						@input="onSortInput"
+						@write="onSortWrite"
+						><div class="text" id="variable-sort-shared-label">
+							{{ t('components.variable-sort-shared-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="variable-sort-temporary"
+						name="variable-sort"
+						class="standard"
+						value="2"
+						@input="onSortInput"
+						@write="onSortWrite"
+						><div class="text" id="variable-sort-temporary-label">
+							{{ t('components.variable-sort-temporary-label.content') }}
+						</div></RadioBox
+					>
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.variable-type-boolean.label') }}</div>
+					<RadioBox
+						id="variable-type-boolean"
+						name="variable-type"
+						class="standard"
+						value="boolean"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="variable-type-boolean-label">
+							{{ t('components.variable-type-boolean-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="variable-type-number"
+						name="variable-type"
+						class="standard"
+						value="number"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="variable-type-number-label">
+							{{ t('components.variable-type-number-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="variable-type-string"
+						name="variable-type"
+						class="standard"
+						value="string"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="variable-type-string-label">
+							{{ t('components.variable-type-string-label.content') }}
+						</div></RadioBox
+					>
+					<RadioBox
+						id="variable-type-object"
+						name="variable-type"
+						class="standard"
+						value="object"
+						@input="onTypeInput"
+						@write="onTypeWrite"
+						><div class="text" id="variable-type-object-label">
+							{{ t('components.variable-type-object-label.content') }}
+						</div></RadioBox
+					>
+				</div>
+				<div class="flex-item" id="variable-value-box">
+					<div class="text">{{ t('components.variable-value-manager.label') }}</div>
+					<PageManager id="variable-value-manager">
+						<div class="page-frame" value="boolean">
+							<RadioBox
+								id="variable-value-boolean-false"
+								name="variable-value-boolean"
+								class="standard"
+								value="false"
+								>False</RadioBox
+							>
+							<RadioBox
+								id="variable-value-boolean-true"
+								name="variable-value-boolean"
+								class="standard"
+								value="true"
+								>True</RadioBox
+							>
+						</div>
+						<div class="page-frame" value="number">
+							<NumberBox
+								id="variable-value-number"
+								min="-1000000000"
+								max="1000000000"
+								decimals="10"
+							/>
+						</div>
+						<div class="page-frame" value="string">
+							<TextArea id="variable-value-string" />
+						</div>
+					</PageManager>
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.variable-note.label') }}</div>
+					<TextArea id="variable-note" />
 				</div>
 			</div>
-			<TextBox id="variable-searcher" name="search" />
-		
+		</div>
+		<TextBox id="variable-searcher" name="search" />
 	</WindowFrame>
 </template>
 
@@ -184,7 +207,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	}
 	nodes.push(h('div', { class: 'variable-init-text text' }, initText));
 	if (node.note) {
-		nodes.push(h('span', { class: ['node-icon', 'icon-note'] },  '\uf27b'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-note'] }, '\uf27b'));
 	}
 	return nodes;
 };
@@ -200,7 +223,9 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	if (node.class === 'folder') {
 		return [h('span', { class: ['node-icon', 'icon-folder'] })];
 	}
-	return [h('span', { class: ['node-icon', (classes as Record<string, string>)[typeof node.value]] })];
+	return [
+		h('span', { class: ['node-icon', (classes as Record<string, string>)[typeof node.value]] })
+	];
 };
 
 const onListSelect = (event: Event) => {

@@ -90,7 +90,8 @@ const insert = (value: string): void => ym.value?.insert(value);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const focus = (): void => ym.value?.focus();
-const getFocus = (mode: string | null): HTMLInputElement => ym.value?.getFocus(mode) as HTMLInputElement;
+const getFocus = (mode: string | null): HTMLInputElement =>
+	ym.value?.getFocus(mode) as HTMLInputElement;
 const setPlaceholder = (placeholder: string): void => ym.value?.setPlaceholder(placeholder);
 const setMaxLength = (length: number): void => ym.value?.setMaxLength(length);
 const fitContent = (): void => ym.value?.fitContent();
@@ -132,7 +133,10 @@ defineExpose({
 	root
 });
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as TextBoxElement | null;

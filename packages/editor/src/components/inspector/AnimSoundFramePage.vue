@@ -1,23 +1,26 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.animSoundFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.animSoundFrame-properties-grid.label') || 'Frame'
+		}}</DetailSummary>
 		<div class="detail-grid" id="animSoundFrame-properties-grid">
-			<div class="text">{{ t('components.animSoundFrame-sound.label') || 'Sound' }}</div
-			><CustomBox
+			<div class="text">{{ t('components.animSoundFrame-sound.label') || 'Sound' }}</div>
+			<CustomBox
 				id="animSoundFrame-sound"
 				:model-value="form.sound"
 				type="file"
 				filter="audio"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ t('components.animSoundFrame-volume.label') || 'Volume' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.animSoundFrame-volume.label') || 'Volume' }}</div>
+			<NumberBox
 				id="animSoundFrame-volume"
 				v-model="form.volume"
 				min="0"
 				max="1"
 				step="0.1"
-				decimals="4" @input="onParamInput"
+				decimals="4"
+				@input="onParamInput"
 			></NumberBox>
 		</div>
 	</DetailBox>

@@ -1,21 +1,26 @@
 <template>
-<WindowFrame id="changeActorAnimation" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorAnimation.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorAnimation" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorAnimation.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorAnimation-actor" type="actor" @input="onActor" /><div class="text">Animation</div
-			><CustomBox
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorAnimation-actor" type="actor" @input="onActor" />
+			<div class="text">Animation</div>
+			<CustomBox
 				id="changeActorAnimation-animationId"
 				type="file"
 				filter="animation"
 				@input="onAnimationId"
-			 /></div>
-	
-</WindowFrame>
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useChangeActorAnimationCommandSchema } from '@app/composables/commands/useChangeActorAnimationCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -37,5 +42,4 @@ const onAnimationId = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

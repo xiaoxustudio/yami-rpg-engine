@@ -1,10 +1,11 @@
 <template>
 	<WindowFrame id="unclampCamera">
-		<template #title><TitleBar>Unclamp Camera<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Unclamp Camera
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
-	
 </template>
 
 <script lang="ts">

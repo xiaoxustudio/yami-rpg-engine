@@ -1,9 +1,11 @@
 <template>
-<WindowFrame id="continue">
-	<template #title><TitleBar>Continue<div class="close" /></TitleBar></template>
-	
-	
-</WindowFrame>
+	<WindowFrame id="continue">
+		<template #title
+			><TitleBar
+				>Continue
+				<div class="close" /></TitleBar
+		></template>
+	</WindowFrame>
 </template>
 
 <script lang="ts">

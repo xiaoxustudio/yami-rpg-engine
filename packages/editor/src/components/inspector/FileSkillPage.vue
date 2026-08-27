@@ -1,19 +1,42 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileSkill-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileSkill-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileSkill-general-grid">
-			<div class="text">{{ t('components.fileSkill-icon.label') || 'Icon' }}</div
-			><CustomBox id="fileSkill-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ t('components.fileSkill-clip.label') || 'Clip' }}</div
-			><CustomBox id="fileSkill-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileSkill-icon" />
-			<div class="text">{{ t('components.fileSkill-inherit.label') || 'Inherit' }}</div
-			><CustomBox id="fileSkill-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="skill" />
+			<div class="text">{{ t('components.fileSkill-icon.label') || 'Icon' }}</div>
+			<CustomBox
+				id="fileSkill-icon"
+				:model-value="form.icon"
+				@input="onParamInput"
+				type="file"
+				filter="image"
+			/>
+			<div class="text">{{ t('components.fileSkill-clip.label') || 'Clip' }}</div>
+			<CustomBox
+				id="fileSkill-clip"
+				:model-value="form.clip"
+				@input="onParamInput"
+				type="clip"
+				image="fileSkill-icon"
+			/>
+			<div class="text">{{ t('components.fileSkill-inherit.label') || 'Inherit' }}</div>
+			<CustomBox
+				id="fileSkill-inherit"
+				:model-value="form.inherit"
+				@input="onParamInput"
+				type="file"
+				filter="skill"
+			/>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileSkill-attributes.label') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileSkill-attributes.label') || 'Attributes'
+		}}</DetailSummary>
 		<ParamList
-			id="fileSkill-attributes" @change="onListChange"
+			id="fileSkill-attributes"
+			@change="onListChange"
 			class="inspector-list"
 			group="skill"
 			flexible
@@ -22,7 +45,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileSkill-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
-			id="fileSkill-events" @change="onListChange"
+			id="fileSkill-events"
+			@change="onListChange"
 			class="inspector-list"
 			filter="skill"
 			flexible
@@ -30,11 +54,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileSkill-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="fileSkill-scripts" @change="onListChange"
-			class="inspector-list"
-			flexible
-		/>
+		<ParamList id="fileSkill-scripts" @change="onListChange" class="inspector-list" flexible />
 	</DetailBox>
 	<ParameterPane id="fileSkill-parameter-pane" />
 </template>
@@ -76,7 +96,9 @@ onMounted(() => {
 	document.getElementById('fileSkill-attributes')?.bind?.(new AttributeListInterface());
 	document.getElementById('fileSkill-events')?.bind?.(new EventListInterface(editor));
 	document.getElementById('fileSkill-scripts')?.bind?.(new ScriptListInterface());
-	document.getElementById('fileSkill-parameter-pane')?.bind?.(document.getElementById('fileSkill-scripts'));
+	document
+		.getElementById('fileSkill-parameter-pane')
+		?.bind?.(document.getElementById('fileSkill-scripts'));
 
 	sync();
 });

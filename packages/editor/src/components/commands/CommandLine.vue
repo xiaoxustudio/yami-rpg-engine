@@ -1,16 +1,27 @@
 <template>
 	<WindowFrame id="commandLine" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.commandLine.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="commandLine-type" v-model="form.type" @write="onType" /> <div class="text">Key</div
-				><StringVar id="commandLine-key" v-model="form.key" /> <div class="text">Value</div
-				><StringVar id="commandLine-value" v-model="form.value" /> <div class="text">Variable</div
-				><CustomBox id="commandLine-variable" type="variable" filter="object" @input="onVariable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.commandLine.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Type</div>
+			<SelectBox id="commandLine-type" v-model="form.type" @write="onType" />
+			<div class="text">Key</div>
+			<StringVar id="commandLine-key" v-model="form.key" />
+			<div class="text">Value</div>
+			<StringVar id="commandLine-value" v-model="form.value" />
+			<div class="text">Variable</div>
+			<CustomBox
+				id="commandLine-variable"
+				type="variable"
+				filter="object"
+				@input="onVariable"
+			/>
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">

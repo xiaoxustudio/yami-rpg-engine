@@ -1,20 +1,24 @@
 ﻿<template>
-		<WindowFrame id="qr-code" no-buttons>
-		<template #title><TitleBar>本地服务预览<div class="close"></div></TitleBar></template>
-		
-			<div class="box">
-				<div class="box" id="qr-img-container"><img id="qr-code-img" :src="imgSrc" /></div><br />
-				<div class="box" id="qr-code-content">
-					<div>IP：{{ url }}</div>
-					<div>扫描二维码打开网页</div>
-					<div style="color: red">PS：注意需在同一局域网下扫描二维码</div>
-					<div style="color: red">如果内容没刷新，请Ctrl+S保存场景</div>
-				</div>
+	<WindowFrame id="qr-code" no-buttons>
+		<template #title
+			><TitleBar
+				>本地服务预览
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="box">
+			<div class="box" id="qr-img-container"><img id="qr-code-img" :src="imgSrc" /></div>
+			<br />
+			<div class="box" id="qr-code-content">
+				<div>IP：{{ url }}</div>
+				<div>扫描二维码打开网页</div>
+				<div style="color: red">PS：注意需在同一局域网下扫描二维码</div>
+				<div style="color: red">如果内容没刷新，请Ctrl+S保存场景</div>
 			</div>
-			<button id="qr-start-button" name="start-qr-code" />
-			<button id="qr-close-button" name="close-qr-code" />
-			<button id="qr-update-button" name="update-qr-code" />
-		
+		</div>
+		<button id="qr-start-button" name="start-qr-code" />
+		<button id="qr-close-button" name="close-qr-code" />
+		<button id="qr-update-button" name="update-qr-code" />
 	</WindowFrame>
 </template>
 
@@ -41,7 +45,5 @@ onMounted(() => {
 	const el = document.getElementById('qr-code-content');
 	if (!el) return;
 	attachElementApi(el, { update });
-
-
 });
 </script>

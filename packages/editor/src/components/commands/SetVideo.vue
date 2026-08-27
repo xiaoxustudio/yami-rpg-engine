@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setVideo" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setVideo.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setVideo-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setVideo-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setVideo.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setVideo-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setVideo-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetVideoCommandSchema } from '@app/composables/commands/useSetVideoCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setVideo-properties'));
 	});
 });
-
 </script>

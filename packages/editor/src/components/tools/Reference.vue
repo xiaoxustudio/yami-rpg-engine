@@ -1,9 +1,12 @@
 <template>
-		<WindowFrame id="reference" no-buttons>
-		<template #title><TitleBar>Reference<div class="close"></div></TitleBar></template>
-		
-			<CommonList id="reference-list" />
-		
+	<WindowFrame id="reference" no-buttons>
+		<template #title
+			><TitleBar
+				>Reference
+				<div class="close"></div></TitleBar
+		></template>
+
+		<CommonList id="reference-list" />
 	</WindowFrame>
 </template>
 
@@ -54,7 +57,5 @@ const updateItems = (items: ReferenceItem[]): void => {
 
 onMounted(() => {
 	registerReferenceUpdate(updateItems);
-
-
 });
 </script>

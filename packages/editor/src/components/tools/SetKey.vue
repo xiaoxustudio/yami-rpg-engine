@@ -1,5 +1,11 @@
 ﻿<template>
-	<YMSetKey v-model="form.key" :title="t('components.setKey.title')" :label="t('components.setKey-key.label')" @confirm="setKey.confirm" @closed="setKey.onWindowClosed" />
+	<YMSetKey
+		v-model="form.key"
+		:title="t('components.setKey.title')"
+		:label="t('components.setKey-key.label')"
+		@confirm="setKey.confirm"
+		@closed="setKey.onWindowClosed"
+	/>
 </template>
 
 <script setup lang="ts">

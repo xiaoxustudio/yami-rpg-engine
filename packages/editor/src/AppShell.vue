@@ -27,7 +27,9 @@
 				hotkey="F4"
 				:class="{ selected: title.playing }"
 				@click="onPlayClick"
-			>&#xf04b;</div>
+			>
+				&#xf04b;
+			</div>
 			<div class="minimize" id="title-minimize" @click="onMinimizeClick"></div>
 			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
 			<div class="close" id="title-close" @click="onCloseClick"></div>
@@ -134,7 +136,9 @@ const toolWindowEntries = Object.entries(toolModules).filter(
 // 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，
 // 懒加载组件就绪前先阻塞 Editor.initialize，避免读取到 null DOM
 const lazyTotal =
-	toolWindowEntries.length + Object.keys(commandModules).length + Object.keys(inspectorModules).length;
+	toolWindowEntries.length +
+	Object.keys(commandModules).length +
+	Object.keys(inspectorModules).length;
 let lazyMounted = 0;
 const onComponentMounted = () => {
 	lazyMounted++;
@@ -150,16 +154,34 @@ const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempt
 	onComponentMounted();
 	fail();
 };
-const asyncComp = (loader: () => Promise<Component>) => defineAsyncComponent({ loader, onError: onAsyncError });
+const asyncComp = (loader: () => Promise<Component>) =>
+	defineAsyncComponent({ loader, onError: onAsyncError });
 const toolComponents = Object.fromEntries(
-	toolWindowEntries.map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
+	toolWindowEntries.map(([path, loader]) => [
+		path,
+		asyncComp(loader as unknown as () => Promise<Component>)
+	])
 );
 const commandComponents = Object.fromEntries(
-	Object.entries(commandModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
+	Object.entries(commandModules).map(([path, loader]) => [
+		path,
+		asyncComp(loader as unknown as () => Promise<Component>)
+	])
 );
-const inspectorSpecialTargets = new Set(['fileImage', 'fileFont', 'fileScript', 'fileAudio', 'fileVideo', 'fileTileset']);
+const inspectorSpecialTargets = new Set([
+	'fileImage',
+	'fileFont',
+	'fileScript',
+	'fileAudio',
+	'fileVideo',
+	'fileTileset'
+]);
 const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => {
-	const name = path.split('/').pop()!.replace(/\.vue$/, '').replace(/Page$/, '');
+	const name = path
+		.split('/')
+		.pop()!
+		.replace(/\.vue$/, '')
+		.replace(/Page$/, '');
 	const raw = name.replace(/^UI(?=[A-Z])/, 'ui');
 	const value = raw.charAt(0).toLowerCase() + raw.slice(1);
 	const target = inspectorSpecialTargets.has(value) ? `#${value}` : `#${value}-vue-mount`;

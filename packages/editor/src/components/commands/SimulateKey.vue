@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="simulateKey" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.simulateKey.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="simulateKey-operation" v-model="form.operation" />
-				<div class="text">Key Code</div><KeyboardBox id="simulateKey-keycode" @input="onKeycode" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.simulateKey.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="simulateKey-operation" v-model="form.operation" />
+			<div class="text">Key Code</div>
+			<KeyboardBox id="simulateKey-keycode" @input="onKeycode" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSimulateKeyCommandSchema } from '@app/composables/useSimulateKeyCommandSchema';
@@ -40,5 +44,4 @@ onMounted(() => {
 		{ name: 'Release', value: 'release' }
 	]);
 });
-
 </script>

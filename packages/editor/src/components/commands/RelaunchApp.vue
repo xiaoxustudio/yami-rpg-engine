@@ -1,10 +1,11 @@
 <template>
 	<WindowFrame id="relaunchApp">
-		<template #title><TitleBar>Relaunch App<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Relaunch App
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
-	
 </template>
 
 <script lang="ts">

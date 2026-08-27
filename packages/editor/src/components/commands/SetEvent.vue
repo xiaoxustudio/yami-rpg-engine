@@ -1,22 +1,25 @@
 <template>
-<WindowFrame id="setEvent" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setEvent.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setEvent" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setEvent.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Operation</div><SelectBox id="setEvent-operation" v-model="form.operation" />
-			<div class="text">Variable</div
-			><CustomBox id="setEvent-variable" type="variable" filter="object" @input="onVariable" />
-			<div class="text">Event</div
-			><CustomBox id="setEvent-eventId" type="file" filter="event" @input="onEventId" />
-			<div class="text">Choice Index</div
-			><NumberVar id="setEvent-choiceIndex" min="0" max="255" v-model="form.choiceIndex" />
+			<div class="text">Operation</div>
+			<SelectBox id="setEvent-operation" v-model="form.operation" />
+			<div class="text">Variable</div>
+			<CustomBox id="setEvent-variable" type="variable" filter="object" @input="onVariable" />
+			<div class="text">Event</div>
+			<CustomBox id="setEvent-eventId" type="file" filter="event" @input="onEventId" />
+			<div class="text">Choice Index</div>
+			<NumberVar id="setEvent-choiceIndex" min="0" max="255" v-model="form.choiceIndex" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
@@ -72,5 +75,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

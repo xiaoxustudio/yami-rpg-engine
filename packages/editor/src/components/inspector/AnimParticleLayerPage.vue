@@ -1,19 +1,39 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.animParticleLayer-properties-grid.label') || 'Particle Layer' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.animParticleLayer-properties-grid.label') || 'Particle Layer'
+		}}</DetailSummary>
 		<div class="detail-grid" id="animParticleLayer-properties-grid">
-			<div class="text">{{ t('components.animParticleLayer-particleId.label') || 'Particle' }}</div
-			><CustomBox
+			<div class="text">
+				{{ t('components.animParticleLayer-particleId.label') || 'Particle' }}
+			</div>
+			<CustomBox
 				id="animParticleLayer-particleId"
 				type="file"
 				filter="particle"
 				:model-value="form.particleId"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ t('components.animParticleLayer-position.label') || 'Position' }}</div
-			><SelectBox id="animParticleLayer-position" v-model="form.position" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle" v-model="form.angle" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div><SelectBox id="animParticleLayer-order" v-model="form.order" @input="onParamInput"></SelectBox>
+			<div class="text">
+				{{ t('components.animParticleLayer-position.label') || 'Position' }}
+			</div>
+			<SelectBox
+				id="animParticleLayer-position"
+				v-model="form.position"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div>
+			<SelectBox
+				id="animParticleLayer-angle"
+				v-model="form.angle"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div>
+			<SelectBox
+				id="animParticleLayer-order"
+				v-model="form.order"
+				@input="onParamInput"
+			></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -46,7 +66,9 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elPosition = document.getElementById('animParticleLayer-position') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elPosition = document.getElementById('animParticleLayer-position') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elPosition?.loadItems) {
 		elPosition.loadItems([
 			{ name: 'Absolute', value: 'absolute' },
@@ -54,7 +76,9 @@ onMounted(() => {
 		]);
 	}
 
-	const elAngle = document.getElementById('animParticleLayer-angle') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elAngle = document.getElementById('animParticleLayer-angle') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elAngle?.loadItems) {
 		elAngle.loadItems([
 			{ name: 'Default', value: 'default' },
@@ -62,7 +86,9 @@ onMounted(() => {
 		]);
 	}
 
-	const elOrder = document.getElementById('animParticleLayer-order') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elOrder = document.getElementById('animParticleLayer-order') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elOrder?.loadItems) {
 		elOrder.loadItems([
 			{ name: 'Behind Sprites', value: 'before' },

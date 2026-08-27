@@ -1,4 +1,5 @@
-?<template>
+?
+<template>
 	<YMCustomBox
 		ref="ym"
 		:id="props.id"
@@ -90,18 +91,18 @@ const on = (
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
 onMounted(() => {
-const el = root.value as HTMLElement & {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-	enable(): void;
-	disable(): void;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-};
+	const el = root.value as HTMLElement & {
+		read(): unknown;
+		write(value: unknown): void;
+		input(value: unknown): void;
+		enable(): void;
+		disable(): void;
+		on(
+			type: string,
+			listener: (event: Event) => void,
+			options?: boolean | AddEventListenerOptions
+		): void;
+	};
 	if (!el) return;
 	attachElementApi(el, { read, write, input, enable, disable, on });
 	ym.value?.write(props.modelValue ?? '');
@@ -114,4 +115,3 @@ const el = root.value as HTMLElement & {
 	});
 });
 </script>
-

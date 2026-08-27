@@ -1,18 +1,33 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="actorGetter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.actorGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.actorGetter-type.label') }}</div><SelectBox id="actorGetter-type" v-model="form.type" /> <div class="text">{{ t('components.actorGetter-memberId.label') }}</div
-				><NumberVar id="actorGetter-memberId" min="0" max="10000" v-model="form.memberId" />
-				<div class="text">{{ t('components.actorGetter-actorId.label') }}</div
-				><CustomBox id="actorGetter-actorId" type="file" filter="actor" v-model="form.actorId" />
-				<div class="text">{{ t('components.actorGetter-presetId.label') }}</div
-				><CustomBox id="actorGetter-presetId" type="preset-object" filter="actor" v-model="form.presetId" />
-				<div class="text">{{ t('components.actorGetter-variable.label') }}</div
-				><CustomBox id="actorGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.actorGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.actorGetter-type.label') }}</div>
+			<SelectBox id="actorGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.actorGetter-memberId.label') }}</div>
+			<NumberVar id="actorGetter-memberId" min="0" max="10000" v-model="form.memberId" />
+			<div class="text">{{ t('components.actorGetter-actorId.label') }}</div>
+			<CustomBox id="actorGetter-actorId" type="file" filter="actor" v-model="form.actorId" />
+			<div class="text">{{ t('components.actorGetter-presetId.label') }}</div>
+			<CustomBox
+				id="actorGetter-presetId"
+				type="preset-object"
+				filter="actor"
+				v-model="form.presetId"
+			/>
+			<div class="text">{{ t('components.actorGetter-variable.label') }}</div>
+			<CustomBox
+				id="actorGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 

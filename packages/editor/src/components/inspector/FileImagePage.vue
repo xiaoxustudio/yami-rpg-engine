@@ -1,10 +1,15 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileImage-info-grid.label') || 'File Info' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileImage-info-grid.label') || 'File Info'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileImage-info-grid">
-			<div class="text">{{ t('components.fileImage-name.label') || 'Name' }}</div><div class="text" id="fileImage-name">{{ form.name }}</div> <div class="text">{{ t('components.fileImage-size.label') || 'Size' }}</div
-			><div class="text" id="fileImage-size">{{ form.size }}</div> <div class="text">{{ t('components.fileImage-resolution.label') || 'Resolution' }}</div
-			><div class="text" id="fileImage-resolution">{{ form.resolution }}</div>
+			<div class="text">{{ t('components.fileImage-name.label') || 'Name' }}</div>
+			<div class="text" id="fileImage-name">{{ form.name }}</div>
+			<div class="text">{{ t('components.fileImage-size.label') || 'Size' }}</div>
+			<div class="text" id="fileImage-size">{{ form.size }}</div>
+			<div class="text">{{ t('components.fileImage-resolution.label') || 'Resolution' }}</div>
+			<div class="text" id="fileImage-resolution">{{ form.resolution }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileImage-image-detail" open>

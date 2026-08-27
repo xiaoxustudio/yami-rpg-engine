@@ -20,7 +20,9 @@
 					class="box close-button browser-search-delete-button"
 					style="top: 50%; transform: translateY(-50%)"
 					@click="onDeleteClick(keyword, $event)"
-				>&#x2716;</div>
+				>
+					&#x2716;
+				</div>
 			</div>
 		</div>
 	</Teleport>
@@ -28,7 +30,10 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
-import { registerSearchHistoryDropdown, BrowserSearchHistory } from '@app/module/browser-search-history.ts';
+import {
+	registerSearchHistoryDropdown,
+	BrowserSearchHistory
+} from '@app/module/browser-search-history.ts';
 
 const visible = ref(false);
 const keywords = ref<string[]>([]);

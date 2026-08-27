@@ -1,43 +1,51 @@
 <template>
-<WindowFrame id="transition" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.transition.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="transition" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.transition.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Write to Variable</div
-			><CustomBox id="transition-variable" type="variable" filter="number" v-model="form.variable" />
-			<div class="text">Start Value</div
-			><NumberVar
+			<div class="text">Write to Variable</div>
+			<CustomBox
+				id="transition-variable"
+				type="variable"
+				filter="number"
+				v-model="form.variable"
+			/>
+			<div class="text">Start Value</div>
+			<NumberVar
 				id="transition-start"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="form.start"
-			 />
-			<div class="text">End Value</div
-			><NumberVar
+			/>
+			<div class="text">End Value</div>
+			<NumberVar
 				id="transition-end"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="form.end"
-			 />
-			<div class="text">Easing</div><SelectBox id="transition-easingId" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div
-			><NumberVar
+			/>
+			<div class="text">Easing</div>
+			<SelectBox id="transition-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberVar
 				id="transition-duration"
 				name="duration"
 				min="0"
 				max="3600000"
 				unit="ms"
 				v-model="form.duration"
-			 />
+			/>
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
@@ -61,5 +69,4 @@ onMounted(() => {
 	on($('#transition'), 'open', () => open());
 	on($('#transition'), 'closed', () => windowClosed(new Event('closed')));
 });
-
 </script>

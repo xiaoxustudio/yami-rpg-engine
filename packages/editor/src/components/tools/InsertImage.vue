@@ -1,16 +1,28 @@
 <template>
 	<WindowFrame ref="frame" id="insertImage" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.insertImage.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.insertImage-mode.label') }}</div><SelectBox id="insertImage-mode" v-model="form.mode" /> <div class="text">{{ t('components.insertImage-image.label') }}</div
-				><CustomBox id="insertImage-image" type="file" filter="image" v-model="form.image" />
-				<div class="text">{{ t('components.insertImage-clip.label') }}</div
-				><CustomBox id="insertImage-clip" type="clip" image="insertImage-image" v-model="form.clip" />
-				<div class="text">{{ t('components.insertImage-width.label') }}</div><NumberBox id="insertImage-width" min="0" max="10000" v-model="form.width" />
-				<div class="text">{{ t('components.insertImage-height.label') }}</div><NumberBox id="insertImage-height" min="0" max="10000" v-model="form.height" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.insertImage.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.insertImage-mode.label') }}</div>
+			<SelectBox id="insertImage-mode" v-model="form.mode" />
+			<div class="text">{{ t('components.insertImage-image.label') }}</div>
+			<CustomBox id="insertImage-image" type="file" filter="image" v-model="form.image" />
+			<div class="text">{{ t('components.insertImage-clip.label') }}</div>
+			<CustomBox
+				id="insertImage-clip"
+				type="clip"
+				image="insertImage-image"
+				v-model="form.clip"
+			/>
+			<div class="text">{{ t('components.insertImage-width.label') }}</div>
+			<NumberBox id="insertImage-width" min="0" max="10000" v-model="form.width" />
+			<div class="text">{{ t('components.insertImage-height.label') }}</div>
+			<NumberBox id="insertImage-height" min="0" max="10000" v-model="form.height" />
+		</div>
 	</WindowFrame>
 </template>
 

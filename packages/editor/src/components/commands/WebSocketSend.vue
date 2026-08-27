@@ -1,18 +1,21 @@
 <template>
 	<WindowFrame id="webSocketSend" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.webSocketSend.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">ID</div><StringVar id="webSocketSend-id" v-model="form.id" /> <div class="text">Data</div
-				><StringVar id="webSocketSend-data" v-model="form.data" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.webSocketSend.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">ID</div>
+			<StringVar id="webSocketSend-id" v-model="form.id" />
+			<div class="text">Data</div>
+			<StringVar id="webSocketSend-data" v-model="form.data" />
+		</div>
 	</WindowFrame>
-	
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useWebSocketSendCommandSchema } from '@app/composables/commands/useWebSocketSendCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -26,5 +29,4 @@ const { form, save } = useWebSocketSendCommandSchema();
 const onConfirm = () => {
 	save();
 };
-
 </script>

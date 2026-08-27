@@ -1,21 +1,29 @@
 <template>
-<WindowFrame id="useItem" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.useItem.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="useItem" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.useItem.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" @input="onActor" />
-			<div class="text">Mode</div><SelectBox id="useItem-mode" v-model="form.mode" /> <div class="text">Shortcut Key</div
-			><SelectBox id="useItem-key" v-model="form.key" /> <div class="text">Item</div
-			><CustomBox id="useItem-itemId" type="file" filter="item" @input="onItemId" />
-			<div class="text">Item</div><CustomBox id="useItem-item" type="item" @input="onItem" />
-			<div class="text">Wait</div><SelectBox id="useItem-wait" name="wait" v-model="form.wait" />
+			<div class="text">Actor</div>
+			<CustomBox id="useItem-actor" type="actor" @input="onActor" />
+			<div class="text">Mode</div>
+			<SelectBox id="useItem-mode" v-model="form.mode" />
+			<div class="text">Shortcut Key</div>
+			<SelectBox id="useItem-key" v-model="form.key" />
+			<div class="text">Item</div>
+			<CustomBox id="useItem-itemId" type="file" filter="item" @input="onItemId" />
+			<div class="text">Item</div>
+			<CustomBox id="useItem-item" type="item" @input="onItem" />
+			<div class="text">Wait</div>
+			<SelectBox id="useItem-wait" name="wait" v-model="form.wait" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUseItemCommandSchema } from '@app/composables/commands/useUseItemCommandSchema';
@@ -63,5 +71,4 @@ onMounted(() => {
 		{ name: 'No', value: false }
 	]);
 });
-
 </script>

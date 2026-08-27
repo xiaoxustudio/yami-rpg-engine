@@ -1,19 +1,29 @@
 <template>
 	<WindowFrame id="setSkill" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setSkill.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Skill</div><CustomBox id="setSkill-skill" type="skill" @input="onSkill" />
-				<div class="text">Operation</div><SelectBox id="setSkill-operation" v-model="form.operation" />
-				<div class="text">Cooldown</div
-				><NumberVar id="setSkill-cooldown" min="1" max="3600000" unit="ms" v-model="form.cooldown" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setSkill.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Skill</div>
+			<CustomBox id="setSkill-skill" type="skill" @input="onSkill" />
+			<div class="text">Operation</div>
+			<SelectBox id="setSkill-operation" v-model="form.operation" />
+			<div class="text">Cooldown</div>
+			<NumberVar
+				id="setSkill-cooldown"
+				min="1"
+				max="3600000"
+				unit="ms"
+				v-model="form.cooldown"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetSkillCommandSchema } from '@app/composables/commands/useSetSkillCommandSchema';
@@ -43,5 +53,4 @@ onMounted(() => {
 		{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }
 	]);
 });
-
 </script>

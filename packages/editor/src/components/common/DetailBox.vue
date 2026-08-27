@@ -1,10 +1,5 @@
 <template>
-	<YMDetailBox
-		ref="ym"
-		:open="props.open"
-		:id="props.id"
-		@toggle="onToggle"
-	>
+	<YMDetailBox ref="ym" :open="props.open" :id="props.id" @toggle="onToggle">
 		<slot />
 	</YMDetailBox>
 </template>
@@ -78,7 +73,12 @@ onMounted(() => {
 	const el = root.value as DetailBoxElement | null;
 	if (!el) return;
 	const define = (key: string, value: unknown): void => {
-		Object.defineProperty(el, key, { value, writable: true, configurable: true, enumerable: false });
+		Object.defineProperty(el, key, {
+			value,
+			writable: true,
+			configurable: true,
+			enumerable: false
+		});
 	};
 	// note: do not expose `open` on the element because it collides with the
 	// boolean `open` DOM attribute/HTML attribute and breaks Vue's patcher

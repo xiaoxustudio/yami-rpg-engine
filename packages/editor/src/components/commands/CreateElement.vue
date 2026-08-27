@@ -1,21 +1,25 @@
 <template>
 	<WindowFrame id="createElement" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.createElement.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="createElement-operation" v-model="form.operation" />
-				<div class="text">Parent</div><CustomBox id="createElement-parent" type="element" @input="onParent" />
-				<div class="text">UI Elements</div
-				><CustomBox id="createElement-uiId" type="file" filter="ui" @input="onUiId" />
-				<div class="text">UI Element</div
-				><CustomBox id="createElement-presetId" type="preset-element" @input="onPresetId" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.createElement.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="createElement-operation" v-model="form.operation" />
+			<div class="text">Parent</div>
+			<CustomBox id="createElement-parent" type="element" @input="onParent" />
+			<div class="text">UI Elements</div>
+			<CustomBox id="createElement-uiId" type="file" filter="ui" @input="onUiId" />
+			<div class="text">UI Element</div>
+			<CustomBox id="createElement-presetId" type="preset-element" @input="onPresetId" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateElementCommandSchema } from '@app/composables/commands/useCreateElementCommandSchema';
@@ -73,5 +77,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

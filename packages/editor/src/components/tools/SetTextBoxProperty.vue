@@ -1,41 +1,48 @@
 <template>
 	<!-- 设置文本框 - 属性 -->
 	<WindowFrame id="setTextBox-property">
-		<template #title><TitleBar>{{ t('components.setTextBox-property.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.setTextBox-property-key.label') }}</div><SelectBox id="setTextBox-property-key" v-model="form.key" />
-				<div class="text">{{ t('components.setTextBox-property-type.label') }}</div><SelectBox id="setTextBox-property-type" v-model="form.type" />
-				<div class="text">{{ t('components.setTextBox-property-text.label') }}</div><StringVar id="setTextBox-property-text" v-model="form.text" />
-				<div class="text">{{ t('components.setTextBox-property-number.label') }}</div
-				><NumberVar
-					id="setTextBox-property-number"
-					min="-1000000000"
-					max="1000000000"
-					decimals="10"
-					v-model="form.number"
-				/>
-				<div class="text">{{ t('components.setTextBox-property-min.label') }}</div
-				><NumberVar
-					id="setTextBox-property-min"
-					min="-1000000000"
-					max="1000000000"
-					decimals="10"
-					v-model="form.min"
-				/>
-				<div class="text">{{ t('components.setTextBox-property-max.label') }}</div
-				><NumberVar
-					id="setTextBox-property-max"
-					min="-1000000000"
-					max="1000000000"
-					decimals="10"
-					v-model="form.max"
-				/>
-				<div class="text">{{ t('components.setTextBox-property-decimals.label') }}</div
-				><NumberBox id="setTextBox-property-decimals" min="0" max="10" v-model="form.decimals" />
-				<div class="text">{{ t('components.setTextBox-property-color.label') }}</div><ColorBox id="setTextBox-property-color" v-model="form.color" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setTextBox-property.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.setTextBox-property-key.label') }}</div>
+			<SelectBox id="setTextBox-property-key" v-model="form.key" />
+			<div class="text">{{ t('components.setTextBox-property-type.label') }}</div>
+			<SelectBox id="setTextBox-property-type" v-model="form.type" />
+			<div class="text">{{ t('components.setTextBox-property-text.label') }}</div>
+			<StringVar id="setTextBox-property-text" v-model="form.text" />
+			<div class="text">{{ t('components.setTextBox-property-number.label') }}</div>
+			<NumberVar
+				id="setTextBox-property-number"
+				min="-1000000000"
+				max="1000000000"
+				decimals="10"
+				v-model="form.number"
+			/>
+			<div class="text">{{ t('components.setTextBox-property-min.label') }}</div>
+			<NumberVar
+				id="setTextBox-property-min"
+				min="-1000000000"
+				max="1000000000"
+				decimals="10"
+				v-model="form.min"
+			/>
+			<div class="text">{{ t('components.setTextBox-property-max.label') }}</div>
+			<NumberVar
+				id="setTextBox-property-max"
+				min="-1000000000"
+				max="1000000000"
+				decimals="10"
+				v-model="form.max"
+			/>
+			<div class="text">{{ t('components.setTextBox-property-decimals.label') }}</div>
+			<NumberBox id="setTextBox-property-decimals" min="0" max="10" v-model="form.decimals" />
+			<div class="text">{{ t('components.setTextBox-property-color.label') }}</div>
+			<ColorBox id="setTextBox-property-color" v-model="form.color" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -60,8 +67,5 @@ const form = TextBoxProperty.form;
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

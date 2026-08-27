@@ -1,22 +1,36 @@
 <template>
-<WindowFrame id="changeActorEquipment" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorEquipment.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorEquipment" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorEquipment.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" v-model="form.actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" v-model="form.operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" v-model="form.slot" /><div class="text">Equipment</div
-			><CustomBox
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorEquipment-actor" type="actor" v-model="form.actor" />
+			<div class="text">Operation</div>
+			<SelectBox id="changeActorEquipment-operation" v-model="form.operation" />
+			<div class="text">Shortcut Key</div>
+			<SelectVar id="changeActorEquipment-slot" v-model="form.slot" />
+			<div class="text">Equipment</div>
+			<CustomBox
 				id="changeActorEquipment-equipmentId"
 				type="file"
 				filter="equipment"
 				v-model="form.equipmentId"
-			 /><div class="text">Equipment</div
-			><CustomBox id="changeActorEquipment-equipment" type="equipment" v-model="form.equipment" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Equipment</div>
+			<CustomBox
+				id="changeActorEquipment-equipment"
+				type="equipment"
+				v-model="form.equipment"
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
@@ -50,10 +64,7 @@ onMounted(() => {
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [
-					$('#changeActorEquipment-slot'),
-					$('#changeActorEquipment-equipmentId')
-				]
+				targets: [$('#changeActorEquipment-slot'), $('#changeActorEquipment-equipmentId')]
 			},
 			{
 				case: 'remove',
@@ -73,5 +84,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

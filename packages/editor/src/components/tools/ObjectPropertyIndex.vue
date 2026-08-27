@@ -1,11 +1,15 @@
 <template>
 	<WindowFrame id="ObjectProperty-index" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.ObjectProperty-index.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div><TextBox id="ObjectProperty-index-name" v-model="indexForm.name" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.ObjectProperty-index.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div>
+			<TextBox id="ObjectProperty-index-name" v-model="indexForm.name" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -28,8 +32,5 @@ const onConfirm = () => {
 	IndexBind?.confirm?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

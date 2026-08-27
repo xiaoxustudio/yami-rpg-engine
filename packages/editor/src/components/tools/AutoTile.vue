@@ -1,86 +1,109 @@
 <template>
 	<WindowFrame id="autoTile" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.autoTile.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set" id="autoTile-general-fieldset">
-				<div class="legend">{{ t('components.autoTile-general-grid.label') }}</div>
-				<div class="grid-box" id="autoTile-general-grid">
-					<div class="text">{{ t('components.autoTile-image.label') }}</div
-					><CustomBox id="autoTile-image" type="file" filter="image" v-model="autoTileStore.imageId" @input="onImageInput" />
-					<div class="text">{{ t('components.autoTile-x.label') }}</div><NumberBox id="autoTile-x" min="0" max="255" v-model="autoTileStore.offsetX" @input="onOffsetXInput" />
-					<div class="text">{{ t('components.autoTile-y.label') }}</div><NumberBox id="autoTile-y" min="0" max="255" v-model="autoTileStore.offsetY" @input="onOffsetYInput" />
-				</div>
-			</div>
-			<div class="field-set input pad" id="autoTile-templates-fieldset">
-				<div class="legend">{{ t('components.autoTile-templates.label') }}</div>
-				<TreeList
-					id="autoTile-templates"
-					padded
-					:node-extras="nodeExtras"
-					@select="onTemplatesSelect"
-					@popup="onTemplatesPopup"
-					@change="onTemplatesChange"
+		<template #title
+			><TitleBar
+				>{{ t('components.autoTile.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set" id="autoTile-general-fieldset">
+			<div class="legend">{{ t('components.autoTile-general-grid.label') }}</div>
+			<div class="grid-box" id="autoTile-general-grid">
+				<div class="text">{{ t('components.autoTile-image.label') }}</div>
+				<CustomBox
+					id="autoTile-image"
+					type="file"
+					filter="image"
+					v-model="autoTileStore.imageId"
+					@input="onImageInput"
+				/>
+				<div class="text">{{ t('components.autoTile-x.label') }}</div>
+				<NumberBox
+					id="autoTile-x"
+					min="0"
+					max="255"
+					v-model="autoTileStore.offsetX"
+					@input="onOffsetXInput"
+				/>
+				<div class="text">{{ t('components.autoTile-y.label') }}</div>
+				<NumberBox
+					id="autoTile-y"
+					min="0"
+					max="255"
+					v-model="autoTileStore.offsetY"
+					@input="onOffsetYInput"
 				/>
 			</div>
-			<div class="field-set input pad" id="autoTile-nodes-fieldset">
-				<div class="legend">{{ t('components.autoTile-nodes.label') }}</div>
-				<CommonList id="autoTile-nodes" @write="onNodesWrite" @popup="onNodesPopup" />
+		</div>
+		<div class="field-set input pad" id="autoTile-templates-fieldset">
+			<div class="legend">{{ t('components.autoTile-templates.label') }}</div>
+			<TreeList
+				id="autoTile-templates"
+				padded
+				:node-extras="nodeExtras"
+				@select="onTemplatesSelect"
+				@popup="onTemplatesPopup"
+				@change="onTemplatesChange"
+			/>
+		</div>
+		<div class="field-set input pad" id="autoTile-nodes-fieldset">
+			<div class="legend">{{ t('components.autoTile-nodes.label') }}</div>
+			<CommonList id="autoTile-nodes" @write="onNodesWrite" @popup="onNodesPopup" />
+		</div>
+		<div class="field-set" id="autoTile-canvas-fieldset">
+			<div class="legend">{{ t('components.autoTile-canvas.label') }}</div>
+			<canvas id="autoTile-canvas" width="128" height="128" @click="onCanvasClick" />
+		</div>
+		<div class="field-set" id="autoTile-rule-fieldset">
+			<div class="legend">{{ t('components.autoTile-rule-grid.label') }}</div>
+			<div class="grid-box" id="autoTile-rule-grid">
+				<SwitchItem
+					id="autoTile-rule-1"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-2"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-3"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-0"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<div class="empty" />
+				<SwitchItem
+					id="autoTile-rule-4"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-7"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-6"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
+				<SwitchItem
+					id="autoTile-rule-5"
+					class="autoTile-switch autoTile-neighbor"
+					:length="3"
+				/>
 			</div>
-			<div class="field-set" id="autoTile-canvas-fieldset">
-				<div class="legend">{{ t('components.autoTile-canvas.label') }}</div>
-				<canvas id="autoTile-canvas" width="128" height="128" @click="onCanvasClick" />
-			</div>
-			<div class="field-set" id="autoTile-rule-fieldset">
-				<div class="legend">{{ t('components.autoTile-rule-grid.label') }}</div>
-				<div class="grid-box" id="autoTile-rule-grid">
-					<SwitchItem
-						id="autoTile-rule-1"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-2"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-3"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-0"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<div class="empty" />
-					<SwitchItem
-						id="autoTile-rule-4"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-7"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-6"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-					<SwitchItem
-						id="autoTile-rule-5"
-						class="autoTile-switch autoTile-neighbor"
-						:length="3"
-					/>
-				</div>
-			</div>
-			<div class="field-set input pad" id="autoTile-frames-fieldset">
-				<div class="legend">{{ t('components.autoTile-frames.label') }}</div>
-				<CommonList id="autoTile-frames" @write="onFramesWrite" @popup="onFramesPopup" />
-			</div>
-		
+		</div>
+		<div class="field-set input pad" id="autoTile-frames-fieldset">
+			<div class="legend">{{ t('components.autoTile-frames.label') }}</div>
+			<CommonList id="autoTile-frames" @write="onFramesWrite" @popup="onFramesPopup" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -158,6 +181,5 @@ const onConfirm = () => {
 	AutoTile?.confirm?.();
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

@@ -92,7 +92,10 @@ const onBlur = (event: FocusEvent): void => emit('blur', event);
 
 defineExpose({ read, write, insert, enable, disable, getFocus, on, root });
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as TextAreaElement | null;

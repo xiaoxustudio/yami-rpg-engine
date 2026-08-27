@@ -16,10 +16,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMSelectBox } from '@ui-kit';
-import {
-	setTooltip as setTooltipElement,
-	dispatchChangeEvent
-} from '@app/utils/element-utils';
+import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -117,11 +114,8 @@ const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const loadItems = (items: unknown[]): HTMLElement =>
-	ym.value?.loadItems(items) as HTMLElement;
-const setItemNames = (
-	options: Record<string, string | { name?: string; tip?: string }>
-): void => {
+const loadItems = (items: unknown[]): HTMLElement => ym.value?.loadItems(items) as HTMLElement;
+const setItemNames = (options: Record<string, string | { name?: string; tip?: string }>): void => {
 	const mapped: Record<string, string | { name?: string; tip?: string }> = {};
 	for (const key of Object.keys(options ?? {})) {
 		const option = options[key];
@@ -162,7 +156,8 @@ const createTooltip = (): void => {
 	if (!el) return;
 	let tip = originalTip ?? '';
 	let options = '';
-	const items = (el as HTMLElement & { dataItems?: Array<{ tip?: string }> | null }).dataItems ?? [];
+	const items =
+		(el as HTMLElement & { dataItems?: Array<{ tip?: string }> | null }).dataItems ?? [];
 	for (const item of items) {
 		if (item.tip) {
 			options += item.tip + '\n';
@@ -228,7 +223,10 @@ defineExpose({
 	root
 });
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as SelectBoxElement | null;

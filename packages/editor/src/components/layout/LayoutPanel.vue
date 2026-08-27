@@ -6,8 +6,12 @@
 				<div class="text" id="home-version"></div>
 				<div class="box" id="home-start-list" @click="onHomeStartClick">
 					<div class="item home-list-label" id="home-start-label">Start</div>
-					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
-					<div class="item home-start-item" id="home-start-open" value="open">Open Project</div>
+					<div class="item home-start-item" id="home-start-new" value="new">
+						New Project
+					</div>
+					<div class="item home-start-item" id="home-start-open" value="open">
+						Open Project
+					</div>
 				</div>
 				<HomeRecentList />
 			</div>
@@ -15,373 +19,800 @@
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
 				<NavBar id="layout-nav">
-			<div class="nav-item" value="project"><div class="nav-icon">&#xf07b;</div><div class="nav-text" id="nav-project">Project</div></div>
-			<div class="nav-item" value="scene"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-scene">Scene</div></div>
-			<div class="nav-item" value="scene-object"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-scene-object">Object</div></div>
-			<div class="nav-item" value="ui"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-ui">UI</div></div>
-			<div class="nav-item" value="ui-element"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-ui-element">Element</div></div>
-			<div class="nav-item" value="animation"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-animation">Animation</div></div>
-			<div class="nav-item" value="animation-motion"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-animation-motion">Motion</div></div>
-			<div class="nav-item" value="animation-timeline"><div class="nav-icon">&#xf017;</div><div class="nav-text" id="nav-animation-timeline">Timeline</div></div>
-			<div class="nav-item" value="animation-easing"><div class="nav-icon">&#xf201;</div><div class="nav-text" id="nav-animation-easing">Easing</div></div>
-			<div class="nav-item" value="particle"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-particle">Particle</div></div>
-			<div class="nav-item" value="particle-layer"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-particle-layer">Layer</div></div>
-			<div class="nav-item" value="inspector"><div class="nav-icon">&#xf05a;</div><div class="nav-text" id="nav-inspector">Inspector</div></div>
-		</NavBar>
-		<PageManager id="layout-page-manager">
-			<div class="page-frame" id="project" value="project">
-				<div class="file-browser" id="project-browser"></div>
-			</div>
-			<div class="page-frame" id="scene" value="scene">
-				<div class="box" id="scene-head" @pointerdown="onSceneHeadPointerdown">
-					<div class="box" id="scene-head-start" @pointerdown="onSceneSwitchPointerdown">
-						<div class="item toolbar-item" id="scene-switch-grid" value="grid"></div>
-						<div class="item toolbar-item" id="scene-switch-light" value="light"></div>
-						<div class="item toolbar-item" id="scene-switch-animation" value="animation"></div>
-						<div class="item toolbar-item" id="scene-switch-settings" value="settings" hotkey="Alt+S"></div>
+					<div class="nav-item" value="project">
+						<div class="nav-icon">&#xf07b;</div>
+						<div class="nav-text" id="nav-project">Project</div>
 					</div>
-					<div class="box" id="scene-head-center">
-						<div class="box" id="scene-layer" @pointerdown="onSceneLayerPointerdown">
-							<div class="item toolbar-item" id="scene-layer-object" value="object" hotkey="`"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-1" value="1" hotkey="1"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-2" value="2" hotkey="2"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-3" value="3" hotkey="3"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-4" value="4" hotkey="4"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-5" value="5" hotkey="5"></div>
-							<div class="item toolbar-item hidden" id="scene-layer-tilemap-6" value="6" hotkey="6"></div>
-							<div class="item toolbar-item" id="scene-layer-terrain" value="terrain" hotkey="`"></div>
+					<div class="nav-item" value="scene">
+						<div class="nav-icon">&#xf26c;</div>
+						<div class="nav-text" id="nav-scene">Scene</div>
+					</div>
+					<div class="nav-item" value="scene-object">
+						<div class="nav-icon">&#xf1b2;</div>
+						<div class="nav-text" id="nav-scene-object">Object</div>
+					</div>
+					<div class="nav-item" value="ui">
+						<div class="nav-icon">&#xf26c;</div>
+						<div class="nav-text" id="nav-ui">UI</div>
+					</div>
+					<div class="nav-item" value="ui-element">
+						<div class="nav-icon">&#xf1b2;</div>
+						<div class="nav-text" id="nav-ui-element">Element</div>
+					</div>
+					<div class="nav-item" value="animation">
+						<div class="nav-icon">&#xf26c;</div>
+						<div class="nav-text" id="nav-animation">Animation</div>
+					</div>
+					<div class="nav-item" value="animation-motion">
+						<div class="nav-icon">&#xf1b2;</div>
+						<div class="nav-text" id="nav-animation-motion">Motion</div>
+					</div>
+					<div class="nav-item" value="animation-timeline">
+						<div class="nav-icon">&#xf017;</div>
+						<div class="nav-text" id="nav-animation-timeline">Timeline</div>
+					</div>
+					<div class="nav-item" value="animation-easing">
+						<div class="nav-icon">&#xf201;</div>
+						<div class="nav-text" id="nav-animation-easing">Easing</div>
+					</div>
+					<div class="nav-item" value="particle">
+						<div class="nav-icon">&#xf26c;</div>
+						<div class="nav-text" id="nav-particle">Particle</div>
+					</div>
+					<div class="nav-item" value="particle-layer">
+						<div class="nav-icon">&#xf1b2;</div>
+						<div class="nav-text" id="nav-particle-layer">Layer</div>
+					</div>
+					<div class="nav-item" value="inspector">
+						<div class="nav-icon">&#xf05a;</div>
+						<div class="nav-text" id="nav-inspector">Inspector</div>
+					</div>
+				</NavBar>
+				<PageManager id="layout-page-manager">
+					<div class="page-frame" id="project" value="project">
+						<div class="file-browser" id="project-browser"></div>
+					</div>
+					<div class="page-frame" id="scene" value="scene">
+						<div class="box" id="scene-head" @pointerdown="onSceneHeadPointerdown">
+							<div
+								class="box"
+								id="scene-head-start"
+								@pointerdown="onSceneSwitchPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="scene-switch-grid"
+									value="grid"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="scene-switch-light"
+									value="light"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="scene-switch-animation"
+									value="animation"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="scene-switch-settings"
+									value="settings"
+									hotkey="Alt+S"
+								></div>
+							</div>
+							<div class="box" id="scene-head-center">
+								<div
+									class="box"
+									id="scene-layer"
+									@pointerdown="onSceneLayerPointerdown"
+								>
+									<div
+										class="item toolbar-item"
+										id="scene-layer-object"
+										value="object"
+										hotkey="`"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-1"
+										value="1"
+										hotkey="1"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-2"
+										value="2"
+										hotkey="2"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-3"
+										value="3"
+										hotkey="3"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-4"
+										value="4"
+										hotkey="4"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-5"
+										value="5"
+										hotkey="5"
+									></div>
+									<div
+										class="item toolbar-item hidden"
+										id="scene-layer-tilemap-6"
+										value="6"
+										hotkey="6"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="scene-layer-terrain"
+										value="terrain"
+										hotkey="`"
+									></div>
+								</div>
+								<div
+									class="box"
+									id="scene-brush"
+									@pointerdown="onSceneBrushPointerdown"
+								>
+									<div
+										class="item toolbar-item"
+										id="scene-brush-eraser"
+										value="eraser"
+										hotkey="Q"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="scene-brush-pencil"
+										value="pencil"
+										hotkey="E"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="scene-brush-rect"
+										value="rect"
+										hotkey="R"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="scene-brush-oval"
+										value="oval"
+										hotkey="T"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="scene-brush-fill"
+										value="fill"
+										hotkey="Y"
+									></div>
+								</div>
+							</div>
+							<div class="box" id="scene-head-end">
+								<SliderBox
+									id="scene-zoom"
+									name="zoom"
+									min="0"
+									max="4"
+									hotkey="-/+"
+									active-wheel
+									@input="onSceneZoomInput"
+									@focus="onSceneZoomFocus"
+								></SliderBox>
+							</div>
 						</div>
-						<div class="box" id="scene-brush" @pointerdown="onSceneBrushPointerdown">
-							<div class="item toolbar-item" id="scene-brush-eraser" value="eraser" hotkey="Q"></div>
-							<div class="item toolbar-item" id="scene-brush-pencil" value="pencil" hotkey="E"></div>
-							<div class="item toolbar-item" id="scene-brush-rect" value="rect" hotkey="R"></div>
-							<div class="item toolbar-item" id="scene-brush-oval" value="oval" hotkey="T"></div>
-							<div class="item toolbar-item" id="scene-brush-fill" value="fill" hotkey="Y"></div>
+						<div class="box" id="scene-body">
+							<div
+								class="box"
+								id="scene-screen"
+								tabindex="-1"
+								@keydown="onSceneScreenKeydown"
+								@wheel="onSceneScreenWheel"
+							>
+								<MarqueeArea
+									id="scene-marquee"
+									@pointerdown="onSceneMarqueePointerdown"
+									@doubleclick="onSceneMarqueeDoubleclick"
+								></MarqueeArea>
+							</div>
+							<div class="text" id="scene-info"></div>
 						</div>
 					</div>
-					<div class="box" id="scene-head-end">
-						<SliderBox
-							id="scene-zoom"
-							name="zoom"
-							min="0"
-							max="4"
-							hotkey="-/+"
-							active-wheel
-							@input="onSceneZoomInput"
-							@focus="onSceneZoomFocus"
-						></SliderBox>
+					<div class="page-frame" id="scene-object" value="scene-object">
+						<div class="box" id="scene-list-head">
+							<TextBox id="scene-searcher" name="search"></TextBox>
+						</div>
+						<TreeList
+							id="scene-list"
+							padded
+							:node-extras="sceneNodeExtras"
+							:node-icon-renderer="sceneNodeIcon"
+							@select="onSceneListSelect"
+							@record="onSceneListRecord"
+							@popup="onSceneListPopup"
+							@open="onSceneListOpen"
+							@change="onSceneListChange"
+						></TreeList>
 					</div>
-				</div>
-				<div class="box" id="scene-body">
-					<div
-						class="box"
-						id="scene-screen"
-						tabindex="-1"
-						@keydown="onSceneScreenKeydown"
-						@wheel="onSceneScreenWheel"
-					>
-						<MarqueeArea
-							id="scene-marquee"
-							@pointerdown="onSceneMarqueePointerdown"
-							@doubleclick="onSceneMarqueeDoubleclick"
-						></MarqueeArea>
+					<div class="page-frame" id="ui" value="ui">
+						<div class="box" id="ui-head" @pointerdown="onUiHeadPointerdown">
+							<div
+								class="box"
+								id="ui-head-start"
+								@pointerdown="onUiSwitchPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="ui-switch-settings"
+									value="settings"
+								></div>
+							</div>
+							<div
+								class="box"
+								id="ui-head-center"
+								@pointerdown="onUiShortcutPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="ui-element-image"
+									value="image"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-text"
+									value="text"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-textbox"
+									value="textbox"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-dialogbox"
+									value="dialogbox"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-progressbar"
+									value="progressbar"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-button"
+									value="button"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-animation"
+									value="animation"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-video"
+									value="video"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-window"
+									value="window"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-container"
+									value="container"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="ui-element-reference"
+									value="reference"
+								></div>
+							</div>
+							<div class="box" id="ui-head-end">
+								<SliderBox
+									id="ui-zoom"
+									name="zoom"
+									min="0"
+									max="4"
+									hotkey="-/+"
+									active-wheel
+									@input="onUiZoomInput"
+									@focus="onUiZoomFocus"
+								></SliderBox>
+							</div>
+						</div>
+						<div class="box" id="ui-body">
+							<div
+								class="box"
+								id="ui-screen"
+								tabindex="-1"
+								@keydown="onUiScreenKeydown"
+								@wheel="onUiScreenWheel"
+							>
+								<MarqueeArea
+									id="ui-marquee"
+									@pointerdown="onUiMarqueePointerdown"
+									@doubleclick="onUiMarqueeDoubleclick"
+								></MarqueeArea>
+							</div>
+						</div>
 					</div>
-					<div class="text" id="scene-info"></div>
-				</div>
-			</div>
-			<div class="page-frame" id="scene-object" value="scene-object">
-				<div class="box" id="scene-list-head">
-					<TextBox id="scene-searcher" name="search"></TextBox>
-				</div>
-				<TreeList
-					id="scene-list"
-					padded
-					:node-extras="sceneNodeExtras"
-					:node-icon-renderer="sceneNodeIcon"
-					@select="onSceneListSelect"
-					@record="onSceneListRecord"
-					@popup="onSceneListPopup"
-					@open="onSceneListOpen"
-					@change="onSceneListChange"
-				></TreeList>
-			</div>
-			<div class="page-frame" id="ui" value="ui">
-				<div class="box" id="ui-head" @pointerdown="onUiHeadPointerdown">
-					<div class="box" id="ui-head-start" @pointerdown="onUiSwitchPointerdown">
-						<div class="item toolbar-item" id="ui-switch-settings" value="settings"></div>
+					<div class="page-frame" id="ui-element" value="ui-element">
+						<div class="box" id="ui-list-head">
+							<TextBox id="ui-searcher" name="search"></TextBox>
+						</div>
+						<TreeList
+							id="ui-list"
+							padded
+							:node-extras="uiNodeExtras"
+							:node-icon-renderer="uiNodeIcon"
+							@select="onUiListSelect"
+							@record="onUiListRecord"
+							@popup="onUiListPopup"
+							@open="onUiListOpen"
+							@change="onUiListChange"
+						></TreeList>
 					</div>
-					<div class="box" id="ui-head-center" @pointerdown="onUiShortcutPointerdown">
-						<div class="item toolbar-item" id="ui-element-image" value="image"></div>
-						<div class="item toolbar-item" id="ui-element-text" value="text"></div>
-						<div class="item toolbar-item" id="ui-element-textbox" value="textbox"></div>
-						<div class="item toolbar-item" id="ui-element-dialogbox" value="dialogbox"></div>
-						<div class="item toolbar-item" id="ui-element-progressbar" value="progressbar"></div>
-						<div class="item toolbar-item" id="ui-element-button" value="button"></div>
-						<div class="item toolbar-item" id="ui-element-animation" value="animation"></div>
-						<div class="item toolbar-item" id="ui-element-video" value="video"></div>
-						<div class="item toolbar-item" id="ui-element-window" value="window"></div>
-						<div class="item toolbar-item" id="ui-element-container" value="container"></div>
-						<div class="item toolbar-item" id="ui-element-reference" value="reference"></div>
-					</div>
-					<div class="box" id="ui-head-end">
-						<SliderBox
-							id="ui-zoom"
-							name="zoom"
-							min="0"
-							max="4"
-							hotkey="-/+"
-							active-wheel
-							@input="onUiZoomInput"
-							@focus="onUiZoomFocus"
-						></SliderBox>
-					</div>
-				</div>
-				<div class="box" id="ui-body">
-					<div
-						class="box"
-						id="ui-screen"
-						tabindex="-1"
-						@keydown="onUiScreenKeydown"
-						@wheel="onUiScreenWheel"
-					>
-						<MarqueeArea
-							id="ui-marquee"
-							@pointerdown="onUiMarqueePointerdown"
-							@doubleclick="onUiMarqueeDoubleclick"
-						></MarqueeArea>
-					</div>
-				</div>
-			</div>
-			<div class="page-frame" id="ui-element" value="ui-element">
-				<div class="box" id="ui-list-head">
-					<TextBox id="ui-searcher" name="search"></TextBox>
-				</div>
-				<TreeList
-					id="ui-list"
-					padded
-					:node-extras="uiNodeExtras"
-					:node-icon-renderer="uiNodeIcon"
-					@select="onUiListSelect"
-					@record="onUiListRecord"
-					@popup="onUiListPopup"
-					@open="onUiListOpen"
-					@change="onUiListChange"
-				></TreeList>
-			</div>
-			<div class="page-frame" id="animation" value="animation">
-				<div class="box" id="animation-head" @pointerdown="onAnimationHeadPointerdown">
-					<div class="box" id="animation-head-start" @pointerdown="onAnimationSwitchPointerdown">
-						<div class="item toolbar-item" id="animation-switch-mark" value="mark" :class="{ selected: animation.showMark }"></div>
-						<div class="item toolbar-item" id="animation-switch-onionskin" value="onionskin" hotkey="O" :class="{ selected: animation.showOnionskin }"></div>
-						<div class="item toolbar-item" id="animation-switch-mirror" value="mirror" hotkey="M" :class="{ selected: animation.mirror }"></div>
-						<div class="item toolbar-item" id="animation-switch-settings" value="settings"></div>
-					</div>
-					<div class="box" id="animation-head-center">
-						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2" v-model="speedModel"><div class="text label">speed:</div></NumberBox>
-					</div>
-					<div class="box" id="animation-head-end">
-						<SliderBox
-							id="animation-zoom"
-							name="zoom-0-6"
-							min="0"
-							max="6"
-							hotkey="-/+"
-							active-wheel
-							v-model="zoomModel"
-							@focus="onAnimationZoomFocus"
-						></SliderBox>
-					</div>
-				</div>
-				<div class="box" id="animation-body">
-					<div
-						class="box"
-						id="animation-screen"
-						tabindex="-1"
-						@keydown="onAnimationScreenKeydown"
-						@wheel="onAnimationScreenWheel"
-					>
-						<MarqueeArea
-							id="animation-marquee"
-							@pointerdown="onAnimationMarqueePointerdown"
-							@doubleclick="onAnimationMarqueeDoubleclick"
-						></MarqueeArea>
-					</div>
-					<div ref="dirListEl" class="box" id="animation-dirList" v-show="dirs.length > 1">
+					<div class="page-frame" id="animation" value="animation">
 						<div
-							class="anim-dir"
-							v-for="(dir, index) in dirs"
-							:key="index"
-							:class="{ selected: index === direction }"
-							@pointerdown="onDirPointerdown(index)"
-						>{{ dir }}</div>
-					</div>
-				</div>
-			</div>
-			<div class="page-frame" id="animation-motion" value="animation-motion">
-				<div class="box" id="animation-list-head">
-					<TextBox id="animation-searcher" name="search"></TextBox>
-				</div>
-				<TreeList
-					id="animation-list"
-					padded
-					:node-extras="animationNodeExtras"
-					:node-icon-renderer="animationNodeIcon"
-					@select="onAnimationListSelect"
-					@record="onAnimationListRecord"
-					@open="onAnimationListOpen"
-					@popup="onAnimationListPopup"
-					@change="onAnimationListChange"
-				></TreeList>
-			</div>
-			<div class="page-frame" id="animation-timeline" value="animation-timeline">
-				<div class="box" id="animation-timeline-head">
-					<div
-						class="box"
-						id="animation-timeline-toolbar"
-						@pointerdown="onTimelineToolbarPointerdown"
-					>
-						<div class="item toolbar-item" id="animation-timeline-previousKey" value="previousKey" hotkey="Z"></div>
-						<div class="item toolbar-item" id="animation-timeline-previous" value="previous" hotkey="Q"></div>
-						<div class="item toolbar-item" id="animation-timeline-play" value="play" hotkey="R" :class="{ playing: animation.playing }"></div>
-						<div class="item toolbar-item" id="animation-timeline-next" value="next" hotkey="E"></div>
-						<div class="item toolbar-item" id="animation-timeline-nextKey" value="nextKey" hotkey="X"></div>
-						<div class="item toolbar-item" id="animation-timeline-loop" value="loop" :class="{ selected: animation.loop }"></div>
-					</div>
-					<div class="box" id="animation-timeline-ruler-outer">
-						<div class="box" id="animation-timeline-ruler-inner"></div>
-					</div>
-				</div>
-				<TreeList
-					id="animation-layer-list"
-					:node-extras="layerNodeExtras"
-					:node-icon-renderer="layerNodeIcon"
-					@select="onLayerListSelect"
-					@record="onLayerListRecord"
-					@popup="onLayerListPopup"
-					@change="onLayerListChange"
-				></TreeList>
-				<div class="box" id="animation-timeline-list-outer" tabindex="0">
-					<div class="box" id="animation-timeline-list-inner"></div>
-					<div class="box" id="animation-timeline-cursor"></div>
-					<div class="box" id="animation-timeline-marquee"></div>
-					<div class="box" id="animation-timeline-marquee-shift"></div>
-				</div>
-				<div class="box" id="animation-timeline-pointer-area-outer">
-					<div class="box" id="animation-timeline-pointer-area-inner">
-						<div class="box" id="animation-timeline-pointer"></div>
-					</div>
-				</div>
-			</div>
-			<div class="page-frame" id="animation-easing" value="animation-easing">
-				<div class="box" id="animation-easing-head">
-					<div class="item toolbar-item" id="animation-easing-settings" value="bezier"></div>
-					<SelectBox
-					id="animation-easing-id"
-					@write="onEasingIdWrite"
-					@input="onEasingIdInput"
-				></SelectBox>
-				</div>
-				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
-			</div>
-			<div class="page-frame" id="particle" value="particle">
-				<div class="box" id="particle-head" @pointerdown="onParticleHeadPointerdown">
-					<div class="box" id="particle-head-start" @pointerdown="onParticleViewPointerdown">
-						<div class="item toolbar-item" id="particle-view-wireframe" value="wireframe"></div>
-						<div class="item toolbar-item" id="particle-view-anchor" value="anchor"></div>
-					</div>
-					<div class="box" id="particle-head-center">
-						<div class="box" id="particle-control" @pointerdown="onParticleControlPointerdown">
-							<div class="item toolbar-item" id="particle-control-restart" value="restart" hotkey="R"></div>
-							<div class="item toolbar-item" id="particle-control-pause" value="pause" hotkey="P"></div>
+							class="box"
+							id="animation-head"
+							@pointerdown="onAnimationHeadPointerdown"
+						>
+							<div
+								class="box"
+								id="animation-head-start"
+								@pointerdown="onAnimationSwitchPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="animation-switch-mark"
+									value="mark"
+									:class="{ selected: animation.showMark }"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-switch-onionskin"
+									value="onionskin"
+									hotkey="O"
+									:class="{ selected: animation.showOnionskin }"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-switch-mirror"
+									value="mirror"
+									hotkey="M"
+									:class="{ selected: animation.mirror }"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-switch-settings"
+									value="settings"
+								></div>
+							</div>
+							<div class="box" id="animation-head-center">
+								<NumberBox
+									id="animation-speed"
+									min="0"
+									max="4"
+									step="0.05"
+									decimals="2"
+									v-model="speedModel"
+									><div class="text label">speed:</div></NumberBox
+								>
+							</div>
+							<div class="box" id="animation-head-end">
+								<SliderBox
+									id="animation-zoom"
+									name="zoom-0-6"
+									min="0"
+									max="6"
+									hotkey="-/+"
+									active-wheel
+									v-model="zoomModel"
+									@focus="onAnimationZoomFocus"
+								></SliderBox>
+							</div>
 						</div>
-						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
+						<div class="box" id="animation-body">
+							<div
+								class="box"
+								id="animation-screen"
+								tabindex="-1"
+								@keydown="onAnimationScreenKeydown"
+								@wheel="onAnimationScreenWheel"
+							>
+								<MarqueeArea
+									id="animation-marquee"
+									@pointerdown="onAnimationMarqueePointerdown"
+									@doubleclick="onAnimationMarqueeDoubleclick"
+								></MarqueeArea>
+							</div>
+							<div
+								ref="dirListEl"
+								class="box"
+								id="animation-dirList"
+								v-show="dirs.length > 1"
+							>
+								<div
+									class="anim-dir"
+									v-for="(dir, index) in dirs"
+									:key="index"
+									:class="{ selected: index === direction }"
+									@pointerdown="onDirPointerdown(index)"
+								>
+									{{ dir }}
+								</div>
+							</div>
+						</div>
 					</div>
-					<div class="box" id="particle-head-end">
-						<SliderBox
-							id="particle-zoom"
-							name="zoom"
-							min="0"
-							max="4"
-							hotkey="-/+"
-							active-wheel
-							@input="onParticleZoomInput"
-							@focus="onParticleZoomFocus"
-						></SliderBox>
+					<div class="page-frame" id="animation-motion" value="animation-motion">
+						<div class="box" id="animation-list-head">
+							<TextBox id="animation-searcher" name="search"></TextBox>
+						</div>
+						<TreeList
+							id="animation-list"
+							padded
+							:node-extras="animationNodeExtras"
+							:node-icon-renderer="animationNodeIcon"
+							@select="onAnimationListSelect"
+							@record="onAnimationListRecord"
+							@open="onAnimationListOpen"
+							@popup="onAnimationListPopup"
+							@change="onAnimationListChange"
+						></TreeList>
 					</div>
-				</div>
-				<div class="box" id="particle-body">
-					<div
-						class="box"
-						id="particle-screen"
-						tabindex="-1"
-						@keydown="onParticleScreenKeydown"
-						@wheel="onParticleScreenWheel"
-					>
-						<MarqueeArea
-							id="particle-marquee"
-							@pointerdown="onParticleMarqueePointerdown"
-						></MarqueeArea>
+					<div class="page-frame" id="animation-timeline" value="animation-timeline">
+						<div class="box" id="animation-timeline-head">
+							<div
+								class="box"
+								id="animation-timeline-toolbar"
+								@pointerdown="onTimelineToolbarPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-previousKey"
+									value="previousKey"
+									hotkey="Z"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-previous"
+									value="previous"
+									hotkey="Q"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-play"
+									value="play"
+									hotkey="R"
+									:class="{ playing: animation.playing }"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-next"
+									value="next"
+									hotkey="E"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-nextKey"
+									value="nextKey"
+									hotkey="X"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="animation-timeline-loop"
+									value="loop"
+									:class="{ selected: animation.loop }"
+								></div>
+							</div>
+							<div class="box" id="animation-timeline-ruler-outer">
+								<div class="box" id="animation-timeline-ruler-inner"></div>
+							</div>
+						</div>
+						<TreeList
+							id="animation-layer-list"
+							:node-extras="layerNodeExtras"
+							:node-icon-renderer="layerNodeIcon"
+							@select="onLayerListSelect"
+							@record="onLayerListRecord"
+							@popup="onLayerListPopup"
+							@change="onLayerListChange"
+						></TreeList>
+						<div class="box" id="animation-timeline-list-outer" tabindex="0">
+							<div class="box" id="animation-timeline-list-inner"></div>
+							<div class="box" id="animation-timeline-cursor"></div>
+							<div class="box" id="animation-timeline-marquee"></div>
+							<div class="box" id="animation-timeline-marquee-shift"></div>
+						</div>
+						<div class="box" id="animation-timeline-pointer-area-outer">
+							<div class="box" id="animation-timeline-pointer-area-inner">
+								<div class="box" id="animation-timeline-pointer"></div>
+							</div>
+						</div>
 					</div>
-					<div class="text" id="particle-info"></div>
-				</div>
+					<div class="page-frame" id="animation-easing" value="animation-easing">
+						<div class="box" id="animation-easing-head">
+							<div
+								class="item toolbar-item"
+								id="animation-easing-settings"
+								value="bezier"
+							></div>
+							<SelectBox
+								id="animation-easing-id"
+								@write="onEasingIdWrite"
+								@input="onEasingIdInput"
+							></SelectBox>
+						</div>
+						<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
+					</div>
+					<div class="page-frame" id="particle" value="particle">
+						<div
+							class="box"
+							id="particle-head"
+							@pointerdown="onParticleHeadPointerdown"
+						>
+							<div
+								class="box"
+								id="particle-head-start"
+								@pointerdown="onParticleViewPointerdown"
+							>
+								<div
+									class="item toolbar-item"
+									id="particle-view-wireframe"
+									value="wireframe"
+								></div>
+								<div
+									class="item toolbar-item"
+									id="particle-view-anchor"
+									value="anchor"
+								></div>
+							</div>
+							<div class="box" id="particle-head-center">
+								<div
+									class="box"
+									id="particle-control"
+									@pointerdown="onParticleControlPointerdown"
+								>
+									<div
+										class="item toolbar-item"
+										id="particle-control-restart"
+										value="restart"
+										hotkey="R"
+									></div>
+									<div
+										class="item toolbar-item"
+										id="particle-control-pause"
+										value="pause"
+										hotkey="P"
+									></div>
+								</div>
+								<NumberBox
+									id="particle-speed"
+									min="0"
+									max="4"
+									step="0.05"
+									decimals="2"
+									><div class="text label">speed:</div></NumberBox
+								>
+							</div>
+							<div class="box" id="particle-head-end">
+								<SliderBox
+									id="particle-zoom"
+									name="zoom"
+									min="0"
+									max="4"
+									hotkey="-/+"
+									active-wheel
+									@input="onParticleZoomInput"
+									@focus="onParticleZoomFocus"
+								></SliderBox>
+							</div>
+						</div>
+						<div class="box" id="particle-body">
+							<div
+								class="box"
+								id="particle-screen"
+								tabindex="-1"
+								@keydown="onParticleScreenKeydown"
+								@wheel="onParticleScreenWheel"
+							>
+								<MarqueeArea
+									id="particle-marquee"
+									@pointerdown="onParticleMarqueePointerdown"
+								></MarqueeArea>
+							</div>
+							<div class="text" id="particle-info"></div>
+						</div>
+					</div>
+					<div class="page-frame" id="particle-layer" value="particle-layer">
+						<TreeList
+							id="particle-list"
+							padded
+							:node-extras="particleNodeExtras"
+							:node-icon-renderer="particleNodeIcon"
+						></TreeList>
+					</div>
+					<div class="page-frame" id="inspector" value="inspector">
+						<PageManager id="inspector-page-manager" tabindex="-1">
+							<div
+								class="page-frame"
+								value="fileScene"
+								id="fileScene-vue-mount"
+							></div>
+							<div class="page-frame" value="fileUI" id="fileUI-vue-mount"></div>
+							<div
+								class="page-frame"
+								value="fileAnimation"
+								id="fileAnimation-vue-mount"
+							></div>
+							<div class="page-frame" id="fileTileset" value="fileTileset"></div>
+							<div
+								class="page-frame"
+								value="fileActor"
+								id="fileActor-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="fileSkill"
+								id="fileSkill-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="fileTrigger"
+								id="fileTrigger-vue-mount"
+							></div>
+							<div class="page-frame" value="fileItem" id="fileItem-vue-mount"></div>
+							<div
+								class="page-frame"
+								value="fileEquipment"
+								id="fileEquipment-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="fileState"
+								id="fileState-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="fileEvent"
+								id="fileEvent-vue-mount"
+							></div>
+							<div class="page-frame" id="fileImage" value="fileImage"></div>
+							<div class="page-frame" id="fileAudio" value="fileAudio"></div>
+							<div class="page-frame" id="fileVideo" value="fileVideo"></div>
+							<div class="page-frame" id="fileFont" value="fileFont"></div>
+							<div class="page-frame" id="fileScript" value="fileScript"></div>
+							<div
+								class="page-frame"
+								value="sceneActor"
+								id="sceneActor-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneRegion"
+								id="sceneRegion-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneLight"
+								id="sceneLight-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneAnimation"
+								id="sceneAnimation-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneParticle"
+								id="sceneParticle-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneParallax"
+								id="sceneParallax-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="sceneTilemap"
+								id="sceneTilemap-vue-mount"
+							></div>
+							<div class="page-frame" value="uiImage" id="uiImage-vue-mount"></div>
+							<div class="page-frame" value="uiText" id="uiText-vue-mount"></div>
+							<div
+								class="page-frame"
+								value="uiTextBox"
+								id="uiTextBox-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="uiDialogBox"
+								id="uiDialogBox-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="uiProgressBar"
+								id="uiProgressBar-vue-mount"
+							></div>
+							<div class="page-frame" value="uiButton" id="uiButton-vue-mount"></div>
+							<div
+								class="page-frame"
+								value="uiAnimation"
+								id="uiAnimation-vue-mount"
+							></div>
+							<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"></div>
+							<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"></div>
+							<div
+								class="page-frame"
+								value="uiContainer"
+								id="uiContainer-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="uiReference"
+								id="uiReference-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animMotion"
+								id="animMotion-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animJointFrame"
+								id="animJointFrame-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animSpriteLayer"
+								id="animSpriteLayer-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animSpriteFrame"
+								id="animSpriteFrame-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animParticleLayer"
+								id="animParticleLayer-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animParticleFrame"
+								id="animParticleFrame-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animSoundLayer"
+								id="animSoundLayer-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="animSoundFrame"
+								id="animSoundFrame-vue-mount"
+							></div>
+							<div
+								class="page-frame"
+								value="particleLayer"
+								id="particleLayer-vue-mount"
+							></div>
+						</PageManager>
+					</div>
+				</PageManager>
 			</div>
-			<div class="page-frame" id="particle-layer" value="particle-layer">
-				<TreeList id="particle-list" padded :node-extras="particleNodeExtras" :node-icon-renderer="particleNodeIcon"></TreeList>
-			</div>
-			<div class="page-frame" id="inspector" value="inspector">
-				<PageManager id="inspector-page-manager" tabindex="-1">
-					<div class="page-frame" value="fileScene" id="fileScene-vue-mount"></div>
-					<div class="page-frame" value="fileUI" id="fileUI-vue-mount"></div>
-					<div class="page-frame" value="fileAnimation" id="fileAnimation-vue-mount"></div>
-					<div class="page-frame" id="fileTileset" value="fileTileset"></div>
-					<div class="page-frame" value="fileActor" id="fileActor-vue-mount"></div>
-					<div class="page-frame" value="fileSkill" id="fileSkill-vue-mount"></div>
-					<div class="page-frame" value="fileTrigger" id="fileTrigger-vue-mount"></div>
-					<div class="page-frame" value="fileItem" id="fileItem-vue-mount"></div>
-					<div class="page-frame" value="fileEquipment" id="fileEquipment-vue-mount"></div>
-					<div class="page-frame" value="fileState" id="fileState-vue-mount"></div>
-					<div class="page-frame" value="fileEvent" id="fileEvent-vue-mount"></div>
-					<div class="page-frame" id="fileImage" value="fileImage"></div>
-					<div class="page-frame" id="fileAudio" value="fileAudio"></div>
-					<div class="page-frame" id="fileVideo" value="fileVideo"></div>
-					<div class="page-frame" id="fileFont" value="fileFont"></div>
-					<div class="page-frame" id="fileScript" value="fileScript"></div>
-					<div class="page-frame" value="sceneActor" id="sceneActor-vue-mount"></div>
-					<div class="page-frame" value="sceneRegion" id="sceneRegion-vue-mount"></div>
-					<div class="page-frame" value="sceneLight" id="sceneLight-vue-mount"></div>
-					<div class="page-frame" value="sceneAnimation" id="sceneAnimation-vue-mount"></div>
-					<div class="page-frame" value="sceneParticle" id="sceneParticle-vue-mount"></div>
-					<div class="page-frame" value="sceneParallax" id="sceneParallax-vue-mount"></div>
-					<div class="page-frame" value="sceneTilemap" id="sceneTilemap-vue-mount"></div>
-					<div class="page-frame" value="uiImage" id="uiImage-vue-mount"></div>
-					<div class="page-frame" value="uiText" id="uiText-vue-mount"></div>
-					<div class="page-frame" value="uiTextBox" id="uiTextBox-vue-mount"></div>
-					<div class="page-frame" value="uiDialogBox" id="uiDialogBox-vue-mount"></div>
-					<div class="page-frame" value="uiProgressBar" id="uiProgressBar-vue-mount"></div>
-					<div class="page-frame" value="uiButton" id="uiButton-vue-mount"></div>
-					<div class="page-frame" value="uiAnimation" id="uiAnimation-vue-mount"></div>
-					<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"></div>
-					<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"></div>
-					<div class="page-frame" value="uiContainer" id="uiContainer-vue-mount"></div>
-					<div class="page-frame" value="uiReference" id="uiReference-vue-mount"></div>
-					<div class="page-frame" value="animMotion" id="animMotion-vue-mount"></div>
-					<div class="page-frame" value="animJointFrame" id="animJointFrame-vue-mount"></div>
-					<div class="page-frame" value="animSpriteLayer" id="animSpriteLayer-vue-mount"></div>
-					<div class="page-frame" value="animSpriteFrame" id="animSpriteFrame-vue-mount"></div>
-					<div class="page-frame" value="animParticleLayer" id="animParticleLayer-vue-mount"></div>
-					<div class="page-frame" value="animParticleFrame" id="animParticleFrame-vue-mount"></div>
-					<div class="page-frame" value="animSoundLayer" id="animSoundLayer-vue-mount"></div>
-					<div class="page-frame" value="animSoundFrame" id="animSoundFrame-vue-mount"></div>
-					<div class="page-frame" value="particleLayer" id="particleLayer-vue-mount"></div>
-					</PageManager>
-			</div>
-		</PageManager>
-</div>
-</div>
-	<div class="page-frame" value="scene"></div>
-	<div class="page-frame" value="ui"></div>
-	<div class="page-frame" value="animation"></div>
-	<div class="page-frame" value="particle"></div>
+		</div>
+		<div class="page-frame" value="scene"></div>
+		<div class="page-frame" value="ui"></div>
+		<div class="page-frame" value="animation"></div>
+		<div class="page-frame" value="particle"></div>
 	</PageManager>
 </template>
 
@@ -514,29 +945,37 @@ const sceneNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 				element?.classList.add('weak');
 			}
 			nodes.push(
-				h('span', { class: ['node-icon', 'icon-conditional'], },  condition === 'conditional' ? '?' : '!')
+				h(
+					'span',
+					{ class: ['node-icon', 'icon-conditional'] },
+					condition === 'conditional' ? '?' : '!'
+				)
 			);
 		}
 	}
 	if (node.events instanceof Array && node.events.length !== 0) {
-		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'], },  'E'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'] }, 'E'));
 	}
 	if (node.scripts instanceof Array && node.scripts.length !== 0) {
-		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'], },  '\uf121'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'] }, '\uf121'));
 	}
 	nodes.push(
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onSceneVisibilityPointerdown(node, container)
-			}, 
+			},
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	);
 	nodes.push(
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onSceneLockPointerdown(node, container)
-			}, 
+			},
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	);
@@ -547,7 +986,7 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 	const node = item as SceneExtrasNode;
 	switch (node.class) {
 		case 'folder':
-			return [h('span', { class: ['node-icon', 'icon-folder'], })];
+			return [h('span', { class: ['node-icon', 'icon-folder'] })];
 		case 'actor': {
 			const team = Data.teams?.map?.[node.teamId ?? ''];
 			const hex = team ? team.color : 'ffffffff';
@@ -555,7 +994,13 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 			const g = parseInt(hex.slice(2, 4), 16);
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			return [h('span', { class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },  '\uf2c0')];
+			return [
+				h(
+					'span',
+					{ class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },
+					'\uf2c0'
+				)
+			];
 		}
 		case 'region': {
 			const hex = node.color ?? '';
@@ -572,14 +1017,19 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 		}
 		case 'light':
 			return [
-				h('span', { class: 'node-icon', style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } }, 
+				h(
+					'span',
+					{
+						class: 'node-icon',
+						style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` }
+					},
 					'\uf006'
 				)
 			];
 		case 'animation':
-			return [h('span', { class: 'node-icon',},  '\uf110')];
+			return [h('span', { class: 'node-icon' }, '\uf110')];
 		case 'particle':
-			return [h('span', { class: 'node-icon',},  '\uf2dc')];
+			return [h('span', { class: 'node-icon' }, '\uf2dc')];
 		case 'parallax': {
 			const path = File.getPath?.(node.image);
 			if (path) {
@@ -590,12 +1040,12 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 					})
 				];
 			}
-			return [h('span', { class: 'node-icon',},  '\uf1c5')];
+			return [h('span', { class: 'node-icon' }, '\uf1c5')];
 		}
 		case 'tilemap':
-			return [h('span', { class: 'node-icon',},  '\uf00a')];
+			return [h('span', { class: 'node-icon' }, '\uf00a')];
 		default:
-			return [h('span', { class: ['node-icon', 'icon-file'], })];
+			return [h('span', { class: ['node-icon', 'icon-file'] })];
 	}
 };
 
@@ -655,27 +1105,31 @@ const uiNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 		element?.classList.remove('weak');
 	} else {
 		element?.classList.add('weak');
-		nodes.push(h('span', { class: ['node-icon', 'icon-conditional'], },  '!'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-conditional'] }, '!'));
 	}
 	if (node.events instanceof Array && node.events.length !== 0) {
-		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'], },  'E'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-eventEnabled'] }, 'E'));
 	}
 	if (node.scripts instanceof Array && node.scripts.length !== 0) {
-		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'], },  '\uf121'));
+		nodes.push(h('span', { class: ['node-icon', 'icon-scriptEnabled'] }, '\uf121'));
 	}
 	nodes.push(
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onUiVisibilityPointerdown(node, container)
-			}, 
+			},
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	);
 	nodes.push(
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onUiLockPointerdown(node, container)
-			}, 
+			},
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	);
@@ -702,9 +1156,7 @@ const uiNodeIcon = (item: unknown): VNode[] => {
 		const preset = Data.uiPresets?.[node.prefabId ?? ''];
 		const presetClass = classes[preset?.data?.class ?? ''];
 		iconClass =
-			presetClass && presetClass !== 'icon-ui-reference'
-				? presetClass
-				: 'icon-ui-reference';
+			presetClass && presetClass !== 'icon-ui-reference' ? presetClass : 'icon-ui-reference';
 	} else {
 		iconClass = classes[node.class ?? ''] ?? 'icon-ui-reference';
 	}
@@ -715,19 +1167,19 @@ const uiNodeIcon = (item: unknown): VNode[] => {
 	if (UI.hasPrefab?.(node)) {
 		iconClasses.push('icon-ui-set-as-prefab');
 	}
-	return [h('span', { class: ['node-icon', iconClasses], })];
+	return [h('span', { class: ['node-icon', iconClasses] })];
 };
 
 const animationNodeExtras = (item: unknown): VNode[] => {
 	const node = item as { loop?: boolean };
 	if (node.loop) {
-		return [h('span', { class: ['node-icon', 'icon-loop'], },  '\uf112')];
+		return [h('span', { class: ['node-icon', 'icon-loop'] }, '\uf112')];
 	}
 	return [];
 };
 
 const animationNodeIcon = (item: unknown): VNode[] => {
-	return [h('span', { class: ['node-icon', 'icon-string'], })];
+	return [h('span', { class: ['node-icon', 'icon-string'] })];
 };
 
 const onLayerVisibilityPointerdown =
@@ -772,16 +1224,20 @@ const onLayerLockPointerdown =
 const layerNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as LayerExtrasNode;
 	return [
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onLayerVisibilityPointerdown(node, container)
-			}, 
+			},
 			node.hidden ? '\uf070' : '\uf06e'
 		),
-		h('span', {
+		h(
+			'span',
+			{
 				class: ['lock-icon', { 'node-icon-highlight': !!node.locked }],
 				onPointerdown: onLayerLockPointerdown(node, container)
-			}, 
+			},
 			node.locked ? '\uf023' : '\uf09c'
 		)
 	];
@@ -819,11 +1275,13 @@ const onParticleVisibilityPointerdown =
 const particleNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as LayerExtrasNode;
 	return [
-		h('span', {
+		h(
+			'span',
+			{
 				style: { right: '0' },
 				class: ['visibility-icon', { 'node-icon-highlight': !!node.hidden }],
 				onPointerdown: onParticleVisibilityPointerdown(node, container)
-			}, 
+			},
 			node.hidden ? '\uf070' : '\uf06e'
 		)
 	];
@@ -836,12 +1294,19 @@ const particleNodeIcon = (item: unknown, container: HTMLElement): VNode[] => {
 		queueMicrotask(() => {
 			const icon = container.querySelector('.node-icon') as HTMLElement | null;
 			if (icon) {
-				setIconClip(icon, path, 0, 0, -(node.sprite?.hframes ?? 1), -(node.sprite?.vframes ?? 1));
+				setIconClip(
+					icon,
+					path,
+					0,
+					0,
+					-(node.sprite?.hframes ?? 1),
+					-(node.sprite?.vframes ?? 1)
+				);
 			}
 		});
-		return [h('span', { class: ['node-icon', 'icon-particle-image'], })];
+		return [h('span', { class: ['node-icon', 'icon-particle-image'] })];
 	}
-	return [h('span', { class: 'node-icon',},  '\uf2dc')];
+	return [h('span', { class: 'node-icon' }, '\uf2dc')];
 };
 
 const dirs = ref<string[]>([]);

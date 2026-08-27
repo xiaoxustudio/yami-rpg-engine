@@ -1,15 +1,21 @@
 <template>
-<WindowFrame id="removeTarget" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.removeTarget.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="removeTarget" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.removeTarget.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="removeTarget-actor" type="actor" @input="onActor" /><div class="text">Target</div><CustomBox id="removeTarget-target" type="actor" @input="onTarget" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="removeTarget-actor" type="actor" @input="onActor" />
+			<div class="text">Target</div>
+			<CustomBox id="removeTarget-target" type="actor" @input="onTarget" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useRemoveTargetCommandSchema } from '@app/composables/commands/useRemoveTargetCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -31,5 +37,4 @@ const onTarget = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

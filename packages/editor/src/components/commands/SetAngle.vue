@@ -1,23 +1,34 @@
 <template>
-<WindowFrame id="setAngle" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setAngle.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setAngle" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setAngle.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setAngle-actor" type="actor" @input="onActor" /><div class="text">Angle</div><CustomBox id="setAngle-angle" type="angle" @input="onAngle" /><div class="text">Easing</div><SelectBox id="setAngle-easingId" name="easing" v-model="form.easingId" /><div class="text">Duration</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="setAngle-actor" type="actor" @input="onActor" />
+			<div class="text">Angle</div>
+			<CustomBox id="setAngle-angle" type="angle" @input="onAngle" />
+			<div class="text">Easing</div>
+			<SelectBox id="setAngle-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberVar
 				id="setAngle-duration"
 				name="duration"
 				min="0"
 				max="3600000"
 				unit="ms"
 				v-model="form.duration"
-			 /><div class="text">Wait</div><SelectBox id="setAngle-wait" name="wait" v-model="form.wait" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setAngle-wait" name="wait" v-model="form.wait" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
@@ -58,5 +69,4 @@ onMounted(() => {
 		clear($('#setAngle-easingId'));
 	});
 });
-
 </script>

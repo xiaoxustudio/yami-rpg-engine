@@ -1,30 +1,33 @@
 <template>
 	<WindowFrame id="setObjectProperty" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setObjectProperty.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="setObjectProperty-variable"
-					type="variable"
-					filter="object"
-					v-model="form.variable"
-				/>
-				<div class="text">setObjectProperty</div><ParamList id="setObjectProperty-list" v-model="form.list" />
-				<div class="text">valueVariable</div
-				><CustomBox
-					id="setObjectProperty-value-variable"
-					type="variable"
-					filter="all"
-					v-model="form.valueVariable"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setObjectProperty.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setObjectProperty-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+			<div class="text">setObjectProperty</div>
+			<ParamList id="setObjectProperty-list" v-model="form.list" />
+			<div class="text">valueVariable</div>
+			<CustomBox
+				id="setObjectProperty-value-variable"
+				type="variable"
+				filter="all"
+				v-model="form.valueVariable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
@@ -52,5 +55,4 @@ onMounted(() => {
 		clear($('#setObjectProperty-list'));
 	});
 });
-
 </script>

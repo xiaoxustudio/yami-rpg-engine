@@ -1,24 +1,47 @@
 <template>
-	<WindowFrame id="fileActor-inventory-goods" buttons-id-prefix="fileActor-inventory" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fileActor-inventory-goods.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div><SelectBox id="fileActor-inventory-type" v-model="form.type" />
-				<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div
-				><CustomBox id="fileActor-inventory-item-id" type="file" filter="item" v-model="form.itemId" />
-				<div class="text">{{ t('components.fileActor-inventory-item-quantity.label') }}</div
-				><NumberBox id="fileActor-inventory-item-quantity" min="1" max="10000" v-model="form.itemQuantity" />
-				<div class="text">{{ t('components.fileActor-inventory-equipment-id.label') }}</div
-				><CustomBox
-					id="fileActor-inventory-equipment-id"
-					type="file"
-					filter="equipment"
-					v-model="form.equipmentId"
-				/>
-				<div class="text">{{ t('components.fileActor-inventory-money.label') }}</div
-				><NumberBox id="fileActor-inventory-money" min="1" max="100000000" v-model="form.money" />
-			</div>
-		
+	<WindowFrame
+		id="fileActor-inventory-goods"
+		buttons-id-prefix="fileActor-inventory"
+		@confirm="onConfirm"
+	>
+		<template #title
+			><TitleBar
+				>{{ t('components.fileActor-inventory-goods.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
+			<SelectBox id="fileActor-inventory-type" v-model="form.type" />
+			<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div>
+			<CustomBox
+				id="fileActor-inventory-item-id"
+				type="file"
+				filter="item"
+				v-model="form.itemId"
+			/>
+			<div class="text">{{ t('components.fileActor-inventory-item-quantity.label') }}</div>
+			<NumberBox
+				id="fileActor-inventory-item-quantity"
+				min="1"
+				max="10000"
+				v-model="form.itemQuantity"
+			/>
+			<div class="text">{{ t('components.fileActor-inventory-equipment-id.label') }}</div>
+			<CustomBox
+				id="fileActor-inventory-equipment-id"
+				type="file"
+				filter="equipment"
+				v-model="form.equipmentId"
+			/>
+			<div class="text">{{ t('components.fileActor-inventory-money.label') }}</div>
+			<NumberBox
+				id="fileActor-inventory-money"
+				min="1"
+				max="100000000"
+				v-model="form.money"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -46,8 +69,5 @@ const onConfirm = () => {
 	Inspector?.fileActor?.inventory?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

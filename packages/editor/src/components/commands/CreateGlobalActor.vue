@@ -1,16 +1,26 @@
 <template>
-<WindowFrame id="createGlobalActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.createGlobalActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="createGlobalActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.createGlobalActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div
-			><CustomBox id="createGlobalActor-actorId" type="file" filter="actor" @input="onActorId" /><div class="text">Team</div><SelectBox id="createGlobalActor-teamId" v-model="form.teamId" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox
+				id="createGlobalActor-actorId"
+				type="file"
+				filter="actor"
+				@input="onActorId"
+			/>
+			<div class="text">Team</div>
+			<SelectBox id="createGlobalActor-teamId" v-model="form.teamId" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';
@@ -42,5 +52,4 @@ onMounted(() => {
 		clear($('#createGlobalActor-teamId'));
 	});
 });
-
 </script>

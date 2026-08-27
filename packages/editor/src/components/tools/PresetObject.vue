@@ -1,16 +1,23 @@
 <template>
-		<WindowFrame id="presetObject" mode="center" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.presetObject.title') }}<div class="close"></div></TitleBar></template>
-		
-			<CustomBox
-				id="presetObject-sceneId"
-				type="file"
-				filter="scene"
-				@write="onSceneIdWrite"
-			/>
-			<TreeList id="presetObject-list" :node-icon-renderer="nodeIconRenderer" @open="onListOpen" />
-			<TextBox id="presetObject-searcher" name="search" @input="onSearcherInput" @compositionend="onSearcherInput" />
-		
+	<WindowFrame id="presetObject" mode="center" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.presetObject.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<CustomBox id="presetObject-sceneId" type="file" filter="scene" @write="onSceneIdWrite" />
+		<TreeList
+			id="presetObject-list"
+			:node-icon-renderer="nodeIconRenderer"
+			@open="onListOpen"
+		/>
+		<TextBox
+			id="presetObject-searcher"
+			name="search"
+			@input="onSearcherInput"
+			@compositionend="onSearcherInput"
+		/>
 	</WindowFrame>
 </template>
 
@@ -55,7 +62,13 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 			const g = parseInt(hex.slice(2, 4), 16);
 			const b = parseInt(hex.slice(4, 6), 16);
 			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			return [h('span', { class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },  '\uf2c0')];
+			return [
+				h(
+					'span',
+					{ class: 'node-icon', style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } },
+					'\uf2c0'
+				)
+			];
 		}
 		case 'region': {
 			const hex = node.color ?? '';
@@ -72,14 +85,19 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 		}
 		case 'light':
 			return [
-				h('span', { class: 'node-icon', style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } }, 
+				h(
+					'span',
+					{
+						class: 'node-icon',
+						style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` }
+					},
 					'\uf006'
 				)
 			];
 		case 'animation':
-			return [h('span', { class: 'node-icon',},  '\uf110')];
+			return [h('span', { class: 'node-icon' }, '\uf110')];
 		case 'particle':
-			return [h('span', { class: 'node-icon',},  '\uf2dc')];
+			return [h('span', { class: 'node-icon' }, '\uf2dc')];
 		case 'parallax': {
 			const path = File.getPath?.(node.image);
 			if (path) {
@@ -90,10 +108,10 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 					})
 				];
 			}
-			return [h('span', { class: 'node-icon',},  '\uf1c5')];
+			return [h('span', { class: 'node-icon' }, '\uf1c5')];
 		}
 		case 'tilemap':
-			return [h('span', { class: 'node-icon',},  '\uf00a')];
+			return [h('span', { class: 'node-icon' }, '\uf00a')];
 		default:
 			return [h('span', { class: ['node-icon', 'icon-file'] })];
 	}
@@ -116,6 +134,5 @@ const onConfirm = () => {
 	PresetObject?.confirm?.();
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

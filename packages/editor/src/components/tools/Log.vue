@@ -1,9 +1,12 @@
 <template>
 	<WindowFrame id="log" no-buttons>
-		<template #title><TitleBar>Log<div class="close"></div></TitleBar></template>
-		
-			<CommonList id="log-list" />
-		
+		<template #title
+			><TitleBar
+				>Log
+				<div class="close"></div></TitleBar
+		></template>
+
+		<CommonList id="log-list" />
 	</WindowFrame>
 </template>
 
@@ -18,8 +21,5 @@ import CommonList from '@app/components/common/CommonList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

@@ -74,8 +74,14 @@ const on = (
 
 defineExpose({ read, write, update, on, root });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (isDisabled.value = val));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (isDisabled.value = val)
+);
 
 onMounted(() => {
 	const el = root.value as SwitchItemElement | null;

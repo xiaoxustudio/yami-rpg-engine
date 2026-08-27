@@ -24,7 +24,15 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), { id: '' });
 
-const ym = ref<{ root: HTMLElement | null; toggle(): void; on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void } | null>(null);
+const ym = ref<{
+	root: HTMLElement | null;
+	toggle(): void;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+} | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const toggle = (): void => ym.value?.toggle();

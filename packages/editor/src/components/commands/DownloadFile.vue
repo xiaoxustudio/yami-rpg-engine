@@ -1,25 +1,43 @@
 <template>
-<WindowFrame id="downloadFile" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.downloadFile.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="downloadFile" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.downloadFile.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">URL</div			><StringVar id="downloadFile-url" v-model="form.url" /> <div class="text">Header</div
-			><ParamList id="downloadFile-header" v-model="form.header" /> <div class="text">Method</div
-			><SelectBox id="downloadFile-method" v-model="form.method" /> <div class="text">Data</div
-			><ParamList id="downloadFile-data" v-model="form.data" /> <div class="text">CallBack</div
-			><CustomBox id="downloadFile-callback" type="file" filter="event" @input="onCallback" />
-			<div class="text">RateCallBack</div
-			><CustomBox id="downloadFile-rateCallback" type="file" filter="event" @input="onRateCallback" />
-			<div class="text">IsBackground</div
-			><CheckBox class="standard" id="downloadFile-isBackground" v-model="form.isBackground" @input="onIsBackgroundInput" />
-			<div class="text">Path</div><StringVar id="downloadFile-isBackground-path" v-model="form.isBackgroundPath" />
+			<div class="text">URL</div>
+			<StringVar id="downloadFile-url" v-model="form.url" />
+			<div class="text">Header</div>
+			<ParamList id="downloadFile-header" v-model="form.header" />
+			<div class="text">Method</div>
+			<SelectBox id="downloadFile-method" v-model="form.method" />
+			<div class="text">Data</div>
+			<ParamList id="downloadFile-data" v-model="form.data" />
+			<div class="text">CallBack</div>
+			<CustomBox id="downloadFile-callback" type="file" filter="event" @input="onCallback" />
+			<div class="text">RateCallBack</div>
+			<CustomBox
+				id="downloadFile-rateCallback"
+				type="file"
+				filter="event"
+				@input="onRateCallback"
+			/>
+			<div class="text">IsBackground</div>
+			<CheckBox
+				class="standard"
+				id="downloadFile-isBackground"
+				v-model="form.isBackground"
+				@input="onIsBackgroundInput"
+			/>
+			<div class="text">Path</div>
+			<StringVar id="downloadFile-isBackground-path" v-model="form.isBackgroundPath" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
@@ -70,5 +88,4 @@ onMounted(() => {
 	$('#downloadFile-header')?.bind?.(RequestkeyValueBind);
 	$('#downloadFile-data')?.bind?.(RequestkeyValueBind);
 });
-
 </script>

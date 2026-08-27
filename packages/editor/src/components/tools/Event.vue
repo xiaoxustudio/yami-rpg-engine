@@ -1,24 +1,29 @@
 <template>
 	<WindowFrame id="event" show-apply class="opaque" @apply="onApply">
-		<template #title><TitleBar id="event-title"
-			>{{ t('components.event.title') }}<div class="maximize"></div>
-			<div class="close"></div>
-		</TitleBar></template>
-		
-			<div class="field-set input pad" id="event-open-fieldset">
-				<div class="legend">{{ t('components.event-open-list.label') }}</div>
-				<TreeList id="event-open-list" :node-extras="nodeExtras" :node-icon-renderer="nodeIconRenderer" />
+		<template #title
+			><TitleBar id="event-title"
+				>{{ t('components.event.title') }}
+				<div class="maximize"></div>
+				<div class="close"></div> </TitleBar
+		></template>
+
+		<div class="field-set input pad" id="event-open-fieldset">
+			<div class="legend">{{ t('components.event-open-list.label') }}</div>
+			<TreeList
+				id="event-open-list"
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+			/>
+		</div>
+		<div class="field-set input pad" id="event-commands-fieldset">
+			<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
+			<div class="box" id="event-commands-gutter-background" />
+			<CommandList id="event-commands" />
+			<div class="box" id="event-commands-gutter-outer">
+				<div class="box" id="event-commands-gutter-inner" />
 			</div>
-			<div class="field-set input pad" id="event-commands-fieldset">
-				<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
-				<div class="box" id="event-commands-gutter-background" />
-				<CommandList id="event-commands" />
-				<div class="box" id="event-commands-gutter-outer">
-					<div class="box" id="event-commands-gutter-inner" />
-				</div>
-			</div>
-			<SelectBox id="event-type" />
-		
+		</div>
+		<SelectBox id="event-type" />
 	</WindowFrame>
 </template>
 
@@ -51,9 +56,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	}
 	let typeName = '';
 	if (node.type !== 'common') {
-		typeName =
-			' : ' +
-			removeTextTags(parseEventType(node.filter + '-event', node.type!));
+		typeName = ' : ' + removeTextTags(parseEventType(node.filter + '-event', node.type!));
 	}
 	return [h('div', { class: 'event-init-text text' }, typeName)];
 };
@@ -66,7 +69,9 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 				class: 'event-close-button text',
 				style: { pointerEvents: 'auto' },
 				onClick: () => {
-					EventEditor?.list?.close?.(item as Parameters<typeof EventEditor.list.close>[0]);
+					EventEditor?.list?.close?.(
+						item as Parameters<typeof EventEditor.list.close>[0]
+					);
 				}
 			},
 			'×'
@@ -78,8 +83,5 @@ const onApply = () => {
 	EventEditor?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

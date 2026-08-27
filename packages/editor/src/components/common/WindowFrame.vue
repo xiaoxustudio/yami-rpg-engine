@@ -85,14 +85,48 @@ const emit = defineEmits<{
 	cancel: [];
 }>();
 
-defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
+defineExpose({
+	open,
+	close,
+	maximize,
+	unmaximize,
+	focus,
+	blur,
+	setTitle,
+	absolute,
+	setPosition,
+	on,
+	root
+});
 
 onMounted(() => {
 	const el = root.value as HTMLElement &
-		// oxlint-disable-next-line no-explicit-any
-		Record<'open' | 'close' | 'maximize' | 'unmaximize' | 'focus' | 'blur' | 'setTitle' | 'absolute' | 'setPosition' | 'on', any>;
+		Record<
+			| 'open'
+			| 'close'
+			| 'maximize'
+			| 'unmaximize'
+			| 'focus'
+			| 'blur'
+			| 'setTitle'
+			| 'absolute'
+			| 'setPosition'
+			| 'on',
+			unknown
+		>;
 	if (!el) return;
-	attachElementApi(el, { open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on });
+	attachElementApi(el, {
+		open,
+		close,
+		maximize,
+		unmaximize,
+		focus,
+		blur,
+		setTitle,
+		absolute,
+		setPosition,
+		on
+	});
 	for (const type of ['confirm', 'apply', 'cancel'] as const) {
 		el.addEventListener(type, () => emit(type));
 	}
@@ -109,7 +143,9 @@ onMounted(() => {
 			const item = components[id];
 			if (item) {
 				const element =
-					rootEl.id === id ? rootEl : rootEl.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+					rootEl.id === id
+						? rootEl
+						: rootEl.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
 				if (element) setLocalElement(element, item);
 			}
 		}

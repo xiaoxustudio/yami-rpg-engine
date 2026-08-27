@@ -1,208 +1,171 @@
 <template>
 	<WindowFrame id="setString" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setString.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Variable</div
-				><CustomBox
-					id="setString-variable"
-					type="variable"
-					filter="writable-string"
-					@input="onVariable"
-				/>
-				<div class="text">Operation</div
-				><SelectBox id="setString-operation" v-model="form.operation" />
-				<div class="text">Type</div
-				><SelectBox
-					id="setString-operand-type"
-					v-model="form.operandType"
-					@write="onWrite"
-				/>
-				<div class="text">String</div
-				><TextArea
-					id="setString-operand-common-value"
-					menu="tag-local-var tag-global-var tag-localization"
-					v-model="form.commonValue"
-				/>
-				<div class="text">String Method</div
-				><SelectBox
-					id="setString-operand-string-method"
-					v-model="form.stringMethod"
-				/>
-				<div class="text">Variable</div
-				><CustomBox
-					id="setString-operand-common-variable"
-					type="variable"
-					filter="all"
-					@input="onCommonVariable"
-				/>
-				<div class="text">Index</div
-				><NumberVar
-					id="setString-operand-string-char-index"
-					min="0"
-					max="1000000000"
-					v-model="form.stringCharIndex"
-				/>
-				<div class="text">Begin Index</div
-				><NumberVar
-					id="setString-operand-string-slice-begin"
-					min="-1000000000"
-					max="1000000000"
-					v-model="form.stringSliceBegin"
-				/>
-				<div class="text">End Index</div
-				><NumberVar
-					id="setString-operand-string-slice-end"
-					min="-1000000000"
-					max="1000000000"
-					v-model="form.stringSliceEnd"
-				/>
-				<div class="text">Target Length</div
-				><NumberBox
-					id="setString-operand-string-pad-start-length"
-					min="2"
-					max="10"
-					v-model="form.stringPadStartLength"
-				/>
-				<div class="text">Pad String</div
-				><TextBox
-					id="setString-operand-string-pad-start-pad"
-					v-model="form.stringPadStartPad"
-				/>
-				<div class="text">Substring</div
-				><StringVar
-					id="setString-operand-string-replace-pattern"
-					v-model="form.stringReplacePattern"
-				/>
-				<div class="text">Replacement</div
-				><StringVar
-					id="setString-operand-string-replace-replacement"
-					v-model="form.stringReplaceReplacement"
-				/>
-				<div class="text">Attribute Key</div
-				><CustomBox
-					id="setString-operand-attribute-attributeId"
-					type="attribute"
-					@input="onAttributeId"
-				/>
-				<div class="text">Enum String</div
-				><CustomBox
-					id="setString-operand-enum-stringId"
-					type="enum-string"
-					@input="onEnumStringId"
-				/>
-				<div class="text">Property</div
-				><SelectBox
-					id="setString-operand-object-property"
-					v-model="form.objectProperty"
-				/>
-				<div class="text">Property</div
-				><SelectBox
-					id="setString-operand-element-property"
-					v-model="form.elementProperty"
-				/>
-				<div class="text">Element</div
-				><CustomBox
-					id="setString-operand-element-element"
-					type="element"
-					@input="onElementElement"
-				/>
-				<div class="text">Actor</div
-				><CustomBox
-					id="setString-operand-common-actor"
-					type="actor"
-					@input="onCommonActor"
-				/>
-				<div class="text">Skill</div
-				><CustomBox
-					id="setString-operand-common-skill"
-					type="skill"
-					@input="onCommonSkill"
-				/>
-				<div class="text">Trigger</div
-				><CustomBox
-					id="setString-operand-common-trigger"
-					type="trigger"
-					@input="onCommonTrigger"
-				/>
-				<div class="text">State</div
-				><CustomBox
-					id="setString-operand-common-state"
-					type="state"
-					@input="onCommonState"
-				/>
-				<div class="text">Equipment</div
-				><CustomBox
-					id="setString-operand-common-equipment"
-					type="equipment"
-					@input="onCommonEquipment"
-				/>
-				<div class="text">Item</div
-				><CustomBox
-					id="setString-operand-common-item"
-					type="item"
-					@input="onCommonItem"
-				/>
-				<div class="text">File</div
-				><CustomBox
-					id="setString-operand-object-fileId"
-					type="file"
-					@input="onObjectFileId"
-				/>
-				<div class="text">Index</div
-				><NumberVar
-					id="setString-operand-list-index"
-					min="0"
-					max="1000000000"
-					v-model="form.listIndex"
-				/>
-				<div class="text">Param Name</div
-				><StringVar
-					id="setString-operand-parameter-key"
-					v-model="form.parameterKey"
-				/>
-				<div class="text">Script</div
-				><TextBox id="setString-operand-script" v-model="form.script" /> <div class="text">Data</div
-				><SelectBox
-					id="setString-operand-other-data"
-					v-model="form.otherData"
-				/> <div class="text">Choice Index</div
-				><NumberVar
-					id="setString-operand-showChoices-content-choiceIndex"
-					min="0"
-					max="255"
-					v-model="form.showChoicesIndex"
-				/>
-				<div class="text">Timestamp</div
-				><CustomBox
-					id="setString-operand-parse-timestamp-variable"
-					type="variable"
-					filter="number"
-					@input="onParseTimestampVariable"
-				/>
-				<div class="text">Date Format</div
-				><TextBox
-					id="setString-operand-parse-timestamp-format"
-					v-model="form.parseTimestampFormat"
-				/>
-				<div class="text">Image Width</div
-				><NumberBox
-					id="setString-operand-screenshot-width"
-					min="64"
-					max="7680"
-					unit="px"
-					v-model="form.screenshotWidth"
-				/>
-				<div class="text">Image Height</div
-				><NumberBox
-					id="setString-operand-screenshot-height"
-					min="64"
-					max="7680"
-					unit="px"
-					v-model="form.screenshotHeight"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setString.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setString-variable"
+				type="variable"
+				filter="writable-string"
+				@input="onVariable"
+			/>
+			<div class="text">Operation</div>
+			<SelectBox id="setString-operation" v-model="form.operation" />
+			<div class="text">Type</div>
+			<SelectBox id="setString-operand-type" v-model="form.operandType" @write="onWrite" />
+			<div class="text">String</div>
+			<TextArea
+				id="setString-operand-common-value"
+				menu="tag-local-var tag-global-var tag-localization"
+				v-model="form.commonValue"
+			/>
+			<div class="text">String Method</div>
+			<SelectBox id="setString-operand-string-method" v-model="form.stringMethod" />
+			<div class="text">Variable</div>
+			<CustomBox
+				id="setString-operand-common-variable"
+				type="variable"
+				filter="all"
+				@input="onCommonVariable"
+			/>
+			<div class="text">Index</div>
+			<NumberVar
+				id="setString-operand-string-char-index"
+				min="0"
+				max="1000000000"
+				v-model="form.stringCharIndex"
+			/>
+			<div class="text">Begin Index</div>
+			<NumberVar
+				id="setString-operand-string-slice-begin"
+				min="-1000000000"
+				max="1000000000"
+				v-model="form.stringSliceBegin"
+			/>
+			<div class="text">End Index</div>
+			<NumberVar
+				id="setString-operand-string-slice-end"
+				min="-1000000000"
+				max="1000000000"
+				v-model="form.stringSliceEnd"
+			/>
+			<div class="text">Target Length</div>
+			<NumberBox
+				id="setString-operand-string-pad-start-length"
+				min="2"
+				max="10"
+				v-model="form.stringPadStartLength"
+			/>
+			<div class="text">Pad String</div>
+			<TextBox id="setString-operand-string-pad-start-pad" v-model="form.stringPadStartPad" />
+			<div class="text">Substring</div>
+			<StringVar
+				id="setString-operand-string-replace-pattern"
+				v-model="form.stringReplacePattern"
+			/>
+			<div class="text">Replacement</div>
+			<StringVar
+				id="setString-operand-string-replace-replacement"
+				v-model="form.stringReplaceReplacement"
+			/>
+			<div class="text">Attribute Key</div>
+			<CustomBox
+				id="setString-operand-attribute-attributeId"
+				type="attribute"
+				@input="onAttributeId"
+			/>
+			<div class="text">Enum String</div>
+			<CustomBox
+				id="setString-operand-enum-stringId"
+				type="enum-string"
+				@input="onEnumStringId"
+			/>
+			<div class="text">Property</div>
+			<SelectBox id="setString-operand-object-property" v-model="form.objectProperty" />
+			<div class="text">Property</div>
+			<SelectBox id="setString-operand-element-property" v-model="form.elementProperty" />
+			<div class="text">Element</div>
+			<CustomBox
+				id="setString-operand-element-element"
+				type="element"
+				@input="onElementElement"
+			/>
+			<div class="text">Actor</div>
+			<CustomBox id="setString-operand-common-actor" type="actor" @input="onCommonActor" />
+			<div class="text">Skill</div>
+			<CustomBox id="setString-operand-common-skill" type="skill" @input="onCommonSkill" />
+			<div class="text">Trigger</div>
+			<CustomBox
+				id="setString-operand-common-trigger"
+				type="trigger"
+				@input="onCommonTrigger"
+			/>
+			<div class="text">State</div>
+			<CustomBox id="setString-operand-common-state" type="state" @input="onCommonState" />
+			<div class="text">Equipment</div>
+			<CustomBox
+				id="setString-operand-common-equipment"
+				type="equipment"
+				@input="onCommonEquipment"
+			/>
+			<div class="text">Item</div>
+			<CustomBox id="setString-operand-common-item" type="item" @input="onCommonItem" />
+			<div class="text">File</div>
+			<CustomBox id="setString-operand-object-fileId" type="file" @input="onObjectFileId" />
+			<div class="text">Index</div>
+			<NumberVar
+				id="setString-operand-list-index"
+				min="0"
+				max="1000000000"
+				v-model="form.listIndex"
+			/>
+			<div class="text">Param Name</div>
+			<StringVar id="setString-operand-parameter-key" v-model="form.parameterKey" />
+			<div class="text">Script</div>
+			<TextBox id="setString-operand-script" v-model="form.script" />
+			<div class="text">Data</div>
+			<SelectBox id="setString-operand-other-data" v-model="form.otherData" />
+			<div class="text">Choice Index</div>
+			<NumberVar
+				id="setString-operand-showChoices-content-choiceIndex"
+				min="0"
+				max="255"
+				v-model="form.showChoicesIndex"
+			/>
+			<div class="text">Timestamp</div>
+			<CustomBox
+				id="setString-operand-parse-timestamp-variable"
+				type="variable"
+				filter="number"
+				@input="onParseTimestampVariable"
+			/>
+			<div class="text">Date Format</div>
+			<TextBox
+				id="setString-operand-parse-timestamp-format"
+				v-model="form.parseTimestampFormat"
+			/>
+			<div class="text">Image Width</div>
+			<NumberBox
+				id="setString-operand-screenshot-width"
+				min="64"
+				max="7680"
+				unit="px"
+				v-model="form.screenshotWidth"
+			/>
+			<div class="text">Image Height</div>
+			<NumberBox
+				id="setString-operand-screenshot-height"
+				min="64"
+				max="7680"
+				unit="px"
+				v-model="form.screenshotHeight"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -407,7 +370,10 @@ onMounted(() => {
 		{ name: get('object.skill-file-id') || 'Skill - File ID', value: 'skill-file-id' },
 		{ name: get('object.trigger-file-id') || 'Trigger - File ID', value: 'trigger-file-id' },
 		{ name: get('object.state-file-id') || 'State - File ID', value: 'state-file-id' },
-		{ name: get('object.equipment-file-id') || 'Equipment - File ID', value: 'equipment-file-id' },
+		{
+			name: get('object.equipment-file-id') || 'Equipment - File ID',
+			value: 'equipment-file-id'
+		},
 		{ name: get('object.equipment-slot') || 'Equipment - Slot', value: 'equipment-slot' },
 		{ name: get('object.item-file-id') || 'Item - File ID', value: 'item-file-id' },
 		{ name: get('object.file-id') || 'File - ID', value: 'file-id' }
@@ -447,7 +413,10 @@ onMounted(() => {
 	$('#setString-operand-element-property')?.loadItems?.([
 		{ name: get('element.text-content') || 'Text - Content', value: 'text-content' },
 		{ name: get('element.textBox-text') || 'Text Box - Text', value: 'textBox-text' },
-		{ name: get('element.dialogBox-content') || 'Dialog Box - Content', value: 'dialogBox-content' }
+		{
+			name: get('element.dialogBox-content') || 'Dialog Box - Content',
+			value: 'dialogBox-content'
+		}
 	]);
 	$('#setString-operand-other-data')?.loadItems?.([
 		{ name: get('other.trigger-key') || 'Event Trigger Key', value: 'trigger-key' },
@@ -456,7 +425,10 @@ onMounted(() => {
 			value: 'start-position-scene-id'
 		},
 		{ name: get('other.showText-content') || 'Show Text - Content', value: 'showText-content' },
-		{ name: get('other.showChoices-content') || 'Show Choices - Content', value: 'showChoices-content' },
+		{
+			name: get('other.showChoices-content') || 'Show Choices - Content',
+			value: 'showChoices-content'
+		},
 		{ name: get('other.parse-timestamp') || 'Parse Timestamp', value: 'parse-timestamp' },
 		{ name: get('other.screenshot') || 'Screenshot(Base64)', value: 'screenshot' },
 		{ name: get('other.game-language') || 'Game Language', value: 'game-language' }

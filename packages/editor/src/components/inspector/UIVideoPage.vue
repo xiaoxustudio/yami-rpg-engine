@@ -1,20 +1,32 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.uiVideo-properties-grid.label') || 'Video Properties' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.uiVideo-properties-grid.label') || 'Video Properties'
+		}}</DetailSummary>
 		<div class="detail-grid" id="uiVideo-properties-grid">
-			<div class="text">{{ t('components.uiVideo-video.label') || 'Video' }}</div
-			><CustomBox id="uiVideo-video" type="file" filter="video" @input="onParamInput"></CustomBox>
-			<div class="text">{{ t('components.uiVideo-playbackRate.label') || 'Playback Rate' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.uiVideo-video.label') || 'Video' }}</div>
+			<CustomBox
+				id="uiVideo-video"
+				type="file"
+				filter="video"
+				@input="onParamInput"
+			></CustomBox>
+			<div class="text">
+				{{ t('components.uiVideo-playbackRate.label') || 'Playback Rate' }}
+			</div>
+			<NumberBox
 				id="uiVideo-playbackRate"
 				min="0"
 				max="4"
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div><SelectBox id="uiVideo-loop" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div><SelectBox id="uiVideo-flip" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div><SelectBox id="uiVideo-blend" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div>
+			<SelectBox id="uiVideo-loop" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div>
+			<SelectBox id="uiVideo-flip" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div>
+			<SelectBox id="uiVideo-blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -45,7 +57,9 @@ onMounted(() => {
 	const editor = Inspector.uiVideo;
 	if (!editor) return;
 
-	const elLoop = document.getElementById('uiVideo-loop') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elLoop = document.getElementById('uiVideo-loop') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elLoop?.loadItems) {
 		elLoop.loadItems([
 			{ name: 'Once', value: false },
@@ -53,7 +67,9 @@ onMounted(() => {
 		]);
 	}
 
-	const elFlip = document.getElementById('uiVideo-flip') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elFlip = document.getElementById('uiVideo-flip') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elFlip?.loadItems) {
 		elFlip.loadItems([
 			{ name: 'None', value: 'none' },
@@ -63,7 +79,9 @@ onMounted(() => {
 		]);
 	}
 
-	const elBlend = document.getElementById('uiVideo-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elBlend = document.getElementById('uiVideo-blend') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elBlend?.loadItems) {
 		elBlend.loadItems([
 			{ name: 'Normal', value: 'normal' },
@@ -72,7 +90,9 @@ onMounted(() => {
 		]);
 	}
 
-	const elements = document.querySelectorAll('#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend');
+	const elements = document.querySelectorAll(
+		'#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend'
+	);
 	bindInput(elements, editor, UI);
 });
 </script>

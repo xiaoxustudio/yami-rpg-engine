@@ -1,9 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.animSoundLayer-properties-grid.label') || 'Sound Layer' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.animSoundLayer-properties-grid.label') || 'Sound Layer'
+		}}</DetailSummary>
 		<div class="detail-grid" id="animSoundLayer-properties-grid">
-			<div class="text">{{ t('components.animSoundLayer-playbackRate.label') || 'Playback Rate' }}</div
-			><SelectBox id="animSoundLayer-playbackRate" v-model="form.playbackRate" @input="onParamInput"></SelectBox>
+			<div class="text">
+				{{ t('components.animSoundLayer-playbackRate.label') || 'Playback Rate' }}
+			</div>
+			<SelectBox
+				id="animSoundLayer-playbackRate"
+				v-model="form.playbackRate"
+				@input="onParamInput"
+			></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -31,15 +39,22 @@ onMounted(() => {
 	if (animSoundLayer) {
 		const el = document.getElementById('animSoundLayer-playbackRate');
 		if (el) {
-			(el as unknown as { loadItems: (items: { name: string; value: string }[]) => void }).loadItems([
+			(
+				el as unknown as { loadItems: (items: { name: string; value: string }[]) => void }
+			).loadItems([
 				{ name: 'Default', value: 'default' },
 				{ name: 'Inherit', value: 'inherit' }
 			]);
-			bindInput([el], animSoundLayer, Animation, (data: { type: string; [k: string]: unknown }) => {
-				data.type = 'inspector-layer-change';
-				data.motion = animSoundLayer.motion;
-				data.direction = Animation.direction;
-			});
+			bindInput(
+				[el],
+				animSoundLayer,
+				Animation,
+				(data: { type: string; [k: string]: unknown }) => {
+					data.type = 'inspector-layer-change';
+					data.motion = animSoundLayer.motion;
+					data.direction = Animation.direction;
+				}
+			);
 		}
 	}
 	const el = document.getElementById('animSoundLayer-vue-mount');

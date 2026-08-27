@@ -1,15 +1,21 @@
 <template>
-<WindowFrame id="setActive" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setActive.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setActive" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setActive.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setActive-actor" type="actor" @input="onActor" /><div class="text">State</div><SelectBox id="setActive-active" v-model="form.active" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="setActive-actor" type="actor" @input="onActor" />
+			<div class="text">State</div>
+			<SelectBox id="setActive-active" v-model="form.active" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetActiveCommandSchema } from '@app/composables/commands/useSetActiveCommandSchema';
@@ -39,5 +45,4 @@ onMounted(() => {
 		{ name: get('active.false') || 'Inactive', value: false }
 	]);
 });
-
 </script>

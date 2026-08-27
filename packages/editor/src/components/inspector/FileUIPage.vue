@@ -1,11 +1,13 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileUI-foreground-grid.label') || 'Stage Foreground' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileUI-foreground-grid.label') || 'Stage Foreground'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileUI-foreground-grid">
-			<div class="text">{{ t('components.fileUI-width.label') || 'Width' }}</div
-			><NumberBox id="fileUI-width" min="8" max="7680" unit="px" @input="onParamInput" />
-			<div class="text">{{ t('components.fileUI-height.label') || 'Height' }}</div
-			><NumberBox id="fileUI-height" min="8" max="7680" unit="px" @input="onParamInput" />
+			<div class="text">{{ t('components.fileUI-width.label') || 'Width' }}</div>
+			<NumberBox id="fileUI-width" min="8" max="7680" unit="px" @input="onParamInput" />
+			<div class="text">{{ t('components.fileUI-height.label') || 'Height' }}</div>
+			<NumberBox id="fileUI-height" min="8" max="7680" unit="px" @input="onParamInput" />
 		</div>
 	</DetailBox>
 </template>
@@ -26,6 +28,5 @@ const onParamInput = (event: Event) => {
 	Inspector?.fileUI?.paramInput?.({ target });
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

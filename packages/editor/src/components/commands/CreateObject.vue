@@ -1,19 +1,26 @@
 <template>
 	<WindowFrame id="createObject" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.createObject.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Object</div
-				><CustomBox id="createObject-presetId" type="preset-object" filter="any" @input="onPresetId" />
-				<div class="text">Position</div
-				><CustomBox id="createObject-position" type="position" @input="onPosition" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.createObject.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Object</div>
+			<CustomBox
+				id="createObject-presetId"
+				type="preset-object"
+				filter="any"
+				@input="onPresetId"
+			/>
+			<div class="text">Position</div>
+			<CustomBox id="createObject-position" type="position" @input="onPosition" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useCreateObjectCommandSchema } from '@app/composables/commands/useCreateObjectCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -35,5 +42,4 @@ const onPosition = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

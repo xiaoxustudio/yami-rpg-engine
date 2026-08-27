@@ -1,24 +1,32 @@
 <template>
-		<WindowFrame id="newProject" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.newProject.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.newProject-template.label') }}</div><SelectBox id="newProject-template" v-model="form.template" @input="onTemplateInput" />
-				<div class="text">{{ t('components.newProject-folder.label') }}</div
-				><TextBox
-					id="newProject-folder"
-					v-model="form.folder"
-					@beforeinput="onFolderBeforeinput"
-					@input="onFolderInput"
+	<WindowFrame id="newProject" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.newProject.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.newProject-template.label') }}</div>
+			<SelectBox id="newProject-template" v-model="form.template" @input="onTemplateInput" />
+			<div class="text">{{ t('components.newProject-folder.label') }}</div>
+			<TextBox
+				id="newProject-folder"
+				v-model="form.folder"
+				@beforeinput="onFolderBeforeinput"
+				@input="onFolderInput"
+			/>
+			<div class="text">{{ t('components.newProject-location-box.label') }}</div>
+			<div class="flex-box" id="newProject-location-box">
+				<TextBox
+					id="newProject-location"
+					v-model="form.location"
+					@input="onLocationInput"
 				/>
-				<div class="text">{{ t('components.newProject-location-box.label') }}</div>
-				<div class="flex-box" id="newProject-location-box">
-					<TextBox id="newProject-location" v-model="form.location" @input="onLocationInput" />
-					<button id="newProject-choose" @click="onChooseClick">…</button>
-				</div>
+				<button id="newProject-choose" @click="onChooseClick">…</button>
 			</div>
-			<div class="text" id="newProject-warning" />
-		
+		</div>
+		<div class="text" id="newProject-warning" />
 	</WindowFrame>
 </template>
 
@@ -59,6 +67,5 @@ const onConfirm = () => {
 	NewProject?.confirm?.();
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 </script>

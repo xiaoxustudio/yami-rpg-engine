@@ -1,10 +1,11 @@
 <template>
 	<WindowFrame id="preventSceneInput">
-		<template #title><TitleBar>Prevent Scene Input<div class="close" /></TitleBar></template>
-		
-		
+		<template #title
+			><TitleBar
+				>Prevent Scene Input
+				<div class="close" /></TitleBar
+		></template>
 	</WindowFrame>
-	
 </template>
 
 <script lang="ts">

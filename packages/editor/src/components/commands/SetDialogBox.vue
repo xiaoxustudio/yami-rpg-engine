@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setDialogBox" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setDialogBox.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setDialogBox-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setDialogBox-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setDialogBox.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setDialogBox-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setDialogBox-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetDialogBoxCommandSchema } from '@app/composables/commands/useSetDialogBoxCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setDialogBox-properties'));
 	});
 });
-
 </script>

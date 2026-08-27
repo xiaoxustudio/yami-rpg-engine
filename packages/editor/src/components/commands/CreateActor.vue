@@ -1,25 +1,32 @@
 <template>
-<WindowFrame id="createActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.createActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="createActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.createActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div
-			><CustomBox id="createActor-actorId" type="file" filter="actor" @input="onActorId" /><div class="text">Team</div><SelectBox id="createActor-teamId" v-model="form.teamId" /><div class="text">Position</div
-			><CustomBox id="createActor-position" type="position" @input="onPosition" /><div class="text">Angle</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="createActor-actorId" type="file" filter="actor" @input="onActorId" />
+			<div class="text">Team</div>
+			<SelectBox id="createActor-teamId" v-model="form.teamId" />
+			<div class="text">Position</div>
+			<CustomBox id="createActor-position" type="position" @input="onPosition" />
+			<div class="text">Angle</div>
+			<NumberVar
 				id="createActor-angle"
 				min="-360"
 				max="360"
 				decimals="4"
 				unit="deg"
 				v-model="form.angle"
-			 /></div>
-
-</WindowFrame>
+			/>
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateActorCommandSchema } from '@app/composables/commands/useCreateActorCommandSchema';
@@ -56,5 +63,4 @@ onMounted(() => {
 		clear($('#createActor-teamId'));
 	});
 });
-
 </script>

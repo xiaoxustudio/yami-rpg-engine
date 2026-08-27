@@ -1,16 +1,23 @@
 <template>
-<WindowFrame id="changeActorMotion" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorMotion.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorMotion" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorMotion.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorMotion-actor" type="actor" @input="onActor" /><div class="text">Type</div><SelectBox id="changeActorMotion-type" v-model="form.type" /><div class="text">Motion</div
-			><CustomBox id="changeActorMotion-motion" type="enum-string" @input="onMotion" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorMotion-actor" type="actor" @input="onActor" />
+			<div class="text">Type</div>
+			<SelectBox id="changeActorMotion-type" v-model="form.type" />
+			<div class="text">Motion</div>
+			<CustomBox id="changeActorMotion-motion" type="enum-string" @input="onMotion" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorMotionCommandSchema } from '@app/composables/commands/useChangeActorMotionCommandSchema';
@@ -44,5 +51,4 @@ onMounted(() => {
 		{ name: get('type.move') || 'Move', value: 'move' }
 	]);
 });
-
 </script>

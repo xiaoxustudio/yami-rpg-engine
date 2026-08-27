@@ -1,14 +1,15 @@
 <template>
 	<WindowFrame id="script" @confirm="onConfirm">
-		<template #title><TitleBar
-			>Script<div class="text hidden" id="script-mark">✱</div>
-			<button id="script-change" name="script-change-ts">切换为TS</button>
-			<div class="maximize" id="script-maximize" />
-			<div class="close" />
-		</TitleBar></template>
-		
-			<div class="box" id="script-script"> </div>
-		
+		<template #title
+			><TitleBar
+				>Script
+				<div class="text hidden" id="script-mark">✱</div>
+				<button id="script-change" name="script-change-ts">切换为TS</button>
+				<div class="maximize" id="script-maximize" />
+				<div class="close" /> </TitleBar
+		></template>
+
+		<div class="box" id="script-script"></div>
 	</WindowFrame>
 </template>
 

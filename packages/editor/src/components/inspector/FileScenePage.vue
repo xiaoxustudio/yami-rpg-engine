@@ -2,20 +2,40 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScene-general-grid.label') || 'Scene' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-general-grid">
-			<div class="text">{{ t('components.fileScene-width.label') || 'Width' }}</div
-			><NumberBox id="fileScene-width" v-model="form.width" min="0" max="512" unit="tile" @change="onParamInput" />
-			<div class="text">{{ t('components.fileScene-height.label') || 'Height' }}</div
-			><NumberBox id="fileScene-height" v-model="form.height" min="0" max="512" unit="tile" @change="onParamInput" />
-			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div
-			><NumberBox
-				id="fileScene-tileWidth" v-model="form.tileWidth" @input="onParamInput"
+			<div class="text">{{ t('components.fileScene-width.label') || 'Width' }}</div>
+			<NumberBox
+				id="fileScene-width"
+				v-model="form.width"
+				min="0"
+				max="512"
+				unit="tile"
+				@change="onParamInput"
+			/>
+			<div class="text">{{ t('components.fileScene-height.label') || 'Height' }}</div>
+			<NumberBox
+				id="fileScene-height"
+				v-model="form.height"
+				min="0"
+				max="512"
+				unit="tile"
+				@change="onParamInput"
+			/>
+			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div>
+			<NumberBox
+				id="fileScene-tileWidth"
+				v-model="form.tileWidth"
+				@input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
 			/>
-			<div class="text">{{ t('components.fileScene-tileHeight.label') || 'Tile Height' }}</div
-			><NumberBox
-				id="fileScene-tileHeight" v-model="form.tileHeight" @input="onParamInput"
+			<div class="text">
+				{{ t('components.fileScene-tileHeight.label') || 'Tile Height' }}
+			</div>
+			<NumberBox
+				id="fileScene-tileHeight"
+				v-model="form.tileHeight"
+				@input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
@@ -23,7 +43,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileScene-ambient-grid.label') || 'Ambient Light' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileScene-ambient-grid.label') || 'Ambient Light'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileScene-ambient-grid">
 			<div class="text">{{ t('components.fileScene-ambient-red-box.label') || 'Red' }}</div>
 			<div class="flex-box" id="fileScene-ambient-red-box">
@@ -35,13 +57,17 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-red" v-model="form.ambientRed" @input="onParamInput"
+					id="fileScene-ambient-red"
+					v-model="form.ambientRed"
+					@input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
 				/>
 			</div>
-			<div class="text">{{ t('components.fileScene-ambient-green-box.label') || 'Green' }}</div>
+			<div class="text">
+				{{ t('components.fileScene-ambient-green-box.label') || 'Green' }}
+			</div>
 			<div class="flex-box" id="fileScene-ambient-green-box">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
@@ -51,7 +77,9 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-green" v-model="form.ambientGreen" @input="onParamInput"
+					id="fileScene-ambient-green"
+					v-model="form.ambientGreen"
+					@input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -67,13 +95,17 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-blue" v-model="form.ambientBlue" @input="onParamInput"
+					id="fileScene-ambient-blue"
+					v-model="form.ambientBlue"
+					@input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
 				/>
 			</div>
-			<div class="text">{{ t('components.fileScene-ambient-direct-box.label') || 'Direct Light Ratio' }}</div>
+			<div class="text">
+				{{ t('components.fileScene-ambient-direct-box.label') || 'Direct Light Ratio' }}
+			</div>
 			<div class="flex-box" id="fileScene-ambient-direct-box">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"
@@ -83,7 +115,9 @@
 					step="0.05"
 				/>
 				<NumberBox
-					id="fileScene-ambient-direct" v-model="form.ambientDirect" @input="onParamInput"
+					id="fileScene-ambient-direct"
+					v-model="form.ambientDirect"
+					@input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -94,20 +128,11 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScene-events.label') || 'Events' }}</DetailSummary>
-		<ParamList
-			id="fileScene-events"
-			class="inspector-list"
-			filter="scene"
-			flexible
-		/>
+		<ParamList id="fileScene-events" class="inspector-list" filter="scene" flexible />
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScene-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="fileScene-scripts"
-			class="inspector-list"
-			flexible
-		/>
+		<ParamList id="fileScene-scripts" class="inspector-list" flexible />
 	</DetailBox>
 	<ParameterPane id="fileScene-parameter-pane" />
 </template>
@@ -146,15 +171,25 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	document.getElementById('fileScene-ambient-red-slider')?.synchronize?.(document.getElementById('fileScene-ambient-red'));
-	document.getElementById('fileScene-ambient-green-slider')?.synchronize?.(document.getElementById('fileScene-ambient-green'));
-	document.getElementById('fileScene-ambient-blue-slider')?.synchronize?.(document.getElementById('fileScene-ambient-blue'));
-	document.getElementById('fileScene-ambient-direct-slider')?.synchronize?.(document.getElementById('fileScene-ambient-direct'));
+	document
+		.getElementById('fileScene-ambient-red-slider')
+		?.synchronize?.(document.getElementById('fileScene-ambient-red'));
+	document
+		.getElementById('fileScene-ambient-green-slider')
+		?.synchronize?.(document.getElementById('fileScene-ambient-green'));
+	document
+		.getElementById('fileScene-ambient-blue-slider')
+		?.synchronize?.(document.getElementById('fileScene-ambient-blue'));
+	document
+		.getElementById('fileScene-ambient-direct-slider')
+		?.synchronize?.(document.getElementById('fileScene-ambient-direct'));
 
 	const owner = editor.owner;
 	document.getElementById('fileScene-events')?.bind?.(new EventListInterface(editor, owner));
 	document.getElementById('fileScene-scripts')?.bind?.(new ScriptListInterface(editor, owner));
-	document.getElementById('fileScene-parameter-pane')?.bind?.(document.getElementById('fileScene-scripts'));
+	document
+		.getElementById('fileScene-parameter-pane')
+		?.bind?.(document.getElementById('fileScene-scripts'));
 
 	const elements = document.querySelectorAll(
 		'#fileScene-tileWidth, #fileScene-tileHeight, #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct'
@@ -164,7 +199,8 @@ onMounted(() => {
 	);
 	bindInput(elements, editor, owner);
 	bindSliders(sliders);
-	document.querySelectorAll('#fileScene-events, #fileScene-scripts')
+	document
+		.querySelectorAll('#fileScene-events, #fileScene-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

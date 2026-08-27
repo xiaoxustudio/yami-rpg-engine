@@ -1,33 +1,67 @@
 <template>
 	<!-- 公告窗口 -->
 	<WindowFrame id="update-log" no-buttons>
-		<template #title><TitleBar>{{ t('components.update-log.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="box" id="update-log-tabs" @click="onTabsClick">
-				<button id="update-log-tab-internal" class="update-log-tab" :class="{ active: mode === 'internal' }">{{ tabInternal }}</button>
-				<button id="update-log-tab-community" class="update-log-tab" :class="{ active: mode === 'community' }">{{ tabCommunity }}</button>
-				<button id="update-log-tab-donation" class="update-log-tab" :class="{ active: mode === 'donation' }">{{ tabDonation }}</button>
-			</div>
-			<div class="box" id="update-log-container">
-				<div class="box" id="update-log-content">
-					<template v-if="mode === 'donation'">
-						<div class="update-log-title text"><b>感谢以下捐赠者对项目的支持！</b></div>
-						<div class="box donation-list">
-							<div v-for="donor in donors" :key="donor.name" class="text donation-item">
-								<a href="#" @click.prevent="onDonorClick(donor)">{{ donor.name }}</a>: ￥{{ donor.amount.toFixed(2) }}
-							</div>
+		<template #title
+			><TitleBar
+				>{{ t('components.update-log.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="box" id="update-log-tabs" @click="onTabsClick">
+			<button
+				id="update-log-tab-internal"
+				class="update-log-tab"
+				:class="{ active: mode === 'internal' }"
+			>
+				{{ tabInternal }}
+			</button>
+			<button
+				id="update-log-tab-community"
+				class="update-log-tab"
+				:class="{ active: mode === 'community' }"
+			>
+				{{ tabCommunity }}
+			</button>
+			<button
+				id="update-log-tab-donation"
+				class="update-log-tab"
+				:class="{ active: mode === 'donation' }"
+			>
+				{{ tabDonation }}
+			</button>
+		</div>
+		<div class="box" id="update-log-container">
+			<div class="box" id="update-log-content">
+				<template v-if="mode === 'donation'">
+					<div class="update-log-title text"><b>感谢以下捐赠者对项目的支持！</b></div>
+					<div class="box donation-list">
+						<div v-for="donor in donors" :key="donor.name" class="text donation-item">
+							<a href="#" @click.prevent="onDonorClick(donor)">{{ donor.name }}</a
+							>: ￥{{ donor.amount.toFixed(2) }}
 						</div>
-					</template>
-					<template v-else>
+					</div>
+				</template>
+				<template v-else>
 					<template v-for="(item, index) in items" :key="index">
-						<div v-if="item.title" class="update-log-title text" v-html="item.titleHtml"></div>
-						<div v-if="item.major" class="update-log-major text" v-html="item.majorHtml"></div>
-						<div v-if="item.minor" class="update-log-minor text" v-html="item.minorHtml"></div>
+						<div
+							v-if="item.title"
+							class="update-log-title text"
+							v-html="item.titleHtml"
+						></div>
+						<div
+							v-if="item.major"
+							class="update-log-major text"
+							v-html="item.majorHtml"
+						></div>
+						<div
+							v-if="item.minor"
+							class="update-log-minor text"
+							v-html="item.minorHtml"
+						></div>
 					</template>
-					</template>
-				</div>
+				</template>
 			</div>
-		
+		</div>
 	</WindowFrame>
 </template>
 
@@ -67,14 +101,15 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const mode = ref<string>('internal');
-const items = ref<Array<UpdateLogItem & { titleHtml?: string; majorHtml?: string; minorHtml?: string }>>([]);
+const items = ref<
+	Array<UpdateLogItem & { titleHtml?: string; majorHtml?: string; minorHtml?: string }>
+>([]);
 
 const md = (text: string): string => markndownToHtml(text);
 
 const refresh = () => {
 	mode.value = UpdateLog.currentMode ?? 'internal';
-	const raw =
-		mode.value === 'internal' ? UpdateLog.internalItems : UpdateLog.communityItems;
+	const raw = mode.value === 'internal' ? UpdateLog.internalItems : UpdateLog.communityItems;
 	// oxlint-disable-next-line no-map-spread
 	items.value = (raw ?? []).map((item) => ({
 		...item,
@@ -97,8 +132,6 @@ const onDonorClick = (donor: Donor) => {
 };
 
 onMounted(() => {
-
-
 	refresh();
 	window.addEventListener('update-log-update', refresh);
 });

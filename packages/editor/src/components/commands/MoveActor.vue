@@ -1,25 +1,34 @@
 <template>
-<WindowFrame id="moveActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.moveActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="moveActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.moveActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="moveActor-actor" type="actor" @input="onActor" /><div class="text">Mode</div><SelectBox id="moveActor-mode" v-model="form.mode" /><div class="text">Angle</div
-			><NumberVar
+			<div class="text">Actor</div>
+			<CustomBox id="moveActor-actor" type="actor" @input="onActor" />
+			<div class="text">Mode</div>
+			<SelectBox id="moveActor-mode" v-model="form.mode" />
+			<div class="text">Angle</div>
+			<NumberVar
 				id="moveActor-angle"
 				min="-360"
 				max="360"
 				decimals="4"
 				unit="deg"
 				v-model="form.angle"
-			 /><div class="text">Destination</div
-			><CustomBox id="moveActor-destination" type="position" @input="onDestination" /><div class="text">Wait</div
-			><SelectBox id="moveActor-wait" name="wait" v-model="form.wait" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Destination</div>
+			<CustomBox id="moveActor-destination" type="position" @input="onDestination" />
+			<div class="text">Wait</div>
+			<SelectBox id="moveActor-wait" name="wait" v-model="form.wait" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
@@ -54,7 +63,10 @@ onMounted(() => {
 		{ name: get('mode.keep') || 'Keep', value: 'keep' },
 		{ name: get('mode.straight') || 'Straight', value: 'straight' },
 		{ name: get('mode.navigate') || 'Navigate', value: 'navigate' },
-		{ name: get('mode.navigate-bypass') || 'Navigate - Bypass Actors', value: 'navigate-bypass' },
+		{
+			name: get('mode.navigate-bypass') || 'Navigate - Bypass Actors',
+			value: 'navigate-bypass'
+		},
 		{ name: get('mode.teleport') || 'Teleport', value: 'teleport' }
 	]);
 	$('#moveActor-mode')
@@ -72,5 +84,4 @@ onMounted(() => {
 		{ name: 'No', value: false }
 	]);
 });
-
 </script>

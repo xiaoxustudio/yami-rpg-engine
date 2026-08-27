@@ -1,10 +1,15 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneAnimation-general-grid.label') || 'General' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.sceneAnimation-general-grid.label') || 'General'
+		}}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
-			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div><TextBox id="sceneAnimation-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}</div
-			><CustomBox
+			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div>
+			<TextBox id="sceneAnimation-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">
+				{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}
+			</div>
+			<CustomBox
 				id="sceneAnimation-animationId"
 				:model-value="form.animationId"
 				type="file"
@@ -12,10 +17,22 @@
 				@input="onParamInput"
 				@write="onAnimationIdWrite"
 			></CustomBox>
-			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion" v-model="form.motion" @input="onParamInput"></SelectBox>
-			<div class="text">{{ t('components.sceneAnimation-rotatable.label') || 'Rotatable' }}</div
-			><SelectBox id="sceneAnimation-rotatable" v-model="form.rotatable" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div>
+			<SelectBox
+				id="sceneAnimation-motion"
+				v-model="form.motion"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">
+				{{ t('components.sceneAnimation-rotatable.label') || 'Rotatable' }}
+			</div>
+			<SelectBox
+				id="sceneAnimation-rotatable"
+				v-model="form.rotatable"
+				@input="onParamInput"
+			></SelectBox>
+			<div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div>
+			<NumberBox
 				id="sceneAnimation-x"
 				v-model="form.x"
 				min="-128"
@@ -25,8 +42,8 @@
 				unit="tile"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div
-			><NumberBox
+			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div>
+			<NumberBox
 				id="sceneAnimation-y"
 				v-model="form.y"
 				min="-128"
@@ -36,8 +53,8 @@
 				unit="tile"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneAnimation-angle-box.label') || 'Angle' }}</div
-			><div class="flex-box" id="sceneAnimation-angle-box">
+			<div class="text">{{ t('components.sceneAnimation-angle-box.label') || 'Angle' }}</div>
+			<div class="flex-box" id="sceneAnimation-angle-box">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
 					v-model="form.angle"
@@ -56,8 +73,8 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneAnimation-scale-box.label') || 'Scale' }}</div
-			><div class="flex-box" id="sceneAnimation-scale-box">
+			<div class="text">{{ t('components.sceneAnimation-scale-box.label') || 'Scale' }}</div>
+			<div class="flex-box" id="sceneAnimation-scale-box">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
 					v-model="form.scale"
@@ -75,8 +92,8 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneAnimation-speed-box.label') || 'Speed' }}</div
-			><div class="flex-box" id="sceneAnimation-speed-box">
+			<div class="text">{{ t('components.sceneAnimation-speed-box.label') || 'Speed' }}</div>
+			<div class="flex-box" id="sceneAnimation-speed-box">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
 					v-model="form.speed"
@@ -94,8 +111,10 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneAnimation-opacity-box.label') || 'Opacity' }}</div
-			><div class="flex-box" id="sceneAnimation-opacity-box">
+			<div class="text">
+				{{ t('components.sceneAnimation-opacity-box.label') || 'Opacity' }}
+			</div>
+			<div class="flex-box" id="sceneAnimation-opacity-box">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
 					v-model="form.opacity"
@@ -113,8 +132,10 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ t('components.sceneAnimation-priority-box.label') || 'Priority' }}</div
-			><div class="flex-box" id="sceneAnimation-priority-box">
+			<div class="text">
+				{{ t('components.sceneAnimation-priority-box.label') || 'Priority' }}
+			</div>
+			<div class="flex-box" id="sceneAnimation-priority-box">
 				<SliderBox
 					id="sceneAnimation-priority-slider"
 					v-model="form.priority"
@@ -133,12 +154,10 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneAnimation-conditions.label') || 'Conditions' }}</DetailSummary>
-		<ParamList
-			id="sceneAnimation-conditions"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneAnimation-conditions.label') || 'Conditions'
+		}}</DetailSummary>
+		<ParamList id="sceneAnimation-conditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneAnimation-events.label') || 'Events' }}</DetailSummary>
@@ -150,12 +169,10 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.sceneAnimation-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList
-			id="sceneAnimation-scripts"
-			class="inspector-list"
-			flexible
-		></ParamList>
+		<DetailSummary>{{
+			t('components.sceneAnimation-scripts.label') || 'Scripts'
+		}}</DetailSummary>
+		<ParamList id="sceneAnimation-scripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneAnimation-parameter-pane"></ParameterPane>
 </template>
@@ -202,7 +219,9 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elRotatable = document.getElementById('sceneAnimation-rotatable') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elRotatable = document.getElementById('sceneAnimation-rotatable') as
+		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+		| null;
 	if (elRotatable?.loadItems) {
 		elRotatable.loadItems([
 			{ name: 'Yes', value: true },
@@ -210,18 +229,32 @@ onMounted(() => {
 		]);
 	}
 
-	document.getElementById('sceneAnimation-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document
+		.getElementById('sceneAnimation-conditions')
+		?.bind?.(new ConditionListInterface(editor, Scene));
 	document.getElementById('sceneAnimation-events')?.bind?.(new EventListInterface(editor, Scene));
-	document.getElementById('sceneAnimation-scripts')?.bind?.(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
-	document.getElementById('sceneAnimation-parameter-pane')?.bind?.(document.getElementById('sceneAnimation-scripts'));
+	document
+		.getElementById('sceneAnimation-scripts')
+		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
+	document
+		.getElementById('sceneAnimation-parameter-pane')
+		?.bind?.(document.getElementById('sceneAnimation-scripts'));
 
-	document.getElementById('sceneAnimation-angle-slider')?.synchronize?.(document.getElementById('sceneAnimation-angle'));
-	document.getElementById('sceneAnimation-scale-slider')?.synchronize?.(document.getElementById('sceneAnimation-scale'));
-	document.getElementById('sceneAnimation-speed-slider')?.synchronize?.(document.getElementById('sceneAnimation-speed'));
-	document.getElementById('sceneAnimation-opacity-slider')?.synchronize?.(document.getElementById('sceneAnimation-opacity'));
-	document.getElementById('sceneAnimation-priority-slider')?.synchronize?.(document.getElementById('sceneAnimation-priority'));
+	document
+		.getElementById('sceneAnimation-angle-slider')
+		?.synchronize?.(document.getElementById('sceneAnimation-angle'));
+	document
+		.getElementById('sceneAnimation-scale-slider')
+		?.synchronize?.(document.getElementById('sceneAnimation-scale'));
+	document
+		.getElementById('sceneAnimation-speed-slider')
+		?.synchronize?.(document.getElementById('sceneAnimation-speed'));
+	document
+		.getElementById('sceneAnimation-opacity-slider')
+		?.synchronize?.(document.getElementById('sceneAnimation-opacity'));
+	document
+		.getElementById('sceneAnimation-priority-slider')
+		?.synchronize?.(document.getElementById('sceneAnimation-priority'));
 
 	document.getElementById('sceneAnimation-animationId')?.on?.('write', editor.animationIdWrite);
 
@@ -233,7 +266,10 @@ onMounted(() => {
 	);
 	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
-	document.querySelectorAll('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts')
+	document
+		.querySelectorAll(
+			'#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts'
+		)
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

@@ -38,7 +38,9 @@ interface SliderBoxElement extends HTMLElement {
 	enable(): void;
 	disable(): void;
 	updateFiller(): void;
-	synchronize(target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }): void;
+	synchronize(
+		target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }
+	): void;
 	on(
 		type: string,
 		listener: (event: Event) => void,
@@ -116,7 +118,9 @@ const disable = (): void => {
 	}
 };
 
-const synchronize = (target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }): void => {
+const synchronize = (
+	target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }
+): void => {
 	const el = root.value;
 	if (!el) return;
 	const slider = el as SliderBoxElement;
@@ -213,10 +217,16 @@ const api = {
 	on
 };
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
-watch(() => props.activeWheel, (val) => {
-	api.activeWheel = val;
-});
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
+watch(
+	() => props.activeWheel,
+	(val) => {
+		api.activeWheel = val;
+	}
+);
 
 onMounted(() => {
 	const el = root.value as SliderBoxElement | null;

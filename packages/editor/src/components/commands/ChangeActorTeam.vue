@@ -1,15 +1,21 @@
 <template>
-<WindowFrame id="changeActorTeam" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorTeam.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorTeam" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorTeam.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorTeam-actor" type="actor" @input="onActor" /><div class="text">Team</div><SelectBox id="changeActorTeam-teamId" v-model="form.teamId" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorTeam-actor" type="actor" @input="onActor" />
+			<div class="text">Team</div>
+			<SelectBox id="changeActorTeam-teamId" v-model="form.teamId" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorTeamCommandSchema } from '@app/composables/commands/useChangeActorTeamCommandSchema';
@@ -41,5 +47,4 @@ onMounted(() => {
 		clear($('#changeActorTeam-teamId'));
 	});
 });
-
 </script>

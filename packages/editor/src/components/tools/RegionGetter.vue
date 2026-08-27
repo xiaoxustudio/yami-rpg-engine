@@ -1,17 +1,22 @@
 ﻿<template>
-		<WindowFrame ref="frame" id="regionGetter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.regionGetter.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.regionGetter-type.label') }}</div><SelectBox id="regionGetter-type" v-model="form.type" /> <div class="text">{{ t('components.regionGetter-presetId.label') }}</div
-				><CustomBox
-					id="regionGetter-presetId"
-					v-model="form.presetId"
-					type="preset-object"
-					filter="region"
-				/>
-			</div>
-		
+	<WindowFrame ref="frame" id="regionGetter" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.regionGetter.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.regionGetter-type.label') }}</div>
+			<SelectBox id="regionGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.regionGetter-presetId.label') }}</div>
+			<CustomBox
+				id="regionGetter-presetId"
+				v-model="form.presetId"
+				type="preset-object"
+				filter="region"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -46,7 +51,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => regionGetter.onWindowClosed());
 	}
-
-
 });
 </script>

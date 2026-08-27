@@ -1,40 +1,80 @@
 <template>
 	<!-- 设置窗口 - 属性 -->
 	<WindowFrame id="setWindow-property">
-		<template #title><TitleBar>{{ t('components.setWindow-property.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.setWindow-property-key.label') }}</div><SelectBox id="setWindow-property-key" v-model="form.key" />
-				<div class="text">{{ t('components.setWindow-property-scrollX.label') }}</div
-				><NumberVar id="setWindow-property-scrollX" min="0" max="10000" unit="px" v-model="form.scrollX" />
-				<div class="text">{{ t('components.setWindow-property-scrollY.label') }}</div
-				><NumberVar id="setWindow-property-scrollY" min="0" max="10000" unit="px" v-model="form.scrollY" />
-				<div class="text">{{ t('components.setWindow-property-gridWidth.label') }}</div
-				><NumberVar
-					id="setWindow-property-gridWidth"
-					min="0"
-					max="1000"
-					unit="px"
-					v-model="form.gridWidth"
-				/>
-				<div class="text">{{ t('components.setWindow-property-gridHeight.label') }}</div
-				><NumberVar
-					id="setWindow-property-gridHeight"
-					min="0"
-					max="1000"
-					unit="px"
-					v-model="form.gridHeight"
-				/>
-				<div class="text">{{ t('components.setWindow-property-gridGapX.label') }}</div
-				><NumberVar id="setWindow-property-gridGapX" min="0" max="1000" unit="px" v-model="form.gridGapX" />
-				<div class="text">{{ t('components.setWindow-property-gridGapY.label') }}</div
-				><NumberVar id="setWindow-property-gridGapY" min="0" max="1000" unit="px" v-model="form.gridGapY" />
-				<div class="text">{{ t('components.setWindow-property-paddingX.label') }}</div
-				><NumberVar id="setWindow-property-paddingX" min="0" max="1000" unit="px" v-model="form.paddingX" />
-				<div class="text">{{ t('components.setWindow-property-paddingY.label') }}</div
-				><NumberVar id="setWindow-property-paddingY" min="0" max="1000" unit="px" v-model="form.paddingY" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setWindow-property.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.setWindow-property-key.label') }}</div>
+			<SelectBox id="setWindow-property-key" v-model="form.key" />
+			<div class="text">{{ t('components.setWindow-property-scrollX.label') }}</div>
+			<NumberVar
+				id="setWindow-property-scrollX"
+				min="0"
+				max="10000"
+				unit="px"
+				v-model="form.scrollX"
+			/>
+			<div class="text">{{ t('components.setWindow-property-scrollY.label') }}</div>
+			<NumberVar
+				id="setWindow-property-scrollY"
+				min="0"
+				max="10000"
+				unit="px"
+				v-model="form.scrollY"
+			/>
+			<div class="text">{{ t('components.setWindow-property-gridWidth.label') }}</div>
+			<NumberVar
+				id="setWindow-property-gridWidth"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.gridWidth"
+			/>
+			<div class="text">{{ t('components.setWindow-property-gridHeight.label') }}</div>
+			<NumberVar
+				id="setWindow-property-gridHeight"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.gridHeight"
+			/>
+			<div class="text">{{ t('components.setWindow-property-gridGapX.label') }}</div>
+			<NumberVar
+				id="setWindow-property-gridGapX"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.gridGapX"
+			/>
+			<div class="text">{{ t('components.setWindow-property-gridGapY.label') }}</div>
+			<NumberVar
+				id="setWindow-property-gridGapY"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.gridGapY"
+			/>
+			<div class="text">{{ t('components.setWindow-property-paddingX.label') }}</div>
+			<NumberVar
+				id="setWindow-property-paddingX"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.paddingX"
+			/>
+			<div class="text">{{ t('components.setWindow-property-paddingY.label') }}</div>
+			<NumberVar
+				id="setWindow-property-paddingY"
+				min="0"
+				max="1000"
+				unit="px"
+				v-model="form.paddingY"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -56,8 +96,5 @@ const form = WindowProperty.form;
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

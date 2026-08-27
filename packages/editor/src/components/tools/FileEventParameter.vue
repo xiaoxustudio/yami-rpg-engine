@@ -1,13 +1,19 @@
 <template>
 	<WindowFrame id="fileEvent-parameter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.fileEvent-parameter.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div><SelectBox id="fileEvent-parameter-type" v-model="form.type" /> <div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div
-				><TextBox id="fileEvent-parameter-key" v-model="form.key" /> <div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div
-				><TextArea id="fileEvent-parameter-note" v-model="form.note" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.fileEvent-parameter.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div>
+			<SelectBox id="fileEvent-parameter-type" v-model="form.type" />
+			<div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div>
+			<TextBox id="fileEvent-parameter-key" v-model="form.key" />
+			<div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div>
+			<TextArea id="fileEvent-parameter-note" v-model="form.note" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -35,8 +41,5 @@ const onConfirm = () => {
 	Inspector?.fileEvent?.parameters?.save?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

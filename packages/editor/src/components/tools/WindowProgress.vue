@@ -2,11 +2,10 @@
 	<!-- 进度窗口 -->
 	<WindowFrame id="windowProgress" no-buttons>
 		<template #title><TitleBar>进度</TitleBar></template>
-		
-			<div class="flex-box" id="windowProgress-flex">
-				<div class="text" id="windowProgress-info" />
-			</div>
-		
+
+		<div class="flex-box" id="windowProgress-flex">
+			<div class="text" id="windowProgress-info" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -20,8 +19,5 @@ import { useLocalStore } from '@app/stores/local';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

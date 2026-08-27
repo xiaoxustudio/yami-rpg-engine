@@ -1,18 +1,42 @@
 <template>
 	<!-- 设置文字效果 -->
 	<WindowFrame ref="frame" id="textEffect" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.textEffect.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.textEffect-type.label') }}</div><SelectBox id="textEffect-type" v-model="form.type" /> <div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div
-				><NumberBox id="textEffect-shadowOffsetX" min="-9" max="9" unit="px" v-model="form.shadowOffsetX" />
-				<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div
-				><NumberBox id="textEffect-shadowOffsetY" min="-9" max="9" unit="px" v-model="form.shadowOffsetY" />
-				<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div
-				><NumberBox id="textEffect-strokeWidth" min="1" max="20" unit="px" v-model="form.strokeWidth" />
-				<div class="text">{{ t('components.textEffect-color.label') }}</div><ColorBox id="textEffect-color" v-model="form.color" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.textEffect.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.textEffect-type.label') }}</div>
+			<SelectBox id="textEffect-type" v-model="form.type" />
+			<div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div>
+			<NumberBox
+				id="textEffect-shadowOffsetX"
+				min="-9"
+				max="9"
+				unit="px"
+				v-model="form.shadowOffsetX"
+			/>
+			<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div>
+			<NumberBox
+				id="textEffect-shadowOffsetY"
+				min="-9"
+				max="9"
+				unit="px"
+				v-model="form.shadowOffsetY"
+			/>
+			<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div>
+			<NumberBox
+				id="textEffect-strokeWidth"
+				min="1"
+				max="20"
+				unit="px"
+				v-model="form.strokeWidth"
+			/>
+			<div class="text">{{ t('components.textEffect-color.label') }}</div>
+			<ColorBox id="textEffect-color" v-model="form.color" />
+		</div>
 	</WindowFrame>
 </template>
 

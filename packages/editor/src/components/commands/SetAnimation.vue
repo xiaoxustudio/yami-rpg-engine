@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setAnimation" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setAnimation.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setAnimation-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setAnimation-properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setAnimation.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setAnimation-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setAnimation-properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationCommandSchema } from '@app/composables/commands/useSetAnimationCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setAnimation-properties'));
 	});
 });
-
 </script>

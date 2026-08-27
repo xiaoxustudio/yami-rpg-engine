@@ -1,28 +1,40 @@
 <template>
-<WindowFrame id="callEvent" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.callEvent.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="callEvent" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.callEvent.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Type</div
-			><SelectBox id="callEvent-type" v-model="form.type" @write="onTypeWrite" /> <div class="text">Actor</div
-			><CustomBox id="callEvent-actor" type="actor" @input="onActor" /> <div class="text">Skill</div
-			><CustomBox id="callEvent-skill" type="skill" @input="onSkill" /> <div class="text">State</div
-			><CustomBox id="callEvent-state" type="state" @input="onState" /> <div class="text">Equipment</div
-			><CustomBox id="callEvent-equipment" type="equipment" @input="onEquipment" /> <div class="text">Item</div
-			><CustomBox id="callEvent-item" type="item" @input="onItem" /> <div class="text">Light</div
-			><CustomBox id="callEvent-light" type="light" @input="onLight" /> <div class="text">Element</div
-			><CustomBox id="callEvent-element" type="element" @input="onElement" /> <div class="text">Event</div
-			><CustomBox
+			<div class="text">Type</div>
+			<SelectBox id="callEvent-type" v-model="form.type" @write="onTypeWrite" />
+			<div class="text">Actor</div>
+			<CustomBox id="callEvent-actor" type="actor" @input="onActor" />
+			<div class="text">Skill</div>
+			<CustomBox id="callEvent-skill" type="skill" @input="onSkill" />
+			<div class="text">State</div>
+			<CustomBox id="callEvent-state" type="state" @input="onState" />
+			<div class="text">Equipment</div>
+			<CustomBox id="callEvent-equipment" type="equipment" @input="onEquipment" />
+			<div class="text">Item</div>
+			<CustomBox id="callEvent-item" type="item" @input="onItem" />
+			<div class="text">Light</div>
+			<CustomBox id="callEvent-light" type="light" @input="onLight" />
+			<div class="text">Element</div>
+			<CustomBox id="callEvent-element" type="element" @input="onElement" />
+			<div class="text">Event</div>
+			<CustomBox
 				id="callEvent-eventId"
 				type="file"
 				filter="event"
 				@write="onEventIdWrite"
 				@input="onEventIdInput"
 			/>
-			<div class="text">Event</div><SelectBox id="callEvent-eventType" v-model="form.eventType" />
+			<div class="text">Event</div>
+			<SelectBox id="callEvent-eventType" v-model="form.eventType" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">

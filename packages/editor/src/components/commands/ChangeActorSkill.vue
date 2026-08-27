@@ -1,16 +1,30 @@
 <template>
-<WindowFrame id="changeActorSkill" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorSkill.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorSkill" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorSkill.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorSkill-actor" type="actor" @input="onActor" /><div class="text">Operation</div><SelectBox id="changeActorSkill-operation" v-model="form.operation" /><div class="text">Skill</div
-			><FileVar id="changeActorSkill-skillId" type="file" filter="skill" v-model="form.skillId" /><div class="text">Skill</div><CustomBox id="changeActorSkill-skill" type="skill" @input="onSkill" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorSkill-actor" type="actor" @input="onActor" />
+			<div class="text">Operation</div>
+			<SelectBox id="changeActorSkill-operation" v-model="form.operation" />
+			<div class="text">Skill</div>
+			<FileVar
+				id="changeActorSkill-skillId"
+				type="file"
+				filter="skill"
+				v-model="form.skillId"
+			/>
+			<div class="text">Skill</div>
+			<CustomBox id="changeActorSkill-skill" type="skill" @input="onSkill" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
@@ -59,5 +73,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

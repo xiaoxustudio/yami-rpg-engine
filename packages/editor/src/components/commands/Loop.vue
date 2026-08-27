@@ -1,17 +1,21 @@
 <template>
-<WindowFrame id="loop" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.loop.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="loop" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.loop.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Mode</div><SelectBox id="loop-mode" v-model="form.mode" /> <div class="text">Conditions</div
-			><ParamList id="loop-conditions" v-model="form.conditions" />
+			<div class="text">Mode</div>
+			<SelectBox id="loop-mode" v-model="form.mode" />
+			<div class="text">Conditions</div>
+			<ParamList id="loop-conditions" v-model="form.conditions" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
@@ -44,5 +48,4 @@ onMounted(() => {
 		clear($('#loop-conditions'));
 	});
 });
-
 </script>

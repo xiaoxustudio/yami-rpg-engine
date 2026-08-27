@@ -1,16 +1,19 @@
 ﻿<template>
 	<WindowFrame ref="frame" id="choice" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.choice.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.choice-content.label') }}</div
-				><TextBox
-					id="choice-content"
-					v-model="form.content"
-					menu="tag-local-var tag-global-var tag-localization"
-				/>
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.choice.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.choice-content.label') }}</div>
+			<TextBox
+				id="choice-content"
+				v-model="form.content"
+				menu="tag-local-var tag-global-var tag-localization"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 

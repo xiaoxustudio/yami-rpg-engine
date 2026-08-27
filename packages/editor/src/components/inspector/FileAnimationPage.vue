@@ -1,11 +1,9 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileAnimation-sprites.label') || 'Sprites' }}</DetailSummary>
-		<ParamList
-			id="fileAnimation-sprites"
-			class="inspector-list"
-			flexible
-		/>
+		<DetailSummary>{{
+			t('components.fileAnimation-sprites.label') || 'Sprites'
+		}}</DetailSummary>
+		<ParamList id="fileAnimation-sprites" class="inspector-list" flexible />
 	</DetailBox>
 </template>
 

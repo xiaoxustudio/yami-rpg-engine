@@ -1,16 +1,19 @@
 <template>
 	<WindowFrame id="deleteObject" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.deleteObject.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Object</div><CustomBox id="deleteObject-object" type="object" @input="onObject" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.deleteObject.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Object</div>
+			<CustomBox id="deleteObject-object" type="object" @input="onObject" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useDeleteObjectCommandSchema } from '@app/composables/commands/useDeleteObjectCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,5 +31,4 @@ const onObject = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

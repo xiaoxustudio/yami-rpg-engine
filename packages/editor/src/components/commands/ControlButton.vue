@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="controlButton" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.controlButton.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="controlButton-operation" v-model="form.operation" />
-				<div class="text">Element</div><CustomBox id="controlButton-element" type="element" @input="onElement" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.controlButton.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Operation</div>
+			<SelectBox id="controlButton-operation" v-model="form.operation" />
+			<div class="text">Element</div>
+			<CustomBox id="controlButton-element" type="element" @input="onElement" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
@@ -52,5 +56,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

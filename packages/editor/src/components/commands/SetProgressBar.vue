@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="setProgressBar" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setProgressBar.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setProgressBar-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="setProgressBar-properties" v-model="form.properties" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setProgressBar.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="setProgressBar-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="setProgressBar-properties" v-model="form.properties" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetProgressBarCommandSchema } from '@app/composables/commands/useSetProgressBarCommandSchema';
@@ -41,5 +45,4 @@ onMounted(() => {
 		clear($('#setProgressBar-properties'));
 	});
 });
-
 </script>

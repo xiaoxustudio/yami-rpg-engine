@@ -1,44 +1,57 @@
 <template>
 	<WindowFrame ref="frame" id="color" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.color.title') }}<div class="close" /></TitleBar></template>
-		
-			<canvas id="color-palette-canvas" width="256" height="194" />
-			<div class="box" id="color-palette-frame">
-				<div class="box" id="color-palette-cursor" />
-			</div>
-			<div class="grid-box" id="color-index-grid">
-				<RadioBox name="color-index" value="0" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="1" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="2" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="3" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="4" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="5" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="6" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="7" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="8" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="9" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="10" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="11" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="12" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="13" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="14" @input="onIndexedInput" />
-				<RadioBox name="color-index" value="15" @input="onIndexedInput" />
-			</div>
-			<canvas id="color-pillar-canvas" width="20" height="256" />
-			<div class="box" id="color-pillar-frame">
-				<div class="box" id="color-pillar-cursor" />
-			</div>
-			<div class="box" id="color-viewer-frame">
-				<div class="box" id="color-viewer" />
-			</div>
-			<div class="grid-box" id="color-rgba-grid">
-				<div class="text">#</div><TextBox id="color-hex" v-model="form.hex" @beforeinput="onHexBeforeinput" @input="onHexInput" /> <div class="text">R</div
-				><NumberBox id="color-r" min="0" max="255" v-model="form.r" @input="onRgbaInput" /> <div class="text">G</div
-				><NumberBox id="color-g" min="0" max="255" v-model="form.g" @input="onRgbaInput" /> <div class="text">B</div
-				><NumberBox id="color-b" min="0" max="255" v-model="form.b" @input="onRgbaInput" /> <div class="text">A</div
-				><NumberBox id="color-a" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.color.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<canvas id="color-palette-canvas" width="256" height="194" />
+		<div class="box" id="color-palette-frame">
+			<div class="box" id="color-palette-cursor" />
+		</div>
+		<div class="grid-box" id="color-index-grid">
+			<RadioBox name="color-index" value="0" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="1" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="2" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="3" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="4" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="5" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="6" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="7" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="8" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="9" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="10" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="11" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="12" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="13" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="14" @input="onIndexedInput" />
+			<RadioBox name="color-index" value="15" @input="onIndexedInput" />
+		</div>
+		<canvas id="color-pillar-canvas" width="20" height="256" />
+		<div class="box" id="color-pillar-frame">
+			<div class="box" id="color-pillar-cursor" />
+		</div>
+		<div class="box" id="color-viewer-frame">
+			<div class="box" id="color-viewer" />
+		</div>
+		<div class="grid-box" id="color-rgba-grid">
+			<div class="text">#</div>
+			<TextBox
+				id="color-hex"
+				v-model="form.hex"
+				@beforeinput="onHexBeforeinput"
+				@input="onHexInput"
+			/>
+			<div class="text">R</div>
+			<NumberBox id="color-r" min="0" max="255" v-model="form.r" @input="onRgbaInput" />
+			<div class="text">G</div>
+			<NumberBox id="color-g" min="0" max="255" v-model="form.g" @input="onRgbaInput" />
+			<div class="text">B</div>
+			<NumberBox id="color-b" min="0" max="255" v-model="form.b" @input="onRgbaInput" />
+			<div class="text">A</div>
+			<NumberBox id="color-a" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -66,7 +79,8 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onIndexedInput = (value: number | string | boolean) => {
-	form.index = typeof value === 'string' && value !== '' ? parseInt(value, 10) : (value as number);
+	form.index =
+		typeof value === 'string' && value !== '' ? parseInt(value, 10) : (value as number);
 	Color?.indexedColorInput?.({ value: String(value) });
 };
 const onRgbaInput = () => {

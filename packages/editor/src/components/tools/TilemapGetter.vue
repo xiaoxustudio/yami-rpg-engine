@@ -1,20 +1,30 @@
 ﻿<template>
 	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame ref="frame" id="tilemapGetter">
-		<template #title><TitleBar>{{ t('components.tilemapGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.tilemapGetter-type.label') }}</div><SelectBox id="tilemapGetter-type" v-model="form.type" /> <div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div
-				><CustomBox
-					id="tilemapGetter-presetId"
-					type="preset-object"
-					filter="tilemap"
-					v-model="form.presetId"
-				/>
-				<div class="text">{{ t('components.tilemapGetter-variable.label') }}</div
-				><CustomBox id="tilemapGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.tilemapGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.tilemapGetter-type.label') }}</div>
+			<SelectBox id="tilemapGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div>
+			<CustomBox
+				id="tilemapGetter-presetId"
+				type="preset-object"
+				filter="tilemap"
+				v-model="form.presetId"
+			/>
+			<div class="text">{{ t('components.tilemapGetter-variable.label') }}</div>
+			<CustomBox
+				id="tilemapGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -44,7 +54,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => tilemapGetter.onWindowClosed());
 	}
-
-
 });
 </script>

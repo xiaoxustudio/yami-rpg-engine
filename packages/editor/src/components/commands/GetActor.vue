@@ -1,52 +1,64 @@
 <template>
-<WindowFrame id="getActor" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.getActor.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="getActor" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.getActor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Write to Variable</div
-			><CustomBox
+			<div class="text">Write to Variable</div>
+			<CustomBox
 				id="getActor-variable"
 				type="variable"
 				filter="object"
 				v-model="form.variable"
-			/><div class="text">Position</div
-			><CustomBox id="getActor-position" type="position" v-model="form.position" /><div class="text">Area</div
-			><SelectBox id="getActor-area" v-model="form.area" /><div class="text">Size</div
-			><NumberVar
+			/>
+			<div class="text">Position</div>
+			<CustomBox id="getActor-position" type="position" v-model="form.position" />
+			<div class="text">Area</div>
+			<SelectBox id="getActor-area" v-model="form.area" />
+			<div class="text">Size</div>
+			<NumberVar
 				id="getActor-size"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
 				v-model="form.size"
-			/><div class="text">Radius</div
-			><NumberVar
+			/>
+			<div class="text">Radius</div>
+			<NumberVar
 				id="getActor-radius"
 				min="0"
 				max="256"
 				decimals="4"
 				unit="tile"
 				v-model="form.radius"
-			 /><div class="text">Selector</div
-			><SelectBox id="getActor-selector" v-model="form.selector" /><div class="text">Team</div
-			><SelectVar id="getActor-teamId" v-model="form.teamId" /><div class="text">Condition</div
-			><SelectBox id="getActor-condition" v-model="form.condition" /><div class="text">Attribute</div
-			><SelectBox id="getActor-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div
-			><SelectBox id="getActor-divisor" v-model="form.divisor" /><div class="text">Activation</div
-			><SelectBox id="getActor-activation" v-model="form.activation" /><div class="text">Exclusion</div
-			><SelectBox id="getActor-exclusion" v-model="form.exclusion" /><div class="text">Exclusion Actor</div
-			><CustomBox
-				id="getActor-exclusionActor"
-				type="actor"
-				v-model="form.exclusionActor"
-			/><div class="text">Exclusion Team</div
-			><SelectVar id="getActor-exclusionTeamId" v-model="form.exclusionTeamId" /></div>
-	
-</WindowFrame>
+			/>
+			<div class="text">Selector</div>
+			<SelectBox id="getActor-selector" v-model="form.selector" />
+			<div class="text">Team</div>
+			<SelectVar id="getActor-teamId" v-model="form.teamId" />
+			<div class="text">Condition</div>
+			<SelectBox id="getActor-condition" v-model="form.condition" />
+			<div class="text">Attribute</div>
+			<SelectBox id="getActor-attribute" v-model="form.attribute" />
+			<div class="text">Attribute 2</div>
+			<SelectBox id="getActor-divisor" v-model="form.divisor" />
+			<div class="text">Activation</div>
+			<SelectBox id="getActor-activation" v-model="form.activation" />
+			<div class="text">Exclusion</div>
+			<SelectBox id="getActor-exclusion" v-model="form.exclusion" />
+			<div class="text">Exclusion Actor</div>
+			<CustomBox id="getActor-exclusionActor" type="actor" v-model="form.exclusionActor" />
+			<div class="text">Exclusion Team</div>
+			<SelectVar id="getActor-exclusionTeamId" v-model="form.exclusionTeamId" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
@@ -98,10 +110,22 @@ onMounted(() => {
 	$('#getActor-condition')?.loadItems?.([
 		{ name: get('condition.nearest') || 'Nearest', value: 'nearest' },
 		{ name: get('condition.farthest') || 'Farthest', value: 'farthest' },
-		{ name: get('condition.min-attribute-value') || 'Min Attribute Value', value: 'min-attribute-value' },
-		{ name: get('condition.max-attribute-value') || 'Max Attribute Value', value: 'max-attribute-value' },
-		{ name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio', value: 'min-attribute-ratio' },
-		{ name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio', value: 'max-attribute-ratio' },
+		{
+			name: get('condition.min-attribute-value') || 'Min Attribute Value',
+			value: 'min-attribute-value'
+		},
+		{
+			name: get('condition.max-attribute-value') || 'Max Attribute Value',
+			value: 'max-attribute-value'
+		},
+		{
+			name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio',
+			value: 'min-attribute-ratio'
+		},
+		{
+			name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio',
+			value: 'max-attribute-ratio'
+		},
 		{ name: get('condition.random') || 'Random', value: 'random' }
 	]);
 	$('#getActor-condition')
@@ -142,5 +166,4 @@ onMounted(() => {
 		clear($('#getActor-exclusionTeamId'));
 	});
 });
-
 </script>

@@ -1,28 +1,34 @@
 <template>
 	<WindowFrame id="moveLight" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.moveLight.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Light</div><CustomBox id="moveLight-light" type="light" @input="onLight" />
-				<div class="text">Properties</div><ParamList id="moveLight-properties" v-model="form.properties" />
-				<div class="text">Easing</div><SelectBox id="moveLight-easingId" name="easing" v-model="form.easingId" />
-				<div class="text">Duration</div
-				><NumberBox
-					id="moveLight-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				 />
-				<div class="text">Wait</div><SelectBox id="moveLight-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.moveLight.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Light</div>
+			<CustomBox id="moveLight-light" type="light" @input="onLight" />
+			<div class="text">Properties</div>
+			<ParamList id="moveLight-properties" v-model="form.properties" />
+			<div class="text">Easing</div>
+			<SelectBox id="moveLight-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberBox
+				id="moveLight-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="moveLight-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
@@ -63,5 +69,4 @@ onMounted(() => {
 		clear($('#moveLight-easingId'));
 	});
 });
-
 </script>

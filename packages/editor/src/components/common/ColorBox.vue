@@ -93,7 +93,10 @@ const openColor = (): void => {
 
 defineExpose({ read, write, input, enable, disable, on, root });
 
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value as ColorBoxElement | null;

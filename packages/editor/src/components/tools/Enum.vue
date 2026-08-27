@@ -1,33 +1,43 @@
 <template>
 	<WindowFrame id="enum" show-apply mode="center" @apply="onApply">
-		<template #title><TitleBar>{{ t('components.enum.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="field-set input pad" id="enum-list-fieldset">
-				<div class="legend">{{ t('components.enum-list.label') }}</div>
-				<TreeList
-					id="enum-list"
-					padded
-					:node-extras="nodeExtras"
-					:node-icon-renderer="nodeIconRenderer"
-					@select="onListSelect"
-					@record="onListRecord"
-					@open="onListOpen"
-					@popup="onListPopup"
-				/>
-			</div>
-			<div class="field-set" id="enum-properties-fieldset">
-				<div class="legend">{{ t('components.enum-properties-flex.label') }}</div>
-				<div class="flex-box" id="enum-properties-flex">
-					<div class="flex-item"
-						><div class="text">{{ t('components.enum-name.label') }}</div><TextBox id="enum-name" menu="tag-localization" @input="onNameInput" /></div>
-					<div class="flex-item"
-						><div class="text">{{ t('components.enum-value.label') }}</div><TextBox id="enum-value" menu="tag-localization" @input="onValueInput" /></div>
-					<div class="flex-item" id="enum-spacing-box" />
-					<div class="flex-item"><div class="text">{{ t('components.enum-note.label') }}</div><TextArea id="enum-note" /></div>
+		<template #title
+			><TitleBar
+				>{{ t('components.enum.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="field-set input pad" id="enum-list-fieldset">
+			<div class="legend">{{ t('components.enum-list.label') }}</div>
+			<TreeList
+				id="enum-list"
+				padded
+				:node-extras="nodeExtras"
+				:node-icon-renderer="nodeIconRenderer"
+				@select="onListSelect"
+				@record="onListRecord"
+				@open="onListOpen"
+				@popup="onListPopup"
+			/>
+		</div>
+		<div class="field-set" id="enum-properties-fieldset">
+			<div class="legend">{{ t('components.enum-properties-flex.label') }}</div>
+			<div class="flex-box" id="enum-properties-flex">
+				<div class="flex-item">
+					<div class="text">{{ t('components.enum-name.label') }}</div>
+					<TextBox id="enum-name" menu="tag-localization" @input="onNameInput" />
+				</div>
+				<div class="flex-item">
+					<div class="text">{{ t('components.enum-value.label') }}</div>
+					<TextBox id="enum-value" menu="tag-localization" @input="onValueInput" />
+				</div>
+				<div class="flex-item" id="enum-spacing-box" />
+				<div class="flex-item">
+					<div class="text">{{ t('components.enum-note.label') }}</div>
+					<TextArea id="enum-note" />
 				</div>
 			</div>
-			<TextBox id="enum-searcher" name="search" />
-		
+		</div>
+		<TextBox id="enum-searcher" name="search" />
 	</WindowFrame>
 </template>
 
@@ -67,10 +77,14 @@ const nodeExtras = (item: unknown): VNode[] => {
 	} else {
 		const value = node.value as string;
 		nodes.push(
-			h('div', { class: 'enum-init-text text' }, value ? ` = ${GameLocal.replace(value)}` : '')
+			h(
+				'div',
+				{ class: 'enum-init-text text' },
+				value ? ` = ${GameLocal.replace(value)}` : ''
+			)
 		);
 		if (node.note) {
-			nodes.push(h('span', { class: ['node-icon', 'icon-note'], },  '\uf27b'));
+			nodes.push(h('span', { class: ['node-icon', 'icon-note'] }, '\uf27b'));
 		}
 	}
 	return nodes;
@@ -106,8 +120,5 @@ const onApply = () => {
 	Enum?.apply?.();
 };
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

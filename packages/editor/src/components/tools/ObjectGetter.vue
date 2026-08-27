@@ -1,14 +1,19 @@
 ﻿<template>
-		<WindowFrame ref="frame" id="objectGetter" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.objectGetter.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.objectGetter-type.label') }}</div><SelectBox id="objectGetter-type" /> <div class="text">{{ t('components.objectGetter-presetId.label') }}</div
-				><CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
-				<div class="text">{{ t('components.objectGetter-variable.label') }}</div
-				><CustomBox id="objectGetter-variable" type="variable" filter="object" />
-			</div>
-		
+	<WindowFrame ref="frame" id="objectGetter" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.objectGetter.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.objectGetter-type.label') }}</div>
+			<SelectBox id="objectGetter-type" />
+			<div class="text">{{ t('components.objectGetter-presetId.label') }}</div>
+			<CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
+			<div class="text">{{ t('components.objectGetter-variable.label') }}</div>
+			<CustomBox id="objectGetter-variable" type="variable" filter="object" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -16,7 +21,10 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
-import { useObjectGetterWindow, type PresetGetterForm } from '@app/composables/usePresetGetterWindow';
+import {
+	useObjectGetterWindow,
+	type PresetGetterForm
+} from '@app/composables/usePresetGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

@@ -1,26 +1,36 @@
 <template>
-		<WindowFrame id="setAnimation-property">
-		<template #title><TitleBar>{{ t('components.setAnimation-property.title') }}<div class="close"></div></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.setAnimation-property-key.label') }}</div><SelectBox id="setAnimation-property-key" v-model="form.key" />
-				<div class="text">{{ t('components.setAnimation-property-animation.label') }}</div
-				><CustomBox
-					id="setAnimation-property-animation"
-					type="file"
-					filter="animation"
-					v-model="form.animation"
-				/>
-				<div class="text">{{ t('components.setAnimation-property-actor.label') }}</div
-				><CustomBox id="setAnimation-property-actor" type="actor" v-model="form.actor" />
-				<div class="text">{{ t('components.setAnimation-property-motion.label') }}</div
-				><CustomBox id="setAnimation-property-motion" type="enum-string" v-model="form.motion" />
-				<div class="text">{{ t('components.setAnimation-property-angle.label') }}</div
-				><NumberVar id="setAnimation-property-angle" min="0" max="360" unit="deg" v-model="form.angle" />
-				<div class="text">{{ t('components.setAnimation-property-frame.label') }}</div
-				><NumberVar id="setAnimation-property-frame" min="0" max="10000" v-model="form.frame" />
-			</div>
-		
+	<WindowFrame id="setAnimation-property">
+		<template #title
+			><TitleBar
+				>{{ t('components.setAnimation-property.title') }}
+				<div class="close"></div></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.setAnimation-property-key.label') }}</div>
+			<SelectBox id="setAnimation-property-key" v-model="form.key" />
+			<div class="text">{{ t('components.setAnimation-property-animation.label') }}</div>
+			<CustomBox
+				id="setAnimation-property-animation"
+				type="file"
+				filter="animation"
+				v-model="form.animation"
+			/>
+			<div class="text">{{ t('components.setAnimation-property-actor.label') }}</div>
+			<CustomBox id="setAnimation-property-actor" type="actor" v-model="form.actor" />
+			<div class="text">{{ t('components.setAnimation-property-motion.label') }}</div>
+			<CustomBox id="setAnimation-property-motion" type="enum-string" v-model="form.motion" />
+			<div class="text">{{ t('components.setAnimation-property-angle.label') }}</div>
+			<NumberVar
+				id="setAnimation-property-angle"
+				min="0"
+				max="360"
+				unit="deg"
+				v-model="form.angle"
+			/>
+			<div class="text">{{ t('components.setAnimation-property-frame.label') }}</div>
+			<NumberVar id="setAnimation-property-frame" min="0" max="10000" v-model="form.frame" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -43,8 +53,5 @@ const form = AnimationProperty.form;
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

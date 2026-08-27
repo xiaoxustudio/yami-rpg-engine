@@ -1,18 +1,23 @@
 <template>
-<WindowFrame id="setItem" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setItem.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setItem" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setItem.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Item</div><CustomBox id="setItem-item" type="item" @input="onItem" />
-			<div class="text">Operation</div><SelectBox id="setItem-operation" v-model="form.operation" />
-			<div class="text">Quantity</div><NumberVar id="setItem-quantity" min="1" max="10000" v-model="form.quantity" />
+			<div class="text">Item</div>
+			<CustomBox id="setItem-item" type="item" @input="onItem" />
+			<div class="text">Operation</div>
+			<SelectBox id="setItem-operation" v-model="form.operation" />
+			<div class="text">Quantity</div>
+			<NumberVar id="setItem-quantity" min="1" max="10000" v-model="form.quantity" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetItemCommandSchema } from '@app/composables/commands/useSetItemCommandSchema';
@@ -41,5 +46,4 @@ onMounted(() => {
 		{ name: 'Decrease', value: 'decrease' }
 	]);
 });
-
 </script>

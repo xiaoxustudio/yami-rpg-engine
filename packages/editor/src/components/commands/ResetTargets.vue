@@ -1,15 +1,19 @@
 <template>
-<WindowFrame id="resetTargets" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.resetTargets.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="resetTargets" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.resetTargets.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="resetTargets-actor" type="actor" @input="onActor" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="resetTargets-actor" type="actor" @input="onActor" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useResetTargetsCommandSchema } from '@app/composables/commands/useResetTargetsCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -27,5 +31,4 @@ const onActor = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>

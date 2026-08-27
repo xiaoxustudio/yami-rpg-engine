@@ -1,16 +1,19 @@
 <template>
 	<WindowFrame id="autoTile-frameIndex" no-buttons>
-		<template #title><TitleBar>{{ t('components.autoTile-frameIndex.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="box" id="autoTile-frameIndex-screen">
-				<div class="box" id="autoTile-frameIndex-image-clip">
-					<img id="autoTile-frameIndex-image" />
-					<div class="box" id="autoTile-frameIndex-mask" />
-				</div>
-				<MarqueeArea id="autoTile-frameIndex-marquee" />
-				<div class="text" id="autoTile-frameIndex-info" />
+		<template #title
+			><TitleBar
+				>{{ t('components.autoTile-frameIndex.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="box" id="autoTile-frameIndex-screen">
+			<div class="box" id="autoTile-frameIndex-image-clip">
+				<img id="autoTile-frameIndex-image" />
+				<div class="box" id="autoTile-frameIndex-mask" />
 			</div>
-		
+			<MarqueeArea id="autoTile-frameIndex-marquee" />
+			<div class="text" id="autoTile-frameIndex-info" />
+		</div>
 	</WindowFrame>
 </template>
 
@@ -28,8 +31,5 @@ const { t } = useI18n();
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-onMounted(() => {
-
-
-});
+onMounted(() => {});
 </script>

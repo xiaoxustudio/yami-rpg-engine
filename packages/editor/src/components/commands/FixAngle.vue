@@ -1,15 +1,21 @@
 <template>
-<WindowFrame id="fixAngle" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.fixAngle.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="fixAngle" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.fixAngle.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="fixAngle-actor" type="actor" @input="onActor" /><div class="text">State</div><SelectBox id="fixAngle-fixed" v-model="form.fixed" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="fixAngle-actor" type="actor" @input="onActor" />
+			<div class="text">State</div>
+			<SelectBox id="fixAngle-fixed" v-model="form.fixed" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFixAngleCommandSchema } from '@app/composables/commands/useFixAngleCommandSchema';
@@ -39,5 +45,4 @@ onMounted(() => {
 		{ name: get('fixed.false') || 'Unfixed', value: false }
 	]);
 });
-
 </script>

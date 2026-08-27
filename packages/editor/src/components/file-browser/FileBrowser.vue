@@ -110,8 +110,7 @@ const fileSystemApi = {
 	path: (p: string) => File.path(p),
 	route: (p: string) => File.route?.(p),
 	getPath: (guid: string) => File.getPath?.(guid),
-	getFileName: (dir: string, name: string, ext?: string) =>
-		File.getFileName?.(dir, name, ext),
+	getFileName: (dir: string, name: string, ext?: string) => File.getFileName?.(dir, name, ext),
 	getImageResolution: (p: string) => File.getImageResolution?.(p),
 	showInExplorer: (p: string) => File.showInExplorer?.(p),
 	showOpenDialog: (options: unknown) => File.showOpenDialog?.(options),
@@ -152,13 +151,20 @@ const clipboardApi = {
 };
 const referenceApi = {
 	findRelated: (guid: string) => Reference.findRelated?.(guid),
-	openList: (list: Array<{ type: string; text: string; id?: string; order?: number; count?: number }>) =>
-		Reference.openList?.(list),
+	openList: (
+		list: Array<{ type: string; text: string; id?: string; order?: number; count?: number }>
+	) => Reference.openList?.(list),
 	openRelated: (guid: string) => Reference.openRelated?.(guid)
 };
 const editorApi = { config: Editor.config };
-const setIconClipAdapter = (icon: HTMLElement, path: string, cx: number, cy: number, cw: number, ch: number) =>
-	setIconClip(icon, path, cx, cy, cw, ch);
+const setIconClipAdapter = (
+	icon: HTMLElement,
+	path: string,
+	cx: number,
+	cy: number,
+	cw: number,
+	ch: number
+) => setIconClip(icon, path, cx, cy, cw, ch);
 
 const onBrowserMount = (): void => getBrowserStore().initialize();
 const onSelectorMount = (): void => getSelectorStore().initialize();

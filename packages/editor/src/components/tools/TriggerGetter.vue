@@ -1,13 +1,23 @@
 ﻿<template>
 	<!-- 触发器访问器窗口 -->
 	<WindowFrame ref="frame" id="triggerGetter">
-		<template #title><TitleBar>{{ t('components.triggerGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.triggerGetter-type.label') }}</div><SelectBox id="triggerGetter-type" v-model="form.type" /> <div class="text">{{ t('components.triggerGetter-variable.label') }}</div
-				><CustomBox id="triggerGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.triggerGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.triggerGetter-type.label') }}</div>
+			<SelectBox id="triggerGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.triggerGetter-variable.label') }}</div>
+			<CustomBox
+				id="triggerGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -37,7 +47,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => triggerGetter.onWindowClosed());
 	}
-
-
 });
 </script>

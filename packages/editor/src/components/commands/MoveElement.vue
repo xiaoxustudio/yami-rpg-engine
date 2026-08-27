@@ -1,28 +1,34 @@
 <template>
 	<WindowFrame id="moveElement" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.moveElement.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="moveElement-element" type="element" @input="onElement" />
-				<div class="text">Properties</div><ParamList id="moveElement-properties" v-model="form.properties" />
-				<div class="text">Easing</div><SelectBox id="moveElement-easingId" name="easing" v-model="form.easingId" />
-				<div class="text">Duration</div
-				><NumberBox
-					id="moveElement-duration"
-					name="duration"
-					min="0"
-					max="3600000"
-					unit="ms"
-					v-model="form.duration"
-				/>
-				<div class="text">Wait</div><SelectBox id="moveElement-wait" name="wait" v-model="form.wait" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.moveElement.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="moveElement-element" type="element" @input="onElement" />
+			<div class="text">Properties</div>
+			<ParamList id="moveElement-properties" v-model="form.properties" />
+			<div class="text">Easing</div>
+			<SelectBox id="moveElement-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberBox
+				id="moveElement-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="moveElement-wait" name="wait" v-model="form.wait" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveElementCommandSchema } from '@app/composables/commands/useMoveElementCommandSchema';
@@ -63,5 +69,4 @@ onMounted(() => {
 		clear($('#moveElement-easingId'));
 	});
 });
-
 </script>

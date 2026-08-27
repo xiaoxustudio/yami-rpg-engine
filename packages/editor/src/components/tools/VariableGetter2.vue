@@ -1,16 +1,24 @@
 ﻿<template>
 	<!-- 变量访问器窗口2 -->
 	<WindowFrame ref="frame" id="variableGetter2" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.variableGetter2.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.variableGetter2-type.label') }}</div><SelectBox id="variableGetter2-type" /> <div class="text">{{ t('components.variableGetter2-element.label') }}</div
-				><CustomBox id="variableGetter2-element" type="element" /> <div class="text">{{ t('components.variableGetter2-common-key.label') }}</div
-				><TextBox id="variableGetter2-common-key" /> <div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div
-				><SelectBox id="variableGetter2-preset-key" /> <div class="text">{{ t('components.variableGetter2-global-key.label') }}</div
-				><CustomBox id="variableGetter2-global-key" type="global-variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.variableGetter2.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.variableGetter2-type.label') }}</div>
+			<SelectBox id="variableGetter2-type" />
+			<div class="text">{{ t('components.variableGetter2-element.label') }}</div>
+			<CustomBox id="variableGetter2-element" type="element" />
+			<div class="text">{{ t('components.variableGetter2-common-key.label') }}</div>
+			<TextBox id="variableGetter2-common-key" />
+			<div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div>
+			<SelectBox id="variableGetter2-preset-key" />
+			<div class="text">{{ t('components.variableGetter2-global-key.label') }}</div>
+			<CustomBox id="variableGetter2-global-key" type="global-variable" />
+		</div>
 	</WindowFrame>
 </template>
 

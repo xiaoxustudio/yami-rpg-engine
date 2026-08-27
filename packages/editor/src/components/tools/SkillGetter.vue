@@ -1,17 +1,29 @@
 ﻿<template>
 	<!-- 技能访问器窗口 -->
 	<WindowFrame ref="frame" id="skillGetter">
-		<template #title><TitleBar>{{ t('components.skillGetter.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">{{ t('components.skillGetter-type.label') }}</div><SelectBox id="skillGetter-type" v-model="form.type" /> <div class="text">{{ t('components.skillGetter-actor.label') }}</div
-				><CustomBox id="skillGetter-actor" type="actor" v-model="form.actor" /> <div class="text">{{ t('components.skillGetter-key.label') }}</div
-				><SelectVar id="skillGetter-key" v-model="form.key" /> <div class="text">{{ t('components.skillGetter-skillId.label') }}</div
-				><CustomBox id="skillGetter-skillId" type="file" filter="skill" v-model="form.skillId" />
-				<div class="text">{{ t('components.skillGetter-variable.label') }}</div
-				><CustomBox id="skillGetter-variable" type="variable" filter="object" v-model="form.variable" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.skillGetter.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">{{ t('components.skillGetter-type.label') }}</div>
+			<SelectBox id="skillGetter-type" v-model="form.type" />
+			<div class="text">{{ t('components.skillGetter-actor.label') }}</div>
+			<CustomBox id="skillGetter-actor" type="actor" v-model="form.actor" />
+			<div class="text">{{ t('components.skillGetter-key.label') }}</div>
+			<SelectVar id="skillGetter-key" v-model="form.key" />
+			<div class="text">{{ t('components.skillGetter-skillId.label') }}</div>
+			<CustomBox id="skillGetter-skillId" type="file" filter="skill" v-model="form.skillId" />
+			<div class="text">{{ t('components.skillGetter-variable.label') }}</div>
+			<CustomBox
+				id="skillGetter-variable"
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+		</div>
 	</WindowFrame>
 </template>
 
@@ -42,7 +54,5 @@ onMounted(() => {
 	if (el) {
 		el.on('closed', () => skillGetter.onWindowClosed());
 	}
-
-
 });
 </script>

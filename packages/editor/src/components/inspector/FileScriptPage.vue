@@ -1,9 +1,13 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ t('components.fileScript-info-grid.label') || 'File Info' }}</DetailSummary>
+		<DetailSummary>{{
+			t('components.fileScript-info-grid.label') || 'File Info'
+		}}</DetailSummary>
 		<div class="detail-grid" id="fileScript-info-grid">
-			<div class="text">{{ t('components.fileScript-name.label') || 'Name' }}</div><div class="text" id="fileScript-name">{{ form.name }}</div> <div class="text">{{ t('components.fileScript-size.label') || 'Size' }}</div
-			><div class="text" id="fileScript-size">{{ form.size }}</div>
+			<div class="text">{{ t('components.fileScript-name.label') || 'Name' }}</div>
+			<div class="text" id="fileScript-name">{{ form.name }}</div>
+			<div class="text">{{ t('components.fileScript-size.label') || 'Size' }}</div>
+			<div class="text" id="fileScript-size">{{ form.size }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>

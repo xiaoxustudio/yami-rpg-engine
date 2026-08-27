@@ -1,18 +1,23 @@
 <template>
 	<WindowFrame id="setState" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setState.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">State</div><CustomBox id="setState-state" type="state" @input="onState" />
-				<div class="text">Operation</div><SelectBox id="setState-operation" v-model="form.operation" /> <div class="text">Time</div
-				><NumberVar id="setState-time" min="0" max="36000000" unit="ms" v-model="form.time" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setState.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">State</div>
+			<CustomBox id="setState-state" type="state" @input="onState" />
+			<div class="text">Operation</div>
+			<SelectBox id="setState-operation" v-model="form.operation" />
+			<div class="text">Time</div>
+			<NumberVar id="setState-time" min="0" max="36000000" unit="ms" v-model="form.time" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateCommandSchema';
@@ -42,5 +47,4 @@ onMounted(() => {
 		{ name: 'Decrease Time', value: 'decrease-time' }
 	]);
 });
-
 </script>

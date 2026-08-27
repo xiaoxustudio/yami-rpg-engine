@@ -1,17 +1,21 @@
 <template>
-<WindowFrame id="changePassableTerrain" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changePassableTerrain.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changePassableTerrain" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changePassableTerrain.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div
-			><CustomBox id="changePassableTerrain-actor" type="actor" @input="onActor" /><div class="text">Passable Terrain</div
-			><SelectBox id="changePassableTerrain-passage" v-model="form.passage" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="changePassableTerrain-actor" type="actor" @input="onActor" />
+			<div class="text">Passable Terrain</div>
+			<SelectBox id="changePassableTerrain-passage" v-model="form.passage" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';
@@ -42,5 +46,4 @@ onMounted(() => {
 		{ name: get('unrestricted') || 'Unrestricted', value: 'unrestricted' }
 	]);
 });
-
 </script>

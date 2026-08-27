@@ -1,12 +1,27 @@
 <template>
-<WindowFrame id="changeActorState" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.changeActorState.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="changeActorState" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.changeActorState.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorState-actor" type="actor" @input="onActor" /><div class="text">Operation</div><SelectBox id="changeActorState-operation" v-model="form.operation" /><div class="text">State</div
-			><CustomBox id="changeActorState-stateId" type="file" filter="state" @input="onStateId" /><div class="text">State</div><CustomBox id="changeActorState-state" type="state" @input="onState" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="changeActorState-actor" type="actor" @input="onActor" />
+			<div class="text">Operation</div>
+			<SelectBox id="changeActorState-operation" v-model="form.operation" />
+			<div class="text">State</div>
+			<CustomBox
+				id="changeActorState-stateId"
+				type="file"
+				filter="state"
+				@input="onStateId"
+			/>
+			<div class="text">State</div>
+			<CustomBox id="changeActorState-state" type="state" @input="onState" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">

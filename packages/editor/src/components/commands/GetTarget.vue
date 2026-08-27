@@ -1,15 +1,27 @@
 <template>
-<WindowFrame id="getTarget" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.getTarget.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="getTarget" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.getTarget.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" v-model="form.actor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" v-model="form.selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" v-model="form.condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" v-model="form.divisor" /></div>
-	
-</WindowFrame>
+			<div class="text">Actor</div>
+			<CustomBox id="getTarget-actor" type="actor" v-model="form.actor" />
+			<div class="text">Selector</div>
+			<SelectBox id="getTarget-selector" v-model="form.selector" />
+			<div class="text">Condition</div>
+			<SelectBox id="getTarget-condition" v-model="form.condition" />
+			<div class="text">Attribute</div>
+			<SelectBox id="getTarget-attribute" v-model="form.attribute" />
+			<div class="text">Attribute 2</div>
+			<SelectBox id="getTarget-divisor" v-model="form.divisor" />
+		</div>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
@@ -42,10 +54,22 @@ onMounted(() => {
 		{ name: get('condition.max-threat') || 'Max Threat', value: 'max-threat' },
 		{ name: get('condition.nearest') || 'Nearest', value: 'nearest' },
 		{ name: get('condition.farthest') || 'Farthest', value: 'farthest' },
-		{ name: get('condition.min-attribute-value') || 'Min Attribute Value', value: 'min-attribute-value' },
-		{ name: get('condition.max-attribute-value') || 'Max Attribute Value', value: 'max-attribute-value' },
-		{ name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio', value: 'min-attribute-ratio' },
-		{ name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio', value: 'max-attribute-ratio' },
+		{
+			name: get('condition.min-attribute-value') || 'Min Attribute Value',
+			value: 'min-attribute-value'
+		},
+		{
+			name: get('condition.max-attribute-value') || 'Max Attribute Value',
+			value: 'max-attribute-value'
+		},
+		{
+			name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio',
+			value: 'min-attribute-ratio'
+		},
+		{
+			name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio',
+			value: 'max-attribute-ratio'
+		},
 		{ name: get('condition.random') || 'Random', value: 'random' }
 	]);
 	$('#getTarget-condition')
@@ -61,5 +85,4 @@ onMounted(() => {
 			}
 		]);
 });
-
 </script>

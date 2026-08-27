@@ -1,17 +1,21 @@
 <template>
 	<WindowFrame id="controlDialog" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.controlDialog.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="controlDialog-element" type="element" @input="onElement" />
-				<div class="text">Operation</div><SelectBox id="controlDialog-operation" v-model="form.operation" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.controlDialog.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Element</div>
+			<CustomBox id="controlDialog-element" type="element" @input="onElement" />
+			<div class="text">Operation</div>
+			<SelectBox id="controlDialog-operation" v-model="form.operation" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlDialogCommandSchema } from '@app/composables/commands/useControlDialogCommandSchema';
@@ -43,5 +47,4 @@ onMounted(() => {
 		{ name: get('print-next-page') || 'Print Next Page', value: 'print-next-page' }
 	]);
 });
-
 </script>

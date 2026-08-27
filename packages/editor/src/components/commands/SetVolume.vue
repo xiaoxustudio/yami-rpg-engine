@@ -1,28 +1,41 @@
 <template>
-<WindowFrame id="setVolume" @confirm="onConfirm">
-	<template #title><TitleBar>{{ t('components.setVolume.title') }}<div class="close" /></TitleBar></template>
-	
+	<WindowFrame id="setVolume" @confirm="onConfirm">
+		<template #title
+			><TitleBar
+				>{{ t('components.setVolume.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="setVolume-type" v-model="form.type" /> <div class="text">Volume</div
-			><NumberVar id="setVolume-volume" min="0" max="1" step="0.1" decimals="4" v-model="form.volume" />
-			<div class="text">Easing</div><SelectBox id="setVolume-easingId" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div
-			><NumberBox
+			<div class="text">Type</div>
+			<SelectBox id="setVolume-type" v-model="form.type" />
+			<div class="text">Volume</div>
+			<NumberVar
+				id="setVolume-volume"
+				min="0"
+				max="1"
+				step="0.1"
+				decimals="4"
+				v-model="form.volume"
+			/>
+			<div class="text">Easing</div>
+			<SelectBox id="setVolume-easingId" name="easing" v-model="form.easingId" />
+			<div class="text">Duration</div>
+			<NumberBox
 				id="setVolume-duration"
 				name="duration"
 				min="0"
 				max="3600000"
 				unit="ms"
 				v-model="form.duration"
-			 />
-			<div class="text">Wait</div><SelectBox id="setVolume-wait" name="wait" v-model="form.wait" />
+			/>
+			<div class="text">Wait</div>
+			<SelectBox id="setVolume-wait" name="wait" v-model="form.wait" />
 		</div>
-	
-</WindowFrame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetVolumeCommandSchema } from '@app/composables/useSetVolumeCommandSchema';
@@ -61,5 +74,4 @@ onMounted(() => {
 		clear($('#setVolume-easingId'));
 	});
 });
-
 </script>

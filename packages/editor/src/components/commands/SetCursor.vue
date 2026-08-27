@@ -1,17 +1,19 @@
 <template>
 	<WindowFrame id="setCursor" @confirm="onConfirm">
-		<template #title><TitleBar>{{ t('components.setCursor.title') }}<div class="close" /></TitleBar></template>
-		
-			<div class="grid-box">
-				<div class="text">Image</div
-				><CustomBox id="setCursor-image" type="file" filter="image" @input="onImage" />
-			</div>
-		
+		<template #title
+			><TitleBar
+				>{{ t('components.setCursor.title') }}
+				<div class="close" /></TitleBar
+		></template>
+
+		<div class="grid-box">
+			<div class="text">Image</div>
+			<CustomBox id="setCursor-image" type="file" filter="image" @input="onImage" />
+		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-
 import { useI18n } from 'vue-i18n';
 import { useSetCursorCommandSchema } from '@app/composables/commands/useSetCursorCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -29,5 +31,4 @@ const onImage = (value: unknown) => {
 const onConfirm = () => {
 	save();
 };
-
 </script>
