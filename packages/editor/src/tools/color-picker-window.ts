@@ -99,7 +99,7 @@ Color.drawPalette = function (this: typeof Color) {
 	if (!canvas.initialized) {
 		canvas.initialized = true;
 
-		const context = canvas.getContext('2d');
+		const context = canvas.getContext('2d', { willReadFrequently: true });
 		const gradient = context.createLinearGradient(0.5, 0, 255.5, 0);
 		gradient.addColorStop(0, '#ff0000');
 		gradient.addColorStop(1 / 6, '#ffff00');
@@ -144,7 +144,7 @@ Color.drawPalette = function (this: typeof Color) {
 Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b] = args[0] as [number, number, number];
 	const canvas = $('#color-pillar-canvas');
-	const context = canvas.getContext('2d');
+	const context = canvas.getContext('2d', { willReadFrequently: true });
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
 	gradient.addColorStop(0, `rgba(${r}, ${g}, ${b})`);
 	gradient.addColorStop(1, `rgba(255, 255, 255)`);

@@ -710,11 +710,14 @@ Selection.fontSize = {
 
 Selection.textPosition = {
 	initialize: function () {
-		$('#textPosition-axis').loadItems([
+		const axis = $('#textPosition-axis');
+		const operation = $('#textPosition-operation');
+		if (!axis || !operation) return;
+		axis.loadItems([
 			{ name: 'X', value: 'x' },
 			{ name: 'Y', value: 'y' }
 		]);
-		$('#textPosition-operation').loadItems([
+		operation.loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Add', value: 'add' }
 		]);
@@ -743,28 +746,28 @@ Selection.textPosition = {
 
 Selection.textEffect = {
 	initialize: function () {
-		$('#textEffect-type').loadItems([
+		const type = $('#textEffect-type');
+		if (!type) return;
+		type.loadItems([
 			{ name: 'Shadow', value: 'shadow' },
 			{ name: 'Stroke', value: 'stroke' },
 			{ name: 'Outline', value: 'outline' }
 		]);
-		$('#textEffect-type')
-			.enableHiddenMode()
-			.relate([
-				{
-					case: 'shadow',
-					targets: [
-						$('#textEffect-shadowOffsetX'),
-						$('#textEffect-shadowOffsetY'),
-						$('#textEffect-color')
-					]
-				},
-				{
-					case: 'stroke',
-					targets: [$('#textEffect-strokeWidth'), $('#textEffect-color')]
-				},
-				{ case: 'outline', targets: [$('#textEffect-color')] }
-			]);
+		type.enableHiddenMode().relate([
+			{
+				case: 'shadow',
+				targets: [
+					$('#textEffect-shadowOffsetX'),
+					$('#textEffect-shadowOffsetY'),
+					$('#textEffect-color')
+				]
+			},
+			{
+				case: 'stroke',
+				targets: [$('#textEffect-strokeWidth'), $('#textEffect-color')]
+			},
+			{ case: 'outline', targets: [$('#textEffect-color')] }
+		]);
 	},
 	open: function ({
 		type = 'shadow',
@@ -805,38 +808,38 @@ Selection.textEffect = {
 
 Selection.image = {
 	initialize: function () {
-		$('#insertImage-mode').loadItems([
+		const mode = $('#insertImage-mode');
+		if (!mode) return;
+		mode.loadItems([
 			{ name: 'Image', value: 'image' },
 			{ name: 'Image - Size', value: 'image-size' },
 			{ name: 'Image - Clip', value: 'image-clip' },
 			{ name: 'Image - Clip - Size', value: 'image-clip-size' }
 		]);
-		$('#insertImage-mode')
-			.enableHiddenMode()
-			.relate([
-				{ case: 'image', targets: [$('#insertImage-image')] },
-				{
-					case: 'image-size',
-					targets: [
-						$('#insertImage-image'),
-						$('#insertImage-width'),
-						$('#insertImage-height')
-					]
-				},
-				{
-					case: 'image-clip',
-					targets: [$('#insertImage-image'), $('#insertImage-clip')]
-				},
-				{
-					case: 'image-clip-size',
-					targets: [
-						$('#insertImage-image'),
-						$('#insertImage-clip'),
-						$('#insertImage-width'),
-						$('#insertImage-height')
-					]
-				}
-			]);
+		mode.enableHiddenMode().relate([
+			{ case: 'image', targets: [$('#insertImage-image')] },
+			{
+				case: 'image-size',
+				targets: [
+					$('#insertImage-image'),
+					$('#insertImage-width'),
+					$('#insertImage-height')
+				]
+			},
+			{
+				case: 'image-clip',
+				targets: [$('#insertImage-image'), $('#insertImage-clip')]
+			},
+			{
+				case: 'image-clip-size',
+				targets: [
+					$('#insertImage-image'),
+					$('#insertImage-clip'),
+					$('#insertImage-width'),
+					$('#insertImage-height')
+				]
+			}
+		]);
 	},
 	open: function ({
 		mode = 'image',
@@ -880,8 +883,10 @@ Selection.image = {
 Selection.localVariable = {
 	filter: 'all',
 	initialize: function (this: { filter: string }) {
+		const key = $('#localVariable-key');
+		if (!key) return;
 		TextSuggestion.listen!(
-			$('#localVariable-key') as unknown as TextSuggestionTarget,
+			key as unknown as TextSuggestionTarget,
 			VariableGetter.createVarListGenerator!(this as never)
 		);
 	},
