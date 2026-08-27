@@ -1,20 +1,23 @@
 import { SettingConfig } from '@app/services/project/setting-config';
 import { Path } from '@app/utils/config';
-import { Animation } from '@app/animation/animation-window.ts';
 import { loadCustomCommandList } from '@app/commands/command-custom.ts';
 import { Data } from '@app/data/data-object.ts';
-import { Project } from '@app/data/project-settings-window.ts';
-import { File } from '@app/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { GameLocal } from '@app/local/local-object.ts';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
-import { Printer } from '@app/printer/printer.ts';
 import { createGetter } from '@app/i18n';
 
 import { Updater } from '@app/services/updater/updater.ts';
+
+const loadCluster = () => import('@app/tools/window-cluster');
+const Animation = getLazyWindow('animation', () => loadCluster().then((m) => m.Animation));
+const File = getLazyWindow('file', () => loadCluster().then((m) => m.File));
+const Layout = getLazyWindow('layout', () => loadCluster().then((m) => m.Layout));
+const Printer = getLazyWindow('printer', () => loadCluster().then((m) => m.Printer));
+const Project = getLazyWindow('project', () => loadCluster().then((m) => m.Project));
 
 async function open(this: typeof Editor, path: string, agreed = false) {
 	path = Path.slash!(path ?? this.config!.project);

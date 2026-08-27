@@ -2,61 +2,21 @@ import { Timer } from '@app/utils/timer';
 import { lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
 import { registerTool, type ToolInstance } from '@app/tools/tool-registry';
+import { primeWindows } from '@app/tools/window-registry';
 import { Window } from '@app/tools/window-object.ts';
 import '@app/variable/initialize.ts';
 
-import { Attribute } from '@app/attribute/attribute-window.ts';
-import { AudioManager } from '@app/audio/audio-manager.ts';
-import { Command } from '@app/commands/command-object.ts';
-import { CustomCommand } from '@app/commands/custom-command-window.ts';
-import { EventEditor } from '@app/commands/event-editor.ts';
-import { Project } from '@app/data/project-settings-window.ts';
-import { Team } from '@app/data/team-window.ts';
-import { Easing } from '@app/data/transition-window.ts';
-import { Enum } from '@app/enum/enum-window.ts';
-import { Directory } from '@app/file/directory-object.ts';
-import { Inspector } from '@app/inspector/inspector.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
-import { Localization } from '@app/local/local-window.ts';
-import { Log } from '@app/log/log-window.ts';
-import { Reference } from '@app/log/related-references.ts';
-import { UpdateLog } from '@app/log/update-log-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
-import { SetTileTag } from '@app/module/global.ts';
 import { initI18n } from '@app/i18n';
-import { PluginManager } from '@app/plugin/plugin.ts';
-import { Printer } from '@app/printer/printer.ts';
-import { Home } from '@app/title/home-page.ts';
-import { Menubar } from '@app/title/menu-bar.ts';
-import { Title } from '@app/title/title-bar.ts';
-import { ArrayList } from '@app/composables/useArrayWindow';
-import { Color } from '@app/tools/color-picker-window.ts';
-import { ConditionListInterface } from '@app/tools/condition-list.ts';
-import { ImageClip } from '@app/tools/image-crop-window.ts';
-import { PresetElement } from '@app/composables/usePresetElementWindow';
-import { AttributeListInterface } from '@app/tools/property-list.ts';
-import { Rename } from '@app/composables/useRenameWindow';
-import { PresetObject } from '@app/composables/usePresetObjectWindow';
-import { SetKey } from '@app/composables/useSetKeyWindow';
-import { SetQuantity } from '@app/tools/set-number-window.ts';
-import { Selection } from '@app/tools/text-capture.ts';
-import { Zoom } from '@app/composables/useZoomWindow';
+
+type ClusterShape = typeof import('@app/tools/window-cluster');
 
 interface SingletonShape {
 	initialize?: (() => void) | null;
 }
 
-registerTool('ArrayList', ArrayList as unknown as ToolInstance);
-registerTool('Color', Color as unknown as ToolInstance);
-registerTool('ImageClip', ImageClip as unknown as ToolInstance);
-registerTool('Rename', Rename as unknown as ToolInstance);
-registerTool('SetKey', SetKey as unknown as ToolInstance);
-registerTool('SetQuantity', SetQuantity as unknown as ToolInstance);
-registerTool('Zoom', Zoom as unknown as ToolInstance);
-registerTool('PresetObject', PresetObject as unknown as ToolInstance);
-registerTool('PresetElement', PresetElement as unknown as ToolInstance);
-registerTool('Selection', Selection as unknown as ToolInstance);
+let clusterRef: ClusterShape | null = null;
 
 const initializedSet = new Set<string>();
 
@@ -75,45 +35,45 @@ function initSingleton(name: string, singleton: unknown): void {
 	}
 }
 
-function initCore(): void {
-	initSingleton('AudioManager', AudioManager);
-	initSingleton('Menubar', Menubar);
-	initSingleton('Layout', Layout);
-	initSingleton('Home', Home);
+function initCore(cluster: ClusterShape): void {
+	initSingleton('AudioManager', cluster.AudioManager);
+	initSingleton('Menubar', cluster.Menubar);
+	initSingleton('Layout', cluster.Layout);
+	initSingleton('Home', cluster.Home);
 	initSingleton('Timer', Timer);
 	initSingleton('Window', Window);
 }
 
-function initEditors(): void {
-	initSingleton('EventEditor', EventEditor);
-	initSingleton('Inspector', Inspector);
-	initSingleton('Command', Command);
-	initSingleton('Project', Project);
-	initSingleton('Easing', Easing);
-	initSingleton('Team', Team);
-	initSingleton('PluginManager', PluginManager);
-	initSingleton('CustomCommand', CustomCommand);
-	initSingleton('Log', Log);
-	initSingleton('UpdateLog', UpdateLog);
-	initSingleton('Reference', Reference);
-	initSingleton('Directory', Directory);
-	initSingleton('Printer', Printer);
+function initEditors(cluster: ClusterShape): void {
+	initSingleton('EventEditor', cluster.EventEditor);
+	initSingleton('Inspector', cluster.Inspector);
+	initSingleton('Command', cluster.Command);
+	initSingleton('Project', cluster.Project);
+	initSingleton('Easing', cluster.Easing);
+	initSingleton('Team', cluster.Team);
+	initSingleton('PluginManager', cluster.PluginManager);
+	initSingleton('CustomCommand', cluster.CustomCommand);
+	initSingleton('Log', cluster.Log);
+	initSingleton('UpdateLog', cluster.UpdateLog);
+	initSingleton('Reference', cluster.Reference);
+	initSingleton('Directory', cluster.Directory);
+	initSingleton('Printer', cluster.Printer);
 }
 
-function initTools(): void {
-	initSingleton('Color', Color);
-	initSingleton('Attribute', Attribute);
-	initSingleton('Enum', Enum);
-	initSingleton('Localization', Localization);
-	initSingleton('ImageClip', ImageClip);
-	initSingleton('Selection', Selection);
-	initSingleton('SetQuantity', SetQuantity);
-	initSingleton('SetTileTag', SetTileTag);
-	initSingleton('PresetObject', PresetObject);
-	initSingleton('PresetElement', PresetElement);
-	initSingleton('ArrayList', ArrayList);
-	initSingleton('AttributeListInterface', AttributeListInterface);
-	initSingleton('ConditionListInterface', ConditionListInterface);
+function initTools(cluster: ClusterShape): void {
+	initSingleton('Color', cluster.Color);
+	initSingleton('Attribute', cluster.Attribute);
+	initSingleton('Enum', cluster.Enum);
+	initSingleton('Localization', cluster.Localization);
+	initSingleton('ImageClip', cluster.ImageClip);
+	initSingleton('Selection', cluster.Selection);
+	initSingleton('SetQuantity', cluster.SetQuantity);
+	initSingleton('SetTileTag', cluster.SetTileTag);
+	initSingleton('PresetObject', cluster.PresetObject);
+	initSingleton('PresetElement', cluster.PresetElement);
+	initSingleton('ArrayList', cluster.ArrayList);
+	initSingleton('AttributeListInterface', cluster.AttributeListInterface);
+	initSingleton('ConditionListInterface', cluster.ConditionListInterface);
 }
 
 Editor.initialize = async function (this: typeof Editor) {
@@ -127,6 +87,11 @@ Editor.initialize = async function (this: typeof Editor) {
 	]);
 
 	try {
+		clusterRef = await import('@app/tools/window-cluster');
+		await clusterRef.clusterReady;
+		primeWindows(clusterRef as unknown as Record<string, unknown>);
+		const cluster = clusterRef;
+		const { Title, Layout } = cluster;
 		Title.initialize!();
 		const data = await loadConfigPromise;
 		const code = JSON.stringify(data);
@@ -135,14 +100,25 @@ Editor.initialize = async function (this: typeof Editor) {
 		Object.defineProperty(this.config, 'code', { value: code });
 		void initI18n();
 
-		initCore();
-		initEditors();
-		initTools();
+		initCore(cluster);
+		initEditors(cluster);
+		initTools(cluster);
+
+		registerTool('ArrayList', cluster.ArrayList as unknown as ToolInstance);
+		registerTool('Color', cluster.Color as unknown as ToolInstance);
+		registerTool('ImageClip', cluster.ImageClip as unknown as ToolInstance);
+		registerTool('Rename', cluster.Rename as unknown as ToolInstance);
+		registerTool('SetKey', cluster.SetKey as unknown as ToolInstance);
+		registerTool('SetQuantity', cluster.SetQuantity as unknown as ToolInstance);
+		registerTool('Zoom', cluster.Zoom as unknown as ToolInstance);
+		registerTool('PresetObject', cluster.PresetObject as unknown as ToolInstance);
+		registerTool('PresetElement', cluster.PresetElement as unknown as ToolInstance);
+		registerTool('Selection', cluster.Selection as unknown as ToolInstance);
 
 		this.loadConfig!();
 		Layout.manager.switch('home');
 	} catch (error: unknown) {
-		Log.throw!(error);
+		clusterRef?.Log?.throw?.(error);
 		Window.confirm!(
 			{
 				message: `Failed to initialize\n${(error as Error).message}`,

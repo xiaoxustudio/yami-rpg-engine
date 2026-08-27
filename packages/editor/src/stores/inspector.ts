@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
-import { Inspector } from '@app/inspector/inspector.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+
+const loadInspector = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Inspector;
+	});
+const Inspector = getLazyWindow('inspector', loadInspector);
 
 export const useInspectorStore = defineStore('inspector', () => {
 	const inspector = shallowRef<unknown>(Inspector ?? null);

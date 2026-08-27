@@ -1,8 +1,15 @@
 import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { pinia } from './pinia';
-import { Title } from '@app/title/title-bar.ts';
 import type { EditorProjectShape } from './editor';
+
+const loadTitle = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Title;
+	});
+const Title = getLazyWindow('title', loadTitle);
 
 export interface TitleShape {
 	theme: string | null;

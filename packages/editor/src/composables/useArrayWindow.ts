@@ -179,8 +179,10 @@ const listInterface: ArrayListInterface = {
 	windows,
 	inputs,
 	initialize: function (this: unknown, list: HTMLElement) {
-		on($('#arrayList-number-confirm'), 'click', () => list.save());
-		on($('#arrayList-string-confirm'), 'click', () => list.save());
+		const numberConfirm = $('#arrayList-number-confirm');
+		if (numberConfirm) on(numberConfirm, 'click', () => list.save());
+		const stringConfirm = $('#arrayList-string-confirm');
+		if (stringConfirm) on(stringConfirm, 'click', () => list.save());
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;

@@ -1,14 +1,16 @@
 import { $ } from '@app/utils/dom';
 import { addClass, removeClass } from '@app/utils/element-utils';
-import { Scene } from '@app/scene/scene-window.ts';
-import { UI } from '@app/ui/ui-window.ts';
-import { Animation } from '@app/animation/animation-window.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
-import { Particle } from '@app/particle/particle-window.ts';
-import { Menubar } from '@app/title/menu-bar.ts';
-import { Title } from '@app/title/title-bar.ts';
+import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
+
+const Layout = getLazyWindow('layout', () =>
+	import('@app/tools/window-cluster').then((m) => m.Layout)
+);
+const Title = getLazyWindow('title', () =>
+	import('@app/tools/window-cluster').then((m) => m.Title)
+);
 
 type WindowFrame = HTMLElement & {
 	open(): unknown;
@@ -316,11 +318,9 @@ const activateModalMode = (): void => {
 	Window.saveActiveElement!();
 	Layout.disableFocusableElements();
 	document.activeElement!.blur();
-	window.removeEventListener('keydown', Menubar.keydown!);
-	window.removeEventListener('keydown', Scene.keydown);
-	window.removeEventListener('keydown', UI.keydown);
-	window.removeEventListener('keydown', Animation.keydown);
-	window.removeEventListener('keydown', Particle.keydown!);
+	for (const handler of getWindowKeydowns()) {
+		window.removeEventListener('keydown', handler);
+	}
 	window.addEventListener('keydown', Window.keydown!);
 };
 
@@ -329,11 +329,9 @@ const deactivateModalMode = (): void => {
 	Title.pointerenter!();
 	Window.restoreActiveElement!();
 	Layout.enableFocusableElements();
-	window.addEventListener('keydown', Menubar.keydown!);
-	window.addEventListener('keydown', Scene.keydown);
-	window.addEventListener('keydown', UI.keydown);
-	window.addEventListener('keydown', Animation.keydown);
-	window.addEventListener('keydown', Particle.keydown!);
+	for (const handler of getWindowKeydowns()) {
+		window.addEventListener('keydown', handler);
+	}
 	window.removeEventListener('keydown', Window.keydown!);
 };
 

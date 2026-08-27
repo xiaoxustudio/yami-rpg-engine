@@ -2,6 +2,7 @@ import { UI } from './ui-window.ts';
 import type { UIShape } from './ui-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { hasClass, read } from '@app/utils/element-utils.ts';
 import { StageColor } from '@app/utils/stage-color';
 import { getUIStore } from '@app/stores/ui';
@@ -85,6 +86,8 @@ UI.keydown = function (this: UIShape, event: KeyboardEvent) {
 		}
 	}
 };
+
+registerWindowKeydown('ui', UI.keydown);
 
 UI.headPointerdown = function (this: UIShape, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {

@@ -1514,3 +1514,7 @@ for (const key of sceneBridgeKeys) {
 		configurable: true
 	});
 }
+
+export const sceneWindowReady = import('./register.ts')
+	.then(() => undefined)
+	.catch(() => undefined);

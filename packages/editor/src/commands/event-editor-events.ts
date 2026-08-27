@@ -3,11 +3,14 @@ import type { EventEditorShape, EventListItem } from './event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { addClass, clear, hasClass, read, removeClass, write } from '@app/utils/element-utils';
 import { ctrl } from '@app/utils/event-accessors';
-import { File } from '@app/file/file-system-core.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { createGetter } from '@app/i18n';
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { Menu } from '@app/components/menu-list.ts';
-import { Inspector } from '@app/inspector/inspector.ts';
+
+const loadCluster = () => import('@app/tools/window-cluster');
+const File = getLazyWindow('file', () => loadCluster().then((m) => m.File));
+const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));
 
 EventEditor.windowLocalize = function (this: EventEditorShape, _event: Event) {
 	const types = EventEditor.types;

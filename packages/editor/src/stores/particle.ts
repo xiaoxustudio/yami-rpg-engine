@@ -1,9 +1,17 @@
 ﻿import { defineStore } from 'pinia';
-import { Particle, type ParticleEmitterShape } from '@app/particle/particle-window.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import type { EditorProjectShape } from './editor';
 import type { History } from '@app/tools/history.ts';
 import { pinia } from './pinia';
+import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
+
+const loadParticle = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Particle;
+	});
+const Particle = getLazyWindow('particle', loadParticle);
 
 export const particleStateKeys = [
 	'state',
@@ -57,7 +65,7 @@ export const useParticleStore = defineStore('particle', () => {
 
 	function initialize() {
 		if (initialized.value) return;
-		Particle?.initialize?.();
+		void loadWindow('particle', loadParticle).then((p) => p?.initialize?.());
 		initialized.value = true;
 	}
 

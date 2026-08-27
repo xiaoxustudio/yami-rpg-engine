@@ -3,15 +3,18 @@ import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Path } from '@app/utils/config';
-import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { filterGUID, parseFileSize, parseGUID } from '@app/services/file-system/path-utils.ts';
-import { Log } from '@app/log/log-window.ts';
-import { Particle } from '@app/particle/particle-window.ts';
-import { Scene } from '@app/scene/scene-window.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
-import { UI } from '@app/ui/ui-window.ts';
+
+const loadCluster = () => import('@app/tools/window-cluster');
+const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));
+const UI = getLazyWindow('ui', () => loadCluster().then((m) => m.UI));
+const Animation = getLazyWindow('animation', () => loadCluster().then((m) => m.Animation));
+const Particle = getLazyWindow('particle', () => loadCluster().then((m) => m.Particle));
+const Log = getLazyWindow('log', () => loadCluster().then((m) => m.Log));
 
 // oxlint-disable-next-line no-explicit-any
 type FileMethod = (...args: any[]) => any;

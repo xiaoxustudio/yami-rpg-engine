@@ -3,15 +3,30 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { YMWindowFrame } from '@ui-kit';
 import { Window } from '@app/tools/window-object';
-import { Title } from '@app/title/title-bar';
-import { Layout } from '@app/engine/layout/layout';
+import { primeWindows } from '@app/tools/window-registry';
+
+const { layoutMock, titleMock } = vi.hoisted(() => ({
+	layoutMock: {
+		disableFocusableElements: vi.fn(),
+		enableFocusableElements: vi.fn()
+	},
+	titleMock: {
+		pointerenter: vi.fn(),
+		pointermove: vi.fn()
+	}
+}));
+vi.mock('@app/tools/window-cluster', () => ({
+	Layout: layoutMock,
+	Title: titleMock
+}));
 
 describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', () => {
 	beforeEach(() => {
-		Title.pointerenter = vi.fn();
-		Title.pointermove = vi.fn();
-		Layout.disableFocusableElements = vi.fn();
-		Layout.enableFocusableElements = vi.fn();
+		primeWindows({ Layout: layoutMock, Title: titleMock });
+		titleMock.pointerenter = vi.fn();
+		titleMock.pointermove = vi.fn();
+		layoutMock.disableFocusableElements = vi.fn();
+		layoutMock.enableFocusableElements = vi.fn();
 		vi.stubGlobal('scrollTo', vi.fn());
 		if (!document.getElementById('title')) {
 			const title = document.createElement('div');

@@ -1,0 +1,13 @@
+import '@app/engine/ui/element-base.ts';
+import '@app/engine/ui/root-element.ts';
+import '@app/engine/ui/image-element.ts';
+import '@app/engine/ui/text-element.ts';
+import '@app/engine/ui/text-box-element.ts';
+import '@app/engine/ui/dialog-element.ts';
+import '@app/engine/ui/progress-bar-element.ts';
+import '@app/engine/ui/button-element.ts';
+import '@app/engine/ui/animation-element.ts';
+import '@app/engine/ui/video-element.ts';
+import '@app/engine/ui/window-element.ts';
+import '@app/engine/ui/container-element.ts';
+import '@app/engine/ui/reference-element.ts';

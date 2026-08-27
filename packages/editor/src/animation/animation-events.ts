@@ -2,6 +2,7 @@ import { Animation } from './animation-window.ts';
 import { hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { StageColor } from '@app/utils/stage-color';
 import { getAnimationStore } from '@app/stores/animation';
 
@@ -206,6 +207,8 @@ Animation.keydown = function (this: typeof Animation, event: KeyboardEvent) {
 		}
 	}
 };
+
+registerWindowKeydown('animation', Animation.keydown);
 
 Animation.headPointerdown = function (this: typeof Animation, event: Event) {
 	if (!(event.target instanceof HTMLInputElement)) {

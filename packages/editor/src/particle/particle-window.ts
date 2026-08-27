@@ -414,3 +414,7 @@ for (const key of particleBridgeKeys) {
 		configurable: true
 	});
 }
+
+export const particleWindowReady = import('./register.ts')
+	.then(() => undefined)
+	.catch(() => undefined);

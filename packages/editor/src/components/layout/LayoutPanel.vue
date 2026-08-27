@@ -832,16 +832,19 @@ import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
-import { Scene } from '@app/scene/scene-window.ts';
-import { UI } from '@app/ui/ui-window.ts';
-import { Animation } from '@app/animation/animation-window.ts';
-import { Particle } from '@app/particle/particle-window.ts';
-import { Curve } from '@app/animation/curve-window.ts';
-import { Home } from '@app/title/home-page.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { setIconClip } from '@app/utils/icon-clip';
-import { Inspector } from '@app/inspector/inspector.ts';
+
+const loadCluster = () => import('@app/tools/window-cluster');
+const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));
+const UI = getLazyWindow('ui', () => loadCluster().then((m) => m.UI));
+const Animation = getLazyWindow('animation', () => loadCluster().then((m) => m.Animation));
+const Particle = getLazyWindow('particle', () => loadCluster().then((m) => m.Particle));
+const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));
+const Curve = getLazyWindow('curve', () => loadCluster().then((m) => m.Curve));
+const Home = getLazyWindow('home', () => loadCluster().then((m) => m.Home));
 
 interface SceneExtrasNode {
 	class?: string;
@@ -927,7 +930,7 @@ const sceneNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	} else {
 		element?.classList.remove('reference');
 	}
-	if (node === Scene.tilemap) {
+	if (node === getSceneStore().tilemap) {
 		element?.classList.add('highlight');
 	}
 	if (node.conditions instanceof Array) {
@@ -1194,8 +1197,8 @@ const onLayerVisibilityPointerdown =
 		Animation.requestRendering?.();
 		Animation.history.save({
 			type: 'animation-layer-hidden',
-			motion: Animation.motion,
-			direction: Animation.direction,
+			motion: getAnimationStore().motion,
+			direction: getAnimationStore().direction,
 			item: item,
 			oldValues: backups,
 			newValue: !hidden
@@ -1213,8 +1216,8 @@ const onLayerLockPointerdown =
 		list.dispatchEvent(new Event('change', { bubbles: true }));
 		Animation.history.save({
 			type: 'animation-layer-locked',
-			motion: Animation.motion,
-			direction: Animation.direction,
+			motion: getAnimationStore().motion,
+			direction: getAnimationStore().direction,
 			item: item,
 			oldValues: backups,
 			newValue: !locked

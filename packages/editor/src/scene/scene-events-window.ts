@@ -1,4 +1,5 @@
 import { Scene } from './scene-window.ts';
+import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { hasClass, read } from '@app/utils/element-utils.ts';
 
 Scene.webglRestored = function (this: typeof Scene, _event: Event) {
@@ -98,6 +99,8 @@ Scene.keydown = function (this: typeof Scene, event: KeyboardEvent) {
 		}
 	}
 };
+
+registerWindowKeydown('scene', Scene.keydown);
 
 Scene.headPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {

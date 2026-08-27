@@ -1,8 +1,15 @@
 import { defineStore } from 'pinia';
-import { Animation } from '@app/animation/animation-window.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import type { EditorProjectShape } from './editor';
+
+const loadAnimation = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Animation;
+	});
+const Animation = getLazyWindow('animation', loadAnimation);
 
 export const animationStateKeys = [
 	'state',
@@ -56,7 +63,7 @@ export const useAnimationStore = defineStore('animation', () => {
 
 	function initialize() {
 		if (initialized.value) return;
-		Animation?.initialize?.();
+		void loadWindow('animation', loadAnimation).then((a) => a?.initialize?.());
 		initialized.value = true;
 	}
 

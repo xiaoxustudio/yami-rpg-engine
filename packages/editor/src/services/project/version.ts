@@ -1,7 +1,9 @@
-import { File } from '@app/file/file-system-core.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@app/services/updater/updater.ts';
+
+const File = getLazyWindow('file', () => import('@app/tools/window-cluster').then((m) => m.File));
 
 function checkForEditorUpdates(this: typeof Editor) {
 	if (!Editor.config) return;

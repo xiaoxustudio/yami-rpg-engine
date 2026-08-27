@@ -1,6 +1,6 @@
 import { GlobalPath, Path } from '@app/utils/config';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { Editor } from './editor.ts';
 import { getAnimationStore } from '@app/stores/animation.ts';
 import { getSceneStore } from '@app/stores/scene.ts';
@@ -8,6 +8,10 @@ import { getTitleStore } from '@app/stores/title.ts';
 import { useLogStore } from '@app/stores/log.ts';
 import { useParticleStore } from '@app/stores/particle.ts';
 import { useUIStore } from '@app/stores/ui.ts';
+
+const Layout = getLazyWindow('layout', () =>
+	import('@app/tools/window-cluster').then((m) => m.Layout)
+);
 
 type LayoutConfigShape = Parameters<NonNullable<typeof Layout.saveToConfig>>[0];
 

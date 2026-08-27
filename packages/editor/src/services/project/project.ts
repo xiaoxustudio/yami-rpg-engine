@@ -1,7 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Editor } from './editor.ts';
-import { Sprite } from '@app/engine/sprite/sprite.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { getAnimationStore } from '@app/stores/animation.ts';
 import { getPaletteStore } from '@app/stores/palette.ts';
 import { getSceneStore } from '@app/stores/scene.ts';
@@ -12,6 +12,10 @@ import { useParticleStore } from '@app/stores/particle.ts';
 import { usePluginStore } from '@app/stores/plugin.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
 import { useUIStore } from '@app/stores/ui.ts';
+
+const Sprite = getLazyWindow('sprite', () =>
+	import('@app/tools/window-cluster').then((m) => m.Sprite)
+);
 
 function saveProject(this: typeof Editor) {
 	const { project } = this;

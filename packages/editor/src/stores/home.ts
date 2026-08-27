@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
-import { Home } from '@app/title/home-page.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+
+const loadHome = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Home;
+	});
+const Home = getLazyWindow('home', loadHome);
 
 export interface HomeShape {
 	state: string;
@@ -21,7 +28,7 @@ export const useHomeStore = defineStore('home', () => {
 	}
 
 	function initialize() {
-		Home?.initialize?.();
+		void loadWindow('home', loadHome).then((h) => h?.initialize?.());
 	}
 
 	function updateCenterPosition() {

@@ -526,3 +526,15 @@ Animation.stopAnimation = AnimationWindowEngine.stopAnimation;
 Animation.requestRendering = AnimationWindowEngine.requestRendering;
 Animation.renderingFunction = AnimationWindowEngine.renderingFunction;
 Animation.stopRendering = AnimationWindowEngine.stopRendering;
+
+export const animationWindowReady = Promise.all([
+	import('./register.ts'),
+	import('@app/engine/animation/animation-window-engine.ts').then((m) => {
+		m.bindAnimationWindow(Animation);
+	}),
+	import('@app/engine/animation/animation-player.ts').then((m) => {
+		Animation.Player = m.AnimationPlayer;
+	})
+])
+	.then(() => undefined)
+	.catch(() => undefined);

@@ -3,6 +3,7 @@ import type { ParticleConfigShape, ParticleShape } from './particle-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { getParticleStore } from '@app/stores/particle';
+import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { $ } from '@app/utils/dom';
 import { addClass, hasClass, read, removeClass } from '@app/utils/element-utils.ts';
 import { StageColor } from '@app/utils/stage-color';
@@ -86,6 +87,8 @@ Particle.keydown = function (event: KeyboardEvent) {
 		}
 	}
 };
+
+registerWindowKeydown('particle', Particle.keydown);
 
 Particle.restartKeyup = function (event: KeyboardEvent) {
 	if (!Particle.restartKey) {

@@ -1,8 +1,15 @@
 import { defineStore } from 'pinia';
 import type { MenuItem } from '@ui-kit';
-import { Menubar } from '@app/title/menu-bar.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
+
+const loadMenubar = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Menubar;
+	});
+const Menubar = getLazyWindow('menubar', loadMenubar);
 
 export const menubarStateKeys = ['state'] as const;
 
@@ -14,7 +21,7 @@ export const useMenubarStore = defineStore('menubar', () => {
 	}
 
 	function initialize() {
-		Menubar?.initialize?.();
+		void loadWindow('menubar', loadMenubar).then((m) => m?.initialize?.());
 	}
 
 	function toggleFullScreen() {

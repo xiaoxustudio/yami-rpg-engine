@@ -137,10 +137,7 @@ export default defineConfig({
 						if (id.includes('@vueuse')) return 'ym-vue';
 						return 'vendor';
 					}
-					if (id.includes('/animation/')) return 'legacy-animation';
-					if (id.includes('/command/')) return 'legacy-command';
-					if (id.includes('/inspector/')) return 'legacy-inspector';
-					if (id.includes('/scene/')) return 'legacy-scene';
+					return undefined;
 				}
 			}
 		},

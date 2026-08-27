@@ -1,9 +1,16 @@
 import { defineStore } from 'pinia';
-import { Scene } from '@app/scene/scene-window.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import type { SceneContextShape } from '@app/scene/scene-window.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import type { EditorConfigShape, EditorProjectShape } from './editor';
+
+const loadScene = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.Scene;
+	});
+const Scene = getLazyWindow('scene', loadScene);
 
 export const sceneStateKeys = [
 	'state',
@@ -33,7 +40,7 @@ export const useSceneStore = defineStore('scene', () => {
 
 	function initialize() {
 		if (initialized.value) return;
-		Scene?.initialize?.();
+		void loadWindow('scene', loadScene).then((s) => s?.initialize?.());
 		initialized.value = true;
 	}
 

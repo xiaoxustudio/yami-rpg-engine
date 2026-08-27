@@ -306,3 +306,10 @@ UI.selectControlPoint = UIEngine.selectControlPoint;
 UI.requestRendering = UIEngine.requestRendering;
 UI.renderingFunction = UIEngine.renderingFunction;
 UI.stopRendering = UIEngine.stopRendering;
+
+export const uiWindowReady = Promise.all([
+	import('@app/engine/ui/element-register.ts'),
+	import('./register.ts')
+])
+	.then(() => undefined)
+	.catch(() => undefined);

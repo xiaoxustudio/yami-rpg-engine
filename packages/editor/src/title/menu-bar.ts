@@ -1,5 +1,6 @@
 import { macRedoKey } from '@app/utils/event-accessors';
 import { Window } from '@app/tools/window-object.ts';
+import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
@@ -1098,6 +1099,8 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 		}
 	}
 };
+
+registerWindowKeydown('menubar', Menubar.keydown);
 
 // 指针按下事件
 Menubar.pointerdown = function (this: typeof Menubar, event: PointerEvent) {

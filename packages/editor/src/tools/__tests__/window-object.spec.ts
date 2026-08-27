@@ -2,9 +2,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import '@app/utils/array';
 import { getConfirmationStore } from '@app/stores/confirmation';
-import { Layout } from '@app/engine/layout/layout';
-import { Title } from '@app/title/title-bar';
 import { Window } from '@app/tools/window-object';
+import { primeWindows } from '@app/tools/window-registry';
+
+const { layoutMock, titleMock } = vi.hoisted(() => ({
+	layoutMock: {
+		disableFocusableElements: vi.fn(),
+		enableFocusableElements: vi.fn()
+	},
+	titleMock: {
+		pointerenter: vi.fn(),
+		pointermove: vi.fn()
+	}
+}));
+vi.mock('@app/tools/window-cluster', () => ({
+	Layout: layoutMock,
+	Title: titleMock
+}));
 
 interface TestFrame extends HTMLElement {
 	open: () => void;
@@ -36,10 +50,11 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 
 describe('Window（window-object 模态/焦点/关闭链）', () => {
 	beforeEach(() => {
-		Title.pointerenter = vi.fn();
-		Title.pointermove = vi.fn();
-		Layout.disableFocusableElements = vi.fn();
-		Layout.enableFocusableElements = vi.fn();
+		primeWindows({ Layout: layoutMock, Title: titleMock });
+		titleMock.pointerenter = vi.fn();
+		titleMock.pointermove = vi.fn();
+		layoutMock.disableFocusableElements = vi.fn();
+		layoutMock.enableFocusableElements = vi.fn();
 		vi.stubGlobal('scrollTo', vi.fn());
 		getConfirmationStore().clear();
 		if (!document.getElementById('title')) {
@@ -76,10 +91,10 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		const pointerenter = vi.fn();
 		const disableFocusable = vi.fn();
 		const enableFocusable = vi.fn();
-		Title.pointermove = pointermove;
-		Title.pointerenter = pointerenter;
-		Layout.disableFocusableElements = disableFocusable;
-		Layout.enableFocusableElements = enableFocusable;
+		titleMock.pointermove = pointermove;
+		titleMock.pointerenter = pointerenter;
+		layoutMock.disableFocusableElements = disableFocusable;
+		layoutMock.enableFocusableElements = enableFocusable;
 		const title = document.getElementById('title')!;
 		Window.open!('modal-1');
 		expect(Window.frames).toEqual([frame]);
@@ -123,8 +138,8 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		const c = makeFrame('stack-c');
 		const pointerenter = vi.fn();
 		const enableFocusable = vi.fn();
-		Title.pointerenter = pointerenter;
-		Layout.enableFocusableElements = enableFocusable;
+		titleMock.pointerenter = pointerenter;
+		layoutMock.enableFocusableElements = enableFocusable;
 		Window.open!('stack-a');
 		Window.open!('stack-b');
 		Window.open!('stack-c');
@@ -301,8 +316,8 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		const frame = makeFrame('inner-close');
 		const pointerenter = vi.fn();
 		const enableFocusable = vi.fn();
-		Title.pointerenter = pointerenter;
-		Layout.enableFocusableElements = enableFocusable;
+		titleMock.pointerenter = pointerenter;
+		layoutMock.enableFocusableElements = enableFocusable;
 		frame.open();
 		expect(Window.frames).toEqual([frame]);
 		expect(document.body.style.pointerEvents).toBe('none');

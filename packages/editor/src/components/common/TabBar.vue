@@ -5,8 +5,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
-import { Title } from '@app/title/title-bar';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { attachElementApi } from '@app/utils/attach-element-api';
+
+const Title = getLazyWindow('title', () =>
+	import('@app/tools/window-cluster').then((m) => m.Title)
+);
 
 interface Props {
 	id?: string;

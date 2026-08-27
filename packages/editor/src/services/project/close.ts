@@ -7,12 +7,15 @@ import { getProjectStore } from '@app/stores/project.ts';
 import { getUIStore } from '@app/stores/ui.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { getLazyWindow } from '@app/tools/window-registry';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
-import { Printer } from '@app/printer/printer.ts';
-import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+
+const loadCluster = () => import('@app/tools/window-cluster');
+const Layout = getLazyWindow('layout', () => loadCluster().then((m) => m.Layout));
+const Printer = getLazyWindow('printer', () => loadCluster().then((m) => m.Printer));
+const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));
 
 function close(this: typeof Editor, save = true) {
 	Layout.manager.switch(null);

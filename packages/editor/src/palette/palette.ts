@@ -138,3 +138,5 @@ for (const key of paletteBridgeKeys) {
 		configurable: true
 	});
 }
+
+export const paletteReady = import('./register.ts').then(() => undefined).catch(() => undefined);

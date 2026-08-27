@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
-import { UI } from '@app/ui/ui-window.ts';
+import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+
+const loadUI = () =>
+	import('@app/tools/window-cluster').then(async (m) => {
+		await m.clusterReady;
+		return m.UI;
+	});
+const UI = getLazyWindow('ui', loadUI);
 
 export const uiStateKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'] as const;
 
@@ -53,7 +60,7 @@ export const useUIStore = defineStore('ui', () => {
 
 	function initialize() {
 		if (initialized.value) return;
-		UI?.initialize?.();
+		void loadWindow('ui', loadUI).then((u) => u?.initialize?.());
 		initialized.value = true;
 	}
 
