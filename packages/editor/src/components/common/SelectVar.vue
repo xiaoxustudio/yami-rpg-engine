@@ -5,6 +5,7 @@
 		:model-value="props.modelValue"
 		:popup="false"
 		:id="props.id"
+		@update:model-value="onValue"
 		@pointerdown="onPointerdown"
 		@keydown="onKeydown"
 	>
@@ -14,7 +15,7 @@
 				type="variable"
 				filter="all"
 				:model-value="state.varValue ?? defVar"
-				@update:model-value="(v: unknown) => (state.varValue = v)"
+				@input="onVarValue"
 			/>
 		</template>
 	</YMSelectVar>
@@ -113,6 +114,15 @@ const onKeydown = (event: KeyboardEvent): void => {
 		const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
 		if (selectBox) Select.open(selectBox);
 	}
+};
+
+const onValue = (value: unknown): void => {
+	emit('update:modelValue', value);
+};
+
+const onVarValue = (value: unknown): void => {
+	state.varValue = value;
+	emit('update:modelValue', value);
 };
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, loadItems, root });

@@ -2,7 +2,7 @@
 import { reactive } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
 import { commandCases } from '@app/commands/command-registry.ts';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { write } from '@app/utils/element-utils';
 
 export function commit(data: Record<string, unknown>): unknown {
 	return Command.save?.(data);
@@ -35,32 +35,21 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 	};
 	const save = (): void => {
 		const data: Record<string, unknown> = {};
-		let focusTarget: HTMLElement | null = null;
-		let invalid = false;
 		for (const field of fields) {
-			const control = document.getElementById(`${name}-${field.domId ?? field.key}`);
-			const value = form[field.key] ?? read(control);
+			const value = form[field.key];
 			if (field.required && (value === '' || value === undefined)) {
-				invalid = true;
-				focusTarget = control;
-				break;
+				return;
 			}
 			data[field.key] = value;
 		}
-		if (invalid) {
-			getFocus(focusTarget);
-			return;
-		}
 		commit(data);
 	};
-	// 事件编辑器契约：commandCases[name].load/save 转发到 composable
 	schema.customLoad = (params: Record<string, unknown>): void => {
 		load(params);
 	};
 	schema.customSave = (): void => {
 		save();
 	};
-	// confirm 由组件 @confirm 处理，接管 initialize 避免 initAll 重复绑定
 	schema.onInitialize = (): void => {};
 	return { form, load, save, commit };
 }

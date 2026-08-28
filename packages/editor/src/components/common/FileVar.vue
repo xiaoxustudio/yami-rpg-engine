@@ -1,12 +1,18 @@
 ﻿<template>
-	<YMFileVar ref="ym" :model-value="props.modelValue" :id="props.id" :disabled="props.disabled">
+	<YMFileVar
+		ref="ym"
+		:model-value="props.modelValue"
+		:id="props.id"
+		:disabled="props.disabled"
+		@update:model-value="onValue"
+	>
 		<template #file>
 			<CustomBox
 				ref="fileBoxRef"
 				type="file"
 				:filter="props.filter"
 				:model-value="state.fileValue"
-				@update:model-value="(v: string) => (state.fileValue = v)"
+				@input="onFileValue"
 			/>
 		</template>
 		<template #variable>
@@ -15,7 +21,7 @@
 				type="variable"
 				filter="string"
 				:model-value="state.varValue ?? defVar"
-				@update:model-value="(v: unknown) => (state.varValue = v)"
+				@input="onVarValue"
 			/>
 		</template>
 	</YMFileVar>
@@ -100,6 +106,20 @@ const on = (
 	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
+
+const onValue = (value: unknown): void => {
+	emit('update:modelValue', value);
+};
+
+const onFileValue = (value: string): void => {
+	state.fileValue = value;
+	emit('update:modelValue', value);
+};
+
+const onVarValue = (value: unknown): void => {
+	state.varValue = value;
+	emit('update:modelValue', value);
+};
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 

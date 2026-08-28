@@ -96,7 +96,10 @@ const input = computed<HTMLInputElement | null>(() => ym.value?.input ?? null);
 
 const read = (): number => ym.value?.read() ?? 0;
 
-const write = (value: number | string): void => ym.value?.write(value);
+const write = (value: number | string): void => {
+	ym.value?.write(value);
+	emit('update:modelValue', ym.value?.read() ?? 0);
+};
 
 const updateFiller = (): void => ym.value?.updateFiller();
 

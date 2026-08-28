@@ -40,6 +40,11 @@ const props = withDefaults(defineProps<Props>(), {
 	disabled: false
 });
 
+const emit = defineEmits<{
+	'update:modelValue': [value: number];
+	input: [value: number];
+}>();
+
 const dataValue = ref(props.modelValue % props.length);
 const inputEventEnabled = ref(false);
 const isDisabled = ref(props.disabled);
@@ -56,6 +61,8 @@ const update = (): void => {};
 
 const input = (value: number): void => {
 	dataValue.value = value % props.length;
+	emit('update:modelValue', dataValue.value);
+	emit('input', dataValue.value);
 	if (inputEventEnabled.value) {
 		const inputEvent = new Event('input');
 		inputEvent.value = dataValue.value;
