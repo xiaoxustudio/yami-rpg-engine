@@ -130,7 +130,12 @@ const onMenuPointerover = (event: PointerEvent) => {
 	menubar.pointerover(event);
 };
 
-const toolModules = import.meta.glob('./components/tools/*.vue');
+const toolModules = import.meta.glob([
+	'./components/tools/*.vue',
+	'!**/CommandSuggestions.vue',
+	'!**/LogMessage.vue',
+	'!**/TextSuggestions.vue'
+]);
 const commandModules = import.meta.glob('./components/commands/*.vue');
 const inspectorModules = import.meta.glob('./components/inspector/*.vue');
 

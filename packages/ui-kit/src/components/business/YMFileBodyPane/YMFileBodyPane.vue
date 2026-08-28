@@ -1,6 +1,6 @@
 ﻿<template>
-	<div class="file-body-pane" ref="el">
-		<div class="file-body-content" ref="contentEl" tabindex="0"></div>
+	<div class="file-body-pane" ref="el" :data-v-ref="''">
+		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''"></div>
 	</div>
 </template>
 

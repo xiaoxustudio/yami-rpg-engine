@@ -123,7 +123,7 @@ onMounted(() => {
 
 <template>
 	<div ref="root" class="marquee-area" :id="props.id">
-		<div class="selection" ref="selection" />
+		<div class="selection" ref="selection" :data-v-ref="''" />
 	</div>
 </template>
 

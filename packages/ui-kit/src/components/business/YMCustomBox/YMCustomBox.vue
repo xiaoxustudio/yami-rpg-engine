@@ -309,7 +309,7 @@ onMounted(initializeApi);
 		@dragover="dragover"
 		@drop="drop"
 	>
-		<div ref="infoEl" class="custom-box-text text" />
+		<div ref="infoEl" class="custom-box-text text" :data-v-ref="''" />
 	</div>
 </template>
 

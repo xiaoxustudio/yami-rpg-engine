@@ -2,7 +2,10 @@ import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { getAnimationStore } from '@app/stores/animation';
-import { AnimationWindowEngine } from '@app/engine/animation/animation-window-engine.ts';
+import {
+	AnimationWindowEngine,
+	bindAnimationWindow
+} from '@app/engine/animation/animation-window-engine.ts';
 
 // DOM 元素字段：运行时挂载大量扩展方法（.hide()/.show()/.update()/.write()/.on() 等），统一用 HTMLElement & {[ k: string ]: any} 兜底，避免穷举
 // oxlint-disable-next-line no-explicit-any
@@ -527,11 +530,10 @@ Animation.requestRendering = AnimationWindowEngine.requestRendering;
 Animation.renderingFunction = AnimationWindowEngine.renderingFunction;
 Animation.stopRendering = AnimationWindowEngine.stopRendering;
 
+bindAnimationWindow(Animation);
+
 export const animationWindowReady = Promise.all([
 	import('./register.ts'),
-	import('@app/engine/animation/animation-window-engine.ts').then((m) => {
-		m.bindAnimationWindow(Animation);
-	}),
 	import('@app/engine/animation/animation-player.ts').then((m) => {
 		Animation.Player = m.AnimationPlayer;
 	})

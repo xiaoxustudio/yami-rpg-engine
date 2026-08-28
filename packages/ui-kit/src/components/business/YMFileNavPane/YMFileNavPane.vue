@@ -1,5 +1,5 @@
 ﻿<template>
-	<div class="file-nav-pane" ref="el" tabindex="-1"></div>
+	<div class="file-nav-pane" ref="el" tabindex="-1" :data-v-ref="''"></div>
 </template>
 
 <script setup lang="ts">

@@ -2,8 +2,8 @@
 	<div class="file-head-pane" ref="el" @pointerdown="pointerdown">
 		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown"></div>
 		<div class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton" @click="backButtonClick">{{ '\uf0a8' }}</div>
-		<YMTextBox ref="searcherEl" class="file-head-searcher" name="search"></YMTextBox>
-		<YMSliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></YMSliderBox>
+<YMTextBox ref="searcherEl" class="file-head-searcher" name="search" :data-v-ref="''"></YMTextBox>
+<YMSliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel" :data-v-ref="''"></YMSliderBox>
 	</div>
 </template>
 

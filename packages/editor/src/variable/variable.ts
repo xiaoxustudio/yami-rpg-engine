@@ -146,10 +146,6 @@ function ensureDomBound() {
 	Variable.list.copy = null as unknown as (...args: unknown[]) => void;
 	Variable.list.paste = null as unknown as (...args: unknown[]) => void;
 	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
-	if (!Variable._listMethodsLoaded) {
-		Variable._listMethodsLoaded = true;
-		void import('./list-methods.ts');
-	}
 	Variable.list.saveScroll = Variable.list_saveScroll;
 	Variable.list.restoreScroll = Variable.list_restoreScroll;
 	Variable.list.cancelSearch = Variable.list_cancelSearch;

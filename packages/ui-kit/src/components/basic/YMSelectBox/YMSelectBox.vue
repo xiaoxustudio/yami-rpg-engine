@@ -546,7 +546,7 @@ onBeforeUnmount(() => {
 		@keydown="onKeydown"
 		@pointerdown="onPointerdown"
 	>
-		<div class="select-box-text" ref="info" />
+		<div class="select-box-text" ref="info" :data-v-ref="''" />
 		<div v-if="builtinOpen" class="select-popup" :class="$style.popup">
 			<div
 				v-for="item in dataItems"
