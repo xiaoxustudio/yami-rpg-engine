@@ -142,7 +142,7 @@ export default defineConfig({
 			}
 		},
 		minify: true,
-		sourcemap: true
+		sourcemap: false
 	},
 
 	server: {

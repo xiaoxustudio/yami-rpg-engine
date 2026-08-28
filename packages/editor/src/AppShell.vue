@@ -41,13 +41,10 @@
 		<FileBrowser />
 	</Teleport>
 	<SearchHistoryDropdown />
-	<Teleport v-for="p in inspectorPages" :key="p.value" :to="p.target">
-		<component :is="p.comp" @vue:mounted="onComponentMounted" />
-	</Teleport>
 	<Teleport to="body">
 		<component
 			:is="comp"
-			v-for="(comp, name) in toolComponents"
+			v-for="(comp, name) in immediateToolComponents"
 			:key="name"
 			@vue:mounted="onComponentMounted"
 		/>
@@ -55,14 +52,27 @@
 		<LogMessage @vue:mounted="onComponentMounted" />
 		<TextSuggestions @vue:mounted="onComponentMounted" />
 	</Teleport>
-	<Teleport to="body">
-		<component
-			:is="comp"
-			v-for="(comp, name) in commandComponents"
-			:key="name"
-			@vue:mounted="onComponentMounted"
-		/>
-	</Teleport>
+	<template v-if="idleReady">
+		<Teleport to="body">
+			<component
+				:is="comp"
+				v-for="(comp, name) in idleToolComponents"
+				:key="name"
+				@vue:mounted="onComponentMounted"
+			/>
+		</Teleport>
+		<Teleport to="body">
+			<component
+				:is="comp"
+				v-for="(comp, name) in commandComponents"
+				:key="name"
+				@vue:mounted="onComponentMounted"
+			/>
+		</Teleport>
+		<Teleport v-for="p in inspectorPages" :key="p.value" :to="p.target">
+			<component :is="p.comp" @vue:mounted="onComponentMounted" />
+		</Teleport>
+	</template>
 </template>
 
 <script setup lang="ts">
@@ -73,7 +83,7 @@ import LayoutPanel from './components/layout/LayoutPanel.vue';
 import CommandSuggestions from './components/tools/CommandSuggestions.vue';
 import LogMessage from './components/tools/LogMessage.vue';
 import TextSuggestions from './components/tools/TextSuggestions.vue';
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
@@ -156,12 +166,47 @@ const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempt
 };
 const asyncComp = (loader: () => Promise<Component>) =>
 	defineAsyncComponent({ loader, onError: onAsyncError });
-const toolComponents = Object.fromEntries(
-	toolWindowEntries.map(([path, loader]) => [
+const criticalToolNames = new Set([
+	'Confirmation.vue',
+	'NewProject.vue',
+	'About.vue',
+	'WindowProgress.vue',
+	'UpdateLog.vue',
+	'Setting.vue',
+	'Deployment.vue',
+	'CommandWidget.vue',
+	'QrCode.vue'
+]);
+const criticalToolEntries = toolWindowEntries.filter(([path]) =>
+	criticalToolNames.has(path.split('/').pop()!)
+);
+const idleToolEntries = toolWindowEntries.filter(
+	([path]) => !criticalToolNames.has(path.split('/').pop()!)
+);
+const immediateToolComponents = Object.fromEntries(
+	criticalToolEntries.map(([path, loader]) => [
 		path,
 		asyncComp(loader as unknown as () => Promise<Component>)
 	])
 );
+const idleToolComponents = Object.fromEntries(
+	idleToolEntries.map(([path, loader]) => [
+		path,
+		asyncComp(loader as unknown as () => Promise<Component>)
+	])
+);
+// 非关键弹窗（其余工具/命令/检查器）延后到浏览器空闲时挂载，避免首屏并行拉取全部异步组件
+const idleReady = ref(false);
+onMounted(() => {
+	const activateIdle = () => {
+		idleReady.value = true;
+	};
+	if (typeof requestIdleCallback === 'function') {
+		requestIdleCallback(() => activateIdle(), { timeout: 3000 });
+	} else {
+		setTimeout(activateIdle, 500);
+	}
+});
 const commandComponents = Object.fromEntries(
 	Object.entries(commandModules).map(([path, loader]) => [
 		path,

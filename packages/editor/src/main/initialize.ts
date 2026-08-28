@@ -8,7 +8,7 @@ import '@app/variable/initialize.ts';
 
 import { Editor } from '@app/services/project/editor.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
-import { initI18n } from '@app/i18n';
+import { initI18n, loadI18n } from '@app/i18n';
 
 type ClusterShape = typeof import('@app/tools/window-cluster');
 
@@ -79,44 +79,57 @@ function initTools(cluster: ClusterShape): void {
 Editor.initialize = async function (this: typeof Editor) {
 	this.switchHotkey!(false);
 
-	// 等待 AppShell 懒加载的命令/工具弹窗组件挂载完成，保证 initAll 能拿到 DOM
-	// 首次冷启动时 145+ 个异步组件编译较慢，8s 超时太短会提前 initAll 导致元素缺失，放宽到 60s
-	await Promise.race([
-		lazyComponentsReady,
-		new Promise((resolve: (val: unknown) => void) => setTimeout(resolve, 60000))
-	]);
-
 	try {
+		const data = await loadConfigPromise;
+		const code = JSON.stringify(data);
+		this.config = data ?? {};
+		Object.defineProperty(this.config, 'code', { value: code });
+		// 尽早加载语言（与窗口簇加载并行），使异步组件挂载时语言已就绪，避免本地化缺失
+		await initI18n().catch(() => undefined);
+
 		clusterRef = await import('@app/tools/window-cluster');
 		await clusterRef.clusterReady;
 		primeWindows(clusterRef as unknown as Record<string, unknown>);
 		const cluster = clusterRef;
-		const { Title, Layout } = cluster;
-		Title.initialize!();
-		const data = await loadConfigPromise;
-		const code = JSON.stringify(data);
-		this.config = data ?? {};
+		const { Layout } = cluster;
 		if (this.config) this.checkForEditorUpdates!();
-		Object.defineProperty(this.config, 'code', { value: code });
-		void initI18n();
 
+		// 核心布局先就绪并立即显示 Home，不等待 145+ 个命令/工具弹窗组件挂载
 		initCore(cluster);
-		initEditors(cluster);
-		initTools(cluster);
-
-		registerTool('ArrayList', cluster.ArrayList as unknown as ToolInstance);
-		registerTool('Color', cluster.Color as unknown as ToolInstance);
-		registerTool('ImageClip', cluster.ImageClip as unknown as ToolInstance);
-		registerTool('Rename', cluster.Rename as unknown as ToolInstance);
-		registerTool('SetKey', cluster.SetKey as unknown as ToolInstance);
-		registerTool('SetQuantity', cluster.SetQuantity as unknown as ToolInstance);
-		registerTool('Zoom', cluster.Zoom as unknown as ToolInstance);
-		registerTool('PresetObject', cluster.PresetObject as unknown as ToolInstance);
-		registerTool('PresetElement', cluster.PresetElement as unknown as ToolInstance);
-		registerTool('Selection', cluster.Selection as unknown as ToolInstance);
-
 		this.loadConfig!();
 		Layout.manager.switch('home');
+
+		// 后台：等待弹窗组件挂载后，再初始化标题栏事件、编辑器与工具
+		void Promise.resolve()
+			.then(() =>
+				Promise.race([
+					lazyComponentsReady,
+					new Promise((resolve: (val: unknown) => void) => setTimeout(resolve, 60000))
+				])
+			)
+			.then(async () => {
+				// 组件已挂载，重放本地化（首次 initI18n 在组件挂载前，延后窗口错过 localize）
+				await loadI18n(Editor.config?.language ?? '').catch(() => undefined);
+				cluster.Title.initialize!();
+				initEditors(cluster);
+				initTools(cluster);
+
+				registerTool('ArrayList', cluster.ArrayList as unknown as ToolInstance);
+				registerTool('Color', cluster.Color as unknown as ToolInstance);
+				registerTool('ImageClip', cluster.ImageClip as unknown as ToolInstance);
+				registerTool('Rename', cluster.Rename as unknown as ToolInstance);
+				registerTool('SetKey', cluster.SetKey as unknown as ToolInstance);
+				registerTool('SetQuantity', cluster.SetQuantity as unknown as ToolInstance);
+				registerTool('Zoom', cluster.Zoom as unknown as ToolInstance);
+				registerTool('PresetObject', cluster.PresetObject as unknown as ToolInstance);
+				registerTool('PresetElement', cluster.PresetElement as unknown as ToolInstance);
+				registerTool('Selection', cluster.Selection as unknown as ToolInstance);
+
+				EventBus.emit('editor_loaded');
+			})
+			.catch((error: unknown) => {
+				console.error('[init] editor initialize failed:', error);
+			});
 	} catch (error: unknown) {
 		clusterRef?.Log?.throw?.(error);
 		Window.confirm!(
@@ -134,5 +147,4 @@ Editor.initialize = async function (this: typeof Editor) {
 			]
 		);
 	}
-	EventBus.emit('editor_loaded');
 };

@@ -14,11 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { YMSelectBox } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
+import { useLocalStore } from '@app/stores/local';
+import { pinia } from '@app/stores/pinia';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
@@ -114,7 +116,17 @@ const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const loadItems = (items: unknown[]): HTMLElement => ym.value?.loadItems(items) as HTMLElement;
+const applyLocalizedOptions = (): void => {
+	const item = useLocalStore(pinia).components?.[props.id];
+	if (item?.options) {
+		setItemNames(item.options as Record<string, string | { name?: string; tip?: string }>);
+	}
+};
+const loadItems = (items: unknown[]): HTMLElement => {
+	const el = ym.value?.loadItems(items) as HTMLElement | undefined;
+	applyLocalizedOptions();
+	return el as HTMLElement;
+};
 const setItemNames = (options: Record<string, string | { name?: string; tip?: string }>): void => {
 	const mapped: Record<string, string | { name?: string; tip?: string }> = {};
 	for (const key of Object.keys(options ?? {})) {

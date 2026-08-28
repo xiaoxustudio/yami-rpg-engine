@@ -149,7 +149,17 @@ onMounted(() => {
 				if (element) setLocalElement(element, item);
 			}
 		}
+		// 通用按钮（[confirm]/[cancel]/[apply] 按 name 匹配），懒加载窗口挂载时兜底本地化
+		for (const buttonName of ['confirm', 'cancel', 'apply'] as const) {
+			const item = components[`[${buttonName}]`];
+			if (!item) continue;
+			rootEl.querySelectorAll<HTMLElement>(`[name="${buttonName}"]`).forEach((el) => {
+				setLocalElement(el, item);
+			});
+		}
 	};
+	// 懒加载窗口可能在语言加载后才挂载（错过 localize 事件），挂载时主动本地化兜底
+	onLocalize();
 	window.addEventListener('localize', onLocalize);
 	onBeforeUnmount(() => window.removeEventListener('localize', onLocalize));
 });
