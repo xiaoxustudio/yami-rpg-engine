@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 // @type {WebGLRenderingContext}
 // oxlint-disable-next-line no-explicit-any
 export let GL: any;

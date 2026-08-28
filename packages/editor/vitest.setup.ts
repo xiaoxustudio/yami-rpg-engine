@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
 

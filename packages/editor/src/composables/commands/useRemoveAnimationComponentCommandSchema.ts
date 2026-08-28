@@ -1,4 +1,5 @@
-﻿import { getFocus, read } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getFocus, read } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';

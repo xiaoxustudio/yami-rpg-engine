@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { $ } from '@app/utils/dom';

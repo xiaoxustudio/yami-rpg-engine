@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { attachApi } from '../../../utils/attach-api';
 
 export interface TextBoxApiOptions {

@@ -1,4 +1,5 @@
-﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';

@@ -1,3 +1,4 @@
+﻿/* oxlint-disable eslint/no-restricted-properties */
 import { createToastManagerElement, type ToastManagerApi } from '@ui-kit';
 
 export function createToastManager(): ToastManagerApi {

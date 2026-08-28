@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';

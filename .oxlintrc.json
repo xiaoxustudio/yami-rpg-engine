@@ -65,7 +65,17 @@
 		"typescript/no-redundant-type-constituents": "warn",
 		"typescript/no-implied-eval": "warn",
 		"unicorn/no-new-array": "warn",
-		"oxc/no-map-spread": "warn"
+		"oxc/no-map-spread": "warn",
+		"eslint/no-restricted-properties": [
+			"error",
+			{ "object": "document", "property": "getElementById", "message": "禁止 getElementById：改用 Vue ref / 组件 ref（DOM 迁移阶段 0，存量代码用 oxlint-disable-file 豁免）" },
+			{ "object": "document", "property": "querySelector", "message": "禁止 querySelector：改用 Vue ref / 组件 ref（DOM 迁移阶段 0）" },
+			{ "object": "document", "property": "querySelectorAll", "message": "禁止 querySelectorAll：改用 Vue ref / v-for 渲染（DOM 迁移阶段 0）" },
+			{ "object": "document", "property": "getElementsByClassName", "message": "禁止 getElementsByClassName（DOM 迁移阶段 0）" },
+			{ "object": "document", "property": "getElementsByName", "message": "禁止 getElementsByName（DOM 迁移阶段 0）" },
+			{ "object": "document", "property": "getElementsByTagName", "message": "禁止 getElementsByTagName（DOM 迁移阶段 0）" },
+			{ "object": "document", "property": "createElement", "message": "禁止 createElement：改用 Vue 模板 / 组件（DOM 迁移阶段 0）" }
+		]
 	},
 	"overrides": [
 		{
@@ -147,7 +157,14 @@
 			"files": ["**/*.spec.ts", "**/__tests__/**/*.ts"],
 			"rules": {
 				"typescript/unbound-method": "off",
-				"typescript/no-explicit-any": "off"
+				"typescript/no-explicit-any": "off",
+				"eslint/no-restricted-properties": "off"
+			}
+		},
+		{
+			"files": ["packages/ui-kit/playground/**"],
+			"rules": {
+				"eslint/no-restricted-properties": "off"
 			}
 		}
 	]

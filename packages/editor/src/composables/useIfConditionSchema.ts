@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {

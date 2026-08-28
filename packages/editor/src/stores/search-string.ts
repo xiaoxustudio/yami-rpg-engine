@@ -49,34 +49,8 @@ export const SearchString = new (class {
 		on($('#event-search-string-previous'), 'click', () => this.previous());
 		on($('#event-search-string-next'), 'click', () => this.next());
 		on($('#event-search-string-search'), 'input', (e: Event) => this.input(e));
-		on($('#event-search-string-case-insensitive'), 'change', (e: Event) =>
-			this.change('caseInsensitive', e)
-		);
-		on($('#event-search-string-regex'), 'change', (e: Event) => this.change('regex', e));
-		on($('#event-search-string-match-line'), 'change', (e: Event) =>
-			this.change('matchLine', e)
-		);
 	}
-	change(mode: keyof SearchMode, e: Event) {
-		this.searchMode = { ...this.searchMode, [mode]: read(e.target as HTMLElement) };
-		switch (mode) {
-			case 'caseInsensitive':
-				if (this.searchMode[mode]) {
-					write($('#event-search-string-regex'), false);
-					disable($('#event-search-string-regex'));
-				} else {
-					enable($('#event-search-string-regex'));
-				}
-				break;
-			case 'regex':
-				if (this.searchMode[mode]) {
-					write($('#event-search-string-case-insensitive'), false);
-					disable($('#event-search-string-case-insensitive'));
-				} else {
-					enable($('#event-search-string-case-insensitive'));
-				}
-				break;
-		}
+	refresh() {
 		if (read($('#event-search-string-search')))
 			this.input({
 				target: { value: read($('#event-search-string-search')) }
@@ -199,10 +173,19 @@ export const useSearchStringStore = defineStore('searchString', () => {
 		};
 	}
 
+	function setMode(mode: keyof SearchModeShape, value: boolean) {
+		const next = { ...searchMode.value };
+		next[mode] = value;
+		if (mode === 'caseInsensitive' && value) next.regex = false;
+		if (mode === 'regex' && value) next.caseInsensitive = false;
+		searchMode.value = next;
+	}
+
 	return {
 		index,
 		searchMode,
-		syncState
+		syncState,
+		setMode
 	};
 });
 

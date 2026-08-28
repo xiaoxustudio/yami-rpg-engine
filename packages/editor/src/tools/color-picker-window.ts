@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';

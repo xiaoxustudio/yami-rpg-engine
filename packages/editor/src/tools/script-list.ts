@@ -1,4 +1,5 @@
-﻿import { getListConfig } from '@ui-kit';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getListConfig } from '@ui-kit';
 import { File } from '@app/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';

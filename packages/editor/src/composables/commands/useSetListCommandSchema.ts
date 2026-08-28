@@ -1,8 +1,9 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -262,19 +263,17 @@ export function useSetListCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const variable = read(document.getElementById('setList-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
 			return getFocus(document.getElementById('setList-variable'));
 		}
-		const operation = (read(document.getElementById('setList-operation')) ??
-			form.operation) as string;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'set-empty':
 				commit({ variable, operation });
 				break;
 			case 'set-numbers': {
-				const list = (read(document.getElementById('setList-numbers')) ??
-					form.numbers) as number[];
+				const list = form.numbers as number[];
 				if (list.length === 0) {
 					return getFocus(document.getElementById('setList-numbers'));
 				}
@@ -282,8 +281,7 @@ export function useSetListCommandSchema() {
 				break;
 			}
 			case 'set-strings': {
-				const list = (read(document.getElementById('setList-strings')) ??
-					form.strings) as string[];
+				const list = form.strings as string[];
 				if (list.length === 0) {
 					return getFocus(document.getElementById('setList-strings'));
 				}
@@ -291,58 +289,49 @@ export function useSetListCommandSchema() {
 				break;
 			}
 			case 'set-boolean': {
-				const index = (read(document.getElementById('setList-index')) ??
-					form.index) as number;
-				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
-					form.indexSkipCheck) as boolean;
-				const constant = read(document.getElementById('setList-boolean')) ?? form.boolean;
+				const index = form.index as number;
+				const skipCheck = form.indexSkipCheck as boolean;
+				const constant = form.boolean;
 				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-number': {
-				const index = (read(document.getElementById('setList-index')) ??
-					form.index) as number;
-				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
-					form.indexSkipCheck) as boolean;
-				const constant = read(document.getElementById('setList-number')) ?? form.number;
+				const index = form.index as number;
+				const skipCheck = form.indexSkipCheck as boolean;
+				const constant = form.number;
 				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-string': {
-				const index = (read(document.getElementById('setList-index')) ??
-					form.index) as number;
-				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
-					form.indexSkipCheck) as boolean;
-				const constant = read(document.getElementById('setList-string')) ?? form.string;
+				const index = form.index as number;
+				const skipCheck = form.indexSkipCheck as boolean;
+				const constant = form.string;
 				commit({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-variable': {
-				const index = (read(document.getElementById('setList-index')) ??
-					form.index) as number;
-				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
-					form.indexSkipCheck) as boolean;
-				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
-				if (VariableGetter.isNone!(operand)) {
+				const index = form.index as number;
+				const skipCheck = form.indexSkipCheck as boolean;
+				const operand = form.operand;
+				if (VariableGetter.isNone!(operand as { key: string })) {
 					return getFocus(document.getElementById('setList-operand'));
 				}
 				commit({ variable, operation, index, operand, skipCheck });
 				break;
 			}
 			case 'split-string': {
-				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
-				if (VariableGetter.isNone!(operand)) {
+				const operand = form.operand;
+				if (VariableGetter.isNone!(operand as { key: string })) {
 					return getFocus(document.getElementById('setList-operand'));
 				}
-				const separator = (read(document.getElementById('setList-separator')) ??
-					form.separator) as string;
+				const separator = form.separator as string;
 				commit({ variable, operation, operand, separator });
 				break;
 			}
 			case 'push':
 			case 'remove': {
-				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
-				if (VariableGetter.isNone!(operand)) {
+				const operand = form.operand;
+				if (VariableGetter.isNone!(operand as { key: string })) {
 					return getFocus(document.getElementById('setList-operand'));
 				}
 				commit({ variable, operation, operand });
@@ -350,8 +339,7 @@ export function useSetListCommandSchema() {
 			}
 			case 'get-attribute-names':
 			case 'get-attribute-keys': {
-				const groupId = (read(document.getElementById('setList-attribute-groupId')) ??
-					form.attributeGroupId) as string;
+				const groupId = form.attributeGroupId as string;
 				if (groupId === '') {
 					return getFocus(document.getElementById('setList-attribute-groupId'));
 				}
@@ -360,8 +348,7 @@ export function useSetListCommandSchema() {
 			}
 			case 'get-enum-names':
 			case 'get-enum-values': {
-				const groupId = (read(document.getElementById('setList-enum-groupId')) ??
-					form.enumGroupId) as string;
+				const groupId = form.enumGroupId as string;
 				if (groupId === '') {
 					return getFocus(document.getElementById('setList-enum-groupId'));
 				}
@@ -369,7 +356,7 @@ export function useSetListCommandSchema() {
 				break;
 			}
 			case 'get-actor-targets': {
-				const actor = read(document.getElementById('setList-actor')) ?? form.actor;
+				const actor = form.actor;
 				commit({ variable, operation, actor });
 				break;
 			}

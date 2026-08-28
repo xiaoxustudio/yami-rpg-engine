@@ -1,8 +1,9 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
-import { getFocus, read } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setFocus = new CommandSchema({
@@ -55,22 +56,18 @@ export function useSetFocusCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const operation = read(document.getElementById('setFocus-operation')) ?? form.operation;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'add':
 				commit({
 					operation,
-					element: read(document.getElementById('setFocus-element')) ?? form.element,
-					mode: read(document.getElementById('setFocus-mode')) ?? form.mode,
-					cancelable:
-						read(document.getElementById('setFocus-cancelable')) ?? form.cancelable
+					element: form.element,
+					mode: form.mode,
+					cancelable: form.cancelable
 				});
 				break;
 			case 'remove':
-				commit({
-					operation,
-					element: read(document.getElementById('setFocus-element')) ?? form.element
-				});
+				commit({ operation, element: form.element });
 				break;
 			case 'remove-latest':
 			case 'reset':

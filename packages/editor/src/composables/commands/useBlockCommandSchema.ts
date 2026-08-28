@@ -1,4 +1,5 @@
-﻿import { getFocus, read } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
@@ -46,9 +47,8 @@ export function useBlockCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const note = ((read(document.getElementById('block-note')!) ?? form.note) as string).trim();
-		const asynchronous =
-			read(document.getElementById('block-asynchronous')!) ?? form.asynchronous;
+		const note = ((form.note ?? '') as string).trim();
+		const asynchronous = form.asynchronous;
 		commit({ note, asynchronous, commands });
 	};
 	const reset = (): void => {

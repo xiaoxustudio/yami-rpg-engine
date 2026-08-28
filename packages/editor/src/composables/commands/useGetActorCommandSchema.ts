@@ -1,4 +1,5 @@
-﻿import { getFocus } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';

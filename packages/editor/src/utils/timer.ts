@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { hasClass } from '@app/utils/element-utils';
 
 export class Timer {

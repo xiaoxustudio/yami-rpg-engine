@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { addClass, removeClass } from '@app/utils/element-utils';
 
 interface PointerObjectWindow {
 	readonly region: HTMLElement;

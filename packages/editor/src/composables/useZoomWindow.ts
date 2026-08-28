@@ -1,4 +1,5 @@
-﻿import { reactive } from 'vue';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus } from '@app/utils/element-utils';
 import { Editor } from '@app/services/project/editor.ts';

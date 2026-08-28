@@ -1,4 +1,5 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
 import { createTextAreaVar } from '@app/components/textarea-var.ts';
 import { Command } from '@app/commands/command-object.ts';

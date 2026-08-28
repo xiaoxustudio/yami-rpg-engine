@@ -98,6 +98,8 @@ const input = (value: boolean): void => {
 	if (!el) return;
 	if (state.dataValue !== value) {
 		write(value);
+		emit('update:modelValue', value);
+		emit('input', value);
 		if (state.inputEventEnabled) {
 			const inputEvent = new Event('input', {
 				bubbles: true

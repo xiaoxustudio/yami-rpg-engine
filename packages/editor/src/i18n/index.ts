@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { createI18n, type I18n } from 'vue-i18n';
 import {
 	convertLocaleData,

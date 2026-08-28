@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import {
@@ -1362,7 +1363,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="param-list" :id="props.id" tabindex="0" :filter="props.filter || undefined" :group="props.group || undefined" />
+	<div
+		ref="root"
+		class="param-list"
+		:id="props.id"
+		tabindex="0"
+		:filter="props.filter || undefined"
+		:group="props.group || undefined"
+	/>
 </template>
 
 <style module>
@@ -1418,7 +1426,9 @@ onMounted(() => {
 	color: var(--text-color-disabled);
 }
 
-:global(:where(.param-item.weak.selected, .selected > .text-0-of-2.weak, .selected > .text-1-of-2.weak)) {
+:global(
+	:where(.param-item.weak.selected, .selected > .text-0-of-2.weak, .selected > .text-1-of-2.weak)
+) {
 	color: var(--text-color-accelerator-selected);
 }
 

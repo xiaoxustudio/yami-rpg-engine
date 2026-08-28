@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { EventEditor } from './event-editor.ts';
 import type {
 	EventCommands,

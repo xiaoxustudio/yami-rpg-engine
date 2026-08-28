@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { clear, removeClass } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';

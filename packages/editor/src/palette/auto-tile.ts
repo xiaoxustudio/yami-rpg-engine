@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@app/utils/dom';

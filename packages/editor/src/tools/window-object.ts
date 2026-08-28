@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';

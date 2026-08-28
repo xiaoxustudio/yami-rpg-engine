@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { setTooltip } from '@app/utils/element-utils';
 
 export interface LocalComponentItem {

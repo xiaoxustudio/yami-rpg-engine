@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 export function addClass(el: HTMLElement, className: string): boolean {
 	if (!el.classList.contains(className)) {
 		el.classList.add(className);

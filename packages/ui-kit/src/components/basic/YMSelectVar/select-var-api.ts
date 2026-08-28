@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { SelectBoxApi } from '../YMSelectBox/select-box-api';

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-image-page.ts';
 import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { EventBus } from '@app/utils/event-bus.ts';
 import { on } from '@app/utils/element-utils.ts';
 import { CommandList } from '@app/components/command-list.ts';

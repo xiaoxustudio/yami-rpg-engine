@@ -1,4 +1,5 @@
-﻿import { clear, getFocus } from '@app/utils/element-utils';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';

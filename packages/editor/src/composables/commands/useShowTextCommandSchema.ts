@@ -1,4 +1,5 @@
-﻿import { measureText } from '@app/utils/dom';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { measureText } from '@app/utils/dom';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { GameLocal } from '@app/local/local-object.ts';

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { ref } from 'vue';
 
 interface Props {
@@ -29,7 +30,9 @@ const update = (): void => {
 		cv = document.createElement('canvas');
 		cv.width = parseInt(String(props.width ?? element.getAttribute('width') ?? '0'));
 		cv.height = parseInt(String(props.height ?? element.getAttribute('height') ?? '0'));
-		const ctx = cv.getContext('2d') as (CanvasRenderingContext2D & { gradient?: CanvasGradient }) | null;
+		const ctx = cv.getContext('2d') as
+			| (CanvasRenderingContext2D & { gradient?: CanvasGradient })
+			| null;
 		if (!ctx) return;
 		(cv as HTMLCanvasElement & { context: CanvasRenderingContext2D }).context = ctx;
 		element.appendChild((canvas = cv));

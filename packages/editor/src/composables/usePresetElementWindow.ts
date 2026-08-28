@@ -1,4 +1,5 @@
-﻿import { getWindowStore } from '@app/stores/window';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getWindowStore } from '@app/stores/window';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { UI } from '@app/ui/ui-window.ts';

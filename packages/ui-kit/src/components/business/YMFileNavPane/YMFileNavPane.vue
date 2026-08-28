@@ -3,8 +3,16 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
-import { addClass, hasClass, hasScrollBar, rect, removeClass, attachDoubleclick } from '../../../utils/dom';
+import {
+	addClass,
+	hasClass,
+	hasScrollBar,
+	rect,
+	removeClass,
+	attachDoubleclick
+} from '../../../utils/dom';
 import {
 	commonListResize,
 	commonListUpdateHeadAndFoot,
@@ -130,8 +138,18 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	directoryApi: () => ({ sortFiles: () => {}, getFolder: () => null, update: () => {}, assets: null, inoMap: {} }),
-	fileSystem: () => ({ path: (p: string) => p, rename: () => Promise.resolve(), existsSync: () => false }),
+	directoryApi: () => ({
+		sortFiles: () => {},
+		getFolder: () => null,
+		update: () => {},
+		assets: null,
+		inoMap: {}
+	}),
+	fileSystem: () => ({
+		path: (p: string) => p,
+		rename: () => Promise.resolve(),
+		existsSync: () => false
+	}),
 	pathUtil: () => ({ dirname: () => '' }),
 	menuState: () => '',
 	createTextBox: () => null
@@ -550,7 +568,10 @@ function pointerdown(event: PointerEvent): void {
 				if (hasClass(element, 'file-nav-item')) {
 					const sels = selections;
 					const length = sels.length;
-					if ((event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey && length !== 0) {
+					if (
+						(event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey &&
+						length !== 0
+					) {
 						const files = Array.from(sels);
 						if (!sels.includes((element as FolderElement).file)) {
 							files.push((element as FolderElement).file);
@@ -607,7 +628,9 @@ function pointerdown(event: PointerEvent): void {
 						} else if (
 							props.menuState?.() === 'closed' &&
 							document.activeElement === node &&
-							event.clientX > rect((element as HTMLElement & { fileIcon: HTMLElement }).fileIcon).right
+							event.clientX >
+								rect((element as HTMLElement & { fileIcon: HTMLElement }).fileIcon)
+									.right
 						) {
 							timer.target = event.target;
 						}
@@ -725,7 +748,8 @@ function createTextBox(): TextBoxElement {
 			const dir = props.pathUtil?.dirname(file.path) ?? '';
 			const path = props.fileSystem!.path(`${dir}/${name}`);
 			if (!props.fileSystem!.existsSync(path)) {
-				return props.fileSystem!.rename(props.fileSystem!.path(file.path), path)
+				return props
+					.fileSystem!.rename(props.fileSystem!.path(file.path), path)
 					.then(() => props.directoryApi?.update() as Promise<boolean>)
 					.then((changed: boolean) => {
 						if (!changed) {

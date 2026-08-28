@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element-utils.ts';
 import { setLocalElement } from '@app/localize/dom-localizer';

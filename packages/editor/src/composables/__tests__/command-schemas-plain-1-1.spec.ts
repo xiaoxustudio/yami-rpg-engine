@@ -360,9 +360,8 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：note 经 onSave 收集并保存（asynchronous 来自控件）', async () => {
 			const wrapper = mount(Block, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
-			const { form } = useBlockCommandSchema();
 			Command.cases.block.customLoad!({ note: 'hello', asynchronous: false });
-			form.note = 'hello ';
+			wrapper.vm.form.note = 'hello ';
 			getControl('block-asynchronous').input(true);
 			const saved = vi.fn();
 			Command.save = saved;

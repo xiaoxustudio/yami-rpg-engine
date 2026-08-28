@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, rect } from '../../../utils/dom';
 
 export interface ScrollBarApiOptions {

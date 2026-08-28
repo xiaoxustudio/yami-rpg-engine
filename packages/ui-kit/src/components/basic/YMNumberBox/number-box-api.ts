@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, read } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
 

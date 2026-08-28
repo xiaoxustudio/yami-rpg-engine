@@ -1,4 +1,5 @@
-﻿import { h, render } from 'vue';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { h, render } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { getListConfig } from '../../../utils/list-config';
 import {

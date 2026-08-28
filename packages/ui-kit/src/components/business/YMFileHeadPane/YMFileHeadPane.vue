@@ -1,13 +1,32 @@
 ﻿<template>
 	<div class="file-head-pane" ref="el" @pointerdown="pointerdown">
 		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown"></div>
-		<div class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton" @click="backButtonClick">{{ '\uf0a8' }}</div>
-<YMTextBox ref="searcherEl" class="file-head-searcher" name="search" :data-v-ref="''"></YMTextBox>
-<YMSliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel" :data-v-ref="''"></YMSliderBox>
+		<div
+			class="item upper-level-directory"
+			name="back"
+			hotkey="Escape/MouseBackButton"
+			@click="backButtonClick"
+		>
+			{{ '\uf0a8' }}
+		</div>
+		<YMTextBox
+			ref="searcherEl"
+			class="file-head-searcher"
+			name="search"
+			:data-v-ref="''"
+		></YMTextBox>
+		<YMSliderBox
+			ref="viewEl"
+			class="file-head-view"
+			name="view"
+			hotkey="Ctrl+Wheel"
+			:data-v-ref="''"
+		></YMSliderBox>
 	</div>
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { h, render, ref, onMounted } from 'vue';
 import { addClass, hasClass, rect, removeClass } from '../../../utils/dom';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
@@ -107,7 +126,10 @@ function updateAddress() {
 				let folder = folders[0];
 				const nodes: HTMLElement[] = [];
 				while (true) {
-					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & { file: FileItem; textContent: string };
+					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & {
+						file: FileItem;
+						textContent: string;
+					};
 					Object.defineProperty(elFolder, 'file', {
 						configurable: true,
 						get: () => folder
@@ -116,7 +138,9 @@ function updateAddress() {
 					nodes.push(elFolder);
 					const { parent } = folder;
 					if (props.isFolderItem(parent)) {
-						const elArrow = renderElement(h('file-head-address-arrow')) as HTMLElement & { folders: FileItem[]; target: FileItem };
+						const elArrow = renderElement(
+							h('file-head-address-arrow')
+						) as HTMLElement & { folders: FileItem[]; target: FileItem };
 						Object.defineProperty(elArrow, 'folders', {
 							configurable: true,
 							get: () => parent!.subfolders
@@ -139,7 +163,10 @@ function updateAddress() {
 				const length = folders.length;
 				for (let i = 0; i < length; i++) {
 					const folder = folders[i];
-					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & { file: FileItem; textContent: string };
+					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & {
+						file: FileItem;
+						textContent: string;
+					};
 					Object.defineProperty(elFolder, 'file', {
 						configurable: true,
 						get: () => folder
@@ -147,7 +174,9 @@ function updateAddress() {
 					elFolder.textContent = folder.name;
 					address.appendChild(elFolder);
 					if (folders[i + 1]) {
-						const elLink = renderElement(h('file-head-address-link')) as HTMLElement & { textContent: string };
+						const elLink = renderElement(h('file-head-address-link')) as HTMLElement & {
+							textContent: string;
+						};
 						elLink.textContent = '&';
 						address.appendChild(elLink);
 					}
@@ -155,7 +184,9 @@ function updateAddress() {
 			}
 			break;
 		case 'search': {
-			const elText = renderElement(h('file-head-address-text')) as HTMLElement & { textContent: string };
+			const elText = renderElement(h('file-head-address-text')) as HTMLElement & {
+				textContent: string;
+			};
 			elText.textContent = `${body.elements.count} 个文件`;
 			address.appendChild(elText);
 			break;
@@ -392,14 +423,17 @@ defineExpose({ updateAddress, el });
 	background-color: var(--drop-target-background);
 }
 
-:global(:where(file-head-address-folder:hover,
-file-head-address-arrow:hover)) {
+:global(:where(file-head-address-folder:hover, file-head-address-arrow:hover)) {
 	background-color: var(--list-item-background-hover);
 }
 
-:global(:where(file-head-address-folder:active,
-file-head-address-arrow:active,
-file-head-address-arrow.active)) {
+:global(
+	:where(
+		file-head-address-folder:active,
+		file-head-address-arrow:active,
+		file-head-address-arrow.active
+	)
+) {
 	color: white;
 	border-color: white;
 	background-color: var(--selected-background);

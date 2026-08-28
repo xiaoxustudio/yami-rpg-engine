@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import {
 	registerSearchHistoryDropdown,

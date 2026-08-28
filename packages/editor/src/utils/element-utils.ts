@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { Timer } from '@app/utils/timer';
 import { Cursor } from '../composables/usePointerObjectWindow';

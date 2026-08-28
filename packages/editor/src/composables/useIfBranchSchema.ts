@@ -1,4 +1,5 @@
-﻿import { getWindowStore } from '@app/stores/window';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getWindowStore } from '@app/stores/window';
 import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { setOperatorColor } from '@app/composables/useCommandColor.ts';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';

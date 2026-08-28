@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import {
 	addClass,
@@ -163,7 +164,7 @@ const root = ref<HTMLElement | null>(null);
 const headPadRef = ref<HTMLElement | null>(null);
 
 // oxlint-disable-next-line no-explicit-any
-let el: HTMLElement & { [k: string]: any } | null = null;
+let el: (HTMLElement & { [k: string]: any }) | null = null;
 
 const paneState = {
 	scriptList: null as unknown,
@@ -254,9 +255,7 @@ const getLocal = (key: string): string => (props.localize ? props.localize(key) 
 const getSelection = (): SelectionAdapter | null => props.selection;
 
 const getMeasureText = (text: string, font: string): { width: number } =>
-	props.measureText
-		? props.measureText(text, font)
-		: { width: 0 };
+	props.measureText ? props.measureText(text, font) : { width: 0 };
 
 const getSetTooltip = (): ((el: HTMLElement, tip: string) => void) | null => props.setTooltip;
 
@@ -375,16 +374,14 @@ const update = (): void => {
 			if (parameter.validate) {
 				const validateInput = () => {
 					const val = input.parameters?.[input.key];
-					const ok =
-						val !== undefined && !!getPlugin()?.checkValidate(parameter, val);
+					const ok = val !== undefined && !!getPlugin()?.checkValidate(parameter, val);
 					if (ok) {
 						removeClass(input as HTMLElement, 'validate-error');
 					} else {
 						addClass(input as HTMLElement, 'validate-error');
 					}
 				};
-				const nativeInput =
-					(input as HTMLElement & { input?: HTMLElement }).input || input;
+				const nativeInput = (input as HTMLElement & { input?: HTMLElement }).input || input;
 				nativeInput.addEventListener('input', validateInput);
 			}
 			children.push(inputWrap);
@@ -704,7 +701,8 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 		for (const rowEl of rowsEl.children) {
 			// oxlint-disable-next-line no-explicit-any
 			const data: Record<string, any> = {};
-			for (const { param, input } of (rowEl as HTMLElement & { wraps: RepeatableRowWrap[] }).wraps) {
+			for (const { param, input } of (rowEl as HTMLElement & { wraps: RepeatableRowWrap[] })
+				.wraps) {
 				data[param.key] = read(input);
 			}
 			result.push(data);
@@ -737,29 +735,31 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 			const grid = document.createElement('div');
 			addClass(grid, 'detail-grid');
 			row.appendChild(grid);
-			(row as HTMLElement & { wraps?: RepeatableRowWrap[] }).wraps = template.map((subParam: ParamDef): RepeatableRowWrap => {
-				const config = getTypeConfig(subParam.type);
-				const wrap = config ? config.create(pane, subParam) : null;
-				const val =
-					item[subParam.key] !== undefined ? item[subParam.key] : subParam.value;
-				if (wrap) {
-					wrap.label.textContent = '';
-					wrap.input.parameters = item;
-					wrap.input.key = subParam.key;
-					write(wrap.input, val);
-					enableInput(wrap.input);
-					removeClass(wrap.input, 'validate-error');
-					if (subParam.readonly) {
-						disableInput(wrap.input);
+			(row as HTMLElement & { wraps?: RepeatableRowWrap[] }).wraps = template.map(
+				(subParam: ParamDef): RepeatableRowWrap => {
+					const config = getTypeConfig(subParam.type);
+					const wrap = config ? config.create(pane, subParam) : null;
+					const val =
+						item[subParam.key] !== undefined ? item[subParam.key] : subParam.value;
+					if (wrap) {
+						wrap.label.textContent = '';
+						wrap.input.parameters = item;
+						wrap.input.key = subParam.key;
+						write(wrap.input, val);
+						enableInput(wrap.input);
+						removeClass(wrap.input, 'validate-error');
+						if (subParam.readonly) {
+							disableInput(wrap.input);
+						}
+						grid.appendChild(wrap.label);
+						if (subParam.prefix || subParam.suffix) {
+							pane.applyAffix(wrap.input, subParam);
+						}
+						grid.appendChild(wrap.input);
 					}
-					grid.appendChild(wrap.label);
-					if (subParam.prefix || subParam.suffix) {
-						pane.applyAffix(wrap.input, subParam);
-					}
-					grid.appendChild(wrap.input);
+					return { param: subParam, ...wrap } as RepeatableRowWrap;
 				}
-				return { param: subParam, ...wrap } as RepeatableRowWrap;
-			});
+			);
 			rowsEl.appendChild(row);
 		}
 	};

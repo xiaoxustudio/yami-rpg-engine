@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';

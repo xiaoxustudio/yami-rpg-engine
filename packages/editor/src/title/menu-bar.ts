@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { macRedoKey } from '@app/utils/event-accessors';
 import { Window } from '@app/tools/window-object.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { ref } from 'vue';
 
 const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
@@ -19,7 +20,10 @@ const show = (message: string, type: string = 'info', duration: number = 4000): 
 	root.value?.appendChild(el);
 	requestAnimationFrame(() => el.classList.add('toast-show'));
 	if (duration > 0) {
-		timerMap.set(el, setTimeout(() => dismiss(el), duration));
+		timerMap.set(
+			el,
+			setTimeout(() => dismiss(el), duration)
+		);
 	}
 	return el;
 };

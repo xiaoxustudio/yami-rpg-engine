@@ -1,4 +1,5 @@
-﻿import { getFocus, read, write } from '@app/utils/element-utils.ts';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';

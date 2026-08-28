@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';

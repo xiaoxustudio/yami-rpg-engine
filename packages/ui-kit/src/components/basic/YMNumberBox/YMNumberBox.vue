@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -212,8 +213,14 @@ type NumberBoxHost = HTMLElement & {
 
 defineExpose({ read, write, enable, disable, getFocus, on, input: inputEl, root });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 onMounted(() => {
 	const el = root.value;

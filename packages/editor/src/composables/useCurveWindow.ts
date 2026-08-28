@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Animation } from '@app/animation/animation-window.ts';

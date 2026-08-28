@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';

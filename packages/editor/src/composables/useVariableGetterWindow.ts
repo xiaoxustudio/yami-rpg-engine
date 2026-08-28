@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';

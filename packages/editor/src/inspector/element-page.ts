@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
 import { clear, disable, enable, hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';

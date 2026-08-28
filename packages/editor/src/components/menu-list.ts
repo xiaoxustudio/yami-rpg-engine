@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { createMenuApi, type MenuApi, type MenuItem, type MenuOptions } from '@ui-kit';
 
 interface MenuListElement extends HTMLElement {

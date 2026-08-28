@@ -1,13 +1,7 @@
 ﻿<script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	hide,
-	show,
-	rect
-} from '../../../utils/dom';
+import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
 
 const arrayRemove = (arr: TabItem[], item: TabItem): boolean => {
@@ -552,7 +546,9 @@ const windowPointerup = (event: PointerEvent): void => {
 	if (el.dragging && el.dragging.relate!(event)) {
 		switch (el.dragging.mode) {
 			case 'close': {
-				const target = (event.target as HTMLElement).closest('.tab-item') as TabDragTarget | null;
+				const target = (event.target as HTMLElement).closest(
+					'.tab-item'
+				) as TabDragTarget | null;
 				if (target && el.dragging.target === target) {
 					close(target.item);
 				}

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';

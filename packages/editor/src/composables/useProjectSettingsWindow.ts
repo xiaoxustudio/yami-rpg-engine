@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';

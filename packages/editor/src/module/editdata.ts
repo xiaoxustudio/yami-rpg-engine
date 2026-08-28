@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';

@@ -84,7 +84,10 @@ const ym = ref<{
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const read = (): number => ym.value?.read() ?? 0;
-const write = (value: unknown): void => ym.value?.write(value);
+const write = (value: unknown): void => {
+	ym.value?.write(value);
+	emit('update:modelValue', ym.value?.read() ?? 0);
+};
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const getFocus = (mode?: string): void => ym.value?.getFocus(mode);

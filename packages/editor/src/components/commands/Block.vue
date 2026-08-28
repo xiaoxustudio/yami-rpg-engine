@@ -27,6 +27,8 @@ const { t } = useI18n();
 
 const { form, save, reset } = useBlockCommandSchema();
 
+defineExpose({ form });
+
 const onConfirm = () => {
 	save();
 };

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';

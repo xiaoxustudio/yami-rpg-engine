@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, hide, read, show } from '@app/utils/element-utils';
 import { setNumberColor, setScriptColor } from '@app/composables/useCommandColor.ts';

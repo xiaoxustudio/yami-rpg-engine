@@ -7,6 +7,7 @@
 		:decimals="props.decimals"
 		:unit="props.unit"
 		:model-value="props.modelValue"
+		@update:model-value="onValue"
 		:id="props.id"
 	>
 		<template #variable>
@@ -15,7 +16,7 @@
 				type="variable"
 				filter="number"
 				:model-value="state.varValue ?? defVar"
-				@update:model-value="(v: unknown) => (state.varValue = v)"
+				@input="onVarValue"
 			/>
 		</template>
 	</YMNumberVar>
@@ -100,6 +101,15 @@ const on = (
 	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
+
+const onValue = (value: unknown): void => {
+	emit('update:modelValue', value);
+};
+
+const onVarValue = (value: unknown): void => {
+	state.varValue = value;
+	emit('update:modelValue', value);
+};
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 

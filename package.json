@@ -30,8 +30,11 @@
 		"debug:template": "node scripts/debug-template.js",
 		"debug:template:watch": "node scripts/debug-template.js --watch",
 		"typecheck": "pnpm -F @yami/editor typecheck",
-		"lint": "oxlint -c ./.oxlintrc.json packages/editor",
-		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor",
+		"lint": "oxlint -c ./.oxlintrc.json packages/editor packages/ui-kit",
+		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit",
+		"dom:guard:exempt": "node scripts/dom-guard.mjs exempt",
+		"dom:guard:tracker": "node scripts/dom-guard.mjs tracker",
+		"dom:guard:fix": "node scripts/dom-guard.mjs fix",
 		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor",
 		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
 	},

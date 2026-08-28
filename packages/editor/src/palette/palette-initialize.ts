@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { Palette } from './palette.ts';
 import { $ } from '@app/utils/dom';
 import { addScrollbars, hide, on } from '@app/utils/element-utils.ts';

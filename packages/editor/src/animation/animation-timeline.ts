@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { Animation } from './animation-window.ts';
 import type {
 	AnimationFrame,

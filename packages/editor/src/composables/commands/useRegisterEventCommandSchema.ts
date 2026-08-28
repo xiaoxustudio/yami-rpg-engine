@@ -1,4 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+﻿/* oxlint-disable eslint/no-restricted-properties */
+import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';

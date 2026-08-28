@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
 import {
 	addClass,
@@ -601,9 +602,7 @@ function computeStartAndEnd(): Uint32Array {
 	const range = content.range!;
 	const count = elements.count;
 	const scroll =
-		viewMode === 'list'
-			? Math.max(node.scrollLeft - 4, 0)
-			: Math.max(node.scrollTop - 4, 0);
+		viewMode === 'list' ? Math.max(node.scrollLeft - 4, 0) : Math.max(node.scrollTop - 4, 0);
 	const { countPerLine, itemSize, visibleLines } = content;
 	const lines = Math.ceil(count / countPerLine!);
 	const sLine = clamp(Math.floor(scroll / itemSize!), 0, lines - 1);
@@ -641,7 +640,8 @@ function updateContentOffset(): void {
 	const { style } = content;
 	style.paddingLeft = '';
 	style.paddingTop = '';
-}function resetContentStyle(): void {
+}
+function resetContentStyle(): void {
 	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
 	content.cpl = -1;
@@ -831,15 +831,16 @@ function createIcon(file: FileBodyFile): HTMLElement {
 			const version = file.stats!.mtimeMs;
 			const path = `${file.path}?ver=${version}`;
 			icon.style.backgroundImage = encodeURL(File?.route(path) ?? path);
-			File?.getImageResolution(path)
-				.then(({ width, height }: { width: number; height: number }) => {
+			File?.getImageResolution(path).then(
+				({ width, height }: { width: number; height: number }) => {
 					if (width <= 128 && height <= 128) {
 						icon.style.imageRendering = 'pixelated';
 					}
 					if (Math.max(width, height) > GL.maxTexSize) {
 						FileItem?.addOversizeImagePaths(file.path);
 					}
-				});
+				}
+			);
 			break;
 		}
 		case 'audio':
@@ -1222,9 +1223,7 @@ function pasteFiles(targetPath?: string): void {
 					const path = File?.path(targetPath) ?? targetPath;
 					return copy.cut
 						? Directory!.moveFiles(path, dir)
-						: Directory!
-								.saveFiles(files)
-								.then(() => Directory!.copyFiles(path, dir));
+						: Directory!.saveFiles(files).then(() => Directory!.copyFiles(path, dir));
 				})
 				.finally(() => {
 					Directory?.update();
@@ -1350,39 +1349,38 @@ function importFiles(): void {
 	const videos = ['mp4', 'mkv', 'webm'];
 	const fonts = ['ttf', 'otf', 'woff', 'woff2'];
 	File?.showOpenDialog({
-			defaultPath: location,
-			filters: [
-				{
-					name: 'Resources',
-					extensions: [...images, ...audio, ...videos, ...fonts]
-				},
-				{ name: 'Images', extensions: images },
-				{ name: 'Audio', extensions: audio },
-				{ name: 'Videos', extensions: videos },
-				{ name: 'Fonts', extensions: fonts }
-			],
-			properties: ['multiSelections']
-		})
-		.then(({ filePaths }: { filePaths: string[] }) => {
-			if (filePaths.length !== 0) {
-				const dir = folder.path;
-				const promises: Promise<void>[] = [];
-				const length = filePaths.length;
-				for (let i = 0; i < length; i++) {
-					const src = Path?.slash(filePaths[i]) ?? filePaths[i];
-					const ext = Path?.extname(src) ?? '';
-					const base = Path?.basename(src, ext) ?? src;
-					const dst = File?.getFileName(dir, base, ext)?.route ?? '';
+		defaultPath: location,
+		filters: [
+			{
+				name: 'Resources',
+				extensions: [...images, ...audio, ...videos, ...fonts]
+			},
+			{ name: 'Images', extensions: images },
+			{ name: 'Audio', extensions: audio },
+			{ name: 'Videos', extensions: videos },
+			{ name: 'Fonts', extensions: fonts }
+		],
+		properties: ['multiSelections']
+	}).then(({ filePaths }: { filePaths: string[] }) => {
+		if (filePaths.length !== 0) {
+			const dir = folder.path;
+			const promises: Promise<void>[] = [];
+			const length = filePaths.length;
+			for (let i = 0; i < length; i++) {
+				const src = Path?.slash(filePaths[i]) ?? filePaths[i];
+				const ext = Path?.extname(src) ?? '';
+				const base = Path?.basename(src, ext) ?? src;
+				const dst = File?.getFileName(dir, base, ext)?.route ?? '';
 				promises.push(FSP?.copyFile(src, dst) ?? Promise.resolve());
-				}
-				Promise.all(promises).then(() => {
-					return Directory?.update();
-				});
-				if (dialogs && filePaths.length > 0) {
-					dialogs.import = Path?.slash(Path?.dirname(filePaths[0]) ?? '') ?? '';
-				}
 			}
-		});
+			Promise.all(promises).then(() => {
+				return Directory?.update();
+			});
+			if (dialogs && filePaths.length > 0) {
+				dialogs.import = Path?.slash(Path?.dirname(filePaths[0]) ?? '') ?? '';
+			}
+		}
+	});
 }
 
 function exportFile(): void {
@@ -1569,39 +1567,39 @@ function pointerdown(event: PointerEvent): void {
 				element = node;
 			}
 			if (element === node) {
-				if (
-					node.contains(document.activeElement as Node) &&
-					isInContent(node, event)
-				) {
+				if (node.contains(document.activeElement as Node) && isInContent(node, event)) {
 					unselect();
 				}
 			} else {
 				if (hasClass(element, 'file-body-icon') || hasClass(element, 'file-body-name')) {
 					element = element.parentNode as HTMLElement;
 				}
-			if (hasClass(element, 'file-body-item')) {
-				if (event.altKey && (element as FileBodyItemApi).file instanceof FileItem) {
-					Reference?.openRelated((element as FileBodyItemApi).file.meta!.guid);
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					return;
-				}
-				const sels = selections;
-				const length = sels.length;
-				if ((event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey && length !== 0) {
-					const els = elements;
-					const files = Array.from(sels);
-					for (let i = length - 1; i >= 0; i--) {
-						const { element } = files[i].getContext(node);
-						if (!els.includes(element!)) {
-							files.splice(i, 1);
-						}
+				if (hasClass(element, 'file-body-item')) {
+					if (event.altKey && (element as FileBodyItemApi).file instanceof FileItem) {
+						Reference?.openRelated((element as FileBodyItemApi).file.meta!.guid);
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						return;
 					}
-					if (!sels.includes((element as FileBodyItemApi).file)) {
-						files.push((element as FileBodyItemApi).file);
-						select(...files);
-					} else if (event.button === 0) {
-						const file = (element as FileBodyItemApi).file;
+					const sels = selections;
+					const length = sels.length;
+					if (
+						(event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey &&
+						length !== 0
+					) {
+						const els = elements;
+						const files = Array.from(sels);
+						for (let i = length - 1; i >= 0; i--) {
+							const { element } = files[i].getContext(node);
+							if (!els.includes(element!)) {
+								files.splice(i, 1);
+							}
+						}
+						if (!sels.includes((element as FileBodyItemApi).file)) {
+							files.push((element as FileBodyItemApi).file);
+							select(...files);
+						} else if (event.button === 0) {
+							const file = (element as FileBodyItemApi).file;
 							const index = files.indexOf(file);
 							if (index !== -1) files.splice(index, 1);
 							const pointerup = (event: PointerEvent) => {
@@ -1635,29 +1633,29 @@ function pointerdown(event: PointerEvent): void {
 							return;
 						}
 					}
-				if (!hasClass(element, 'selected')) {
-					switch (event.button) {
-						case 0:
-							activateFile((element as FileBodyItemApi).file);
-							break;
-						case 2:
-							select((element as FileBodyItemApi).file);
-							break;
-					}
-				} else if (event.button === 0) {
-					if (length > 1) {
-						const pointerup = (event: PointerEvent) => {
-							if (pressing === pointerup) {
-								pressing = null;
-								if (element.contains(event.target as Node)) {
-									select((element as FileBodyItemApi).file);
+					if (!hasClass(element, 'selected')) {
+						switch (event.button) {
+							case 0:
+								activateFile((element as FileBodyItemApi).file);
+								break;
+							case 2:
+								select((element as FileBodyItemApi).file);
+								break;
+						}
+					} else if (event.button === 0) {
+						if (length > 1) {
+							const pointerup = (event: PointerEvent) => {
+								if (pressing === pointerup) {
+									pressing = null;
+									if (element.contains(event.target as Node)) {
+										select((element as FileBodyItemApi).file);
+									}
 								}
-							}
-						};
-						pressing = pointerup;
-						window.addEventListener('pointerup', pointerup, { once: true });
-					} else {
-						activateFile((element as FileBodyItemApi).file);
+							};
+							pressing = pointerup;
+							window.addEventListener('pointerup', pointerup, { once: true });
+						} else {
+							activateFile((element as FileBodyItemApi).file);
 							if (
 								Menu?.() === 'closed' &&
 								document.activeElement === content &&
@@ -1849,7 +1847,11 @@ function createTextBox(): FileBodyTextBox {
 	return tb;
 }
 
-function on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void {
+function on(
+	type: string,
+	listener: (event: Event) => void,
+	options?: boolean | AddEventListenerOptions
+): void {
 	const node = el.value as FileBodyPaneApi;
 	node.addEventListener(type, listener, options);
 	switch (type) {

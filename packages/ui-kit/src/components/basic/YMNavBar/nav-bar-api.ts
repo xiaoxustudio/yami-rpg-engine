@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { addClass, removeClass, hasClass } from '../../../utils/dom';
 
 export interface NavBarApi extends HTMLElement {

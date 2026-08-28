@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';

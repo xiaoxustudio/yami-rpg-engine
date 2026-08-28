@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { reactive, ref } from 'vue';
 import { h, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';

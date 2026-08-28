@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';

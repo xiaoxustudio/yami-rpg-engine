@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
 import { commandCases } from '@app/commands/command-registry.ts';

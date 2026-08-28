@@ -70,7 +70,10 @@ const ym = ref<{
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const read = (): string => ym.value?.read() ?? '';
-const write = (value: string): void => ym.value?.write(value);
+const write = (value: string): void => {
+	ym.value?.write(value);
+	emit('update:modelValue', ym.value?.read() ?? '');
+};
 const insert = (value: string): void => ym.value?.insert(value);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();

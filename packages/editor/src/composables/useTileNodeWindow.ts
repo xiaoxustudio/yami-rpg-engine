@@ -1,3 +1,4 @@
+/* oxlint-disable eslint/no-restricted-properties */
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { getWindowStore } from '@app/stores/window';
 import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
