@@ -510,7 +510,8 @@
 				"animation": "动画",
 				"particle": "粒子发射器",
 				"parallax": "视差图",
-				"tilemap": "瓦片地图"
+				"tilemap": "瓦片地图",
+				"name": "创建"
 			}
 		},
 		"menuUIList": {
@@ -530,7 +531,8 @@
 				"container": "容器",
 				"reference": "引用",
 				"shortcut": "快捷方式",
-				"prefab": "预制件"
+				"prefab": "预制件",
+				"name": "创建"
 			}
 		},
 		"menuAnimationList": {},
@@ -540,7 +542,8 @@
 				"joint": "关节",
 				"sprite": "精灵",
 				"particle": "粒子发射器",
-				"sound": "音效"
+				"sound": "音效",
+				"name": "创建"
 			}
 		},
 		"menuAnimationTimeline": {
@@ -552,7 +555,8 @@
 		"menuVariableList": {
 			"create": {
 				"folder": "文件夹",
-				"variable": "变量"
+				"variable": "变量",
+				"name": "创建"
 			}
 		},
 		"menuAttributeList": {
@@ -568,7 +572,8 @@
 			},
 			"create": {
 				"folder": "文件夹",
-				"attribute": "属性"
+				"attribute": "属性",
+				"name": "创建"
 			}
 		},
 		"menuEnumList": {
@@ -595,7 +600,8 @@
 			},
 			"create": {
 				"folder": "文件夹",
-				"string": "字符串"
+				"string": "字符串",
+				"name": "创建"
 			}
 		},
 		"menuEventList": {
@@ -608,7 +614,8 @@
 		"menuLocalList": {
 			"create": {
 				"folder": "文件夹",
-				"text": "文本"
+				"text": "文本",
+				"name": "创建"
 			}
 		},
 		"menuPluginList": {},
@@ -2098,7 +2105,8 @@
 			"webSocketClose": "WebSocket关闭",
 			"custom": "自定义",
 			"invalidCommand": "无效指令",
-			"blankCommandChar": "　"
+			"blankCommandChar": "　",
+			"downloadFileData": "下载文件数据"
 		},
 		"confirmation": {
 			"deleteReferencedFile": "删除被引用的 \"<filename>\" ?",

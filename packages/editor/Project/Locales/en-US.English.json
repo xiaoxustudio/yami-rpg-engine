@@ -510,7 +510,8 @@
 				"animation": "Animation",
 				"particle": "Particle Emitter",
 				"parallax": "Parallax",
-				"tilemap": "Tilemap"
+				"tilemap": "Tilemap",
+				"name": "Create"
 			}
 		},
 		"menuUIList": {
@@ -530,7 +531,8 @@
 				"container": "Container",
 				"reference": "Reference",
 				"shortcut": "Shortcut",
-				"prefab": "Prefab"
+				"prefab": "Prefab",
+				"name": "Create"
 			}
 		},
 		"menuAnimationList": {},
@@ -540,7 +542,8 @@
 				"joint": "Joint",
 				"sprite": "Sprite",
 				"particle": "Particle Emitter",
-				"sound": "Sound Effect"
+				"sound": "Sound Effect",
+				"name": "Create"
 			}
 		},
 		"menuAnimationTimeline": {
@@ -552,7 +555,8 @@
 		"menuVariableList": {
 			"create": {
 				"folder": "Folder",
-				"variable": "Variable"
+				"variable": "Variable",
+				"name": "Create"
 			}
 		},
 		"menuAttributeList": {
@@ -568,7 +572,8 @@
 			},
 			"create": {
 				"folder": "Folder",
-				"attribute": "Attribute"
+				"attribute": "Attribute",
+				"name": "Create"
 			}
 		},
 		"menuEnumList": {
@@ -595,7 +600,8 @@
 			},
 			"create": {
 				"folder": "Folder",
-				"string": "String"
+				"string": "String",
+				"name": "Create"
 			}
 		},
 		"menuEventList": {
@@ -608,7 +614,8 @@
 		"menuLocalList": {
 			"create": {
 				"folder": "Folder",
-				"text": "Text"
+				"text": "Text",
+				"name": "Create"
 			}
 		},
 		"menuPluginList": {},
@@ -1545,12 +1552,12 @@
 					"trigger": "TriggerAnimation",
 					"animation": "SceneAnimation"
 				},
-				"full": "Tint",
-				"rgb": "RGB",
-				"gray": "Grayscale",
 				"set-opacity": "Opacity",
 				"set-offsetY": "OffsetY",
-				"set-rotation": "Rotation"
+				"set-rotation": "Rotation",
+				"set-tint": "Tint",
+				"set-rgb": "RGB",
+				"set-gray": "Grayscale"
 			},
 			"audio": "Audio",
 			"playAudio": {
@@ -2097,7 +2104,9 @@
 			"webSocketClose": "WebSocket Close",
 			"custom": "Custom",
 			"invalidCommand": "Invalid Command",
-			"blankCommandChar": " "
+			"blankCommandChar": " ",
+			"downloadFile": "Download File",
+			"downloadFileData": "Download File Data"
 		},
 		"confirmation": {
 			"deleteReferencedFile": "Delete the referenced \"<filename>\" ?",
