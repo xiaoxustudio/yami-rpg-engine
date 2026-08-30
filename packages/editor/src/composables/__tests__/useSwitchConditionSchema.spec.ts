@@ -33,13 +33,16 @@ vi.mock('@app/composables/useCommandParse.ts', () => ({
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', () => ({
-	t: (key: string) =>
-		key.includes('keyboard') ? 'Key' : key.includes('gamepad') ? 'Gamepad' : 'Mouse',
-	createGetter: () => (key: string) => key
+	getYamiI18n: () => ({
+		global: {
+			t: (key: string) =>
+				key.includes('keyboard') ? 'Key' : key.includes('gamepad') ? 'Gamepad' : 'Mouse'
+		}
+	})
 }));
 
 const target = {

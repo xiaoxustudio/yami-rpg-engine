@@ -15,11 +15,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { YMParamList, type MenuItem, type MenuOptions } from '@ui-kit';
 import { ParamListHistory } from '@ui-kit';
 import { ctrl as ctrlText } from '@app/utils/event-accessors';
 import { Menu } from '@app/components/menu-list';
-import { createGetter } from '@app/i18n';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
@@ -34,9 +34,11 @@ const props = withDefaults(defineProps<Props>(), {
 	flexible: false
 });
 
+const { t } = useI18n();
+
 const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list);
 const menuPopup = (options: MenuOptions, items: MenuItem[]): void => Menu.popup(options, items);
-const localize = (key: string): string => createGetter('menuParamList')(key);
+const localize = (key: string): string => t('menuParamList.' + key);
 interface ClipboardAdapter {
 	write(type: string, data: unknown): void;
 	read(type: string): unknown;

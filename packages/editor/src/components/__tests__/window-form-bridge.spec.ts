@@ -8,7 +8,7 @@ import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 interface FormFrame extends HTMLElement {

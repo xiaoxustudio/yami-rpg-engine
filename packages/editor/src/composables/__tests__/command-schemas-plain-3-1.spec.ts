@@ -26,7 +26,7 @@ import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSc
 import MoveActor from '@app/components/commands/MoveActor.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

@@ -2,7 +2,9 @@
 import { $ } from '@app/utils/dom';
 import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element-utils.ts';
 import { setLocalElement } from '@app/localize/dom-localizer';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { getLocalStore } from '@app/stores/local';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import type { SettingOption, SettingSection } from './types.ts';
@@ -69,7 +71,7 @@ export class SettingRenderer {
 	}
 
 	applyL10n() {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		const components = getLocalStore().components ?? {};
 		const localize = (sections: SettingSection[], basePath: string[]) => {
 			for (const section of sections) {
@@ -142,7 +144,7 @@ export class SettingRenderer {
 			`#${this.optionId(sectionPath, opt)}`
 		)[0] as HTMLElement;
 		if (!el) return;
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		const items = await opt.optionsFn({ get, config: this.host.config });
 		el.loadItems(items);
 		write(el, this.readConfig(sectionPath, opt.key));

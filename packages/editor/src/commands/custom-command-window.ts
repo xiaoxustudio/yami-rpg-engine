@@ -10,7 +10,9 @@ import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { PluginManager } from '@app/plugin/plugin.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { reactive } from 'vue';
 import type { EditorProjectShape } from '@app/stores/editor';
@@ -276,7 +278,7 @@ CustomCommand.getItemById = Easing.getItemById as unknown as (
 CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedCommands')
@@ -372,7 +374,7 @@ CustomCommand.listPopup = function (
 	const selected = !!item;
 	const pastable = Clipboard.has('yami.data.customCommand');
 	const deletable = selected;
-	const get = createGetter('menuCustomCommandList');
+	const get = (key: string) => t('menuCustomCommandList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,

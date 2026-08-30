@@ -10,7 +10,9 @@ import { createNumberVar } from '@app/components/number-var.ts';
 import { createSelectBox } from '@app/components/select-box.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Selection } from '@app/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';

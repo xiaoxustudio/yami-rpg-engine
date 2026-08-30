@@ -1,19 +1,19 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{
-			local.getLabel('sceneTilemap-general-grid') || 'General'
+			t('components.sceneTilemap-general-grid.label') || 'General'
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneTilemap-general-grid">
-			<div class="text">{{ local.getLabel('sceneTilemap-name') || 'Name' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-name.label') || 'Name' }}</div>
 			<TextBox id="sceneTilemap-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-layer') || 'Layer' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
 				id="sceneTilemap-layer"
 				v-model="form.layer"
 				@input="onParamInput"
 				@write="onLayerWrite"
 			></SelectBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-order') || 'Order' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-order.label') || 'Order' }}</div>
 			<NumberBox
 				id="sceneTilemap-order"
 				v-model="form.order"
@@ -21,19 +21,19 @@
 				min="0"
 				max="100"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-light') || 'Light Sampling' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-light.label') || 'Light Sampling' }}</div>
 			<SelectBox
 				id="sceneTilemap-light"
 				v-model="form.light"
 				@input="onParamInput"
 			></SelectBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-blend') || 'Blend' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="sceneTilemap-blend"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-x') || 'X' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneTilemap-x"
 				v-model="form.x"
@@ -44,7 +44,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-y') || 'Y' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-y"
 				v-model="form.y"
@@ -55,7 +55,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-width') || 'Width' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="sceneTilemap-width"
 				v-model="form.width"
@@ -64,7 +64,7 @@
 				unit="tile"
 				@change="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-height') || 'Height' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="sceneTilemap-height"
 				v-model="form.height"
@@ -73,7 +73,7 @@
 				unit="tile"
 				@change="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-anchorX') || 'Anchor X' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorX"
 				v-model="form.anchorX"
@@ -83,7 +83,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-anchorY') || 'Anchor Y' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorY"
 				v-model="form.anchorY"
@@ -93,7 +93,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-offsetX') || 'Offset X' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetX"
 				v-model="form.offsetX"
@@ -102,7 +102,7 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-offsetY') || 'Offset Y' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetY"
 				v-model="form.offsetY"
@@ -112,7 +112,7 @@
 				unit="px"
 			></NumberBox>
 			<div class="text">
-				{{ local.getLabel('sceneTilemap-parallaxFactorX') || 'Parallax Factor X' }}
+				{{ t('components.sceneTilemap-parallaxFactorX.label') || 'Parallax Factor X' }}
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorX"
@@ -124,7 +124,7 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">
-				{{ local.getLabel('sceneTilemap-parallaxFactorY') || 'Parallax Factor Y' }}
+				{{ t('components.sceneTilemap-parallaxFactorY.label') || 'Parallax Factor Y' }}
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorY"
@@ -135,7 +135,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneTilemap-opacity') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.sceneTilemap-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
 				id="sceneTilemap-opacity"
 				v-model="form.opacity"
@@ -149,12 +149,12 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{
-			local.getLabel('sceneTilemap-conditions') || 'Conditions'
+			t('components.sceneTilemap-conditions.label') || 'Conditions'
 		}}</DetailSummary>
 		<ParamList id="sceneTilemap-conditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneTilemap-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneTilemap-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneTilemap-events"
 			class="inspector-list"
@@ -163,7 +163,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneTilemap-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneTilemap-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList id="sceneTilemap-scripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneTilemap-parameter-pane"></ParameterPane>

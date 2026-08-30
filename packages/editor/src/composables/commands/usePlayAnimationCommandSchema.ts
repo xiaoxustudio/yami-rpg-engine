@@ -5,7 +5,9 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 type PlayAnimationCommandData = {
 	mode: string;

@@ -10,11 +10,13 @@ import { FolderItem } from '@app/services/file-system/file-item.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from '@app/module/global.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
 import { reactive } from 'vue';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
 const _moduleURL = new URL(import.meta.url);

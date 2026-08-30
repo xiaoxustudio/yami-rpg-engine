@@ -1,7 +1,9 @@
 import { clear, write } from '@app/utils/element-utils.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { Reference } from '@app/log/related-references.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from '@app/variable/variable.ts';
 
@@ -9,7 +11,7 @@ Variable.windowClose = function (this: typeof Variable, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedVariables')

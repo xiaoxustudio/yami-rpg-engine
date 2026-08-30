@@ -31,7 +31,7 @@ vi.mock('@app/stores/audio', () => ({
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type UpdateEl = HTMLElement & { update?: () => void };

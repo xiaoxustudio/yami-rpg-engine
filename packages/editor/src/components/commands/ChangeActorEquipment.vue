@@ -35,7 +35,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -51,13 +50,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changeActorEquipment');
 	$('#changeActorEquipment-operation')?.loadItems?.([
-		{ name: get('add') || 'Add', value: 'add' },
-		{ name: get('remove') || 'Remove', value: 'remove' },
-		{ name: get('add-instance') || 'Add Instance', value: 'add-instance' },
-		{ name: get('remove-instance') || 'Remove Instance', value: 'remove-instance' },
-		{ name: get('remove-slot') || 'Remove Slot', value: 'remove-slot' }
+		{ name: t('command.changeActorEquipment.add') || 'Add', value: 'add' },
+		{ name: t('command.changeActorEquipment.remove') || 'Remove', value: 'remove' },
+		{
+			name: t('command.changeActorEquipment.add-instance') || 'Add Instance',
+			value: 'add-instance'
+		},
+		{
+			name: t('command.changeActorEquipment.remove-instance') || 'Remove Instance',
+			value: 'remove-instance'
+		},
+		{ name: t('command.changeActorEquipment.remove-slot') || 'Remove Slot', value: 'remove-slot' }
 	]);
 	$('#changeActorEquipment-operation')
 		?.enableHiddenMode?.()

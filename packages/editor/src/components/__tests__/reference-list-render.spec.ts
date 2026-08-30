@@ -6,7 +6,7 @@ import Reference from '@app/components/tools/Reference.vue';
 import { Reference as ReferenceLegacy } from '@app/log/related-references.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 beforeEach(() => {

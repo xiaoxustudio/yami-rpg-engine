@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import ForEach from '@app/components/commands/ForEach.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/components/custom-box-opts', () => ({
@@ -18,9 +18,7 @@ vi.mock('@app/components/custom-box-opts', () => ({
 }));
 
 vi.mock('@app/i18n', () => ({
-	t: (key: string) => key,
-	createGetter: () => (key: string) => key,
-	getLabel: () => ''
+	getYamiI18n: () => ({ global: { t: (key: string) => key } })
 }));
 
 const getDisplay = (id: string): string => {

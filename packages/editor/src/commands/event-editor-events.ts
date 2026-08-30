@@ -4,7 +4,9 @@ import { Window } from '@app/tools/window-object.ts';
 import { addClass, clear, hasClass, read, removeClass, write } from '@app/utils/element-utils';
 import { ctrl } from '@app/utils/event-accessors';
 import { getLazyWindow } from '@app/tools/window-registry';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { Menu } from '@app/components/menu-list.ts';
 
@@ -14,8 +16,8 @@ const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.I
 
 EventEditor.windowLocalize = function (this: EventEditorShape, _event: Event) {
 	const types = EventEditor.types;
-	const getType = createGetter('eventTypes');
-	const getTip = createGetter('eventTips');
+	const getType = (key: string) => t('eventTypes.' + key);
+	const getTip = (key: string) => t('eventTips.' + key);
 	for (const item of types.all) {
 		const key = item.value;
 		const name = getType(key);
@@ -39,7 +41,7 @@ EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
 	this.closing = true;
 	if (this.isChanged!()) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		return Window.confirm!(
 			{
 				message: get('closeUnsavedEvent')
@@ -182,7 +184,7 @@ EventEditor.listSelect = function (this: EventEditorShape, event: Event) {
 EventEditor.listPopup = function (this: EventEditorShape, event: Event) {
 	const item = event.value;
 	const selected = !!item;
-	const get = createGetter('menuEventList');
+	const get = (key: string) => t('menuEventList.' + key);
 	Menu.popup!(
 		{
 			x: event.clientX,

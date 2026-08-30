@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,11 +38,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changePassableTerrain');
 	$('#changePassableTerrain-passage')?.loadItems?.([
-		{ name: get('land') || 'Land', value: 'land' },
-		{ name: get('water') || 'Water', value: 'water' },
-		{ name: get('unrestricted') || 'Unrestricted', value: 'unrestricted' }
+		{ name: t('command.changePassableTerrain.land') || 'Land', value: 'land' },
+		{ name: t('command.changePassableTerrain.water') || 'Water', value: 'water' },
+		{
+			name: t('command.changePassableTerrain.unrestricted') || 'Unrestricted',
+			value: 'unrestricted'
+		}
 	]);
 });
 </script>

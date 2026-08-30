@@ -1,4 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
+/* oxlint-disable eslint/no-restricted-properties */
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -6,12 +6,14 @@ import { commit } from '@app/composables/useCommandSchema';
 import { Editor } from '@app/services/project/editor.ts';
 import { loadDtsFolder } from '@app/module/global.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/utils/monaco';
 import { h, reactive, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 Command.cases.script = new CommandSchema({
 	name: 'script',
@@ -327,7 +329,7 @@ const createEditor = async (): Promise<void> => {
 	document.getElementById('script-change')?.on?.('click', async () => {
 		const currentLanguage = editor!.getModel()!.getLanguageId();
 		let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		const scriptChange = document.getElementById('script-change');
 		if (scriptChange) {
 			scriptChange.name =
@@ -414,7 +416,7 @@ const save = async (): Promise<void> => {
 			script = result.res!;
 		}
 	} catch (error: unknown) {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		let continued = false;
 		return getWindowStore().confirm(
 			{
@@ -450,7 +452,7 @@ const initialize = (): void => {
 	document.getElementById('script')?.on('close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
-			const get = createGetter('confirmation');
+			const get = (key: string) => t('confirmation.' + key);
 			getWindowStore().confirm(
 				{
 					message: get('closeUnsavedScript'),

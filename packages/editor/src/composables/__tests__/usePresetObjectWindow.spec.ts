@@ -11,7 +11,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/file/file-system-core.ts', () => ({

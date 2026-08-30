@@ -4,7 +4,9 @@ import type { UIShape, UINodeShape, UIPointerEvent } from './ui-window.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { ctrl } from '@app/utils/event-accessors';
 import { dispatchChangeEvent, read, rect, write } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -103,7 +105,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 	const list = UI.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
-	const get = createGetter('menuUIList');
+	const get = (key: string) => t('menuUIList.' + key);
 	const selected = !!item;
 	const copyable = selected;
 	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');

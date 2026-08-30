@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,13 +38,21 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.controlButton');
 	$('#controlButton-operation')?.loadItems?.([
-		{ name: get('select-default') || 'Select Default Button', value: 'select-default' },
-		{ name: get('select') || 'Select Button', value: 'select' },
-		{ name: get('hover-mode') || 'Display Hover Mode', value: 'hover-mode' },
-		{ name: get('active-mode') || 'Display Active Mode', value: 'active-mode' },
-		{ name: get('normal-mode') || 'Restore Display Mode', value: 'normal-mode' }
+		{
+			name: t('command.controlButton.select-default') || 'Select Default Button',
+			value: 'select-default'
+		},
+		{ name: t('command.controlButton.select') || 'Select Button', value: 'select' },
+		{ name: t('command.controlButton.hover-mode') || 'Display Hover Mode', value: 'hover-mode' },
+		{
+			name: t('command.controlButton.active-mode') || 'Display Active Mode',
+			value: 'active-mode'
+		},
+		{
+			name: t('command.controlButton.normal-mode') || 'Restore Display Mode',
+			value: 'normal-mode'
+		}
 	]);
 	$('#controlButton-operation')
 		?.enableHiddenMode?.()

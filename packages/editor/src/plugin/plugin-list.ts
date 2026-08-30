@@ -3,7 +3,9 @@ import type { PluginItemShape, ClipboardShape } from './plugin.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { read } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { ctrl } from '@app/utils/event-accessors';
 import { Command } from '@app/commands/command-object.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -64,7 +66,7 @@ PluginManager.listPopup = function (
 	const selected = !!item;
 	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.data.plugin');
 	const deletable = selected;
-	const get = createGetter('menuPluginList');
+	const get = (key: string) => t('menuPluginList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -189,7 +191,7 @@ PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemSha
 
 // 列表 - 删除
 PluginManager.list_delete = function (this: TreeListElement, item: PluginItemShape) {
-	const get = createGetter('confirmation');
+	const get = (key: string) => t('confirmation.' + key);
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
 	Window.confirm!(
 		{

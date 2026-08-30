@@ -12,7 +12,7 @@ import { Menu } from '@app/components/menu-list.ts';
 import type { TeamData } from '@app/composables/useTeamWindow';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
@@ -26,11 +26,7 @@ vi.mock('@app/file/file-system-core.ts', () => ({
 }));
 
 vi.mock('@app/i18n', () => ({
-	t: () => '',
-	createGetter: () => (key: string) => key,
-	getLabel: () => '',
-	getTip: () => '',
-	getContent: () => ''
+	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
 vi.mock('@app/tools/color-picker-window.ts', () => ({

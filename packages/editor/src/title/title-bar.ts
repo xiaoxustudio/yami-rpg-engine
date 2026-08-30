@@ -22,9 +22,11 @@ import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { DynamicShape } from '@app/types/shapes.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
@@ -303,7 +305,7 @@ Title.reopenClosedTab = function (this: TitleShape, meta: TitleMeta) {
 
 Title.askWhetherToSave = function (this: TitleShape, callback: () => void) {
 	if (Data.manifest?.changes.length > 0) {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedProject')
@@ -685,7 +687,7 @@ Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
 	if (!item) return;
 	const items = this.data;
 	const last = items[items.length - 1];
-	const get = createGetter('menuTab');
+	const get = (key: string) => t('menuTab.' + key);
 	Menu.popup!(
 		{
 			x: event.clientX,

@@ -2,7 +2,9 @@ import { Particle } from './particle-window.ts';
 import type { ParticleShape } from './particle-window.ts';
 import { getListConfig } from '@ui-kit';
 import { Menu } from '@app/components/menu-list.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Inspector } from '@app/inspector/inspector.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { read, write } from '@app/utils/element-utils.ts';
@@ -90,7 +92,7 @@ Particle.listRecord = function (event: Event) {
 
 Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent) {
 	const item = event.value;
-	const get = createGetter('menuParticleList');
+	const get = (key: string) => t('menuParticleList.' + key);
 	let copyable;
 	let pastable;
 	let deletable;

@@ -20,9 +20,11 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { SearchString } from '@app/stores/search-string';
 import { getLocalStore } from '@app/stores/local';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { setTooltip } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 const Clipboard = GlobalClipboard;
 
@@ -55,7 +57,7 @@ const options = {
 	localize: {
 		language: () => getLocalStore().language,
 		get: (key: string) => t(key),
-		createGetter: (key: string) => createGetter(key)
+		createGetter: (key: string) => (sub: string) => t(key + '.' + sub)
 	},
 	commandSuggestion: {
 		searcher: () => CommandSuggestion.searcher

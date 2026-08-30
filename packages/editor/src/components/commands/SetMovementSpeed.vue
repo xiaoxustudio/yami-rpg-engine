@@ -37,7 +37,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -57,11 +56,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setMovementSpeed');
 	$('#setMovementSpeed-property')?.loadItems?.([
-		{ name: get('base') || 'Base Speed', value: 'base' },
-		{ name: get('factor') || 'Speed Factor', value: 'factor' },
-		{ name: get('factor-temp') || 'Speed Factor (Temp)', value: 'factor-temp' }
+		{ name: t('command.setMovementSpeed.base') || 'Base Speed', value: 'base' },
+		{ name: t('command.setMovementSpeed.factor') || 'Speed Factor', value: 'factor' },
+		{
+			name: t('command.setMovementSpeed.factor-temp') || 'Speed Factor (Temp)',
+			value: 'factor-temp'
+		}
 	]);
 	$('#setMovementSpeed-property')
 		?.enableHiddenMode?.()

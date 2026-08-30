@@ -21,7 +21,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { SceneShift } from '@app/scene/move-scene.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
@@ -117,7 +119,7 @@ Animation.listPopup = function (
 ) {
 	const list = Animation.list;
 	const item = event.value;
-	const get = createGetter('menuAnimationList');
+	const get = (key: string) => t('menuAnimationList.' + key);
 	let copyable;
 	let pastable;
 	let deletable;
@@ -329,7 +331,7 @@ Animation.layerListPopup = function (
 ) {
 	const list = Animation.layerList;
 	const item = event.value;
-	const get = createGetter('menuAnimationLayerList');
+	const get = (key: string) => t('menuAnimationLayerList.' + key);
 	let copyable;
 	let pastable;
 	let deletable;
@@ -703,7 +705,7 @@ Animation.outerTimelineListPointerup = function (
 						const pastable = Clipboard.has(`yami.animFrame.${key}`);
 						const extendable = selected || marquee.isExtendable();
 						const shrinkable = selected || marquee.isShrinkable();
-						const get = createGetter('menuAnimationTimeline');
+						const get = (key: string) => t('menuAnimationTimeline.' + key);
 						Menu.popup!(
 							{
 								x: event.clientX,

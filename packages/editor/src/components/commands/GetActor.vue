@@ -63,7 +63,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -82,10 +81,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.getActor');
 	$('#getActor-area')?.loadItems?.([
-		{ name: get('square') || 'Square', value: 'square' },
-		{ name: get('circle') || 'Circle', value: 'circle' }
+		{ name: t('command.getActor.square') || 'Square', value: 'square' },
+		{ name: t('command.getActor.circle') || 'Circle', value: 'circle' }
 	]);
 	$('#getActor-area')
 		?.enableHiddenMode?.()
@@ -108,25 +106,25 @@ onMounted(() => {
 			}
 		]);
 	$('#getActor-condition')?.loadItems?.([
-		{ name: get('condition.nearest') || 'Nearest', value: 'nearest' },
-		{ name: get('condition.farthest') || 'Farthest', value: 'farthest' },
+		{ name: t('command.getActor.condition.nearest') || 'Nearest', value: 'nearest' },
+		{ name: t('command.getActor.condition.farthest') || 'Farthest', value: 'farthest' },
 		{
-			name: get('condition.min-attribute-value') || 'Min Attribute Value',
+			name: t('command.getActor.condition.min-attribute-value') || 'Min Attribute Value',
 			value: 'min-attribute-value'
 		},
 		{
-			name: get('condition.max-attribute-value') || 'Max Attribute Value',
+			name: t('command.getActor.condition.max-attribute-value') || 'Max Attribute Value',
 			value: 'max-attribute-value'
 		},
 		{
-			name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio',
+			name: t('command.getActor.condition.min-attribute-ratio') || 'Min Attribute Ratio',
 			value: 'min-attribute-ratio'
 		},
 		{
-			name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio',
+			name: t('command.getActor.condition.max-attribute-ratio') || 'Max Attribute Ratio',
 			value: 'max-attribute-ratio'
 		},
-		{ name: get('condition.random') || 'Random', value: 'random' }
+		{ name: t('command.getActor.condition.random') || 'Random', value: 'random' }
 	]);
 	$('#getActor-condition')
 		?.enableHiddenMode?.()
@@ -141,9 +139,9 @@ onMounted(() => {
 			}
 		]);
 	$('#getActor-activation')?.loadItems?.([
-		{ name: get('active') || 'Active', value: 'active' },
-		{ name: get('inactive') || 'Inactive', value: 'inactive' },
-		{ name: get('either') || 'Either', value: 'either' }
+		{ name: t('command.getActor.active') || 'Active', value: 'active' },
+		{ name: t('command.getActor.inactive') || 'Inactive', value: 'inactive' },
+		{ name: t('command.getActor.either') || 'Either', value: 'either' }
 	]);
 	$('#getActor-exclusion')?.loadItems?.([
 		{ name: 'None', value: 'none' },

@@ -11,7 +11,7 @@ import { useSetQuantityWindow } from '@app/composables/useSetQuantityWindow';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 interface FormFrame extends HTMLElement {

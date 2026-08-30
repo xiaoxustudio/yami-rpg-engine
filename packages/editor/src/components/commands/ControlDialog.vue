@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlDialogCommandSchema } from '@app/composables/commands/useControlDialogCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,12 +38,17 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.controlDialog');
 	$('#controlDialog-operation')?.loadItems?.([
-		{ name: get('pause') || 'Pause Printing', value: 'pause' },
-		{ name: get('continue') || 'Continue Printing', value: 'continue' },
-		{ name: get('print-immediately') || 'Print Immediately', value: 'print-immediately' },
-		{ name: get('print-next-page') || 'Print Next Page', value: 'print-next-page' }
+		{ name: t('command.controlDialog.pause') || 'Pause Printing', value: 'pause' },
+		{ name: t('command.controlDialog.continue') || 'Continue Printing', value: 'continue' },
+		{
+			name: t('command.controlDialog.print-immediately') || 'Print Immediately',
+			value: 'print-immediately'
+		},
+		{
+			name: t('command.controlDialog.print-next-page') || 'Print Next Page',
+			value: 'print-next-page'
+		}
 	]);
 });
 </script>

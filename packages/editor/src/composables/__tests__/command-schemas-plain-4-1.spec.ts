@@ -22,7 +22,7 @@ import SetLanguage from '@app/components/commands/SetLanguage.vue';
 import { useSetLanguageCommandSchema } from '@app/composables/commands/useSetLanguageCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

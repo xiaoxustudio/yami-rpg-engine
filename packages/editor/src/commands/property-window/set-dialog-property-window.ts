@@ -3,7 +3,9 @@ import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 const dialogEffectRelate = [
 	{
@@ -41,7 +43,7 @@ export const DialogBoxProperty = createPropertyWindow({
 	],
 	subRelates: [{ selector: 'effect-type', cases: dialogEffectRelate }],
 	init() {
-		const get = createGetter('command.setDialogBox');
+		const get = (key: string) => t('command.setDialogBox.' + key);
 		$('#setDialogBox-property-effect-type').loadItems([
 			{ name: get('effect.none') || 'None', value: 'none' },
 			{ name: get('effect.shadow') || 'Shadow', value: 'shadow' },

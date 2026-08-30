@@ -1,4 +1,6 @@
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Window } from '@app/tools/window-object.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
@@ -64,7 +66,7 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 
 	list.delete = function (item: ListItem) {
 		if (item) {
-			const get = createGetter('confirmation');
+			const get = (key: string) => t('confirmation.' + key);
 			Window.confirm!(
 				{
 					message: get!('deleteSingleFile').replace('<filename>', item.name)

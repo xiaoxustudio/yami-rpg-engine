@@ -25,7 +25,7 @@ import { useControlButtonCommandSchema } from '@app/composables/commands/useCont
 import '@app/animation/register.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

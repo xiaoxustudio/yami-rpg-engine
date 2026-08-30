@@ -6,7 +6,9 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { reactive } from 'vue';
 
 Command.cases.transition = new CommandSchema({

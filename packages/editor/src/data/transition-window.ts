@@ -13,7 +13,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { TreeList } from '@app/components/tree-list.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { SetKey } from '@app/composables/useSetKeyWindow';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { EditorProjectShape } from '@app/stores/editor';
@@ -398,7 +400,7 @@ Easing.paste = function (this: typeof Easing, dItem?: EasingData) {
 Easing.delete = function (this: typeof Easing, item: EasingData) {
 	const items = getEasingStore().data!;
 	if (items.length > 1) {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -790,7 +792,7 @@ Easing.stopRendering = function (this: typeof Easing) {
 Easing.windowClose = function (this: typeof Easing, event: Event) {
 	if (Easing.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEasings')
@@ -903,7 +905,7 @@ Easing.listPopup = function (
 	const selected = !!item;
 	const pastable = Clipboard.has('yami.data.easing');
 	const deletable = selected && getEasingStore().data!.length > 1;
-	const get = createGetter('menuEasingList');
+	const get = (key: string) => t('menuEasingList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,

@@ -24,7 +24,7 @@ import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateC
 import SetString from '@app/components/commands/SetString.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

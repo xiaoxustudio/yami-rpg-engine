@@ -3,7 +3,9 @@ import type { ParameterShape, PluginMetaShape } from './plugin.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { clear } from '@app/utils/element-utils.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import type { TreeListElement } from '@app/components/tree-list.ts';
 
 PluginManager.checkValidate = function (
@@ -35,7 +37,7 @@ PluginManager.loadFromProject = function (this: typeof PluginManager, project: E
 PluginManager.windowClose = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedPlugins')

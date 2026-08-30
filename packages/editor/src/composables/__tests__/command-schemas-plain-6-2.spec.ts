@@ -19,7 +19,7 @@ import { useWebSocketConnectCommandSchema } from '@app/composables/commands/useW
 import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

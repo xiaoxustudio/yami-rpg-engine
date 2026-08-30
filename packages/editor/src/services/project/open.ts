@@ -8,8 +8,9 @@ import { getLazyWindow } from '@app/tools/window-registry';
 import { GameLocal } from '@app/local/local-object.ts';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Updater } from '@app/services/updater/updater.ts';
 
 const loadCluster = () => import('@app/tools/window-cluster');
@@ -41,7 +42,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 	File.updateRoot!(path);
 	this.config!.project = path;
 
-	const get = createGetter('confirmation');
+	const get = (key: string) => t('confirmation.' + key);
 
 	try {
 		const json = FS.readFileSync!(path, 'utf8');

@@ -33,7 +33,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -57,17 +56,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.moveActor');
 	$('#moveActor-mode')?.loadItems?.([
-		{ name: get('mode.stop') || 'Stop', value: 'stop' },
-		{ name: get('mode.keep') || 'Keep', value: 'keep' },
-		{ name: get('mode.straight') || 'Straight', value: 'straight' },
-		{ name: get('mode.navigate') || 'Navigate', value: 'navigate' },
+		{ name: t('command.moveActor.mode.stop') || 'Stop', value: 'stop' },
+		{ name: t('command.moveActor.mode.keep') || 'Keep', value: 'keep' },
+		{ name: t('command.moveActor.mode.straight') || 'Straight', value: 'straight' },
+		{ name: t('command.moveActor.mode.navigate') || 'Navigate', value: 'navigate' },
 		{
-			name: get('mode.navigate-bypass') || 'Navigate - Bypass Actors',
+			name: t('command.moveActor.mode.navigate-bypass') || 'Navigate - Bypass Actors',
 			value: 'navigate-bypass'
 		},
-		{ name: get('mode.teleport') || 'Teleport', value: 'teleport' }
+		{ name: t('command.moveActor.mode.teleport') || 'Teleport', value: 'teleport' }
 	]);
 	$('#moveActor-mode')
 		?.enableHiddenMode?.()

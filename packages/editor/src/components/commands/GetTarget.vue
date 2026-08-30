@@ -26,7 +26,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -41,7 +40,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.getTarget');
 	$('#getTarget-selector')?.loadItems?.([
 		{ name: 'Enemy', value: 'enemy' },
 		{ name: 'Friend', value: 'friend' },
@@ -51,26 +49,26 @@ onMounted(() => {
 		{ name: 'Any', value: 'any' }
 	]);
 	$('#getTarget-condition')?.loadItems?.([
-		{ name: get('condition.max-threat') || 'Max Threat', value: 'max-threat' },
-		{ name: get('condition.nearest') || 'Nearest', value: 'nearest' },
-		{ name: get('condition.farthest') || 'Farthest', value: 'farthest' },
+		{ name: t('command.getTarget.condition.max-threat') || 'Max Threat', value: 'max-threat' },
+		{ name: t('command.getTarget.condition.nearest') || 'Nearest', value: 'nearest' },
+		{ name: t('command.getTarget.condition.farthest') || 'Farthest', value: 'farthest' },
 		{
-			name: get('condition.min-attribute-value') || 'Min Attribute Value',
+			name: t('command.getTarget.condition.min-attribute-value') || 'Min Attribute Value',
 			value: 'min-attribute-value'
 		},
 		{
-			name: get('condition.max-attribute-value') || 'Max Attribute Value',
+			name: t('command.getTarget.condition.max-attribute-value') || 'Max Attribute Value',
 			value: 'max-attribute-value'
 		},
 		{
-			name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio',
+			name: t('command.getTarget.condition.min-attribute-ratio') || 'Min Attribute Ratio',
 			value: 'min-attribute-ratio'
 		},
 		{
-			name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio',
+			name: t('command.getTarget.condition.max-attribute-ratio') || 'Max Attribute Ratio',
 			value: 'max-attribute-ratio'
 		},
-		{ name: get('condition.random') || 'Random', value: 'random' }
+		{ name: t('command.getTarget.condition.random') || 'Random', value: 'random' }
 	]);
 	$('#getTarget-condition')
 		?.enableHiddenMode?.()

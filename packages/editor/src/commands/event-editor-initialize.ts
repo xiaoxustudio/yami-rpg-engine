@@ -10,7 +10,9 @@ import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
@@ -63,7 +65,7 @@ function bindListMethods() {
 				this.selectIndex!(index);
 			};
 			if (item.changed) {
-				const get = createGetter('confirmation');
+				const get = (key: string) => t('confirmation.' + key);
 				return Window.confirm!(
 					{
 						message: get('closeUnsavedEvent')
@@ -98,7 +100,7 @@ function bindListMethods() {
 		};
 		for (const item of items) {
 			if (item.changed) {
-				const get = createGetter('confirmation');
+				const get = (key: string) => t('confirmation.' + key);
 				return Window.confirm!(
 					{
 						message: get('closeUnsavedEvent')

@@ -10,7 +10,7 @@ import LocalVariable from '@app/components/tools/LocalVariable.vue';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('text-capture 窗口表单桥接（Vue 双向绑定迁移回归）', () => {

@@ -10,7 +10,9 @@ import { ParamHistory } from '@app/composables/useParamHistory';
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IEditableHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 interface ConditionData {
 	type: string;

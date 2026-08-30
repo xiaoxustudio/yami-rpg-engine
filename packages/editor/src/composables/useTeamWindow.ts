@@ -11,7 +11,9 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import { Data } from '@app/data/data-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import '@app/utils/number';
 import '@app/utils/object';
 import { getTeamStore } from '@app/stores/team';
@@ -231,7 +233,7 @@ function packTeams(): void {
 function windowClose(event: Event): void {
 	if (changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedTeams')
@@ -360,7 +362,7 @@ function listPopup(event: PointerEvent & { value?: TeamData | null }): void {
 	const insertable = length < maximum!;
 	const pastable = insertable && Clipboard.has('yami.data.team');
 	const deletable = selected && length > 1;
-	const get = createGetter('menuTeamList');
+	const get = (key: string) => t('menuTeamList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -473,7 +475,7 @@ function list_paste(this: TeamListElement, dItem: TeamData | null): void {
 function list_delete(this: TeamListElement, item: TeamData): void {
 	const items = this.data;
 	if (items.length > 1) {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		getWindowStore().confirm(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)

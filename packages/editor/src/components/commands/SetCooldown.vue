@@ -30,7 +30,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -51,11 +50,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setCooldown');
 	$('#setCooldown-operation')?.loadItems?.([
-		{ name: get('set') || 'Set', value: 'set' },
-		{ name: get('increase') || 'Increase', value: 'increase' },
-		{ name: get('decrease') || 'Decrease', value: 'decrease' }
+		{ name: t('command.setCooldown.set') || 'Set', value: 'set' },
+		{ name: t('command.setCooldown.increase') || 'Increase', value: 'increase' },
+		{ name: t('command.setCooldown.decrease') || 'Decrease', value: 'decrease' }
 	]);
 });
 </script>

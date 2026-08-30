@@ -54,18 +54,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import type { OverviewShape, ParameterShape, PluginMetaShape } from '@app/plugin/plugin.ts';
-import { useLocalStore } from '@app/stores/local';
+
+const { t } = useI18n();
 
 const props = withDefaults(defineProps<{ meta: PluginMetaShape | null; detailed: boolean }>(), {
 	meta: null,
 	detailed: false
 });
 
-const local = useLocalStore();
-const get = local.createGetter('plugin');
+const get = (key: string) => t('plugin.' + key);
 
 const overview = computed<OverviewShape>(() => props.meta?.overview ?? ({} as OverviewShape));
 const langMap = computed(() => props.meta?.langMap.update());

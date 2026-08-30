@@ -6,7 +6,9 @@ import { File } from '@app/file/file-system-core.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Rename } from '@app/composables/useRenameWindow';
 
 type ColorTarget = {
@@ -337,7 +339,7 @@ Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEven
 			const element = event.target as HTMLElement & { dataValue?: string };
 			const index = element.dataValue;
 			const indexedColor = Data.config.indexedColors[index];
-			const get = createGetter('menuIndexedColor');
+			const get = (key: string) => t('menuIndexedColor.' + key);
 			Menu.popup(
 				{
 					x: event.clientX,

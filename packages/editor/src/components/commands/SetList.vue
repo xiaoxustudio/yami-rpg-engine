@@ -88,7 +88,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -136,7 +135,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setList');
 	$('#setList-operation')?.loadItems?.([
 		{ name: 'Set to Empty', value: 'set-empty' },
 		{ name: 'Set Numbers', value: 'set-numbers' },
@@ -145,14 +143,32 @@ onMounted(() => {
 		{ name: 'Set Number', value: 'set-number' },
 		{ name: 'Set String', value: 'set-string' },
 		{ name: 'Set Variable', value: 'set-variable' },
-		{ name: get('split-string') || 'Split String', value: 'split-string' },
+		{
+			name: t('command.setList.split-string') || 'Split String',
+			value: 'split-string'
+		},
 		{ name: 'Push', value: 'push' },
 		{ name: 'Remove', value: 'remove' },
-		{ name: get('get-attribute-names') || 'Get Attribute Names', value: 'get-attribute-names' },
-		{ name: get('get-attribute-keys') || 'Get Attribute Keys', value: 'get-attribute-keys' },
-		{ name: get('get-enum-names') || 'Get Enumeration Names', value: 'get-enum-names' },
-		{ name: get('get-enum-values') || 'Get Enumeration Values', value: 'get-enum-values' },
-		{ name: get('get-actor-targets') || 'Get Actor Targets', value: 'get-actor-targets' }
+		{
+			name: t('command.setList.get-attribute-names') || 'Get Attribute Names',
+			value: 'get-attribute-names'
+		},
+		{
+			name: t('command.setList.get-attribute-keys') || 'Get Attribute Keys',
+			value: 'get-attribute-keys'
+		},
+		{
+			name: t('command.setList.get-enum-names') || 'Get Enumeration Names',
+			value: 'get-enum-names'
+		},
+		{
+			name: t('command.setList.get-enum-values') || 'Get Enumeration Values',
+			value: 'get-enum-values'
+		},
+		{
+			name: t('command.setList.get-actor-targets') || 'Get Actor Targets',
+			value: 'get-actor-targets'
+		}
 	]);
 	$('#setList-operation')
 		?.enableHiddenMode?.()

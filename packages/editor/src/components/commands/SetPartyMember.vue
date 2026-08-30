@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPartyMemberCommandSchema } from '@app/composables/commands/useSetPartyMemberCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,10 +38,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setPartyMember');
 	$('#setPartyMember-operation')?.loadItems?.([
-		{ name: get('add') || 'Add', value: 'add' },
-		{ name: get('remove') || 'Remove', value: 'remove' }
+		{ name: t('command.setPartyMember.add') || 'Add', value: 'add' },
+		{ name: t('command.setPartyMember.remove') || 'Remove', value: 'remove' }
 	]);
 });
 </script>

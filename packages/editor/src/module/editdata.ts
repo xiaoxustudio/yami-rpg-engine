@@ -4,7 +4,9 @@ import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { h, render } from 'vue';
 
 import { getMonaco } from '@app/utils/monaco';
@@ -61,7 +63,7 @@ export const EditDataInstance = new (class {
 		on(this.editorParent, 'close', (event: Event) => {
 			if (this.changed) {
 				event.preventDefault();
-				const get = createGetter('confirmation');
+				const get = (key: string) => t('confirmation.' + key);
 				Window.confirm!(
 					{
 						message: get('closeUnsavedData'),

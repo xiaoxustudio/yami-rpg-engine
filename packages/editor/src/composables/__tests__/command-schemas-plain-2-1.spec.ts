@@ -25,7 +25,7 @@ import DeleteObject from '@app/components/commands/DeleteObject.vue';
 import { useDeleteObjectCommandSchema } from '@app/composables/commands/useDeleteObjectCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

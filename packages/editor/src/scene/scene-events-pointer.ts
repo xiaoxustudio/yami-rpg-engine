@@ -10,7 +10,9 @@ import { FileItem } from '@app/services/file-system/file-item.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { Palette } from '@app/palette/palette.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -543,7 +545,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 		const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has(
 			'yami.scene.object'
 		);
-		const get = createGetter('menuScene');
+		const get = (key: string) => t('menuScene.' + key);
 		const menuItems: MenuItem[] = [
 			{
 				label: get('create'),

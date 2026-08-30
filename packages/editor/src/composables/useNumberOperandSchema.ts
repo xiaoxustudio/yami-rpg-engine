@@ -26,7 +26,9 @@ import { Token } from '@app/commands/token.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export interface OperandRefShape {
 	type: string;

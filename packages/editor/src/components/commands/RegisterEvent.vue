@@ -39,7 +39,6 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -67,7 +66,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.registerEvent');
 	$('#registerEvent-target')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
 		{ name: 'Actor', value: 'actor' },
@@ -80,9 +78,9 @@ onMounted(() => {
 			{ case: 'element', targets: [$('#registerEvent-element')] }
 		]);
 	$('#registerEvent-operation')?.loadItems?.([
-		{ name: get('alias.register') || 'Register', value: 'register' },
-		{ name: get('alias.unregister') || 'Unregister', value: 'unregister' },
-		{ name: get('alias.reset') || 'Reset', value: 'reset' }
+		{ name: t('command.registerEvent.alias.register') || 'Register', value: 'register' },
+		{ name: t('command.registerEvent.alias.unregister') || 'Unregister', value: 'unregister' },
+		{ name: t('command.registerEvent.alias.reset') || 'Reset', value: 'reset' }
 	]);
 });
 </script>

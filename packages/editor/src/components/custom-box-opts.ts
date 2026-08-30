@@ -21,11 +21,13 @@ import { Enum } from '@app/enum/enum-window';
 import { File } from '@app/file/file-system-core';
 import { GameLocal } from '@app/local/local-object';
 import { ImageClip } from '@app/tools/image-crop-window';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { ArrayList } from '@app/composables/useArrayWindow';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import { Variable } from '@app/variable/variable';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 interface GetterElement {
 	dataValue: unknown;

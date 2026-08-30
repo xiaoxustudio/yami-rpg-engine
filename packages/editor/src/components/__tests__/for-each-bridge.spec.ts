@@ -7,7 +7,7 @@ import { useForEachCommandSchema } from '@app/composables/commands/useForEachCom
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('forEach 窗口表单桥接（Vue 双向绑定迁移回归）', () => {

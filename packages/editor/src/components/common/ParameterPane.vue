@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { YMParameterPane } from '@ui-kit';
 import { createCheckBox as createCheckBoxElement } from '@app/components/check-box';
 import { createColorBox as createColorBoxElement } from '@app/components/color-box';
@@ -35,7 +36,6 @@ import { TypeRegistry } from '@app/components/type-registry';
 import { Select } from '@app/components/select-list';
 import { Data } from '@app/data/data-object';
 import { PluginManager } from '@app/plugin/plugin';
-import { t } from '@app/i18n';
 import { Selection } from '@app/tools/text-capture';
 import { measureText as measureTextUtil } from '@app/utils/dom';
 import { setTooltip as setTooltipUtil } from '@app/utils/element-utils';
@@ -46,6 +46,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { id: '' });
+
+const { t } = useI18n();
 
 const controls = {
 	checkBox: () => createCheckBoxElement(true),

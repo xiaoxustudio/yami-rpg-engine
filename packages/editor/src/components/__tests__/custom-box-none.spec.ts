@@ -3,7 +3,7 @@ import { customBoxOptions } from '@app/components/custom-box-opts.ts';
 
 vi.mock('@app/i18n', async (importOriginal) => {
 	const mod = await importOriginal<typeof import('@app/i18n')>();
-	return { ...mod, t: () => 'None', createGetter: () => () => 'None' };
+	return { ...mod, getYamiI18n: () => ({ global: { t: () => 'None' } }) };
 });
 
 const parse = (type: string, value: unknown): string => {

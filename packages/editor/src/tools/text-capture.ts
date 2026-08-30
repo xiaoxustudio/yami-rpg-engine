@@ -10,7 +10,9 @@ import { Menu } from '@app/components/menu-list.ts';
 import { Localization } from '@app/local/local-window.ts';
 import { Printer } from '@app/printer/printer.ts';
 import { Color } from './color-picker-window.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Variable } from '@app/variable/variable.ts';
 
 export type {
@@ -452,7 +454,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 					const pastable = !!clipText;
 					const undoable = element.history.canUndo();
 					const redoable = element.history.canRedo();
-					const get = createGetter('menuTextBox');
+					const get = (key: string) => t('menuTextBox.' + key);
 					const wrap = element.parentNode as HTMLElement;
 					const menu = wrap.getAttribute('menu') ?? 'tag';
 					const tagItems: {

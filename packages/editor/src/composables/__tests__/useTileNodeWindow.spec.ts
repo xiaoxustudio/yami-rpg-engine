@@ -10,7 +10,7 @@ import { Timer } from '@app/utils/timer';
 import '@app/utils/math';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/palette/palette.ts', () => ({

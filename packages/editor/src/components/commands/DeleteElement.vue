@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDeleteElementCommandSchema } from '@app/composables/commands/useDeleteElementCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,11 +38,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.deleteElement');
 	$('#deleteElement-operation')?.loadItems?.([
 		{ name: 'Delete Element', value: 'delete-element' },
-		{ name: get('children') || 'Delete Children', value: 'delete-children' },
-		{ name: get('all-elements') || 'Delete All', value: 'delete-all' }
+		{
+			name: t('command.deleteElement.children') || 'Delete Children',
+			value: 'delete-children'
+		},
+		{ name: t('command.deleteElement.all-elements') || 'Delete All', value: 'delete-all' }
 	]);
 	$('#deleteElement-operation')
 		?.enableHiddenMode?.()

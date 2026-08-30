@@ -12,7 +12,9 @@ import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { showInExplorerCommand } from '@app/utils/platform';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
 
@@ -311,7 +313,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		const items: MenuItem[] = [];
 		const { target: rawTarget } = event.raw;
 		const { browser, nav } = Selector.links ?? {};
-		const get = createGetter('menuFileBrowser');
+		const get = (key: string) => t('menuFileBrowser.' + key);
 		if (seek(rawTarget, 'file-body-pane') === Selector) {
 			const folders = nav?.selections ?? [];
 			if (!(browser?.display === 'normal' && (folders ?? []).length === 1)) {

@@ -23,7 +23,7 @@ import StopAudio from '@app/components/commands/StopAudio.vue';
 import { useStopAudioCommandSchema } from '@app/composables/commands/useStopAudioCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

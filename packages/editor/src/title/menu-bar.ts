@@ -45,7 +45,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Title } from './title-bar.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
 import { showInExplorerCommand } from '@app/utils/platform';
-import { createGetter, loadI18n } from '@app/i18n';
+import { getYamiI18n, loadI18n } from '@app/i18n';
 import { loadLanguageList, resolveLocalesDir } from '@app/i18n/loader';
 import { getLocalStore } from '@app/stores/local';
 import { UndoManager } from '@app/tools/undo-manager.ts';
@@ -55,6 +55,8 @@ import { UI } from '@app/ui/ui-window.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { Variable } from '@app/variable/variable.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 // ******************************** 菜单栏对象 ********************************
 
@@ -154,7 +156,7 @@ Menubar.popupFileMenu = function (this: typeof Menubar, target: HTMLElement) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = createGetter('menuFile');
+		const get = (key: string) => t('menuFile.' + key);
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -252,7 +254,7 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = createGetter('menuEdit');
+		const get = (key: string) => t('menuEdit.' + key);
 		const items = {
 			cut: {
 				label: get('cut'),
@@ -408,7 +410,7 @@ Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 		const isAnimationOpen = Scene.showAnimation;
 		const isDarkTheme = hasClass(document.documentElement, 'dark');
 		const isLightTheme = !isDarkTheme;
-		const get = createGetter('menuView');
+		const get = (key: string) => t('menuView.' + key);
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -558,7 +560,7 @@ Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = createGetter('menuWindow');
+		const get = (key: string) => t('menuWindow.' + key);
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -656,7 +658,7 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = createGetter('menuHelp');
+		const get = (key: string) => t('menuHelp.' + key);
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -729,7 +731,7 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 		addClass(target, 'selected');
 		const open = Editor.state === 'open';
 		const bounds = rect(target);
-		const get = createGetter('menuOpenYami');
+		const get = (key: string) => t('menuOpenYami.' + key);
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -871,7 +873,7 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 	}
 	const recentTabs = Editor.project!.recentTabs!;
 	const items: (MenuItem & { meta?: RecentTabMeta })[] = [];
-	const get = createGetter('menuFile');
+	const get = (key: string) => t('menuFile.' + key);
 	items.push({
 		label: get('openRecent.reopenClosedFile'),
 		enabled: !!Title.getClosedTabMeta!(),
@@ -911,7 +913,7 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 
 // 创建语言项目
 Menubar.createLanguageItems = function (this: typeof Menubar) {
-	const get = createGetter('menuView.language');
+	const get = (key: string) => t('menuView.language.' + key);
 	const autoChecked = Editor.config!.language === '';
 	const autoLabel = get('auto');
 	const items: MenuItem[] = [

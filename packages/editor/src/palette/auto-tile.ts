@@ -17,7 +17,9 @@ import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
 import { SceneShift } from '@app/scene/move-scene.ts';
 import { AutoTileEngine } from '@app/engine/palette/auto-tile-engine.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { SetQuantity } from '@app/tools/set-number-window.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { h, render } from 'vue';
@@ -206,7 +208,7 @@ AutoTile.pasteTemplate = function (this: typeof AutoTile, dItem: AutoTileTemplat
 AutoTile.deleteTemplate = function (this: typeof AutoTile, item: AutoTileTemplateData) {
 	const items = getAutoTileStore().templates;
 	if (items.length > 1) {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -453,7 +455,7 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
 	if (getAutoTileStore().changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedTiles')
@@ -543,7 +545,7 @@ AutoTile.templatesPopup = function (
 	const selected = !!item;
 	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.template');
 	const deletable = selected && getAutoTileStore().templates.length > 1;
-	const get = createGetter('menuAutoTileTemplateList');
+	const get = (key: string) => t('menuAutoTileTemplateList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -638,7 +640,7 @@ AutoTile.nodesPopup = function (
 		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.node');
 	const deletable = selected && nodes.length > 1;
 	const coverable = selected && id !== cover;
-	const get = createGetter('menuAutoTileNodeList');
+	const get = (key: string) => t('menuAutoTileNodeList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -771,7 +773,7 @@ AutoTile.framesPopup = function (
 	const pastable =
 		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.frame');
 	const deletable = selected && frames.length > 1;
-	const get = createGetter('menuAutoTileFrameList');
+	const get = (key: string) => t('menuAutoTileFrameList.' + key);
 	Menu.popup(
 		{
 			x: event.clientX,

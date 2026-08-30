@@ -37,7 +37,6 @@ import { useI18n } from 'vue-i18n';
 import { useStopEventCommandSchema } from '@app/composables/commands/useStopEventCommandSchema';
 import { $ } from '@app/utils/dom';
 import { write } from '@app/utils/element-utils';
-import { createGetter } from '@app/i18n';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -103,11 +102,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.stopEvent');
 	$('#stopEvent-type')?.loadItems?.([
-		{ name: get('current') || 'Current', value: 'current' },
+		{ name: t('command.stopEvent.current') || 'Current', value: 'current' },
 		{ name: 'Global', value: 'global' },
-		{ name: get('scene') || 'Scene', value: 'scene' },
+		{ name: t('command.stopEvent.scene') || 'Scene', value: 'scene' },
 		{ name: 'Actor', value: 'actor' },
 		{ name: 'Skill', value: 'skill' },
 		{ name: 'State', value: 'state' },

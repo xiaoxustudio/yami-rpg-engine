@@ -8,7 +8,7 @@ import { initEditorService } from '@app/services/project/init.ts';
 import { configureFileItemDisplay } from '@app/services/file-system/file-item.ts';
 import { request } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 initCommandColorBridges();
@@ -20,7 +20,7 @@ initEditorService();
 
 configureFileItemDisplay({
 	request,
-	localize: (key: string) => t(key),
+	localize: (key: string) => getYamiI18n().global.t(key),
 	confirm: (options, items) => Window.confirm!(options, items),
 	maxTexSize: () => GL.maxTexSize
 });

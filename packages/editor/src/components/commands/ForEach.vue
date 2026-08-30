@@ -52,7 +52,6 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import { on } from '@app/utils/element-utils.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -69,21 +68,23 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.forEach');
 	$('#forEach-data')
 		?.loadItems?.([
-			{ name: get('list') || 'List', value: 'list' },
-			{ name: get('skill') || 'Skill', value: 'skill' },
-			{ name: get('state') || 'State', value: 'state' },
-			{ name: get('equipment') || 'Equipment', value: 'equipment' },
-			{ name: get('inventory') || 'Inventory', value: 'inventory' },
-			{ name: get('element') || 'Element', value: 'element' },
-			{ name: get('member') || 'Party Member', value: 'member' },
-			{ name: get('attribute') || 'Attribute Key', value: 'attribute' },
-			{ name: get('enum') || 'Enumeration Value', value: 'enum' },
-			{ name: get('save') || 'Save Data', value: 'save' },
-			{ name: get('touch') || 'Touch Point', value: 'touch' },
-			{ name: get('changed-touch') || 'Changed Touch Point', value: 'changed-touch' }
+			{ name: t('command.forEach.list') || 'List', value: 'list' },
+			{ name: t('command.forEach.skill') || 'Skill', value: 'skill' },
+			{ name: t('command.forEach.state') || 'State', value: 'state' },
+			{ name: t('command.forEach.equipment') || 'Equipment', value: 'equipment' },
+			{ name: t('command.forEach.inventory') || 'Inventory', value: 'inventory' },
+			{ name: t('command.forEach.element') || 'Element', value: 'element' },
+			{ name: t('command.forEach.member') || 'Party Member', value: 'member' },
+			{ name: t('command.forEach.attribute') || 'Attribute Key', value: 'attribute' },
+			{ name: t('command.forEach.enum') || 'Enumeration Value', value: 'enum' },
+			{ name: t('command.forEach.save') || 'Save Data', value: 'save' },
+			{ name: t('command.forEach.touch') || 'Touch Point', value: 'touch' },
+			{
+				name: t('command.forEach.changed-touch') || 'Changed Touch Point',
+				value: 'changed-touch'
+			}
 		])
 		?.enableHiddenMode?.()
 		?.relate?.([

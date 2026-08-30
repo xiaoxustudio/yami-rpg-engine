@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetActiveCommandSchema } from '@app/composables/commands/useSetActiveCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,10 +38,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setActive');
 	$('#setActive-active')?.loadItems?.([
-		{ name: get('active.true') || 'Active', value: true },
-		{ name: get('active.false') || 'Inactive', value: false }
+		{ name: t('command.setActive.active.true') || 'Active', value: true },
+		{ name: t('command.setActive.active.false') || 'Inactive', value: false }
 	]);
 });
 </script>

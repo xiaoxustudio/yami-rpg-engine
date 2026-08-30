@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, getFocus } from '@app/utils/element-utils';
+import { disable, enable, getFocus, read } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Data } from '@app/data/data-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
@@ -11,10 +11,14 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from '@app/module/global.ts';
+import { isNoResource } from '@app/module/constants';
 import { getLocalStore } from '@app/stores/local';
-import { t } from '@app/i18n';
+import { Title } from '@app/title/title-bar.ts';
+import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
@@ -337,4 +341,20 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 				]
 			);
 		});
+};
+
+const newProjectConfirmOriginal = NewProject.confirm;
+
+NewProject.confirm = function (this: typeof NewProject) {
+	const template = read($('#newProject-template'));
+	const noResourceObj = isNoResource();
+	if (
+		(template == 'arpg-ts-english' && noResourceObj['arpg-ts-english'].check) ||
+		(template == 'arpg-ts-chinese' && noResourceObj['arpg-ts-chinese'].check) ||
+		template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)
+	) {
+		newProjectConfirmOriginal!.call(Title);
+	} else {
+		alert(t('confirmation.resource-not-found'));
+	}
 };

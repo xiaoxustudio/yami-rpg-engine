@@ -18,7 +18,9 @@ import {
 	setPackMeta,
 	setNoResourceObj
 } from './global.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 interface TextBoxElement extends HTMLElement {
 	input?: HTMLInputElement | null;
@@ -110,7 +112,7 @@ export const Resources = new (class {
 	getCurrentNodeInfo() {
 		const config = SettingConfig.config?.github?.accelerationNode || 'auto';
 		if (!this._fastGithubArray) return { nodeName: '', nodeUrl: '' };
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 
 		let nodeName = '';
 		let nodeUrl = '';
@@ -207,7 +209,7 @@ export const Resources = new (class {
 
 	async updateNodeInfo() {
 		const { nodeName, nodeUrl } = this.getCurrentNodeInfo();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 
 		const nodeLabel = get('resource-current-node-label') || '当前节点';
 		if (this.currentNodeText) {
@@ -341,7 +343,7 @@ export const Resources = new (class {
 	}
 
 	async checkEditorVersion() {
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		const url = `${this.fastGithubPrefix}Open-Yami-Community/yami-rpg-editor/refs/heads/main/Project/Script/module/packmeta.json`;
 		const jsonParse = await Net.get(url, {
 			headers: {
@@ -396,7 +398,7 @@ export const Resources = new (class {
 			versionString += `${i} ${PackMeta[i]} -> ${elemVersion}\n`;
 		}
 
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		if (isReOpen) {
 			Window.close!('resource');
 			if (
@@ -434,7 +436,7 @@ export const Resources = new (class {
 			// 判断目录下是否有zip文件，有则删除它节省空间
 			if (fs.existsSync(targetPath)) void fs.unlink(targetPath);
 		};
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 
 		const domPase = new DOMParser().parseFromString(
 			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
@@ -481,7 +483,7 @@ export const Resources = new (class {
 
 		this.getFileSize(val)
 			.then((size) => {
-				const get = createGetter('confirmation');
+				const get = (key: string) => t('confirmation.' + key);
 				const sizeLabel = get('resource-size-label') || '大小';
 				if (size > 0) {
 					sizeText.textContent = `${sizeLabel}: ${this.formatFileSize(size)}`;
@@ -490,7 +492,7 @@ export const Resources = new (class {
 				}
 			})
 			.catch(() => {
-				const get = createGetter('confirmation');
+				const get = (key: string) => t('confirmation.' + key);
 				const sizeLabel = get('resource-size-label') || '大小';
 				sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
 			});

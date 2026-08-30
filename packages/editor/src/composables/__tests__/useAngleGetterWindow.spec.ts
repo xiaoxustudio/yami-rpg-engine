@@ -7,7 +7,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { AngleGetter as AngleGetterController } from '@app/commands/accessors/angle-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

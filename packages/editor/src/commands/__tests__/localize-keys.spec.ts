@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyLocaleData, createGetter, t } from '@app/i18n';
+import { applyLocaleData, getYamiI18n } from '@app/i18n';
 import data from '../../../Project/Locales/zh-CN.简体中文.json';
 
 describe('localize keys', () => {
@@ -9,11 +9,10 @@ describe('localize keys', () => {
 			components: Record<string, Record<string, unknown>>;
 		};
 		applyLocaleData('zh-CN', locale);
-		const get = createGetter('command.setVideo');
-		expect(get('loop.false')).toBe('播放一次');
-		expect(get('flip.none')).toBe('无');
+		const t = (key: string) => getYamiI18n().global.t(key);
+		expect(t('command.setVideo.loop.false')).toBe('播放一次');
+		expect(t('command.setVideo.flip.none')).toBe('无');
 		expect(t('blend.normal')).toBe('正常');
-		const getImg = createGetter('command.setImage');
-		expect(getImg('display.stretch')).toBe('拉伸');
+		expect(t('command.setImage.display.stretch')).toBe('拉伸');
 	});
 });

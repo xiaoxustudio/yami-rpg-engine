@@ -29,7 +29,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -53,12 +52,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changeActorSkill');
 	$('#changeActorSkill-operation')?.loadItems?.([
-		{ name: get('add') || 'Add', value: 'add' },
-		{ name: get('remove') || 'Remove', value: 'remove' },
-		{ name: get('remove-instance') || 'Remove Instance', value: 'remove-instance' },
-		{ name: get('sort-by-order') || 'Sort by Filename', value: 'sort-by-order' }
+		{ name: t('command.changeActorSkill.add') || 'Add', value: 'add' },
+		{ name: t('command.changeActorSkill.remove') || 'Remove', value: 'remove' },
+		{
+			name: t('command.changeActorSkill.remove-instance') || 'Remove Instance',
+			value: 'remove-instance'
+		},
+		{ name: t('command.changeActorSkill.sort-by-order') || 'Sort by Filename', value: 'sort-by-order' }
 	]);
 	$('#changeActorSkill-operation')
 		?.enableHiddenMode?.()

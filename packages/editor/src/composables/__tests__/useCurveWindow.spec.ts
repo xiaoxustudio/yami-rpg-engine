@@ -7,7 +7,7 @@ import { Easing } from '@app/data/transition-window.ts';
 import { Timer } from '@app/utils/timer';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/animation/animation-window.ts', () => ({

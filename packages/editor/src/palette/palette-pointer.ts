@@ -5,7 +5,9 @@ import { File } from '@app/file/file-system-core.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Menu } from '@app/components/menu-list.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getPaletteStore } from '@app/stores/palette';
 
@@ -269,7 +271,7 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 		const copyable = existing;
 		const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.tile');
 		const deletable = existing;
-		const get = createGetter('menuTileset');
+		const get = (key: string) => t('menuTileset.' + key);
 		Menu.popup(
 			{
 				x: event.clientX,

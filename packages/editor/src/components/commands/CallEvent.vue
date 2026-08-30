@@ -42,7 +42,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCallEventCommandSchema } from '@app/composables/commands/useCallEventCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -98,11 +97,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.callEvent');
 	$('#callEvent-type')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
-		{ name: get('inherited') || 'Inherited', value: 'inherited' },
-		{ name: get('scene') || 'Scene', value: 'scene' },
+		{ name: t('command.callEvent.inherited') || 'Inherited', value: 'inherited' },
+		{ name: t('command.callEvent.scene') || 'Scene', value: 'scene' },
 		{ name: 'Actor', value: 'actor' },
 		{ name: 'Skill', value: 'skill' },
 		{ name: 'State', value: 'state' },

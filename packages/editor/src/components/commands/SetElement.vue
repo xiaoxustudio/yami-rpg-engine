@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetElementCommandSchema } from '@app/composables/commands/useSetElementCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,21 +38,26 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setElement');
 	$('#setElement-operation')?.loadItems?.([
-		{ name: get('hide') || 'Hide', value: 'hide' },
-		{ name: get('show') || 'Show', value: 'show' },
+		{ name: t('command.setElement.hide') || 'Hide', value: 'hide' },
+		{ name: t('command.setElement.show') || 'Show', value: 'show' },
 		{
-			name: get('disable-pointer-events') || 'Disable Pointer Events',
+			name: t('command.setElement.disable-pointer-events') || 'Disable Pointer Events',
 			value: 'disable-pointer-events'
 		},
 		{
-			name: get('enable-pointer-events') || 'Enable Pointer Events',
+			name: t('command.setElement.enable-pointer-events') || 'Enable Pointer Events',
 			value: 'enable-pointer-events'
 		},
-		{ name: get('skip-pointer-events') || 'Skip Pointer Events', value: 'skip-pointer-events' },
-		{ name: get('move-to-first') || 'Move to First', value: 'move-to-first' },
-		{ name: get('move-to-last') || 'Move to Last', value: 'move-to-last' }
+		{
+			name: t('command.setElement.skip-pointer-events') || 'Skip Pointer Events',
+			value: 'skip-pointer-events'
+		},
+		{
+			name: t('command.setElement.move-to-first') || 'Move to First',
+			value: 'move-to-first'
+		},
+		{ name: t('command.setElement.move-to-last') || 'Move to Last', value: 'move-to-last' }
 	]);
 });
 </script>

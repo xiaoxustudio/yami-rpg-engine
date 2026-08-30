@@ -34,7 +34,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorPortraitCommandSchema } from '@app/composables/commands/useChangeActorPortraitCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -61,11 +60,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changeActorPortrait');
 	$('#changeActorPortrait-mode')?.loadItems?.([
 		{ name: 'Full Mode', value: 'full' },
 		{ name: 'Image Mode', value: 'portrait' },
-		{ name: get('clip') || 'Clip Mode', value: 'clip' }
+		{ name: t('command.changeActorPortrait.clip') || 'Clip Mode', value: 'clip' }
 	]);
 	$('#changeActorPortrait-mode')
 		?.enableHiddenMode?.()

@@ -64,7 +64,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -99,10 +98,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.getMultipleActors');
 	$('#getMultipleActors-area')?.loadItems?.([
-		{ name: get('rectangle') || 'Rectangle', value: 'rectangle' },
-		{ name: get('circle') || 'Circle', value: 'circle' }
+		{ name: t('command.getMultipleActors.rectangle') || 'Rectangle', value: 'rectangle' },
+		{ name: t('command.getMultipleActors.circle') || 'Circle', value: 'circle' }
 	]);
 	$('#getMultipleActors-area')
 		?.enableHiddenMode?.()
@@ -128,9 +126,9 @@ onMounted(() => {
 			}
 		]);
 	$('#getMultipleActors-activation')?.loadItems?.([
-		{ name: get('active') || 'Active', value: 'active' },
-		{ name: get('inactive') || 'Inactive', value: 'inactive' },
-		{ name: get('either') || 'Either', value: 'either' }
+		{ name: t('command.getMultipleActors.active') || 'Active', value: 'active' },
+		{ name: t('command.getMultipleActors.inactive') || 'Inactive', value: 'inactive' },
+		{ name: t('command.getMultipleActors.either') || 'Either', value: 'either' }
 	]);
 	$('#getMultipleActors')?.on?.('open', function (event: Event) {
 		const items = Data.createTeamItems!();

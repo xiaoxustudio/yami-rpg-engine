@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SwitchCommandWindow from '@app/components/commands/Switch.vue';
@@ -30,15 +30,11 @@ vi.mock('@app/composables/useCommandParse.ts', () => ({
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', () => ({
-	t: () => '',
-	createGetter: () => () => '',
-	getLabel: () => '',
-	getTip: () => '',
-	getContent: () => ''
+	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
 interface ParamListElement extends HTMLElement {

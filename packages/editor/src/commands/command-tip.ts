@@ -14,7 +14,9 @@ import {
 } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { parseLocalTip } from '@app/localize/dom-localizer';
 
 export interface CommandSuggestionItem {
@@ -201,7 +203,7 @@ function bindListMethods() {
 			}
 		};
 		return function (this: CommandSuggestionList): void {
-			update(this.data as CommandSuggestionItem[], createGetter('command'));
+			update(this.data as CommandSuggestionItem[], (key: string) => t('command.' + key));
 		};
 	})();
 

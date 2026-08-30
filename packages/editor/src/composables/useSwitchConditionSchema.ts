@@ -21,7 +21,9 @@ import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 const IfCondition = useIfConditionSchema();
 import { Token } from '@app/commands/token.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export interface SwitchConditionData {
 	type:

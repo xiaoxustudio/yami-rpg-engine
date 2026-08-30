@@ -61,7 +61,6 @@ import { useI18n } from 'vue-i18n';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear, write } from '@app/utils/element-utils';
-import { createGetter } from '@app/i18n';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -108,11 +107,10 @@ watch(
 );
 
 onMounted(() => {
-	const get = createGetter('command.tintImage');
 	$('#tintImage-mode')?.loadItems?.([
-		{ name: get('full') || 'Full', value: 'full' },
-		{ name: get('rgb') || 'RGB', value: 'rgb' },
-		{ name: get('gray') || 'Gray', value: 'gray' }
+		{ name: t('command.tintImage.full') || 'Full', value: 'full' },
+		{ name: t('command.tintImage.rgb') || 'RGB', value: 'rgb' },
+		{ name: t('command.tintImage.gray') || 'Gray', value: 'gray' }
 	]);
 	$('#tintImage-mode')
 		?.enableHiddenMode?.()

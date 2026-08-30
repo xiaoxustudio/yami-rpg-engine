@@ -3,9 +3,11 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { t, tObject } from '@app/i18n';
+import { getLoadedLocaleData, getYamiI18n } from '@app/i18n';
 import { getFocus, write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 Command.cases.setLanguage = new CommandSchema({
 	name: 'setLanguage',
@@ -19,8 +21,11 @@ Command.cases.setLanguage = new CommandSchema({
 	},
 	createLanguageItems() {
 		const items = [];
-		const languages = tObject<Record<string, string>>('languages');
-		if (languages) {
+		const properties = getLoadedLocaleData(getYamiI18n().global.locale.value)?.properties as
+			| Record<string, unknown>
+			| undefined;
+		const languages = (properties?.languages ?? {}) as Record<string, string>;
+		if (Object.keys(languages).length > 0) {
 			const langList = new Set(
 				Data.config.localization.languages.map((lang: { name: string }) => lang.name)
 			);

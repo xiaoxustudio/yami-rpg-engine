@@ -22,7 +22,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -38,11 +37,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.gameData');
 	$('#gameData-operation')?.loadItems?.([
-		{ name: get('save') || 'Save', value: 'save' },
-		{ name: get('load') || 'Load', value: 'load' },
-		{ name: get('delete') || 'Delete', value: 'delete' }
+		{ name: t('command.gameData.save') || 'Save', value: 'save' },
+		{ name: t('command.gameData.load') || 'Load', value: 'load' },
+		{ name: t('command.gameData.delete') || 'Delete', value: 'delete' }
 	]);
 	$('#gameData-operation')
 		?.enableHiddenMode?.()

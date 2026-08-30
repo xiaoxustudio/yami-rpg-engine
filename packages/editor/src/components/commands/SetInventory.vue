@@ -41,7 +41,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -58,28 +57,48 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setInventory');
 	$('#setInventory-operation')?.loadItems?.([
-		{ name: get('increase-money') || 'Increase Money', value: 'increase-money' },
-		{ name: get('decrease-money') || 'Decrease Money', value: 'decrease-money' },
-		{ name: get('increase-items') || 'Increase Items', value: 'increase-items' },
-		{ name: get('decrease-items') || 'Decrease Items', value: 'decrease-items' },
-		{ name: get('gain-equipment') || 'Gain Equipment', value: 'gain-equipment' },
-		{ name: get('lose-equipment') || 'Lose Equipment', value: 'lose-equipment' },
 		{
-			name: get('gain-equipment-instance') || 'Gain Equipment',
+			name: t('command.setInventory.increase-money') || 'Increase Money',
+			value: 'increase-money'
+		},
+		{
+			name: t('command.setInventory.decrease-money') || 'Decrease Money',
+			value: 'decrease-money'
+		},
+		{
+			name: t('command.setInventory.increase-items') || 'Increase Items',
+			value: 'increase-items'
+		},
+		{
+			name: t('command.setInventory.decrease-items') || 'Decrease Items',
+			value: 'decrease-items'
+		},
+		{
+			name: t('command.setInventory.gain-equipment') || 'Gain Equipment',
+			value: 'gain-equipment'
+		},
+		{
+			name: t('command.setInventory.lose-equipment') || 'Lose Equipment',
+			value: 'lose-equipment'
+		},
+		{
+			name: t('command.setInventory.gain-equipment-instance') || 'Gain Equipment',
 			value: 'gain-equipment-instance'
 		},
 		{
-			name: get('lose-equipment-instance') || 'Lose Equipment',
+			name: t('command.setInventory.lose-equipment-instance') || 'Lose Equipment',
 			value: 'lose-equipment-instance'
 		},
-		{ name: get('swap') || 'Swap Order of Items', value: 'swap' },
-		{ name: get('sort') || 'Sort Simply', value: 'sort' },
-		{ name: get('sort-by-order') || 'Sort by Filename', value: 'sort-by-order' },
-		{ name: get('reference') || "Use Global Actor's Inventory", value: 'reference' },
-		{ name: get('dereference') || 'Restore Inventory', value: 'dereference' },
-		{ name: get('reset') || 'Reset', value: 'reset' }
+		{ name: t('command.setInventory.swap') || 'Swap Order of Items', value: 'swap' },
+		{ name: t('command.setInventory.sort') || 'Sort Simply', value: 'sort' },
+		{ name: t('command.setInventory.sort-by-order') || 'Sort by Filename', value: 'sort-by-order' },
+		{
+			name: t('command.setInventory.reference') || "Use Global Actor's Inventory",
+			value: 'reference'
+		},
+		{ name: t('command.setInventory.dereference') || 'Restore Inventory', value: 'dereference' },
+		{ name: t('command.setInventory.reset') || 'Reset', value: 'reset' }
 	]);
 	$('#setInventory-operation')
 		?.enableHiddenMode?.()

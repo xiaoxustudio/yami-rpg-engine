@@ -4,13 +4,9 @@ import { fileURLToPath } from 'node:url';
 import fsExtra from 'fs-extra';
 import nodeYauzl from 'yauzl';
 import { $ } from '@app/utils/dom';
-import { off, read } from '@app/utils/element-utils.ts';
 import { Resources } from './resource.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import { Updater } from '@app/services/updater/updater.ts';
-import { NewProject } from '@app/title/new-project-window.ts';
-import { Title } from '@app/title/title-bar.ts';
-import { t } from '@app/i18n';
 import OriginPackmeta from './packmeta.json';
 
 const GlobalPath =
@@ -87,24 +83,6 @@ window.addEventListener('localize', () => {
 	}
 	Resources.loaded = true;
 });
-
-const newProjectConfirm = $('#newProject-confirm');
-if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm!);
-export const TitleConfirmOld = NewProject.confirm;
-NewProject.confirm = function () {
-	const template = read($('#newProject-template'));
-	NoResourceObj = isNoResource();
-	if (
-		(template == 'arpg-ts-english' && NoResourceObj['arpg-ts-english'].check) ||
-		(template == 'arpg-ts-chinese' && NoResourceObj['arpg-ts-chinese'].check) ||
-		template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)
-	) {
-		TitleConfirmOld!.call(Title);
-	} else {
-		alert(t('confirmation.resource-not-found'));
-	}
-};
-if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm);
 
 export let homeElem: HTMLElement | null = null;
 

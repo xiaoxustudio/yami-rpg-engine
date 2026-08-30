@@ -3,7 +3,9 @@ import { reactive, ref } from 'vue';
 import { h, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read } from '@app/utils/element-utils';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { $ } from '@app/utils/dom';
 import { Command } from '@app/commands/command-object.ts';
 
@@ -61,7 +63,7 @@ const markChanged = (): void => {
 const onWindowClose = (event: Event): void => {
 	if (changedState.value) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedData')

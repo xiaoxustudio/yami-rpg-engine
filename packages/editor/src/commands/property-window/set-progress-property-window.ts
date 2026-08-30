@@ -1,7 +1,9 @@
 ﻿import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export const ProgressBarProperty = createPropertyWindow({
 	prefix: 'setProgressBar',
@@ -21,7 +23,7 @@ export const ProgressBarProperty = createPropertyWindow({
 		{ name: 'Color Alpha', value: 'color-3', default: 0 }
 	],
 	init() {
-		const get = createGetter('command.setProgressBar');
+		const get = (key: string) => t('command.setProgressBar.' + key);
 		$('#setProgressBar-property-display').loadItems([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.clip') || 'Clip', value: 'clip' }

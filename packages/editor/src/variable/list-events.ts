@@ -3,7 +3,9 @@ import type { MenuItem } from '@ui-kit';
 import { write } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from '@app/variable/variable.ts';
@@ -49,7 +51,7 @@ Variable.listPopup = function (
 	const pastable = Clipboard.has('yami.data.variable');
 	const undoable = Variable.history.canUndo();
 	const redoable = Variable.history.canRedo();
-	const get = createGetter('menuVariableList');
+	const get = (key: string) => t('menuVariableList.' + key);
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

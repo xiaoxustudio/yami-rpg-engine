@@ -28,7 +28,9 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@app/local/local-object.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';

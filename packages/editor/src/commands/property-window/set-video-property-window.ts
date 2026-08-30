@@ -1,7 +1,9 @@
 ﻿import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export const VideoProperty = createPropertyWindow({
 	prefix: 'setVideo',
@@ -14,7 +16,7 @@ export const VideoProperty = createPropertyWindow({
 		{ name: 'Blend', value: 'blend', default: 'normal' }
 	],
 	init() {
-		const get = createGetter('command.setVideo');
+		const get = (key: string) => t('command.setVideo.' + key);
 		$('#setVideo-property-loop').loadItems([
 			{ name: get('loop.false') || 'Once', value: false },
 			{ name: get('loop.true') || 'Loop', value: true }

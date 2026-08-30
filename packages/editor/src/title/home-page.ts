@@ -9,10 +9,12 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Title } from './title-bar.ts';
 import { showInExplorerCommand } from '@app/utils/platform';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { getHomeStore } from '@app/stores/home';
 
 import type { Dirent, Stats } from 'node:fs';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 type StatType = 'folder' | 'data' | 'script' | 'image' | 'media' | 'other';
 
@@ -205,7 +207,7 @@ Home.parseRecentProjects = function (this: typeof Home) {
 				counts.total =
 					counts.data + counts.script + counts.image + counts.media + counts.other;
 				sizes.total = sizes.data + sizes.script + sizes.image + sizes.media + sizes.other;
-				const get = createGetter('stats');
+				const get = (key: string) => t('stats.' + key);
 				const texts: string[] = [];
 				for (const { type, name } of [
 					{ type: 'data', name: get('data') },
@@ -459,7 +461,7 @@ Home.recentPointerup = function (this: typeof Home, event: Event) {
 				addClass(element, 'hover');
 				const index = parseInt(element.getAttribute('value') ?? '0');
 				const enabled = !hasClass(element, 'disabled');
-				const get = createGetter('menuRecent');
+				const get = (key: string) => t('menuRecent.' + key);
 				Menu.popup!(
 					{
 						x: event.clientX,

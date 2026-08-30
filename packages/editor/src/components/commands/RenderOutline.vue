@@ -22,7 +22,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
@@ -42,11 +41,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.renderOutline');
 	$('#renderOutline-operation')?.loadItems?.([
-		{ name: get('add') || 'Add', value: 'add' },
-		{ name: get('remove') || 'Remove', value: 'remove' },
-		{ name: get('reset') || 'Reset', value: 'reset' }
+		{ name: t('command.renderOutline.add') || 'Add', value: 'add' },
+		{ name: t('command.renderOutline.remove') || 'Remove', value: 'remove' },
+		{ name: t('command.renderOutline.reset') || 'Reset', value: 'reset' }
 	]);
 	$('#renderOutline-operation')
 		?.enableHiddenMode?.()

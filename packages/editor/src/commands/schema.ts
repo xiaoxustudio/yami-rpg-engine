@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/unbound-method */
 import { $ } from '@app/utils/dom';
 import { markRaw } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
@@ -24,7 +25,9 @@ import { TilemapGetter } from '@app/commands/accessors/tilemap-accessor-window.t
 import { TriggerGetter } from '@app/commands/accessors/trigger-accessor-window.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 interface CommandField {
 	key: string;

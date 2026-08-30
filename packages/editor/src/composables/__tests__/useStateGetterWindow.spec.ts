@@ -7,7 +7,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { StateGetter as StateGetterController } from '@app/commands/accessors/state-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

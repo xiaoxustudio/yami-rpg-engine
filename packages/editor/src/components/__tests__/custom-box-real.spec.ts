@@ -5,7 +5,7 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 
 vi.mock('@app/i18n', async (importOriginal) => {
 	const mod = await importOriginal<typeof import('@app/i18n')>();
-	return { ...mod, t: () => 'None', createGetter: () => () => 'None' };
+	return { ...mod, getYamiI18n: () => ({ global: { t: () => 'None' } }) };
 });
 
 describe('editor CustomBox 空值显示 None（真实链路）', () => {

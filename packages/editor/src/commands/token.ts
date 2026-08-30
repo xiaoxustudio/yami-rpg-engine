@@ -1,4 +1,6 @@
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import {
 	setBooleanColor,
 	setDelimiterColor,

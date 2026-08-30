@@ -1,7 +1,8 @@
 // 语言 JSON → vue-i18n messages 转换（扁平表）。
-// legacy 数据形态：properties 展平为点路径键；components 段 label/tip/content/options。
-// 关键：输出**扁平表**（完整点路径 → 字符串），避免嵌套 messages 中
-// `plugin.enum`（值）与 `plugin.enum.group`（前缀）冲突。
+// JSON 采用 vue-i18n 推荐的嵌套树写法：properties/components 两段均为嵌套对象。
+// properties 展平为点路径键；"值 vs 前缀"冲突键（既含字符串值又含子项）以 `name`
+// 子键存储字符串值，展平时提升为父级完整键（如 command.setVideo.name → command.setVideo）。
+// components 段 label/tip/content/options。
 // vue-i18n 经自定义 messageResolver 按完整键精确查询（+ legacy common fallback）。
 
 export type LocaleData = {
@@ -11,7 +12,7 @@ export type LocaleData = {
 
 export type FlatMessages = Record<string, string>;
 
-// 递归展开嵌套对象为点路径键（值限定为字符串/数字/布尔，忽略对象以避免嵌套冲突）
+// 递归展开嵌套对象为点路径键；叶子 `name` 提升为父级完整键（值限定为字符串/数字/布尔）
 function flatten(obj: unknown, prefix: string, out: Record<string, string>): void {
 	if (obj === null || typeof obj !== 'object') return;
 	for (const key of Object.keys(obj as Record<string, unknown>)) {
@@ -24,7 +25,8 @@ function flatten(obj: unknown, prefix: string, out: Record<string, string>): voi
 			typeof value === 'number' ||
 			typeof value === 'boolean'
 		) {
-			out[path] = String(value);
+			const flatKey = key === 'name' && prefix ? prefix : path;
+			out[flatKey] = String(value);
 		}
 	}
 }

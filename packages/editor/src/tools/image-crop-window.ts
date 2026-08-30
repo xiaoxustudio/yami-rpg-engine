@@ -4,7 +4,9 @@ import { $ } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/utils/doubleclick';
 import { on, hide, show, hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Path } from '@app/utils/config';
 

@@ -23,7 +23,7 @@ import SetAnimationComponent from '@app/components/commands/SetAnimationComponen
 import { Animation } from '@app/animation/animation-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 {

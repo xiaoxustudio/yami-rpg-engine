@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { createI18n, type I18n } from 'vue-i18n';
+import { createI18n, type I18nOptions } from 'vue-i18n';
 import {
 	convertLocaleData,
 	flattenProperties,
@@ -12,11 +12,9 @@ import { getLocalStore } from '@app/stores/local';
 import { Editor } from '@app/services/project/editor';
 
 // vue-i18n 唯一真源（扁平消息表）。
-// 兼容层（legacy Local.get / createGetter / store.getLabel）内部转发到此实例，
-// 使既有 1073+ 处调用零改动地消费 vue-i18n；未来迁移完成后移除兼容层即可。
+// 组件内使用 useI18n()，非组件代码使用 getYamiI18n().global.t 访问全局 Composer。
 
 let locale = 'en-US';
-let i18nLocal: I18n | null = null;
 const flatMessages: Record<string, FlatMessages> = {};
 const loadedLocaleData: Record<string, LocaleData> = {};
 let loadPromise: Promise<string> | null = null;
@@ -53,26 +51,25 @@ function resolveFlat(messages: unknown, key: string): unknown {
 	return undefined;
 }
 
-const i18n: I18n = createI18n({
+const options = {
 	legacy: false,
 	locale,
 	fallbackLocale: 'en-US',
 	missingWarn: false,
 	fallbackWarn: false,
 	messageResolver: resolveFlat as never
-});
-i18nLocal = i18n;
+} satisfies I18nOptions;
+
+const i18n = createI18n<false, typeof options>(options);
 
 // 由 legacy Local 语言加载流程调用：把语言 JSON 喂给 i18n（唯一真源）
 export function applyLocaleData(lang: string, data: LocaleData): void {
-	if (!i18nLocal?.global) return;
+	if (!i18n) return;
 	loadedLocaleData[lang] = data;
 	const messages = convertLocaleData(data);
 	flatMessages[lang] = messages;
-	(
-		i18nLocal.global as unknown as { setLocaleMessage(l: string, m: unknown): void }
-	).setLocaleMessage(lang, messages);
-	(i18nLocal.global.locale as { value: string }).value = lang;
+	i18n.global.setLocaleMessage(lang, messages);
+	i18n.global.locale.value = lang;
 	locale = lang;
 }
 
@@ -82,7 +79,7 @@ export function getLoadedLocaleData(lang: string): LocaleData | undefined {
 }
 
 // 应用初始化：注册到 App（legacy Local 加载完成后会经 applyLocaleData 填充）
-export function initYamiI18n(options?: { autoLoad?: boolean; language?: string }): I18n {
+export function initYamiI18n(options?: { autoLoad?: boolean; language?: string }) {
 	if (options?.autoLoad) {
 		loadI18n(options.language).catch(() => undefined);
 	}
@@ -109,7 +106,7 @@ export async function loadI18n(language?: string): Promise<string> {
 				applyLocaleData(entry.key, data);
 			} else {
 				// messages 已存在（如启动 autoLoad 已加载）——仍需切换 locale，否则 t() 用旧语言
-				(i18nLocal!.global.locale as { value: string }).value = entry.key;
+				i18n.global.locale.value = entry.key;
 				locale = entry.key;
 			}
 			const data = getLoadedLocaleData(key);
@@ -137,7 +134,7 @@ export async function loadI18n(language?: string): Promise<string> {
 	return promise;
 }
 
-export function getYamiI18n(): I18n {
+export function getYamiI18n() {
 	return i18n;
 }
 
@@ -153,39 +150,4 @@ export async function initI18n(): Promise<string> {
 	const menu = document.getElementById('menu');
 	if (menu) menu.classList.add('visible');
 	return language;
-}
-
-// 兼容层：legacy 旧接口转发到 i18n 真源（仅叶子字符串键；段级/对象读取请用 tObject）
-export function t(key: string): string {
-	if (!i18nLocal?.global) return key;
-	const value = (i18nLocal.global as unknown as { t: (k: string) => string }).t(key);
-	if (value && value !== key) return value;
-	return key;
-}
-
-// 兼容 createGetter：前缀 + key → t
-export function createGetter(path: string): (key: string) => string {
-	const prefix = path ? `${path}.` : '';
-	return (key: string) => t(prefix + key);
-}
-
-// 兼容嵌套对象读取：从原始语言数据读 properties 下的嵌套对象（如 tObject('languages')）
-export function tObject<T = Record<string, unknown>>(key: string): T | undefined {
-	if (!locale || !loadedLocaleData[locale]) return undefined;
-	const properties = loadedLocaleData[locale].properties as Record<string, unknown>;
-	const value = properties[key];
-	return (value as T) ?? undefined;
-}
-
-// 兼容 components 段：components.<id>.label
-export function getLabel(id: string): string {
-	return t(`components.${id}.label`);
-}
-
-export function getTip(id: string): string {
-	return t(`components.${id}.tip`);
-}
-
-export function getContent(id: string): string {
-	return t(`components.${id}.content`);
 }

@@ -9,7 +9,16 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { t, createGetter, tObject } from '@app/i18n';
+import { getLoadedLocaleData, getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
+
+function getLanguageMap(): Record<string, string> {
+	const properties = getLoadedLocaleData(getYamiI18n().global.locale.value)?.properties as
+		| Record<string, unknown>
+		| undefined;
+	return (properties?.languages ?? {}) as Record<string, string>;
+}
 import { AttributeListInterface } from '@app/tools/property-list.ts';
 import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
 import '@app/utils/object';
@@ -323,7 +332,7 @@ function stopTSC(): void {
 function windowClose(event: Event): void {
 	if (changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		getWindowStore().confirm(
 			{
 				message: get('closeUnsavedProjectSettings')
@@ -484,8 +493,8 @@ const languages: LanguagesInterface = {
 	},
 	createAllItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = tObject<Record<string, string>>('languages');
-		if (languages) {
+		const languages = getLanguageMap();
+		if (Object.keys(languages).length > 0) {
 			for (const [value, name] of Object.entries(languages)) {
 				if (value !== 'auto') {
 					items.push({ name, value });
@@ -496,8 +505,8 @@ const languages: LanguagesInterface = {
 	},
 	createValidItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = tObject<Record<string, string>>('languages');
-		if (languages) {
+		const languages = getLanguageMap();
+		if (Object.keys(languages).length > 0) {
 			const langList = new Set(
 				getProjectStore().data!.localization.languages.map(
 					(lang: { name: string }) => lang.name

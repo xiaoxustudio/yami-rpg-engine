@@ -5,8 +5,9 @@ import { Data } from '@app/data/data-object.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
+const t = (key: string) => getYamiI18n().global.t(key);
 import { IListInterface } from '@app/types/list-interface.ts';
 import { HistoryData, IEditableHistory } from '@app/types/history.ts';
 

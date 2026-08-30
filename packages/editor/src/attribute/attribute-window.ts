@@ -10,8 +10,9 @@ import { Menu } from '@app/components/menu-list.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { History } from '@app/tools/history.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
+const t = (key: string) => getYamiI18n().global.t(key);
 import { bindListClipboardMethods } from '@app/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@ui-kit';
 import { type MenuItem } from '@ui-kit';
@@ -585,7 +586,7 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 	this.list.saveScroll();
 	if (getAttributeStore().state.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedAttributes')
@@ -719,7 +720,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.attribute');
 	const undoable = (getAttributeStore().state.history as History).canUndo();
 	const redoable = (getAttributeStore().state.history as History).canRedo();
-	const get = createGetter('menuAttributeList');
+	const get = (key: string) => t('menuAttributeList.' + key);
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

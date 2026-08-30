@@ -30,7 +30,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeThreatCommandSchema } from '@app/composables/commands/useChangeThreatCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -54,10 +53,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changeThreat');
 	$('#changeThreat-operation')?.loadItems?.([
-		{ name: get('increase') || 'Increase', value: 'increase' },
-		{ name: get('decrease') || 'Decrease', value: 'decrease' }
+		{ name: t('command.changeThreat.increase') || 'Increase', value: 'increase' },
+		{ name: t('command.changeThreat.decrease') || 'Decrease', value: 'decrease' }
 	]);
 });
 </script>

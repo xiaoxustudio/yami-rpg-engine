@@ -3,7 +3,9 @@ import { Window } from '@app/tools/window-object.ts';
 import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export interface ReferenceItem {
 	type: 'comment' | 'path';
@@ -113,7 +115,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	const guidInScript = /"[0-9a-f]{16}"|'[0-9a-f]{16}'/g;
 	const guidMap = Data.manifest.guidMap;
 	const { scenePresets, uiPresets } = Data;
-	const get = createGetter('reference');
+	const get = (key: string) => t('reference.' + key);
 	let fileId = '';
 	let order = 0;
 	const resetFileId = () => {

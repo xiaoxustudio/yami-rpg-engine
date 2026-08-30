@@ -11,7 +11,7 @@ import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('electron', () => ({
@@ -24,12 +24,8 @@ vi.mock('@app/file/file-system-core.ts', () => ({
 }));
 
 vi.mock('@app/i18n', () => ({
-	t: () => '',
-	tObject: () => ({}),
-	createGetter: () => (key: string) => key,
-	getLabel: () => '',
-	getTip: () => '',
-	getContent: () => ''
+	getYamiI18n: () => ({ global: { t: () => '' } }),
+	getLoadedLocaleData: () => ({ properties: { languages: {} } })
 }));
 
 vi.mock('@app/log/log-window.ts', () => ({

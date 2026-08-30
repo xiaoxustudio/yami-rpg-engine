@@ -4,7 +4,9 @@ import { Codec } from '@app/engine/codec/codec.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Scene } from './scene-window.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';

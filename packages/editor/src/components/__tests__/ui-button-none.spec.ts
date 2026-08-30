@@ -6,12 +6,12 @@ import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', async (importOriginal) => {
 	const mod = await importOriginal<typeof import('@app/i18n')>();
-	return { ...mod, t: () => 'None', createGetter: () => () => 'None' };
+	return { ...mod, getYamiI18n: () => ({ global: { t: () => 'None' } }) };
 });
 
 describe('UIButtonPage normalImage CustomBox None 显示（真实场景）', () => {

@@ -39,7 +39,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoadImageCommandSchema } from '@app/composables/commands/useLoadImageCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -83,15 +82,17 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.loadImage');
 	$('#loadImage-type')?.loadItems?.([
-		{ name: get('actor-portrait') || 'Actor Portrait', value: 'actor-portrait' },
-		{ name: get('skill-icon') || 'Skill Icon', value: 'skill-icon' },
-		{ name: get('state-icon') || 'State Icon', value: 'state-icon' },
-		{ name: get('equipment-icon') || 'Equipment Icon', value: 'equipment-icon' },
-		{ name: get('item-icon') || 'Item Icon', value: 'item-icon' },
-		{ name: get('shortcut-icon') || 'Shortcut Icon', value: 'shortcut-icon' },
-		{ name: get('base64') || 'Base64 Image', value: 'base64' }
+		{ name: t('command.loadImage.actor-portrait') || 'Actor Portrait', value: 'actor-portrait' },
+		{ name: t('command.loadImage.skill-icon') || 'Skill Icon', value: 'skill-icon' },
+		{ name: t('command.loadImage.state-icon') || 'State Icon', value: 'state-icon' },
+		{
+			name: t('command.loadImage.equipment-icon') || 'Equipment Icon',
+			value: 'equipment-icon'
+		},
+		{ name: t('command.loadImage.item-icon') || 'Item Icon', value: 'item-icon' },
+		{ name: t('command.loadImage.shortcut-icon') || 'Shortcut Icon', value: 'shortcut-icon' },
+		{ name: t('command.loadImage.base64') || 'Base64 Image', value: 'base64' }
 	]);
 	$('#loadImage-type')
 		?.enableHiddenMode?.()

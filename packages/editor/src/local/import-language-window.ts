@@ -4,8 +4,9 @@ import { on, getFocus, read } from '@app/utils/element-utils.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Path } from '@app/utils/config';
 
 export const ImportLanguage: {
@@ -89,7 +90,7 @@ ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string
 };
 
 ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
-	const get = createGetter('confirmation');
+	const get = (key: string) => t('confirmation.' + key);
 	const filename = Path.basename!(ImportLanguage.filePath);
 	const language = read($('#importLanguage-language'));
 	const langname = t('languages.' + language);

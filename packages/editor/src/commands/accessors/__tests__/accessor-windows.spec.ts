@@ -49,7 +49,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/composables/usePresetElementWindow', () => ({

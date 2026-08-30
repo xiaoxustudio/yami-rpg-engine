@@ -9,7 +9,9 @@ import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { PluginManager } from '@app/plugin/plugin.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 const Layout = getLazyWindow('layout', () =>
 	import('@app/tools/window-cluster').then((m) => m.Layout)

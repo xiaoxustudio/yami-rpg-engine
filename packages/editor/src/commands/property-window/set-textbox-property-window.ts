@@ -2,7 +2,9 @@ import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export const TextBoxProperty = createPropertyWindow({
 	prefix: 'setTextBox',
@@ -17,7 +19,7 @@ export const TextBoxProperty = createPropertyWindow({
 		{ name: 'Color', value: 'color', default: 'ffffffff' }
 	],
 	init() {
-		const get = createGetter('command.setTextBox');
+		const get = (key: string) => t('command.setTextBox.' + key);
 		$('#setTextBox-property-type').loadItems([
 			{ name: get('type.text') || 'Text', value: 'text' },
 			{ name: get('type.number') || 'Number', value: 'number' }

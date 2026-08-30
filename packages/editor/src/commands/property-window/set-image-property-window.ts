@@ -1,7 +1,9 @@
 ﻿import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 export const ImageProperty = createPropertyWindow({
 	prefix: 'setImage',
@@ -19,7 +21,7 @@ export const ImageProperty = createPropertyWindow({
 		{ name: 'Clip Height', value: 'clip-3', default: 0 }
 	],
 	init() {
-		const get = createGetter('command.setImage');
+		const get = (key: string) => t('command.setImage.' + key);
 		$('#setImage-property-display').loadItems([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.tile') || 'Tile', value: 'tile' },

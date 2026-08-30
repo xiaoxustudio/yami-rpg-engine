@@ -88,7 +88,6 @@ import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
 import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
-import { createGetter } from '@app/i18n';
 import { Animation } from '@app/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -142,17 +141,31 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setAnimationComponent');
 	$('#setAnimationComponent-operation')?.loadItems?.([
-		{ name: get('set-angle') || 'Set Angle', value: 'set-angle' },
-		{ name: get('set-scale') || 'Set Scale', value: 'set-scale' },
-		{ name: get('set-speed') || 'Set Speed', value: 'set-speed' },
-		{ name: get('set-opacity') || 'Set Opacity', value: 'set-opacity' },
-		{ name: get('set-priority') || 'Set Priority', value: 'set-priority' },
-		{ name: get('set-offsetY') || 'Set Offset Y', value: 'set-offsetY' },
-		{ name: get('set-sprite') || 'Set Sprite', value: 'set-sprite' },
-		{ name: get('play-motion') || 'Play Motion', value: 'play-motion' },
-		{ name: get('stop-motion') || 'Stop Motion', value: 'stop-motion' }
+		{ name: t('command.setAnimationComponent.set-angle') || 'Set Angle', value: 'set-angle' },
+		{ name: t('command.setAnimationComponent.set-scale') || 'Set Scale', value: 'set-scale' },
+		{ name: t('command.setAnimationComponent.set-speed') || 'Set Speed', value: 'set-speed' },
+		{
+			name: t('command.setAnimationComponent.set-opacity') || 'Set Opacity',
+			value: 'set-opacity'
+		},
+		{
+			name: t('command.setAnimationComponent.set-priority') || 'Set Priority',
+			value: 'set-priority'
+		},
+		{
+			name: t('command.setAnimationComponent.set-offsetY') || 'Set Offset Y',
+			value: 'set-offsetY'
+		},
+		{ name: t('command.setAnimationComponent.set-sprite') || 'Set Sprite', value: 'set-sprite' },
+		{
+			name: t('command.setAnimationComponent.play-motion') || 'Play Motion',
+			value: 'play-motion'
+		},
+		{
+			name: t('command.setAnimationComponent.stop-motion') || 'Stop Motion',
+			value: 'stop-motion'
+		}
 	]);
 	$('#setAnimationComponent-operation')
 		?.enableHiddenMode?.()

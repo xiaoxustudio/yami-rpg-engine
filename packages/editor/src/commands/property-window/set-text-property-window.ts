@@ -3,7 +3,9 @@ import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 const effectRelate = [
 	{
@@ -40,7 +42,7 @@ export const TextProperty = createPropertyWindow({
 	],
 	subRelates: [{ selector: 'effect-type', cases: effectRelate }],
 	init() {
-		const get = createGetter('command.setText');
+		const get = (key: string) => t('command.setText.' + key);
 		$('#setText-property-effect-type').loadItems([
 			{ name: get('effect.none') || 'None', value: 'none' },
 			{ name: get('effect.shadow') || 'Shadow', value: 'shadow' },

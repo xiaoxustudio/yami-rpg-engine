@@ -25,7 +25,9 @@ import { ExportLanguage } from './export-language-window.ts';
 import { ImportLanguage } from './import-language-window.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { History } from '@app/tools/history.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Selection } from '@app/tools/text-capture.ts';
 import { UndoManager } from '@app/tools/undo-manager.ts';
 
@@ -500,7 +502,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 	this.list!.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedLocalization')
@@ -623,7 +625,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.localization');
 	const undoable = Localization.history!.canUndo();
 	const redoable = Localization.history!.canRedo();
-	const get = createGetter('menuLocalList');
+	const get = (key: string) => t('menuLocalList.' + key);
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

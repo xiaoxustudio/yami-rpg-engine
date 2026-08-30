@@ -119,9 +119,9 @@ const refresh = () => {
 	}));
 };
 
-const tabInternal = computed(() => local.get('menuOpenYami.update-log-tab-internal'));
-const tabCommunity = computed(() => local.get('menuOpenYami.update-log-tab-community'));
-const tabDonation = computed(() => local.get('menuOpenYami.update-log-tab-donation'));
+const tabInternal = computed(() => t('menuOpenYami.update-log-tab-internal'));
+const tabCommunity = computed(() => t('menuOpenYami.update-log-tab-community'));
+const tabDonation = computed(() => t('menuOpenYami.update-log-tab-donation'));
 
 const onTabsClick = (event: MouseEvent) => {
 	UpdateLog?.tabsClick?.(event);

@@ -6,7 +6,9 @@ import { Token } from '@app/commands/token.ts';
 import { TransformProperty } from '@app/commands/property-window/move-element-property-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 
 Command.cases.moveElement = new CommandSchema({
 	name: 'moveElement',

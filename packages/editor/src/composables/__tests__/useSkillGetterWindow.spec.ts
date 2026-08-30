@@ -8,7 +8,7 @@ import { SkillGetter as SkillGetterController } from '@app/commands/accessors/sk
 import { Enum } from '@app/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

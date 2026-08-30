@@ -4,7 +4,9 @@ import { Window } from '@app/tools/window-object.ts';
 import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { reactive } from 'vue';
 
 interface PropertyKeyConfig {
@@ -103,7 +105,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		{ key, value }: { key: string; value: unknown },
 		listData?: boolean
 	) {
-		const get = createGetter(locale);
+		const get = (key: string) => t(locale + '.' + key);
 		const name = get(key).replace('.', Token('.'));
 		let string;
 

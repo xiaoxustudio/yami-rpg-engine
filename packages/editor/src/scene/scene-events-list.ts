@@ -7,7 +7,9 @@ import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import { Palette } from '@app/palette/palette.ts';
-import { t, createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { SceneShift } from './move-scene.ts';
@@ -163,7 +165,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 	const list = Scene.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
-	const get = createGetter('menuSceneList');
+	const get = (key: string) => t('menuSceneList.' + key);
 	let copyable;
 	let pastable;
 	let deletable;

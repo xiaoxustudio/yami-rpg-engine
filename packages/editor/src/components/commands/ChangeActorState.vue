@@ -29,7 +29,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorStateCommandSchema } from '@app/composables/commands/useChangeActorStateCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -56,11 +55,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.changeActorState');
 	$('#changeActorState-operation')?.loadItems?.([
-		{ name: get('add') || 'Add', value: 'add' },
-		{ name: get('remove') || 'Remove', value: 'remove' },
-		{ name: get('remove-instance') || 'Remove Instance', value: 'remove-instance' }
+		{ name: t('command.changeActorState.add') || 'Add', value: 'add' },
+		{ name: t('command.changeActorState.remove') || 'Remove', value: 'remove' },
+		{
+			name: t('command.changeActorState.remove-instance') || 'Remove Instance',
+			value: 'remove-instance'
+		}
 	]);
 	$('#changeActorState-operation')
 		?.enableHiddenMode?.()

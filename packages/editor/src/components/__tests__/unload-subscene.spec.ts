@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import UnloadSubscene from '@app/components/commands/UnloadSubscene.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('UnloadSubscene 组件 DOM 完整性', () => {

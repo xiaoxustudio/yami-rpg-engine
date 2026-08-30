@@ -10,8 +10,9 @@ import { Menu } from '@app/components/menu-list.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { History } from '@app/tools/history.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 
+const t = (key: string) => getYamiI18n().global.t(key);
 import { bindListClipboardMethods } from '@app/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@app/components/tree-list.ts';
@@ -531,7 +532,7 @@ Enum.windowClose = function (this: typeof Enum, event: Event) {
 	this.list.saveScroll();
 	if (getEnumStore().state.changed) {
 		event.preventDefault();
-		const get = createGetter('confirmation');
+		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEnumeration')
@@ -663,7 +664,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.enumeration');
 	const undoable = getEnumStore().state.history!.canUndo();
 	const redoable = getEnumStore().state.history!.canRedo();
-	const get = createGetter('menuEnumList');
+	const get = (key: string) => t('menuEnumList.' + key);
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

@@ -16,12 +16,11 @@ import { Command } from '@app/commands/command-object.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
 
 vi.mock('@app/i18n', () => ({
-	t: (key: string) => key,
-	createGetter: () => (key: string) => key,
-	tObject: () => ({}),
-	getLabel: () => '',
-	getTip: () => '',
-	getContent: () => ''
+	getYamiI18n: () => ({
+		global: {
+			t: (key: string) => key.split('.').slice(2).join('.')
+		}
+	})
 }));
 
 vi.mock('@app/commands/token.ts', () => ({

@@ -5,7 +5,9 @@ import { Token } from '@app/commands/token.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { reactive } from 'vue';
 
 export interface ShowChoicesForm {

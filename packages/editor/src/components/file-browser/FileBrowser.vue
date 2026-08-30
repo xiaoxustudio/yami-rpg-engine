@@ -36,7 +36,7 @@ import { FileItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/services/file-system/file-item.ts';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import { createTextBoxElement as createTextBoxFactory } from '@ui-kit';
 import { setIconClip } from '@app/utils/icon-clip';
@@ -129,7 +129,8 @@ const pathUtil = {
 	basename: (p: string, ext?: string) => Path.basename(p, ext),
 	resolve: (...paths: string[]) => Path.resolve(...paths)
 };
-const localize = { createGetter: (key: string) => createGetter(key) };
+const t = (key: string) => getYamiI18n().global.t(key);
+const localize = { createGetter: (key: string) => (sub: string) => t(key + '.' + sub) };
 const fileClasses = { FileItem, FolderItem };
 const menuState = () => Menu.state;
 const dataApi = {

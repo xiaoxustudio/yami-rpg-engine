@@ -5,7 +5,9 @@ import type { TreeListElement } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { t } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { ctrl } from '@app/utils/event-accessors';
 import { show, hide } from '@app/utils/element-utils.ts';
 

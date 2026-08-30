@@ -24,7 +24,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -48,15 +47,23 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setEvent');
 	$('#setEvent-operation')?.loadItems?.([
-		{ name: get('stop-propagation') || 'Stop Propagation', value: 'stop-propagation' },
-		{ name: get('pause') || 'Pause and Save to Variable', value: 'pause' },
-		{ name: get('continue') || 'Continue and Reset Variable', value: 'continue' },
-		{ name: get('enable') || 'Enable Global Event', value: 'enable' },
-		{ name: get('disable') || 'Disable Global Event', value: 'disable' },
-		{ name: get('highest-priority') || 'Set to Highest Priority', value: 'highest-priority' },
-		{ name: get('goto-choice-branch') || 'Go to Choice Branch', value: 'goto-choice-branch' }
+		{
+			name: t('command.setEvent.stop-propagation') || 'Stop Propagation',
+			value: 'stop-propagation'
+		},
+		{ name: t('command.setEvent.pause') || 'Pause and Save to Variable', value: 'pause' },
+		{ name: t('command.setEvent.continue') || 'Continue and Reset Variable', value: 'continue' },
+		{ name: t('command.setEvent.enable') || 'Enable Global Event', value: 'enable' },
+		{ name: t('command.setEvent.disable') || 'Disable Global Event', value: 'disable' },
+		{
+			name: t('command.setEvent.highest-priority') || 'Set to Highest Priority',
+			value: 'highest-priority'
+		},
+		{
+			name: t('command.setEvent.goto-choice-branch') || 'Go to Choice Branch',
+			value: 'goto-choice-branch'
+		}
 	]);
 	$('#setEvent-operation')
 		?.enableHiddenMode?.()

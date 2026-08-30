@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetLoopCommandSchema } from '@app/composables/commands/useSetLoopCommandSchema';
 import { $ } from '@app/utils/dom';
-import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -34,15 +33,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = createGetter('command.setLoop');
 	$('#setLoop-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }
 	]);
 	$('#setLoop-loop')?.loadItems?.([
-		{ name: get('once') || 'Once', value: false },
-		{ name: get('loop') || 'Loop', value: true }
+		{ name: t('command.setLoop.once') || 'Once', value: false },
+		{ name: t('command.setLoop.loop') || 'Loop', value: true }
 	]);
 });
 </script>

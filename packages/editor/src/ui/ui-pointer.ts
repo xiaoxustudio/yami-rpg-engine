@@ -5,7 +5,9 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import { getRelativeCoords, relate } from '@app/utils/element-utils.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { ctrl } from '@app/utils/event-accessors';
-import { createGetter } from '@app/i18n';
+import { getYamiI18n } from '@app/i18n';
+
+const t = (key: string) => getYamiI18n().global.t(key);
 import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
@@ -402,7 +404,7 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	const target = getUIStore().target;
 	const selected = !!target;
 	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
-	const get = createGetter('menuUIList');
+	const get = (key: string) => t('menuUIList.' + key);
 	const items = [
 		{
 			label: get('create'),
