@@ -104,6 +104,7 @@ export const Layout: DynamicShape = {
 	updateGroups: null as ((force?: boolean) => void) | null,
 	updateGroupTabs: null as ((group: LayoutGroupElement) => void) | null,
 	updateGroupInfo: null as (() => void) | null,
+	logDiagnostics: null as ((verbose?: boolean) => void) | null,
 	mergeGroups: null as (() => void) | null,
 	setGroupSize: null as
 		| ((
@@ -199,6 +200,8 @@ Layout.initialize = function () {
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
 	this.manager?.on('switch', this.pageSwitch!);
+	(window as unknown as Record<string, unknown>).__yamiLayoutDebug = () =>
+		this.logDiagnostics!(true);
 };
 
 Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
@@ -333,6 +336,7 @@ Layout.updateGroups = (function IIFE() {
 			root.width = width;
 			root.height = height;
 			update(root, 'full', 0);
+			this.logDiagnostics!(false);
 		}
 	};
 })();
@@ -349,6 +353,122 @@ Layout.updateGroupInfo = function () {
 	for (const info of getLayoutStore().resizing.infos) {
 		const box = CSS.getDevicePixelContentBoxSize(info.manager);
 		info.textContent = `${box.width} x ${box.height}`;
+	}
+};
+
+// 调试日志：输出布局链各层级（窗口/page-frame/group/group-manager）的尺寸与定位
+// 发现溢出或定位异常时自动输出（2秒节流），也可在控制台执行 __yamiLayoutDebug() 手动全量输出
+let diagnosticsLastLogTime = 0;
+
+Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
+	const manager = this.manager as PageManagerApi | null;
+	if (manager === null) return;
+	const winW = window.innerWidth;
+	const winH = window.innerHeight;
+	const lines: string[] = [];
+	const problems: string[] = [];
+	const describe = (el: HTMLElement): string => {
+		const r = el.getBoundingClientRect();
+		const style = window.getComputedStyle(el);
+		return `rect(l:${r.left.toFixed(1)},t:${r.top.toFixed(1)},w:${r.width.toFixed(1)},h:${r.height.toFixed(1)}) position:${style.position} display:${style.display} cssHeight:${style.height}`;
+	};
+	lines.push(`window:${winW}x${winH} scrollX:${window.scrollX} scrollY:${window.scrollY}`);
+	if (window.scrollX !== 0 || window.scrollY !== 0) {
+		problems.push(
+			`页面发生滚动 scrollX:${window.scrollX} scrollY:${window.scrollY}（顶栏会被滚出视口）`
+		);
+	}
+	lines.push(`#workspace-page-manager: ${describe(manager)} scrollTop:${manager.scrollTop}`);
+	const page = manager.active as HTMLElement | null;
+	if (page === null) {
+		lines.push('active page-frame: null');
+	} else {
+		lines.push(`active page-frame[value=${page.getAttribute('value')}]: ${describe(page)}`);
+		const root = page.childNodes[0] as LayoutGroupElement | undefined;
+		if (root !== undefined && hasClass(root, 'group')) {
+			const walk = (group: LayoutGroupElement, depth: number): void => {
+				const indent = ' '.repeat(depth * 2);
+				lines.push(
+					`${indent}group: ${describe(group)} end:${group.end} split:${group.split ?? '-'}`
+				);
+				const groupManager = group.manager as PageManagerApi | undefined;
+				if (groupManager !== undefined) {
+					const gmRect = groupManager.getBoundingClientRect();
+					lines.push(
+						`${indent}  group-manager: ${describe(groupManager)} scrollTop:${groupManager.scrollTop}`
+					);
+					for (const child of Array.from(groupManager.children)) {
+						if (!hasClass(child, 'page-frame')) continue;
+						const frame = child as HTMLElement;
+						const value = frame.getAttribute('value');
+						const visible = hasClass(frame, 'visible');
+						lines.push(
+							`${indent}  page-frame[value=${value}] visible:${visible}: ${describe(frame)}`
+						);
+						if (!visible) continue;
+						const style = window.getComputedStyle(frame);
+						if (style.position === 'static') {
+							problems.push(
+								`page-frame[value=${value}] position 为 static（缺少绝对定位样式，高度由内容撑开导致溢出）`
+							);
+						}
+						const fr = frame.getBoundingClientRect();
+						if (fr.height > gmRect.height + 1) {
+							problems.push(
+								`page-frame[value=${value}] 高度 ${fr.height.toFixed(1)} 超出 group-manager 高度 ${gmRect.height.toFixed(1)}`
+							);
+						}
+						if (fr.bottom > winH + 1) {
+							problems.push(
+								`page-frame[value=${value}] 底部 ${fr.bottom.toFixed(1)} 超出窗口底部 ${winH}（溢出 ${(fr.bottom - winH).toFixed(1)}px）`
+							);
+						}
+					}
+				}
+				for (const child of Array.from(group.children)) {
+					if (hasClass(child, 'group')) {
+						walk(child as LayoutGroupElement, depth + 1);
+					}
+				}
+			};
+			walk(root, 0);
+		}
+	}
+	const browser = document.getElementById('project-browser');
+	if (browser !== null) {
+		const br = browser.getBoundingClientRect();
+		lines.push(`#project-browser: ${describe(browser)}`);
+		const fileBrowser = browser.querySelector('.file-browser') as HTMLElement | null;
+		if (fileBrowser !== null) {
+			lines.push(`#project-browser 内 .file-browser: ${describe(fileBrowser)}`);
+			const fbRect = fileBrowser.getBoundingClientRect();
+			if (fbRect.bottom > winH + 1) {
+				problems.push(
+					`.file-browser 底部 ${fbRect.bottom.toFixed(1)} 超出窗口底部 ${winH}（溢出 ${(fbRect.bottom - winH).toFixed(1)}px）`
+				);
+			}
+		}
+		if (br.bottom > winH + 1) {
+			problems.push(
+				`#project-browser 底部 ${br.bottom.toFixed(1)} 超出窗口底部 ${winH}（溢出 ${(br.bottom - winH).toFixed(1)}px）`
+			);
+		}
+	}
+	if (problems.length !== 0 || verbose === true) {
+		const now = Date.now();
+		if (verbose === true || now - diagnosticsLastLogTime >= 2000) {
+			diagnosticsLastLogTime = now;
+			/* oxlint-disable no-console */
+			console.groupCollapsed(`[LayoutDiagnostics] 发现 ${problems.length} 个问题`);
+			for (const line of lines) {
+				console.log(line);
+			}
+			for (const problem of problems) {
+				console.warn(`- ${problem}`);
+			}
+			console.groupEnd();
+			/* oxlint-enable no-console */
+		}
 	}
 };
 
@@ -583,13 +703,16 @@ Layout.getGroupOfElement = function (element: HTMLElement): LayoutGroupElement |
 };
 
 // 准备获得焦点 在获得焦点之前给群组添加ready-to-focus类来防止闪烁
+// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
 Layout.readyToFocus = function (element: HTMLElement) {
 	const group = this.getGroupOfElement!(element);
 	if (group) {
 		addClass(group, 'ready-to-focus');
 		setTimeout(() => {
 			removeClass(group, 'ready-to-focus');
-			element.focus();
+			(element as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+				preventScroll: true
+			});
 		});
 	}
 };

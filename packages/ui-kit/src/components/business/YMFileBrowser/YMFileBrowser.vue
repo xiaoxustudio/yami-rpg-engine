@@ -727,6 +727,7 @@ defineExpose({ update, searchFiles, backToParentFolder, el });
 <style module>
 :global(:where(.file-browser)) {
 	position: absolute;
+	inset: 0;
 }
 
 :global(:where(.file-browser.hide-nav-pane > .file-nav-pane)) {

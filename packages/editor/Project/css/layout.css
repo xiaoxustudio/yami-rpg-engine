@@ -499,6 +499,13 @@ body.border > .window-frame.maximized {
 	display: none !important;
 }
 
+/* 由 createPageManagerElement 创建的 DOM 版 page-manager 没有 Vue CSS Module 的定位样式
+ * 需要全局规则让 page-frame 填满 group-manager，否则高度由内容撑开导致底部溢出 */
+.page-manager > .page-frame {
+	position: absolute;
+	inset: 0;
+}
+
 /* --------------------------------
  * 选框区域
  * --------------------------------
@@ -618,6 +625,9 @@ body.maximized > #title > #title-buttons > #title-maximize::after {
 	top: 28px;
 	right: 0;
 	bottom: 0;
+	/* 覆盖 YMPageManager 模块类的 height:100%
+	 * 否则 top+height 并存时 bottom:0 失效，高度超出窗口 28px */
+	height: auto;
 	overflow: hidden;
 	border-top: var(--nav-bar-border);
 }

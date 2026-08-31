@@ -198,7 +198,9 @@ Window.restoreActiveElement = function (this: typeof Window) {
 	const store = getWindowStore();
 	if (store.activeElement) {
 		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
-		(store.activeElement as HTMLElement).focus();
+		(store.activeElement as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+			preventScroll: true
+		});
 		store.activeElement = null;
 	}
 };
