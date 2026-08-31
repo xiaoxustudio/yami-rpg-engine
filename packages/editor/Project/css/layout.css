@@ -610,7 +610,8 @@ body.border > .window-frame.maximized {
 	color: var(--window-title-color-for-mac);
 }
 
-body.maximized > #title > #title-buttons > #title-maximize::after {
+/* Vue 迁移后 #title 位于 #app 内 不再是 body 的直接子元素 需用后代选择器 */
+body.maximized #title > #title-buttons > #title-maximize::after {
 	-webkit-mask-position: 0 -200%;
 	mask-position: 0 -200%;
 }

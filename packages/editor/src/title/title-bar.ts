@@ -166,13 +166,13 @@ Title.initialize = function (this: TitleShape) {
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
-				this.windowMaximize!(event);
+				this.windowMaximize!();
 				break;
 			case 'unmaximize':
-				this.windowUnmaximize!(event);
+				this.windowUnmaximize!();
 				break;
 			case 'enter-full-screen':
-				this.windowEnterFullScreen!(event);
+				this.windowEnterFullScreen!();
 				break;
 		}
 	});
