@@ -6,7 +6,8 @@ import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { Path } from '@app/utils/config';
 
 export const ImportLanguage: {
@@ -96,9 +97,7 @@ ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 	const langname = t('languages.' + language);
 	Window.confirm!(
 		{
-			message: get('importLanguagePack')
-				.replace('<filename>', filename)
-				.replace('<langname>', langname)
+			message: t('confirmation.importLanguagePack', { filename, langname })
 		},
 		[
 			{

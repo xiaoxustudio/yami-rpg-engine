@@ -824,8 +824,10 @@ Layout.pageSwitch = function (event: EditorEvent) {
 				Home.parseRecentProjects!();
 				break;
 			case 'directory':
-				addClass(Title.tabBar, 'visible');
-				Title.tabBar.select(Title.tabBar.dirItem);
+				if (Title.tabBar) {
+					addClass(Title.tabBar, 'visible');
+					Title.tabBar.select(Title.tabBar.dirItem);
+				}
 				Layout.loadLayoutScheme!('directory');
 				break;
 			case 'scene':

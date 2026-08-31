@@ -18,7 +18,8 @@ import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 

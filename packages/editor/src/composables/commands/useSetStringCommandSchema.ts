@@ -4,7 +4,8 @@ import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';

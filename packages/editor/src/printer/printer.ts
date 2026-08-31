@@ -1361,7 +1361,7 @@ export class Printer {
 			const font = Data.config.text.fontFamily || 'sans-serif';
 			if (Printer.font !== font) {
 				Printer.updateFont();
-				for (const context of Title.tabBar.data) {
+				for (const context of Title.tabBar?.data ?? []) {
 					if (context.type === 'ui') {
 						context.fontChanged = true;
 					}

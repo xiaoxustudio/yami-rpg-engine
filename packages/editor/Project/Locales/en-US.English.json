@@ -418,8 +418,8 @@
 			"open-event": "Open Event"
 		},
 		"menuFileOnDrop": {
-			"moveTo": "Move To \"<dirName>\"",
-			"copyTo": "Copy To \"<dirName>\""
+			"moveTo": "Move To \"{dirName}\"",
+			"copyTo": "Copy To \"{dirName}\""
 		},
 		"menuFileBrowser": {
 			"openFileLocation": "Open File Location",
@@ -1050,12 +1050,12 @@
 					"has-skill-shortcut": "has Skill Shortcut",
 					"has-item-shortcut": "has Item Shortcut",
 					"equipped": "equipped",
-					"is-teammate": "is a Teammate of <actor>",
-					"is-friend": "is a Friend of <actor>",
-					"is-enemy": "is an Enemy of <actor>",
-					"is-team-member": "is a Member of <team>",
-					"is-team-friend": "is a Friend of <team>",
-					"is-team-enemy": "is an Enemy of <team>"
+					"is-teammate": "is a Teammate of {actor}",
+					"is-friend": "is a Friend of {actor}",
+					"is-enemy": "is an Enemy of {actor}",
+					"is-team-member": "is a Member of {team}",
+					"is-team-friend": "is a Friend of {team}",
+					"is-team-enemy": "is an Enemy of {team}"
 				},
 				"element": {
 					"present": "is Present",
@@ -2109,9 +2109,9 @@
 			"downloadFileData": "Download File Data"
 		},
 		"confirmation": {
-			"deleteReferencedFile": "Delete the referenced \"<filename>\" ?",
-			"deleteSingleFile": "Delete \"<filename>\" ?",
-			"deleteMultipleFiles": "Delete selected <number> files?",
+			"deleteReferencedFile": "Delete the referenced \"{filename}\" ?",
+			"deleteSingleFile": "Delete \"{filename}\" ?",
+			"deleteMultipleFiles": "Delete selected {number} files?",
 			"closeUnsavedProject": "Save changes to the project?",
 			"closeUnsavedProjectSettings": "Discard changes to project settings?",
 			"closeUnsavedVariables": "Discard changes to variables?",
@@ -2128,8 +2128,8 @@
 			"closeUnsavedScript": "Discard changes to the script?",
 			"compileError": "An error occurred while compiling, Continue?",
 			"guidConflict": "The following files have duplicate GUIDs (16-character identifiers) and cannot be referenced correctly.\nPlease ensure GUID uniqueness by deleting or renaming unused files.",
-			"oversizeImage": "The following images exceed the size limit of <size> and cannot be properly processed into textures.",
-			"importLanguagePack": "Import the contents of the \"<filename>\" file to the \"<langname>\" language pack.\nThe action cannot be undone.",
+			"oversizeImage": "The following images exceed the size limit of {size} and cannot be properly processed into textures.",
+			"importLanguagePack": "Import the contents of the \"{filename}\" file to the \"{langname}\" language pack.\nThe action cannot be undone.",
 			"enterFolderName": "Enter the folder name.",
 			"folderAlreadyExists": "The folder already exists.",
 			"versionIsTooHigh": "The project version is higher than the editor version and cannot be opened.",

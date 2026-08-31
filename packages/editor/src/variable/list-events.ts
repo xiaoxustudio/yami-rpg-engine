@@ -5,7 +5,8 @@ import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from '@app/variable/variable.ts';
@@ -41,10 +42,16 @@ Variable.listRecord = function (event: Event) {
 	}
 };
 
-Variable.listPopup = function (
-	this: HTMLElement & { createVariable: () => unknown },
-	event: Event
-) {
+Variable.listPopup = function (event: Event) {
+	const list = Variable.list as unknown as {
+		createFolder: () => unknown;
+		createVariable: () => unknown;
+		copy: (item: unknown) => void;
+		paste: (item: unknown) => void;
+		delete: (item: unknown) => void;
+		rename: (item: unknown) => void;
+		addNodeTo: (node: unknown, item: unknown) => void;
+	};
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
@@ -59,14 +66,14 @@ Variable.listPopup = function (
 				{
 					label: get('create.folder'),
 					click: () => {
-						this.addNodeTo(this.createFolder(), item);
+						list.addNodeTo(list.createFolder(), item);
 					}
 				},
 				{
 					label: get('create.variable'),
 					accelerator: 'Insert',
 					click: () => {
-						this.addNodeTo(this.createVariable(), item);
+						list.addNodeTo(list.createVariable(), item);
 					}
 				}
 			]
@@ -76,7 +83,7 @@ Variable.listPopup = function (
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -84,7 +91,7 @@ Variable.listPopup = function (
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -92,7 +99,7 @@ Variable.listPopup = function (
 			accelerator: 'Delete',
 			enabled: selected,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -100,7 +107,7 @@ Variable.listPopup = function (
 			accelerator: 'F2',
 			enabled: selected,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

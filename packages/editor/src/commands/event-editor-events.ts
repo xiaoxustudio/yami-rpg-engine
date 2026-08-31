@@ -6,7 +6,8 @@ import { ctrl } from '@app/utils/event-accessors';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { Menu } from '@app/components/menu-list.ts';
 

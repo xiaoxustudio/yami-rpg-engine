@@ -24,7 +24,8 @@ import { getYamiI18n } from '@app/i18n';
 import { setTooltip } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 const Clipboard = GlobalClipboard;
 

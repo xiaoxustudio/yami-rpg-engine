@@ -4,7 +4,8 @@ import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element
 import { setLocalElement } from '@app/localize/dom-localizer';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { getLocalStore } from '@app/stores/local';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import type { SettingOption, SettingSection } from './types.ts';

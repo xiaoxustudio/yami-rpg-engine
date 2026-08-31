@@ -11,7 +11,8 @@ import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
 import { getLoadedLocaleData, getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 function getLanguageMap(): Record<string, string> {
 	const properties = getLoadedLocaleData(getYamiI18n().global.locale.value)?.properties as

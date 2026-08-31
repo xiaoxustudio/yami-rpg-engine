@@ -14,7 +14,8 @@ import { getHomeStore } from '@app/stores/home';
 
 import type { Dirent, Stats } from 'node:fs';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 type StatType = 'folder' | 'data' | 'script' | 'image' | 'media' | 'other';
 

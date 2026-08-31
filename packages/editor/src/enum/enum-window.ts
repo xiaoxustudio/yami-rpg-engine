@@ -12,7 +12,8 @@ import { Reference } from '@app/log/related-references.ts';
 import { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { bindListClipboardMethods } from '@app/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@app/components/tree-list.ts';

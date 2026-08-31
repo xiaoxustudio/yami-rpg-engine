@@ -6,7 +6,8 @@ import { Command } from '@app/commands/command-object.ts';
 import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { h, render } from 'vue';
 
 import { getMonaco } from '@app/utils/monaco';

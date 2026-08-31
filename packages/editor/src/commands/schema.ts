@@ -27,7 +27,8 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Data } from '@app/data/data-object.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 interface CommandField {
 	key: string;

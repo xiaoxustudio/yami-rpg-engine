@@ -7,7 +7,8 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { IListInterface } from '@app/types/list-interface.ts';
 import { HistoryData, IEditableHistory } from '@app/types/history.ts';
 

@@ -13,7 +13,8 @@ import { GUID } from '@app/services/file-system/guid.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import '@app/utils/number';
 import '@app/utils/object';
 import { getTeamStore } from '@app/stores/team';
@@ -478,7 +479,7 @@ function list_delete(this: TeamListElement, item: TeamData): void {
 		const get = (key: string) => t('confirmation.' + key);
 		getWindowStore().confirm(
 			{
-				message: get('deleteSingleFile').replace('<filename>', item.name)
+				message: t('confirmation.deleteSingleFile', { filename: item.name })
 			},
 			[
 				{

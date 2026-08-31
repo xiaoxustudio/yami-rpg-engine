@@ -56,7 +56,8 @@ import { ctrl } from '@app/utils/event-accessors';
 import { Variable } from '@app/variable/variable.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 // ******************************** 菜单栏对象 ********************************
 

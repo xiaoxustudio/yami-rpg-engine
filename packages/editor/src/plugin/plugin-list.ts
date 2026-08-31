@@ -5,7 +5,8 @@ import { read } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { ctrl } from '@app/utils/event-accessors';
 import { Command } from '@app/commands/command-object.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -195,7 +196,7 @@ PluginManager.list_delete = function (this: TreeListElement, item: PluginItemSha
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
 	Window.confirm!(
 		{
-			message: get('deleteSingleFile').replace('<filename>', name)
+			message: t('confirmation.deleteSingleFile', { filename: name })
 		},
 		[
 			{

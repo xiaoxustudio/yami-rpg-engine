@@ -12,7 +12,8 @@ import { Printer } from '@app/printer/printer.ts';
 import { Color } from './color-picker-window.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { Variable } from '@app/variable/variable.ts';
 
 export type {

@@ -16,7 +16,8 @@ import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
 import { reactive } from 'vue';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
 const _moduleURL = new URL(import.meta.url);

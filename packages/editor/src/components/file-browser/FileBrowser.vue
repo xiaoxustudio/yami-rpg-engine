@@ -129,7 +129,8 @@ const pathUtil = {
 	basename: (p: string, ext?: string) => Path.basename(p, ext),
 	resolve: (...paths: string[]) => Path.resolve(...paths)
 };
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 const localize = { createGetter: (key: string) => (sub: string) => t(key + '.' + sub) };
 const fileClasses = { FileItem, FolderItem };
 const menuState = () => Menu.state;

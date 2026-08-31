@@ -231,7 +231,7 @@ UI.updateIndexedColor = function (this: UIShape, index: number) {
 };
 
 UI.updateAllTexts = function (this: UIShape) {
-	if (!Title.tabBar.data) return;
+	if (!Title.tabBar?.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
 			context.languageChanged = true;
@@ -241,7 +241,7 @@ UI.updateAllTexts = function (this: UIShape) {
 };
 
 UI.updateAllPrinters = function (this: UIShape) {
-	if (!Title.tabBar.data) return;
+	if (!Title.tabBar?.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
 			context.scalingChanged = true;

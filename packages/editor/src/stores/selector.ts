@@ -14,7 +14,8 @@ import { Reference } from '@app/log/related-references.ts';
 import { showInExplorerCommand } from '@app/utils/platform';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
 

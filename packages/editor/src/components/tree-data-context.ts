@@ -2,7 +2,8 @@
 import { getYamiI18n } from '@app/i18n';
 import { getLocalStore } from '@app/stores/local';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 export class TreeDataContext extends YMTreeDataContext {
 	constructor(data: Record<string, unknown>, keysField: string) {

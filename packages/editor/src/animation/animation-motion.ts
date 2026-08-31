@@ -30,7 +30,8 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';

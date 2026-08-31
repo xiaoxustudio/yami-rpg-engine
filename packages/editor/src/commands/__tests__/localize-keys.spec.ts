@@ -9,7 +9,8 @@ describe('localize keys', () => {
 			components: Record<string, Record<string, unknown>>;
 		};
 		applyLocaleData('zh-CN', locale);
-		const t = (key: string) => getYamiI18n().global.t(key);
+		const t = (key: string, named?: Record<string, unknown>) =>
+			getYamiI18n().global.t(key, named ?? {});
 		expect(t('command.setVideo.loop.false')).toBe('播放一次');
 		expect(t('command.setVideo.flip.none')).toBe('无');
 		expect(t('blend.normal')).toBe('正常');

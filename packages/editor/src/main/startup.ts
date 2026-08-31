@@ -20,7 +20,8 @@ initEditorService();
 
 configureFileItemDisplay({
 	request,
-	localize: (key: string) => getYamiI18n().global.t(key),
+	localize: (key: string, named?: Record<string, unknown>) =>
+		getYamiI18n().global.t(key, named ?? {}),
 	confirm: (options, items) => Window.confirm!(options, items),
 	maxTexSize: () => GL.maxTexSize
 });

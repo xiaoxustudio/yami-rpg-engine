@@ -24,7 +24,7 @@ export interface FileItemHooks {
 
 export interface FileItemDisplayHooks {
 	request: (callback: () => void) => void;
-	localize: (key: string) => string;
+	localize: (key: string, named?: Record<string, unknown>) => string;
 	confirm: (
 		options: { message?: string; close?: () => void },
 		items: Array<{ label?: string; click?: () => void }>
@@ -237,9 +237,9 @@ export class FileItem {
 			return;
 		}
 		const warnings = [
-			hooks
-				.localize('confirmation.oversizeImage')
-				.replace('<size>', hooks.maxTexSize().toString())
+			hooks.localize('confirmation.oversizeImage', {
+				size: hooks.maxTexSize().toString()
+			})
 		];
 		hooks.confirm(
 			{

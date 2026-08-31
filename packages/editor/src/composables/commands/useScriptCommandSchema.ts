@@ -13,7 +13,8 @@ import { h, reactive, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 Command.cases.script = new CommandSchema({
 	name: 'script',

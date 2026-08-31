@@ -19,7 +19,8 @@ import { SceneShift } from '@app/scene/move-scene.ts';
 import { AutoTileEngine } from '@app/engine/palette/auto-tile-engine.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { SetQuantity } from '@app/tools/set-number-window.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { h, render } from 'vue';
@@ -211,7 +212,7 @@ AutoTile.deleteTemplate = function (this: typeof AutoTile, item: AutoTileTemplat
 		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
-				message: get('deleteSingleFile').replace('<filename>', item.name)
+				message: t('confirmation.deleteSingleFile', { filename: item.name })
 			},
 			[
 				{

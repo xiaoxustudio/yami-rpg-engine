@@ -6,7 +6,8 @@ import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { ctrl } from '@app/utils/event-accessors';
 import { dispatchChangeEvent, read, rect, write } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -258,7 +259,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 			accelerator: 'F2',
 			enabled: renamable,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

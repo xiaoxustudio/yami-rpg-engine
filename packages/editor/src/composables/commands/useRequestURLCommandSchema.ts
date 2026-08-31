@@ -8,7 +8,8 @@ import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { reactive } from 'vue';
 
 export type RequestKeyValue = {

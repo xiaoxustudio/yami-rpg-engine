@@ -15,7 +15,8 @@ import { Menu } from '@app/components/menu-list.ts';
 import { TreeList } from '@app/components/tree-list.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { SetKey } from '@app/composables/useSetKeyWindow';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { EditorProjectShape } from '@app/stores/editor';
@@ -403,7 +404,7 @@ Easing.delete = function (this: typeof Easing, item: EasingData) {
 		const get = (key: string) => t('confirmation.' + key);
 		Window.confirm!(
 			{
-				message: get('deleteSingleFile').replace('<filename>', item.name)
+				message: t('confirmation.deleteSingleFile', { filename: item.name })
 			},
 			[
 				{

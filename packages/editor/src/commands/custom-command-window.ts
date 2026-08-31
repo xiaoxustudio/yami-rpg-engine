@@ -12,7 +12,8 @@ import { File } from '@app/file/file-system-core.ts';
 import { PluginManager } from '@app/plugin/plugin.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { reactive } from 'vue';
 import type { EditorProjectShape } from '@app/stores/editor';

@@ -12,7 +12,8 @@ import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';

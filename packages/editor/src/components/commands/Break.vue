@@ -14,7 +14,8 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { commandCases } from '@app/commands/command-registry.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 commandCases.break = new CommandSchema({
 	name: 'break',

@@ -4,7 +4,8 @@ import { getListConfig } from '@ui-kit';
 import { Menu } from '@app/components/menu-list.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { Inspector } from '@app/inspector/inspector.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { read, write } from '@app/utils/element-utils.ts';

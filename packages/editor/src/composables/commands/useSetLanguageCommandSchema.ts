@@ -7,7 +7,8 @@ import { getLoadedLocaleData, getYamiI18n } from '@app/i18n';
 import { getFocus, write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 Command.cases.setLanguage = new CommandSchema({
 	name: 'setLanguage',

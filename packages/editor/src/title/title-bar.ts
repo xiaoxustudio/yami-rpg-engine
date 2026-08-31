@@ -26,7 +26,8 @@ import { getYamiI18n } from '@app/i18n';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
@@ -457,6 +458,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	};
 	const items: TitleTabItem[] = [dirItem];
 	const tabBar = this.tabBar;
+	if (!tabBar) return;
 	tabBar.dirItem = dirItem;
 	const map = Data.manifest.guidMap;
 	for (const guid of openTabs) {

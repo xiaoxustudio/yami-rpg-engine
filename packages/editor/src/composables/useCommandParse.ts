@@ -8,7 +8,8 @@ import { File } from '@app/file/file-system-core.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { commandState } from './useCommandState.ts';
 import {
 	setVariableColor,

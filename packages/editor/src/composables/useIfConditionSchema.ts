@@ -30,7 +30,8 @@ import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { getFocus } from '@app/utils/element-utils.ts';
 
 export interface IfConditionTarget {
@@ -310,11 +311,11 @@ const parseActorOperation = ({
 		case 'is-teammate':
 		case 'is-friend':
 		case 'is-enemy':
-			return op.replace('<actor>', parseActor(actorTarget)!);
+			return t('command.if.actor.' + operation, { actor: parseActor(actorTarget)! });
 		case 'is-team-member':
 		case 'is-team-friend':
 		case 'is-team-enemy':
-			return op.replace('<team>', parseTeam(teamId!));
+			return t('command.if.actor.' + operation, { team: parseTeam(teamId!) });
 		default:
 			return op;
 	}

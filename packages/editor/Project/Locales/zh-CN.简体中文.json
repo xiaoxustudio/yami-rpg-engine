@@ -418,8 +418,8 @@
 			"open-event": "打开事件"
 		},
 		"menuFileOnDrop": {
-			"moveTo": "移动到 \"<dirName>\"",
-			"copyTo": "复制到 \"<dirName>\""
+			"moveTo": "移动到 \"{dirName}\"",
+			"copyTo": "复制到 \"{dirName}\""
 		},
 		"menuFileBrowser": {
 			"openFileLocation": "打开文件位置",
@@ -1050,12 +1050,12 @@
 					"has-skill-shortcut": "拥有技能快捷项",
 					"has-item-shortcut": "拥有物品快捷项",
 					"equipped": "装备了",
-					"is-teammate": "是 <actor> 的队友",
-					"is-friend": "是 <actor> 的朋友",
-					"is-enemy": "是 <actor> 的敌人",
-					"is-team-member": "是 <team> 的成员",
-					"is-team-friend": "是 <team> 的朋友",
-					"is-team-enemy": "是 <team> 的敌人"
+					"is-teammate": "是 {actor} 的队友",
+					"is-friend": "是 {actor} 的朋友",
+					"is-enemy": "是 {actor} 的敌人",
+					"is-team-member": "是 {team} 的成员",
+					"is-team-friend": "是 {team} 的朋友",
+					"is-team-enemy": "是 {team} 的敌人"
 				},
 				"element": {
 					"present": "存在",
@@ -2109,9 +2109,9 @@
 			"downloadFileData": "下载文件数据"
 		},
 		"confirmation": {
-			"deleteReferencedFile": "删除被引用的 \"<filename>\" ?",
-			"deleteSingleFile": "删除 \"<filename>\" ?",
-			"deleteMultipleFiles": "删除选中的 <number> 个文件?",
+			"deleteReferencedFile": "删除被引用的 \"{filename}\" ?",
+			"deleteSingleFile": "删除 \"{filename}\" ?",
+			"deleteMultipleFiles": "删除选中的 {number} 个文件?",
 			"closeUnsavedProject": "保存项目的更改?",
 			"closeUnsavedProjectSettings": "放弃项目设置的更改?",
 			"closeUnsavedVariables": "放弃变量的更改?",
@@ -2128,8 +2128,8 @@
 			"closeUnsavedScript": "放弃脚本的更改?",
 			"compileError": "编译时发生错误，是否继续?",
 			"guidConflict": "以下文件的GUID(16位字符)重复，无法被正确引用。\n请确保GUID的唯一性，删除或重命名用不到的文件。",
-			"oversizeImage": "以下的图像尺寸超过<size>，无法正常生成纹理。",
-			"importLanguagePack": "写入 \"<filename>\" 文件内容到 \"<langname>\" 语言包，\n此操作不可撤销。",
+			"oversizeImage": "以下的图像尺寸超过{size}，无法正常生成纹理。",
+			"importLanguagePack": "写入 \"{filename}\" 文件内容到 \"{langname}\" 语言包，\n此操作不可撤销。",
 			"enterFolderName": "输入文件夹名称",
 			"folderAlreadyExists": "文件夹已存在",
 			"versionIsTooHigh": "项目版本高于编辑器版本，无法打开",

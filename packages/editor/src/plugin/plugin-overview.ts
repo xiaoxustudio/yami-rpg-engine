@@ -7,7 +7,8 @@ import { File } from '@app/file/file-system-core.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { ctrl } from '@app/utils/event-accessors';
 import { show, hide } from '@app/utils/element-utils.ts';
 

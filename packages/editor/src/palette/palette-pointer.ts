@@ -7,7 +7,8 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Menu } from '@app/components/menu-list.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getPaletteStore } from '@app/stores/palette';
 

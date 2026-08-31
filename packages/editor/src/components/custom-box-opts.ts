@@ -27,7 +27,8 @@ import { PresetElement } from '@app/composables/usePresetElementWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import { Variable } from '@app/variable/variable';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 interface GetterElement {
 	dataValue: unknown;

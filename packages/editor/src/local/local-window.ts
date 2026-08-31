@@ -27,7 +27,8 @@ import { Reference } from '@app/log/related-references.ts';
 import { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 import { Selection } from '@app/tools/text-capture.ts';
 import { UndoManager } from '@app/tools/undo-manager.ts';
 

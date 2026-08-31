@@ -12,7 +12,8 @@ import { IEditableHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 
-const t = (key: string) => getYamiI18n().global.t(key);
+const t = (key: string, named?: Record<string, unknown>) =>
+	getYamiI18n().global.t(key, named ?? {});
 
 interface ConditionData {
 	type: string;
