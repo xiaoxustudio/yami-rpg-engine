@@ -3,7 +3,7 @@ import type { MenuItem } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { shallowRef } from 'vue';
 import { $ } from '@app/utils/dom';
-import { clear, hasClass, seek } from '@app/utils/element-utils';
+import { clear, hasClass } from '@app/utils/element-utils';
 import { getDataStore } from '@app/stores/data';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -313,9 +313,11 @@ export const useSelectorStore = defineStore('selector', () => {
 		const Directory = getDirectoryTree();
 		const items: MenuItem[] = [];
 		const { target: rawTarget } = event.raw;
+		const targetElement = rawTarget instanceof Element ? rawTarget : null;
+		const itemElement = targetElement?.closest('.file-body-item') ?? null;
 		const { browser, nav } = Selector.links ?? {};
 		const get = (key: string) => t('menuFileBrowser.' + key);
-		if (seek(rawTarget, 'file-body-pane') === Selector) {
+		if (itemElement === null && targetElement?.closest('.file-body-pane') != null) {
 			const folders = nav?.selections ?? [];
 			if (!(browser?.display === 'normal' && (folders ?? []).length === 1)) {
 				return;
@@ -327,8 +329,8 @@ export const useSelectorStore = defineStore('selector', () => {
 				}
 			});
 		} else {
-			const element = seek(rawTarget, 'file-body-item', 2);
-			if (element.tagName === 'FILE-BODY-ITEM' && hasClass(element, 'selected')) {
+			const element = itemElement as (HTMLElement & { file: unknown }) | null;
+			if (element !== null && hasClass(element, 'selected')) {
 				const { selections } = Selector ?? {};
 				const { file } = element;
 				const single = (selections ?? []).length === 1;

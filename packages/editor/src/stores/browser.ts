@@ -22,7 +22,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { $ } from '@app/utils/dom';
-import { addClass, hasClass, removeClass, seek } from '@app/utils/element-utils';
+import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
 import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -232,12 +232,14 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Directory = getDirectoryTree();
 		const items: MenuItem[] = [];
 		const { target } = event.raw;
+		const targetElement = target instanceof Element ? target : null;
+		const itemElement = targetElement?.closest('.file-body-item') ?? null;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
 		const get = (key: string) => t('menuFileBrowser.' + key);
 		const Clipboard = GlobalClipboard;
 		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;
-		if ((seek(target, 'file-body-pane') as unknown as FileBrowserInstance) === Browser) {
+		if (itemElement === null && targetElement?.closest('.file-body-pane') != null) {
 			const folders = nav?.selections ?? [];
 			if (browser?.display === 'normal' && folders.length === 1) {
 				creatable = true;
@@ -277,8 +279,8 @@ export const useBrowserStore = defineStore('browser', () => {
 				);
 			}
 		} else {
-			const element = seek(target, 'file-body-item', 2);
-			if (element.tagName === 'FILE-BODY-ITEM' && hasClass(element, 'selected')) {
+			const element = itemElement as (HTMLElement & { file?: unknown }) | null;
+			if (element !== null && hasClass(element, 'selected')) {
 				const { selections } = Browser.body ?? { selections: [] as unknown[] };
 				const { file } = element;
 				const single = (selections ?? []).length === 1;
