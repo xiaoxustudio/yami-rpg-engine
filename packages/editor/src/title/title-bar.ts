@@ -162,6 +162,7 @@ export const Title: TitleShape = {
 Title.initialize = function (this: TitleShape) {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar') as unknown as TitleTabBarShape;
+	if (this.tabBar) this.tabBar.data = [];
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
@@ -282,7 +283,8 @@ Title.getClosedTabMeta = function (this: TitleShape) {
 };
 
 Title.openTab = function (this: TitleShape, file: FileItem) {
-	const { tabBar } = this;
+	const tabBar = this.tabBar as TitleTabBarShape | null;
+	if (!tabBar) return;
 	const { meta: rawMeta, type } = file;
 	const meta = rawMeta as TitleMeta;
 	let context = tabBar.find(meta);
