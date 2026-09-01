@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="downloadFile-url" v-model="form.url" />
+			<StringVar id="downloadFile-url" v-focus v-model="form.url" />
 			<div class="text">Header</div>
 			<ParamList id="downloadFile-header" v-model="form.header" />
 			<div class="text">Method</div>
@@ -16,13 +16,18 @@
 			<div class="text">Data</div>
 			<ParamList id="downloadFile-data" v-model="form.data" />
 			<div class="text">CallBack</div>
-			<CustomBox id="downloadFile-callback" type="file" filter="event" @input="onCallback" />
+			<CustomBox
+				id="downloadFile-callback"
+				type="file"
+				filter="event"
+				v-model="form.callback"
+			/>
 			<div class="text">RateCallBack</div>
 			<CustomBox
 				id="downloadFile-rateCallback"
 				type="file"
 				filter="event"
-				@input="onRateCallback"
+				v-model="form.rateCallback"
 			/>
 			<div class="text">IsBackground</div>
 			<CheckBox
@@ -55,14 +60,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDownloadFileCommandSchema();
-
-const onCallback = (value: unknown) => {
-	form.callback = value;
-};
-
-const onRateCallback = (value: unknown) => {
-	form.rateCallback = value;
-};
 
 const onIsBackgroundInput = (value: boolean) => {
 	if (value) {

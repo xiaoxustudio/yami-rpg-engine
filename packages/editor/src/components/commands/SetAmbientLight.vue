@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Red</div>
-			<NumberVar id="setAmbientLight-red" min="0" max="255" step="5" v-model="form.red" />
+			<NumberVar id="setAmbientLight-red" v-focus min="0" max="255" step="5" v-model="form.red" />
 			<div class="text">Green</div>
 			<NumberVar id="setAmbientLight-green" min="0" max="255" step="5" v-model="form.green" />
 			<div class="text">Blue</div>

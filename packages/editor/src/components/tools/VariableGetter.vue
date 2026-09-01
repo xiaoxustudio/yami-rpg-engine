@@ -45,6 +45,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -67,7 +68,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => variableGetter.onWindowClosed());
+		on(el, 'closed', () => variableGetter.onWindowClosed());
 	}
 });
 </script>

@@ -225,7 +225,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		),
 		array: (array: unknown) => ({
 			text:
-				(array as unknown[]).length !== 0
+				array != null && (array as unknown[]).length !== 0
 					? // oxlint-disable-next-line no-base-to-string
 						(Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
 						t('common.empty'))

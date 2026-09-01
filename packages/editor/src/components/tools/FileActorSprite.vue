@@ -8,10 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
-			<SelectBox id="fileActor-sprite-id" v-model="form.id" />
+			<SelectBox id="fileActor-sprite-id" v-focus v-model="form.id" />
 			<div class="text">{{ t('components.fileActor-sprite-image.label') }}</div>
 			<CustomBox
 				id="fileActor-sprite-image"
+				v-focus
 				type="file"
 				filter="image"
 				v-model="form.image"

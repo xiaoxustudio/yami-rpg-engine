@@ -1,6 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, hide, read, show } from '@app/utils/element-utils';
+import { hide, read, show } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 import { setNumberColor, setScriptColor } from '@app/composables/useCommandColor.ts';
 import {
 	parseVariable,
@@ -432,12 +433,12 @@ const open = (
 	if (target!.start === 0) {
 		document.getElementById('setNumber-operation')!.save();
 		show(document.getElementById('setNumber-operation'));
-		getFocus(document.getElementById('setNumber-operation'));
+		requestFocus('setNumber-operation');
 		hide(document.getElementById('setNumber-operand-operation'));
 	} else {
 		hide(document.getElementById('setNumber-operation'));
 		show(document.getElementById('setNumber-operand-operation'));
-		getFocus(document.getElementById('setNumber-operand-operation'));
+		requestFocus('setNumber-operand-operation');
 	}
 
 	document
@@ -600,7 +601,7 @@ const save = (): unknown => {
 		case 'variable': {
 			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('setNumber-operand-common-variable'));
+				return requestFocus('setNumber-operand-common-variable');
 			}
 			operand = { operation, type, variable };
 			break;
@@ -611,9 +612,7 @@ const save = (): unknown => {
 				case 'round': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus(
-							document.getElementById('setNumber-operand-common-variable')
-						);
+						return requestFocus('setNumber-operand-common-variable');
 					}
 					const decimals = form.mathDecimals;
 					operand = { operation, type, method, variable, decimals };
@@ -628,9 +627,7 @@ const save = (): unknown => {
 				case 'tan': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus(
-							document.getElementById('setNumber-operand-common-variable')
-						);
+						return requestFocus('setNumber-operand-common-variable');
 					}
 					operand = { operation, type, method, variable };
 					break;
@@ -660,7 +657,7 @@ const save = (): unknown => {
 			const method = form.stringMethod;
 			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('setNumber-operand-common-variable'));
+				return requestFocus('setNumber-operand-common-variable');
 			}
 			switch (method) {
 				case 'length':
@@ -670,7 +667,7 @@ const save = (): unknown => {
 				case 'search': {
 					const search = form.stringSearch;
 					if (search === '') {
-						return getFocus(document.getElementById('setNumber-operand-string-search'));
+						return requestFocus('setNumber-operand-string-search');
 					}
 					operand = { operation, type, method, variable, search };
 					break;
@@ -711,7 +708,7 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const itemId = form.objectItemId;
 					if (itemId === '') {
-						return getFocus(document.getElementById('setNumber-operand-object-itemId'));
+						return requestFocus('setNumber-operand-object-itemId');
 					}
 					operand = { operation, type, property, actor, itemId };
 					break;
@@ -720,9 +717,7 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const equipmentId = form.objectEquipmentId;
 					if (equipmentId === '') {
-						return getFocus(
-							document.getElementById('setNumber-operand-object-equipmentId')
-						);
+						return requestFocus('setNumber-operand-object-equipmentId');
 					}
 					operand = { operation, type, property, actor, equipmentId };
 					break;
@@ -733,7 +728,7 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const key = form.cooldownKey;
 					if (key === '') {
-						return getFocus(document.getElementById('setNumber-operand-cooldown-key'));
+						return requestFocus('setNumber-operand-cooldown-key');
 					}
 					operand = { operation, type, property, actor, key };
 					break;
@@ -790,9 +785,7 @@ const save = (): unknown => {
 				case 'list-length': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus(
-							document.getElementById('setNumber-operand-common-variable')
-						);
+						return requestFocus('setNumber-operand-common-variable');
 					}
 					operand = { operation, type, property, variable };
 					break;
@@ -810,7 +803,7 @@ const save = (): unknown => {
 			const variable = form.commonVariable;
 			const index = form.listIndex;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('setNumber-operand-common-variable'));
+				return requestFocus('setNumber-operand-common-variable');
 			}
 			operand = { operation, type, variable, index };
 			break;
@@ -818,7 +811,7 @@ const save = (): unknown => {
 		case 'parameter': {
 			const key = form.parameterKey;
 			if (key === '') {
-				return getFocus(document.getElementById('setNumber-operand-parameter-key'));
+				return requestFocus('setNumber-operand-parameter-key');
 			}
 			operand = { operation, type, key };
 			break;
@@ -826,7 +819,7 @@ const save = (): unknown => {
 		case 'script': {
 			const script = form.script!.trim();
 			if (script === '') {
-				return getFocus(document.getElementById('setNumber-operand-script'));
+				return requestFocus('setNumber-operand-script');
 			}
 			operand = { operation, type, script };
 			break;

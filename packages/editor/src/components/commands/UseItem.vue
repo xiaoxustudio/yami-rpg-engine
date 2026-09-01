@@ -8,15 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="useItem-actor" type="actor" @input="onActor" />
+			<CustomBox id="useItem-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="useItem-mode" v-model="form.mode" />
 			<div class="text">Shortcut Key</div>
-			<SelectBox id="useItem-key" v-model="form.key" />
+			<SelectBox id="useItem-key" v-focus v-model="form.key" />
 			<div class="text">Item</div>
-			<CustomBox id="useItem-itemId" type="file" filter="item" @input="onItemId" />
+			<CustomBox
+				id="useItem-itemId"
+				v-focus
+				type="file"
+				filter="item"
+				v-model="form.itemId"
+			/>
 			<div class="text">Item</div>
-			<CustomBox id="useItem-item" type="item" @input="onItem" />
+			<CustomBox id="useItem-item" type="item" v-model="form.item" />
 			<div class="text">Wait</div>
 			<SelectBox id="useItem-wait" name="wait" v-model="form.wait" />
 		</div>
@@ -36,18 +42,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useUseItemCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onItemId = (value: unknown) => {
-	form.itemId = value;
-};
-
-const onItem = (value: unknown) => {
-	form.item = value;
-};
 
 const onConfirm = () => {
 	save();

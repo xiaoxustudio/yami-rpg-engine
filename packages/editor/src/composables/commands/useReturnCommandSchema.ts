@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -98,7 +98,7 @@ Command.cases.return = new CommandSchema({
 });
 
 export function useReturnCommandSchema() {
-	const { form, load, commit } = useCommandSchema('return');
+	const { form, load, commit } = useCommandSchema('return', { skipWrite: true });
 	const loadTypeItems = (type: string): void => {
 		const items = Command.cases.return.typeItems;
 		document.getElementById('return-type')?.loadItems?.([items[type] ?? items.none]);
@@ -123,88 +123,55 @@ export function useReturnCommandSchema() {
 			light: type === 'light' && value !== null ? value : { type: 'trigger' },
 			element: type === 'element' && value !== null ? value : { type: 'trigger' }
 		});
-		getFocus(document.getElementById('return-type'));
+		requestFocus('return-type');
 	};
 	const onSave = (): void => {
-		const type = read(document.getElementById('return-type')) ?? form.type;
+		const type = form.type as string;
 		switch (type) {
 			case 'none':
 				commit({ type });
 				break;
 			case 'boolean':
-				commit({
-					type,
-					value: read(document.getElementById('return-boolean')) ?? form.boolean
-				});
+				commit({ type, value: form.boolean });
 				break;
 			case 'number':
-				commit({
-					type,
-					value: read(document.getElementById('return-number')) ?? form.number
-				});
+				commit({ type, value: form.number });
 				break;
 			case 'string':
-				commit({
-					type,
-					value: read(document.getElementById('return-string')) ?? form.string
-				});
+				commit({ type, value: form.string });
 				break;
 			case 'object': {
-				const variable = read(document.getElementById('return-object')) ?? form.object;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('return-object'));
+				const variable = form.object;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('return-object');
 					return;
 				}
 				commit({ type, value: variable });
 				break;
 			}
 			case 'actor':
-				commit({
-					type,
-					value: read(document.getElementById('return-actor')) ?? form.actor
-				});
+				commit({ type, value: form.actor });
 				break;
 			case 'skill':
-				commit({
-					type,
-					value: read(document.getElementById('return-skill')) ?? form.skill
-				});
+				commit({ type, value: form.skill });
 				break;
 			case 'state':
-				commit({
-					type,
-					value: read(document.getElementById('return-state')) ?? form.state
-				});
+				commit({ type, value: form.state });
 				break;
 			case 'equipment':
-				commit({
-					type,
-					value: read(document.getElementById('return-equipment')) ?? form.equipment
-				});
+				commit({ type, value: form.equipment });
 				break;
 			case 'item':
-				commit({
-					type,
-					value: read(document.getElementById('return-item')) ?? form.item
-				});
+				commit({ type, value: form.item });
 				break;
 			case 'trigger':
-				commit({
-					type,
-					value: read(document.getElementById('return-trigger')) ?? form.trigger
-				});
+				commit({ type, value: form.trigger });
 				break;
 			case 'light':
-				commit({
-					type,
-					value: read(document.getElementById('return-light')) ?? form.light
-				});
+				commit({ type, value: form.light });
 				break;
 			case 'element':
-				commit({
-					type,
-					value: read(document.getElementById('return-element')) ?? form.element
-				});
+				commit({ type, value: form.element });
 				break;
 		}
 	};

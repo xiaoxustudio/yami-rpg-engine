@@ -8,12 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="removeAnimationComponent-actor" type="actor" @input="onActor" />
+			<CustomBox
+				id="removeAnimationComponent-actor"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">Animation</div>
 			<CustomBox
 				id="removeAnimationComponent-animationId"
 				type="file"
 				filter="animation"
+				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
@@ -33,10 +39,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useRemoveAnimationComponentCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

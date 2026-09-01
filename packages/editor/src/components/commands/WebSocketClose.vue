@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">ID</div>
-			<StringVar id="webSocketClose-id" v-model="form.id" />
+			<StringVar id="webSocketClose-id" v-focus v-model="form.id" />
 			<div class="text">Code</div>
 			<NumberBox id="webSocketClose-code" min="1000" max="4999" v-model="form.code" />
 			<div class="text">Reason</div>

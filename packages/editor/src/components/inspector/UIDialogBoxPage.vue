@@ -25,8 +25,15 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiDialogBox-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiDialogBox-size-box">
-				<SliderBox id="uiDialogBox-size-slider" min="12" max="52" step="2"></SliderBox>
+				<SliderBox
+					ref="elSizeSlider"
+					id="uiDialogBox-size-slider"
+					min="12"
+					max="52"
+					step="2"
+				></SliderBox>
 				<NumberBox
+					ref="elSize"
 					id="uiDialogBox-size"
 					v-model="form.size"
 					min="10"
@@ -41,12 +48,14 @@
 			</div>
 			<div class="flex-box" id="uiDialogBox-lineSpacing-box">
 				<SliderBox
+					ref="elLineSpacingSlider"
 					id="uiDialogBox-lineSpacing-slider"
 					min="0"
 					max="20"
 					step="1"
 				></SliderBox>
 				<NumberBox
+					ref="elLineSpacing"
 					id="uiDialogBox-lineSpacing"
 					v-model="form.lineSpacing"
 					min="-10"
@@ -61,12 +70,14 @@
 			</div>
 			<div class="flex-box" id="uiDialogBox-letterSpacing-box">
 				<SliderBox
+					ref="elLetterSpacingSlider"
 					id="uiDialogBox-letterSpacing-slider"
 					min="0"
 					max="20"
 					step="1"
 				></SliderBox>
 				<NumberBox
+					ref="elLetterSpacing"
 					id="uiDialogBox-letterSpacing"
 					v-model="form.letterSpacing"
 					min="-10"
@@ -82,12 +93,14 @@
 			<TextBox id="uiDialogBox-font" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
+				ref="elTypeface"
 				id="uiDialogBox-typeface"
 				v-model="form.typeface"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiDialogBox-effect-type.label') || 'Effect' }}</div>
 			<SelectBox
+				ref="elEffectType"
 				id="uiDialogBox-effect-type"
 				v-model="form.effect.type"
 				@input="onParamInput"
@@ -96,6 +109,7 @@
 				{{ t('components.uiDialogBox-effect-shadowOffsetX.label') || 'Shadow X' }}
 			</div>
 			<NumberBox
+				ref="elShadowOffsetX"
 				id="uiDialogBox-effect-shadowOffsetX"
 				v-model="form.effect.shadowOffsetX"
 				min="-9"
@@ -107,6 +121,7 @@
 				{{ t('components.uiDialogBox-effect-shadowOffsetY.label') || 'Shadow Y' }}
 			</div>
 			<NumberBox
+				ref="elShadowOffsetY"
 				id="uiDialogBox-effect-shadowOffsetY"
 				v-model="form.effect.shadowOffsetY"
 				min="-9"
@@ -118,6 +133,7 @@
 				{{ t('components.uiDialogBox-effect-strokeWidth.label') || 'Stroke Width' }}
 			</div>
 			<NumberBox
+				ref="elStrokeWidth"
 				id="uiDialogBox-effect-strokeWidth"
 				v-model="form.effect.strokeWidth"
 				min="1"
@@ -129,12 +145,14 @@
 				{{ t('components.uiDialogBox-effect-color.label') || 'Effect Color' }}
 			</div>
 			<ColorBox
+				ref="elEffectColor"
 				id="uiDialogBox-effect-color"
 				v-model="form.effect.color"
 				@input="onParamInput"
 			></ColorBox>
 			<div class="text">{{ t('components.uiDialogBox-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				ref="elBlend"
 				id="uiDialogBox-blend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -145,7 +163,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -167,76 +185,73 @@ const { form, sync, onParamInput } = useUIDialogBoxPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
+const elTypeface = ref<InstanceType<typeof SelectBox> | null>(null);
+const elEffectType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSizeSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elSize = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLineSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elLineSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLetterSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elLetterSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShadowOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShadowOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
 
-const relate = (
-	id: string,
-	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
 ) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
-};
-
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
+	const el = input?.root ?? null;
+	if (!el) return;
+	slider?.synchronize(
+		el as HTMLElement & {
+			write(value: number | string): void;
+			input: HTMLInputElement;
+		}
+	);
 };
 
 onMounted(() => {
 	const uiDialogBox = Inspector.uiDialogBox;
 	if (!uiDialogBox) return;
 
-	loadItems('uiDialogBox-typeface', [
+	elTypeface.value?.loadItems([
 		{ name: 'Regular', value: 'regular' },
 		{ name: 'Bold', value: 'bold' },
 		{ name: 'Italic', value: 'italic' },
 		{ name: 'Bold Italic', value: 'bold-italic' }
 	]);
-	loadItems('uiDialogBox-effect-type', [
+	elEffectType.value?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Shadow', value: 'shadow' },
 		{ name: 'Stroke', value: 'stroke' },
 		{ name: 'Outline', value: 'outline' }
 	]);
-	loadItems('uiDialogBox-blend', [
+	elBlend.value?.loadItems([
 		{ name: 'Normal', value: 'normal' },
 		{ name: 'Additive', value: 'additive' },
 		{ name: 'Subtract', value: 'subtract' }
 	]);
-	synchronize('uiDialogBox-size-slider', 'uiDialogBox-size');
-	synchronize('uiDialogBox-lineSpacing-slider', 'uiDialogBox-lineSpacing');
-	synchronize('uiDialogBox-letterSpacing-slider', 'uiDialogBox-letterSpacing');
-	relate('uiDialogBox-effect-type', [
+	synchronize(elSizeSlider.value, elSize.value);
+	synchronize(elLineSpacingSlider.value, elLineSpacing.value);
+	synchronize(elLetterSpacingSlider.value, elLetterSpacing.value);
+	elEffectType.value?.enableHiddenMode();
+	elEffectType.value?.relate([
 		{
 			case: 'shadow',
 			targets: [
-				document.getElementById('uiDialogBox-effect-shadowOffsetX'),
-				document.getElementById('uiDialogBox-effect-shadowOffsetY'),
-				document.getElementById('uiDialogBox-effect-color')
+				elShadowOffsetX.value?.root ?? null,
+				elShadowOffsetY.value?.root ?? null,
+				elEffectColor.value?.root ?? null
 			]
 		},
 		{
 			case: 'stroke',
-			targets: [
-				document.getElementById('uiDialogBox-effect-strokeWidth'),
-				document.getElementById('uiDialogBox-effect-color')
-			]
+			targets: [elStrokeWidth.value?.root ?? null, elEffectColor.value?.root ?? null]
 		},
-		{ case: 'outline', targets: [document.getElementById('uiDialogBox-effect-color')] }
+		{ case: 'outline', targets: [elEffectColor.value?.root ?? null] }
 	]);
 
 	const elements =

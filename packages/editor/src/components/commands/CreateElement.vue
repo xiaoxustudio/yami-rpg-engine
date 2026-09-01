@@ -8,13 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="createElement-operation" v-model="form.operation" />
+			<SelectBox id="createElement-operation" v-focus v-model="form.operation" />
 			<div class="text">Parent</div>
-			<CustomBox id="createElement-parent" type="element" @input="onParent" />
+			<CustomBox id="createElement-parent" type="element" v-model="form.parent" />
 			<div class="text">UI Elements</div>
-			<CustomBox id="createElement-uiId" type="file" filter="ui" @input="onUiId" />
+			<CustomBox
+				id="createElement-uiId"
+				v-focus
+				type="file"
+				filter="ui"
+				v-model="form.uiId"
+			/>
 			<div class="text">UI Element</div>
-			<CustomBox id="createElement-presetId" type="preset-element" @input="onPresetId" />
+			<CustomBox
+				id="createElement-presetId"
+				v-focus
+				type="preset-element"
+				v-model="form.presetId"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -32,18 +43,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useCreateElementCommandSchema();
-
-const onParent = (value: unknown) => {
-	form.parent = value;
-};
-
-const onUiId = (value: unknown) => {
-	form.uiId = value;
-};
-
-const onPresetId = (value: unknown) => {
-	form.presetId = value;
-};
 
 const onConfirm = () => {
 	save();

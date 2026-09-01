@@ -1,7 +1,7 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils.ts';
+import { requestFocus } from '@app/directives/focus';
 import { removeTextTags, parseVariableTag } from '@app/composables/useCommandParse.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 
@@ -44,14 +44,14 @@ const parse = (choice: ChoicesData): string => {
 const open = (choice: ChoicesData = { content: '', commands: [] }): void => {
 	getWindowStore().open('choice');
 	Object.assign(form, { content: choice.content });
-	getFocus(document.getElementById('choice-content'), 'all');
+	requestFocus('choice-content', 'all');
 	commands = choice.commands;
 };
 
 const save = (): unknown => {
 	const content = form.content.trim();
 	if (content === '') {
-		return getFocus(document.getElementById('choice-content'));
+		return requestFocus('choice-content');
 	}
 	getWindowStore().close('choice');
 	return { content, commands };

@@ -68,28 +68,37 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">
 			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div>
-			<CustomBox id="fileTileset-image" type="file" filter="image" @input="onParamInput" />
+			<CustomBox
+				id="fileTileset-image"
+				v-model="form.image"
+				type="file"
+				filter="image"
+				@input="onParamInput"
+			/>
 			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileTileset-width"
+				v-model="form.width"
 				min="1"
 				max="256"
 				unit="tile"
-				@change="onParamChange"
+				@change="onParamInput"
 			/>
 			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileTileset-height"
+				v-model="form.height"
 				min="1"
 				max="256"
 				unit="tile"
-				@change="onParamChange"
+				@change="onParamInput"
 			/>
 			<div class="text">
 				{{ t('components.fileTileset-tileWidth.label') || 'Tile Width' }}
 			</div>
 			<NumberBox
 				id="fileTileset-tileWidth"
+				v-model="form.tileWidth"
 				min="16"
 				max="256"
 				unit="px"
@@ -100,6 +109,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-tileHeight"
+				v-model="form.tileHeight"
 				min="16"
 				max="256"
 				unit="px"
@@ -110,6 +120,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalOffsetX"
+				v-model="form.globalOffsetX"
 				min="-256"
 				max="256"
 				unit="px"
@@ -120,6 +131,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalOffsetY"
+				v-model="form.globalOffsetY"
 				min="-256"
 				max="256"
 				unit="px"
@@ -130,6 +142,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalPriority"
+				v-model="form.globalPriority"
 				min="-10"
 				max="10"
 				decimals="4"
@@ -140,14 +153,16 @@
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-tileset-page.ts';
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { focus } from '@app/utils/element-utils';
-import { Inspector } from '@app/inspector/inspector.ts';
 import { Palette } from '@app/palette/palette.ts';
+import { useFileTilesetPage } from '@app/composables/useFileTilesetPage';
 import { useSceneStore } from '@app/stores/scene';
 import { usePaletteStore } from '@app/stores/palette';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -159,13 +174,7 @@ const scene = useSceneStore();
 const { t } = useI18n();
 const palette = usePaletteStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.fileTileset?.paramInput?.({ target });
-};
-const onParamChange = () => {
-	Inspector?.fileTileset?.paramInput?.();
-};
+	const { form, sync, onParamInput } = useFileTilesetPage();
 
 const onHeadPointerdown = (event: PointerEvent) => {
 	if (!(event.target instanceof HTMLInputElement)) {
@@ -238,5 +247,11 @@ const paletteInfo = computed(() => {
 
 onMounted(() => {
 	palette.initialize();
+
+	const el = document.getElementById('fileTileset');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

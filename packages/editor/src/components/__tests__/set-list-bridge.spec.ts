@@ -45,6 +45,7 @@ describe('useSetListCommandSchema（setList 命令表单 composable：insert/edi
 		const wrapper = mount(SetList, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		CommandSchema.insert(target, 'setList');
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setList');
 		expect(getControl('setList-variable').read()).toEqual({ type: 'local', key: '' });
 		expect(getControl('setList-operation').read()).toBe('set-empty');
@@ -65,6 +66,7 @@ describe('useSetListCommandSchema（setList 命令表单 composable：insert/edi
 				list: [4, 5]
 			}
 		});
+		await wrapper.vm.$nextTick();
 		expect(Window.open).toHaveBeenCalledWith('setList');
 		expect(getControl('setList-numbers').read()).toEqual([4, 5]);
 		Command.cases.setList.customLoad!({

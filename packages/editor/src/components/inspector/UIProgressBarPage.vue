@@ -15,12 +15,14 @@
 			<div class="text">{{ t('components.uiProgressBar-display.label') || 'Display' }}</div>
 			<SelectBox
 				id="uiProgressBar-display"
+				ref="elDisplay"
 				v-model="form.display"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiProgressBar-clip.label') || 'Clip' }}</div>
 			<CustomBox
 				id="uiProgressBar-clip"
+				ref="elClip"
 				v-model="form.clip"
 				type="clip"
 				image="uiProgressBar-image"
@@ -29,12 +31,14 @@
 			<div class="text">{{ t('components.uiProgressBar-type.label') || 'Type' }}</div>
 			<SelectBox
 				id="uiProgressBar-type"
+				ref="elType"
 				v-model="form.type"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiProgressBar-centerX.label') || 'Center X' }}</div>
 			<NumberBox
 				id="uiProgressBar-centerX"
+				ref="elCenterX"
 				v-model="form.centerX"
 				min="0"
 				max="1"
@@ -45,6 +49,7 @@
 			<div class="text">{{ t('components.uiProgressBar-centerY.label') || 'Center Y' }}</div>
 			<NumberBox
 				id="uiProgressBar-centerY"
+				ref="elCenterY"
 				v-model="form.centerY"
 				min="0"
 				max="1"
@@ -57,6 +62,7 @@
 			</div>
 			<NumberBox
 				id="uiProgressBar-startAngle"
+				ref="elStartAngle"
 				v-model="form.startAngle"
 				min="-360"
 				max="360"
@@ -70,6 +76,7 @@
 			</div>
 			<NumberBox
 				id="uiProgressBar-centralAngle"
+				ref="elCentralAngle"
 				v-model="form.centralAngle"
 				min="-360"
 				max="360"
@@ -99,6 +106,7 @@
 			<div class="text">{{ t('components.uiProgressBar-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="uiProgressBar-blend"
+				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
@@ -107,13 +115,15 @@
 			</div>
 			<SelectBox
 				id="uiProgressBar-colorMode"
+				ref="elColorMode"
 				v-model="form.colorMode"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiProgressBar-color-0-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-0-box">
+			<div class="flex-box" id="uiProgressBar-color-0-box" ref="elColor0Box">
 				<SliderBox
 					id="uiProgressBar-color-0-slider"
+					ref="elColor0Slider"
 					v-model="form.color[0]"
 					min="0"
 					max="255"
@@ -121,6 +131,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiProgressBar-color-0"
+					ref="elColor0"
 					v-model="form.color[0]"
 					min="0"
 					max="255"
@@ -129,9 +140,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-1-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-1-box">
+			<div class="flex-box" id="uiProgressBar-color-1-box" ref="elColor1Box">
 				<SliderBox
 					id="uiProgressBar-color-1-slider"
+					ref="elColor1Slider"
 					v-model="form.color[1]"
 					min="0"
 					max="255"
@@ -139,6 +151,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiProgressBar-color-1"
+					ref="elColor1"
 					v-model="form.color[1]"
 					min="0"
 					max="255"
@@ -147,9 +160,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-2-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-2-box">
+			<div class="flex-box" id="uiProgressBar-color-2-box" ref="elColor2Box">
 				<SliderBox
 					id="uiProgressBar-color-2-slider"
+					ref="elColor2Slider"
 					v-model="form.color[2]"
 					min="0"
 					max="255"
@@ -157,6 +171,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiProgressBar-color-2"
+					ref="elColor2"
 					v-model="form.color[2]"
 					min="0"
 					max="255"
@@ -165,9 +180,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-3-box.label') || 'Alpha' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-3-box">
+			<div class="flex-box" id="uiProgressBar-color-3-box" ref="elColor3Box">
 				<SliderBox
 					id="uiProgressBar-color-3-slider"
+					ref="elColor3Slider"
 					v-model="form.color[3]"
 					min="0"
 					max="255"
@@ -175,6 +191,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiProgressBar-color-3"
+					ref="elColor3"
 					v-model="form.color[3]"
 					min="0"
 					max="255"
@@ -188,7 +205,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -208,87 +225,99 @@ const { form, sync, onParamInput } = useUIProgressBarPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elDisplay = ref<InstanceType<typeof SelectBox> | null>(null);
+const elClip = ref<InstanceType<typeof CustomBox> | null>(null);
+const elType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elCenterX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elCenterY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elStartAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elCentralAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elColorMode = ref<InstanceType<typeof SelectBox> | null>(null);
+const elColor0Box = ref<HTMLElement | null>(null);
+const elColor0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elColor0 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elColor1Box = ref<HTMLElement | null>(null);
+const elColor1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elColor1 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elColor2Box = ref<HTMLElement | null>(null);
+const elColor2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elColor2 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elColor3Box = ref<HTMLElement | null>(null);
+const elColor3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elColor3 = ref<InstanceType<typeof NumberBox> | null>(null);
+
+const loadItems = (el: InstanceType<typeof SelectBox> | null, items: unknown[]) => {
+	el?.loadItems(items);
 };
 
 const relate = (
-	id: string,
+	el: InstanceType<typeof SelectBox> | null,
 	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
 ) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
+	if (el) {
+		el.enableHiddenMode();
+		el.relate(config);
+	}
 };
 
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
+) => {
+	slider?.synchronize(input?.root as SyncTarget);
 };
 
 onMounted(() => {
 	const uiProgressBar = Inspector.uiProgressBar;
 	if (!uiProgressBar) return;
 
-	loadItems('uiProgressBar-display', [
+	loadItems(elDisplay.value, [
 		{ name: 'Stretch', value: 'stretch' },
 		{ name: 'Clip', value: 'clip' }
 	]);
-	relate('uiProgressBar-display', [
-		{ case: 'clip', targets: [document.getElementById('uiProgressBar-clip')] }
-	]);
-	loadItems('uiProgressBar-type', [
+	relate(elDisplay.value, [{ case: 'clip', targets: [elClip.value?.root ?? null] }]);
+	loadItems(elType.value, [
 		{ name: 'Horizontal', value: 'horizontal' },
 		{ name: 'Vertical', value: 'vertical' },
 		{ name: 'Round', value: 'round' }
 	]);
-	relate('uiProgressBar-type', [
+	relate(elType.value, [
 		{
 			case: 'round',
 			targets: [
-				document.getElementById('uiProgressBar-centerX'),
-				document.getElementById('uiProgressBar-centerY'),
-				document.getElementById('uiProgressBar-startAngle'),
-				document.getElementById('uiProgressBar-centralAngle')
+				elCenterX.value?.root ?? null,
+				elCenterY.value?.root ?? null,
+				elStartAngle.value?.root ?? null,
+				elCentralAngle.value?.root ?? null
 			]
 		}
 	]);
-	loadItems('uiProgressBar-blend', [
+	loadItems(elBlend.value, [
 		{ name: 'Normal', value: 'normal' },
 		{ name: 'Additive', value: 'additive' },
 		{ name: 'Subtract', value: 'subtract' }
 	]);
-	loadItems('uiProgressBar-colorMode', [
+	loadItems(elColorMode.value, [
 		{ name: 'Texture Sampling', value: 'texture' },
 		{ name: 'Fixed', value: 'fixed' }
 	]);
-	relate('uiProgressBar-colorMode', [
+	relate(elColorMode.value, [
 		{
 			case: 'fixed',
-			targets: [
-				document.getElementById('uiProgressBar-color-0-box'),
-				document.getElementById('uiProgressBar-color-1-box'),
-				document.getElementById('uiProgressBar-color-2-box'),
-				document.getElementById('uiProgressBar-color-3-box')
-			]
+			targets: [elColor0Box.value, elColor1Box.value, elColor2Box.value, elColor3Box.value]
 		}
 	]);
 
-	synchronize('uiProgressBar-color-0-slider', 'uiProgressBar-color-0');
-	synchronize('uiProgressBar-color-1-slider', 'uiProgressBar-color-1');
-	synchronize('uiProgressBar-color-2-slider', 'uiProgressBar-color-2');
-	synchronize('uiProgressBar-color-3-slider', 'uiProgressBar-color-3');
+	synchronize(elColor0Slider.value, elColor0.value);
+	synchronize(elColor1Slider.value, elColor1.value);
+	synchronize(elColor2Slider.value, elColor2.value);
+	synchronize(elColor3Slider.value, elColor3.value);
 
 	const elements = document.querySelectorAll(`#uiProgressBar-image,
     #uiProgressBar-display, #uiProgressBar-clip,

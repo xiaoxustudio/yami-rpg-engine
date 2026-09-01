@@ -2,6 +2,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { createNumberBoxCore } from './number-box-core';
 
 interface Props {
 	id?: string;
@@ -42,57 +43,19 @@ const state = {
 
 let decimalPlaces: number = Number(props.decimals);
 
-const whiteList = new Set([
-	'Digit0',
-	'Digit1',
-	'Digit2',
-	'Digit3',
-	'Digit4',
-	'Digit5',
-	'Digit6',
-	'Digit7',
-	'Digit8',
-	'Digit9',
-	'Minus',
-	'Period',
-	'Numpad0',
-	'Numpad1',
-	'Numpad2',
-	'Numpad3',
-	'Numpad4',
-	'Numpad5',
-	'Numpad6',
-	'Numpad7',
-	'Numpad8',
-	'Numpad9',
-	'NumpadSubtract',
-	'NumpadDecimal',
-	'Backspace',
-	'Delete',
-	'Tab',
-	'Enter',
-	'ArrowLeft',
-	'ArrowUp',
-	'ArrowRight',
-	'ArrowDown',
-	'Home',
-	'End',
-	'NumpadEnter'
-]);
+const core = createNumberBoxCore(
+	{
+		getRoot: () => root.value,
+		getInput: () => inputEl.value
+	},
+	state
+);
+const { inputKeydown, readValue, enable, disable, getFocus, on } = core;
 
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
+const read = (): number => readValue(decimalPlaces);
 
-const roundTo = (value: number, decimals: number): number => {
-	const factor = Math.pow(10, decimals);
-	return Math.round(value * factor) / factor;
-};
-
-const inputKeydown = (event: KeyboardEvent): void => {
-	const cmdOrCtrlKey = event.ctrlKey || event.metaKey;
-	if (!whiteList.has(event.code) && !cmdOrCtrlKey) {
-		event.preventDefault();
-	}
+const write = (value: string | number): void => {
+	core.write(value, decimalPlaces);
 };
 
 const onInputChange = (): void => {
@@ -108,97 +71,12 @@ const onInputFocus = (event: FocusEvent): void => emit('focus', event);
 
 const onInputBlur = (event: FocusEvent): void => emit('blur', event);
 
-const read = (): number => {
-	const el = inputEl.value;
-	if (!el) return 0;
-	const min = parseFloat(el.min);
-	const max = parseFloat(el.max);
-	let value = parseFloat(el.value) || 0;
-	value = clamp(value, min, max);
-	value = roundTo(value, decimalPlaces);
-	return value;
-};
-
-const write = (value: string | number): void => {
-	const el = inputEl.value;
-	if (!el) return;
-	el.value = String(value);
-	el.value = String(read());
-	(el as HTMLInputElement & { history?: { reset(): void } }).history?.reset();
-};
-
-const enable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.remove('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = '';
-	}
-};
-
-const disable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.add('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = 'none';
-	}
-};
-
-const getFocus = (mode?: string): void => {
-	const el = inputEl.value;
-	if (!el) return;
-	setTimeout(() => {
-		el.focus();
-		switch (mode) {
-			case 'all':
-				el.select();
-				el.scrollLeft = 0;
-				break;
-			case 'end':
-				if (typeof el.selectionStart === 'number') {
-					el.setSelectionRange(el.value.length, el.value.length);
-					el.scrollLeft = el.scrollWidth;
-				}
-				break;
-		}
-	});
-};
-
 const measureText = (text: string, font: string): { width: number } => {
 	const canvas = document.createElement('canvas');
 	const context = canvas.getContext('2d');
 	if (!context) return { width: 0 };
 	context.font = font;
 	return context.measureText(text);
-};
-
-const on = (
-	type: string,
-	listener: (event: Event) => void,
-	options?: boolean | AddEventListenerOptions
-): void => {
-	const el = root.value;
-	if (!el) return;
-	el.addEventListener(type, listener, options);
-	switch (type) {
-		case 'focus':
-			if (!state.focusEventEnabled) {
-				state.focusEventEnabled = true;
-				inputEl.value?.addEventListener('focus', () => {
-					el.dispatchEvent(new FocusEvent('focus'));
-				});
-			}
-			break;
-		case 'blur':
-			if (!state.blurEventEnabled) {
-				state.blurEventEnabled = true;
-				inputEl.value?.addEventListener('blur', () => {
-					el.dispatchEvent(new FocusEvent('blur'));
-				});
-			}
-			break;
-	}
 };
 
 type NumberBoxHost = HTMLElement & {

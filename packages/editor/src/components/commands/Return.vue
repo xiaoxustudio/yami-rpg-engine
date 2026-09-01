@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="return-type" v-model="form.type" />
+			<SelectBox id="return-type" v-focus v-model="form.type" />
 			<div class="text">Boolean</div>
 			<SelectBox id="return-boolean" v-model="form.boolean" />
 			<div class="text">Number</div>
@@ -21,24 +21,30 @@
 			/>
 			<div class="text">String</div>
 			<StringVar id="return-string" v-model="form.string" />
-			<div class="text">Object</div>
-			<CustomBox id="return-object" type="variable" filter="object" @input="onObject" />
-			<div class="text">Actor</div>
-			<CustomBox id="return-actor" type="actor" @input="onActor" />
-			<div class="text">Skill</div>
-			<CustomBox id="return-skill" type="skill" @input="onSkill" />
-			<div class="text">State</div>
-			<CustomBox id="return-state" type="state" @input="onState" />
-			<div class="text">Equipment</div>
-			<CustomBox id="return-equipment" type="equipment" @input="onEquipment" />
-			<div class="text">Item</div>
-			<CustomBox id="return-item" type="item" @input="onItem" />
-			<div class="text">Trigger</div>
-			<CustomBox id="return-trigger" type="trigger" @input="onTrigger" />
-			<div class="text">Light</div>
-			<CustomBox id="return-light" type="light" @input="onLight" />
-			<div class="text">Element</div>
-			<CustomBox id="return-element" type="element" @input="onElement" />
+		<div class="text">Object</div>
+		<CustomBox
+			id="return-object"
+			v-focus
+			type="variable"
+			filter="object"
+			v-model="form.object"
+		/>
+		<div class="text">Actor</div>
+		<CustomBox id="return-actor" type="actor" v-model="form.actor" />
+		<div class="text">Skill</div>
+		<CustomBox id="return-skill" type="skill" v-model="form.skill" />
+		<div class="text">State</div>
+		<CustomBox id="return-state" type="state" v-model="form.state" />
+		<div class="text">Equipment</div>
+		<CustomBox id="return-equipment" type="equipment" v-model="form.equipment" />
+		<div class="text">Item</div>
+		<CustomBox id="return-item" type="item" v-model="form.item" />
+		<div class="text">Trigger</div>
+		<CustomBox id="return-trigger" type="trigger" v-model="form.trigger" />
+		<div class="text">Light</div>
+		<CustomBox id="return-light" type="light" v-model="form.light" />
+		<div class="text">Element</div>
+		<CustomBox id="return-element" type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
@@ -58,42 +64,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useReturnCommandSchema();
-
-const onObject = (value: unknown) => {
-	form.object = value;
-};
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onSkill = (value: unknown) => {
-	form.skill = value;
-};
-
-const onState = (value: unknown) => {
-	form.state = value;
-};
-
-const onEquipment = (value: unknown) => {
-	form.equipment = value;
-};
-
-const onItem = (value: unknown) => {
-	form.item = value;
-};
-
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
-
-const onLight = (value: unknown) => {
-	form.light = value;
-};
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -15,11 +15,12 @@ describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () 
 		expect(store.offsetY).toBe(null);
 		expect(store.imageId).toBe(null);
 		expect(store.changed).toBe(false);
+		expect(store.ruleBits).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
 	});
 
-	it('状态键完整（10 项）', () => {
+	it('状态键完整（11 项）', () => {
 		const store = getAutoTileStore();
-		expect(autoTileStateKeys).toHaveLength(10);
+		expect(autoTileStateKeys).toHaveLength(11);
 		for (const key of autoTileStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
@@ -43,6 +44,8 @@ describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () 
 		expect(store.imageId).toBe('img');
 		store.changed = true;
 		expect(store.changed).toBe(true);
+		store.ruleBits = [1, 2, 3, 0, 1, 2, 3, 0];
+		expect(store.ruleBits).toEqual([1, 2, 3, 0, 1, 2, 3, 0]);
 		store.templates = null;
 		store.template = null;
 		store.nodeIndex = null;
@@ -51,6 +54,7 @@ describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () 
 		store.offsetY = null;
 		store.imageId = null;
 		store.changed = false;
+		store.ruleBits = [0, 0, 0, 0, 0, 0, 0, 0];
 	});
 
 	it('legacy 写入经 store 生效（store 为源）', () => {

@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface RenameForm {
 	name: string;
@@ -21,7 +21,7 @@ const open = (name: string, cb: (value: string) => void): void => {
 	callback = cb;
 	Object.assign(form, { name });
 	getWindowStore().open('rename');
-	getFocus(document.getElementById('rename-name'), 'all');
+	requestFocus('rename-name', 'all');
 };
 
 const confirm = (): void => {

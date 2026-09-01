@@ -10,6 +10,7 @@
 			<div class="text">Write to Variable</div>
 			<CustomBox
 				id="transition-variable"
+				v-focus
 				type="variable"
 				filter="number"
 				v-model="form.variable"
@@ -35,6 +36,7 @@
 			<div class="text">Duration</div>
 			<NumberVar
 				id="transition-duration"
+				v-focus
 				name="duration"
 				min="0"
 				max="3600000"

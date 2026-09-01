@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Global Actor</div>
-			<CustomBox id="setPlayerActor-actor" type="actor" @input="onActor" />
+			<CustomBox id="setPlayerActor-actor" v-focus type="actor" v-model="form.actor" />
 		</div>
 	</WindowFrame>
 </template>
@@ -23,10 +23,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetPlayerActorCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

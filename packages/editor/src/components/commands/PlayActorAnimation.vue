@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="playActorAnimation-actor" type="actor" @input="onActor" />
+			<CustomBox id="playActorAnimation-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Motion</div>
-			<CustomBox id="playActorAnimation-motion" type="enum-string" @input="onMotion" />
+			<CustomBox id="playActorAnimation-motion" type="enum-string" v-model="form.motion" />
 			<div class="text">Speed</div>
 			<NumberVar
 				id="playActorAnimation-speed"
@@ -40,14 +40,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = usePlayActorAnimationCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onMotion = (value: unknown) => {
-	form.motion = value;
-};
 
 const onConfirm = () => {
 	save();

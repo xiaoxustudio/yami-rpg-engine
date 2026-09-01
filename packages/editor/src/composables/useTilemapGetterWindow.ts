@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface TilemapGetterForm {
 	type: string;
@@ -48,7 +48,7 @@ const open = (target: TilemapGetterTarget, defaults?: Partial<TilemapGetterForm>
 			break;
 	}
 	Object.assign(form, { type: tilemap.type, presetId, variable });
-	getFocus(document.getElementById('tilemapGetter-type'));
+	requestFocus('tilemapGetter-type');
 };
 
 const confirm = (): void => {
@@ -60,14 +60,14 @@ const confirm = (): void => {
 			break;
 		case 'by-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('tilemapGetter-presetId'));
+				requestFocus('tilemapGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, presetId: data.presetId };
 			break;
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('tilemapGetter-variable'));
+				requestFocus('tilemapGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

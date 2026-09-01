@@ -7,6 +7,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { Data } from '@app/data/data-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import ChangeActorSkill from '@app/components/commands/ChangeActorSkill.vue';
+import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
 import ChangeActorSprite from '@app/components/commands/ChangeActorSprite.vue';
 import { useChangeActorSpriteCommandSchema } from '@app/composables/commands/useChangeActorSpriteCommandSchema';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -18,6 +19,7 @@ import { useChangeThreatCommandSchema } from '@app/composables/commands/useChang
 import ClampCamera from '@app/components/commands/ClampCamera.vue';
 import { useClampCameraCommandSchema } from '@app/composables/commands/useClampCameraCommandSchema';
 import CommandLine from '@app/components/commands/CommandLine.vue';
+import { useCommandLineCommandSchema } from '@app/composables/commands/useCommandLineCommandSchema';
 import Comment from '@app/components/commands/Comment.vue';
 import { useCommentCommandSchema } from '@app/composables/commands/useCommentCommandSchema';
 import ControlButton from '@app/components/commands/ControlButton.vue';
@@ -65,6 +67,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ChangeActorSkill, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'changeActorSkill');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorSkill');
 			expect(getControl('changeActorSkill-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changeActorSkill-operation').read()).toBe('add');
@@ -83,6 +86,7 @@ vi.mock('@app/stores/local', () => ({
 					skill: { type: 'skill' }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorSkill');
 			expect(getControl('changeActorSkill-operation').read()).toBe('remove-instance');
 			expect(getControl('changeActorSkill-skill').read()).toEqual({ type: 'skill' });
@@ -92,13 +96,14 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.changeActorSkill.save 保存', async () => {
 			const wrapper = mount(ChangeActorSkill, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useChangeActorSkillCommandSchema();
 			Command.cases.changeActorSkill.customLoad!({
 				actor: { type: 'trigger' },
 				operation: 'add',
 				skillId: ''
 			});
-			getControl('changeActorSkill-operation').input('remove');
-			getControl('changeActorSkill-skillId').write('skill1');
+			form.operation = 'remove';
+			form.skillId = 'skill1';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.changeActorSkill.save!();
@@ -277,6 +282,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ChangeActorState, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'changeActorState');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorState');
 			expect(getControl('changeActorState-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changeActorState-operation').read()).toBe('add');
@@ -296,6 +302,7 @@ vi.mock('@app/stores/local', () => ({
 					state: { type: 'state' }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorState');
 			expect(getControl('changeActorState-operation').read()).toBe('remove-instance');
 			expect(getControl('changeActorState-state').read()).toEqual({ type: 'state' });
@@ -388,6 +395,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ChangeActorTeam, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'changeActorTeam');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorTeam');
 			expect(getControl('changeActorTeam-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changeActorTeam-teamId').read()).toBe('team0');
@@ -401,6 +409,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'changeActorTeam',
 				params: { actor: { type: 'trigger' }, teamId: 'team1' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorTeam');
 			expect(getControl('changeActorTeam-teamId').read()).toBe('team1');
 			wrapper.unmount();
@@ -464,6 +473,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ChangePassableTerrain, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'changePassableTerrain');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changePassableTerrain');
 			expect(getControl('changePassableTerrain-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changePassableTerrain-passage').read()).toBe('land');
@@ -477,6 +487,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'changePassableTerrain',
 				params: { actor: { type: 'trigger' }, passage: 'water' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changePassableTerrain');
 			expect(getControl('changePassableTerrain-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changePassableTerrain-passage').read()).toBe('water');
@@ -721,6 +732,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(CommandLine, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'commandLine');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('commandLine');
 			expect(getControl('commandLine-type').read()).toBe('get');
 			expect(getControl('commandLine-key').read()).toBe('');
@@ -741,6 +753,7 @@ vi.mock('@app/stores/local', () => ({
 					variable: { type: 'local', key: 'v' }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('commandLine');
 			expect(getControl('commandLine-type').read()).toBe('set');
 			expect(getControl('commandLine-key').read()).toBe('foo');
@@ -751,15 +764,16 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.commandLine.save 保存', async () => {
 			const wrapper = mount(CommandLine, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useCommandLineCommandSchema();
 			Command.cases.commandLine.customLoad!({
 				type: 'get',
 				key: '',
 				value: '',
 				variable: { type: 'local', key: 'v' }
 			});
-			getControl('commandLine-type').input('set');
-			getControl('commandLine-key').write('foo');
-			getControl('commandLine-value').write('bar');
+			form.type = 'set';
+			form.key = 'foo';
+			form.value = 'bar';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.commandLine.save!();
@@ -841,6 +855,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(Comment, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.edit(target, { id: 'comment', params: { comment: 'hello\nworld' } });
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('comment');
 			expect(getControl('comment-comment').read()).toBe('hello\nworld');
 			wrapper.unmount();

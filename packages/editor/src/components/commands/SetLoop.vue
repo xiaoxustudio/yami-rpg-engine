@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setLoop-type" v-model="form.type" />
+			<SelectBox id="setLoop-type" v-focus v-model="form.type" />
 			<div class="text">Loop</div>
 			<SelectBox id="setLoop-loop" v-model="form.loop" />
 		</div>

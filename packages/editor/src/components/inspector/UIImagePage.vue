@@ -284,20 +284,41 @@
 			<div class="text">{{ t('components.uiImage-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiImage-image"
+				v-model="form.image"
 				type="file"
 				filter="image"
 				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ t('components.uiImage-display.label') || 'Display' }}</div>
-			<SelectBox id="uiImage-display" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elDisplay"
+				id="uiImage-display"
+				v-model="form.display"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiImage-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiImage-flip" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elFlip"
+				id="uiImage-flip"
+				v-model="form.flip"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiImage-blend.label') || 'Blend' }}</div>
-			<SelectBox id="uiImage-blend" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elBlend"
+				id="uiImage-blend"
+				v-model="form.blend"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiImage-shift-box.label') || 'Shift' }}</div>
-			<div id="uiImage-shift-box" class="box uiElement-grid-box with-2-columns">
+			<div
+				ref="elShiftBox"
+				id="uiImage-shift-box"
+				class="box uiElement-grid-box with-2-columns"
+			>
 				<NumberBox
 					id="uiImage-shiftX"
+					v-model="form.shiftX"
 					min="-10000"
 					max="10000"
 					unit="px"
@@ -305,6 +326,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiImage-shiftY"
+					v-model="form.shiftY"
 					min="-10000"
 					max="10000"
 					unit="px"
@@ -313,14 +335,18 @@
 			</div>
 			<div class="text">{{ t('components.uiImage-clip.label') || 'Clip' }}</div>
 			<CustomBox
+				ref="elClip"
 				id="uiImage-clip"
+				v-model="form.clip"
 				type="clip"
 				image="uiImage-image"
 				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ t('components.uiImage-border.label') || 'Border' }}</div>
 			<NumberBox
+				ref="elBorder"
 				id="uiImage-border"
+				v-model="form.border"
 				min="1"
 				max="100"
 				unit="px"
@@ -328,25 +354,85 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiImage-tint-0-box.label') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="uiImage-tint-0-box">
-				<SliderBox id="uiImage-tint-0-slider" min="-255" max="255" step="15"></SliderBox>
-				<NumberBox id="uiImage-tint-0" min="-255" max="255" step="5"></NumberBox>
+				<SliderBox
+					ref="elTint0Slider"
+					id="uiImage-tint-0-slider"
+					v-model="form['tint-0']"
+					min="-255"
+					max="255"
+					step="15"
+				></SliderBox>
+				<NumberBox
+					ref="elTint0"
+					id="uiImage-tint-0"
+					v-model="form['tint-0']"
+					min="-255"
+					max="255"
+					step="5"
+					@input="onParamInput"
+				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiImage-tint-1-box.label') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="uiImage-tint-1-box">
-				<SliderBox id="uiImage-tint-1-slider" min="-255" max="255" step="15"></SliderBox>
-				<NumberBox id="uiImage-tint-1" min="-255" max="255" step="5"></NumberBox>
+				<SliderBox
+					ref="elTint1Slider"
+					id="uiImage-tint-1-slider"
+					v-model="form['tint-1']"
+					min="-255"
+					max="255"
+					step="15"
+				></SliderBox>
+				<NumberBox
+					ref="elTint1"
+					id="uiImage-tint-1"
+					v-model="form['tint-1']"
+					min="-255"
+					max="255"
+					step="5"
+					@input="onParamInput"
+				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiImage-tint-2-box.label') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="uiImage-tint-2-box">
-				<SliderBox id="uiImage-tint-2-slider" min="-255" max="255" step="15"></SliderBox>
-				<NumberBox id="uiImage-tint-2" min="-255" max="255" step="5"></NumberBox>
+				<SliderBox
+					ref="elTint2Slider"
+					id="uiImage-tint-2-slider"
+					v-model="form['tint-2']"
+					min="-255"
+					max="255"
+					step="15"
+				></SliderBox>
+				<NumberBox
+					ref="elTint2"
+					id="uiImage-tint-2"
+					v-model="form['tint-2']"
+					min="-255"
+					max="255"
+					step="5"
+					@input="onParamInput"
+				></NumberBox>
 			</div>
 			<div class="text">
 				{{ t('components.uiImage-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
 			<div class="flex-box" id="uiImage-tint-3-box">
-				<SliderBox id="uiImage-tint-3-slider" min="0" max="255" step="15"></SliderBox>
-				<NumberBox id="uiImage-tint-3" min="0" max="255" step="5"></NumberBox>
+				<SliderBox
+					ref="elTint3Slider"
+					id="uiImage-tint-3-slider"
+					v-model="form['tint-3']"
+					min="0"
+					max="255"
+					step="15"
+				></SliderBox>
+				<NumberBox
+					ref="elTint3"
+					id="uiImage-tint-3"
+					v-model="form['tint-3']"
+					min="0"
+					max="255"
+					step="5"
+					@input="onParamInput"
+				></NumberBox>
 			</div>
 		</div>
 	</DetailBox>
@@ -354,7 +440,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -377,84 +463,76 @@ const { form, sync, onParamInput } = useUIImagePage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
+const elDisplay = ref<InstanceType<typeof SelectBox> | null>(null);
+const elFlip = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elShiftBox = ref<HTMLElement | null>(null);
+const elClip = ref<InstanceType<typeof CustomBox> | null>(null);
+const elBorder = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint0 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint1 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint2 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
 
-const relate = (
-	id: string,
-	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
 ) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
-};
-
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
+	const el = input?.root ?? null;
+	if (!el) return;
+	slider?.synchronize(
+		el as HTMLElement & {
+			write(value: number | string): void;
+			input: HTMLInputElement;
+		}
+	);
 };
 
 onMounted(() => {
 	const uiImage = Inspector.uiImage;
 	if (!uiImage) return;
 
-	loadItems('uiImage-display', [
+	elDisplay.value?.loadItems([
 		{ name: 'Stretch', value: 'stretch' },
 		{ name: 'Tile', value: 'tile' },
 		{ name: 'Clip', value: 'clip' },
 		{ name: 'Slice', value: 'slice' }
 	]);
-	relate('uiImage-display', [
+	elDisplay.value?.enableHiddenMode();
+	elDisplay.value?.relate([
 		{
 			case: ['stretch', 'tile'],
-			targets: [
-				document.getElementById('uiImage-flip'),
-				document.getElementById('uiImage-shift-box')
-			]
+			targets: [elFlip.value?.root ?? null, elShiftBox.value]
 		},
 		{
 			case: 'clip',
-			targets: [
-				document.getElementById('uiImage-flip'),
-				document.getElementById('uiImage-clip')
-			]
+			targets: [elFlip.value?.root ?? null, elClip.value?.root ?? null]
 		},
 		{
 			case: 'slice',
-			targets: [
-				document.getElementById('uiImage-clip'),
-				document.getElementById('uiImage-border')
-			]
+			targets: [elClip.value?.root ?? null, elBorder.value?.root ?? null]
 		}
 	]);
-	loadItems('uiImage-flip', [
+	elFlip.value?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Horizontal', value: 'horizontal' },
 		{ name: 'Vertical', value: 'vertical' },
 		{ name: 'Both', value: 'both' }
 	]);
-	loadItems('uiImage-blend', [
+	elBlend.value?.loadItems([
 		{ name: 'Normal', value: 'normal' },
 		{ name: 'Additive', value: 'additive' },
 		{ name: 'Subtract', value: 'subtract' },
 		{ name: 'Mask', value: 'mask' }
 	]);
-	synchronize('uiImage-tint-0-slider', 'uiImage-tint-0');
-	synchronize('uiImage-tint-1-slider', 'uiImage-tint-1');
-	synchronize('uiImage-tint-2-slider', 'uiImage-tint-2');
-	synchronize('uiImage-tint-3-slider', 'uiImage-tint-3');
+	synchronize(elTint0Slider.value, elTint0.value);
+	synchronize(elTint1Slider.value, elTint1.value);
+	synchronize(elTint2Slider.value, elTint2.value);
+	synchronize(elTint3Slider.value, elTint3.value);
 
 	const elements = document.querySelectorAll(`#uiImage-image,
     #uiImage-display, #uiImage-flip, #uiImage-blend,

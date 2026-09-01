@@ -42,6 +42,7 @@ Command.cases.setLanguage = new CommandSchema({
 
 export function useSetLanguageCommandSchema() {
 	return useCommandSchema('setLanguage', {
+		skipWrite: true,
 		onLoad(params) {
 			const el = document.getElementById('setLanguage-language')!;
 			el.loadItems(Command.cases.setLanguage.createLanguageItems!());

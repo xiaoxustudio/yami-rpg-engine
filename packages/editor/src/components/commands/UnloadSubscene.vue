@@ -10,6 +10,7 @@
 			<div class="text">Scene</div>
 			<FileVar
 				id="unloadSubscene-sceneId"
+				v-focus
 				type="file"
 				filter="scene"
 				v-model="form.sceneId"

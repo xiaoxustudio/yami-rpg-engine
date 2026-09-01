@@ -10,7 +10,7 @@
 			<div class="text">Mode</div>
 			<SelectBox id="loop-mode" v-model="form.mode" />
 			<div class="text">Conditions</div>
-			<ParamList id="loop-conditions" v-model="form.conditions" />
+			<ParamList id="loop-conditions" v-focus v-model="form.conditions" />
 		</div>
 	</WindowFrame>
 </template>

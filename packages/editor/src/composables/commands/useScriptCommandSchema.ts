@@ -1,6 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
-import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
+import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Editor } from '@app/services/project/editor.ts';
@@ -450,7 +450,7 @@ const save = async (): Promise<void> => {
 const initialize = (): void => {
 	if (bound) return;
 	bound = true;
-	document.getElementById('script')?.on('close', (event: Event) => {
+	on(document.getElementById('script'), 'close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
 			const get = (key: string) => t('confirmation.' + key);
@@ -477,15 +477,15 @@ const initialize = (): void => {
 		}
 	});
 
-	document.getElementById('script')?.on('resize', () => {
+	on(document.getElementById('script'), 'resize', () => {
 		resize();
 	});
 
-	document.getElementById('script')?.on('closed', () => {
+	on(document.getElementById('script'), 'closed', () => {
 		model?.setValue('');
 	});
 
-	document.getElementById('script')?.on('keydown', (event: KeyboardEvent) => {
+	on(document.getElementById('script'), 'keydown', (event: KeyboardEvent) => {
 		if (hasClass(event.target, 'inputarea')) {
 			switch (event.code) {
 				case 'Enter':

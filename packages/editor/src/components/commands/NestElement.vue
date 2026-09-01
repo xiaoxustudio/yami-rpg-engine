@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Parent Element</div>
-			<CustomBox id="nestElement-parent" type="element" @input="onParent" />
+			<CustomBox id="nestElement-parent" v-focus type="element" v-model="form.parent" />
 			<div class="text">Child Element</div>
-			<CustomBox id="nestElement-child" type="element" @input="onChild" />
+			<CustomBox id="nestElement-child" type="element" v-model="form.child" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useNestElementCommandSchema();
-
-const onParent = (value: unknown) => {
-	form.parent = value;
-};
-
-const onChild = (value: unknown) => {
-	form.child = value;
-};
 
 const onConfirm = () => {
 	save();

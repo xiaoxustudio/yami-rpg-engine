@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="resetTargets-actor" type="actor" @input="onActor" />
+			<CustomBox id="resetTargets-actor" v-focus type="actor" v-model="form.actor" />
 		</div>
 	</WindowFrame>
 </template>
@@ -23,10 +23,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useResetTargetsCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

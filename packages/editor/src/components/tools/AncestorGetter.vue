@@ -8,12 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.ancestorGetter-type.label') }}</div>
-			<SelectBox id="ancestorGetter-type" v-model="form.type" />
+			<SelectBox id="ancestorGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div>
-			<CustomBox id="ancestorGetter-presetId" type="preset-element" v-model="form.presetId" />
+			<CustomBox
+				id="ancestorGetter-presetId"
+				v-focus
+				type="preset-element"
+				v-model="form.presetId"
+			/>
 			<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div>
 			<CustomBox
 				id="ancestorGetter-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -30,6 +36,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -46,7 +53,7 @@ const local = useLocalStore();
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => ancestorGetter.onWindowClosed());
+		on(el, 'closed', () => ancestorGetter.onWindowClosed());
 	}
 });
 </script>

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Scene</div>
-			<FileVar id="loadSubscene-sceneId" type="file" filter="scene" v-model="form.sceneId" />
+			<FileVar id="loadSubscene-sceneId" v-focus type="file" filter="scene" v-model="form.sceneId" />
 			<div class="text">Shift X</div>
 			<NumberVar id="loadSubscene-shiftX" min="0" max="512" v-model="form.shiftX" />
 			<div class="text">Shift Y</div>

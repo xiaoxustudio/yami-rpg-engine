@@ -2,10 +2,11 @@ import { reactive } from 'vue';
 import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { clear, getFocus, read } from '@app/utils/element-utils';
+import { clear, on, read } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/data/data-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { Enum } from '@app/enum/enum-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -241,7 +242,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 	FileActor.sprites = {
 		initialize: function (this, list: ListShape) {
-			list.on('change', (_event: Event) => {
+			on(list, 'change', (_event: Event) => {
 				const guid = FileActor.meta.guid;
 				if (Scene.actors instanceof Array) {
 					for (const actor of Scene.actors) {
@@ -273,15 +274,15 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			$('#fileActor-sprite-id').loadItems(items);
 			Object.assign(fileActorSpriteForm, { id, image });
 			if (!id) {
-				getFocus($('#fileActor-sprite-id'));
+				requestFocus('fileActor-sprite-id');
 			} else {
-				getFocus($('#fileActor-sprite-image'));
+				requestFocus('fileActor-sprite-image');
 			}
 		},
 		save: function () {
 			const id = fileActorSpriteForm.id;
 			if (!id) {
-				return getFocus($('#fileActor-sprite-id'));
+				return requestFocus('fileActor-sprite-id');
 			}
 			const image = fileActorSpriteForm.image;
 			Window.close!('fileActor-sprite');
@@ -311,18 +312,16 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', key = '' } = {}) {
 			Window.open!('fileActor-skill');
-			const elSkillId = $('#fileActor-skill-id');
 			const elSkillKey = $('#fileActor-skill-key');
 			const items = Enum.getStringItems!('shortcut-key', true);
 			elSkillKey.loadItems(items);
 			Object.assign(fileActorSkillForm, { id, key });
-			getFocus(elSkillId);
+			requestFocus('fileActor-skill-id');
 		},
 		save: function () {
-			const elSkillId = $('#fileActor-skill-id');
 			const id = fileActorSkillForm.id;
 			if (!id) {
-				return getFocus(elSkillId);
+				return requestFocus('fileActor-skill-id');
 			}
 			const key = fileActorSkillForm.key;
 			Window.close!('fileActor-skill');
@@ -352,23 +351,20 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
 			Window.open!('fileActor-equipment');
-			const elEquipmentId = $('#fileActor-equipment-id');
 			const elEquipmentKey = $('#fileActor-equipment-slot');
 			const items = Enum.getStringItems!('equipment-slot');
 			elEquipmentKey.loadItems(items);
 			Object.assign(fileActorEquipmentForm, { id, slot });
-			getFocus(elEquipmentId);
+			requestFocus('fileActor-equipment-id');
 		},
 		save: function () {
-			const elEquipmentId = $('#fileActor-equipment-id');
-			const elKey = $('#fileActor-equipment-slot');
 			const id = fileActorEquipmentForm.id;
 			if (!id) {
-				return getFocus(elEquipmentId);
+				return requestFocus('fileActor-equipment-id');
 			}
 			const slot = fileActorEquipmentForm.slot;
 			if (!slot) {
-				return getFocus(elKey);
+				return requestFocus('fileActor-equipment-slot');
 			}
 			Window.close!('fileActor-equipment');
 			return { id, slot };
@@ -461,7 +457,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 				equipmentId,
 				money
 			});
-			getFocus($('#fileActor-inventory-type'));
+			requestFocus('fileActor-inventory-type');
 		},
 		save: function () {
 			const type = fileActorInventoryForm.type;
@@ -473,11 +469,11 @@ const t = (key: string, named?: Record<string, unknown>) =>
 						id: fileActorInventoryForm.itemId,
 						quantity: fileActorInventoryForm.itemQuantity
 					};
-					if (!goods.id) return getFocus($('#fileActor-inventory-item-id'));
+					if (!goods.id) return requestFocus('fileActor-inventory-item-id');
 					break;
 				case 'equipment':
 					goods = { type: 'equipment', id: fileActorInventoryForm.equipmentId };
-					if (!goods.id) return getFocus($('#fileActor-inventory-equipment-id'));
+					if (!goods.id) return requestFocus('fileActor-inventory-equipment-id');
 					break;
 				case 'money':
 					goods = { type: 'money', money: fileActorInventoryForm.money };

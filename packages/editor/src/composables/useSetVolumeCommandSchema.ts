@@ -4,10 +4,10 @@ import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setVolume = new CommandSchema({
@@ -47,7 +47,7 @@ Command.cases.setVolume = new CommandSchema({
 export function useSetVolumeCommandSchema() {
 	return useCommandSchema('setVolume', {
 		onLoad() {
-			getFocus(document.getElementById('setVolume-type'));
+			requestFocus('setVolume-type');
 		}
 	});
 }

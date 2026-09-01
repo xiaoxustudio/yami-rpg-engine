@@ -36,6 +36,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileSkill-attributes"
+			ref="elAttributes"
 			@change="onListChange"
 			class="inspector-list"
 			group="skill"
@@ -46,6 +47,7 @@
 		<DetailSummary>{{ t('components.fileSkill-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-events"
+			ref="elEvents"
 			@change="onListChange"
 			class="inspector-list"
 			filter="skill"
@@ -54,14 +56,20 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileSkill-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="fileSkill-scripts" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			id="fileSkill-scripts"
+			ref="elScripts"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
-	<ParameterPane id="fileSkill-parameter-pane" />
+	<ParameterPane id="fileSkill-parameter-pane" ref="elParameterPane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -85,6 +93,11 @@ const onListChange = () => {
 	Inspector?.fileSkill?.listChange?.();
 };
 
+const elAttributes = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileSkill;
 	if (!editor) return;
@@ -94,12 +107,13 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	document.getElementById('fileSkill-attributes')?.bind?.(new AttributeListInterface());
-	document.getElementById('fileSkill-events')?.bind?.(new EventListInterface(editor));
-	document.getElementById('fileSkill-scripts')?.bind?.(new ScriptListInterface());
-	document
-		.getElementById('fileSkill-parameter-pane')
-		?.bind?.(document.getElementById('fileSkill-scripts'));
+	elAttributes.value?.bind(new AttributeListInterface());
+	elEvents.value?.bind(new EventListInterface(editor));
+	elScripts.value?.bind(new ScriptListInterface());
+	const scriptsEl = elScripts.value?.root;
+	if (scriptsEl) {
+		elParameterPane.value?.bind(scriptsEl);
+	}
 
 	sync();
 });

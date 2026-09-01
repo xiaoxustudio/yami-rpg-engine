@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.language-name.label') }}</div>
-			<SelectBox id="language-name" />
+			<SelectBox id="language-name" v-focus />
 			<div class="text">{{ t('components.language-font.label') }}</div>
 			<CustomBox id="language-font" type="file" filter="font" />
 			<div class="text">{{ t('components.language-scale.label') }}</div>

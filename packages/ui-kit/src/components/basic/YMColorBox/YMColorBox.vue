@@ -74,8 +74,8 @@ const input = (color: string): void => {
 			}
 			el.dispatchEvent(new Event('change', { bubbles: true }));
 		}
-		emit('input', dataValue);
 		emit('update:modelValue', dataValue);
+		emit('input', dataValue);
 	}
 };
 

@@ -6,44 +6,39 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<ParamList id="arrayList-list" @change="onListChange" />
+		<ParamList id="arrayList-list" ref="elList" v-focus @change="onListChange" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();
 const form = arrayWindow.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const elList = ref<InstanceType<typeof ParamList> | null>(null);
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListChange = () => {
-	const control = document.getElementById('arrayList-list') as
-		| (HTMLElement & { read?: () => unknown[] | null })
-		| null;
-	form.values = control?.read?.() ?? form.values;
+	form.values = elList.value?.read() ?? form.values;
 	arrayWindow.markChanged();
 };
 
 watch(
 	() => form.values,
 	(values) => {
-		const control = document.getElementById('arrayList-list') as
-			| (HTMLElement & { write?: (data: unknown[]) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(values);
+		if (elList.value) {
+			elList.value.write(values);
 		}
 	},
 	{ flush: 'sync' }
@@ -52,7 +47,7 @@ watch(
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => arrayWindow.onWindowClosed());
+		on(el, 'closed', () => arrayWindow.onWindowClosed());
 	}
 });
 </script>

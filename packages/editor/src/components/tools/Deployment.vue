@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.deployment-platform.label') }}</div>
 			<SelectBox
 				id="deployment-platform"
+				v-focus
 				v-model="Deployment.form.platform"
 				@input="onPlatformInput"
 			/>

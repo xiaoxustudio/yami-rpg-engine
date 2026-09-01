@@ -9,10 +9,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.triggerGetter-type.label') }}</div>
-			<SelectBox id="triggerGetter-type" v-model="form.type" />
+			<SelectBox id="triggerGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.triggerGetter-variable.label') }}</div>
 			<CustomBox
 				id="triggerGetter-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -29,6 +30,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -45,7 +47,7 @@ const local = useLocalStore();
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => triggerGetter.onWindowClosed());
+		on(el, 'closed', () => triggerGetter.onWindowClosed());
 	}
 });
 </script>

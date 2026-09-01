@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="appendTarget-actor" type="actor" @input="onActor" />
+			<CustomBox id="appendTarget-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="appendTarget-target" type="actor" @input="onTarget" />
+			<CustomBox id="appendTarget-target" type="actor" v-model="form.target" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useAppendTargetCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onTarget = (value: unknown) => {
-	form.target = value;
-};
 
 const onConfirm = () => {
 	save();

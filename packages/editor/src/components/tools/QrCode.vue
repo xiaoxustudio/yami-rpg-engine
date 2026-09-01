@@ -9,7 +9,7 @@
 		<div class="box">
 			<div class="box" id="qr-img-container"><img id="qr-code-img" :src="imgSrc" /></div>
 			<br />
-			<div class="box" id="qr-code-content">
+			<div class="box" id="qr-code-content" ref="elContent">
 				<div>IP：{{ url }}</div>
 				<div>扫描二维码打开网页</div>
 				<div style="color: red">PS：注意需在同一局域网下扫描二维码</div>
@@ -23,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -37,13 +36,15 @@ const local = useLocalStore();
 const url = ref('');
 const imgSrc = ref('');
 
+const elContent = ref<HTMLElement | null>(null);
+
 const update = (value: { url: string; img: string }): void => {
 	url.value = value.url;
 	imgSrc.value = value.img;
 };
 
 onMounted(() => {
-	const el = document.getElementById('qr-code-content');
+	const el = elContent.value;
 	if (!el) return;
 	attachElementApi(el, { update });
 });

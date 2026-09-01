@@ -50,6 +50,7 @@ onMounted(() => {
 			<div class="text">{{ props.keyLabel }}</div>
 			<YMStringVar
 				id="request-keyValue-key"
+				v-focus
 				:model-value="props.keyValue"
 				@update:model-value="emit('update:keyValue', String($event))"
 			/>

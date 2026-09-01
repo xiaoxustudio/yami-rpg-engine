@@ -39,6 +39,7 @@
 			<div class="text">#</div>
 			<TextBox
 				id="color-hex"
+				v-focus
 				v-model="form.hex"
 				@beforeinput="onHexBeforeinput"
 				@input="onHexInput"
@@ -64,6 +65,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -99,7 +101,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => color.onWindowClosed());
+		on(el, 'closed', () => color.onWindowClosed());
 	}
 });
 </script>

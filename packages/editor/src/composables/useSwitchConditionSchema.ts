@@ -1,7 +1,8 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { $ } from '@app/utils/dom';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { read, write } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 import { reactive } from 'vue';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
@@ -187,7 +188,7 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	});
 	write($('#switch-condition-keyboard-keycode'), keyboardKeycode);
 	write($('#switch-condition-gamepad-button'), gamepadButton);
-	getFocus(document.getElementById('switch-condition-type'));
+	requestFocus('switch-condition-type');
 };
 
 const save = (): SwitchConditionData => {
@@ -215,8 +216,8 @@ const save = (): SwitchConditionData => {
 		case 'attribute': {
 			const attributeId = form.attributeId;
 			if (attributeId === '') {
-				return getFocus(
-					document.getElementById('switch-condition-attribute-attributeId')
+				return requestFocus(
+					'switch-condition-attribute-attributeId'
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, attributeId };
@@ -225,8 +226,8 @@ const save = (): SwitchConditionData => {
 		case 'enum': {
 			const stringId = form.stringId;
 			if (stringId === '') {
-				return getFocus(
-					document.getElementById('switch-condition-enum-stringId')
+				return requestFocus(
+					'switch-condition-enum-stringId'
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, stringId };
@@ -235,8 +236,8 @@ const save = (): SwitchConditionData => {
 		case 'keyboard': {
 			const keycode = read($('#switch-condition-keyboard-keycode')) as string;
 			if (keycode === '') {
-				return getFocus(
-					document.getElementById('switch-condition-keyboard-keycode')
+				return requestFocus(
+					'switch-condition-keyboard-keycode'
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, keycode };
@@ -245,8 +246,8 @@ const save = (): SwitchConditionData => {
 		case 'gamepad': {
 			const button = read($('#switch-condition-gamepad-button')) as number;
 			if (button === -1) {
-				return getFocus(
-					document.getElementById('switch-condition-gamepad-button')
+				return requestFocus(
+					'switch-condition-gamepad-button'
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, button };
@@ -260,8 +261,8 @@ const save = (): SwitchConditionData => {
 		case 'variable': {
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(
-					document.getElementById('switch-condition-variable-variable')
+				return requestFocus(
+					'switch-condition-variable-variable'
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, variable };

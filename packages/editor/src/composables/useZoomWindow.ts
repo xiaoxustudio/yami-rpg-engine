@@ -1,7 +1,7 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
 
@@ -24,7 +24,7 @@ const open = (): void => {
 	const factor = getFactor();
 	getWindowStore().open('zoom');
 	Object.assign(form, { factor });
-	getFocus(document.getElementById('zoom-factor'), 'all');
+	requestFocus('zoom-factor', 'all');
 };
 
 const confirm = (): void => {

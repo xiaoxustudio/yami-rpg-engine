@@ -46,6 +46,7 @@ onMounted(() => {
 			<div class="text">{{ props.label }}</div>
 			<YMTextBox
 				id="rename-name"
+				v-focus
 				:model-value="props.modelValue"
 				@update:model-value="emit('update:modelValue', $event)"
 			/>

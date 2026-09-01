@@ -3,6 +3,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { pinia } from '@app/stores/pinia';
 import { initYamiI18n } from '@app/i18n';
+import { vFocus } from '@app/directives/focus';
 import '@app/utils/element-data.ts';
 import '@app/main/startup.ts';
 
@@ -16,6 +17,7 @@ window.addEventListener('error', (e: ErrorEvent) => {
 const app = createApp(App);
 app.use(pinia);
 app.use(initYamiI18n({ autoLoad: true }));
+app.directive('focus', vFocus);
 
 const el = document.getElementById('app');
 if (el) {

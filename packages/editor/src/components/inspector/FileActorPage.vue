@@ -34,9 +34,19 @@
 			<div class="text">Move Motion</div>
 			<SelectBox id="fileActor-moveMotion" v-model="form.moveMotion" @input="onParamInput" />
 			<div class="text">Rotatable</div>
-			<SelectBox id="fileActor-rotatable" v-model="form.rotatable" @input="onParamInput" />
+			<SelectBox
+				id="fileActor-rotatable"
+				ref="elRotatable"
+				v-model="form.rotatable"
+				@input="onParamInput"
+			/>
 			<div class="text">Passage Terrain</div>
-			<SelectBox id="fileActor-passage" v-model="form.passage" @input="onParamInput" />
+			<SelectBox
+				id="fileActor-passage"
+				ref="elPassage"
+				v-model="form.passage"
+				@input="onParamInput"
+			/>
 			<div class="text">Movement Speed</div>
 			<NumberBox
 				id="fileActor-speed"
@@ -48,7 +58,12 @@
 				@input="onParamInput"
 			/>
 			<div class="text">Collision Shape</div>
-			<SelectBox id="fileActor-shape" v-model="form.shape" @input="onParamInput" />
+			<SelectBox
+				id="fileActor-shape"
+				ref="elShape"
+				v-model="form.shape"
+				@input="onParamInput"
+			/>
 			<div class="text">Collision Size</div>
 			<NumberBox
 				id="fileActor-size"
@@ -71,7 +86,12 @@
 				@input="onParamInput"
 			/>
 			<div class="text">Immovable</div>
-			<SelectBox id="fileActor-immovable" v-model="form.immovable" @input="onParamInput" />
+			<SelectBox
+				id="fileActor-immovable"
+				ref="elImmovable"
+				v-model="form.immovable"
+				@input="onParamInput"
+			/>
 			<div class="text">Scale</div>
 			<NumberBox
 				id="fileActor-scale"
@@ -103,7 +123,13 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileActor-sprites.label') || 'Sprites' }}</DetailSummary>
-		<ParamList id="fileActor-sprites" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			id="fileActor-sprites"
+			ref="elSprites"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{
@@ -111,6 +137,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-attributes"
+			ref="elAttributes"
 			@change="onListChange"
 			class="inspector-list"
 			group="actor"
@@ -119,7 +146,13 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileActor-skills.label') || 'Skills' }}</DetailSummary>
-		<ParamList id="fileActor-skills" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			id="fileActor-skills"
+			ref="elSkills"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{
@@ -127,6 +160,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-equipments"
+			ref="elEquipments"
 			@change="onListChange"
 			class="inspector-list"
 			flexible
@@ -138,6 +172,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-inventory"
+			ref="elInventory"
 			@change="onListChange"
 			class="inspector-list"
 			flexible
@@ -147,6 +182,7 @@
 		<DetailSummary>{{ t('components.fileActor-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileActor-events"
+			ref="elEvents"
 			@change="onListChange"
 			class="inspector-list"
 			filter="actor"
@@ -155,14 +191,20 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileActor-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="fileActor-scripts" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			id="fileActor-scripts"
+			ref="elScripts"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
-	<ParameterPane id="fileActor-parameter-pane" />
+	<ParameterPane id="fileActor-parameter-pane" ref="elParameterPane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -191,6 +233,19 @@ const onListChange = () => {
 	Inspector?.fileActor?.listChange?.();
 };
 
+const elRotatable = ref<InstanceType<typeof SelectBox> | null>(null);
+const elPassage = ref<InstanceType<typeof SelectBox> | null>(null);
+const elShape = ref<InstanceType<typeof SelectBox> | null>(null);
+const elImmovable = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSprites = ref<InstanceType<typeof ParamList> | null>(null);
+const elAttributes = ref<InstanceType<typeof ParamList> | null>(null);
+const elSkills = ref<InstanceType<typeof ParamList> | null>(null);
+const elEquipments = ref<InstanceType<typeof ParamList> | null>(null);
+const elInventory = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileActor;
 	if (!editor) return;
@@ -200,58 +255,35 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elRotatable = document.getElementById('fileActor-rotatable') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elRotatable?.loadItems) {
-		elRotatable.loadItems([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	}
+	elRotatable.value?.loadItems([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
 
-	const elPassage = document.getElementById('fileActor-passage') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elPassage?.loadItems) {
-		elPassage.loadItems([
-			{ name: 'Land', value: 'land' },
-			{ name: 'Water', value: 'water' },
-			{ name: 'Unrestricted', value: 'unrestricted' }
-		]);
-	}
+	elPassage.value?.loadItems([
+		{ name: 'Land', value: 'land' },
+		{ name: 'Water', value: 'water' },
+		{ name: 'Unrestricted', value: 'unrestricted' }
+	]);
 
-	const elShape = document.getElementById('fileActor-shape') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elShape?.loadItems) {
-		elShape.loadItems([
-			{ name: 'Square', value: 'square' },
-			{ name: 'Circle', value: 'circle' }
-		]);
-	}
+	elShape.value?.loadItems([
+		{ name: 'Square', value: 'square' },
+		{ name: 'Circle', value: 'circle' }
+	]);
 
-	const elImmovable = document.getElementById('fileActor-immovable') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elImmovable?.loadItems) {
-		elImmovable.loadItems([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	}
+	elImmovable.value?.loadItems([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
 
-	if (editor.sprites) document.getElementById('fileActor-sprites')?.bind?.(editor.sprites);
-	document.getElementById('fileActor-attributes')?.bind?.(new AttributeListInterface());
-	if (editor.skills) document.getElementById('fileActor-skills')?.bind?.(editor.skills);
-	if (editor.equipments)
-		document.getElementById('fileActor-equipments')?.bind?.(editor.equipments);
-	if (editor.inventory) document.getElementById('fileActor-inventory')?.bind?.(editor.inventory);
-	document.getElementById('fileActor-events')?.bind?.(new EventListInterface(editor));
-	document.getElementById('fileActor-scripts')?.bind?.(new ScriptListInterface());
-	document
-		.getElementById('fileActor-parameter-pane')
-		?.bind?.(document.getElementById('fileActor-scripts'));
+	if (editor.sprites) elSprites.value?.bind(editor.sprites);
+	elAttributes.value?.bind(new AttributeListInterface());
+	if (editor.skills) elSkills.value?.bind(editor.skills);
+	if (editor.equipments) elEquipments.value?.bind(editor.equipments);
+	if (editor.inventory) elInventory.value?.bind(editor.inventory);
+	elEvents.value?.bind(new EventListInterface(editor));
+	elScripts.value?.bind(new ScriptListInterface());
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	sync();
 });

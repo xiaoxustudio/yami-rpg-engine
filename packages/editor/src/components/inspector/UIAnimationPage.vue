@@ -7,38 +7,60 @@
 			<div class="text">{{ t('components.uiAnimation-animation.label') || 'Animation' }}</div>
 			<CustomBox
 				id="uiAnimation-animation"
+				ref="elAnimation"
+				:model-value="form.animation"
 				type="file"
 				filter="animation"
 				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div>
-			<SelectBox id="uiAnimation-motion" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="uiAnimation-motion"
+				ref="elMotion"
+				v-model="form.motion"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiAnimation-autoplay.label') || 'Autoplay' }}</div>
 			<CheckBox
 				id="uiAnimation-autoplay"
+				ref="elAutoplay"
+				:model-value="form.autoplay"
 				class="standard large"
 				@input="onParamInput"
 			></CheckBox>
 			<div class="text">{{ t('components.uiAnimation-rotatable.label') || 'Rotatable' }}</div>
 			<CheckBox
 				id="uiAnimation-rotatable"
+				ref="elRotatable"
+				:model-value="form.rotatable"
 				class="standard large"
 				@input="onParamInput"
 			></CheckBox>
 			<div class="text">{{ t('components.uiAnimation-angle.label') || 'Angle' }}</div>
 			<NumberBox
 				id="uiAnimation-angle"
+				ref="elAngle"
+				v-model="form.angle"
 				min="0"
 				max="360"
 				unit="deg"
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiAnimation-frame.label') || 'Frame' }}</div>
-			<NumberBox id="uiAnimation-frame" min="0" max="10000" @input="onParamInput"></NumberBox>
+			<NumberBox
+				id="uiAnimation-frame"
+				ref="elFrame"
+				v-model="form.frame"
+				min="0"
+				max="10000"
+				@input="onParamInput"
+			></NumberBox>
 			<div class="text">{{ t('components.uiAnimation-offset-box.label') || 'Offset' }}</div>
 			<div id="uiAnimation-offset-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiAnimation-offsetX"
+					ref="elOffsetX"
+					v-model="form.offsetX"
 					min="-10000"
 					max="10000"
 					unit="px"
@@ -46,6 +68,8 @@
 				></NumberBox>
 				<NumberBox
 					id="uiAnimation-offsetY"
+					ref="elOffsetY"
+					v-model="form.offsetY"
 					min="-10000"
 					max="10000"
 					unit="px"
@@ -59,11 +83,13 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/element-animation-page.ts';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useUIAnimationPage } from '@app/composables/useUIAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -75,20 +101,39 @@ const { t } = useI18n();
 
 const { bindInput } = useInspectorInput();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.uiAnimation?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useUIAnimationPage();
+
+const elAnimation = ref<InstanceType<typeof CustomBox> | null>(null);
+const elMotion = ref<InstanceType<typeof SelectBox> | null>(null);
+const elAutoplay = ref<InstanceType<typeof CheckBox> | null>(null);
+const elRotatable = ref<InstanceType<typeof CheckBox> | null>(null);
+const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elFrame = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
 	const uiAnimation = Inspector.uiAnimation;
 	if (!uiAnimation) return;
-	document.getElementById('uiAnimation-animation')?.addEventListener('write', (event: Event) => {
+	elAnimation.value?.on('write', (event: Event) => {
 		uiAnimation.animationIdWrite(event);
 	});
-	const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
-    #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
-    #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);
+	const elements = [
+		elAnimation.value?.root,
+		elMotion.value?.root,
+		elAutoplay.value?.root,
+		elRotatable.value?.root,
+		elAngle.value?.root,
+		elFrame.value?.root,
+		elOffsetX.value?.root,
+		elOffsetY.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, uiAnimation, UI);
+
+	const el = document.getElementById('uiAnimation-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

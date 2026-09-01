@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -88,7 +88,7 @@ const load = (params: Record<string, unknown> = {}): void => {
 	document.getElementById('getTarget-attribute')?.loadItems?.(attrItems);
 	document.getElementById('getTarget-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), params);
-	getFocus(document.getElementById('getTarget-actor')!);
+	requestFocus('getTarget-actor');
 };
 
 const save = (): void => {
@@ -106,7 +106,7 @@ const save = (): void => {
 		case 'max-attribute-value': {
 			const attribute = form.attribute;
 			if (attribute === '') {
-				getFocus(document.getElementById('getTarget-attribute')!);
+				requestFocus('getTarget-attribute');
 				return;
 			}
 			commit({ actor, selector, condition, attribute });
@@ -117,11 +117,11 @@ const save = (): void => {
 			const attribute = form.attribute;
 			const divisor = form.divisor;
 			if (attribute === '') {
-				getFocus(document.getElementById('getTarget-attribute')!);
+				requestFocus('getTarget-attribute');
 				return;
 			}
 			if (divisor === '') {
-				getFocus(document.getElementById('getTarget-divisor')!);
+				requestFocus('getTarget-divisor');
 				return;
 			}
 			commit({

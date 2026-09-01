@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Team A</div>
-			<SelectBox id="setTeamRelation-teamId1" v-model="form.teamId1" />
+			<SelectBox id="setTeamRelation-teamId1" v-focus v-model="form.teamId1" />
 			<div class="text">Team B</div>
 			<SelectBox id="setTeamRelation-teamId2" v-model="form.teamId2" />
 			<div class="text">Relation</div>

@@ -10,16 +10,17 @@
 			<div class="text">Trigger</div>
 			<FileVar
 				id="createTrigger-triggerId"
+				v-focus
 				type="file"
 				filter="trigger"
 				v-model="form.triggerId"
 			/>
 			<div class="text">Caster</div>
-			<CustomBox id="createTrigger-caster" type="actor" @input="onCaster" />
+			<CustomBox id="createTrigger-caster" type="actor" v-model="form.caster" />
 			<div class="text">Origin</div>
-			<CustomBox id="createTrigger-origin" type="position" @input="onOrigin" />
+			<CustomBox id="createTrigger-origin" type="position" v-model="form.origin" />
 			<div class="text">Angle</div>
-			<CustomBox id="createTrigger-angle" type="angle" @input="onAngle" />
+			<CustomBox id="createTrigger-angle" type="angle" v-model="form.angle" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="createTrigger-distance"
@@ -63,18 +64,6 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useCreateTriggerCommandSchema();
-
-const onCaster = (value: unknown) => {
-	form.caster = value;
-};
-
-const onOrigin = (value: unknown) => {
-	form.origin = value;
-};
-
-const onAngle = (value: unknown) => {
-	form.angle = value;
-};
 
 const onConfirm = () => {
 	save();

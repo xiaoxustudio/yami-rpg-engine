@@ -1,9 +1,10 @@
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 
 {
 	interface FileTriggerShape {
@@ -125,27 +126,29 @@ import { Inspector } from '@app/inspector/inspector.ts';
 				break;
 			case 'shape-type':
 				if (trigger.shape.type !== value) {
-					const read = getElementReader('fileTrigger-shape');
+					const form = (
+						$('#fileTrigger-vue-mount') as (HTMLElement & { form?: TriggerForm }) | null
+					)?.form;
 					switch (value) {
 						case 'rectangle':
 							trigger.shape = {
 								type: 'rectangle',
-								width: read('width'),
-								height: read('height'),
-								anchor: read('anchor')
+								width: form?.shapeWidth,
+								height: form?.shapeHeight,
+								anchor: form?.shapeAnchor
 							};
 							break;
 						case 'circle':
 							trigger.shape = {
 								type: 'circle',
-								radius: read('radius')
+								radius: form?.shapeRadius
 							};
 							break;
 						case 'sector':
 							trigger.shape = {
 								type: 'sector',
-								radius: read('radius'),
-								centralAngle: read('centralAngle')
+								radius: form?.shapeRadius,
+								centralAngle: form?.shapeCentralAngle
 							};
 							break;
 					}

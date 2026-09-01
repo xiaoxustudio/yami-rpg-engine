@@ -8,15 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="castSkill-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="castSkill-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="castSkill-mode" v-model="form.mode" />
 			<div class="text">Shortcut Key</div>
-			<SelectBox id="castSkill-key" v-model="form.key" />
+			<SelectBox id="castSkill-key" v-focus v-model="form.key" />
 			<div class="text">Shortcut Key</div>
 			<StringVar id="castSkill-keyVar" v-model="form.keyVar" />
 			<div class="text">Skill</div>
-			<CustomBox id="castSkill-skillId" type="file" filter="skill" v-model="form.skillId" />
+			<CustomBox id="castSkill-skillId" v-focus type="file" filter="skill" v-model="form.skillId" />
 			<div class="text">Skill</div>
 			<CustomBox id="castSkill-skill" type="skill" v-model="form.skill" />
 			<div class="text">Wait</div>

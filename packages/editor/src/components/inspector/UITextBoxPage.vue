@@ -5,13 +5,29 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="uiTextBox-properties-grid">
 			<div class="text">{{ t('components.uiTextBox-type.label') || 'Type' }}</div>
-			<SelectBox id="uiTextBox-type" v-model="form.type" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elType"
+				id="uiTextBox-type"
+				v-model="form.type"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiTextBox-align.label') || 'Align' }}</div>
-			<SelectBox id="uiTextBox-align" v-model="form.align" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elAlign"
+				id="uiTextBox-align"
+				v-model="form.align"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiTextBox-text.label') || 'Text' }}</div>
-			<TextBox id="uiTextBox-text" v-model="form.text" @input="onParamInput"></TextBox>
+			<TextBox
+				ref="elText"
+				id="uiTextBox-text"
+				v-model="form.text"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.uiTextBox-maxLength.label') || 'Max Length' }}</div>
 			<NumberBox
+				ref="elMaxLength"
 				id="uiTextBox-maxLength"
 				v-model="form.maxLength"
 				min="1"
@@ -20,12 +36,14 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-number.label') || 'Number' }}</div>
 			<NumberBox
+				ref="elNumber"
 				id="uiTextBox-number"
 				v-model="form.number"
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-min.label') || 'Min' }}</div>
 			<NumberBox
+				ref="elMin"
 				id="uiTextBox-min"
 				v-model="form.min"
 				min="-1000000000"
@@ -35,6 +53,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-max.label') || 'Max' }}</div>
 			<NumberBox
+				ref="elMax"
 				id="uiTextBox-max"
 				v-model="form.max"
 				min="-1000000000"
@@ -46,6 +65,7 @@
 				{{ t('components.uiTextBox-decimals.label') || 'Decimal Places' }}
 			</div>
 			<NumberBox
+				ref="elDecimals"
 				id="uiTextBox-decimals"
 				v-model="form.decimals"
 				min="0"
@@ -96,7 +116,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -116,55 +136,41 @@ const { form, sync, onParamInput } = useUITextBoxPage();
 
 const { bindInput } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
-
-const relate = (
-	id: string,
-	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
-};
+const elType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elAlign = ref<InstanceType<typeof SelectBox> | null>(null);
+const elText = ref<InstanceType<typeof TextBox> | null>(null);
+const elMaxLength = ref<InstanceType<typeof NumberBox> | null>(null);
+const elNumber = ref<InstanceType<typeof NumberBox> | null>(null);
+const elMin = ref<InstanceType<typeof NumberBox> | null>(null);
+const elMax = ref<InstanceType<typeof NumberBox> | null>(null);
+const elDecimals = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
 	const uiTextBox = Inspector.uiTextBox;
 	if (!uiTextBox) return;
 
-	loadItems('uiTextBox-type', [
+	elType.value?.loadItems([
 		{ name: 'Text', value: 'text' },
 		{ name: 'Number', value: 'number' }
 	]);
-	loadItems('uiTextBox-align', [
+	elAlign.value?.loadItems([
 		{ name: 'Left', value: 'left' },
 		{ name: 'Center', value: 'center' },
 		{ name: 'Right', value: 'right' }
 	]);
-	relate('uiTextBox-type', [
+	elType.value?.enableHiddenMode();
+	elType.value?.relate([
 		{
 			case: 'text',
-			targets: [
-				document.getElementById('uiTextBox-text'),
-				document.getElementById('uiTextBox-maxLength')
-			]
+			targets: [elText.value?.root ?? null, elMaxLength.value?.root ?? null]
 		},
 		{
 			case: 'number',
 			targets: [
-				document.getElementById('uiTextBox-number'),
-				document.getElementById('uiTextBox-min'),
-				document.getElementById('uiTextBox-max'),
-				document.getElementById('uiTextBox-decimals')
+				elNumber.value?.root ?? null,
+				elMin.value?.root ?? null,
+				elMax.value?.root ?? null,
+				elDecimals.value?.root ?? null
 			]
 		}
 	]);

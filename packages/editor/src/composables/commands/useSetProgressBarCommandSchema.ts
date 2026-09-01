@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setProgressBar = new CommandSchema({
 	name: 'setProgressBar',
@@ -37,14 +37,15 @@ Command.cases.setProgressBar = new CommandSchema({
 
 export function useSetProgressBarCommandSchema() {
 	const { form, save, load } = useCommandSchema('setProgressBar', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setProgressBar-element'));
+			requestFocus('setProgressBar-element');
 		}
 	});
 	const onSave = (): void => {
 		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
-			getFocus(document.getElementById('setProgressBar-properties'));
+			requestFocus('setProgressBar-properties');
 			return;
 		}
 		save();

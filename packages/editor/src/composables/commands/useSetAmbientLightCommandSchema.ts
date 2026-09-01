@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 type SetAmbientLightData = {
 	red: number | string;
@@ -49,8 +49,9 @@ Command.cases.setAmbientLight = new CommandSchema({
 
 export function useSetAmbientLightCommandSchema() {
 	return useCommandSchema('setAmbientLight', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setAmbientLight-red')!, 'all');
+			requestFocus('setAmbientLight-red', 'all');
 		}
 	});
 }

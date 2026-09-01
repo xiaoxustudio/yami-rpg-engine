@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.elementGetter-type.label') }}</div>
-			<SelectBox id="elementGetter-type" v-model="form.type" />
+			<SelectBox id="elementGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.elementGetter-ancestor.label') }}</div>
 			<CustomBox
 				id="elementGetter-ancestor"
@@ -16,12 +16,18 @@
 				v-model="form.ancestor"
 			/>
 			<div class="text">{{ t('components.elementGetter-presetId.label') }}</div>
-			<CustomBox id="elementGetter-presetId" type="preset-element" v-model="form.presetId" />
+			<CustomBox
+				id="elementGetter-presetId"
+				v-focus
+				type="preset-element"
+				v-model="form.presetId"
+			/>
 			<div class="text">{{ t('components.elementGetter-index.label') }}</div>
 			<NumberVar id="elementGetter-index" min="0" max="10000" v-model="form.index" />
 			<div class="text">{{ t('components.elementGetter-variable.label') }}</div>
 			<CustomBox
 				id="elementGetter-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -39,6 +45,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -60,7 +67,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => elementGetter.onWindowClosed());
+		on(el, 'closed', () => elementGetter.onWindowClosed());
 	}
 });
 </script>

@@ -1,13 +1,12 @@
-import { $, getElementReader } from '@app/utils/dom';
-import { read } from '@app/utils/element-utils';
+import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
+import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 
 {
 	interface ParticleLayerShape {
 		target: ParticleLayerData | null;
-		paramInput: ((event: Event) => void) | null;
 		update: ((layer: ParticleLayerData, key: string, value: unknown) => void) | null;
 		[k: string]: unknown;
 	}
@@ -51,8 +50,7 @@ import { Particle } from '@app/particle/particle-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	ParticleLayer.initialize = function () {};
@@ -165,22 +163,26 @@ import { Particle } from '@app/particle/particle-window.ts';
 					delete area.width;
 					delete area.height;
 					delete area.radius;
-					const read = getElementReader('particleLayer-area');
+					const form = (
+						$('#particleLayer-vue-mount') as
+							| (HTMLElement & { form?: ParticleForm })
+							| null
+					)?.form;
 					switch (value) {
 						case 'point':
-							area.x = read('x');
-							area.y = read('y');
+							area.x = form?.area.x;
+							area.y = form?.area.y;
 							break;
 						case 'rectangle':
-							area.x = read('x');
-							area.y = read('y');
-							area.width = read('width');
-							area.height = read('height');
+							area.x = form?.area.x;
+							area.y = form?.area.y;
+							area.width = form?.area.width;
+							area.height = form?.area.height;
 							break;
 						case 'circle':
-							area.x = read('x');
-							area.y = read('y');
-							area.radius = read('radius');
+							area.x = form?.area.x;
+							area.y = form?.area.y;
+							area.radius = form?.area.radius;
 							break;
 						case 'edge':
 							break;
@@ -279,64 +281,68 @@ import { Particle } from '@app/particle/particle-window.ts';
 					delete color.endMin;
 					delete color.endMax;
 					delete color.tint;
-					const read = getElementReader('particleLayer-color');
+					const form = (
+						$('#particleLayer-vue-mount') as
+							| (HTMLElement & { form?: ParticleForm })
+							| null
+					)?.form;
 					switch (value) {
 						case 'fixed':
 							color.rgba = [
-								read('rgba-0'),
-								read('rgba-1'),
-								read('rgba-2'),
-								read('rgba-3')
+								form?.color.rgba[0],
+								form?.color.rgba[1],
+								form?.color.rgba[2],
+								form?.color.rgba[3]
 							];
 							break;
 						case 'random':
 							color.min = [
-								read('min-0'),
-								read('min-1'),
-								read('min-2'),
-								read('min-3')
+								form?.color.min[0],
+								form?.color.min[1],
+								form?.color.min[2],
+								form?.color.min[3]
 							];
 							color.max = [
-								read('max-0'),
-								read('max-1'),
-								read('max-2'),
-								read('max-3')
+								form?.color.max[0],
+								form?.color.max[1],
+								form?.color.max[2],
+								form?.color.max[3]
 							];
 							break;
 						case 'easing':
-							color.easingId = read('easingId');
+							color.easingId = form?.color.easingId;
 							color.startMin = [
-								read('startMin-0'),
-								read('startMin-1'),
-								read('startMin-2'),
-								read('startMin-3')
+								form?.color.startMin[0],
+								form?.color.startMin[1],
+								form?.color.startMin[2],
+								form?.color.startMin[3]
 							];
 							color.startMax = [
-								read('startMax-0'),
-								read('startMax-1'),
-								read('startMax-2'),
-								read('startMax-3')
+								form?.color.startMax[0],
+								form?.color.startMax[1],
+								form?.color.startMax[2],
+								form?.color.startMax[3]
 							];
 							color.endMin = [
-								read('endMin-0'),
-								read('endMin-1'),
-								read('endMin-2'),
-								read('endMin-3')
+								form?.color.endMin[0],
+								form?.color.endMin[1],
+								form?.color.endMin[2],
+								form?.color.endMin[3]
 							];
 							color.endMax = [
-								read('endMax-0'),
-								read('endMax-1'),
-								read('endMax-2'),
-								read('endMax-3')
+								form?.color.endMax[0],
+								form?.color.endMax[1],
+								form?.color.endMax[2],
+								form?.color.endMax[3]
 							];
 							layerInstance.updateEasing();
 							break;
 						case 'texture':
 							color.tint = [
-								read('tint-0'),
-								read('tint-1'),
-								read('tint-2'),
-								read('tint-3')
+								form?.color.tint[0],
+								form?.color.tint[1],
+								form?.color.tint[2],
+								form?.color.tint[3]
 							];
 							break;
 					}
@@ -440,20 +446,6 @@ import { Particle } from '@app/particle/particle-window.ts';
 			}
 		}
 		Particle.requestRendering!();
-	};
-
-	ParticleLayer.paramInput = function (this: typeof ParticleLayer, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^particleLayer-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		ParticleLayer.update!(
-			ParticleLayer.target as ParticleLayerData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.particleLayer = ParticleLayer;

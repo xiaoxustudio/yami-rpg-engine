@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
@@ -7,6 +6,7 @@ import { LightProperty } from '@app/commands/property-window/move-light-property
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -48,14 +48,15 @@ Command.cases.moveLight = new CommandSchema({
 
 export function useMoveLightCommandSchema() {
 	const { form, load, commit } = useCommandSchema('moveLight', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('moveLight-light')!);
+			requestFocus('moveLight-light');
 		}
 	});
 	const onSave = (): void => {
 		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
-			getFocus(document.getElementById('moveLight-properties')!);
+			requestFocus('moveLight-properties');
 			return;
 		}
 		commit({

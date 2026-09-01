@@ -8,11 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorMotion-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorMotion-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Type</div>
 			<SelectBox id="changeActorMotion-type" v-model="form.type" />
 			<div class="text">Motion</div>
-			<CustomBox id="changeActorMotion-motion" type="enum-string" @input="onMotion" />
+			<CustomBox id="changeActorMotion-motion" type="enum-string" v-model="form.motion" />
 		</div>
 	</WindowFrame>
 </template>
@@ -30,14 +30,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorMotionCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onMotion = (value: unknown) => {
-	form.motion = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -17,11 +17,13 @@ import { useSetResolutionCommandSchema } from '@app/composables/commands/useSetR
 import SetReverb from '@app/components/commands/SetReverb.vue';
 import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
 import SetShortcut from '@app/components/commands/SetShortcut.vue';
+import { useSetShortcutCommandSchema } from '@app/composables/commands/useSetShortcutCommandSchema';
 import SetSkill from '@app/components/commands/SetSkill.vue';
 import { useSetSkillCommandSchema } from '@app/composables/commands/useSetSkillCommandSchema';
 import SetState from '@app/components/commands/SetState.vue';
 import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateCommandSchema';
 import SetString from '@app/components/commands/SetString.vue';
+import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -76,6 +78,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetObjectAnimation, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setObjectAnimation');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setObjectAnimation');
 			expect(getControl('setObjectAnimation-sort').read()).toBe('actor');
 			expect(getControl('setObjectAnimation-actor').read()).toEqual({ type: 'trigger' });
@@ -102,6 +105,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setObjectAnimation');
 			expect(getControl('setObjectAnimation-sort').read()).toBe('trigger');
 			expect(getControl('setObjectAnimation-trigger').read()).toEqual({ type: 'player' });
@@ -184,6 +188,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetObject, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setObject');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setObject');
 			expect(getControl('setObject-variable').read()).toEqual({ type: 'local', key: '' });
 			expect(getControl('setObject-operand-type').read()).toBe('none');
@@ -206,6 +211,7 @@ vi.mock('@app/stores/local', () => ({
 					operand: { type: 'list', variable: { type: 'local', key: 'list1' }, index: 3 }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setObject');
 			expect(getControl('setObject-variable').read()).toEqual({ type: 'local', key: 'obj' });
 			expect(getControl('setObject-operand-type').read()).toBe('list');
@@ -294,6 +300,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetPan, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setPan');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setPan');
 			expect(getControl('setPan-type').read()).toBe('bgm');
 			expect(getControl('setPan-pan').read()).toBe(0);
@@ -310,6 +317,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'setPan',
 				params: { type: 'se', pan: -0.5, easingId: 'e2', duration: 300, wait: true }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setPan');
 			expect(getControl('setPan-type').read()).toBe('se');
 			expect(getControl('setPan-pan').read()).toBe(-0.5);
@@ -376,6 +384,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetProgressBar, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setProgressBar');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setProgressBar');
 			expect(getControl('setProgressBar-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -391,6 +400,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setProgressBar');
 			expect(getControl('setProgressBar-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setProgressBar-properties').read()).toEqual([
@@ -572,6 +582,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetReverb, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setReverb');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setReverb');
 			expect(getControl('setReverb-type').read()).toBe('bgm');
 			expect(getControl('setReverb-dry').read()).toBe(1);
@@ -596,6 +607,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setReverb');
 			expect(getControl('setReverb-type').read()).toBe('se');
 			expect(getControl('setReverb-dry').read()).toBe(0.5);
@@ -679,6 +691,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetShortcut, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setShortcut');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setShortcut');
 			expect(getControl('setShortcut-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setShortcut-operation').read()).toBe('set-item-shortcut');
@@ -699,6 +712,7 @@ vi.mock('@app/stores/local', () => ({
 					key2: 'key2'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setShortcut');
 			expect(getControl('setShortcut-operation').read()).toBe('swap-shortcuts');
 			expect(getControl('setShortcut-key').read()).toBe('key1');
@@ -706,17 +720,18 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('save 路径：用户改控件后经 Command.cases.setShortcut.save 保存', async () => {
+		it('save 路径：form 值经 Command.cases.setShortcut.save 保存', async () => {
 			const wrapper = mount(SetShortcut, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetShortcutCommandSchema();
 			Command.cases.setShortcut.customLoad!({
 				actor: { type: 'trigger' },
 				operation: 'set-item-shortcut',
 				itemId: 'item1',
 				key: 'key1'
 			});
-			getControl('setShortcut-operation').input('set-skill-shortcut');
-			getControl('setShortcut-skillId').write('skill1');
+			form.operation = 'set-skill-shortcut';
+			form.skillId = 'skill1';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setShortcut.save!();
@@ -746,15 +761,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -812,13 +818,14 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.setSkill.save 保存', async () => {
 			const wrapper = mount(SetSkill, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetSkillCommandSchema();
 			Command.cases.setSkill.customLoad!({
 				skill: { type: 'trigger' },
 				operation: 'set-cooldown',
 				cooldown: 0
 			});
-			getControl('setSkill-skill').write({ type: 'player' });
-			getControl('setSkill-cooldown').write(500);
+			form.skill = { type: 'player' };
+			form.cooldown = 500;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setSkill.save!();
@@ -981,6 +988,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetString, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setString');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setString');
 			expect(getControl('setString-variable').read()).toEqual({ type: 'local', key: '' });
 			expect(getControl('setString-operation').read()).toBe('set');
@@ -1009,6 +1017,7 @@ vi.mock('@app/stores/local', () => ({
 					}
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setString');
 			expect(getControl('setString-variable').read()).toEqual({ type: 'local', key: 'foo' });
 			expect(getControl('setString-operation').read()).toBe('add');
@@ -1026,6 +1035,7 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.setString.save 保存', async () => {
 			const wrapper = mount(SetString, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetStringCommandSchema();
 			Command.cases.setString.customLoad!({
 				variable: { type: 'local', key: 'foo' },
 				operation: 'add',
@@ -1037,8 +1047,8 @@ vi.mock('@app/stores/local', () => ({
 					end: 3
 				}
 			});
-			getControl('setString-operand-string-method').input('char');
-			getControl('setString-operand-string-char-index').write(7);
+			form.stringMethod = 'char';
+			form.stringCharIndex = 7;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setString.save!();

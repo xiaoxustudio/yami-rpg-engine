@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+﻿import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
@@ -7,6 +7,22 @@ import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Variable } from '@app/variable/variable.ts';
 import { Window } from '@app/tools/window-object';
+import { primeWindows } from '@app/tools/window-registry';
+
+const { stackLayoutMock, stackTitleMock } = vi.hoisted(() => ({
+	stackLayoutMock: {
+		disableFocusableElements: vi.fn(),
+		enableFocusableElements: vi.fn()
+	},
+	stackTitleMock: {
+		pointerenter: vi.fn(),
+		pointermove: vi.fn()
+	}
+}));
+vi.mock('@app/tools/window-cluster', () => ({
+	Layout: stackLayoutMock,
+	Title: stackTitleMock
+}));
 
 describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
@@ -147,9 +163,9 @@ describe('useWindowStore（Window 状态反转：store 为源）', () => {
 		expect(store.activeElement).toBe(null);
 	});
 
-	it('状态键完整（4 项）', () => {
+	it('状态键完整（5 项）', () => {
 		const store = getWindowStore();
-		expect(windowStateKeys).toHaveLength(4);
+		expect(windowStateKeys).toHaveLength(5);
 		for (const key of windowStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
@@ -212,5 +228,105 @@ describe('useWindowStore（Window 状态反转：store 为源）', () => {
 		Window.restoreActiveElement!();
 		expect(store.activeElement).toBe(null);
 		input.remove();
+	});
+});
+
+interface StackTestFrame extends HTMLElement {
+	open: () => void;
+	close: () => boolean;
+	closeEventEnabled: boolean;
+	enableAmbient: boolean;
+}
+
+let stackFrames: StackTestFrame[] = [];
+
+function makeStackFrame(id: string): StackTestFrame {
+	const el = document.createElement('div');
+	el.id = id;
+	el.tabIndex = -1;
+	const frame = el as unknown as StackTestFrame;
+	frame.open = () => Window.frames.append(frame);
+	frame.close = () => Window.frames.remove(frame);
+	frame.closeEventEnabled = true;
+	frame.enableAmbient = false;
+	document.body.appendChild(el);
+	stackFrames.push(frame);
+	return frame;
+}
+
+describe('useWindowStore（窗口栈 stack 同步）', () => {
+	beforeEach(() => {
+		primeWindows({ Layout: stackLayoutMock, Title: stackTitleMock });
+		vi.stubGlobal('scrollTo', vi.fn());
+		if (!document.getElementById('title')) {
+			const title = document.createElement('div');
+			title.id = 'title';
+			document.body.appendChild(title);
+		}
+	});
+
+	afterEach(() => {
+		window.removeEventListener('keydown', Window.keydown!);
+		Window.frames.length = 0;
+		getWindowStore().syncStack([]);
+		document.body.style.pointerEvents = '';
+		for (const frame of stackFrames) {
+			frame.remove();
+		}
+		stackFrames = [];
+		vi.unstubAllGlobals();
+	});
+
+	it('windowStateKeys 含 stack', () => {
+		expect(windowStateKeys).toContain('stack');
+	});
+
+	it('frames.append/remove 直接操作后 stack 同步', () => {
+		const store = getWindowStore();
+		const a = makeStackFrame('stack-a');
+		const b = makeStackFrame('stack-b');
+		Window.frames.append(a);
+		expect(store.stack).toEqual(['stack-a']);
+		Window.frames.append(b);
+		expect(store.stack).toEqual(['stack-a', 'stack-b']);
+		Window.frames.remove(a);
+		expect(store.stack).toEqual(['stack-b']);
+		Window.frames.remove(b);
+		expect(store.stack).toEqual([]);
+	});
+
+	it('Window.open/close 一个真实 frame 后 stack 同步', () => {
+		const store = getWindowStore();
+		makeStackFrame('real-a');
+		makeStackFrame('real-b');
+		Window.open!('real-a');
+		Window.open!('real-b');
+		expect(store.stack).toEqual(['real-a', 'real-b']);
+		Window.close!('real-b');
+		expect(store.stack).toEqual(['real-a']);
+		Window.close!('real-a');
+		expect(store.stack).toEqual([]);
+	});
+
+	it('isWindowOpen 基于 stack 计算', () => {
+		const store = getWindowStore();
+		const a = makeStackFrame('open-a');
+		expect(store.isWindowOpen('open-a')).toBe(false);
+		Window.frames.append(a);
+		expect(store.isWindowOpen('open-a')).toBe(true);
+		expect(store.isWindowOpen('no-such')).toBe(false);
+	});
+
+	it('getTopWindowId 返回栈顶 id', () => {
+		const store = getWindowStore();
+		expect(store.getTopWindowId()).toBe(undefined);
+		const a = makeStackFrame('top-a');
+		const b = makeStackFrame('top-b');
+		Window.frames.append(a);
+		expect(store.getTopWindowId()).toBe('top-a');
+		Window.frames.append(b);
+		expect(store.getTopWindowId()).toBe('top-b');
+		Window.frames.remove(b);
+		expect(store.getTopWindowId()).toBe('top-a');
 	});
 });

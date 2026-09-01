@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
 import { Window } from '@app/tools/window-object.ts';
 import { pinia } from './pinia';
-import { shallowRef } from 'vue';
+import { shallowReactive, shallowRef } from 'vue';
 
 export const windowStateKeys = [
 	'positionMode',
 	'absolutePos',
 	'overlapRoot',
-	'activeElement'
+	'activeElement',
+	'stack'
 ] as const;
 
 export const useWindowStore = defineStore('window', () => {
@@ -15,6 +16,11 @@ export const useWindowStore = defineStore('window', () => {
 	const absolutePos = shallowRef<{ x: number; y: number }>({ x: 0, y: 0 });
 	const overlapRoot = shallowRef<HTMLElement | null>(null);
 	const activeElement = shallowRef<Element | null>(null);
+	const stack = shallowReactive<string[]>([]);
+
+	function syncStack(ids: string[]) {
+		stack.splice(0, stack.length, ...ids);
+	}
 
 	interface WindowButton {
 		label?: string;
@@ -41,11 +47,15 @@ export const useWindowStore = defineStore('window', () => {
 	}
 
 	function isWindowOpen(id: string) {
-		return Window?.isWindowOpen?.(id) ?? false;
+		return stack.includes(id);
 	}
 
 	function getTopWindow() {
 		return Window?.getTopWindow?.();
+	}
+
+	function getTopWindowId(): string | undefined {
+		return stack[stack.length - 1];
 	}
 
 	function setPositionMode(mode: string) {
@@ -77,6 +87,8 @@ export const useWindowStore = defineStore('window', () => {
 		absolutePos,
 		overlapRoot,
 		activeElement,
+		stack,
+		syncStack,
 		confirm,
 		initialize,
 		open,
@@ -84,6 +96,7 @@ export const useWindowStore = defineStore('window', () => {
 		closeAll,
 		isWindowOpen,
 		getTopWindow,
+		getTopWindowId,
 		setPositionMode,
 		saveActiveElement,
 		restoreActiveElement,

@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -64,42 +64,28 @@ Command.cases.moveActor = new CommandSchema({
 
 export function useMoveActorCommandSchema() {
 	const { form, load, commit } = useCommandSchema('moveActor', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('moveActor-actor')!);
+			requestFocus('moveActor-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('moveActor-actor')!) ?? form.actor;
-		const mode = read(document.getElementById('moveActor-mode')!) ?? form.mode;
+		const actor = form.actor;
+		const mode = form.mode;
 		switch (mode) {
 			case 'stop':
 				commit({ actor, mode });
 				break;
 			case 'keep':
-				commit({
-					actor,
-					mode,
-					angle: read(document.getElementById('moveActor-angle')!) ?? form.angle
-				});
+				commit({ actor, mode, angle: form.angle });
 				break;
 			case 'straight':
 			case 'navigate':
 			case 'navigate-bypass':
-				commit({
-					actor,
-					mode,
-					destination:
-						read(document.getElementById('moveActor-destination')!) ?? form.destination,
-					wait: read(document.getElementById('moveActor-wait')!) ?? form.wait
-				});
+				commit({ actor, mode, destination: form.destination, wait: form.wait });
 				break;
 			case 'teleport':
-				commit({
-					actor,
-					mode,
-					destination:
-						read(document.getElementById('moveActor-destination')!) ?? form.destination
-				});
+				commit({ actor, mode, destination: form.destination });
 				break;
 		}
 	};

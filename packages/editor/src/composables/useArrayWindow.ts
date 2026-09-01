@@ -2,7 +2,8 @@
 import { reactive, ref } from 'vue';
 import { h, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, on, read } from '@app/utils/element-utils';
+import { on, read } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -48,7 +49,7 @@ const openForm = (values: unknown[], cb: (value: unknown) => void): void => {
 	callback = cb;
 	getWindowStore().open('arrayList');
 	Object.assign(form, { values });
-	getFocus(document.getElementById('arrayList-list'));
+	requestFocus('arrayList-list');
 };
 
 const confirmForm = (): void => {
@@ -92,7 +93,7 @@ const onWindowClosed = (): void => {
 const openNumberForm = (value: number): void => {
 	getWindowStore().open('arrayList-number');
 	Object.assign(numberForm, { value });
-	getFocus(document.getElementById('arrayList-number-value'), 'all');
+	requestFocus('arrayList-number-value', 'all');
 };
 
 const confirmNumber = (): number => {
@@ -104,7 +105,7 @@ const confirmNumber = (): number => {
 const openStringForm = (value: string): void => {
 	getWindowStore().open('arrayList-string');
 	Object.assign(stringForm, { value });
-	getFocus(document.getElementById('arrayList-string-value'), 'all');
+	requestFocus('arrayList-string-value', 'all');
 };
 
 const confirmString = (): string => {

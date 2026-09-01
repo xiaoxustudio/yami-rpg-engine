@@ -9,7 +9,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-condition-type.label') }}</div>
-			<SelectBox id="switch-condition-type" v-model="form.type" />
+			<SelectBox id="switch-condition-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div>
 			<SelectBox id="switch-condition-boolean-value" v-model="form.booleanValue" />
 			<div class="text">{{ t('components.switch-condition-number-value.label') }}</div>
@@ -27,24 +27,27 @@
 			</div>
 			<CustomBox
 				id="switch-condition-attribute-attributeId"
+				v-focus
 				type="attribute"
 				v-model="form.attributeId"
 			/>
 			<div class="text">{{ t('components.switch-condition-enum-stringId.label') }}</div>
 			<CustomBox
 				id="switch-condition-enum-stringId"
+				v-focus
 				type="enum-string"
 				v-model="form.stringId"
 			/>
 			<div class="text">{{ t('components.switch-condition-keyboard-keycode.label') }}</div>
-			<KeyboardBox id="switch-condition-keyboard-keycode" />
+			<KeyboardBox id="switch-condition-keyboard-keycode" v-focus />
 			<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div>
-			<GamepadBox id="switch-condition-gamepad-button" />
+			<GamepadBox id="switch-condition-gamepad-button" v-focus />
 			<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div>
 			<SelectBox id="switch-condition-mouse-button" v-model="form.mouseButton" />
 			<div class="text">{{ t('components.switch-condition-variable-variable.label') }}</div>
 			<CustomBox
 				id="switch-condition-variable-variable"
+				v-focus
 				type="variable"
 				filter="all"
 				v-model="form.variable"

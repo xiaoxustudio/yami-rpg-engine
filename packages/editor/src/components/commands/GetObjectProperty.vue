@@ -10,18 +10,20 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="getObjectProperty-variable"
+				v-focus
 				type="variable"
 				filter="object"
-				@input="onVariable"
+				v-model="form.variable"
 			/>
 			<div class="text">getObjectProperty</div>
-			<ParamList id="getObjectProperty-list" v-model="form.properties" />
+			<ParamList id="getObjectProperty-list" v-focus v-model="form.properties" />
 			<div class="text">saveVariable</div>
 			<CustomBox
 				id="getObjectProperty-save-variable"
+				v-focus
 				type="variable"
 				filter="object"
-				@input="onSaveVariable"
+				v-model="form.saveVariable"
 			/>
 		</div>
 	</WindowFrame>
@@ -42,14 +44,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useGetObjectPropertyCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onSaveVariable = (value: unknown) => {
-	form.saveVariable = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorPortrait-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorPortrait-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="changeActorPortrait-mode" v-model="form.mode" />
 			<div class="text">Portrait</div>
@@ -16,14 +16,14 @@
 				id="changeActorPortrait-portrait"
 				type="file"
 				filter="image"
-				@input="onPortrait"
+				v-model="form.portrait"
 			/>
 			<div class="text">Clip</div>
 			<CustomBox
 				id="changeActorPortrait-clip"
 				type="clip"
 				image="changeActorPortrait-portrait"
-				@input="onClip"
+				v-model="form.clip"
 			/>
 		</div>
 	</WindowFrame>
@@ -42,18 +42,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorPortraitCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onPortrait = (value: unknown) => {
-	form.portrait = value;
-};
-
-const onClip = (value: unknown) => {
-	form.clip = value;
-};
 
 const onConfirm = () => {
 	save();

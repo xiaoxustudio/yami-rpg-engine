@@ -5,28 +5,65 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileUI-foreground-grid">
 			<div class="text">{{ t('components.fileUI-width.label') || 'Width' }}</div>
-			<NumberBox id="fileUI-width" min="8" max="7680" unit="px" @input="onParamInput" />
+			<NumberBox
+				id="fileUI-width"
+				ref="elWidth"
+				v-model="form.width"
+				min="8"
+				max="7680"
+				unit="px"
+				@input="onParamInput"
+			/>
 			<div class="text">{{ t('components.fileUI-height.label') || 'Height' }}</div>
-			<NumberBox id="fileUI-height" min="8" max="7680" unit="px" @input="onParamInput" />
+			<NumberBox
+				id="fileUI-height"
+				ref="elHeight"
+				v-model="form.height"
+				min="8"
+				max="7680"
+				unit="px"
+				@input="onParamInput"
+			/>
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
+/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-ui-page.ts';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useFileUIPage } from '@app/composables/useFileUIPage';
+import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.fileUI?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useFileUIPage();
 
-onMounted(() => {});
+const { bindInput } = useInspectorInput();
+
+const elWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elHeight = ref<InstanceType<typeof NumberBox> | null>(null);
+
+onMounted(() => {
+	const editor = Inspector.fileUI;
+	if (!editor) return;
+
+	const el = document.getElementById('fileUI-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+
+	const elements = [elWidth.value?.root, elHeight.value?.root].filter(
+		(el): el is HTMLElement => el != null
+	);
+	bindInput(elements, editor, editor.owner as { history: unknown });
+
+	sync();
+});
 </script>

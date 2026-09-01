@@ -1,7 +1,8 @@
 import { $ } from '@app/utils/dom';
 import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus, on } from '@app/utils/element-utils.ts';
+import { on } from '@app/utils/element-utils.ts';
+import { requestFocus } from '@app/directives/focus';
 
 export interface FrameGeneratorForm {
 	strideX: number;
@@ -38,7 +39,7 @@ FrameGenerator.open = function (
 ) {
 	this.callback = callback;
 	Window.open!('autoTile-generateFrames');
-	getFocus($('#autoTile-generateFrames-strideX'), 'all');
+	requestFocus('autoTile-generateFrames-strideX', 'all');
 };
 
 FrameGenerator.windowClosed = function (this: typeof FrameGenerator, _event: Event) {
@@ -50,7 +51,7 @@ FrameGenerator.confirm = function (this: typeof FrameGenerator, _event: Event) {
 	const strideY = form.strideY;
 	const count = form.count;
 	if (strideX === 0 && strideY === 0) {
-		return getFocus($('#autoTile-generateFrames-strideX'));
+		return requestFocus('autoTile-generateFrames-strideX');
 	}
 	this.callback(strideX, strideY, count);
 	Window.close!('autoTile-generateFrames');

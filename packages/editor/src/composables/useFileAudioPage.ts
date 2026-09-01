@@ -42,7 +42,7 @@ export function useFileAudioPage() {
 		}
 	};
 
-	const onParamInput = (event: Event): void => {
+	const onParamInput = (event?: Event): void => {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
@@ -50,7 +50,15 @@ export function useFileAudioPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
-			Inspector.fileAudio.paramInput({ target: element });
+			const fileAudio = Inspector.fileAudio;
+			const params = {
+				volume: form.volume,
+				pan: form.pan,
+				dry: form.dry,
+				wet: form.wet
+			};
+			fileAudio.updateParams?.(params);
+			fileAudio.updateParamInfos?.(params);
 		}
 		sync();
 	};

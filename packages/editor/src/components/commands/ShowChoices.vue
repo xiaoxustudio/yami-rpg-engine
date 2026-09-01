@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Choices</div>
-			<ParamList id="showChoices-choices" v-model="form.choices" />
+			<ParamList id="showChoices-choices" v-focus v-model="form.choices" />
 			<div class="text">Parameters</div>
 			<TextBox id="showChoices-parameters" v-model="form.parameters" />
 		</div>

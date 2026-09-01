@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Item</div>
-			<CustomBox id="setItem-item" type="item" @input="onItem" />
+			<CustomBox id="setItem-item" v-focus type="item" v-model="form.item" />
 			<div class="text">Operation</div>
 			<SelectBox id="setItem-operation" v-model="form.operation" />
 			<div class="text">Quantity</div>
@@ -31,10 +31,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetItemCommandSchema();
-
-const onItem = (value: unknown) => {
-	form.item = value;
-};
 
 const onConfirm = () => {
 	save();

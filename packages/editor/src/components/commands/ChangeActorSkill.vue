@@ -8,18 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorSkill-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorSkill-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeActorSkill-operation" v-model="form.operation" />
 			<div class="text">Skill</div>
 			<FileVar
 				id="changeActorSkill-skillId"
+				v-focus
 				type="file"
 				filter="skill"
 				v-model="form.skillId"
 			/>
 			<div class="text">Skill</div>
-			<CustomBox id="changeActorSkill-skill" type="skill" @input="onSkill" />
+			<CustomBox id="changeActorSkill-skill" type="skill" v-model="form.skill" />
 		</div>
 	</WindowFrame>
 </template>
@@ -38,14 +39,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorSkillCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onSkill = (value: unknown) => {
-	form.skill = value;
-};
 
 const onConfirm = () => {
 	save();

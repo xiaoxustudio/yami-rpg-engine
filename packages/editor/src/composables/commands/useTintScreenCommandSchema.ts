@@ -7,8 +7,9 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.tintScreen = new CommandSchema({
 	name: 'tintScreen',
@@ -63,8 +64,9 @@ Command.cases.tintScreen = new CommandSchema({
 
 export function useTintScreenCommandSchema() {
 	const { form, load, commit } = useCommandSchema('tintScreen', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('tintScreen-tint-0'), 'all');
+			requestFocus('tintScreen-tint-0', 'all');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -79,17 +81,12 @@ export function useTintScreenCommandSchema() {
 		write(document.getElementById('tintScreen-filter'), tint);
 	};
 	const onSave = (): void => {
-		const tint = [
-			read(document.getElementById('tintScreen-tint-0')) ?? form['tint-0'],
-			read(document.getElementById('tintScreen-tint-1')) ?? form['tint-1'],
-			read(document.getElementById('tintScreen-tint-2')) ?? form['tint-2'],
-			read(document.getElementById('tintScreen-tint-3')) ?? form['tint-3']
-		];
+		const tint = [form['tint-0'], form['tint-1'], form['tint-2'], form['tint-3']];
 		commit({
 			tint,
-			easingId: read(document.getElementById('tintScreen-easingId')) ?? form.easingId,
-			duration: read(document.getElementById('tintScreen-duration')) ?? form.duration,
-			wait: read(document.getElementById('tintScreen-wait')) ?? form.wait
+			easingId: form.easingId,
+			duration: form.duration,
+			wait: form.wait
 		});
 	};
 	Command.cases.tintScreen.customLoad = onLoad;

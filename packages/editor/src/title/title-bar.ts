@@ -2,7 +2,7 @@ import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
-import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
+import { addClass, hasClass, hide, on, removeClass, show } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';
 import { ctrl } from '@app/utils/event-accessors';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -18,6 +18,7 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { getTitleStore } from '@app/stores/title';
+import { getWindowStore } from '@app/stores/window';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -203,7 +204,7 @@ Title.initialize = function (this: TitleShape) {
 	window.addEventListener('drop', this.windowDrop!);
 	window.addEventListener('dirchange', this.windowDirchange!);
 	window.addEventListener('localize', this.windowLocalize!);
-	this.tabBar.on('pointerdown', this.tabBarPointerdown);
+	on(this.tabBar, 'pointerdown', this.tabBarPointerdown!);
 	// select/closed/popup 事件经 Vue 模板转发（AppShell @select/@closed/@popup → Title.tabBar*）
 
 	YamiIpc.events.on(CHANNELS.send.beforeCloseWindow, this.windowBeforeClose!);
@@ -507,7 +508,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 };
 
 Title.windowBeforeClose = function (this: TitleShape, _event: Event) {
-	if ((Window.frames?.length ?? 0) === 0) {
+	if (getWindowStore().stack.length === 0) {
 		YamiIpc.send.preventCloseWindow();
 		Title.askWhetherToSave!(() => {
 			Editor.quit!();
@@ -536,7 +537,7 @@ Title.windowLeaveFullScreen = function (this: TitleShape, _event: Event) {
 }.bind(Title);
 
 Title.windowDrop = function (this: TitleShape, event: DragEvent) {
-	if ((Window.frames?.length ?? 0) === 0) {
+	if (getWindowStore().stack.length === 0) {
 		const { files } = event.dataTransfer!;
 		for (const file of files) {
 			if (/\.yamirpg$/i.test(file.name)) {

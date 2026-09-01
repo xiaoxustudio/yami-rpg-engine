@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { createTextBoxCore } from './text-box-core';
 
 interface Props {
 	id?: string;
@@ -59,96 +60,18 @@ const state = {
 
 let isEditing = false;
 
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
+const core = createTextBoxCore({
+	getRoot: () => root.value,
+	getInput: () => inputEl.value
+});
+const { read, insert, enable, disable, focus, getFocus, setPlaceholder, setMaxLength, fitContent, deleteInputContent } =
+	core;
 
-const read = (): string => inputEl.value?.value ?? '';
 const write = (value: string): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	el.value = value;
 	(el as TextBoxApi).history?.reset();
-};
-const insert = (value: string): void => {
-	const el = inputEl.value;
-	if (!el) return;
-	el.dispatchEvent(
-		new InputEvent('beforeinput', {
-			inputType: 'insertFromPaste',
-			data: value,
-			bubbles: true
-		})
-	);
-	document.execCommand('insertText', false, value);
-};
-const enable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.remove('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = '';
-	}
-};
-const disable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.add('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = 'none';
-	}
-};
-const focus = (): void => {
-	inputEl.value?.focus();
-};
-const getFocus = (mode: string | null): HTMLInputElement | undefined => {
-	const el = inputEl.value;
-	if (!el) return undefined;
-	setTimeout(() => {
-		el.focus();
-		switch (mode) {
-			case 'all':
-				el.select();
-				el.scrollLeft = 0;
-				break;
-			case 'end':
-				if (typeof el.selectionStart === 'number') {
-					el.setSelectionRange(el.value.length, el.value.length);
-					el.scrollLeft = el.scrollWidth;
-				}
-				break;
-		}
-	});
-	return el;
-};
-const setPlaceholder = (placeholder: string): void => {
-	if (inputEl.value) inputEl.value.placeholder = placeholder;
-};
-const setMaxLength = (length: number): void => {
-	if (inputEl.value) inputEl.value.maxLength = length;
-};
-const fitContent = (): void => {
-	const el = root.value;
-	const input = inputEl.value;
-	if (!el || !input) return;
-	const parent = el.parentNode as HTMLElement;
-	el.style.width = '0';
-	const parentRight = parent.getBoundingClientRect().right;
-	const elLeft = el.getBoundingClientRect().left;
-	el.style.width = `${clamp(input.scrollWidth + 2, 0, parentRight - elLeft)}px`;
-};
-const deleteInputContent = (): void => {
-	const el = inputEl.value;
-	if (!el) return;
-	if (read() !== '') {
-		el.select();
-		el.dispatchEvent(
-			new InputEvent('beforeinput', {
-				inputType: 'deleteContentForward',
-				bubbles: true
-			})
-		);
-		document.execCommand('delete');
-	}
 };
 const updateCloseButton = (): void => {
 	closeButtonDisplay.value = read() !== '' ? '' : 'none';

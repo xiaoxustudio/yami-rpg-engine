@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 type ObjectRef = {
 	type: string;
@@ -137,8 +137,9 @@ Command.cases.setObjectAnimation = new CommandSchema({
 
 export function useSetObjectAnimationCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setObjectAnimation', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setObjectAnimation-sort'));
+			requestFocus('setObjectAnimation-sort');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -159,34 +160,27 @@ export function useSetObjectAnimationCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const sort = read(document.getElementById('setObjectAnimation-sort')) ?? form.sort;
-		const operation =
-			read(document.getElementById('setObjectAnimation-operation')) ?? form.operation;
+		const sort = form.sort as string;
+		const operation = form.operation as string;
 		let object: ObjectRef;
 		switch (sort) {
 			case 'actor':
 			case 'components':
-				object =
-					read(document.getElementById('setObjectAnimation-actor')) ??
-					(form.actor as ObjectRef);
+				object = form.actor as ObjectRef;
 				break;
 			case 'trigger':
-				object =
-					read(document.getElementById('setObjectAnimation-trigger')) ??
-					(form.trigger as ObjectRef);
+				object = form.trigger as ObjectRef;
 				break;
 			case 'animation':
-				object =
-					read(document.getElementById('setObjectAnimation-animation')) ??
-					(form.animation as ObjectRef);
+				object = form.animation as ObjectRef;
 				break;
 			default:
 				return;
 		}
-		let red = read(document.getElementById('setObjectAnimation-tint-0')) ?? form['tint-0'];
-		let green = read(document.getElementById('setObjectAnimation-tint-1')) ?? form['tint-1'];
-		let blue = read(document.getElementById('setObjectAnimation-tint-2')) ?? form['tint-2'];
-		let gray = read(document.getElementById('setObjectAnimation-tint-3')) ?? form['tint-3'];
+		let red = form['tint-0'];
+		let green = form['tint-1'];
+		let blue = form['tint-2'];
+		let gray = form['tint-3'];
 		switch (operation) {
 			case 'set-tint':
 				break;
@@ -199,11 +193,9 @@ export function useSetObjectAnimationCommandSchema() {
 				blue = 0;
 				break;
 		}
-		const easingId =
-			read(document.getElementById('setObjectAnimation-easingId')) ?? form.easingId;
-		const duration =
-			read(document.getElementById('setObjectAnimation-duration')) ?? form.duration;
-		const wait = read(document.getElementById('setObjectAnimation-wait')) ?? form.wait;
+		const easingId = form.easingId;
+		const duration = form.duration;
+		const wait = form.wait;
 		if ('set-tint|set-rgb|set-gray'.includes(operation as string)) {
 			commit({
 				sort,
@@ -219,8 +211,7 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				opacity:
-					read(document.getElementById('setObjectAnimation-opacity')) ?? form.opacity,
+				opacity: form.opacity,
 				easingId,
 				duration,
 				wait
@@ -230,8 +221,7 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				offsetY:
-					read(document.getElementById('setObjectAnimation-offsetY')) ?? form.offsetY,
+				offsetY: form.offsetY,
 				easingId,
 				duration,
 				wait
@@ -241,8 +231,7 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				rotation:
-					read(document.getElementById('setObjectAnimation-rotation')) ?? form.rotation,
+				rotation: form.rotation,
 				easingId,
 				duration,
 				wait

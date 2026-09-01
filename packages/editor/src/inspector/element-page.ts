@@ -1,6 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, disable, enable, hide, show } from '@app/utils/element-utils';
+import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
@@ -84,10 +84,10 @@ import { UI } from '@app/ui/ui-window.ts';
 
 		// this.generalGroup.remove() this.transformGroup.remove() this.eventsGroup.remove() this.scriptsGroup.remove()
 
-		Inspector.manager.on('switch', this.pageSwitch);
+		on(Inspector.manager, 'switch', this.pageSwitch);
 		const alignElements = $('.uiElement-transform-align');
 		(alignElements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('click', this.alignmentClick)
+			on(el, 'click', this.alignmentClick)
 		);
 		// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妲呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楀极瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
 		const otherElements = document.querySelectorAll(`#uiElement-name,
@@ -97,14 +97,14 @@ import { UI } from '@app/ui/ui-window.ts';
     #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
     #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`);
 		(otherElements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
+			on(el, 'focus', Inspector.inputFocus)
 		);
 		(otherElements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+			on(el, 'blur', Inspector.inputBlur!(this, UI))
 		);
 		document
 			.querySelectorAll('#uiElement-events, #uiElement-scripts')
-			.forEach((el) => (el as HTMLElement).on('change', UI.listChange));
+			.forEach((el) => on(el, 'change', UI.listChange));
 	};
 
 	UIElement.createTransform = function (this: typeof UIElement) {

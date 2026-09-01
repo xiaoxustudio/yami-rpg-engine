@@ -10,6 +10,7 @@
 			<div class="text">Write to Variable</div>
 			<CustomBox
 				id="getActor-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -43,9 +44,9 @@
 			<div class="text">Condition</div>
 			<SelectBox id="getActor-condition" v-model="form.condition" />
 			<div class="text">Attribute</div>
-			<SelectBox id="getActor-attribute" v-model="form.attribute" />
+			<SelectBox id="getActor-attribute" v-focus v-model="form.attribute" />
 			<div class="text">Attribute 2</div>
-			<SelectBox id="getActor-divisor" v-model="form.divisor" />
+			<SelectBox id="getActor-divisor" v-focus v-model="form.divisor" />
 			<div class="text">Activation</div>
 			<SelectBox id="getActor-activation" v-model="form.activation" />
 			<div class="text">Exclusion</div>

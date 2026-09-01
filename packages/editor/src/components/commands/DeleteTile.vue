@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Tilemap</div>
-			<CustomBox id="deleteTile-tilemap" type="tilemap" @input="onTilemap" />
+			<CustomBox id="deleteTile-tilemap" v-focus type="tilemap" v-model="form.tilemap" />
 			<div class="text">Tilemap X</div>
 			<NumberVar id="deleteTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
 			<div class="text">Tilemap Y</div>
@@ -28,10 +28,6 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useDeleteTileCommandSchema();
-
-const onTilemap = (value: unknown) => {
-	form.tilemap = value;
-};
 
 const onConfirm = () => {
 	save();

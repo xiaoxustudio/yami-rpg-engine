@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { attachApi } from '../../../utils/attach-api';
+import { createTextBoxCore } from './text-box-core';
 
 export interface TextBoxApiOptions {
 	id?: string;
@@ -28,9 +29,6 @@ export interface TextBoxApi extends HTMLElement {
 	on(...args: unknown[]): void;
 }
 
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
 export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {}): TextBoxApi {
 	const box = el as TextBoxApi;
 	if (box._initialized) return box;
@@ -47,79 +45,26 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	let isEditing = false;
 	const keydownFilters: ((event: KeyboardEvent) => boolean)[] = [];
 
-	const read = (): string => input.value;
+	const core = createTextBoxCore({
+		getRoot: () => box,
+		getInput: () => input
+	});
+	const {
+		read,
+		insert,
+		enable,
+		disable,
+		focus,
+		getFocus,
+		setPlaceholder,
+		setMaxLength,
+		fitContent,
+		deleteInputContent
+	} = core;
+
 	const write = (value: string): void => {
 		input.value = value;
 		box.lastText = value;
-	};
-	const insert = (value: string): void => {
-		input.dispatchEvent(
-			new InputEvent('beforeinput', {
-				inputType: 'insertFromPaste',
-				data: value,
-				bubbles: true
-			})
-		);
-		document.execCommand('insertText', false, value);
-	};
-	const enable = (): void => {
-		box.classList.remove('disabled');
-		for (const child of Array.from(box.children)) {
-			(child as HTMLElement).style.display = '';
-		}
-	};
-	const disable = (): void => {
-		box.classList.add('disabled');
-		for (const child of Array.from(box.children)) {
-			(child as HTMLElement).style.display = 'none';
-		}
-	};
-	const focus = (): void => {
-		input.focus();
-	};
-	const getFocus = (mode: string | null): HTMLInputElement | undefined => {
-		setTimeout(() => {
-			input.focus();
-			switch (mode) {
-				case 'all':
-					input.select();
-					input.scrollLeft = 0;
-					break;
-				case 'end':
-					if (typeof input.selectionStart === 'number') {
-						input.setSelectionRange(input.value.length, input.value.length);
-						input.scrollLeft = input.scrollWidth;
-					}
-					break;
-			}
-		});
-		return input;
-	};
-	const setPlaceholder = (placeholder: string): void => {
-		input.placeholder = placeholder;
-	};
-	const setMaxLength = (maxLength: number): void => {
-		input.maxLength = maxLength;
-	};
-	const fitContent = (): void => {
-		const parent = box.parentNode as HTMLElement;
-		if (!parent) return;
-		box.style.width = '0';
-		const parentRight = parent.getBoundingClientRect().right;
-		const elLeft = box.getBoundingClientRect().left;
-		box.style.width = `${clamp(input.scrollWidth + 2, 0, parentRight - elLeft)}px`;
-	};
-	const deleteInputContent = (): void => {
-		if (read() !== '') {
-			input.select();
-			input.dispatchEvent(
-				new InputEvent('beforeinput', {
-					inputType: 'deleteContentForward',
-					bubbles: true
-				})
-			);
-			document.execCommand('delete');
-		}
 	};
 	const addCloseButton = (): void => {
 		const close = document.createElement('button');

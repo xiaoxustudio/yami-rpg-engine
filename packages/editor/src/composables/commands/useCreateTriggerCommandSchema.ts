@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -57,25 +57,25 @@ Command.cases.createTrigger = new CommandSchema({
 
 export function useCreateTriggerCommandSchema() {
 	const { form, load, commit } = useCommandSchema('createTrigger', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('createTrigger-triggerId'));
+			requestFocus('createTrigger-triggerId');
 		}
 	});
 	const onSave = (): void => {
-		const triggerId =
-			read(document.getElementById('createTrigger-triggerId')) ?? form.triggerId;
+		const triggerId = form.triggerId as string;
 		if (triggerId === '') {
-			getFocus(document.getElementById('createTrigger-triggerId'));
+			requestFocus('createTrigger-triggerId');
 			return;
 		}
 		commit({
 			triggerId,
-			caster: read(document.getElementById('createTrigger-caster')) ?? form.caster,
-			origin: read(document.getElementById('createTrigger-origin')) ?? form.origin,
-			angle: read(document.getElementById('createTrigger-angle')) ?? form.angle,
-			distance: read(document.getElementById('createTrigger-distance')) ?? form.distance,
-			scale: read(document.getElementById('createTrigger-scale')) ?? form.scale,
-			timeScale: read(document.getElementById('createTrigger-timeScale')) ?? form.timeScale
+			caster: form.caster,
+			origin: form.origin,
+			angle: form.angle,
+			distance: form.distance,
+			scale: form.scale,
+			timeScale: form.timeScale
 		});
 	};
 	Command.cases.createTrigger.customSave = onSave;

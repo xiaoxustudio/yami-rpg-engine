@@ -51,6 +51,7 @@
 			<div class="flex-box" id="fileScene-ambient-red-box">
 				<SliderBox
 					id="fileScene-ambient-red-slider"
+					ref="elAmbientRedSlider"
 					v-model="form.ambientRed"
 					min="0"
 					max="255"
@@ -58,6 +59,7 @@
 				/>
 				<NumberBox
 					id="fileScene-ambient-red"
+					ref="elAmbientRed"
 					v-model="form.ambientRed"
 					@input="onParamInput"
 					min="0"
@@ -71,6 +73,7 @@
 			<div class="flex-box" id="fileScene-ambient-green-box">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
+					ref="elAmbientGreenSlider"
 					v-model="form.ambientGreen"
 					min="0"
 					max="255"
@@ -78,6 +81,7 @@
 				/>
 				<NumberBox
 					id="fileScene-ambient-green"
+					ref="elAmbientGreen"
 					v-model="form.ambientGreen"
 					@input="onParamInput"
 					min="0"
@@ -89,6 +93,7 @@
 			<div class="flex-box" id="fileScene-ambient-blue-box">
 				<SliderBox
 					id="fileScene-ambient-blue-slider"
+					ref="elAmbientBlueSlider"
 					v-model="form.ambientBlue"
 					min="0"
 					max="255"
@@ -96,6 +101,7 @@
 				/>
 				<NumberBox
 					id="fileScene-ambient-blue"
+					ref="elAmbientBlue"
 					v-model="form.ambientBlue"
 					@input="onParamInput"
 					min="0"
@@ -109,6 +115,7 @@
 			<div class="flex-box" id="fileScene-ambient-direct-box">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"
+					ref="elAmbientDirectSlider"
 					v-model="form.ambientDirect"
 					min="0"
 					max="1"
@@ -116,6 +123,7 @@
 				/>
 				<NumberBox
 					id="fileScene-ambient-direct"
+					ref="elAmbientDirect"
 					v-model="form.ambientDirect"
 					@input="onParamInput"
 					min="0"
@@ -128,18 +136,29 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScene-events.label') || 'Events' }}</DetailSummary>
-		<ParamList id="fileScene-events" class="inspector-list" filter="scene" flexible />
+		<ParamList
+			id="fileScene-events"
+			ref="elEvents"
+			class="inspector-list"
+			filter="scene"
+			flexible
+		/>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScene-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="fileScene-scripts" class="inspector-list" flexible />
+		<ParamList
+			id="fileScene-scripts"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
-	<ParameterPane id="fileScene-parameter-pane" />
+	<ParameterPane id="fileScene-parameter-pane" ref="elParameterPane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -163,6 +182,23 @@ const { form, sync, onParamInput } = useFileScenePage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elAmbientRedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAmbientRed = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAmbientGreenSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAmbientGreen = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAmbientBlueSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAmbientBlue = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAmbientDirectSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAmbientDirect = ref<InstanceType<typeof NumberBox> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileScene;
 	if (!editor) return;
@@ -172,25 +208,15 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	document
-		.getElementById('fileScene-ambient-red-slider')
-		?.synchronize?.(document.getElementById('fileScene-ambient-red'));
-	document
-		.getElementById('fileScene-ambient-green-slider')
-		?.synchronize?.(document.getElementById('fileScene-ambient-green'));
-	document
-		.getElementById('fileScene-ambient-blue-slider')
-		?.synchronize?.(document.getElementById('fileScene-ambient-blue'));
-	document
-		.getElementById('fileScene-ambient-direct-slider')
-		?.synchronize?.(document.getElementById('fileScene-ambient-direct'));
+	elAmbientRedSlider.value?.synchronize(elAmbientRed.value?.root as SyncTarget);
+	elAmbientGreenSlider.value?.synchronize(elAmbientGreen.value?.root as SyncTarget);
+	elAmbientBlueSlider.value?.synchronize(elAmbientBlue.value?.root as SyncTarget);
+	elAmbientDirectSlider.value?.synchronize(elAmbientDirect.value?.root as SyncTarget);
 
 	const owner = editor.owner;
-	document.getElementById('fileScene-events')?.bind?.(new EventListInterface(editor, owner));
-	document.getElementById('fileScene-scripts')?.bind?.(new ScriptListInterface(editor, owner));
-	document
-		.getElementById('fileScene-parameter-pane')
-		?.bind?.(document.getElementById('fileScene-scripts'));
+	elEvents.value?.bind(new EventListInterface(editor, owner));
+	elScripts.value?.bind(new ScriptListInterface(editor, owner));
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	const elements = document.querySelectorAll(
 		'#fileScene-tileWidth, #fileScene-tileHeight, #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct'

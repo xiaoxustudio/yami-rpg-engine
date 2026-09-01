@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Object</div>
-			<CustomBox id="deleteObject-object" type="object" @input="onObject" />
+			<CustomBox id="deleteObject-object" v-focus type="object" v-model="form.object" />
 		</div>
 	</WindowFrame>
 </template>
@@ -23,10 +23,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDeleteObjectCommandSchema();
-
-const onObject = (value: unknown) => {
-	form.object = value;
-};
 
 const onConfirm = () => {
 	save();

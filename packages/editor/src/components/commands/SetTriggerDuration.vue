@@ -8,7 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerDuration-trigger" type="trigger" @input="onTrigger" />
+			<CustomBox
+			id="setTriggerDuration-trigger"
+			v-focus
+			type="trigger"
+			v-model="form.trigger"
+		/>
 			<div class="text">Operation</div>
 			<SelectBox id="setTriggerDuration-operation" v-model="form.operation" />
 			<div class="text">Duration</div>

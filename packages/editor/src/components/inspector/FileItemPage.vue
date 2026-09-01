@@ -35,6 +35,7 @@
 			t('components.fileItem-attributes.label') || 'Attributes'
 		}}</DetailSummary>
 		<ParamList
+			ref="elAttributes"
 			id="fileItem-attributes"
 			@change="onListChange"
 			class="inspector-list"
@@ -45,6 +46,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileItem-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
+			ref="elEvents"
 			id="fileItem-events"
 			@change="onListChange"
 			class="inspector-list"
@@ -54,14 +56,20 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileItem-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="fileItem-scripts" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			ref="elScripts"
+			id="fileItem-scripts"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
-	<ParameterPane id="fileItem-parameter-pane" />
+	<ParameterPane ref="elParameterPane" id="fileItem-parameter-pane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -85,6 +93,11 @@ const onListChange = () => {
 	Inspector?.fileItem?.listChange?.();
 };
 
+const elAttributes = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileItem;
 	if (!editor) return;
@@ -94,12 +107,10 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	document.getElementById('fileItem-attributes')?.bind?.(new AttributeListInterface());
-	document.getElementById('fileItem-events')?.bind?.(new EventListInterface(editor));
-	document.getElementById('fileItem-scripts')?.bind?.(new ScriptListInterface());
-	document
-		.getElementById('fileItem-parameter-pane')
-		?.bind?.(document.getElementById('fileItem-scripts'));
+	elAttributes.value?.bind(new AttributeListInterface());
+	elEvents.value?.bind(new EventListInterface(editor));
+	elScripts.value?.bind(new ScriptListInterface());
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	sync();
 });

@@ -10,6 +10,7 @@
 			<div class="text">Left</div>
 			<NumberVar
 				id="clampCamera-left"
+				v-focus
 				min="-1000"
 				max="1000"
 				step="0.1"

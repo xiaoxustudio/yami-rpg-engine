@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="renderOutline-operation" v-model="form.operation" />
+			<SelectBox id="renderOutline-operation" v-focus v-model="form.operation" />
 			<div class="text">Actor</div>
-			<CustomBox id="renderOutline-actor" type="actor" @input="onActor" />
+			<CustomBox id="renderOutline-actor" type="actor" v-model="form.actor" />
 			<div class="text">Color</div>
 			<ColorBox id="renderOutline-color" v-model="form.color" />
 		</div>
@@ -31,10 +31,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useRenderOutlineCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

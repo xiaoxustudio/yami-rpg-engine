@@ -8,18 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorState-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorState-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeActorState-operation" v-model="form.operation" />
 			<div class="text">State</div>
 			<CustomBox
 				id="changeActorState-stateId"
+				v-focus
 				type="file"
 				filter="state"
-				@input="onStateId"
+				v-model="form.stateId"
 			/>
 			<div class="text">State</div>
-			<CustomBox id="changeActorState-state" type="state" @input="onState" />
+			<CustomBox id="changeActorState-state" type="state" v-model="form.state" />
 		</div>
 	</WindowFrame>
 </template>
@@ -37,18 +38,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorStateCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onStateId = (value: unknown) => {
-	form.stateId = value;
-};
-
-const onState = (value: unknown) => {
-	form.state = value;
-};
 
 const onConfirm = () => {
 	save();

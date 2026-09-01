@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.positionGetter-type.label') }}</div>
-			<SelectBox id="positionGetter-type" v-model="form.type" />
+			<SelectBox id="positionGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.positionGetter-common-x.label') }}</div>
 			<NumberVar
 				id="positionGetter-common-x"
@@ -40,6 +40,7 @@
 			<div class="text">{{ t('components.positionGetter-objectId.label') }}</div>
 			<CustomBox
 				id="positionGetter-objectId"
+				v-focus
 				type="preset-object"
 				filter="any"
 				v-model="form.objectId"
@@ -57,6 +58,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -78,7 +80,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => positionGetter.onWindowClosed());
+		on(el, 'closed', () => positionGetter.onWindowClosed());
 	}
 });
 </script>

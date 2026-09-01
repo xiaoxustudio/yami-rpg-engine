@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
 
@@ -8,6 +7,7 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -87,17 +87,17 @@ const load = ({
 		default: !!value
 	});
 	defaultCommands = value as unknown[] | null;
-	getFocus(document.getElementById('switch-variable'));
+	requestFocus('switch-variable');
 };
 
 const save = (): unknown => {
 	const variable = form.variable;
 	if (VariableGetter.isNone!(variable)) {
-		return getFocus(document.getElementById('switch-variable'));
+		return requestFocus('switch-variable');
 	}
 	const branches = form.branches ?? [];
 	if (branches.length === 0) {
-		return getFocus(document.getElementById('switch-branches'));
+		return requestFocus('switch-branches');
 	}
 	switch (form.default) {
 		case true: {

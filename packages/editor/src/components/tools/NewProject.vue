@@ -8,7 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.newProject-template.label') }}</div>
-			<SelectBox id="newProject-template" v-model="form.template" @input="onTemplateInput" />
+			<SelectBox
+				id="newProject-template"
+				v-focus
+				v-model="form.template"
+				@input="onTemplateInput"
+			/>
 			<div class="text">{{ t('components.newProject-folder.label') }}</div>
 			<TextBox
 				id="newProject-folder"

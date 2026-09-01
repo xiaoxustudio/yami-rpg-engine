@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="moveActor-actor" type="actor" @input="onActor" />
+			<CustomBox id="moveActor-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="moveActor-mode" v-model="form.mode" />
 			<div class="text">Angle</div>
@@ -21,7 +21,7 @@
 				v-model="form.angle"
 			/>
 			<div class="text">Destination</div>
-			<CustomBox id="moveActor-destination" type="position" @input="onDestination" />
+			<CustomBox id="moveActor-destination" type="position" v-model="form.destination" />
 			<div class="text">Wait</div>
 			<SelectBox id="moveActor-wait" name="wait" v-model="form.wait" />
 		</div>
@@ -42,14 +42,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useMoveActorCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onDestination = (value: unknown) => {
-	form.destination = value;
-};
 
 const onConfirm = () => {
 	save();

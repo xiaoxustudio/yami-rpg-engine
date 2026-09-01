@@ -11,12 +11,14 @@
 			</div>
 			<SelectBox
 				id="particleLayer-area-type"
+				ref="elAreaType"
 				v-model="form.area.type"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.particleLayer-area-x.label') || 'X' }}</div>
 			<NumberBox
 				id="particleLayer-area-x"
+				ref="elAreaX"
 				v-model="form.area.x"
 				@input="onParamInput"
 				min="-10000"
@@ -26,6 +28,7 @@
 			<div class="text">{{ t('components.particleLayer-area-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="particleLayer-area-y"
+				ref="elAreaY"
 				v-model="form.area.y"
 				@input="onParamInput"
 				min="-10000"
@@ -35,6 +38,7 @@
 			<div class="text">{{ t('components.particleLayer-area-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="particleLayer-area-width"
+				ref="elAreaWidth"
 				v-model="form.area.width"
 				@input="onParamInput"
 				min="0"
@@ -46,6 +50,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-area-height"
+				ref="elAreaHeight"
 				v-model="form.area.height"
 				@input="onParamInput"
 				min="0"
@@ -57,6 +62,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-area-radius"
+				ref="elAreaRadius"
 				v-model="form.area.radius"
 				@input="onParamInput"
 				min="0"
@@ -687,6 +693,7 @@
 			<div class="text">{{ t('components.particleLayer-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="particleLayer-blend"
+				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
@@ -695,12 +702,14 @@
 			</div>
 			<SelectBox
 				id="particleLayer-light"
+				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.particleLayer-sort.label') || 'Sort' }}</div>
 			<SelectBox
 				id="particleLayer-sort"
+				ref="elSort"
 				v-model="form.sort"
 				@input="onParamInput"
 			></SelectBox>
@@ -709,6 +718,7 @@
 			</div>
 			<SelectBox
 				id="particleLayer-sprite-mode"
+				ref="elSpriteMode"
 				v-model="form.sprite.mode"
 				@input="onParamInput"
 			></SelectBox>
@@ -737,6 +747,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-interval"
+				ref="elSpriteInterval"
 				v-model="form.sprite.interval"
 				@input="onParamInput"
 				min="1"
@@ -748,13 +759,14 @@
 			</div>
 			<SelectBox
 				id="particleLayer-color-mode"
+				ref="elColorMode"
 				v-model="form.color.mode"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">
 				{{ t('components.particleLayer-color-rgba-box.label') || 'Color' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-rgba-box">
+			<div class="flex-box" id="particleLayer-color-rgba-box" ref="elColorRgbaBox">
 				<NumberBox
 					id="particleLayer-color-rgba-0"
 					v-model="form.color.rgba[0]"
@@ -795,7 +807,7 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-min-box.label') || 'Color Min' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-min-box">
+			<div class="flex-box" id="particleLayer-color-min-box" ref="elColorMinBox">
 				<NumberBox
 					id="particleLayer-color-min-0"
 					v-model="form.color.min[0]"
@@ -836,7 +848,7 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-max-box.label') || 'Color Max' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-max-box">
+			<div class="flex-box" id="particleLayer-color-max-box" ref="elColorMaxBox">
 				<NumberBox
 					id="particleLayer-color-max-0"
 					v-model="form.color.max[0]"
@@ -879,13 +891,14 @@
 			</div>
 			<SelectBox
 				id="particleLayer-color-easingId"
+				ref="elColorEasingId"
 				v-model="form.color.easingId"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">
 				{{ t('components.particleLayer-color-startMin-box.label') || 'Color Start Min' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-startMin-box">
+			<div class="flex-box" id="particleLayer-color-startMin-box" ref="elColorStartMinBox">
 				<NumberBox
 					id="particleLayer-color-startMin-0"
 					v-model="form.color.startMin[0]"
@@ -926,7 +939,7 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-startMax-box.label') || 'Color Start Max' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-startMax-box">
+			<div class="flex-box" id="particleLayer-color-startMax-box" ref="elColorStartMaxBox">
 				<NumberBox
 					id="particleLayer-color-startMax-0"
 					v-model="form.color.startMax[0]"
@@ -967,7 +980,7 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-endMin-box.label') || 'Color End Min' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-endMin-box">
+			<div class="flex-box" id="particleLayer-color-endMin-box" ref="elColorEndMinBox">
 				<NumberBox
 					id="particleLayer-color-endMin-0"
 					v-model="form.color.endMin[0]"
@@ -1008,7 +1021,7 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-endMax-box.label') || 'Color End Max' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-endMax-box">
+			<div class="flex-box" id="particleLayer-color-endMax-box" ref="elColorEndMaxBox">
 				<NumberBox
 					id="particleLayer-color-endMax-0"
 					v-model="form.color.endMax[0]"
@@ -1049,17 +1062,19 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-0-box">
+			<div class="flex-box" id="particleLayer-color-tint-0-box" ref="elTint0Box">
 				<SliderBox
-					id="particleLayer-color-tint-0-slider"
-					v-model="form.color.tint[0]"
+				id="particleLayer-color-tint-0-slider"
+				ref="elTint0Slider"
+				v-model="form.color.tint[0]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="particleLayer-color-tint-0"
-					v-model="form.color.tint[0]"
+				id="particleLayer-color-tint-0"
+				ref="elTint0"
+				v-model="form.color.tint[0]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -1069,17 +1084,19 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-1-box">
+			<div class="flex-box" id="particleLayer-color-tint-1-box" ref="elTint1Box">
 				<SliderBox
-					id="particleLayer-color-tint-1-slider"
-					v-model="form.color.tint[1]"
+				id="particleLayer-color-tint-1-slider"
+				ref="elTint1Slider"
+				v-model="form.color.tint[1]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="particleLayer-color-tint-1"
-					v-model="form.color.tint[1]"
+				id="particleLayer-color-tint-1"
+				ref="elTint1"
+				v-model="form.color.tint[1]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -1089,17 +1106,19 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-2-box">
+			<div class="flex-box" id="particleLayer-color-tint-2-box" ref="elTint2Box">
 				<SliderBox
-					id="particleLayer-color-tint-2-slider"
-					v-model="form.color.tint[2]"
+				id="particleLayer-color-tint-2-slider"
+				ref="elTint2Slider"
+				v-model="form.color.tint[2]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="particleLayer-color-tint-2"
-					v-model="form.color.tint[2]"
+				id="particleLayer-color-tint-2"
+				ref="elTint2"
+				v-model="form.color.tint[2]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -1109,17 +1128,19 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-3-box">
+			<div class="flex-box" id="particleLayer-color-tint-3-box" ref="elTint3Box">
 				<SliderBox
-					id="particleLayer-color-tint-3-slider"
-					v-model="form.color.tint[3]"
+				id="particleLayer-color-tint-3-slider"
+				ref="elTint3Slider"
+				v-model="form.color.tint[3]"
 					min="0"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="particleLayer-color-tint-3"
-					v-model="form.color.tint[3]"
+				id="particleLayer-color-tint-3"
+				ref="elTint3"
+				v-model="form.color.tint[3]"
 					@input="onParamInput"
 					min="0"
 					max="255"
@@ -1132,7 +1153,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -1155,178 +1176,162 @@ const { form, sync, onParamInput } = useParticleLayerPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elAreaType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elAreaX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAreaY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAreaWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAreaHeight = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAreaRadius = ref<InstanceType<typeof NumberBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSort = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSpriteMode = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSpriteInterval = ref<InstanceType<typeof NumberBox> | null>(null);
+const elColorMode = ref<InstanceType<typeof SelectBox> | null>(null);
+const elColorEasingId = ref<InstanceType<typeof SelectBox> | null>(null);
+const elColorRgbaBox = ref<HTMLElement | null>(null);
+const elColorMinBox = ref<HTMLElement | null>(null);
+const elColorMaxBox = ref<HTMLElement | null>(null);
+const elColorStartMinBox = ref<HTMLElement | null>(null);
+const elColorStartMaxBox = ref<HTMLElement | null>(null);
+const elColorEndMinBox = ref<HTMLElement | null>(null);
+const elColorEndMaxBox = ref<HTMLElement | null>(null);
+const elTint0Box = ref<HTMLElement | null>(null);
+const elTint1Box = ref<HTMLElement | null>(null);
+const elTint2Box = ref<HTMLElement | null>(null);
+const elTint3Box = ref<HTMLElement | null>(null);
+const elTint0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint0 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint1 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint2 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.particleLayer;
 	if (!editor) return;
 
 	const el = document.getElementById('particleLayer-vue-mount');
 	if (el) {
-		attachElementApi(el, { sync });
+		attachElementApi(el, { sync, form });
 	}
 
-	const elAreaType = document.getElementById('particleLayer-area-type') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elAreaType?.loadItems) {
-		elAreaType.loadItems([
-			{ name: 'Point', value: 'point' },
-			{ name: 'Rectangle', value: 'rectangle' },
-			{ name: 'Circle', value: 'circle' },
-			{ name: 'Screen Edge', value: 'edge' }
-		]);
-	}
-	if (elAreaType?.enableHiddenMode) {
-		const hidden = elAreaType.enableHiddenMode();
-		hidden.relate?.([
+	elAreaType.value?.loadItems([
+		{ name: 'Point', value: 'point' },
+		{ name: 'Rectangle', value: 'rectangle' },
+		{ name: 'Circle', value: 'circle' },
+		{ name: 'Screen Edge', value: 'edge' }
+	]);
+	if (elAreaType.value) {
+		elAreaType.value.enableHiddenMode();
+		elAreaType.value.relate([
 			{
 				case: 'point',
-				targets: [
-					document.getElementById('particleLayer-area-x'),
-					document.getElementById('particleLayer-area-y')
-				]
+				targets: [elAreaX.value?.root ?? null, elAreaY.value?.root ?? null]
 			},
 			{
 				case: 'rectangle',
 				targets: [
-					document.getElementById('particleLayer-area-x'),
-					document.getElementById('particleLayer-area-y'),
-					document.getElementById('particleLayer-area-width'),
-					document.getElementById('particleLayer-area-height')
+					elAreaX.value?.root ?? null,
+					elAreaY.value?.root ?? null,
+					elAreaWidth.value?.root ?? null,
+					elAreaHeight.value?.root ?? null
 				]
 			},
 			{
 				case: 'circle',
 				targets: [
-					document.getElementById('particleLayer-area-x'),
-					document.getElementById('particleLayer-area-y'),
-					document.getElementById('particleLayer-area-radius')
+					elAreaX.value?.root ?? null,
+					elAreaY.value?.root ?? null,
+					elAreaRadius.value?.root ?? null
 				]
 			}
 		]);
 	}
 
-	const elBlend = document.getElementById('particleLayer-blend') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elBlend?.loadItems) {
+	if (elBlend.value) {
 		const blendName = (key: string, fallback: string) =>
 			local.components?.['particleLayer-blend']?.options?.[key]?.name || fallback;
-		elBlend.loadItems([
+		elBlend.value.loadItems([
 			{ name: blendName('normal', 'Normal'), value: 'normal' },
 			{ name: blendName('additive', 'Additive'), value: 'additive' },
 			{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
 		]);
 	}
 
-	const elLight = document.getElementById('particleLayer-light') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elLight?.loadItems) {
+	if (elLight.value) {
 		const lightName = (key: string, fallback: string) =>
 			local.components?.['particleLayer-light']?.options?.[key]?.name || fallback;
-		elLight.loadItems([
+		elLight.value.loadItems([
 			{ name: lightName('raw', 'Raw'), value: 'raw' },
 			{ name: lightName('global', 'Global Sampling'), value: 'global' },
 			{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
 		]);
 	}
 
-	const elSort = document.getElementById('particleLayer-sort') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elSort?.loadItems) {
-		elSort.loadItems([
-			{ name: 'Youngest in Front', value: 'youngest-in-front' },
-			{ name: 'Oldest in Front', value: 'oldest-in-front' },
-			{ name: 'By Scale Factor', value: 'by-scale-factor' }
-		]);
-	}
+	elSort.value?.loadItems([
+		{ name: 'Youngest in Front', value: 'youngest-in-front' },
+		{ name: 'Oldest in Front', value: 'oldest-in-front' },
+		{ name: 'By Scale Factor', value: 'by-scale-factor' }
+	]);
 
-	const elSpriteMode = document.getElementById('particleLayer-sprite-mode') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elSpriteMode?.loadItems) {
-		elSpriteMode.loadItems([
-			{ name: 'Random', value: 'random' },
-			{ name: 'Animation', value: 'animation' },
-			{ name: 'Animation(Loop)', value: 'animation-loop' }
-		]);
-	}
-	if (elSpriteMode?.enableHiddenMode) {
-		const hidden = elSpriteMode.enableHiddenMode();
-		hidden.relate?.([
+	elSpriteMode.value?.loadItems([
+		{ name: 'Random', value: 'random' },
+		{ name: 'Animation', value: 'animation' },
+		{ name: 'Animation(Loop)', value: 'animation-loop' }
+	]);
+	if (elSpriteMode.value) {
+		elSpriteMode.value.enableHiddenMode();
+		elSpriteMode.value.relate([
 			{
 				case: ['animation', 'animation-loop'],
-				targets: [document.getElementById('particleLayer-sprite-interval')]
+				targets: [elSpriteInterval.value?.root ?? null]
 			}
 		]);
 	}
 
-	const elColorMode = document.getElementById('particleLayer-color-mode') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elColorMode?.loadItems) {
-		elColorMode.loadItems([
-			{ name: 'Fixed', value: 'fixed' },
-			{ name: 'Random', value: 'random' },
-			{ name: 'Easing', value: 'easing' },
-			{ name: 'Texture Sampling', value: 'texture' }
-		]);
-	}
-	if (elColorMode?.enableHiddenMode) {
-		const hidden = elColorMode.enableHiddenMode();
-		hidden.relate?.([
-			{ case: 'fixed', targets: [document.getElementById('particleLayer-color-rgba-box')] },
+	elColorMode.value?.loadItems([
+		{ name: 'Fixed', value: 'fixed' },
+		{ name: 'Random', value: 'random' },
+		{ name: 'Easing', value: 'easing' },
+		{ name: 'Texture Sampling', value: 'texture' }
+	]);
+	if (elColorMode.value) {
+		elColorMode.value.enableHiddenMode();
+		elColorMode.value.relate([
+			{ case: 'fixed', targets: [elColorRgbaBox.value] },
 			{
 				case: 'random',
-				targets: [
-					document.getElementById('particleLayer-color-min-box'),
-					document.getElementById('particleLayer-color-max-box')
-				]
+				targets: [elColorMinBox.value, elColorMaxBox.value]
 			},
 			{
 				case: 'easing',
 				targets: [
-					document.getElementById('particleLayer-color-easingId'),
-					document.getElementById('particleLayer-color-startMin-box'),
-					document.getElementById('particleLayer-color-startMax-box'),
-					document.getElementById('particleLayer-color-endMin-box'),
-					document.getElementById('particleLayer-color-endMax-box')
+					elColorEasingId.value?.root ?? null,
+					elColorStartMinBox.value,
+					elColorStartMaxBox.value,
+					elColorEndMinBox.value,
+					elColorEndMaxBox.value
 				]
 			},
 			{
 				case: 'texture',
-				targets: [
-					document.getElementById('particleLayer-color-tint-0-box'),
-					document.getElementById('particleLayer-color-tint-1-box'),
-					document.getElementById('particleLayer-color-tint-2-box'),
-					document.getElementById('particleLayer-color-tint-3-box')
-				]
+				targets: [elTint0Box.value, elTint1Box.value, elTint2Box.value, elTint3Box.value]
 			}
 		]);
 	}
 
-	document
-		.getElementById('particleLayer-color-tint-0-slider')
-		?.synchronize?.(document.getElementById('particleLayer-color-tint-0'));
-	document
-		.getElementById('particleLayer-color-tint-1-slider')
-		?.synchronize?.(document.getElementById('particleLayer-color-tint-1'));
-	document
-		.getElementById('particleLayer-color-tint-2-slider')
-		?.synchronize?.(document.getElementById('particleLayer-color-tint-2'));
-	document
-		.getElementById('particleLayer-color-tint-3-slider')
-		?.synchronize?.(document.getElementById('particleLayer-color-tint-3'));
+	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
+	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
+	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);
+	elTint3Slider.value?.synchronize(elTint3.value?.root as SyncTarget);
 
 	const elements = document.querySelectorAll(
 		'#particleLayer-name, #particleLayer-area-type, #particleLayer-area-x, #particleLayer-area-y, #particleLayer-area-width, #particleLayer-area-height, #particleLayer-area-radius, #particleLayer-count, #particleLayer-delay, #particleLayer-interval, #particleLayer-lifetime, #particleLayer-lifetimeDev, #particleLayer-fadeout, #particleLayer-anchor-x-0, #particleLayer-anchor-x-1, #particleLayer-anchor-y-0, #particleLayer-anchor-y-1, #particleLayer-anchor-speedX-0, #particleLayer-anchor-speedX-1, #particleLayer-anchor-speedY-0, #particleLayer-anchor-speedY-1, #particleLayer-movement-angle-0, #particleLayer-movement-angle-1, #particleLayer-movement-speed-0, #particleLayer-movement-speed-1, #particleLayer-movement-accelAngle-0, #particleLayer-movement-accelAngle-1, #particleLayer-movement-accel-0, #particleLayer-movement-accel-1, #particleLayer-rotation-angle-0, #particleLayer-rotation-angle-1, #particleLayer-rotation-speed-0, #particleLayer-rotation-speed-1, #particleLayer-rotation-accel-0, #particleLayer-rotation-accel-1, #particleLayer-hRotation-radius-0, #particleLayer-hRotation-radius-1, #particleLayer-hRotation-expansionSpeed-0, #particleLayer-hRotation-expansionSpeed-1, #particleLayer-hRotation-expansionAccel-0, #particleLayer-hRotation-expansionAccel-1, #particleLayer-hRotation-angle-0, #particleLayer-hRotation-angle-1, #particleLayer-hRotation-angularSpeed-0, #particleLayer-hRotation-angularSpeed-1, #particleLayer-hRotation-angularAccel-0, #particleLayer-hRotation-angularAccel-1, #particleLayer-scale-factor-0, #particleLayer-scale-factor-1, #particleLayer-scale-speed-0, #particleLayer-scale-speed-1, #particleLayer-scale-accel-0, #particleLayer-scale-accel-1, #particleLayer-image, #particleLayer-blend, #particleLayer-light, #particleLayer-sort, #particleLayer-sprite-mode, #particleLayer-sprite-hframes, #particleLayer-sprite-vframes, #particleLayer-sprite-interval, #particleLayer-color-mode, #particleLayer-color-rgba-0, #particleLayer-color-rgba-1, #particleLayer-color-rgba-2, #particleLayer-color-rgba-3, #particleLayer-color-min-0, #particleLayer-color-min-1, #particleLayer-color-min-2, #particleLayer-color-min-3, #particleLayer-color-max-0, #particleLayer-color-max-1, #particleLayer-color-max-2, #particleLayer-color-max-3, #particleLayer-color-easingId, #particleLayer-color-startMin-0, #particleLayer-color-startMin-1, #particleLayer-color-startMin-2, #particleLayer-color-startMin-3, #particleLayer-color-startMax-0, #particleLayer-color-startMax-1, #particleLayer-color-startMax-2, #particleLayer-color-startMax-3, #particleLayer-color-endMin-0, #particleLayer-color-endMin-1, #particleLayer-color-endMin-2, #particleLayer-color-endMin-3, #particleLayer-color-endMax-0, #particleLayer-color-endMax-1, #particleLayer-color-endMax-2, #particleLayer-color-endMax-3, #particleLayer-color-tint-0, #particleLayer-color-tint-1, #particleLayer-color-tint-2, #particleLayer-color-tint-3'
@@ -1341,14 +1346,10 @@ onMounted(() => {
 			const options = local.components?.[id]?.options;
 			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
 		};
-		// oxlint-disable-next-line no-explicit-any
-		(document.getElementById('particleLayer-blend') as any)?.loadItems?.(
+		elBlend.value?.loadItems(
 			getNames('particleLayer-blend', ['normal', 'additive', 'subtract'])
 		);
-		// oxlint-disable-next-line no-explicit-any
-		(document.getElementById('particleLayer-light') as any)?.loadItems?.(
-			getNames('particleLayer-light', ['raw', 'global', 'ambient'])
-		);
+		elLight.value?.loadItems(getNames('particleLayer-light', ['raw', 'global', 'ambient']));
 	};
 	window.addEventListener('localize', refreshLocalizedItems);
 	watch(

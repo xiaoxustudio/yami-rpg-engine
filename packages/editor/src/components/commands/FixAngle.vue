@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="fixAngle-actor" type="actor" @input="onActor" />
+			<CustomBox id="fixAngle-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
 			<SelectBox id="fixAngle-fixed" v-model="form.fixed" />
 		</div>
@@ -28,10 +28,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useFixAngleCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

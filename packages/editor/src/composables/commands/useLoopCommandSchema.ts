@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
@@ -7,6 +6,7 @@ import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
 const IfBranch = useIfBranchSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -52,14 +52,15 @@ let commands: unknown = null;
 
 export function useLoopCommandSchema() {
 	const { form, load, commit } = useCommandSchema('loop', {
+		skipWrite: true,
 		onLoad(params) {
 			commands = params.commands ?? [];
-			getFocus(document.getElementById('loop-conditions')!);
+			requestFocus('loop-conditions');
 		}
 	});
 	const onSave = (): void => {
 		commit({
-			mode: read(document.getElementById('loop-mode')!) ?? form.mode,
+			mode: form.mode,
 			conditions: form.conditions,
 			commands
 		});

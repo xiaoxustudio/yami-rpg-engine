@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setPan-type" v-model="form.type" />
+			<SelectBox id="setPan-type" v-focus v-model="form.type" />
 			<div class="text">Pan</div>
 			<NumberVar
 				id="setPan-pan"

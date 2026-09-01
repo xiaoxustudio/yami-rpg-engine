@@ -199,8 +199,8 @@ const pointerdown = (event: PointerEvent): void => {
 
 const onNumInput = (value: number): void => {
 	numValue.value = value;
-	emit('input', value);
 	emit('update:modelValue', value);
+	emit('input', value);
 };
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });

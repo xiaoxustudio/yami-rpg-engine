@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setTarget = new CommandSchema({
 	name: 'setTarget',
@@ -23,8 +23,9 @@ Command.cases.setTarget = new CommandSchema({
 
 export function useSetTargetCommandSchema() {
 	return useCommandSchema('setTarget', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setTarget-actor'));
+			requestFocus('setTarget-actor');
 		}
 	});
 }

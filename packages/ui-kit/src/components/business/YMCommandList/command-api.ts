@@ -22,6 +22,9 @@ import {
 	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
 import { attachScrollListener } from '../YMParamList/scroll-listener';
+import { createCommandCore } from './command-core';
+
+const commandCore = createCommandCore();
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = document.createElement('div');
@@ -41,8 +44,6 @@ const macRedoKey = (event: KeyboardEvent): boolean =>
 const arrayAppend = (arr: unknown[], item: unknown): void => {
 	arr[arr.length] = item;
 };
-
-const compress = (str: string): string => str.replace(/\s+/g, ' ').trim();
 
 const alphabetCode = /^Key[A-Z]$/;
 
@@ -533,21 +534,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 				if (content.script !== undefined) {
 					const MAX_LINES = 20;
-					let code = content.script;
-					const matches = code.match(/\n/g);
-					const lines = (matches?.length ?? 0) + 1;
-					if (lines > MAX_LINES) {
-						let count = 0;
-						const chars = code;
-						const clen = chars.length;
-						for (let i = 0; i < clen; i++) {
-							if (chars[i] === '\n' && ++count === MAX_LINES) {
-								code = chars.slice(0, i);
-								break;
-							}
-						}
-					}
-					const slength = Math.min(lines, MAX_LINES + 1);
+					const { code, lines, visibleLines } = commandCore.truncateScript(
+						content.script,
+						MAX_LINES
+					);
+					const slength = visibleLines;
 					const items = Array.from<CommandItemElement>({ length: slength });
 					items[0] = li;
 					for (let i = 1; i < slength; i++) {
@@ -864,54 +855,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		indent: number
 	): string {
 		const lang = (this.__options as CommandListApiOptions).localize?.language;
-		switch (lang) {
-			case 'en-US':
-				return indent * 4 + 'ch';
-			default:
-				return indent * 2 + 'em';
-		}
+		return commandCore.computeTextIndent(indent, lang);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	select: function (this: any, start: number, end: number = start): void {
-		if (start > end) {
-			[start, end] = [end, start];
-		}
-
-		const elements = this.elements;
-		const count = elements.count;
-		start = clamp(start, 0, count - 1);
-		end = clamp(end, 0, count - 1);
-		let indent = Infinity;
-		for (let i = start; i <= end; i++) {
-			const { dataIndent } = elements[i];
-			if (dataIndent < indent) {
-				indent = dataIndent;
-			}
-		}
-		for (let i = start; i >= 0; i--) {
-			const element = elements[i];
-			if (element.dataIndent === indent && element.dataKey === true) {
-				start = i;
-				break;
-			}
-		}
-		for (let i = end + 1; i < count; i++) {
-			const element = elements[i];
-			if (
-				element.dataIndent < indent ||
-				(element.dataIndent === indent && element.dataKey === true)
-			) {
-				end = i - 1;
-				break;
-			}
-		}
-		if (start !== end) {
-			const element = elements[end];
-			if (!element.dataItem) {
-				end--;
-			}
-		}
+		[start, end] = commandCore.computeSelectRange(this.elements, start, end);
 
 		this.unselect();
 
@@ -975,17 +924,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	selectUp: function (this: any): void {
 		if (this.start !== null) {
-			const elements = this.elements;
-			const sData = elements[this.start].dataItem;
-			const eData = elements[this.end].dataItem;
-			let i = this.start;
-			if (sData === eData) {
-				while (--i >= 0) {
-					if (elements[i].dataKey) {
-						break;
-					}
-				}
-			}
+			const i = commandCore.getSelectUpIndex(this.elements, this.start, this.end);
 			this.select(i);
 			this.scrollToSelection();
 		}
@@ -994,28 +933,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	selectDown: function (this: any): void {
 		if (this.start !== null) {
-			const elements = this.elements;
-			const sData = elements[this.start].dataItem;
-			const eData = elements[this.end].dataItem;
-			let i = this.end;
-			if (sData === eData) {
-				const eElement = elements[i];
-				if (!eElement.dataKey) {
-					const data = eElement.dataItem;
-					while (--i >= 0) {
-						const element = elements[i];
-						if (element.dataItem === data && element.dataKey === true) {
-							break;
-						}
-					}
-				}
-				const { count } = elements;
-				while (++i < count) {
-					if (elements[i].dataKey) {
-						break;
-					}
-				}
-			}
+			const i = commandCore.getSelectDownIndex(this.elements, this.start, this.end);
 			this.select(i);
 			this.scrollToSelection();
 		}
@@ -1234,30 +1152,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		index: number
 	): number[] {
 		const elements = this.elements as CommandItemElement[] & { count: number };
-		const count = elements.count;
-		const element = elements[index];
-		const data = element.dataItem;
-		const indent = element.dataIndent;
-		let start = index;
-		let end = index;
-		for (let i = index; i >= 0; i--) {
-			const element = elements[i];
-			if (element.dataItem === data && element.dataKey === true) {
-				start = i;
-				break;
-			}
-		}
-		for (let i = index + 1; i < count; i++) {
-			const element = elements[i];
-			if (
-				element.dataIndent < indent ||
-				(element.dataIndent === indent && element.dataKey === true)
-			) {
-				end = i - 1;
-				break;
-			}
-		}
-		return [start, end];
+		return commandCore.getRangeByIndex(elements, index);
 	},
 
 	getRangeByData: function (
@@ -1265,29 +1160,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		data: CommandData
 	): number[] {
 		const elements = this.elements as CommandItemElement[] & { count: number };
-		const count = elements.count;
-		let indent: number;
-		let start = 0;
-		let end = 0;
-		for (let i = 0; i < count; i++) {
-			const element = elements[i];
-			if (element.dataItem === data) {
-				indent = element.dataIndent;
-				start = i;
-				break;
-			}
-		}
-		for (let i = start + 1; i < count; i++) {
-			const element = elements[i];
-			if (
-				element.dataIndent < indent! ||
-				(element.dataIndent === indent! && element.dataKey === true)
-			) {
-				end = i - 1;
-				break;
-			}
-		}
-		return [start, end];
+		return commandCore.getRangeByData(elements, data);
 	},
 
 	isParentEnabled: function (
@@ -1485,22 +1358,14 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this: HTMLElement & { [k: string]: unknown },
 		commands: CommandData[]
 	): void {
-		for (const command of commands) {
-			if (command.id[0] === '!') {
-				command.id = command.id.slice(1);
-			}
-		}
+		commandCore.enableItems(commands);
 	},
 
 	disableItems: function (
 		this: HTMLElement & { [k: string]: unknown },
 		commands: CommandData[]
 	): void {
-		for (const command of commands) {
-			if (command.id[0] !== '!') {
-				command.id = '!' + command.id;
-			}
-		}
+		commandCore.disableItems(commands);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1597,19 +1462,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this: HTMLElement & { [k: string]: unknown },
 		commands: CommandData[]
 	): string {
-		const commandsJson = JSON.stringify(commands, null, 2);
-
-		const code = `const commands = ${commandsJson};
-try {
-	if (typeof Command === 'undefined' || typeof EventHandler === 'undefined') {
-		throw new Error('运行环境不完整');
-	}
-	const event = new EventHandler(Command.compile(commands));
-	EventHandler.call(event);
-} catch (err) {
-	console.error('✗ 执行出错:', err.message);
-}`;
-		return code;
+		return commandCore.generateExecutableCode(commands);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1956,7 +1809,7 @@ try {
 			} else {
 				addClass(text, 'invalid');
 			}
-			const attrName = compress(
+			const attrName = commandCore.compress(
 				attr
 					? (lookup?.gameLocalReplace(attr.name) ?? attr.name)
 					: (options.command?.parseUnlinkedId(id) ?? id)
@@ -2044,13 +1897,7 @@ try {
 		this: HTMLElement & { [k: string]: unknown },
 		data: CommandData | null | undefined
 	): string | undefined {
-		const id = data?.id;
-		if (id === 'callEvent' || id === '!callEvent') {
-			if (data!.params.type === 'global') {
-				return data!.params.eventId;
-			}
-		}
-		return undefined;
+		return commandCore.tryGetEventId(data);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -2095,13 +1942,10 @@ try {
 		searchMode: FindSearchMode = { caseInsensitive: false, regex: false, matchLine: false }
 	): FindResult[] {
 		if (searchMode.regex) {
-			const strOri = (str as string).trim();
-			try {
-				str = new RegExp(
-					strOri.substring(strOri.indexOf('/') + 1, strOri.lastIndexOf('/')),
-					strOri.substring(strOri.lastIndexOf('/') + 1)
-				);
-			} catch {}
+			const parsed = commandCore.parseSearchRegExp(str as string);
+			if (parsed !== null) {
+				str = parsed;
+			}
 		}
 		const findList = [];
 		for (let i = 0; i < elements.length; i++) {

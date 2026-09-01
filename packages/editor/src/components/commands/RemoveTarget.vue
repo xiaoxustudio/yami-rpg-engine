@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="removeTarget-actor" type="actor" @input="onActor" />
+			<CustomBox id="removeTarget-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="removeTarget-target" type="actor" @input="onTarget" />
+			<CustomBox id="removeTarget-target" type="actor" v-model="form.target" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useRemoveTargetCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onTarget = (value: unknown) => {
-	form.target = value;
-};
 
 const onConfirm = () => {
 	save();

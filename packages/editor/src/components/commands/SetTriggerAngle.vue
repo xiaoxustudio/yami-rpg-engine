@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerAngle-trigger" type="trigger" @input="onTrigger" />
+			<CustomBox id="setTriggerAngle-trigger" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Angle</div>
-			<CustomBox id="setTriggerAngle-angle" type="angle" @input="onAngle" />
+			<CustomBox id="setTriggerAngle-angle" type="angle" v-model="form.angle" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetTriggerAngleCommandSchema();
-
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
-
-const onAngle = (value: unknown) => {
-	form.angle = value;
-};
 
 const onConfirm = () => {
 	save();

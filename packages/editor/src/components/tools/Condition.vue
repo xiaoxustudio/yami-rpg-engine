@@ -8,9 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.condition-type.label') }}</div>
-			<SelectBox id="condition-type" v-model="form.type" @write="onTypeWrite" />
+			<SelectBox id="condition-type" v-focus v-model="form.type" @write="onTypeWrite" />
 			<div class="text">{{ t('components.condition-key.label') }}</div>
-			<CustomBox id="condition-key" type="global-variable" filter="all" v-model="form.key" />
+			<CustomBox
+				id="condition-key"
+				v-focus
+				type="global-variable"
+				filter="all"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.condition-boolean-operation.label') }}</div>
 			<SelectBox id="condition-boolean-operation" v-model="form.booleanOperation" />
 			<div class="text">{{ t('components.condition-boolean-value.label') }}</div>

@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setLoop = new CommandSchema({
 	name: 'setLoop',
@@ -35,8 +35,9 @@ Command.cases.setLoop = new CommandSchema({
 
 export function useSetLoopCommandSchema() {
 	return useCommandSchema('setLoop', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setLoop-type'));
+			requestFocus('setLoop-type');
 		}
 	});
 }

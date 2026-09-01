@@ -8,18 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorSprite-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorSprite-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="changeActorSprite-animationId"
 				type="file"
 				filter="animation"
+				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Sprite Name</div>
 			<SelectBox id="changeActorSprite-spriteId" v-model="form.spriteId" />
 			<div class="text">Sprite</div>
-			<CustomBox id="changeActorSprite-image" type="file" filter="image" @input="onImage" />
+			<CustomBox
+				id="changeActorSprite-image"
+				type="file"
+				filter="image"
+				v-model="form.image"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -35,14 +41,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useChangeActorSpriteCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onImage = (value: unknown) => {
-	form.image = value;
-};
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

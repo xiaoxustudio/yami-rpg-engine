@@ -2,10 +2,10 @@
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -84,30 +84,30 @@ Command.cases.uploadFile = new CommandSchema({
 
 export function useUploadFileCommandSchema() {
 	const { form, load, commit } = useCommandSchema('uploadFile', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('uploadFile-url'));
+			requestFocus('uploadFile-url');
 		}
 	});
 	const onSave = (): void => {
-		const url = read(document.getElementById('uploadFile-url')) ?? form.url;
-		if (!url || VariableGetter.isNone!(url)) {
-			getFocus(document.getElementById('uploadFile-url'));
+		const url = form.url;
+		if (!url || VariableGetter.isNone!(url as { key: string })) {
+			requestFocus('uploadFile-url');
 			return;
 		}
-		const path = read(document.getElementById('uploadFile-path')) ?? form.path;
-		if (!path || VariableGetter.isNone!(path)) {
-			getFocus(document.getElementById('uploadFile-path'));
+		const path = form.path;
+		if (!path || VariableGetter.isNone!(path as { key: string })) {
+			requestFocus('uploadFile-path');
 			return;
 		}
 		commit({
 			url,
-			method: read(document.getElementById('uploadFile-method')) ?? form.method,
+			method: form.method,
 			path,
-			field: read(document.getElementById('uploadFile-field')) ?? form.field,
+			field: form.field,
 			headers: form.header,
-			callback: read(document.getElementById('uploadFile-callback')) ?? form.callback,
-			rateCallback:
-				read(document.getElementById('uploadFile-rateCallback')) ?? form.rateCallback
+			callback: form.callback,
+			rateCallback: form.rateCallback
 		});
 	};
 	Command.cases.uploadFile.customSave = onSave;

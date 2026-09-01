@@ -19,6 +19,9 @@ import {
 	attachDoubleclick
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { createFileBodyCore } from './file-body-core';
+
+const core = createFileBodyCore();
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = document.createElement('div');
@@ -323,9 +326,6 @@ const encodeURL = (string: string): string => {
 	return `url(${encodeURI(string).replace(regexp, '\\$1')})`;
 };
 
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
 const el = ref<HTMLElement>();
 const contentEl = ref<HTMLElement>();
 
@@ -378,7 +378,7 @@ let windowResizeHandler: () => void;
 let resizeObserver: ResizeObserver | null = null;
 
 function setViewIndex(idx: number): void {
-	idx = clamp(idx, 0, 4);
+	idx = core.clamp(idx, 0, 4);
 	if (viewIndex !== idx) {
 		const { head } = props.links;
 		viewIndex = idx;
@@ -547,53 +547,27 @@ function computeGridProperties(): void {
 function computeListGridProperties(): void {
 	const node = el.value as FileBodyPaneApi;
 	const content = contentEl.value as FileBodyContentApi;
-	const WIDTH = 240;
-	const HEIGHT = 20;
-	const PADDING = 4;
-	const GAP = 2;
-	const SCROLLBAR_HEIGHT = 12;
 	const nodeRect = rect(node);
-	const cw = nodeRect.width;
-	const ch = nodeRect.height;
-	const ow = Math.max(cw - PADDING * 2 + GAP, 0);
-	const oh = Math.max(ch - PADDING * 2, 0);
-	const iw = WIDTH + GAP;
-	const ih = HEIGHT;
-	const visibleLines = Math.ceil((cw + GAP) / iw) + 1;
-	const normalCountPerLine = Math.max(Math.floor(oh / ih), 1);
-	const scrollCountPerLine = Math.max(Math.floor((oh - SCROLLBAR_HEIGHT) / ih), 1);
-	const scrollCount = Math.floor(ow / iw) * normalCountPerLine + 1;
-	content.itemSize = iw;
-	content.itemWidth = iw;
-	content.visibleLines = visibleLines;
-	content.normalCountPerLine = normalCountPerLine;
-	content.scrollCountPerLine = scrollCountPerLine;
-	content.scrollCount = scrollCount;
+	const metrics = core.computeListGridMetrics(nodeRect.width, nodeRect.height);
+	content.itemSize = metrics.itemSize;
+	content.itemWidth = metrics.itemWidth;
+	content.visibleLines = metrics.visibleLines;
+	content.normalCountPerLine = metrics.normalCountPerLine;
+	content.scrollCountPerLine = metrics.scrollCountPerLine;
+	content.scrollCount = metrics.scrollCount;
 }
 
 function computeTileGridProperties(width: number, height: number): void {
 	const node = el.value as FileBodyPaneApi;
 	const content = contentEl.value as FileBodyContentApi;
-	const PADDING = 4;
-	const GAP = 2;
-	const SCROLLBAR_WIDTH = 12;
 	const nodeRect = rect(node);
-	const cw = nodeRect.width;
-	const ch = nodeRect.height;
-	const ow = Math.max(cw - PADDING * 2 + GAP, 0);
-	const oh = Math.max(ch - PADDING * 2 + GAP, 0);
-	const iw = width + GAP;
-	const ih = height + GAP;
-	const visibleLines = Math.ceil((ch + GAP) / ih) + 1;
-	const normalCountPerLine = Math.max(Math.floor(ow / iw), 1);
-	const scrollCountPerLine = Math.max(Math.floor((ow - SCROLLBAR_WIDTH) / iw), 1);
-	const scrollCount = Math.floor(oh / ih) * normalCountPerLine + 1;
-	content.itemSize = ih;
-	content.itemWidth = iw;
-	content.visibleLines = visibleLines;
-	content.normalCountPerLine = normalCountPerLine;
-	content.scrollCountPerLine = scrollCountPerLine;
-	content.scrollCount = scrollCount;
+	const metrics = core.computeTileGridMetrics(nodeRect.width, nodeRect.height, width, height);
+	content.itemSize = metrics.itemSize;
+	content.itemWidth = metrics.itemWidth;
+	content.visibleLines = metrics.visibleLines;
+	content.normalCountPerLine = metrics.normalCountPerLine;
+	content.scrollCountPerLine = metrics.scrollCountPerLine;
+	content.scrollCount = metrics.scrollCount;
 }
 
 function computeStartAndEnd(): Uint32Array {
@@ -604,11 +578,13 @@ function computeStartAndEnd(): Uint32Array {
 	const scroll =
 		viewMode === 'list' ? Math.max(node.scrollLeft - 4, 0) : Math.max(node.scrollTop - 4, 0);
 	const { countPerLine, itemSize, visibleLines } = content;
-	const lines = Math.ceil(count / countPerLine!);
-	const sLine = clamp(Math.floor(scroll / itemSize!), 0, lines - 1);
-	const start = countPerLine! * sLine;
-	const length = countPerLine! * visibleLines!;
-	const end = Math.min(start + length, count);
+	const { start, end } = core.computeVisibleRange(
+		scroll,
+		count,
+		countPerLine!,
+		itemSize!,
+		visibleLines!
+	);
 	range[0] = start;
 	range[1] = end;
 	return range;
@@ -1010,7 +986,6 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 	const els = elements;
 	const count = els.count;
 	if (count > 0) {
-		let index: number;
 		let start = Infinity;
 		let end = -Infinity;
 		const { selections: sels } = { selections };
@@ -1022,41 +997,15 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 				end = Math.max(end, idx);
 			}
 		}
-		if (start === Infinity) {
-			switch (direction) {
-				case 'prev':
-				case 'prev-line':
-					index = count - 1;
-					break;
-				case 'next':
-				case 'next-line':
-					index = 0;
-					break;
-			}
-		} else {
-			const { countPerLine } = contentEl.value as FileBodyContentApi;
-			switch (direction) {
-				case 'prev':
-					index = start - 1;
-					break;
-				case 'next':
-					index = end + 1;
-					break;
-				case 'prev-line':
-					index = start - countPerLine!;
-					break;
-				case 'next-line':
-					index = end + countPerLine!;
-					if (index >= count) {
-						const line = Math.floor(index / countPerLine!);
-						const head = line * countPerLine!;
-						if (count > head) {
-							index = count - 1;
-						}
-					}
-					break;
-			}
-		}
+		const { countPerLine } = contentEl.value as FileBodyContentApi;
+		const index = core.computeNavigationIndex(
+			direction,
+			count,
+			countPerLine!,
+			start !== Infinity,
+			start,
+			end
+		);
 		const file = els[index]?.file;
 		if (file === undefined) return;
 		if (!(sels.length === 1 && sels[0] === file)) {
@@ -1094,9 +1043,9 @@ function scrollToSelectionInGridMode(mode: string = 'active'): void {
 				}
 				let scroll = node[property];
 				switch (mode) {
-					case 'active':
-						scroll = clamp(scroll, pos + size + PADDING * 2 - GAP - clientSize, pos);
-						break;
+				case 'active':
+					scroll = core.clamp(scroll, pos + size + PADDING * 2 - GAP - clientSize, pos);
+					break;
 					default:
 						return;
 				}

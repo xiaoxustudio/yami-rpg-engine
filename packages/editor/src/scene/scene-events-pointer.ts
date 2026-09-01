@@ -1,6 +1,7 @@
-import { Scene } from './scene-window.ts';
+﻿import { Scene } from './scene-window.ts';
 import type { DragEventItem, ScrollableScreen } from './scene-events.ts';
 import { relate } from '@app/utils/element-utils';
+import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import { ctrl } from '@app/utils/event-accessors';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -121,7 +122,7 @@ Scene.marqueePointerdown = function (this: typeof Scene, event: DragEventItem) {
 						event.pointerdownY = y;
 						window.addEventListener('pointerup', this.pointerup);
 						window.addEventListener('pointermove', this.pointermove);
-						this.screen.addScrollListener('both', this.scale / 2, false, () => {
+						addScrollListener(this.screen, 'both', this.scale / 2, false, () => {
 							const screen = this.screen as ScrollableScreen;
 							this.screen.beginScrolling();
 							screen.rawScrollLeft = screen.scrollLeft;
@@ -326,7 +327,7 @@ Scene.pointerup = function (this: typeof Scene, event: PointerEvent | undefined)
 			}
 			case 'object-move':
 				this.screen.endScrolling();
-				this.screen.removeScrollListener();
+				removeScrollListener(this.screen);
 				break;
 			case 'ready-to-scroll':
 				if (event?.target === this.marquee) {

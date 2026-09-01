@@ -10,6 +10,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setBoolean-variable"
+				v-focus
 				type="variable"
 				filter="writable-boolean"
 				v-model="form.variable"
@@ -27,6 +28,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setBoolean-common-variable"
+				v-focus
 				type="variable"
 				filter="all"
 				v-model="form['common-variable']"
@@ -39,9 +41,9 @@
 				v-model="form['list-index']"
 			/>
 			<div class="text">Param Name</div>
-			<StringVar id="setBoolean-parameter-key" v-model="form['parameter-key']" />
+			<StringVar id="setBoolean-parameter-key" v-focus v-model="form['parameter-key']" />
 			<div class="text">Script</div>
-			<TextBox id="setBoolean-script" v-model="form.script" />
+			<TextBox id="setBoolean-script" v-focus v-model="form.script" />
 		</div>
 	</WindowFrame>
 </template>

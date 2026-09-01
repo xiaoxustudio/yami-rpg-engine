@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -79,7 +79,7 @@ const createDefault = (): Record<string, unknown> => {
 const load = (params: Record<string, unknown> = {}): void => {
 	document.getElementById('castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 	Object.assign(form, createDefault(), params);
-	getFocus(document.getElementById('castSkill-actor'));
+	requestFocus('castSkill-actor');
 };
 
 const save = (): void => {
@@ -90,7 +90,7 @@ const save = (): void => {
 		case 'by-key': {
 			const key = form.key;
 			if (key === '') {
-				getFocus(document.getElementById('castSkill-key'));
+				requestFocus('castSkill-key');
 				return;
 			}
 			commit({ actor, mode, key, wait });
@@ -99,7 +99,7 @@ const save = (): void => {
 		case 'by-id': {
 			const skillId = form.skillId;
 			if (skillId === '') {
-				getFocus(document.getElementById('castSkill-skillId'));
+				requestFocus('castSkill-skillId');
 				return;
 			}
 			commit({ actor, mode, skillId, wait });

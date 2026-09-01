@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setTile = new CommandSchema({
@@ -51,23 +51,24 @@ Command.cases.setTile = new CommandSchema({
 
 export function useSetTileCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setTile', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setTile-tilemap'));
+			requestFocus('setTile-tilemap');
 		}
 	});
 	const onSave = (): void => {
-		const tilesetId = read(document.getElementById('setTile-tilesetId')) ?? form.tilesetId;
+		const tilesetId = form.tilesetId as string;
 		if (tilesetId === '') {
-			getFocus(document.getElementById('setTile-tilesetId'));
+			requestFocus('setTile-tilesetId');
 			return;
 		}
 		commit({
-			tilemap: read(document.getElementById('setTile-tilemap')) ?? form.tilemap,
-			tilemapX: read(document.getElementById('setTile-tilemapX')) ?? form.tilemapX,
-			tilemapY: read(document.getElementById('setTile-tilemapY')) ?? form.tilemapY,
+			tilemap: form.tilemap,
+			tilemapX: form.tilemapX,
+			tilemapY: form.tilemapY,
 			tilesetId,
-			tilesetX: read(document.getElementById('setTile-tilesetX')) ?? form.tilesetX,
-			tilesetY: read(document.getElementById('setTile-tilesetY')) ?? form.tilesetY
+			tilesetX: form.tilesetX,
+			tilesetY: form.tilesetY
 		});
 	};
 	Command.cases.setTile.customSave = onSave;

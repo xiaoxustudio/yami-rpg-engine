@@ -158,8 +158,8 @@ const pointerdown = (event: PointerEvent): void => {
 
 const onSelectInput = (value: unknown): void => {
 	selectValue.value = value;
-	emit('input', value);
 	emit('update:modelValue', value);
+	emit('input', value);
 };
 
 const loadItems = (items: unknown[]): void => {

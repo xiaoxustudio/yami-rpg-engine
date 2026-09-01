@@ -12,10 +12,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
-			<SelectBox id="fileActor-inventory-type" v-model="form.type" />
+			<SelectBox id="fileActor-inventory-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-item-id"
+				v-focus
 				type="file"
 				filter="item"
 				v-model="form.itemId"
@@ -30,6 +31,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-equipment-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-equipment-id"
+				v-focus
 				type="file"
 				filter="equipment"
 				v-model="form.equipmentId"

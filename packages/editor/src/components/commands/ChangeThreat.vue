@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeThreat-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeThreat-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="changeThreat-target" type="actor" @input="onTarget" />
+			<CustomBox id="changeThreat-target" type="actor" v-model="form.target" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeThreat-operation" v-model="form.operation" />
 			<div class="text">Threat</div>
@@ -39,14 +39,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeThreatCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onTarget = (value: unknown) => {
-	form.target = value;
-};
 
 const onConfirm = () => {
 	save();

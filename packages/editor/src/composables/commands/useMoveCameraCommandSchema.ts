@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -55,21 +55,21 @@ Command.cases.moveCamera = new CommandSchema({
 
 export function useMoveCameraCommandSchema() {
 	const { form, load, commit } = useCommandSchema('moveCamera', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('moveCamera-mode')!);
+			requestFocus('moveCamera-mode');
 		}
 	});
 	const onSave = (): void => {
-		const mode = read(document.getElementById('moveCamera-mode')!) ?? form.mode;
-		const easingId = read(document.getElementById('moveCamera-easingId')!) ?? form.easingId;
-		const duration = read(document.getElementById('moveCamera-duration')!) ?? form.duration;
-		const wait = read(document.getElementById('moveCamera-wait')!) ?? form.wait;
+		const mode = form.mode as string;
+		const easingId = form.easingId;
+		const duration = form.duration;
+		const wait = form.wait;
 		switch (mode) {
 			case 'position':
 				commit({
 					mode,
-					position:
-						read(document.getElementById('moveCamera-position')!) ?? form.position,
+					position: form.position,
 					easingId,
 					duration,
 					wait
@@ -78,7 +78,7 @@ export function useMoveCameraCommandSchema() {
 			case 'actor':
 				commit({
 					mode,
-					actor: read(document.getElementById('moveCamera-actor')!) ?? form.actor,
+					actor: form.actor,
 					easingId,
 					duration,
 					wait

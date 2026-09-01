@@ -1,10 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { disable, enable, getFocus, read } from '@app/utils/element-utils';
+import { disable, enable } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -102,8 +103,9 @@ Command.cases.downloadFile = new CommandSchema({
 
 export function useDownloadFileCommandSchema() {
 	const { form, load, commit } = useCommandSchema('downloadFile', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('downloadFile-url')!);
+			requestFocus('downloadFile-url');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -115,24 +117,20 @@ export function useDownloadFileCommandSchema() {
 		load(params);
 	};
 	const onSave = (): void => {
-		const url = read(document.getElementById('downloadFile-url')!) ?? form.url;
-		if (!url || VariableGetter.isNone!(url)) {
-			getFocus(document.getElementById('downloadFile-url')!);
+		const url = form.url;
+		if (!url || VariableGetter.isNone!(url as { key: string })) {
+			requestFocus('downloadFile-url');
 			return;
 		}
 		commit({
 			url,
-			method: read(document.getElementById('downloadFile-method')!) ?? form.method,
+			method: form.method,
 			headers: form.header,
 			data: form.data,
-			callback: read(document.getElementById('downloadFile-callback')!) ?? form.callback,
-			rateCallback:
-				read(document.getElementById('downloadFile-rateCallback')!) ?? form.rateCallback,
-			isBackground:
-				read(document.getElementById('downloadFile-isBackground')!) ?? form.isBackground,
-			isBackgroundPath:
-				read(document.getElementById('downloadFile-isBackground-path')!) ??
-				form.isBackgroundPath
+			callback: form.callback,
+			rateCallback: form.rateCallback,
+			isBackground: form.isBackground,
+			isBackgroundPath: form.isBackgroundPath
 		});
 	};
 	Command.cases.downloadFile.customLoad = onLoad;

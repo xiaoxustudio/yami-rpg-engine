@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Image</div>
-			<CustomBox id="setCursor-image" type="file" filter="image" @input="onImage" />
+			<CustomBox id="setCursor-image" v-focus type="file" filter="image" v-model="form.image" />
 		</div>
 	</WindowFrame>
 </template>
@@ -23,10 +23,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetCursorCommandSchema();
-
-const onImage = (value: unknown) => {
-	form.image = value;
-};
 
 const onConfirm = () => {
 	save();

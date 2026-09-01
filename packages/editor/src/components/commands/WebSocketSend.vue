@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">ID</div>
-			<StringVar id="webSocketSend-id" v-model="form.id" />
+			<StringVar id="webSocketSend-id" v-focus v-model="form.id" />
 			<div class="text">Data</div>
 			<StringVar id="webSocketSend-data" v-model="form.data" />
 		</div>

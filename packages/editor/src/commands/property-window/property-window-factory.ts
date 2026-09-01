@@ -1,7 +1,7 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus } from '@app/utils/element-utils.ts';
+import { getFocus, on } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -98,7 +98,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 			window.addEventListener('localize', onLocalize);
 		}
 
-		$(`#${prefix}-property-confirm`).on('click', this.confirm);
+		on($(`#${prefix}-property-confirm`), 'click', this.confirm!);
 	};
 
 	PropertyWindow.parse = function (

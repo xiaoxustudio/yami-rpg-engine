@@ -1,10 +1,10 @@
 import { reactive } from 'vue';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus } from '@app/utils/element-utils';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { createSelectBox } from '@app/components/select-box.ts';
+import { requestFocus } from '@app/directives/focus';
 import { Enum } from '@app/enum/enum-window.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { GameLocal } from '@app/local/local-object.ts';
@@ -143,22 +143,22 @@ export class AttributeListInterface implements IListInterface {
 		if (invalid) AttributeListInterface.typeBox.write(type);
 		Object.assign(form, { key, booleanValue, numberValue, stringValue, enumValue });
 		if (isNew || invalid) {
-			return getFocus($('#object-attribute-key'));
+			return requestFocus('object-attribute-key');
 		}
 		switch (type) {
 			case 'boolean':
-				return getFocus($('#object-attribute-boolean-value'));
+				return requestFocus('object-attribute-boolean-value');
 			case 'number':
-				return getFocus($('#object-attribute-number-value'), 'all');
+				return requestFocus('object-attribute-number-value', 'all');
 			case 'string':
-				return getFocus($('#object-attribute-string-value'), 'all');
+				return requestFocus('object-attribute-string-value', 'all');
 			case 'enum': {
 				const attr = Attribute.getGroupAttribute(this.group, key);
 				const enumBox = $('#object-attribute-enum-value');
 				if (attr && enumBox) {
 					enumBox.loadItems(Enum.getStringItems(attr.enum));
 				}
-				return getFocus($('#object-attribute-enum-value'));
+				return requestFocus('object-attribute-enum-value');
 			}
 		}
 	}
@@ -167,7 +167,7 @@ export class AttributeListInterface implements IListInterface {
 		const type = AttributeListInterface.typeBox.read();
 		const key = form.key;
 		if (key === '') {
-			return getFocus($('#object-attribute-key'));
+			return requestFocus('object-attribute-key');
 		}
 		let value;
 		switch (type) {
@@ -183,7 +183,7 @@ export class AttributeListInterface implements IListInterface {
 			case 'enum':
 				value = form.enumValue;
 				if (value === '') {
-					return getFocus($('#object-attribute-enum-value'));
+					return requestFocus('object-attribute-enum-value');
 				}
 				break;
 		}

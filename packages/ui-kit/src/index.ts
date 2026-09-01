@@ -154,11 +154,6 @@ export {
 	type KeyboardBoxApiOptions
 } from './components/basic/YMKeyboardBox/keyboard-box-api';
 export {
-	createSliderBoxElement,
-	type SliderBoxApi,
-	type SliderBoxApiOptions
-} from './components/basic/YMSliderBox/slider-box-api';
-export {
 	createScrollBarElement,
 	type ScrollBarApi,
 	type ScrollBarApiOptions

@@ -10,9 +10,10 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="createGlobalActor-actorId"
+				v-focus
 				type="file"
 				filter="actor"
-				@input="onActorId"
+				v-model="form.actorId"
 			/>
 			<div class="text">Team</div>
 			<SelectBox id="createGlobalActor-teamId" v-model="form.teamId" />
@@ -35,10 +36,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useCreateGlobalActorCommandSchema();
-
-const onActorId = (value: unknown) => {
-	form.actorId = value;
-};
 
 const onConfirm = () => {
 	save();

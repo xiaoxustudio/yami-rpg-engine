@@ -8,7 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setMovementSpeed-actor" type="actor" @input="onActor" />
+			<CustomBox
+				id="setMovementSpeed-actor"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">Property</div>
 			<SelectBox id="setMovementSpeed-property" v-model="form.property" />
 			<div class="text">Base Speed</div>
@@ -46,10 +51,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetMovementSpeedCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

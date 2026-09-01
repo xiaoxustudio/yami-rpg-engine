@@ -8,21 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setAnimationComponent-actor" type="actor" @input="onActor" />
+			<CustomBox id="setAnimationComponent-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="setAnimationComponent-animationId"
+				v-focus
 				type="file"
 				filter="animation"
-				@input="onAnimationId"
+				v-model="form.animationId"
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="setAnimationComponent-motion" v-model="form.motion" />
+			<SelectBox id="setAnimationComponent-motion" v-focus v-model="form.motion" />
 			<div class="text">Operation</div>
 			<SelectBox id="setAnimationComponent-operation" v-model="form.operation" />
 			<div class="text">Angle</div>
-			<CustomBox id="setAnimationComponent-angle" type="angle" @input="onAngle" />
+			<CustomBox id="setAnimationComponent-angle" type="angle" v-model="form.angle" />
 			<div class="text">Scale</div>
 			<NumberVar
 				id="setAnimationComponent-scale"
@@ -66,16 +67,16 @@
 				v-model="form.offsetY"
 			/>
 			<div class="text">Sprite Name</div>
-			<SelectBox id="setAnimationComponent-spriteId" v-model="form.spriteId" />
+			<SelectBox id="setAnimationComponent-spriteId" v-focus v-model="form.spriteId" />
 			<div class="text">Image</div>
 			<CustomBox
 				id="setAnimationComponent-image"
 				type="file"
 				filter="image"
-				@input="onImage"
+				v-model="form.image"
 			/>
 			<div class="text">Play Motion</div>
-			<SelectBox id="setAnimationComponent-playMotion" v-model="form.playMotion" />
+			<SelectBox id="setAnimationComponent-playMotion" v-focus v-model="form.playMotion" />
 			<div class="text">Wait</div>
 			<SelectBox id="setAnimationComponent-wait" name="wait" v-model="form.wait" />
 		</div>
@@ -100,14 +101,6 @@ const { t } = useI18n();
 
 const { form, save } = useSetAnimationComponentCommandSchema();
 
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onAnimationId = (value: unknown) => {
-	form.animationId = value;
-};
-
 const onAnimationIdWrite = (value: unknown) => {
 	const animationId = value as string;
 	const elMotion = $('#setAnimationComponent-motion');
@@ -126,14 +119,6 @@ const onAnimationIdWrite = (value: unknown) => {
 	form.motion = prevMotion;
 	form.playMotion = prevMotion;
 	form.spriteId = prevSprite;
-};
-
-const onAngle = (value: unknown) => {
-	form.angle = value;
-};
-
-const onImage = (value: unknown) => {
-	form.image = value;
 };
 
 const onConfirm = () => {

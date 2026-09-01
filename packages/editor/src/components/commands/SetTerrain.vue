@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Position</div>
-			<CustomBox id="setTerrain-position" type="position" @input="onPosition" />
+			<CustomBox id="setTerrain-position" v-focus type="position" v-model="form.position" />
 			<div class="text">Terrain</div>
 			<SelectBox id="setTerrain-terrain" v-model="form.terrain" />
 		</div>

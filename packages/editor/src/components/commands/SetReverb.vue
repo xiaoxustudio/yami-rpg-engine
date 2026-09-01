@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setReverb-type" v-model="form.type" />
+			<SelectBox id="setReverb-type" v-focus v-model="form.type" />
 			<div class="text">Dry</div>
 			<NumberVar
 				id="setReverb-dry"

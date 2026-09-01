@@ -47,6 +47,7 @@ onMounted(() => {
 			<div class="text">{{ props.label }}</div>
 			<YMNumberBox
 				id="setQuantity-quantity"
+				v-focus
 				min="1"
 				:max="props.max"
 				:model-value="props.modelValue"

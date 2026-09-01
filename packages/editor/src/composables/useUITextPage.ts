@@ -2,7 +2,7 @@ import '@app/inspector/element-text-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 
-interface TextForm {
+export interface TextForm {
 	direction: string;
 	horizontalAlign: string;
 	verticalAlign: string;

@@ -10,14 +10,15 @@
 			<div class="text">Write to List</div>
 			<CustomBox
 				id="getMultipleActors-variable"
+				v-focus
 				type="variable"
 				filter="object"
-				@input="onVariable"
+				v-model="form.variable"
 			/>
 			<div class="text">Position</div>
-			<CustomBox id="getMultipleActors-position" type="position" @input="onPosition" />
+			<CustomBox id="getMultipleActors-position" type="position" v-model="form.position" />
 			<div class="text">Area</div>
-			<SelectBox id="getMultipleActors-area" v-model="form.area" @write="onArea" />
+			<SelectBox id="getMultipleActors-area" v-model="form.area" />
 			<div class="text">Width</div>
 			<NumberVar
 				id="getMultipleActors-width"
@@ -46,11 +47,7 @@
 				v-model="form.radius"
 			/>
 			<div class="text">Selector</div>
-			<SelectBox
-				id="getMultipleActors-selector"
-				v-model="form.selector"
-				@write="onSelector"
-			/>
+			<SelectBox id="getMultipleActors-selector" v-model="form.selector" />
 			<div class="text">Team</div>
 			<SelectVar id="getMultipleActors-teamId" v-model="form.teamId" />
 			<div class="text">Activation</div>
@@ -76,22 +73,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useGetMultipleActorsCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
-
-const onArea = (value: unknown) => {
-	form.area = value as string;
-};
-
-const onSelector = (value: unknown) => {
-	form.selector = value as string;
-};
 
 const onConfirm = () => {
 	save();

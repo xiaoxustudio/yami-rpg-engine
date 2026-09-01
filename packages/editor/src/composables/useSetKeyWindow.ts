@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface SetKeyForm {
 	key: string;
@@ -21,7 +21,7 @@ const open = (key: string, cb: (key: string) => void): void => {
 	callback = cb;
 	Object.assign(form, { key });
 	getWindowStore().open('setKey');
-	getFocus(document.getElementById('setKey-key'), 'all');
+	requestFocus('setKey-key', 'all');
 };
 
 const confirm = (): void => {

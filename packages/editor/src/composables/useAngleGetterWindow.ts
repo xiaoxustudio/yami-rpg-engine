@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface AngleGetterForm {
 	type: string;
@@ -50,7 +50,7 @@ const open = (target: AngleGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: angle.type, position, degrees });
-	getFocus(document.getElementById('angleGetter-type'));
+	requestFocus('angleGetter-type');
 };
 
 const confirm = (): void => {

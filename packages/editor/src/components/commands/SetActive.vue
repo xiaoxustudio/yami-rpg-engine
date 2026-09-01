@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setActive-actor" type="actor" @input="onActor" />
+			<CustomBox id="setActive-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
 			<SelectBox id="setActive-active" v-model="form.active" />
 		</div>
@@ -28,10 +28,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetActiveCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

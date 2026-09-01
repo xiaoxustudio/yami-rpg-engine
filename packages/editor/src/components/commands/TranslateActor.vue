@@ -8,12 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="translateActor-actor" type="actor" @input="onActor" />
+			<CustomBox id="translateActor-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Angle</div>
-			<CustomBox id="translateActor-angle" type="angle" @input="onAngle" />
+			<CustomBox id="translateActor-angle" type="angle" v-model="form.angle" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="translateActor-distance"
+				v-focus
 				min="0"
 				max="512"
 				decimals="4"
@@ -53,14 +54,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useTranslateActorCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onAngle = (value: unknown) => {
-	form.angle = value;
-};
 
 const onConfirm = () => {
 	save();

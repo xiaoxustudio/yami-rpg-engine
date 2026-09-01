@@ -61,8 +61,8 @@ const write = (value: number | string): void => {
 const onInput = (): void => {
 	updateFiller();
 	const value = read();
-	emit('input', value);
 	emit('update:modelValue', value);
+	emit('input', value);
 };
 
 const onWheel = (event: WheelEvent): void => {

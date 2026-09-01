@@ -8,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setPointerEventRoot-operation" v-model="form.operation" />
+			<SelectBox id="setPointerEventRoot-operation" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="setPointerEventRoot-element" type="element" @input="onElement" />
+			<CustomBox
+				id="setPointerEventRoot-element"
+				type="element"
+				v-model="form.element"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -28,10 +32,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetPointerEventRootCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

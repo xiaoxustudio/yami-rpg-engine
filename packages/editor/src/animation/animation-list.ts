@@ -2,6 +2,7 @@ import { Animation } from './animation-window.ts';
 import type { AnimationLayer, AnimationMotion } from './animation-window.ts';
 import { getListConfig } from '@ui-kit';
 import { relate } from '@app/utils/element-utils';
+import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import {
 	addClass,
 	hasClass,
@@ -631,7 +632,7 @@ Animation.outerTimelineListPointerdown = function (
 							'pointermove',
 							Animation.outerTimelineListPointermove
 						);
-						this.addScrollListener!('both', 1, true, () => {
+						addScrollListener(this as unknown as HTMLElement, 'both', 1, true, () => {
 							Animation.outerTimelineListPointermove!(event.latest);
 						});
 						return;
@@ -647,7 +648,7 @@ Animation.outerTimelineListPointerdown = function (
 				event.enableDblclickEvent = true;
 				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
 				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
-				this.addScrollListener!('horizontal', 1, true, () => {
+				addScrollListener(this as unknown as HTMLElement, 'horizontal', 1, true, () => {
 					Animation.outerTimelineListPointermove!(event.latest);
 				});
 			}
@@ -678,7 +679,7 @@ Animation.outerTimelineListPointerup = function (
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select':
-				Animation.outerTimelineList.removeScrollListener();
+				removeScrollListener(Animation.outerTimelineList);
 				break;
 			case 'shift': {
 				const marquee = Animation.timelineMarqueeShift;
@@ -688,7 +689,7 @@ Animation.outerTimelineListPointerup = function (
 				hide(marquee);
 				marquee.layer = null;
 				removeClass(marquee, 'disabled');
-				Animation.outerTimelineList.removeScrollListener();
+				removeScrollListener(Animation.outerTimelineList);
 				break;
 			}
 			case 'ready-to-scroll':

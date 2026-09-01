@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -263,8 +263,9 @@ Command.cases.setString = new CommandSchema({
 
 export function useSetStringCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setString', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setString-variable'));
+			requestFocus('setString-variable');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -347,88 +348,64 @@ export function useSetStringCommandSchema() {
 		load(data);
 	};
 	const onSave = (): void => {
-		const variable = read(document.getElementById('setString-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('setString-variable'));
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
+			requestFocus('setString-variable');
 			return;
 		}
-		const operation = (read(document.getElementById('setString-operation')) ??
-			form.operation) as string;
-		const type = (read(document.getElementById('setString-operand-type')) ??
-			form.operandType) as string;
+		const operation = form.operation as string;
+		const type = form.operandType as string;
 		let operand: SetStringOperand = { type };
 		switch (type) {
 			case 'constant':
 			case 'template': {
-				const value = (read(document.getElementById('setString-operand-common-value')) ??
-					form.commonValue) as string;
+				const value = form.commonValue as string;
 				operand = { type, value };
 				break;
 			}
 			case 'variable': {
-				const variable =
-					read(document.getElementById('setString-operand-common-variable')) ??
-					form.commonVariable;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('setString-operand-common-variable'));
+				const variable = form.commonVariable;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('setString-operand-common-variable');
 					return;
 				}
 				operand = { type, variable: variable as { type: string; key: string } };
 				break;
 			}
 			case 'string': {
-				const method = (read(document.getElementById('setString-operand-string-method')) ??
-					form.stringMethod) as string;
-				const variable =
-					read(document.getElementById('setString-operand-common-variable')) ??
-					form.commonVariable;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('setString-operand-common-variable'));
+				const method = form.stringMethod as string;
+				const variable = form.commonVariable;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('setString-operand-common-variable');
 					return;
 				}
 				const varRef = variable as { type: string; key: string };
 				switch (method) {
 					case 'char': {
-						const index = (read(
-							document.getElementById('setString-operand-string-char-index')
-						) ?? form.stringCharIndex) as number;
+						const index = form.stringCharIndex as number;
 						operand = { type, method, variable: varRef, index };
 						break;
 					}
 					case 'slice': {
-						const begin = (read(
-							document.getElementById('setString-operand-string-slice-begin')
-						) ?? form.stringSliceBegin) as number;
-						const end = (read(
-							document.getElementById('setString-operand-string-slice-end')
-						) ?? form.stringSliceEnd) as number;
+						const begin = form.stringSliceBegin as number;
+						const end = form.stringSliceEnd as number;
 						operand = { type, method, variable: varRef, begin, end };
 						break;
 					}
 					case 'pad-start': {
-						const length = (read(
-							document.getElementById('setString-operand-string-pad-start-length')
-						) ?? form.stringPadStartLength) as number;
-						const pad = (read(
-							document.getElementById('setString-operand-string-pad-start-pad')
-						) ?? form.stringPadStartPad) as string;
+						const length = form.stringPadStartLength as number;
+						const pad = form.stringPadStartPad as string;
 						operand = { type, method, variable: varRef, length, pad };
 						break;
 					}
 					case 'replace':
 					case 'replace-all': {
-						const pattern = (read(
-							document.getElementById('setString-operand-string-replace-pattern')
-						) ?? form.stringReplacePattern) as string;
+						const pattern = form.stringReplacePattern as string;
 						if (pattern === '') {
-							getFocus(
-								document.getElementById('setString-operand-string-replace-pattern')
-							);
+							requestFocus('setString-operand-string-replace-pattern');
 							return;
 						}
-						const replacement = (read(
-							document.getElementById('setString-operand-string-replace-replacement')
-						) ?? form.stringReplaceReplacement) as string;
+						const replacement = form.stringReplaceReplacement as string;
 						operand = { type, method, variable: varRef, pattern, replacement };
 						break;
 					}
@@ -436,83 +413,63 @@ export function useSetStringCommandSchema() {
 				break;
 			}
 			case 'attribute': {
-				const attributeId = (read(
-					document.getElementById('setString-operand-attribute-attributeId')
-				) ?? form.attributeId) as string;
+				const attributeId = form.attributeId as string;
 				if (attributeId === '') {
-					getFocus(document.getElementById('setString-operand-attribute-attributeId'));
+					requestFocus('setString-operand-attribute-attributeId');
 					return;
 				}
 				operand = { type, attributeId };
 				break;
 			}
 			case 'enum': {
-				const stringId = (read(
-					document.getElementById('setString-operand-enum-stringId')
-				) ?? form.enumStringId) as string;
+				const stringId = form.enumStringId as string;
 				if (stringId === '') {
-					getFocus(document.getElementById('setString-operand-enum-stringId'));
+					requestFocus('setString-operand-enum-stringId');
 					return;
 				}
 				operand = { type, stringId };
 				break;
 			}
 			case 'object': {
-				const property = (read(
-					document.getElementById('setString-operand-object-property')
-				) ?? form.objectProperty) as string;
+				const property = form.objectProperty as string;
 				switch (property) {
 					case 'actor-team-id':
 					case 'actor-file-id':
 					case 'actor-animation-motion-name': {
-						const actor =
-							read(document.getElementById('setString-operand-common-actor')) ??
-							form.commonActor;
+						const actor = form.commonActor;
 						operand = { type, property, actor: actor as { type: string } };
 						break;
 					}
 					case 'skill-file-id': {
-						const skill =
-							read(document.getElementById('setString-operand-common-skill')) ??
-							form.commonSkill;
+						const skill = form.commonSkill;
 						operand = { type, property, skill: skill as { type: string } };
 						break;
 					}
 					case 'trigger-file-id': {
-						const trigger =
-							read(document.getElementById('setString-operand-common-trigger')) ??
-							form.commonTrigger;
+						const trigger = form.commonTrigger;
 						operand = { type, property, trigger: trigger as { type: string } };
 						break;
 					}
 					case 'state-file-id': {
-						const state =
-							read(document.getElementById('setString-operand-common-state')) ??
-							form.commonState;
+						const state = form.commonState;
 						operand = { type, property, state: state as { type: string } };
 						break;
 					}
 					case 'equipment-file-id':
 					case 'equipment-slot': {
-						const equipment =
-							read(document.getElementById('setString-operand-common-equipment')) ??
-							form.commonEquipment;
+						const equipment = form.commonEquipment;
 						operand = { type, property, equipment: equipment as { type: string } };
 						break;
 					}
 					case 'item-file-id': {
-						const item =
-							read(document.getElementById('setString-operand-common-item')) ??
-							form.commonItem;
+						const item = form.commonItem;
 						operand = { type, property, item: item as { type: string } };
 						break;
 					}
 					case 'file-id': {
-						const fileId = (read(
-							document.getElementById('setString-operand-object-fileId')
-						) ?? form.objectFileId) as string;
+						const fileId = form.objectFileId as string;
 						if (fileId === '') {
-							getFocus(document.getElementById('setString-operand-object-fileId'));
+							requestFocus('setString-operand-object-fileId');
 							return;
 						}
 						operand = { type, property, fileId };
@@ -522,81 +479,54 @@ export function useSetStringCommandSchema() {
 				break;
 			}
 			case 'element': {
-				const property = (read(
-					document.getElementById('setString-operand-element-property')
-				) ?? form.elementProperty) as string;
-				const element =
-					read(document.getElementById('setString-operand-element-element')) ??
-					form.elementElement;
+				const property = form.elementProperty as string;
+				const element = form.elementElement;
 				operand = { type, property, element: element as { type: string } };
 				break;
 			}
 			case 'list': {
-				const variable =
-					read(document.getElementById('setString-operand-common-variable')) ??
-					form.commonVariable;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('setString-operand-common-variable'));
+				const variable = form.commonVariable;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('setString-operand-common-variable');
 					return;
 				}
-				const index = (read(document.getElementById('setString-operand-list-index')) ??
-					form.listIndex) as number;
+				const index = form.listIndex as number;
 				operand = { type, variable: variable as { type: string; key: string }, index };
 				break;
 			}
 			case 'parameter': {
-				const key = (read(document.getElementById('setString-operand-parameter-key')) ??
-					form.parameterKey) as string;
+				const key = form.parameterKey as string;
 				if (key === '') {
-					getFocus(document.getElementById('setString-operand-parameter-key'));
+					requestFocus('setString-operand-parameter-key');
 					return;
 				}
 				operand = { type, key };
 				break;
 			}
 			case 'script': {
-				const script = (
-					(read(document.getElementById('setString-operand-script')) ??
-						form.script) as string
-				).trim();
+				const script = (form.script as string).trim();
 				if (script === '') {
-					getFocus(document.getElementById('setString-operand-script'));
+					requestFocus('setString-operand-script');
 					return;
 				}
 				operand = { type, script };
 				break;
 			}
 			case 'other': {
-				const data = (read(document.getElementById('setString-operand-other-data')) ??
-					form.otherData) as string;
+				const data = form.otherData as string;
 				switch (data) {
 					case 'showChoices-content': {
-						const choiceIndex = (read(
-							document.getElementById(
-								'setString-operand-showChoices-content-choiceIndex'
-							)
-						) ?? form.showChoicesIndex) as number;
+						const choiceIndex = form.showChoicesIndex as number;
 						operand = { type, data, choiceIndex };
 						break;
 					}
 					case 'parse-timestamp': {
-						const variable =
-							read(
-								document.getElementById(
-									'setString-operand-parse-timestamp-variable'
-								)
-							) ?? form.parseTimestampVariable;
-						if (VariableGetter.isNone!(variable)) {
-							getFocus(
-								document.getElementById(
-									'setString-operand-parse-timestamp-variable'
-								)
-							);
+						const variable = form.parseTimestampVariable;
+						if (VariableGetter.isNone!(variable as { key: string })) {
+							requestFocus('setString-operand-parse-timestamp-variable');
 							return;
 						}
-						const format = (read(
-							document.getElementById('setString-operand-parse-timestamp-format')
-						) ?? form.parseTimestampFormat) as string;
+						const format = form.parseTimestampFormat as string;
 						operand = {
 							type,
 							data,
@@ -606,12 +536,8 @@ export function useSetStringCommandSchema() {
 						break;
 					}
 					case 'screenshot': {
-						const width = (read(
-							document.getElementById('setString-operand-screenshot-width')
-						) ?? form.screenshotWidth) as number;
-						const height = (read(
-							document.getElementById('setString-operand-screenshot-height')
-						) ?? form.screenshotHeight) as number;
+						const width = form.screenshotWidth as number;
+						const height = form.screenshotHeight as number;
 						operand = { type, data, width, height };
 						break;
 					}

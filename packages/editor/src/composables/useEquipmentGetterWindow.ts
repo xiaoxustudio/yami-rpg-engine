@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface EquipmentGetterForm {
 	type: string;
@@ -63,7 +63,7 @@ const open = (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterF
 			break;
 	}
 	Object.assign(form, { type: equipment.type, actor, slot, equipmentId, variable });
-	getFocus(document.getElementById('equipmentGetter-type'));
+	requestFocus('equipmentGetter-type');
 };
 
 const confirm = (): void => {
@@ -76,7 +76,7 @@ const confirm = (): void => {
 			break;
 		case 'by-slot':
 			if (data.slot === '') {
-				getFocus(document.getElementById('equipmentGetter-slot'));
+				requestFocus('equipmentGetter-slot');
 				return;
 			}
 			getter = { type: data.type, actor: data.actor, slot: data.slot };
@@ -84,14 +84,14 @@ const confirm = (): void => {
 		case 'by-id-equipped':
 		case 'by-id-inventory':
 			if (data.equipmentId === '') {
-				getFocus(document.getElementById('equipmentGetter-equipmentId'));
+				requestFocus('equipmentGetter-equipmentId');
 				return;
 			}
 			getter = { type: data.type, actor: data.actor, equipmentId: data.equipmentId };
 			break;
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('equipmentGetter-variable'));
+				requestFocus('equipmentGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

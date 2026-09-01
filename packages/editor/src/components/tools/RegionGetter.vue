@@ -8,10 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.regionGetter-type.label') }}</div>
-			<SelectBox id="regionGetter-type" v-model="form.type" />
+			<SelectBox id="regionGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.regionGetter-presetId.label') }}</div>
 			<CustomBox
 				id="regionGetter-presetId"
+				v-focus
 				v-model="form.presetId"
 				type="preset-object"
 				filter="region"
@@ -29,6 +30,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -49,7 +51,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => regionGetter.onWindowClosed());
+		on(el, 'closed', () => regionGetter.onWindowClosed());
 	}
 });
 </script>

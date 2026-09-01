@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="deleteElement-operation" v-model="form.operation" />
+			<SelectBox id="deleteElement-operation" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="deleteElement-element" type="element" @input="onElement" />
+			<CustomBox id="deleteElement-element" type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
@@ -28,10 +28,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDeleteElementCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

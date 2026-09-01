@@ -135,12 +135,12 @@ describe('useUIImagePage（uiElement inspector 页面 composable）', () => {
 		wrapper.unmount();
 	});
 
-	it('onParamInput 落在 uiImage 控件时调用 uiImage.update', () => {
+	it('onParamInput 落在 uiImage 控件时以 form 值调用 uiImage.update', () => {
 		const { wrapper, page } = mountPage();
 		uiElement.target = makeElement();
-		const el = document.createElement('div') as HTMLElement & { read: () => string };
+		page.form.image = 'img.png';
+		const el = document.createElement('div') as HTMLElement;
 		el.id = 'uiImage-image';
-		el.read = () => 'img.png';
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));

@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, write } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
@@ -78,13 +78,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneParticle.write = function (this: typeof SceneParticle, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneParticle-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneParticle-y'), options.y);
-		}
+	SceneParticle.write = function (this: typeof SceneParticle, _options: Record<string, unknown>) {
+		($('#sceneParticle-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneParticle.update = function (

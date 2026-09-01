@@ -8,6 +8,7 @@
 			<TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
 			<SelectBox
+				ref="elType"
 				id="sceneActor-type"
 				v-model="form.type"
 				@input="onParamInput"
@@ -50,6 +51,7 @@
 			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div>
 			<div class="flex-box" id="sceneActor-angle-box">
 				<SliderBox
+					ref="elAngleSlider"
 					id="sceneActor-angle-slider"
 					v-model="form.angle"
 					min="0"
@@ -57,6 +59,7 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
+					ref="elAngle"
 					id="sceneActor-angle"
 					v-model="form.angle"
 					min="-360"
@@ -70,6 +73,7 @@
 			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div>
 			<div class="flex-box" id="sceneActor-scale-box">
 				<SliderBox
+					ref="elScaleSlider"
 					id="sceneActor-scale-slider"
 					v-model="form.scale"
 					min="0"
@@ -77,6 +81,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					ref="elScale"
 					id="sceneActor-scale"
 					v-model="form.scale"
 					min="0"
@@ -92,11 +97,17 @@
 		<DetailSummary>{{
 			t('components.sceneActor-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneActor-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			ref="elConditions"
+			id="sceneActor-conditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneActor-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
+			ref="elEvents"
 			id="sceneActor-events"
 			class="inspector-list"
 			filter="actor"
@@ -105,14 +116,19 @@
 	</DetailBox>
 	<DetailBox id="sceneActor-scripts-detail" open>
 		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneActor-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			ref="elScripts"
+			id="sceneActor-scripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneActor-parameter-pane"></ParameterPane>
+	<ParameterPane ref="elParameterPane" id="sceneActor-parameter-pane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -144,6 +160,30 @@ const onTypeWrite = (value: unknown) => {
 	Inspector?.sceneActor?.typeWrite?.({ value });
 };
 
+const elType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elScale = ref<InstanceType<typeof NumberBox> | null>(null);
+
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
+) => {
+	const el = input?.root ?? null;
+	if (!el) return;
+	slider?.synchronize(
+		el as HTMLElement & {
+			write(value: number | string): void;
+			input: HTMLInputElement;
+		}
+	);
+};
+
 onMounted(() => {
 	const editor = Inspector.sceneActor;
 	if (!editor) return;
@@ -153,33 +193,20 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elType = document.getElementById('sceneActor-type') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elType?.loadItems) {
-		elType.loadItems([
-			{ name: 'Local Actor', value: 'local' },
-			{ name: 'Global Actor', value: 'global' }
-		]);
-	}
+	elType.value?.loadItems([
+		{ name: 'Local Actor', value: 'local' },
+		{ name: 'Global Actor', value: 'global' }
+	]);
 
-	document
-		.getElementById('sceneActor-conditions')
-		?.bind?.(new ConditionListInterface(editor, Scene));
-	document.getElementById('sceneActor-events')?.bind?.(new EventListInterface(editor, Scene));
-	document
-		.getElementById('sceneActor-scripts')
-		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
-	document
-		.getElementById('sceneActor-parameter-pane')
-		?.bind?.(document.getElementById('sceneActor-scripts'));
+	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+	elEvents.value?.bind(new EventListInterface(editor, Scene));
+	elScripts.value?.bind(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-	document
-		.getElementById('sceneActor-angle-slider')
-		?.synchronize?.(document.getElementById('sceneActor-angle'));
-	document
-		.getElementById('sceneActor-scale-slider')
-		?.synchronize?.(document.getElementById('sceneActor-scale'));
+	synchronize(elAngleSlider.value, elAngle.value);
+	synchronize(elScaleSlider.value, elScale.value);
 
 	window.addEventListener('datachange', editor.datachange as unknown as EventListener);
 	const elements = document.querySelectorAll(

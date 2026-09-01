@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface TriggerGetterForm {
 	type: string;
@@ -43,7 +43,7 @@ const open = (target: TriggerGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: trigger.type, variable });
-	getFocus(document.getElementById('triggerGetter-type'));
+	requestFocus('triggerGetter-type');
 };
 
 const confirm = (): void => {
@@ -56,7 +56,7 @@ const confirm = (): void => {
 			break;
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('triggerGetter-variable'));
+				requestFocus('triggerGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

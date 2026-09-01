@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
@@ -7,6 +6,7 @@ import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
 const IfBranch = useIfBranchSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -75,13 +75,13 @@ const load = ({
 		else: !!value
 	});
 	elseCommands = value as unknown[] | null;
-	getFocus(document.getElementById('if-branches'));
+	requestFocus('if-branches');
 };
 
 const save = (): unknown => {
 	const branches = form.branches ?? [];
 	if (branches.length === 0) {
-		return getFocus(document.getElementById('if-branches'));
+		return requestFocus('if-branches');
 	}
 	switch (form.else) {
 		case true: {

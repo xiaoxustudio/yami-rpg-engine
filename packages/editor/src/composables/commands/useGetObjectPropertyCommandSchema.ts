@@ -1,12 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -28,7 +27,7 @@ export const IndexBind = {
 	},
 	open(item: ObjectPropertyItem | null) {
 		Window.open!('ObjectProperty-index');
-		getFocus($('#ObjectProperty-index-name'));
+		requestFocus('ObjectProperty-index-name');
 		indexForm.name = item?.text ?? '';
 	},
 	save() {
@@ -110,20 +109,20 @@ Command.cases.setObjectProperty = new CommandSchema({
 		properties = []
 	}) {
 		Object.assign(setForm, { variable, valueVariable, list: properties });
-		getFocus($('#setObjectProperty-variable'));
+		requestFocus('setObjectProperty-variable');
 	},
 	customSave() {
 		const variable = setForm.variable;
 		if (VariableGetter.isNone!(variable)) {
-			return getFocus($('#setObjectProperty-variable'));
+			return requestFocus('setObjectProperty-variable');
 		}
 		const valueVariable = setForm.valueVariable;
 		if (VariableGetter.isNone!(valueVariable)) {
-			return getFocus($('#setObjectProperty-value-variable'));
+			return requestFocus('setObjectProperty-value-variable');
 		}
 		const properties = setForm.list ?? [];
 		if (properties.length === 0) {
-			return getFocus($('#setObjectProperty-list'));
+			return requestFocus('setObjectProperty-list');
 		}
 		Command.save!({ variable, valueVariable, properties });
 	}
@@ -131,26 +130,25 @@ Command.cases.setObjectProperty = new CommandSchema({
 
 export function useGetObjectPropertyCommandSchema() {
 	const { form, load, commit } = useCommandSchema('getObjectProperty', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('getObjectProperty-variable'));
+			requestFocus('getObjectProperty-variable');
 		}
 	});
 	const onSave = (): void => {
-		const variable =
-			read(document.getElementById('getObjectProperty-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('getObjectProperty-variable'));
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
+			requestFocus('getObjectProperty-variable');
 			return;
 		}
-		const saveVariable =
-			read(document.getElementById('getObjectProperty-save-variable')) ?? form.saveVariable;
-		if (VariableGetter.isNone!(saveVariable)) {
-			getFocus(document.getElementById('getObjectProperty-save-variable'));
+		const saveVariable = form.saveVariable;
+		if (VariableGetter.isNone!(saveVariable as { key: string })) {
+			requestFocus('getObjectProperty-save-variable');
 			return;
 		}
 		const properties = form.properties as ObjectPropertyItem[];
 		if (properties.length === 0) {
-			getFocus(document.getElementById('getObjectProperty-list'));
+			requestFocus('getObjectProperty-list');
 			return;
 		}
 		commit({ variable, saveVariable, properties });

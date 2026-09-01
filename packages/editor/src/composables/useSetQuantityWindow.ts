@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface SetQuantityForm {
 	quantity: number;
@@ -22,7 +22,7 @@ const open = (quantity: number, maximum: number, cb: (value: number) => void): v
 	callback = cb;
 	Object.assign(form, { quantity, max: maximum });
 	getWindowStore().open('setQuantity');
-	getFocus(document.getElementById('setQuantity-quantity'), 'all');
+	requestFocus('setQuantity-quantity', 'all');
 };
 
 const confirm = (): void => {

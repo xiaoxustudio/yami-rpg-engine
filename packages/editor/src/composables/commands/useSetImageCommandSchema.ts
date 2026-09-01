@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setImage = new CommandSchema({
 	name: 'setImage',
@@ -37,14 +37,15 @@ Command.cases.setImage = new CommandSchema({
 
 export function useSetImageCommandSchema() {
 	const { form, save, load } = useCommandSchema('setImage', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setImage-element'));
+			requestFocus('setImage-element');
 		}
 	});
 	const onSave = (): void => {
 		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
-			getFocus(document.getElementById('setImage-properties'));
+			requestFocus('setImage-properties');
 			return;
 		}
 		save();

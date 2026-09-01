@@ -8,20 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">Mode</div>
-			<SelectBox id="playAnimation-mode" v-model="form.mode" />
+			<SelectBox id="playAnimation-mode" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
-			<CustomBox id="playAnimation-position" type="position" @input="onPosition" />
+			<CustomBox id="playAnimation-position" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
-			<CustomBox id="playAnimation-actor" type="actor" @input="onActor" />
+			<CustomBox id="playAnimation-actor" type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="playAnimation-animationId"
+				v-focus
 				type="file"
 				filter="animation"
+				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="playAnimation-motion" v-model="form.motion" />
+			<SelectBox id="playAnimation-motion" v-focus v-model="form.motion" />
 			<div class="text">Rotatable</div>
 			<SelectBox id="playAnimation-rotatable" v-model="form.rotatable" />
 			<div class="text">Priority</div>
@@ -74,14 +76,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = usePlayAnimationCommandSchema();
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

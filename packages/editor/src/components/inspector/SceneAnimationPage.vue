@@ -11,6 +11,7 @@
 			</div>
 			<CustomBox
 				id="sceneAnimation-animationId"
+				ref="elAnimationId"
 				:model-value="form.animationId"
 				type="file"
 				filter="animation"
@@ -28,6 +29,7 @@
 			</div>
 			<SelectBox
 				id="sceneAnimation-rotatable"
+				ref="elRotatable"
 				v-model="form.rotatable"
 				@input="onParamInput"
 			></SelectBox>
@@ -57,6 +59,7 @@
 			<div class="flex-box" id="sceneAnimation-angle-box">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
+					ref="elAngleSlider"
 					v-model="form.angle"
 					min="0"
 					max="360"
@@ -64,6 +67,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneAnimation-angle"
+					ref="elAngle"
 					v-model="form.angle"
 					min="-360"
 					max="360"
@@ -77,6 +81,7 @@
 			<div class="flex-box" id="sceneAnimation-scale-box">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
+					ref="elScaleSlider"
 					v-model="form.scale"
 					min="0"
 					max="2"
@@ -84,6 +89,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneAnimation-scale"
+					ref="elScale"
 					v-model="form.scale"
 					min="0"
 					max="10"
@@ -96,6 +102,7 @@
 			<div class="flex-box" id="sceneAnimation-speed-box">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
+					ref="elSpeedSlider"
 					v-model="form.speed"
 					min="0"
 					max="2"
@@ -103,6 +110,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneAnimation-speed"
+					ref="elSpeed"
 					v-model="form.speed"
 					min="0"
 					max="10"
@@ -117,6 +125,7 @@
 			<div class="flex-box" id="sceneAnimation-opacity-box">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
+					ref="elOpacitySlider"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -124,6 +133,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneAnimation-opacity"
+					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -138,6 +148,7 @@
 			<div class="flex-box" id="sceneAnimation-priority-box">
 				<SliderBox
 					id="sceneAnimation-priority-slider"
+					ref="elPrioritySlider"
 					v-model="form.priority"
 					min="-4"
 					max="4"
@@ -145,6 +156,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneAnimation-priority"
+					ref="elPriority"
 					v-model="form.priority"
 					min="-512"
 					max="512"
@@ -157,12 +169,18 @@
 		<DetailSummary>{{
 			t('components.sceneAnimation-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneAnimation-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneAnimation-conditions"
+			ref="elConditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneAnimation-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="animation"
 			flexible
@@ -172,14 +190,22 @@
 		<DetailSummary>{{
 			t('components.sceneAnimation-scripts.label') || 'Scripts'
 		}}</DetailSummary>
-		<ParamList id="sceneAnimation-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneAnimation-scripts"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneAnimation-parameter-pane"></ParameterPane>
+	<ParameterPane
+		id="sceneAnimation-parameter-pane"
+		ref="elParameterPane"
+	></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -211,6 +237,28 @@ const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.sceneAnimation?.animationIdWrite?.({ value });
 };
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elAnimationId = ref<InstanceType<typeof CustomBox> | null>(null);
+const elRotatable = ref<InstanceType<typeof SelectBox> | null>(null);
+const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elScale = ref<InstanceType<typeof NumberBox> | null>(null);
+const elSpeedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elSpeed = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOpacitySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elPrioritySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elPriority = ref<InstanceType<typeof NumberBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneAnimation;
 	if (!editor) return;
@@ -220,44 +268,25 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elRotatable = document.getElementById('sceneAnimation-rotatable') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elRotatable?.loadItems) {
-		elRotatable.loadItems([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	}
+	elRotatable.value?.loadItems([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
 
-	document
-		.getElementById('sceneAnimation-conditions')
-		?.bind?.(new ConditionListInterface(editor, Scene));
-	document.getElementById('sceneAnimation-events')?.bind?.(new EventListInterface(editor, Scene));
-	document
-		.getElementById('sceneAnimation-scripts')
-		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
-	document
-		.getElementById('sceneAnimation-parameter-pane')
-		?.bind?.(document.getElementById('sceneAnimation-scripts'));
+	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+	elEvents.value?.bind(new EventListInterface(editor, Scene));
+	elScripts.value?.bind(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-	document
-		.getElementById('sceneAnimation-angle-slider')
-		?.synchronize?.(document.getElementById('sceneAnimation-angle'));
-	document
-		.getElementById('sceneAnimation-scale-slider')
-		?.synchronize?.(document.getElementById('sceneAnimation-scale'));
-	document
-		.getElementById('sceneAnimation-speed-slider')
-		?.synchronize?.(document.getElementById('sceneAnimation-speed'));
-	document
-		.getElementById('sceneAnimation-opacity-slider')
-		?.synchronize?.(document.getElementById('sceneAnimation-opacity'));
-	document
-		.getElementById('sceneAnimation-priority-slider')
-		?.synchronize?.(document.getElementById('sceneAnimation-priority'));
+	elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
+	elScaleSlider.value?.synchronize(elScale.value?.root as SyncTarget);
+	elSpeedSlider.value?.synchronize(elSpeed.value?.root as SyncTarget);
+	elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
+	elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
 
-	document.getElementById('sceneAnimation-animationId')?.on?.('write', editor.animationIdWrite);
+	elAnimationId.value?.on('write', editor.animationIdWrite);
 
 	const elements = document.querySelectorAll(
 		'#sceneAnimation-name, #sceneAnimation-animationId, #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y, #sceneAnimation-angle, #sceneAnimation-scale, #sceneAnimation-speed, #sceneAnimation-opacity, #sceneAnimation-priority'

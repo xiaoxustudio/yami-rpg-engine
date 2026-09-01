@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div>
-			<SelectBox id="fileEvent-parameter-type" v-model="form.type" />
+			<SelectBox id="fileEvent-parameter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div>
-			<TextBox id="fileEvent-parameter-key" v-model="form.key" />
+			<TextBox id="fileEvent-parameter-key" v-focus v-model="form.key" />
 			<div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div>
 			<TextArea id="fileEvent-parameter-note" v-model="form.note" />
 		</div>

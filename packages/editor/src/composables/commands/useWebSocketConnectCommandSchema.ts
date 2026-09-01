@@ -5,9 +5,9 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.webSocketConnect = new CommandSchema({
 	name: 'webSocketConnect',
@@ -42,33 +42,30 @@ Command.cases.webSocketConnect = new CommandSchema({
 
 export function useWebSocketConnectCommandSchema() {
 	const { form, load, commit } = useCommandSchema('webSocketConnect', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('webSocketConnect-url'));
+			requestFocus('webSocketConnect-url');
 		}
 	});
 	const onSave = (): void => {
-		const elUrl = document.getElementById('webSocketConnect-url');
-		const url = read(elUrl) ?? form.url;
-		if (!url || VariableGetter.isNone!(url)) {
-			getFocus(elUrl);
+		const url = form.url;
+		if (!url || VariableGetter.isNone!(url as { key: string })) {
+			requestFocus('webSocketConnect-url');
 			return;
 		}
-		const elId = document.getElementById('webSocketConnect-id');
-		const id = read(elId) ?? form.id;
-		if (!id || VariableGetter.isNone!(id)) {
-			getFocus(elId);
+		const id = form.id;
+		if (!id || VariableGetter.isNone!(id as { key: string })) {
+			requestFocus('webSocketConnect-id');
 			return;
 		}
 		commit({
 			url,
 			id,
-			protocols:
-				read(document.getElementById('webSocketConnect-protocols')) ?? form.protocols,
-			onOpen: read(document.getElementById('webSocketConnect-onOpen')) ?? form.onOpen,
-			onMessage:
-				read(document.getElementById('webSocketConnect-onMessage')) ?? form.onMessage,
-			onError: read(document.getElementById('webSocketConnect-onError')) ?? form.onError,
-			onClose: read(document.getElementById('webSocketConnect-onClose')) ?? form.onClose
+			protocols: form.protocols,
+			onOpen: form.onOpen,
+			onMessage: form.onMessage,
+			onError: form.onError,
+			onClose: form.onClose
 		});
 	};
 	Command.cases.webSocketConnect.customSave = onSave;

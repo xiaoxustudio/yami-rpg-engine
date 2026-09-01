@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.stopAudio = new CommandSchema({
 	name: 'stopAudio',
@@ -24,8 +24,9 @@ Command.cases.stopAudio = new CommandSchema({
 
 export function useStopAudioCommandSchema() {
 	return useCommandSchema('stopAudio', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('stopAudio-type')!);
+			requestFocus('stopAudio-type');
 		}
 	});
 }

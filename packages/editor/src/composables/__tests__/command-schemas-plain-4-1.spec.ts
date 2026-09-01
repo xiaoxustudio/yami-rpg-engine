@@ -203,6 +203,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetButton, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setButton');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setButton');
 			expect(getControl('setButton-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -218,6 +219,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setButton');
 			expect(getControl('setButton-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setButton-properties').read()).toEqual([
@@ -370,6 +372,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetDialogBox, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setDialogBox');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setDialogBox');
 			expect(getControl('setDialogBox-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -385,6 +388,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setDialogBox');
 			expect(getControl('setDialogBox-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setDialogBox-properties').read()).toEqual([
@@ -464,6 +468,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetElement, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setElement');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setElement');
 			expect(getControl('setElement-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setElement-operation').read()).toBe('hide');
@@ -477,6 +482,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'setElement',
 				params: { element: { type: 'trigger' }, operation: 'show' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setElement');
 			expect(getControl('setElement-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setElement-operation').read()).toBe('show');
@@ -526,6 +532,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetEvent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setEvent');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setEvent');
 			expect(getControl('setEvent-operation').read()).toBe('stop-propagation');
 			expect(getControl('setEvent-variable').read()).toEqual({ type: 'global', key: '' });
@@ -539,6 +546,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'setEvent',
 				params: { operation: 'pause', variable: { type: 'global', key: 'foo' } }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setEvent');
 			expect(getControl('setEvent-operation').read()).toBe('pause');
 			expect(getControl('setEvent-variable').read()).toEqual({ type: 'global', key: 'foo' });
@@ -552,6 +560,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'setEvent',
 				params: { operation: 'prevent-scene-input-events' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(getControl('setEvent-operation').read()).toBe('stop-propagation');
 			wrapper.unmount();
 		});
@@ -634,6 +643,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetFocus, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setFocus');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setFocus');
 			expect(getControl('setFocus-operation').read()).toBe('add');
 			expect(getControl('setFocus-element').read()).toEqual({ type: 'trigger' });
@@ -652,6 +662,7 @@ vi.mock('@app/stores/local', () => ({
 					element: { type: 'player' }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setFocus');
 			expect(getControl('setFocus-operation').read()).toBe('remove');
 			expect(getControl('setFocus-element').read()).toEqual({ type: 'player' });
@@ -724,6 +735,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetImage, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setImage');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setImage');
 			expect(getControl('setImage-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -739,6 +751,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setImage');
 			expect(getControl('setImage-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setImage-properties').read()).toEqual([

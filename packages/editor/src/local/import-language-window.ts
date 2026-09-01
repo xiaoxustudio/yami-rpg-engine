@@ -1,8 +1,9 @@
 ﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { on, getFocus, read } from '@app/utils/element-utils.ts';
+import { on, read } from '@app/utils/element-utils.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { File } from '@app/file/file-system-core.ts';
 import { getYamiI18n } from '@app/i18n';
 
@@ -57,7 +58,7 @@ ImportLanguage.open = function (this: typeof ImportLanguage) {
 			const language = Path.basename!(filePath, extname);
 			$('#importLanguage-language').loadItems(items);
 			$('#importLanguage-language').write2(language);
-			getFocus($('#importLanguage-language'));
+			requestFocus('importLanguage-language');
 			dialogs.import = Path.slash!(Path.dirname!(filePath));
 		}
 	});

@@ -1,6 +1,7 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
+import { on, read, write } from '@app/utils/element-utils.ts';
+import { requestFocus } from '@app/directives/focus';
 
 /* 设置图块标签 */
 export const SetTileTag: {
@@ -30,7 +31,7 @@ SetTileTag.open = function (tag: unknown, callback: (tag: unknown) => void) {
 	this.callback = callback;
 	Window.open!('setTileTag');
 	write($('#setTileTag-tag'), tag);
-	getFocus($('#setTileTag-tag'), 'all');
+	requestFocus('setTileTag-tag', 'all');
 };
 
 SetTileTag.windowClosed = function (this: typeof SetTileTag) {

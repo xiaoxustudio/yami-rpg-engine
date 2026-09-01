@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Light</div>
-			<CustomBox id="moveLight-light" type="light" @input="onLight" />
+			<CustomBox id="moveLight-light" v-focus type="light" v-model="form.light" />
 			<div class="text">Properties</div>
-			<ParamList id="moveLight-properties" v-model="form.properties" />
+			<ParamList id="moveLight-properties" v-focus v-model="form.properties" />
 			<div class="text">Easing</div>
 			<SelectBox id="moveLight-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
@@ -46,10 +46,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useMoveLightCommandSchema();
-
-const onLight = (value: unknown) => {
-	form.light = value;
-};
 
 const onConfirm = () => {
 	save();

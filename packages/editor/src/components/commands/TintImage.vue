@@ -8,7 +8,7 @@
 
 		<div class="grid-box" id="tintImage-grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="tintImage-element" type="element" @input="onElement" />
+			<CustomBox id="tintImage-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Mode</div>
 			<SelectBox id="tintImage-mode" v-model="form.mode" />
 			<div class="text">Tint - Red</div>
@@ -72,10 +72,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useTintImageCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

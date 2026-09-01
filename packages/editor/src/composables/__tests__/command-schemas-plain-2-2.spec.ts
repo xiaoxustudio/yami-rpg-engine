@@ -8,11 +8,13 @@ import { Data } from '@app/data/data-object.ts';
 import DeleteTile from '@app/components/commands/DeleteTile.vue';
 import { useDeleteTileCommandSchema } from '@app/composables/commands/useDeleteTileCommandSchema';
 import DeleteVariable from '@app/components/commands/DeleteVariable.vue';
+import { useDeleteVariableCommandSchema } from '@app/composables/commands/useDeleteVariableCommandSchema';
 import DetectTargets from '@app/components/commands/DetectTargets.vue';
 import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';
 import DiscardTargets from '@app/components/commands/DiscardTargets.vue';
 import { useDiscardTargetsCommandSchema } from '@app/composables/commands/useDiscardTargetsCommandSchema';
 import DownloadFile from '@app/components/commands/DownloadFile.vue';
+import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import FixAngle from '@app/components/commands/FixAngle.vue';
 import { useFixAngleCommandSchema } from '@app/composables/commands/useFixAngleCommandSchema';
@@ -120,15 +122,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -142,27 +135,31 @@ vi.mock('@app/stores/local', () => ({
 			Window.close = vi.fn();
 		});
 
-		it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+		it('insert 路径：打开窗口并 load 默认 form', async () => {
 			const wrapper = mount(DeleteVariable, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useDeleteVariableCommandSchema();
 			CommandSchema.insert(target, 'deleteVariable');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('deleteVariable');
-			expect(getControl('deleteVariable-variable').read()).toEqual({
+			expect(form.variable).toEqual({
 				type: 'local',
 				key: ''
 			});
 			wrapper.unmount();
 		});
 
-		it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
+		it('edit 路径：handler.load 解构 params 到 form', async () => {
 			const wrapper = mount(DeleteVariable, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useDeleteVariableCommandSchema();
 			CommandSchema.edit(target, {
 				id: 'deleteVariable',
 				params: { variable: { type: 'local', key: 'foo' } }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('deleteVariable');
-			expect(getControl('deleteVariable-variable').read()).toEqual({
+			expect(form.variable).toEqual({
 				type: 'local',
 				key: 'foo'
 			});
@@ -233,6 +230,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(DetectTargets, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'detectTargets');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('detectTargets');
 			expect(getControl('detectTargets-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('detectTargets-distance').read()).toBe(0);
@@ -253,6 +251,7 @@ vi.mock('@app/stores/local', () => ({
 					inSight: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('detectTargets');
 			expect(getControl('detectTargets-distance').read()).toBe(3);
 			expect(getControl('detectTargets-selector').read()).toBe('friend');
@@ -423,6 +422,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(DownloadFile, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'downloadFile');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('downloadFile');
 			expect(getControl('downloadFile-url').read()).toBe('');
 			expect(getControl('downloadFile-method').read()).toBe('GET');
@@ -444,6 +444,7 @@ vi.mock('@app/stores/local', () => ({
 					isBackgroundPath: 'C:/temp'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('downloadFile');
 			expect(getControl('downloadFile-url').read()).toEqual({ type: 'local', key: 'url' });
 			expect(getControl('downloadFile-method').read()).toBe('POST');
@@ -456,15 +457,16 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.downloadFile.save 保存', async () => {
 			const wrapper = mount(DownloadFile, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useDownloadFileCommandSchema();
 			Command.cases.downloadFile.customLoad!({
 				url: 'http://example.com',
 				method: 'GET'
 			});
-			getControl('downloadFile-method').input('DELETE');
-			getControl('downloadFile-callback').input('cb2');
-			getControl('downloadFile-rateCallback').input('rc2');
-			getControl('downloadFile-isBackground').input(true);
-			getControl('downloadFile-isBackground-path').write('C:/out');
+			form.method = 'DELETE';
+			form.callback = 'cb2';
+			form.rateCallback = 'rc2';
+			form.isBackground = true;
+			form.isBackgroundPath = 'C:/out';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.downloadFile.save!();
@@ -601,6 +603,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(FollowActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'followActor');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('followActor');
 			expect(getControl('followActor-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('followActor-mode').read()).toBe('circle');
@@ -621,6 +624,7 @@ vi.mock('@app/stores/local', () => ({
 					navigate: false
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('followActor');
 			expect(getControl('followActor-mode').read()).toBe('rectangle');
 			expect(getControl('followActor-vertDist').read()).toBe(2);

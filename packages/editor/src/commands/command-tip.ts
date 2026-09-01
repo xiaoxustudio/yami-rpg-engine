@@ -1,6 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
+import { getWindowStore } from '@app/stores/window';
 import {
 	addClass,
 	dispatchUpdateEvent,
@@ -427,7 +428,7 @@ CommandSuggestion.listUpdate = function (_event: Event): void {
 		this.style.left = `${x}px`;
 		this.style.top = `${top}px`;
 		this.style.height = `${lines * 20}px`;
-		this.style.zIndex = ((Window.frames?.length ?? 0) + 1).toString();
+		this.style.zIndex = (getWindowStore().stack.length + 1).toString();
 		show(this);
 	} else {
 		hide(this);

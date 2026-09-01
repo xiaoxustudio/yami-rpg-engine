@@ -44,7 +44,7 @@ const syncOverview = (): void => {
 onMounted(() => {
 	const fileScript = Inspector.fileScript;
 	if (fileScript) {
-		fileScript.overview = document.getElementById('fileScript-overview');
+		fileScript.overview = overviewEl.value;
 	}
 	overviewEl.value?.addEventListener('update', syncOverview);
 	if (fileScript) {

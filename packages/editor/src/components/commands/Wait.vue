@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Duration</div>
-			<NumberVar id="wait-duration" min="1" max="3600000" unit="ms" v-model="form.duration" />
+			<NumberVar id="wait-duration" v-focus min="1" max="3600000" unit="ms" v-model="form.duration" />
 		</div>
 	</WindowFrame>
 </template>

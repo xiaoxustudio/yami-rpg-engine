@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="requestURL-url" v-model="form.url" />
+			<StringVar id="requestURL-url" v-focus v-model="form.url" />
 			<div class="text">Header</div>
 			<ParamList id="requestURL-header" v-model="form.headers" />
 			<div class="text">Method</div>
@@ -16,7 +16,12 @@
 			<div class="text">Data</div>
 			<ParamList id="requestURL-data" v-model="form.data" />
 			<div class="text">CallBack</div>
-			<CustomBox id="requestURL-callback" type="file" filter="event" @input="onCallback" />
+			<CustomBox
+				id="requestURL-callback"
+				type="file"
+				filter="event"
+				v-model="form.callback"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -37,10 +42,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useRequestURLCommandSchema();
-
-const onCallback = (value: unknown) => {
-	form.callback = value;
-};
 
 const onConfirm = () => {
 	save();

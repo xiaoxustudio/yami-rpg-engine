@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -124,31 +124,29 @@ Command.cases.httpRequest = new CommandSchema({
 
 export function useHttpRequestCommandSchema() {
 	const { form, load, commit } = useCommandSchema('httpRequest', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('httpRequest-url')!);
+			requestFocus('httpRequest-url');
 		}
 	});
 	const onSave = (): void => {
-		const url = read(document.getElementById('httpRequest-url')!) ?? form.url;
-		if (!url || VariableGetter.isNone!(url)) {
-			getFocus(document.getElementById('httpRequest-url')!);
+		const url = form.url;
+		if (!url || VariableGetter.isNone!(url as { key: string })) {
+			requestFocus('httpRequest-url');
 			return;
 		}
-		const timeout = read(document.getElementById('httpRequest-timeout')!) ?? form.timeout;
+		const timeout = form.timeout;
 		commit({
 			url,
-			method: read(document.getElementById('httpRequest-method')!) ?? form.method,
+			method: form.method,
 			headers: form.headers,
 			data: form.data,
-			callback: read(document.getElementById('httpRequest-callback')!) ?? form.callback,
+			callback: form.callback,
 			timeout: timeout === '' ? '' : Number(timeout),
-			responseType:
-				read(document.getElementById('httpRequest-responseType')!) ?? form.responseType,
-			withCredentials:
-				read(document.getElementById('httpRequest-withCredentials')!) ??
-				form.withCredentials,
-			authUser: read(document.getElementById('httpRequest-authUser')!) ?? form.authUser,
-			authPass: read(document.getElementById('httpRequest-authPass')!) ?? form.authPass
+			responseType: form.responseType,
+			withCredentials: form.withCredentials,
+			authUser: form.authUser,
+			authPass: form.authPass
 		});
 	};
 	Command.cases.httpRequest.customSave = onSave;

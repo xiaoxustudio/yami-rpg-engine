@@ -1,8 +1,8 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -136,13 +136,13 @@ const load = ({
 	form['list-index'] = listIndex;
 	form['parameter-key'] = parameterKey;
 	form.script = script;
-	getFocus(document.getElementById('setBoolean-variable'));
+	requestFocus('setBoolean-variable');
 };
 
 const save = (): unknown => {
 	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
-		return getFocus(document.getElementById('setBoolean-variable'));
+		return requestFocus('setBoolean-variable');
 	}
 	const operation = form.operation;
 	const type = form['operand-type'];
@@ -156,7 +156,7 @@ const save = (): unknown => {
 		case 'variable': {
 			const commonVariable = form['common-variable'] as { type: string; key: string };
 			if (VariableGetter.isNone!(commonVariable)) {
-				return getFocus(document.getElementById('setBoolean-common-variable'));
+				return requestFocus('setBoolean-common-variable');
 			}
 			operand = { type, variable: commonVariable };
 			break;
@@ -164,7 +164,7 @@ const save = (): unknown => {
 		case 'list': {
 			const commonVariable = form['common-variable'] as { type: string; key: string };
 			if (VariableGetter.isNone!(commonVariable)) {
-				return getFocus(document.getElementById('setBoolean-common-variable'));
+				return requestFocus('setBoolean-common-variable');
 			}
 			const index = form['list-index'];
 			operand = { type, variable: commonVariable, index };
@@ -173,7 +173,7 @@ const save = (): unknown => {
 		case 'parameter': {
 			const key = form['parameter-key'];
 			if (key === '') {
-				return getFocus(document.getElementById('setBoolean-parameter-key'));
+				return requestFocus('setBoolean-parameter-key');
 			}
 			operand = { type, key };
 			break;
@@ -181,7 +181,7 @@ const save = (): unknown => {
 		case 'script': {
 			const script = (form.script as string).trim();
 			if (script === '') {
-				return getFocus(document.getElementById('setBoolean-script'));
+				return requestFocus('setBoolean-script');
 			}
 			operand = { type, script };
 			break;

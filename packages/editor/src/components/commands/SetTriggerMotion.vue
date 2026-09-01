@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerMotion-trigger" type="trigger" @input="onTrigger" />
+			<CustomBox id="setTriggerMotion-trigger" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Motion</div>
-			<CustomBox id="setTriggerMotion-motion" type="enum-string" @input="onMotion" />
+			<CustomBox id="setTriggerMotion-motion" type="enum-string" v-model="form.motion" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetTriggerMotionCommandSchema();
-
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
-
-const onMotion = (value: unknown) => {
-	form.motion = value;
-};
 
 const onConfirm = () => {
 	save();

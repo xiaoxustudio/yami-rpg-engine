@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,6 +6,7 @@ import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -82,45 +82,28 @@ Command.cases.getMultipleActors = new CommandSchema({
 
 export function useGetMultipleActorsCommandSchema() {
 	const { form, load, commit } = useCommandSchema('getMultipleActors', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('getMultipleActors-variable')!);
+			requestFocus('getMultipleActors-variable');
 		}
 	});
 	const onSave = (): void => {
-		const variable =
-			read(document.getElementById('getMultipleActors-variable')!) ?? form.variable;
+		const variable = form.variable as { key: string };
 		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('getMultipleActors-variable')!);
+			requestFocus('getMultipleActors-variable');
 			return;
 		}
-		const position =
-			read(document.getElementById('getMultipleActors-position')!) ?? form.position;
-		const area = (read(document.getElementById('getMultipleActors-area')!) ??
-			form.area) as string;
-		const selector = (read(document.getElementById('getMultipleActors-selector')!) ??
-			form.selector) as string;
-		const activation =
-			read(document.getElementById('getMultipleActors-activation')!) ?? form.activation;
+		const position = form.position;
+		const area = form.area as string;
+		const selector = form.selector as string;
+		const activation = form.activation;
 		let params1: Record<string, unknown>;
 		switch (area) {
 			case 'rectangle':
-				params1 = {
-					variable,
-					position,
-					area,
-					width: read(document.getElementById('getMultipleActors-width')!) ?? form.width,
-					height:
-						read(document.getElementById('getMultipleActors-height')!) ?? form.height
-				};
+				params1 = { variable, position, area, width: form.width, height: form.height };
 				break;
 			default:
-				params1 = {
-					variable,
-					position,
-					area,
-					radius:
-						read(document.getElementById('getMultipleActors-radius')!) ?? form.radius
-				};
+				params1 = { variable, position, area, radius: form.radius };
 				break;
 		}
 		let params2: Record<string, unknown>;
@@ -128,11 +111,7 @@ export function useGetMultipleActorsCommandSchema() {
 			case 'enemy':
 			case 'friend':
 			case 'team':
-				params2 = {
-					selector,
-					teamId:
-						read(document.getElementById('getMultipleActors-teamId')!) ?? form.teamId
-				};
+				params2 = { selector, teamId: form.teamId };
 				break;
 			default:
 				params2 = { selector };

@@ -7,9 +7,19 @@
 			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div>
 			<TextBox id="sceneLight-name" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div>
-			<SelectBox id="sceneLight-type" v-model="form.type" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="sceneLight-type"
+				ref="elType"
+				v-model="form.type"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.sceneLight-blend.label') || 'Blend' }}</div>
-			<SelectBox id="sceneLight-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="sceneLight-blend"
+				ref="elBlend"
+				v-model="form.blend"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.sceneLight-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneLight-x"
@@ -31,9 +41,10 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneLight-range-box.label') || 'Range' }}</div>
-			<div class="flex-box" id="sceneLight-range-box">
+			<div class="flex-box" id="sceneLight-range-box" ref="elRangeBox">
 				<SliderBox
 					id="sceneLight-range-slider"
+					ref="elRangeSlider"
 					v-model="form.range"
 					min="1"
 					max="40"
@@ -41,6 +52,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-range"
+					ref="elRange"
 					v-model="form.range"
 					@input="onParamInput"
 					min="0"
@@ -51,9 +63,10 @@
 			<div class="text">
 				{{ t('components.sceneLight-intensity-box.label') || 'Intensity' }}
 			</div>
-			<div class="flex-box" id="sceneLight-intensity-box">
+			<div class="flex-box" id="sceneLight-intensity-box" ref="elIntensityBox">
 				<SliderBox
 					id="sceneLight-intensity-slider"
+					ref="elIntensitySlider"
 					v-model="form.intensity"
 					min="0"
 					max="1"
@@ -61,6 +74,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-intensity"
+					ref="elIntensity"
 					v-model="form.intensity"
 					@input="onParamInput"
 					min="0"
@@ -72,15 +86,17 @@
 			<div class="text">{{ t('components.sceneLight-mask.label') || 'Mask' }}</div>
 			<CustomBox
 				id="sceneLight-mask"
+				ref="elMask"
 				:model-value="form.mask"
 				@input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ t('components.sceneLight-anchorX-box.label') || 'Anchor X' }}</div>
-			<div class="flex-box" id="sceneLight-anchorX-box">
+			<div class="flex-box" id="sceneLight-anchorX-box" ref="elAnchorXBox">
 				<SliderBox
 					id="sceneLight-anchorX-slider"
+					ref="elAnchorXSlider"
 					v-model="form.anchorX"
 					min="0"
 					max="1"
@@ -88,6 +104,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-anchorX"
+					ref="elAnchorX"
 					v-model="form.anchorX"
 					@input="onParamInput"
 					min="0"
@@ -97,9 +114,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-anchorY-box.label') || 'Anchor Y' }}</div>
-			<div class="flex-box" id="sceneLight-anchorY-box">
+			<div class="flex-box" id="sceneLight-anchorY-box" ref="elAnchorYBox">
 				<SliderBox
 					id="sceneLight-anchorY-slider"
+					ref="elAnchorYSlider"
 					v-model="form.anchorY"
 					min="0"
 					max="1"
@@ -107,6 +125,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-anchorY"
+					ref="elAnchorY"
 					v-model="form.anchorY"
 					@input="onParamInput"
 					min="0"
@@ -116,9 +135,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-width-box.label') || 'Width' }}</div>
-			<div class="flex-box" id="sceneLight-width-box">
+			<div class="flex-box" id="sceneLight-width-box" ref="elWidthBox">
 				<SliderBox
 					id="sceneLight-width-slider"
+					ref="elWidthSlider"
 					v-model="form.width"
 					min="1"
 					max="40"
@@ -126,6 +146,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-width"
+					ref="elWidth"
 					v-model="form.width"
 					@input="onParamInput"
 					min="0"
@@ -135,9 +156,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-height-box.label') || 'Height' }}</div>
-			<div class="flex-box" id="sceneLight-height-box">
+			<div class="flex-box" id="sceneLight-height-box" ref="elHeightBox">
 				<SliderBox
 					id="sceneLight-height-slider"
+					ref="elHeightSlider"
 					v-model="form.height"
 					min="1"
 					max="40"
@@ -145,6 +167,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-height"
+					ref="elHeight"
 					v-model="form.height"
 					@input="onParamInput"
 					min="0"
@@ -154,9 +177,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneLight-angle-box">
+			<div class="flex-box" id="sceneLight-angle-box" ref="elAngleBox">
 				<SliderBox
 					id="sceneLight-angle-slider"
+					ref="elAngleSlider"
 					v-model="form.angle"
 					min="0"
 					max="360"
@@ -164,6 +188,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-angle"
+					ref="elAngle"
 					v-model="form.angle"
 					@input="onParamInput"
 					min="-36000"
@@ -173,9 +198,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-red-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="sceneLight-red-box">
+			<div class="flex-box" id="sceneLight-red-box" ref="elRedBox">
 				<SliderBox
 					id="sceneLight-red-slider"
+					ref="elRedSlider"
 					v-model="form.red"
 					min="0"
 					max="255"
@@ -183,6 +209,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-red"
+					ref="elRed"
 					v-model="form.red"
 					@input="onParamInput"
 					min="0"
@@ -191,9 +218,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-green-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="sceneLight-green-box">
+			<div class="flex-box" id="sceneLight-green-box" ref="elGreenBox">
 				<SliderBox
 					id="sceneLight-green-slider"
+					ref="elGreenSlider"
 					v-model="form.green"
 					min="0"
 					max="255"
@@ -201,6 +229,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-green"
+					ref="elGreen"
 					v-model="form.green"
 					@input="onParamInput"
 					min="0"
@@ -209,9 +238,10 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-blue-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="sceneLight-blue-box">
+			<div class="flex-box" id="sceneLight-blue-box" ref="elBlueBox">
 				<SliderBox
 					id="sceneLight-blue-slider"
+					ref="elBlueSlider"
 					v-model="form.blue"
 					min="0"
 					max="255"
@@ -219,6 +249,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-blue"
+					ref="elBlue"
 					v-model="form.blue"
 					@input="onParamInput"
 					min="0"
@@ -229,9 +260,10 @@
 			<div class="text">
 				{{ t('components.sceneLight-direct-box.label') || 'Direct Light Ratio' }}
 			</div>
-			<div class="flex-box" id="sceneLight-direct-box">
+			<div class="flex-box" id="sceneLight-direct-box" ref="elDirectBox">
 				<SliderBox
 					id="sceneLight-direct-slider"
+					ref="elDirectSlider"
 					v-model="form.direct"
 					min="0"
 					max="1"
@@ -239,6 +271,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneLight-direct"
+					ref="elDirect"
 					v-model="form.direct"
 					@input="onParamInput"
 					min="0"
@@ -253,12 +286,18 @@
 		<DetailSummary>{{
 			t('components.sceneLight-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneLight-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneLight-conditions"
+			ref="elConditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneLight-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="light"
 			flexible
@@ -266,14 +305,19 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneLight-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneLight-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneLight-scripts"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneLight-parameter-pane"></ParameterPane>
+	<ParameterPane id="sceneLight-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -299,6 +343,48 @@ const { form, sync, onParamInput } = useSceneLightPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elMask = ref<InstanceType<typeof CustomBox> | null>(null);
+const elRangeSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elRange = ref<InstanceType<typeof NumberBox> | null>(null);
+const elIntensitySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elIntensity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAnchorXSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAnchorX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAnchorYSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAnchorY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elWidthSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elHeightSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elHeight = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elRed = ref<InstanceType<typeof NumberBox> | null>(null);
+const elGreenSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elGreen = ref<InstanceType<typeof NumberBox> | null>(null);
+const elBlueSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elBlue = ref<InstanceType<typeof NumberBox> | null>(null);
+const elDirectSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elDirect = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRangeBox = ref<HTMLElement | null>(null);
+const elIntensityBox = ref<HTMLElement | null>(null);
+const elAnchorXBox = ref<HTMLElement | null>(null);
+const elAnchorYBox = ref<HTMLElement | null>(null);
+const elWidthBox = ref<HTMLElement | null>(null);
+const elHeightBox = ref<HTMLElement | null>(null);
+const elAngleBox = ref<HTMLElement | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneLight;
 	if (!editor) return;
@@ -309,102 +395,57 @@ onMounted(() => {
 	}
 
 	try {
-		const elType = document.getElementById('sceneLight-type') as
-			| (HTMLElement & {
-					loadItems?: (items: unknown[]) => void;
-					enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-			  })
-			| null;
-		if (elType?.loadItems) {
-			elType.loadItems([
-				{ name: 'Point', value: 'point' },
-				{ name: 'Area', value: 'area' }
-			]);
-		}
+		elType.value?.loadItems([
+			{ name: 'Point', value: 'point' },
+			{ name: 'Area', value: 'area' }
+		]);
 
-		const elBlend = document.getElementById('sceneLight-blend') as
-			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-			| null;
-		if (elBlend?.loadItems) {
-			elBlend.loadItems([
-				{ name: 'Screen', value: 'screen' },
-				{ name: 'Additive', value: 'additive' },
-				{ name: 'Subtract', value: 'subtract' },
-				{ name: 'Max', value: 'max' }
-			]);
-		}
+		elBlend.value?.loadItems([
+			{ name: 'Screen', value: 'screen' },
+			{ name: 'Additive', value: 'additive' },
+			{ name: 'Subtract', value: 'subtract' },
+			{ name: 'Max', value: 'max' }
+		]);
 
-		if (elType?.enableHiddenMode) {
-			const hidden = elType.enableHiddenMode();
-			hidden.relate?.([
+		if (elType.value) {
+			elType.value.enableHiddenMode();
+			elType.value.relate([
 				{
 					case: 'point',
-					targets: [
-						document.getElementById('sceneLight-range-box'),
-						document.getElementById('sceneLight-intensity-box')
-					]
+					targets: [elRangeBox.value, elIntensityBox.value]
 				},
 				{
 					case: 'area',
 					targets: [
-						document.getElementById('sceneLight-mask'),
-						document.getElementById('sceneLight-anchorX-box'),
-						document.getElementById('sceneLight-anchorY-box'),
-						document.getElementById('sceneLight-width-box'),
-						document.getElementById('sceneLight-height-box'),
-						document.getElementById('sceneLight-angle-box')
+						elMask.value?.root ?? null,
+						elAnchorXBox.value,
+						elAnchorYBox.value,
+						elWidthBox.value,
+						elHeightBox.value,
+						elAngleBox.value
 					]
 				}
 			]);
 		}
 
-		const conditions = document.getElementById('sceneLight-conditions');
-		conditions?.bind?.(new ConditionListInterface(editor, Scene));
-
-		const events = document.getElementById('sceneLight-events');
-		events?.bind?.(new EventListInterface(editor, Scene));
-
-		const scripts = document.getElementById('sceneLight-scripts');
-		scripts?.bind?.(
+		elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+		elEvents.value?.bind(new EventListInterface(editor, Scene));
+		elScripts.value?.bind(
 			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
 		);
+		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-		const parameterPane = document.getElementById('sceneLight-parameter-pane');
-		parameterPane?.bind?.(scripts);
-
-		document
-			.getElementById('sceneLight-range-slider')
-			?.synchronize?.(document.getElementById('sceneLight-range'));
-		document
-			.getElementById('sceneLight-intensity-slider')
-			?.synchronize?.(document.getElementById('sceneLight-intensity'));
-		document
-			.getElementById('sceneLight-anchorX-slider')
-			?.synchronize?.(document.getElementById('sceneLight-anchorX'));
-		document
-			.getElementById('sceneLight-anchorY-slider')
-			?.synchronize?.(document.getElementById('sceneLight-anchorY'));
-		document
-			.getElementById('sceneLight-width-slider')
-			?.synchronize?.(document.getElementById('sceneLight-width'));
-		document
-			.getElementById('sceneLight-height-slider')
-			?.synchronize?.(document.getElementById('sceneLight-height'));
-		document
-			.getElementById('sceneLight-angle-slider')
-			?.synchronize?.(document.getElementById('sceneLight-angle'));
-		document
-			.getElementById('sceneLight-red-slider')
-			?.synchronize?.(document.getElementById('sceneLight-red'));
-		document
-			.getElementById('sceneLight-green-slider')
-			?.synchronize?.(document.getElementById('sceneLight-green'));
-		document
-			.getElementById('sceneLight-blue-slider')
-			?.synchronize?.(document.getElementById('sceneLight-blue'));
-		document
-			.getElementById('sceneLight-direct-slider')
-			?.synchronize?.(document.getElementById('sceneLight-direct'));
+		elRangeSlider.value?.synchronize(elRange.value?.root as SyncTarget);
+		elIntensitySlider.value?.synchronize(elIntensity.value?.root as SyncTarget);
+		elAnchorXSlider.value?.synchronize(elAnchorX.value?.root as SyncTarget);
+		elAnchorYSlider.value?.synchronize(elAnchorY.value?.root as SyncTarget);
+		elWidthSlider.value?.synchronize(elWidth.value?.root as SyncTarget);
+		elHeightSlider.value?.synchronize(elHeight.value?.root as SyncTarget);
+		elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
+		elRedSlider.value?.synchronize(elRed.value?.root as SyncTarget);
+		elGreenSlider.value?.synchronize(elGreen.value?.root as SyncTarget);
+		elBlueSlider.value?.synchronize(elBlue.value?.root as SyncTarget);
+		elDirectSlider.value?.synchronize(elDirect.value?.root as SyncTarget);
 
 		const elements = document.querySelectorAll(
 			'#sceneLight-name, #sceneLight-type, #sceneLight-blend, #sceneLight-x, #sceneLight-y, #sceneLight-range, #sceneLight-intensity, #sceneLight-mask, #sceneLight-anchorX, #sceneLight-anchorY, #sceneLight-width, #sceneLight-height, #sceneLight-angle, #sceneLight-red, #sceneLight-green, #sceneLight-blue, #sceneLight-direct'

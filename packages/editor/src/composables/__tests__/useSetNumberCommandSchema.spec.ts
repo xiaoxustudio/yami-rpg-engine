@@ -24,14 +24,6 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-interface ControlEl extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	input(value: unknown): void;
-}
-
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
-
 const target = {
 	scrollAndResize: vi.fn(),
 	getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -97,7 +89,7 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 			operation: 'add',
 			operands: [{ operation: 'add', type: 'constant', value: 1 }]
 		});
-		getControl('setNumber-variable').write({ type: 'global', key: 'bar' });
+		form.variable = { type: 'global', key: 'bar' };
 		form.operands = [{ operation: 'add', type: 'constant', value: 2 }];
 		const saved = vi.fn();
 		Command.save = saved;

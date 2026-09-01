@@ -12,17 +12,17 @@
 			<div class="text" id="fileImage-resolution">{{ form.resolution }}</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="fileImage-image-detail" open>
+	<DetailBox id="fileImage-image-detail" ref="elImageDetail" open>
 		<DetailSummary>{{ t('components.fileImage-image-viewer.label') || 'Image' }}</DetailSummary>
 		<div class="box" id="fileImage-image-viewer">
-			<img id="fileImage-image" />
+			<img id="fileImage-image" ref="elImage" />
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -34,17 +34,20 @@ const { t } = useI18n();
 
 const { form, sync, updateImage, windowResize } = useFileImagePage();
 
+const elImage = ref<HTMLImageElement | null>(null);
+const elImageDetail = ref<InstanceType<typeof DetailBox> | null>(null);
+
 onMounted(() => {
 	const fileImage = Inspector.fileImage;
 	if (fileImage) {
-		fileImage.image = document.getElementById('fileImage-image') as HTMLImageElement | null;
+		fileImage.image = elImage.value;
 	}
 
 	const el = document.getElementById('fileImage');
 	if (!el) return;
 	attachElementApi(el, { updateImage, update: sync });
 	el.addEventListener('resize', windowResize);
-	document.getElementById('fileImage-image-detail')?.on?.('toggle', windowResize);
+	elImageDetail.value?.on('toggle', windowResize);
 	sync();
 });
 </script>

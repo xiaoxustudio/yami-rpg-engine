@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface ElementGetterForm {
 	type: string;
@@ -74,7 +74,7 @@ const open = (target: ElementGetterTarget, defaults?: Partial<ElementGetterForm>
 			break;
 	}
 	Object.assign(form, { type: element.type, presetId, ancestor, index, variable });
-	getFocus(document.getElementById('elementGetter-type'));
+	requestFocus('elementGetter-type');
 };
 
 const confirm = (): void => {
@@ -88,14 +88,14 @@ const confirm = (): void => {
 			break;
 		case 'by-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('elementGetter-presetId'));
+				requestFocus('elementGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, presetId: data.presetId };
 			break;
 		case 'by-ancestor-and-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('elementGetter-presetId'));
+				requestFocus('elementGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, ancestor: data.ancestor, presetId: data.presetId };
@@ -112,7 +112,7 @@ const confirm = (): void => {
 		case 'parent':
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('elementGetter-variable'));
+				requestFocus('elementGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

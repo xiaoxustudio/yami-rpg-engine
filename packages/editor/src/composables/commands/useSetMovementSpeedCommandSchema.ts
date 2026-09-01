@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
@@ -51,29 +51,21 @@ Command.cases.setMovementSpeed = new CommandSchema({
 
 export function useSetMovementSpeedCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setMovementSpeed', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setMovementSpeed-actor')!);
+			requestFocus('setMovementSpeed-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('setMovementSpeed-actor')!) ?? form.actor;
-		const property =
-			read(document.getElementById('setMovementSpeed-property')!) ?? form.property;
+		const actor = form.actor;
+		const property = form.property;
 		switch (property) {
 			case 'base':
-				commit({
-					actor,
-					property,
-					base: read(document.getElementById('setMovementSpeed-base')!) ?? form.base
-				});
+				commit({ actor, property, base: form.base });
 				break;
 			case 'factor':
 			case 'factor-temp':
-				commit({
-					actor,
-					property,
-					factor: read(document.getElementById('setMovementSpeed-factor')!) ?? form.factor
-				});
+				commit({ actor, property, factor: form.factor });
 				break;
 		}
 	};

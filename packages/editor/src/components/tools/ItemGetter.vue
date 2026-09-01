@@ -8,16 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.itemGetter-type.label') }}</div>
-			<SelectBox id="itemGetter-type" v-model="form.type" />
+			<SelectBox id="itemGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.itemGetter-actor.label') }}</div>
 			<CustomBox id="itemGetter-actor" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.itemGetter-key.label') }}</div>
-			<SelectVar id="itemGetter-key" v-model="form.key" />
+			<SelectVar id="itemGetter-key" v-focus v-model="form.key" />
 			<div class="text">{{ t('components.itemGetter-itemId.label') }}</div>
-			<CustomBox id="itemGetter-itemId" type="file" filter="item" v-model="form.itemId" />
+			<CustomBox
+				id="itemGetter-itemId"
+				v-focus
+				type="file"
+				filter="item"
+				v-model="form.itemId"
+			/>
 			<div class="text">{{ t('components.itemGetter-variable.label') }}</div>
 			<CustomBox
 				id="itemGetter-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -35,6 +42,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -56,7 +64,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => itemGetter.onWindowClosed());
+		on(el, 'closed', () => itemGetter.onWindowClosed());
 	}
 });
 </script>

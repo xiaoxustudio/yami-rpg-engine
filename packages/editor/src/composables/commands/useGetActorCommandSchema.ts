@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -8,6 +7,7 @@ import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -183,13 +183,13 @@ const load = (params: Record<string, unknown> = {}): void => {
 	document.getElementById('getActor-attribute')?.loadItems?.(attrItems);
 	document.getElementById('getActor-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), { ...params, selector, activation });
-	getFocus(document.getElementById('getActor-variable'));
+	requestFocus('getActor-variable');
 };
 
 const save = (): void => {
 	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
-		getFocus(document.getElementById('getActor-variable'));
+		requestFocus('getActor-variable');
 		return;
 	}
 	const position = form.position;
@@ -236,7 +236,7 @@ const save = (): void => {
 		case 'min-attribute-value':
 		case 'max-attribute-value':
 			if (attribute === '') {
-				getFocus(document.getElementById('getActor-attribute'));
+				requestFocus('getActor-attribute');
 				return;
 			}
 			params3 = { condition, attribute };
@@ -244,11 +244,11 @@ const save = (): void => {
 		case 'min-attribute-ratio':
 		case 'max-attribute-ratio':
 			if (attribute === '') {
-				getFocus(document.getElementById('getActor-attribute'));
+				requestFocus('getActor-attribute');
 				return;
 			}
 			if (divisor === '' || attribute === divisor) {
-				getFocus(document.getElementById('getActor-divisor'));
+				requestFocus('getActor-divisor');
 				return;
 			}
 			params3 = { condition, attribute, divisor };

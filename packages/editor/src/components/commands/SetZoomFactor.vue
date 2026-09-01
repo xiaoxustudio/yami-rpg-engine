@@ -10,6 +10,7 @@
 			<div class="text">Zoom Factor</div>
 			<NumberVar
 				id="setZoomFactor-zoom"
+				v-focus
 				min="1"
 				max="8"
 				step="0.1"

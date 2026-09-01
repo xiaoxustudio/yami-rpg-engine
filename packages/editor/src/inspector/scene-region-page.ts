@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, write } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
@@ -66,13 +66,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneRegion.write = function (this: typeof SceneRegion, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneRegion-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneRegion-y'), options.y);
-		}
+	SceneRegion.write = function (this: typeof SceneRegion, _options: Record<string, unknown>) {
+		($('#sceneRegion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneRegion.update = function (

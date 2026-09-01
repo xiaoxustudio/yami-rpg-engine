@@ -59,6 +59,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ActivateScene, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'activateScene');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('activateScene');
 			expect(getControl('activateScene-pointer').read()).toBe(0);
 			wrapper.unmount();
@@ -68,6 +69,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ActivateScene, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.edit(target, { id: 'activateScene', params: { pointer: 1 } });
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('activateScene');
 			expect(getControl('activateScene-pointer').read()).toBe(1);
 			wrapper.unmount();
@@ -133,6 +135,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(AddAnimationComponent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'addAnimationComponent');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('addAnimationComponent');
 			expect(getControl('addAnimationComponent-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('addAnimationComponent-animationId').read()).toBe('');
@@ -159,6 +162,7 @@ vi.mock('@app/stores/local', () => ({
 					offsetY: 5
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('addAnimationComponent');
 			expect(getControl('addAnimationComponent-animationId').read()).toBe('anim1.json');
 			expect(getControl('addAnimationComponent-motion').read()).toBe('run');
@@ -344,15 +348,14 @@ vi.mock('@app/stores/local', () => ({
 		it('edit 路径：handler.load 解构 params 到 form 与控件 DOM', async () => {
 			const wrapper = mount(Block, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
-			const { form } = useBlockCommandSchema();
 			CommandSchema.edit(target, {
 				id: 'block',
 				params: { note: 'note', asynchronous: true }
 			});
 			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('block');
-			expect(form.note).toBe('note');
-			expect(form.asynchronous).toBe(true);
+			expect(wrapper.vm.form.note).toBe('note');
+			expect(wrapper.vm.form.asynchronous).toBe(true);
 			expect(getControl('block-note').read()).toBe('note');
 			wrapper.unmount();
 		});
@@ -430,6 +433,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(CallEvent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'callEvent');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('callEvent');
 			expect(getControl('callEvent-type').read()).toBe('global');
 			expect(getControl('callEvent-actor').read()).toEqual({ type: 'trigger' });
@@ -442,6 +446,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(CallEvent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			Command.cases.callEvent.customLoad!({ type: 'scene', eventType: 'onStart' });
+			await wrapper.vm.$nextTick();
 			expect(getControl('callEvent-type').read()).toBe('scene');
 			expect(getControl('callEvent-eventType').read()).toBe('onStart');
 			const saved = vi.fn();
@@ -604,15 +609,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -626,26 +622,30 @@ vi.mock('@app/stores/local', () => ({
 			Window.close = vi.fn();
 		});
 
-		it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+		it('insert 路径：打开窗口并 load 默认 form', async () => {
 			const wrapper = mount(ChangeActorAnimation, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useChangeActorAnimationCommandSchema();
 			CommandSchema.insert(target, 'changeActorAnimation');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorAnimation');
-			expect(getControl('changeActorAnimation-actor').read()).toEqual({ type: 'trigger' });
-			expect(getControl('changeActorAnimation-animationId').read()).toBe('');
+			expect(form.actor).toEqual({ type: 'trigger' });
+			expect(form.animationId).toBe('');
 			wrapper.unmount();
 		});
 
-		it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
+		it('edit 路径：handler.load 解构 params 到 form', async () => {
 			const wrapper = mount(ChangeActorAnimation, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useChangeActorAnimationCommandSchema();
 			CommandSchema.edit(target, {
 				id: 'changeActorAnimation',
 				params: { actor: { type: 'trigger' }, animationId: 'anim1.json' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorAnimation');
-			expect(getControl('changeActorAnimation-actor').read()).toEqual({ type: 'trigger' });
-			expect(getControl('changeActorAnimation-animationId').read()).toBe('anim1.json');
+			expect(form.actor).toEqual({ type: 'trigger' });
+			expect(form.animationId).toBe('anim1.json');
 			wrapper.unmount();
 		});
 
@@ -934,6 +934,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ChangeActorPortrait, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'changeActorPortrait');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorPortrait');
 			expect(getControl('changeActorPortrait-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('changeActorPortrait-mode').read()).toBe('full');
@@ -953,6 +954,7 @@ vi.mock('@app/stores/local', () => ({
 					portrait: 'portrait1'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('changeActorPortrait');
 			expect(getControl('changeActorPortrait-mode').read()).toBe('portrait');
 			expect(getControl('changeActorPortrait-portrait').read()).toBe('portrait1');

@@ -10,6 +10,7 @@
 			<div id="animSpriteFrame-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-anchorX"
+					ref="elAnchorX"
 					v-model="form.anchorX"
 					min="-10"
 					max="10"
@@ -19,6 +20,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
+					ref="elAnchorY"
 					v-model="form.anchorY"
 					min="-10"
 					max="10"
@@ -31,6 +33,7 @@
 			<div id="animSpriteFrame-pivot-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-pivotX"
+					ref="elPivotX"
 					v-model="form.pivotX"
 					min="-10000"
 					max="10000"
@@ -40,6 +43,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
+					ref="elPivotY"
 					v-model="form.pivotY"
 					min="-10000"
 					max="10000"
@@ -54,6 +58,7 @@
 			<div id="animSpriteFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-x"
+					ref="elX"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
@@ -63,6 +68,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
+					ref="elY"
 					v-model="form.y"
 					min="-10000"
 					max="10000"
@@ -77,6 +83,7 @@
 			<div id="animSpriteFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-rotation"
+					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
 					max="36000"
@@ -89,6 +96,7 @@
 			<div id="animSpriteFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-scaleX"
+					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
 					max="100"
@@ -98,6 +106,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
+					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
 					max="100"
@@ -112,6 +121,7 @@
 			<div id="animSpriteFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-opacity"
+					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -126,6 +136,7 @@
 			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
+					ref="elTint0Slider"
 					v-model="form.tint[0]"
 					min="-255"
 					max="255"
@@ -133,6 +144,7 @@
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-0"
+					ref="elTint0"
 					v-model="form.tint[0]"
 					min="-255"
 					max="255"
@@ -145,6 +157,7 @@
 			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
+					ref="elTint1Slider"
 					v-model="form.tint[1]"
 					min="-255"
 					max="255"
@@ -152,6 +165,7 @@
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-1"
+					ref="elTint1"
 					v-model="form.tint[1]"
 					min="-255"
 					max="255"
@@ -164,6 +178,7 @@
 			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
+					ref="elTint2Slider"
 					v-model="form.tint[2]"
 					min="-255"
 					max="255"
@@ -171,6 +186,7 @@
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-2"
+					ref="elTint2"
 					v-model="form.tint[2]"
 					min="-255"
 					max="255"
@@ -183,6 +199,7 @@
 			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
+					ref="elTint3Slider"
 					v-model="form.tint[3]"
 					min="0"
 					max="255"
@@ -190,6 +207,7 @@
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-3"
+					ref="elTint3"
 					v-model="form.tint[3]"
 					min="0"
 					max="255"
@@ -234,7 +252,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -270,32 +288,64 @@ const onMarqueePointerdown = (event: PointerEvent) => {
 	Sprite?.marqueePointerdown?.(event);
 };
 
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
-};
+const elAnchorX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elAnchorY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elPivotX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elPivotY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRotation = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint0 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint1 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint2 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 
 onMounted(() => {
 	const animSpriteFrame = Inspector.animSpriteFrame;
 	if (!animSpriteFrame) return;
 
-	synchronize('animSpriteFrame-tint-0-slider', 'animSpriteFrame-tint-0');
-	synchronize('animSpriteFrame-tint-1-slider', 'animSpriteFrame-tint-1');
-	synchronize('animSpriteFrame-tint-2-slider', 'animSpriteFrame-tint-2');
-	synchronize('animSpriteFrame-tint-3-slider', 'animSpriteFrame-tint-3');
+	const tintSliders = [elTint0Slider, elTint1Slider, elTint2Slider, elTint3Slider];
+	const tintNumbers = [elTint0, elTint1, elTint2, elTint3];
+	tintSliders.forEach((slider, index) => {
+		const target = tintNumbers[index].value?.root;
+		if (!target) return;
+		slider.value?.synchronize(
+			target as HTMLElement & {
+				write(value: number | string): void;
+				input: HTMLInputElement;
+			}
+		);
+	});
 
-	const elements = document.querySelectorAll(`
-    #animSpriteFrame-anchorX, #animSpriteFrame-anchorY,
-    #animSpriteFrame-pivotX, #animSpriteFrame-pivotY,
-    #animSpriteFrame-x, #animSpriteFrame-y, #animSpriteFrame-rotation,
-    #animSpriteFrame-scaleX, #animSpriteFrame-scaleY, #animSpriteFrame-opacity,
-    #animSpriteFrame-tint-0, #animSpriteFrame-tint-1, #animSpriteFrame-tint-2, #animSpriteFrame-tint-3`);
-	const sliders = document.querySelectorAll(`
-    #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
-    #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
+	const elements = [
+		elAnchorX.value?.root,
+		elAnchorY.value?.root,
+		elPivotX.value?.root,
+		elPivotY.value?.root,
+		elX.value?.root,
+		elY.value?.root,
+		elRotation.value?.root,
+		elScaleX.value?.root,
+		elScaleY.value?.root,
+		elOpacity.value?.root,
+		elTint0.value?.root,
+		elTint1.value?.root,
+		elTint2.value?.root,
+		elTint3.value?.root
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		elTint0Slider.value?.root,
+		elTint1Slider.value?.root,
+		elTint2Slider.value?.root,
+		elTint3Slider.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, animSpriteFrame, Animation, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = animSpriteFrame.motion;

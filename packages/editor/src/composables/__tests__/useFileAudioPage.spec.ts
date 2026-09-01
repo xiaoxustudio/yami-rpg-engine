@@ -20,7 +20,8 @@ interface AudioParams {
 const fileAudio = vi.hoisted(() => ({
 	info: null as AudioInfo | null,
 	params: null as AudioParams | null,
-	paramInput: vi.fn()
+	updateParams: vi.fn(),
+	updateParamInfos: vi.fn()
 }));
 
 vi.mock('@app/inspector/inspector.ts', () => ({
@@ -57,7 +58,8 @@ describe('useFileAudioPage（fileAudio inspector 页面 composable）', () => {
 		document.body.innerHTML = '';
 		fileAudio.info = null;
 		fileAudio.params = null;
-		fileAudio.paramInput.mockClear();
+		fileAudio.updateParams.mockClear();
+		fileAudio.updateParamInfos.mockClear();
 	});
 
 	const mountPage = () => {
@@ -97,21 +99,23 @@ describe('useFileAudioPage（fileAudio inspector 页面 composable）', () => {
 		wrapper.unmount();
 	});
 
-	it('onParamInput 找不到 fileAudio 控件时跳过 paramInput', () => {
+	it('onParamInput 找不到 fileAudio 控件时跳过 updateParams', () => {
 		const { wrapper, page } = mountPage();
 		const el = document.createElement('input');
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(fileAudio.paramInput).not.toHaveBeenCalled();
+		expect(fileAudio.updateParams).not.toHaveBeenCalled();
+		expect(fileAudio.updateParamInfos).not.toHaveBeenCalled();
 		wrapper.unmount();
 	});
 
-	it('onParamInput 从嵌套元素向上解析控件并委托 paramInput + 重新 sync', () => {
+	it('onParamInput 从嵌套元素向上解析控件并以 form 值调用 updateParams + 重新 sync', () => {
 		const { wrapper, page } = mountPage();
 		fileAudio.params = makeParams({ volume: 0.1 });
 		page.sync();
 		fileAudio.params = makeParams({ volume: 0.9 });
+		page.form.volume = 0.4;
 		const el = document.createElement('div');
 		el.id = 'fileAudio-volume';
 		const input = document.createElement('input');
@@ -119,7 +123,13 @@ describe('useFileAudioPage（fileAudio inspector 页面 composable）', () => {
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		input.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(fileAudio.paramInput).toHaveBeenCalled();
+		expect(fileAudio.updateParams).toHaveBeenCalledWith({
+			volume: 0.4,
+			pan: 0.2,
+			dry: 0.5,
+			wet: 0.3
+		});
+		expect(fileAudio.updateParamInfos).toHaveBeenCalled();
 		expect(page.form.volume).toBe(0.9);
 		wrapper.unmount();
 	});

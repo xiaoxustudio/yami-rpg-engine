@@ -1,6 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
@@ -81,7 +81,7 @@ function initialize(): void {
 	searcher = document.getElementById('presetObject-searcher')!;
 	list.bind(() => nodes);
 	searcher.addCloseButton();
-	searcher.on('keydown', searcherKeydown);
+	on(searcher, 'keydown', searcherKeydown);
 	document.getElementById('presetObject')!.addEventListener('closed', windowClosed);
 }
 

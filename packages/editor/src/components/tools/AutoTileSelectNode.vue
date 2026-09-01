@@ -20,6 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 
@@ -35,7 +36,7 @@ const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => tileNode.windowClosed());
+		on(el, 'closed', () => tileNode.windowClosed());
 	}
 });
 </script>

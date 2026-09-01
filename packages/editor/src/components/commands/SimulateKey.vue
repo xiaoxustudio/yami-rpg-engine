@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="simulateKey-operation" v-model="form.operation" />
+			<SelectBox id="simulateKey-operation" v-focus v-model="form.operation" />
 			<div class="text">Key Code</div>
 			<KeyboardBox id="simulateKey-keycode" @input="onKeycode" />
 		</div>

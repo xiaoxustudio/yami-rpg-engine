@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Scene</div>
-			<FileVar id="loadScene-sceneId" type="file" filter="scene" v-model="form.sceneId" />
+			<FileVar id="loadScene-sceneId" v-focus type="file" filter="scene" v-model="form.sceneId" />
 			<div class="text">Transfer Player</div>
 			<SelectBox id="loadScene-transfer" v-model="form.transfer" />
 			<div class="text">X</div>

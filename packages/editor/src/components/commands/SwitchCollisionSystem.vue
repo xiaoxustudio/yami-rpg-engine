@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="switchCollisionSystem-operation" v-model="form.operation" />
+			<SelectBox id="switchCollisionSystem-operation" v-focus v-model="form.operation" />
 		</div>
 	</WindowFrame>
 </template>

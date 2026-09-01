@@ -1,6 +1,7 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
 import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
@@ -54,7 +55,7 @@ const open = (branch: SwitchBranchData): void => {
 	} else {
 		getWindowStore().open('switch-branch');
 		write(document.getElementById('switch-branch-conditions'), branch.conditions.slice());
-		getFocus(document.getElementById('switch-branch-conditions'));
+		requestFocus('switch-branch-conditions');
 		commands = branch.commands;
 	}
 };

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setCooldown-actor" type="actor" @input="onActor" />
+			<CustomBox id="setCooldown-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="setCooldown-operation" v-model="form.operation" />
 			<div class="text">Cooldown Key</div>
@@ -40,10 +40,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetCooldownCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

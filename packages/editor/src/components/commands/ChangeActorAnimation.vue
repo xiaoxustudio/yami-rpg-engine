@@ -8,13 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorAnimation-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorAnimation-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="changeActorAnimation-animationId"
 				type="file"
 				filter="animation"
-				@input="onAnimationId"
+				v-model="form.animationId"
 			/>
 		</div>
 	</WindowFrame>
@@ -30,14 +30,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorAnimationCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onAnimationId = (value: unknown) => {
-	form.animationId = value;
-};
 
 const onConfirm = () => {
 	save();

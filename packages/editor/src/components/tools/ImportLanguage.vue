@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.importLanguage-language.label') }}</div>
-			<SelectBox id="importLanguage-language" />
+			<SelectBox id="importLanguage-language" v-focus />
 		</div>
 	</WindowFrame>
 </template>

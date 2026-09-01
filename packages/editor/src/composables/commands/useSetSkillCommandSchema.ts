@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setSkill = new CommandSchema({
 	name: 'setSkill',
@@ -45,22 +45,19 @@ Command.cases.setSkill = new CommandSchema({
 
 export function useSetSkillCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setSkill', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setSkill-skill'));
+			requestFocus('setSkill-skill');
 		}
 	});
 	const onSave = (): void => {
-		const skill = read(document.getElementById('setSkill-skill')) ?? form.skill;
-		const operation = read(document.getElementById('setSkill-operation')) ?? form.operation;
+		const skill = form.skill;
+		const operation = form.operation;
 		switch (operation) {
 			case 'set-cooldown':
 			case 'increase-cooldown':
 			case 'decrease-cooldown': {
-				commit({
-					skill,
-					operation,
-					cooldown: read(document.getElementById('setSkill-cooldown')) ?? form.cooldown
-				});
+				commit({ skill, operation, cooldown: form.cooldown });
 				break;
 			}
 		}

@@ -714,15 +714,6 @@ vi.mock('@app/stores/local', () => ({
 	initCommandColorBridges();
 	initCommandParseBridges();
 
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -789,14 +780,15 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：property=factor 时保存 factor', async () => {
 			const wrapper = mount(SetMovementSpeed, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetMovementSpeedCommandSchema();
 			Command.cases.setMovementSpeed.customLoad!({
 				actor: { type: 'trigger' },
 				property: 'base',
 				base: 0,
 				factor: 0
 			});
-			getControl('setMovementSpeed-property').write('factor');
-			getControl('setMovementSpeed-factor').write(2.5);
+			form.property = 'factor';
+			form.factor = 2.5;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setMovementSpeed.save!();
@@ -1034,7 +1026,7 @@ vi.mock('@app/stores/local', () => ({
 				operation: 'add',
 				element: { type: 'trigger' }
 			});
-			getControl('setPointerEventRoot-operation').write('remove-latest');
+			getControl('setPointerEventRoot-operation').input('remove-latest');
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setPointerEventRoot.save!();

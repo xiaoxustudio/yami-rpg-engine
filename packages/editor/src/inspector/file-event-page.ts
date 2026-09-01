@@ -2,10 +2,11 @@ import { reactive } from 'vue';
 import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { clear, getFocus, hide, show, write } from '@app/utils/element-utils';
+import { clear, hide, show } from '@app/utils/element-utils';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { File } from '@app/file/file-system-core.ts';
+import { requestFocus } from '@app/directives/focus';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getYamiI18n } from '@app/i18n';
 
@@ -91,12 +92,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			);
 
 			const write = getElementWriter('fileEvent', event);
-			write('type');
-			write('enabled');
-			write('priority');
-			write('namespace');
-			write('returnType');
-			write('description');
 			write('parameters');
 
 			($('#fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
@@ -112,10 +107,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		}
 	};
 
-	FileEvent.write = function (this: FileEventPage, options: { type?: string }) {
-		if (options.type !== undefined) {
-			write($('#fileEvent-type'), options.type);
-		}
+	FileEvent.write = function (this: FileEventPage, _options: { type?: string }) {
+		($('#fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	FileEvent.update = function (
@@ -222,13 +215,13 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			Window.open!('fileEvent-parameter');
 			FileEvent.parameters.loadTypeItems?.();
 			Object.assign(fileEventParameterForm, { type, key, note });
-			getFocus($('#fileEvent-parameter-type'));
+			requestFocus('fileEvent-parameter-type');
 		},
 		save: function () {
 			const type = fileEventParameterForm.type;
 			const key = fileEventParameterForm.key.trim();
 			if (!key) {
-				return getFocus($('#fileEvent-parameter-key'));
+				return requestFocus('fileEvent-parameter-key');
 			}
 			const note = fileEventParameterForm.note.trim();
 			Window.close!('fileEvent-parameter');

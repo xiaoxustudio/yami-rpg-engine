@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setVideo = new CommandSchema({
 	name: 'setVideo',
@@ -37,14 +37,15 @@ Command.cases.setVideo = new CommandSchema({
 
 export function useSetVideoCommandSchema() {
 	const { form, save, load } = useCommandSchema('setVideo', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setVideo-element'));
+			requestFocus('setVideo-element');
 		}
 	});
 	const onSave = (): void => {
 		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (properties.length === 0) {
-			getFocus(document.getElementById('setVideo-properties'));
+			requestFocus('setVideo-properties');
 			return;
 		}
 		save();

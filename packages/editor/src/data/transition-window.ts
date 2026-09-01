@@ -2,8 +2,13 @@
 import { getListConfig } from '@ui-kit';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
+import {
+	useEasingWindow,
+	clampEasingPointX,
+	clampEasingPointY
+} from '@app/composables/useEasingWindow';
 import { Timer } from '@app/utils/timer';
 import { ctrl } from '@app/utils/event-accessors';
 import { Data } from './data-object.ts';
@@ -145,9 +150,8 @@ export const Easing = {
 	curveBlur: null as unknown as (event: Event) => void,
 	pointerup: null as unknown as (event?: PointerEvent) => void,
 	pointermove: null as unknown as (event: PointerEvent) => void,
-	reverseInput: null as unknown as (event: Event) => void,
-	durationInput: null as unknown as (event: Event) => void,
-	delayInput: null as unknown as (event: Event) => void,
+	durationInput: null as unknown as () => void,
+	delayInput: null as unknown as () => void,
 	confirm: null as unknown as (event: Event) => void,
 	CurveMap: null as unknown as { new (): CurveMapInstance },
 	EasingMap: null as unknown as { new (): EasingMapInstance } & {
@@ -217,16 +221,6 @@ Easing.initialize = () => {
 	const easingScaleInit = $('#easing-scale');
 	if (easingScaleInit) write(easingScaleInit, Easing.scale);
 
-	Easing.reverse = true;
-	Easing.duration = 400;
-	Easing.delay = 400;
-	const easingPreviewReverseInit = $('#easing-preview-reverse');
-	if (easingPreviewReverseInit) write(easingPreviewReverseInit, Easing.reverse);
-	const easingPreviewDurationInit = $('#easing-preview-duration');
-	if (easingPreviewDurationInit) write(easingPreviewDurationInit, Easing.duration);
-	const easingPreviewDelayInit = $('#easing-preview-delay');
-	if (easingPreviewDelayInit) write(easingPreviewDelayInit, Easing.delay);
-
 	Easing.timer = new Timer({
 		duration: Easing.duration,
 		update: (timer) => {
@@ -292,12 +286,6 @@ Easing.initialize = () => {
 		on(Easing.curve, 'wheel', Easing.curveWheel, { passive: true });
 		on(Easing.curve, 'blur', Easing.curveBlur);
 	}
-	const easingPreviewReverse = $('#easing-preview-reverse');
-	if (easingPreviewReverse) on(easingPreviewReverse, 'input', Easing.reverseInput);
-	const easingPreviewDuration = $('#easing-preview-duration');
-	if (easingPreviewDuration) on(easingPreviewDuration, 'input', Easing.durationInput);
-	const easingPreviewDelay = $('#easing-preview-delay');
-	if (easingPreviewDelay) on(easingPreviewDelay, 'input', Easing.delayInput);
 	const easingConfirm = $('#easing-confirm');
 	if (easingConfirm) on(easingConfirm, 'click', Easing.confirm);
 };
@@ -363,16 +351,12 @@ Easing.load = function (this: typeof Easing, easing: EasingData) {
 	const points = easing.points;
 	this.points = points;
 
-	const write = getElementWriter('easing', easing);
-	const length = points.length;
-	write('mode', length);
-	for (let i = 0; i < length; i++) {
-		write(`points-${i}-x`);
-		write(`points-${i}-y`);
-	}
-	for (let i = length; i < 8; i++) {
-		write(`points-${i}-x`, 0);
-		write(`points-${i}-y`, 0);
+	const form = useEasingWindow().form;
+	form.mode = points.length;
+	for (let i = 0; i < 8; i++) {
+		const point = points[i];
+		form.points[i].x = point ? clampEasingPointX(point.x) : 0;
+		form.points[i].y = point ? clampEasingPointY(point.y) : 0;
 	}
 
 	this.updateMaps();
@@ -692,16 +676,16 @@ Easing.drawPreview = function (this: typeof Easing) {
 };
 
 Easing.updatePoints = function (this: typeof Easing) {
-	const read = getElementReader('easing');
-	const count = read('mode');
+	const form = useEasingWindow().form;
+	const count = form.mode;
 	const points = this.points!;
 	const length = points.length;
 	if (length !== count) {
 		points.length = count;
 		for (let i = length; i < count; i++) {
 			points[i] = {
-				x: read(`points-${i}-x`),
-				y: read(`points-${i}-y`)
+				x: form.points[i].x,
+				y: form.points[i].y
 			};
 		}
 	}
@@ -967,8 +951,7 @@ Easing.modeSelect = function (this: typeof Easing, _event: Event) {
 	this.updatePoints();
 	const points = this.points!;
 	const easingMap = this.easingMap!;
-	const write = getElementWriter('easing');
-	const read = getElementReader('easing');
+	const form = useEasingWindow().form;
 	if (
 		points.length === 5 &&
 		points[2].x === 0 &&
@@ -986,15 +969,15 @@ Easing.modeSelect = function (this: typeof Easing, _event: Event) {
 		const ctrlY0 = easingMap.ease(ctrlX0);
 		const ctrlX1 = startX + ((right - startX) * 2) / 3;
 		const ctrlY1 = easingMap.ease(ctrlX1);
-		write('points-2-x', startX);
-		write('points-2-y', startY);
-		write('points-3-x', ctrlX0);
-		write('points-3-y', ctrlY0);
-		write('points-4-x', ctrlX1);
-		write('points-4-y', ctrlY1);
+		form.points[2].x = clampEasingPointX(startX);
+		form.points[2].y = clampEasingPointY(startY);
+		form.points[3].x = clampEasingPointX(ctrlX0);
+		form.points[3].y = clampEasingPointY(ctrlY0);
+		form.points[4].x = clampEasingPointX(ctrlX1);
+		form.points[4].y = clampEasingPointY(ctrlY1);
 		for (let i = 2; i < 5; i++) {
-			points[i].x = read(`points-${i}-x`);
-			points[i].y = read(`points-${i}-y`);
+			points[i].x = form.points[i].x;
+			points[i].y = form.points[i].y;
 		}
 	}
 	if (
@@ -1014,15 +997,15 @@ Easing.modeSelect = function (this: typeof Easing, _event: Event) {
 		const ctrlY0 = easingMap.ease(ctrlX0);
 		const ctrlX1 = startX + ((right - startX) * 2) / 3;
 		const ctrlY1 = easingMap.ease(ctrlX1);
-		write('points-5-x', startX);
-		write('points-5-y', startY);
-		write('points-6-x', ctrlX0);
-		write('points-6-y', ctrlY0);
-		write('points-7-x', ctrlX1);
-		write('points-7-y', ctrlY1);
+		form.points[5].x = clampEasingPointX(startX);
+		form.points[5].y = clampEasingPointY(startY);
+		form.points[6].x = clampEasingPointX(ctrlX0);
+		form.points[6].y = clampEasingPointY(ctrlY0);
+		form.points[7].x = clampEasingPointX(ctrlX1);
+		form.points[7].y = clampEasingPointY(ctrlY1);
 		for (let i = 5; i < 8; i++) {
-			points[i].x = read(`points-${i}-x`);
-			points[i].y = read(`points-${i}-y`);
+			points[i].x = form.points[i].x;
+			points[i].y = form.points[i].y;
 		}
 	}
 	this.updateMaps();
@@ -1054,12 +1037,12 @@ Easing.scaleInput = function (this: typeof Easing, event: Event & { value?: numb
 Easing.curveKeydown = function (this: typeof Easing, event: KeyboardEvent) {
 	const point = this.activePoint;
 	if (point !== null) {
+		const form = useEasingWindow().form;
 		switch (event.code) {
 			case 'ArrowUp': {
 				const index = this.points!.indexOf(point);
-				const element = $(`#easing-points-${index}-y`);
-				write(element, point.y + 0.01);
-				point.y = read(element);
+				point.y = clampEasingPointY(point.y + 0.01);
+				form.points[index].y = point.y;
 				this.changed = true;
 				this.updateMaps();
 				this.requestRendering();
@@ -1067,9 +1050,8 @@ Easing.curveKeydown = function (this: typeof Easing, event: KeyboardEvent) {
 			}
 			case 'ArrowDown': {
 				const index = this.points!.indexOf(point);
-				const element = $(`#easing-points-${index}-y`);
-				write(element, point.y - 0.01);
-				point.y = read(element);
+				point.y = clampEasingPointY(point.y - 0.01);
+				form.points[index].y = point.y;
 				this.changed = true;
 				this.updateMaps();
 				this.requestRendering();
@@ -1077,9 +1059,8 @@ Easing.curveKeydown = function (this: typeof Easing, event: KeyboardEvent) {
 			}
 			case 'ArrowLeft': {
 				const index = this.points!.indexOf(point);
-				const element = $(`#easing-points-${index}-x`);
-				write(element, point.x - 0.01);
-				point.x = read(element);
+				point.x = clampEasingPointX(point.x - 0.01);
+				form.points[index].x = point.x;
 				this.changed = true;
 				this.updateMaps();
 				this.requestRendering();
@@ -1087,9 +1068,8 @@ Easing.curveKeydown = function (this: typeof Easing, event: KeyboardEvent) {
 			}
 			case 'ArrowRight': {
 				const index = this.points!.indexOf(point);
-				const element = $(`#easing-points-${index}-x`);
-				write(element, point.x + 0.01);
-				point.x = read(element);
+				point.x = clampEasingPointX(point.x + 0.01);
+				form.points[index].x = point.x;
 				this.changed = true;
 				this.updateMaps();
 				this.requestRendering();
@@ -1180,41 +1160,34 @@ Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 		const transY = Math.roundTo((dragging.clientY - event.clientY) / fullSize, 2);
 		const pointX = Math.clamp(Math.roundTo(dragging.pointStartX + transX, 2), 0, 1);
 		const pointY = Math.clamp(Math.roundTo(dragging.pointStartY + transY, 2), -5, 5);
-		const xInput = $(`#easing-points-${index}-x`);
-		const yInput = $(`#easing-points-${index}-y`);
-		write(xInput, pointX);
-		write(yInput, pointY);
-		point.x = read(xInput);
-		point.y = read(yInput);
+		point.x = pointX;
+		point.y = pointY;
+		const form = useEasingWindow().form;
+		form.points[index].x = pointX;
+		form.points[index].y = pointY;
 		this.changed = true;
 		this.updateMaps();
 		this.requestRendering();
 	}
 }.bind(Easing);
 
-Easing.reverseInput = function (this: HTMLElement, _event: Event) {
-	Easing.reverse = read(this);
-};
-
-Easing.durationInput = function (this: HTMLElement, _event: Event) {
-	Easing.duration = read(this);
-	const timer = Easing.timer;
+Easing.durationInput = function (this: typeof Easing) {
+	const timer = this.timer;
 	if (timer.state === 'playing') {
 		const lastDuration = timer.duration;
-		timer.duration = Easing.duration;
+		timer.duration = this.duration;
 		timer.elapsed = (timer.elapsed * timer.duration) / lastDuration;
 	}
-};
+}.bind(Easing);
 
-Easing.delayInput = function (this: HTMLElement, _event: Event) {
-	Easing.delay = read(this);
-	const timer = Easing.timer;
+Easing.delayInput = function (this: typeof Easing) {
+	const timer = this.timer;
 	if (timer.state === 'waiting') {
 		const lastDuration = timer.duration;
-		timer.duration = Easing.delay;
+		timer.duration = this.delay;
 		timer.elapsed = (timer.elapsed * timer.duration) / lastDuration;
 	}
-};
+}.bind(Easing);
 
 Easing.confirm = function (this: typeof Easing, _event: Event) {
 	if (this.changed) {
@@ -1379,3 +1352,36 @@ for (const key of easingStateKeys) {
 		configurable: true
 	});
 }
+
+const easingForm = () => useEasingWindow().form;
+
+Object.defineProperties(Easing, {
+	scale: {
+		get: () => easingForm().scale,
+		set: (value: number) => {
+			easingForm().scale = value;
+		},
+		configurable: true
+	},
+	reverse: {
+		get: () => easingForm().preview.reverse,
+		set: (value: boolean) => {
+			easingForm().preview.reverse = value;
+		},
+		configurable: true
+	},
+	duration: {
+		get: () => easingForm().preview.duration,
+		set: (value: number) => {
+			easingForm().preview.duration = value;
+		},
+		configurable: true
+	},
+	delay: {
+		get: () => easingForm().preview.delay,
+		set: (value: number) => {
+			easingForm().preview.delay = value;
+		},
+		configurable: true
+	}
+});

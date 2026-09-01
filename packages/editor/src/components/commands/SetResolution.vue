@@ -10,6 +10,7 @@
 			<div class="text">Width</div>
 			<NumberVar
 				id="setResolution-width"
+				v-focus
 				min="240"
 				max="7680"
 				unit="px"

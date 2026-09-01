@@ -8,15 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="getTarget-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="getTarget-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
 			<SelectBox id="getTarget-selector" v-model="form.selector" />
 			<div class="text">Condition</div>
 			<SelectBox id="getTarget-condition" v-model="form.condition" />
 			<div class="text">Attribute</div>
-			<SelectBox id="getTarget-attribute" v-model="form.attribute" />
+			<SelectBox id="getTarget-attribute" v-focus v-model="form.attribute" />
 			<div class="text">Attribute 2</div>
-			<SelectBox id="getTarget-divisor" v-model="form.divisor" />
+			<SelectBox id="getTarget-divisor" v-focus v-model="form.divisor" />
 		</div>
 	</WindowFrame>
 </template>

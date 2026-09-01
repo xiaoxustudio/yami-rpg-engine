@@ -7,6 +7,7 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import UploadFile from '@app/components/commands/UploadFile.vue';
+import { useUploadFileCommandSchema } from '@app/composables/commands/useUploadFileCommandSchema';
 import UseItem from '@app/components/commands/UseItem.vue';
 import Wait from '@app/components/commands/Wait.vue';
 import { useWaitCommandSchema } from '@app/composables/commands/useWaitCommandSchema';
@@ -52,6 +53,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(UploadFile, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'uploadFile');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('uploadFile');
 			expect(getControl('uploadFile-url').read()).toBe('');
 			expect(getControl('uploadFile-method').read()).toBe('POST');
@@ -73,6 +75,7 @@ vi.mock('@app/stores/local', () => ({
 					callback: 'cb1'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('uploadFile');
 			expect(getControl('uploadFile-url').read()).toBe('http://example.com/up');
 			expect(getControl('uploadFile-method').read()).toBe('PUT');
@@ -85,15 +88,16 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.uploadFile.save 保存', async () => {
 			const wrapper = mount(UploadFile, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useUploadFileCommandSchema();
 			Command.cases.uploadFile.customLoad!({
 				url: 'http://example.com/up',
 				method: 'POST',
 				path: 'C:/file'
 			});
-			getControl('uploadFile-method').input('PUT');
-			getControl('uploadFile-field').write('f2');
-			getControl('uploadFile-callback').input('cb2');
-			getControl('uploadFile-rateCallback').input('rc2');
+			form.method = 'PUT';
+			form.field = 'f2';
+			form.callback = 'cb2';
+			form.rateCallback = 'rc2';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.uploadFile.save!();
@@ -162,6 +166,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(UseItem, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'useItem');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('useItem');
 			expect(getControl('useItem-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('useItem-mode').read()).toBe('by-key');
@@ -182,6 +187,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('useItem');
 			expect(getControl('useItem-actor').read()).toEqual({ type: 'player' });
 			expect(getControl('useItem-mode').read()).toBe('by-item');
@@ -354,15 +360,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -411,13 +408,14 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.webSocketClose.save 保存', async () => {
 			const wrapper = mount(WebSocketClose, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useWebSocketCloseCommandSchema();
 			Command.cases.webSocketClose.customLoad!({
 				id: 'ws1',
 				code: 1000,
 				reason: 'bye'
 			});
-			getControl('webSocketClose-code').write(4000);
-			getControl('webSocketClose-reason').write('closing');
+			form.code = 4000;
+			form.reason = 'closing';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.webSocketClose.save!();
@@ -449,15 +447,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -510,6 +499,7 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.webSocketConnect.save 保存', async () => {
 			const wrapper = mount(WebSocketConnect, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useWebSocketConnectCommandSchema();
 			Command.cases.webSocketConnect.customLoad!({
 				url: 'wss://host/socket',
 				id: 'ws1',
@@ -519,7 +509,7 @@ vi.mock('@app/stores/local', () => ({
 				onError: '',
 				onClose: ''
 			});
-			getControl('webSocketConnect-protocols').write('graphql-ws');
+			form.protocols = 'graphql-ws';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.webSocketConnect.save!();

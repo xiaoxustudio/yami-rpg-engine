@@ -5,12 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
 			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div>
-			<TextBox id="sceneRegion-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneRegion-name" ref="elName" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div>
-			<ColorBox id="sceneRegion-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<ColorBox id="sceneRegion-color" ref="elColor" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneRegion-x"
+				ref="elX"
 				v-model="form.x"
 				@input="onParamInput"
 				min="-128"
@@ -21,6 +22,7 @@
 			<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneRegion-y"
+				ref="elY"
 				v-model="form.y"
 				@input="onParamInput"
 				min="-128"
@@ -31,6 +33,7 @@
 			<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="sceneRegion-width"
+				ref="elWidth"
 				v-model="form.width"
 				@input="onParamInput"
 				min="0"
@@ -40,6 +43,7 @@
 			<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="sceneRegion-height"
+				ref="elHeight"
 				v-model="form.height"
 				@input="onParamInput"
 				min="0"
@@ -52,12 +56,13 @@
 		<DetailSummary>{{
 			t('components.sceneRegion-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneRegion-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList id="sceneRegion-conditions" ref="elConditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="region"
 			flexible
@@ -65,14 +70,14 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneRegion-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList id="sceneRegion-scripts" ref="elScripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneRegion-parameter-pane"></ParameterPane>
+	<ParameterPane id="sceneRegion-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -96,6 +101,17 @@ const { form, sync, onParamInput } = useSceneRegionPage();
 
 const { bindInput } = useInspectorInput();
 
+const elName = ref<InstanceType<typeof TextBox> | null>(null);
+const elColor = ref<InstanceType<typeof ColorBox> | null>(null);
+const elX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elHeight = ref<InstanceType<typeof NumberBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneRegion;
 	if (!editor) return;
@@ -106,27 +122,31 @@ onMounted(() => {
 	}
 
 	try {
-		const conditions = document.getElementById('sceneRegion-conditions');
-		conditions?.bind?.(new ConditionListInterface(editor, Scene));
+		elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 
-		const events = document.getElementById('sceneRegion-events');
-		events?.bind?.(new EventListInterface(editor, Scene));
+		elEvents.value?.bind(new EventListInterface(editor, Scene));
 
-		const scripts = document.getElementById('sceneRegion-scripts');
-		scripts?.bind?.(
+		elScripts.value?.bind(
 			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
 		);
 
-		const parameterPane = document.getElementById('sceneRegion-parameter-pane');
-		parameterPane?.bind?.(scripts);
+		const scriptsEl = elScripts.value?.root;
+		if (scriptsEl) {
+			elParameterPane.value?.bind(scriptsEl);
+		}
 
-		const elements = document.querySelectorAll(
-			'#sceneRegion-name, #sceneRegion-color, #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height'
-		);
+		const elements = [
+			elName.value?.root,
+			elColor.value?.root,
+			elX.value?.root,
+			elY.value?.root,
+			elWidth.value?.root,
+			elHeight.value?.root
+		].filter((el): el is HTMLElement => el != null);
 		bindInput(elements, editor, Scene);
 
-		document
-			.querySelectorAll('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts')
+		[elConditions.value?.root, elEvents.value?.root, elScripts.value?.root]
+			.filter((el): el is HTMLElement => el != null)
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneRegionPage] init skipped:', (e as Error)?.message);

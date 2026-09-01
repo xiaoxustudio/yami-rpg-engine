@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setCursor = new CommandSchema({
 	name: 'setCursor',
@@ -23,8 +23,9 @@ Command.cases.setCursor = new CommandSchema({
 
 export function useSetCursorCommandSchema() {
 	return useCommandSchema('setCursor', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setCursor-image'));
+			requestFocus('setCursor-image');
 		}
 	});
 }

@@ -41,8 +41,8 @@
 					@表示编辑器模板目录、$表示项目目录apk文件夹、~表示项目目录
 				</div>
 			</div>
-			<div class="box" id="export-apk-container">
-				<div class="box" id="export-apk-content">
+			<div class="box" id="export-apk-container" ref="elContainer">
+				<div class="box" id="export-apk-content" ref="elContent">
 					<div v-for="(log, index) in items" :key="index" class="export-apk-major text">
 						{{ log.msg }}
 					</div>
@@ -54,7 +54,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { nextTick, onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -70,20 +69,20 @@ const local = useLocalStore();
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
 
+const elContainer = ref<HTMLElement | null>(null);
+const elContent = ref<HTMLElement | null>(null);
+
 const update = (): void => {
 	items.value = ApkBuilder.logs.slice();
 	void nextTick(() => {
-		const el = document.getElementById('export-apk-container');
-		if (el) {
-			el.scrollTo({
-				top: el.scrollHeight
-			});
-		}
+		elContainer.value?.scrollTo({
+			top: elContainer.value.scrollHeight
+		});
 	});
 };
 
 onMounted(() => {
-	const el = document.getElementById('export-apk-content');
+	const el = elContent.value;
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();

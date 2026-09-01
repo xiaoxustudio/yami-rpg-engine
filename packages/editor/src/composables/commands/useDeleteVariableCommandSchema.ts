@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -24,14 +24,15 @@ Command.cases.deleteVariable = new CommandSchema({
 
 export function useDeleteVariableCommandSchema() {
 	const { form, load, commit } = useCommandSchema('deleteVariable', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('deleteVariable-variable'));
+			requestFocus('deleteVariable-variable');
 		}
 	});
 	const onSave = (): void => {
-		const variable = read(document.getElementById('deleteVariable-variable')) ?? form.variable;
+		const variable = form.variable as { key: string };
 		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('deleteVariable-variable'));
+			requestFocus('deleteVariable-variable');
 			return;
 		}
 		commit({ variable });

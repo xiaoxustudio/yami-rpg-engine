@@ -1,7 +1,8 @@
-import { $, getElementReader } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { TextForm } from '@app/composables/useUITextPage';
 
 {
 	interface UITextShape {
@@ -163,22 +164,24 @@ import { UI } from '@app/ui/ui-window.ts';
 			}
 			case 'effect-type':
 				if (node.effect.type !== value) {
-					const read = getElementReader('uiText-effect');
+					const form = (
+						$('#uiText-vue-mount') as (HTMLElement & { form?: TextForm }) | null
+					)?.form;
 					const effect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':
 							break;
 						case 'shadow':
-							effect.shadowOffsetX = read('shadowOffsetX');
-							effect.shadowOffsetY = read('shadowOffsetY');
-							effect.color = read('color');
+							effect.shadowOffsetX = form?.effect.shadowOffsetX;
+							effect.shadowOffsetY = form?.effect.shadowOffsetY;
+							effect.color = form?.effect.color;
 							break;
 						case 'stroke':
-							effect.strokeWidth = read('strokeWidth');
-							effect.color = read('color');
+							effect.strokeWidth = form?.effect.strokeWidth;
+							effect.color = form?.effect.color;
 							break;
 						case 'outline':
-							effect.color = read('color');
+							effect.color = form?.effect.color;
 							break;
 					}
 					node.effect = effect;

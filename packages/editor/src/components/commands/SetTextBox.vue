@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setTextBox-element" type="element" @input="onElement" />
+			<CustomBox id="setTextBox-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setTextBox-properties" v-model="form.properties" />
+			<ParamList id="setTextBox-properties" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>

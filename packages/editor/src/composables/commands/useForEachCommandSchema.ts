@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils.ts';
 import { reactive } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
@@ -7,6 +6,7 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -175,7 +175,7 @@ const load = ({
 		touchId: touchId as { type: string; key: string }
 	});
 	commands = children as unknown[];
-	getFocus(document.getElementById('forEach-data')!);
+	requestFocus('forEach-data');
 };
 
 const save = (): unknown => {
@@ -185,11 +185,11 @@ const save = (): unknown => {
 		case 'list': {
 			const list = form.list;
 			if (VariableGetter.isNone!(list)) {
-				return getFocus(document.getElementById('forEach-list')!);
+				return requestFocus('forEach-list');
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, list, variable, commands: children });
 			break;
@@ -201,7 +201,7 @@ const save = (): unknown => {
 			const actor = form.actor;
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, actor, variable, commands: children });
 			break;
@@ -210,7 +210,7 @@ const save = (): unknown => {
 			const element = form.element;
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, element, variable, commands: children });
 			break;
@@ -218,7 +218,7 @@ const save = (): unknown => {
 		case 'member': {
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, variable, commands: children });
 			break;
@@ -226,11 +226,11 @@ const save = (): unknown => {
 		case 'attribute': {
 			const groupId = form.attributeGroupId;
 			if (groupId === '') {
-				return getFocus(document.getElementById('forEach-attribute-groupId')!);
+				return requestFocus('forEach-attribute-groupId');
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, groupId, variable, commands: children });
 			break;
@@ -238,11 +238,11 @@ const save = (): unknown => {
 		case 'enum': {
 			const groupId = form.enumGroupId;
 			if (groupId === '') {
-				return getFocus(document.getElementById('forEach-enum-groupId')!);
+				return requestFocus('forEach-enum-groupId');
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus(document.getElementById('forEach-variable')!);
+				return requestFocus('forEach-variable');
 			}
 			commit({ data, groupId, variable, commands: children });
 			break;
@@ -250,7 +250,7 @@ const save = (): unknown => {
 		case 'save': {
 			const saveIndex = form.saveIndex;
 			if (VariableGetter.isNone!(saveIndex)) {
-				return getFocus(document.getElementById('forEach-saveIndex')!);
+				return requestFocus('forEach-saveIndex');
 			}
 			commit({ data, saveIndex, commands: children });
 			break;
@@ -259,7 +259,7 @@ const save = (): unknown => {
 		case 'changed-touch': {
 			const touchId = form.touchId;
 			if (VariableGetter.isNone!(touchId)) {
-				return getFocus(document.getElementById('forEach-touchId')!);
+				return requestFocus('forEach-touchId');
 			}
 			commit({ data, touchId, commands: children });
 			break;

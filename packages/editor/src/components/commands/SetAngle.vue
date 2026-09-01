@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setAngle-actor" type="actor" @input="onActor" />
+			<CustomBox id="setAngle-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Angle</div>
-			<CustomBox id="setAngle-angle" type="angle" @input="onAngle" />
+			<CustomBox id="setAngle-angle" type="angle" v-model="form.angle" />
 			<div class="text">Easing</div>
 			<SelectBox id="setAngle-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
@@ -44,14 +44,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetAngleCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onAngle = (value: unknown) => {
-	form.angle = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -35,6 +35,7 @@
 			t('components.fileState-attributes.label') || 'Attributes'
 		}}</DetailSummary>
 		<ParamList
+			ref="elAttributes"
 			id="fileState-attributes"
 			@change="onListChange"
 			class="inspector-list"
@@ -45,6 +46,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileState-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
+			ref="elEvents"
 			id="fileState-events"
 			@change="onListChange"
 			class="inspector-list"
@@ -54,14 +56,20 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileState-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="fileState-scripts" @change="onListChange" class="inspector-list" flexible />
+		<ParamList
+			ref="elScripts"
+			id="fileState-scripts"
+			@change="onListChange"
+			class="inspector-list"
+			flexible
+		/>
 	</DetailBox>
-	<ParameterPane id="fileState-parameter-pane" />
+	<ParameterPane ref="elParameterPane" id="fileState-parameter-pane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -85,6 +93,11 @@ const onListChange = () => {
 	Inspector?.fileState?.listChange?.();
 };
 
+const elAttributes = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileState;
 	if (!editor) return;
@@ -94,12 +107,10 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	document.getElementById('fileState-attributes')?.bind?.(new AttributeListInterface());
-	document.getElementById('fileState-events')?.bind?.(new EventListInterface(editor));
-	document.getElementById('fileState-scripts')?.bind?.(new ScriptListInterface());
-	document
-		.getElementById('fileState-parameter-pane')
-		?.bind?.(document.getElementById('fileState-scripts'));
+	elAttributes.value?.bind(new AttributeListInterface());
+	elEvents.value?.bind(new EventListInterface(editor));
+	elScripts.value?.bind(new ScriptListInterface());
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	sync();
 });

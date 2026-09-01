@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="waitForVideo-element" type="element" @input="onElement" />
+			<CustomBox id="waitForVideo-element" v-focus type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
@@ -23,10 +23,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useWaitForVideoCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -1,5 +1,5 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { clear, getFocus } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -7,6 +7,7 @@ import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -72,17 +73,17 @@ const load = ({
 	form.easingId = easingId;
 	form.duration = duration;
 	commands = children as unknown[];
-	getFocus(document.getElementById('transition-variable'));
+	requestFocus('transition-variable');
 };
 
 const save = (): unknown => {
 	const variable = form.variable as { type: string; key: string };
 	if (VariableGetter.isNone!(variable)) {
-		return getFocus(document.getElementById('transition-variable'));
+		return requestFocus('transition-variable');
 	}
 	const duration = form.duration as number;
 	if (duration === 0) {
-		return getFocus(document.getElementById('transition-duration'), 'all');
+		return requestFocus('transition-duration', 'all');
 	}
 	commit({
 		variable,

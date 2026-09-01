@@ -5,12 +5,18 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileTrigger-general-grid">
 			<div class="text">{{ t('components.fileTrigger-selector.label') || 'Selector' }}</div>
-			<SelectBox id="fileTrigger-selector" v-model="form.selector" @input="onParamInput" />
+			<SelectBox
+				id="fileTrigger-selector"
+				ref="elSelector"
+				v-model="form.selector"
+				@input="onParamInput"
+			/>
 			<div class="text">
 				{{ t('components.fileTrigger-onHitWalls.label') || 'On Hit Walls' }}
 			</div>
 			<SelectBox
 				id="fileTrigger-onHitWalls"
+				ref="elOnHitWalls"
 				v-model="form.onHitWalls"
 				@input="onParamInput"
 			/>
@@ -19,22 +25,30 @@
 			</div>
 			<SelectBox
 				id="fileTrigger-onHitActors"
+				ref="elOnHitActors"
 				v-model="form.onHitActors"
 				@input="onParamInput"
 			/>
 			<div class="text">{{ t('components.fileTrigger-hitCount.label') || 'Hit Count' }}</div>
 			<NumberBox
 				id="fileTrigger-hitCount"
+				ref="elHitCount"
 				v-model="form.hitCount"
 				min="2"
 				max="10000"
 				@input="onParamInput"
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-type.label') || 'Shape' }}</div>
-			<SelectBox id="fileTrigger-shape-type" v-model="form.shapeType" @input="onParamInput" />
+			<SelectBox
+				id="fileTrigger-shape-type"
+				ref="elShapeType"
+				v-model="form.shapeType"
+				@input="onParamInput"
+			/>
 			<div class="text">{{ t('components.fileTrigger-shape-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-width"
+				ref="elShapeWidth"
 				v-model="form.shapeWidth"
 				min="0"
 				max="512"
@@ -45,6 +59,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-height"
+				ref="elShapeHeight"
 				v-model="form.shapeHeight"
 				min="0"
 				max="512"
@@ -55,6 +70,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-anchor.label') || 'Anchor' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-anchor"
+				ref="elShapeAnchor"
 				v-model="form.shapeAnchor"
 				min="-4"
 				max="5"
@@ -64,6 +80,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-radius.label') || 'Radius' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-radius"
+				ref="elShapeRadius"
 				v-model="form.shapeRadius"
 				min="0"
 				max="512"
@@ -76,6 +93,7 @@
 			</div>
 			<NumberBox
 				id="fileTrigger-shape-centralAngle"
+				ref="elShapeCentralAngle"
 				v-model="form.shapeCentralAngle"
 				min="0"
 				max="360"
@@ -94,12 +112,18 @@
 				@input="onParamInput"
 			/>
 			<div class="text">{{ t('components.fileTrigger-hitMode.label') || 'Hit Mode' }}</div>
-			<SelectBox id="fileTrigger-hitMode" v-model="form.hitMode" @input="onParamInput" />
+			<SelectBox
+				id="fileTrigger-hitMode"
+				ref="elHitMode"
+				v-model="form.hitMode"
+				@input="onParamInput"
+			/>
 			<div class="text">
 				{{ t('components.fileTrigger-hitInterval.label') || 'Hit Interval' }}
 			</div>
 			<NumberBox
 				id="fileTrigger-hitInterval"
+				ref="elHitInterval"
 				v-model="form.hitInterval"
 				min="0"
 				max="10000"
@@ -183,13 +207,19 @@
 				@input="onParamInput"
 			/>
 			<div class="text">{{ t('components.fileTrigger-rotatable.label') || 'Rotatable' }}</div>
-			<SelectBox id="fileTrigger-rotatable" v-model="form.rotatable" @input="onParamInput" />
+			<SelectBox
+				id="fileTrigger-rotatable"
+				ref="elRotatable"
+				v-model="form.rotatable"
+				@input="onParamInput"
+			/>
 		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileTrigger-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="trigger"
 			flexible
@@ -200,17 +230,18 @@
 		<DetailSummary>{{ t('components.fileTrigger-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-scripts"
+			ref="elScripts"
 			class="inspector-list"
 			flexible
 			@change="onListChange"
 		/>
 	</DetailBox>
-	<ParameterPane id="fileTrigger-parameter-pane" />
+	<ParameterPane id="fileTrigger-parameter-pane" ref="elParameterPane" />
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -238,132 +269,108 @@ const onListChange = () => {
 	Inspector?.fileTrigger?.listChange?.();
 };
 
+const elSelector = ref<InstanceType<typeof SelectBox> | null>(null);
+const elOnHitWalls = ref<InstanceType<typeof SelectBox> | null>(null);
+const elOnHitActors = ref<InstanceType<typeof SelectBox> | null>(null);
+const elHitCount = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShapeType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elShapeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShapeHeight = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShapeAnchor = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShapeRadius = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShapeCentralAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elHitMode = ref<InstanceType<typeof SelectBox> | null>(null);
+const elHitInterval = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRotatable = ref<InstanceType<typeof SelectBox> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileTrigger;
 	if (!editor) return;
 
 	const el = document.getElementById('fileTrigger-vue-mount');
 	if (el) {
-		attachElementApi(el, { sync });
+		attachElementApi(el, { sync, form });
 	}
 
-	const elSelector = document.getElementById('fileTrigger-selector') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elSelector?.loadItems) {
-		elSelector.loadItems([
-			{ name: 'Enemy', value: 'enemy' },
-			{ name: 'Friend', value: 'friend' },
-			{ name: 'Team Member', value: 'team' },
-			{ name: 'Team Member Except Self', value: 'team-except-self' },
-			{ name: 'Any Except Self', value: 'any-except-self' },
-			{ name: 'Any', value: 'any' }
-		]);
-	}
+	elSelector.value?.loadItems([
+		{ name: 'Enemy', value: 'enemy' },
+		{ name: 'Friend', value: 'friend' },
+		{ name: 'Team Member', value: 'team' },
+		{ name: 'Team Member Except Self', value: 'team-except-self' },
+		{ name: 'Any Except Self', value: 'any-except-self' },
+		{ name: 'Any', value: 'any' }
+	]);
 
-	const elOnHitWalls = document.getElementById('fileTrigger-onHitWalls') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elOnHitWalls?.loadItems) {
-		elOnHitWalls.loadItems([
-			{ name: 'Penetrate', value: 'penetrate' },
-			{ name: 'Destroy', value: 'destroy' }
-		]);
-	}
+	elOnHitWalls.value?.loadItems([
+		{ name: 'Penetrate', value: 'penetrate' },
+		{ name: 'Destroy', value: 'destroy' }
+	]);
 
-	const elOnHitActors = document.getElementById('fileTrigger-onHitActors') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elOnHitActors?.loadItems) {
-		elOnHitActors.loadItems([
-			{ name: 'Penetrate', value: 'penetrate' },
-			{ name: 'Destroy', value: 'destroy' },
-			{ name: 'Destroy After Multiple Hits', value: 'penetrate-destroy' }
-		]);
-	}
-	if (elOnHitActors?.enableHiddenMode) {
-		const hidden = elOnHitActors.enableHiddenMode();
-		hidden.relate?.([
+	elOnHitActors.value?.loadItems([
+		{ name: 'Penetrate', value: 'penetrate' },
+		{ name: 'Destroy', value: 'destroy' },
+		{ name: 'Destroy After Multiple Hits', value: 'penetrate-destroy' }
+	]);
+	if (elOnHitActors.value) {
+		elOnHitActors.value.enableHiddenMode();
+		elOnHitActors.value.relate([
 			{
 				case: 'penetrate-destroy',
-				targets: [document.getElementById('fileTrigger-hitCount')]
+				targets: [elHitCount.value?.root ?? null]
 			}
 		]);
 	}
 
-	const elShapeType = document.getElementById('fileTrigger-shape-type') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elShapeType?.loadItems) {
-		elShapeType.loadItems([
-			{ name: 'Rectangle', value: 'rectangle' },
-			{ name: 'Circle', value: 'circle' },
-			{ name: 'Sector', value: 'sector' }
-		]);
-	}
-	if (elShapeType?.enableHiddenMode) {
-		const hidden = elShapeType.enableHiddenMode();
-		hidden.relate?.([
+	elShapeType.value?.loadItems([
+		{ name: 'Rectangle', value: 'rectangle' },
+		{ name: 'Circle', value: 'circle' },
+		{ name: 'Sector', value: 'sector' }
+	]);
+	if (elShapeType.value) {
+		elShapeType.value.enableHiddenMode();
+		elShapeType.value.relate([
 			{
 				case: 'rectangle',
 				targets: [
-					document.getElementById('fileTrigger-shape-width'),
-					document.getElementById('fileTrigger-shape-height'),
-					document.getElementById('fileTrigger-shape-anchor')
+					elShapeWidth.value?.root ?? null,
+					elShapeHeight.value?.root ?? null,
+					elShapeAnchor.value?.root ?? null
 				]
 			},
-			{ case: 'circle', targets: [document.getElementById('fileTrigger-shape-radius')] },
+			{ case: 'circle', targets: [elShapeRadius.value?.root ?? null] },
 			{
 				case: 'sector',
 				targets: [
-					document.getElementById('fileTrigger-shape-radius'),
-					document.getElementById('fileTrigger-shape-centralAngle')
+					elShapeRadius.value?.root ?? null,
+					elShapeCentralAngle.value?.root ?? null
 				]
 			}
 		]);
 	}
 
-	const elHitMode = document.getElementById('fileTrigger-hitMode') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void };
-		  })
-		| null;
-	if (elHitMode?.loadItems) {
-		elHitMode.loadItems([
-			{ name: 'Once', value: 'once' },
-			{ name: 'Once On Overlap', value: 'once-on-overlap' },
-			{ name: 'Repeat', value: 'repeat' }
-		]);
-	}
-	if (elHitMode?.enableHiddenMode) {
-		const hidden = elHitMode.enableHiddenMode();
-		hidden.relate?.([
-			{ case: 'repeat', targets: [document.getElementById('fileTrigger-hitInterval')] }
+	elHitMode.value?.loadItems([
+		{ name: 'Once', value: 'once' },
+		{ name: 'Once On Overlap', value: 'once-on-overlap' },
+		{ name: 'Repeat', value: 'repeat' }
+	]);
+	if (elHitMode.value) {
+		elHitMode.value.enableHiddenMode();
+		elHitMode.value.relate([
+			{ case: 'repeat', targets: [elHitInterval.value?.root ?? null] }
 		]);
 	}
 
-	const elRotatable = document.getElementById('fileTrigger-rotatable') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elRotatable?.loadItems) {
-		elRotatable.loadItems([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	}
+	elRotatable.value?.loadItems([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
 
-	document.getElementById('fileTrigger-events')?.bind?.(new EventListInterface(editor));
-	document.getElementById('fileTrigger-scripts')?.bind?.(new ScriptListInterface());
-	document
-		.getElementById('fileTrigger-parameter-pane')
-		?.bind?.(document.getElementById('fileTrigger-scripts'));
+	elEvents.value?.bind(new EventListInterface(editor));
+	elScripts.value?.bind(new ScriptListInterface());
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	sync();
 });

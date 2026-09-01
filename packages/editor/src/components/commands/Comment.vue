@@ -6,7 +6,7 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<TextArea id="comment-comment" v-model="form.comment" />
+		<TextArea id="comment-comment" v-focus v-model="form.comment" />
 	</WindowFrame>
 </template>
 

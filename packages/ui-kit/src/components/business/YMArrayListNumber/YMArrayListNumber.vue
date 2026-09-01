@@ -42,6 +42,7 @@ onMounted(() => {
 		<div class="grid-box">
 			<YMNumberBox
 				id="arrayList-number-value"
+				v-focus
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"

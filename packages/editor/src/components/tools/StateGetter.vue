@@ -9,14 +9,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.stateGetter-type.label') }}</div>
-			<SelectBox id="stateGetter-type" v-model="form.type" />
+			<SelectBox id="stateGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.stateGetter-actor.label') }}</div>
 			<CustomBox id="stateGetter-actor" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.stateGetter-stateId.label') }}</div>
-			<CustomBox id="stateGetter-stateId" type="file" filter="state" v-model="form.stateId" />
+			<CustomBox
+				id="stateGetter-stateId"
+				v-focus
+				type="file"
+				filter="state"
+				v-model="form.stateId"
+			/>
 			<div class="text">{{ t('components.stateGetter-variable.label') }}</div>
 			<CustomBox
 				id="stateGetter-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
@@ -33,6 +40,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -49,7 +57,7 @@ const local = useLocalStore();
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => stateGetter.onWindowClosed());
+		on(el, 'closed', () => stateGetter.onWindowClosed());
 	}
 });
 </script>

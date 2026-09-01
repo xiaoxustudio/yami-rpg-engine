@@ -1,6 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
+import { vFocus } from '@app/directives/focus';
 
 // preload 桥 mock：测试环境无 preload，提供 window.yami 全量 vi.fn 占位
 window.yami = {
@@ -71,6 +72,7 @@ for (const id of ['tooltip', 'window-ambient']) {
 const { initYamiI18n } = await import('@app/i18n');
 
 config.global.plugins = [initYamiI18n()];
+config.global.directives = { focus: vFocus };
 
 // legacy inspector 页面由 composable/组件顶层侧效应 import 注册挂载点，
 // 测试环境统一 mock 为空模块，避免 IIFE 覆盖各测试文件的 Inspector 挂载点 mock

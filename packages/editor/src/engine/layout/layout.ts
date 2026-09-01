@@ -199,7 +199,7 @@ Layout.initialize = function () {
 
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
-	this.manager?.on('switch', this.pageSwitch!);
+	on(this.manager, 'switch', this.pageSwitch!);
 	(window as unknown as Record<string, unknown>).__yamiLayoutDebug = () =>
 		this.logDiagnostics!(true);
 };

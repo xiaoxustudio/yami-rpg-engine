@@ -7,6 +7,8 @@
 			<div class="text">{{ t('components.uiVideo-video.label') || 'Video' }}</div>
 			<CustomBox
 				id="uiVideo-video"
+				ref="elVideo"
+				v-model="form.video"
 				type="file"
 				filter="video"
 				@input="onParamInput"
@@ -16,17 +18,19 @@
 			</div>
 			<NumberBox
 				id="uiVideo-playbackRate"
+				ref="elPlaybackRate"
+				v-model="form.playbackRate"
 				min="0"
 				max="4"
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div>
-			<SelectBox id="uiVideo-loop" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-loop" ref="elLoop" v-model="form.loop" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiVideo-flip" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-flip" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div>
-			<SelectBox id="uiVideo-blend" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-blend" ref="elBlend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -34,11 +38,13 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/element-video-page.ts';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useUIVideoPage } from '@app/composables/useUIVideoPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -47,53 +53,51 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
+const { form, sync, onParamInput } = useUIVideoPage();
+
 const { bindInput } = useInspectorInput();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.uiVideo?.paramInput?.({ target });
-};
+const elVideo = ref<InstanceType<typeof CustomBox> | null>(null);
+const elPlaybackRate = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLoop = ref<InstanceType<typeof SelectBox> | null>(null);
+const elFlip = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 
 onMounted(() => {
 	const editor = Inspector.uiVideo;
 	if (!editor) return;
 
-	const elLoop = document.getElementById('uiVideo-loop') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elLoop?.loadItems) {
-		elLoop.loadItems([
-			{ name: 'Once', value: false },
-			{ name: 'Loop', value: true }
-		]);
-	}
+	elLoop.value?.loadItems([
+		{ name: 'Once', value: false },
+		{ name: 'Loop', value: true }
+	]);
 
-	const elFlip = document.getElementById('uiVideo-flip') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elFlip?.loadItems) {
-		elFlip.loadItems([
-			{ name: 'None', value: 'none' },
-			{ name: 'Horizontal', value: 'horizontal' },
-			{ name: 'Vertical', value: 'vertical' },
-			{ name: 'Both', value: 'both' }
-		]);
-	}
+	elFlip.value?.loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Horizontal', value: 'horizontal' },
+		{ name: 'Vertical', value: 'vertical' },
+		{ name: 'Both', value: 'both' }
+	]);
 
-	const elBlend = document.getElementById('uiVideo-blend') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elBlend?.loadItems) {
-		elBlend.loadItems([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-	}
+	elBlend.value?.loadItems([
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Additive', value: 'additive' },
+		{ name: 'Subtract', value: 'subtract' }
+	]);
 
-	const elements = document.querySelectorAll(
-		'#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend'
-	);
+	const elements = [
+		elVideo.value?.root,
+		elPlaybackRate.value?.root,
+		elLoop.value?.root,
+		elFlip.value?.root,
+		elBlend.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, UI);
+
+	const el = document.getElementById('uiVideo-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

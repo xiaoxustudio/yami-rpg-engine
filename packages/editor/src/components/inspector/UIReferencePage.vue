@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiReference-prefabId.label') || 'Prefab' }}</div>
 			<CustomBox
 				id="uiReference-prefabId"
+				ref="elPrefabId"
 				:model-value="form.prefabId"
 				type="preset-element"
 				@input="onParamInput"
@@ -16,6 +17,7 @@
 			</div>
 			<CheckBox
 				id="uiReference-synchronous"
+				ref="elSynchronous"
 				:model-value="form.synchronous"
 				class="standard large"
 				@input="onParamInput"
@@ -26,7 +28,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -44,11 +46,14 @@ const { form, sync, onParamInput } = useUIReferencePage();
 
 const { bindInput } = useInspectorInput();
 
+const elPrefabId = ref<InstanceType<typeof CustomBox> | null>(null);
+const elSynchronous = ref<InstanceType<typeof CheckBox> | null>(null);
+
 onMounted(() => {
 	const uiReference = Inspector.uiReference;
 	if (uiReference) {
-		const elements = document.querySelectorAll(
-			'#uiReference-prefabId, #uiReference-synchronous'
+		const elements = [elPrefabId.value?.root, elSynchronous.value?.root].filter(
+			(el): el is HTMLElement => el != null
 		);
 		bindInput(elements, uiReference, UI);
 	}

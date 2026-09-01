@@ -4,10 +4,10 @@ import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setShortcut = new CommandSchema({
@@ -66,36 +66,36 @@ Command.cases.setShortcut = new CommandSchema({
 
 export function useSetShortcutCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setShortcut', {
+		skipWrite: true,
 		onLoad() {
 			const items = Enum.getStringItems!('shortcut-key');
 			document.getElementById('setShortcut-key')?.loadItems?.(items);
 			document.getElementById('setShortcut-key2')?.loadItems?.(items);
-			getFocus(document.getElementById('setShortcut-operation'));
+			requestFocus('setShortcut-operation');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('setShortcut-actor')) ?? form.actor;
-		const operation = read(document.getElementById('setShortcut-operation')) ?? form.operation;
-		const key = read(document.getElementById('setShortcut-key')) ?? form.key;
+		const actor = form.actor;
+		const operation = form.operation as string;
+		const key = form.key;
 		if (key === '') {
-			getFocus(document.getElementById('setShortcut-key'));
+			requestFocus('setShortcut-key');
 			return;
 		}
 		switch (operation) {
 			case 'set-item-shortcut': {
-				const itemId = read(document.getElementById('setShortcut-itemId')) ?? form.itemId;
+				const itemId = form.itemId;
 				if (itemId === '') {
-					getFocus(document.getElementById('setShortcut-itemId'));
+					requestFocus('setShortcut-itemId');
 					return;
 				}
 				commit({ actor, operation, key, itemId });
 				break;
 			}
 			case 'set-skill-shortcut': {
-				const skillId =
-					read(document.getElementById('setShortcut-skillId')) ?? form.skillId;
+				const skillId = form.skillId;
 				if (skillId === '') {
-					getFocus(document.getElementById('setShortcut-skillId'));
+					requestFocus('setShortcut-skillId');
 					return;
 				}
 				commit({ actor, operation, key, skillId });
@@ -105,12 +105,7 @@ export function useSetShortcutCommandSchema() {
 				commit({ actor, operation, key });
 				break;
 			case 'swap-shortcuts':
-				commit({
-					actor,
-					operation,
-					key,
-					key2: read(document.getElementById('setShortcut-key2')) ?? form.key2
-				});
+				commit({ actor, operation, key, key2: form.key2 });
 				break;
 		}
 	};

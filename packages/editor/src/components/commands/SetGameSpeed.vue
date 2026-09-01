@@ -10,6 +10,7 @@
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setGameSpeed-speed"
+				v-focus
 				min="0"
 				max="10"
 				step="0.1"

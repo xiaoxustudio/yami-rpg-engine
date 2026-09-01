@@ -1,4 +1,4 @@
-import { getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -60,13 +60,8 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiVideo', node);
-			write('video');
-			write('playbackRate');
-			write('loop');
-			write('flip');
-			write('blend');
 			Inspector.uiElement.open(node);
+			($('#uiVideo-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

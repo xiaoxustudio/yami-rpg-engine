@@ -92,17 +92,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneAnimation.write = function (
 		this: typeof SceneAnimation,
-		options: Record<string, unknown>
+		_options: Record<string, unknown>
 	) {
-		if (options.x !== undefined) {
-			write($('#sceneAnimation-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneAnimation-y'), options.y);
-		}
-		if (options.angle !== undefined) {
-			write($('#sceneAnimation-angle'), options.angle);
-		}
+		($('#sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneAnimation.update = function (

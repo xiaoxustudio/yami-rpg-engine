@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -42,24 +42,25 @@ Command.cases.loadScene = new CommandSchema({
 
 export function useLoadSceneCommandSchema() {
 	const { form, load, commit } = useCommandSchema('loadScene', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('loadScene-sceneId')!);
+			requestFocus('loadScene-sceneId');
 		}
 	});
 	const onSave = (): void => {
-		const sceneId = read(document.getElementById('loadScene-sceneId')!) ?? form.sceneId;
+		const sceneId = form.sceneId as string;
 		if (sceneId === '') {
-			getFocus(document.getElementById('loadScene-sceneId')!);
+			requestFocus('loadScene-sceneId');
 			return;
 		}
-		const transfer = read(document.getElementById('loadScene-transfer')!) ?? form.transfer;
+		const transfer = form.transfer as boolean;
 		switch (transfer) {
 			case true:
 				commit({
 					sceneId,
 					transfer,
-					x: read(document.getElementById('loadScene-x')!) ?? form.x,
-					y: read(document.getElementById('loadScene-y')!) ?? form.y
+					x: form.x,
+					y: form.y
 				});
 				break;
 			case false:

@@ -8,11 +8,17 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="createActor-actorId" type="file" filter="actor" @input="onActorId" />
+			<CustomBox
+				id="createActor-actorId"
+				v-focus
+				type="file"
+				filter="actor"
+				v-model="form.actorId"
+			/>
 			<div class="text">Team</div>
 			<SelectBox id="createActor-teamId" v-model="form.teamId" />
 			<div class="text">Position</div>
-			<CustomBox id="createActor-position" type="position" @input="onPosition" />
+			<CustomBox id="createActor-position" type="position" v-model="form.position" />
 			<div class="text">Angle</div>
 			<NumberVar
 				id="createActor-angle"
@@ -42,14 +48,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useCreateActorCommandSchema();
-
-const onActorId = (value: unknown) => {
-	form.actorId = value;
-};
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.stopEvent = new CommandSchema({
@@ -95,41 +95,40 @@ Command.cases.stopEvent = new CommandSchema({
 
 export function useStopEventCommandSchema() {
 	const { form, load, commit } = useCommandSchema('stopEvent', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('stopEvent-type'));
+			requestFocus('stopEvent-type');
 		}
 	});
 	const onSave = (): void => {
-		const type = read(document.getElementById('stopEvent-type')) ?? form.type;
+		const type = form.type as string;
 		switch (type) {
 			case 'current':
 				commit({ type });
 				break;
 			case 'global': {
-				const eventId = read(document.getElementById('stopEvent-eventId')) ?? form.eventId;
+				const eventId = form.eventId;
 				if (eventId === '') {
-					getFocus(document.getElementById('stopEvent-eventId'));
+					requestFocus('stopEvent-eventId');
 					return;
 				}
 				commit({ type, eventId });
 				break;
 			}
 			case 'scene': {
-				const eventType =
-					read(document.getElementById('stopEvent-eventType')) ?? form.eventType;
+				const eventType = form.eventType;
 				if (eventType === '') {
-					getFocus(document.getElementById('stopEvent-eventType'));
+					requestFocus('stopEvent-eventType');
 					return;
 				}
 				commit({ type, eventType });
 				break;
 			}
 			default: {
-				const target = read(document.getElementById('stopEvent-' + type)) ?? form[type];
-				const eventType =
-					read(document.getElementById('stopEvent-eventType')) ?? form.eventType;
+				const target = form[type];
+				const eventType = form.eventType;
 				if (eventType === '') {
-					getFocus(document.getElementById('stopEvent-eventType'));
+					requestFocus('stopEvent-eventType');
 					return;
 				}
 				commit({

@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface SkillGetterForm {
 	type: string;
@@ -59,7 +59,7 @@ const open = (target: SkillGetterTarget, defaults?: Partial<SkillGetterForm>): v
 			break;
 	}
 	Object.assign(form, { type: skill.type, actor, key, skillId, variable });
-	getFocus(document.getElementById('skillGetter-type'));
+	requestFocus('skillGetter-type');
 };
 
 const confirm = (): void => {
@@ -74,7 +74,7 @@ const confirm = (): void => {
 			const actor = data.actor;
 			const key = data.key;
 			if (key === '') {
-				getFocus(document.getElementById('skillGetter-key'));
+				requestFocus('skillGetter-key');
 				return;
 			}
 			getter = { type: data.type, actor, key };
@@ -84,7 +84,7 @@ const confirm = (): void => {
 			const actor = data.actor;
 			const skillId = data.skillId;
 			if (skillId === '') {
-				getFocus(document.getElementById('skillGetter-skillId'));
+				requestFocus('skillGetter-skillId');
 				return;
 			}
 			getter = { type: data.type, actor, skillId };
@@ -92,7 +92,7 @@ const confirm = (): void => {
 		}
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('skillGetter-variable'));
+				requestFocus('skillGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

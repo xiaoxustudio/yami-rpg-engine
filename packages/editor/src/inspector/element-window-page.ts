@@ -1,4 +1,4 @@
-import { getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -62,18 +62,8 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiWindow', node);
-			write('layout');
-			write('scrollX');
-			write('scrollY');
-			write('gridWidth');
-			write('gridHeight');
-			write('gridGapX');
-			write('gridGapY');
-			write('paddingX');
-			write('paddingY');
-			write('overflow');
 			Inspector.uiElement.open(node);
+			($('#uiWindow-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

@@ -17,6 +17,7 @@
 			<div class="text">{{ t('components.sceneParallax-layer.label') || 'Layer' }}</div>
 			<SelectBox
 				id="sceneParallax-layer"
+				ref="elLayer"
 				v-model="form.layer"
 				@input="onParamInput"
 			></SelectBox>
@@ -33,12 +34,14 @@
 			</div>
 			<SelectBox
 				id="sceneParallax-light"
+				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.sceneParallax-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="sceneParallax-blend"
+				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
@@ -211,6 +214,7 @@
 			<div class="flex-box" id="sceneParallax-tint-0-box">
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
+					ref="elTint0Slider"
 					v-model="form.tint[0]"
 					min="-255"
 					max="255"
@@ -218,6 +222,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParallax-tint-0"
+					ref="elTint0"
 					v-model="form.tint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -231,6 +236,7 @@
 			<div class="flex-box" id="sceneParallax-tint-1-box">
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
+					ref="elTint1Slider"
 					v-model="form.tint[1]"
 					min="-255"
 					max="255"
@@ -238,6 +244,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParallax-tint-1"
+					ref="elTint1"
 					v-model="form.tint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -251,6 +258,7 @@
 			<div class="flex-box" id="sceneParallax-tint-2-box">
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
+					ref="elTint2Slider"
 					v-model="form.tint[2]"
 					min="-255"
 					max="255"
@@ -258,6 +266,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParallax-tint-2"
+					ref="elTint2"
 					v-model="form.tint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -271,6 +280,7 @@
 			<div class="flex-box" id="sceneParallax-tint-3-box">
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
+					ref="elTint3Slider"
 					v-model="form.tint[3]"
 					min="0"
 					max="255"
@@ -278,6 +288,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParallax-tint-3"
+					ref="elTint3"
 					v-model="form.tint[3]"
 					@input="onParamInput"
 					min="0"
@@ -291,12 +302,18 @@
 		<DetailSummary>{{
 			t('components.sceneParallax-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneParallax-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneParallax-conditions"
+			ref="elConditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneParallax-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="parallax"
 			flexible
@@ -306,14 +323,22 @@
 		<DetailSummary>{{
 			t('components.sceneParallax-scripts.label') || 'Scripts'
 		}}</DetailSummary>
-		<ParamList id="sceneParallax-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneParallax-scripts"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneParallax-parameter-pane"></ParameterPane>
+	<ParameterPane
+		id="sceneParallax-parameter-pane"
+		ref="elParameterPane"
+	></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -343,6 +368,27 @@ const { form, sync, onParamInput } = useSceneParallaxPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elLayer = ref<InstanceType<typeof SelectBox> | null>(null);
+const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elTint0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint0 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint1 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint2 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneParallax;
 	if (!editor) return;
@@ -352,37 +398,26 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elLayer = document.getElementById('sceneParallax-layer') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elLayer?.loadItems) {
-		elLayer.loadItems([
-			{ name: 'Background', value: 'background' },
-			{ name: 'Foreground', value: 'foreground' }
-		]);
-	}
+	elLayer.value?.loadItems([
+		{ name: 'Background', value: 'background' },
+		{ name: 'Foreground', value: 'foreground' }
+	]);
 
-	const elLight = document.getElementById('sceneParallax-light') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	const elBlend = document.getElementById('sceneParallax-blend') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
 	const refreshLocalizedItems = () => {
-		if (elLight?.loadItems) {
+		if (elLight.value) {
 			const lightName = (key: string, fallback: string) =>
 				local.components?.['sceneParallax-light']?.options?.[key]?.name || fallback;
-			elLight.loadItems([
+			elLight.value.loadItems([
 				{ name: lightName('raw', 'Raw'), value: 'raw' },
 				{ name: lightName('global', 'Global Sampling'), value: 'global' },
 				{ name: lightName('anchor', 'Anchor Sampling'), value: 'anchor' },
 				{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
 			]);
 		}
-		if (elBlend?.loadItems) {
+		if (elBlend.value) {
 			const blendName = (key: string, fallback: string) =>
 				local.components?.['sceneParallax-blend']?.options?.[key]?.name || fallback;
-			elBlend.loadItems([
+			elBlend.value.loadItems([
 				{ name: blendName('normal', 'Normal'), value: 'normal' },
 				{ name: blendName('additive', 'Additive'), value: 'additive' },
 				{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
@@ -391,29 +426,17 @@ onMounted(() => {
 	};
 	refreshLocalizedItems();
 
-	document
-		.getElementById('sceneParallax-tint-0-slider')
-		?.synchronize?.(document.getElementById('sceneParallax-tint-0'));
-	document
-		.getElementById('sceneParallax-tint-1-slider')
-		?.synchronize?.(document.getElementById('sceneParallax-tint-1'));
-	document
-		.getElementById('sceneParallax-tint-2-slider')
-		?.synchronize?.(document.getElementById('sceneParallax-tint-2'));
-	document
-		.getElementById('sceneParallax-tint-3-slider')
-		?.synchronize?.(document.getElementById('sceneParallax-tint-3'));
+	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
+	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
+	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);
+	elTint3Slider.value?.synchronize(elTint3.value?.root as SyncTarget);
 
-	document
-		.getElementById('sceneParallax-conditions')
-		?.bind?.(new ConditionListInterface(editor, Scene));
-	document.getElementById('sceneParallax-events')?.bind?.(new EventListInterface(editor, Scene));
-	document
-		.getElementById('sceneParallax-scripts')
-		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
-	document
-		.getElementById('sceneParallax-parameter-pane')
-		?.bind?.(document.getElementById('sceneParallax-scripts'));
+	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+	elEvents.value?.bind(new EventListInterface(editor, Scene));
+	elScripts.value?.bind(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	const elements = document.querySelectorAll(
 		'#sceneParallax-name, #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order, #sceneParallax-light, #sceneParallax-blend, #sceneParallax-opacity, #sceneParallax-x, #sceneParallax-y, #sceneParallax-scaleX, #sceneParallax-scaleY, #sceneParallax-repeatX, #sceneParallax-repeatY, #sceneParallax-anchorX, #sceneParallax-anchorY, #sceneParallax-offsetX, #sceneParallax-offsetY, #sceneParallax-parallaxFactorX, #sceneParallax-parallaxFactorY, #sceneParallax-shiftSpeedX, #sceneParallax-shiftSpeedY, #sceneParallax-tint-0, #sceneParallax-tint-1, #sceneParallax-tint-2, #sceneParallax-tint-3'

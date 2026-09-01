@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Skill</div>
-			<CustomBox id="setSkill-skill" type="skill" @input="onSkill" />
+			<CustomBox id="setSkill-skill" v-focus type="skill" v-model="form.skill" />
 			<div class="text">Operation</div>
 			<SelectBox id="setSkill-operation" v-model="form.operation" />
 			<div class="text">Cooldown</div>
@@ -37,10 +37,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetSkillCommandSchema();
-
-const onSkill = (value: unknown) => {
-	form.skill = value;
-};
 
 const onConfirm = () => {
 	save();

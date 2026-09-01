@@ -1,4 +1,3 @@
-import { getElementWriter } from '@app/utils/dom';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { read } from '@app/utils/element-utils.ts';
@@ -60,19 +59,6 @@ import { read } from '@app/utils/element-utils.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiImage', node);
-			write('image');
-			write('display');
-			write('flip');
-			write('blend');
-			write('shiftX');
-			write('shiftY');
-			write('clip');
-			write('border');
-			write('tint-0');
-			write('tint-1');
-			write('tint-2');
-			write('tint-3');
 			Inspector.uiElement.open(node);
 		}
 	};

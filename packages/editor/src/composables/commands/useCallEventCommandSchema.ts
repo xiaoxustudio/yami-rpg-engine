@@ -11,6 +11,7 @@ import { createSelectBox } from '@app/components/select-box.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -259,10 +260,11 @@ interface CallEventResultEl {
 }
 
 export function useCallEventCommandSchema() {
-	const { form, load, commit } = useCommandSchema('callEvent');
+	const { form, load, commit } = useCommandSchema('callEvent', { skipWrite: true });
 	let parameters: CallEventParameter[] = [];
 	let eventResult: CallEventResultEl | null = null;
 	let pendingArgs: CallEventArg[] | null = [];
+	let createdEventId: string | null = null;
 
 	const getGridBox = (): HTMLElement | null =>
 		(document.getElementById('callEvent')?.querySelector('.grid-box') as HTMLElement | null) ??
@@ -508,9 +510,13 @@ export function useCallEventCommandSchema() {
 		resizeWindow();
 	};
 	const eventIdWrite = (event: { value: string }): void => {
+		const id = event.value;
+		if (id === createdEventId) {
+			return;
+		}
+		createdEventId = id;
 		pendingArgs = readEventArgs();
 		clearGlobalEventElements();
-		const id = event.value;
 		if (id) {
 			const globalEvent = Data.events?.[id];
 			if (globalEvent) {
@@ -547,18 +553,18 @@ export function useCallEventCommandSchema() {
 			eventArgs: params.eventArgs ?? [],
 			eventResult: params.eventResult ?? { type: 'none' }
 		});
+		eventIdWrite({ value: form.eventId as string });
 		writeEventArgs((params.eventArgs ?? []) as CallEventArg[]);
 		writeEventResult((params.eventResult ?? { type: 'none' }) as CallEventResultData);
-		getFocus(document.getElementById('callEvent-type'));
+		requestFocus('callEvent-type');
 	};
 	const onSave = (): void => {
-		const type = (read(document.getElementById('callEvent-type')) ?? form.type) as string;
+		const type = form.type as string;
 		switch (type) {
 			case 'global': {
-				const eventId = (read(document.getElementById('callEvent-eventId')) ??
-					form.eventId) as string;
+				const eventId = form.eventId as string;
 				if (eventId === '') {
-					getFocus(document.getElementById('callEvent-eventId'));
+					requestFocus('callEvent-eventId');
 					return;
 				}
 				const eventArgs = readEventArgs();
@@ -578,21 +584,19 @@ export function useCallEventCommandSchema() {
 				commit({ type });
 				break;
 			case 'scene': {
-				const eventType = (read(document.getElementById('callEvent-eventType')) ??
-					form.eventType) as string;
+				const eventType = form.eventType as string;
 				if (eventType === '') {
-					getFocus(document.getElementById('callEvent-eventType'));
+					requestFocus('callEvent-eventType');
 					return;
 				}
 				commit({ type, eventType });
 				break;
 			}
 			default: {
-				const target = read(document.getElementById('callEvent-${type}')) ?? form[type];
-				const eventType = (read(document.getElementById('callEvent-eventType')) ??
-					form.eventType) as string;
+				const target = form[type];
+				const eventType = form.eventType as string;
 				if (eventType === '') {
-					getFocus(document.getElementById('callEvent-eventType'));
+					requestFocus('callEvent-eventType');
 					return;
 				}
 				commit({ type, [type]: target, eventType });
@@ -602,6 +606,7 @@ export function useCallEventCommandSchema() {
 	};
 	const onWindowClosed = (): void => {
 		pendingArgs = [];
+		createdEventId = null;
 		clearGlobalEventElements();
 	};
 	Command.cases.callEvent.customLoad = onLoad;

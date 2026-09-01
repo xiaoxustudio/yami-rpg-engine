@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -92,13 +92,13 @@ const load = ({
 	parameters?: string;
 } = {}): void => {
 	Object.assign(form, { choices: list.slice(), parameters });
-	getFocus(document.getElementById('showChoices-choices'));
+	requestFocus('showChoices-choices');
 };
 
 const save = (): unknown => {
 	const list = form.choices ?? [];
 	if (list.length === 0) {
-		return getFocus(document.getElementById('showChoices-choices'));
+		return requestFocus('showChoices-choices');
 	}
 	const parameters = form.parameters;
 	commit({ choices: list, parameters });

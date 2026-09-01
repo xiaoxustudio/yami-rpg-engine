@@ -10,9 +10,10 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="deleteVariable-variable"
+				v-focus
 				type="variable"
 				filter="deletable"
-				@input="onVariable"
+				v-model="form.variable"
 			/>
 		</div>
 	</WindowFrame>
@@ -28,10 +29,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDeleteVariableCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
 
 const onConfirm = () => {
 	save();

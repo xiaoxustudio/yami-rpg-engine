@@ -9,7 +9,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-branch-conditions.label') }}</div>
-			<ParamList id="switch-branch-conditions" />
+			<ParamList id="switch-branch-conditions" v-focus />
 		</div>
 	</WindowFrame>
 </template>

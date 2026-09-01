@@ -1,6 +1,6 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { UI } from '@app/ui/ui-window.ts';
 
@@ -72,7 +72,7 @@ function initialize(): void {
 	list = current;
 	searcher = document.getElementById('presetElement-searcher')!;
 	list.bind(() => nodes);
-	searcher.on('keydown', searcherKeydown);
+	on(searcher, 'keydown', searcherKeydown);
 	document.getElementById('presetElement')!.addEventListener('closed', windowClosed);
 }
 

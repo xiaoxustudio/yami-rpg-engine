@@ -305,6 +305,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetTextBox, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setTextBox');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setTextBox');
 			expect(getControl('setTextBox-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -320,6 +321,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setTextBox');
 			expect(getControl('setTextBox-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setTextBox-properties').read()).toEqual([
@@ -385,6 +387,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetText, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setText');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setText');
 			expect(getControl('setText-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -400,6 +403,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setText');
 			expect(getControl('setText-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setText-properties').read()).toEqual([
@@ -438,15 +442,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -512,9 +507,10 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('save 路径：用户改控件后经 Command.cases.setTile.save 保存', async () => {
+		it('save 路径：form 值经 Command.cases.setTile.save 保存', async () => {
 			const wrapper = mount(SetTile, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetTileCommandSchema();
 			Command.cases.setTile.customLoad!({
 				tilemap: { type: 'trigger' },
 				tilemapX: 0,
@@ -523,8 +519,8 @@ vi.mock('@app/stores/local', () => ({
 				tilesetX: 0,
 				tilesetY: 0
 			});
-			getControl('setTile-tilemapX').write(5);
-			getControl('setTile-tilesetId').write('ts1');
+			form.tilemapX = 5;
+			form.tilesetId = 'ts1';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.setTile.save!();

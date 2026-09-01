@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Variable</div>
-			<CustomBox id="switch-variable" type="variable" filter="all" v-model="form.variable" />
+			<CustomBox id="switch-variable" v-focus type="variable" filter="all" v-model="form.variable" />
 			<div class="text">Branches</div>
-			<ParamList id="switch-branches" v-model="form.branches" />
+			<ParamList id="switch-branches" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="switch-default" v-model="form.default" class="standard"
 			><div class="text" id="switch-default-label">Default</div></CheckBox

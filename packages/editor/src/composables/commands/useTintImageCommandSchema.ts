@@ -7,8 +7,9 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
@@ -89,8 +90,9 @@ Command.cases.tintImage = new CommandSchema({
 
 export function useTintImageCommandSchema() {
 	const { form, load, commit } = useCommandSchema('tintImage', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('tintImage-element'));
+			requestFocus('tintImage-element');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -105,12 +107,12 @@ export function useTintImageCommandSchema() {
 		write(document.getElementById('tintImage-filter'), tint);
 	};
 	const onSave = (): void => {
-		const element = read(document.getElementById('tintImage-element')) ?? form.element;
-		const mode = read(document.getElementById('tintImage-mode')) ?? form.mode;
-		let red = read(document.getElementById('tintImage-tint-0')) ?? form['tint-0'];
-		let green = read(document.getElementById('tintImage-tint-1')) ?? form['tint-1'];
-		let blue = read(document.getElementById('tintImage-tint-2')) ?? form['tint-2'];
-		let gray = read(document.getElementById('tintImage-tint-3')) ?? form['tint-3'];
+		const element = form.element;
+		const mode = form.mode as 'full' | 'rgb' | 'gray';
+		let red = form['tint-0'];
+		let green = form['tint-1'];
+		let blue = form['tint-2'];
+		let gray = form['tint-3'];
 		switch (mode) {
 			case 'full':
 				break;
@@ -127,9 +129,9 @@ export function useTintImageCommandSchema() {
 			element,
 			mode,
 			tint: [red, green, blue, gray],
-			easingId: read(document.getElementById('tintImage-easingId')) ?? form.easingId,
-			duration: read(document.getElementById('tintImage-duration')) ?? form.duration,
-			wait: read(document.getElementById('tintImage-wait')) ?? form.wait
+			easingId: form.easingId,
+			duration: form.duration,
+			wait: form.wait
 		});
 	};
 	Command.cases.tintImage.customLoad = onLoad;

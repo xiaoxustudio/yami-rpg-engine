@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setVolume-type" v-model="form.type" />
+			<SelectBox id="setVolume-type" v-focus v-model="form.type" />
 			<div class="text">Volume</div>
 			<NumberVar
 				id="setVolume-volume"

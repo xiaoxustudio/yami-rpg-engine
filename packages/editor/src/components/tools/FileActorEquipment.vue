@@ -10,12 +10,13 @@
 			<div class="text">{{ t('components.fileActor-equipment-id.label') }}</div>
 			<CustomBox
 				id="fileActor-equipment-id"
+				v-focus
 				type="file"
 				filter="equipment"
 				v-model="form.id"
 			/>
 			<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div>
-			<SelectBox id="fileActor-equipment-slot" v-model="form.slot" />
+			<SelectBox id="fileActor-equipment-slot" v-focus v-model="form.slot" />
 		</div>
 	</WindowFrame>
 </template>

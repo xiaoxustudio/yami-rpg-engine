@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">State</div>
-			<CustomBox id="setState-state" type="state" @input="onState" />
+			<CustomBox id="setState-state" v-focus type="state" v-model="form.state" />
 			<div class="text">Operation</div>
 			<SelectBox id="setState-operation" v-model="form.operation" />
 			<div class="text">Time</div>
@@ -31,10 +31,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetStateCommandSchema();
-
-const onState = (value: unknown) => {
-	form.state = value;
-};
 
 const onConfirm = () => {
 	save();

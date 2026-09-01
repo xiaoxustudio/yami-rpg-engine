@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.choice-content.label') }}</div>
 			<TextBox
 				id="choice-content"
+				v-focus
 				v-model="form.content"
 				menu="tag-local-var tag-global-var tag-localization"
 			/>

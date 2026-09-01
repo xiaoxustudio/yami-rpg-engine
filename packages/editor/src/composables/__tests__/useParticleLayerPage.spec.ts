@@ -76,12 +76,13 @@ interface ParticleData {
 const particleLayer = vi.hoisted(() => ({
 	target: null as Partial<ParticleData> | null,
 	easingDefaultId: 'easing-1',
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
-		particleLayer
+		particleLayer,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
 	}
 }));
 
@@ -137,7 +138,7 @@ describe('useParticleLayerPage（particleLayer inspector 页面 composable）', 
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		particleLayer.target = null;
-		particleLayer.paramInput.mockClear();
+		particleLayer.update.mockClear();
 	});
 
 	const mountPage = () => {
@@ -192,30 +193,31 @@ describe('useParticleLayerPage（particleLayer inspector 页面 composable）', 
 		wrapper.unmount();
 	});
 
-	it('onParamInput 找不到 particleLayer 控件时跳过 paramInput', () => {
+	it('onParamInput 找不到 particleLayer 控件时跳过 update', () => {
 		const { wrapper, page } = mountPage();
 		particleLayer.target = makeParticle();
 		const el = document.createElement('input');
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		el.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(particleLayer.paramInput).not.toHaveBeenCalled();
+		expect(particleLayer.update).not.toHaveBeenCalled();
 		wrapper.unmount();
 	});
 
-	it('onParamInput 从嵌套元素向上解析控件并委托 paramInput + 重新 sync', () => {
+	it('onParamInput 从嵌套元素向上解析控件并调用 update + 重新 sync', () => {
 		const { wrapper, page } = mountPage();
 		particleLayer.target = makeParticle({ name: 'Old Name' });
 		page.sync();
 		particleLayer.target = makeParticle({ name: 'New Name' });
-		const el = document.createElement('div');
+		const el = document.createElement('div') as HTMLElement & { read?: () => unknown };
 		el.id = 'particleLayer-name';
+		el.read = () => 'New Name';
 		const input = document.createElement('input');
 		el.appendChild(input);
 		document.body.appendChild(el);
 		el.addEventListener('input', (e) => page.onParamInput(e));
 		input.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(particleLayer.paramInput).toHaveBeenCalled();
+		expect(particleLayer.update).toHaveBeenCalledWith(particleLayer.target, 'name', 'New Name');
 		expect(page.form.name).toBe('New Name');
 		wrapper.unmount();
 	});

@@ -18,13 +18,13 @@
 	</DetailBox>
 	<DetailBox id="fileVideo-video-detail" open>
 		<DetailSummary>{{ t('components.fileVideo-video.label') || 'Player' }}</DetailSummary>
-		<video id="fileVideo-video" controls="controls"></video>
+		<video id="fileVideo-video" ref="elVideo" controls="controls"></video>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -36,10 +36,12 @@ const { t } = useI18n();
 
 const { form, sync, windowError } = useFileVideoPage();
 
+const elVideo = ref<HTMLVideoElement | null>(null);
+
 onMounted(() => {
 	const fileVideo = Inspector.fileVideo;
 	if (fileVideo) {
-		fileVideo.video = document.getElementById('fileVideo-video') as HTMLVideoElement;
+		fileVideo.video = elVideo.value;
 	}
 	window.addEventListener('error', windowError);
 	const el = document.getElementById('fileVideo');

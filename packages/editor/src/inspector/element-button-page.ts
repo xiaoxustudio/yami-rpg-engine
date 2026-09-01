@@ -1,7 +1,8 @@
-import { $, getElementReader } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { ButtonForm } from '@app/composables/useUIButtonPage';
 
 {
 	interface UIButtonShape {
@@ -227,22 +228,24 @@ import { UI } from '@app/ui/ui-window.ts';
 			}
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
-					const read = getElementReader('uiButton-textEffect');
+					const form = (
+						$('#uiButton-vue-mount') as (HTMLElement & { form?: ButtonForm }) | null
+					)?.form;
 					const textEffect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':
 							break;
 						case 'shadow':
-							textEffect.shadowOffsetX = read('shadowOffsetX');
-							textEffect.shadowOffsetY = read('shadowOffsetY');
-							textEffect.color = read('color');
+							textEffect.shadowOffsetX = form?.textEffect.shadowOffsetX;
+							textEffect.shadowOffsetY = form?.textEffect.shadowOffsetY;
+							textEffect.color = form?.textEffect.color;
 							break;
 						case 'stroke':
-							textEffect.strokeWidth = read('strokeWidth');
-							textEffect.color = read('color');
+							textEffect.strokeWidth = form?.textEffect.strokeWidth;
+							textEffect.color = form?.textEffect.color;
 							break;
 						case 'outline':
-							textEffect.color = read('color');
+							textEffect.color = form?.textEffect.color;
 							break;
 					}
 					node.textEffect = textEffect;

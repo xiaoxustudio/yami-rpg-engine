@@ -1,12 +1,12 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
+import { read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -39,7 +39,7 @@ export const RequestkeyValueBind = {
 		Window.open!('request-keyValue');
 		requestKeyValueForm.key = item?.key ?? '';
 		requestKeyValueForm.value = item?.value ?? '';
-		getFocus($('#request-keyValue-key'));
+		requestFocus('request-keyValue-key');
 	},
 	save() {
 		const data = { key: requestKeyValueForm.key, value: requestKeyValueForm.value };
@@ -52,7 +52,7 @@ export const RequestkeyValueBind = {
 			);
 		}
 		if (!data.key) {
-			return getFocus($('#request-keyValue-key'));
+			return requestFocus('request-keyValue-key');
 		}
 		Window.close!('request-keyValue');
 		return data;
@@ -128,22 +128,23 @@ Command.cases.requestURL = new CommandSchema({
 
 export function useRequestURLCommandSchema() {
 	const { form, load, commit } = useCommandSchema('requestURL', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('requestURL-url'));
+			requestFocus('requestURL-url');
 		}
 	});
 	const onSave = (): void => {
-		const url = read(document.getElementById('requestURL-url')) ?? form.url;
-		if (!url || VariableGetter.isNone!(url)) {
-			getFocus(document.getElementById('requestURL-url'));
+		const url = form.url;
+		if (!url || VariableGetter.isNone!(url as { key: string })) {
+			requestFocus('requestURL-url');
 			return;
 		}
 		commit({
 			url,
-			method: read(document.getElementById('requestURL-method')) ?? form.method,
+			method: form.method,
 			headers: form.headers,
 			data: form.data,
-			callback: read(document.getElementById('requestURL-callback')) ?? form.callback
+			callback: form.callback
 		});
 	};
 	Command.cases.requestURL.customSave = onSave;

@@ -45,6 +45,7 @@ onMounted(() => {
 			<div class="text">{{ props.label }}</div>
 			<YMNumberBox
 				id="zoom-factor"
+				v-focus
 				min="0.6666"
 				max="2"
 				decimals="4"

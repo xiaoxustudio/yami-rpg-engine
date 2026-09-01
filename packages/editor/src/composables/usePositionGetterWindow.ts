@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface PositionGetterForm {
 	type: string;
@@ -91,7 +91,7 @@ const open = (target: PositionGetterTarget, defaults?: Partial<PositionGetterFor
 		mode,
 		objectId
 	});
-	getFocus(document.getElementById('positionGetter-type'));
+	requestFocus('positionGetter-type');
 };
 
 const confirm = (): void => {
@@ -116,7 +116,7 @@ const confirm = (): void => {
 			break;
 		case 'object':
 			if (data.objectId === '') {
-				getFocus(document.getElementById('positionGetter-objectId'));
+				requestFocus('positionGetter-objectId');
 				return;
 			}
 			getter = { type: data.type, objectId: data.objectId };

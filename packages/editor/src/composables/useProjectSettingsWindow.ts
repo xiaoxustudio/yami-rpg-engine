@@ -21,7 +21,8 @@ function getLanguageMap(): Record<string, string> {
 	return (properties?.languages ?? {}) as Record<string, string>;
 }
 import { AttributeListInterface } from '@app/tools/property-list.ts';
-import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
+import { on, read, write } from '@app/utils/element-utils.ts';
+import { requestFocus } from '@app/directives/focus';
 import '@app/utils/object';
 import { getProjectStore } from '@app/stores/project';
 
@@ -458,7 +459,7 @@ const languages: LanguagesInterface = {
 				const languages = getProjectStore().data!.localization.languages;
 				const langName = read(document.getElementById('language-name'));
 				if (languages.find((lang: { name: string }) => lang.name === langName)) {
-					return getFocus(document.getElementById('language-name'));
+					return requestFocus('language-name');
 				}
 			}
 			this.target?.save?.();
@@ -476,7 +477,7 @@ const languages: LanguagesInterface = {
 		document.getElementById('language-name')!.write2(language.name);
 		write(document.getElementById('language-font'), language.font);
 		write(document.getElementById('language-scale'), language.scale);
-		getFocus(document.getElementById('language-name'));
+		requestFocus('language-name');
 		getWindowStore().open('language');
 	},
 	save: function () {

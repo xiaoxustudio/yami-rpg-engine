@@ -23,77 +23,173 @@
 			<div class="legend">{{ t('components.easing-points-grid.label') }}</div>
 			<div class="grid-box" id="easing-points-grid">
 				<div class="text">{{ t('components.easing-mode.label') }}</div>
-				<SelectBox id="easing-mode" />
+				<SelectBox id="easing-mode" v-model="form.mode" />
 				<div class="text" id="easing-points-0">
 					{{ t('components.easing-points-0.content') }}
 				</div>
-				<NumberBox id="easing-points-0-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-0-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[0].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-0-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-0-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[0].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-1">
 					{{ t('components.easing-points-1.content') }}
 				</div>
-				<NumberBox id="easing-points-1-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-1-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[1].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-1-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-1-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[1].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-2">
 					{{ t('components.easing-points-2.content') }}
 				</div>
-				<NumberBox id="easing-points-2-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-2-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[2].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-2-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-2-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[2].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-3">
 					{{ t('components.easing-points-3.content') }}
 				</div>
-				<NumberBox id="easing-points-3-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-3-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[3].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-3-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-3-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[3].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-4">
 					{{ t('components.easing-points-4.content') }}
 				</div>
-				<NumberBox id="easing-points-4-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-4-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[4].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-4-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-4-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[4].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-5">
 					{{ t('components.easing-points-5.content') }}
 				</div>
-				<NumberBox id="easing-points-5-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-5-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[5].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-5-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-5-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[5].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-6">
 					{{ t('components.easing-points-6.content') }}
 				</div>
-				<NumberBox id="easing-points-6-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-6-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[6].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-6-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-6-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[6].y"
 					><div class="text label">Y</div></NumberBox
 				>
 				<div class="text" id="easing-points-7">
 					{{ t('components.easing-points-7.content') }}
 				</div>
-				<NumberBox id="easing-points-7-x" min="0" max="1" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-7-x"
+					min="0"
+					max="1"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[7].x"
 					><div class="text label">X</div></NumberBox
 				>
-				<NumberBox id="easing-points-7-y" min="-5" max="5" step="0.01" decimals="2"
+				<NumberBox
+					id="easing-points-7-y"
+					min="-5"
+					max="5"
+					step="0.01"
+					decimals="2"
+					v-model="form.points[7].y"
 					><div class="text label">Y</div></NumberBox
 				>
 			</div>
@@ -109,11 +205,25 @@
 			<canvas id="easing-preview-canvas" width="0" height="0" />
 			<div class="grid-box" id="easing-preview-grid">
 				<div class="text">{{ t('components.easing-preview-reverse.label') }}</div>
-				<SelectBox id="easing-preview-reverse" />
+				<SelectBox id="easing-preview-reverse" v-model="form.preview.reverse" />
 				<div class="text">{{ t('components.easing-preview-duration.label') }}</div>
-				<NumberBox id="easing-preview-duration" min="1" max="60000" unit="ms" />
+				<NumberBox
+					id="easing-preview-duration"
+					min="1"
+					max="60000"
+					unit="ms"
+					v-model="form.preview.duration"
+					@change="onDurationInput"
+				/>
 				<div class="text">{{ t('components.easing-preview-delay.label') }}</div>
-				<NumberBox id="easing-preview-delay" min="0" max="5000" unit="ms" />
+				<NumberBox
+					id="easing-preview-delay"
+					min="0"
+					max="5000"
+					unit="ms"
+					v-model="form.preview.delay"
+					@change="onDelayInput"
+				/>
 			</div>
 		</div>
 	</WindowFrame>
@@ -123,6 +233,7 @@
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Easing } from '@app/data/transition-window.ts';
+import { useEasingWindow } from '@app/composables/useEasingWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -133,6 +244,17 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
+
+const easingWindow = useEasingWindow();
+const form = easingWindow.form;
+
+const onDurationInput = () => {
+	Easing?.durationInput?.();
+};
+
+const onDelayInput = () => {
+	Easing?.delayInput?.();
+};
 
 const inspector = useInspectorStore();
 const onListSelect = (event: Event & { value?: unknown }) => {

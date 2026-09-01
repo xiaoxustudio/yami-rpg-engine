@@ -1,5 +1,5 @@
 ﻿<template>
-	<WindowFrame id="resource" no-buttons>
+	<WindowFrame ref="frame" id="resource" no-buttons>
 		<template #title
 			><TitleBar> <div class="close"></div> </TitleBar
 		></template>
@@ -45,7 +45,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -57,6 +56,8 @@ import { attachElementApi } from '@app/utils/attach-element-api';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
 const checkVersionText = ref('check version');
 const openDirText = ref('open dir');
 
@@ -66,7 +67,7 @@ const update = (): void => {
 };
 
 onMounted(() => {
-	const el = document.getElementById('resource');
+	const el = frame.value?.root;
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();

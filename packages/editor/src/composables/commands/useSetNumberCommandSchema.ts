@@ -6,10 +6,10 @@ import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema'
 const NumberOperand = useNumberOperandSchema();
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -110,22 +110,22 @@ Command.cases.setNumber = new CommandSchema({
 
 export function useSetNumberCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setNumber', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setNumber-variable'));
+			requestFocus('setNumber-variable');
 		}
 	});
 	useNumberOperandSchema();
 	const onSave = (): void => {
-		const variable = read(document.getElementById('setNumber-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('setNumber-variable'));
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
+			requestFocus('setNumber-variable');
 			return;
 		}
-		const operation = (read(document.getElementById('setNumber-operation')) ??
-			form.operation) as string;
+		const operation = form.operation as string;
 		const operands = form.operands as SetNumberOperand[];
 		if (operands.length === 0) {
-			getFocus(document.getElementById('setNumber-operands'));
+			requestFocus('setNumber-operands');
 			return;
 		}
 		operands[0].operation = 'add';

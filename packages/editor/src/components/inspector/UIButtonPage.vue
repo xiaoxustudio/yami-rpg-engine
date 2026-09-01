@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiButton-display.label') || 'Display' }}</div>
 			<SelectBox
 				id="uiButton-display"
+				ref="elDisplay"
 				v-model="form.display"
 				@input="onParamInput"
 			></SelectBox>
@@ -23,6 +24,7 @@
 			<div class="text">{{ t('components.uiButton-normalClip.label') || 'Normal Clip' }}</div>
 			<CustomBox
 				id="uiButton-normalClip"
+				ref="elNormalClip"
 				:model-value="form.normalClip"
 				@input="onParamInput"
 				type="clip"
@@ -39,6 +41,7 @@
 			<div class="text">{{ t('components.uiButton-hoverClip.label') || 'Hover Clip' }}</div>
 			<CustomBox
 				id="uiButton-hoverClip"
+				ref="elHoverClip"
 				:model-value="form.hoverClip"
 				@input="onParamInput"
 				type="clip"
@@ -57,16 +60,18 @@
 			<div class="text">{{ t('components.uiButton-activeClip.label') || 'Active Clip' }}</div>
 			<CustomBox
 				id="uiButton-activeClip"
+				ref="elActiveClip"
 				:model-value="form.activeClip"
 				@input="onParamInput"
 				type="clip"
 				image="uiButton-activeImage"
 			></CustomBox>
 			<div class="text">{{ t('components.uiButton-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiButton-flip" v-model="form.flip" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiButton-flip" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.uiButton-border.label') || 'Border' }}</div>
 			<NumberBox
 				id="uiButton-border"
+				ref="elBorder"
 				v-model="form.border"
 				@input="onParamInput"
 				min="1"
@@ -78,13 +83,15 @@
 			</div>
 			<div class="flex-box" id="uiButton-imagePadding-box">
 				<SliderBox
-					id="uiButton-imagePadding-slider"
-					v-model="form.imagePadding"
+				id="uiButton-imagePadding-slider"
+				ref="elImagePaddingSlider"
+				v-model="form.imagePadding"
 					min="0"
 					max="20"
 				></SliderBox>
 				<NumberBox
 					id="uiButton-imagePadding"
+					ref="elImagePadding"
 					v-model="form.imagePadding"
 					@input="onParamInput"
 					min="0"
@@ -97,14 +104,16 @@
 			</div>
 			<div class="flex-box" id="uiButton-imageOpacity-box">
 				<SliderBox
-					id="uiButton-imageOpacity-slider"
-					v-model="form.imageOpacity"
+				id="uiButton-imageOpacity-slider"
+				ref="elImageOpacitySlider"
+				v-model="form.imageOpacity"
 					min="0"
 					max="1"
 					step="0.05"
 				></SliderBox>
 				<NumberBox
 					id="uiButton-imageOpacity"
+					ref="elImageOpacity"
 					v-model="form.imageOpacity"
 					@input="onParamInput"
 					min="0"
@@ -116,13 +125,14 @@
 			<div class="text">{{ t('components.uiButton-imageEffect.label') || 'Effect' }}</div>
 			<SelectBox
 				id="uiButton-imageEffect"
+				ref="elImageEffect"
 				v-model="form.imageEffect"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">
 				{{ t('components.uiButton-normalTint-box.label') || 'Normal Tint' }}
 			</div>
-			<div id="uiButton-normalTint-box" class="box uiElement-grid-box with-4-columns">
+			<div id="uiButton-normalTint-box" ref="elNormalTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-normalTint-0"
 					v-model="form.normalTint[0]"
@@ -159,7 +169,7 @@
 			<div class="text">
 				{{ t('components.uiButton-hoverTint-box.label') || 'Hover Tint' }}
 			</div>
-			<div id="uiButton-hoverTint-box" class="box uiElement-grid-box with-4-columns">
+			<div id="uiButton-hoverTint-box" ref="elHoverTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-hoverTint-0"
 					v-model="form.hoverTint[0]"
@@ -196,7 +206,7 @@
 			<div class="text">
 				{{ t('components.uiButton-activeTint-box.label') || 'Active Tint' }}
 			</div>
-			<div id="uiButton-activeTint-box" class="box uiElement-grid-box with-4-columns">
+			<div id="uiButton-activeTint-box" ref="elActiveTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-activeTint-0"
 					v-model="form.activeTint[0]"
@@ -240,6 +250,7 @@
 			<div class="text">{{ t('components.uiButton-direction.label') || 'Direction' }}</div>
 			<SelectBox
 				id="uiButton-direction"
+				ref="elDirection"
 				v-model="form.direction"
 				@input="onParamInput"
 			></SelectBox>
@@ -304,14 +315,16 @@
 			<div class="text">{{ t('components.uiButton-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiButton-size-box">
 				<SliderBox
-					id="uiButton-size-slider"
-					v-model="form.size"
+				id="uiButton-size-slider"
+				ref="elSizeSlider"
+				v-model="form.size"
 					min="12"
 					max="52"
 					step="2"
 				></SliderBox>
 				<NumberBox
 					id="uiButton-size"
+					ref="elSize"
 					v-model="form.size"
 					@input="onParamInput"
 					min="10"
@@ -325,14 +338,16 @@
 			</div>
 			<div class="flex-box" id="uiButton-letterSpacing-box">
 				<SliderBox
-					id="uiButton-letterSpacing-slider"
-					v-model="form.letterSpacing"
+				id="uiButton-letterSpacing-slider"
+				ref="elLetterSpacingSlider"
+				v-model="form.letterSpacing"
 					min="0"
 					max="20"
 					step="1"
 				></SliderBox>
 				<NumberBox
 					id="uiButton-letterSpacing"
+					ref="elLetterSpacing"
 					v-model="form.letterSpacing"
 					@input="onParamInput"
 					min="-10"
@@ -346,14 +361,16 @@
 			</div>
 			<div class="flex-box" id="uiButton-textPadding-box">
 				<SliderBox
-					id="uiButton-textPadding-slider"
-					v-model="form.textPadding"
+				id="uiButton-textPadding-slider"
+				ref="elTextPaddingSlider"
+				v-model="form.textPadding"
 					min="0"
 					max="40"
 					step="2"
 				></SliderBox>
 				<NumberBox
 					id="uiButton-textPadding"
+					ref="elTextPadding"
 					v-model="form.textPadding"
 					@input="onParamInput"
 					min="0"
@@ -367,12 +384,14 @@
 			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				id="uiButton-typeface"
+				ref="elTypeface"
 				v-model="form.typeface"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiButton-textEffect-type.label') || 'Effect' }}</div>
 			<SelectBox
 				id="uiButton-textEffect-type"
+				ref="elTextEffectType"
 				v-model="form.textEffect.type"
 				@input="onParamInput"
 			></SelectBox>
@@ -381,6 +400,7 @@
 			</div>
 			<NumberBox
 				id="uiButton-textEffect-shadowOffsetX"
+				ref="elShadowOffsetX"
 				v-model="form.textEffect.shadowOffsetX"
 				@input="onParamInput"
 				min="-9"
@@ -392,6 +412,7 @@
 			</div>
 			<NumberBox
 				id="uiButton-textEffect-shadowOffsetY"
+				ref="elShadowOffsetY"
 				v-model="form.textEffect.shadowOffsetY"
 				@input="onParamInput"
 				min="-9"
@@ -403,6 +424,7 @@
 			</div>
 			<NumberBox
 				id="uiButton-textEffect-strokeWidth"
+				ref="elStrokeWidth"
 				v-model="form.textEffect.strokeWidth"
 				@input="onParamInput"
 				min="1"
@@ -414,6 +436,7 @@
 			</div>
 			<ColorBox
 				id="uiButton-textEffect-color"
+				ref="elEffectColor"
 				v-model="form.textEffect.color"
 				@input="onParamInput"
 			></ColorBox>
@@ -468,7 +491,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -491,137 +514,152 @@ const { form, sync, onParamInput } = useUIButtonPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elDisplay = ref<InstanceType<typeof SelectBox> | null>(null);
+const elFlip = ref<InstanceType<typeof SelectBox> | null>(null);
+const elNormalClip = ref<InstanceType<typeof CustomBox> | null>(null);
+const elHoverClip = ref<InstanceType<typeof CustomBox> | null>(null);
+const elActiveClip = ref<InstanceType<typeof CustomBox> | null>(null);
+const elBorder = ref<InstanceType<typeof NumberBox> | null>(null);
+const elImagePaddingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elImagePadding = ref<InstanceType<typeof NumberBox> | null>(null);
+const elImageOpacitySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elImageOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elImageEffect = ref<InstanceType<typeof SelectBox> | null>(null);
+const elNormalTintBox = ref<HTMLElement | null>(null);
+const elHoverTintBox = ref<HTMLElement | null>(null);
+const elActiveTintBox = ref<HTMLElement | null>(null);
+const elDirection = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSizeSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elSize = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLetterSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elLetterSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTextPaddingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elTextPadding = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTypeface = ref<InstanceType<typeof SelectBox> | null>(null);
+const elTextEffectType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elShadowOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShadowOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
+
+const loadItems = (el: InstanceType<typeof SelectBox> | null, items: unknown[]) => {
+	el?.loadItems(items);
 };
 
 const relate = (
-	id: string,
+	el: InstanceType<typeof SelectBox> | null,
 	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
 ) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
+	if (el) {
+		el.enableHiddenMode();
+		el.relate(config);
+	}
 };
 
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
+) => {
+	slider?.synchronize(input?.root as SyncTarget);
 };
 
 onMounted(() => {
 	const uiButton = Inspector.uiButton;
 	if (!uiButton) return;
 
-	loadItems('uiButton-display', [
+	loadItems(elDisplay.value, [
 		{ name: 'Stretch', value: 'stretch' },
 		{ name: 'Tile', value: 'tile' },
 		{ name: 'Clip', value: 'clip' },
 		{ name: 'Slice', value: 'slice' }
 	]);
-	relate('uiButton-display', [
-		{ case: ['stretch', 'tile'], targets: [document.getElementById('uiButton-flip')] },
+	relate(elDisplay.value, [
+		{ case: ['stretch', 'tile'], targets: [elFlip.value?.root ?? null] },
 		{
 			case: 'clip',
 			targets: [
-				document.getElementById('uiButton-flip'),
-				document.getElementById('uiButton-normalClip'),
-				document.getElementById('uiButton-hoverClip'),
-				document.getElementById('uiButton-activeClip')
+				elFlip.value?.root ?? null,
+				elNormalClip.value?.root ?? null,
+				elHoverClip.value?.root ?? null,
+				elActiveClip.value?.root ?? null
 			]
 		},
 		{
 			case: 'slice',
 			targets: [
-				document.getElementById('uiButton-normalClip'),
-				document.getElementById('uiButton-hoverClip'),
-				document.getElementById('uiButton-activeClip'),
-				document.getElementById('uiButton-border')
+				elNormalClip.value?.root ?? null,
+				elHoverClip.value?.root ?? null,
+				elActiveClip.value?.root ?? null,
+				elBorder.value?.root ?? null
 			]
 		}
 	]);
 
-	loadItems('uiButton-flip', [
+	loadItems(elFlip.value, [
 		{ name: 'None', value: 'none' },
 		{ name: 'Horizontal', value: 'horizontal' },
 		{ name: 'Vertical', value: 'vertical' },
 		{ name: 'Both', value: 'both' }
 	]);
-	loadItems('uiButton-imageEffect', [
+	loadItems(elImageEffect.value, [
 		{ name: 'None', value: 'none' },
 		{ name: 'Tint', value: 'tint-1' },
 		{ name: 'Tint (Normal, Hover)', value: 'tint-2' },
 		{ name: 'Tint (Normal, Hover, Active)', value: 'tint-3' }
 	]);
-	relate('uiButton-imageEffect', [
-		{ case: 'tint-1', targets: [document.getElementById('uiButton-normalTint-box')] },
+	relate(elImageEffect.value, [
+		{ case: 'tint-1', targets: [elNormalTintBox.value] },
 		{
 			case: 'tint-2',
-			targets: [
-				document.getElementById('uiButton-normalTint-box'),
-				document.getElementById('uiButton-hoverTint-box')
-			]
+			targets: [elNormalTintBox.value, elHoverTintBox.value]
 		},
 		{
 			case: 'tint-3',
-			targets: [
-				document.getElementById('uiButton-normalTint-box'),
-				document.getElementById('uiButton-hoverTint-box'),
-				document.getElementById('uiButton-activeTint-box')
-			]
+			targets: [elNormalTintBox.value, elHoverTintBox.value, elActiveTintBox.value]
 		}
 	]);
-	loadItems('uiButton-direction', [
+	loadItems(elDirection.value, [
 		{ name: 'Horizontal', value: 'horizontal-tb' },
 		{ name: 'Vertical', value: 'vertical-lr' }
 	]);
-	loadItems('uiButton-typeface', [
+	loadItems(elTypeface.value, [
 		{ name: 'Regular', value: 'regular' },
 		{ name: 'Bold', value: 'bold' },
 		{ name: 'Italic', value: 'italic' },
 		{ name: 'Bold Italic', value: 'bold-italic' }
 	]);
-	loadItems('uiButton-textEffect-type', [
+	loadItems(elTextEffectType.value, [
 		{ name: 'None', value: 'none' },
 		{ name: 'Shadow', value: 'shadow' },
 		{ name: 'Stroke', value: 'stroke' },
 		{ name: 'Outline', value: 'outline' }
 	]);
-	relate('uiButton-textEffect-type', [
+	relate(elTextEffectType.value, [
 		{
 			case: 'shadow',
 			targets: [
-				document.getElementById('uiButton-textEffect-shadowOffsetX'),
-				document.getElementById('uiButton-textEffect-shadowOffsetY'),
-				document.getElementById('uiButton-textEffect-color')
+				elShadowOffsetX.value?.root ?? null,
+				elShadowOffsetY.value?.root ?? null,
+				elEffectColor.value?.root ?? null
 			]
 		},
 		{
 			case: 'stroke',
-			targets: [
-				document.getElementById('uiButton-textEffect-strokeWidth'),
-				document.getElementById('uiButton-textEffect-color')
-			]
+			targets: [elStrokeWidth.value?.root ?? null, elEffectColor.value?.root ?? null]
 		},
-		{ case: 'outline', targets: [document.getElementById('uiButton-textEffect-color')] }
+		{ case: 'outline', targets: [elEffectColor.value?.root ?? null] }
 	]);
 
-	synchronize('uiButton-imagePadding-slider', 'uiButton-imagePadding');
-	synchronize('uiButton-imageOpacity-slider', 'uiButton-imageOpacity');
-	synchronize('uiButton-size-slider', 'uiButton-size');
-	synchronize('uiButton-letterSpacing-slider', 'uiButton-letterSpacing');
-	synchronize('uiButton-textPadding-slider', 'uiButton-textPadding');
+	synchronize(elImagePaddingSlider.value, elImagePadding.value);
+	synchronize(elImageOpacitySlider.value, elImageOpacity.value);
+	synchronize(elSizeSlider.value, elSize.value);
+	synchronize(elLetterSpacingSlider.value, elLetterSpacing.value);
+	synchronize(elTextPaddingSlider.value, elTextPadding.value);
 
 	const elements = document.querySelectorAll(`#uiButton-display,
     #uiButton-normalImage, #uiButton-normalClip,
@@ -645,7 +683,7 @@ onMounted(() => {
 
 	const el = document.getElementById('uiButton-vue-mount');
 	if (el) {
-		attachElementApi(el, { sync });
+		attachElementApi(el, { sync, form });
 	}
 	sync();
 });

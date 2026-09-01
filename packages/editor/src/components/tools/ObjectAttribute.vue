@@ -8,12 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.object-attribute-key.label') }}</div>
-			<SelectBox id="object-attribute-key" v-model="form.key" @write="onKeyWrite" />
+			<SelectBox id="object-attribute-key" v-focus v-model="form.key" @write="onKeyWrite" />
 			<div class="text">{{ t('components.object-attribute-boolean-value.label') }}</div>
-			<SelectBox id="object-attribute-boolean-value" v-model="form.booleanValue" />
+			<SelectBox id="object-attribute-boolean-value" v-focus v-model="form.booleanValue" />
 			<div class="text">{{ t('components.object-attribute-number-value.label') }}</div>
 			<NumberBox
 				id="object-attribute-number-value"
+				v-focus
 				min="-1000000000"
 				max="1000000000"
 				decimals="6"
@@ -22,11 +23,12 @@
 			<div class="text">{{ t('components.object-attribute-string-value.label') }}</div>
 			<TextArea
 				id="object-attribute-string-value"
+				v-focus
 				menu="tag-localization"
 				v-model="form.stringValue"
 			/>
 			<div class="text">{{ t('components.object-attribute-enum-value.label') }}</div>
-			<SelectBox id="object-attribute-enum-value" v-model="form.enumValue" />
+			<SelectBox id="object-attribute-enum-value" v-focus v-model="form.enumValue" />
 		</div>
 	</WindowFrame>
 </template>

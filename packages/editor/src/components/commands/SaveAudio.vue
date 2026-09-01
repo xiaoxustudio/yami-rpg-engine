@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="saveAudio-type" v-model="form.type" />
+			<SelectBox id="saveAudio-type" v-focus v-model="form.type" />
 		</div>
 	</WindowFrame>
 </template>

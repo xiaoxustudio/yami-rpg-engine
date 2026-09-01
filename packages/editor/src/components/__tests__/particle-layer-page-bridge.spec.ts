@@ -76,12 +76,15 @@ interface LayerData {
 
 const particleLayer = vi.hoisted(() => ({
 	target: null as LayerData | null,
-	paramInput: vi.fn(),
+	update: vi.fn(),
 	easingDefaultId: 'ease-linear'
 }));
 
 vi.mock('@app/inspector/inspector.ts', () => ({
-	Inspector: { particleLayer }
+	Inspector: {
+		particleLayer,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/particle', () => ({
@@ -104,7 +107,7 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		particleLayer.target = null;
-		particleLayer.paramInput.mockClear();
+		particleLayer.update.mockClear();
 	});
 
 	const mountPage = async () => {
@@ -249,14 +252,14 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 		wrapper.unmount();
 	});
 
-	it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+	it('控件 input 经 composable 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
 		const el = document.getElementById('particleLayer-vue-mount') as SyncEl;
 		particleLayer.target = makeLayer();
 		el.sync?.();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
-		particleLayer.paramInput.mockImplementation(() => {
+		particleLayer.update.mockImplementation(() => {
 			if (particleLayer.target) {
 				particleLayer.target.count = 500;
 			}
@@ -265,7 +268,7 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 		expect(input).toBeTruthy();
 		input!.value = '500';
 		input!.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(particleLayer.paramInput).toHaveBeenCalled();
+		expect(particleLayer.update).toHaveBeenCalledWith(particleLayer.target, 'count', 500);
 		await wrapper.vm.$nextTick();
 		expect(read('particleLayer-count')).toBe(500);
 		wrapper.unmount();

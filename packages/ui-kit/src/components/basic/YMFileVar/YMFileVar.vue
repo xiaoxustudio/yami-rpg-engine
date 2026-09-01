@@ -152,14 +152,14 @@ const pointerdown = (event: PointerEvent): void => {
 
 const onFileInput = (value: string): void => {
 	fileValue.value = value;
-	emit('input', value);
 	emit('update:modelValue', value);
+	emit('input', value);
 };
 
 const onVarInput = (value: unknown): void => {
 	varValue.value = value as { key?: string } | null;
-	emit('input', value);
 	emit('update:modelValue', value);
+	emit('input', value);
 };
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });

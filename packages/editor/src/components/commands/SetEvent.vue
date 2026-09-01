@@ -8,11 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setEvent-operation" v-model="form.operation" />
+			<SelectBox id="setEvent-operation" v-focus v-model="form.operation" />
 			<div class="text">Variable</div>
-			<CustomBox id="setEvent-variable" type="variable" filter="object" @input="onVariable" />
+			<CustomBox
+				id="setEvent-variable"
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
 			<div class="text">Event</div>
-			<CustomBox id="setEvent-eventId" type="file" filter="event" @input="onEventId" />
+			<CustomBox
+				id="setEvent-eventId"
+				v-focus
+				type="file"
+				filter="event"
+				v-model="form.eventId"
+			/>
 			<div class="text">Choice Index</div>
 			<NumberVar id="setEvent-choiceIndex" min="0" max="255" v-model="form.choiceIndex" />
 		</div>
@@ -33,14 +45,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetEventCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onEventId = (value: unknown) => {
-	form.eventId = value;
-};
 
 const onConfirm = () => {
 	save();

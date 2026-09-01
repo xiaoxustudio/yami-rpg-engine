@@ -2,7 +2,7 @@ import '@app/inspector/file-trigger-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 
-interface TriggerForm {
+export interface TriggerForm {
 	selector: string;
 	onHitWalls: string;
 	onHitActors: string;

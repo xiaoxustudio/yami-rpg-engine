@@ -1,6 +1,6 @@
 import { SettingConfig } from '@app/services/project/setting-config';
 import { $ } from '@app/utils/dom';
-import { addClass, hasClass, rect, removeClass } from '@app/utils/element-utils';
+import { addClass, hasClass, on, rect, removeClass } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -94,7 +94,7 @@ export const Home: HomeShape = {
 
 Home.initialize = function (this: typeof Home) {
 	getHomeStore().state = Layout.manager?.index === 'home' ? 'open' : 'closed';
-	Layout.manager?.on('switch', (event: Event & { value: string | null }) => {
+	on(Layout.manager, 'switch', (event: Event & { value: string | null }) => {
 		getHomeStore().state = event.value === 'home' ? 'open' : 'closed';
 	});
 	window.addEventListener('resize', this.windowResize!);

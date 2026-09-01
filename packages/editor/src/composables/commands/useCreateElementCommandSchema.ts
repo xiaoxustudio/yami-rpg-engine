@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -80,48 +80,46 @@ Command.cases.createElement = new CommandSchema({
 
 export function useCreateElementCommandSchema() {
 	const { form, load, commit } = useCommandSchema('createElement', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('createElement-operation')!, 'all');
+			requestFocus('createElement-operation', 'all');
 		}
 	});
 	const onSave = (): void => {
-		const operation =
-			read(document.getElementById('createElement-operation')!) ?? form.operation;
-		const parent = read(document.getElementById('createElement-parent')!) ?? form.parent;
+		const operation = form.operation as string;
+		const parent = form.parent;
 		switch (operation) {
 			case 'append-all-to-root': {
-				const uiId = read(document.getElementById('createElement-uiId')!) ?? form.uiId;
+				const uiId = form.uiId as string;
 				if (uiId === '') {
-					getFocus(document.getElementById('createElement-uiId')!);
+					requestFocus('createElement-uiId');
 					return;
 				}
 				commit({ operation, uiId });
 				break;
 			}
 			case 'append-one-to-root': {
-				const presetId =
-					read(document.getElementById('createElement-presetId')!) ?? form.presetId;
+				const presetId = form.presetId as string;
 				if (presetId === '') {
-					getFocus(document.getElementById('createElement-presetId')!);
+					requestFocus('createElement-presetId');
 					return;
 				}
 				commit({ operation, presetId });
 				break;
 			}
 			case 'append-all-to-element': {
-				const uiId = read(document.getElementById('createElement-uiId')!) ?? form.uiId;
+				const uiId = form.uiId as string;
 				if (uiId === '') {
-					getFocus(document.getElementById('createElement-uiId')!);
+					requestFocus('createElement-uiId');
 					return;
 				}
 				commit({ operation, parent, uiId });
 				break;
 			}
 			case 'append-one-to-element': {
-				const presetId =
-					read(document.getElementById('createElement-presetId')!) ?? form.presetId;
+				const presetId = form.presetId as string;
 				if (presetId === '') {
-					getFocus(document.getElementById('createElement-presetId')!);
+					requestFocus('createElement-presetId');
 					return;
 				}
 				commit({ operation, parent, presetId });

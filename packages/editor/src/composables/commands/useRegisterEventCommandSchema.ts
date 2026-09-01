@@ -3,10 +3,11 @@ import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
-import { getFocus, hide, show } from '@app/utils/element-utils';
+import { hide, show } from '@app/utils/element-utils';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -289,7 +290,7 @@ const load = ({
 	});
 	commands = children as unknown[];
 	switchNamespace();
-	getFocus(document.getElementById('registerEvent-target'));
+	requestFocus('registerEvent-target');
 };
 
 const save = (): unknown => {
@@ -321,7 +322,7 @@ const save = (): unknown => {
 				case 'unregister': {
 					let tag = form.tag;
 					if (typeof tag === 'string' && (tag = tag.trim()) === '') {
-						return getFocus(document.getElementById('registerEvent-tag'));
+						return requestFocus('registerEvent-tag');
 					}
 					commit({ target, operation, tag });
 					break;

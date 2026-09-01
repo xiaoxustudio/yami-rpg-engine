@@ -2,7 +2,6 @@ import '@app/inspector/element-page.ts';
 import '@app/inspector/element-image-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { read } from '@app/utils/element-utils';
 
 interface UIElementForm {
 	name: string;
@@ -23,6 +22,21 @@ interface UIElementForm {
 	skewX: number;
 	skewY: number;
 	opacity: number;
+}
+
+interface UIImageForm {
+	image: string;
+	display: string;
+	flip: string;
+	blend: string;
+	shiftX: number;
+	shiftY: number;
+	clip: number[];
+	border: number;
+	'tint-0': number;
+	'tint-1': number;
+	'tint-2': number;
+	'tint-3': number;
 }
 
 const NODE_KEYS: (keyof UIElementForm)[] = ['name', 'pointerEvents'];
@@ -46,21 +60,46 @@ const TRANSFORM_KEYS: (keyof UIElementForm)[] = [
 	'opacity'
 ];
 
+const IMAGE_KEYS: (keyof UIImageForm)[] = [
+	'image',
+	'display',
+	'flip',
+	'blend',
+	'shiftX',
+	'shiftY',
+	'clip',
+	'border'
+];
+
 export function useUIImagePage() {
-	const form = reactive<Partial<UIElementForm>>({});
+	const form = reactive<Partial<UIElementForm> & Partial<UIImageForm>>({});
 
 	const sync = (): void => {
 		const target = Inspector?.uiElement?.target as
 			| (Partial<UIElementForm> & { transform?: Partial<UIElementForm> })
 			| null
 			| undefined;
-		if (!target) return;
-		for (const key of NODE_KEYS) {
-			(form as Record<string, unknown>)[key] = target[key];
+		if (target) {
+			for (const key of NODE_KEYS) {
+				(form as Record<string, unknown>)[key] = target[key];
+			}
+			const transform = target.transform ?? {};
+			for (const key of TRANSFORM_KEYS) {
+				(form as Record<string, unknown>)[key] = transform[key];
+			}
 		}
-		const transform = target.transform ?? {};
-		for (const key of TRANSFORM_KEYS) {
-			(form as Record<string, unknown>)[key] = transform[key];
+		const imageTarget = Inspector?.uiImage?.target as
+			| (Partial<UIImageForm> & { tint?: unknown[] })
+			| null
+			| undefined;
+		if (imageTarget) {
+			for (const key of IMAGE_KEYS) {
+				(form as Record<string, unknown>)[key] = imageTarget[key];
+			}
+			const tint = imageTarget.tint ?? [];
+			for (let i = 0; i < 4; i++) {
+				(form as Record<string, unknown>)[`tint-${i}`] = tint[i];
+			}
 		}
 	};
 
@@ -74,7 +113,11 @@ export function useUIImagePage() {
 		if (element instanceof Element) {
 			const key = Inspector.getKey(element);
 			if (new RegExp('^uiImage-').test(element.id)) {
-				Inspector.uiImage.update(Inspector.uiImage.target, key, read(element));
+				Inspector.uiImage.update(
+					Inspector.uiImage.target,
+					key,
+					(form as Record<string, unknown>)[key]
+				);
 			} else {
 				const formKey = key.startsWith('transform-') ? key.slice('transform-'.length) : key;
 				Inspector.uiElement.update(

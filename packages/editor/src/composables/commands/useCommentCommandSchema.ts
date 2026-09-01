@@ -1,8 +1,8 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.comment = new CommandSchema({
 	name: 'comment',
@@ -26,8 +26,9 @@ Command.cases.comment = new CommandSchema({
 
 export function useCommentCommandSchema() {
 	return useCommandSchema('comment', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('comment-comment')!, 'end');
+			requestFocus('comment-comment', 'end');
 		}
 	});
 }

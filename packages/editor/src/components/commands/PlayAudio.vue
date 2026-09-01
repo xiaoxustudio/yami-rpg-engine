@@ -8,9 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="playAudio-type" v-model="form.type" />
+			<SelectBox id="playAudio-type" v-focus v-model="form.type" />
 			<div class="text">Audio</div>
-			<CustomBox id="playAudio-audio" type="file" filter="audio" @input="onAudio" />
+			<CustomBox
+				id="playAudio-audio"
+				v-focus
+				type="file"
+				filter="audio"
+				v-model="form.audio"
+			/>
 			<div class="text">Volume</div>
 			<NumberBox
 				id="playAudio-volume"
@@ -21,7 +27,7 @@
 				v-model="form.volume"
 			/>
 			<div class="text">Sound Location</div>
-			<CustomBox id="playAudio-location" type="position" @input="onLocation" />
+			<CustomBox id="playAudio-location" type="position" v-model="form.location" />
 		</div>
 	</WindowFrame>
 </template>
@@ -40,14 +46,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = usePlayAudioCommandSchema();
-
-const onAudio = (value: unknown) => {
-	form.audio = value;
-};
-
-const onLocation = (value: unknown) => {
-	form.location = value;
-};
 
 const onConfirm = () => {
 	save();

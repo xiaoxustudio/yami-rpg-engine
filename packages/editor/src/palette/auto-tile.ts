@@ -1,9 +1,10 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@app/utils/dom';
-import { on, hasClass, write, getFocus, read, clear } from '@app/utils/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on, hasClass, write, read, clear } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
+import { requestFocus } from '@app/directives/focus';
 import { File } from '@app/file/file-system-core.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
@@ -156,9 +157,6 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 	// list select/popup 经 Vue 模板转发（AutoTile.vue @select/@popup → AutoTile.templates*）
 	// list change 经 Vue 模板转发（AutoTile.vue @change → AutoTile.templatesChange）
 	on(this.nodeList, 'keydown', this.nodesKeydown);
-	document
-		.querySelectorAll('.autoTile-neighbor')
-		.forEach((el) => el.addEventListener('input', this.ruleNeighborInput!));
 	on(this.frameList, 'keydown', this.framesKeydown);
 	on(this.frameList, 'doubleclick', this.framesDoubleclick);
 };
@@ -175,7 +173,7 @@ AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: Auto
 	this.templateList.update();
 	this.templateList.select(this.getTemplateById(template) ?? getAutoTileStore().templates[0]);
 	this.templateList.scrollToSelection();
-	getFocus($('#autoTile-image'));
+	requestFocus('autoTile-image');
 };
 
 AutoTile.create = function (this: typeof AutoTile) {
@@ -613,16 +611,11 @@ AutoTile.nodesWrite = function (this: typeof AutoTile, event: Event & { value?: 
 	getAutoTileStore().nodeIndex = nodeIndex;
 	this.node = this.nodes[nodeIndex];
 	this.frames = this.node.frames;
-	const write = getElementWriter('autoTile');
 	const rule = this.node.rule;
-	write('rule-0', rule & 0b11);
-	write('rule-1', (rule >> 2) & 0b11);
-	write('rule-2', (rule >> 4) & 0b11);
-	write('rule-3', (rule >> 6) & 0b11);
-	write('rule-4', (rule >> 8) & 0b11);
-	write('rule-5', (rule >> 10) & 0b11);
-	write('rule-6', (rule >> 12) & 0b11);
-	write('rule-7', (rule >> 14) & 0b11);
+	const ruleBits = getAutoTileStore().ruleBits;
+	for (let i = 0; i < 8; i++) {
+		ruleBits[i] = (rule >> (i * 2)) & 0b11;
+	}
 
 	this.createFrameItems();
 }.bind(AutoTile);
@@ -742,16 +735,11 @@ AutoTile.nodesKeydown = function (this: typeof AutoTile, event: KeyboardEvent) {
 };
 
 AutoTile.ruleNeighborInput = function (this: typeof AutoTile, _event: Event) {
-	const read = getElementReader('autoTile-rule');
-	const rule =
-		read('0') |
-		(read('1') << 2) |
-		(read('2') << 4) |
-		(read('3') << 6) |
-		(read('4') << 8) |
-		(read('5') << 10) |
-		(read('6') << 12) |
-		(read('7') << 14);
+	const ruleBits = getAutoTileStore().ruleBits;
+	let rule = 0;
+	for (let i = 0; i < 8; i++) {
+		rule |= ruleBits[i] << (i * 2);
+	}
 	AutoTile.node.rule = rule;
 	getAutoTileStore().changed = true;
 };

@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setTriggerAngle = new CommandSchema({
 	name: 'setTriggerAngle',
@@ -29,8 +29,9 @@ Command.cases.setTriggerAngle = new CommandSchema({
 
 export function useSetTriggerAngleCommandSchema() {
 	return useCommandSchema('setTriggerAngle', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setTriggerAngle-trigger'));
+			requestFocus('setTriggerAngle-trigger');
 		}
 	});
 }

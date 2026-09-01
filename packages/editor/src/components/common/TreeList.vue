@@ -14,6 +14,7 @@ import { Fragment, h, render, type VNode } from 'vue';
 import { YMTreeList } from '@ui-kit';
 import { useMenuService } from '@app/composables/useMenuService';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { on } from '@app/utils/element-utils';
 
 interface Props {
 	id?: string;
@@ -63,11 +64,11 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	attachElementApi(el, { getMenuState: () => menuService.getState() });
-	// 经 el.on 注册（YMTreeList 的 on() 启用 select/record/popup/open 派发开关）
-	el.on('select', (event: Event & { value?: unknown }) => emit('select', event));
-	el.on('record', (event: Event & { value?: unknown }) => emit('record', event));
-	el.on('popup', (event: Event & { value?: unknown }) => emit('popup', event));
-	el.on('open', (event: Event & { value?: unknown }) => emit('open', event));
-	el.on('change', (event: Event & { value?: unknown }) => emit('change', event));
+	// 经 on() 注册（YMTreeList 的 on() 启用 select/record/popup/open 派发开关）
+	on(el, 'select', (event: Event & { value?: unknown }) => emit('select', event));
+	on(el, 'record', (event: Event & { value?: unknown }) => emit('record', event));
+	on(el, 'popup', (event: Event & { value?: unknown }) => emit('popup', event));
+	on(el, 'open', (event: Event & { value?: unknown }) => emit('open', event));
+	on(el, 'change', (event: Event & { value?: unknown }) => emit('change', event));
 });
 </script>

@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { $, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -73,9 +73,7 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			addClass(this.button, 'selected');
 
-			const write = getElementWriter('fileUI', ui);
-			write('width');
-			write('height');
+			($('#fileUI-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

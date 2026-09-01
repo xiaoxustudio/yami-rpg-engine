@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -201,8 +201,9 @@ Command.cases.setList = new CommandSchema({
 
 export function useSetListCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setList', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setList-variable'));
+			requestFocus('setList-variable');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -268,7 +269,7 @@ export function useSetListCommandSchema() {
 	const onSave = (): void => {
 		const variable = form.variable;
 		if (VariableGetter.isNone!(variable as { key: string })) {
-			return getFocus(document.getElementById('setList-variable'));
+			return requestFocus('setList-variable');
 		}
 		const operation = form.operation as string;
 		switch (operation) {
@@ -278,7 +279,7 @@ export function useSetListCommandSchema() {
 			case 'set-numbers': {
 				const list = form.numbers as number[];
 				if (list.length === 0) {
-					return getFocus(document.getElementById('setList-numbers'));
+					return requestFocus('setList-numbers');
 				}
 				commit({ variable, operation, list });
 				break;
@@ -286,7 +287,7 @@ export function useSetListCommandSchema() {
 			case 'set-strings': {
 				const list = form.strings as string[];
 				if (list.length === 0) {
-					return getFocus(document.getElementById('setList-strings'));
+					return requestFocus('setList-strings');
 				}
 				commit({ variable, operation, list });
 				break;
@@ -317,7 +318,7 @@ export function useSetListCommandSchema() {
 				const skipCheck = form.indexSkipCheck as boolean;
 				const operand = form.operand;
 				if (VariableGetter.isNone!(operand as { key: string })) {
-					return getFocus(document.getElementById('setList-operand'));
+					return requestFocus('setList-operand');
 				}
 				commit({ variable, operation, index, operand, skipCheck });
 				break;
@@ -325,7 +326,7 @@ export function useSetListCommandSchema() {
 			case 'split-string': {
 				const operand = form.operand;
 				if (VariableGetter.isNone!(operand as { key: string })) {
-					return getFocus(document.getElementById('setList-operand'));
+					return requestFocus('setList-operand');
 				}
 				const separator = form.separator as string;
 				commit({ variable, operation, operand, separator });
@@ -335,7 +336,7 @@ export function useSetListCommandSchema() {
 			case 'remove': {
 				const operand = form.operand;
 				if (VariableGetter.isNone!(operand as { key: string })) {
-					return getFocus(document.getElementById('setList-operand'));
+					return requestFocus('setList-operand');
 				}
 				commit({ variable, operation, operand });
 				break;
@@ -344,7 +345,7 @@ export function useSetListCommandSchema() {
 			case 'get-attribute-keys': {
 				const groupId = form.attributeGroupId as string;
 				if (groupId === '') {
-					return getFocus(document.getElementById('setList-attribute-groupId'));
+					return requestFocus('setList-attribute-groupId');
 				}
 				commit({ variable, operation, groupId });
 				break;
@@ -353,7 +354,7 @@ export function useSetListCommandSchema() {
 			case 'get-enum-values': {
 				const groupId = form.enumGroupId as string;
 				if (groupId === '') {
-					return getFocus(document.getElementById('setList-enum-groupId'));
+					return requestFocus('setList-enum-groupId');
 				}
 				commit({ variable, operation, groupId });
 				break;

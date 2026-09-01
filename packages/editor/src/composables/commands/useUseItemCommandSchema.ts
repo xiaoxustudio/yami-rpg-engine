@@ -4,10 +4,10 @@ import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.useItem = new CommandSchema({
@@ -58,43 +58,39 @@ Command.cases.useItem = new CommandSchema({
 
 export function useUseItemCommandSchema() {
 	const { form, load, commit } = useCommandSchema('useItem', {
+		skipWrite: true,
 		onLoad() {
 			document
 				.getElementById('useItem-key')
 				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-			getFocus(document.getElementById('useItem-actor'));
+			requestFocus('useItem-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('useItem-actor')) ?? form.actor;
-		const mode = read(document.getElementById('useItem-mode')) ?? form.mode;
-		const wait = read(document.getElementById('useItem-wait')) ?? form.wait;
+		const actor = form.actor;
+		const mode = form.mode;
+		const wait = form.wait;
 		switch (mode) {
 			case 'by-key': {
-				const key = read(document.getElementById('useItem-key')) ?? form.key;
+				const key = form.key;
 				if (key === '') {
-					getFocus(document.getElementById('useItem-key'));
+					requestFocus('useItem-key');
 					return;
 				}
 				commit({ actor, mode, key, wait });
 				break;
 			}
 			case 'by-id': {
-				const itemId = read(document.getElementById('useItem-itemId')) ?? form.itemId;
+				const itemId = form.itemId;
 				if (itemId === '') {
-					getFocus(document.getElementById('useItem-itemId'));
+					requestFocus('useItem-itemId');
 					return;
 				}
 				commit({ actor, mode, itemId, wait });
 				break;
 			}
 			case 'by-item':
-				commit({
-					actor,
-					mode,
-					item: read(document.getElementById('useItem-item')) ?? form.item,
-					wait
-				});
+				commit({ actor, mode, item: form.item, wait });
 				break;
 		}
 	};

@@ -6,10 +6,11 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<CustomBox id="showText-target" type="actor" @input="onTarget" />
+		<CustomBox id="showText-target" v-focus type="actor" v-model="form.target" />
 		<TextBox id="showText-parameters" v-model="form.parameters" />
 		<TextArea
 			id="showText-content"
+			v-focus
 			menu="tag-local-var tag-global-var tag-localization"
 			v-model="form.content"
 		/>
@@ -28,10 +29,6 @@ import TextBox from '@app/components/common/TextBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useShowTextCommandSchema();
-
-const onTarget = (value: unknown) => {
-	form.target = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Branches</div>
-			<ParamList id="if-branches" v-model="form.branches" />
+			<ParamList id="if-branches" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="if-else" v-model="form.else" class="standard"
 			><div class="text" id="if-else-label">Else</div></CheckBox

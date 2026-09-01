@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.translateActor = new CommandSchema({
 	name: 'translateActor',
@@ -50,23 +50,24 @@ Command.cases.translateActor = new CommandSchema({
 
 export function useTranslateActorCommandSchema() {
 	const { form, load, commit } = useCommandSchema('translateActor', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('translateActor-actor'));
+			requestFocus('translateActor-actor');
 		}
 	});
 	const onSave = (): void => {
-		const distance = read(document.getElementById('translateActor-distance')) ?? form.distance;
+		const distance = form.distance;
 		if (distance === 0) {
-			getFocus(document.getElementById('translateActor-distance'), 'all');
+			requestFocus('translateActor-distance', 'all');
 			return;
 		}
 		commit({
-			actor: read(document.getElementById('translateActor-actor')) ?? form.actor,
-			angle: read(document.getElementById('translateActor-angle')) ?? form.angle,
+			actor: form.actor,
+			angle: form.angle,
 			distance,
-			easingId: read(document.getElementById('translateActor-easingId')) ?? form.easingId,
-			duration: read(document.getElementById('translateActor-duration')) ?? form.duration,
-			wait: read(document.getElementById('translateActor-wait')) ?? form.wait
+			easingId: form.easingId,
+			duration: form.duration,
+			wait: form.wait
 		});
 	};
 	Command.cases.translateActor.customSave = onSave;

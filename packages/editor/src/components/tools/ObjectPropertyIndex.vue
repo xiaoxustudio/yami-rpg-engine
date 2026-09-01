@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div>
-			<TextBox id="ObjectProperty-index-name" v-model="indexForm.name" />
+			<TextBox id="ObjectProperty-index-name" v-focus v-model="indexForm.name" />
 		</div>
 	</WindowFrame>
 </template>

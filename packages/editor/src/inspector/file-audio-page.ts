@@ -1,6 +1,6 @@
-import { $, getElementReader } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { addClass, hasClass, hide, removeClass, show, write } from '@app/utils/element-utils';
+import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
@@ -50,7 +50,6 @@ import { Timer } from '@app/utils/timer';
 		stopAnimation: null,
 		themechange: null,
 		windowResize: null,
-		paramInput: null,
 		progressPointerdown: null,
 		progressPointermove: null,
 		progressPointerleave: null,
@@ -150,10 +149,6 @@ import { Timer } from '@app/utils/timer';
 	};
 
 	FileAudio.writeParams = function (this: typeof FileAudio, params: AudioParams) {
-		write($('#fileAudio-volume'), params.volume);
-		write($('#fileAudio-pan'), params.pan);
-		write($('#fileAudio-dry'), params.dry);
-		write($('#fileAudio-wet'), params.wet);
 		this.updateParamInfos!(params);
 	};
 
@@ -369,18 +364,6 @@ import { Timer } from '@app/utils/timer';
 			FileAudio.updateCanvas();
 		}
 	};
-
-	FileAudio.paramInput = function (this: typeof FileAudio, _event: Event) {
-		const read = getElementReader('fileAudio');
-		const params = {
-			volume: read('volume'),
-			pan: read('pan'),
-			dry: read('dry'),
-			wet: read('wet')
-		};
-		this.updateParams!(params);
-		this.updateParamInfos!(params);
-	}.bind(FileAudio);
 
 	FileAudio.progressPointerdown = function (this: typeof FileAudio, event: PointerEvent) {
 		switch (event.button) {

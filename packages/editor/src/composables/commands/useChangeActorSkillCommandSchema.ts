@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -53,21 +53,20 @@ Command.cases.changeActorSkill = new CommandSchema({
 
 export function useChangeActorSkillCommandSchema() {
 	const { form, load, commit } = useCommandSchema('changeActorSkill', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('changeActorSkill-actor')!);
+			requestFocus('changeActorSkill-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('changeActorSkill-actor')!) ?? form.actor;
-		const operation =
-			read(document.getElementById('changeActorSkill-operation')!) ?? form.operation;
+		const actor = form.actor;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'add':
 			case 'remove': {
-				const skillId =
-					read(document.getElementById('changeActorSkill-skillId')!) ?? form.skillId;
+				const skillId = form.skillId as string;
 				if (skillId === '') {
-					getFocus(document.getElementById('changeActorSkill-skillId')!);
+					requestFocus('changeActorSkill-skillId');
 					return;
 				}
 				commit({ actor, operation, skillId });
@@ -77,7 +76,7 @@ export function useChangeActorSkillCommandSchema() {
 				commit({
 					actor,
 					operation,
-					skill: read(document.getElementById('changeActorSkill-skill')!) ?? form.skill
+					skill: form.skill
 				});
 				break;
 			case 'sort-by-order':

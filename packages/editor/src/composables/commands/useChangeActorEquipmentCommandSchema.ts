@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -85,7 +85,7 @@ const load = (params: Record<string, unknown> = {}): void => {
 		.getElementById('changeActorEquipment-slot')
 		?.loadItems?.(Enum.getStringItems!('equipment-slot'));
 	Object.assign(form, createDefault(), params);
-	getFocus(document.getElementById('changeActorEquipment-actor'));
+	requestFocus('changeActorEquipment-actor');
 };
 
 const save = (): void => {
@@ -95,12 +95,12 @@ const save = (): void => {
 		case 'add': {
 			const slot = form.slot;
 			if (slot === '') {
-				getFocus(document.getElementById('changeActorEquipment-slot'));
+				requestFocus('changeActorEquipment-slot');
 				return;
 			}
 			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
-				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
+				requestFocus('changeActorEquipment-equipmentId');
 				return;
 			}
 			commit({ actor, operation, slot, equipmentId });
@@ -109,7 +109,7 @@ const save = (): void => {
 		case 'remove': {
 			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
-				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
+				requestFocus('changeActorEquipment-equipmentId');
 				return;
 			}
 			commit({ actor, operation, equipmentId });
@@ -118,7 +118,7 @@ const save = (): void => {
 		case 'add-instance': {
 			const slot = form.slot;
 			if (slot === '') {
-				getFocus(document.getElementById('changeActorEquipment-slot'));
+				requestFocus('changeActorEquipment-slot');
 				return;
 			}
 			commit({ actor, operation, slot, equipment: form.equipment });
@@ -130,7 +130,7 @@ const save = (): void => {
 		case 'remove-slot': {
 			const slot = form.slot;
 			if (slot === '') {
-				getFocus(document.getElementById('changeActorEquipment-slot'));
+				requestFocus('changeActorEquipment-slot');
 				return;
 			}
 			commit({ actor, operation, slot });

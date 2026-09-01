@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { commit } from '@app/composables/useCommandSchema';
 import { reactive } from 'vue';
 
@@ -101,7 +101,7 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	Object.assign(form, createDefault(), params);
-	getFocus(document.getElementById('setInventory-actor'));
+	requestFocus('setInventory-actor');
 };
 
 const save = (): void => {
@@ -116,7 +116,7 @@ const save = (): void => {
 		case 'decrease-items': {
 			const itemId = form.itemId;
 			if (itemId === '') {
-				getFocus(document.getElementById('setInventory-itemId'));
+				requestFocus('setInventory-itemId');
 				return;
 			}
 			commit({ actor, operation, itemId, quantity: form.quantity });
@@ -126,7 +126,7 @@ const save = (): void => {
 		case 'lose-equipment': {
 			const equipmentId = form.equipmentId;
 			if (equipmentId === '') {
-				getFocus(document.getElementById('setInventory-equipmentId'));
+				requestFocus('setInventory-equipmentId');
 				return;
 			}
 			commit({ actor, operation, equipmentId });

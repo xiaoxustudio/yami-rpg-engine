@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface AncestorGetterForm {
 	type: string;
@@ -49,7 +49,7 @@ const open = (target: AncestorGetterTarget, defaults?: Partial<AncestorGetterFor
 			break;
 	}
 	Object.assign(form, { type: element.type, presetId, variable });
-	getFocus(document.getElementById('ancestorGetter-type'));
+	requestFocus('ancestorGetter-type');
 };
 
 const confirm = (): void => {
@@ -62,14 +62,14 @@ const confirm = (): void => {
 			break;
 		case 'by-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('ancestorGetter-presetId'));
+				requestFocus('ancestorGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, presetId: data.presetId };
 			break;
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('ancestorGetter-variable'));
+				requestFocus('ancestorGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

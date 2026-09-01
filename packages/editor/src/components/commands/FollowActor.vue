@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="followActor-actor" type="actor" @input="onActor" />
+			<CustomBox id="followActor-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="followActor-target" type="actor" @input="onTarget" />
+			<CustomBox id="followActor-target" type="actor" v-model="form.target" />
 			<div class="text">Mode</div>
 			<SelectBox id="followActor-mode" v-model="form.mode" />
 			<div class="text">Min Distance</div>
@@ -85,14 +85,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useFollowActorCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onTarget = (value: unknown) => {
-	form.target = value;
-};
 
 const onConfirm = () => {
 	save();

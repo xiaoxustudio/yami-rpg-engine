@@ -42,6 +42,7 @@ onMounted(() => {
 		<div class="grid-box">
 			<YMTextArea
 				id="arrayList-string-value"
+				v-focus
 				:model-value="props.modelValue"
 				@update:model-value="emit('update:modelValue', $event)"
 			/>

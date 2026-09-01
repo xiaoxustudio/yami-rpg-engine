@@ -6,70 +6,6 @@ import { createScrollBarElement as createScrollBar } from '@ui-kit';
 import { attachDoubleclick, detachDoubleclick } from '@app/utils/doubleclick';
 import { Fragment, h, render, type VNode } from 'vue';
 
-if (typeof (HTMLElement.prototype as unknown as Record<string, unknown>).on !== 'function') {
-	Object.defineProperty(HTMLElement.prototype, 'on', {
-		configurable: true,
-		writable: true,
-		value: function (
-			this: HTMLElement,
-			type: string,
-			listener: (event: EditorEvent) => void,
-			options?: AddEventListenerOptions
-		) {
-			if (type === 'doubleclick') {
-				attachDoubleclick(this, listener, options);
-			} else {
-				this.addEventListener(type, listener, options);
-			}
-		}
-	});
-	Object.defineProperty(HTMLElement.prototype, 'off', {
-		configurable: true,
-		writable: true,
-		value: function (
-			this: HTMLElement,
-			type: string,
-			listener: (event: EditorEvent) => void,
-			options?: EventListenerOptions
-		) {
-			if (type === 'doubleclick') {
-				detachDoubleclick(this, listener, options);
-			} else {
-				this.removeEventListener(type, listener, options);
-			}
-		}
-	});
-}
-if (typeof (NodeList.prototype as unknown as Record<string, unknown>).on !== 'function') {
-	Object.defineProperty(NodeList.prototype, 'on', {
-		configurable: true,
-		value: function (
-			this: NodeList,
-			type: string,
-			listener: (event: EditorEvent) => void,
-			options?: AddEventListenerOptions
-		) {
-			for (const el of this) {
-				(el as Element).addEventListener(type, listener, options);
-			}
-		}
-	});
-	Object.defineProperty(NodeList.prototype, 'off', {
-		configurable: true,
-		writable: true,
-		value: function (
-			this: NodeList,
-			type: string,
-			listener: (event: EditorEvent) => void,
-			options?: EventListenerOptions
-		) {
-			for (const el of this) {
-				(el as Element).removeEventListener(type, listener, options);
-			}
-		}
-	});
-}
-
 export function on(
 	// oxlint-disable-next-line no-explicit-any
 	el: any,
@@ -82,19 +18,15 @@ export function on(
 		console.error('[on] el is null/undefined, type:', type, 'stack:', new Error().stack);
 		return;
 	}
-	if (type === 'doubleclick') {
-		if (typeof el.on === 'function') {
-			el.on(type, listener, options);
-		} else {
-			attachDoubleclick(el, listener, options);
-		}
-		return;
-	}
 	if (typeof el.on === 'function') {
 		el.on(type, listener, options);
-	} else {
-		el.addEventListener(type, listener, options);
+		return;
 	}
+	if (type === 'doubleclick') {
+		attachDoubleclick(el, listener, options);
+		return;
+	}
+	el.addEventListener(type, listener, options);
 }
 
 export function off(
@@ -106,19 +38,15 @@ export function off(
 	options?: EventListenerOptions
 ): void {
 	if (!el) return;
-	if (type === 'doubleclick') {
-		if (typeof el.off === 'function') {
-			el.off(type, listener, options);
-		} else {
-			detachDoubleclick(el, listener, options);
-		}
-		return;
-	}
 	if (typeof el.off === 'function') {
 		el.off(type, listener, options);
-	} else {
-		el.removeEventListener(type, listener, options);
+		return;
 	}
+	if (type === 'doubleclick') {
+		detachDoubleclick(el, listener, options);
+		return;
+	}
+	el.removeEventListener(type, listener, options);
 }
 
 export function emit(el: EventTarget, type: string, detail?: unknown): boolean {

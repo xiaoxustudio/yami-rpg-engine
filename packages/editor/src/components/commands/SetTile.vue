@@ -8,13 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">Tilemap</div>
-			<CustomBox id="setTile-tilemap" type="tilemap" @input="onTilemap" />
+			<CustomBox id="setTile-tilemap" v-focus type="tilemap" v-model="form.tilemap" />
 			<div class="text">Tilemap X</div>
 			<NumberVar id="setTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
 			<div class="text">Tilemap Y</div>
 			<NumberVar id="setTile-tilemapY" min="0" max="511" v-model="form.tilemapY" />
 			<div class="text">Tileset</div>
-			<CustomBox id="setTile-tilesetId" type="file" filter="tileset" @input="onTilesetId" />
+			<CustomBox
+				id="setTile-tilesetId"
+				v-focus
+				type="file"
+				filter="tileset"
+				v-model="form.tilesetId"
+			/>
 			<div class="text">Tileset X</div>
 			<NumberVar id="setTile-tilesetX" min="0" max="255" v-model="form.tilesetX" />
 			<div class="text">Tileset Y</div>
@@ -34,14 +40,6 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetTileCommandSchema();
-
-const onTilemap = (value: unknown) => {
-	form.tilemap = value;
-};
-
-const onTilesetId = (value: unknown) => {
-	form.tilesetId = value;
-};
 
 const onConfirm = () => {
 	save();

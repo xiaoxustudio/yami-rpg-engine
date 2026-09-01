@@ -1,4 +1,4 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -62,16 +62,8 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiAnimation', node);
-			write('animation');
-			write('motion');
-			write('autoplay');
-			write('rotatable');
-			write('angle');
-			write('frame');
-			write('offsetX');
-			write('offsetY');
 			Inspector.uiElement.open(node);
+			($('#uiAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

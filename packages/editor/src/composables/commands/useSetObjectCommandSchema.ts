@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -94,8 +94,9 @@ Command.cases.setObject = new CommandSchema({
 
 export function useSetObjectCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setObject', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setObject-variable'));
+			requestFocus('setObject-variable');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -119,84 +120,60 @@ export function useSetObjectCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const variable = read(document.getElementById('setObject-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('setObject-variable'));
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
+			requestFocus('setObject-variable');
 			return;
 		}
-		const type =
-			read(document.getElementById('setObject-operand-type')) ?? form['operand-type'];
+		const type = form['operand-type'];
 		let operand: SetObjectOperand = { type: type as string };
 		switch (type) {
 			case 'none':
 				break;
 			case 'actor':
-				operand.actor =
-					read(document.getElementById('setObject-operand-actor')) ??
-					form['operand-actor'];
+				operand.actor = form['operand-actor'] as ObjectRef;
 				break;
 			case 'skill':
-				operand.skill =
-					read(document.getElementById('setObject-operand-skill')) ??
-					form['operand-skill'];
+				operand.skill = form['operand-skill'] as ObjectRef;
 				break;
 			case 'state':
-				operand.state =
-					read(document.getElementById('setObject-operand-state')) ??
-					form['operand-state'];
+				operand.state = form['operand-state'] as ObjectRef;
 				break;
 			case 'equipment':
-				operand.equipment =
-					read(document.getElementById('setObject-operand-equipment')) ??
-					form['operand-equipment'];
+				operand.equipment = form['operand-equipment'] as ObjectRef;
 				break;
 			case 'item':
-				operand.item =
-					read(document.getElementById('setObject-operand-item')) ?? form['operand-item'];
+				operand.item = form['operand-item'] as ObjectRef;
 				break;
 			case 'trigger':
-				operand.trigger =
-					read(document.getElementById('setObject-operand-trigger')) ??
-					form['operand-trigger'];
+				operand.trigger = form['operand-trigger'] as ObjectRef;
 				break;
 			case 'light':
-				operand.light =
-					read(document.getElementById('setObject-operand-light')) ??
-					form['operand-light'];
+				operand.light = form['operand-light'] as ObjectRef;
 				break;
 			case 'object':
-				operand.object =
-					read(document.getElementById('setObject-operand-object')) ??
-					form['operand-object'];
+				operand.object = form['operand-object'] as ObjectRef;
 				break;
 			case 'element':
-				operand.element =
-					read(document.getElementById('setObject-operand-element')) ??
-					form['operand-element'];
+				operand.element = form['operand-element'] as ObjectRef;
 				break;
 			case 'variable': {
-				const value =
-					read(document.getElementById('setObject-operand-variable')) ??
-					form['operand-variable'];
-				if (VariableGetter.isNone!(value)) {
-					getFocus(document.getElementById('setObject-operand-variable'));
+				const value = form['operand-variable'];
+				if (VariableGetter.isNone!(value as { key: string })) {
+					requestFocus('setObject-operand-variable');
 					return;
 				}
-				operand.variable = value;
+				operand.variable = value as ObjectRef;
 				break;
 			}
 			case 'list': {
-				const value =
-					read(document.getElementById('setObject-operand-variable')) ??
-					form['operand-variable'];
-				if (VariableGetter.isNone!(value)) {
-					getFocus(document.getElementById('setObject-operand-variable'));
+				const value = form['operand-variable'];
+				if (VariableGetter.isNone!(value as { key: string })) {
+					requestFocus('setObject-operand-variable');
 					return;
 				}
-				operand.variable = value;
-				operand.index =
-					read(document.getElementById('setObject-operand-list-index')) ??
-					form['operand-list-index'];
+				operand.variable = value as ObjectRef;
+				operand.index = form['operand-list-index'] as number;
 				break;
 			}
 		}

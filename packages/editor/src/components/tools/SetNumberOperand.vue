@@ -8,8 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setNumber-operation.label') }}</div>
-			<SelectBox id="setNumber-operation" />
-			<SelectBox id="setNumber-operand-operation" :model-value="form.operation" />
+			<SelectBox id="setNumber-operation" v-focus />
+			<SelectBox id="setNumber-operand-operation" v-focus :model-value="form.operation" />
 			<div class="text">{{ t('components.setNumber-operand-type.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-type"
@@ -44,6 +44,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-variable.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-variable"
+				v-focus
 				type="variable"
 				filter="all"
 				:model-value="form.commonVariable"
@@ -99,6 +100,7 @@
 			<div class="text">{{ t('components.setNumber-operand-object-itemId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-itemId"
+				v-focus
 				type="file"
 				filter="item"
 				:model-value="form.objectItemId"
@@ -106,12 +108,17 @@
 			<div class="text">{{ t('components.setNumber-operand-object-equipmentId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-equipmentId"
+				v-focus
 				type="file"
 				filter="equipment"
 				:model-value="form.objectEquipmentId"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-string-search.label') }}</div>
-			<StringVar id="setNumber-operand-string-search" :model-value="form.stringSearch" />
+			<StringVar
+				id="setNumber-operand-string-search"
+				v-focus
+				:model-value="form.stringSearch"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-math-decimals.label') }}</div>
 			<NumberBox
 				id="setNumber-operand-math-decimals"
@@ -146,7 +153,11 @@
 				:model-value="form.mathEndPosition"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-cooldown-key.label') }}</div>
-			<SelectVar id="setNumber-operand-cooldown-key" :model-value="form.cooldownKey" />
+			<SelectVar
+				id="setNumber-operand-cooldown-key"
+				v-focus
+				:model-value="form.cooldownKey"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-list-index"
@@ -155,9 +166,13 @@
 				:model-value="form.listIndex"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-parameter-key.label') }}</div>
-			<StringVar id="setNumber-operand-parameter-key" :model-value="form.parameterKey" />
+			<StringVar
+				id="setNumber-operand-parameter-key"
+				v-focus
+				:model-value="form.parameterKey"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-script.label') }}</div>
-			<TextBox id="setNumber-operand-script" :model-value="form.script" />
+			<TextBox id="setNumber-operand-script" v-focus :model-value="form.script" />
 			<div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div>
 			<SelectBox id="setNumber-operand-other-data" :model-value="form.otherData" />
 			<div class="text">{{ t('components.setNumber-operand-other-touchId.label') }}</div>

@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setTriggerDuration = new CommandSchema({
 	name: 'setTriggerDuration',
@@ -39,8 +39,9 @@ Command.cases.setTriggerDuration = new CommandSchema({
 
 export function useSetTriggerDurationCommandSchema() {
 	return useCommandSchema('setTriggerDuration', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setTriggerDuration-trigger'));
+			requestFocus('setTriggerDuration-trigger');
 		}
 	});
 }

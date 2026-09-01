@@ -1,11 +1,12 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
+import { read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -99,8 +100,9 @@ Command.cases.playAnimation = new CommandSchema({
 
 export function usePlayAnimationCommandSchema() {
 	const { form, load, commit } = useCommandSchema('playAnimation', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('playAnimation-mode')!);
+			requestFocus('playAnimation-mode');
 		}
 	});
 	const writeHandler = (event: { value: string }): void => {
@@ -110,31 +112,28 @@ export function usePlayAnimationCommandSchema() {
 		elMotion?.write2?.(read(elMotion));
 	};
 	const onSave = (): void => {
-		const mode = read(document.getElementById('playAnimation-mode')!) ?? form.mode;
-		const animationId =
-			read(document.getElementById('playAnimation-animationId')!) ?? form.animationId;
-		const motion = read(document.getElementById('playAnimation-motion')!) ?? form.motion;
-		const rotatable =
-			read(document.getElementById('playAnimation-rotatable')!) ?? form.rotatable;
-		const priority = read(document.getElementById('playAnimation-priority')!) ?? form.priority;
-		const offsetY = read(document.getElementById('playAnimation-offsetY')!) ?? form.offsetY;
-		const angle = read(document.getElementById('playAnimation-angle')!) ?? form.angle;
-		const speed = read(document.getElementById('playAnimation-speed')!) ?? form.speed;
-		const wait = read(document.getElementById('playAnimation-wait')!) ?? form.wait;
+		const mode = form.mode as string;
+		const animationId = form.animationId as string;
+		const motion = form.motion as string;
+		const rotatable = form.rotatable;
+		const priority = form.priority;
+		const offsetY = form.offsetY;
+		const angle = form.angle;
+		const speed = form.speed;
+		const wait = form.wait;
 		if (animationId === '') {
-			getFocus(document.getElementById('playAnimation-animationId')!);
+			requestFocus('playAnimation-animationId');
 			return;
 		}
 		if (motion === '') {
-			getFocus(document.getElementById('playAnimation-motion')!);
+			requestFocus('playAnimation-motion');
 			return;
 		}
 		switch (mode) {
 			case 'position':
 				commit({
 					mode,
-					position:
-						read(document.getElementById('playAnimation-position')!) ?? form.position,
+					position: form.position,
 					animationId,
 					motion,
 					rotatable,
@@ -148,7 +147,7 @@ export function usePlayAnimationCommandSchema() {
 			case 'actor':
 				commit({
 					mode,
-					actor: read(document.getElementById('playAnimation-actor')!) ?? form.actor,
+					actor: form.actor,
 					animationId,
 					motion,
 					rotatable,

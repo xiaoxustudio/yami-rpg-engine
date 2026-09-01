@@ -1,7 +1,8 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { attachApi } from '../../../utils/attach-api';
-import { addClass, removeClass, read } from '../../../utils/dom';
+import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
+import { createNumberBoxCore } from './number-box-core';
 
 export interface NumberBoxApiOptions {
 	dom?: HTMLElement | null;
@@ -34,84 +35,6 @@ interface HistoryInputElement extends HTMLInputElement {
 	history: { reset(): void };
 }
 
-const whiteList = new Set([
-	'Digit0',
-	'Digit1',
-	'Digit2',
-	'Digit3',
-	'Digit4',
-	'Digit5',
-	'Digit6',
-	'Digit7',
-	'Digit8',
-	'Digit9',
-	'Minus',
-	'Period',
-	'Numpad0',
-	'Numpad1',
-	'Numpad2',
-	'Numpad3',
-	'Numpad4',
-	'Numpad5',
-	'Numpad6',
-	'Numpad7',
-	'Numpad8',
-	'Numpad9',
-	'NumpadSubtract',
-	'NumpadDecimal',
-	'Backspace',
-	'Delete',
-	'Tab',
-	'Enter',
-	'ArrowLeft',
-	'ArrowUp',
-	'ArrowRight',
-	'ArrowDown',
-	'Home',
-	'End',
-	'NumpadEnter'
-]);
-
-const inputKeydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
-	if (!whiteList.has(event.code) && !event.cmdOrCtrlKey) event.preventDefault();
-};
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
-const roundTo = (value: number, decimals: number): number => {
-	const factor = Math.pow(10, decimals);
-	return Math.round(value * factor) / factor;
-};
-
-const showChildNodes = (el: HTMLElement): void => {
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = '';
-	}
-};
-
-const hideChildNodes = (el: HTMLElement): void => {
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = 'none';
-	}
-};
-
-const getFocus = (input: HTMLInputElement, mode?: string): void => {
-	setTimeout(() => {
-		input.focus();
-		switch (mode) {
-			case 'all':
-				input.select();
-				break;
-			case 'end':
-				if (typeof input.selectionStart === 'number') {
-					input.setSelectionRange(input.value.length, input.value.length);
-				}
-				break;
-		}
-	});
-};
-
 export function attachNumberBoxApi(
 	el: HTMLElement,
 	options: NumberBoxApiOptions = {}
@@ -127,9 +50,22 @@ export function attachNumberBoxApi(
 	input.step = '1';
 	input.title = '';
 	(input as HistoryInputElement).history = new NumberHistory(input);
+
+	box.focusEventEnabled = false;
+	box.blurEventEnabled = false;
+
+	const core = createNumberBoxCore(
+		{
+			getRoot: () => el,
+			getInput: () => input
+		},
+		box
+	);
+	const { inputKeydown, readValue, enable, disable, getFocus, on } = core;
+
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('change', () => {
-		input.value = String(read(box));
+		input.value = String(readValue(box.decimals));
 	});
 
 	const src = options.dom instanceof HTMLElement ? options.dom : el;
@@ -145,8 +81,6 @@ export function attachNumberBoxApi(
 
 	box.input = input;
 	box.decimals = decimals;
-	box.focusEventEnabled = false;
-	box.blurEventEnabled = false;
 	box._unit = unit;
 
 	el.appendChild(input);
@@ -170,64 +104,13 @@ export function attachNumberBoxApi(
 		input.style.paddingRight = `${padding}px`;
 	}
 
-	const readValue = function (): number {
-		const minValue = parseFloat(input.min);
-		const maxValue = parseFloat(input.max);
-		let value = parseFloat(input.value) || 0;
-		value = clamp(value, minValue, maxValue);
-		value = roundTo(value, box.decimals);
-		return value;
+	const read = (): number => readValue(box.decimals);
+
+	const write = (value: string | number): void => {
+		core.write(value, box.decimals);
 	};
 
-	const write = function (value: string | number): void {
-		input.value = String(value);
-		input.value = String(read(box));
-		(input as HistoryInputElement).history.reset();
-	};
-
-	const enable = function (): void {
-		if (removeClass(el, 'disabled')) {
-			showChildNodes(el);
-		}
-	};
-
-	const disable = function (): void {
-		if (addClass(el, 'disabled')) {
-			hideChildNodes(el);
-		}
-	};
-
-	const focusBox = function (mode?: string): void {
-		getFocus(input, mode);
-	};
-
-	const on = function (
-		type: string,
-		listener: (event: Event) => void,
-		listenerOptions?: boolean | AddEventListenerOptions
-	): void {
-		el.addEventListener(type, listener as EventListener, listenerOptions);
-		switch (type) {
-			case 'focus':
-				if (!box.focusEventEnabled) {
-					box.focusEventEnabled = true;
-					input.addEventListener('focus', () => {
-						el.dispatchEvent(new FocusEvent('focus'));
-					});
-				}
-				break;
-			case 'blur':
-				if (!box.blurEventEnabled) {
-					box.blurEventEnabled = true;
-					input.addEventListener('blur', () => {
-						el.dispatchEvent(new FocusEvent('blur'));
-					});
-				}
-				break;
-		}
-	};
-
-	attachApi(box, { read: readValue, write, enable, disable, getFocus: focusBox, on });
+	attachApi(box, { read, write, enable, disable, getFocus, on });
 
 	box._initialized = true;
 

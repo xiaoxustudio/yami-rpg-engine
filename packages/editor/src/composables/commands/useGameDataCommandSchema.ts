@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -50,17 +50,17 @@ Command.cases.gameData = new CommandSchema({
 
 export function useGameDataCommandSchema() {
 	const { form, load, commit } = useCommandSchema('gameData', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('gameData-operation')!);
+			requestFocus('gameData-operation');
 		}
 	});
 	const onSave = (): void => {
-		const operation = read(document.getElementById('gameData-operation')!) ?? form.operation;
-		const index = read(document.getElementById('gameData-index')!) ?? form.index;
+		const operation = form.operation as string;
+		const index = form.index;
 		switch (operation) {
 			case 'save': {
-				const variables =
-					read(document.getElementById('gameData-variables')!) ?? form.variables;
+				const variables = form.variables as string;
 				commit({ operation, index, variables: variables.trim() });
 				break;
 			}

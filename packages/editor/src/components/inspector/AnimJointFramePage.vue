@@ -10,6 +10,7 @@
 			<div id="animJointFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-x"
+					ref="elX"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
@@ -19,6 +20,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animJointFrame-y"
+					ref="elY"
 					v-model="form.y"
 					min="-10000"
 					max="10000"
@@ -33,6 +35,7 @@
 			<div id="animJointFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-rotation"
+					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
 					max="36000"
@@ -45,6 +48,7 @@
 			<div id="animJointFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-scaleX"
+					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
 					max="100"
@@ -54,6 +58,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animJointFrame-scaleY"
+					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
 					max="100"
@@ -68,6 +73,7 @@
 			<div id="animJointFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-opacity"
+					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -82,7 +88,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimJointFramePage } from '@app/composables/useAnimJointFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -99,13 +105,25 @@ const { form, sync, onParamInput } = useAnimJointFramePage();
 
 const { bindInput } = useInspectorInput();
 
+const elX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRotation = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+
 onMounted(() => {
 	const animJointFrame = Inspector.animJointFrame;
 	if (!animJointFrame) return;
 
-	const elements =
-		document.querySelectorAll(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
-    #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
+	const elements = [
+		elX.value?.root,
+		elY.value?.root,
+		elRotation.value?.root,
+		elScaleX.value?.root,
+		elScaleY.value?.root,
+		elOpacity.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, animJointFrame, Animation, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = animJointFrame.motion;

@@ -1,11 +1,11 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -44,21 +44,22 @@ Command.cases.createActor = new CommandSchema({
 
 export function useCreateActorCommandSchema() {
 	const { form, load, commit } = useCommandSchema('createActor', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('createActor-actorId')!, 'all');
+			requestFocus('createActor-actorId', 'all');
 		}
 	});
 	const onSave = (): void => {
-		const actorId = read(document.getElementById('createActor-actorId')!) ?? form.actorId;
+		const actorId = form.actorId as string;
 		if (actorId === '') {
-			getFocus(document.getElementById('createActor-actorId')!);
+			requestFocus('createActor-actorId');
 			return;
 		}
 		commit({
 			actorId,
-			teamId: read(document.getElementById('createActor-teamId')!) ?? form.teamId,
-			position: read(document.getElementById('createActor-position')!) ?? form.position,
-			angle: read(document.getElementById('createActor-angle')!) ?? form.angle
+			teamId: form.teamId,
+			position: form.position,
+			angle: form.angle
 		});
 	};
 	Command.cases.createActor.customSave = onSave;

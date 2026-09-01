@@ -40,6 +40,7 @@
 			<div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
+					ref="elAngleSlider"
 					v-model="form.angle"
 					min="0"
 					max="360"
@@ -47,6 +48,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParticle-angle"
+					ref="elAngle"
 					v-model="form.angle"
 					@input="onParamInput"
 					min="-360"
@@ -60,6 +62,7 @@
 			<div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
+					ref="elScaleSlider"
 					v-model="form.scale"
 					min="0"
 					max="2"
@@ -67,6 +70,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParticle-scale"
+					ref="elScale"
 					v-model="form.scale"
 					@input="onParamInput"
 					min="0"
@@ -79,6 +83,7 @@
 			<div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
+					ref="elSpeedSlider"
 					v-model="form.speed"
 					min="0"
 					max="2"
@@ -86,6 +91,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParticle-speed"
+					ref="elSpeed"
 					v-model="form.speed"
 					@input="onParamInput"
 					min="0"
@@ -100,6 +106,7 @@
 			<div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
+					ref="elOpacitySlider"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -107,6 +114,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParticle-opacity"
+					ref="elOpacity"
 					v-model="form.opacity"
 					@input="onParamInput"
 					min="0"
@@ -121,6 +129,7 @@
 			<div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"
+					ref="elPrioritySlider"
 					v-model="form.priority"
 					min="-4"
 					max="4"
@@ -128,6 +137,7 @@
 				></SliderBox>
 				<NumberBox
 					id="sceneParticle-priority"
+					ref="elPriority"
 					v-model="form.priority"
 					@input="onParamInput"
 					min="-512"
@@ -140,12 +150,18 @@
 		<DetailSummary>{{
 			t('components.sceneParticle-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneParticle-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneParticle-conditions"
+			ref="elConditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneParticle-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-events"
+			ref="elEvents"
 			class="inspector-list"
 			filter="particle"
 			flexible
@@ -155,14 +171,22 @@
 		<DetailSummary>{{
 			t('components.sceneParticle-scripts.label') || 'Scripts'
 		}}</DetailSummary>
-		<ParamList id="sceneParticle-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneParticle-scripts"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneParticle-parameter-pane"></ParameterPane>
+	<ParameterPane
+		id="sceneParticle-parameter-pane"
+		ref="elParameterPane"
+	></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -187,6 +211,26 @@ const { form, sync, onParamInput } = useSceneParticlePage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
+type SyncTarget = HTMLElement & {
+	write(value: number | string): void;
+	input: HTMLInputElement;
+};
+
+const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elScale = ref<InstanceType<typeof NumberBox> | null>(null);
+const elSpeedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elSpeed = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOpacitySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elPrioritySlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elPriority = ref<InstanceType<typeof NumberBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneParticle;
 	if (!editor) return;
@@ -197,35 +241,18 @@ onMounted(() => {
 	}
 
 	try {
-		const conditions = document.getElementById('sceneParticle-conditions');
-		conditions?.bind?.(new ConditionListInterface(editor, Scene));
-
-		const events = document.getElementById('sceneParticle-events');
-		events?.bind?.(new EventListInterface(editor, Scene));
-
-		const scripts = document.getElementById('sceneParticle-scripts');
-		scripts?.bind?.(
+		elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+		elEvents.value?.bind(new EventListInterface(editor, Scene));
+		elScripts.value?.bind(
 			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
 		);
+		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-		const parameterPane = document.getElementById('sceneParticle-parameter-pane');
-		parameterPane?.bind?.(scripts);
-
-		document
-			.getElementById('sceneParticle-angle-slider')
-			?.synchronize?.(document.getElementById('sceneParticle-angle'));
-		document
-			.getElementById('sceneParticle-scale-slider')
-			?.synchronize?.(document.getElementById('sceneParticle-scale'));
-		document
-			.getElementById('sceneParticle-speed-slider')
-			?.synchronize?.(document.getElementById('sceneParticle-speed'));
-		document
-			.getElementById('sceneParticle-opacity-slider')
-			?.synchronize?.(document.getElementById('sceneParticle-opacity'));
-		document
-			.getElementById('sceneParticle-priority-slider')
-			?.synchronize?.(document.getElementById('sceneParticle-priority'));
+		elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
+		elScaleSlider.value?.synchronize(elScale.value?.root as SyncTarget);
+		elSpeedSlider.value?.synchronize(elSpeed.value?.root as SyncTarget);
+		elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
+		elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
 
 		const elements = document.querySelectorAll(
 			'#sceneParticle-name, #sceneParticle-particleId, #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle, #sceneParticle-scale, #sceneParticle-speed, #sceneParticle-opacity, #sceneParticle-priority'

@@ -31,6 +31,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -84,7 +85,7 @@ onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
-		el.on('closed', () => objectGetter.onWindowClosed());
+		on(el, 'closed', () => objectGetter.onWindowClosed());
 	}
 });
 </script>

@@ -16,9 +16,11 @@ import RegisterEventWindow from '@app/components/commands/RegisterEvent.vue';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import RequestURL from '@app/components/commands/RequestURL.vue';
 import Return from '@app/components/commands/Return.vue';
+import { useReturnCommandSchema } from '@app/composables/commands/useReturnCommandSchema';
 import SetAngle from '@app/components/commands/SetAngle.vue';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
 import SetAnimation from '@app/components/commands/SetAnimation.vue';
+import { useSetAnimationCommandSchema } from '@app/composables/commands/useSetAnimationCommandSchema';
 import SetAnimationComponent from '@app/components/commands/SetAnimationComponent.vue';
 import { Animation } from '@app/animation/animation-window.ts';
 
@@ -69,6 +71,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveCamera, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'moveCamera');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveCamera');
 			expect(getControl('moveCamera-mode').read()).toBe('position');
 			expect(getControl('moveCamera-position').read()).toEqual({
@@ -95,6 +98,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveCamera');
 			expect(getControl('moveCamera-mode').read()).toBe('actor');
 			expect(getControl('moveCamera-actor').read()).toEqual({ type: 'player' });
@@ -171,6 +175,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveElement, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'moveElement');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveElement');
 			expect(getControl('moveElement-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -180,6 +185,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveElement, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.edit(target, { id: 'moveElement', params });
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveElement');
 			expect(getControl('moveElement-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('moveElement-properties').read()).toEqual(params.properties);
@@ -247,6 +253,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveLight, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'moveLight');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveLight');
 			expect(getControl('moveLight-light').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -256,6 +263,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveLight, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.edit(target, { id: 'moveLight', params });
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveLight');
 			expect(getControl('moveLight-light').read()).toEqual({ type: 'trigger' });
 			expect(getControl('moveLight-properties').read()).toEqual(params.properties);
@@ -312,6 +320,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(PlayAudio, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'playAudio');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('playAudio');
 			expect(getControl('playAudio-type').read()).toBe('se-attenuated');
 			expect(getControl('playAudio-audio').read()).toBe('');
@@ -326,6 +335,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'playAudio',
 				params: { type: 'bgm', audio: 'audio1', volume: 0.5 }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('playAudio');
 			expect(getControl('playAudio-type').read()).toBe('bgm');
 			expect(getControl('playAudio-audio').read()).toBe('audio1');
@@ -510,19 +520,12 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ParamListElement extends HTMLElement {
-		read(): unknown[] | null;
-		write(data: unknown[]): void;
-	}
-
 	interface ControlEl extends HTMLElement {
 		read(): unknown;
 		write(value: unknown): void;
 		input(value: unknown): void;
 	}
 
-	const getList = (id: string): ParamListElement =>
-		document.getElementById(id) as unknown as ParamListElement;
 	const getControl = (id: string): ControlEl =>
 		document.getElementById(id) as unknown as ControlEl;
 
@@ -556,12 +559,13 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(RequestURL, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'requestURL');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('requestURL');
 			expect(getControl('requestURL-url').read()).toBe('');
 			expect(getControl('requestURL-method').read()).toBe('GET');
 			expect(getControl('requestURL-callback').read()).toBe('');
-			expect(getList('requestURL-header').read()).toEqual([]);
-			expect(getList('requestURL-data').read()).toEqual([]);
+			expect(wrapper.vm.form.headers).toEqual([]);
+			expect(wrapper.vm.form.data).toEqual([]);
 			wrapper.unmount();
 		});
 
@@ -578,11 +582,12 @@ vi.mock('@app/stores/local', () => ({
 					callback: 'onDone'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('requestURL');
 			expect(getControl('requestURL-url').read()).toBe('https://example.com');
 			expect(getControl('requestURL-method').read()).toBe('POST');
-			expect(getList('requestURL-header').read()).toEqual([{ key: 'a', value: 'b' }]);
-			expect(getList('requestURL-data').read()).toEqual([{ key: 'c', value: 'd' }]);
+			expect(wrapper.vm.form.headers).toEqual([{ key: 'a', value: 'b' }]);
+			expect(wrapper.vm.form.data).toEqual([{ key: 'c', value: 'd' }]);
 			wrapper.unmount();
 		});
 
@@ -658,6 +663,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(Return, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'return');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('return');
 			expect(getControl('return-type').read()).toBe('number');
 			expect(getControl('return-number').read()).toBe(0);
@@ -672,6 +678,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'return',
 				params: { type: 'actor', value: { type: 'player' } }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('return');
 			expect(getControl('return-type').read()).toBe('actor');
 			expect(getControl('return-actor').read()).toEqual({ type: 'player' });
@@ -682,11 +689,12 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：用户改控件后经 Command.cases.return.save 保存', async () => {
 			const wrapper = mount(Return, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useReturnCommandSchema();
 			Command.cases.return.customLoad!({
 				type: 'number',
 				value: 0
 			});
-			getControl('return-number').write(5);
+			form.number = 5;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.return.save!();
@@ -749,6 +757,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetAngle, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setAngle');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAngle');
 			expect(getControl('setAngle-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setAngle-angle').read()).toEqual({ type: 'absolute', degrees: 0 });
@@ -771,6 +780,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAngle');
 			expect(getControl('setAngle-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setAngle-angle').read()).toEqual({ type: 'absolute', degrees: 90 });
@@ -811,15 +821,6 @@ vi.mock('@app/stores/local', () => ({
 {
 	initCommandParseBridges();
 
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -834,18 +835,21 @@ vi.mock('@app/stores/local', () => ({
 			Window.close = vi.fn();
 		});
 
-		it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+		it('insert 路径：打开窗口并 load 默认 form', async () => {
 			const wrapper = mount(SetAnimation, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetAnimationCommandSchema();
 			CommandSchema.insert(target, 'setAnimation');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAnimation');
-			expect(getControl('setAnimation-element').read()).toEqual({ type: 'trigger' });
+			expect(form.element).toEqual({ type: 'trigger' });
 			wrapper.unmount();
 		});
 
-		it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
+		it('edit 路径：handler.load 解构 params 到 form', async () => {
 			const wrapper = mount(SetAnimation, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useSetAnimationCommandSchema();
 			CommandSchema.edit(target, {
 				id: 'setAnimation',
 				params: {
@@ -853,11 +857,10 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'animation', value: 'a1' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAnimation');
-			expect(getControl('setAnimation-element').read()).toEqual({ type: 'trigger' });
-			expect(getControl('setAnimation-properties').read()).toEqual([
-				{ key: 'animation', value: 'a1' }
-			]);
+			expect(form.element).toEqual({ type: 'trigger' });
+			expect(form.properties).toEqual([{ key: 'animation', value: 'a1' }]);
 			wrapper.unmount();
 		});
 
@@ -939,6 +942,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetAnimationComponent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setAnimationComponent');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAnimationComponent');
 			expect(getControl('setAnimationComponent-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setAnimationComponent-animationId').read()).toBe('');
@@ -964,6 +968,7 @@ vi.mock('@app/stores/local', () => ({
 					speed: 2
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setAnimationComponent');
 			expect(getControl('setAnimationComponent-actor').read()).toEqual({ type: 'player' });
 			expect(getControl('setAnimationComponent-animationId').read()).toBe('anim1');

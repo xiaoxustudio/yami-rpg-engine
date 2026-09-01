@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setFocus-operation" v-model="form.operation" />
+			<SelectBox id="setFocus-operation" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="setFocus-element" type="element" @input="onElement" />
+			<CustomBox id="setFocus-element" type="element" v-model="form.element" />
 			<div class="text">Mode</div>
 			<SelectBox id="setFocus-mode" v-model="form.mode" />
 			<div class="text">Cancelable</div>
@@ -33,10 +33,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetFocusCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

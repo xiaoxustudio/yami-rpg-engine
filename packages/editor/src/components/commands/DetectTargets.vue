@@ -8,10 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="detectTargets-actor" type="actor" @input="onActor" />
+			<CustomBox id="detectTargets-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="detectTargets-distance"
+				v-focus
 				min="0"
 				max="512"
 				decimals="4"
@@ -40,10 +41,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDetectTargetsCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

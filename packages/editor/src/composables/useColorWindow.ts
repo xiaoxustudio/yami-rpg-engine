@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface ColorForm {
 	hex: string;
@@ -62,7 +62,7 @@ const open = (
 		index
 	};
 	Object.assign(form, data);
-	getFocus(document.getElementById('color-hex'), 'all');
+	requestFocus('color-hex', 'all');
 };
 
 const confirm = (): void => {

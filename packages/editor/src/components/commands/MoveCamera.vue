@@ -8,11 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Mode</div>
-			<SelectBox id="moveCamera-mode" v-model="form.mode" />
+			<SelectBox id="moveCamera-mode" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
-			<CustomBox id="moveCamera-position" type="position" @input="onPosition" />
+			<CustomBox id="moveCamera-position" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
-			<CustomBox id="moveCamera-actor" type="actor" @input="onActor" />
+			<CustomBox id="moveCamera-actor" type="actor" v-model="form.actor" />
 			<div class="text">Easing</div>
 			<SelectBox id="moveCamera-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
@@ -46,14 +46,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useMoveCameraCommandSchema();
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Scene</div>
-			<SelectBox id="activateScene-pointer" v-model="form.pointer" />
+			<SelectBox id="activateScene-pointer" v-focus v-model="form.pointer" />
 		</div>
 	</WindowFrame>
 </template>

@@ -355,6 +355,7 @@ Object.defineProperty(frames, 'append', {
 			console.error('[window] frames.append error:', error);
 		}
 		frames.push(element);
+		getWindowStore().syncStack(frames.map((f) => f.id));
 		return true;
 	}
 });
@@ -366,6 +367,7 @@ Object.defineProperty(frames, 'remove', {
 			return false;
 		}
 		frames.splice(index, 1);
+		getWindowStore().syncStack(frames.map((f) => f.id));
 		try {
 			if (frames.length === 0) {
 				deactivateModalMode();

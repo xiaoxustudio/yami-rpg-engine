@@ -1,11 +1,12 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read, write } from '@app/utils/element-utils.ts';
+import { read } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
-import { commit } from '@app/composables/useCommandSchema';
+import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -17,6 +18,10 @@ type JumpToData = {
 
 Command.cases.jumpTo = new CommandSchema({
 	name: 'jumpTo',
+	fields: [
+		{ key: 'operation', default: 'jump' },
+		{ key: 'label', default: '' }
+	],
 	customParse({ operation, label }: JumpToData) {
 		const words = Command.words;
 		switch (operation) {
@@ -58,41 +63,31 @@ const loadLabels = (): Array<{ name: string; icon: string }> => {
 	return items.sort((a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name));
 };
 
-const load = ({
-	operation = 'jump',
-	label = ''
-}: {
-	operation?: string;
-	label?: string;
-} = {}): void => {
-	write(document.getElementById('jumpTo-operation')!, operation);
-	write(document.getElementById('jumpTo-label')!, label);
-	getFocus(document.getElementById('jumpTo-operation')!);
-};
-
-const save = (): unknown => {
-	const operation = read(document.getElementById('jumpTo-operation')!);
-	switch (operation) {
-		case 'jump':
-		case 'save-jump': {
-			const label = read(document.getElementById('jumpTo-label')!).trim();
-			if (label === '') {
-				return getFocus(document.getElementById('jumpTo-label')!);
-			}
-			commit({ operation, label });
-			break;
-		}
-		case 'return':
-			commit({ operation });
-			break;
-	}
-};
-
-const schema = Command.cases.jumpTo;
-schema.customLoad = load;
-schema.customSave = save;
-schema.onInitialize = (): void => {};
-
 export function useJumpToCommandSchema() {
-	return { load, save, loadLabels };
+	const { form, load, commit } = useCommandSchema('jumpTo', {
+		skipWrite: true,
+		onLoad() {
+			requestFocus('jumpTo-operation');
+		}
+	});
+	const onSave = (): unknown => {
+		const operation = form.operation as string;
+		switch (operation) {
+			case 'jump':
+			case 'save-jump': {
+				const label = (form.label as string).trim();
+				if (label === '') {
+					return requestFocus('jumpTo-label');
+				}
+				commit({ operation, label });
+				break;
+			}
+			case 'return':
+				commit({ operation });
+				break;
+		}
+	};
+	Command.cases.jumpTo.customLoad = load;
+	Command.cases.jumpTo.customSave = onSave;
+	return { form, save: onSave, load, loadLabels };
 }

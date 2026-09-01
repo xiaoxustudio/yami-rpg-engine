@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerSpeed-trigger" type="trigger" @input="onTrigger" />
+			<CustomBox id="setTriggerSpeed-trigger" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setTriggerSpeed-speed"
@@ -33,10 +33,6 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetTriggerSpeedCommandSchema();
-
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
 
 const onConfirm = () => {
 	save();

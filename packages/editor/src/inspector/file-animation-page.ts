@@ -1,9 +1,10 @@
 import { reactive } from 'vue';
 import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { addClass, getFocus, removeClass } from '@app/utils/element-utils';
+import { addClass, on, removeClass } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Command } from '@app/commands/command-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -81,7 +82,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 			this.history = new ParamHistory(FileAnimation, FileAnimation.owner as never, list);
 
-			list.on('change', (_event: Event) => {
+			on(list, 'change', (_event: Event) => {
 				if (Animation.sprites) {
 					if (Animation.sprites.listItems) {
 						Animation.sprites.listItems = undefined;
@@ -137,15 +138,15 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			Object.assign(fileAnimationSpriteForm, { name, image, hframes, vframes });
 			this.spriteId = id;
 			if (!name) {
-				getFocus($('#fileAnimation-sprite-name'));
+				requestFocus('fileAnimation-sprite-name');
 			} else {
-				getFocus($('#fileAnimation-sprite-image'));
+				requestFocus('fileAnimation-sprite-image');
 			}
 		},
 		save: function (this: { spriteId: string }) {
 			const name = fileAnimationSpriteForm.name.trim();
 			if (!name) {
-				return getFocus($('#fileAnimation-sprite-name'));
+				return requestFocus('fileAnimation-sprite-name');
 			}
 			const image = fileAnimationSpriteForm.image;
 			const hframes = fileAnimationSpriteForm.hframes;

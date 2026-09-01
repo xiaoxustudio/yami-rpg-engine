@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Target</div>
-			<SelectBox id="registerEvent-target" v-model="form.target" @write="onTargetWrite" />
+			<SelectBox id="registerEvent-target" v-focus v-model="form.target" @write="onTargetWrite" />
 			<div class="text">Actor</div>
 			<CustomBox id="registerEvent-actor" type="actor" v-model="form.actor" />
 			<div class="text">Element</div>
@@ -30,7 +30,7 @@
 				v-model="form.namespace"
 			/>
 			<div class="text">Tag Name</div>
-			<StringVar id="registerEvent-tag" v-model="form.tag" />
+			<StringVar id="registerEvent-tag" v-focus v-model="form.tag" />
 		</div>
 	</WindowFrame>
 </template>

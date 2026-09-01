@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { addClass, clear, removeClass, write } from '@app/utils/element-utils';
+import { addClass, clear, removeClass } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -126,14 +126,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 	FileScene.write = function (
 		this: typeof FileScene,
-		options: { width?: number; height?: number }
+		_options: { width?: number; height?: number }
 	) {
-		if (options.width !== undefined) {
-			write($('#fileScene-width'), options.width);
-		}
-		if (options.height !== undefined) {
-			write($('#fileScene-height'), options.height);
-		}
+		($('#fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	FileScene.update = function (

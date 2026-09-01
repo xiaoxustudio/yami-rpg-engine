@@ -7,14 +7,15 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
-			<CustomBox
-				id="setString-variable"
-				type="variable"
-				filter="writable-string"
-				@input="onVariable"
-			/>
-			<div class="text">Operation</div>
+		<div class="text">Variable</div>
+		<CustomBox
+			id="setString-variable"
+			v-focus
+			type="variable"
+			filter="writable-string"
+			v-model="form.variable"
+		/>
+		<div class="text">Operation</div>
 			<SelectBox id="setString-operation" v-model="form.operation" />
 			<div class="text">Type</div>
 			<SelectBox id="setString-operand-type" v-model="form.operandType" @write="onWrite" />
@@ -27,12 +28,13 @@
 			<div class="text">String Method</div>
 			<SelectBox id="setString-operand-string-method" v-model="form.stringMethod" />
 			<div class="text">Variable</div>
-			<CustomBox
-				id="setString-operand-common-variable"
-				type="variable"
-				filter="all"
-				@input="onCommonVariable"
-			/>
+		<CustomBox
+			id="setString-operand-common-variable"
+			v-focus
+			type="variable"
+			filter="all"
+			v-model="form.commonVariable"
+		/>
 			<div class="text">Index</div>
 			<NumberVar
 				id="setString-operand-string-char-index"
@@ -66,6 +68,7 @@
 			<div class="text">Substring</div>
 			<StringVar
 				id="setString-operand-string-replace-pattern"
+				v-focus
 				v-model="form.stringReplacePattern"
 			/>
 			<div class="text">Replacement</div>
@@ -74,49 +77,56 @@
 				v-model="form.stringReplaceReplacement"
 			/>
 			<div class="text">Attribute Key</div>
-			<CustomBox
-				id="setString-operand-attribute-attributeId"
-				type="attribute"
-				@input="onAttributeId"
-			/>
+		<CustomBox
+			id="setString-operand-attribute-attributeId"
+			v-focus
+			type="attribute"
+			v-model="form.attributeId"
+		/>
 			<div class="text">Enum String</div>
-			<CustomBox
-				id="setString-operand-enum-stringId"
-				type="enum-string"
-				@input="onEnumStringId"
-			/>
+		<CustomBox
+			id="setString-operand-enum-stringId"
+			v-focus
+			type="enum-string"
+			v-model="form.enumStringId"
+		/>
 			<div class="text">Property</div>
 			<SelectBox id="setString-operand-object-property" v-model="form.objectProperty" />
 			<div class="text">Property</div>
 			<SelectBox id="setString-operand-element-property" v-model="form.elementProperty" />
 			<div class="text">Element</div>
-			<CustomBox
-				id="setString-operand-element-element"
-				type="element"
-				@input="onElementElement"
-			/>
-			<div class="text">Actor</div>
-			<CustomBox id="setString-operand-common-actor" type="actor" @input="onCommonActor" />
-			<div class="text">Skill</div>
-			<CustomBox id="setString-operand-common-skill" type="skill" @input="onCommonSkill" />
-			<div class="text">Trigger</div>
-			<CustomBox
-				id="setString-operand-common-trigger"
-				type="trigger"
-				@input="onCommonTrigger"
-			/>
-			<div class="text">State</div>
-			<CustomBox id="setString-operand-common-state" type="state" @input="onCommonState" />
-			<div class="text">Equipment</div>
-			<CustomBox
-				id="setString-operand-common-equipment"
-				type="equipment"
-				@input="onCommonEquipment"
-			/>
-			<div class="text">Item</div>
-			<CustomBox id="setString-operand-common-item" type="item" @input="onCommonItem" />
-			<div class="text">File</div>
-			<CustomBox id="setString-operand-object-fileId" type="file" @input="onObjectFileId" />
+		<CustomBox
+			id="setString-operand-element-element"
+			type="element"
+			v-model="form.elementElement"
+		/>
+		<div class="text">Actor</div>
+		<CustomBox id="setString-operand-common-actor" type="actor" v-model="form.commonActor" />
+		<div class="text">Skill</div>
+		<CustomBox id="setString-operand-common-skill" type="skill" v-model="form.commonSkill" />
+		<div class="text">Trigger</div>
+		<CustomBox
+			id="setString-operand-common-trigger"
+			type="trigger"
+			v-model="form.commonTrigger"
+		/>
+		<div class="text">State</div>
+		<CustomBox id="setString-operand-common-state" type="state" v-model="form.commonState" />
+		<div class="text">Equipment</div>
+		<CustomBox
+			id="setString-operand-common-equipment"
+			type="equipment"
+			v-model="form.commonEquipment"
+		/>
+		<div class="text">Item</div>
+		<CustomBox id="setString-operand-common-item" type="item" v-model="form.commonItem" />
+		<div class="text">File</div>
+		<CustomBox
+			id="setString-operand-object-fileId"
+			v-focus
+			type="file"
+			v-model="form.objectFileId"
+		/>
 			<div class="text">Index</div>
 			<NumberVar
 				id="setString-operand-list-index"
@@ -125,9 +135,9 @@
 				v-model="form.listIndex"
 			/>
 			<div class="text">Param Name</div>
-			<StringVar id="setString-operand-parameter-key" v-model="form.parameterKey" />
+			<StringVar id="setString-operand-parameter-key" v-focus v-model="form.parameterKey" />
 			<div class="text">Script</div>
-			<TextBox id="setString-operand-script" v-model="form.script" />
+			<TextBox id="setString-operand-script" v-focus v-model="form.script" />
 			<div class="text">Data</div>
 			<SelectBox id="setString-operand-other-data" v-model="form.otherData" />
 			<div class="text">Choice Index</div>
@@ -138,12 +148,13 @@
 				v-model="form.showChoicesIndex"
 			/>
 			<div class="text">Timestamp</div>
-			<CustomBox
-				id="setString-operand-parse-timestamp-variable"
-				type="variable"
-				filter="number"
-				@input="onParseTimestampVariable"
-			/>
+		<CustomBox
+			id="setString-operand-parse-timestamp-variable"
+			v-focus
+			type="variable"
+			filter="number"
+			v-model="form.parseTimestampVariable"
+		/>
 			<div class="text">Date Format</div>
 			<TextBox
 				id="setString-operand-parse-timestamp-format"
@@ -187,58 +198,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useSetStringCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onCommonVariable = (value: unknown) => {
-	form.commonVariable = value;
-};
-
-const onAttributeId = (value: unknown) => {
-	form.attributeId = value;
-};
-
-const onEnumStringId = (value: unknown) => {
-	form.enumStringId = value;
-};
-
-const onElementElement = (value: unknown) => {
-	form.elementElement = value;
-};
-
-const onCommonActor = (value: unknown) => {
-	form.commonActor = value;
-};
-
-const onCommonSkill = (value: unknown) => {
-	form.commonSkill = value;
-};
-
-const onCommonTrigger = (value: unknown) => {
-	form.commonTrigger = value;
-};
-
-const onCommonState = (value: unknown) => {
-	form.commonState = value;
-};
-
-const onCommonEquipment = (value: unknown) => {
-	form.commonEquipment = value;
-};
-
-const onCommonItem = (value: unknown) => {
-	form.commonItem = value;
-};
-
-const onObjectFileId = (value: unknown) => {
-	form.objectFileId = value;
-};
-
-const onParseTimestampVariable = (value: unknown) => {
-	form.parseTimestampVariable = value;
-};
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

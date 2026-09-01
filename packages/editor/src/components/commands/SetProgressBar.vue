@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setProgressBar-element" type="element" @input="onElement" />
+			<CustomBox id="setProgressBar-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setProgressBar-properties" v-model="form.properties" />
+			<ParamList id="setProgressBar-properties" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
@@ -30,10 +30,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetProgressBarCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

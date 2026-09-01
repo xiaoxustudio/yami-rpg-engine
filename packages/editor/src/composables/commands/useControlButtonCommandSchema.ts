@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -35,13 +35,13 @@ Command.cases.controlButton = new CommandSchema({
 
 export function useControlButtonCommandSchema() {
 	const { form, load, commit } = useCommandSchema('controlButton', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('controlButton-operation'));
+			requestFocus('controlButton-operation');
 		}
 	});
 	const onSave = (): void => {
-		const operation =
-			read(document.getElementById('controlButton-operation')) ?? form.operation;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'select-default':
 				commit({ operation });
@@ -52,7 +52,7 @@ export function useControlButtonCommandSchema() {
 			case 'normal-mode': {
 				commit({
 					operation,
-					element: read(document.getElementById('controlButton-element')) ?? form.element
+					element: form.element
 				});
 				break;
 			}

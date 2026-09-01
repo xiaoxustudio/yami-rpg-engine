@@ -1,6 +1,7 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
+import { requestFocus } from '@app/directives/focus';
 import { setOperatorColor } from '@app/composables/useCommandColor.ts';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
@@ -66,7 +67,7 @@ const open = (branch: IfBranchData): void => {
 		getWindowStore().open('if-branch');
 		write(document.getElementById('if-branch-mode'), branch.mode);
 		write(document.getElementById('if-branch-conditions'), branch.conditions.slice());
-		getFocus(document.getElementById('if-branch-conditions'));
+		requestFocus('if-branch-conditions');
 		commands = branch.commands!;
 	}
 };

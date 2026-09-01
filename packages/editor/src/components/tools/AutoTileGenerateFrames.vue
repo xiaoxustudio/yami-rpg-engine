@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.autoTile-generateFrames-strideX.label') }}</div>
 			<NumberBox
 				id="autoTile-generateFrames-strideX"
+				v-focus
 				min="-128"
 				max="128"
 				v-model="form.strideX"

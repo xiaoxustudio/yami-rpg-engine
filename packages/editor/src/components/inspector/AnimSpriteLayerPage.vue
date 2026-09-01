@@ -7,12 +7,14 @@
 			<div class="text">{{ t('components.animSpriteLayer-sprite.label') || 'Sprite' }}</div>
 			<SelectBox
 				id="animSpriteLayer-sprite"
+				ref="elSprite"
 				v-model="form.sprite"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.animSpriteLayer-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="animSpriteLayer-blend"
+				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
@@ -21,6 +23,7 @@
 			</div>
 			<SelectBox
 				id="animSpriteLayer-light"
+				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"
 			></SelectBox>
@@ -30,7 +33,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -49,18 +52,15 @@ const { form, sync, onParamInput } = useAnimSpriteLayerPage();
 
 const { bindInput } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
+const elSprite = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
 
 onMounted(() => {
 	const animSpriteLayer = Inspector.animSpriteLayer;
 	if (!animSpriteLayer) return;
 
-	loadItems('animSpriteLayer-blend', [
+	elBlend.value?.loadItems([
 		{
 			name: local.components?.['animSpriteLayer-blend']?.options?.normal?.name || 'Normal',
 			value: 'normal'
@@ -76,7 +76,7 @@ onMounted(() => {
 			value: 'subtract'
 		}
 	]);
-	loadItems('animSpriteLayer-light', [
+	elLight.value?.loadItems([
 		{
 			name: local.components?.['animSpriteLayer-light']?.options?.raw?.name || 'Raw',
 			value: 'raw'
@@ -95,8 +95,8 @@ onMounted(() => {
 		}
 	]);
 
-	const elements = document.querySelectorAll(
-		'#animSpriteLayer-sprite, #animSpriteLayer-blend, #animSpriteLayer-light'
+	const elements = [elSprite.value?.root, elBlend.value?.root, elLight.value?.root].filter(
+		(el): el is HTMLElement => el != null
 	);
 	bindInput(elements, animSpriteLayer, Animation, (data: Record<string, unknown>) => {
 		data.type = 'inspector-layer-change';
@@ -113,14 +113,10 @@ onMounted(() => {
 			const options = local.components?.[id]?.options;
 			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
 		};
-		loadItems(
-			'animSpriteLayer-blend',
+		elBlend.value?.loadItems(
 			getNames('animSpriteLayer-blend', ['normal', 'additive', 'subtract'])
 		);
-		loadItems(
-			'animSpriteLayer-light',
-			getNames('animSpriteLayer-light', ['raw', 'global', 'anchor'])
-		);
+		elLight.value?.loadItems(getNames('animSpriteLayer-light', ['raw', 'global', 'anchor']));
 	};
 	window.addEventListener('localize', refreshLocalizedItems);
 	watch(

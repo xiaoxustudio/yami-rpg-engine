@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
-import { Window } from '@app/tools/window-object.ts';
-import { addClass, hasClass, hide, rect, show } from '@app/utils/element-utils';
+import { getWindowStore } from '@app/stores/window';
+import { addClass, hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { Fragment, h, render, type VNode } from 'vue';
 
 interface TextSuggestionItem {
@@ -162,9 +162,9 @@ TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 	const { list } = this;
 	list.bind(() => this.data);
 
-	list.on('pointerdown', this.listPointerdown!);
-	list.on('update', this.listUpdate!);
-	list.on('open', this.listOpen!);
+	on(list, 'pointerdown', this.listPointerdown!);
+	on(list, 'update', this.listUpdate!);
+	on(list, 'open', this.listOpen!);
 };
 
 TextSuggestion.listen = function (
@@ -311,7 +311,7 @@ TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): 
 		this.style.top = `${top}px`;
 		this.style.width = `calc(${rw}px - var(--2dpx))`;
 		this.style.height = `${lines * 20}px`;
-		this.style.zIndex = ((Window.frames?.length ?? 0) + 1).toString();
+		this.style.zIndex = (getWindowStore().stack.length + 1).toString();
 		show(this);
 	} else {
 		hide(this);

@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -90,25 +90,25 @@ Command.cases.commandLine = new CommandSchema({
 });
 
 export function useCommandLineCommandSchema() {
-	const { form, load, commit } = useCommandSchema('commandLine');
+	const { form, load, commit } = useCommandSchema('commandLine', { skipWrite: true });
 	const onSave = (): void => {
-		const key = read(document.getElementById('commandLine-key')) ?? form.key;
+		const key = form.key;
 		if (
 			(typeof key === 'string' && key.trim() === '') ||
-			(typeof key === 'object' && VariableGetter.isNone!(key))
+			(typeof key === 'object' && VariableGetter.isNone!(key as { key: string }))
 		) {
-			getFocus(document.getElementById('commandLine-key'));
+			requestFocus('commandLine-key');
 			return;
 		}
-		const variable = read(document.getElementById('commandLine-variable')) ?? form.variable;
-		if (VariableGetter.isNone!(variable)) {
-			getFocus(document.getElementById('commandLine-variable'));
+		const variable = form.variable;
+		if (VariableGetter.isNone!(variable as { key: string })) {
+			requestFocus('commandLine-variable');
 			return;
 		}
 		commit({
-			type: read(document.getElementById('commandLine-type')) ?? form.type,
+			type: form.type,
 			key,
-			value: read(document.getElementById('commandLine-value')) ?? form.value,
+			value: form.value,
 			variable
 		});
 	};

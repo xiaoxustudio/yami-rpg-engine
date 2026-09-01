@@ -7,6 +7,7 @@ import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { on as onElement } from '@app/utils/element-utils';
 
 const Title = getLazyWindow('title', () =>
 	import('@app/tools/window-cluster').then((m) => m.Title)
@@ -118,11 +119,6 @@ onMounted(() => {
 		closeTabsToTheRight: (item: TabItemData) => void;
 		find: (meta: TabItemMeta) => TabItemData | undefined;
 		clear: () => void;
-		on: (
-			type: string,
-			listener: (event: Event) => void,
-			options?: boolean | AddEventListenerOptions
-		) => void;
 	};
 	if (!el) return;
 	attachElementApi(el, {
@@ -142,9 +138,9 @@ onMounted(() => {
 		on
 	});
 
-	// 经 el.on 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
-	el.on('select', (event: Event & { value?: TabItemData }) => emit('select', event));
-	el.on('closed', (event: Event & { value?: TabItemData }) => emit('closed', event));
-	el.on('popup', (event: Event & { value?: TabItemData }) => emit('popup', event));
+	// 经 on() 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
+	onElement(el, 'select', (event: Event & { value?: TabItemData }) => emit('select', event));
+	onElement(el, 'closed', (event: Event & { value?: TabItemData }) => emit('closed', event));
+	onElement(el, 'popup', (event: Event & { value?: TabItemData }) => emit('popup', event));
 });
 </script>

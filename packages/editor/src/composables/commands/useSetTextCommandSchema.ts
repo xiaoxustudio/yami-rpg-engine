@@ -4,10 +4,10 @@ import { Token } from '@app/commands/token.ts';
 import { TextProperty } from '@app/commands/property-window/set-text-property-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 Command.cases.setText = new CommandSchema({
@@ -37,14 +37,15 @@ Command.cases.setText = new CommandSchema({
 
 export function useSetTextCommandSchema() {
 	const { form, save, load } = useCommandSchema('setText', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setText-element'));
+			requestFocus('setText-element');
 		}
 	});
 	const onSave = (): void => {
 		const properties = form.properties as Array<{ key: string; value: unknown }>;
 		if (!properties || properties.length === 0) {
-			getFocus(document.getElementById('setText-properties'));
+			requestFocus('setText-properties');
 			return;
 		}
 		save();

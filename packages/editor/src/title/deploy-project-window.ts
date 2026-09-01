@@ -1,9 +1,10 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, getFocus } from '@app/utils/element-utils';
+import { disable, enable } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/data/data-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { File } from '@app/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/services/file-system/file-item.ts';
@@ -150,7 +151,7 @@ Deployment.open = function (this: typeof Deployment) {
 		folder: 'Output',
 		location: location
 	});
-	getFocus($('#deployment-platform'));
+	requestFocus('deployment-platform');
 	this.check!();
 };
 

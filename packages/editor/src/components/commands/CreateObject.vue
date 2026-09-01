@@ -10,12 +10,13 @@
 			<div class="text">Object</div>
 			<CustomBox
 				id="createObject-presetId"
+				v-focus
 				type="preset-object"
 				filter="any"
-				@input="onPresetId"
+				v-model="form.presetId"
 			/>
 			<div class="text">Position</div>
-			<CustomBox id="createObject-position" type="position" @input="onPosition" />
+			<CustomBox id="createObject-position" type="position" v-model="form.position" />
 		</div>
 	</WindowFrame>
 </template>
@@ -30,14 +31,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useCreateObjectCommandSchema();
-
-const onPresetId = (value: unknown) => {
-	form.presetId = value;
-};
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
 
 const onConfirm = () => {
 	save();

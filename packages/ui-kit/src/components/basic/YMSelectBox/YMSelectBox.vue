@@ -1,6 +1,12 @@
 ﻿<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import {
+	createSelectBoxCore,
+	type RelationEntry,
+	type SelectBoxCoreState,
+	type SelectItem
+} from './select-box-core';
 
 interface Props {
 	id?: string;
@@ -28,359 +34,76 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 const info = ref<HTMLElement | null>(null);
 
-interface SelectItem {
-	value: unknown;
-	name?: string;
-	tip?: string;
-	[k: string]: unknown;
-}
-
-interface RelationEntry {
-	case: unknown | unknown[];
-	targets: HTMLElement[];
-}
-
-type ToggleableElement = HTMLElement & { enable?: () => void; disable?: () => void };
-
-interface SelectBoxApi extends HTMLElement {
-	invalid?: boolean;
-	dataValue?: unknown;
-	dataItems?: SelectItem[] | null;
-	relations?: RelationEntry[];
+type SelectBoxHost = HTMLElement & {
 	info?: HTMLElement;
+	dataItems?: SelectItem[] | null;
+	dataValue?: unknown;
+	relations?: RelationEntry[];
+	invalid?: boolean;
 	hideUnrelated?: boolean;
 	savedValue?: unknown;
 	_initialized?: boolean;
-	read(): unknown;
-	write(value: unknown): void;
-	write2(value: unknown): void;
-	writeDefault(): void;
-	input(value: unknown): void;
-	update(): void;
-	reselect(offset: number): void;
-	save(): void;
-	restore(): void;
-	enable(): void;
-	disable(): void;
-	loadItems(items: unknown[]): void;
-	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
-	clear(): HTMLElement;
-	enableHiddenMode(): HTMLElement;
-	relate(entries: unknown): void;
-	toggleRelatedElements(): void;
-	enableElement(element: ToggleableElement): void;
-	disableElement(element: ToggleableElement): void;
-	on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void;
-}
+};
 
-let dataItems: SelectItem[] = [];
-let dataValue: unknown = null;
-let relations: RelationEntry[] = [];
-let invalid = false;
-let hideUnrelated = false;
-let savedValue: unknown;
-let writeEventEnabled = false;
-let inputEventEnabled = false;
+const state: SelectBoxCoreState = {
+	dataItems: [],
+	dataValue: null,
+	relations: [],
+	invalid: false,
+	hideUnrelated: false,
+	savedValue: undefined,
+	writeEventEnabled: false,
+	inputEventEnabled: false
+};
+
 const builtinOpen = ref(false);
 let documentPointerdown: ((event: PointerEvent) => void) | null = null;
 
-const subtract = <T>(a: T[], b: T[]): T[] => a.filter((x) => !b.includes(x));
-
-const read = (): unknown => dataValue;
-
-const update = (): void => {
-	const infoEl = info.value;
-	if (!infoEl) return;
-	const value = dataValue;
-	const items = dataItems;
-	const length = items?.length ?? 0;
-	let name: string | undefined;
-	for (let i = 0; i < length; i++) {
-		const item = items[i];
-		if (item.value === value) {
-			name = item.name;
-			break;
-		}
-	}
-	if (name !== undefined) {
-		invalid = false;
-		infoEl.classList.remove('invalid');
-		infoEl.textContent = name;
-	} else {
-		invalid = true;
-		infoEl.classList.add('invalid');
-		infoEl.textContent = String(value);
-	}
-	const el = root.value;
-	if (el) (el as SelectBoxApi).invalid = invalid;
-};
-
-const write = (value: unknown): void => {
-	const el = root.value;
-	if (!el) return;
-	dataValue = value;
-	(el as SelectBoxApi).dataValue = value;
-	update();
-	if (!el.classList.contains('disabled')) {
-		toggleRelatedElements();
-	}
-	if (writeEventEnabled) {
-		const writeEvent = new Event('write') as Event & { value?: unknown };
-		writeEvent.value = dataValue;
-		el.dispatchEvent(writeEvent);
-	}
-	emit('write', dataValue);
-};
-
-const write2 = (value: unknown): void => {
-	for (const item of dataItems) {
-		if (item.value === value) {
-			write(value);
-			return;
-		}
-	}
-	writeDefault();
-};
-
-const writeDefault = (): void => {
-	write(dataItems[0]?.value);
-};
-
-const input = (value: unknown): void => {
-	const el = root.value;
-	if (!el) return;
-	const last = dataValue;
-	if (last !== value) {
-		write(value);
-		if (inputEventEnabled) {
-			const inputEvent = new Event('input', { bubbles: true }) as Event & {
-				last?: unknown;
-				value?: unknown;
-			};
-			inputEvent.last = last;
-			inputEvent.value = dataValue;
-			el.dispatchEvent(inputEvent);
-			emit('input', dataValue);
-			emit('update:modelValue', dataValue);
-		}
-		el.dispatchEvent(new Event('change', { bubbles: true }));
-	}
-};
-
-const reselect = (offset: number): void => {
-	const value = dataValue;
-	const items = dataItems;
-	const length = items.length;
-	for (let i = 0; i < length; i++) {
-		if (items[i].value === value) {
-			const index = i + offset;
-			if (index >= 0 && index < length) {
-				input(items[index].value);
-			}
-			return;
-		}
-	}
-	const index = offset > 0 ? 0 : length - 1;
-	input(items[index].value);
-};
-
-const save = (): void => {
-	savedValue = read();
-};
-
-const restore = (): void => {
-	if (savedValue !== undefined) {
-		input(savedValue);
-		savedValue = undefined;
-	}
-};
-
-const enable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	const wasDisabled = el.classList.contains('disabled');
-	el.classList.remove('disabled');
-	if (wasDisabled) {
-		el.tabIndex += 1;
-		showChildNodes();
-		toggleRelatedElements();
-	}
-};
-
-const disable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	const wasEnabled = !el.classList.contains('disabled');
-	el.classList.add('disabled');
-	if (wasEnabled) {
-		el.tabIndex -= 1;
-		hideChildNodes();
-		toggleRelatedElements();
-	}
-};
-
-const showChildNodes = (): void => {
-	const el = root.value;
-	if (!el) return;
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = '';
-	}
-};
-
-const hideChildNodes = (): void => {
-	const el = root.value;
-	if (!el) return;
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = 'none';
-	}
-};
+const core = createSelectBoxCore(
+	{ getRoot: () => root.value, getInfo: () => info.value },
+	state
+);
+const {
+	read,
+	write,
+	write2,
+	writeDefault,
+	input,
+	update,
+	reselect,
+	save,
+	restore,
+	enable,
+	disable,
+	setItemNames,
+	toggleRelatedElements,
+	enableElement,
+	disableElement,
+	on
+} = core;
 
 const loadItems = (items: unknown[]): HTMLElement => {
 	if (!Array.isArray(items)) return root.value as HTMLElement;
-	dataItems = items as SelectItem[];
-	if (root.value) (root.value as SelectBoxApi).dataItems = items as SelectItem[];
-	if (dataValue !== null && dataValue !== undefined) {
-		update();
-	}
+	core.loadItems(items);
 	return root.value as HTMLElement;
 };
 
-const setItemNames = (
-	options: Record<string, string | { name?: string; tip?: string }>
-): void => {
-	if (!dataItems) return;
-	for (const item of dataItems) {
-		const key = item.value;
-		const option = options[key as string];
-		switch (typeof option) {
-			case 'string':
-				item.name = option;
-				continue;
-			case 'object':
-				if (option && 'name' in option) {
-					item.name = option.name;
-				}
-				if (option && 'tip' in option) {
-					item.tip = typeof option.tip === 'string' ? option.tip : option.name;
-				}
-				continue;
-		}
-	}
-	if (dataValue !== null) {
-		update();
-	}
-};
-
 const clear = (): HTMLElement => {
-	const el = root.value as HTMLElement;
-	const infoEl = info.value as HTMLElement;
-	dataItems = null as unknown as SelectItem[];
-	dataValue = null;
-	(el as SelectBoxApi).dataItems = null;
-	(el as SelectBoxApi).dataValue = null;
-	infoEl.textContent = '';
-	return el;
+	core.clear();
+	return root.value as HTMLElement;
 };
 
 const enableHiddenMode = (): HTMLElement => {
-	hideUnrelated = true;
+	core.enableHiddenMode();
 	return root.value as HTMLElement;
 };
 
 const relate = (entries: unknown): void => {
-	relations = entries as RelationEntry[];
-	if (root.value) (root.value as SelectBoxApi).relations = entries as RelationEntry[];
-	if (dataValue !== undefined) {
+	core.relate(entries);
+	const el = root.value;
+	if (el) (el as SelectBoxHost).relations = entries as RelationEntry[];
+	if (state.dataValue !== undefined) {
 		toggleRelatedElements();
-	}
-};
-
-const toggleRelatedElements = (): void => {
-	const el = root.value;
-	if (!el || relations.length === 0) return;
-	if (!el.classList.contains('disabled')) {
-		const entries = relations;
-		const value = dataValue;
-		const selection = entries.find((entry: RelationEntry) =>
-			entry.case instanceof Array ? entry.case.includes(value) : entry.case === value
-		);
-		const deferredList: RelationEntry[] = [];
-		for (const entry of entries) {
-			if (entry.case instanceof Array ? entry.case.includes(value) : entry.case === value) {
-				deferredList.push(entry);
-			} else {
-				for (const element of selection ? subtract(entry.targets, selection.targets) : entry.targets) {
-					disableElement(element);
-				}
-			}
-		}
-		for (const entry of deferredList) {
-			for (const element of entry.targets) {
-				enableElement(element);
-			}
-		}
-	} else {
-		for (const entry of relations) {
-			for (const element of entry.targets) {
-				disableElement(element);
-			}
-		}
-	}
-};
-
-const enableElement = (element: ToggleableElement): void => {
-	if (!element) return;
-	if (typeof element.enable === 'function') {
-		element.enable();
-	} else {
-		(element as HTMLElement).classList.remove('disabled');
-	}
-	if (hideUnrelated) {
-		let node = element.previousSibling;
-		while (node instanceof Text) {
-			node = node.previousSibling;
-		}
-		if (node instanceof Element && node.classList.contains('text')) {
-			(node as HTMLElement).style.display = '';
-		}
-		(element as HTMLElement).style.display = '';
-	}
-};
-
-const disableElement = (element: ToggleableElement): void => {
-	if (!element) return;
-	if (typeof element.disable === 'function') {
-		element.disable();
-	} else {
-		(element as HTMLElement).classList.add('disabled');
-	}
-	if (hideUnrelated) {
-		let node = element.previousSibling;
-		while (node instanceof Text) {
-			node = node.previousSibling;
-		}
-		if (node instanceof Element && node.classList.contains('text')) {
-			(node as HTMLElement).style.display = 'none';
-		}
-		(element as HTMLElement).style.display = 'none';
-	}
-};
-
-const on = (
-	type: string,
-	listener: (event: Event) => void,
-	options?: boolean | AddEventListenerOptions
-): void => {
-	const el = root.value;
-	if (!el) return;
-	el.addEventListener(type, listener, options);
-	switch (type) {
-		case 'write':
-			writeEventEnabled = true;
-			break;
-		case 'input':
-			inputEventEnabled = true;
-			break;
 	}
 };
 
@@ -487,15 +210,21 @@ watch(
 function initializeApi(): void {
 	const el = root.value;
 	const infoEl = info.value;
-	if (!el || !infoEl || (el as SelectBoxApi)._initialized) return;
+	if (!el || !infoEl || (el as SelectBoxHost)._initialized) return;
 	el.tabIndex = 0;
-	(el as SelectBoxApi).info = infoEl;
-	(el as SelectBoxApi).dataItems = dataItems;
-	(el as SelectBoxApi).dataValue = dataValue;
-	(el as SelectBoxApi).relations = relations;
-	(el as SelectBoxApi).invalid = invalid;
-	(el as SelectBoxApi).hideUnrelated = hideUnrelated;
-	(el as SelectBoxApi).savedValue = savedValue;
+	(el as SelectBoxHost).info = infoEl;
+	(el as SelectBoxHost).dataItems = state.dataItems;
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => state.dataValue,
+		set: (value: unknown) => {
+			state.dataValue = value;
+		}
+	});
+	(el as SelectBoxHost).relations = state.relations;
+	(el as SelectBoxHost).invalid = state.invalid;
+	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
+	(el as SelectBoxHost).savedValue = state.savedValue;
 	attachApi(el, {
 		read,
 		write,
@@ -520,15 +249,15 @@ function initializeApi(): void {
 	});
 	loadItems(props.items);
 	on('input', (e: Event & { value?: unknown }) => {
-		emit('input', e.value);
 		emit('update:modelValue', e.value);
+		emit('input', e.value);
 	});
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	el.addEventListener('change', () => emit('change', read()));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
-	(el as SelectBoxApi)._initialized = true;
-};
+	(el as SelectBoxHost)._initialized = true;
+}
 
 onMounted(initializeApi);
 
@@ -549,10 +278,10 @@ onBeforeUnmount(() => {
 		<div class="select-box-text" ref="info" :data-v-ref="''" />
 		<div v-if="builtinOpen" class="select-popup" :class="$style.popup">
 			<div
-				v-for="item in dataItems"
+				v-for="item in state.dataItems"
 				:key="item.value as PropertyKey"
 				class="select-item"
-				:class="{ selected: item.value === dataValue }"
+				:class="{ selected: item.value === state.dataValue }"
 				@pointerdown.stop="pick(item)"
 			>
 				{{ item.name }}

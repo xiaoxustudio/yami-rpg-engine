@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setPointerEventRoot = new CommandSchema({
 	name: 'setPointerEventRoot',
@@ -36,21 +36,17 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 
 export function useSetPointerEventRootCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setPointerEventRoot', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setPointerEventRoot-operation'));
+			requestFocus('setPointerEventRoot-operation');
 		}
 	});
 	const onSave = (): void => {
-		const operation =
-			read(document.getElementById('setPointerEventRoot-operation')) ?? form.operation;
+		const operation = form.operation;
 		switch (operation) {
 			case 'add':
 			case 'remove':
-				commit({
-					operation,
-					element:
-						read(document.getElementById('setPointerEventRoot-element')) ?? form.element
-				});
+				commit({ operation, element: form.element });
 				break;
 			case 'remove-latest':
 			case 'reset':

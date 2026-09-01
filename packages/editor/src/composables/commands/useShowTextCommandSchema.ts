@@ -5,10 +5,10 @@ import { Token } from '@app/commands/token.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 type ShowTextLine = { fold?: boolean; color?: string; text?: string; break?: boolean };
@@ -165,24 +165,25 @@ Command.cases.showText = new CommandSchema({
 
 export function useShowTextCommandSchema() {
 	const { form, load, commit } = useCommandSchema('showText', {
+		skipWrite: true,
 		onLoad(params) {
 			const content = (params.content as string) ?? '';
 			if (content === '') {
-				getFocus(document.getElementById('showText-target'));
+				requestFocus('showText-target');
 			} else {
-				getFocus(document.getElementById('showText-content'));
+				requestFocus('showText-content');
 			}
 		}
 	});
 	const onSave = (): void => {
-		const content = read(document.getElementById('showText-content')) ?? form.content;
+		const content = form.content;
 		if (content === '') {
-			getFocus(document.getElementById('showText-content'));
+			requestFocus('showText-content');
 			return;
 		}
 		commit({
-			target: read(document.getElementById('showText-target')) ?? form.target,
-			parameters: read(document.getElementById('showText-parameters')) ?? form.parameters,
+			target: form.target,
+			parameters: form.parameters,
 			content
 		});
 	};

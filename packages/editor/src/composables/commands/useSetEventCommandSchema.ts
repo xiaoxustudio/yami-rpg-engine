@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -56,8 +56,9 @@ Command.cases.setEvent = new CommandSchema({
 
 export function useSetEventCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setEvent', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setEvent-operation')!);
+			requestFocus('setEvent-operation');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -71,17 +72,16 @@ export function useSetEventCommandSchema() {
 		load({ ...params, operation });
 	};
 	const onSave = (): void => {
-		const operation = read(document.getElementById('setEvent-operation')!) ?? form.operation;
+		const operation = form.operation;
 		switch (operation) {
 			case 'stop-propagation':
 				commit({ operation });
 				break;
 			case 'pause':
 			case 'continue': {
-				const variable =
-					read(document.getElementById('setEvent-variable')!) ?? form.variable;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('setEvent-variable')!);
+				const variable = form.variable;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('setEvent-variable');
 					return;
 				}
 				commit({ operation, variable });
@@ -90,20 +90,16 @@ export function useSetEventCommandSchema() {
 			case 'enable':
 			case 'disable':
 			case 'highest-priority': {
-				const eventId = read(document.getElementById('setEvent-eventId')!) ?? form.eventId;
+				const eventId = form.eventId;
 				if (eventId === '') {
-					getFocus(document.getElementById('setEvent-eventId')!);
+					requestFocus('setEvent-eventId');
 					return;
 				}
 				commit({ operation, eventId });
 				break;
 			}
 			case 'goto-choice-branch':
-				commit({
-					operation,
-					choiceIndex:
-						read(document.getElementById('setEvent-choiceIndex')!) ?? form.choiceIndex
-				});
+				commit({ operation, choiceIndex: form.choiceIndex });
 				break;
 		}
 	};

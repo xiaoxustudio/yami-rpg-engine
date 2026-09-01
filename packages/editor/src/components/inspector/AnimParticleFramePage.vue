@@ -10,6 +10,7 @@
 			<div id="animParticleFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-x"
+					ref="elX"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
@@ -19,6 +20,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-y"
+					ref="elY"
 					v-model="form.y"
 					min="-10000"
 					max="10000"
@@ -33,6 +35,7 @@
 			<div id="animParticleFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-rotation"
+					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
 					max="36000"
@@ -47,6 +50,7 @@
 			<div id="animParticleFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-scaleX"
+					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
 					max="100"
@@ -56,6 +60,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-scaleY"
+					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
 					max="100"
@@ -70,6 +75,7 @@
 			<div id="animParticleFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-opacity"
+					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -83,6 +89,7 @@
 			</div>
 			<NumberBox
 				id="animParticleFrame-scale"
+				ref="elScale"
 				v-model="form.scale"
 				min="0.1"
 				max="10"
@@ -93,6 +100,7 @@
 			<div class="text">{{ t('components.animParticleFrame-speed.label') || 'Speed' }}</div>
 			<NumberBox
 				id="animParticleFrame-speed"
+				ref="elSpeed"
 				v-model="form.speed"
 				min="0.1"
 				max="10"
@@ -106,7 +114,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -123,6 +131,15 @@ const { form, sync, onParamInput } = useAnimParticleFramePage();
 
 const { bindInput } = useInspectorInput();
 
+const elX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elRotation = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScaleY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elOpacity = ref<InstanceType<typeof NumberBox> | null>(null);
+const elScale = ref<InstanceType<typeof NumberBox> | null>(null);
+const elSpeed = ref<InstanceType<typeof NumberBox> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.animParticleFrame;
 	if (!editor) return;
@@ -132,9 +149,16 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elements = document.querySelectorAll(
-		'#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation, #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity, #animParticleFrame-scale, #animParticleFrame-speed'
-	);
+	const elements = [
+		elX.value?.root,
+		elY.value?.root,
+		elRotation.value?.root,
+		elScaleX.value?.root,
+		elScaleY.value?.root,
+		elOpacity.value?.root,
+		elScale.value?.root,
+		elSpeed.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = editor.motion;

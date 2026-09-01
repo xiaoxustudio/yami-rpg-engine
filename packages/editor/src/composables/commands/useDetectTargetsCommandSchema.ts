@@ -1,10 +1,10 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -51,14 +51,15 @@ Command.cases.detectTargets = new CommandSchema({
 
 export function useDetectTargetsCommandSchema() {
 	const { form, save, load } = useCommandSchema('detectTargets', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('detectTargets-actor')!);
+			requestFocus('detectTargets-actor');
 		}
 	});
 	const onSave = (): void => {
-		const distance = read(document.getElementById('detectTargets-distance')!) ?? form.distance;
+		const distance = form.distance as number;
 		if (distance === 0) {
-			getFocus(document.getElementById('detectTargets-distance')!, 'all');
+			requestFocus('detectTargets-distance', 'all');
 			return;
 		}
 		save();

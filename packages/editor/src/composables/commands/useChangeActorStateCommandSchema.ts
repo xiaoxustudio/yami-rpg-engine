@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -53,21 +53,20 @@ Command.cases.changeActorState = new CommandSchema({
 
 export function useChangeActorStateCommandSchema() {
 	const { form, load, commit } = useCommandSchema('changeActorState', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('changeActorState-actor'));
+			requestFocus('changeActorState-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('changeActorState-actor')) ?? form.actor;
-		const operation =
-			read(document.getElementById('changeActorState-operation')) ?? form.operation;
+		const actor = form.actor;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'add':
 			case 'remove': {
-				const stateId =
-					read(document.getElementById('changeActorState-stateId')) ?? form.stateId;
+				const stateId = form.stateId as string;
 				if (stateId === '') {
-					getFocus(document.getElementById('changeActorState-stateId'));
+					requestFocus('changeActorState-stateId');
 					return;
 				}
 				commit({ actor, operation, stateId });
@@ -77,7 +76,7 @@ export function useChangeActorStateCommandSchema() {
 				commit({
 					actor,
 					operation,
-					state: read(document.getElementById('changeActorState-state')) ?? form.state
+					state: form.state
 				});
 				break;
 		}

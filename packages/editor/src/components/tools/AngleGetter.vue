@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.angleGetter-type.label') }}</div>
-			<SelectBox id="angleGetter-type" v-model="form.type" />
+			<SelectBox id="angleGetter-type" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.angleGetter-position-position.label') }}</div>
 			<CustomBox id="angleGetter-position-position" type="position" v-model="form.position" />
 			<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div>
@@ -33,6 +33,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -54,7 +55,7 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		el.on('closed', () => angleGetter.onWindowClosed());
+		on(el, 'closed', () => angleGetter.onWindowClosed());
 	}
 });
 </script>

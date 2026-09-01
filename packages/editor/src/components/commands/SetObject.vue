@@ -7,44 +7,46 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
-			<CustomBox
-				id="setObject-variable"
-				type="variable"
-				filter="object"
-				@input="onVariable"
-			/>
-			<div class="text">Type</div>
-			<SelectBox id="setObject-operand-type" v-model="form['operand-type']" />
-			<div class="text">Actor</div>
-			<CustomBox id="setObject-operand-actor" type="actor" @input="onOperandActor" />
-			<div class="text">Skill</div>
-			<CustomBox id="setObject-operand-skill" type="skill" @input="onOperandSkill" />
-			<div class="text">State</div>
-			<CustomBox id="setObject-operand-state" type="state" @input="onOperandState" />
-			<div class="text">Equipment</div>
-			<CustomBox
-				id="setObject-operand-equipment"
-				type="equipment"
-				@input="onOperandEquipment"
-			/>
-			<div class="text">Item</div>
-			<CustomBox id="setObject-operand-item" type="item" @input="onOperandItem" />
-			<div class="text">Trigger</div>
-			<CustomBox id="setObject-operand-trigger" type="trigger" @input="onOperandTrigger" />
-			<div class="text">Light</div>
-			<CustomBox id="setObject-operand-light" type="light" @input="onOperandLight" />
-			<div class="text">Object</div>
-			<CustomBox id="setObject-operand-object" type="object" @input="onOperandObject" />
-			<div class="text">Element</div>
-			<CustomBox id="setObject-operand-element" type="element" @input="onOperandElement" />
-			<div class="text">Variable</div>
-			<CustomBox
-				id="setObject-operand-variable"
-				type="variable"
-				filter="object"
-				@input="onOperandVariable"
-			/>
+		<div class="text">Variable</div>
+		<CustomBox
+			id="setObject-variable"
+			v-focus
+			type="variable"
+			filter="object"
+			v-model="form.variable"
+		/>
+		<div class="text">Type</div>
+		<SelectBox id="setObject-operand-type" v-model="form['operand-type']" />
+		<div class="text">Actor</div>
+		<CustomBox id="setObject-operand-actor" type="actor" v-model="form['operand-actor']" />
+		<div class="text">Skill</div>
+		<CustomBox id="setObject-operand-skill" type="skill" v-model="form['operand-skill']" />
+		<div class="text">State</div>
+		<CustomBox id="setObject-operand-state" type="state" v-model="form['operand-state']" />
+		<div class="text">Equipment</div>
+		<CustomBox
+			id="setObject-operand-equipment"
+			type="equipment"
+			v-model="form['operand-equipment']"
+		/>
+		<div class="text">Item</div>
+		<CustomBox id="setObject-operand-item" type="item" v-model="form['operand-item']" />
+		<div class="text">Trigger</div>
+		<CustomBox id="setObject-operand-trigger" type="trigger" v-model="form['operand-trigger']" />
+		<div class="text">Light</div>
+		<CustomBox id="setObject-operand-light" type="light" v-model="form['operand-light']" />
+		<div class="text">Object</div>
+		<CustomBox id="setObject-operand-object" type="object" v-model="form['operand-object']" />
+		<div class="text">Element</div>
+		<CustomBox id="setObject-operand-element" type="element" v-model="form['operand-element']" />
+		<div class="text">Variable</div>
+		<CustomBox
+			id="setObject-operand-variable"
+			v-focus
+			type="variable"
+			filter="object"
+			v-model="form['operand-variable']"
+		/>
 			<div class="text">Index</div>
 			<NumberVar
 				id="setObject-operand-list-index"
@@ -70,50 +72,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetObjectCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onOperandActor = (value: unknown) => {
-	form['operand-actor'] = value;
-};
-
-const onOperandSkill = (value: unknown) => {
-	form['operand-skill'] = value;
-};
-
-const onOperandState = (value: unknown) => {
-	form['operand-state'] = value;
-};
-
-const onOperandEquipment = (value: unknown) => {
-	form['operand-equipment'] = value;
-};
-
-const onOperandItem = (value: unknown) => {
-	form['operand-item'] = value;
-};
-
-const onOperandTrigger = (value: unknown) => {
-	form['operand-trigger'] = value;
-};
-
-const onOperandLight = (value: unknown) => {
-	form['operand-light'] = value;
-};
-
-const onOperandObject = (value: unknown) => {
-	form['operand-object'] = value;
-};
-
-const onOperandElement = (value: unknown) => {
-	form['operand-element'] = value;
-};
-
-const onOperandVariable = (value: unknown) => {
-	form['operand-variable'] = value;
-};
 
 const onConfirm = () => {
 	save();

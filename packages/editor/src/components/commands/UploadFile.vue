@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="uploadFile-url" v-model="form.url" />
+			<StringVar id="uploadFile-url" v-focus v-model="form.url" />
 			<div class="text">LocalPath</div>
-			<StringVar id="uploadFile-path" v-model="form.path" />
+			<StringVar id="uploadFile-path" v-focus v-model="form.path" />
 			<div class="text">Method</div>
 			<SelectBox id="uploadFile-method" v-model="form.method" />
 			<div class="text">Field</div>
@@ -18,13 +18,18 @@
 			<div class="text">Header</div>
 			<ParamList id="uploadFile-header" v-model="form.header" />
 			<div class="text">CallBack</div>
-			<CustomBox id="uploadFile-callback" type="file" filter="event" @input="onCallback" />
+			<CustomBox
+				id="uploadFile-callback"
+				type="file"
+				filter="event"
+				v-model="form.callback"
+			/>
 			<div class="text">RateCallBack</div>
 			<CustomBox
 				id="uploadFile-rateCallback"
 				type="file"
 				filter="event"
-				@input="onRateCallback"
+				v-model="form.rateCallback"
 			/>
 		</div>
 	</WindowFrame>
@@ -46,14 +51,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useUploadFileCommandSchema();
-
-const onCallback = (value: unknown) => {
-	form.callback = value;
-};
-
-const onRateCallback = (value: unknown) => {
-	form.rateCallback = value;
-};
 
 const onConfirm = () => {
 	save();

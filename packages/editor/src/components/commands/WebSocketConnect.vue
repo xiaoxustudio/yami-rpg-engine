@@ -8,24 +8,39 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="webSocketConnect-url" v-model="form.url" />
+			<StringVar id="webSocketConnect-url" v-focus v-model="form.url" />
 			<div class="text">ID</div>
 			<StringVar id="webSocketConnect-id" v-model="form.id" />
 			<div class="text">Protocols</div>
 			<StringVar id="webSocketConnect-protocols" v-model="form.protocols" />
 			<div class="text">OnOpen</div>
-			<CustomBox id="webSocketConnect-onOpen" type="file" filter="event" @input="onOpen" />
+			<CustomBox
+				id="webSocketConnect-onOpen"
+				type="file"
+				filter="event"
+				v-model="form.onOpen"
+			/>
 			<div class="text">OnMessage</div>
 			<CustomBox
 				id="webSocketConnect-onMessage"
 				type="file"
 				filter="event"
-				@input="onMessage"
+				v-model="form.onMessage"
 			/>
 			<div class="text">OnError</div>
-			<CustomBox id="webSocketConnect-onError" type="file" filter="event" @input="onError" />
+			<CustomBox
+				id="webSocketConnect-onError"
+				type="file"
+				filter="event"
+				v-model="form.onError"
+			/>
 			<div class="text">OnClose</div>
-			<CustomBox id="webSocketConnect-onClose" type="file" filter="event" @input="onClose" />
+			<CustomBox
+				id="webSocketConnect-onClose"
+				type="file"
+				filter="event"
+				v-model="form.onClose"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -41,22 +56,6 @@ import StringVar from '@app/components/common/StringVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useWebSocketConnectCommandSchema();
-
-const onOpen = (value: unknown) => {
-	form.onOpen = value;
-};
-
-const onMessage = (value: unknown) => {
-	form.onMessage = value;
-};
-
-const onError = (value: unknown) => {
-	form.onError = value;
-};
-
-const onClose = (value: unknown) => {
-	form.onClose = value;
-};
 
 const onConfirm = () => {
 	save();

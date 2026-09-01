@@ -7,26 +7,32 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
-			<SelectBox id="stopEvent-type" v-model="form.type" @write="onTypeWrite" />
-			<div class="text">Actor</div>
-			<CustomBox id="stopEvent-actor" type="actor" @input="onActor" />
-			<div class="text">Skill</div>
-			<CustomBox id="stopEvent-skill" type="skill" @input="onSkill" />
-			<div class="text">State</div>
-			<CustomBox id="stopEvent-state" type="state" @input="onState" />
-			<div class="text">Equipment</div>
-			<CustomBox id="stopEvent-equipment" type="equipment" @input="onEquipment" />
-			<div class="text">Item</div>
-			<CustomBox id="stopEvent-item" type="item" @input="onItem" />
-			<div class="text">Light</div>
-			<CustomBox id="stopEvent-light" type="light" @input="onLight" />
-			<div class="text">Element</div>
-			<CustomBox id="stopEvent-element" type="element" @input="onElement" />
+		<div class="text">Type</div>
+		<SelectBox id="stopEvent-type" v-focus v-model="form.type" @write="onTypeWrite" />
+		<div class="text">Actor</div>
+		<CustomBox id="stopEvent-actor" type="actor" v-model="form.actor" />
+		<div class="text">Skill</div>
+		<CustomBox id="stopEvent-skill" type="skill" v-model="form.skill" />
+		<div class="text">State</div>
+		<CustomBox id="stopEvent-state" type="state" v-model="form.state" />
+		<div class="text">Equipment</div>
+		<CustomBox id="stopEvent-equipment" type="equipment" v-model="form.equipment" />
+		<div class="text">Item</div>
+		<CustomBox id="stopEvent-item" type="item" v-model="form.item" />
+		<div class="text">Light</div>
+		<CustomBox id="stopEvent-light" type="light" v-model="form.light" />
+		<div class="text">Element</div>
+		<CustomBox id="stopEvent-element" type="element" v-model="form.element" />
+		<div class="text">Event</div>
+		<CustomBox
+			id="stopEvent-eventId"
+			v-focus
+			type="file"
+			filter="event"
+			v-model="form.eventId"
+		/>
 			<div class="text">Event</div>
-			<CustomBox id="stopEvent-eventId" type="file" filter="event" @input="onEventId" />
-			<div class="text">Event</div>
-			<SelectBox id="stopEvent-eventType" v-model="form.eventType" />
+			<SelectBox id="stopEvent-eventType" v-focus v-model="form.eventType" />
 		</div>
 	</WindowFrame>
 </template>
@@ -63,38 +69,6 @@ const onTypeWrite = (value: unknown) => {
 	elEventType?.createTooltip?.();
 	write(elEventType, eventTypes[0].value);
 	form.eventType = eventTypes[0].value;
-};
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onSkill = (value: unknown) => {
-	form.skill = value;
-};
-
-const onState = (value: unknown) => {
-	form.state = value;
-};
-
-const onEquipment = (value: unknown) => {
-	form.equipment = value;
-};
-
-const onItem = (value: unknown) => {
-	form.item = value;
-};
-
-const onLight = (value: unknown) => {
-	form.light = value;
-};
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
-
-const onEventId = (value: unknown) => {
-	form.eventId = value;
 };
 
 const onConfirm = () => {

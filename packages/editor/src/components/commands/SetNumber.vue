@@ -10,12 +10,13 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setNumber-variable"
+				v-focus
 				type="variable"
 				filter="writable-number"
-				@input="onVariable"
+				v-model="form.variable"
 			/>
 			<div class="text">Expression</div>
-			<ParamList id="setNumber-operands" v-model="form.operands" />
+			<ParamList id="setNumber-operands" v-focus v-model="form.operands" />
 		</div>
 	</WindowFrame>
 </template>
@@ -37,10 +38,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetNumberCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface RegionGetterForm {
 	type: string;
@@ -42,7 +42,7 @@ const open = (target: RegionGetterTarget, defaults?: Partial<RegionGetterForm>):
 			break;
 	}
 	Object.assign(form, { type: region.type, presetId });
-	getFocus(document.getElementById('regionGetter-type'));
+	requestFocus('regionGetter-type');
 };
 
 const confirm = (): void => {
@@ -54,7 +54,7 @@ const confirm = (): void => {
 			break;
 		case 'by-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('regionGetter-presetId'));
+				requestFocus('regionGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, presetId: data.presetId };

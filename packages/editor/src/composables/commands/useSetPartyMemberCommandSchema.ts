@@ -6,8 +6,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setPartyMember = new CommandSchema({
 	name: 'setPartyMember',
@@ -29,8 +29,9 @@ Command.cases.setPartyMember = new CommandSchema({
 
 export function useSetPartyMemberCommandSchema() {
 	return useCommandSchema('setPartyMember', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setPartyMember-operation')!);
+			requestFocus('setPartyMember-operation');
 		}
 	});
 }

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Label Name</div>
-			<TextBox id="label-name" v-model="form.name" />
+			<TextBox id="label-name" v-focus v-model="form.name" />
 		</div>
 	</WindowFrame>
 </template>

@@ -1,8 +1,9 @@
 import '@app/inspector/particle-layer-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { read } from '@app/utils/element-utils';
 
-interface ParticleForm {
+export interface ParticleForm {
 	name: string;
 	area: {
 		type: string;
@@ -260,7 +261,11 @@ export function useParticleLayerPage() {
 			element = element.parentElement;
 		}
 		if (element instanceof Element) {
-			Inspector.particleLayer.paramInput({ target: element });
+			Inspector.particleLayer.update(
+				Inspector.particleLayer.target,
+				Inspector.getKey(element),
+				read(element)
+			);
 		}
 		sync();
 	};

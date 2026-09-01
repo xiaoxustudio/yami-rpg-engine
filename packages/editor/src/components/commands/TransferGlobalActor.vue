@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="transferGlobalActor-actor" type="actor" @input="onActor" />
+			<CustomBox id="transferGlobalActor-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Position</div>
-			<CustomBox id="transferGlobalActor-position" type="position" @input="onPosition" />
+			<CustomBox id="transferGlobalActor-position" type="position" v-model="form.position" />
 		</div>
 	</WindowFrame>
 </template>
@@ -25,14 +25,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useTransferGlobalActorCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
 
 const onConfirm = () => {
 	save();

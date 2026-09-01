@@ -1,6 +1,6 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface SceneShiftForm {
 	x: number;
@@ -36,7 +36,7 @@ SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 			| null
 	)?.setForm;
 	setForm?.({ x: 0, y: 0 });
-	getFocus($('#scene-shift-x'), 'all');
+	requestFocus('scene-shift-x', 'all');
 };
 
 SceneShift.windowClosed = function (_event: Event) {
@@ -48,7 +48,7 @@ SceneShift.confirm = function (_event: Event) {
 		?.getForm;
 	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);
 	if (x === 0 && y === 0) {
-		return getFocus($('#scene-shift-x'));
+		return requestFocus('scene-shift-x');
 	}
 	SceneShift.callback!(x, y);
 	Window.close!('scene-shift');

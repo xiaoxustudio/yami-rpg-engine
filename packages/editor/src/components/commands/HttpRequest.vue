@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="httpRequest-url" v-model="form.url" />
+			<StringVar id="httpRequest-url" v-focus v-model="form.url" />
 			<div class="text">Method</div>
 			<SelectBox id="httpRequest-method" v-model="form.method" />
 			<div class="text">Header</div>
@@ -30,7 +30,12 @@
 			<div class="text">AuthPass</div>
 			<StringVar id="httpRequest-authPass" v-model="form.authPass" />
 			<div class="text">CallBack</div>
-			<CustomBox id="httpRequest-callback" type="file" filter="event" @input="onCallback" />
+			<CustomBox
+				id="httpRequest-callback"
+				type="file"
+				filter="event"
+				v-model="form.callback"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -53,10 +58,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useHttpRequestCommandSchema();
-
-const onCallback = (value: unknown) => {
-	form.callback = value;
-};
 
 const onConfirm = () => {
 	save();

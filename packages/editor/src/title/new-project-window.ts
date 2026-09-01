@@ -1,9 +1,10 @@
 import { reactive } from 'vue';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, getFocus, read } from '@app/utils/element-utils';
+import { disable, enable, read } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Data } from '@app/data/data-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
@@ -105,7 +106,7 @@ NewProject.open = function (this: typeof NewProject) {
 			break;
 	}
 	Object.assign(form, { template, folder, location });
-	getFocus($('#newProject-template'));
+	requestFocus('newProject-template');
 	this.check!();
 };
 

@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.if-branch-mode.label') }}</div>
 			<SelectBox id="if-branch-mode" />
 			<div class="text">{{ t('components.if-branch-conditions.label') }}</div>
-			<ParamList id="if-branch-conditions" />
+			<ParamList id="if-branch-conditions" v-focus />
 		</div>
 	</WindowFrame>
 </template>

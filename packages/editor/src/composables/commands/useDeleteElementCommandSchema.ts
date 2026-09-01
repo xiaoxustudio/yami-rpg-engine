@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -41,19 +41,19 @@ Command.cases.deleteElement = new CommandSchema({
 
 export function useDeleteElementCommandSchema() {
 	const { form, load, commit } = useCommandSchema('deleteElement', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('deleteElement-operation'));
+			requestFocus('deleteElement-operation');
 		}
 	});
 	const onSave = (): void => {
-		const operation =
-			read(document.getElementById('deleteElement-operation')) ?? form.operation;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'delete-element':
 			case 'delete-children': {
 				commit({
 					operation,
-					element: read(document.getElementById('deleteElement-element')) ?? form.element
+					element: form.element
 				});
 				break;
 			}

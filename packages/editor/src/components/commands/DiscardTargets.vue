@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="discardTargets-actor" type="actor" @input="onActor" />
+			<CustomBox id="discardTargets-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
 			<SelectBox id="discardTargets-selector" v-model="form.selector" />
 			<div class="text">Distance</div>
@@ -38,10 +38,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDiscardTargetsCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

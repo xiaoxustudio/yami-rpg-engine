@@ -10,9 +10,10 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="deleteGlobalActor-actorId"
+				v-focus
 				type="file"
 				filter="actor"
-				@input="onActorId"
+				v-model="form.actorId"
 			/>
 		</div>
 	</WindowFrame>
@@ -28,10 +29,6 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDeleteGlobalActorCommandSchema();
-
-const onActorId = (value: unknown) => {
-	form.actorId = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface StateGetterForm {
 	type: string;
@@ -52,7 +52,7 @@ const open = (target: StateGetterTarget): void => {
 			break;
 	}
 	Object.assign(form, { type: state.type, actor, stateId, variable });
-	getFocus(document.getElementById('stateGetter-type'));
+	requestFocus('stateGetter-type');
 };
 
 const confirm = (): void => {
@@ -67,7 +67,7 @@ const confirm = (): void => {
 			const actor = data.actor;
 			const stateId = data.stateId;
 			if (stateId === '') {
-				getFocus(document.getElementById('stateGetter-stateId'));
+				requestFocus('stateGetter-stateId');
 				return;
 			}
 			getter = { type: data.type, actor, stateId };
@@ -75,7 +75,7 @@ const confirm = (): void => {
 		}
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('stateGetter-variable'));
+				requestFocus('stateGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

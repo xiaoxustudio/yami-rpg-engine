@@ -9,6 +9,7 @@
 			</div>
 			<SelectBox
 				id="animSoundLayer-playbackRate"
+				ref="elPlaybackRate"
 				v-model="form.playbackRate"
 				@input="onParamInput"
 			></SelectBox>
@@ -18,7 +19,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSoundLayerPage } from '@app/composables/useAnimSoundLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -35,17 +36,17 @@ const { form, sync, onParamInput } = useAnimSoundLayerPage();
 
 const { bindInput } = useInspectorInput();
 
+const elPlaybackRate = ref<InstanceType<typeof SelectBox> | null>(null);
+
 onMounted(() => {
 	const animSoundLayer = Inspector.animSoundLayer;
 	if (animSoundLayer) {
-		const el = document.getElementById('animSoundLayer-playbackRate');
+		elPlaybackRate.value?.loadItems([
+			{ name: 'Default', value: 'default' },
+			{ name: 'Inherit', value: 'inherit' }
+		]);
+		const el = elPlaybackRate.value?.root;
 		if (el) {
-			(
-				el as unknown as { loadItems: (items: { name: string; value: string }[]) => void }
-			).loadItems([
-				{ name: 'Default', value: 'default' },
-				{ name: 'Inherit', value: 'inherit' }
-			]);
 			bindInput(
 				[el],
 				animSoundLayer,

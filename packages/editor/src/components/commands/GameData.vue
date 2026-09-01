@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="gameData-operation" v-model="form.operation" />
+			<SelectBox id="gameData-operation" v-focus v-model="form.operation" />
 			<div class="text">Index</div>
 			<NumberVar id="gameData-index" min="0" max="32" v-model="form.index" />
 			<div class="text">Variables</div>

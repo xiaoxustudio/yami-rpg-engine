@@ -475,16 +475,16 @@ Animation.initialize = function (this: typeof Animation) {
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
 	this.searcher.addEventListener('input', this.searcherInput);
 	this.searcher.addEventListener('compositionend', this.searcherInput);
-	list.on('keydown', this.listKeydown);
-	list.on('pointerdown', this.listPointerdown);
+	on(list, 'keydown', this.listKeydown);
+	on(list, 'pointerdown', this.listPointerdown);
 	// list select/record/open/popup 经 Vue 模板转发（LayoutPanel @select/@record/@open/@popup → Animation.list*）
 	// list change 经 Vue 模板转发（LayoutPanel @change → Animation.listChange）
 	on(list.page, 'resize', this.listPageResize);
 	on(this.timeline, 'resize', this.timelinePageResize);
 	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
-	this.layerList.on('scroll', this.layerListScroll);
-	this.layerList.on('keydown', this.layerListKeydown, { capture: true });
-	this.layerList.on('pointerdown', this.layerListPointerdown);
+	on(this.layerList, 'scroll', this.layerListScroll);
+	on(this.layerList, 'keydown', this.layerListKeydown, { capture: true });
+	on(this.layerList, 'pointerdown', this.layerListPointerdown);
 	// layerList select/record/popup 经 Vue 模板转发（LayoutPanel @select/@record/@popup → Animation.layerList*）
 	// layerList change 经 Vue 模板转发（LayoutPanel @change → Animation.layerListChange）
 	on(this.outerTimelineList, 'keydown', this.outerTimelineListKeydown);

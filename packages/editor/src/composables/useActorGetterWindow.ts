@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus } from '@app/utils/element-utils';
+import { requestFocus } from '@app/directives/focus';
 
 export interface ActorGetterForm {
 	type: string;
@@ -60,7 +60,7 @@ const open = (target: ActorGetterTarget, defaults?: Partial<ActorGetterForm>): v
 			break;
 	}
 	Object.assign(form, { type: actor.type, memberId, actorId, presetId, variable });
-	getFocus(document.getElementById('actorGetter-type'));
+	requestFocus('actorGetter-type');
 };
 
 const confirm = (): void => {
@@ -79,21 +79,21 @@ const confirm = (): void => {
 			break;
 		case 'global':
 			if (data.actorId === '') {
-				getFocus(document.getElementById('actorGetter-actorId'));
+				requestFocus('actorGetter-actorId');
 				return;
 			}
 			getter = { type: data.type, actorId: data.actorId };
 			break;
 		case 'by-id':
 			if (data.presetId === '') {
-				getFocus(document.getElementById('actorGetter-presetId'));
+				requestFocus('actorGetter-presetId');
 				return;
 			}
 			getter = { type: data.type, presetId: data.presetId };
 			break;
 		case 'variable':
 			if (data.variable.key === '') {
-				getFocus(document.getElementById('actorGetter-variable'));
+				requestFocus('actorGetter-variable');
 				return;
 			}
 			getter = { type: data.type, variable: data.variable };

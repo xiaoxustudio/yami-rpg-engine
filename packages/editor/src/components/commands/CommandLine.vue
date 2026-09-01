@@ -8,17 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="commandLine-type" v-model="form.type" @write="onType" />
+			<SelectBox id="commandLine-type" v-model="form.type" />
 			<div class="text">Key</div>
-			<StringVar id="commandLine-key" v-model="form.key" />
+			<StringVar id="commandLine-key" v-focus v-model="form.key" />
 			<div class="text">Value</div>
 			<StringVar id="commandLine-value" v-model="form.value" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="commandLine-variable"
+				v-focus
 				type="variable"
 				filter="object"
-				@input="onVariable"
+				v-model="form.variable"
 			/>
 		</div>
 	</WindowFrame>
@@ -38,14 +39,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useCommandLineCommandSchema();
-
-const onVariable = (value: unknown) => {
-	form.variable = value;
-};
-
-const onType = (value: unknown) => {
-	form.type = value as string;
-};
 
 const onConfirm = () => {
 	save();

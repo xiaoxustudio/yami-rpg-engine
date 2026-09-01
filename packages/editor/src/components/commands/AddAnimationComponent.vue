@@ -8,12 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="addAnimationComponent-actor" type="actor" @input="onActor" />
+			<CustomBox id="addAnimationComponent-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
 				type="file"
 				filter="animation"
+				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
@@ -55,10 +56,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useAddAnimationComponentCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

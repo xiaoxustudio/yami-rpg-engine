@@ -5,10 +5,11 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="animMotion-general-grid">
 			<div class="text">{{ t('components.animMotion-mode.label') || 'Direction' }}</div>
-			<SelectBox id="animMotion-mode" v-model="form.mode" @input="onParamInput"></SelectBox>
+			<SelectBox id="animMotion-mode" ref="elMode" v-model="form.mode" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.animMotion-skip.label') || 'Skip Last Frame' }}</div>
 			<CheckBox
 				id="animMotion-skip"
+				ref="elSkip"
 				class="standard large"
 				:model-value="form.skip"
 				@input="onParamInput"
@@ -16,6 +17,7 @@
 			<div class="text">{{ t('components.animMotion-loop.label') || 'Loop' }}</div>
 			<CheckBox
 				id="animMotion-loop"
+				ref="elLoop"
 				class="standard large"
 				:model-value="form.loop"
 				@input="onParamInput"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.animMotion-loopStart.label') || 'Loop Start' }}</div>
 			<NumberBox
 				id="animMotion-loopStart"
+				ref="elLoopStart"
 				v-model="form.loopStart"
 				min="0"
 				max="10000"
@@ -34,7 +37,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimMotionPage } from '@app/composables/useAnimMotionPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -53,22 +56,10 @@ const { form, sync, onParamInput } = useAnimMotionPage();
 
 const { bindInput } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
-
-const relate = (
-	id: string,
-	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-) => {
-	const el = document.getElementById(id) as unknown as {
-		relate?: (targets: (HTMLElement | null)[]) => void;
-	} | null;
-	el?.relate?.(config.flatMap((c) => c.targets));
-};
+const elMode = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSkip = ref<InstanceType<typeof CheckBox> | null>(null);
+const elLoop = ref<InstanceType<typeof CheckBox> | null>(null);
+const elLoopStart = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
 	const animMotion = Inspector.animMotion;
@@ -81,7 +72,7 @@ onMounted(() => {
 		}
 	};
 
-	loadItems('animMotion-mode', [
+	elMode.value?.loadItems([
 		{ name: '1 Directional', value: '1-dir' },
 		{ name: '2 Directional', value: '2-dir' },
 		{ name: '4 Directional', value: '4-dir' },
@@ -92,13 +83,13 @@ onMounted(() => {
 		{ name: '5 Directional - Mirror', value: '5-dir-mirror' }
 	]);
 
-	const loopEl = document.getElementById('animMotion-loop') as unknown as {
-		relate?: (targets: HTMLElement[]) => void;
-	} | null;
-	loopEl?.relate?.([document.getElementById('animMotion-loopStart')!]);
+	const loopStartEl = elLoopStart.value?.root;
+	if (loopStartEl) {
+		elLoop.value?.relate([loopStartEl]);
+	}
 
-	const elements = document.querySelectorAll(
-		'#animMotion-skip, #animMotion-loop, #animMotion-loopStart'
+	const elements = [elSkip.value?.root, elLoop.value?.root, elLoopStart.value?.root].filter(
+		(el): el is HTMLElement => el != null
 	);
 	bindInput(elements, animMotion, Animation);
 

@@ -10,6 +10,7 @@ export function commit(data: Record<string, unknown>): unknown {
 
 export interface UseCommandSchemaOptions {
 	onLoad?: (params: Record<string, unknown>) => void;
+	skipWrite?: boolean;
 }
 
 export function useCommandSchema(name: string, options: UseCommandSchemaOptions = {}) {
@@ -28,8 +29,13 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 	};
 	const load = (params: Record<string, unknown>): void => {
 		Object.assign(form, createDefault(), params);
-		for (const field of fields) {
-			write(document.getElementById(`${name}-${field.domId ?? field.key}`), form[field.key]);
+		if (!options.skipWrite) {
+			for (const field of fields) {
+				write(
+					document.getElementById(`${name}-${field.domId ?? field.key}`),
+					form[field.key]
+				);
+			}
 		}
 		options.onLoad?.(params);
 	};

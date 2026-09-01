@@ -124,8 +124,8 @@ const input = (value: unknown): void => {
 			}
 			dispatchChangeEvent(el);
 		}
-		emit('input', state.dataValue);
 		emit('update:modelValue', state.dataValue);
+		emit('input', state.dataValue);
 	} else {
 		if (getType() === 'file') {
 			update();

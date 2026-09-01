@@ -112,19 +112,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneTilemap.write = function (this: typeof SceneTilemap, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneTilemap-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneTilemap-y'), options.y);
-		}
-		if (options.width !== undefined) {
-			write($('#sceneTilemap-width'), options.width);
-		}
-		if (options.height !== undefined) {
-			write($('#sceneTilemap-height'), options.height);
-		}
+	SceneTilemap.write = function (this: typeof SceneTilemap, _options: Record<string, unknown>) {
+		($('#sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneTilemap.update = function (

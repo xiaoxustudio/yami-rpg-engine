@@ -3,10 +3,10 @@ import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
@@ -112,8 +112,9 @@ Command.cases.setAnimationComponent = new CommandSchema({
 
 export function useSetAnimationComponentCommandSchema() {
 	const { form, load, commit } = useCommandSchema('setAnimationComponent', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setAnimationComponent-actor'));
+			requestFocus('setAnimationComponent-actor');
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -132,119 +133,53 @@ export function useSetAnimationComponentCommandSchema() {
 		load(params);
 	};
 	const onSave = (): void => {
-		const actor = read(document.getElementById('setAnimationComponent-actor')) ?? form.actor;
-		const animationId =
-			read(document.getElementById('setAnimationComponent-animationId')) ?? form.animationId;
+		const actor = form.actor;
+		const animationId = form.animationId as string;
 		if (animationId === '') {
-			getFocus(document.getElementById('setAnimationComponent-animationId'));
+			requestFocus('setAnimationComponent-animationId');
 			return;
 		}
-		const motion = read(document.getElementById('setAnimationComponent-motion')) ?? form.motion;
+		const motion = form.motion as string;
 		if (motion === '') {
-			getFocus(document.getElementById('setAnimationComponent-motion'));
+			requestFocus('setAnimationComponent-motion');
 			return;
 		}
-		const operation =
-			read(document.getElementById('setAnimationComponent-operation')) ?? form.operation;
+		const operation = form.operation as string;
 		switch (operation) {
 			case 'set-angle':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					angle:
-						read(document.getElementById('setAnimationComponent-angle')) ?? form.angle
-				});
+				commit({ actor, animationId, motion, operation, angle: form.angle });
 				break;
 			case 'set-scale':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					scale:
-						read(document.getElementById('setAnimationComponent-scale')) ?? form.scale
-				});
+				commit({ actor, animationId, motion, operation, scale: form.scale });
 				break;
 			case 'set-speed':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					speed:
-						read(document.getElementById('setAnimationComponent-speed')) ?? form.speed
-				});
+				commit({ actor, animationId, motion, operation, speed: form.speed });
 				break;
 			case 'set-opacity':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					opacity:
-						read(document.getElementById('setAnimationComponent-opacity')) ??
-						form.opacity
-				});
+				commit({ actor, animationId, motion, operation, opacity: form.opacity });
 				break;
 			case 'set-priority':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					priority:
-						read(document.getElementById('setAnimationComponent-priority')) ??
-						form.priority
-				});
+				commit({ actor, animationId, motion, operation, priority: form.priority });
 				break;
 			case 'set-offsetY':
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					offsetY:
-						read(document.getElementById('setAnimationComponent-offsetY')) ??
-						form.offsetY
-				});
+				commit({ actor, animationId, motion, operation, offsetY: form.offsetY });
 				break;
 			case 'set-sprite': {
-				const spriteId =
-					read(document.getElementById('setAnimationComponent-spriteId')) ??
-					form.spriteId;
+				const spriteId = form.spriteId as string;
 				if (spriteId === '') {
-					getFocus(document.getElementById('setAnimationComponent-spriteId'));
+					requestFocus('setAnimationComponent-spriteId');
 					return;
 				}
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					spriteId,
-					image:
-						read(document.getElementById('setAnimationComponent-image')) ?? form.image
-				});
+				commit({ actor, animationId, motion, operation, spriteId, image: form.image });
 				break;
 			}
 			case 'play-motion': {
-				const playMotion =
-					read(document.getElementById('setAnimationComponent-playMotion')) ??
-					form.playMotion;
+				const playMotion = form.playMotion as string;
 				if (playMotion === '') {
-					getFocus(document.getElementById('setAnimationComponent-playMotion'));
+					requestFocus('setAnimationComponent-playMotion');
 					return;
 				}
-				commit({
-					actor,
-					animationId,
-					motion,
-					operation,
-					playMotion,
-					wait: read(document.getElementById('setAnimationComponent-wait')) ?? form.wait
-				});
+				commit({ actor, animationId, motion, operation, playMotion, wait: form.wait });
 				break;
 			}
 			case 'stop-motion':

@@ -48,9 +48,9 @@
 			:key="name"
 			@vue:mounted="onComponentMounted"
 		/>
-		<CommandSuggestions @vue:mounted="onComponentMounted" />
-		<LogMessage @vue:mounted="onComponentMounted" />
-		<TextSuggestions @vue:mounted="onComponentMounted" />
+		<CommandSuggestions />
+		<LogMessage />
+		<TextSuggestions />
 	</Teleport>
 	<template v-if="idleReady">
 		<Teleport to="body">

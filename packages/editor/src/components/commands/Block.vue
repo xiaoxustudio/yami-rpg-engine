@@ -6,7 +6,7 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<TextBox id="block-note" v-model="form.note" />
+		<TextBox id="block-note" v-focus v-model="form.note" />
 		<CheckBox id="block-asynchronous" class="standard" v-model="form.asynchronous"
 			><div class="text" id="block-asynchronous-label">Asynchronous</div></CheckBox
 		>

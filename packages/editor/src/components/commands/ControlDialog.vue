@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="controlDialog-element" type="element" @input="onElement" />
+			<CustomBox id="controlDialog-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Operation</div>
 			<SelectBox id="controlDialog-operation" v-model="form.operation" />
 		</div>
@@ -28,10 +28,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useControlDialogCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

@@ -54,6 +54,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetVideo, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setVideo');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setVideo');
 			expect(getControl('setVideo-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -69,6 +70,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setVideo');
 			expect(getControl('setVideo-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setVideo-properties').read()).toEqual([
@@ -296,6 +298,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(SetWindow, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'setWindow');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setWindow');
 			expect(getControl('setWindow-element').read()).toEqual({ type: 'trigger' });
 			wrapper.unmount();
@@ -311,6 +314,7 @@ vi.mock('@app/stores/local', () => ({
 					properties: [{ key: 'content', value: 'hi' }]
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('setWindow');
 			expect(getControl('setWindow-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('setWindow-properties').read()).toEqual([
@@ -593,6 +597,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(ShowText, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'showText');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('showText');
 			expect(getControl('showText-target').read()).toEqual({ type: 'trigger' });
 			expect(getControl('showText-parameters').read()).toBe('');
@@ -607,6 +612,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'showText',
 				params: { target: { type: 'trigger' }, parameters: 'a,b', content: 'hello\nworld' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('showText');
 			expect(getControl('showText-parameters').read()).toBe('a,b');
 			expect(getControl('showText-content').read()).toBe('hello\nworld');

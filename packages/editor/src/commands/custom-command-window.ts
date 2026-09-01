@@ -211,9 +211,9 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 
 	$('#command')?.addEventListener('close', this.windowClose!);
 	$('#command')?.addEventListener('closed', this.windowClosed!);
-	list.on('keydown', this.listKeydown!);
+	on(list, 'keydown', this.listKeydown!);
 	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
-	list.on('unselect', this.listUnselect!);
+	on(list, 'unselect', this.listUnselect!);
 	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
 };
 

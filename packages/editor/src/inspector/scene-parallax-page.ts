@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, write } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
@@ -92,13 +92,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneParallax.write = function (this: typeof SceneParallax, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneParallax-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneParallax-y'), options.y);
-		}
+	SceneParallax.write = function (this: typeof SceneParallax, _options: Record<string, unknown>) {
+		($('#sceneParallax-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneParallax.update = function (

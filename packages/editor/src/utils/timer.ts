@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { hasClass } from '@app/utils/element-utils';
+import { hasClass, on } from '@app/utils/element-utils';
 
 export class Timer {
 	static state: string | null = null;
@@ -148,18 +148,10 @@ Timer.initialize = function (this: typeof Timer) {
 		this.animationWaiting--;
 	};
 	const windows = document.querySelectorAll('#event, #selector, #imageClip');
-	(windows as unknown as HTMLElement[]).forEach((el) =>
-		(el as HTMLElement).on('open', windowOpen)
-	);
-	(windows as unknown as HTMLElement[]).forEach((el) =>
-		(el as HTMLElement).on('closed', windowClosed)
-	);
-	(windows as unknown as HTMLElement[]).forEach((el) =>
-		(el as HTMLElement).on('maximize', windowMaximize)
-	);
-	(windows as unknown as HTMLElement[]).forEach((el) =>
-		(el as HTMLElement).on('unmaximize', windowUnmaximize)
-	);
+	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'open', windowOpen));
+	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'closed', windowClosed));
+	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'maximize', windowMaximize));
+	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'unmaximize', windowUnmaximize));
 };
 
 Timer.start = function (timestamp: number) {

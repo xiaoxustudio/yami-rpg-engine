@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, hide, show, write } from '@app/utils/element-utils';
+import { clear, hide, show } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -85,16 +85,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneActor.write = function (this: typeof SceneActor, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneActor-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneActor-y'), options.y);
-		}
-		if (options.angle !== undefined) {
-			write($('#sceneActor-angle'), options.angle);
-		}
+	SceneActor.write = function (this: typeof SceneActor, _options: Record<string, unknown>) {
+		($('#sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneActor.update = function (

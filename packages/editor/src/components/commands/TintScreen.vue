@@ -10,6 +10,7 @@
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="tintScreen-tint-0"
+				v-focus
 				min="-255"
 				max="255"
 				step="5"

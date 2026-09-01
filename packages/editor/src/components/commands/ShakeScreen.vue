@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Shake Mode</div>
-			<SelectBox id="shakeScreen-mode" v-model="form.mode" />
+			<SelectBox id="shakeScreen-mode" v-focus v-model="form.mode" />
 			<div class="text">Power</div>
 			<NumberBox id="shakeScreen-power" min="1" max="10" v-model="form.power" />
 			<div class="text">Speed</div>

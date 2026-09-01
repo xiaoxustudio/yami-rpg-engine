@@ -2,12 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import GetMultipleActors from '@app/components/commands/GetMultipleActors.vue';
+import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 import GetObjectProperty from '@app/components/commands/GetObjectProperty.vue';
+import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import GetTarget from '@app/components/commands/GetTarget.vue';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
@@ -87,6 +89,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(GetMultipleActors, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'getMultipleActors');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('getMultipleActors');
 			expect(getControl('getMultipleActors-variable').read()).toEqual({
 				type: 'local',
@@ -115,6 +118,7 @@ vi.mock('@app/stores/local', () => ({
 					activation: 'inactive'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('getMultipleActors');
 			expect(getControl('getMultipleActors-variable').read()).toEqual({
 				type: 'local',
@@ -130,6 +134,7 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：rectangle + team 组合保存 area/width/height/teamId 并裁剪 radius', async () => {
 			const wrapper = mount(GetMultipleActors, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useGetMultipleActorsCommandSchema();
 			Command.cases.getMultipleActors.customLoad!({
 				variable: { type: 'local', key: 'list' },
 				position: { type: 'absolute', x: 0, y: 0 },
@@ -141,7 +146,7 @@ vi.mock('@app/stores/local', () => ({
 				teamId: 'team1',
 				activation: 'active'
 			});
-			getControl('getMultipleActors-width').write(4);
+			form.width = 4;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.getMultipleActors.save!();
@@ -204,22 +209,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ParamListElement extends HTMLElement {
-		read(): unknown[] | null;
-		write(data: unknown[]): void;
-	}
-
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getList = (id: string): ParamListElement =>
-		document.getElementById(id) as unknown as ParamListElement;
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -239,17 +228,18 @@ vi.mock('@app/stores/local', () => ({
 		it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
 			const wrapper = mount(GetObjectProperty, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useGetObjectPropertyCommandSchema();
 			CommandSchema.insert(target, 'getObjectProperty');
 			expect(Window.open).toHaveBeenCalledWith('getObjectProperty');
-			expect(getControl('getObjectProperty-variable').read()).toEqual({
+			expect(form.variable).toEqual({
 				type: 'local',
 				key: ''
 			});
-			expect(getControl('getObjectProperty-save-variable').read()).toEqual({
+			expect(form.saveVariable).toEqual({
 				type: 'local',
 				key: ''
 			});
-			expect(getList('getObjectProperty-list').read()).toEqual([]);
+			expect(form.properties).toEqual([]);
 			wrapper.unmount();
 		});
 
@@ -416,15 +406,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -492,6 +473,7 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：url 非空且 timeout 转数字保存', async () => {
 			const wrapper = mount(HttpRequest, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useHttpRequestCommandSchema();
 			Command.cases.httpRequest.customLoad!({
 				url: 'https://x',
 				method: 'GET',
@@ -504,9 +486,8 @@ vi.mock('@app/stores/local', () => ({
 				authUser: '',
 				authPass: ''
 			});
-			getControl('httpRequest-url').write('https://x');
-			getControl('httpRequest-timeout').write(8000);
-			(getControl('httpRequest-timeout') as { read: () => unknown }).read = () => 8000;
+			form.url = 'https://x';
+			form.timeout = 8000;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.httpRequest.save!();
@@ -574,6 +555,7 @@ vi.mock('@app/stores/local', () => ({
 				save: vi.fn()
 			};
 			CommandSchema.insert(target, 'jumpTo');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('jumpTo');
 			expect(getControl('jumpTo-operation').read()).toBe('jump');
 			expect(getControl('jumpTo-label').read()).toBe('');
@@ -591,6 +573,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'jumpTo',
 				params: { operation: 'save-jump', label: 'boss' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('jumpTo');
 			expect(getControl('jumpTo-operation').read()).toBe('save-jump');
 			expect(getControl('jumpTo-label').read()).toBe('boss');
@@ -849,6 +832,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(LoadScene, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'loadScene');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('loadScene');
 			expect(getControl('loadScene-sceneId').read()).toBe('');
 			expect(getControl('loadScene-transfer').read()).toBe(true);
@@ -864,6 +848,7 @@ vi.mock('@app/stores/local', () => ({
 				id: 'loadScene',
 				params: { sceneId: 'scene1', transfer: true, x: 10, y: 20 }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('loadScene');
 			expect(getControl('loadScene-sceneId').read()).toBe('scene1');
 			expect(getControl('loadScene-transfer').read()).toBe(true);
@@ -917,15 +902,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -969,13 +945,13 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：mode 从控件读取并连同 conditions/commands 保存', async () => {
 			const wrapper = mount(Loop, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
-			useLoopCommandSchema();
+			const { form } = useLoopCommandSchema();
 			Command.cases.loop.customLoad!({
 				mode: 'all',
 				conditions: [],
 				commands: [{ id: 'wait', params: { duration: 1 } }]
 			});
-			getControl('loop-mode').write('any');
+			form.mode = 'any';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.loop.save!();
@@ -1042,6 +1018,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(MoveActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'moveActor');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveActor');
 			expect(getControl('moveActor-actor').read()).toEqual({ type: 'trigger' });
 			expect(getControl('moveActor-mode').read()).toBe('straight');
@@ -1066,6 +1043,7 @@ vi.mock('@app/stores/local', () => ({
 					destination: { type: 'absolute', x: 5, y: 6 }
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('moveActor');
 			expect(getControl('moveActor-actor').read()).toEqual({ type: 'player' });
 			expect(getControl('moveActor-mode').read()).toBe('teleport');

@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="uiText-properties-grid">
 			<div class="text">{{ t('components.uiText-direction.label') || 'Direction' }}</div>
 			<SelectBox
+				ref="elDirection"
 				id="uiText-direction"
 				v-model="form.direction"
 				@input="onParamInput"
@@ -71,6 +72,7 @@
 			<div class="text">{{ t('components.uiText-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiText-size-box">
 				<SliderBox
+					ref="elSizeSlider"
 					id="uiText-size-slider"
 					v-model="form.size"
 					min="12"
@@ -78,6 +80,7 @@
 					step="2"
 				></SliderBox>
 				<NumberBox
+					ref="elSize"
 					id="uiText-size"
 					v-model="form.size"
 					min="10"
@@ -92,6 +95,7 @@
 			</div>
 			<div class="flex-box" id="uiText-lineSpacing-box">
 				<SliderBox
+					ref="elLineSpacingSlider"
 					id="uiText-lineSpacing-slider"
 					v-model="form.lineSpacing"
 					min="0"
@@ -99,6 +103,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					ref="elLineSpacing"
 					id="uiText-lineSpacing"
 					v-model="form.lineSpacing"
 					min="-10"
@@ -113,6 +118,7 @@
 			</div>
 			<div class="flex-box" id="uiText-letterSpacing-box">
 				<SliderBox
+					ref="elLetterSpacingSlider"
 					id="uiText-letterSpacing-slider"
 					v-model="form.letterSpacing"
 					min="0"
@@ -120,6 +126,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					ref="elLetterSpacing"
 					id="uiText-letterSpacing"
 					v-model="form.letterSpacing"
 					min="-10"
@@ -135,12 +142,14 @@
 			<TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
+				ref="elTypeface"
 				id="uiText-typeface"
 				v-model="form.typeface"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiText-effect-type.label') || 'Effect' }}</div>
 			<SelectBox
+				ref="elEffectType"
 				id="uiText-effect-type"
 				v-model="form.effect.type"
 				@input="onParamInput"
@@ -149,6 +158,7 @@
 				{{ t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X' }}
 			</div>
 			<NumberBox
+				ref="elShadowOffsetX"
 				id="uiText-effect-shadowOffsetX"
 				v-model="form.effect.shadowOffsetX"
 				min="-9"
@@ -160,6 +170,7 @@
 				{{ t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y' }}
 			</div>
 			<NumberBox
+				ref="elShadowOffsetY"
 				id="uiText-effect-shadowOffsetY"
 				v-model="form.effect.shadowOffsetY"
 				min="-9"
@@ -171,6 +182,7 @@
 				{{ t('components.uiText-effect-strokeWidth.label') || 'Stroke Width' }}
 			</div>
 			<NumberBox
+				ref="elStrokeWidth"
 				id="uiText-effect-strokeWidth"
 				v-model="form.effect.strokeWidth"
 				min="1"
@@ -182,25 +194,32 @@
 				{{ t('components.uiText-effect-color.label') || 'Effect Color' }}
 			</div>
 			<ColorBox
+				ref="elEffectColor"
 				id="uiText-effect-color"
 				v-model="form.effect.color"
 				@input="onParamInput"
 			></ColorBox>
 			<div class="text">{{ t('components.uiText-overflow.label') || 'Overflow' }}</div>
 			<SelectBox
+				ref="elOverflow"
 				id="uiText-overflow"
 				v-model="form.overflow"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiText-blend.label') || 'Blend' }}</div>
-			<SelectBox id="uiText-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<SelectBox
+				ref="elBlend"
+				id="uiText-blend"
+				v-model="form.blend"
+				@input="onParamInput"
+			></SelectBox>
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUITextPage } from '@app/composables/useUITextPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -223,87 +242,86 @@ const { form, sync, onParamInput } = useUITextPage();
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-const loadItems = (id: string, items: { name: string; value: string }[]) => {
-	const el = document.getElementById(id) as unknown as {
-		loadItems?: (items: { name: string; value: string }[]) => void;
-	} | null;
-	el?.loadItems?.(items);
-};
+const elDirection = ref<InstanceType<typeof SelectBox> | null>(null);
+const elTypeface = ref<InstanceType<typeof SelectBox> | null>(null);
+const elEffectType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elOverflow = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elSizeSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elSize = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLineSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elLineSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
+const elLetterSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
+const elLetterSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShadowOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
+const elShadowOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
+const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
 
-const relate = (
-	id: string,
-	config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
+const synchronize = (
+	slider: InstanceType<typeof SliderBox> | null,
+	input: InstanceType<typeof NumberBox> | null
 ) => {
-	const el = document.getElementById(id) as unknown as {
-		enableHiddenMode?: () => {
-			relate: (
-				config: { case: string | string[]; targets: (HTMLElement | null)[] }[]
-			) => void;
-		};
-	} | null;
-	if (el) el.enableHiddenMode()?.relate(config);
-};
-
-const synchronize = (sliderId: string, inputId: string) => {
-	const slider = document.getElementById(sliderId) as unknown as {
-		synchronize?: (el: HTMLElement | null) => void;
-	} | null;
-	const input = document.getElementById(inputId);
-	slider?.synchronize?.(input);
+	const el = input?.root ?? null;
+	if (!el) return;
+	slider?.synchronize(
+		el as HTMLElement & {
+			write(value: number | string): void;
+			input: HTMLInputElement;
+		}
+	);
 };
 
 onMounted(() => {
 	const uiText = Inspector.uiText;
 	if (!uiText) return;
 
-	loadItems('uiText-direction', [
+	elDirection.value?.loadItems([
 		{ name: 'Horizontal - TB', value: 'horizontal-tb' },
 		{ name: 'Vertical - LR', value: 'vertical-lr' },
 		{ name: 'Vertical - RL', value: 'vertical-rl' }
 	]);
-	loadItems('uiText-typeface', [
+	elTypeface.value?.loadItems([
 		{ name: 'Regular', value: 'regular' },
 		{ name: 'Bold', value: 'bold' },
 		{ name: 'Italic', value: 'italic' },
 		{ name: 'Bold Italic', value: 'bold-italic' }
 	]);
-	loadItems('uiText-effect-type', [
+	elEffectType.value?.loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Shadow', value: 'shadow' },
 		{ name: 'Stroke', value: 'stroke' },
 		{ name: 'Outline', value: 'outline' }
 	]);
-	loadItems('uiText-overflow', [
+	elOverflow.value?.loadItems([
 		{ name: 'Visible', value: 'visible' },
 		{ name: 'Wrap', value: 'wrap' },
 		{ name: 'Truncate', value: 'truncate' },
 		{ name: 'Wrap Truncate', value: 'wrap-truncate' }
 	]);
-	loadItems('uiText-blend', [
+	elBlend.value?.loadItems([
 		{ name: 'Normal', value: 'normal' },
 		{ name: 'Additive', value: 'additive' },
 		{ name: 'Subtract', value: 'subtract' }
 	]);
-	synchronize('uiText-size-slider', 'uiText-size');
-	synchronize('uiText-lineSpacing-slider', 'uiText-lineSpacing');
-	synchronize('uiText-letterSpacing-slider', 'uiText-letterSpacing');
-	relate('uiText-effect-type', [
+	synchronize(elSizeSlider.value, elSize.value);
+	synchronize(elLineSpacingSlider.value, elLineSpacing.value);
+	synchronize(elLetterSpacingSlider.value, elLetterSpacing.value);
+	elEffectType.value?.enableHiddenMode();
+	elEffectType.value?.relate([
 		{
 			case: 'shadow',
 			targets: [
-				document.getElementById('uiText-effect-shadowOffsetX'),
-				document.getElementById('uiText-effect-shadowOffsetY'),
-				document.getElementById('uiText-effect-color')
+				elShadowOffsetX.value?.root ?? null,
+				elShadowOffsetY.value?.root ?? null,
+				elEffectColor.value?.root ?? null
 			]
 		},
 		{
 			case: 'stroke',
-			targets: [
-				document.getElementById('uiText-effect-strokeWidth'),
-				document.getElementById('uiText-effect-color')
-			]
+			targets: [elStrokeWidth.value?.root ?? null, elEffectColor.value?.root ?? null]
 		},
-		{ case: 'outline', targets: [document.getElementById('uiText-effect-color')] }
+		{ case: 'outline', targets: [elEffectColor.value?.root ?? null] }
 	]);
 
 	const elements =
@@ -319,7 +337,7 @@ onMounted(() => {
 
 	const el = document.getElementById('uiText-vue-mount');
 	if (el) {
-		attachElementApi(el, { sync });
+		attachElementApi(el, { sync, form });
 	}
 	sync();
 });

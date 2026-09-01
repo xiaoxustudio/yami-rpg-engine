@@ -9,6 +9,7 @@
 			</div>
 			<CustomBox
 				id="animParticleLayer-particleId"
+				ref="elParticleId"
 				type="file"
 				filter="particle"
 				:model-value="form.particleId"
@@ -19,18 +20,21 @@
 			</div>
 			<SelectBox
 				id="animParticleLayer-position"
+				ref="elPosition"
 				v-model="form.position"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div>
 			<SelectBox
 				id="animParticleLayer-angle"
+				ref="elAngle"
 				v-model="form.angle"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div>
 			<SelectBox
 				id="animParticleLayer-order"
+				ref="elOrder"
 				v-model="form.order"
 				@input="onParamInput"
 			></SelectBox>
@@ -40,7 +44,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -58,6 +62,11 @@ const { form, sync, onParamInput } = useAnimParticleLayerPage();
 
 const { bindInput } = useInspectorInput();
 
+const elParticleId = ref<InstanceType<typeof CustomBox> | null>(null);
+const elPosition = ref<InstanceType<typeof SelectBox> | null>(null);
+const elAngle = ref<InstanceType<typeof SelectBox> | null>(null);
+const elOrder = ref<InstanceType<typeof SelectBox> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.animParticleLayer;
 	if (!editor) return;
@@ -67,39 +76,27 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elPosition = document.getElementById('animParticleLayer-position') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elPosition?.loadItems) {
-		elPosition.loadItems([
-			{ name: 'Absolute', value: 'absolute' },
-			{ name: 'Relative', value: 'relative' }
-		]);
-	}
+	elPosition.value?.loadItems([
+		{ name: 'Absolute', value: 'absolute' },
+		{ name: 'Relative', value: 'relative' }
+	]);
 
-	const elAngle = document.getElementById('animParticleLayer-angle') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elAngle?.loadItems) {
-		elAngle.loadItems([
-			{ name: 'Default', value: 'default' },
-			{ name: 'Inherit', value: 'inherit' }
-		]);
-	}
+	elAngle.value?.loadItems([
+		{ name: 'Default', value: 'default' },
+		{ name: 'Inherit', value: 'inherit' }
+	]);
 
-	const elOrder = document.getElementById('animParticleLayer-order') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elOrder?.loadItems) {
-		elOrder.loadItems([
-			{ name: 'Behind Sprites', value: 'before' },
-			{ name: 'Front of Sprites', value: 'after' }
-		]);
-	}
+	elOrder.value?.loadItems([
+		{ name: 'Behind Sprites', value: 'before' },
+		{ name: 'Front of Sprites', value: 'after' }
+	]);
 
-	const elements = document.querySelectorAll(
-		'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
-	);
+	const elements = [
+		elParticleId.value?.root,
+		elPosition.value?.root,
+		elAngle.value?.root,
+		elOrder.value?.root
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
 		data.type = 'inspector-layer-change';
 		data.motion = editor.motion;

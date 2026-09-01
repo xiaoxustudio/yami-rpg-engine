@@ -67,6 +67,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(StopEvent, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'stopEvent');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('stopEvent');
 			expect(getControl('stopEvent-type').read()).toBe('current');
 			expect(getControl('stopEvent-actor').read()).toEqual({ type: 'trigger' });
@@ -85,6 +86,7 @@ vi.mock('@app/stores/local', () => ({
 					eventId: 'event1'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('stopEvent');
 			expect(getControl('stopEvent-type').read()).toBe('global');
 			expect(getControl('stopEvent-eventId').read()).toBe('event1');
@@ -224,6 +226,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(TintImage, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'tintImage');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('tintImage');
 			expect(getControl('tintImage-element').read()).toEqual({ type: 'trigger' });
 			expect(getControl('tintImage-mode').read()).toBe('full');
@@ -244,6 +247,7 @@ vi.mock('@app/stores/local', () => ({
 					duration: 100
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('tintImage');
 			expect(getControl('tintImage-tint-0').read()).toBe(1);
 			expect(getControl('tintImage-tint-2').read()).toBe(3);
@@ -321,6 +325,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(TintScreen, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'tintScreen');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('tintScreen');
 			expect(getControl('tintScreen-tint-0').read()).toBe(0);
 			expect(getControl('tintScreen-tint-3').read()).toBe(0);
@@ -342,6 +347,7 @@ vi.mock('@app/stores/local', () => ({
 					wait: true
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('tintScreen');
 			expect(getControl('tintScreen-tint-0').read()).toBe(10);
 			expect(getControl('tintScreen-tint-1').read()).toBe(20);
@@ -610,15 +616,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -688,9 +685,10 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('save 路径：用户改控件后经 Command.cases.translateActor.save 保存', async () => {
+		it('save 路径：form 值经 Command.cases.translateActor.save 保存', async () => {
 			const wrapper = mount(TranslateActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useTranslateActorCommandSchema();
 			Command.cases.translateActor.customLoad!({
 				actor: { type: 'trigger' },
 				angle: { type: 'absolute', degrees: 0 },
@@ -699,8 +697,8 @@ vi.mock('@app/stores/local', () => ({
 				duration: 0,
 				wait: false
 			});
-			getControl('translateActor-distance').write(5);
-			getControl('translateActor-wait').write(true);
+			form.distance = 5;
+			form.wait = true;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.translateActor.save!();

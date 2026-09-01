@@ -8,13 +8,13 @@
 
 		<div class="grid-box" id="setObjectAnimation-grid-box">
 			<div class="text">Sort</div>
-			<SelectBox id="setObjectAnimation-sort" v-model="form.sort" />
+			<SelectBox id="setObjectAnimation-sort" v-focus v-model="form.sort" />
 			<div class="text">Actor</div>
-			<CustomBox id="setObjectAnimation-actor" type="actor" @input="onActor" />
+			<CustomBox id="setObjectAnimation-actor" type="actor" v-model="form.actor" />
 			<div class="text">Trigger</div>
-			<CustomBox id="setObjectAnimation-trigger" type="trigger" @input="onTrigger" />
+			<CustomBox id="setObjectAnimation-trigger" type="trigger" v-model="form.trigger" />
 			<div class="text">Animation</div>
-			<CustomBox id="setObjectAnimation-animation" type="object" @input="onAnimation" />
+			<CustomBox id="setObjectAnimation-animation" type="object" v-model="form.animation" />
 			<div class="text">Operation</div>
 			<SelectBox id="setObjectAnimation-operation" v-model="form.operation" />
 			<div class="text">Tint - Red</div>
@@ -110,18 +110,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetObjectAnimationCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
-
-const onAnimation = (value: unknown) => {
-	form.animation = value;
-};
 
 const onConfirm = () => {
 	save();

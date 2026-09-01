@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -47,16 +47,17 @@ Command.cases.playAudio = new CommandSchema({
 
 export function usePlayAudioCommandSchema() {
 	const { form, load, commit } = useCommandSchema('playAudio', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('playAudio-type'));
+			requestFocus('playAudio-type');
 		}
 	});
 	const onSave = (): void => {
-		const type = read(document.getElementById('playAudio-type')) ?? form.type;
-		const audio = read(document.getElementById('playAudio-audio')) ?? form.audio;
-		const volume = read(document.getElementById('playAudio-volume')) ?? form.volume;
+		const type = form.type;
+		const audio = form.audio;
+		const volume = form.volume;
 		if (audio === '') {
-			getFocus(document.getElementById('playAudio-audio'));
+			requestFocus('playAudio-audio');
 			return;
 		}
 		switch (type) {
@@ -67,8 +68,7 @@ export function usePlayAudioCommandSchema() {
 				commit({ type, audio, volume });
 				break;
 			case 'se-attenuated': {
-				const location =
-					read(document.getElementById('playAudio-location')) ?? form.location;
+				const location = form.location;
 				commit({ type, audio, volume, location });
 				break;
 			}

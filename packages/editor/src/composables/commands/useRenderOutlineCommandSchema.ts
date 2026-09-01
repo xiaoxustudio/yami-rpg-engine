@@ -1,11 +1,11 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -53,27 +53,20 @@ Command.cases.renderOutline = new CommandSchema({
 
 export function useRenderOutlineCommandSchema() {
 	const { form, load, commit } = useCommandSchema('renderOutline', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('renderOutline-operation'));
+			requestFocus('renderOutline-operation');
 		}
 	});
 	const onSave = (): void => {
-		const operation =
-			read(document.getElementById('renderOutline-operation')) ?? form.operation;
+		const operation = form.operation;
 		switch (operation) {
 			case 'add': {
-				commit({
-					operation,
-					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor,
-					color: read(document.getElementById('renderOutline-color')) ?? form.color
-				});
+				commit({ operation, actor: form.actor, color: form.color });
 				break;
 			}
 			case 'remove': {
-				commit({
-					operation,
-					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor
-				});
+				commit({ operation, actor: form.actor });
 				break;
 			}
 			case 'reset':

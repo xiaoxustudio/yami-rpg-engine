@@ -8,9 +8,9 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setVideo-element" type="element" @input="onElement" />
+			<CustomBox id="setVideo-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setVideo-properties" v-model="form.properties" />
+			<ParamList id="setVideo-properties" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
@@ -30,10 +30,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetVideoCommandSchema();
-
-const onElement = (value: unknown) => {
-	form.element = value;
-};
 
 const onConfirm = () => {
 	save();

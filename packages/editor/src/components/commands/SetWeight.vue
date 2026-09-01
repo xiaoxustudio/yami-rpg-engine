@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setWeight-actor" type="actor" @input="onActor" />
+			<CustomBox id="setWeight-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Weight</div>
 			<NumberVar
 				id="setWeight-weight"
@@ -33,10 +33,6 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetWeightCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

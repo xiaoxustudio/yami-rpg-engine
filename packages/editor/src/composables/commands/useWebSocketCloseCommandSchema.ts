@@ -5,9 +5,9 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.webSocketClose = new CommandSchema({
 	name: 'webSocketClose',
@@ -37,22 +37,22 @@ Command.cases.webSocketClose = new CommandSchema({
 
 export function useWebSocketCloseCommandSchema() {
 	const { form, load, commit } = useCommandSchema('webSocketClose', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('webSocketClose-id'));
+			requestFocus('webSocketClose-id');
 		}
 	});
 	const onSave = (): void => {
-		const elId = document.getElementById('webSocketClose-id');
-		const id = read(elId) ?? form.id;
-		if (!id || VariableGetter.isNone!(id)) {
-			getFocus(elId);
+		const id = form.id;
+		if (!id || VariableGetter.isNone!(id as { key: string })) {
+			requestFocus('webSocketClose-id');
 			return;
 		}
-		const code = read(document.getElementById('webSocketClose-code')) ?? form.code;
+		const code = form.code;
 		commit({
 			id,
 			code: code === '' ? '' : Number(code),
-			reason: read(document.getElementById('webSocketClose-reason')) ?? form.reason
+			reason: form.reason
 		});
 	};
 	Command.cases.webSocketClose.customSave = onSave;

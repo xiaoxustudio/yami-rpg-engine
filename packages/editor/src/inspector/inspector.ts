@@ -46,6 +46,35 @@ interface InspectorScriptParameterData {
 	value: unknown;
 }
 
+const getFormBridge = (input: HTMLElement): Record<string, unknown> | null => {
+	const mount = input.closest('[id$="-vue-mount"]') as (HTMLElement & { form?: unknown }) | null;
+	const form = mount?.form;
+	return form !== null && typeof form === 'object' ? (form as Record<string, unknown>) : null;
+};
+
+const writeFormValue = (form: Record<string, unknown>, key: string, value: unknown): boolean => {
+	if (key in form) {
+		form[key] = value;
+		return true;
+	}
+	const camelKey = key.replace(/-([a-z])/g, (_match: string, char: string) => char.toUpperCase());
+	if (camelKey !== key && camelKey in form) {
+		form[camelKey] = value;
+		return true;
+	}
+	const nodes = key.split('-');
+	let node: Record<string, unknown> = form;
+	for (let i = 0; i < nodes.length - 1; i++) {
+		const next = node[nodes[i]];
+		if (next === null || typeof next !== 'object') return false;
+		node = next as Record<string, unknown>;
+	}
+	const last = nodes[nodes.length - 1];
+	if (!(last in node)) return false;
+	node[last] = value;
+	return true;
+};
+
 export const Inspector: DynamicShape = {
 	manager: null,
 	type: null,
@@ -132,6 +161,10 @@ Inspector.initialize = function (this: typeof Inspector) {
 			const value = operation === 'undo' ? change.oldValue : change.newValue;
 			if (editor.target === target) {
 				write(input, value);
+				const form = getFormBridge(input);
+				if (form) {
+					writeFormValue(form, Inspector.getKey!(input), value);
+				}
 				input.dispatchEvent(new Event('input'));
 			} else {
 				const key = Inspector.getKey!(input);

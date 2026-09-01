@@ -1,5 +1,4 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -7,6 +6,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -85,66 +85,40 @@ Command.cases.loadImage = new CommandSchema({
 
 export function useLoadImageCommandSchema() {
 	const { form, load, commit } = useCommandSchema('loadImage', {
+		skipWrite: true,
 		onLoad() {
 			document
 				.getElementById('loadImage-key')
 				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-			getFocus(document.getElementById('loadImage-element')!);
+			requestFocus('loadImage-element');
 		}
 	});
 	const onSave = (): void => {
-		const element = read(document.getElementById('loadImage-element')!) ?? form.element;
-		const type = read(document.getElementById('loadImage-type')!) ?? form.type;
+		const element = form.element;
+		const type = form.type as string;
 		switch (type) {
 			case 'actor-portrait':
-				commit({
-					element,
-					type,
-					actor: read(document.getElementById('loadImage-actor')!) ?? form.actor
-				});
+				commit({ element, type, actor: form.actor });
 				break;
 			case 'skill-icon':
-				commit({
-					element,
-					type,
-					skill: read(document.getElementById('loadImage-skill')!) ?? form.skill
-				});
+				commit({ element, type, skill: form.skill });
 				break;
 			case 'state-icon':
-				commit({
-					element,
-					type,
-					state: read(document.getElementById('loadImage-state')!) ?? form.state
-				});
+				commit({ element, type, state: form.state });
 				break;
 			case 'equipment-icon':
-				commit({
-					element,
-					type,
-					equipment:
-						read(document.getElementById('loadImage-equipment')!) ?? form.equipment
-				});
+				commit({ element, type, equipment: form.equipment });
 				break;
 			case 'item-icon':
-				commit({
-					element,
-					type,
-					item: read(document.getElementById('loadImage-item')!) ?? form.item
-				});
+				commit({ element, type, item: form.item });
 				break;
 			case 'shortcut-icon':
-				commit({
-					element,
-					type,
-					actor: read(document.getElementById('loadImage-actor')!) ?? form.actor,
-					key: read(document.getElementById('loadImage-key')!) ?? form.key
-				});
+				commit({ element, type, actor: form.actor, key: form.key });
 				break;
 			case 'base64': {
-				const variable =
-					read(document.getElementById('loadImage-variable')!) ?? form.variable;
-				if (VariableGetter.isNone!(variable)) {
-					getFocus(document.getElementById('loadImage-variable')!);
+				const variable = form.variable;
+				if (VariableGetter.isNone!(variable as { key: string })) {
+					requestFocus('loadImage-variable');
 					return;
 				}
 				commit({ element, type, variable });

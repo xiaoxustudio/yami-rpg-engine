@@ -539,8 +539,8 @@ vi.mock('@app/stores/local', () => ({
 				speed: 1,
 				wait: false
 			});
-			getControl('playAnimation-mode').write('actor');
-			getControl('playAnimation-actor').write({ type: 'latest' });
+			getControl('playAnimation-mode').input('actor');
+			getControl('playAnimation-actor').input({ type: 'latest' });
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.playAnimation.save!();
@@ -868,7 +868,7 @@ vi.mock('@app/stores/local', () => ({
 				actor: { type: 'trigger' },
 				color: 'ffffffff'
 			});
-			getControl('renderOutline-operation').write('remove');
+			getControl('renderOutline-operation').input('remove');
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.renderOutline.save!();
@@ -884,7 +884,7 @@ vi.mock('@app/stores/local', () => ({
 				actor: { type: 'trigger' },
 				color: 'ffffffff'
 			});
-			getControl('renderOutline-operation').write('reset');
+			getControl('renderOutline-operation').input('reset');
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.renderOutline.save!();

@@ -1,4 +1,4 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -83,15 +83,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 					break;
 			}
 
-			const write = getElementWriter('fileTileset', tileset);
-			write('image', tileset.image ?? '');
-			write('width');
-			write('height');
-			write('tileWidth');
-			write('tileHeight');
-			write('globalOffsetX');
-			write('globalOffsetY');
-			write('globalPriority');
+			($('#fileTileset') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

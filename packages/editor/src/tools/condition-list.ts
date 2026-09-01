@@ -1,8 +1,8 @@
 ﻿import { reactive } from 'vue';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
+import { requestFocus } from '@app/directives/focus';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
 const IfCondition = useIfConditionSchema();
@@ -170,7 +170,7 @@ export class ConditionListInterface implements IListInterface {
 			stringOperation,
 			stringValue
 		});
-		getFocus($('#condition-type'));
+		requestFocus('condition-type');
 	}
 
 	save() {
@@ -184,7 +184,7 @@ export class ConditionListInterface implements IListInterface {
 			case 'global':
 				key = form.key;
 				if (key === '') {
-					return getFocus($('#condition-key'));
+					return requestFocus('condition-key');
 				}
 				break;
 		}

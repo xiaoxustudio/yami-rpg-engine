@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { shallowRef } from 'vue';
+import { ref, shallowRef } from 'vue';
 import { pinia } from './pinia';
 
 export const autoTileStateKeys = [
@@ -12,7 +12,8 @@ export const autoTileStateKeys = [
 	'offsetX',
 	'offsetY',
 	'imageId',
-	'changed'
+	'changed',
+	'ruleBits'
 ] as const;
 
 export const useAutoTileStore = defineStore('autoTile', () => {
@@ -32,6 +33,7 @@ export const useAutoTileStore = defineStore('autoTile', () => {
 	const offsetY = shallowRef<any>(null);
 	const imageId = shallowRef<string | null>(null);
 	const changed = shallowRef<boolean>(false);
+	const ruleBits = ref([0, 0, 0, 0, 0, 0, 0, 0]);
 
 	return {
 		state,
@@ -43,7 +45,8 @@ export const useAutoTileStore = defineStore('autoTile', () => {
 		offsetX,
 		offsetY,
 		imageId,
-		changed
+		changed,
+		ruleBits
 	};
 });
 

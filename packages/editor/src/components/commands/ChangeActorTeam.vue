@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorTeam-actor" type="actor" @input="onActor" />
+			<CustomBox id="changeActorTeam-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Team</div>
 			<SelectBox id="changeActorTeam-teamId" v-model="form.teamId" />
 		</div>
@@ -30,10 +30,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useChangeActorTeamCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
 
 const onConfirm = () => {
 	save();

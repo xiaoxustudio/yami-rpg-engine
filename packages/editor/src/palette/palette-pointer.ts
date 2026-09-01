@@ -1,6 +1,7 @@
-import { Palette } from './palette.ts';
+﻿import { Palette } from './palette.ts';
 import type { ClipboardShape } from './palette.ts';
 import { relate, removeClass } from '@app/utils/element-utils';
+import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import { File } from '@app/file/file-system-core.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
@@ -34,7 +35,7 @@ Palette.marqueePointerdown = function (
 	const { x, y } = this.getTileCoords(event, true);
 	switch (event.button) {
 		case 0: {
-			// 如果正在修改图块组宽高，让它立即生效
+			// 濡傛灉姝ｅ湪淇敼鍥惧潡缁勫楂橈紝璁╁畠绔嬪嵆鐢熸晥
 			document.activeElement!.blur();
 			if (event.dragKey) {
 				this.dragging = event;
@@ -87,7 +88,7 @@ Palette.marqueePointerdown = function (
 					event.mode = 'select';
 					window.addEventListener('pointerup', this.pointerup);
 					window.addEventListener('pointermove', this.pointermove);
-					this.screen.addScrollListener('both', this.scaleX / 4, false, () => {
+					addScrollListener(this.screen, 'both', this.scaleX / 4, false, () => {
 						this.screen.beginScrolling();
 						this.updateTransform();
 						this.requestRendering();
@@ -324,14 +325,13 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
-		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
-		this.dragging = null;
+		// 鎵撳紑绐楀彛鏃惰Е鍙戠殑blur浜嬩欢浼氬鑷村啀娆℃墽琛宲ointerup 鍥犳鎻愬墠閲嶇疆dragging鏉ラ伩鍏嶉噸澶嶆墽琛?		this.dragging = null;
 		switch (dragging.mode) {
 			case 'select': {
 				const { x, y, width, height } = this.marquee;
 				this.selectTiles(x, y, width, height);
 				this.screen.endScrolling();
-				this.screen.removeScrollListener();
+				removeScrollListener(this.screen);
 				Scene.marquee.style.pointerEvents = 'inherit';
 				break;
 			}
@@ -375,7 +375,7 @@ Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 			case 'shift':
 				this.marquee.customShiftAutoTile();
 				this.screen.endScrolling();
-				this.screen.removeScrollListener();
+				removeScrollListener(this.screen);
 				this.requestRendering();
 				Scene.requestRendering!();
 				Scene.marquee.style.pointerEvents = 'inherit';
@@ -463,7 +463,7 @@ Palette.pointermove = function (this: typeof Palette, event: PointerEvent) {
 					const y = dragging.startY;
 					this.requestRendering();
 					this.marquee.customSelect('destination', x, y);
-					this.screen.addScrollListener('both', this.scaleX / 4, false, () => {
+					addScrollListener(this.screen, 'both', this.scaleX / 4, false, () => {
 						this.screen.beginScrolling();
 						this.updateTransform();
 						this.requestRendering();

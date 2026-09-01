@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { clear, write } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 
@@ -81,13 +81,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	};
 
-	SceneLight.write = function (this: typeof SceneLight, options: Record<string, unknown>) {
-		if (options.x !== undefined) {
-			write($('#sceneLight-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#sceneLight-y'), options.y);
-		}
+	SceneLight.write = function (this: typeof SceneLight, _options: Record<string, unknown>) {
+		($('#sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneLight.update = function (

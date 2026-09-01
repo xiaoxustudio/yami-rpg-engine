@@ -10,15 +10,17 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setObjectProperty-variable"
+				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
 			/>
 			<div class="text">setObjectProperty</div>
-			<ParamList id="setObjectProperty-list" v-model="form.list" />
+			<ParamList id="setObjectProperty-list" v-focus v-model="form.list" />
 			<div class="text">valueVariable</div>
 			<CustomBox
 				id="setObjectProperty-value-variable"
+				v-focus
 				type="variable"
 				filter="all"
 				v-model="form.valueVariable"

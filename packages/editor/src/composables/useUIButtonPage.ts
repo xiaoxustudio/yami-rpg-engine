@@ -2,7 +2,7 @@ import '@app/inspector/element-button-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 
-interface ButtonForm {
+export interface ButtonForm {
 	display: string;
 	normalImage: string;
 	normalClip: number[];

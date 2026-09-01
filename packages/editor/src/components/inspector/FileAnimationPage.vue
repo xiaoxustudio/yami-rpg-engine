@@ -3,14 +3,13 @@
 		<DetailSummary>{{
 			t('components.fileAnimation-sprites.label') || 'Sprites'
 		}}</DetailSummary>
-		<ParamList id="fileAnimation-sprites" class="inspector-list" flexible />
+		<ParamList id="fileAnimation-sprites" ref="elSprites" class="inspector-list" flexible />
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-animation-page.ts';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -20,14 +19,15 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const { t } = useI18n();
 
+const elSprites = ref<InstanceType<typeof ParamList> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.fileAnimation;
 	if (!editor) return;
 
-	const elSprites = document.getElementById('fileAnimation-sprites');
-	if (elSprites) {
-		elSprites.bind(editor.sprites);
-		elSprites.on('change', Animation.listChange);
+	if (elSprites.value) {
+		elSprites.value.bind(editor.sprites);
+		elSprites.value.on('change', Animation.listChange);
 	}
 });
 </script>

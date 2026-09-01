@@ -8,6 +8,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { getFocus, read } from '@app/utils/element-utils';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.webSocketSend = new CommandSchema({
 	name: 'webSocketSend',
@@ -38,7 +39,7 @@ Command.cases.webSocketSend = new CommandSchema({
 export function useWebSocketSendCommandSchema() {
 	const { form, load, commit } = useCommandSchema('webSocketSend', {
 		onLoad() {
-			getFocus(document.getElementById('webSocketSend-id'));
+			requestFocus('webSocketSend-id');
 		}
 	});
 	const onSave = (): void => {

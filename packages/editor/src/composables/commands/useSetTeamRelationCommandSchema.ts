@@ -7,8 +7,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { requestFocus } from '@app/directives/focus';
 
 Command.cases.setTeamRelation = new CommandSchema({
 	name: 'setTeamRelation',
@@ -43,8 +43,9 @@ Command.cases.setTeamRelation = new CommandSchema({
 
 export function useSetTeamRelationCommandSchema() {
 	return useCommandSchema('setTeamRelation', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('setTeamRelation-teamId1'));
+			requestFocus('setTeamRelation-teamId1');
 		}
 	});
 }

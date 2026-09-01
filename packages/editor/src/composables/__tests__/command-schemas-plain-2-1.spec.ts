@@ -21,6 +21,7 @@ import { useDeleteActorCommandSchema } from '@app/composables/commands/useDelete
 import DeleteElement from '@app/components/commands/DeleteElement.vue';
 import { useDeleteElementCommandSchema } from '@app/composables/commands/useDeleteElementCommandSchema';
 import DeleteGlobalActor from '@app/components/commands/DeleteGlobalActor.vue';
+import { useDeleteGlobalActorCommandSchema } from '@app/composables/commands/useDeleteGlobalActorCommandSchema';
 import DeleteObject from '@app/components/commands/DeleteObject.vue';
 import { useDeleteObjectCommandSchema } from '@app/composables/commands/useDeleteObjectCommandSchema';
 
@@ -115,15 +116,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -197,15 +189,16 @@ vi.mock('@app/stores/local', () => ({
 		it('save 路径：DOM 改动经 Command.cases.createActor.save 保存', async () => {
 			const wrapper = mount(CreateActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useCreateActorCommandSchema();
 			Command.cases.createActor.customLoad!({
 				actorId: 'a1',
 				teamId: 'team0',
 				position: { type: 'absolute', x: 0, y: 0 },
 				angle: 0
 			});
-			getControl('createActor-actorId').input('a2');
-			getControl('createActor-position').input({ type: 'absolute', x: 5, y: 6 });
-			getControl('createActor-angle').write(90);
+			form.actorId = 'a2';
+			form.position = { type: 'absolute', x: 5, y: 6 };
+			form.angle = 90;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.createActor.save!();
@@ -265,6 +258,7 @@ vi.mock('@app/stores/local', () => ({
 			const wrapper = mount(CreateElement, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
 			CommandSchema.insert(target, 'createElement');
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('createElement');
 			expect(getControl('createElement-operation').read()).toBe('append-all-to-root');
 			expect(getControl('createElement-parent').read()).toEqual({ type: 'trigger' });
@@ -283,6 +277,7 @@ vi.mock('@app/stores/local', () => ({
 					presetId: 'p1'
 				}
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('createElement');
 			expect(getControl('createElement-operation').read()).toBe('append-one-to-element');
 			expect(getControl('createElement-parent').read()).toEqual({ type: 'trigger' });
@@ -532,15 +527,6 @@ vi.mock('@app/stores/local', () => ({
 	});
 }
 {
-	interface ControlEl extends HTMLElement {
-		read(): unknown;
-		write(value: unknown): void;
-		input(value: unknown): void;
-	}
-
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
-
 	const target = {
 		scrollAndResize: vi.fn(),
 		getSelectionPosition: () => ({ x: 100, y: 100 }),
@@ -614,9 +600,10 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('save 路径：DOM 改动经 Command.cases.createTrigger.save 保存', async () => {
+		it('save 路径：form 值经 Command.cases.createTrigger.save 保存', async () => {
 			const wrapper = mount(CreateTrigger, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useCreateTriggerCommandSchema();
 			Command.cases.createTrigger.customLoad!({
 				triggerId: 't1',
 				caster: { type: 'trigger' },
@@ -626,8 +613,8 @@ vi.mock('@app/stores/local', () => ({
 				scale: 1,
 				timeScale: 1
 			});
-			getControl('createTrigger-triggerId').write('t2');
-			getControl('createTrigger-distance').write(3);
+			form.triggerId = 't2';
+			form.distance = 3;
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.createTrigger.save!();
@@ -873,15 +860,17 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
+		it('edit 路径：handler.load 解构 params 到 form', async () => {
 			const wrapper = mount(DeleteGlobalActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useDeleteGlobalActorCommandSchema();
 			CommandSchema.edit(target, {
 				id: 'deleteGlobalActor',
 				params: { actorId: 'hero.json' }
 			});
+			await wrapper.vm.$nextTick();
 			expect(Window.open).toHaveBeenCalledWith('deleteGlobalActor');
-			expect(getControl('deleteGlobalActor-actorId').read()).toBe('hero.json');
+			expect(form.actorId).toBe('hero.json');
 			wrapper.unmount();
 		});
 
@@ -896,11 +885,12 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
-		it('save 路径：用户改控件后经 Command.cases.deleteGlobalActor.save 保存', async () => {
+		it('save 路径：用户改 form 后经 Command.cases.deleteGlobalActor.save 保存', async () => {
 			const wrapper = mount(DeleteGlobalActor, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			const { form } = useDeleteGlobalActorCommandSchema();
 			Command.cases.deleteGlobalActor.customLoad!({ actorId: '' });
-			getControl('deleteGlobalActor-actorId').input('enemy.json');
+			form.actorId = 'enemy.json';
 			const saved = vi.fn();
 			Command.save = saved;
 			Command.cases.deleteGlobalActor.save!();

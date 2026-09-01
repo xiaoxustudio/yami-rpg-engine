@@ -1,10 +1,10 @@
 ﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
+import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -69,16 +69,16 @@ Command.cases.changeActorPortrait = new CommandSchema({
 
 export function useChangeActorPortraitCommandSchema() {
 	const { form, load, commit } = useCommandSchema('changeActorPortrait', {
+		skipWrite: true,
 		onLoad() {
-			getFocus(document.getElementById('changeActorPortrait-actor'));
+			requestFocus('changeActorPortrait-actor');
 		}
 	});
 	const onSave = (): void => {
-		const actor = read(document.getElementById('changeActorPortrait-actor')) ?? form.actor;
-		const mode = read(document.getElementById('changeActorPortrait-mode')) ?? form.mode;
-		const portrait =
-			read(document.getElementById('changeActorPortrait-portrait')) ?? form.portrait;
-		const clip = read(document.getElementById('changeActorPortrait-clip')) ?? form.clip;
+		const actor = form.actor;
+		const mode = form.mode as string;
+		const portrait = form.portrait;
+		const clip = form.clip as number[];
 		switch (mode) {
 			case 'full':
 				commit({ actor, mode, portrait, clip });

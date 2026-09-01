@@ -8,6 +8,7 @@
 			<TextBox id="sceneTilemap-name" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
+				ref="elLayer"
 				id="sceneTilemap-layer"
 				v-model="form.layer"
 				@input="onParamInput"
@@ -21,14 +22,18 @@
 				min="0"
 				max="100"
 			></NumberBox>
-			<div class="text">{{ t('components.sceneTilemap-light.label') || 'Light Sampling' }}</div>
+			<div class="text">
+				{{ t('components.sceneTilemap-light.label') || 'Light Sampling' }}
+			</div>
 			<SelectBox
+				ref="elLight"
 				id="sceneTilemap-light"
 				v-model="form.light"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.sceneTilemap-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				ref="elBlend"
 				id="sceneTilemap-blend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -151,11 +156,17 @@
 		<DetailSummary>{{
 			t('components.sceneTilemap-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneTilemap-conditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			ref="elConditions"
+			id="sceneTilemap-conditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneTilemap-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
+			ref="elEvents"
 			id="sceneTilemap-events"
 			class="inspector-list"
 			filter="tilemap"
@@ -164,14 +175,19 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneTilemap-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneTilemap-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			ref="elScripts"
+			id="sceneTilemap-scripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
-	<ParameterPane id="sceneTilemap-parameter-pane"></ParameterPane>
+	<ParameterPane ref="elParameterPane" id="sceneTilemap-parameter-pane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -203,6 +219,14 @@ const onLayerWrite = (value: unknown) => {
 	Inspector?.sceneTilemap?.layerWrite?.({ value });
 };
 
+const elLayer = ref<InstanceType<typeof SelectBox> | null>(null);
+const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
+const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
+const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
+const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
+const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
+const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+
 onMounted(() => {
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
@@ -212,29 +236,12 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 
-	const elLayer = document.getElementById('sceneTilemap-layer') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
-	if (elLayer?.loadItems) {
-		elLayer.loadItems([
-			{ name: 'Background', value: 'background' },
-			{ name: 'Foreground', value: 'foreground' },
-			{ name: 'Object', value: 'object' }
-		]);
-	}
+	elLayer.value?.loadItems([
+		{ name: 'Background', value: 'background' },
+		{ name: 'Foreground', value: 'foreground' },
+		{ name: 'Object', value: 'object' }
+	]);
 
-	const elLight = document.getElementById('sceneTilemap-light') as
-		| (HTMLElement & {
-				loadItems?: (items: unknown[]) => void;
-				lightItems?: Record<string, unknown[]>;
-				dataItems?: unknown[] | null;
-				dataValue?: unknown;
-				update?: () => void;
-		  })
-		| null;
-	const elBlend = document.getElementById('sceneTilemap-blend') as
-		| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-		| null;
 	const refreshLocalizedItems = () => {
 		try {
 			const readOption = (id: string, key: string) => {
@@ -246,7 +253,12 @@ onMounted(() => {
 				if (legacyName) return legacyName;
 				return t(`components.${id}.options.${key}.label`);
 			};
-			if (elLight) {
+			const lightRoot = elLight.value?.root as
+				| (HTMLElement & {
+						lightItems: { all: unknown[]; tile: unknown[]; sprite: unknown[] };
+				  })
+				| null;
+			if (lightRoot) {
 				const items = {
 					raw: { name: readOption('sceneTilemap-light', 'raw'), value: 'raw' },
 					global: { name: readOption('sceneTilemap-light', 'global'), value: 'global' },
@@ -256,53 +268,43 @@ onMounted(() => {
 					},
 					anchor: { name: readOption('sceneTilemap-light', 'anchor'), value: 'anchor' }
 				};
-				(
-					elLight as unknown as {
-						lightItems: { all: unknown[]; tile: unknown[]; sprite: unknown[] };
-					}
-				).lightItems = {
+				lightRoot.lightItems = {
 					all: Object.values(items),
 					tile: [items.raw, items.global, items.ambient],
 					sprite: [items.raw, items.global, items.anchor]
 				};
-				if (elLight.loadItems) elLight.loadItems(items.tile);
+				elLight.value?.loadItems(items.tile);
 			}
-			if (elBlend?.loadItems) {
-				elBlend.loadItems([
-					{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
-					{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
-					{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
-				]);
-			}
+			elBlend.value?.loadItems([
+				{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
+				{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
+				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
+			]);
 		} catch {
 			// 语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新
 		}
 	};
-	if (elLight) {
-		editor.lightBox = elLight;
+	if (elLight.value) {
+		editor.lightBox = elLight.value.root;
 		refreshLocalizedItems();
 	}
 
-	if (elBlend?.loadItems) {
+	if (elBlend.value) {
 		refreshLocalizedItems();
 	}
 
-	document
-		.getElementById('sceneTilemap-conditions')
-		?.bind?.(new ConditionListInterface(editor, Scene));
-	document.getElementById('sceneTilemap-events')?.bind?.(new EventListInterface(editor, Scene));
-	document
-		.getElementById('sceneTilemap-scripts')
-		?.bind?.(new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene));
-	document
-		.getElementById('sceneTilemap-parameter-pane')
-		?.bind?.(document.getElementById('sceneTilemap-scripts'));
+	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
+	elEvents.value?.bind(new EventListInterface(editor, Scene));
+	elScripts.value?.bind(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	const elements = document.querySelectorAll(
 		'#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order, #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y, #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY, #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity'
 	);
 	bindInput(elements, editor, Scene);
-	document.getElementById('sceneTilemap-layer')?.addEventListener('input', editor.layerInput!);
+	elLayer.value?.on('input', editor.layerInput!);
 	document
 		.querySelectorAll('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts')
 		.forEach((el) => el.addEventListener('change', Scene.listChange));

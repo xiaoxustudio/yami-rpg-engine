@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.if-condition-type.label') }}</div>
 			<SelectBox
 				id="if-condition-type"
+				v-focus
 				:model-value="form.type"
 				:ref="fieldRef('if-condition-type')"
 				@write="onWrite"
@@ -17,6 +18,7 @@
 			<div class="text">{{ t('components.if-condition-common-variable.label') }}</div>
 			<CustomBox
 				id="if-condition-common-variable"
+				v-focus
 				:ref="fieldRef('if-condition-common-variable')"
 				type="variable"
 				filter="all"
@@ -82,6 +84,7 @@
 			<div class="text">{{ t('components.if-condition-string-enum-stringId.label') }}</div>
 			<CustomBox
 				id="if-condition-string-enum-stringId"
+				v-focus
 				:ref="fieldRef('if-condition-string-enum-stringId')"
 				type="enum-string"
 				:model-value="form.stringEnumStringId"
@@ -107,6 +110,7 @@
 			<div class="text">{{ t('components.if-condition-operand-variable.label') }}</div>
 			<CustomBox
 				id="if-condition-operand-variable"
+				v-focus
 				:ref="fieldRef('if-condition-operand-variable')"
 				type="variable"
 				filter="all"
@@ -177,6 +181,7 @@
 			<div class="text">{{ t('components.if-condition-actor-skillId.label') }}</div>
 			<CustomBox
 				id="if-condition-actor-skillId"
+				v-focus
 				:ref="fieldRef('if-condition-actor-skillId')"
 				type="file"
 				filter="skill"
@@ -185,6 +190,7 @@
 			<div class="text">{{ t('components.if-condition-actor-stateId.label') }}</div>
 			<CustomBox
 				id="if-condition-actor-stateId"
+				v-focus
 				:ref="fieldRef('if-condition-actor-stateId')"
 				type="file"
 				filter="state"
@@ -193,6 +199,7 @@
 			<div class="text">{{ t('components.if-condition-actor-itemId.label') }}</div>
 			<CustomBox
 				id="if-condition-actor-itemId"
+				v-focus
 				:ref="fieldRef('if-condition-actor-itemId')"
 				type="file"
 				filter="item"
@@ -201,6 +208,7 @@
 			<div class="text">{{ t('components.if-condition-actor-equipmentId.label') }}</div>
 			<CustomBox
 				id="if-condition-actor-equipmentId"
+				v-focus
 				:ref="fieldRef('if-condition-actor-equipmentId')"
 				type="file"
 				filter="equipment"
@@ -217,6 +225,7 @@
 			<div class="text">{{ t('components.if-condition-actor-shortcutKey.label') }}</div>
 			<SelectVar
 				id="if-condition-actor-shortcutKey"
+				v-focus
 				:ref="fieldRef('if-condition-actor-shortcutKey')"
 				:model-value="form.actorShortcutKey"
 			/>
@@ -242,6 +251,7 @@
 			<div class="text">{{ t('components.if-condition-keyboard-keycode.label') }}</div>
 			<KeyboardBox
 				id="if-condition-keyboard-keycode"
+				v-focus
 				:ref="fieldRef('if-condition-keyboard-keycode')"
 			/>
 			<div class="text">{{ t('components.if-condition-keyboard-state.label') }}</div>
@@ -253,6 +263,7 @@
 			<div class="text">{{ t('components.if-condition-gamepad-button.label') }}</div>
 			<GamepadBox
 				id="if-condition-gamepad-button"
+				v-focus
 				:ref="fieldRef('if-condition-gamepad-button')"
 			/>
 			<div class="text">{{ t('components.if-condition-gamepad-state.label') }}</div>
