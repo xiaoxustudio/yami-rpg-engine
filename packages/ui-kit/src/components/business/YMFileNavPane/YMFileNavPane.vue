@@ -19,6 +19,9 @@ import {
 	type CommonListLike
 } from '../../../utils/common-list';
 import { attachApi } from '../../../utils/attach-api';
+import { createFileNavCore } from './file-nav-pane-core';
+
+const core = createFileNavCore();
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = document.createElement('div');
@@ -157,9 +160,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const el = ref<HTMLElement>();
 
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
 const timer: RenameTimer = {
 	target: null,
 	running: false,
@@ -204,10 +204,8 @@ function listenDraggingScrollbarEvent() {
 
 function load(...folders: FileItem[]): void {
 	select(...folders);
-	for (let folder of folders) {
-		while ((folder = folder.parent as FileItem)) {
-			folder.getContext(el.value!).expanded = true;
-		}
+	for (const ancestor of core.collectAncestorFolders(folders)) {
+		ancestor.getContext(el.value!).expanded = true;
 	}
 	update();
 	const { browser } = props.links;
@@ -304,13 +302,12 @@ function updateFolderElement(element: FolderElement): void {
 		element.textNode = textNode;
 	}
 
-	const markVisible = file.subfolders.length !== 0;
+	const { markVisible, expanded } = core.computeFolderExpansionState(file, context.expanded);
 	if (element.markVisible !== markVisible) {
 		element.markVisible = markVisible;
 		element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
 	}
 
-	const expanded = markVisible && context.expanded;
 	if (element.expanded !== expanded) {
 		element.expanded = expanded;
 		switch (expanded) {
@@ -325,7 +322,7 @@ function updateFolderElement(element: FolderElement): void {
 		}
 	}
 
-	const textIndent = element.indent * 12;
+	const textIndent = core.computeTextIndent(element.indent);
 	if (element.textIndent !== textIndent) {
 		element.textIndent = textIndent;
 		element.style.textIndent = `${textIndent}px`;
@@ -368,27 +365,12 @@ function selectRelative(direction: 'up' | 'down'): void {
 	const els = elements;
 	const count = els.count;
 	if (count > 0) {
-		let index: number;
-		let start = Infinity;
-		let end = -Infinity;
-		const last = count - 1;
 		const { selections: sels } = { selections };
+		const indices: number[] = [];
 		for (const file of sels) {
-			const { element } = file.getContext(el.value!);
-			const idx = els.indexOf(element);
-			if (idx !== -1) {
-				start = Math.min(start, idx);
-				end = Math.max(end, idx);
-			}
+			indices.push(els.indexOf(file.getContext(el.value!).element));
 		}
-		switch (direction) {
-			case 'up':
-				index = clamp(start - 1, 0, last);
-				break;
-			case 'down':
-				index = clamp(end + 1, 0, last);
-				break;
-		}
+		const index = core.computeRelativeSelectionIndex(direction, count, indices);
 		const file = els[index]?.file;
 		if (!(sels.length === 1 && sels[0] === file)) {
 			select(file!);
@@ -406,16 +388,9 @@ function scrollToSelection(mode: string = 'active'): void {
 		const count = els.count;
 		for (let i = 0; i < count; i++) {
 			if (els[i]!.file === selection) {
-				let scrollTop: number;
-				switch (mode) {
-					case 'active':
-						scrollTop = clamp(node.scrollTop, i * 20 + 20 - node.innerHeight, i * 20);
-						break;
-					case 'middle':
-						scrollTop = Math.round((i * 20 + 10 - node.innerHeight / 2) / 20) * 20;
-						break;
-					default:
-						return;
+				const scrollTop = core.computeScrollTop(mode, i, node.scrollTop, node.innerHeight);
+				if (scrollTop === null) {
+					return;
 				}
 				if (node.scrollTop !== scrollTop) {
 					node.scrollTop = scrollTop;
@@ -428,13 +403,7 @@ function scrollToSelection(mode: string = 'active'): void {
 
 function getSelections(): unknown[] {
 	const { browser } = props.links;
-	switch (browser!.display) {
-		case 'normal':
-			return selections;
-		case 'search':
-			return browser!.backupFolders!;
-	}
-	return [];
+	return core.resolveSelections(browser!.display, selections, browser!.backupFolders!);
 }
 
 function rename(file: FileItem): void {
@@ -467,14 +436,7 @@ function cancelRenaming(): void {
 }
 
 function clearElements(start: number): void {
-	const els = elements;
-	if (els.length > 256 && els.length !== start) {
-		els.length = start;
-	}
-	let i = start;
-	while (els[i] !== undefined) {
-		els[i++] = undefined;
-	}
+	core.clearFolderElements(elements, start);
 }
 
 function clear(): HTMLElement {
@@ -595,16 +557,14 @@ function pointerdown(event: PointerEvent): void {
 					}
 					if (event.shiftKey && length !== 0) {
 						const els = elements;
-						let start = els.indexOf(element as FolderElement);
-						let end = start;
+						const indices: number[] = [];
 						for (const file of sels) {
-							const { element } = file.getContext(node);
-							const index = els.indexOf(element);
-							if (index !== -1) {
-								start = Math.min(start, index);
-								end = Math.max(end, index);
-							}
+							indices.push(els.indexOf(file.getContext(node).element));
 						}
+						const { start, end } = core.computeShiftSelectionRange(
+							els.indexOf(element as FolderElement),
+							indices
+						);
 						if (start !== -1) {
 							const slice = els.slice(start, end + 1);
 							select(...slice.map((element) => element!.file));
@@ -679,14 +639,8 @@ function listSelect(event: Event): void {
 }
 
 function dirchange(event: Event): void {
-	const node = el.value!;
-	const folders: unknown[] = [];
-	const { inoMap } = props.directoryApi!;
-	for (const folder of getSelections()) {
-		const { ino } = (folder as FileItem).stats;
-		const { path } = (inoMap[ino as string] || folder) as FileItem;
-		folders.push(props.directoryApi?.getFolder(path));
-	}
+	const paths = core.resolveFolderPaths(getSelections(), props.directoryApi!.inoMap);
+	const folders: unknown[] = paths.map((path) => props.directoryApi?.getFolder(path));
 	const { browser } = props.links;
 	switch (browser!.display) {
 		case 'normal':
@@ -723,8 +677,7 @@ function createTextBox(): TextBoxElement {
 
 	tb.addEventListener('beforeinput', function (event: InputEvent) {
 		if (event.inputType === 'insertText' && typeof event.data === 'string') {
-			const regexp = /[\\/:*?"<>|]/;
-			if (regexp.test(event.data)) {
+			if (core.isForbiddenFileNameChar(event.data)) {
 				event.preventDefault();
 				event.stopPropagation();
 			}

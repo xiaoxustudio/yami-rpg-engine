@@ -27,10 +27,10 @@ function mountPane() {
 	const { links, body } = makeLinks();
 	const wrapper = mount(YMFileBodyPane, {
 		props: {
-			links,
-			directoryApi: {},
-			fileSystemApi: {},
-			pathUtil: { dirname: (p: string) => p.split('/').slice(0, -1).join('/') },
+			links: links as never,
+			directoryApi: {} as never,
+			fileSystemApi: {} as never,
+			pathUtil: { dirname: (p: string) => p.split('/').slice(0, -1).join('/') } as never,
 			fileClasses: { FileItem: class FileItem {}, FolderItem: class FolderItem {} },
 			createTextBox: () => null,
 			setIconClip: () => {},

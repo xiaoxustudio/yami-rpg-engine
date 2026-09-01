@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import AppShell from './AppShell.vue';
-import { createScrollListener } from '@ui-kit';
 import { Toast } from '@app/components/toast';
 import { provideToastService } from '@app/composables/useToastService';
 

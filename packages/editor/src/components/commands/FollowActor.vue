@@ -38,7 +38,7 @@
 				max="0.8"
 				decimals="4"
 				unit="r"
-				v-model="form.offset"
+				v-model="offset"
 			/>
 			<div class="text">Vert Distance</div>
 			<NumberBox
@@ -47,7 +47,7 @@
 				max="4"
 				decimals="4"
 				unit="tile"
-				v-model="form.vertDist"
+				v-model="vertDist"
 			/>
 			<div class="text">Buffer Distance</div>
 			<NumberBox
@@ -56,7 +56,7 @@
 				max="4"
 				decimals="4"
 				unit="tile"
-				v-model="form.bufferDist"
+				v-model="bufferDist"
 			/>
 			<div class="text">Navigate</div>
 			<SelectBox id="followActor-navigate" v-model="form.navigate" />
@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -85,6 +85,25 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useFollowActorCommandSchema();
+
+const offset = computed({
+	get: () => form.offset as number | string,
+	set: (value) => {
+		form.offset = value;
+	}
+});
+const vertDist = computed({
+	get: () => form.vertDist as number | string,
+	set: (value) => {
+		form.vertDist = value;
+	}
+});
+const bufferDist = computed({
+	get: () => form.bufferDist as number | string,
+	set: (value) => {
+		form.bufferDist = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

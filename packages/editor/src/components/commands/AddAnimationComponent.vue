@@ -28,7 +28,7 @@
 				id="addAnimationComponent-priority"
 				min="-100"
 				max="100"
-				v-model="form.priority"
+				v-model="priority"
 			/>
 			<div class="text">Offset Y</div>
 			<NumberBox
@@ -36,14 +36,14 @@
 				min="-100"
 				max="100"
 				unit="px"
-				v-model="form.offsetY"
+				v-model="offsetY"
 			/>
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAddAnimationComponentCommandSchema } from '@app/composables/commands/useAddAnimationComponentCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -56,6 +56,19 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useAddAnimationComponentCommandSchema();
+
+const priority = computed({
+	get: () => form.priority as number | string,
+	set: (value) => {
+		form.priority = value;
+	}
+});
+const offsetY = computed({
+	get: () => form.offsetY as number | string,
+	set: (value) => {
+		form.offsetY = value;
+	}
+});
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

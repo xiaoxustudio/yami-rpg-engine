@@ -12,13 +12,13 @@
 			<div class="text">Index</div>
 			<NumberVar id="gameData-index" min="0" max="32" v-model="form.index" />
 			<div class="text">Variables</div>
-			<TextBox id="gameData-variables" v-model="form.variables" />
+			<TextBox id="gameData-variables" v-model="variables" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -31,6 +31,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useGameDataCommandSchema();
+
+const variables = computed({
+	get: () => form.variables as string,
+	set: (value) => {
+		form.variables = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

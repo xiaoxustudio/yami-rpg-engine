@@ -16,14 +16,14 @@
 			<div class="text">Data</div>
 			<ParamList id="httpRequest-data" v-model="form.data" />
 			<div class="text">TimeOut</div>
-			<NumberBox id="httpRequest-timeout" v-model="form.timeout" />
+			<NumberBox id="httpRequest-timeout" v-model="timeout" />
 			<div class="text">ResponseType</div>
 			<SelectBox id="httpRequest-responseType" v-model="form.responseType" />
 			<div class="text">WithCredentials</div>
 			<CheckBox
 				class="standard"
 				id="httpRequest-withCredentials"
-				v-model="form.withCredentials"
+				v-model="withCredentials"
 			/>
 			<div class="text">AuthUser</div>
 			<StringVar id="httpRequest-authUser" v-model="form.authUser" />
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHttpRequestCommandSchema } from '@app/composables/commands/useHttpRequestCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -58,6 +58,19 @@ import ParamList from '@app/components/common/ParamList.vue';
 const { t } = useI18n();
 
 const { form, save } = useHttpRequestCommandSchema();
+
+const timeout = computed({
+	get: () => form.timeout as number | string,
+	set: (value) => {
+		form.timeout = value;
+	}
+});
+const withCredentials = computed({
+	get: () => form.withCredentials as boolean,
+	set: (value) => {
+		form.withCredentials = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

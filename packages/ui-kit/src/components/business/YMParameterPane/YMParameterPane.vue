@@ -12,6 +12,9 @@ import {
 	write
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { createParamPaneCore, type ParamDef } from './param-pane-core';
+
+const core = createParamPaneCore();
 
 interface PaneControlFactory {
 	checkBox(): HTMLElement;
@@ -24,21 +27,6 @@ interface PaneControlFactory {
 	numberVar(): HTMLElement;
 	selectBox(): HTMLElement;
 	textBox(): HTMLElement;
-}
-
-interface ParamDef {
-	type: string;
-	key: string;
-	alias?: string;
-	desc?: string;
-	prefix?: string;
-	suffix?: string;
-	readonly?: boolean;
-	validate?: boolean;
-	hidden?: boolean;
-	group?: string;
-	value?: unknown;
-	repeatableGroup?: { parameters: ParamDef[] };
 }
 
 interface ScriptDef {
@@ -324,27 +312,10 @@ const update = (): void => {
 		if (meta.overview?.deprecated && paramList.length) {
 			const banner = document.createElement('div');
 			addClass(banner, 'deprecated-banner');
-			banner.textContent =
-				typeof meta.overview.deprecated === 'string'
-					? 'deprecated: ' + meta.overview.deprecated
-					: 'deprecated';
+			banner.textContent = core.deprecatedBannerText(meta.overview.deprecated);
 			self.appendChild(banner);
 		}
-		const groupOrder: string[] = [];
-		// oxlint-disable-next-line no-explicit-any
-		const groupMap = new Map<string, any[]>();
-		for (const parameter of paramList) {
-			const g = parameter.group || '';
-			if (!groupMap.has(g)) {
-				groupMap.set(g, []);
-				groupOrder.push(g);
-			}
-			groupMap.get(g)!.push(parameter);
-		}
-		if (!groupMap.has('')) {
-			groupMap.set('', []);
-			groupOrder.unshift('');
-		}
+		const { groupOrder, groupMap } = core.groupParameters(paramList);
 		const createParamRow = (
 			box: HTMLElement,
 			grid: HTMLElement,
@@ -356,7 +327,7 @@ const update = (): void => {
 			const key = parameter.key;
 			const name = langMap.get(parameter.alias) ?? key;
 			const desc = langMap.get(parameter.desc);
-			const tip = desc ? `<b>${name}</b>\n${desc}` : '';
+			const tip = core.formatParamTip(name, desc);
 			self.updateParamInput(inputWrap, parameters[key]);
 			label.textContent = name;
 			getSetTooltip()?.(input as HTMLElement, tip);
@@ -374,7 +345,7 @@ const update = (): void => {
 			if (parameter.validate) {
 				const validateInput = () => {
 					const val = input.parameters?.[input.key];
-					const ok = val !== undefined && !!getPlugin()?.checkValidate(parameter, val);
+					const ok = core.isParamValueValid(parameter, val, getPlugin());
 					if (ok) {
 						removeClass(input as HTMLElement, 'validate-error');
 					} else {
@@ -711,15 +682,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	};
 	input.write = function (value: Array<Record<string, unknown>>) {
 		rowsEl.innerHTML = '';
-		let arr = value;
-		if (!arr || arr.length === 0) {
-			// oxlint-disable-next-line no-explicit-any
-			const empty: Record<string, any> = {};
-			for (const subParam of template) {
-				empty[subParam.key] = subParam.value;
-			}
-			arr = [empty];
-		}
+		const arr = core.normalizeRepeatableRows(value, template);
 		for (const item of arr) {
 			const row = document.createElement('div');
 			row.className = 'repeatable-group-row';
@@ -739,8 +702,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 				(subParam: ParamDef): RepeatableRowWrap => {
 					const config = getTypeConfig(subParam.type);
 					const wrap = config ? config.create(pane, subParam) : null;
-					const val =
-						item[subParam.key] !== undefined ? item[subParam.key] : subParam.value;
+					const val = core.resolveSubParamValue(item, subParam);
 					if (wrap) {
 						wrap.label.textContent = '';
 						wrap.input.parameters = item;
@@ -765,13 +727,8 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	};
 	addBtn.onclick = function (e: MouseEvent) {
 		e.stopPropagation();
-		// oxlint-disable-next-line no-explicit-any
-		const empty: Record<string, any> = {};
-		for (const subParam of template) {
-			empty[subParam.key] = subParam.value;
-		}
 		const data = input.read();
-		data.push(empty);
+		data.push(core.createRepeatableRowData(template));
 		input.write(data);
 		container.dispatchEvent(new Event('change', { bubbles: true }));
 	};

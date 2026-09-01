@@ -26,7 +26,8 @@
 		"build:vite": "cross-env VITE_SERVE=false pnpm -F @yami/ui-kit build && cross-env VITE_SERVE=false vite build",
 		"build:all": "pnpm run build:vite",
 		"start:prod": "pnpm run build:all && electron . --dirname=.",
-		"typecheck": "tsc --noEmit -p tsconfig.strict.json"
+		"typecheck": "tsc --noEmit -p tsconfig.strict.json",
+		"typecheck:vue": "node scripts/check-vue-types.mjs"
 	},
 	"dependencies": {
 		"@vueuse/core": "^14.3.0",

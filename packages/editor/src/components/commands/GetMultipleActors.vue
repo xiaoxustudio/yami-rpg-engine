@@ -111,11 +111,11 @@ onMounted(() => {
 		{ name: t('command.getMultipleActors.inactive') || 'Inactive', value: 'inactive' },
 		{ name: t('command.getMultipleActors.either') || 'Either', value: 'either' }
 	]);
-	$('#getMultipleActors')?.on?.('open', function (event: Event) {
+	$('#getMultipleActors')?.on?.('open', function (_event: Event) {
 		const items = Data.createTeamItems!();
 		$('#getMultipleActors-teamId')?.loadItems?.(items);
 	});
-	$('#getMultipleActors')?.on?.('closed', function (event: Event) {
+	$('#getMultipleActors')?.on?.('closed', function (_event: Event) {
 		clear($('#getMultipleActors-teamId'));
 	});
 });

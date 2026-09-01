@@ -33,7 +33,7 @@
 			<CheckBox
 				class="standard"
 				id="downloadFile-isBackground"
-				v-model="form.isBackground"
+				v-model="isBackground"
 				@input="onIsBackgroundInput"
 			/>
 			<div class="text">Path</div>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -60,6 +60,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useDownloadFileCommandSchema();
+
+const isBackground = computed({
+	get: () => form.isBackground as boolean,
+	set: (value) => {
+		form.isBackground = value;
+	}
+});
 
 const onIsBackgroundInput = (value: boolean) => {
 	if (value) {

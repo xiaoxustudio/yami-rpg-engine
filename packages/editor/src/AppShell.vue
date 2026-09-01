@@ -161,7 +161,7 @@ const onComponentMounted = () => {
 		resolveLazyComponentsReady();
 	}
 };
-const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempts: number) => {
+const onAsyncError = (_error: Error, retry: () => void, fail: () => void, attempts: number) => {
 	if (attempts < 3) {
 		retry();
 		return;
