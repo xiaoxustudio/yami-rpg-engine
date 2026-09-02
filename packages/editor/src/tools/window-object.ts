@@ -355,7 +355,11 @@ Object.defineProperty(frames, 'append', {
 			console.error('[window] frames.append error:', error);
 		}
 		frames.push(element);
-		getWindowStore().syncStack(frames.map((f) => f.id));
+		try {
+			getWindowStore().syncStack(frames.map((f) => f.id));
+		} catch (error) {
+			console.error('[window] frames.syncStack error:', error);
+		}
 		return true;
 	}
 });
@@ -366,9 +370,9 @@ Object.defineProperty(frames, 'remove', {
 		if (index === -1) {
 			return false;
 		}
-		frames.splice(index, 1);
-		getWindowStore().syncStack(frames.map((f) => f.id));
 		try {
+			frames.splice(index, 1);
+			getWindowStore().syncStack(frames.map((f) => f.id));
 			if (frames.length === 0) {
 				deactivateModalMode();
 			} else {
@@ -376,6 +380,9 @@ Object.defineProperty(frames, 'remove', {
 			}
 		} catch (error) {
 			console.error('[window] frames.remove restore error:', error);
+			if (frames.length === 0) {
+				document.body.style.pointerEvents = 'inherit';
+			}
 		}
 		return true;
 	}
