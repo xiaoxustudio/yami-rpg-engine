@@ -134,6 +134,11 @@ export function rect(el: unknown): DOMRect {
 
 export function clear(el: Node | null | undefined): HTMLElement {
 	if (!el) return el as unknown as HTMLElement;
+	const element = el as HTMLElement & { clear?: () => void };
+	if (element.classList?.contains('tree-list') && typeof element.clear === 'function') {
+		element.clear();
+		return element;
+	}
 	el.textContent = '';
 	return el as HTMLElement;
 }
