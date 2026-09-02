@@ -5,7 +5,6 @@
 		:padded="props.padded"
 		:render-node-extras="renderNodeExtras"
 		:render-node-icon="props.nodeIconRenderer ? renderNodeIcon : undefined"
-		:render-node-content="props.nodeContent ? renderNodeContent : undefined"
 	/>
 </template>
 
@@ -22,7 +21,6 @@ interface Props {
 	padded?: boolean;
 	nodeExtras?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
 	nodeIconRenderer?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
-	nodeContent?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -54,15 +52,6 @@ const renderNodeIcon = (item: unknown, container: HTMLElement): void => {
 		render(vnodes ? h(Fragment as never, vnodes) : null, container);
 	} catch (error) {
 		console.error('[tree-icon] renderNodeIcon failed:', error);
-	}
-};
-
-const renderNodeContent = (item: unknown, container: HTMLElement): void => {
-	try {
-		const vnodes = props.nodeContent?.(item, container);
-		render(vnodes ? h(Fragment as never, vnodes) : null, container);
-	} catch (error) {
-		console.error('[tree-content] renderNodeContent failed:', error);
 	}
 };
 

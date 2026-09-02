@@ -1,8 +1,8 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { getWindowStore } from '@app/stores/window';
-import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
+import { addClass, hasClass, hide, on, rect, show } from '@app/utils/element-utils';
+import { Fragment, h, render, type VNode } from 'vue';
 
 interface TextSuggestionItem {
 	name: string;
@@ -19,6 +19,7 @@ type ListMethod = ((...args: any[]) => any) | null;
 
 interface TextSuggestionList {
 	selectDefaultCommand: ListMethod;
+	updateNodeElement: ListMethod;
 	elements: Array<{ item: TextSuggestionItem }> & { count: number };
 	selection: TextSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
@@ -98,6 +99,7 @@ function createEmptyList(): TextSuggestionList {
 	const noop = () => {};
 	return {
 		selectDefaultCommand: null,
+		updateNodeElement: null,
 		elements: Object.assign([], { count: 0 }),
 		selection: null,
 		pressing: null,
@@ -143,18 +145,21 @@ export const TextSuggestion: TextSuggestionShape = {
 	listOpen: null
 };
 
+TextSuggestion.list.updateNodeElement = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 	const element = $('#text-suggestions');
 	if (element && element !== (this.list as unknown as HTMLElement)) {
+		element.updateNodeElement = this.list.updateNodeElement as unknown as (
+			item: unknown
+		) => unknown;
 		element.selectDefaultCommand = this.list.selectDefaultCommand as unknown as (
 			item: unknown
 		) => unknown;
 		this.list = element as unknown as TextSuggestionList;
 	}
 	const { list } = this;
-	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
 
 	on(list, 'pointerdown', this.listPointerdown!);
@@ -320,6 +325,30 @@ TextSuggestion.listOpen = function (
 	const item = event.value;
 	if (item.element!.parentNode) {
 		TextSuggestion.select!(item);
+	}
+};
+
+TextSuggestion.list.updateNodeElement = function (
+	this: TextSuggestionList,
+	element: HTMLElement & { item: TextSuggestionItem; initialized?: boolean }
+): void {
+	if (!element.initialized) {
+		element.initialized = true;
+		const item = element.item;
+		const nodes: VNode[] = [];
+		const classList = ['text-suggestion-content', 'text'];
+		if (item.class) classList.push(item.class);
+		nodes.push(h('div', { class: classList }, item.name));
+		if (item.refCount) {
+			nodes.push(
+				h('div', { class: 'text-suggestion-ref-count text' }, String(item.refCount))
+			);
+		}
+		if (item.comment) {
+			nodes.push(h('div', { class: 'text-suggestion-comment text' }, item.comment));
+		}
+		render(h(Fragment, nodes), element);
+		addClass(element, 'text-suggestion-item');
 	}
 };
 

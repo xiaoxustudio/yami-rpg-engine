@@ -23,7 +23,6 @@ interface Props {
 	padded?: boolean;
 	renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
 	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
-	renderNodeContent?: (item: unknown, container: HTMLElement) => void;
 }
 
 type TreeListRootElement = HTMLElement & {
@@ -48,7 +47,6 @@ type TreeListHost = HTMLElement & {
 	createText?: (item: TreeItem) => Text;
 	renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
 	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
-	renderNodeContent?: (item: unknown, container: HTMLElement) => void;
 };
 
 interface TreeListElements {
@@ -68,7 +66,6 @@ interface RowItem {
 	textNode?: Text | null;
 	folderMark?: HTMLElement | null;
 	nodeIcon?: HTMLElement | null;
-	rowContent?: HTMLElement | null;
 	extras?: HTMLElement | null;
 	indent?: number;
 	textIndent?: number;
@@ -90,7 +87,6 @@ const topGap = ref(0);
 const bottomGap = ref(0);
 const hasIconContainer = computed(() => typeof props.renderNodeIcon === 'function');
 const hasExtrasContainer = computed(() => typeof props.renderNodeExtras === 'function');
-const hasContentContainer = computed(() => typeof props.renderNodeContent === 'function');
 
 let host: TreeListHost | null = null;
 let allRows: TreeRow[] = [];
@@ -198,12 +194,6 @@ const fillInternals = (element: RowElement, row: TreeRow): void => {
 				? (Array.from(element.querySelectorAll('.tree-node-extras'))[0] as HTMLElement)
 				: null;
 	}
-	if (element.rowContent === undefined) {
-		element.rowContent =
-			typeof list.renderNodeContent === 'function'
-				? (Array.from(element.querySelectorAll('.tree-node-content'))[0] as HTMLElement)
-				: null;
-	}
 	element.item = row.item;
 	if (
 		typeof list.renderNodeIcon !== 'function' &&
@@ -247,10 +237,6 @@ const contentPass = (refreshAll: boolean): void => {
 			const icon = (element as RowElement).nodeIcon;
 			if (icon instanceof HTMLElement && typeof list.renderNodeIcon === 'function') {
 				list.renderNodeIcon(row.item, icon);
-			}
-			const content = (element as RowElement).rowContent;
-			if (content instanceof HTMLElement && typeof list.renderNodeContent === 'function') {
-				list.renderNodeContent(row.item, content);
 			}
 		}
 	}
@@ -340,8 +326,7 @@ onMounted(() => {
 	if (props.padded) list.setAttribute('padded', '');
 	createTreeListApi(list, {
 		renderNodeExtras: props.renderNodeExtras,
-		renderNodeIcon: props.renderNodeIcon,
-		renderNodeContent: props.renderNodeContent
+		renderNodeIcon: props.renderNodeIcon
 	});
 	Object.defineProperty(list, '__ymTreeController', {
 		configurable: true,
@@ -375,20 +360,17 @@ onBeforeUnmount(() => {
 			draggable="true"
 		>
 			<span v-if="row.hasMark && row.markVisible" class="folder-mark" :class="{ expanded: row.expanded }" />
-			<span v-if="hasContentContainer" class="tree-node-content" />
-			<template v-else>
-				<span v-if="hasIconContainer" class="tree-node-icon" />
-				<span
-					v-else
-					class="node-icon"
-					:class="{
-						'icon-folder': row.item.class === 'folder',
-						'icon-file': row.item.class !== 'folder',
-						expanded: row.item.class === 'folder' && row.expanded
-					}"
-				/>
-				<span class="node-text" />
-			</template>
+			<span v-if="hasIconContainer" class="tree-node-icon" />
+			<span
+				v-else
+				class="node-icon"
+				:class="{
+					'icon-folder': row.item.class === 'folder',
+					'icon-file': row.item.class !== 'folder',
+					expanded: row.item.class === 'folder' && row.expanded
+				}"
+			/>
+			<span class="node-text" />
 			<span v-if="hasExtrasContainer" class="tree-node-extras" />
 		</div>
 		<div class="tree-scroll-spacer" :style="{ height: bottomGap + 'px' }" />
@@ -458,10 +440,6 @@ onBeforeUnmount(() => {
 	margin: 0 2px 0 0;
 	text-indent: 0;
 	pointer-events: none;
-}
-
-:global(:where(.tree-node-content)) {
-	display: contents;
 }
 
 :global(:where(.tree-node-extras)) {
