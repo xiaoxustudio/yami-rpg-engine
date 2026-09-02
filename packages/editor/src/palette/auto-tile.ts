@@ -122,10 +122,11 @@ AutoTile.generateFrames = AutoTileEngine.generateFrames;
 AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
 function ensureDomBound() {
-	if (AutoTile.templateList) return;
-	const templateList = $('#autoTile-templates');
-	if (!templateList) return;
-	AutoTile.canvas = $('#autoTile-canvas');
+	const canvas = AutoTile.canvas ?? $('#autoTile-canvas');
+	const templateList = AutoTile.templateList ?? $('#autoTile-templates');
+	if (AutoTile.templateList && canvas) return;
+	if (!templateList || !canvas) return;
+	AutoTile.canvas = canvas;
 	AutoTile.templateList = templateList;
 	AutoTile.nodeList = $('#autoTile-nodes');
 	AutoTile.frameList = $('#autoTile-frames');
@@ -163,6 +164,7 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 
 AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: AutoTileOpenParams) {
 	Window.open!('autoTile');
+	ensureDomBound();
 	getAutoTileStore().templates = Object.clone(Data.autotiles);
 	getAutoTileStore().nodeIndex = 0;
 	getAutoTileStore().frameIndex = 0;
