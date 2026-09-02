@@ -20,6 +20,12 @@ import {
 } from '../../../utils/dom';
 import { Timer } from '../../../utils/timer';
 import {
+	type CommonListLike,
+	commonListClearElements,
+	commonListUpdateHeadAndFoot,
+	commonListResize
+} from '../../../utils/common-list';
+import {
 	createDragAndDropHintElement,
 	type DragAndDropHintApi
 } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
@@ -28,92 +34,6 @@ import { createTreeCore, type NodeElement, type TreeItem } from './tree-core';
 const treeCore = createTreeCore();
 
 const isSSR = typeof document === 'undefined';
-
-export interface TreeRow {
-	key: string;
-	item: TreeItem;
-	indent: number;
-	textIndent: number;
-	hasMark: boolean;
-	markVisible: boolean;
-	expanded: boolean;
-}
-
-const rowKeyMap = new WeakMap<object, string>();
-let rowKeySequence = 0;
-
-const treeRowKey = (item: TreeItem): string => {
-	let key = rowKeyMap.get(item);
-	if (key === undefined) {
-		key = `n${++rowKeySequence}`;
-		rowKeyMap.set(item, key);
-	}
-	return key;
-};
-
-export interface TreeListLike {
-	data?: TreeItem[] | null;
-	display?: string;
-	searchResults?: TreeItem[];
-	root?: TreeItem | null;
-}
-
-export function flattenTreeRows(list: TreeListLike): TreeRow[] {
-	const isSearch = list.display === 'search';
-	const data = list.data;
-	const rows: TreeRow[] = [];
-	const foldable = !!getListConfig(list).foldable;
-	const pushRow = (item: TreeItem, indent: number): void => {
-		const children = item.children;
-		const hasMark = children instanceof Array;
-		const empty = hasMark && children.length === 0;
-		const hidden = hasMark && item.expanded !== undefined && empty;
-		rows.push({
-			key: treeRowKey(item),
-			item: item,
-			indent: indent,
-			textIndent: (hasMark || !foldable ? 0 : 16) + indent * 12,
-			hasMark: hasMark,
-			markVisible: !hidden,
-			expanded: hasMark && !empty && !!item.expanded
-		});
-	};
-	if (isSearch) {
-		const results = list.searchResults;
-		if (results) {
-			for (const item of results) {
-				pushRow(item, 0);
-			}
-		}
-		return rows;
-	}
-	const walk = (items: TreeItem[], indent: number, parent: TreeItem | null): void => {
-		for (const item of items) {
-			if (item.parent === undefined) {
-				throw new Error('No parent!');
-			}
-			item.parent = parent;
-			pushRow(item, indent);
-			const children = item.children;
-			if (item.expanded && children instanceof Array && children.length > 0) {
-				walk(children, indent + 1, item);
-			}
-		}
-	};
-	if (data) {
-		walk(data, 0, (list.root ?? null) as TreeItem | null);
-	}
-	return rows;
-}
-
-export interface TreeRenderController {
-	update(): void;
-	resize(): void;
-	clear(): void;
-	refresh(): void;
-	select(): void;
-	unselect(): void;
-}
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = isSSR ? (null as unknown as HTMLDivElement) : document.createElement('div');
@@ -321,58 +241,86 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	update: function (this: any): void {
+		const { elements } = this;
+		elements.start = -1;
+		elements.count = 0;
+
 		this.initialize();
-		const controller = this.__ymTreeController as TreeRenderController | undefined;
-		if (controller) {
-			controller.update();
-		} else {
-			const elements = this.elements;
-			elements.start = -1;
-			elements.count = 0;
+
+		switch (this.display) {
+			case 'normal':
+				if (this.data) {
+					this.createIndentedItems(this.data, this.root, 0);
+				}
+				break;
+			case 'search':
+				if (this.searchResults.length !== 0) {
+					this.createFlatItems(this.searchResults);
+				}
 		}
+
+		commonListClearElements(this, elements.count);
+
 		if (this.updateEventEnabled) {
 			dispatchUpdateEvent(this);
 		}
+
+		this.resize();
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	refresh: function (this: any): void {
-		const controller = this.__ymTreeController as TreeRenderController | undefined;
-		if (controller) {
-			controller.refresh();
-		} else {
-			this.deleteNodeElements(this.data);
-			const elements = this.elements;
-			elements.start = -1;
-			elements.count = 0;
-		}
-		if (this.updateEventEnabled) {
-			dispatchUpdateEvent(this);
-		}
+		this.deleteNodeElements(this.data);
+		this.update();
 	},
 
 	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
-		const controller = this.__ymTreeController as TreeRenderController | undefined;
-		if (controller) {
-			controller.resize();
+		return commonListResize(this as unknown as CommonListLike);
+	},
+
+	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
+		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
+	},
+
+	// oxlint-disable-next-line no-explicit-any
+	updateOnResize: function (this: any, element: NodeElement): void {
+		if (element.changed) {
+			element.changed = false;
+			this.updateNodeElement(element);
 		}
 	},
 
-	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {},
-
 	// oxlint-disable-next-line no-explicit-any
-	updateOnResize: function (this: any, _element: NodeElement): void {},
-
-	// oxlint-disable-next-line no-explicit-any
-	createFlatItems: function (this: any, _data: TreeItem[]): void {},
+	createFlatItems: function (this: any, data: TreeItem[]): void {
+		const elements = this.elements;
+		const length = data.length;
+		for (let i = 0; i < length; i++) {
+			const item = data[i];
+			elements[elements.count++] = this.createNodeElement(item, 0);
+		}
+	},
 
 	createIndentedItems: function (
 		// oxlint-disable-next-line no-explicit-any
 		this: any,
-		_data: TreeItem[],
-		_parent: TreeItem | null,
-		_indent: number
-	): void {},
+		data: TreeItem[],
+		parent: TreeItem | null,
+		indent: number
+	): void {
+		const elements = this.elements;
+		const length = data.length;
+		for (let i = 0; i < length; i++) {
+			const item = data[i];
+			elements[elements.count++] = this.createNodeElement(item, indent);
+			if (item.parent === undefined) {
+				throw new Error('No parent!');
+			}
+			item.parent = parent;
+			if (item.expanded && item.children!.length !== 0) {
+				this.createIndentedItems(item.children!, item, indent + 1);
+			}
+		}
+	},
 
 	// oxlint-disable-next-line no-explicit-any
 	searchNodes: function (this: any, keyword: string | RegExp): void {
@@ -421,14 +369,130 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	createNodeElement: function (
 		this: HTMLElement & { [k: string]: unknown },
-		_item: TreeItem,
-		_indent: number
+		item: TreeItem,
+		indent: number
 	): NodeElement {
-		return undefined as unknown as NodeElement;
+		let element: NodeElement | undefined = item.element;
+		if (element === undefined) {
+			element = document.createElement('div') as unknown as NodeElement;
+			addClass(element, 'node-item');
+			element.item = item;
+			Object.defineProperty(item, 'element', {
+				configurable: true,
+				value: element
+			});
+
+			if ((this.selections as (TreeItem | undefined)[]).includes(item)) {
+				addClass(element, 'selected');
+			}
+		}
+		element.indent = indent;
+		element.changed = true;
+		return element;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
-	updateNodeElement: function (this: any, _element: NodeElement): void {},
+	updateNodeElement: function (this: any, element: NodeElement): void {
+		const { item } = element;
+		if (!element.textNode) {
+			let folderMark = null;
+			let markVisible = false;
+			let markIndent = getListConfig(this).foldable ? 16 : 0;
+			if (item!.children instanceof Array) {
+				folderMark = renderElement(h('span', { class: 'folder-mark' }));
+				markVisible = true;
+				markIndent = 0;
+				element.appendChild(folderMark);
+			}
+
+			let nodeIcon: HTMLElement;
+			if (typeof this.renderNodeIcon === 'function') {
+				nodeIcon = document.createElement('div');
+				addClass(nodeIcon, 'tree-node-icon');
+			} else {
+				nodeIcon = this.createIcon(item!);
+			}
+			element.appendChild(nodeIcon);
+
+			const textNode = this.createText(item!);
+			element.appendChild(textNode);
+
+			element.draggable = true;
+			element.expanded = false;
+			element.markVisible = markVisible;
+			element.markIndent = markIndent;
+			element.textIndent = 0;
+			element.folderMark = folderMark;
+			element.nodeIcon = nodeIcon;
+			element.textNode = textNode;
+
+			for (const creator of getListConfig(this).creators) {
+				creator(item!);
+			}
+
+			if (typeof this.renderNodeExtras === 'function') {
+				const extras = document.createElement('div');
+				addClass(extras, 'tree-node-extras');
+				element.appendChild(extras);
+				element.extras = extras;
+			}
+		}
+
+		if (item!.expanded !== undefined) {
+			const markVisible = item!.children!.length !== 0;
+			if (element.markVisible !== markVisible) {
+				element.markVisible = markVisible;
+				element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
+			}
+
+			const expanded = markVisible && item!.expanded;
+			if (item!.class === 'folder') {
+				if (element.expanded !== expanded) {
+					element.expanded = expanded;
+					switch (expanded) {
+						case true:
+							addClass(element.folderMark, 'expanded');
+							addClass(element.nodeIcon, 'expanded');
+							break;
+						case false:
+							removeClass(element.folderMark, 'expanded');
+							removeClass(element.nodeIcon, 'expanded');
+							break;
+					}
+				}
+			} else {
+				if (element.expanded !== expanded) {
+					element.expanded = expanded;
+					switch (expanded) {
+						case true:
+							addClass(element.folderMark, 'expanded');
+							break;
+						case false:
+							removeClass(element.folderMark, 'expanded');
+							break;
+					}
+				}
+			}
+		}
+
+		const textIndent = element.markIndent + element.indent * 12;
+		if (element.textIndent !== textIndent) {
+			element.textIndent = textIndent;
+			element.style.textIndent = `${textIndent}px`;
+		}
+
+		for (const updater of getListConfig(this).updaters) {
+			updater(item);
+		}
+
+		if (element.extras && typeof this.renderNodeExtras === 'function') {
+			this.renderNodeExtras(item!, element.extras);
+		}
+
+		if (typeof this.renderNodeIcon === 'function') {
+			this.renderNodeIcon(item!, element.nodeIcon);
+		}
+	},
 
 	// oxlint-disable-next-line no-explicit-any
 	deleteNodeElements: function (this: any, data: TreeItem[]): void {
@@ -664,6 +728,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.dispatchEvent(record);
 			}
 
+			this.insertPaddingAndClear();
 			this.update();
 			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
@@ -711,6 +776,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.dispatchEvent(record);
 			}
 
+			this.insertPaddingAndClear();
 			this.update();
 			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
@@ -826,6 +892,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 
+				this.insertPaddingAndClear();
 				this.update();
 				this.select(item);
 				getListConfig(this).onRemove?.(item);
@@ -852,9 +919,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		if (item instanceof Object && this.read() !== item) {
 			this.unselect();
 			this.selections.push(item);
-			const controller = this.__ymTreeController as TreeRenderController | undefined;
-			if (controller) {
-				controller.select();
+			if (item.element !== undefined) {
+				addClass(item.element, 'selected');
 			}
 			if (this.selectEventEnabled) {
 				const select: ValueEvent = new Event('select') as ValueEvent;
@@ -882,16 +948,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 		if (selections.length !== 0) {
 			treeListStatics.textBox.input.blur();
+			for (const selected of selections) {
+				const { element } = selected;
+				if (element !== undefined) {
+					removeClass(element, 'selected');
+				}
+			}
 			if (this.unselectEventEnabled) {
 				const select: ValueEvent = new Event('unselect') as ValueEvent;
 				select.value = selections;
 				this.dispatchEvent(select);
 			}
 			this.selections = [];
-			const controller = this.__ymTreeController as TreeRenderController | undefined;
-			if (controller) {
-				controller.unselect();
-			}
 		}
 	},
 
@@ -922,7 +990,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			const last = count - 1;
 			const selection = this.read();
 			if (selection) {
-				index = this.getElementIndexOfSelection(-1);
+				index = elements.indexOf(selection.element);
 			}
 			switch (direction) {
 				case 'up':
@@ -948,7 +1016,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	expandSelection: function (this: any): void {
 		const item = this.read();
-		if (item !== null && item.expanded !== undefined) {
+		if (item !== null && item.expanded !== undefined && item.element !== undefined) {
 			item.expanded = !item.expanded;
 			this.update();
 			dispatchChangeEvent(this);
@@ -1017,7 +1085,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	scrollToHome: function (this: any): void {
 		const element = this.elements[0];
-		if (element) {
+		if (element instanceof HTMLElement) {
 			this.select((element as NodeItemElement).item);
 		}
 		this.scroll(0, 0);
@@ -1028,7 +1096,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		const elements = this.elements;
 		const index = elements.count - 1;
 		const element = elements[index];
-		if (element) {
+		if (element instanceof HTMLElement) {
 			this.select((element as NodeItemElement).item);
 		}
 		this.scroll(0, this.scrollHeight);
@@ -1064,17 +1132,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	getElementIndexOfSelection: function (this: any, defIndex: number): number {
-		const selection = this.read();
-		if (selection) {
-			const elements = this.elements;
-			const count = elements.count;
-			for (let i = 0; i < count; i++) {
-				if ((elements[i] as NodeItemElement | undefined)?.item === selection) {
-					return i;
-				}
-			}
-		}
-		return defIndex;
+		const item = this.read();
+		return item ? this.elements.indexOf(item.element) : defIndex;
 	},
 
 	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
@@ -1116,13 +1175,25 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {},
+	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {
+		const padding = treeListStatics.padding;
+		let count = (this.elements as CommonListLike['elements']).count;
+		if (getListConfig(this).padded) count++;
+		if (padding.count !== count) {
+			padding.count = count;
+			padding.style.height = `${count * 20}px`;
+		}
+		const head = this.childNodes[0];
+		this.insertBefore(padding, head);
+		const { childNodes } = this;
+		const { length } = childNodes;
+		for (let i = length - 1; i > 0; i--) {
+			childNodes[i].remove();
+		}
+	},
 
 	clearElements: function (this: HTMLElement & { [k: string]: unknown }, start: number): void {
-		const elements = this.elements as unknown as unknown[] & { count?: number };
-		if (typeof elements.length === 'number' && start < elements.length) {
-			elements.length = Math.max(start, 0);
-		}
+		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1133,16 +1204,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			this.searchResults = [];
 		}
 		this.unselect();
-		const controller = this.__ymTreeController as TreeRenderController | undefined;
-		if (controller) {
-			controller.clear();
-		} else {
-			const elements = this.elements;
-			elements.length = 0;
-			elements.count = 0;
-			elements.start = -1;
-			elements.end = -1;
-		}
+		this.textContent = '';
+		commonListClearElements(this, 0);
+		this.elements.count = 0;
+		this.elements.start = -1;
+		this.elements.end = -1;
+		this.updateHeadAndFoot();
 		return this;
 	},
 
