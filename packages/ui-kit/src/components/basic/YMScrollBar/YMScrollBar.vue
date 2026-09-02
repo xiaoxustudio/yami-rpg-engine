@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 
 interface Props {
@@ -9,6 +8,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLElement | null>(null);
+const thumb = ref<HTMLElement | null>(null);
 
 interface ThumbElement extends HTMLElement {
 	left?: number;
@@ -132,22 +132,19 @@ const updateVerticalBar = (): void => {
 const bind = (target: HTMLElement, type: string): void => {
 	const element = root.value;
 	if (!element) return;
-	const thumb = document.createElement('div');
-	thumb.className = 'scroll-thumb';
-	const inner = document.createElement('div');
-	inner.className = 'scroll-thumb-inner';
-	thumb.appendChild(inner);
-	element.appendChild((state.thumb = thumb));
 	state.target = target;
 	state.type = type;
+	const thumbEl = (state.thumb = thumb.value);
 	element.classList.add(type);
-	switch (type) {
-		case 'horizontal':
-			thumb.style.height = '100%';
-			break;
-		case 'vertical':
-			thumb.style.width = '100%';
-			break;
+	if (thumbEl) {
+		switch (type) {
+			case 'horizontal':
+				thumbEl.style.height = '100%';
+				break;
+			case 'vertical':
+				thumbEl.style.width = '100%';
+				break;
+		}
 	}
 	element.classList.add('visible');
 	state.visible = true;
@@ -326,14 +323,22 @@ onMounted(() => {
 	element.updateHorizontalBar = updateHorizontalBar;
 	element.updateVerticalBar = updateVerticalBar;
 	element.updateDisplay = updateDisplay;
-	element.addEventListener('pointerdown', pointerdown);
 });
 
 defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root });
 </script>
 
 <template>
-	<div ref="root" class="scroll-bar" :id="props.id" />
+	<div
+		ref="root"
+		class="scroll-bar"
+		:id="props.id"
+		@pointerdown="pointerdown"
+	>
+		<div ref="thumb" class="scroll-thumb">
+			<div class="scroll-thumb-inner"></div>
+		</div>
+	</div>
 </template>
 
 <style module>

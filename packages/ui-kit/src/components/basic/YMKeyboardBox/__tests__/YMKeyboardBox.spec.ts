@@ -48,13 +48,15 @@ describe('YMKeyboardBox', () => {
 		expect((input.element as HTMLInputElement).value).toBe('Up');
 	});
 
-	it('disable hides children and adds class', () => {
+	it('disable hides children and adds class', async () => {
 		const wrapper = mount(YMKeyboardBox);
 		const vm = wrapper.vm as unknown as KeyboardBoxApi;
 		vm.disable();
+		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('disabled');
 		expect((wrapper.find('input').element as HTMLElement).style.display).toBe('none');
 		vm.enable();
+		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).not.toContain('disabled');
 	});
 

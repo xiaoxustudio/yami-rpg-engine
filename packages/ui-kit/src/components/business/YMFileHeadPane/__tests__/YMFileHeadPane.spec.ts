@@ -43,20 +43,21 @@ describe('YMFileHeadPane', () => {
 		expect(wrapper.element.querySelector('.file-head-view')).toBeTruthy();
 	});
 
-	it('updateAddress renders single folder breadcrumb', () => {
+	it('updateAddress renders single folder breadcrumb', async () => {
 		const folder = makeFolder('Root');
 		const links = makeLinks({
 			nav: { selections: [folder], load: vi.fn(), scrollToSelection: vi.fn() }
 		});
 		const wrapper = mount(YMFileHeadPane, { props: { links } });
 		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		await wrapper.vm.$nextTick();
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
 		const folderEl = address.querySelector('file-head-address-folder');
 		expect(folderEl).toBeTruthy();
 		expect(folderEl!.textContent).toBe('Root');
 	});
 
-	it('updateAddress renders search count', () => {
+	it('updateAddress renders search count', async () => {
 		const links = makeLinks({
 			browser: { display: 'search', backToParentFolder: vi.fn(), searchFiles: vi.fn() },
 			body: {
@@ -67,6 +68,7 @@ describe('YMFileHeadPane', () => {
 		});
 		const wrapper = mount(YMFileHeadPane, { props: { links } });
 		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		await wrapper.vm.$nextTick();
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
 		expect(address.textContent).toContain('5 个文件');
 	});

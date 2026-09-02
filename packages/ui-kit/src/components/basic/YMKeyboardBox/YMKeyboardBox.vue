@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<Props>(), { id: '' });
 
 const root = ref<HTMLElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
+const isDisabled = ref(false);
 
 let dataValue = 0;
 let inputEventEnabled = false;
@@ -48,21 +49,11 @@ const inputCode = (code: number): void => {
 };
 
 const enable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.remove('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = '';
-	}
+	isDisabled.value = false;
 };
 
 const disable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	el.classList.add('disabled');
-	for (const child of Array.from(el.children)) {
-		(child as HTMLElement).style.display = 'none';
-	}
+	isDisabled.value = true;
 };
 
 const getFocus = (mode: string): HTMLInputElement | null => {
@@ -99,21 +90,23 @@ const on = (
 			inputEventEnabled = true;
 			break;
 		case 'focus':
-			if (!focusEventEnabled) {
-				focusEventEnabled = true;
-				input.value?.addEventListener('focus', () => {
-					el.dispatchEvent(new FocusEvent('focus'));
-				});
-			}
+			focusEventEnabled = true;
 			break;
 		case 'blur':
-			if (!blurEventEnabled) {
-				blurEventEnabled = true;
-				input.value?.addEventListener('blur', () => {
-					el.dispatchEvent(new FocusEvent('blur'));
-				});
-			}
+			blurEventEnabled = true;
 			break;
+	}
+};
+
+const inputFocus = (): void => {
+	if (focusEventEnabled) {
+		root.value?.dispatchEvent(new FocusEvent('focus'));
+	}
+};
+
+const inputBlur = (): void => {
+	if (blurEventEnabled) {
+		root.value?.dispatchEvent(new FocusEvent('blur'));
 	}
 };
 
@@ -135,7 +128,6 @@ const inputKeydown = (event: KeyboardEvent): void => {
 };
 
 onMounted(() => {
-	input.value?.addEventListener('keydown', inputKeydown);
 	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
 	attachApi(el, { read, write, inputCode, enable, disable, getFocus, on });
@@ -146,8 +138,17 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root, inpu
 </script>
 
 <template>
-	<div ref="root" class="keyboard-box" :class="$style.box" :id="props.id">
-		<input class="keyboard-box-input" :class="$style.input" ref="input" type="text" />
+	<div ref="root" class="keyboard-box" :class="[$style.box, { disabled: isDisabled }]" :id="props.id">
+		<input
+			class="keyboard-box-input"
+			:class="$style.input"
+			ref="input"
+			type="text"
+			v-show="!isDisabled"
+			@keydown="inputKeydown"
+			@focus="inputFocus"
+			@blur="inputBlur"
+		/>
 	</div>
 </template>
 

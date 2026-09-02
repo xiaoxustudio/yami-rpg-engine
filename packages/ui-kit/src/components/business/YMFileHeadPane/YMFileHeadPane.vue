@@ -1,6 +1,8 @@
 ﻿<template>
 	<div class="file-head-pane" ref="el" @pointerdown="pointerdown">
-		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown"></div>
+		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown">
+			<AddressPart v-for="node in addressNodes" :key="node.id" :node="node" />
+		</div>
 		<div
 			class="item upper-level-directory"
 			name="back"
@@ -26,19 +28,10 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
-import { h, render, ref, onMounted } from 'vue';
+import { defineComponent, h, type PropType, onMounted, ref } from 'vue';
 import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../../utils/dom';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
-
-const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	const host = document.createElement('div');
-	render(vnode, host);
-	const element = host.firstElementChild as HTMLElement;
-	host.removeChild(element);
-	return element;
-};
 
 interface FileItem {
 	name: string;
@@ -84,7 +77,7 @@ type FileHeadElement = HTMLElement & {
 	updateAddress?: () => void;
 	view?: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number };
 	searcher?: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
-	address?: HTMLElement & { clear(): HTMLElement; appendChild(n: Node): Node };
+	address?: HTMLElement;
 }
 
 interface Props {
@@ -99,7 +92,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const el = ref<HTMLElement>();
-const addressEl = ref<HTMLElement & { clear(): HTMLElement; appendChild(n: Node): Node }>();
+const addressEl = ref<HTMLElement>();
 const searcherEl = ref<{
 	root: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
 	input: HTMLInputElement;
@@ -110,88 +103,102 @@ const viewEl = ref<{
 	read(): number;
 } | null>(null);
 
-const clear = (el: HTMLElement): HTMLElement => {
-	if (!el) return el;
-	el.textContent = '';
-	return el;
-};
+interface AddressNode {
+	id: number;
+	type: 'folder' | 'arrow' | 'link' | 'text';
+	text?: string;
+	file?: FileItem;
+	folders?: FileItem[];
+	target?: FileItem;
+	disabled?: boolean;
+}
+
+const addressNodes = ref<AddressNode[]>([]);
+let addressSeq = 0;
+
+const AddressPart = defineComponent({
+	props: {
+		node: { type: Object as PropType<AddressNode>, required: true }
+	},
+	setup(props) {
+		const root = ref<HTMLElement | null>(null);
+		onMounted(() => {
+			const element = root.value as unknown as {
+				file?: FileItem;
+				folders?: FileItem[];
+				target?: FileItem;
+				disabled?: boolean;
+			};
+			if (!element) return;
+			element.file = props.node.file;
+			element.folders = props.node.folders;
+			element.target = props.node.target;
+			element.disabled = props.node.disabled === true;
+		});
+		return () =>
+			h('file-head-address-' + props.node.type, { ref: root }, props.node.text ?? '');
+	}
+});
 
 function updateAddress() {
 	const { browser, nav, body } = props.links;
 	const folders = nav.selections;
-	const address = clear(addressEl.value!);
+	const nodes: AddressNode[] = [];
 	switch (browser.display) {
 		case 'normal':
 			if (folders.length === 1) {
 				let folder = folders[0];
-				const nodes: HTMLElement[] = [];
+				const chain: AddressNode[] = [];
 				while (true) {
-					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & {
-						file: FileItem;
-						textContent: string;
-					};
-					Object.defineProperty(elFolder, 'file', {
-						configurable: true,
-						get: () => folder
-					});
-					elFolder.textContent = folder.name;
-					nodes.push(elFolder);
+					chain.push({ id: ++addressSeq, type: 'folder', text: folder.name });
 					const { parent } = folder;
 					if (props.isFolderItem(parent)) {
-						const elArrow = renderElement(
-							h('file-head-address-arrow')
-						) as HTMLElement & { folders: FileItem[]; target: FileItem };
-						Object.defineProperty(elArrow, 'folders', {
-							configurable: true,
-							get: () => parent!.subfolders
+						chain.push({
+							id: ++addressSeq,
+							type: 'arrow',
+							folders: parent!.subfolders
 						});
-						Object.defineProperty(elArrow, 'target', {
-							configurable: true,
-							get: () => folder
-						});
-						nodes.push(elArrow);
 						folder = parent!;
 					} else {
 						break;
 					}
 				}
-				(nodes[0] as HTMLElement & { disabled?: boolean }).disabled = true;
-				for (const node of nodes.reverse()) {
-					address.appendChild(node);
+				const root = folder;
+				for (const node of chain) {
+					if (node.type === 'folder') {
+						node.file = root;
+					} else {
+						node.target = root;
+					}
 				}
+				chain[0].disabled = true;
+				nodes.push(...chain.reverse());
 			} else if (folders.length > 1) {
 				const length = folders.length;
 				for (let i = 0; i < length; i++) {
 					const folder = folders[i];
-					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & {
-						file: FileItem;
-						textContent: string;
-					};
-					Object.defineProperty(elFolder, 'file', {
-						configurable: true,
-						get: () => folder
+					nodes.push({
+						id: ++addressSeq,
+						type: 'folder',
+						text: folder.name,
+						file: folder
 					});
-					elFolder.textContent = folder.name;
-					address.appendChild(elFolder);
 					if (folders[i + 1]) {
-						const elLink = renderElement(h('file-head-address-link')) as HTMLElement & {
-							textContent: string;
-						};
-						elLink.textContent = '&';
-						address.appendChild(elLink);
+						nodes.push({ id: ++addressSeq, type: 'link', text: '&' });
 					}
 				}
 			}
 			break;
 		case 'search': {
-			const elText = renderElement(h('file-head-address-text')) as HTMLElement & {
-				textContent: string;
-			};
-			elText.textContent = `${body.elements.count} 个文件`;
-			address.appendChild(elText);
+			nodes.push({
+				id: ++addressSeq,
+				type: 'text',
+				text: `${body.elements.count} 个文件`
+			});
 			break;
 		}
 	}
+	addressNodes.value = nodes;
 }
 
 function pointerdown(event: PointerEvent) {

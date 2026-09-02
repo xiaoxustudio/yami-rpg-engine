@@ -61,11 +61,12 @@ describe('YMFileHeadPane', () => {
 		wrapper.unmount();
 	});
 
-	it('updateAddress search mode shows file count', () => {
+	it('updateAddress search mode shows file count', async () => {
 		const links = makeLinks();
 		links.browser.display = 'search';
 		const wrapper = mountPane({ links });
 		wrapper.vm.updateAddress();
+		await wrapper.vm.$nextTick();
 		const text = wrapper.element.querySelector('file-head-address-text');
 		expect(text?.textContent).toBe('3 个文件');
 		wrapper.unmount();
