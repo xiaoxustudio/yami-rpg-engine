@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { clamp, hasClass, seek } from '../../../utils/dom';
+import { hasClass, seek } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { createCommonListCore, type RelativeDirection } from './common-list-core';
+
+const core = createCommonListCore();
 
 interface Props {
 	id?: string;
@@ -49,14 +52,8 @@ const write = (value: unknown): void => {
 	const el = root.value;
 	if (!el || elements.count === 0) return;
 	unselect();
-	let index = 0;
-	let target = elements[index];
-	for (let i = 0; i < elements.count; i++) {
-		if (elements[i].dataValue === value) {
-			target = elements[(index = i)];
-			break;
-		}
-	}
+	const index = core.findItemIndex(elements, elements.count, value);
+	const target = elements[index];
 	target.classList.add('selected');
 	selection = target;
 	scrollToItem(index);
@@ -96,13 +93,12 @@ const updateHeadAndFoot = (): void => {
 	}
 	const { count, start, end } = elements;
 	if (count !== 0) {
-		const pad = (el as HTMLElement & { padded?: boolean }).padded ? 1 : 0;
-		const mt = start * 20;
-		const mb = (count - end + pad) * 20;
+		const padded = !!(el as HTMLElement & { padded?: boolean }).padded;
+		const margins = core.computeHeadAndFootMargins(count, start, end, padded);
 		elements.head = elements[start];
-		elements.head!.style.marginTop = `${mt}px`;
+		elements.head!.style.marginTop = `${margins.marginTop}px`;
 		elements.foot = elements[end - 1];
-		elements.foot!.style.marginBottom = `${mb}px`;
+		elements.foot!.style.marginBottom = `${margins.marginBottom}px`;
 	}
 };
 
@@ -117,15 +113,13 @@ const resize = (): void => {
 		el.textContent = '';
 		return;
 	}
-	const start = Math.min(Math.floor(st / 20), count - 1);
-	const length = Math.ceil(ch / 20) + 1;
-	const end = Math.min(start + length, count);
-	if (elements.start !== start || elements.end !== end) {
-		elements.start = start;
-		elements.end = end;
+	const range = core.computeVisibleRange(st, ch, count);
+	if (elements.start !== range.start || elements.end !== range.end) {
+		elements.start = range.start;
+		elements.end = range.end;
 		updateHeadAndFoot();
 		const versionId = elements.versionId++;
-		for (let i = start; i < end; i++) {
+		for (let i = range.start; i < range.end; i++) {
 			const element = elements[i];
 			element.versionId = versionId;
 			updateOnResize(element);
@@ -141,7 +135,7 @@ const resize = (): void => {
 		if (elements.foot && !elements.foot.parentNode) {
 			el.appendChild(elements.foot);
 		}
-		for (let i = end - 2; i >= start; i--) {
+		for (let i = range.end - 2; i >= range.start; i--) {
 			const element = elements[i];
 			if (element.parentNode === null) {
 				const next = elements[i + 1];
@@ -175,45 +169,25 @@ const unselect = (): void => {
 const scrollToItem = (index: number): void => {
 	const el = root.value;
 	if (!el) return;
-	const scrollTop = clamp(el.scrollTop, index * 20 + 20 - el.clientHeight, index * 20);
+	const scrollTop = core.computeItemScrollTop(el.scrollTop, index, el.clientHeight);
 	if (el.scrollTop !== scrollTop) {
 		el.scrollTop = scrollTop;
 	}
 };
 
-const selectRelative = (direction: 'up' | 'down'): void => {
+const selectRelative = (direction: RelativeDirection): void => {
 	const count = elements.count;
 	if (count > 0) {
 		let index = -1;
-		const last = count - 1;
 		if (selection) {
 			index = Array.prototype.indexOf.call(elements, selection);
 		}
-		switch (direction) {
-			case 'up':
-				if (index !== -1) {
-					index = Math.max(index - 1, 0);
-				} else {
-					index = last;
-				}
-				break;
-			case 'down':
-				if (index !== -1) {
-					index = Math.min(index + 1, last);
-				} else {
-					index = 0;
-				}
-				break;
-		}
-		select(elements[index]);
+		select(elements[core.computeRelativeIndex(direction, count, index)]);
 	}
 };
 
 const clearElements = (start: number): void => {
-	let i = start;
-	while (elements[i] !== undefined) {
-		elements[i++] = undefined as never;
-	}
+	core.clearElements(elements, start);
 };
 
 const clear = (): HTMLElement => {

@@ -16,7 +16,10 @@ import {
 	relate
 } from '../../../utils/dom';
 import { ParamListHistory } from './param-history';
+import { createParamListCore, type ParamDataItem } from './param-list-core';
 import { attachScrollListener, type ScrollListenerApi } from './scroll-listener';
+
+const core = createParamListCore();
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
@@ -59,8 +62,6 @@ interface Props {
 	clipboard?: ClipboardAdapter | null;
 	ctrl?: (keyName: string) => string;
 }
-
-type ParamDataItem = { enabled?: boolean };
 
 type ParamParseItem = { content?: string; class?: string };
 
@@ -435,15 +436,13 @@ const resize = (): void => {
 		self.textContent = '';
 		return;
 	}
-	const start = Math.min(Math.floor(st / 20), count - 1);
-	const length = Math.ceil(ch / 20) + 1;
-	const end = Math.min(start + length, count);
-	if (elements.start !== start || elements.end !== end) {
-		elements.start = start;
-		elements.end = end;
+	const range = core.computeVisibleRange(st, ch, count);
+	if (elements.start !== range.start || elements.end !== range.end) {
+		elements.start = range.start;
+		elements.end = range.end;
 		updateHeadAndFoot();
 		const versionId = elements.versionId++;
-		for (let i = start; i < end; i++) {
+		for (let i = range.start; i < range.end; i++) {
 			const element = elements[i];
 			element.versionId = versionId;
 			updateOnResize(element);
@@ -459,7 +458,7 @@ const resize = (): void => {
 		if (elements.foot && !elements.foot.parentNode) {
 			self.appendChild(elements.foot);
 		}
-		for (let i = end - 2; i >= start; i--) {
+		for (let i = range.end - 2; i >= range.start; i--) {
 			const element = elements[i];
 			if (element.parentNode === null) {
 				const next = elements[i + 1];
@@ -473,7 +472,7 @@ const updateFlexibleHeight = (): void => {
 	const self = el!;
 	if (self.flexible) {
 		const count = self.elements.count;
-		const height = Math.min(count * 20, 500) + 2;
+		const height = core.computeFlexibleHeight(count);
 		if (self.height !== height) {
 			self.height = height;
 			self.style.height = `${height}px`;
@@ -509,13 +508,11 @@ const updateHeadAndFoot = (): void => {
 	}
 	const { count, start, end } = self.elements;
 	if (count !== 0) {
-		const pad = self.padded ? 1 : 0;
-		const mt = start * 20;
-		const mb = (count - end + pad) * 20;
+		const margins = core.computeHeadAndFootMargins(count, start, end, !!self.padded);
 		self.elements.head = self.elements[start];
-		self.elements.head!.style.marginTop = `${mt}px`;
+		self.elements.head!.style.marginTop = `${margins.marginTop}px`;
 		self.elements.foot = self.elements[end - 1];
-		self.elements.foot!.style.marginBottom = `${mb}px`;
+		self.elements.foot!.style.marginBottom = `${margins.marginBottom}px`;
 	}
 };
 
@@ -523,27 +520,17 @@ const updateOnResize = (_element?: ParamItemElement): void => {};
 
 const select = (start: number, end: number = start): void => {
 	const self = el!;
-	if (start > end) {
-		[start, end] = [end, start];
-	}
-
 	const elements = self.elements;
-	const count = elements.count;
-	start = clamp(start, 0, count - 1);
-	end = clamp(end, 0, count - 1);
-	if (start !== end) {
-		const element = elements[end];
-		if (!element.dataItem) {
-			end--;
-		}
-	}
+	const range = core.resolveSelectionRange(start, end, elements.count, (index) => {
+		return !!elements[index].dataItem;
+	});
 
 	unselect();
 
-	self.start = start;
-	self.end = end;
-	self.origin = start;
-	self.active = start;
+	self.start = range.start;
+	self.end = range.end;
+	self.origin = range.start;
+	self.active = range.start;
 
 	reselect();
 };
@@ -647,10 +634,10 @@ const selectMultipleDown = (): void => {
 const scrollToSelection = (): void => {
 	const self = el!;
 	if (self.start !== null) {
-		const scrollTop = clamp(
+		const scrollTop = core.computeSelectionScrollTop(
 			self.scrollTop,
-			self.active! * 20 + 20 - self.innerHeight,
-			self.active! * 20
+			self.active!,
+			self.innerHeight
 		);
 		if (self.scrollTop !== scrollTop) {
 			self.scrollTop = scrollTop;
@@ -689,28 +676,8 @@ const edit = (): void => {
 const toggle = (): void => {
 	const self = el!;
 	if (self.togglable && self.start !== null) {
-		let method = 'disable';
-		const items: ParamDataItem[] = [];
 		const { data, start, end } = self;
-		for (let i = start; i <= end!; i++) {
-			const item = data![i];
-			if (item) {
-				switch (method) {
-					case 'disable':
-						if (!item.enabled) {
-							method = 'enable';
-							items.length = 0;
-						}
-						items.push(item);
-						continue;
-					case 'enable':
-						if (!item.enabled) {
-							items.push(item);
-						}
-						continue;
-				}
-			}
-		}
+		const { method, items } = core.collectToggleItems(data!, start, end!);
 		if (items.length !== 0) {
 			self.history!.save({
 				type: 'toggle',
@@ -734,15 +701,11 @@ const toggle = (): void => {
 };
 
 const enableItems = (items: ParamDataItem[]): void => {
-	for (const item of items) {
-		item.enabled = true;
-	}
+	core.setItemsEnabled(items, true);
 };
 
 const disableItems = (items: ParamDataItem[]): void => {
-	for (const item of items) {
-		item.enabled = false;
-	}
+	core.setItemsEnabled(items, false);
 };
 
 const copy = (): void => {
@@ -862,11 +825,7 @@ const save = (): void => {
 };
 
 const clearElements = (start: number): void => {
-	const self = el!;
-	let i = start;
-	while (self.elements[i] !== undefined) {
-		self.elements[i++] = undefined as never;
-	}
+	core.clearElements(el!.elements, start);
 };
 
 const clear = (): HTMLElement => {
@@ -1200,11 +1159,10 @@ const windowPointermove = (event: PointerEvent): void => {
 			const elements = self.elements;
 			const count = elements.count;
 			if (count > 0) {
-				const pt = self.paddingTop;
-				const { itemHeight } = dragging;
-				const { y } = getRelativeCoords(event, self);
-				const line = Math.floor((y - pt) / itemHeight!);
-				const index = clamp(line, 0, count - 1);
+			const pt = self.paddingTop;
+			const { itemHeight } = dragging;
+			const { y } = getRelativeCoords(event, self);
+			const index = core.computeDragSelectIndex(y, pt, itemHeight!, count);
 				if (dragging.itemIndex !== index) {
 					dragging.itemIndex = index;
 					selectMultiple(index);

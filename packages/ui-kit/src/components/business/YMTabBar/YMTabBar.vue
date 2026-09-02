@@ -3,15 +3,9 @@
 import { onMounted, ref } from 'vue';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
+import { createTabBarCore, type TabItem, type TabItemMeta } from './tab-bar-core';
 
-const arrayRemove = (arr: TabItem[], item: TabItem): boolean => {
-	const index = arr.indexOf(item);
-	if (index !== -1) {
-		arr.splice(index, 1);
-		return true;
-	}
-	return false;
-};
+const core = createTabBarCore();
 
 interface TabHint extends HTMLElement {
 	target: HTMLElement;
@@ -26,22 +20,6 @@ interface TabDraggingEvent {
 	offsetX: number;
 	mode?: 'close' | 'popup';
 	relate?(event: PointerEvent): boolean;
-}
-
-interface TabItemMeta {
-	guid?: string;
-	path?: string;
-	[k: string]: unknown;
-}
-
-interface TabItem {
-	item?: string;
-	icon: string;
-	name: string;
-	type?: string;
-	meta?: TabItemMeta;
-	tab?: HTMLElement;
-	[k: string]: unknown;
 }
 
 interface TabElement extends HTMLElement {
@@ -164,7 +142,7 @@ const update = (): void => {
 	}
 };
 
-const parseTabName = (item: TabItem): string => `${item.icon} ${item.name}`;
+const parseTabName = (item: TabItem): string => core.parseTabName(item);
 
 const select = (item: TabItem): void => {
 	const el = root.value as TabBarElement | null;
@@ -193,8 +171,7 @@ const insert = (item: TabItem): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	const data = el.data!;
-	if (!data.includes(item)) {
-		data.splice(selectionIndex + 1, 0, item);
+	if (core.insertTabItem(data, item, selectionIndex)) {
 		update();
 	}
 };
@@ -205,7 +182,7 @@ const close = (item: TabItem): void => {
 	if (item === el.dirItem) return;
 	const value = read();
 	const data = el.data!;
-	if (arrayRemove(data, item)) {
+	if (core.arrayRemove(data, item)) {
 		update();
 		if (data.length > 0) {
 			if (value === item || value === undefined || !data.includes(value)) {
@@ -231,11 +208,9 @@ const close = (item: TabItem): void => {
 const closeByProperty = (key: string, value: unknown): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	for (const context of el.data!) {
-		if (context[key] === value) {
-			close(context);
-			return;
-		}
+	const context = core.findTabByProperty(el.data!, key, value);
+	if (context !== undefined) {
+		close(context);
 	}
 };
 
@@ -244,16 +219,8 @@ const closeOtherTabs = (item: TabItem): void => {
 	if (!el) return;
 	const value = read();
 	const items = el.data!;
-	let i = items.length;
-	if (i <= 1) return;
-	const closedItems: TabItem[] = [];
-	while (--i >= 0) {
-		const tab = items[i];
-		if (tab === item) continue;
-		if (tab === el.dirItem) continue;
-		items.splice(i, 1);
-		closedItems.push(tab);
-	}
+	if (items.length <= 1) return;
+	const closedItems = core.collectOtherTabs(items, item, el.dirItem);
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
@@ -274,16 +241,7 @@ const closeTabsToTheRight = (item: TabItem): void => {
 	if (!el) return;
 	const value = read();
 	const items = el.data!;
-	const index = items.indexOf(item);
-	if (index === -1) return;
-	const closedItems: TabItem[] = [];
-	let i = items.length;
-	while (--i > index) {
-		const tab = items[i];
-		if (tab === el.dirItem) continue;
-		items.splice(i, 1);
-		closedItems.push(tab);
-	}
+	const closedItems = core.collectTabsToTheRight(items, item, el.dirItem);
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
@@ -462,9 +420,7 @@ const dragover = (event: DragEvent): void => {
 			return;
 		}
 		const box = rect(element);
-		const middle = box.width / 2;
-		const offsetX = event.clientX - box.left;
-		const position = offsetX < middle ? 'before' : 'after';
+		const position = core.computeDropPosition(event.clientX, box);
 		switch (position) {
 			case 'before':
 				if (hint.target !== element || hint.position !== position) {
@@ -472,12 +428,9 @@ const dragover = (event: DragEvent): void => {
 						hide(hint);
 						return;
 					}
-					const r = hint.measure(element);
-					r.left -= 1;
-					r.width = 2;
 					hint.target = element;
 					hint.position = position;
-					hint.set(r);
+					hint.set(core.computeHintRect(hint.measure(element), position));
 				}
 				break;
 			case 'after':
@@ -486,12 +439,9 @@ const dragover = (event: DragEvent): void => {
 						hide(hint);
 						return;
 					}
-					const r = hint.measure(element);
-					r.left += r.width - 1;
-					r.width = 2;
 					hint.target = element;
 					hint.position = position;
-					hint.set(r);
+					hint.set(core.computeHintRect(hint.measure(element), position));
 				}
 				break;
 		}
@@ -523,12 +473,8 @@ const drop = (event: DragEvent): void => {
 		const items = el.data!;
 		const sItem = (el.dragging.target as TabDragTarget).item;
 		const dItem = (hint.target as TabDragTarget).item;
-		if (arrayRemove(items, sItem)) {
-			let dIndex = items.indexOf(dItem);
-			if (hint.position === 'after') {
-				dIndex++;
-			}
-			items.splice(dIndex, 0, sItem);
+		const dIndex = core.moveTabItem(items, sItem, dItem, hint.position);
+		if (dIndex !== null) {
 			selectionIndex = dIndex;
 			update();
 			const selectedEl = el.childNodes[selectionIndex] as HTMLElement | undefined;
