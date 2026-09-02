@@ -329,9 +329,21 @@ const activateModalMode = (): void => {
 
 const deactivateModalMode = (): void => {
 	document.body.style.pointerEvents = 'inherit';
-	Title.pointerenter!();
-	Window.restoreActiveElement!();
-	Layout.enableFocusableElements();
+	try {
+		Title.pointerenter!();
+	} catch (e: unknown) {
+		console.error('[window] deactivate Title.pointerenter error:', e);
+	}
+	try {
+		Window.restoreActiveElement!();
+	} catch (e: unknown) {
+		console.error('[window] deactivate restoreActiveElement error:', e);
+	}
+	try {
+		Layout.enableFocusableElements();
+	} catch (e: unknown) {
+		console.error('[window] deactivate enableFocusableElements error:', e);
+	}
 	for (const handler of getWindowKeydowns()) {
 		window.addEventListener('keydown', handler);
 	}
@@ -368,6 +380,7 @@ Object.defineProperty(frames, 'remove', {
 	value: (element: HTMLElement) => {
 		const index = frames.indexOf(element);
 		if (index === -1) {
+			console.warn('[window] frames.remove: element not in stack', element.id);
 			return false;
 		}
 		try {
