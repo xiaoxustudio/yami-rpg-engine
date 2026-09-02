@@ -41,6 +41,7 @@ type ListMethod = ((...args: any[]) => any) | null;
 interface CommandSuggestionList {
 	searchNodesAlgorithm: ListMethod;
 	updateCommandNames: ListMethod;
+	refresh: ListMethod;
 	createCommandTip: ListMethod;
 	selectDefaultCommand: ListMethod;
 	creators: ListMethod[];
@@ -314,12 +315,11 @@ CommandSuggestion.select = function (item: CommandSuggestionItem): void {
 };
 
 CommandSuggestion.windowLocalize = function (_event: Event): void {
-	// 用重置textContent代替clear来保留选中项
-	const { list, data } = CommandSuggestion;
+	const { list } = CommandSuggestion;
 	if (list.initialized) {
 		list.initialized = false;
-		list.textContent = '';
-		list.deleteNodeElements(data);
+		list.updateCommandNames!();
+		list.refresh!();
 	}
 };
 
