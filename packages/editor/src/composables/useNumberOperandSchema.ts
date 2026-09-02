@@ -368,7 +368,7 @@ const parse = (
 	let operation;
 	let operator;
 	if (index === 0) {
-		operation = read(document.getElementById('setNumber-operation'));
+		operation = read(document.getElementById('setNumber-operation')) ?? 'set';
 		switch (operation) {
 			case 'set':
 				operator = '= ';
@@ -390,7 +390,7 @@ const parse = (
 				break;
 		}
 	} else {
-		operation = operand.operation;
+		operation = operand.operation ?? 'add';
 		switch (operation.replace('()', '')) {
 			case 'add':
 				operator = '+ ';
@@ -410,8 +410,8 @@ const parse = (
 		}
 	}
 	let operandName = removeTextTags(parseOperand(operand)!);
-	const currentPriority = operation.includes('()');
-	const nextPriority = data![index! + 1]?.operation.includes('()');
+	const currentPriority = operation!.includes('()');
+	const nextPriority = data?.[index! + 1]?.operation?.includes('()') ?? false;
 	if (!currentPriority && nextPriority) {
 		operandName = '(' + operandName;
 	}
