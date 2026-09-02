@@ -40,7 +40,7 @@ const menuService = useMenuService();
 const renderNodeExtras = (item: unknown, container: HTMLElement): void => {
 	try {
 		const vnodes = props.nodeExtras?.(item, container);
-		render(vnodes ? h(Fragment, vnodes) : null, container);
+		render(vnodes ? h(Fragment as never, vnodes) : null, container);
 	} catch (error) {
 		console.error('[tree-extras] renderNodeExtras failed:', error);
 	}
@@ -49,7 +49,7 @@ const renderNodeExtras = (item: unknown, container: HTMLElement): void => {
 const renderNodeIcon = (item: unknown, container: HTMLElement): void => {
 	try {
 		const vnodes = props.nodeIconRenderer?.(item, container);
-		render(vnodes ? h(Fragment, vnodes) : null, container);
+		render(vnodes ? h(Fragment as never, vnodes) : null, container);
 	} catch (error) {
 		console.error('[tree-icon] renderNodeIcon failed:', error);
 	}

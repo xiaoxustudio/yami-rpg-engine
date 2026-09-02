@@ -16,7 +16,8 @@ import {
 	rect,
 	removeClass,
 	show,
-	attachDoubleclick
+	attachDoubleclick,
+	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 import { createFileBodyCore } from './file-body-core';
@@ -73,12 +74,12 @@ interface FileBodyRelatedList {
 	isEmpty: boolean;
 }
 
-interface FileBodyEvent extends Event {
+type FileBodyEvent = Event & {
 	value?: unknown;
 	raw?: PointerEvent;
 	clientX?: number;
 	clientY?: number;
-}
+};
 
 interface FileBodyTextBox extends HTMLElement {
 	input: HTMLElement & { blur(): void };
@@ -107,9 +108,9 @@ interface FileBrowserLinks {
 	[key: string]: any;
 }
 
-interface FileBodyIconApi extends HTMLElement {
+type FileBodyIconApi = HTMLElement & {
 	isImageChanged?: () => boolean;
-}
+};
 
 interface FileBodyItemApi extends HTMLElement {
 	file: FileBodyFile;
@@ -120,7 +121,7 @@ interface FileBodyItemApi extends HTMLElement {
 	fileIcon?: FileBodyIconApi;
 }
 
-interface FileBodyContentApi extends HTMLElement {
+type FileBodyContentApi = HTMLElement & {
 	range?: Uint32Array;
 	count?: number;
 	cpl?: number;
@@ -133,7 +134,7 @@ interface FileBodyContentApi extends HTMLElement {
 	visibleLines?: number;
 }
 
-interface FileBodyPaneApi extends HTMLElement {
+type FileBodyPaneApi = HTMLElement & {
 	textBox?: FileBodyTextBox;
 	content?: FileBodyContentApi;
 	elements?: (FileBodyItemApi | undefined)[];
@@ -718,7 +719,6 @@ function createFileElement(file: FileBodyFile): FileBodyItemApi {
 
 function updateFileElement(element: FileBodyItemApi): void {
 	const { file } = element;
-	const node = el.value as FileBodyPaneApi;
 	if (!element.nameBox) {
 		const fileIcon = createIcon(file);
 		element.appendChild(fileIcon);
@@ -742,7 +742,6 @@ function updateFileElement(element: FileBodyItemApi): void {
 }
 
 function createIcon(file: FileBodyFile): HTMLElement {
-	const node = el.value as FileBodyPaneApi;
 	const icon = renderElement(h('span', { class: 'file-body-icon' }));
 	switch (file.type) {
 		case 'actor': {
@@ -876,7 +875,7 @@ function activateFile(file: FileBodyFile): void {
 			if (c.element) removeClass(c.element, 'selected');
 		}
 	}
-	const pointerup = (event: PointerEvent) => {
+	const pointerup = (_event: PointerEvent) => {
 		if (pressing === pointerup) {
 			pressing = null;
 			selectActiveFile();
@@ -884,21 +883,6 @@ function activateFile(file: FileBodyFile): void {
 	};
 	pressing = pointerup;
 	window.addEventListener('pointerup', pointerup, { once: true });
-}
-
-function deactivateFile(): void {
-	const node = el.value as FileBodyPaneApi;
-	if (activeFile instanceof FileItem) {
-		if (!selections.includes(activeFile!)) {
-			const context = activeFile!.getContext(node);
-			removeClass(context.element!, 'selected');
-			for (const f of selections) {
-				const c = f.getContext(node);
-				if (c.element) addClass(c.element, 'selected');
-			}
-		}
-		activeFile = null;
-	}
 }
 
 function selectActiveFile(): void {
@@ -926,7 +910,6 @@ function select(...files: FileBodyFile[]): void {
 }
 
 function selectAll(): void {
-	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
 	const files = Array.from<FileBodyFile>({ length: count });
@@ -958,7 +941,6 @@ function unselect(): void {
 }
 
 function selectByPath(path: string): void {
-	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
 	for (let i = 0; i < count; i++) {
@@ -1333,7 +1315,6 @@ function importFiles(): void {
 }
 
 function exportFile(): void {
-	const node = el.value as FileBodyPaneApi;
 	const files = selections;
 	const dialogs: { import?: string; export?: string } = Editor?.config.dialogs ?? {};
 	if (files.length === 1 && files[0] instanceof FileItem) {
@@ -1510,7 +1491,7 @@ function pointerdown(event: PointerEvent): void {
 			let element = event.target as HTMLElement;
 			const content = contentEl.value as FileBodyContentApi;
 			if (event.button === 2) {
-				content.focus({ preventScroll: true });
+				focusWithOptions(content, { preventScroll: true });
 			}
 			if (element === content) {
 				element = node;
@@ -1616,10 +1597,10 @@ function pointerdown(event: PointerEvent): void {
 					}
 				}
 			}
-			if (event.target === node) {
-				event.preventDefault();
-				content.focus({ preventScroll: true });
-			}
+		if (event.target === node) {
+			event.preventDefault();
+			focusWithOptions(content, { preventScroll: true });
+		}
 			break;
 		}
 		case 3: {
@@ -1654,7 +1635,6 @@ function pointerup(event: PointerEvent): void {
 }
 
 function doubleclick(event: Event): void {
-	const node = el.value as FileBodyPaneApi;
 	let element = event.target as HTMLElement;
 	if (hasClass(element, 'file-body-icon') || hasClass(element, 'file-body-name')) {
 		element = element.parentNode as HTMLElement;
@@ -1733,7 +1713,7 @@ function createTextBox(): FileBodyTextBox {
 				const item = this.parentNode;
 				const content = item.parentNode as HTMLElement;
 				this.input.blur();
-				content.focus({ preventScroll: true });
+				focusWithOptions(content, { preventScroll: true });
 				break;
 			}
 		}
@@ -1750,7 +1730,7 @@ function createTextBox(): FileBodyTextBox {
 	});
 
 	// oxlint-disable-next-line no-explicit-any
-	tb.addEventListener('input', function (this: any, event: Event) {
+		tb.addEventListener('input', function (this: any, _event: Event) {
 		if (this.style.width !== '') {
 			this.fitContent();
 		}
@@ -1784,8 +1764,8 @@ function createTextBox(): FileBodyTextBox {
 						throw new Error('same file');
 					}
 				})
-				.catch((error: unknown) => {
-					return FSP?.rename(File?.path(file.path) ?? file.path, path).then(() => {
+			.catch((_error: unknown) => {
+				return FSP?.rename(File?.path(file.path) ?? file.path, path).then(() => {
 						item.nameBox.textContent = name;
 						return Directory?.update();
 					});

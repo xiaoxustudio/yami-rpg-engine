@@ -63,9 +63,21 @@ const controls = {
 };
 
 const dataManifest = (): { guidMap: Record<string, unknown> } | null => Data.manifest;
-const plugin = computed(() => PluginManager);
+const plugin = computed(() =>
+	PluginManager as unknown as {
+		reconstruct(script: Record<string, unknown>): boolean;
+		checkValidate(param: unknown, val: unknown): boolean;
+	}
+);
 const localize = (key: string): string => t(key);
-const selection = computed(() => Selection);
+const selection = computed(() =>
+	Selection as unknown as {
+		inputKeydown?: (event: Event) => void;
+		inputKeyup?: (event: Event) => void;
+		inputPointerdown?: (event: Event) => void;
+		inputPointerup?: (event: Event) => void;
+	}
+);
 const selectList = computed(() => Select);
 const measureText = (text: string, font: string): { width: number } => measureTextUtil(text, font);
 const setTooltip = (el: HTMLElement, tip: string): void => setTooltipUtil(el, tip);

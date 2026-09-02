@@ -54,8 +54,6 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorInventoryForm } from '@app/inspector/file-actor-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -63,9 +61,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const form = fileActorInventoryForm;
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onConfirm = () => {
 	Inspector?.fileActor?.inventory?.save?.();

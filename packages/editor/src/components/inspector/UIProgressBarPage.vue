@@ -221,7 +221,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useUIProgressBarPage();
+const { form, sync, onParamInput: onParamInputEvent } = useUIProgressBarPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 

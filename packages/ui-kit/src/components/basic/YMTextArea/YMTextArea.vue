@@ -28,7 +28,6 @@ const state = {
 	blurEventEnabled: false
 };
 
-let target: HTMLElement | null = null;
 let inputtingTimer: ReturnType<typeof setTimeout> | null = null;
 
 const read = (): string => inputEl.value?.value ?? '';
@@ -116,13 +115,11 @@ const on = (
 const markInputting = (): void => {
 	const el = root.value;
 	if (!el) return;
-	target = el;
 	if (inputtingTimer !== null) {
 		clearTimeout(inputtingTimer);
 	}
 	inputtingTimer = setTimeout(() => {
 		el.classList.remove('inputting');
-		target = null;
 		inputtingTimer = null;
 	}, 300);
 	el.classList.add('inputting');

@@ -22,8 +22,6 @@ import { useI18n } from 'vue-i18n';
 import type { ExportLanguageForm } from '@app/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -63,9 +61,6 @@ const getForm = (): ExportLanguageForm => {
 };
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 onMounted(() => {
 	const el = frame.value?.root;

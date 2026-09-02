@@ -45,8 +45,6 @@ import { PluginManager } from '@app/plugin/plugin.ts';
 import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
@@ -54,9 +52,6 @@ import TreeList from '@app/components/common/TreeList.vue';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const overviewMeta = shallowRef<PluginMetaShape | null>(PluginManager.meta);
 const overviewDetailed = ref(PluginManager.detailed);
@@ -102,8 +97,8 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const onListSelect = (event: Event & { value?: unknown }) => {
 	PluginManager?.listSelect?.(event);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	PluginManager?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	PluginManager?.listPopup?.(event as PointerEvent & { value?: unknown });
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	PluginManager?.listChange?.(event);

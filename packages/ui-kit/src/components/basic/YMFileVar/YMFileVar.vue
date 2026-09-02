@@ -99,7 +99,7 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg?: unknown): HTMLElement | null | undefined => {
+const getFocus = (_modeArg?: unknown): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant': {
 			const fileSlot = root.value?.querySelector('.file-var-file') as HTMLElement | null;

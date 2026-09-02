@@ -33,8 +33,6 @@ import {
 } from '@app/composables/useVariableGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -82,11 +80,8 @@ const FIELD_BY_ID: Record<string, keyof VariableGetterForm> = {
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	VariableGetter?.confirm2?.();
+	VariableGetter?.confirm2?.(new Event('click'));
 };
 
 onMounted(() => {

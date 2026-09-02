@@ -15,14 +15,9 @@
 import { h, onMounted, render, type VNode } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CommonList from '@app/components/common/CommonList.vue';
 import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
 import { $ } from '@app/utils/dom';
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const updateItems = (items: ReferenceItem[]): void => {
 	const list = $('#reference-list') as HTMLElement & {

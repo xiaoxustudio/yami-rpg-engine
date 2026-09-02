@@ -137,7 +137,7 @@
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
 					ref="elTint0Slider"
-					v-model="form.tint[0]"
+					v-model="tint[0]"
 					min="-255"
 					max="255"
 					step="15"
@@ -145,7 +145,7 @@
 				<NumberBox
 					id="animSpriteFrame-tint-0"
 					ref="elTint0"
-					v-model="form.tint[0]"
+					v-model="tint[0]"
 					min="-255"
 					max="255"
 					step="5"
@@ -158,7 +158,7 @@
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
 					ref="elTint1Slider"
-					v-model="form.tint[1]"
+					v-model="tint[1]"
 					min="-255"
 					max="255"
 					step="15"
@@ -166,7 +166,7 @@
 				<NumberBox
 					id="animSpriteFrame-tint-1"
 					ref="elTint1"
-					v-model="form.tint[1]"
+					v-model="tint[1]"
 					min="-255"
 					max="255"
 					step="5"
@@ -179,7 +179,7 @@
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
 					ref="elTint2Slider"
-					v-model="form.tint[2]"
+					v-model="tint[2]"
 					min="-255"
 					max="255"
 					step="15"
@@ -187,7 +187,7 @@
 				<NumberBox
 					id="animSpriteFrame-tint-2"
 					ref="elTint2"
-					v-model="form.tint[2]"
+					v-model="tint[2]"
 					min="-255"
 					max="255"
 					step="5"
@@ -200,7 +200,7 @@
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
 					ref="elTint3Slider"
-					v-model="form.tint[3]"
+					v-model="tint[3]"
 					min="0"
 					max="255"
 					step="15"
@@ -208,7 +208,7 @@
 				<NumberBox
 					id="animSpriteFrame-tint-3"
 					ref="elTint3"
-					v-model="form.tint[3]"
+					v-model="tint[3]"
 					min="0"
 					max="255"
 					step="5"
@@ -252,7 +252,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -268,15 +268,21 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimSpriteFramePage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimSpriteFramePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
+
+const tint = computed(() => form.tint as number[]);
 
 const { bindInput, bindSliders } = useInspectorInput();
 
 const onZoomInput = (value: number) => {
 	Sprite?.setZoom?.(value);
 };
-const onZoomFocus = () => {
-	Sprite?.zoomFocus?.();
+const onZoomFocus = (event: FocusEvent) => {
+	Sprite?.zoomFocus?.(event);
 };
 const onScreenKeydown = (event: KeyboardEvent) => {
 	Sprite?.screenKeydown?.(event);
@@ -346,7 +352,7 @@ onMounted(() => {
 		elTint2Slider.value?.root,
 		elTint3Slider.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, animSpriteFrame, Animation, (data: Record<string, unknown>) => {
+	bindInput(elements, animSpriteFrame, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = animSpriteFrame.motion;
 		data.direction = Animation.direction;

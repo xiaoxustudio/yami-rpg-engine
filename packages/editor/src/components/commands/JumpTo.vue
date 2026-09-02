@@ -10,13 +10,13 @@
 			<div class="text">Operation</div>
 			<SelectBox id="jumpTo-operation" v-focus v-model="form.operation" />
 			<div class="text">Label Name</div>
-			<TextBox id="jumpTo-label" v-focus v-model="form.label" />
+			<TextBox id="jumpTo-label" v-focus v-model="label" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { TextSuggestion, type TextSuggestionTarget } from '@app/commands/text-tip.ts';
@@ -29,6 +29,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, loadLabels } = useJumpToCommandSchema();
+
+const label = computed({
+	get: () => form.label as string,
+	set: (value) => {
+		form.label = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

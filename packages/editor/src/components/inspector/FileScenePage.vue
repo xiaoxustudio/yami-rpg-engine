@@ -166,7 +166,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useFileScenePage } from '@app/composables/useFileScenePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -175,10 +174,13 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const scene = useSceneStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useFileScenePage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileScenePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 

@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { YMSelectBox } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
@@ -61,7 +61,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	items: () => [],
 	disabled: false
 });
@@ -117,7 +117,7 @@ const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const applyLocalizedOptions = (): void => {
-	const item = useLocalStore(pinia).components?.[props.id];
+	const item = useLocalStore(pinia).components?.[props.id!];
 	if (item?.options) {
 		setItemNames(item.options as Record<string, string | { name?: string; tip?: string }>);
 	}
@@ -136,7 +136,7 @@ const setItemNames = (options: Record<string, string | { name?: string; tip?: st
 		} else if (option && typeof option === 'object') {
 			const copy: { name?: string; tip?: string } = { ...option };
 			if ('tip' in copy) {
-				copy.tip = parseLocalTip(copy.tip, copy.name);
+				copy.tip = parseLocalTip(copy.tip!, copy.name ?? '');
 			}
 			mapped[key] = copy;
 		}

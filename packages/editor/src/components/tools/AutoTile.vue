@@ -130,8 +130,6 @@ import { useI18n } from 'vue-i18n';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { useAutoTileStore } from '@app/stores/auto-tile';
 import SwitchItem from '@app/components/common/SwitchItem.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -141,12 +139,10 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
 const autoTileStore = useAutoTileStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
-	container.parentNode?.classList.add('plain');
+	(container.parentNode as HTMLElement | null)?.classList.add('plain');
 	const node = item as { id?: string };
 	const count = AutoTile.templateCounts?.[node.id ?? ''];
 	return [
@@ -164,8 +160,8 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 const onTemplatesSelect = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesSelect?.(event);
 };
-const onTemplatesPopup = (event: PointerEvent & { value?: unknown }) => {
-	AutoTile?.templatesPopup?.(event);
+const onTemplatesPopup = (event: Event & { value?: unknown }) => {
+	AutoTile?.templatesPopup?.(event as MouseEvent & { value?: unknown });
 };
 const onTemplatesChange = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesChange?.(event);

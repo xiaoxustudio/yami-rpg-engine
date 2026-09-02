@@ -28,8 +28,6 @@ import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts'
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -41,11 +39,8 @@ const form = regionGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	RegionGetter?.confirm?.();
+	RegionGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

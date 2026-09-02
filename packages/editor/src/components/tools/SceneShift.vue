@@ -22,8 +22,6 @@ import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
@@ -64,11 +62,8 @@ const FIELD_BY_ID: Record<string, keyof SceneShiftForm> = {
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	SceneShift?.confirm?.();
+	SceneShift?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

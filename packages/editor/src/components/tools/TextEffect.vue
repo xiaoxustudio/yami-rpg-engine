@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置文字效果 -->
-	<WindowFrame ref="frame" id="textEffect" @confirm="onConfirm">
+	<WindowFrame id="textEffect" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.textEffect.title') }}
@@ -41,14 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Selection } from '@app/tools/text-capture.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -57,12 +54,7 @@ const { t } = useI18n();
 
 const form = useTextCaptureWindow().textEffect.form;
 
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	Selection?.textEffect?.confirm?.();
+	Selection?.textEffect?.confirm?.(new Event('click'));
 };
 </script>

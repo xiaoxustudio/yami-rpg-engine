@@ -46,8 +46,6 @@ import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -60,11 +58,8 @@ const form = actorGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	ActorGetter?.confirm?.();
+	ActorGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

@@ -152,7 +152,7 @@ onMounted(() => {
 		configurable: true,
 		get: () => state.dataValue,
 		set: (value: unknown) => {
-			state.dataValue = value;
+			state.dataValue = value as number | string | boolean;
 		}
 	});
 

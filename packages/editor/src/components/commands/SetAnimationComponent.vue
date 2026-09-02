@@ -56,7 +56,7 @@
 				id="setAnimationComponent-priority"
 				min="-100"
 				max="100"
-				v-model="form.priority"
+				v-model="priority"
 			/>
 			<div class="text">Offset Y</div>
 			<NumberBox
@@ -64,7 +64,7 @@
 				min="-100"
 				max="100"
 				unit="px"
-				v-model="form.offsetY"
+				v-model="offsetY"
 			/>
 			<div class="text">Sprite Name</div>
 			<SelectBox id="setAnimationComponent-spriteId" v-focus v-model="form.spriteId" />
@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -100,6 +100,20 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetAnimationComponentCommandSchema();
+
+const priority = computed({
+	get: () => form.priority as number | string,
+	set: (value) => {
+		form.priority = value;
+	}
+});
+
+const offsetY = computed({
+	get: () => form.offsetY as number | string,
+	set: (value) => {
+		form.offsetY = value;
+	}
+});
 
 const onAnimationIdWrite = (value: unknown) => {
 	const animationId = value as string;

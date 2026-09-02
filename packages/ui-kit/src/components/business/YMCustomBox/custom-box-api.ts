@@ -7,7 +7,7 @@ export interface CustomBoxParseResult {
 }
 
 export interface CustomBoxBrowserState {
-	dragging?: boolean;
+	dragging: boolean;
 	body?: {
 		activeFile?: {
 			type?: string;

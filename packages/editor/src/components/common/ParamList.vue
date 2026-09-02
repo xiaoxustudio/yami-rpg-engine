@@ -36,12 +36,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 
-const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list);
+const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list as never);
 const menuPopup = (options: MenuOptions, items: MenuItem[]): void => Menu.popup(options, items);
 const localize = (key: string): string => t('menuParamList.' + key);
 interface ClipboardAdapter {
 	write(type: string, data: unknown): void;
-	read(type: string): unknown;
+	read(type: string): unknown[] | null;
 	has(type: string): boolean;
 }
 const clipboard = ((): ClipboardAdapter | null => {
@@ -49,7 +49,7 @@ const clipboard = ((): ClipboardAdapter | null => {
 	if (!C) return null;
 	return {
 		write: (type: string, data: unknown): void => C.write(type, data),
-		read: (type: string): unknown => C.read(type),
+		read: (type: string): unknown[] | null => C.read(type) as unknown[] | null,
 		has: (type: string): boolean => C.has(type)
 	};
 })();

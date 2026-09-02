@@ -26,32 +26,10 @@ interface ListData {
 	foot: HTMLElement | null;
 }
 
-interface ListItem extends HTMLElement {
+type ListItem = HTMLElement & {
 	dataValue?: unknown;
 	versionId?: number;
-}
-
-interface CommonListApi extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	reload(): HTMLElement;
-	appendElement(element: HTMLElement): void;
-	update(): void;
-	resize(): void;
-	updateHeadAndFoot(): void;
-	updateOnResize(_element?: HTMLElement): void;
-	select(element: HTMLElement): void;
-	unselect(): void;
-	scrollToItem(index: number): void;
-	selectRelative(direction: 'up' | 'down'): void;
-	clearElements(start: number): void;
-	clear(): HTMLElement;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
+};
 
 let elements = [] as unknown as ListItem[] & ListData;
 elements.versionId = 0;

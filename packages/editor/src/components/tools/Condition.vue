@@ -45,8 +45,6 @@ import { useI18n } from 'vue-i18n';
 import { ConditionListInterface, form } from '@app/tools/condition-list.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -54,11 +52,8 @@ import TextArea from '@app/components/common/TextArea.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
-const onTypeWrite = (value: string) => {
-	ConditionListInterface?.typeWrite?.({ value });
+const onTypeWrite = (value: unknown) => {
+	ConditionListInterface?.typeWrite?.({ value } as Event & { value: string });
 };
 const onConfirm = () => {
 	ConditionListInterface?.target?.save?.();

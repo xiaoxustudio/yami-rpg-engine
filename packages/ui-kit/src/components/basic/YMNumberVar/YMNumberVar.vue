@@ -53,7 +53,6 @@ const displayValue = computed(() => {
 	const value = varValue.value;
 	return value && typeof value === 'object' ? value.key : value;
 });
-const pluginInput = ref(false);
 
 const read = (): unknown => {
 	switch (mode.value) {

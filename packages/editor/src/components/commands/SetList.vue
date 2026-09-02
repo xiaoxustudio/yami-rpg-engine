@@ -43,10 +43,10 @@
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
-				v-model="form.number"
+				v-model="number"
 			/>
 			<div class="text">String</div>
-			<TextArea id="setList-string" v-model="form.string" />
+			<TextArea id="setList-string" v-model="string" />
 		<div class="text">Variable</div>
 		<CustomBox
 			id="setList-operand"
@@ -77,14 +77,14 @@
 			<CheckBox
 				id="setList-index-skip-check"
 				class="standard"
-				v-model="form.indexSkipCheck"
+				v-model="indexSkipCheck"
 			/>
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -101,6 +101,27 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetListCommandSchema();
+
+const number = computed({
+	get: () => form.number as number | string,
+	set: (value) => {
+		form.number = value;
+	}
+});
+
+const string = computed({
+	get: () => form.string as string,
+	set: (value) => {
+		form.string = value;
+	}
+});
+
+const indexSkipCheck = computed({
+	get: () => form.indexSkipCheck as boolean,
+	set: (value) => {
+		form.indexSkipCheck = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

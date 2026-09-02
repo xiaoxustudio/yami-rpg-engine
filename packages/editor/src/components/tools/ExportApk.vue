@@ -57,15 +57,10 @@
 import { nextTick, onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { exportApkForm } from '@app/title/menu-bar';
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
 

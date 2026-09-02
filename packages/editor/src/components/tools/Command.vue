@@ -53,8 +53,6 @@ import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -62,13 +60,10 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const overviewMeta = ref<PluginMetaShape | null>(null);
 
 const syncOverview = (): void => {
-	overviewMeta.value = CustomCommand?.meta ?? null;
+	overviewMeta.value = (CustomCommand?.meta ?? null) as PluginMetaShape | null;
 };
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
@@ -107,22 +102,29 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const onListSelect = (event: Event & { value?: unknown }) => {
 	CustomCommand?.listSelect?.(event);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	CustomCommand?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	(
+		CustomCommand?.listPopup as
+			| ((event: PointerEvent & { value?: unknown }) => void)
+			| null
+			| undefined
+	)?.(event as PointerEvent & { value?: unknown });
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
-	CustomCommand?.listOpen?.(event);
+	(
+		CustomCommand?.listOpen as ((event: Event & { value?: unknown }) => void) | null | undefined
+	)?.(event);
 };
-const onListChange = (event: Event & { value?: unknown }) => {
-	CustomCommand?.listChange?.(event);
+const onListChange = (_event: Event & { value?: unknown }) => {
+	CustomCommand?.listChange?.();
 };
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	CustomCommand?.paramInput?.({ target });
+const onParamInput = (_value: string) => {
+	const target: EventTarget | null = document.activeElement;
+	CustomCommand?.paramInput?.({ target } as Event);
 };
 
 const onApply = () => {
-	CustomCommand?.apply?.();
+	(CustomCommand?.apply as ((event?: Event) => void) | null)?.();
 };
 
 onMounted(() => {});

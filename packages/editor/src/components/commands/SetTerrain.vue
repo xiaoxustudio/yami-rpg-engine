@@ -29,10 +29,6 @@ const { t } = useI18n();
 
 const { form, save } = useSetTerrainCommandSchema();
 
-const onPosition = (value: unknown) => {
-	form.position = value;
-};
-
 const onConfirm = () => {
 	save();
 };

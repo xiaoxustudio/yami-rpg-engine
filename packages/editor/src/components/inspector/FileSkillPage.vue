@@ -76,7 +76,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { AttributeListInterface } from '@app/tools/property-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useFileSkillPage } from '@app/composables/useFileSkillPage';
-import { useInspectorStore } from '@app/stores/inspector';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -84,10 +83,13 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const inspector = useInspectorStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useFileSkillPage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileSkillPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const onListChange = () => {
 	Inspector?.fileSkill?.listChange?.();

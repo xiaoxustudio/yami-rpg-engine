@@ -38,8 +38,6 @@ import { useI18n } from 'vue-i18n';
 import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -50,9 +48,6 @@ const stateGetter = useStateGetterWindow();
 const form = stateGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 onMounted(() => {
 	const el = frame.value?.root;

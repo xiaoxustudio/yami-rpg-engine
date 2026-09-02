@@ -15,8 +15,6 @@ import { onMounted, ref, watch } from 'vue';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import ParamList from '@app/components/common/ParamList.vue';
 
@@ -25,9 +23,6 @@ const form = arrayWindow.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 const elList = ref<InstanceType<typeof ParamList> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onListChange = () => {
 	form.values = elList.value?.read() ?? form.values;

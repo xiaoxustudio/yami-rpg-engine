@@ -36,7 +36,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	items: () => []
 });
 

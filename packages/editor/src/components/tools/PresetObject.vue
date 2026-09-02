@@ -29,16 +29,11 @@ import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 interface PresetIconNode {
 	class?: string;
@@ -118,7 +113,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 };
 
 const onSceneIdWrite = (value: unknown) => {
-	PresetObject?.sceneIdWrite?.({ value });
+	PresetObject?.sceneIdWrite?.({ value } as Event & { value?: string });
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetObject?.listOpen?.(event);

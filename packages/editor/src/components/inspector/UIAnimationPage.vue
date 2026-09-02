@@ -101,7 +101,11 @@ const { t } = useI18n();
 
 const { bindInput } = useInspectorInput();
 
-const { form, sync, onParamInput } = useUIAnimationPage();
+const { form, sync, onParamInput: onParamInputEvent } = useUIAnimationPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const elAnimation = ref<InstanceType<typeof CustomBox> | null>(null);
 const elMotion = ref<InstanceType<typeof SelectBox> | null>(null);

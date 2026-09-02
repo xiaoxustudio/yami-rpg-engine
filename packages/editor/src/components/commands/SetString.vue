@@ -23,7 +23,7 @@
 			<TextArea
 				id="setString-operand-common-value"
 				menu="tag-local-var tag-global-var tag-localization"
-				v-model="form.commonValue"
+				v-model="commonValue"
 			/>
 			<div class="text">String Method</div>
 			<SelectBox id="setString-operand-string-method" v-model="form.stringMethod" />
@@ -61,10 +61,10 @@
 				id="setString-operand-string-pad-start-length"
 				min="2"
 				max="10"
-				v-model="form.stringPadStartLength"
+				v-model="stringPadStartLength"
 			/>
 			<div class="text">Pad String</div>
-			<TextBox id="setString-operand-string-pad-start-pad" v-model="form.stringPadStartPad" />
+			<TextBox id="setString-operand-string-pad-start-pad" v-model="stringPadStartPad" />
 			<div class="text">Substring</div>
 			<StringVar
 				id="setString-operand-string-replace-pattern"
@@ -137,7 +137,7 @@
 			<div class="text">Param Name</div>
 			<StringVar id="setString-operand-parameter-key" v-focus v-model="form.parameterKey" />
 			<div class="text">Script</div>
-			<TextBox id="setString-operand-script" v-focus v-model="form.script" />
+			<TextBox id="setString-operand-script" v-focus v-model="script" />
 			<div class="text">Data</div>
 			<SelectBox id="setString-operand-other-data" v-model="form.otherData" />
 			<div class="text">Choice Index</div>
@@ -158,7 +158,7 @@
 			<div class="text">Date Format</div>
 			<TextBox
 				id="setString-operand-parse-timestamp-format"
-				v-model="form.parseTimestampFormat"
+				v-model="parseTimestampFormat"
 			/>
 			<div class="text">Image Width</div>
 			<NumberBox
@@ -166,7 +166,7 @@
 				min="64"
 				max="7680"
 				unit="px"
-				v-model="form.screenshotWidth"
+				v-model="screenshotWidth"
 			/>
 			<div class="text">Image Height</div>
 			<NumberBox
@@ -174,14 +174,14 @@
 				min="64"
 				max="7680"
 				unit="px"
-				v-model="form.screenshotHeight"
+				v-model="screenshotHeight"
 			/>
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -198,6 +198,55 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useSetStringCommandSchema();
+
+const commonValue = computed({
+	get: () => form.commonValue as string,
+	set: (value) => {
+		form.commonValue = value;
+	}
+});
+
+const stringPadStartLength = computed({
+	get: () => form.stringPadStartLength as number | string,
+	set: (value) => {
+		form.stringPadStartLength = value;
+	}
+});
+
+const stringPadStartPad = computed({
+	get: () => form.stringPadStartPad as string,
+	set: (value) => {
+		form.stringPadStartPad = value;
+	}
+});
+
+const script = computed({
+	get: () => form.script as string,
+	set: (value) => {
+		form.script = value;
+	}
+});
+
+const parseTimestampFormat = computed({
+	get: () => form.parseTimestampFormat as string,
+	set: (value) => {
+		form.parseTimestampFormat = value;
+	}
+});
+
+const screenshotWidth = computed({
+	get: () => form.screenshotWidth as number | string,
+	set: (value) => {
+		form.screenshotWidth = value;
+	}
+});
+
+const screenshotHeight = computed({
+	get: () => form.screenshotHeight as number | string,
+	set: (value) => {
+		form.screenshotHeight = value;
+	}
+});
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

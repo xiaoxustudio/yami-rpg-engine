@@ -31,10 +31,6 @@ const { t } = useI18n();
 
 const { form, save } = useSetTextCommandSchema();
 
-const onElement = (value: unknown) => {
-	form.element = value;
-};
-
 const onConfirm = () => {
 	save();
 };

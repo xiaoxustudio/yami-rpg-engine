@@ -1172,7 +1172,14 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const local = useLocalStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useParticleLayerPage();
+const { form, sync, onParamInput: onParamInputEvent } = useParticleLayerPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
+
+const getOptions = (id: string) =>
+	local.components?.[id]?.options as Record<string, { name?: string }> | undefined;
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -1258,7 +1265,7 @@ onMounted(() => {
 
 	if (elBlend.value) {
 		const blendName = (key: string, fallback: string) =>
-			local.components?.['particleLayer-blend']?.options?.[key]?.name || fallback;
+			getOptions('particleLayer-blend')?.[key]?.name || fallback;
 		elBlend.value.loadItems([
 			{ name: blendName('normal', 'Normal'), value: 'normal' },
 			{ name: blendName('additive', 'Additive'), value: 'additive' },
@@ -1268,7 +1275,7 @@ onMounted(() => {
 
 	if (elLight.value) {
 		const lightName = (key: string, fallback: string) =>
-			local.components?.['particleLayer-light']?.options?.[key]?.name || fallback;
+			getOptions('particleLayer-light')?.[key]?.name || fallback;
 		elLight.value.loadItems([
 			{ name: lightName('raw', 'Raw'), value: 'raw' },
 			{ name: lightName('global', 'Global Sampling'), value: 'global' },
@@ -1339,11 +1346,11 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider, #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider'
 	);
-	bindInput(elements, editor, Particle);
+	bindInput(elements, editor, Particle as unknown as { history: unknown });
 	bindSliders(sliders);
 	const refreshLocalizedItems = () => {
 		const getNames = (id: string, values: string[]) => {
-			const options = local.components?.[id]?.options;
+			const options = getOptions(id);
 			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
 		};
 		elBlend.value?.loadItems(

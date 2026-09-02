@@ -48,17 +48,12 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { getEnumStore } from '@app/stores/enum';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const nodeExtras = (item: unknown): VNode[] => {
 	const node = item as { class?: string; id: string; value?: string; note?: string };
@@ -104,16 +99,16 @@ const onListRecord = (event: Event & { value?: unknown }) => {
 	Enum?.listRecord?.(event);
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
-	Enum?.listOpen?.(event);
+	Enum?.listOpen?.(event as MouseEvent);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	Enum?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	Enum?.listPopup?.(event as Event & { clientX: number; clientY: number });
 };
 const onNameInput = (value: string) => {
-	Enum?.nameInput?.({ target: { value } });
+	Enum?.nameInput?.({ target: { value } } as InputEvent & { target: HTMLInputElement });
 };
 const onValueInput = (value: string) => {
-	Enum?.valueInput?.({ target: { value } });
+	Enum?.valueInput?.({ target: { value } } as InputEvent & { target: HTMLInputElement });
 };
 
 const onApply = () => {

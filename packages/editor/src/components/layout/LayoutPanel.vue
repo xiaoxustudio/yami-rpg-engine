@@ -1181,7 +1181,7 @@ const animationNodeExtras = (item: unknown): VNode[] => {
 	return [];
 };
 
-const animationNodeIcon = (item: unknown): VNode[] => {
+const animationNodeIcon = (_item: unknown): VNode[] => {
 	return [h('span', { class: ['node-icon', 'icon-string'] })];
 };
 
@@ -1254,7 +1254,7 @@ const layerNodeIcon = (item: unknown): VNode[] => {
 		particle: 'anim-layer-particle',
 		sound: 'anim-layer-sound'
 	} as Record<string, string>;
-	return [h('span', { class: ['node-icon', classes[node.class] ?? ''] })];
+	return [h('span', { class: ['node-icon', classes[node.class ?? ''] ?? ''] })];
 };
 
 const onParticleVisibilityPointerdown =
@@ -1392,11 +1392,11 @@ const onSceneMarqueePointerdown = (event: PointerEvent) => {
 const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
 	Scene?.marqueeDoubleclick?.(event);
 };
-const onEasingIdWrite = (value: string) => {
-	Curve?.easingIdWrite?.({ value });
+const onEasingIdWrite = (value: unknown) => {
+	Curve?.easingIdWrite?.({ value: value as string } as unknown as Event);
 };
 const onEasingIdInput = (value: unknown) => {
-	Curve?.easingIdInput?.({ value });
+	Curve?.easingIdInput?.({ value } as unknown as Event);
 };
 const onUiListChange = (event: Event) => {
 	UI?.listChange?.(event);

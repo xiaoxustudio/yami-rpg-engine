@@ -97,7 +97,11 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneRegionPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneRegionPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -143,7 +147,7 @@ onMounted(() => {
 			elWidth.value?.root,
 			elHeight.value?.root
 		].filter((el): el is HTMLElement => el != null);
-		bindInput(elements, editor, Scene);
+		bindInput(elements, editor, Scene as unknown as { history: unknown });
 
 		[elConditions.value?.root, elEvents.value?.root, elScripts.value?.root]
 			.filter((el): el is HTMLElement => el != null)

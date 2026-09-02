@@ -159,8 +159,6 @@ import { Variable } from '@app/variable/variable.ts';
 import { parseMultiLineString } from '@app/composables/useCommandParse.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { getVariableStore } from '@app/stores/variable';
 import PageManager from '@app/components/common/PageManager.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -170,9 +168,6 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { class?: string; value?: unknown; sort?: number; note?: string };
@@ -241,7 +236,7 @@ const onListOpen = (event: Event) => {
 	Variable?.listOpen?.(event);
 };
 const onNameInput = (value: string) => {
-	Variable?.nameInput?.({ target: { value } });
+	Variable?.nameInput?.({ target: { value } } as Event & { target: HTMLInputElement });
 };
 let lastSortValue: number | string | boolean | undefined;
 let lastSortWriteValue: number | string | boolean | undefined;
@@ -250,30 +245,30 @@ let lastTypeWriteValue: number | string | boolean | undefined;
 const onSortInput = (value: number | string | boolean) => {
 	if (lastSortValue !== value) {
 		lastSortValue = value;
-		Variable?.sortInput?.({ value });
+		Variable?.sortInput?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 const onSortWrite = (value: number | string | boolean) => {
 	if (lastSortWriteValue !== value) {
 		lastSortWriteValue = value;
-		Variable?.sortWrite?.({ value });
+		Variable?.sortWrite?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 const onTypeInput = (value: number | string | boolean) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
-		Variable?.typeInput?.({ value });
+		Variable?.typeInput?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 const onTypeWrite = (value: number | string | boolean) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
-		Variable?.typeWrite?.({ value });
+		Variable?.typeWrite?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 
 const onApply = () => {
-	Variable?.apply?.();
+	Variable?.apply?.(new Event('click'));
 };
 
 onMounted(() => {

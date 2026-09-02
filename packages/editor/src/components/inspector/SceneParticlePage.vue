@@ -207,7 +207,11 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneParticlePage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneParticlePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -260,7 +264,7 @@ onMounted(() => {
 		const sliders = document.querySelectorAll(
 			'#sceneParticle-angle-slider, #sceneParticle-scale-slider, #sceneParticle-speed-slider, #sceneParticle-opacity-slider, #sceneParticle-priority-slider'
 		);
-		bindInput(elements, editor, Scene);
+		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
 		document

@@ -39,20 +39,18 @@
 				v-model="form.max"
 			/>
 			<div class="text">{{ t('components.setTextBox-property-decimals.label') }}</div>
-			<NumberBox id="setTextBox-property-decimals" min="0" max="10" v-model="form.decimals" />
+			<NumberBox id="setTextBox-property-decimals" min="0" max="10" v-model="decimals" />
 			<div class="text">{{ t('components.setTextBox-property-color.label') }}</div>
-			<ColorBox id="setTextBox-property-color" v-model="form.color" />
+			<ColorBox id="setTextBox-property-color" v-model="color" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -64,8 +62,18 @@ const { t } = useI18n();
 
 const form = TextBoxProperty.form;
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
+const decimals = computed({
+	get: () => form.decimals as number | string,
+	set: (value) => {
+		form.decimals = value;
+	}
+});
+const color = computed({
+	get: () => form.color as string | undefined,
+	set: (value) => {
+		form.color = value;
+	}
+});
 
 onMounted(() => {});
 </script>

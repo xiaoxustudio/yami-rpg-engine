@@ -564,8 +564,9 @@ vi.mock('@app/stores/local', () => ({
 			expect(getControl('requestURL-url').read()).toBe('');
 			expect(getControl('requestURL-method').read()).toBe('GET');
 			expect(getControl('requestURL-callback').read()).toBe('');
-			expect(wrapper.vm.form.headers).toEqual([]);
-			expect(wrapper.vm.form.data).toEqual([]);
+			const vm = wrapper.vm as unknown as { form: Record<string, unknown> };
+			expect(vm.form.headers).toEqual([]);
+			expect(vm.form.data).toEqual([]);
 			wrapper.unmount();
 		});
 
@@ -586,8 +587,9 @@ vi.mock('@app/stores/local', () => ({
 			expect(Window.open).toHaveBeenCalledWith('requestURL');
 			expect(getControl('requestURL-url').read()).toBe('https://example.com');
 			expect(getControl('requestURL-method').read()).toBe('POST');
-			expect(wrapper.vm.form.headers).toEqual([{ key: 'a', value: 'b' }]);
-			expect(wrapper.vm.form.data).toEqual([{ key: 'c', value: 'd' }]);
+			const vm = wrapper.vm as unknown as { form: Record<string, unknown> };
+			expect(vm.form.headers).toEqual([{ key: 'a', value: 'b' }]);
+			expect(vm.form.data).toEqual([{ key: 'c', value: 'd' }]);
 			wrapper.unmount();
 		});
 

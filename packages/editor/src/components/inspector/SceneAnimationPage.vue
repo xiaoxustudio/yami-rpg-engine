@@ -214,7 +214,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -226,10 +225,13 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const scene = useSceneStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneAnimationPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneAnimationPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -294,7 +296,7 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#sceneAnimation-angle-slider, #sceneAnimation-scale-slider, #sceneAnimation-speed-slider, #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider'
 	);
-	bindInput(elements, editor, Scene);
+	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
 	document
 		.querySelectorAll(

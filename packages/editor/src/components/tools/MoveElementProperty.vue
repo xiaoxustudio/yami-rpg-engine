@@ -166,8 +166,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { TransformProperty } from '@app/commands/property-window/move-element-property-window';
@@ -175,9 +173,6 @@ import { TransformProperty } from '@app/commands/property-window/move-element-pr
 const { t } = useI18n();
 
 const form = TransformProperty.form;
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 onMounted(() => {});
 </script>

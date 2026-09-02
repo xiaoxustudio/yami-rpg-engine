@@ -68,7 +68,6 @@ import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
-import { useInspectorStore } from '@app/stores/inspector';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -77,10 +76,13 @@ import TextArea from '@app/components/common/TextArea.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const inspector = useInspectorStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useFileEventPage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileEventPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const onTypeWrite = (value: unknown) => {
 	Inspector?.fileEvent?.typeWrite?.({ value });

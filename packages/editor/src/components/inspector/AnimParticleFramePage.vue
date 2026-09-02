@@ -127,7 +127,11 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimParticleFramePage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimParticleFramePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -159,7 +163,7 @@ onMounted(() => {
 		elScale.value?.root,
 		elSpeed.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
+	bindInput(elements, editor, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = editor.motion;
 		data.direction = Animation.direction;

@@ -1,6 +1,6 @@
 <template>
-	<!-- 设置文字位置 -->
-	<WindowFrame ref="frame" id="textPosition" @confirm="onConfirm">
+	<!-- 璁剧疆鏂囧瓧浣嶇疆 -->
+	<WindowFrame id="textPosition" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.textPosition.title') }}
@@ -25,14 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Selection } from '@app/tools/text-capture.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
@@ -40,12 +37,7 @@ const { t } = useI18n();
 
 const form = useTextCaptureWindow().textPosition.form;
 
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	Selection?.textPosition?.confirm?.();
+	Selection?.textPosition?.confirm?.(new Event('click'));
 };
 </script>

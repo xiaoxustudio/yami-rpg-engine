@@ -18,8 +18,6 @@ import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -27,9 +25,6 @@ import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 const { t } = useI18n();
 
 const tileNode = useTileNodeWindow();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 

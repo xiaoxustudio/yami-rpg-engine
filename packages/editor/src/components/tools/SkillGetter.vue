@@ -40,8 +40,6 @@ import { useI18n } from 'vue-i18n';
 import { useSkillGetterWindow } from '@app/composables/useSkillGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
@@ -53,9 +51,6 @@ const skillGetter = useSkillGetterWindow();
 const form = skillGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 onMounted(() => {
 	const el = frame.value?.root;

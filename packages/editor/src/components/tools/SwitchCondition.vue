@@ -67,8 +67,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import GamepadBox from '@app/components/common/GamepadBox.vue';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
@@ -77,11 +75,8 @@ import { form } from '@app/composables/useSwitchConditionSchema';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	SwitchCondition?.confirm?.();
+	SwitchCondition?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

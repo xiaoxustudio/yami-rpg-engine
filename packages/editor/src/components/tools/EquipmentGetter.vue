@@ -40,8 +40,6 @@ import { EquipmentGetter } from '@app/commands/accessors/equipment-accessor-wind
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
@@ -54,11 +52,8 @@ const form = equipmentGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	EquipmentGetter?.confirm?.();
+	EquipmentGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

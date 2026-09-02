@@ -20,7 +20,7 @@
 				min="0"
 				max="3600000"
 				unit="ms"
-				v-model="form.duration"
+				v-model="duration"
 			/>
 			<div class="text">Wait</div>
 			<SelectBox id="moveElement-wait" name="wait" v-model="form.wait" />
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveElementCommandSchema } from '@app/composables/commands/useMoveElementCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -46,6 +46,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useMoveElementCommandSchema();
+
+const duration = computed({
+	get: () => form.duration as number | string,
+	set: (value) => {
+		form.duration = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

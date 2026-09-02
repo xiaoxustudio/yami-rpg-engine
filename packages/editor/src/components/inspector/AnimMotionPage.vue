@@ -52,7 +52,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimMotionPage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimMotionPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -91,7 +95,7 @@ onMounted(() => {
 	const elements = [elSkip.value?.root, elLoop.value?.root, elLoopStart.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
-	bindInput(elements, animMotion, Animation);
+	bindInput(elements, animMotion, Animation as unknown as { history: unknown });
 
 	const el = document.getElementById('animMotion-vue-mount');
 	if (el) {

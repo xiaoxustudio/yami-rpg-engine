@@ -43,13 +43,13 @@
 			<div class="text">Param Name</div>
 			<StringVar id="setBoolean-parameter-key" v-focus v-model="form['parameter-key']" />
 			<div class="text">Script</div>
-			<TextBox id="setBoolean-script" v-focus v-model="form.script" />
+			<TextBox id="setBoolean-script" v-focus v-model="script" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
@@ -64,6 +64,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = useSetBooleanCommandSchema();
+
+const script = computed({
+	get: () => form.script as string,
+	set: (value) => {
+		form.script = value;
+	}
+});
 
 const onWrite = (value: unknown) => {
 	writeHandler?.({ value: value as string });

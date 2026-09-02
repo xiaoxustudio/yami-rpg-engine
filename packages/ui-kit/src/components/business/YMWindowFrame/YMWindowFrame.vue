@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-import { clamp, addClass, removeClass, hasClass, rect, rasterize } from '../../../utils/dom';
+import { clamp, addClass, removeClass, hasClass, rect, rasterize, focusWithOptions } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
@@ -83,7 +83,7 @@ const on = (
 			break;
 		case 'resize':
 			state.resizeEventEnabled = true;
-			state.windowResize = (event: Event) => {
+			state.windowResize = (_event: Event) => {
 				root.value?.dispatchEvent(new Event('resize'));
 			};
 			break;
@@ -282,10 +282,10 @@ const focus = (): void => {
 			}
 		}
 		state.focusableElements = null;
-		if (state.activeElement) {
-			state.activeElement.focus({ preventScroll: true });
-			state.activeElement = null;
-		}
+	if (state.activeElement) {
+		focusWithOptions(state.activeElement, { preventScroll: true });
+		state.activeElement = null;
+	}
 	}
 };
 

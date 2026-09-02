@@ -40,7 +40,7 @@ const emit = defineEmits<{
 	popup: [event: Event & { value?: TabItemData }];
 }>();
 
-const updateAppRegion = (): void => Title.updateAppRegion();
+const updateAppRegion = (): void => Title.updateAppRegion?.();
 
 const ym = ref<{
 	root: HTMLElement | null;

@@ -24,7 +24,7 @@
 				max="1"
 				step="0.1"
 				decimals="4"
-				v-model="form.volume"
+				v-model="volume"
 			/>
 			<div class="text">Sound Location</div>
 			<CustomBox id="playAudio-location" type="position" v-model="form.location" />
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAudioCommandSchema } from '@app/composables/commands/usePlayAudioCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -46,6 +46,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = usePlayAudioCommandSchema();
+
+const volume = computed({
+	get: () => form.volume as number | string,
+	set: (value) => {
+		form.volume = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

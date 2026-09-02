@@ -215,7 +215,7 @@
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
 					ref="elTint0Slider"
-					v-model="form.tint[0]"
+					v-model="tint[0]"
 					min="-255"
 					max="255"
 					step="15"
@@ -223,7 +223,7 @@
 				<NumberBox
 					id="sceneParallax-tint-0"
 					ref="elTint0"
-					v-model="form.tint[0]"
+					v-model="tint[0]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -237,7 +237,7 @@
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
 					ref="elTint1Slider"
-					v-model="form.tint[1]"
+					v-model="tint[1]"
 					min="-255"
 					max="255"
 					step="15"
@@ -245,7 +245,7 @@
 				<NumberBox
 					id="sceneParallax-tint-1"
 					ref="elTint1"
-					v-model="form.tint[1]"
+					v-model="tint[1]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -259,7 +259,7 @@
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
 					ref="elTint2Slider"
-					v-model="form.tint[2]"
+					v-model="tint[2]"
 					min="-255"
 					max="255"
 					step="15"
@@ -267,7 +267,7 @@
 				<NumberBox
 					id="sceneParallax-tint-2"
 					ref="elTint2"
-					v-model="form.tint[2]"
+					v-model="tint[2]"
 					@input="onParamInput"
 					min="-255"
 					max="255"
@@ -281,7 +281,7 @@
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
 					ref="elTint3Slider"
-					v-model="form.tint[3]"
+					v-model="tint[3]"
 					min="0"
 					max="255"
 					step="15"
@@ -289,7 +289,7 @@
 				<NumberBox
 					id="sceneParallax-tint-3"
 					ref="elTint3"
-					v-model="form.tint[3]"
+					v-model="tint[3]"
 					@input="onParamInput"
 					min="0"
 					max="255"
@@ -338,7 +338,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -347,7 +347,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -360,11 +359,19 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const scene = useSceneStore();
 const local = useLocalStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneParallaxPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneParallaxPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
+
+const tint = computed(() => form.tint as number[]);
+
+const getOptions = (id: string) =>
+	local.components?.[id]?.options as Record<string, { name?: string }> | undefined;
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -406,7 +413,7 @@ onMounted(() => {
 	const refreshLocalizedItems = () => {
 		if (elLight.value) {
 			const lightName = (key: string, fallback: string) =>
-				local.components?.['sceneParallax-light']?.options?.[key]?.name || fallback;
+				getOptions('sceneParallax-light')?.[key]?.name || fallback;
 			elLight.value.loadItems([
 				{ name: lightName('raw', 'Raw'), value: 'raw' },
 				{ name: lightName('global', 'Global Sampling'), value: 'global' },
@@ -416,7 +423,7 @@ onMounted(() => {
 		}
 		if (elBlend.value) {
 			const blendName = (key: string, fallback: string) =>
-				local.components?.['sceneParallax-blend']?.options?.[key]?.name || fallback;
+				getOptions('sceneParallax-blend')?.[key]?.name || fallback;
 			elBlend.value.loadItems([
 				{ name: blendName('normal', 'Normal'), value: 'normal' },
 				{ name: blendName('additive', 'Additive'), value: 'additive' },
@@ -444,7 +451,7 @@ onMounted(() => {
 	const sliders = document.querySelectorAll(
 		'#sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider, #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider'
 	);
-	bindInput(elements, editor, Scene);
+	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
 	document
 		.querySelectorAll(

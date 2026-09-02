@@ -32,15 +32,10 @@ import { useI18n } from 'vue-i18n';
 import { Localization } from '@app/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { class?: string; name?: string; contents?: Record<string, string> };
@@ -83,10 +78,10 @@ const onListRecord = (event: Event & { value?: unknown }) => {
 	Localization?.listRecord?.(event);
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
-	Localization?.listOpen?.(event);
+	Localization?.listOpen?.(event as MouseEvent);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	Localization?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	(Localization?.listPopup as ((event: Event) => void) | null | undefined)?.(event);
 };
 
 const onApply = () => {

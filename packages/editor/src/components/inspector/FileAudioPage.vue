@@ -102,7 +102,11 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useFileAudioPage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileAudioPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const elProgress = ref<HTMLElement | null>(null);
 const elProgressFiller = ref<HTMLElement | null>(null);

@@ -45,7 +45,7 @@ interface FileItemContext {
 	expanded: boolean;
 }
 
-interface FolderElement extends HTMLElement {
+type FolderElement = HTMLElement & {
 	file: FileItem;
 	context: FileItemContext;
 	indent: number;
@@ -101,7 +101,7 @@ interface FolderElements extends Array<FolderElement | undefined> {
 	foot: HTMLElement | null;
 }
 
-interface FileNavPaneElement extends HTMLElement {
+type FileNavPaneElement = HTMLElement & {
 	textBox?: TextBoxElement;
 	load?: (...folders: FileItem[]) => void;
 	update?: () => void;
@@ -632,13 +632,13 @@ function doubleclick(event: Event): void {
 	}
 }
 
-function listSelect(event: Event): void {
+function listSelect(_event: Event): void {
 	const { browser } = props.links;
 	browser?.restoreDisplay?.();
 	browser?.update?.();
 }
 
-function dirchange(event: Event): void {
+function dirchange(_event: Event): void {
 	const paths = core.resolveFolderPaths(getSelections(), props.directoryApi!.inoMap);
 	const folders: unknown[] = paths.map((path) => props.directoryApi?.getFolder(path));
 	const { browser } = props.links;
@@ -709,9 +709,9 @@ function createTextBox(): TextBoxElement {
 							throw new Error();
 						}
 					})
-					.catch((error: unknown) => {
-						item.textNode.nodeValue = file.name;
-					});
+				.catch((_error: unknown) => {
+					item.textNode.nodeValue = file.name;
+				});
 			}
 		}
 		item.textNode.nodeValue = file.name;

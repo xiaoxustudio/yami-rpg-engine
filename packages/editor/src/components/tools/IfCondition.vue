@@ -298,7 +298,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
-import { on, clear } from '@app/utils/element-utils.ts';
+import { clear } from '@app/utils/element-utils.ts';
 import { Data } from '@app/data/data-object.ts';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
@@ -308,8 +308,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import GamepadBox from '@app/components/common/GamepadBox.vue';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -446,11 +444,8 @@ const onWrite = (value: unknown) => {
 	IfCondition?.writeHandler?.({ value });
 };
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	IfCondition?.confirm?.();
+	IfCondition?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

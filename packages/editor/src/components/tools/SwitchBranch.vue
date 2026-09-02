@@ -24,17 +24,12 @@ import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
 const SwitchBranch = useSwitchBranchSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import ParamList from '@app/components/common/ParamList.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	SwitchBranch?.confirm?.();
+	SwitchBranch?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

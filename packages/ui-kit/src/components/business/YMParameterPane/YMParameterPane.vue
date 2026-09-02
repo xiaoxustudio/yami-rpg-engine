@@ -64,18 +64,18 @@ interface DetailWrap {
 	children: ParamWrap[];
 }
 
-interface DetailBoxElement extends HTMLElement {
+type DetailBoxElement = HTMLElement & {
 	meta?: DetailMeta | null;
 	data?: ScriptDef | null;
 	wrap?: DetailWrap;
-}
+};
 
 interface DetailMeta {
 	manager: { states: Record<string, unknown> };
 	parameters: ParamDef[];
 }
 
-interface ParamInput extends HTMLElement {
+type ParamInput = HTMLElement & {
 	parameters?: Record<string, unknown> | null;
 	key?: string | null;
 	branched?: boolean;
@@ -316,8 +316,8 @@ const update = (): void => {
 			self.appendChild(banner);
 		}
 		const { groupOrder, groupMap } = core.groupParameters(paramList);
-		const createParamRow = (
-			box: HTMLElement,
+const createParamRow = (
+	_box: HTMLElement,
 			grid: HTMLElement,
 			children: ParamWrap[],
 			parameter: ParamDef
@@ -732,7 +732,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 		input.write(data);
 		container.dispatchEvent(new Event('change', { bubbles: true }));
 	};
-	return { tag, label, input: container };
+	return { tag, label, input: container as unknown as ParamInput };
 };
 
 const recycle = (wrap: RecycleWrap): void => {
@@ -896,7 +896,7 @@ const applyAffix = (input: HTMLElement, param: ParamDef): void => {
 	}
 };
 
-const windowLocalize = (event: Event): void => {
+const windowLocalize = (_event: Event): void => {
 	const self = el!;
 	for (const { langMap } of self.metas) {
 		const oldMap = langMap.active;

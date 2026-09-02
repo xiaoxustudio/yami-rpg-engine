@@ -89,11 +89,11 @@ interface ParamObject {
 	onPaste?(list: ParamListElement, items: unknown[]): void;
 }
 
-interface ParamItemElement extends HTMLElement {
+type ParamItemElement = HTMLElement & {
 	dataValue?: number;
 	dataItem?: unknown;
 	versionId?: number;
-}
+};
 
 interface ParamElements extends Array<ParamItemElement> {
 	versionId: number;
@@ -108,7 +108,7 @@ interface ParamSelections extends Array<ParamItemElement | undefined> {
 	count: number;
 }
 
-interface ParamListElement extends HTMLElement {
+type ParamListElement = HTMLElement & {
 	flexible: boolean;
 	height?: number;
 	_paddingTop?: number;
@@ -177,12 +177,12 @@ interface ParamListElement extends HTMLElement {
 	): void;
 }
 
-interface DragEventState extends PointerEvent {
+type DragEventState = PointerEvent & {
 	mode?: string;
 	itemIndex?: number;
 	itemHeight?: number;
 	latest?: PointerEvent;
-}
+};
 
 const props = withDefaults(defineProps<Props>(), {
 	flexible: false,
@@ -874,7 +874,7 @@ const clear = (): HTMLElement => {
 	unselect();
 	self.textContent = '';
 	self.data = null;
-	self.start = null;
+	self.start = null as unknown as number;
 	self.end = null;
 	self.history!.reset();
 	clearElements(0);
@@ -885,7 +885,7 @@ const clear = (): HTMLElement => {
 	return self;
 };
 
-const listFocus = (event: Event): void => {
+const listFocus = (_event: Event): void => {
 	const self = el!;
 	if (!self.focusing) {
 		self.focusing = true;
@@ -894,7 +894,7 @@ const listFocus = (event: Event): void => {
 	}
 };
 
-const listBlur = (event: Event): void => {
+const listBlur = (_event: Event): void => {
 	const self = el!;
 	if (self.dragging) {
 		windowPointerup(self.dragging);
@@ -1171,7 +1171,7 @@ const pointerup = (event: PointerEvent): void => {
 	}
 };
 
-const doubleclick = (event: Event): void => {
+const doubleclick = (_event: Event): void => {
 	const self = el!;
 	if (self.start === self.end) {
 		edit();
@@ -1275,7 +1275,7 @@ onMounted(() => {
 	self.elements.foot = null;
 	self.selections = [] as unknown as ParamSelections;
 	self.selections.count = 0;
-	self.start = null;
+	self.start = null as unknown as number;
 	self.end = null;
 	self.origin = null;
 	self.active = null;
@@ -1286,7 +1286,7 @@ onMounted(() => {
 	self.history = null;
 	self.togglable = false;
 	self.height = undefined;
-	self._paddingTop = undefined;
+	self._paddingTop = undefined as unknown as number;
 	Object.defineProperty(self, 'innerHeight', {
 		configurable: true,
 		get: getInnerHeight

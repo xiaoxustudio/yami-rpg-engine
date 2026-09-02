@@ -32,7 +32,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimSoundLayerPage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimSoundLayerPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -50,8 +54,8 @@ onMounted(() => {
 			bindInput(
 				[el],
 				animSoundLayer,
-				Animation,
-				(data: { type: string; [k: string]: unknown }) => {
+				Animation as unknown as { history: unknown },
+				(data: Record<string, unknown>) => {
 					data.type = 'inspector-layer-change';
 					data.motion = animSoundLayer.motion;
 					data.direction = Animation.direction;

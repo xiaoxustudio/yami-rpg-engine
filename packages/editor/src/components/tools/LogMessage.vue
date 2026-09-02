@@ -18,15 +18,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { Log } from '@app/log/log-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { useToastService } from '@app/composables/useToastService';
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
 const toast = useToastService();
 
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
@@ -68,7 +64,10 @@ const update = (): void => {
 		}
 	}
 	// oxlint-disable-next-line no-map-spread
-	items.value = next.map((item) => ({ ...item, message: sanitizeLogMessage(item.message) }));
+	items.value = next.map((item: { type: string; message: string; duration: number }) => ({
+		...item,
+		message: sanitizeLogMessage(item.message)
+	}));
 };
 
 const onMessageClick = (event: MouseEvent): void => {

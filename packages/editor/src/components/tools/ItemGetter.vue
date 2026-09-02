@@ -40,8 +40,6 @@ import { ItemGetter } from '@app/commands/accessors/item-accessor-window.ts';
 import { useItemGetterWindow } from '@app/composables/useItemGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
@@ -54,11 +52,8 @@ const form = itemGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	ItemGetter?.confirm?.();
+	ItemGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

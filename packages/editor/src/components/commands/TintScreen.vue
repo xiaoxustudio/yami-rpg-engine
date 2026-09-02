@@ -14,7 +14,7 @@
 				min="-255"
 				max="255"
 				step="5"
-				v-model="form['tint-0']"
+				v-model="tint0"
 			/>
 			<div class="text">Tint - Green</div>
 			<NumberBox
@@ -22,7 +22,7 @@
 				min="-255"
 				max="255"
 				step="5"
-				v-model="form['tint-1']"
+				v-model="tint1"
 			/>
 			<div class="text">Tint - Blue</div>
 			<NumberBox
@@ -30,10 +30,10 @@
 				min="-255"
 				max="255"
 				step="5"
-				v-model="form['tint-2']"
+				v-model="tint2"
 			/>
 			<div class="text">Tint - Grayscale</div>
-			<NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" v-model="form['tint-3']" />
+			<NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">Easing</div>
 			<SelectBox id="tintScreen-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
@@ -43,7 +43,7 @@
 				min="0"
 				max="3600000"
 				unit="ms"
-				v-model="form.duration"
+				v-model="duration"
 			/>
 			<div class="text">Wait</div>
 			<SelectBox id="tintScreen-wait" name="wait" v-model="form.wait" />
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintScreenCommandSchema } from '@app/composables/commands/useTintScreenCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -68,6 +68,41 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useTintScreenCommandSchema();
+
+const tint0 = computed({
+	get: () => form['tint-0'] as number | string,
+	set: (value) => {
+		form['tint-0'] = value;
+	}
+});
+
+const tint1 = computed({
+	get: () => form['tint-1'] as number | string,
+	set: (value) => {
+		form['tint-1'] = value;
+	}
+});
+
+const tint2 = computed({
+	get: () => form['tint-2'] as number | string,
+	set: (value) => {
+		form['tint-2'] = value;
+	}
+});
+
+const tint3 = computed({
+	get: () => form['tint-3'] as number | string,
+	set: (value) => {
+		form['tint-3'] = value;
+	}
+});
+
+const duration = computed({
+	get: () => form.duration as number | string,
+	set: (value) => {
+		form.duration = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

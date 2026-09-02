@@ -39,8 +39,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -49,9 +47,6 @@ import { AnimationProperty } from '@app/commands/property-window/set-animation-p
 const { t } = useI18n();
 
 const form = AnimationProperty.form;
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 onMounted(() => {});
 </script>

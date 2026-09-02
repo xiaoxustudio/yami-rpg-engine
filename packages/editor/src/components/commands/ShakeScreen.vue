@@ -10,9 +10,9 @@
 			<div class="text">Shake Mode</div>
 			<SelectBox id="shakeScreen-mode" v-focus v-model="form.mode" />
 			<div class="text">Power</div>
-			<NumberBox id="shakeScreen-power" min="1" max="10" v-model="form.power" />
+			<NumberBox id="shakeScreen-power" min="1" max="10" v-model="power" />
 			<div class="text">Speed</div>
-			<NumberBox id="shakeScreen-speed" min="1" max="10" v-model="form.speed" />
+			<NumberBox id="shakeScreen-speed" min="1" max="10" v-model="speed" />
 			<div class="text">Easing</div>
 			<SelectBox id="shakeScreen-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
@@ -22,7 +22,7 @@
 				min="1"
 				max="3600000"
 				unit="ms"
-				v-model="form.duration"
+				v-model="duration"
 			/>
 			<div class="text">Wait</div>
 			<SelectBox id="shakeScreen-wait" name="wait" v-model="form.wait" />
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShakeScreenCommandSchema } from '@app/composables/commands/useShakeScreenCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -45,6 +45,27 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useShakeScreenCommandSchema();
+
+const power = computed({
+	get: () => form.power as number | string,
+	set: (value) => {
+		form.power = value;
+	}
+});
+
+const speed = computed({
+	get: () => form.speed as number | string,
+	set: (value) => {
+		form.speed = value;
+	}
+});
+
+const duration = computed({
+	get: () => form.duration as number | string,
+	set: (value) => {
+		form.duration = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

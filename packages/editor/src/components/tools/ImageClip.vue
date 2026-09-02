@@ -44,8 +44,6 @@ import { ImageClip } from '@app/tools/image-crop-window.ts';
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -55,11 +53,8 @@ const form = imageClip.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onParamInput = () => {
-	ImageClip?.paramInput?.();
+	ImageClip?.paramInput?.(new Event('input'));
 };
 const onConfirm = () => {
 	imageClip.confirm();

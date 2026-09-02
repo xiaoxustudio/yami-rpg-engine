@@ -28,7 +28,7 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { h, render, ref, onMounted } from 'vue';
-import { addClass, hasClass, rect, removeClass } from '../../../utils/dom';
+import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../../utils/dom';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
 
@@ -79,7 +79,7 @@ interface FileBrowserLinks {
 	[key: string]: unknown;
 }
 
-interface FileHeadElement extends HTMLElement {
+type FileHeadElement = HTMLElement & {
 	links?: FileBrowserLinks;
 	updateAddress?: () => void;
 	view?: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number };
@@ -199,7 +199,7 @@ function pointerdown(event: PointerEvent) {
 		event.preventDefault();
 		const { content } = props.links.body;
 		if (document.activeElement !== content) {
-			content.focus({ preventScroll: true });
+			focusWithOptions(content, { preventScroll: true });
 		}
 	}
 }
@@ -283,7 +283,7 @@ function addressPointerdown(event: PointerEvent) {
 	}
 }
 
-function backButtonClick(event: Event) {
+function backButtonClick(_event: Event) {
 	const { browser } = props.links;
 	browser.backToParentFolder();
 }
@@ -295,11 +295,11 @@ function searcherInput(event: Event) {
 	}
 }
 
-function viewFocus(event: Event) {
-	props.links.body.content.focus({ preventScroll: true });
+function viewFocus(_event: Event) {
+	focusWithOptions(props.links.body.content, { preventScroll: true });
 }
 
-function viewInput(event: Event) {
+function viewInput(_event: Event) {
 	const value = viewEl.value?.read?.();
 	if (value !== undefined) {
 		props.links.body.setViewIndex(value);
@@ -321,7 +321,8 @@ onMounted(() => {
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
 	const viewRoot = viewEl.value?.root;
-	const viewInputEl = viewEl.value?.input ?? viewRoot?.querySelector('input');
+	const viewInputEl = (viewEl.value?.input ??
+		viewRoot?.querySelector('input')) as HTMLInputElement | null | undefined;
 	if (viewRoot) {
 		// oxlint-disable-next-line no-explicit-any
 		const viewApi = viewEl.value as unknown as Record<string, any>;

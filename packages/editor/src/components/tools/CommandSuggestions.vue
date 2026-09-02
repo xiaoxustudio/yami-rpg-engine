@@ -9,11 +9,9 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TreeList from '@app/components/common/TreeList.vue';
 
-const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const nodeIconRenderer = (item: unknown): VNode[] => {

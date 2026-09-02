@@ -43,10 +43,6 @@ const { t } = useI18n();
 
 const { form, save } = useSetTriggerDurationCommandSchema();
 
-const onTrigger = (value: unknown) => {
-	form.trigger = value;
-};
-
 const onConfirm = () => {
 	save();
 };

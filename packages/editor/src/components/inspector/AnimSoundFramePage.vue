@@ -44,7 +44,11 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimSoundFramePage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimSoundFramePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -57,7 +61,7 @@ onMounted(() => {
 		const elements = [elSound.value?.root, elVolume.value?.root].filter(
 			(el): el is HTMLElement => el != null
 		);
-		bindInput(elements, animSoundFrame, Animation, (data: Record<string, unknown>) => {
+		bindInput(elements, animSoundFrame, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 			data.type = 'inspector-frame-change';
 			data.motion = animSoundFrame.motion;
 			data.direction = Animation.direction;

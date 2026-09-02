@@ -111,7 +111,7 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg?: string): HTMLElement | null | undefined => {
+const getFocus = (_modeArg?: string): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant':
 			return selectRef.value ? selectRef.value.root : root.value;

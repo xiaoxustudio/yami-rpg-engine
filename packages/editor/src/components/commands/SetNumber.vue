@@ -45,7 +45,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	$('#setNumber-operands')?.bind?.(NumberOperand);
-	$('#setNumber')?.on?.('closed', (event: Event) => {
+	$('#setNumber')?.on?.('closed', (_event: Event) => {
 		clear($('#setNumber-operands'));
 	});
 });

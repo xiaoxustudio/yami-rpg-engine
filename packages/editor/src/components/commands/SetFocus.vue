@@ -14,13 +14,13 @@
 			<div class="text">Mode</div>
 			<SelectBox id="setFocus-mode" v-model="form.mode" />
 			<div class="text">Cancelable</div>
-			<CheckBox id="setFocus-cancelable" class="standard large" v-model="form.cancelable" />
+			<CheckBox id="setFocus-cancelable" class="standard large" v-model="cancelable" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -33,6 +33,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useSetFocusCommandSchema();
+
+const cancelable = computed({
+	get: () => form.cancelable as boolean,
+	set: (value) => {
+		form.cancelable = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

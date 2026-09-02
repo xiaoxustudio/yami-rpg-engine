@@ -196,7 +196,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -207,11 +206,14 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const scene = useSceneStore();
 const local = useLocalStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneTilemapPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneTilemapPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -273,7 +275,7 @@ onMounted(() => {
 					tile: [items.raw, items.global, items.ambient],
 					sprite: [items.raw, items.global, items.anchor]
 				};
-				elLight.value?.loadItems(items.tile);
+				elLight.value?.loadItems([items.raw, items.global, items.ambient]);
 			}
 			elBlend.value?.loadItems([
 				{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
@@ -281,7 +283,7 @@ onMounted(() => {
 				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
 			]);
 		} catch {
-			// 语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新
+			// 璇█鍒囨崲涓棿鎬侊細t()/DOM 璁块棶鍙兘澶辫触锛岃烦杩囨湰娆″埛鏂?
 		}
 	};
 	if (elLight.value) {
@@ -303,7 +305,7 @@ onMounted(() => {
 	const elements = document.querySelectorAll(
 		'#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order, #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y, #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY, #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity'
 	);
-	bindInput(elements, editor, Scene);
+	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	elLayer.value?.on('input', editor.layerInput!);
 	document
 		.querySelectorAll('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts')

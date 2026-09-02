@@ -43,8 +43,6 @@ import { ElementGetter } from '@app/commands/accessors/element-accessor-window.t
 import { useElementGetterWindow } from '@app/composables/useElementGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -57,11 +55,8 @@ const form = elementGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	ElementGetter?.confirm?.();
+	ElementGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

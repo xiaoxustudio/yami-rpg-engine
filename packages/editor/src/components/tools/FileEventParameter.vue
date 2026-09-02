@@ -24,8 +24,6 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { fileEventParameterForm } from '@app/inspector/file-event-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -33,9 +31,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const form = fileEventParameterForm;
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onConfirm = () => {
 	Inspector?.fileEvent?.parameters?.save?.();

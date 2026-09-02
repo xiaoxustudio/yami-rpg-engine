@@ -101,7 +101,11 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimJointFramePage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimJointFramePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -124,7 +128,7 @@ onMounted(() => {
 		elScaleY.value?.root,
 		elOpacity.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, animJointFrame, Animation, (data: Record<string, unknown>) => {
+	bindInput(elements, animJointFrame, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 		data.type = 'inspector-frame-change';
 		data.motion = animJointFrame.motion;
 		data.direction = Animation.direction;

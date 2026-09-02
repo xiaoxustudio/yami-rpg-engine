@@ -137,7 +137,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useSceneStore } from '@app/stores/scene';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -149,10 +148,13 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const scene = useSceneStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneActorPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneActorPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -213,7 +215,7 @@ onMounted(() => {
 		'#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId, #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale'
 	);
 	const sliders = document.querySelectorAll('#sceneActor-angle-slider, #sceneActor-scale-slider');
-	bindInput(elements, editor, Scene);
+	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
 	document
 		.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')

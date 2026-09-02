@@ -19,13 +19,8 @@ import { onMounted } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onConfirm = () => {
 	Command?.custom?.save?.();

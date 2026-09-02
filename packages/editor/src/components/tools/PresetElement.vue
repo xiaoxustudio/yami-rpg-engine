@@ -29,15 +29,11 @@ import { Data } from '@app/data/data-object.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
 
 interface PresetIconNode {
 	class?: string;
@@ -83,7 +79,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 };
 
 const onUiIdWrite = (value: unknown) => {
-	PresetElement?.uiIdWrite?.({ value });
+	PresetElement?.uiIdWrite?.({ value } as Event & { value?: string });
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetElement?.listOpen?.(event);
@@ -98,8 +94,6 @@ const onSearcherInput = (value: string | Event) => {
 const onConfirm = () => {
 	PresetElement?.confirm?.();
 };
-
-const local = useLocalStore();
 
 onMounted(() => {});
 </script>

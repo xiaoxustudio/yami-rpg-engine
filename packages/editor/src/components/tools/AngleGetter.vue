@@ -31,8 +31,6 @@ import { AngleGetter } from '@app/commands/accessors/angle-accessor-window.ts';
 import { useAngleGetterWindow } from '@app/composables/useAngleGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -45,11 +43,8 @@ const form = angleGetter.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	AngleGetter?.confirm?.();
+	AngleGetter?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

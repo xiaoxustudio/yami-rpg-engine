@@ -53,7 +53,7 @@ interface TabDragTarget extends HTMLElement {
 	item: TabItem;
 }
 
-interface TabBarElement extends HTMLElement {
+type TabBarElement = HTMLElement & {
 	data?: TabItem[] | null;
 	dirItem?: TabItem | null;
 	selectionIndex?: number;

@@ -31,10 +31,6 @@ const { t } = useI18n();
 
 const { form, save } = useSetTextBoxCommandSchema();
 
-const onElement = (value: unknown) => {
-	form.element = value;
-};
-
 const onConfirm = () => {
 	save();
 };

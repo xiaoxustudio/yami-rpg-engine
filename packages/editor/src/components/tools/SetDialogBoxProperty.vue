@@ -21,7 +21,7 @@
 				min="0"
 				max="100"
 				unit="ms"
-				v-model="form.interval"
+				v-model="interval"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-size.label') }}</div>
 			<NumberBox
@@ -29,7 +29,7 @@
 				min="10"
 				max="400"
 				unit="px"
-				v-model="form.size"
+				v-model="size"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-lineSpacing.label') }}</div>
 			<NumberBox
@@ -37,7 +37,7 @@
 				min="-10"
 				max="100"
 				unit="px"
-				v-model="form.lineSpacing"
+				v-model="lineSpacing"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-letterSpacing.label') }}</div>
 			<NumberBox
@@ -45,12 +45,12 @@
 				min="-10"
 				max="100"
 				unit="px"
-				v-model="form.letterSpacing"
+				v-model="letterSpacing"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-color.label') }}</div>
-			<ColorBox id="setDialogBox-property-color" v-model="form.color" />
+			<ColorBox id="setDialogBox-property-color" v-model="color" />
 			<div class="text">{{ t('components.setDialogBox-property-font.label') }}</div>
-			<TextBox id="setDialogBox-property-font" v-model="form.font" />
+			<TextBox id="setDialogBox-property-font" v-model="font" />
 			<div class="text">{{ t('components.setDialogBox-property-effect-type.label') }}</div>
 			<SelectBox id="setDialogBox-property-effect-type" v-model="form['effect-type']" />
 			<div class="text">
@@ -61,7 +61,7 @@
 				min="-9"
 				max="9"
 				unit="px"
-				v-model="form['effect-shadowOffsetX']"
+				v-model="shadowOffsetX"
 			/>
 			<div class="text">
 				{{ t('components.setDialogBox-property-effect-shadowOffsetY.label') }}
@@ -71,7 +71,7 @@
 				min="-9"
 				max="9"
 				unit="px"
-				v-model="form['effect-shadowOffsetY']"
+				v-model="shadowOffsetY"
 			/>
 			<div class="text">
 				{{ t('components.setDialogBox-property-effect-strokeWidth.label') }}
@@ -81,10 +81,10 @@
 				min="1"
 				max="20"
 				unit="px"
-				v-model="form['effect-strokeWidth']"
+				v-model="strokeWidth"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-effect-color.label') }}</div>
-			<ColorBox id="setDialogBox-property-effect-color" v-model="form['effect-color']" />
+			<ColorBox id="setDialogBox-property-effect-color" v-model="effectColor" />
 			<div class="text">{{ t('components.setDialogBox-property-blend.label') }}</div>
 			<SelectBox id="setDialogBox-property-blend" v-model="form.blend" />
 		</div>
@@ -92,12 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextAreaVar from '@app/components/common/TextAreaVar.vue';
@@ -109,8 +107,30 @@ const { t } = useI18n();
 
 const form = DialogBoxProperty.form;
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
+const numberField = (key: string) =>
+	computed({
+		get: () => form[key] as number | string,
+		set: (value) => {
+			form[key] = value;
+		}
+	});
+const stringField = (key: string) =>
+	computed({
+		get: () => form[key] as string | undefined,
+		set: (value) => {
+			form[key] = value;
+		}
+	});
+const interval = numberField('interval');
+const size = numberField('size');
+const lineSpacing = numberField('lineSpacing');
+const letterSpacing = numberField('letterSpacing');
+const shadowOffsetX = numberField('effect-shadowOffsetX');
+const shadowOffsetY = numberField('effect-shadowOffsetY');
+const strokeWidth = numberField('effect-strokeWidth');
+const color = stringField('color');
+const font = stringField('font');
+const effectColor = stringField('effect-color');
 
 onMounted(() => {});
 </script>

@@ -339,7 +339,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useSceneLightPage();
+const { form, sync, onParamInput: onParamInputEvent } = useSceneLightPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -453,7 +457,7 @@ onMounted(() => {
 		const sliders = document.querySelectorAll(
 			'#sceneLight-range-slider, #sceneLight-intensity-slider, #sceneLight-anchorX-slider, #sceneLight-anchorY-slider, #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider, #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider'
 		);
-		bindInput(elements, editor, Scene);
+		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
 		document

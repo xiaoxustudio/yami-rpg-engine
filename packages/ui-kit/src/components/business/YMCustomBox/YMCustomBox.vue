@@ -18,11 +18,6 @@ interface BrowserAdapter {
 	};
 }
 
-interface CustomBoxRootElement extends HTMLElement {
-	type: string | null;
-	filter: string | null;
-}
-
 interface Props {
 	id?: string;
 	type?: string;
@@ -71,8 +66,6 @@ let info: HTMLElement | null = null;
 
 const getType = (): string | null => root.value?.getAttribute('type') ?? null;
 const getFilter = (): string | null => root.value?.getAttribute('filter') ?? null;
-
-const getLocal = (key: string): string => (props.localize ? props.localize(key) : key);
 
 const read = (): unknown => state.dataValue;
 
@@ -133,17 +126,6 @@ const input = (value: unknown): void => {
 	}
 };
 
-const openDialogDir = (inputEl: { read(): unknown; write(v: unknown): void }): void => {
-	if (!props.fileDialog) return;
-	props
-		.fileDialog(inputEl.read())
-		.then(({ filePaths }: { filePaths: string[] }) => {
-			if (filePaths.length === 1) {
-				inputEl.write(filePaths[0]);
-			}
-		});
-};
-
 const enable = (): void => {
 	const el = root.value;
 	if (el && removeClass(el, 'disabled')) {
@@ -182,7 +164,7 @@ const on = (
 	}
 };
 
-const click = (event?: Event): void => {
+const click = (_event?: Event): void => {
 	const el = root.value;
 	if (!el) return;
 	el.setAttribute('type', props.type || '');
@@ -235,7 +217,7 @@ const dragover = (event: DragEvent): void => {
 	}
 };
 
-const drop = (event: DragEvent): void => {
+const drop = (_event: DragEvent): void => {
 	const el = root.value;
 	if (!el) return;
 	const browser = getBrowser();

@@ -1,6 +1,10 @@
 export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
+export const focusWithOptions = (el: Element | null | undefined, options?: FocusOptions): void => {
+	(el as unknown as { focus(options?: FocusOptions): void }).focus(options);
+};
+
 export const addClass = (
 	el: { classList?: DOMTokenList } | null | undefined,
 	className: string

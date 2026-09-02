@@ -160,7 +160,6 @@ import { useI18n } from 'vue-i18n';
 import { focus } from '@app/utils/element-utils';
 import { Palette } from '@app/palette/palette.ts';
 import { useFileTilesetPage } from '@app/composables/useFileTilesetPage';
-import { useSceneStore } from '@app/stores/scene';
 import { usePaletteStore } from '@app/stores/palette';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -170,11 +169,14 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
-const scene = useSceneStore();
 const { t } = useI18n();
 const palette = usePaletteStore();
 
-	const { form, sync, onParamInput } = useFileTilesetPage();
+	const { form, sync, onParamInput: onParamInputEvent } = useFileTilesetPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const onHeadPointerdown = (event: PointerEvent) => {
 	if (!(event.target instanceof HTMLInputElement)) {

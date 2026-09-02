@@ -201,8 +201,6 @@ import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema'
 const NumberOperand = useNumberOperandSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
@@ -317,11 +315,8 @@ const onWrite = (value: unknown) => {
 	NumberOperand?.writeHandler?.({ value });
 };
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	NumberOperand?.confirm?.();
+	NumberOperand?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

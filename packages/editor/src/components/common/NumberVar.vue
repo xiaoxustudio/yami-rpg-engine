@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMNumberVar } from '@ui-kit';
-import { defVar, defVarForPlugin } from '@app/components/number-var';
+import { defVar } from '@app/components/number-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	decimals: 0,
 	unit: '',
-	modelValue: null
+	modelValue: null as never
 });
 
 const emit = defineEmits<{

@@ -107,7 +107,7 @@ const directoryApi = {
 	}
 };
 const fileSystemApi = {
-	path: (p: string) => File.path(p),
+	path: (p: string) => File.path!(p),
 	route: (p: string) => File.route?.(p),
 	getPath: (guid: string) => File.getPath?.(guid),
 	getFileName: (dir: string, name: string, ext?: string) => File.getFileName?.(dir, name, ext),

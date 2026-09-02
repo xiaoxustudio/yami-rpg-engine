@@ -27,7 +27,7 @@
 			<div class="text">Rotatable</div>
 			<SelectBox id="playAnimation-rotatable" v-model="form.rotatable" />
 			<div class="text">Priority</div>
-			<NumberBox id="playAnimation-priority" min="-100" max="100" v-model="form.priority" />
+			<NumberBox id="playAnimation-priority" min="-100" max="100" v-model="priority" />
 			<div class="text">Offset Y</div>
 			<NumberVar
 				id="playAnimation-offsetY"
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -76,6 +76,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save, writeHandler } = usePlayAnimationCommandSchema();
+
+const priority = computed({
+	get: () => form.priority as number | string,
+	set: (value) => {
+		form.priority = value;
+	}
+});
 
 const onWrite = (value: unknown) => {
 	writeHandler({ value: value as string });

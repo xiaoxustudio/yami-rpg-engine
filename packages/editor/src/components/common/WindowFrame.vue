@@ -128,7 +128,9 @@ onMounted(() => {
 		on
 	});
 	for (const type of ['confirm', 'apply', 'cancel'] as const) {
-		el.addEventListener(type, () => emit(type));
+		el.addEventListener(type, () =>
+			(emit as (evt: 'confirm' | 'apply' | 'cancel') => void)(type)
+		);
 	}
 	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）
 	const onLocalize = (): void => {
@@ -145,7 +147,7 @@ onMounted(() => {
 				const element =
 					rootEl.id === id
 						? rootEl
-						: rootEl.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+						: (rootEl.querySelector(`#${CSS.escape(id)}`) as HTMLElement);
 				if (element) setLocalElement(element, item);
 			}
 		}

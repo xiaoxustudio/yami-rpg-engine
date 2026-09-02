@@ -236,8 +236,6 @@ import { Easing } from '@app/data/transition-window.ts';
 import { useEasingWindow } from '@app/composables/useEasingWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -256,15 +254,14 @@ const onDelayInput = () => {
 	Easing?.delayInput?.();
 };
 
-const inspector = useInspectorStore();
 const onListSelect = (event: Event & { value?: unknown }) => {
 	Easing?.listSelect?.(event);
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
 	Easing?.listOpen?.(event);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	Easing?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	Easing?.listPopup?.(event as PointerEvent & { value?: unknown });
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Easing?.dataChange?.(event);
@@ -272,7 +269,7 @@ const onListChange = (event: Event & { value?: unknown }) => {
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { key?: string };
-	container.parentNode?.classList.add('plain');
+	(container.parentNode as HTMLElement | null)?.classList.add('plain');
 	return [h('div', { class: 'variable-init-text text' }, ' = ' + node.key)];
 };
 
@@ -283,8 +280,6 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	}
 	return [h('span', { class: ['node-icon', ['icon-command', 'flow']] })];
 };
-
-const local = useLocalStore();
 
 onMounted(() => {});
 </script>

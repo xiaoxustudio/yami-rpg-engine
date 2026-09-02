@@ -35,7 +35,7 @@ const props = withDefaults(defineProps<Props>(), {
 	type: '',
 	filter: '',
 	disabled: false,
-	modelValue: null
+	modelValue: null as never
 });
 
 const emit = defineEmits<{
@@ -53,7 +53,10 @@ const onInput = (value: unknown) => {
 	emit('update:modelValue', value);
 };
 
-const getters = customBoxOptions.getters ?? null;
+const getters = (customBoxOptions.getters ?? null) as Record<
+	string,
+	(el: HTMLElement) => void
+> | null;
 const parsers = customBoxOptions.parsers ?? null;
 const fileDialog = customBoxOptions.fileDialog ?? null;
 const browser = customBoxOptions.browser ?? null;
@@ -67,6 +70,7 @@ const ym = ref<{
 	enable(): void;
 	disable(): void;
 	focus(): void;
+	update?(): void;
 	on(
 		type: string,
 		listener: (event: Event) => void,

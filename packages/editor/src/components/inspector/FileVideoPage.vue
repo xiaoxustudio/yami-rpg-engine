@@ -18,7 +18,7 @@
 	</DetailBox>
 	<DetailBox id="fileVideo-video-detail" open>
 		<DetailSummary>{{ t('components.fileVideo-video.label') || 'Player' }}</DetailSummary>
-		<video id="fileVideo-video" ref="elVideo" controls="controls"></video>
+		<video id="fileVideo-video" ref="elVideo" :controls="true"></video>
 	</DetailBox>
 </template>
 

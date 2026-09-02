@@ -73,8 +73,6 @@ import { markndownToHtml } from '@app/module/global.ts';
 import { File } from '@app/file/file-system-core.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 
 const { t } = useI18n();
 
@@ -96,9 +94,6 @@ const donors: Donor[] = [
 		link: 'tencent://message/?uin=332685057&Site=qq&Menu=yes'
 	}
 ];
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const mode = ref<string>('internal');
 const items = ref<

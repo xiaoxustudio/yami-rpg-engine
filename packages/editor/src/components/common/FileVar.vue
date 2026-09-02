@@ -44,7 +44,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
 	filter: '',
 	disabled: false,
-	modelValue: null
+	modelValue: null as never
 });
 
 const emit = defineEmits<{
@@ -111,8 +111,8 @@ const onValue = (value: unknown): void => {
 	emit('update:modelValue', value);
 };
 
-const onFileValue = (value: string): void => {
-	state.fileValue = value;
+const onFileValue = (value: unknown): void => {
+	state.fileValue = value as string;
 	emit('update:modelValue', value);
 };
 

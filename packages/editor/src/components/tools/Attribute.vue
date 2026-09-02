@@ -108,8 +108,6 @@ import { useI18n } from 'vue-i18n';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { getAttributeStore } from '@app/stores/attribute';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
@@ -118,9 +116,6 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const nodeExtras = (item: unknown): VNode[] => {
 	const node = item as { class?: string; id: string; key?: string; note?: string };
@@ -177,23 +172,23 @@ const onListPopup = (event: Event & { clientX: number; clientY: number }) => {
 	Attribute?.listPopup?.(event);
 };
 const onNameInput = (value: string) => {
-	Attribute?.nameInput?.({ target: { value } });
+	Attribute?.nameInput?.({ target: { value } } as InputEvent & { target: HTMLInputElement });
 };
 const onKeyInput = (value: string) => {
-	Attribute?.keyInput?.({ target: { value } });
+	Attribute?.keyInput?.({ target: { value } } as InputEvent & { target: HTMLInputElement });
 };
 let lastTypeValue: number | string | boolean | undefined;
 let lastTypeWriteValue: number | string | boolean | undefined;
 const onTypeInput = (value: number | string | boolean) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
-		Attribute?.typeInput?.({ value });
+		Attribute?.typeInput?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 const onTypeWrite = (value: number | string | boolean) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
-		Attribute?.typeWrite?.({ value });
+		Attribute?.typeWrite?.({ value } as Event & { value: number | string | boolean });
 	}
 };
 

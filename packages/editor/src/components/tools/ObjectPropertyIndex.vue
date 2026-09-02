@@ -19,14 +19,9 @@ import { useI18n } from 'vue-i18n';
 import { IndexBind, indexForm } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onConfirm = () => {
 	IndexBind?.confirm?.();

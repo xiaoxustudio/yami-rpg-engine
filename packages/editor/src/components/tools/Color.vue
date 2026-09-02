@@ -63,8 +63,6 @@ import { Color } from '@app/tools/color-picker-window.ts';
 import { useColorWindow } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { on } from '@app/utils/element-utils';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
@@ -77,22 +75,19 @@ const form = color.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onIndexedInput = (value: number | string | boolean) => {
 	form.index =
 		typeof value === 'string' && value !== '' ? parseInt(value, 10) : (value as number);
-	Color?.indexedColorInput?.({ value: String(value) });
+	Color?.indexedColorInput?.({ value: String(value) } as Event & { value: string });
 };
 const onRgbaInput = () => {
-	Color?.rgbaInput?.();
+	Color?.rgbaInput?.(new Event('input'));
 };
 const onHexBeforeinput = (event: InputEvent) => {
 	Color?.hexBeforeinput?.(event);
 };
 const onHexInput = () => {
-	Color?.hexInput?.();
+	Color?.hexInput?.(new Event('input'));
 };
 const onConfirm = () => {
 	color.confirm();

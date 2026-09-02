@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMStringVar } from '@ui-kit';
 import { defVar } from '@app/components/string-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -30,7 +30,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null
+	modelValue: null as never
 });
 
 const emit = defineEmits<{

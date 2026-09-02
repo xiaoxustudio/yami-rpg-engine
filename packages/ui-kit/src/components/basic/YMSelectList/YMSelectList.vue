@@ -29,7 +29,7 @@ const getElementIndexOfSelection = (defIndex: number): number =>
 	api?.getElementIndexOfSelection(defIndex) ?? defIndex;
 const scrollToSelection = (): void => api?.scrollToSelection();
 const clearElements = (start: number): void => api?.clearElements(start);
-const clear = (): HTMLElement | undefined => api?.clear();
+const clear = (): HTMLElement | undefined => api?.clear() as HTMLElement | undefined;
 
 defineExpose({
 	read,

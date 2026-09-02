@@ -25,18 +25,13 @@ import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
 const IfBranch = useIfBranchSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const onConfirm = () => {
-	IfBranch?.confirm?.();
+	IfBranch?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {

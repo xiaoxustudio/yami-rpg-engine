@@ -69,7 +69,7 @@ const pointerdown = (event: PointerEvent): void => {
 			cancel();
 		}
 	};
-	const cancel = (event?: Event): void => {
+	const cancel = (_event?: Event): void => {
 		dragging = null;
 		window.removeEventListener('pointermove', pointermove);
 		window.removeEventListener('pointerup', pointerup);

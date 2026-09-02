@@ -54,7 +54,9 @@ const options = {
 		read: (type: string) => Clipboard?.read?.(type),
 		has: (type: string) => Clipboard?.has?.(type)
 	},
-	settingConfig: SettingConfig,
+	settingConfig: SettingConfig as unknown as {
+		config: { other: { copyAsTextKeepEmptyLine: boolean } };
+	},
 	localize: {
 		language: () => getLocalStore().language,
 		get: (key: string) => t(key),
@@ -67,7 +69,8 @@ const options = {
 		openGlobalEvent: (id: string) => EventEditor.openGlobalEvent!(id)
 	},
 	searchString: {
-		open: (list: Parameters<typeof SearchString.open>[0]) => SearchString.open(list)
+		open: (list: HTMLElement) =>
+			SearchString.open(list as unknown as Parameters<typeof SearchString.open>[0])
 	},
 	menuPopup: (popupOptions: MenuOptions, items: MenuItem[]) => Menu.popup(popupOptions, items),
 	getVariable,
@@ -100,7 +103,7 @@ export const CommandList: CommandListStaticsType = {
 	prototype: commandListPrototype
 };
 
-export const commandListOptions = options;
+export const commandListOptions = options as unknown as CommandListApiOptions;
 
 export function attachCommandListApi(el: HTMLElement): void {
 	createCommandListApi(el, options as unknown as CommandListApiOptions);

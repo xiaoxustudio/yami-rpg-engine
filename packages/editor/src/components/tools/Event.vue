@@ -34,16 +34,11 @@ import { removeTextTags, parseEventType } from '@app/composables/useCommandParse
 import { EventEditor } from '@app/commands/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CommandList from '@app/components/common/CommandList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
-
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { filter?: string; type?: string };

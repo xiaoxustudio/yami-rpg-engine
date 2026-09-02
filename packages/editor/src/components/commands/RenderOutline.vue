@@ -12,13 +12,13 @@
 			<div class="text">Actor</div>
 			<CustomBox id="renderOutline-actor" type="actor" v-model="form.actor" />
 			<div class="text">Color</div>
-			<ColorBox id="renderOutline-color" v-model="form.color" />
+			<ColorBox id="renderOutline-color" v-model="color" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
 import { $ } from '@app/utils/dom';
@@ -31,6 +31,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const { form, save } = useRenderOutlineCommandSchema();
+
+const color = computed({
+	get: () => form.color as string,
+	set: (value) => {
+		form.color = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

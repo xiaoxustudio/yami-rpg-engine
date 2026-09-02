@@ -26,19 +26,14 @@ import { useI18n } from 'vue-i18n';
 import { Team } from '@app/data/team-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
-
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { id: string };
 	const nodes: VNode[] = [];
-	container.parentNode?.classList.add('plain');
+	(container.parentNode as HTMLElement | null)?.classList.add('plain');
 	const selection = Team.list?.read() as
 		| {
 				relations?: Record<string, number>;
@@ -82,8 +77,8 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const onListSelect = (event: Event & { value?: unknown }) => {
 	Team?.listSelect?.(event);
 };
-const onListPopup = (event: PointerEvent & { value?: unknown }) => {
-	Team?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown }) => {
+	Team?.listPopup?.(event as PointerEvent & { value?: unknown });
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Team?.listChange?.(event);

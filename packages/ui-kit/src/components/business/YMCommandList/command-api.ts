@@ -69,7 +69,7 @@ interface DataLookupAdapter {
 }
 
 interface LocalizeAdapter {
-	language: string;
+	language: string | (() => string);
 	get(key: string): string;
 	createGetter(key: string): (key: string) => string;
 }
@@ -158,11 +158,13 @@ interface ClipboardAdapter {
 export interface CommandListApiOptions {
 	command?: CommandAdapter | null;
 	dataLookup?: DataLookupAdapter | null;
-	commandHistory?: new (list: HTMLElement) => CommandHistory;
+	commandHistory?: new (list: never) => CommandHistory;
 	clipboard?: ClipboardAdapter | null;
 	settingConfig?: { config: { other: { copyAsTextKeepEmptyLine: boolean } } } | null;
 	localize?: LocalizeAdapter | null;
-	commandSuggestion?: { searcher: { input: HTMLInputElement } } | null;
+	commandSuggestion?: {
+		searcher: { input: HTMLInputElement } | (() => { input: HTMLInputElement });
+	} | null;
 	eventEditor?: { openGlobalEvent(id: string): void } | null;
 	searchString?: { open(list: HTMLElement): void } | null;
 	menuPopup?: (options: { x: number; y: number }, items: unknown[]) => void;
@@ -855,7 +857,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		indent: number
 	): string {
 		const lang = (this.__options as CommandListApiOptions).localize?.language;
-		return commandCore.computeTextIndent(indent, lang);
+		const langText = typeof lang === 'function' ? lang() : lang;
+		return commandCore.computeTextIndent(indent, langText);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -2204,7 +2207,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				default:
 					if (alphabetCode.test(event.code)) {
 						this.insert();
-						options.commandSuggestion?.searcher.input.focus();
+						const searcher = options.commandSuggestion?.searcher;
+						(typeof searcher === 'function' ? searcher() : searcher)?.input.focus();
 					}
 					break;
 			}

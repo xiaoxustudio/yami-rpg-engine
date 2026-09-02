@@ -10,7 +10,7 @@
 			<div class="text">ID</div>
 			<StringVar id="webSocketClose-id" v-focus v-model="form.id" />
 			<div class="text">Code</div>
-			<NumberBox id="webSocketClose-code" min="1000" max="4999" v-model="form.code" />
+			<NumberBox id="webSocketClose-code" min="1000" max="4999" v-model="code" />
 			<div class="text">Reason</div>
 			<StringVar id="webSocketClose-reason" v-model="form.reason" />
 		</div>
@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useWebSocketCloseCommandSchema } from '@app/composables/commands/useWebSocketCloseCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,6 +29,13 @@ import StringVar from '@app/components/common/StringVar.vue';
 const { t } = useI18n();
 
 const { form, save } = useWebSocketCloseCommandSchema();
+
+const code = computed({
+	get: () => form.code as number | string,
+	set: (value) => {
+		form.code = value;
+	}
+});
 
 const onConfirm = () => {
 	save();

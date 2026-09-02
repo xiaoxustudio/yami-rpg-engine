@@ -42,7 +42,11 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useUIReferencePage();
+const { form, sync, onParamInput: onParamInputEvent } = useUIReferencePage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 

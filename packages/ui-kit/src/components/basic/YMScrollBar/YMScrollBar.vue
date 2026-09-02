@@ -24,7 +24,7 @@ interface ScrollBarRootElement extends HTMLElement {
 	updateDisplay: (value: boolean) => void;
 }
 
-interface DragState extends PointerEvent {
+type DragState = PointerEvent & {
 	mode: 'scroll' | 'repeat';
 	scrollLeft: number;
 	scrollTop: number;

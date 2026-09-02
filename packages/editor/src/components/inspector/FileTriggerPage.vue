@@ -247,7 +247,6 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useFileTriggerPage } from '@app/composables/useFileTriggerPage';
-import { useInspectorStore } from '@app/stores/inspector';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -257,10 +256,13 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const inspector = useInspectorStore();
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useFileTriggerPage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileTriggerPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.fileTrigger?.animationIdWrite?.({ value });

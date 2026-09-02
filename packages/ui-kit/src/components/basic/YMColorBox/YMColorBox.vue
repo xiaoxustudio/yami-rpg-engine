@@ -21,7 +21,7 @@ const emit = defineEmits<{
 	open: [];
 }>();
 
-interface ColorBoxApi extends HTMLElement {
+type ColorBoxApi = HTMLElement & {
 	dataValue?: string;
 	foreground?: HTMLElement | null;
 	inputEventEnabled?: boolean;
@@ -37,7 +37,6 @@ interface ColorBoxApi extends HTMLElement {
 
 const root = ref<HTMLElement | null>(null);
 const foreground = ref<HTMLElement | null>(null);
-const colorInput = ref<HTMLInputElement | null>(null);
 
 let dataValue = '';
 let inputEventEnabled = false;
@@ -145,7 +144,7 @@ const pickColor = (event: Event): void => {
 	closeBuiltin();
 };
 
-const mouseclick = (event: Event): void => {
+const mouseclick = (_event: Event): void => {
 	if (props.disabled) return;
 	if (props.popup) {
 		openBuiltin();

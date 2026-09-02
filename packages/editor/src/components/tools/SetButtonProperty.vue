@@ -22,25 +22,25 @@
 					id="setButton-property-clip-0"
 					min="0"
 					max="10000"
-					v-model="form['clip-0']"
+					v-model="clip0"
 				/>
 				<NumberBox
 					id="setButton-property-clip-1"
 					min="0"
 					max="10000"
-					v-model="form['clip-1']"
+					v-model="clip1"
 				/>
 				<NumberBox
 					id="setButton-property-clip-2"
 					min="0"
 					max="4000"
-					v-model="form['clip-2']"
+					v-model="clip2"
 				/>
 				<NumberBox
 					id="setButton-property-clip-3"
 					min="0"
 					max="4000"
-					v-model="form['clip-3']"
+					v-model="clip3"
 				/>
 			</div>
 			<div class="text">{{ t('components.setButton-property-tint-box.label') }}</div>
@@ -50,28 +50,28 @@
 					min="-255"
 					max="255"
 					step="5"
-					v-model="form['tint-0']"
+					v-model="tint0"
 				/>
 				<NumberBox
 					id="setButton-property-tint-1"
 					min="-255"
 					max="255"
 					step="5"
-					v-model="form['tint-1']"
+					v-model="tint1"
 				/>
 				<NumberBox
 					id="setButton-property-tint-2"
 					min="-255"
 					max="255"
 					step="5"
-					v-model="form['tint-2']"
+					v-model="tint2"
 				/>
 				<NumberBox
 					id="setButton-property-tint-3"
 					min="0"
 					max="255"
 					step="5"
-					v-model="form['tint-3']"
+					v-model="tint3"
 				/>
 			</div>
 			<div class="text">{{ t('components.setButton-property-imageOpacity.label') }}</div>
@@ -81,7 +81,7 @@
 				max="1"
 				step="0.05"
 				decimals="4"
-				v-model="form.imageOpacity"
+				v-model="imageOpacity"
 			/>
 			<div class="text">{{ t('components.setButton-property-content.label') }}</div>
 			<TextAreaVar
@@ -95,7 +95,7 @@
 				min="10"
 				max="400"
 				unit="px"
-				v-model="form.size"
+				v-model="size"
 			/>
 			<div class="text">{{ t('components.setButton-property-letterSpacing.label') }}</div>
 			<NumberBox
@@ -103,19 +103,17 @@
 				min="-10"
 				max="100"
 				unit="px"
-				v-model="form.letterSpacing"
+				v-model="letterSpacing"
 			/>
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextAreaVar from '@app/components/common/TextAreaVar.vue';
@@ -126,8 +124,24 @@ const { t } = useI18n();
 
 const form = ButtonProperty.form;
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
+const numberField = (key: string) =>
+	computed({
+		get: () => form[key] as number | string,
+		set: (value) => {
+			form[key] = value;
+		}
+	});
+const clip0 = numberField('clip-0');
+const clip1 = numberField('clip-1');
+const clip2 = numberField('clip-2');
+const clip3 = numberField('clip-3');
+const tint0 = numberField('tint-0');
+const tint1 = numberField('tint-1');
+const tint2 = numberField('tint-2');
+const tint3 = numberField('tint-3');
+const imageOpacity = numberField('imageOpacity');
+const size = numberField('size');
+const letterSpacing = numberField('letterSpacing');
 
 onMounted(() => {});
 </script>

@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, type CSSProperties } from 'vue';
 import {
 	registerSearchHistoryDropdown,
 	BrowserSearchHistory
@@ -50,7 +50,7 @@ let input: HTMLInputElement | null = null;
 let themeObserver: MutationObserver | null = null;
 let outsideHandler: ((event: Event) => void) | null = null;
 
-const dropdownStyle = computed(() => ({
+const dropdownStyle = computed<CSSProperties>(() => ({
 	position: 'absolute',
 	zIndex: 9999,
 	padding: '2px 0',
@@ -70,7 +70,7 @@ const dropdownStyle = computed(() => ({
 	boxSizing: 'border-box'
 }));
 
-const itemStyle = (keyword: string) => ({
+const itemStyle = (keyword: string): CSSProperties => ({
 	position: 'relative',
 	padding: '2px 26px 2px 8px',
 	lineHeight: '18px',
@@ -92,7 +92,7 @@ const show = (target: HTMLInputElement): void => {
 		visible.value = false;
 		return;
 	}
-	keywords.value = histories.slice(0, BrowserSearchHistory.getLimit());
+	keywords.value = histories.slice(0, BrowserSearchHistory.getLimit!());
 	const anchor = input.closest?.('text-box') ?? input;
 	const rect = anchor.getBoundingClientRect();
 	position.width = `${rect.width}px`;
@@ -133,7 +133,7 @@ const onItemClick = (keyword: string): void => {
 const onDeleteClick = (keyword: string, event: MouseEvent): void => {
 	event.preventDefault();
 	event.stopPropagation();
-	BrowserSearchHistory.remove(keyword);
+	BrowserSearchHistory.remove!(keyword);
 	if (BrowserSearchHistory.histories.length === 0) {
 		hide();
 	} else {

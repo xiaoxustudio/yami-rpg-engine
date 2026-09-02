@@ -27,7 +27,7 @@ const inputEl = ref<HTMLInputElement | null>(null);
 const closeButtonEl = ref<HTMLElement | null>(null);
 const closeButtonDisplay = ref('none');
 
-interface TextBoxApi extends HTMLElement {
+type TextBoxApi = HTMLElement & {
 	_initialized?: boolean;
 	lastText?: string;
 	hiddenNodes?: HTMLElement[];

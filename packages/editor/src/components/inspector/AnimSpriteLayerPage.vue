@@ -48,7 +48,14 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 const local = useLocalStore();
 
-const { form, sync, onParamInput } = useAnimSpriteLayerPage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimSpriteLayerPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
+
+const getOptions = (id: string) =>
+	local.components?.[id]?.options as Record<string, { name?: string }> | undefined;
 
 const { bindInput } = useInspectorInput();
 
@@ -62,35 +69,29 @@ onMounted(() => {
 
 	elBlend.value?.loadItems([
 		{
-			name: local.components?.['animSpriteLayer-blend']?.options?.normal?.name || 'Normal',
+			name: getOptions('animSpriteLayer-blend')?.normal?.name || 'Normal',
 			value: 'normal'
 		},
 		{
-			name:
-				local.components?.['animSpriteLayer-blend']?.options?.additive?.name || 'Additive',
+			name: getOptions('animSpriteLayer-blend')?.additive?.name || 'Additive',
 			value: 'additive'
 		},
 		{
-			name:
-				local.components?.['animSpriteLayer-blend']?.options?.subtract?.name || 'Subtract',
+			name: getOptions('animSpriteLayer-blend')?.subtract?.name || 'Subtract',
 			value: 'subtract'
 		}
 	]);
 	elLight.value?.loadItems([
 		{
-			name: local.components?.['animSpriteLayer-light']?.options?.raw?.name || 'Raw',
+			name: getOptions('animSpriteLayer-light')?.raw?.name || 'Raw',
 			value: 'raw'
 		},
 		{
-			name:
-				local.components?.['animSpriteLayer-light']?.options?.global?.name ||
-				'Global Sampling',
+			name: getOptions('animSpriteLayer-light')?.global?.name || 'Global Sampling',
 			value: 'global'
 		},
 		{
-			name:
-				local.components?.['animSpriteLayer-light']?.options?.anchor?.name ||
-				'Anchor Sampling',
+			name: getOptions('animSpriteLayer-light')?.anchor?.name || 'Anchor Sampling',
 			value: 'anchor'
 		}
 	]);
@@ -98,7 +99,7 @@ onMounted(() => {
 	const elements = [elSprite.value?.root, elBlend.value?.root, elLight.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
-	bindInput(elements, animSpriteLayer, Animation, (data: Record<string, unknown>) => {
+	bindInput(elements, animSpriteLayer, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 		data.type = 'inspector-layer-change';
 		data.motion = animSpriteLayer.motion;
 		data.direction = Animation.direction;
@@ -110,7 +111,7 @@ onMounted(() => {
 	}
 	const refreshLocalizedItems = () => {
 		const getNames = (id: string, values: string[]) => {
-			const options = local.components?.[id]?.options;
+			const options = getOptions(id);
 			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
 		};
 		elBlend.value?.loadItems(

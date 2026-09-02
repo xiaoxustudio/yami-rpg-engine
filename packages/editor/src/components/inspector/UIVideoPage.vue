@@ -53,7 +53,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useUIVideoPage();
+const { form, sync, onParamInput: onParamInputEvent } = useUIVideoPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 

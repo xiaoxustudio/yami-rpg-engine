@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-interface FileBrowserApi extends HTMLElement {
+type FileBrowserApi = HTMLElement & {
 	load?(folders: unknown[]): void;
 	select?(item: unknown): void;
 	getSelections?(): unknown[];
@@ -21,7 +21,7 @@ interface FileBrowserApi extends HTMLElement {
 	searchResults?: unknown[];
 	[key: string]: unknown;
 }
-interface FileNavApi extends HTMLElement {
+type FileNavApi = HTMLElement & {
 	load?(...folders: unknown[]): void;
 	select?(item: unknown): void;
 	getSelections?(): unknown[];
@@ -30,7 +30,7 @@ interface FileNavApi extends HTMLElement {
 	selections?: unknown[];
 	[key: string]: unknown;
 }
-interface FileBodyApi extends HTMLElement {
+type FileBodyApi = HTMLElement & {
 	load?(folders: unknown[]): void;
 	select?(...files: unknown[]): void;
 	clear?(): void;
@@ -265,7 +265,7 @@ function backToParentFolder(): boolean {
 	return false;
 }
 
-function dirchange(event: Event): void {
+function dirchange(_event: Event): void {
 	const body = bodyEl.value?.el as unknown as FileBodyApi;
 	switch (display) {
 		case 'normal':
@@ -299,7 +299,6 @@ function dirchange(event: Event): void {
 }
 
 function close(): void {
-	const node = el.value as unknown as FileBrowserApi;
 	if (directory) {
 		directory = null;
 		restoreDisplay();
@@ -327,8 +326,7 @@ function getFilePaths(files: unknown[]): { relativePaths: string[]; absolutePath
 	return { relativePaths, absolutePaths };
 }
 
-function pointerdown(event: PointerEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
+function pointerdown(_event: PointerEvent): void {
 	switch ((dragging as DragState | null)?.mode) {
 		case 'drag':
 			dragend();
@@ -384,7 +382,7 @@ function dragstart(event: DragEvent): void {
 	}
 }
 
-function dragend(event?: DragEvent): void {
+function dragend(_event?: DragEvent): void {
 	const node = el.value as unknown as FileBrowserApi;
 	if (dragging) {
 		const { dropTarget, page } = dragging as unknown as DragState;
@@ -416,7 +414,6 @@ function dragleave(event: DragEvent): void {
 }
 
 function dragover(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
 	const d = dragging as unknown as DragState;
 	if (d) {
 		const { dropTarget } = d;
@@ -490,14 +487,13 @@ function dragover(event: DragEvent): void {
 }
 
 function drop(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
 	const d = dragging as unknown as DragState;
 	if (d) {
 		event.stopPropagation();
 		if (!d.dropPath) return;
 		const dropPath = File?.path?.(d.dropPath) ?? d.dropPath;
 		const dropName = Path?.basename?.(dropPath) ?? dropPath;
-		const get = (Local as unknown as { createGetter?: (key: string) => (key: string) => string })?.createGetter?.('menuFileOnDrop') ?? ((key: string) => '');
+		const get = (Local as unknown as { createGetter?: (key: string) => (key: string) => string })?.createGetter?.('menuFileOnDrop') ?? ((_key: string) => '');
 		const menuItems: { label: string; click: () => void }[] = [];
 		switch (d.dropMode) {
 			case 'move':
@@ -548,7 +544,7 @@ function osDragstart(event: DragEvent): void {
 	}
 }
 
-function osDragend(event?: DragEvent): void {
+function osDragend(_event?: DragEvent): void {
 	const node = el.value as unknown as FileBrowserApi;
 	if (dragging) {
 		const { dropTarget } = dragging as unknown as DragState;
@@ -568,7 +564,6 @@ function osDragleave(event: DragEvent): void {
 }
 
 function osDragover(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
 	const d = dragging as unknown as DragState;
 	if (d) {
 		const { dropTarget } = d;
@@ -609,7 +604,6 @@ function osDragover(event: DragEvent): void {
 }
 
 function osDrop(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
 	const { files } = (event as OsDragEvent).dataTransfer;
 	if (files.length === 0) return;
 	const d = dragging as unknown as DragState;

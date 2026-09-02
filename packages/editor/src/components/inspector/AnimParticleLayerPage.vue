@@ -58,7 +58,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, sync, onParamInput } = useAnimParticleLayerPage();
+const { form, sync, onParamInput: onParamInputEvent } = useAnimParticleLayerPage();
+
+const onParamInput = (value: unknown): void => {
+	onParamInputEvent(value as unknown as Event);
+};
 
 const { bindInput } = useInspectorInput();
 
@@ -97,7 +101,7 @@ onMounted(() => {
 		elAngle.value?.root,
 		elOrder.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
+	bindInput(elements, editor, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
 		data.type = 'inspector-layer-change';
 		data.motion = editor.motion;
 		data.direction = Animation.direction;
