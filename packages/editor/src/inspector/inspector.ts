@@ -136,10 +136,14 @@ export const Inspector: DynamicShape = {
 	inputBlur: null,
 	sliderFocus: null,
 	sliderBlur: null,
-	ParamHistory: null
+	ParamHistory: null,
+	_initialized: false
 };
 
 Inspector.initialize = function (this: typeof Inspector) {
+	if (this._initialized) {
+		return;
+	}
 	this.manager = $('#inspector-page-manager');
 	if (!this.manager) return;
 	this.manager.focusing = null;
@@ -272,9 +276,16 @@ Inspector.initialize = function (this: typeof Inspector) {
 			console.warn('[Inspector] Window.initialize failed:', (e as Error)?.message);
 		}
 	}
+	this._initialized = true;
 };
 
 Inspector.open = function (this: typeof Inspector, type: string, target: unknown, meta?: unknown) {
+	if (!this.manager) {
+		this.initialize();
+	}
+	if (!this.manager) {
+		return;
+	}
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -303,6 +314,12 @@ Inspector.open = function (this: typeof Inspector, type: string, target: unknown
 };
 
 Inspector.close = function (this: typeof Inspector, type?: string) {
+	if (!this.manager) {
+		this.initialize();
+	}
+	if (!this.manager) {
+		return;
+	}
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
