@@ -469,6 +469,8 @@ EventEditor.initialize = function (this: EventEditorShape) {
 		relatedElements: []
 	};
 
+	this.windowLocalize!(new Event('localize'));
+
 	if (!this.commandList || !this.innerGutter) return;
 	const INNER_HEIGHT = 600;
 	Object.defineProperty(this.commandList, 'innerHeight', {
