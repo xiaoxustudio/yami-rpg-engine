@@ -29,6 +29,12 @@
 - 阶段 5 剩余：tree-api v-for 化实施（按 docs/tree-list-vfor-plan.md 五步走）；YMFileHeadPane/YMScrollBar/YMKeyboardBox 等 SFC 内命令式小件收敛。
 - 2026-09-01 vue-tsc baseline 存量清零（736 → 0）：三个并行 agent 按目录消减——tools（283→0，97 文件：死代码删除 ~190、confirm 补参 ~27、writable computed ~35、popup handler 签名对齐等）、inspector（221→0，38 文件：onParamInput 解构重命名统一包装 ~140、bindInput owner cast 16、tint 可空 computed 16 等）、ui-kit+commands+common（剩余 ~230→1，我修最后 1 处 commandListOptions 导出收窄）。**editor + ui-kit 全部 .vue 现在处于 vue-tsc 零错误状态，baseline 为空数组**——后续任何 .vue 类型错误都会被门禁拦截。全量：editor 1781/1782（预存审计）、ui-kit 548/548、lint 0 警告、typecheck:vue 通过。
 - 2026-09-01 阶段 5 巨石 core 抽取完成：①command-core.ts（279 行）——parseSearchRegExp/parseScript（多行折叠 20 行截断）/computeSelectRange（多选区间）等纯函数 + 27 个单测，command-api 改委托调用（断连遗留的 1 个错误断言已修正：无斜杠搜索串因 flags 非法实际返回 null）。②file-body-core.ts（159 行）——虚拟滚动窗口计算（computeListGridMetrics/computeTileGridMetrics/computeVisibleRange）与键盘网格导航索引（computeNavigationIndex）参数化纯函数 + 16 个单测（含零项负偏移经 Uint32Array 强转的原始边界行为），DOM 读取留在 .vue 传参。至此三巨石均完成纯数据层分离：tree-core 179 行 + command-core 279 行 + file-body-core 159 行，DOM 渲染层暂保留命令式。全量：ui-kit 511/511（较阶段 5 开始时 +43 测试）、editor 1781/1782（预存审计失败）、lint 0 警告、typecheck 过。
+- 2026-09-03 ⚠️ tree v-for 化第 2 步（渲染层 v-for）已回滚（revert `648773f0` 及依赖的 `0001ee0e`/`05b69561`）：真实运行「首次点击 TabBar 标签页」即崩（Vue `insertBefore null`/`__vnode null`）。根因是架构级——layout 系统在首次 `loadLayoutScheme` 的 `createGroups`（layout.ts:243-244）把 Vue 渲染的 PageManager（`#workspace-page-manager`/`#layout-page-manager`，LayoutPanel.vue 内 `<PageManager>`）子页命令式 `appendChild` 搬运进新建 group，Vue vnode 仍持旧父子关系；v-for 化 TreeList 的同步 flushRender（绕过 Vue scheduler 直接 instance.update()）频繁触发 patch，与搬运交错即 vnode/DOM 失配。v-for 化前命令式行渲染无 Vue patch 故不暴露。
+  - **前置条件结论**：YMTreeList 行渲染 Vue 化的前提是先做 layout 页面组织 Vue 化（PageManager/group/nav 结构改为 Vue 渲染或 Teleport，消除命令式 reparent）。
+  - **护栏保留**：金标准测试 26 用例（tree-list-interactions.spec.ts，行为级断言新旧实现均绿）与 41303633 一并保留，供将来重做。
+  - **保留**：element-utils clear 委托修复（ef5d3173，与 v-for 无关）、小件 core 抽取（a49a5ffd）、SFC 小件收敛、vue-tsc 清零等全部前置成果。
+  - 当前 YMTreeList 回到旧命令式渲染，全量测试绿（editor 1781/1782 仅预存审计、ui-kit 55/55 tree 目录）。
+- 阶段 5 后续（调整后顺序）：layout/PageManager 页面组织 Vue 化 →（前置完成后再）重做 tree 行渲染 v-for 化 → 其余巨石 core 化与 editor 消费方迁移。
 
 ## 一、现状总览
 
