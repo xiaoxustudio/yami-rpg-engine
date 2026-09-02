@@ -237,6 +237,56 @@ describe('YMTreeList', () => {
 	});
 });
 
+describe('renderNodeContent', () => {
+	it('提供 renderNodeContent 时以 tree-node-content 替换默认图标/文本，folder-mark 保留', async () => {
+		const wrapper = mount(YMTreeList, {
+			props: {
+				renderNodeContent: (item: unknown, container: HTMLElement) => {
+					const node = item as { name: string; class?: string };
+					const span = document.createElement('span');
+					span.className = 'content-test';
+					if (node.class) span.classList.add(node.class);
+					span.textContent = node.name;
+					container.appendChild(span);
+				}
+			}
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		const data = makeData();
+		el.bind(() => data);
+		el.update();
+		expect(el.querySelectorAll('.tree-node-content').length).toBe(4);
+		expect(el.querySelectorAll('.node-text').length).toBe(0);
+		expect(el.querySelectorAll('.node-icon').length).toBe(0);
+		expect(el.querySelectorAll('.folder-mark').length).toBeGreaterThan(0);
+		const first = el.querySelector('.content-test')!;
+		expect(first.textContent).toBe('Folder');
+		expect(first.classList.contains('folder')).toBe(true);
+		wrapper.unmount();
+	});
+
+	it('更新时重新调用 renderNodeContent', async () => {
+		let renderCount = 0;
+		const wrapper = mount(YMTreeList, {
+			props: {
+				renderNodeContent: () => {
+					renderCount++;
+				}
+			}
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		const data = makeData();
+		el.bind(() => data);
+		el.update();
+		renderCount = 0;
+		el.update();
+		expect(renderCount).toBeGreaterThan(0);
+		wrapper.unmount();
+	});
+});
+
 describe('renderNodeExtras', () => {
 	it('节点创建时渲染 extras 容器与内容', async () => {
 		const wrapper = mount(YMTreeList, {

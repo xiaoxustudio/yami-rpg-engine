@@ -279,6 +279,7 @@ export interface TreeListApiOptions {
 	getMenuState?: () => string;
 	renderNodeExtras?: (item: TreeItem, container: HTMLElement) => void;
 	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
+	renderNodeContent?: (item: TreeItem, container: HTMLElement) => void;
 }
 
 type NodeItemElement = HTMLElement & {
@@ -1517,6 +1518,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
+	list.renderNodeContent = options?.renderNodeContent;
 	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {

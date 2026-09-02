@@ -226,13 +226,14 @@
 	pointer-events: visible;
 }
 
-.text-suggestion-item {
+#text-suggestions .node-item {
 	padding-left: 4px;
 	padding-right: 4px;
 	/* color: var(--text-color-unit); */
 }
 
 .text-suggestion-content {
+	display: inline-block;
 	pointer-events: none;
 }
 
@@ -241,6 +242,7 @@
 }
 
 .text-suggestion-ref-count {
+	display: inline-block;
 	margin-left: 4px;
 	padding: 0 2px;
 	color: var(--text-color-suggestion-ref-count);
