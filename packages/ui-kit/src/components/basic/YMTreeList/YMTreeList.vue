@@ -1,6 +1,22 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { createTreeListApi } from './tree-api';
+import {
+	computed,
+	getCurrentInstance,
+	onBeforeUnmount,
+	onMounted,
+	ref,
+	shallowRef,
+	type ComponentInternalInstance
+} from 'vue';
+import { getListConfig } from '../../../utils/list-config';
+import {
+	createTreeListApi,
+	flattenTreeRows,
+	treeListPrototype,
+	type TreeRenderController,
+	type TreeRow
+} from './tree-api';
+import type { TreeItem } from './tree-core';
 
 interface Props {
 	id?: string;
@@ -9,7 +25,7 @@ interface Props {
 	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
 }
 
-interface TreeListRootElement extends HTMLElement {
+type TreeListRootElement = HTMLElement & {
 	resize: EventListener;
 	keydown: EventListener;
 	pointerdown: EventListener;
@@ -17,21 +33,304 @@ interface TreeListRootElement extends HTMLElement {
 	dragstart: EventListener;
 	dragend: EventListener;
 	dataChange: EventListener;
+};
+
+type TreeListHost = HTMLElement & {
+	data?: TreeItem[] | null;
+	display?: string;
+	searchResults?: TreeItem[];
+	selections?: TreeItem[];
+	root?: TreeItem | null;
+	padded?: boolean;
+	parseName?: (item: TreeItem) => string;
+	createIcon?: (item: TreeItem) => HTMLElement;
+	createText?: (item: TreeItem) => Text;
+	renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
+	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
+};
+
+interface TreeListElements {
+	length: number;
+	count: number;
+	start: number;
+	end: number;
+	head: unknown;
+	foot: unknown;
+	versionId: number;
+	[index: number]: unknown;
 }
+
+interface RowItem {
+	item?: TreeItem;
+	element?: RowElement;
+	textNode?: Text | null;
+	folderMark?: HTMLElement | null;
+	nodeIcon?: HTMLElement | null;
+	extras?: HTMLElement | null;
+	indent?: number;
+	textIndent?: number;
+	expanded?: boolean;
+	markVisible?: boolean;
+	changed?: boolean;
+}
+
+type RowElement = HTMLElement & RowItem;
 
 const props = withDefaults(defineProps<Props>(), {
 	padded: false
 });
 
+const instance = getCurrentInstance() as ComponentInternalInstance | null;
 const root = ref<HTMLElement | null>(null);
+const windowRows = shallowRef<TreeRow[]>([]);
+const topGap = ref(0);
+const bottomGap = ref(0);
+const hasIconContainer = computed(() => typeof props.renderNodeIcon === 'function');
+const hasExtrasContainer = computed(() => typeof props.renderNodeExtras === 'function');
+
+let host: TreeListHost | null = null;
+let allRows: TreeRow[] = [];
+let rowStart = 0;
+let rowEnd = 0;
+let epoch = 0;
+const createdElements = new WeakSet<HTMLElement>();
+const filledElements = new WeakSet<HTMLElement>();
+
+const flushRender = (): void => {
+	if (instance?.isMounted) {
+		const update = (instance as { update?: () => void }).update;
+		if (typeof update === 'function') {
+			update();
+		}
+	}
+};
+
+const rebuildRows = (): void => {
+	const list = host;
+	if (!list) return;
+	const base = flattenTreeRows(list);
+	allRows = [];
+	for (const row of base) {
+		allRows.push({ ...row, key: `${epoch}:${row.key}` });
+	}
+};
+
+const measureWindow = (): void => {
+	const list = host;
+	if (!list) return;
+	const scrollTop = list.scrollTop || 0;
+	const clientHeight = list.clientHeight || 0;
+	const total = allRows.length;
+	if (total === 0 || clientHeight <= 0) {
+		rowStart = 0;
+		rowEnd = 0;
+	} else {
+		rowStart = Math.min(Math.floor(scrollTop / 20), total - 1);
+		const length = Math.ceil(clientHeight / 20) + 1;
+		rowEnd = Math.min(rowStart + length, total);
+	}
+	topGap.value = rowStart * 20;
+	bottomGap.value = (total - rowEnd) * 20 + (list.padded ? 20 : 0);
+};
+
+const present = (): void => {
+	windowRows.value = allRows.slice(rowStart, rowEnd);
+	flushRender();
+};
+
+const bindRow = (row: TreeRow, value: unknown): void => {
+	if (!host) return;
+	const item = row.item as RowItem;
+	if (value instanceof HTMLElement) {
+		const element = value as RowElement;
+		if (item.element !== element) {
+			Object.defineProperty(item, 'element', {
+				configurable: true,
+				value: element
+			});
+		}
+		element.item = row.item;
+		element.indent = row.indent;
+		element.textIndent = row.textIndent;
+		element.expanded = row.expanded;
+		element.markVisible = row.hasMark && row.markVisible;
+		element.changed = true;
+	} else {
+		const element = item.element;
+		if (element instanceof HTMLElement && !element.isConnected) {
+			delete item.element;
+		}
+	}
+};
+
+const fillInternals = (element: RowElement, row: TreeRow): void => {
+	const list = host;
+	if (!list) return;
+	if (element.textNode === undefined || element.textNode === null) {
+		const textHolder = Array.from(element.querySelectorAll('.node-text'))[0] as
+			| HTMLElement
+			| undefined;
+		if (textHolder) {
+			const textNode =
+				typeof list.createText === 'function'
+					? list.createText(row.item)
+					: document.createTextNode(String(row.item.name ?? ''));
+			textHolder.appendChild(textNode as unknown as Node);
+			element.textNode = textNode;
+		}
+	}
+	if (element.folderMark === undefined) {
+		element.folderMark =
+			(Array.from(element.querySelectorAll('.folder-mark'))[0] as HTMLElement) ?? null;
+	}
+	if (element.nodeIcon === undefined) {
+		const selector = typeof list.renderNodeIcon === 'function' ? '.tree-node-icon' : '.node-icon';
+		element.nodeIcon =
+			(Array.from(element.querySelectorAll(selector))[0] as HTMLElement) ?? null;
+	}
+	if (element.extras === undefined) {
+		element.extras =
+			typeof list.renderNodeExtras === 'function'
+				? (Array.from(element.querySelectorAll('.tree-node-extras'))[0] as HTMLElement)
+				: null;
+	}
+	element.item = row.item;
+	if (
+		typeof list.renderNodeIcon !== 'function' &&
+		typeof list.createIcon === 'function' &&
+		list.createIcon !== treeListPrototype.createIcon
+	) {
+		const icon = list.createIcon(row.item);
+		if (icon instanceof HTMLElement && element.nodeIcon instanceof HTMLElement) {
+			element.nodeIcon.className = icon.className;
+		}
+	}
+};
+
+const contentPass = (refreshAll: boolean): void => {
+	const list = host;
+	if (!list) return;
+	const config = getListConfig(list);
+	for (const row of windowRows.value) {
+		const element = (row.item as RowItem).element;
+		if (!(element instanceof HTMLElement)) continue;
+		const fresh = !filledElements.has(element);
+		if (fresh) {
+			filledElements.add(element);
+			fillInternals(element as RowElement, row);
+		}
+		if (!fresh && !refreshAll) continue;
+		if (fresh && !createdElements.has(element)) {
+			createdElements.add(element);
+			for (const creator of config.creators) {
+				creator(row.item);
+			}
+		}
+		if (fresh || refreshAll) {
+			for (const updater of config.updaters) {
+				updater(row.item);
+			}
+			const extras = (element as RowElement).extras;
+			if (extras instanceof HTMLElement && typeof list.renderNodeExtras === 'function') {
+				list.renderNodeExtras(row.item, extras);
+			}
+			const icon = (element as RowElement).nodeIcon;
+			if (icon instanceof HTMLElement && typeof list.renderNodeIcon === 'function') {
+				list.renderNodeIcon(row.item, icon);
+			}
+		}
+	}
+};
+
+const syncElements = (): void => {
+	const list = host;
+	if (!list) return;
+	const elements = (list as unknown as { elements?: TreeListElements }).elements;
+	if (!elements) return;
+	elements.length = 0;
+	elements.count = allRows.length;
+	elements.start = rowStart;
+	elements.end = rowEnd;
+	elements.head = null;
+	elements.foot = null;
+	elements.versionId++;
+	for (let i = 0; i < allRows.length; i++) {
+		const element = (allRows[i].item as RowItem).element;
+		if (element instanceof HTMLElement) {
+			elements[i] = element;
+		} else {
+			elements[i] = { item: allRows[i].item };
+		}
+	}
+};
+
+const updateAll = (): void => {
+	if (!host) return;
+	rebuildRows();
+	measureWindow();
+	present();
+	contentPass(true);
+	syncElements();
+};
+
+const resizeWindow = (): void => {
+	if (!host) return;
+	measureWindow();
+	present();
+	contentPass(false);
+	syncElements();
+};
+
+const repaint = (): void => {
+	if (!host) return;
+	windowRows.value = windowRows.value.slice();
+	flushRender();
+};
+
+const clearAll = (): void => {
+	allRows = [];
+	rowStart = 0;
+	rowEnd = 0;
+	topGap.value = 0;
+	bottomGap.value = 0;
+	present();
+	if (host) syncElements();
+};
+
+const refreshAll = (): void => {
+	epoch++;
+	updateAll();
+};
+
+const controller: TreeRenderController = {
+	update: updateAll,
+	resize: resizeWindow,
+	clear: clearAll,
+	refresh: refreshAll,
+	select: repaint,
+	unselect: repaint
+};
+
+const rowClass = (row: TreeRow): Record<string, boolean> => {
+	const selections = host?.selections;
+	return {
+		selected: selections ? selections.includes(row.item) : false
+	};
+};
 
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	if (props.padded) el.setAttribute('padded', '');
-	createTreeListApi(el, {
+	const list = el as TreeListHost;
+	host = list;
+	if (props.padded) list.setAttribute('padded', '');
+	createTreeListApi(list, {
 		renderNodeExtras: props.renderNodeExtras,
 		renderNodeIcon: props.renderNodeIcon
+	});
+	Object.defineProperty(list, '__ymTreeController', {
+		configurable: true,
+		value: controller
 	});
 });
 
@@ -49,7 +348,33 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div ref="root" class="tree-list" :id="props.id" />
+	<div ref="root" class="tree-list" :id="props.id">
+		<div class="tree-scroll-spacer" :style="{ height: topGap + 'px' }" />
+		<div
+			v-for="row in windowRows"
+			:key="row.key"
+			:ref="(el: unknown) => bindRow(row, el)"
+			class="node-item"
+			:class="rowClass(row)"
+			:style="{ textIndent: row.textIndent + 'px' }"
+			draggable="true"
+		>
+			<span v-if="row.hasMark && row.markVisible" class="folder-mark" :class="{ expanded: row.expanded }" />
+			<span v-if="hasIconContainer" class="tree-node-icon" />
+			<span
+				v-else
+				class="node-icon"
+				:class="{
+					'icon-folder': row.item.class === 'folder',
+					'icon-file': row.item.class !== 'folder',
+					expanded: row.item.class === 'folder' && row.expanded
+				}"
+			/>
+			<span class="node-text" />
+			<span v-if="hasExtrasContainer" class="tree-node-extras" />
+		</div>
+		<div class="tree-scroll-spacer" :style="{ height: bottomGap + 'px' }" />
+	</div>
 </template>
 
 <style module>
@@ -75,6 +400,15 @@ onBeforeUnmount(() => {
 :global(.node-item.selected) {
 	color: var(--ym-color-on-primary);
 	background-color: var(--ym-color-selected);
+}
+
+:global(.node-text) {
+	pointer-events: none;
+}
+
+:global(.tree-scroll-spacer) {
+	display: block;
+	height: 0;
 }
 
 :global(.folder-mark) {
