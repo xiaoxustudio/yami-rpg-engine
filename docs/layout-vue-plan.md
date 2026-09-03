@@ -157,9 +157,10 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - 二次同 scheme 加载（else 分支）与命令式共用同一恢复逻辑（不重建组树）；重载（先删 `page.scheme`）会先卸载旧树再重建单根。
 - 金标准 `layout-vue-scheme-load.spec.ts`（6 用例）：Vue 首载 vs 命令式首载逐叶状态/叶子宿主类/激活/palette 清空一致；默认关仍走命令式；点击+二次加载 lastValue 恢复且组树不重建；重载卸载重建单根；跨工作区 pageTargets 归属；双路快照等价。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 
-**M3b-2b（设计定稿，接线实施待真机冒烟阶段）**：
+**M3b-2b（引擎侧已交付，LayoutPanel 接线待真机冒烟阶段）**：
 - 整壳 Teleport 机制已探针验证（`layout-shell-teleport.spec.ts` 4 用例）：①整壳 `.page-frame`（壳+内容）经 LayoutPalettePage 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、`collectPageTargets` DOM walk 仍能发现归属；②nav-item Teleport 顺序 = palette 声明序，引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻可收敛到 tabs 序且幂等、nav.write 选中不受影响；③visible 类随节点搬家——真实序列依赖离开工作区前 `saveNavStates → write(nav,null) → switch(null)` 先清 visible，探针已按此前置模拟并收敛。
-- 接线设计定稿见**附录 F**：12 页/12 nav-item 整壳 Teleport、归属源（pageTargets 扩展 tabTargets）、排序 pass 收敛点、clear 终版语义、Vue 分支 else 恢复改数据驱动。
+- **引擎 Teleport 模式已落地（默认关，`YM_LAYOUT_VUE_RENDER=2|teleport`）**：新增 `Layout.loadLayoutSchemeVueTeleport`——宿主 page 只渲染/挂载 Vue 组树（不做 clear），按叶子发布归属（页→manager、页签→nav，store `pageTargets`/`tabTargets`，新增 `removePageTargets`/`removeTabTargets` 供卸载前收回），等 Teleport 落位后按 group.tabs 排序收敛每个叶子 nav/manager、激活首 tab（首载）或 `nav.lastValue`（二次进入）；组树重载时先收回旧树归属再卸载。端到端金标准 `layout-vue-teleport-load.spec.ts`（4 用例）：palette 复刻（整壳 page/nav wrappers）+ 真实引擎入口——首载落位激活、跨工作区只搬家不重建 + 返回 lastValue 恢复组树不重建、重载收回再发布节点身份不变、默认关命令式对照组。layout __tests__ 76→80 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
+- 接线设计见**附录 F**：整壳 Teleport 模型、归属源、排序 pass、clear 终版语义；**剩余 = LayoutPanel 12 页/12 nav-item 实际接入（按 F 模式用 LayoutPalettePage source=page/tab 包装）**，真机冒烟验收见 F.5。
 - **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支 loadLayoutScheme/pageSwitch 异步时序首次进入各工作区须真机验证（附录 E.2）。
 - 验证：M1/M3a/M3b-1/M3b-2a 断言双路径跑 + LayoutPanel 接线后真机冒烟清单（附录 E.3/F.5）；全程默认关、独立 PR 可回滚。
 
@@ -318,7 +319,7 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 ## 附录 E：M3b-2 渲染接线实施要点（2026-09-03；M3b-1 后设计，M3b-2a 已落地）
 
 ### E.1 门控与分支
-- 开关已落地在 `engine/layout/layout.ts` 顶部：`YM_LAYOUT_VUE_RENDER`（localStorage 读取，默认 off；jsdom 无 localStorage 时回退 false），导出 `isLayoutVueRenderEnabled`/`setLayoutVueRenderEnabled`/`awaitVueLayoutLoad`（M3b-2a）。
+- 开关已落地在 `engine/layout/layout.ts` 顶部：`YM_LAYOUT_VUE_RENDER`（localStorage）取值：`0`/空（默认命令式）、`1|true|on`（M3b-2a 中间态）、`2|teleport`（M3b-2b Teleport 模式）；导出 `isLayoutVueRenderEnabled`/`setLayoutVueRenderEnabled`（→1）/`getLayoutVueRenderMode`/`setLayoutVueRenderMode`/`awaitVueLayoutLoad`。jsdom 无 localStorage 时回退 0。
 - `loadLayoutScheme` 首载双路：命令式路径**一字不动**（兜底始终在）；Vue 路径（M3b-2a）仅当开关开：
   1. 宿主 page 上先 `unmount` 掉上一棵 Vue 组树（首载时无）；
   2. `await mountVueGroupTree(page, scheme, handlers)`，handlers 绑定 `Layout.navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown`（与 createGroupContent/createGroupBorder 同接线）；

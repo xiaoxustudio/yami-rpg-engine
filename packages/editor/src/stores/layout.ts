@@ -60,6 +60,11 @@ export const useLayoutStore = defineStore('layout', () => {
 			for (const key of Object.keys(record)) {
 				delete record[key];
 			}
+		},
+		remove(keys: readonly string[]): void {
+			for (const key of keys) {
+				delete record[key];
+			}
 		}
 	});
 
@@ -74,12 +79,20 @@ export const useLayoutStore = defineStore('layout', () => {
 		pageTargetActions.reset();
 	}
 
+	function removePageTargets(keys: readonly string[]): void {
+		pageTargetActions.remove(keys);
+	}
+
 	function setTabTargets(record: Record<string, HTMLElement>): void {
 		tabTargetActions.set(record);
 	}
 
 	function resetTabTargets(): void {
 		tabTargetActions.reset();
+	}
+
+	function removeTabTargets(keys: readonly string[]): void {
+		tabTargetActions.remove(keys);
 	}
 
 	function switchLayout(name: string) {
@@ -250,9 +263,11 @@ export const useLayoutStore = defineStore('layout', () => {
 		pageTargets,
 		setPageTargets,
 		resetPageTargets,
+		removePageTargets,
 		tabTargets,
 		setTabTargets,
 		resetTabTargets,
+		removeTabTargets,
 		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,

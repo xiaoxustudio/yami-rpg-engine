@@ -35,30 +35,44 @@ import { Home } from '@app/title/home-page.ts';
 import { Title } from '@app/title/title-bar.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { DynamicShape } from '@app/types/shapes.ts';
-import { h, render, type VNode } from 'vue';
+import { h, nextTick, render, type VNode } from 'vue';
 
 // M3b-2 双路开关（docs/layout-vue-plan.md 附录 E.1）：默认命令式路径；打开后
-// loadLayoutScheme 首载改走 Vue 渲染（mountVueGroupTree）。jsdom/无 localStorage 时回退 false。
+// loadLayoutScheme 首载改走 Vue 渲染。取值：
+//   0/关 —— 命令式（现状）
+//   1/true/on —— M3b-2a 中间态：Vue 组树渲染 + 水合，页/页签命令式搬移
+//   2/teleport —— M3b-2b：Vue 组树 + 数据驱动归属发布，页/页签经整壳 Teleport 落位
+// jsdom/无 localStorage 时回退 0。
 const layoutVueRenderGate = (() => {
 	try {
-		return /^(1|true|on)$/i.test(localStorage.getItem('YM_LAYOUT_VUE_RENDER') ?? '');
+		const value = localStorage.getItem('YM_LAYOUT_VUE_RENDER') ?? '';
+		if (/^(2|teleport)$/i.test(value)) return 2;
+		return /^(1|true|on)$/i.test(value) ? 1 : 0;
 	} catch {
-		return false;
+		return 0;
 	}
 })();
 
-let vueRenderEnabled = layoutVueRenderGate;
-// 每个宿主 page 上挂载中的 Vue 组树（再次首载/切布局时先 unmount 再重建）
+let vueRenderMode = layoutVueRenderGate;
+// 每个宿主 page 上挂载中的 Vue 组树（再次首载/切布局时先收回页签再 unmount）
 const vueTreeHandles = new WeakMap<HTMLElement, VueGroupTreeHandle>();
 // 最近一次 Vue 渲染加载（供 loadLayoutScheme fire-and-forget 后测试/时序方等待）
 let lastVueSchemeLoad: Promise<void> | null = null;
 
 export function isLayoutVueRenderEnabled(): boolean {
-	return vueRenderEnabled;
+	return vueRenderMode !== 0;
 }
 
 export function setLayoutVueRenderEnabled(enabled: boolean): void {
-	vueRenderEnabled = enabled;
+	vueRenderMode = enabled ? 1 : 0;
+}
+
+export function getLayoutVueRenderMode(): number {
+	return vueRenderMode;
+}
+
+export function setLayoutVueRenderMode(mode: number): void {
+	vueRenderMode = mode;
 }
 
 export function awaitVueLayoutLoad(): Promise<void> {
@@ -134,6 +148,78 @@ const syncPageTargets = (
 	getLayoutStore().setPageTargets(collectPageTargets(root));
 };
 
+// ---- M3b-2b Teleport 模式辅助（docs/layout-vue-plan.md 附录 F）----
+// 水合后叶子 group 带 tabs/nav/manager/border expando；按 DOM 收集某组树内全部叶子宿主。
+
+const collectLeafHosts = (root: Element | null): LayoutGroupElement[] => {
+	const out: LayoutGroupElement[] = [];
+	if (root === null) return out;
+	const walk = (el: Element): void => {
+		if (!hasClass(el, 'group')) return;
+		const host = el as LayoutGroupElement;
+		if (host.nav !== undefined && host.manager !== undefined) {
+			out.push(host);
+			return;
+		}
+		for (const child of Array.from(el.children)) {
+			if (hasClass(child, 'group')) walk(child);
+		}
+	};
+	walk(root);
+	return out;
+};
+
+const hostedValues = (root: Element | null): string[] => {
+	const values: string[] = [];
+	for (const leaf of collectLeafHosts(root)) {
+		for (const tab of leaf.tabs ?? []) values.push(tab);
+	}
+	return values;
+};
+
+// Teleport 落位后按 group.tabs 顺序收敛每个叶子 nav/manager 的子节点序
+// （Teleport 到达序 = palette 声明序，可能与 tabs 序不同，见附录 F.2）。
+const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
+	const { nav, manager, tabs } = leaf;
+	if (nav === undefined || manager === undefined || tabs === undefined) return;
+	for (const tab of tabs) {
+		for (const child of Array.from(nav.children)) {
+			if (
+				hasClass(child, 'nav-item') &&
+				(child as HTMLElement).getAttribute('value') === tab
+			) {
+				nav.appendChild(child);
+				break;
+			}
+		}
+		for (const child of Array.from(manager.children)) {
+			if (
+				hasClass(child, 'page-frame') &&
+				(child as HTMLElement).getAttribute('value') === tab
+			) {
+				manager.appendChild(child);
+				break;
+			}
+		}
+	}
+};
+
+// 把当前宿主 page 内挂载的 Vue 组树叶子归属发布到 store（页 → manager、页签 → nav）。
+const publishLeafTargets = (root: Element | null): LayoutGroupElement[] => {
+	const leaves = collectLeafHosts(root);
+	const pages: Record<string, HTMLElement> = {};
+	const tabs: Record<string, HTMLElement> = {};
+	for (const leaf of leaves) {
+		for (const tab of leaf.tabs ?? []) {
+			pages[tab] = leaf.manager;
+			tabs[tab] = leaf.nav;
+		}
+	}
+	getLayoutStore().setPageTargets(pages);
+	getLayoutStore().setTabTargets(tabs);
+	return leaves;
+};
+
 export const Layout: DynamicShape = {
 	manager: null,
 	items: null as LayoutItems | null,
@@ -172,6 +258,14 @@ export const Layout: DynamicShape = {
 	loadLayoutScheme: null as ((key?: string) => void) | null,
 	loadLayoutSchemeVue: null as
 		| ((key: string, scheme: LayoutScheme, page: HTMLElement) => Promise<void>)
+		| null,
+	loadLayoutSchemeVueTeleport: null as
+		| ((
+				key: string,
+				scheme: LayoutScheme,
+				page: HTMLElement,
+				isFirst: boolean
+		  ) => Promise<void>)
 		| null,
 	saveToConfig: null as
 		| ((config: { layout?: Record<string, LayoutScheme> | null }) => void)
@@ -845,9 +939,19 @@ Layout.loadLayoutScheme = function (key?: string) {
 	}
 	if (page.scheme !== scheme) {
 		page.scheme = scheme;
-		if (vueRenderEnabled) {
-			// Vue 渲染路径（默认关）：结构/叶子宿主由 LayoutTreeView(.vue) 渲染并水合，
-			// 语义与下方命令式首载分支等价（M3b-2，见 docs/layout-vue-plan.md）。
+		if (vueRenderMode === 2) {
+			// Teleport 模式（M3b-2b，默认关）：组树 Vue 渲染+水合后按叶子发布归属，
+			// palette 页/页签经整壳 Teleport 落位，不做命令式搬移（docs/layout-vue-plan.md 附录 F）。
+			const pending = this.loadLayoutSchemeVueTeleport!(key ?? '', scheme, page, true);
+			pending.catch((error: unknown) => {
+				console.warn('[loadLayoutScheme(teleport)] failed:', error);
+			});
+			lastVueSchemeLoad = pending;
+			return;
+		}
+		if (vueRenderMode === 1) {
+			// Vue 渲染路径（M3b-2a，默认关）：结构/叶子宿主由 LayoutTreeView(.vue) 渲染并水合，
+			// 语义与下方命令式首载分支等价。
 			const pending = this.loadLayoutSchemeVue!(key ?? '', scheme, page);
 			pending.catch((error: unknown) => {
 				console.warn('[loadLayoutScheme(vue)] failed:', error);
@@ -862,6 +966,15 @@ Layout.loadLayoutScheme = function (key?: string) {
 			write(group.nav, group.tabs[0]);
 		}
 	} else {
+		if (vueRenderMode === 2) {
+			// 二次进入：不重建组树，只重算归属并激活 nav.lastValue（Teleport 负责落位）
+			const pending = this.loadLayoutSchemeVueTeleport!(key ?? '', scheme, page, false);
+			pending.catch((error: unknown) => {
+				console.warn('[loadLayoutScheme(teleport/restore)] failed:', error);
+			});
+			lastVueSchemeLoad = pending;
+			return;
+		}
 		const items = this.items!;
 		const groups = this.getKeyGroups!();
 		for (const group of groups) {
@@ -925,6 +1038,66 @@ Layout.loadLayoutSchemeVue = async function (
 	for (const group of groups) {
 		write(group.nav, group.tabs[0]);
 	}
+	syncPageTargets(this.manager);
+};
+
+// Teleport 模式（M3b-2b，默认关）：宿主 page 上仅渲染/挂载 Vue 组树（不执行 clear，
+// palette 等宿主页其它内容原样保留）；页/页签的落位完全由「归属发布 → 整壳 Teleport」驱动，
+// 引擎不做命令式搬移。isFirst=true 为首次加载（先收回旧树托管值、卸载旧树再挂新树），
+// false 为二次进入（组树不重建，仅重算归属并激活 nav.lastValue）。
+Layout.loadLayoutSchemeVueTeleport = async function (
+	_key: string,
+	scheme: LayoutScheme,
+	page: HTMLElement,
+	isFirst: boolean
+) {
+	// 全局串行化：上一棵 Vue 组树加载完成后再开始本次
+	const previous = lastVueSchemeLoad;
+	if (previous !== null) {
+		await previous.catch(() => {});
+	}
+	if (isFirst) {
+		const prior = vueTreeHandles.get(page);
+		if (prior !== undefined) {
+			// 先收回旧树托管的页/页签归属（Teleport 内容退回 palette 宿主），再卸载组树，
+			// 避免卸载时把仍挂在旧 manager 里的 Teleport 内容从文档中带走
+			const values = hostedValues(prior.root);
+			if (values.length !== 0) {
+				getLayoutStore().removePageTargets(values);
+				getLayoutStore().removeTabTargets(values);
+				await nextTick();
+			}
+			prior.unmount();
+			vueTreeHandles.delete(page);
+		}
+		const handle = await mountVueGroupTree(page, scheme as LayoutSchemeData, {
+			navWrite: this.navWrite!,
+			navPointerdown: this.navPointerdown!,
+			navDragstart: this.navDragstart!,
+			navDragend: this.navDragend!,
+			borderPointerdown: this.borderPointerdown!
+		});
+		vueTreeHandles.set(page, handle);
+	} else if (vueTreeHandles.get(page) === undefined && page.firstElementChild === null) {
+		// 无既有组树（例如运行期才切到 teleport 模式）：按首载处理
+		return this.loadLayoutSchemeVueTeleport!(_key, scheme, page, true);
+	}
+
+	// 归属发布：页 → 叶子 manager、页签 → 叶子 nav（数据驱动，取代命令式搬移）
+	const leaves = publishLeafTargets(page.firstElementChild as HTMLElement | null);
+	await nextTick(); // 等待 Teleport 把整壳节点搬进对应叶子宿主
+	for (const leaf of leaves) {
+		orderLeafHostChildren(leaf);
+		if (isFirst) {
+			write(leaf.nav!, leaf.tabs?.[0]);
+		} else {
+			write(
+				leaf.nav!,
+				(leaf.nav as HTMLElement & { lastValue?: string }).lastValue ?? leaf.tabs?.[0]
+			);
+		}
+	}
+	this.updateGroups!();
 	syncPageTargets(this.manager);
 };
 
