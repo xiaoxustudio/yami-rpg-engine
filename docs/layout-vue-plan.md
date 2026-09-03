@@ -343,7 +343,7 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 
 ### F.1 归属源
 - **页归属**（`store.pageTargets`，value → group-manager）：整壳帧物理进入 manager.children 后 `collectPageTargets` DOM walk 仍成立（探针 A-1），收敛点不变（loadLayoutScheme/navDrop 尾 `syncPageTargets`）。
-- **页签归属**（新增 `store.tabTargets`，value → leaf nav）：LayoutPalettePage 扩展或新增对应包装组件；同一 DOM walk 一并收集 `{value→manager}` 与 `{value→nav}`（`collectPageTargets` 返回扩展或新增 `collectNavTargets`）。
+- **页签归属**（`store.tabTargets`，value → leaf nav）：**已落地**（M3b-2b 前置）——stores/layout.ts 新增 `tabTargets`/`setTabTargets`/`resetTabTargets`（与 pageTargets 同构、共用 targets 工厂）；`LayoutPalettePage` 增加 `source?: 'page' | 'tab'`（默认 'page'，'tab' 读 tabTargets），配套 spec（layout-palette-page.spec.ts +2 用例：tab 归属搬家/换归属不重建/清归属回宿主；page/tab 双通道互不干扰）。
 - 跨工作区：归属表按当前激活工作区根树刷新 → Teleport 目标切换 = 页/页签搬到新工作区组（同探针「换归属只搬家」）。
 
 ### F.2 nav 排序 pass

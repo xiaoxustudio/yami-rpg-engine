@@ -145,3 +145,128 @@ describe('LayoutPalettePage 与 layout 收敛点联动', () => {
 		}
 	});
 });
+
+describe('LayoutPalettePage source="tab"（tabTargets 页签归属）', () => {
+	const store = getLayoutStore();
+
+	const createNav = (name: string): HTMLElement => {
+		const el = document.createElement('div');
+		el.className = 'nav-bar';
+		el.id = name;
+		return el;
+	};
+
+	beforeEach(() => {
+		store.resetTabTargets();
+		document.body.innerHTML = '';
+	});
+
+	it('无归属 disabled 留宿主；tabTargets 归属后搬进 nav；换归属不重建；清归属回宿主', async () => {
+		let mounts = 0;
+		const Marker = defineComponent({
+			setup() {
+				onMounted(() => {
+					mounts += 1;
+				});
+				return () => h('span', { class: 'tab-marker' }, 'tab');
+			}
+		});
+		const navA = createNav('nav-a');
+		const navB = createNav('nav-b');
+		document.body.append(navA, navB);
+		const host = document.createElement('div');
+		document.body.append(host);
+
+		const wrapper = mount(LayoutPalettePage, {
+			props: { value: 'scene', source: 'tab' },
+			attachTo: host,
+			slots: { default: () => h(Marker) }
+		});
+		const content = (): HTMLElement => document.querySelector('.tab-marker') as HTMLElement;
+
+		try {
+			expect(mounts).toBe(1);
+			expect(host.contains(content())).toBe(true);
+
+			store.setTabTargets({ scene: navA });
+			await nextTick();
+			expect(content().parentNode).toBe(navA);
+			expect(mounts).toBe(1);
+
+			store.setTabTargets({ scene: navB });
+			await nextTick();
+			expect(content().parentNode).toBe(navB);
+			expect(mounts).toBe(1);
+
+			store.setTabTargets({});
+			await nextTick();
+			expect(content().isConnected).toBe(true);
+			expect(host.contains(content())).toBe(true);
+			expect(content().parentNode).not.toBe(navA);
+			expect(content().parentNode).not.toBe(navB);
+			expect(mounts).toBe(1);
+		} finally {
+			wrapper.unmount();
+		}
+	});
+
+	it('source 缺省仍走 pageTargets；与 tab 归属互不干扰', async () => {
+		let pageMounts = 0;
+		let tabMounts = 0;
+		const PageMarker = defineComponent({
+			setup() {
+				onMounted(() => {
+					pageMounts += 1;
+				});
+				return () => h('span', { class: 'page-marker' }, 'page');
+			}
+		});
+		const TabMarker = defineComponent({
+			setup() {
+				onMounted(() => {
+					tabMounts += 1;
+				});
+				return () => h('span', { class: 'tab-marker' }, 'tab');
+			}
+		});
+		const manager = document.createElement('div');
+		manager.className = 'page-manager';
+		const nav = createNav('nav');
+		document.body.append(manager, nav);
+		const host = document.createElement('div');
+		document.body.append(host);
+
+		const pageWrapper = mount(LayoutPalettePage, {
+			props: { value: 'scene' },
+			attachTo: host,
+			slots: { default: () => h(PageMarker) }
+		});
+		const tabWrapper = mount(LayoutPalettePage, {
+			props: { value: 'scene', source: 'tab' },
+			attachTo: host,
+			slots: { default: () => h(TabMarker) }
+		});
+		const pageContent = (): HTMLElement =>
+			document.querySelector('.page-marker') as HTMLElement;
+		const tabContent = (): HTMLElement => document.querySelector('.tab-marker') as HTMLElement;
+
+		try {
+			// 只设 page 归属：page 搬走、tab 留宿主
+			store.setPageTargets({ scene: manager as HTMLElement });
+			await nextTick();
+			expect(pageContent().parentNode).toBe(manager);
+			expect(host.contains(tabContent())).toBe(true);
+
+			// 只设 tab 归属：tab 搬走、page 不动
+			store.setTabTargets({ scene: nav });
+			await nextTick();
+			expect(tabContent().parentNode).toBe(nav);
+			expect(pageContent().parentNode).toBe(manager);
+			expect(pageMounts).toBe(1);
+			expect(tabMounts).toBe(1);
+		} finally {
+			pageWrapper.unmount();
+			tabWrapper.unmount();
+		}
+	});
+});

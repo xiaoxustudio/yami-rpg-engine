@@ -42,22 +42,44 @@ export const useLayoutStore = defineStore('layout', () => {
 	const focusableSelector = shallowRef<string | null>(null);
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);
 
-	// 运行时页面归属：value → 当前承载该页面的 group-manager 元素（M3b Teleport :to 输入）。
+	// 运行时页面/页签归属：value → 当前承载该页面的 group-manager / leaf nav 元素
+	// （M3b 整壳 Teleport :to 输入，docs/layout-vue-plan.md 附录 F.1）。
 	const pageTargets = shallowReactive<Record<string, HTMLElement | null>>({});
+	const tabTargets = shallowReactive<Record<string, HTMLElement | null>>({});
+
+	const makeTargets = (record: Record<string, HTMLElement | null>) => ({
+		set(entries: Record<string, HTMLElement>): void {
+			for (const key of Object.keys(record)) {
+				if (!(key in entries)) delete record[key];
+			}
+			for (const [key, element] of Object.entries(entries)) {
+				record[key] = element;
+			}
+		},
+		reset(): void {
+			for (const key of Object.keys(record)) {
+				delete record[key];
+			}
+		}
+	});
+
+	const pageTargetActions = makeTargets(pageTargets);
+	const tabTargetActions = makeTargets(tabTargets);
 
 	function setPageTargets(record: Record<string, HTMLElement>): void {
-		for (const key of Object.keys(pageTargets)) {
-			if (!(key in record)) delete pageTargets[key];
-		}
-		for (const [key, element] of Object.entries(record)) {
-			pageTargets[key] = element;
-		}
+		pageTargetActions.set(record);
 	}
 
 	function resetPageTargets(): void {
-		for (const key of Object.keys(pageTargets)) {
-			delete pageTargets[key];
-		}
+		pageTargetActions.reset();
+	}
+
+	function setTabTargets(record: Record<string, HTMLElement>): void {
+		tabTargetActions.set(record);
+	}
+
+	function resetTabTargets(): void {
+		tabTargetActions.reset();
 	}
 
 	function switchLayout(name: string) {
@@ -228,6 +250,9 @@ export const useLayoutStore = defineStore('layout', () => {
 		pageTargets,
 		setPageTargets,
 		resetPageTargets,
+		tabTargets,
+		setTabTargets,
+		resetTabTargets,
 		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,
