@@ -34,6 +34,7 @@
   - **护栏保留**：金标准测试 26 用例（tree-list-interactions.spec.ts，行为级断言新旧实现均绿）与 41303633 一并保留，供将来重做。
   - **保留**：element-utils clear 委托修复（ef5d3173，与 v-for 无关）、小件 core 抽取（a49a5ffd）、SFC 小件收敛、vue-tsc 清零等全部前置成果。
   - 当前 YMTreeList 回到旧命令式渲染，全量测试绿（editor 1781/1782 仅预存审计、ui-kit 55/55 tree 目录）。
+- 2026-09-03 layout/PageManager 页面组织 Vue 化开工：新增 `docs/layout-vue-plan.md`（现状模型 + 方案对比[推荐 Teleport 起步/组件化远期] + M1-M6 分步计划 + 风险回滚）。Phase 0 摸底测试落地 `layout-scheme-baseline.spec.ts`（6 用例）锁定现状语义：首载 `clear` 摧毁 palette 挂载与节点搬移、group 递归结构、首 tab 激活、页签点击切换（nav write→manager.switch）、跨工作区节点对象不变仅 parent 迁移、二次加载 lastValue 恢复、saveLayoutScheme 往返保真。layout __tests__ 10/10 绿、lint 0。M2（scheme 数据化）为下一项。
 - 阶段 5 后续（调整后顺序）：layout/PageManager 页面组织 Vue 化 →（前置完成后再）重做 tree 行渲染 v-for 化 → 其余巨石 core 化与 editor 消费方迁移。
 
 ## 一、现状总览
