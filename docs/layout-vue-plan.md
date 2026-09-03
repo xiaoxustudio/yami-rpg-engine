@@ -1,6 +1,6 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：设计稿（Phase 0 摸底测试已落地，M1-M6 未实施）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 Vue 化已交付；M3b-2 接线起待真机冒烟，见附录 E）
 - 日期：2026-09-03
 - 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`packages/editor/src/engine/layout/layout.ts`（1555 行）、`packages/editor/src/stores/layout.ts`、`packages/ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
@@ -141,13 +141,20 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 
 **M3a（已交付）**：递归数据渲染组件 `components/layout/LayoutTreeView.vue`（输入 `LayoutTreeNode|null`，输出与命令式一致的 `.group`/`horizontal|vertical`/叶子 `.nav-bar`+`.page-manager.group-manager`/`.group-border` 结构；split 含子递归，`v-for :key=node.id` 稳定；node=null 渲染空）+ `layout-tree-view.spec.ts`（5 用例：4 个 scheme 与命令式 createGroups 的结构签名/叶子数/叶子宿主等价 + 空树）。vue-tsc 门禁 0 新增错误。
 
-**M3b（剩余，待真机冒烟阶段实施）**：
-- **运行时页面归属源已落地**：`engine/layout/layout-page-targets.ts`（DOM walker：value→归属 manager）+ `stores/layout.ts` 响应式 `pageTargets`/`setPageTargets`/`resetPageTargets`；`loadLayoutScheme`/`navDrop` 收敛点后由 `syncPageTargets` 刷新（layout-page-targets.spec.ts 5 用例）。这是页面 Teleport `:to` 的响应式输入。
-- **页面 Teleport 组件已落地**：`components/layout/LayoutPalettePage.vue`（slot 内容经 `<Teleport :to=pageTargets[value] + disabled>` 归属到 group-manager，无归属 disabled 留宿主）＋ `layout-palette-page.spec.ts`（2 用例：纯 store 驱动搬家/清归属不重建；与真实 loadLayoutScheme 联动、跨工作区往返目标一致且不重建）。
-- 双路开关（如 `YM_LAYOUT_VUE_RENDER`，默认命令式）：`createGroups/loadLayoutScheme` 结构创建分支换 `LayoutTreeView`，叶子宿主注入逻辑与命令式保留一致；**注意**：.vue 版 YMPageManager/YMNavBar 的 switch/index/active 桥在 onMounted（nextTick 后）才可用 → Vue 叶子换源需异步时序改造（loadLayoutScheme/pageSwitch async 化）或保留命令式叶子宿主仅骨架走 Vue（见附录 C.2/C.5）。LayoutPanel 12 页接入 LayoutPalettePage 时需保持 `.page-frame` 结构与 visible class 驱动（见附录 C.1）。
-- `clear(page)` 的 `textContent=''` 替换为「只卸载 group 树、保留 page-frame 内容」（会摧毁已挂 Teleport 锚点/引擎 canvas）。
-- **方案 A 前提已验证**（`layout-teleport-probe.spec.ts`，见风险表 R1/R2）：动态 Teleport 挂命令式 manager 元素可行。
-- 验证：M1/M3a 断言双路径跑 + 15 工作区真机冒烟清单；M3b 全程默认关、独立 PR 可回滚。
+**M3b（分两步交付）**：
+
+**M3b-1（已交付）叶子宿主 Vue 化（C.5#1）**：
+- `LayoutTreeView.vue` 叶子改由 `YMNavBar`/`YMPageManager`(.vue) 渲染——组件 onMounted 把 `read/write/unselect/on` 与 `switch/on/index/active` 等命令式 API 直接挂到 root 元素，命令式消费方零改动；保持 `.nav-bar`/`.page-manager.group-manager`/`.group-border` 结构与类（M3a 结构等价断言继续绿）。
+- 新增 `engine/layout/layout-vue-tree.ts` 水合层：`mountVueGroupTree(host, scheme, handlers)`——`parseLayoutScheme` → `render(h(LayoutTreeView))` → `await nextTick`（等 .vue onMounted 挂 API）→ 按先序把 `end/split/tabs/nav/manager/border` expando 绑到 Vue DOM、并做与 `createGroupContent`/`createGroupBorder` 一致的 nav/border 事件接线；`unmount()` 只卸载组树（幂等），宿主可再次挂载。
+- 金标准 `layout-vue-leaf.spec.ts`（6 用例）：Vue 宿主 vs 命令式 `loadLayoutScheme` 的结构签名/叶子宿主类/首载激活/页签点击切换双路等价 + 水合 expando 与数据树一致 + unmount/重挂。layout __tests__ 58→64 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
+- 接线所需前置组件均在册：`layout-page-targets.ts` + store `pageTargets`（Teleport :to 输入）、`LayoutPalettePage.vue`（页面 Teleport 组件）、`layout-teleport-probe.spec.ts`（风险 R1/R2 jsdom 试验台）。
+
+**M3b-2（剩余，渲染接线，待真机冒烟阶段实施）**：
+- 双路开关（如 `YM_LAYOUT_VUE_RENDER`，默认命令式）：`createGroups/loadLayoutScheme` 结构创建分支换 `mountVueGroupTree`（host = 宿主 page、handlers = Layout.navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown）；激活首 tab 与命令式一致 `write(nav, tabs[0])`、页归属同步 `syncPageTargets`。
+- **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支的 loadLayoutScheme/pageSwitch 需 async 化，首次进入各工作区的时序须真机验证（附录 E.2）。
+- LayoutPanel 12 页接入 LayoutPalettePage（保持 `.page-frame` 结构与 visible class 驱动，见附录 C.1）。
+- `clear(page)` 的 `textContent=''` 替换为「只卸载 group 树、保留 page-frame 内容」（否则摧毁 Teleport 锚点/引擎 canvas）。
+- 验证：M1/M3a/M3b-1 断言双路径跑 + 真机冒烟清单（附录 E.3）；全程默认关、独立 PR 可回滚。
 
 ### M4：交互数据化
 
@@ -300,3 +307,22 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 ### D.4 结论
 - 持久层 `config.layout` 无 active/lastValue（saveLayoutScheme 只写 end/split/children/tabs）→ 树模型分「持久 scheme」与「运行时树（含 active/lastValue）」两层。
 - **M2b 走 mirror（DOM 为事实源，收敛点后反序列化快照）改动面最小**：layout.ts 实现与时序不动，7 个函数尾部插入快照 + saveToConfig 从镜像树落盘；把数据树当事实源则需重写整个 1555 行写入路径（R 面大）。M3 再把渲染源切到镜像树。
+
+## 附录 E：M3b-2 渲染接线实施要点（2026-09-03，M3b-1 落地后）
+
+### E.1 门控与分支
+- 开关常量建议放 `engine/layout/layout.ts` 顶部（`YM_LAYOUT_VUE_RENDER`，localStorage 读取，默认 off；jsdom 无 localStorage 时回退 false）。
+- `createGroups`/`loadLayoutScheme` 双路：命令式路径**一字不动**（兜底始终在）；Vue 路径仅当开关开：
+  1. 宿主 page 上先 `unmount` 掉上一棵 Vue 组树（首载时无）；
+  2. `await mountVueGroupTree(page, scheme, handlers)`，handlers 绑定 `Layout.navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown`（与 createGroupContent/createGroupBorder 同接线）；
+  3. 按 `handle.leaves` 把 items（palette 页/页签）搬入叶子 nav/manager——**Vue 模式下 palette 不再被 clear 摧毁**，页内容改为经 LayoutPalettePage Teleport 归属（C.5#3）；
+  4. 激活首 tab `write(nav, tabs[0])`、`updateGroups`、`syncPageTargets`（与命令式 loadLayoutScheme 尾部一致）。
+
+### E.2 异步时序（真机重点验证）
+- .vue 叶子的 read/write/on/switch/index/active 在 onMounted（nextTick 后）才可用 → Vue 分支 `loadLayoutScheme` 必须 async；`pageSwitch`（layout.ts L869-975）里对它同步调用后还有 GL.canvas insert/`afterChange`，切 Vue 分支时这些后续步骤要等 mount 完成（await 链或排队到 promise 回调）。
+- 命令式兜底路径保持同步（开关默认关时零时序变化）。冒烟时重点测：首次进入每个工作区（directory/scene/ui/animation/particle）、快速往返切换、拖拽/缩放期间开关恒关。
+
+### E.3 真机冒烟清单（M3b-2 验收）
+1. 默认（关）：现状全量行为回归——五工作区进入/切换/往返、页签点击、拖 tab 跨组、分割、缩放、inspector 嵌套页、GL.canvas 各画布正常。
+2. 开：`YM_LAYOUT_VUE_RENDER=1` 启动→首次进入 directory：组树为 Vue 渲染、palette 仍在 DOM（隐藏宿主）、页内容经 Teleport 出现在 group manager；页签点击/拖拽后 DOM 归属与 store.pageTargets 一致；切 scene/ui/animation/particle 往返不重建页面（mounted 计数 1）；saveLayoutScheme 往返保真（M1 基线语义）。
+3. 回归护栏：layout __tests__（含 M3b-1 双路等价 6 用例）在开关两种取值下都跑；editor/ui-kit 全量；lint/typecheck/vue-tsc 门禁。
