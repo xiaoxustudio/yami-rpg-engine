@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { pinia } from './pinia';
 import type { EditorEvent } from '@app/types/editor-event.ts';
-import { shallowRef } from 'vue';
+import { shallowReactive, shallowRef } from 'vue';
 
 type LayoutSchemeShape = {
 	end: number;
@@ -41,6 +41,24 @@ export const useLayoutStore = defineStore('layout', () => {
 	const resizing = shallowRef<any>(null);
 	const focusableSelector = shallowRef<string | null>(null);
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);
+
+	// 运行时页面归属：value → 当前承载该页面的 group-manager 元素（M3b Teleport :to 输入）。
+	const pageTargets = shallowReactive<Record<string, HTMLElement | null>>({});
+
+	function setPageTargets(record: Record<string, HTMLElement>): void {
+		for (const key of Object.keys(pageTargets)) {
+			if (!(key in record)) delete pageTargets[key];
+		}
+		for (const [key, element] of Object.entries(record)) {
+			pageTargets[key] = element;
+		}
+	}
+
+	function resetPageTargets(): void {
+		for (const key of Object.keys(pageTargets)) {
+			delete pageTargets[key];
+		}
+	}
 
 	function switchLayout(name: string) {
 		Layout?.switchLayout?.(name);
@@ -207,6 +225,9 @@ export const useLayoutStore = defineStore('layout', () => {
 		resizing,
 		focusableSelector,
 		focusableElements,
+		pageTargets,
+		setPageTargets,
+		resetPageTargets,
 		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,

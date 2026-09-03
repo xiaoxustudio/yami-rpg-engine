@@ -19,6 +19,9 @@ import {
 	createPageManagerElement as createPageManager,
 	type PageManagerApi
 } from '@ui-kit';
+import { toLayoutScheme } from './layout-scheme';
+import { deserializeGroupElement } from './layout-deserialize';
+import { collectPageTargets } from './layout-page-targets';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '../webgl/webgl-init.ts';
@@ -89,6 +92,18 @@ function renderElement(vnode: VNode): HTMLElement {
 	host.removeChild(element);
 	return element;
 }
+
+// 结构/归属收敛点后把「value → 归属 manager」刷进 layout store，供 Vue 层 Teleport :to 使用。
+const syncPageTargets = (
+	manager: {
+		active: { firstElementChild?: Element | null } | null;
+	} | null
+): void => {
+	if (manager === null) return;
+	const active = manager.active;
+	const root = active?.firstElementChild ?? null;
+	getLayoutStore().setPageTargets(collectPageTargets(root));
+};
 
 export const Layout: DynamicShape = {
 	manager: null,
@@ -782,30 +797,9 @@ Layout.saveNavStates = function () {
 	}
 };
 
-Layout.saveLayoutScheme = (function IIFE() {
-	const read = (data: LayoutScheme, group: LayoutGroupElement): LayoutScheme => {
-		if (group.split !== undefined) {
-			const children: LayoutScheme[] = [];
-			data.end = group.end;
-			data.split = group.split;
-			data.children = children;
-			for (const childNode of group.childNodes) {
-				if (childNode !== group.border) {
-					const subdata = {} as LayoutScheme;
-					read(subdata, childNode as LayoutGroupElement);
-					children.push(subdata);
-				}
-			}
-		} else {
-			data.end = group.end;
-			data.tabs = group.tabs;
-		}
-		return data;
-	};
-	return function (rootGroup: LayoutGroupElement) {
-		return read({} as LayoutScheme, rootGroup);
-	};
-})();
+Layout.saveLayoutScheme = function (rootGroup: LayoutGroupElement) {
+	return toLayoutScheme(deserializeGroupElement(rootGroup));
+};
 
 Layout.loadLayoutScheme = function (key?: string) {
 	const layout = this.layout ?? {};
@@ -841,6 +835,7 @@ Layout.loadLayoutScheme = function (key?: string) {
 			write(nav, nav.lastValue);
 		}
 	}
+	syncPageTargets(this.manager);
 };
 
 Layout.saveToConfig = function (config: { layout?: Record<string, LayoutScheme> | null }) {
@@ -1245,6 +1240,7 @@ Layout.navDrop = function (event: EditorEvent) {
 			});
 		}
 	}
+	syncPageTargets(Layout.manager);
 };
 
 Layout.regionDragleave = function (this: typeof Layout, _event: EditorEvent) {
