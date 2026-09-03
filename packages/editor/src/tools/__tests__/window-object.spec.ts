@@ -34,12 +34,22 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	el.id = id;
 	el.tabIndex = -1;
 	const frame = el as unknown as TestFrame;
-	frame.open = vi.fn(() => Window.frames.append(frame));
-	frame.close = vi.fn(() => {
-		if (closeResult) {
-			Window.frames.remove(frame);
+	frame.open = vi.fn(() => {
+		if (Window.frames.append(frame)) {
+			frame.classList.add('open');
+			return true;
 		}
-		return closeResult;
+		return false;
+	});
+	frame.close = vi.fn(() => {
+		if (!closeResult) {
+			return false;
+		}
+		if (Window.frames.remove(frame)) {
+			frame.classList.remove('open');
+			return true;
+		}
+		return false;
 	});
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
@@ -326,5 +336,68 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		expect(document.body.style.pointerEvents).toBe('inherit');
 		expect(pointerenter).toHaveBeenCalledTimes(1);
 		expect(enableFocusable).toHaveBeenCalledTimes(1);
+	});
+
+	it('隐藏残留帧压在栈底：关闭可见顶层后应清空帧栈并恢复模态', () => {
+		// 模拟一个曾打开但随后被外部逻辑直接隐藏、残留于帧栈的幽灵窗口
+		const ghost = makeFrame('ghost-hidden');
+		const live = makeFrame('ghost-live');
+		Window.frames.push(ghost);
+		// 幽灵帧把模态挂在打开状态，界面已被锁死
+		document.body.style.pointerEvents = 'none';
+		live.open();
+		expect(Window.frames).toEqual([ghost, live]);
+		expect(document.body.style.pointerEvents).toBe('none');
+
+		Window.close!('ghost-live');
+		expect(Window.frames).toHaveLength(0);
+		expect(document.body.style.pointerEvents).toBe('inherit');
+		expect(ghost.classList.contains('open')).toBe(false);
+	});
+
+	it('再次打开窗口时驱逐栈顶隐藏残留帧', () => {
+		const ghost = makeFrame('hidden-top');
+		const live = makeFrame('hidden-top-live');
+		Window.frames.push(ghost);
+		// 模拟残留帧把界面锁死
+		document.body.style.pointerEvents = 'none';
+
+		Window.open!('hidden-top-live');
+		expect(Window.frames).toEqual([live]);
+		expect(document.body.style.pointerEvents).toBe('none');
+	});
+
+	it('已入栈但失去 open 的窗口重新 open 时恢复到可见且置顶', () => {
+		const a = makeFrame('reopen-a');
+		const b = makeFrame('reopen-b');
+		a.open();
+		b.open();
+		// 模拟 b 被外部直接隐藏但仍留在帧栈
+		b.classList.remove('open');
+		b.close = vi.fn(() => {
+			if (Window.frames.remove(b)) {
+				b.classList.remove('open');
+				return true;
+			}
+			return false;
+		});
+
+		Window.open!('reopen-b');
+		expect(Window.frames).toEqual([a, b]);
+		expect(b.classList.contains('open')).toBe(true);
+		expect(document.body.style.pointerEvents).toBe('none');
+	});
+
+	it('游离于文档外的残留帧在 open 时被清理', () => {
+		const ghost = makeFrame('detached-ghost');
+		const live = makeFrame('detached-live');
+		ghost.open();
+		ghost.remove();
+		expect(document.body.contains(ghost)).toBe(false);
+		document.body.style.pointerEvents = 'none';
+
+		Window.open!('detached-live');
+		expect(Window.frames).toEqual([live]);
+		expect(document.body.style.pointerEvents).toBe('none');
 	});
 });

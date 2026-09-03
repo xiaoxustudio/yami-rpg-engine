@@ -245,8 +245,20 @@ function makeStackFrame(id: string): StackTestFrame {
 	el.id = id;
 	el.tabIndex = -1;
 	const frame = el as unknown as StackTestFrame;
-	frame.open = () => Window.frames.append(frame);
-	frame.close = () => Window.frames.remove(frame);
+	frame.open = () => {
+		if (Window.frames.append(frame)) {
+			frame.classList.add('open');
+			return true;
+		}
+		return false;
+	};
+	frame.close = () => {
+		if (Window.frames.remove(frame)) {
+			frame.classList.remove('open');
+			return true;
+		}
+		return false;
+	};
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);

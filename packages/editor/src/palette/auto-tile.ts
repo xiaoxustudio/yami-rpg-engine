@@ -121,11 +121,11 @@ AutoTile.createFrameData = AutoTileEngine.createFrameData;
 AutoTile.generateFrames = AutoTileEngine.generateFrames;
 AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
-function ensureDomBound() {
-	const canvas = AutoTile.canvas ?? $('#autoTile-canvas');
-	const templateList = AutoTile.templateList ?? $('#autoTile-templates');
-	if (AutoTile.templateList && canvas) return;
-	if (!templateList || !canvas) return;
+function ensureDomBound(): boolean {
+	const canvas = $('#autoTile-canvas');
+	const templateList = $('#autoTile-templates');
+	if (!templateList || !canvas) return false;
+	if (AutoTile.templateList === templateList && AutoTile.canvas === canvas) return false;
 	AutoTile.canvas = canvas;
 	AutoTile.templateList = templateList;
 	AutoTile.nodeList = $('#autoTile-nodes');
@@ -136,41 +136,55 @@ function ensureDomBound() {
 	templateList.updateTextNode = Easing.list_updateTextNode as unknown as (
 		...args: unknown[]
 	) => unknown;
+	return true;
 }
 
-AutoTile.initialize = function (this: typeof AutoTile) {
-	ensureDomBound();
-	if (!AutoTile.templateList) return;
-	this.nodeMaximum = 64;
-	this.frameMaximum = 256;
+function configureLists() {
+	AutoTile.nodeMaximum = 64;
+	AutoTile.frameMaximum = 256;
 
-	const list = this.templateList;
+	const list = AutoTile.templateList;
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => getAutoTileStore().templates);
 	getListConfig(list).updaters.push(list.updateTextNode);
+}
 
-	window.addEventListener('dprchange', this.dprchange);
-	on($('#autoTile'), 'close', this.windowClose);
-	on($('#autoTile'), 'closed', this.windowClosed);
-	on(list, 'keydown', this.templatesKeydown);
+function registerWindowEvents() {
+	const frame = $('#autoTile');
+	if (!frame || !AutoTile.templateList || !AutoTile.nodeList || !AutoTile.frameList) return;
+	window.addEventListener('dprchange', AutoTile.dprchange);
+	on(frame, 'close', AutoTile.windowClose);
+	on(frame, 'closed', AutoTile.windowClosed);
+	on(AutoTile.templateList, 'keydown', AutoTile.templatesKeydown);
 	// list select/popup 经 Vue 模板转发（AutoTile.vue @select/@popup → AutoTile.templates*）
 	// list change 经 Vue 模板转发（AutoTile.vue @change → AutoTile.templatesChange）
-	on(this.nodeList, 'keydown', this.nodesKeydown);
-	on(this.frameList, 'keydown', this.framesKeydown);
-	on(this.frameList, 'doubleclick', this.framesDoubleclick);
+	on(AutoTile.nodeList, 'keydown', AutoTile.nodesKeydown);
+	on(AutoTile.frameList, 'keydown', AutoTile.framesKeydown);
+	on(AutoTile.frameList, 'doubleclick', AutoTile.framesDoubleclick);
+}
+
+AutoTile.initialize = function (this: typeof AutoTile) {
+	if (ensureDomBound()) {
+		configureLists();
+		registerWindowEvents();
+	}
 };
 
 AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: AutoTileOpenParams) {
+	if (ensureDomBound()) {
+		configureLists();
+		registerWindowEvents();
+	}
 	Window.open!('autoTile');
-	ensureDomBound();
 	getAutoTileStore().templates = Object.clone(Data.autotiles);
 	getAutoTileStore().nodeIndex = 0;
 	getAutoTileStore().frameIndex = 0;
 	getAutoTileStore().imageId = image;
 	getAutoTileStore().offsetX = x;
 	getAutoTileStore().offsetY = y;
+	getAutoTileStore().changed = false;
 	this.updateCanvas();
 	this.templateList.update();
 	this.templateList.select(this.getTemplateById(template) ?? getAutoTileStore().templates[0]);

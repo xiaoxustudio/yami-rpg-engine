@@ -81,9 +81,40 @@ Window.initialize = function (this: typeof Window) {
 
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
+	purgeStaleFrames();
 	const element = document.getElementById(id);
 	if (!element) {
+		console.warn('[window] open: element not found:', id);
+		if (modalActive() && frames.length === 0) {
+			deactivateModalMode();
+		}
 		return;
+	}
+
+	if (frames.includes(element) && !element.classList.contains('open')) {
+		// 目标已在栈中但失去 open 状态（隐藏残留）：退栈后重新打开，保证可见与焦点/模态一致
+		const hiddenIndex = frames.indexOf(element);
+		frames.splice(hiddenIndex, 1);
+		getWindowStore().syncStack(frames.map((f) => f.id));
+		console.warn('[window] reopen hidden stacked frame:', element.id);
+		if (frames.length === 0 && modalActive()) {
+			deactivateModalMode();
+		}
+	}
+
+	if (
+		!frames.includes(element) &&
+		frames.length > 0 &&
+		frames[frames.length - 1] instanceof HTMLElement &&
+		!frames[frames.length - 1].classList.contains('open')
+	) {
+		// 栈顶是失去 open 状态的隐藏帧且目标未入栈：先驱逐隐藏帧再打开，避免界面被锁死
+		const ghost = frames.pop();
+		getWindowStore().syncStack(frames.map((f) => f.id));
+		console.warn('[window] purged hidden top frame:', ghost?.id);
+		if (frames.length === 0 && modalActive()) {
+			deactivateModalMode();
+		}
 	}
 
 	const { activeElement } = document;
@@ -108,12 +139,28 @@ Window.open = function (this: typeof Window, id: string) {
 			});
 		}
 		this.afterChange?.();
+	} else if (element.classList.contains('open')) {
+		// 已在栈中且可见：静默 no-op 会掩盖焦点/层级异常，这里补齐置顶与焦点
+		console.warn('[window] open no-op (already stacked & open):', id);
+		const index = frames.indexOf(element);
+		if (index !== frames.length - 1) {
+			frames.splice(index, 1);
+			frames.push(element);
+			getWindowStore().syncStack(frames.map((f) => f.id));
+		}
+		element.style.zIndex = String(frames.length);
+		Window.ambient.update();
+		(element as WindowFrame & { focus(): void }).focus?.();
 	}
 };
 
 Window.close = function (this: typeof Window, id: string | null = null) {
 	const frames = this.frames;
-	if (!frames.length) {
+	purgeStaleFrames();
+	if (frames.length === 0) {
+		if (modalActive()) {
+			deactivateModalMode();
+		}
 		return;
 	}
 
@@ -131,6 +178,9 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		window.scrollTo(0, 0);
 		if (getWindowStore().overlapRoot === element) {
 			this.setPositionMode!('center');
+		}
+		if (modalActive() && frames.length === 0) {
+			deactivateModalMode();
 		}
 		this.afterChange?.();
 	}
@@ -317,13 +367,32 @@ for (const key of windowBridgeKeys) {
 
 const activateModalMode = (): void => {
 	document.body.style.pointerEvents = 'none';
-	Title.pointermove!({ target: null });
-	Window.saveActiveElement!();
-	Layout.disableFocusableElements();
-	document.activeElement!.blur();
+	// 模态激活必须异常安全：body 已锁死后若中途抛错（懒加载代理未就绪等），
+	// 键盘接管不会执行，ESC 将失效导致界面永久锁死。逐段兜底，保证关键步骤必达。
+	try {
+		Title.pointermove!({ target: null });
+	} catch (e: unknown) {
+		console.error('[window] activate Title.pointermove error:', e);
+	}
+	try {
+		Window.saveActiveElement!();
+	} catch (e: unknown) {
+		console.error('[window] activate saveActiveElement error:', e);
+	}
+	try {
+		Layout.disableFocusableElements();
+	} catch (e: unknown) {
+		console.error('[window] activate disableFocusableElements error:', e);
+	}
+	try {
+		document.activeElement!.blur();
+	} catch (e: unknown) {
+		console.error('[window] activate blur error:', e);
+	}
 	for (const handler of getWindowKeydowns()) {
 		window.removeEventListener('keydown', handler);
 	}
+	window.removeEventListener('keydown', Window.keydown!);
 	window.addEventListener('keydown', Window.keydown!);
 };
 
@@ -351,12 +420,46 @@ const deactivateModalMode = (): void => {
 };
 
 const frames = Window.frames;
+
+const modalActive = (): boolean => document.body.style.pointerEvents === 'none';
+
+// 帧栈一致性：清除游离在栈内但已不在文档中的幽灵帧（DOM 被重建/卸载）；
+// 当刚关闭的是一个真实可见窗口（allowHidden）时，也把下方已丢失 open 状态的
+// 隐藏帧一并驱逐，避免不可见帧残留在栈中把界面锁死。
+const purgeStaleFrames = (allowHidden = false): void => {
+	const stale: string[] = [];
+	for (let i = frames.length - 1; i >= 0; i--) {
+		const frame = frames[i];
+		const detached = !(frame instanceof HTMLElement) || !document.contains(frame);
+		const hidden =
+			allowHidden && frame instanceof HTMLElement && !frame.classList.contains('open');
+		if (detached || hidden) {
+			stale.push(frame?.id ?? '?');
+			frames.splice(i, 1);
+		}
+	}
+	if (stale.length === 0) return;
+	console.warn('[window] purged stale frames:', stale.join(', '));
+	try {
+		getWindowStore().syncStack(frames.map((f) => f.id));
+	} catch (error) {
+		console.error('[window] frames.syncStack error:', error);
+	}
+	if (frames.length === 0 && modalActive()) {
+		deactivateModalMode();
+	} else if (frames.length > 0) {
+		frames[frames.length - 1].focus();
+	}
+};
+
 Object.defineProperty(frames, 'append', {
 	configurable: true,
 	value: (element: HTMLElement) => {
 		if (frames.includes(element)) {
+			console.warn('[window] append duplicate:', element.id);
 			return false;
 		}
+		purgeStaleFrames();
 		try {
 			if (frames.length === 0) {
 				activateModalMode();
@@ -384,7 +487,9 @@ Object.defineProperty(frames, 'remove', {
 			return false;
 		}
 		try {
+			const closingOpen = element.classList.contains('open');
 			frames.splice(index, 1);
+			purgeStaleFrames(closingOpen);
 			getWindowStore().syncStack(frames.map((f) => f.id));
 			if (frames.length === 0) {
 				deactivateModalMode();

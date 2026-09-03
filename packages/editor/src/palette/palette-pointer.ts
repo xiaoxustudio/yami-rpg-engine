@@ -325,65 +325,70 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
-		// 鎵撳紑绐楀彛鏃惰Е鍙戠殑blur浜嬩欢浼氬鑷村啀娆℃墽琛宲ointerup 鍥犳鎻愬墠閲嶇疆dragging鏉ラ伩鍏嶉噸澶嶆墽琛?		this.dragging = null;
-		switch (dragging.mode) {
-			case 'select': {
-				const { x, y, width, height } = this.marquee;
-				this.selectTiles(x, y, width, height);
-				this.screen.endScrolling();
-				removeScrollListener(this.screen);
-				Scene.marquee.style.pointerEvents = 'inherit';
-				break;
-			}
-			case 'ready-to-scroll':
-				if (event.target === this.marquee) {
-					this.marqueePopup(event);
+		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
+		this.dragging = null;
+		try {
+			switch (dragging.mode) {
+				case 'select': {
+					const { x, y, width, height } = this.marquee;
+					this.selectTiles(x, y, width, height);
+					this.screen.endScrolling();
+					removeScrollListener(this.screen);
+					Scene.marquee.style.pointerEvents = 'inherit';
+					break;
 				}
-				break;
-			case 'scroll':
-				this.screen.endScrolling();
-				Cursor.close('cursor-grab');
-				break;
-			case 'edit':
-				if (dragging.active) {
+				case 'ready-to-scroll':
+					if (event.target === this.marquee) {
+						this.marqueePopup(event);
+					}
+					break;
+				case 'scroll':
+					this.screen.endScrolling();
+					Cursor.close('cursor-grab');
+					break;
+				case 'edit':
+					if (dragging.active) {
+						this.marquee.customUnselect('source');
+						this.editAutoTile(dragging.startIndex);
+					}
+					break;
+				case 'increase-priority':
+				case 'ready-to-decrease-priority':
+					if (dragging.active) {
+						const { priorities } = dragging;
+						const i = dragging.startIndex;
+						const step = event.button === 0 ? 1 : 9;
+						priorities[i] = (priorities[i] + step) % 10;
+						this.requestRendering();
+						Scene.requestRendering!();
+						File.planToSave!(this.meta);
+					}
+					break;
+				case 'increase-tag':
+				case 'ready-to-decrease-tag':
+					break;
+				case 'ready-to-increase-terrain':
+					this.setTerrain(dragging.startX, dragging.startY, 1);
+					break;
+				case 'ready-to-shift':
 					this.marquee.customUnselect('source');
 					this.editAutoTile(dragging.startIndex);
-				}
-				break;
-			case 'increase-priority':
-			case 'ready-to-decrease-priority':
-				if (dragging.active) {
-					const { priorities } = dragging;
-					const i = dragging.startIndex;
-					const step = event.button === 0 ? 1 : 9;
-					priorities[i] = (priorities[i] + step) % 10;
+					break;
+				case 'shift':
+					this.marquee.customShiftAutoTile();
+					this.screen.endScrolling();
+					removeScrollListener(this.screen);
 					this.requestRendering();
 					Scene.requestRendering!();
+					Scene.marquee.style.pointerEvents = 'inherit';
 					File.planToSave!(this.meta);
-				}
-				break;
-			case 'increase-tag':
-			case 'ready-to-decrease-tag':
-				break;
-			case 'ready-to-increase-terrain':
-				this.setTerrain(dragging.startX, dragging.startY, 1);
-				break;
-			case 'ready-to-shift':
-				this.marquee.customUnselect('source');
-				this.editAutoTile(dragging.startIndex);
-				break;
-			case 'shift':
-				this.marquee.customShiftAutoTile();
-				this.screen.endScrolling();
-				removeScrollListener(this.screen);
-				this.requestRendering();
-				Scene.requestRendering!();
-				Scene.marquee.style.pointerEvents = 'inherit';
-				File.planToSave!(this.meta);
-				break;
+					break;
+			}
+		} finally {
+			// 无论拖拽处理是否抛错都必须移除全局监听，否则残留监听会在后续任意点击中再次触发
+			window.removeEventListener('pointerup', this.pointerup);
+			window.removeEventListener('pointermove', this.pointermove);
 		}
-		window.removeEventListener('pointerup', this.pointerup);
-		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Palette);
 
