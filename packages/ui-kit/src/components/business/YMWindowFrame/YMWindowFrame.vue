@@ -190,6 +190,11 @@ const open = (): void => {
 			element.dispatchEvent(new Event('resize'));
 			window.addEventListener('resize', state.windowResize!);
 		}
+	} else if (!hasClass(element, 'open')) {
+		addClass(element, 'open');
+		W?.ambient?.update();
+		element.style.zIndex = String(W?.frames?.length ?? 0);
+		element.dispatchEvent(new Event('open'));
 	}
 };
 
