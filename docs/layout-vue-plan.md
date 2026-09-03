@@ -157,11 +157,11 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - 二次同 scheme 加载（else 分支）与命令式共用同一恢复逻辑（不重建组树）；重载（先删 `page.scheme`）会先卸载旧树再重建单根。
 - 金标准 `layout-vue-scheme-load.spec.ts`（6 用例）：Vue 首载 vs 命令式首载逐叶状态/叶子宿主类/激活/palette 清空一致；默认关仍走命令式；点击+二次加载 lastValue 恢复且组树不重建；重载卸载重建单根；跨工作区 pageTargets 归属；双路快照等价。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 
-**M3b-2b（剩余，LayoutPanel 接线，待真机冒烟阶段实施）**：
+**M3b-2b（设计定稿，接线实施待真机冒烟阶段）**：
+- 整壳 Teleport 机制已探针验证（`layout-shell-teleport.spec.ts` 4 用例）：①整壳 `.page-frame`（壳+内容）经 LayoutPalettePage 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、`collectPageTargets` DOM walk 仍能发现归属；②nav-item Teleport 顺序 = palette 声明序，引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻可收敛到 tabs 序且幂等、nav.write 选中不受影响；③visible 类随节点搬家——真实序列依赖离开工作区前 `saveNavStates → write(nav,null) → switch(null)` 先清 visible，探针已按此前置模拟并收敛。
+- 接线设计定稿见**附录 F**：12 页/12 nav-item 整壳 Teleport、归属源（pageTargets 扩展 tabTargets）、排序 pass 收敛点、clear 终版语义、Vue 分支 else 恢复改数据驱动。
 - **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支 loadLayoutScheme/pageSwitch 异步时序首次进入各工作区须真机验证（附录 E.2）。
-- LayoutPanel 12 页接入 LayoutPalettePage（保持 `.page-frame` 结构与 visible class 驱动，见附录 C.1）。
-- `clear(page)` 的 `textContent=''` 替换为「只卸载 group 树、保留 page-frame 内容」的终版语义（页内容经 Teleport 归属后 palette 不再被摧毁）。
-- 验证：M1/M3a/M3b-1/M3b-2a 断言双路径跑 + 真机冒烟清单（附录 E.3）；全程默认关、独立 PR 可回滚。
+- 验证：M1/M3a/M3b-1/M3b-2a 断言双路径跑 + LayoutPanel 接线后真机冒烟清单（附录 E.3/F.5）；全程默认关、独立 PR 可回滚。
 
 ### M4：交互数据化
 
@@ -333,4 +333,36 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 ### E.3 真机冒烟清单（M3b-2 验收）
 1. 默认（关）：现状全量行为回归——五工作区进入/切换/往返、页签点击、拖 tab 跨组、分割、缩放、inspector 嵌套页、GL.canvas 各画布正常。
 2. 开：`YM_LAYOUT_VUE_RENDER=1` 启动→首次进入 directory：组树为 Vue 渲染、palette 仍在 DOM（隐藏宿主）、页内容经 Teleport 出现在 group manager；页签点击/拖拽后 DOM 归属与 store.pageTargets 一致；切 scene/ui/animation/particle 往返不重建页面（mounted 计数 1）；saveLayoutScheme 往返保真（M1 基线语义）。
-3. 回归护栏：layout __tests__（含 M3b-1 双路等价 6 用例）在开关两种取值下都跑；editor/ui-kit 全量；lint/typecheck/vue-tsc 门禁。
+3. 回归护栏：layout __tests__（含 M3b-1/M3b-2a 双路等价 + M3b-2b 探针）在开关两种取值下都跑；editor/ui-kit 全量；lint/typecheck/vue-tsc 门禁。
+
+## 附录 F：M3b-2b LayoutPanel 接线设计定稿（2026-09-03，探针验证后）
+
+### F.0 目标模型：整壳 Teleport（消灭命令式 reparent）
+- LayoutPanel 的 12 个 palette 页（`.page-frame` 壳 + 内容）与 12 个 nav-item 的 **vnode 永驻 LayoutPanel palette 子树**；DOM 归属由 LayoutPalettePage（slot = 整壳节点，`:to = store.pageTargets[value]`/`tabTargets[value]`）显式搬家 → Vue 始终知道页/页签的 DOM 去向，命令式 appendChild 搬运消失。
+- 页分类沿用 C.1：`inspector` 页整页不动（内层 `#inspector-page-manager` 不被搬）；`scene/ui/animation/particle` 画布页整包对待；列表页/空容器页同机制。
+
+### F.1 归属源
+- **页归属**（`store.pageTargets`，value → group-manager）：整壳帧物理进入 manager.children 后 `collectPageTargets` DOM walk 仍成立（探针 A-1），收敛点不变（loadLayoutScheme/navDrop 尾 `syncPageTargets`）。
+- **页签归属**（新增 `store.tabTargets`，value → leaf nav）：LayoutPalettePage 扩展或新增对应包装组件；同一 DOM walk 一并收集 `{value→manager}` 与 `{value→nav}`（`collectPageTargets` 返回扩展或新增 `collectNavTargets`）。
+- 跨工作区：归属表按当前激活工作区根树刷新 → Teleport 目标切换 = 页/页签搬到新工作区组（同探针「换归属只搬家」）。
+
+### F.2 nav 排序 pass
+- Teleport 内容进入同一 target 的顺序 = palette 声明序，与 group.tabs 可不同 → 在归属收敛后执行 `orderLeafNav(group)`：按 `group.tabs` 顺序对该 leaf nav `appendChild`（探针 B：幂等、任意时刻可收敛、对 Teleport 内容安全、write/selected 不受影响）。
+- 调用点：loadLayoutSchemeVue 尾部、`updateGroupTabs` 归属同步处、navDrop 跨组后（M4 收口前先用此 pass 兜底）。
+
+### F.3 clear 终版语义
+- Vue 分支不再 `clear(page)`（textContent=''）整页摧毁（会杀掉 palette/Telport 锚点/引擎 canvas）；首次/重载 = 仅 `mountVueGroupTree` 前 unmount 旧组树，保留宿主页内其它内容。
+- 命令式 else 恢复（append items 回组）在 Vue 分支停用：二次进入 = 仅重算归属 + 刷 targets + 按 `nav.lastValue` 激活；组树不重建（M3b-2a 已证根节点对象不变）。
+
+### F.4 已知点与硬约束
+- **visible 随节点搬家**（探针 A-2）：真实工作区切换前引擎经 `saveNavStates → write(nav,null) → navWrite → switch(null)` 清 visible；接线时任何归属变化前须保证已清，或激活首 tab 前先 `switch(null)`。
+- 引擎 `Layout.items` 仍以「每 value 一个 nav-item/page」为单位做配对与拖拽——Teleport 只搬 DOM 不改节点身份，配对保持。
+- 画布/GL 模块依赖 DOM 常驻：Teleport 不重建即满足（挂载计数恒 1 语义），引擎 canvas insert 逻辑仍走 `pageSwitch`（时序见 E.2）。
+- 所有机制先 jsdom 结构断言（layout-shell-teleport.spec.ts 等），LayoutPanel 真机改动独立 PR 默认关。
+
+### F.5 M3b-2b 接线真机验收（增量）
+1. 开关开进入 directory：目录内 12 页壳仍在 palette（隐藏宿主），可见页/页签出现在各组 manager/nav；首 tab 激活、selected/visible 正确。
+2. 页签点击/拖跨组后：DOM 归属与 store.pageTargets/tabTargets 一致，nav 顺序 = tabs（排序 pass 生效），页/页签节点身份不变。
+3. scene/ui/animation/particle 画布页往返：挂载计数 1、GL.canvas 正常、dpr/尺寸 resize 正常；inspector 嵌套页不受影响。
+4. saveLayoutScheme/saveToConfig 往返保真；重启恢复（loadFromConfig）后布局一致。
+5. 关回默认开关：与现状行为逐项一致（回归护栏）。
