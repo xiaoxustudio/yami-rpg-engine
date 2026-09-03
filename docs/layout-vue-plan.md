@@ -149,12 +149,19 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - 金标准 `layout-vue-leaf.spec.ts`（6 用例）：Vue 宿主 vs 命令式 `loadLayoutScheme` 的结构签名/叶子宿主类/首载激活/页签点击切换双路等价 + 水合 expando 与数据树一致 + unmount/重挂。layout __tests__ 58→64 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 - 接线所需前置组件均在册：`layout-page-targets.ts` + store `pageTargets`（Teleport :to 输入）、`LayoutPalettePage.vue`（页面 Teleport 组件）、`layout-teleport-probe.spec.ts`（风险 R1/R2 jsdom 试验台）。
 
-**M3b-2（剩余，渲染接线，待真机冒烟阶段实施）**：
-- 双路开关（如 `YM_LAYOUT_VUE_RENDER`，默认命令式）：`createGroups/loadLayoutScheme` 结构创建分支换 `mountVueGroupTree`（host = 宿主 page、handlers = Layout.navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown）；激活首 tab 与命令式一致 `write(nav, tabs[0])`、页归属同步 `syncPageTargets`。
-- **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支的 loadLayoutScheme/pageSwitch 需 async 化，首次进入各工作区的时序须真机验证（附录 E.2）。
+**M3b-2（分两半交付）**：
+
+**M3b-2a（已交付）引擎双路分支（默认关）**：
+- 双路开关落地：`layout.ts` 模块级 `YM_LAYOUT_VUE_RENDER`（localStorage，默认关；`isLayoutVueRenderEnabled`/`setLayoutVueRenderEnabled`/`awaitVueLayoutLoad` 供测试/时序方使用）。
+- `loadLayoutScheme` 首载分支：开关开时改走异步 `Layout.loadLayoutSchemeVue`（fire-and-forget + `.catch`，`lastVueSchemeLoad` 记录供等待）——先 unmount 该宿主 page 上旧的 Vue 组树（`vueTreeHandles` WeakMap），`clear(page)` 后 `mountVueGroupTree(page, scheme, {navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown})` 渲染+水合，再把 palette 页/页签搬进叶子宿主、激活首 tab、`updateGroups`、`syncPageTargets`——尾部与命令式首载逐点等价；**命令式分支一字未动**（开关关时零时序变化）。
+- 二次同 scheme 加载（else 分支）与命令式共用同一恢复逻辑（不重建组树）；重载（先删 `page.scheme`）会先卸载旧树再重建单根。
+- 金标准 `layout-vue-scheme-load.spec.ts`（6 用例）：Vue 首载 vs 命令式首载逐叶状态/叶子宿主类/激活/palette 清空一致；默认关仍走命令式；点击+二次加载 lastValue 恢复且组树不重建；重载卸载重建单根；跨工作区 pageTargets 归属；双路快照等价。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
+
+**M3b-2b（剩余，LayoutPanel 接线，待真机冒烟阶段实施）**：
+- **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支 loadLayoutScheme/pageSwitch 异步时序首次进入各工作区须真机验证（附录 E.2）。
 - LayoutPanel 12 页接入 LayoutPalettePage（保持 `.page-frame` 结构与 visible class 驱动，见附录 C.1）。
-- `clear(page)` 的 `textContent=''` 替换为「只卸载 group 树、保留 page-frame 内容」（否则摧毁 Teleport 锚点/引擎 canvas）。
-- 验证：M1/M3a/M3b-1 断言双路径跑 + 真机冒烟清单（附录 E.3）；全程默认关、独立 PR 可回滚。
+- `clear(page)` 的 `textContent=''` 替换为「只卸载 group 树、保留 page-frame 内容」的终版语义（页内容经 Teleport 归属后 palette 不再被摧毁）。
+- 验证：M1/M3a/M3b-1/M3b-2a 断言双路径跑 + 真机冒烟清单（附录 E.3）；全程默认关、独立 PR 可回滚。
 
 ### M4：交互数据化
 
@@ -308,19 +315,20 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 - 持久层 `config.layout` 无 active/lastValue（saveLayoutScheme 只写 end/split/children/tabs）→ 树模型分「持久 scheme」与「运行时树（含 active/lastValue）」两层。
 - **M2b 走 mirror（DOM 为事实源，收敛点后反序列化快照）改动面最小**：layout.ts 实现与时序不动，7 个函数尾部插入快照 + saveToConfig 从镜像树落盘；把数据树当事实源则需重写整个 1555 行写入路径（R 面大）。M3 再把渲染源切到镜像树。
 
-## 附录 E：M3b-2 渲染接线实施要点（2026-09-03，M3b-1 落地后）
+## 附录 E：M3b-2 渲染接线实施要点（2026-09-03；M3b-1 后设计，M3b-2a 已落地）
 
 ### E.1 门控与分支
-- 开关常量建议放 `engine/layout/layout.ts` 顶部（`YM_LAYOUT_VUE_RENDER`，localStorage 读取，默认 off；jsdom 无 localStorage 时回退 false）。
-- `createGroups`/`loadLayoutScheme` 双路：命令式路径**一字不动**（兜底始终在）；Vue 路径仅当开关开：
+- 开关已落地在 `engine/layout/layout.ts` 顶部：`YM_LAYOUT_VUE_RENDER`（localStorage 读取，默认 off；jsdom 无 localStorage 时回退 false），导出 `isLayoutVueRenderEnabled`/`setLayoutVueRenderEnabled`/`awaitVueLayoutLoad`（M3b-2a）。
+- `loadLayoutScheme` 首载双路：命令式路径**一字不动**（兜底始终在）；Vue 路径（M3b-2a）仅当开关开：
   1. 宿主 page 上先 `unmount` 掉上一棵 Vue 组树（首载时无）；
   2. `await mountVueGroupTree(page, scheme, handlers)`，handlers 绑定 `Layout.navWrite/navPointerdown/navDragstart/navDragend/borderPointerdown`（与 createGroupContent/createGroupBorder 同接线）；
-  3. 按 `handle.leaves` 把 items（palette 页/页签）搬入叶子 nav/manager——**Vue 模式下 palette 不再被 clear 摧毁**，页内容改为经 LayoutPalettePage Teleport 归属（C.5#3）；
+  3. 按 `handle.leaves` 把 items（palette 页/页签）搬入叶子 nav/manager——M3b-2a 与命令式一致 `clear(page)` 后重建；**M3b-2b 终版语义**：palette 不再被 clear 摧毁，页内容改为经 LayoutPalettePage Teleport 归属（C.5#3）；
   4. 激活首 tab `write(nav, tabs[0])`、`updateGroups`、`syncPageTargets`（与命令式 loadLayoutScheme 尾部一致）。
 
 ### E.2 异步时序（真机重点验证）
-- .vue 叶子的 read/write/on/switch/index/active 在 onMounted（nextTick 后）才可用 → Vue 分支 `loadLayoutScheme` 必须 async；`pageSwitch`（layout.ts L869-975）里对它同步调用后还有 GL.canvas insert/`afterChange`，切 Vue 分支时这些后续步骤要等 mount 完成（await 链或排队到 promise 回调）。
-- 命令式兜底路径保持同步（开关默认关时零时序变化）。冒烟时重点测：首次进入每个工作区（directory/scene/ui/animation/particle）、快速往返切换、拖拽/缩放期间开关恒关。
+- M3b-2a 已落地：`loadLayoutScheme` Vue 分支 fire-and-forget 调用 `loadLayoutSchemeVue`（内部 `await mountVueGroupTree`，nextTick 后 API 才可用），并把 promise 记到 `lastVueSchemeLoad`，测试/调用方可 `await awaitVueLayoutLoad()` 等完成。
+- `pageSwitch`（layout.ts L869-975）对 loadLayoutScheme 同步调用后还有 GL.canvas insert/`afterChange`，切 Vue 分支时这些后续步骤要等 mount 完成（await 链或排队到 promise 回调）——首次进入每个工作区（directory/scene/ui/animation/particle）、快速往返切换时序真机验证。
+- 命令式兜底路径保持同步（开关默认关时零时序变化）。拖拽/缩放期间开关恒关。
 
 ### E.3 真机冒烟清单（M3b-2 验收）
 1. 默认（关）：现状全量行为回归——五工作区进入/切换/往返、页签点击、拖 tab 跨组、分割、缩放、inspector 嵌套页、GL.canvas 各画布正常。

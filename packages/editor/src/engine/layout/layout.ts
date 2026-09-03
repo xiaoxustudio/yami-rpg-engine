@@ -19,9 +19,10 @@ import {
 	createPageManagerElement as createPageManager,
 	type PageManagerApi
 } from '@ui-kit';
-import { toLayoutScheme } from './layout-scheme';
+import { toLayoutScheme, type LayoutSchemeData } from './layout-scheme';
 import { deserializeGroupElement } from './layout-deserialize';
 import { collectPageTargets } from './layout-page-targets';
+import { mountVueGroupTree, type VueGroupTreeHandle } from './layout-vue-tree';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '../webgl/webgl-init.ts';
@@ -35,6 +36,34 @@ import { Title } from '@app/title/title-bar.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { h, render, type VNode } from 'vue';
+
+// M3b-2 双路开关（docs/layout-vue-plan.md 附录 E.1）：默认命令式路径；打开后
+// loadLayoutScheme 首载改走 Vue 渲染（mountVueGroupTree）。jsdom/无 localStorage 时回退 false。
+const layoutVueRenderGate = (() => {
+	try {
+		return /^(1|true|on)$/i.test(localStorage.getItem('YM_LAYOUT_VUE_RENDER') ?? '');
+	} catch {
+		return false;
+	}
+})();
+
+let vueRenderEnabled = layoutVueRenderGate;
+// 每个宿主 page 上挂载中的 Vue 组树（再次首载/切布局时先 unmount 再重建）
+const vueTreeHandles = new WeakMap<HTMLElement, VueGroupTreeHandle>();
+// 最近一次 Vue 渲染加载（供 loadLayoutScheme fire-and-forget 后测试/时序方等待）
+let lastVueSchemeLoad: Promise<void> | null = null;
+
+export function isLayoutVueRenderEnabled(): boolean {
+	return vueRenderEnabled;
+}
+
+export function setLayoutVueRenderEnabled(enabled: boolean): void {
+	vueRenderEnabled = enabled;
+}
+
+export function awaitVueLayoutLoad(): Promise<void> {
+	return lastVueSchemeLoad ?? Promise.resolve();
+}
 
 interface LayoutScheme {
 	end: number;
@@ -141,6 +170,9 @@ export const Layout: DynamicShape = {
 	saveNavStates: null as (() => void) | null,
 	saveLayoutScheme: null as ((rootGroup?: LayoutGroupElement) => LayoutScheme) | null,
 	loadLayoutScheme: null as ((key?: string) => void) | null,
+	loadLayoutSchemeVue: null as
+		| ((key: string, scheme: LayoutScheme, page: HTMLElement) => Promise<void>)
+		| null,
 	saveToConfig: null as
 		| ((config: { layout?: Record<string, LayoutScheme> | null }) => void)
 		| null,
@@ -813,6 +845,16 @@ Layout.loadLayoutScheme = function (key?: string) {
 	}
 	if (page.scheme !== scheme) {
 		page.scheme = scheme;
+		if (vueRenderEnabled) {
+			// Vue 渲染路径（默认关）：结构/叶子宿主由 LayoutTreeView(.vue) 渲染并水合，
+			// 语义与下方命令式首载分支等价（M3b-2，见 docs/layout-vue-plan.md）。
+			const pending = this.loadLayoutSchemeVue!(key ?? '', scheme, page);
+			pending.catch((error: unknown) => {
+				console.warn('[loadLayoutScheme(vue)] failed:', error);
+			});
+			lastVueSchemeLoad = pending;
+			return;
+		}
 		this.createGroups!(scheme, clear(page));
 		this.updateGroups!();
 		const groups = this.getKeyGroups!();
@@ -834,6 +876,54 @@ Layout.loadLayoutScheme = function (key?: string) {
 		for (const { nav } of groups) {
 			write(nav, nav.lastValue);
 		}
+	}
+	syncPageTargets(this.manager);
+};
+
+// 与 loadLayoutScheme 首载分支语义等价的 Vue 渲染加载（M3b-2，默认关）。
+// 宿主 page 上已有 Vue 组树时先 unmount；清空 page 后 mountVueGroupTree 渲染+水合，
+// 再把 palette 的页/页签搬进叶子宿主并激活各 group 首 tab，尾部与命令式一致（syncPageTargets）。
+Layout.loadLayoutSchemeVue = async function (
+	_key: string,
+	scheme: LayoutScheme,
+	page: HTMLElement
+) {
+	// 全局串行化：上一棵 Vue 组树加载完成后再开始本次（快速切换工作区时避免交错挂载）。
+	const previous = lastVueSchemeLoad;
+	if (previous !== null) {
+		await previous.catch(() => {});
+	}
+	const prior = vueTreeHandles.get(page);
+	if (prior !== undefined) {
+		prior.unmount();
+		vueTreeHandles.delete(page);
+	}
+	clear(page);
+	const handle = await mountVueGroupTree(page, scheme as LayoutSchemeData, {
+		navWrite: this.navWrite!,
+		navPointerdown: this.navPointerdown!,
+		navDragstart: this.navDragstart!,
+		navDragend: this.navDragend!,
+		borderPointerdown: this.borderPointerdown!
+	});
+	vueTreeHandles.set(page, handle);
+
+	const items = this.items!;
+	for (const leaf of handle.leaves) {
+		for (const tab of leaf.tabs) {
+			const item = items[tab];
+			if (item) {
+				leaf.nav.appendChild(item);
+				leaf.manager.appendChild(item.page!);
+			} else {
+				console.warn('missing item for tab:', tab);
+			}
+		}
+	}
+	this.updateGroups!();
+	const groups = this.getKeyGroups!();
+	for (const group of groups) {
+		write(group.nav, group.tabs[0]);
 	}
 	syncPageTargets(this.manager);
 };
