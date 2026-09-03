@@ -18,61 +18,89 @@
 		</div>
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
+			<LayoutPaletteHost>
 				<NavBar id="layout-nav">
 					<div class="nav-item" value="project">
+					<PaletteNode value="project" source="tab">
 						<div class="nav-icon">&#xf07b;</div>
 						<div class="nav-text" id="nav-project">Project</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="scene">
+					<PaletteNode value="scene" source="tab">
 						<div class="nav-icon">&#xf26c;</div>
 						<div class="nav-text" id="nav-scene">Scene</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="scene-object">
+					<PaletteNode value="scene-object" source="tab">
 						<div class="nav-icon">&#xf1b2;</div>
 						<div class="nav-text" id="nav-scene-object">Object</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="ui">
+					<PaletteNode value="ui" source="tab">
 						<div class="nav-icon">&#xf26c;</div>
 						<div class="nav-text" id="nav-ui">UI</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="ui-element">
+					<PaletteNode value="ui-element" source="tab">
 						<div class="nav-icon">&#xf1b2;</div>
 						<div class="nav-text" id="nav-ui-element">Element</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="animation">
+					<PaletteNode value="animation" source="tab">
 						<div class="nav-icon">&#xf26c;</div>
 						<div class="nav-text" id="nav-animation">Animation</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="animation-motion">
+					<PaletteNode value="animation-motion" source="tab">
 						<div class="nav-icon">&#xf1b2;</div>
 						<div class="nav-text" id="nav-animation-motion">Motion</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="animation-timeline">
+					<PaletteNode value="animation-timeline" source="tab">
 						<div class="nav-icon">&#xf017;</div>
 						<div class="nav-text" id="nav-animation-timeline">Timeline</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="animation-easing">
+					<PaletteNode value="animation-easing" source="tab">
 						<div class="nav-icon">&#xf201;</div>
 						<div class="nav-text" id="nav-animation-easing">Easing</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="particle">
+					<PaletteNode value="particle" source="tab">
 						<div class="nav-icon">&#xf26c;</div>
 						<div class="nav-text" id="nav-particle">Particle</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="particle-layer">
+					<PaletteNode value="particle-layer" source="tab">
 						<div class="nav-icon">&#xf1b2;</div>
 						<div class="nav-text" id="nav-particle-layer">Layer</div>
+					</PaletteNode>
 					</div>
 					<div class="nav-item" value="inspector">
+					<PaletteNode value="inspector" source="tab">
 						<div class="nav-icon">&#xf05a;</div>
 						<div class="nav-text" id="nav-inspector">Inspector</div>
+					</PaletteNode>
 					</div>
 				</NavBar>
 				<PageManager id="layout-page-manager">
 					<div class="page-frame" id="project" value="project">
+					<PaletteNode value="project" source="page">
 						<div class="file-browser" id="project-browser"></div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="scene" value="scene">
+					<PaletteNode value="scene" source="page">
 						<div class="box" id="scene-head" @pointerdown="onSceneHeadPointerdown">
 							<div
 								class="box"
@@ -222,8 +250,10 @@
 							</div>
 							<div class="text" id="scene-info"></div>
 						</div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="scene-object" value="scene-object">
+					<PaletteNode value="scene-object" source="page">
 						<div class="box" id="scene-list-head">
 							<TextBox id="scene-searcher" name="search"></TextBox>
 						</div>
@@ -238,8 +268,10 @@
 							@open="onSceneListOpen"
 							@change="onSceneListChange"
 						></TreeList>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="ui" value="ui">
+					<PaletteNode value="ui" source="page">
 						<div class="box" id="ui-head" @pointerdown="onUiHeadPointerdown">
 							<div
 								class="box"
@@ -341,8 +373,10 @@
 								></MarqueeArea>
 							</div>
 						</div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="ui-element" value="ui-element">
+					<PaletteNode value="ui-element" source="page">
 						<div class="box" id="ui-list-head">
 							<TextBox id="ui-searcher" name="search"></TextBox>
 						</div>
@@ -357,8 +391,10 @@
 							@open="onUiListOpen"
 							@change="onUiListChange"
 						></TreeList>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="animation" value="animation">
+					<PaletteNode value="animation" source="page">
 						<div
 							class="box"
 							id="animation-head"
@@ -450,8 +486,10 @@
 								</div>
 							</div>
 						</div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="animation-motion" value="animation-motion">
+					<PaletteNode value="animation-motion" source="page">
 						<div class="box" id="animation-list-head">
 							<TextBox id="animation-searcher" name="search"></TextBox>
 						</div>
@@ -466,8 +504,10 @@
 							@popup="onAnimationListPopup"
 							@change="onAnimationListChange"
 						></TreeList>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="animation-timeline" value="animation-timeline">
+					<PaletteNode value="animation-timeline" source="page">
 						<div class="box" id="animation-timeline-head">
 							<div
 								class="box"
@@ -536,8 +576,10 @@
 								<div class="box" id="animation-timeline-pointer"></div>
 							</div>
 						</div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="animation-easing" value="animation-easing">
+					<PaletteNode value="animation-easing" source="page">
 						<div class="box" id="animation-easing-head">
 							<div
 								class="item toolbar-item"
@@ -551,8 +593,10 @@
 							></SelectBox>
 						</div>
 						<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="particle" value="particle">
+					<PaletteNode value="particle" source="page">
 						<div
 							class="box"
 							id="particle-head"
@@ -630,16 +674,20 @@
 							</div>
 							<div class="text" id="particle-info"></div>
 						</div>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="particle-layer" value="particle-layer">
+					<PaletteNode value="particle-layer" source="page">
 						<TreeList
 							id="particle-list"
 							padded
 							:node-extras="particleNodeExtras"
 							:node-icon-renderer="particleNodeIcon"
 						></TreeList>
+					</PaletteNode>
 					</div>
 					<div class="page-frame" id="inspector" value="inspector">
+					<PaletteNode value="inspector" source="page">
 						<PageManager id="inspector-page-manager" tabindex="-1">
 							<div
 								class="page-frame"
@@ -805,8 +853,10 @@
 								id="particleLayer-vue-mount"
 							></div>
 						</PageManager>
+					</PaletteNode>
 					</div>
 				</PageManager>
+			</LayoutPaletteHost>
 			</div>
 		</div>
 		<div class="page-frame" value="scene"></div>

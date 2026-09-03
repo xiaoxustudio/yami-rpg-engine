@@ -1,8 +1,8 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 Vue 化已交付；M3b-2 接线起待真机冒烟，见附录 E）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + **LayoutPanel 12 页整壳接线**均已交付（接线当前未提交）；剩余 F.5 真机冒烟验收，见附录 F）
 - 日期：2026-09-03
-- 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`packages/editor/src/engine/layout/layout.ts`（1555 行）、`packages/editor/src/stores/layout.ts`、`packages/ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
+- 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`engine/layout/layout.ts`（M3b-2 后 ~1815 行，文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
 
 ---
@@ -157,10 +157,10 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - 二次同 scheme 加载（else 分支）与命令式共用同一恢复逻辑（不重建组树）；重载（先删 `page.scheme`）会先卸载旧树再重建单根。
 - 金标准 `layout-vue-scheme-load.spec.ts`（6 用例）：Vue 首载 vs 命令式首载逐叶状态/叶子宿主类/激活/palette 清空一致；默认关仍走命令式；点击+二次加载 lastValue 恢复且组树不重建；重载卸载重建单根；跨工作区 pageTargets 归属；双路快照等价。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 
-**M3b-2b（引擎侧已交付，LayoutPanel 接线待真机冒烟阶段）**：
+**M3b-2b（引擎 Teleport 模式 + LayoutPanel 整壳接线已落地；剩余 F.5 真机冒烟验收）**：
 - 整壳 Teleport 机制已探针验证（`layout-shell-teleport.spec.ts` 4 用例）：①整壳 `.page-frame`（壳+内容）经 LayoutPalettePage 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、`collectPageTargets` DOM walk 仍能发现归属；②nav-item Teleport 顺序 = palette 声明序，引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻可收敛到 tabs 序且幂等、nav.write 选中不受影响；③visible 类随节点搬家——真实序列依赖离开工作区前 `saveNavStates → write(nav,null) → switch(null)` 先清 visible，探针已按此前置模拟并收敛。
 - **引擎 Teleport 模式已落地（默认关，`YM_LAYOUT_VUE_RENDER=2|teleport`）**：新增 `Layout.loadLayoutSchemeVueTeleport`——宿主 page 只渲染/挂载 Vue 组树（不做 clear），按叶子发布归属（页→manager、页签→nav，store `pageTargets`/`tabTargets`，新增 `removePageTargets`/`removeTabTargets` 供卸载前收回），等 Teleport 落位后按 group.tabs 排序收敛每个叶子 nav/manager、激活首 tab（首载）或 `nav.lastValue`（二次进入）；组树重载时先收回旧树归属再卸载。端到端金标准 `layout-vue-teleport-load.spec.ts`（4 用例）：palette 复刻（整壳 page/nav wrappers）+ 真实引擎入口——首载落位激活、跨工作区只搬家不重建 + 返回 lastValue 恢复组树不重建、重载收回再发布节点身份不变、默认关命令式对照组。layout __tests__ 76→80 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
-- 接线设计见**附录 F**：整壳 Teleport 模型、归属源、排序 pass、clear 终版语义；**剩余 = LayoutPanel 12 页/12 nav-item 实际接入（按 F 模式用 LayoutPalettePage source=page/tab 包装）**，真机冒烟验收见 F.5。
+- 接线设计见**附录 F**：整壳 Teleport 模型、归属源、排序 pass、clear 终版语义；**LayoutPanel 12 页/12 nav-item 整壳接线已落地（工作区未提交）**——`LayoutPaletteHost`（纯模板实现，无 DOM API）包裹 `#layout-content` 内 NavBar/PageManager 子树，`PaletteNode`（source=page/tab）分别包 12 `.page-frame`/12 `.nav-item`；默认关透传 DOM 与现状一致（`layout-palette-wrappers.spec.ts` 护栏：单/多节点无额外元素、host 不产生 body 容器），teleport 模式把 palette 搬入 body 隐藏容器供引擎挂 Vue 组树；真机冒烟验收见 F.5。layout __tests__ 85→86（新增空 value 透传用例）。
 - **注意**：Vue 叶子 API 在 mount（nextTick 后）才可用 → Vue 分支 loadLayoutScheme/pageSwitch 异步时序首次进入各工作区须真机验证（附录 E.2）。
 - 验证：M1/M3a/M3b-1/M3b-2a 断言双路径跑 + LayoutPanel 接线后真机冒烟清单（附录 E.3/F.5）；全程默认关、独立 PR 可回滚。
 
@@ -201,13 +201,16 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 
 ## 附录 A：涉及文件
 
-- editor：`components/layout/LayoutPanel.vue`（两级 palette + 宿主页）、`engine/layout/layout.ts`、`engine/layout/layout-scheme.ts`（M2 数据层）、`stores/layout.ts`、`utils/element-utils.ts`（clear/write/read）、`title/title-bar.ts`（workspace 切换源）、`scene/ui/animation/particle` 各 window 模块（`Layout.manager.switch('directory')` 消费方，M5 改 store）
+- editor：`components/layout/LayoutPanel.vue`（两级 palette + 宿主页 + 整壳接线）、`components/layout/LayoutTreeView.vue`（M3a 递归渲染）、`LayoutPalettePage.vue`（M3b Teleport 归属）、`LayoutPaletteHost.vue`/`PaletteNode.vue`（M3b-2b LayoutPanel 接线件）、`engine/layout/layout.ts`、`layout-scheme.ts`（M2 数据层）、`layout-deserialize.ts`、`layout-page-targets.ts`、`layout-vue-tree.ts`（水合层）、`stores/layout.ts`（pageTargets/tabTargets）、`utils/element-utils.ts`（clear/write/read）、`title/title-bar.ts`（workspace 切换源）、`scene/ui/animation/particle` 各 window 模块（`Layout.manager.switch('directory')` 消费方，M5 改 store）
+- tests：`engine/layout/__tests__/`（layout-scheme/layout-deserialize/layout-config/layout-lifecycle/layout-page-targets/layout-tree-view/layout-vue-leaf/layout-vue-scheme-load/layout-shell-teleport/layout-palette-page/layout-palette-wrappers/layout-vue-teleport-load/layout-group-render + layout-spec-utils 共享 fixture；用例数为循环展开的运行时口径）
 - ui-kit：`YMPageManager/`、`YMNavBar/`（命令式 api 与 .vue 双实现，M3 后决定收敛）
 - docs：`vue3-migration-plan.md`（进展记录）、`tree-list-vfor-plan.md`（解锁后重做）
 
 ## 附录 B：布局状态读写面盘点（sub-agent，2026-09-03）
 
 路径简称：LAY=`engine/layout/layout.ts`、LST=`stores/layout.ts`、CFG=`services/project/config.ts`、OPEN=`services/project/open.ts`、CLOSE=`services/project/close.ts`、TITLE=`title/title-bar.ts`、MENU=`title/menu-bar.ts`、INIT=`main/initialize.ts`、UCFG=`utils/config.ts`、PMA=`ui-kit/YMPageManager/page-manager-api.ts`、NBA=`ui-kit/YMNavBar/nav-bar-api.ts`、PMV/NBV=对应 .vue、LPV=`components/layout/LayoutPanel.vue`。
+
+> 行号口径说明：下文 LAY/LPV 行号为早期快照（layout.ts 由 ~1555 增至 ~1815，M3b 双路/Teleport 逻辑插桩后），附录 C/D/E/F 的 L 引用同理会漂移；核对实现请以函数名/符号为准。
 
 ### B.1 `Layout.layout` / `Layout.default`
 - LAY:188-193 `initialize` 载入 `default.json` → `Layout.default`（write）。
@@ -349,7 +352,7 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 
 ### F.2 nav 排序 pass
 - Teleport 内容进入同一 target 的顺序 = palette 声明序，与 group.tabs 可不同 → 在归属收敛后执行 `orderLeafNav(group)`：按 `group.tabs` 顺序对该 leaf nav `appendChild`（探针 B：幂等、任意时刻可收敛、对 Teleport 内容安全、write/selected 不受影响）。
-- 调用点：loadLayoutSchemeVue 尾部、`updateGroupTabs` 归属同步处、navDrop 跨组后（M4 收口前先用此 pass 兜底）。
+- 调用点：**目前仅 `loadLayoutSchemeVueTeleport`（layout.ts `orderLeafHostChildren(leaf)`）落地 1 处**；`loadLayoutSchemeVue`/`updateGroupTabs`/navDrop 跨组后的排序 pass 待 M4 收口前补上（navDrop 当前命令式搬移 + drop 后 updateGroupTabs，Teleport 模式下 M4 前先用该 pass 兜底）。
 
 ### F.3 clear 终版语义
 - Vue 分支不再 `clear(page)`（textContent=''）整页摧毁（会杀掉 palette/Telport 锚点/引擎 canvas）；首次/重载 = 仅 `mountVueGroupTree` 前 unmount 旧组树，保留宿主页内其它内容。
