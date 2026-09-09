@@ -28,3 +28,27 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#scriptCommand {
+	width: 324px;
+}
+
+#scriptCommand-parameter-grid {
+	display: grid;
+	margin: 10px;
+	grid-gap: 4px;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+#scriptCommand-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#scriptCommand-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>

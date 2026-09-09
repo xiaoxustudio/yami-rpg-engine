@@ -90,3 +90,66 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#localization {
+	width: 972px;
+	height: 700px;
+}
+
+#localization-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 320px;
+	height: 622px;
+}
+
+#localization-list {
+	font-family: var(--font-family-mono);
+}
+
+#localization-inspector {
+	position: absolute;
+	left: 340px;
+	top: 10px;
+	width: 622px;
+	height: 622px;
+	background-color: var(--fieldset-background);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#localization-searcher {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	width: 320px;
+}
+
+#localization-from-excel {
+	right: 406px;
+	bottom: 10px;
+}
+
+#localization-to-excel {
+	right: 306px;
+	bottom: 10px;
+}
+
+#localization-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#localization-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#localization-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

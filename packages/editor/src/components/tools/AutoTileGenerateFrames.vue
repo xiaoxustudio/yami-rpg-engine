@@ -39,3 +39,22 @@ const { t } = useI18n();
 
 const form = FrameGenerator.form;
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#autoTile-generateFrames {
+	width: 324px;
+	height: 146px;
+}
+
+#autoTile-generateFrames-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#autoTile-generateFrames-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

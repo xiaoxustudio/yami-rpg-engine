@@ -77,3 +77,48 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#deployment {
+	width: 448px;
+	height: 166px;
+}
+
+#deployment-folder {
+	width: 324px;
+}
+
+#deployment-location {
+	width: 300px;
+}
+
+#deployment-compress {
+	width: 300px;
+}
+
+#deployment-choose {
+	position: static;
+	width: 20px;
+}
+
+#deployment-warning {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	line-height: 20px;
+	white-space: nowrap;
+	background-color: var(--selected-background);
+}
+
+#deployment-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#deployment-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

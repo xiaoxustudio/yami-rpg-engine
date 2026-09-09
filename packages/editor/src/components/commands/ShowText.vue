@@ -49,3 +49,46 @@ const onConfirm = () => {
 	save();
 };
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#showText {
+	width: 720px;
+	height: 268px;
+}
+
+#showText-target {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 200px;
+}
+
+#showText-parameters {
+	position: absolute;
+	left: 220px;
+	top: 10px;
+	width: 490px;
+	font-family: var(--font-family-mono);
+}
+
+#showText-content {
+	position: absolute;
+	left: 10px;
+	top: 40px;
+	width: 700px;
+	height: 160px;
+	background-color: var(--input-background);
+}
+
+#showText-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#showText-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

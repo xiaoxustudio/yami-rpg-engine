@@ -24,3 +24,33 @@ const { t } = useI18n();
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#copyProgress {
+	width: 380px;
+	height: 116px;
+}
+
+#copyProgress-flex {
+	margin: 10px;
+	flex-direction: column;
+}
+
+#copyProgress-box {
+	display: block;
+	height: 20px;
+	background-color: var(--input-background);
+	border: var(--input-border);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+#copyProgress-bar {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: var(--selected-background);
+}
+</style>
+

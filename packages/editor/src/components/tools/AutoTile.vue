@@ -199,3 +199,91 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#autoTile {
+	width: 504px;
+	height: 520px;
+}
+
+#autoTile-general-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 342px;
+	height: 90px;
+}
+
+#autoTile-templates-fieldset {
+	left: 10px;
+	top: 110px;
+	width: 200px;
+	height: 342px;
+}
+
+#autoTile-templates {
+	font-family: var(--font-family-mono);
+}
+
+#autoTile-nodes-fieldset {
+	left: 220px;
+	top: 110px;
+	width: 132px;
+	height: 342px;
+}
+
+#autoTile-nodes {
+	font-family: var(--font-family-mono);
+}
+
+#autoTile-canvas-fieldset {
+	left: 362px;
+	top: 10px;
+	width: 132px;
+	height: 132px;
+}
+
+#autoTile-canvas {
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	background-image: var(--grid-background);
+	background-size: var(--16dpx);
+}
+
+#autoTile-rule-fieldset {
+	left: 362px;
+	top: 152px;
+	width: 132px;
+	height: 132px;
+}
+
+#autoTile-rule-grid {
+	grid-gap: 10px;
+	grid-template-columns: 30px 30px 30px;
+}
+
+#autoTile-frames-fieldset {
+	left: 362px;
+	top: 294px;
+	width: 132px;
+	height: 158px;
+}
+
+#autoTile-frames {
+	font-family: var(--font-family-mono);
+}
+
+#autoTile-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#autoTile-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

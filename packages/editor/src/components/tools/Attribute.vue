@@ -198,3 +198,64 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#attribute {
+	width: 572px;
+	height: 700px;
+}
+
+#attribute-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 320px;
+	height: 622px;
+}
+
+#attribute-list {
+	font-family: var(--font-family-mono);
+}
+
+#attribute-properties-fieldset {
+	left: 340px;
+	top: 10px;
+	width: 222px;
+	height: 622px;
+}
+
+#attribute-properties-flex {
+	flex-direction: column;
+}
+
+#attribute-enum-box {
+	height: 168px;
+}
+
+#attribute-note {
+	height: 196px;
+}
+
+#attribute-searcher {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	width: 258px;
+}
+
+#attribute-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#attribute-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#attribute-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

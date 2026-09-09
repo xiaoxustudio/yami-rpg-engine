@@ -57,3 +57,25 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileScript-overview {
+	display: block;
+	margin: 4px;
+	padding: 4px 10px;
+	width: calc(100% - 8px);
+	/* font-family: var(--font-family-mono); */
+	user-select: text;
+	overflow: hidden;
+	white-space: pre-wrap;
+	text-overflow: ellipsis;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+</style>
+

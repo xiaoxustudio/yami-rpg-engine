@@ -443,3 +443,32 @@ const { t } = useI18n();
 const settings = useProjectSettingsWindow();
 const form = settings.form;
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#project-settings {
+	width: 480px;
+	height: 700px;
+}
+
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#project-page {
+	position: absolute;
+	top: 0;
+	bottom: 40px;
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	/* background-color: green; */
+}
+
+#project-grid-box {
+	display: grid;
+	margin: 10px 4px 10px 10px;
+	grid-gap: 4px;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	line-height: 20px;
+	white-space: nowrap;
+}
+</style>
+

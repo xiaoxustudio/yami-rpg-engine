@@ -307,3 +307,23 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#sceneAnimation-angle-slider,
+#sceneAnimation-scale-slider,
+#sceneAnimation-speed-slider,
+#sceneAnimation-opacity-slider,
+#sceneAnimation-priority-slider {
+	flex: 2 1 auto;
+}
+
+#sceneAnimation-angle,
+#sceneAnimation-scale,
+#sceneAnimation-speed,
+#sceneAnimation-opacity,
+#sceneAnimation-priority {
+	flex: 1 1 auto;
+}
+</style>
+

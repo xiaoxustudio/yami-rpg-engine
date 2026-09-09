@@ -12,3 +12,15 @@ import TextBox from '@app/components/common/TextBox.vue';
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#command-widget {
+	width: 400px;
+	height: 20px;
+	box-shadow: none;
+	outline: none;
+	/* outline-color: var(--input-border-color-focus); */
+}
+</style>
+

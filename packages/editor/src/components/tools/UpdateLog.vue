@@ -135,3 +135,41 @@ onBeforeUnmount(() => {
 	window.removeEventListener('update-log-update', refresh);
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/log.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#update-log {
+	width: 900px;
+	height: 700px;
+}
+
+#update-log-tabs {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	height: 32px;
+	display: flex;
+	border-bottom: var(--tab-item-border);
+}
+
+#update-log-container {
+	position: absolute;
+	left: 0;
+	top: 32px;
+	right: 0;
+	bottom: 0;
+	background-color: var(--input-background);
+	border: none;
+	border-radius: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 10px;
+}
+
+#update-log-content {
+	display: block;
+	user-select: text;
+}
+</style>
+

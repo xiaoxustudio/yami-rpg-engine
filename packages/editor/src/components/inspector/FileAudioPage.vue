@@ -159,3 +159,82 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileAudio-volume,
+#fileAudio-pan,
+#fileAudio-dry,
+#fileAudio-wet {
+	flex-grow: 1;
+}
+
+#fileAudio-volume-info,
+#fileAudio-pan-info,
+#fileAudio-dry-info,
+#fileAudio-wet-info {
+	padding-right: 2px;
+	width: 40px;
+	text-align: right;
+}
+
+#fileAudio-progress-box {
+	display: block;
+	width: 100%;
+	height: 160px;
+	overflow: hidden;
+}
+
+#fileAudio-progress {
+	position: absolute;
+	width: 100%;
+	height: 160px;
+	background-color: var(--audio-waveform-background);
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+	image-rendering: pixelated;
+	transition-property: opacity;
+	transition-duration: 0.5s;
+	opacity: 0;
+}
+
+#fileAudio-progress-filler {
+	position: absolute;
+	width: 100%;
+	height: 160px;
+	background-color: var(--audio-waveform-background-active);
+	pointer-events: none;
+}
+
+#fileAudio-progress-pointer {
+	position: absolute;
+	height: 160px;
+	border-left: 1px dotted #cc0000;
+	pointer-events: none;
+}
+
+#fileAudio-currentTime {
+	position: absolute;
+	margin-left: 10px;
+	margin-top: 4px;
+	line-height: 16px;
+	font-size: 16px;
+	font-family: var(--font-family-mono);
+	text-shadow: var(--timeline-ruler-number-shadow);
+	pointer-events: none;
+}
+
+#fileAudio-pointerTime {
+	position: absolute;
+	margin-left: 8px;
+	margin-top: 72px;
+	padding: 0 2px;
+	line-height: 16px;
+	font-size: 16px;
+	font-family: var(--font-family-mono);
+	background-color: rgba(0, 0, 0, 0.25);
+	border-radius: 2px;
+	pointer-events: none;
+}
+</style>
+

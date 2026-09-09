@@ -49,3 +49,32 @@ onMounted(() => {
 	on($('#switch'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#switch {
+	width: 324px;
+	height: 204px;
+}
+
+#switch-branches {
+	height: 102px;
+}
+
+#switch-default {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+}
+
+#switch-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#switch-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

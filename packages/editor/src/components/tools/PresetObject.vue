@@ -131,3 +131,50 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#presetObject {
+	width: 340px;
+	height: 528px;
+}
+
+#presetObject-sceneId {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 320px;
+}
+
+#presetObject-list {
+	position: absolute;
+	left: 10px;
+	top: 34px;
+	width: 320px;
+	height: 402px;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+
+#presetObject-searcher {
+	position: absolute;
+	left: 10px;
+	top: 440px;
+	width: 320px;
+}
+
+#presetObject-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#presetObject-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

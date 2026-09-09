@@ -134,3 +134,25 @@ const effectColor = stringField('effect-color');
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setDialogBox-property {
+	width: 324px;
+	height: 194px;
+}
+
+#setDialogBox-property-content {
+	height: 92px;
+}
+
+#setDialogBox-property-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setDialogBox-property-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>

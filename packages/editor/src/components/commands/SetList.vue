@@ -213,3 +213,27 @@ onMounted(() => {
 	]);
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setList {
+	width: 324px;
+	height: calc(194px + 24px);
+}
+
+#setList-string,
+#setList-separator {
+	height: 44px;
+}
+
+#setList-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setList-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

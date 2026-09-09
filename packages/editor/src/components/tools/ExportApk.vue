@@ -83,3 +83,58 @@ onMounted(() => {
 	update();
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#export-apk {
+	width: 480px;
+	height: 720px;
+}
+
+#export-apk-out {
+	display: block;
+	border: var(--input-border);
+	border-radius: 2px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 650px;
+	width: 100%;
+}
+
+#export-apk-PS {
+	display: block;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 10px;
+	width: 460px;
+	height: 240px;
+	margin: 0 auto;
+}
+
+#export-apk-container {
+	display: block;
+	background-color: var(--input-background);
+	border: var(--input-border);
+	border-radius: 2px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	width: 460px;
+	height: 200px;
+	margin: 0 auto;
+}
+
+#export-apk-content {
+	display: block;
+	padding: 0 10px;
+	white-space: pre-wrap;
+	user-select: text;
+}
+
+#export-apk-button {
+	position: absolute;
+	bottom: 10px;
+	width: 200px;
+	left: 140px;
+}
+</style>
+

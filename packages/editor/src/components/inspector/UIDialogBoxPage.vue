@@ -276,3 +276,23 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/scene.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#uiDialogBox-content {
+	height: 140px;
+}
+
+#uiDialogBox-size-slider,
+#uiDialogBox-lineSpacing-slider,
+#uiDialogBox-letterSpacing-slider {
+	flex: 2 1 auto;
+}
+
+#uiDialogBox-size,
+#uiDialogBox-lineSpacing,
+#uiDialogBox-letterSpacing {
+	flex: 1 1 auto;
+}
+</style>
+

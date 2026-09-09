@@ -78,3 +78,22 @@ const { t } = useI18n();
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setting {
+	width: 520px;
+	height: 700px;
+}
+
+#setting-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+#setting-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+</style>
+

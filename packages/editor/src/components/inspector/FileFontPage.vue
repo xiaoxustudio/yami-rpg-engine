@@ -53,3 +53,51 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileFont-font-grid {
+	grid-gap: 20px;
+	grid-template-columns: 1fr;
+}
+
+#fileFont-content {
+	font-size: 12px;
+}
+
+#fileFont-12px {
+	line-height: 1em;
+	font-size: 1em;
+}
+
+#fileFont-18px {
+	font-size: 1.5em;
+	line-height: 1em;
+}
+
+#fileFont-24px {
+	font-size: 2em;
+	line-height: 1em;
+}
+
+#fileFont-36px {
+	font-size: 3em;
+	line-height: 1em;
+}
+
+#fileFont-48px {
+	font-size: 4em;
+	line-height: 1em;
+}
+
+#fileFont-60px {
+	font-size: 5em;
+	line-height: 1em;
+}
+
+#fileFont-72px {
+	font-size: 6em;
+	line-height: 1em;
+}
+</style>
+

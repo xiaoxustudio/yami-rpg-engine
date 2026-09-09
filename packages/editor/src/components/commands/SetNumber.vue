@@ -50,3 +50,26 @@ onMounted(() => {
 	});
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setNumber {
+	width: 324px;
+	height: 204px;
+}
+
+#setNumber-operands {
+	height: 102px;
+}
+
+#setNumber-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setNumber-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

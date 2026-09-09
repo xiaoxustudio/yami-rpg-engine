@@ -33,3 +33,31 @@ const onConfirm = () => {
 	save();
 };
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#comment {
+	width: 720px;
+	height: 238px;
+}
+
+#comment-comment {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 700px;
+	height: 160px;
+	background-color: var(--input-background);
+}
+
+#comment-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#comment-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

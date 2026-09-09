@@ -35,3 +35,24 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#autoTile-selectNode {
+	width: auto;
+	height: auto;
+}
+
+#autoTile-selectNode-canvas {
+	position: absolute;
+	background-image: var(--grid-background);
+	background-size: var(--16dpx);
+}
+
+#autoTile-selectNode-screen {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+</style>
+

@@ -468,3 +468,21 @@ onMounted(() => {
 	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#sceneParallax-tint-0-slider,
+#sceneParallax-tint-1-slider,
+#sceneParallax-tint-2-slider,
+#sceneParallax-tint-3-slider {
+	flex: 2 1 auto;
+}
+
+#sceneParallax-tint-0,
+#sceneParallax-tint-1,
+#sceneParallax-tint-2,
+#sceneParallax-tint-3 {
+	flex: 1 1 auto;
+}
+</style>
+

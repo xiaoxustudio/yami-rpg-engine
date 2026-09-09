@@ -29,3 +29,22 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#ObjectProperty-index {
+	width: 324px;
+	height: 98px;
+}
+
+#ObjectProperty-index-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#ObjectProperty-index-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

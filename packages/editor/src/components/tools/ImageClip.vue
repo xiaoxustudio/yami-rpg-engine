@@ -67,3 +67,55 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#imageClip {
+	width: 1080px;
+	height: 700px;
+}
+
+#imageClip-screen {
+	position: absolute;
+	top: 0;
+	bottom: 40px;
+	width: 100%;
+	overflow: auto;
+	background-color: var(--viewer-background);
+	border-bottom: var(--input-border);
+}
+
+#imageClip-image {
+	position: absolute;
+	background-image: var(--grid-background);
+	background-size: var(--16dpx);
+}
+
+#imageClip-flex {
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	left: 206px;
+	right: 206px;
+	bottom: 10px;
+	max-width: 412px;
+}
+
+#imageClip-x,
+#imageClip-y,
+#imageClip-width,
+#imageClip-height {
+	width: 100px;
+}
+
+#imageClip-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#imageClip-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

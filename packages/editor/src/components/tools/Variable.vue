@@ -275,3 +275,68 @@ onMounted(() => {
 	getVariableStore().initialize();
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#variable {
+	width: 572px;
+	height: 700px;
+}
+
+#variable-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 320px;
+	height: 622px;
+}
+
+#variable-list {
+	font-family: var(--font-family-mono);
+}
+
+#variable-properties-fieldset {
+	left: 340px;
+	top: 10px;
+	width: 222px;
+	height: 622px;
+}
+
+#variable-properties-flex {
+	flex-direction: column;
+}
+
+#variable-value-box {
+	height: 148px;
+}
+
+#variable-value-string {
+	height: 128px;
+}
+
+#variable-note {
+	height: 196px;
+}
+
+#variable-searcher {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	width: 258px;
+}
+
+#variable-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#variable-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#variable-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

@@ -242,3 +242,51 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 	};
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#title {
+	display: flex;
+	position: absolute;
+	width: 100%;
+	height: 28px;
+	justify-content: flex-end;
+	background-color: var(--title-background);
+	overflow: hidden;
+}
+
+#menu {
+	flex: 0 1 320px;
+	display: flex;
+	height: 28px;
+	line-height: 28px;
+	overflow: hidden;
+	visibility: hidden;
+}
+
+#title-buttons {
+	flex: 0 1 320px;
+	display: flex;
+	height: 28px;
+	justify-content: flex-end;
+}
+
+#title-play {
+	width: 44px;
+	height: 28px;
+	line-height: 28px;
+	text-align: center;
+	/* font-size: 10px; */
+	font-family: var(--font-family-symbol);
+}
+
+#title-play,
+#title-minimize,
+#title-maximize,
+#title-close {
+	position: static;
+	right: auto;
+	-webkit-app-region: no-drag;
+}
+</style>
+

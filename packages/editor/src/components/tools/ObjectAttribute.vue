@@ -54,3 +54,26 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#object-attribute {
+	width: 324px;
+	height: 194px;
+}
+
+#object-attribute-string-value {
+	height: 92px;
+}
+
+#object-attribute-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#object-attribute-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

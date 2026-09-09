@@ -135,3 +135,11 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileEvent-description {
+	height: 92px;
+}
+</style>
+

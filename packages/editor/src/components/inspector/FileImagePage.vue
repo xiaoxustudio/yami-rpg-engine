@@ -51,3 +51,26 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileImage-image-detail {
+	flex-grow: 1;
+}
+
+#fileImage-image-viewer {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: calc(100% - 22px);
+	overflow: hidden;
+}
+
+#fileImage-image {
+	position: absolute;
+	background-image: var(--grid-background);
+	background-size: var(--16dpx);
+	outline: var(--window-outline);
+}
+</style>
+

@@ -43,3 +43,22 @@ onMounted(() => {
 	on($('#choice-confirm'), 'click', () => Choices.confirm?.(new Event('click')));
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#choice {
+	width: 400px;
+	height: 98px;
+}
+
+#choice-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#choice-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

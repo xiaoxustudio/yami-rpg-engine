@@ -46,3 +46,75 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#arrayList {
+	width: 340px;
+	height: 480px;
+}
+
+#arrayList-list {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 320px;
+	height: 402px;
+}
+
+#arrayList-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#arrayList-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+#arrayList-number {
+	width: 300px;
+	height: 98px;
+}
+
+#arrayList-number-value {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 280px;
+}
+
+#arrayList-number-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#arrayList-number-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+#arrayList-string {
+	width: 300px;
+	height: 122px;
+}
+
+#arrayList-string-value {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	width: 280px;
+	height: 44px;
+}
+
+#arrayList-string-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#arrayList-string-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

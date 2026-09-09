@@ -42,3 +42,26 @@ onMounted(() => {
 	on($('#showChoices'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#showChoices {
+	width: 400px;
+	height: 204px;
+}
+
+#showChoices-choices {
+	height: 102px;
+}
+
+#showChoices-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#showChoices-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

@@ -235,3 +235,21 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileScene-ambient-red-slider,
+#fileScene-ambient-green-slider,
+#fileScene-ambient-blue-slider,
+#fileScene-ambient-direct-slider {
+	flex: 2 1 auto;
+}
+
+#fileScene-ambient-red,
+#fileScene-ambient-green,
+#fileScene-ambient-blue,
+#fileScene-ambient-direct {
+	flex: 1 1 auto;
+}
+</style>
+

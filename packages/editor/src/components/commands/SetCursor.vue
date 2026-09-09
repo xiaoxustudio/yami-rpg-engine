@@ -28,3 +28,22 @@ const onConfirm = () => {
 	save();
 };
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setCursor {
+	width: 324px;
+	height: 98px;
+}
+
+#setCursor-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setCursor-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

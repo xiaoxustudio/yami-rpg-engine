@@ -129,3 +129,95 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#command-suggestions {
+	display: block;
+	position: fixed;
+	margin-left: var(--1dpx);
+	width: calc(400px - var(--2dpx));
+	/* box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5); */
+	background-color: var(--suggestion-widget-background);
+	outline: var(--window-outline);
+	pointer-events: visible;
+}
+
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#command-searcher {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	font-family: var(--font-family-mono);
+	border-radius: 0;
+}
+
+#command-searcher-mark {
+	position: absolute;
+	left: 0;
+	line-height: 18px;
+	text-indent: 4px;
+	color: var(--text-color-unit);
+}
+
+#command-searcher-input {
+	padding-left: 12px;
+}
+
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#command {
+	width: 700px;
+	height: 700px;
+}
+
+#command-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 270px;
+	height: 622px;
+}
+
+#command-inspector {
+	position: absolute;
+	left: 290px;
+	top: 10px;
+	width: 400px;
+	height: 622px;
+	background-color: var(--fieldset-background);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#command-overview {
+	display: block;
+	margin: 4px;
+	padding: 4px 10px;
+	width: calc(100% - 8px);
+	/* font-family: var(--font-family-mono); */
+	user-select: text;
+	overflow: hidden;
+	white-space: pre-wrap;
+	text-overflow: ellipsis;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+
+#command-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#command-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#command-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>

@@ -113,3 +113,63 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#plugin {
+	width: 700px;
+	height: 700px;
+}
+
+#plugin-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 270px;
+	height: 622px;
+}
+
+#plugin-inspector {
+	position: absolute;
+	left: 290px;
+	top: 10px;
+	width: 400px;
+	height: 622px;
+	background-color: var(--fieldset-background);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#plugin-overview {
+	display: block;
+	margin: 4px;
+	padding: 4px 10px;
+	width: calc(100% - 8px);
+	/* font-family: var(--font-family-mono); */
+	user-select: text;
+	overflow: hidden;
+	white-space: pre-wrap;
+	text-overflow: ellipsis;
+	background-color: var(--input-background);
+	border-top: var(--input-border-dark);
+	border-left: var(--input-border-light);
+	border-right: var(--input-border-light);
+	border-bottom: var(--input-border-light);
+	border-radius: 2px;
+}
+
+#plugin-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#plugin-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#plugin-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

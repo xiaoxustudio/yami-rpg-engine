@@ -555,3 +555,21 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/scene.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#uiImage-tint-0-slider,
+#uiImage-tint-1-slider,
+#uiImage-tint-2-slider,
+#uiImage-tint-3-slider {
+	flex: 2 1 auto;
+}
+
+#uiImage-tint-0,
+#uiImage-tint-1,
+#uiImage-tint-2,
+#uiImage-tint-3 {
+	flex: 1 1 auto;
+}
+</style>
+

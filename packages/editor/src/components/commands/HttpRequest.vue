@@ -96,3 +96,30 @@ onMounted(() => {
 	$('#httpRequest-data')?.bind?.(RequestkeyValueBind);
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#httpRequest {
+	width: 324px;
+	height: 530px;
+}
+
+#httpRequest-header {
+	height: 102px;
+}
+
+#httpRequest-data {
+	height: 102px;
+}
+
+#httpRequest-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#httpRequest-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

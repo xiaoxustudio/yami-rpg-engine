@@ -100,3 +100,119 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#color {
+	width: 410px;
+	height: 306px;
+}
+
+#color-palette-canvas {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	border: var(--input-border);
+	border-radius: 2px;
+}
+
+#color-palette-frame {
+	position: absolute;
+	left: 11px;
+	top: 11px;
+	width: 256px;
+	height: 194px;
+	overflow: hidden;
+}
+
+#color-palette-cursor {
+	position: absolute;
+	width: 11px;
+	height: 11px;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+#color-index-grid {
+	display: grid;
+	position: absolute;
+	grid-template-columns: repeat(8, 1fr);
+	left: 0;
+	bottom: 0;
+	width: 220px;
+	height: 52px;
+}
+
+#color-pillar-canvas {
+	position: absolute;
+	left: 278px;
+	top: 10px;
+	border: var(--input-border);
+	border-radius: 2px;
+}
+
+#color-pillar-frame {
+	position: absolute;
+	left: 270px;
+	top: 8px;
+	width: 38px;
+	height: 262px;
+	z-index: 1;
+}
+
+#color-pillar-cursor {
+	position: absolute;
+	width: 100%;
+	height: 7px;
+	pointer-events: none;
+}
+
+#color-viewer-frame {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 90px;
+	height: 34px;
+	background-clip: content-box;
+	background-image: var(--grid-background);
+	border: var(--input-border);
+	border-radius: 2px;
+}
+
+#color-viewer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+#color-rgba-grid {
+	position: absolute;
+	left: auto;
+	right: 0;
+	top: 44px;
+	grid-template-columns: 14px 1fr;
+}
+
+#color-hex,
+#color-r,
+#color-g,
+#color-b,
+#color-a {
+	width: 72px;
+	font-family: var(--font-family-mono);
+}
+
+#color-confirm {
+	width: 90px;
+	right: 10px;
+	bottom: 34px;
+}
+
+#color-cancel {
+	width: 90px;
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

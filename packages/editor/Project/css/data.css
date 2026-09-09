@@ -2,21 +2,6 @@
  * 队伍窗口
  * --------------------------------
  */
-#team {
-	width: 304px;
-	height: 420px;
-}
-
-#team-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 284px;
-	height: 342px;
-}
-
-#team-list {
-	font-family: var(--font-family-mono);
-}
 
 #team-list > .common-item {
 	padding-right: 26px;
@@ -65,35 +50,10 @@
 	color: var(--team-collision-mark-color-on);
 }
 
-#team-confirm {
-	right: 108px;
-	bottom: 10px;
-}
-
-#team-cancel {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 变量窗口
  * --------------------------------
  */
-#variable {
-	width: 572px;
-	height: 700px;
-}
-
-#variable-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 320px;
-	height: 622px;
-}
-
-#variable-list {
-	font-family: var(--font-family-mono);
-}
 
 .variable-item {
 	padding-right: 20px;
@@ -166,69 +126,9 @@
 	color: var(--text-color-accelerator-selected);
 }
 
-#variable-properties-fieldset {
-	left: 340px;
-	top: 10px;
-	width: 222px;
-	height: 622px;
-}
-
-#variable-properties-flex {
-	flex-direction: column;
-}
-
-#variable-value-box {
-	height: 148px;
-}
-
-#variable-value-string {
-	height: 128px;
-}
-
-#variable-note {
-	height: 196px;
-}
-
-#variable-searcher {
-	position: absolute;
-	left: 10px;
-	bottom: 10px;
-	width: 258px;
-}
-
-#variable-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#variable-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#variable-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 属性窗�? * --------------------------------
  */
-#attribute {
-	width: 572px;
-	height: 700px;
-}
-
-#attribute-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 320px;
-	height: 622px;
-}
-
-#attribute-list {
-	font-family: var(--font-family-mono);
-}
 
 .attribute-item {
 	padding-right: 20px;
@@ -257,66 +157,10 @@
 	color: var(--text-color-accelerator-selected);
 }
 
-#attribute-properties-fieldset {
-	left: 340px;
-	top: 10px;
-	width: 222px;
-	height: 622px;
-}
-
-#attribute-properties-flex {
-	flex-direction: column;
-}
-
-#attribute-enum-box {
-	height: 168px;
-}
-
-#attribute-note {
-	height: 196px;
-}
-
-#attribute-searcher {
-	position: absolute;
-	left: 10px;
-	bottom: 10px;
-	width: 258px;
-}
-
-#attribute-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#attribute-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#attribute-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 枚举窗口
  * --------------------------------
  */
-#enum {
-	width: 572px;
-	height: 700px;
-}
-
-#enum-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 320px;
-	height: 622px;
-}
-
-#enum-list {
-	font-family: var(--font-family-mono);
-}
 
 .enum-item {
 	padding-right: 20px;
@@ -345,65 +189,9 @@
 	color: var(--text-color-accelerator-selected);
 }
 
-#enum-properties-fieldset {
-	left: 340px;
-	top: 10px;
-	width: 222px;
-	height: 622px;
-}
-
-#enum-properties-flex {
-	flex-direction: column;
-}
-
-#enum-spacing-box {
-	height: 292px;
-}
-
-#enum-note {
-	height: 196px;
-}
-
-#enum-searcher {
-	position: absolute;
-	left: 10px;
-	bottom: 10px;
-	width: 258px;
-}
-
-#enum-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#enum-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#enum-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 本地化窗�? * --------------------------------
  */
-#localization {
-	width: 972px;
-	height: 700px;
-}
-
-#localization-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 320px;
-	height: 622px;
-}
-
-#localization-list {
-	font-family: var(--font-family-mono);
-}
 
 .localization-item {
 	padding-right: 4px;
@@ -419,70 +207,16 @@
 	color: var(--text-color-accelerator-selected);
 }
 
-#localization-inspector {
-	position: absolute;
-	left: 340px;
-	top: 10px;
-	width: 622px;
-	height: 622px;
-	background-color: var(--fieldset-background);
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
 .localization-text-area {
 	margin: 4px;
 	width: calc(100% - 8px);
 	height: 40px;
 }
 
-#localization-searcher {
-	position: absolute;
-	left: 10px;
-	bottom: 10px;
-	width: 320px;
-}
-
-#localization-from-excel {
-	right: 406px;
-	bottom: 10px;
-}
-
-#localization-to-excel {
-	right: 306px;
-	bottom: 10px;
-}
-
-#localization-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#localization-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#localization-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 插件窗口
  * --------------------------------
  */
-#plugin {
-	width: 700px;
-	height: 700px;
-}
-
-#plugin-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 270px;
-	height: 622px;
-}
 
 .plugin-item {
 	padding-left: 10px;
@@ -496,17 +230,6 @@
 	top: 0;
 }
 
-#plugin-inspector {
-	position: absolute;
-	left: 290px;
-	top: 10px;
-	width: 400px;
-	height: 622px;
-	background-color: var(--fieldset-background);
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
 #plugin-inspector::-webkit-scrollbar-track {
 	border-left: none;
 }
@@ -518,24 +241,6 @@
 /* #plugin-list {
   font-family: var(--font-family-mono);
 } */
-
-#plugin-overview {
-	display: block;
-	margin: 4px;
-	padding: 4px 10px;
-	width: calc(100% - 8px);
-	/* font-family: var(--font-family-mono); */
-	user-select: text;
-	overflow: hidden;
-	white-space: pre-wrap;
-	text-overflow: ellipsis;
-	background-color: var(--input-background);
-	border-top: var(--input-border-dark);
-	border-left: var(--input-border-light);
-	border-right: var(--input-border-light);
-	border-bottom: var(--input-border-light);
-	border-radius: 2px;
-}
 
 .plugin-title {
 	display: inline-block;
@@ -608,46 +313,9 @@
 	margin-left: 12px;
 }
 
-#plugin-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#plugin-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#plugin-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
 /* --------------------------------
  * 自定义指令窗�? * --------------------------------
  */
-#command {
-	width: 700px;
-	height: 700px;
-}
-
-#command-list-fieldset {
-	left: 10px;
-	top: 10px;
-	width: 270px;
-	height: 622px;
-}
-
-#command-inspector {
-	position: absolute;
-	left: 290px;
-	top: 10px;
-	width: 400px;
-	height: 622px;
-	background-color: var(--fieldset-background);
-	overflow-x: hidden;
-	overflow-y: auto;
-}
 
 #command-inspector::-webkit-scrollbar-track {
 	border-left: none;
@@ -655,115 +323,4 @@
 
 #command-inspector::-webkit-scrollbar-button {
 	border-left: none;
-}
-
-#command-overview {
-	display: block;
-	margin: 4px;
-	padding: 4px 10px;
-	width: calc(100% - 8px);
-	/* font-family: var(--font-family-mono); */
-	user-select: text;
-	overflow: hidden;
-	white-space: pre-wrap;
-	text-overflow: ellipsis;
-	background-color: var(--input-background);
-	border-top: var(--input-border-dark);
-	border-left: var(--input-border-light);
-	border-right: var(--input-border-light);
-	border-bottom: var(--input-border-light);
-	border-radius: 2px;
-}
-
-#command-confirm {
-	right: 206px;
-	bottom: 10px;
-}
-
-#command-cancel {
-	right: 108px;
-	bottom: 10px;
-}
-
-#command-apply {
-	right: 10px;
-	bottom: 10px;
-}
-
-/* --------------------------------
- * 数组窗口
- * --------------------------------
- */
-#arrayList {
-	width: 340px;
-	height: 480px;
-}
-
-#arrayList-list {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-	width: 320px;
-	height: 402px;
-}
-
-#arrayList-confirm {
-	right: 108px;
-	bottom: 10px;
-}
-
-#arrayList-cancel {
-	right: 10px;
-	bottom: 10px;
-}
-
-/* --------------------------------
- * 数组窗口 - 数�? * --------------------------------
- */
-#arrayList-number {
-	width: 300px;
-	height: 98px;
-}
-
-#arrayList-number-value {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-	width: 280px;
-}
-
-#arrayList-number-confirm {
-	right: 108px;
-	bottom: 10px;
-}
-
-#arrayList-number-cancel {
-	right: 10px;
-	bottom: 10px;
-}
-
-/* --------------------------------
- * 数组窗口 - 字符�? * --------------------------------
- */
-#arrayList-string {
-	width: 300px;
-	height: 122px;
-}
-
-#arrayList-string-value {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-	width: 280px;
-	height: 44px;
-}
-
-#arrayList-string-confirm {
-	right: 108px;
-	bottom: 10px;
-}
-
-#arrayList-string-cancel {
-	right: 10px;
-	bottom: 10px;
 }

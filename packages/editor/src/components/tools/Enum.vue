@@ -117,3 +117,64 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#enum {
+	width: 572px;
+	height: 700px;
+}
+
+#enum-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 320px;
+	height: 622px;
+}
+
+#enum-list {
+	font-family: var(--font-family-mono);
+}
+
+#enum-properties-fieldset {
+	left: 340px;
+	top: 10px;
+	width: 222px;
+	height: 622px;
+}
+
+#enum-properties-flex {
+	flex-direction: column;
+}
+
+#enum-spacing-box {
+	height: 292px;
+}
+
+#enum-note {
+	height: 196px;
+}
+
+#enum-searcher {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	width: 258px;
+}
+
+#enum-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#enum-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#enum-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

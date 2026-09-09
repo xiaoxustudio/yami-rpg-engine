@@ -80,3 +80,74 @@ const onApply = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#event {
+	width: 1280px;
+	height: 700px;
+}
+
+#event-open-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 280px;
+	bottom: 10px;
+}
+
+#event-commands-fieldset {
+	left: 300px;
+	top: 10px;
+	right: 10px;
+	bottom: 40px;
+}
+
+#event-commands-gutter-background {
+	position: absolute;
+	top: 10px;
+	bottom: 10px;
+	width: 48px;
+	pointer-events: none;
+	border-right: var(--command-line-number-color);
+}
+
+#event-commands-gutter-outer {
+	position: absolute;
+	top: 10px;
+	bottom: 10px;
+	width: 48px;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+#event-commands-gutter-inner {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	/* margin-top: -20px; */
+	width: 32px;
+}
+
+#event-type {
+	position: absolute;
+	left: 300px;
+	bottom: 10px;
+	width: 200px;
+}
+
+#event-confirm {
+	right: 206px;
+	bottom: 10px;
+}
+
+#event-cancel {
+	right: 108px;
+	bottom: 10px;
+}
+
+#event-apply {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

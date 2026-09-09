@@ -61,3 +61,15 @@ const { t } = useI18n();
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#about {
+	width: 280px;
+	height: 400px;
+	border: 5px solid transparent;
+	border-image-slice: 1;
+	animation: neon-border-animation 3s linear infinite;
+}
+</style>
+

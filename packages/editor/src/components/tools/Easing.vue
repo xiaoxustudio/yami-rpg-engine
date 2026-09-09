@@ -283,3 +283,115 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#easing {
+	width: 800px;
+	height: 604px;
+}
+
+#easing-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 200px;
+	height: 234px;
+}
+
+#easing-list {
+	font-family: var(--font-family-mono);
+}
+
+#easing-points-fieldset {
+	left: 220px;
+	top: 10px;
+	width: 326px;
+	height: 234px;
+}
+
+#easing-points-grid {
+	grid-template-columns: 100px 98px 98px;
+}
+
+#easing-mode {
+	grid-column-start: 2;
+	grid-column-end: 4;
+	grid-row-start: 1;
+}
+
+#easing-points-0-x,
+#easing-points-0-y,
+#easing-points-1-x,
+#easing-points-1-y,
+#easing-points-2-x,
+#easing-points-2-y,
+#easing-points-3-x,
+#easing-points-3-y,
+#easing-points-4-x,
+#easing-points-4-y,
+#easing-points-5-x,
+#easing-points-5-y,
+#easing-points-6-x,
+#easing-points-6-y,
+#easing-points-7-x,
+#easing-points-7-y {
+	width: 98px;
+}
+
+#easing-curve-fieldset {
+	padding: 10px;
+	left: 556px;
+	top: 10px;
+	width: 234px;
+	height: 234px;
+}
+
+#easing-curve-canvas {
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	/* background-color: green; */
+}
+
+#easing-preview-fieldset {
+	left: 10px;
+	top: 254px;
+	width: 780px;
+	height: 282px;
+}
+
+#easing-preview-canvas {
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	/* background-color: green; */
+}
+
+#easing-preview-grid {
+	position: absolute;
+	left: auto;
+	right: 0;
+	grid-template-columns: 60px 1fr;
+}
+
+#easing-preview-reverse,
+#easing-preview-duration,
+#easing-preview-delay {
+	width: 80px;
+}
+
+#easing-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#easing-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

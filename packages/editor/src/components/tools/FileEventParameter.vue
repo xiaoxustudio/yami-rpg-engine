@@ -38,3 +38,26 @@ const onConfirm = () => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fileEvent-parameter {
+	width: 324px;
+	height: 218px;
+}
+
+#fileEvent-parameter-note {
+	height: 92px;
+}
+
+#fileEvent-parameter-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#fileEvent-parameter-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

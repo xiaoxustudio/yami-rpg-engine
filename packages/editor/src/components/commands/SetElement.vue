@@ -57,3 +57,22 @@ onMounted(() => {
 	]);
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setElement {
+	width: 324px;
+	height: 122px;
+}
+
+#setElement-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setElement-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

@@ -279,3 +279,23 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#sceneParticle-angle-slider,
+#sceneParticle-scale-slider,
+#sceneParticle-speed-slider,
+#sceneParticle-opacity-slider,
+#sceneParticle-priority-slider {
+	flex: 2 1 auto;
+}
+
+#sceneParticle-angle,
+#sceneParticle-scale,
+#sceneParticle-speed,
+#sceneParticle-opacity,
+#sceneParticle-priority {
+	flex: 1 1 auto;
+}
+</style>
+

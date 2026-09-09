@@ -224,3 +224,17 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#sceneActor-angle-slider,
+#sceneActor-scale-slider {
+	flex: 2 1 auto;
+}
+
+#sceneActor-angle,
+#sceneActor-scale {
+	flex: 1 1 auto;
+}
+</style>
+

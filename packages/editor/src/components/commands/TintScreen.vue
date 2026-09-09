@@ -129,3 +129,34 @@ onMounted(() => {
 	});
 });
 </script>
+
+<style>
+/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#tintScreen {
+	width: 428px;
+	height: 242px;
+}
+
+#tintScreen-grid-box {
+	width: 304px;
+}
+
+#tintScreen-filter {
+	position: absolute;
+	left: 318px;
+	top: 10px;
+	width: 100px;
+	height: 164px;
+}
+
+#tintScreen-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#tintScreen-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+</style>

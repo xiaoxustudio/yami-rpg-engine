@@ -44,3 +44,44 @@ onMounted(() => {
 	attachElementApi(el, { update });
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#qr-code {
+	width: 320px;
+	height: 400px;
+	border: 5px solid transparent;
+	border-image-slice: 1;
+}
+
+#qr-code-img {
+	width: 200px;
+	height: 200px;
+}
+
+/* 样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#qr-img-container {
+	width: 100%;
+	height: 220px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#qr-start-button {
+	right: 206px;
+	bottom: 10px;
+}
+
+#qr-close-button {
+	right: 108px;
+	bottom: 10px;
+}
+
+#qr-update-button {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

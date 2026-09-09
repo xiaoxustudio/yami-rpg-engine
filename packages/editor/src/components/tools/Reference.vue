@@ -55,3 +55,23 @@ onMounted(() => {
 	registerReferenceUpdate(updateItems);
 });
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#reference {
+	width: 800px;
+	height: 600px;
+}
+
+#reference-list {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	right: 10px;
+	bottom: 10px;
+	background-color: var(--input-background);
+	border: var(--input-border);
+	border-radius: 2px;
+}
+</style>
+

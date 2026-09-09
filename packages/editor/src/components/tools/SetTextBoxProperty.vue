@@ -77,3 +77,21 @@ const color = computed({
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口尺寸样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#setTextBox-property {
+	width: 324px;
+	height: 122px;
+}
+
+#setTextBox-property-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setTextBox-property-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>

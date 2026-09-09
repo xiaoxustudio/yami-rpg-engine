@@ -23,3 +23,22 @@ const onConfirm = () => {
 	Selection?.fontSize?.confirm?.(new Event('click'));
 };
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#fontSize {
+	width: 324px;
+	height: 98px;
+}
+
+#fontSize-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#fontSize-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

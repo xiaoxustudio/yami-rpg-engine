@@ -86,3 +86,33 @@ const onListChange = (event: Event & { value?: unknown }) => {
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#team {
+	width: 304px;
+	height: 420px;
+}
+
+#team-list-fieldset {
+	left: 10px;
+	top: 10px;
+	width: 284px;
+	height: 342px;
+}
+
+#team-list {
+	font-family: var(--font-family-mono);
+}
+
+#team-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#team-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+</style>
+

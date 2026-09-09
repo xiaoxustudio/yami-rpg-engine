@@ -346,3 +346,23 @@ onMounted(() => {
 	sync();
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/scene.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#uiText-content {
+	height: 140px;
+}
+
+#uiText-size-slider,
+#uiText-lineSpacing-slider,
+#uiText-letterSpacing-slider {
+	flex: 2 1 auto;
+}
+
+#uiText-size,
+#uiText-lineSpacing,
+#uiText-letterSpacing {
+	flex: 1 1 auto;
+}
+</style>
+

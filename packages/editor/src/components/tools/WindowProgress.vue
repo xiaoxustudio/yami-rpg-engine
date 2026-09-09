@@ -16,3 +16,33 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 
 onMounted(() => {});
 </script>
+
+<style>
+/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#windowProgress {
+	width: 380px;
+	height: 116px;
+}
+
+#windowProgress-flex {
+	margin: 10px;
+	flex-direction: column;
+}
+
+#windowProgress-box {
+	display: block;
+	height: 20px;
+	background-color: var(--input-background);
+	border: var(--input-border);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+#windowProgress-bar {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: var(--selected-background);
+}
+</style>
+

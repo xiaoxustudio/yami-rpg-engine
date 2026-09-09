@@ -56,3 +56,20 @@ onBeforeUnmount(() => {
 	window.removeEventListener('home-recent-update', refresh);
 });
 </script>
+
+<style>
+/* 样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
+#home-recent-list {
+	display: flex;
+	position: absolute;
+	flex-direction: column;
+	left: 170px;
+	top: 100px;
+	width: 466px;
+	height: 422px;
+	row-gap: 10px;
+	overflow: hidden;
+	/* background-color: blue; */
+}
+</style>
+
