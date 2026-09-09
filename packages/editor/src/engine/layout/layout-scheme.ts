@@ -205,3 +205,22 @@ export function moveLayoutTab(
 		active: keepActiveOnSelfMove ? tab : target.active
 	}));
 }
+
+// M4（docs/layout-vue-plan.md M4）：同组内页签顺序移动（数据先行）。
+// 与现状 navDrop 的 DOM 语义等价：先移除该页签，anchor=null 视为 append 到末尾，
+// 否则插到 anchor 页签（移除后）所在位置之前；anchor 不存在时回退 append。
+// 纯函数、无 DOM，供引擎层以 tabs 数据驱动 DOM 收敛（取代命令式 insertBefore 差量）。
+export function moveTabWithin(
+	tabs: readonly string[],
+	tab: string,
+	anchor: string | null
+): string[] {
+	if (tabs.indexOf(tab) === -1) return [...tabs];
+	const rest = tabs.filter((value) => value !== tab);
+	if (anchor === null) return [...rest, tab];
+	const index = rest.indexOf(anchor);
+	if (index === -1) return [...rest, tab];
+	const out = [...rest];
+	out.splice(index, 0, tab);
+	return out;
+}

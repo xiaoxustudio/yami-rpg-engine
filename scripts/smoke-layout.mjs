@@ -448,6 +448,10 @@ async function evaluateMode(mode) {
 	ws.close();
 }
 
+async function dragHere() {
+	await dragReorderPhase();
+}
+
 const phases = {
 	debug,
 	'open-project': openProject,
@@ -455,6 +459,7 @@ const phases = {
 	'roundtrip-scene': roundtripScene,
 	'mode0-control': mode0Control,
 	'drag-mode0': dragMode0,
-	'drag-mode2': dragMode2
+	'drag-mode2': dragMode2,
+	'drag-here': dragHere
 };
 await runPhase(phases[phase]);

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, setLayoutVueRenderMode } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import {
 	buildLayoutFixture,
@@ -178,5 +178,45 @@ describe('navDrop 跨组搬入', () => {
 			end: 1,
 			tabs: ['project', 'inspector', 'scene']
 		});
+	});
+});
+
+describe('M4 Teleport 模式同组 drop 数据化（moveTabWithin 数据路径）', () => {
+	it('mode2：append 到 nav 空白 → tabs 数据驱动收敛，与命令式结果一致', () => {
+		const { leaves } = mountDirectory();
+		const leaf = leaves[0];
+		const group = leaf.nav.parentNode as HTMLElement & { tabs?: string[] };
+		setLayoutVueRenderMode(2);
+		try {
+			dragDrop(leaf, {
+				dragItem: 'project',
+				trigger: leaf.nav,
+				target: group,
+				direction: 'inside'
+			});
+		} finally {
+			setLayoutVueRenderMode(0);
+		}
+		expect(navValues(leaf.nav)).toEqual(['inspector', 'project']);
+		expect(managerValues(leaf.manager)).toEqual(['inspector', 'project']);
+		expect(group.tabs).toEqual(['inspector', 'project']);
+	});
+
+	it('mode2：insert-before 指定页签 → 顺序重排，页签与页同步', () => {
+		const { leaves } = mountDirectory();
+		const leaf = leaves[0];
+		setLayoutVueRenderMode(2);
+		try {
+			dragDrop(leaf, {
+				dragItem: 'inspector',
+				trigger: itemOf(leaf, 'project'),
+				target: leaf.nav.parentNode as HTMLElement,
+				direction: 'inside'
+			});
+		} finally {
+			setLayoutVueRenderMode(0);
+		}
+		expect(navValues(leaf.nav)).toEqual(['inspector', 'project']);
+		expect(managerValues(leaf.manager)).toEqual(['inspector', 'project']);
 	});
 });

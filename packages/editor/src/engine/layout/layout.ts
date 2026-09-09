@@ -19,7 +19,7 @@ import {
 	createPageManagerElement as createPageManager,
 	type PageManagerApi
 } from '@ui-kit';
-import { toLayoutScheme, type LayoutSchemeData } from './layout-scheme';
+import { toLayoutScheme, moveTabWithin, type LayoutSchemeData } from './layout-scheme';
 import { deserializeGroupElement } from './layout-deserialize';
 import { collectPageTargets } from './layout-page-targets';
 import { mountVueGroupTree, type VueGroupTreeHandle } from './layout-vue-tree';
@@ -201,6 +201,53 @@ const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
 				break;
 			}
 		}
+	}
+};
+
+// M4（docs/layout-vue-plan.md M4）：同组 drop（inside）生效动作数据化。
+// 由 group.tabs 数据 + moveTabWithin 直接推导目标顺序，再按 tabs 序收敛 nav/manager
+// 子节点序（复用附录 F.2 的「排序 pass」语义），取代命令式 insertBefore/appendChild 差量；
+// 对 Vue/Teleport 管理的子节点也安全（pass 只做容器内稳定追加，探针 B 已证）。
+const navTabsOf = (nav: HTMLElement | undefined): string[] => {
+	if (!nav) return [];
+	const values: string[] = [];
+	for (const child of Array.from(nav.children)) {
+		if (hasClass(child, 'nav-item')) {
+			const value = (child as HTMLElement).getAttribute('value');
+			if (value !== null) values.push(value);
+		}
+	}
+	return values;
+};
+
+const applyTabDropWithin = (
+	group: LayoutGroupElement,
+	item: LayoutItemElement,
+	trigger: HTMLElement
+): void => {
+	const { nav, manager } = group;
+	const value = item.getAttribute('value') ?? '';
+	const anchor = hasClass(trigger, 'nav-item') ? trigger.getAttribute('value') : null;
+	const tabs = moveTabWithin(group.tabs ?? navTabsOf(nav), value, anchor);
+	group.tabs = tabs;
+	for (const tab of tabs) {
+		for (const child of Array.from(nav.children)) {
+			if (hasClass(child, 'nav-item') && child.getAttribute('value') === tab) {
+				nav.appendChild(child);
+				break;
+			}
+		}
+		for (const child of Array.from(manager.children)) {
+			if (hasClass(child, 'page-frame') && child.getAttribute('value') === tab) {
+				manager.appendChild(child);
+				break;
+			}
+		}
+	}
+	const page = item.page;
+	if (page) {
+		(page as HTMLElement & { width: unknown; height: unknown }).width = null;
+		(page as HTMLElement & { width: unknown; height: unknown }).height = null;
 	}
 };
 
@@ -1386,6 +1433,16 @@ Layout.navDrop = function (event: EditorEvent) {
 		const { trigger } = location;
 		const { target } = location;
 		const { direction } = location;
+
+		// M4：Teleport 模式（默认关）同组 drop（inside）走数据路径 —— 行为与命令式等价
+		// （layout-nav-drop.spec.ts 金标准钉死），但生效动作 = 更新 tabs 数据 + 排序 pass，
+		// 避免对 Vue/Teleport 管理的子节点直接 insertBefore；命令式路径（模式 0/1）保留到 M5。
+		if (vueRenderMode === 2 && direction === 'inside' && target === sGroup) {
+			applyTabDropWithin(sGroup, item, trigger);
+			syncPageTargets(Layout.manager);
+			return;
+		}
+
 		let parent = target.parentNode;
 		let dGroup: LayoutGroupElement = target as LayoutGroupElement;
 		let split;

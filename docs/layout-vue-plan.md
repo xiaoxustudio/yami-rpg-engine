@@ -1,6 +1,6 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 12 页整壳接线均已交付并提交；**F.5 真机冒烟核心项已于 2026-09-09 自动验证通过**，见附录 F.5 验收记录；下一步 M4 交互数据化）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 12 页整壳接线均已交付并提交；**F.5 真机冒烟核心项已于 2026-09-09 自动验证通过**（见附录 F.5 验收记录）；**M4-1 已交付**：navDrop 金标准 4 用例 + Teleport 模式同组 drop 数据化（moveTabWithin/applyTabDropWithin，默认关）；下一步 M4-2 交互数据化剩余项）
 - 日期：2026-09-03
 - 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`engine/layout/layout.ts`（M3b-2 后 ~1815 行，文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
@@ -172,6 +172,7 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - mode0 跨组搬入（project → inspector 组）：源组搬空 → 组移除 + `prev.end=1` + 根 flatten 为单组 [inspector, project]，与 `layout-nav-drop.spec.ts` 第 4 例 jsdom 语义逐点一致（几何真实路径验证通过）。
   - mode2（Teleport）同组重排：`[inspector, project] → [project, inspector]`，group.tabs 同步；随后页签 pointerdown 往返切换与 scene↔directory 往返均正常，节点身份不变、渲染日志仅预存 CSP 提示。**结论：当前命令式 navDrop 在 Teleport 模式下无即时 vnode/DOM 失配**；M4 数据化定位为一致性加固（消除命令式 insertBefore 与 Vue patch 的潜在竞争），非救火。
   - 仍缺真机用例：region 分割（左/右/上/下）与 border 缩放（几何最重），留 M4 改造后补。
+- **M4-1（2026-09-09 已交付）Teleport 模式同组 drop 数据化（默认关）**：layout-scheme.ts 新增纯函数 `moveTabWithin(tabs, tab, anchor)`（与 navDrop 命令式 insert-before/append 语义逐点等价，+4 单测）；layout.ts 新增 `applyTabDropWithin`（moveTabWithin 推导 tabs → 按 tabs 序做 nav/manager 排序 pass 收敛，复用附录 F.2 语义，无 insertBefore 差量）；`navDrop` 在 `vueRenderMode === 2` 且同组 inside 时走该数据路径，**命令式路径（模式 0/1）一字未动（保留到 M5）**。`layout-nav-drop.spec.ts` +2（mode2 开关下 append/insert-before 与命令式结果一致），layout __tests__ 90→96。真机：跨组搬入/折叠在新构建仍正常；同组重排的合成 DragEvent 冒烟受「结构变更后 dragend 需落在存活 nav 上」的驱动限制，留 M4-2/人工复核。
 - nav 拖拽 drop：`removeItemTo` 落点计算保留命令式（测坐标/邻居），但**生效动作**改为更新 tabs 数据 + `list.updateGroupTabs` 读数据；region 分割/合并、border 缩放改 `updateGroups` 读数据重排，移除命令式 replaceChild/insertBefore 路径。
 - 验证：nav-drop 金标准 + M1 拖拽/缩放缺口用例 + 真机冒烟清单。
 

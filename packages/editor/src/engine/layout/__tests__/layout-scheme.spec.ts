@@ -5,6 +5,7 @@ import {
 	groupActiveTab,
 	leavesOf,
 	moveLayoutTab,
+	moveTabWithin,
 	parseLayoutScheme,
 	toLayoutScheme,
 	type LayoutGroupNode,
@@ -245,5 +246,38 @@ describe('moveLayoutTab 跨组', () => {
 		const root = parseLayoutScheme(directoryScheme);
 		expect(moveLayoutTab(root, 'layout-2', 'layout-3', 'missing', 0)).toBe(root);
 		expect(moveLayoutTab(root, 'missing', 'layout-3', 'project', 0)).toBe(root);
+	});
+});
+
+describe('moveTabWithin 同组顺序（M4 navDrop 数据层）', () => {
+	const tabs = ['project', 'inspector', 'scene'];
+
+	it('insert-before：拖末位页签到首页签前', () => {
+		expect(moveTabWithin(tabs, 'scene', 'project')).toEqual(['scene', 'project', 'inspector']);
+	});
+
+	it('insert-before：拖中间页签到前一页签前（anchor 在移除后定位）', () => {
+		expect(moveTabWithin(tabs, 'inspector', 'project')).toEqual([
+			'inspector',
+			'project',
+			'scene'
+		]);
+		// anchor 位于被拖页签之后：先移除再按 anchor 现索引插入
+		expect(moveTabWithin(tabs, 'project', 'scene')).toEqual(['inspector', 'project', 'scene']);
+	});
+
+	it('anchor=null 视为 append 到末尾', () => {
+		expect(moveTabWithin(tabs, 'project', null)).toEqual(['inspector', 'scene', 'project']);
+		expect(moveTabWithin(tabs, 'scene', null)).toEqual(['project', 'inspector', 'scene']);
+	});
+
+	it('anchor 不存在回退 append；未知页签返回原数组', () => {
+		expect(moveTabWithin(tabs, 'project', 'missing')).toEqual([
+			'inspector',
+			'scene',
+			'project'
+		]);
+		expect(moveTabWithin(tabs, 'missing', null)).toEqual(tabs);
+		expect(moveTabWithin(tabs, 'missing', 'project')).toEqual(tabs);
 	});
 });
