@@ -517,6 +517,83 @@ vi.mock('@app/stores/local', () => ({
 			expect(saved).toHaveBeenCalledWith({ target: 'global', operation: 'reset' });
 			wrapper.unmount();
 		});
+
+		it('窗口打开即按 target 加载 type 选项（不再空下拉/红色无效 autorun）', async () => {
+			const wrapper = await mountWindow();
+			const { form } = useRegisterEventCommandSchema();
+			const target = {
+				scrollAndResize: vi.fn(),
+				getSelectionPosition: () => ({ x: 100, y: 100 }),
+				save: vi.fn()
+			};
+			const prevMerged = Enum.getMergedItems;
+			const prevTypes = EventEditor.types;
+			// 更贴近真实事件类型表：register_global 首项为 autorun
+			Enum.getMergedItems = vi.fn((headItems: unknown[]) => headItems) as never;
+			EventEditor.types = {
+				all: [{ name: 'Autorun', value: 'autorun' }],
+				register_global: [
+					{ name: 'Autorun', value: 'autorun' },
+					{ name: 'Key Down', value: 'keydown' },
+					{ name: 'Key Up', value: 'keyup' }
+				],
+				register_actor: [
+					{ name: 'Autorun', value: 'autorun' },
+					{ name: 'Mouse Down LB', value: 'mousedownLB' },
+					{ name: 'Click', value: 'click' }
+				]
+			} as never;
+			try {
+				CommandSchema.insert(target, 'registerEvent');
+				await wrapper.vm.$nextTick();
+				const type = document.getElementById('registerEvent-type') as unknown as {
+					dataItems?: Array<{ value: string }>;
+					invalid?: boolean;
+					read(): unknown;
+				};
+				// 修复前：insert 打开窗口后 type 下拉没有任何选项，默认值 autorun 显示为红色无效文本
+				expect(type.dataItems?.map((item) => item.value)).toEqual([
+					'autorun',
+					'keydown',
+					'keyup'
+				]);
+				expect(type.read()).toBe('autorun');
+				expect(type.invalid).toBe(false);
+				expect(form.type).toBe('autorun');
+				// 编辑已有指令（同 target）：选项按 target 刷新且保留已存 type
+				Command.cases.registerEvent.customLoad!({
+					target: 'global',
+					operation: 'register',
+					type: 'keydown',
+					priority: true,
+					namespace: true,
+					tag: 'tag1'
+				});
+				await wrapper.vm.$nextTick();
+				expect(type.dataItems?.map((item) => item.value)).toEqual([
+					'autorun',
+					'keydown',
+					'keyup'
+				]);
+				expect(type.read()).toBe('keydown');
+				expect(type.invalid).toBe(false);
+				expect(form.type).toBe('keydown');
+				// 用户切换 target：按新目标集重载选项（回到该组首个事件类型）
+				Command.cases.registerEvent.targetWrite!({ value: 'actor' });
+				await wrapper.vm.$nextTick();
+				expect(type.dataItems?.map((item) => item.value)).toEqual([
+					'autorun',
+					'mousedownLB',
+					'click'
+				]);
+				expect(form.type).toBe('autorun');
+				expect(type.invalid).toBe(false);
+			} finally {
+				Enum.getMergedItems = prevMerged;
+				EventEditor.types = prevTypes;
+			}
+			wrapper.unmount();
+		});
 	});
 }
 {

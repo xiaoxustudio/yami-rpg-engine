@@ -1,4 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
+/* oxlint-disable eslint/no-restricted-properties */
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -232,18 +232,41 @@ const switchNamespace = (): void => {
 	}
 };
 
-const targetWrite = (event: { value: string }): void => {
-	const type = event.value;
-	const elEventType = document.getElementById('registerEvent-type')!;
-	const registerType = 'register_' + type;
-	const source = EventEditor.types?.[registerType] ?? EventEditor.types?.all;
+const createEventTypeItems = (target: string): Array<{ name: string; value: string }> | null => {
+	const source = EventEditor.types?.['register_' + target] ?? EventEditor.types?.all;
 	if (!source) {
+		return null;
+	}
+	const items = Enum.getMergedItems!(source, target + '-event') as Array<{
+		name: string;
+		value: string;
+	}>;
+	return items.length > 0 ? items : null;
+};
+
+// 依据 target 加载 Type 下拉选项；用户主动切换 target 时强制回到该组首个事件类型
+const syncEventTypes = (target: string): void => {
+	const elEventType = document.getElementById('registerEvent-type');
+	if (!elEventType) {
 		return;
 	}
-	const eventTypes = Enum.getMergedItems!(source, type + '-event');
+	const eventTypes = createEventTypeItems(target);
+	if (!eventTypes) {
+		return;
+	}
+	// 窗口挂载早期元素可能尚未挂载控件 API，需保持可选调用
+	elEventType.loadItems?.(eventTypes);
+	elEventType.createTooltip?.();
+};
+
+const targetWrite = (event: { value: string }): void => {
+	const type = event.value;
+	const eventTypes = createEventTypeItems(type);
+	if (!eventTypes) {
+		return;
+	}
 	switchTypeAndTagInput();
-	elEventType?.loadItems?.(eventTypes);
-	elEventType?.createTooltip?.();
+	syncEventTypes(type);
 	form.type = eventTypes[0].value;
 };
 
@@ -289,6 +312,11 @@ const load = ({
 		tag
 	});
 	commands = children as unknown[];
+	// 打开/编辑窗口时按已载入的 target/operation/type 同步联动：
+	// Type 下拉必须先加载选项，否则选项为空（默认显示红色无效 autorun、无法展开下拉）
+	switchTypeAndTagInput();
+	syncEventTypes(form.target);
+	switchPriority();
 	switchNamespace();
 	requestFocus('registerEvent-target');
 };
