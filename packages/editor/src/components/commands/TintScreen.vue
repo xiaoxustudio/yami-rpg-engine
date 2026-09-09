@@ -124,7 +124,6 @@ onMounted(() => {
 		$('#tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 	$('#tintScreen')?.on?.('closed', () => {
-		clear($('#tintScreen-easingId'));
 		clear($('#tintScreen-filter'));
 	});
 });

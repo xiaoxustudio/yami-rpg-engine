@@ -402,6 +402,47 @@ vi.mock('@app/stores/local', () => ({
 			wrapper.unmount();
 		});
 
+		it('insert 打开即加载队伍下拉选项并显示默认文本（不依赖窗口 open 事件）', async () => {
+			const wrapper = mount(ChangeActorTeam, { attachTo: document.body });
+			await wrapper.vm.$nextTick();
+			CommandSchema.insert(target, 'changeActorTeam');
+			await wrapper.vm.$nextTick();
+			const team = document.getElementById('changeActorTeam-teamId') as unknown as {
+				dataItems?: Array<{ value: string }>;
+				invalid?: boolean;
+				read(): unknown;
+			};
+			const text = document.querySelector('#changeActorTeam-teamId .select-box-text');
+			// 修复前：下拉只靠窗口 'open' 事件加载选项，open 未触发时选项为空、无默认文本
+			expect(team.dataItems?.map((item) => item.value)).toEqual(['team0']);
+			expect(team.read()).toBe('team0');
+			expect(team.invalid).toBe(false);
+			expect(text?.textContent).toBe('Team 0');
+			wrapper.unmount();
+		});
+
+		it('窗口关闭后 SelectBox 内部文本节点不被删除（可再次打开显示）', async () => {
+			const wrapper = mount(ChangeActorTeam, { attachTo: document.body });
+			await wrapper.vm.$nextTick();
+			const select = document.getElementById('changeActorTeam-teamId') as HTMLElement;
+			expect(select.querySelector('.select-box-text')).toBeTruthy();
+			const frame = document.getElementById('changeActorTeam');
+			frame?.dispatchEvent(new Event('closed'));
+			await wrapper.vm.$nextTick();
+			// 修复前：closed 用 textContent 清空把 .select-box-text 一起删掉，之后再打开下拉永远空白
+			expect(select.querySelector('.select-box-text')).toBeTruthy();
+			// 关闭后再打开（open 事件重新 loadItems + load 相同默认值）：默认文本仍应显示
+			frame?.dispatchEvent(new Event('open'));
+			Command.cases.changeActorTeam.customLoad!({
+				actor: { type: 'trigger' },
+				teamId: 'team0'
+			});
+			await wrapper.vm.$nextTick();
+			const text = document.querySelector('#changeActorTeam-teamId .select-box-text');
+			expect(text?.textContent).toBe('Team 0');
+			wrapper.unmount();
+		});
+
 		it('edit 路径：handler.load 解构 params 到控件 DOM', async () => {
 			const wrapper = mount(ChangeActorTeam, { attachTo: document.body });
 			await wrapper.vm.$nextTick();

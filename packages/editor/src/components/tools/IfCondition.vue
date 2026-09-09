@@ -298,7 +298,6 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils.ts';
 import { Data } from '@app/data/data-object.ts';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
@@ -785,9 +784,6 @@ onMounted(() => {
 		$('#if-condition-actor-teamId')?.loadItems(Data.createTeamItems!());
 	});
 
-	$('#if-condition')?.on?.('closed', () => {
-		clear($('#if-condition-actor-teamId'));
-	});
 });
 </script>
 

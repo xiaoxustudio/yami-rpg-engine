@@ -169,7 +169,6 @@ onMounted(() => {
 		$('#tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 	$('#tintImage')?.on?.('closed', () => {
-		clear($('#tintImage-easingId'));
 		clear($('#tintImage-filter'));
 	});
 });

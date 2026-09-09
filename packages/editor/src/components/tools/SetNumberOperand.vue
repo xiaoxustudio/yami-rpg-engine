@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="setNumber-operand" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -193,7 +193,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
-import { on, clear } from '@app/utils/element-utils.ts';
+import { on } from '@app/utils/element-utils.ts';
 import { Data } from '@app/data/data-object.ts';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
@@ -741,7 +741,6 @@ onMounted(() => {
 	});
 
 	on($('#setNumber-operand'), 'closed', () => {
-		clear($('#setNumber-operand-other-teamId'));
 		$('#setNumber-operation').restore();
 	});
 });

@@ -69,7 +69,6 @@ onMounted(() => {
 	});
 	$('#moveLight')?.on?.('closed', () => {
 		clear($('#moveLight-properties'));
-		clear($('#moveLight-easingId'));
 	});
 });
 </script>

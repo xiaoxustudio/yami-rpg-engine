@@ -33,7 +33,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -56,9 +55,6 @@ onMounted(() => {
 	]);
 	$('#setAngle')?.on?.('open', () => {
 		$('#setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	$('#setAngle')?.on?.('closed', () => {
-		clear($('#setAngle-easingId'));
 	});
 });
 </script>

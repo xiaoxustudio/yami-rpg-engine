@@ -64,7 +64,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -159,10 +158,6 @@ onMounted(() => {
 		const items = Data.createTeamItems!();
 		$('#getActor-teamId')?.loadItems?.(items);
 		$('#getActor-exclusionTeamId')?.loadItems?.(items);
-	});
-	$('#getActor')?.on?.('closed', () => {
-		clear($('#getActor-teamId'));
-		clear($('#getActor-exclusionTeamId'));
 	});
 });
 </script>

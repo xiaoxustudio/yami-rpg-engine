@@ -98,7 +98,6 @@ import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectAnimationCommandSchema } from '@app/composables/commands/useSetObjectAnimationCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -224,9 +223,6 @@ onMounted(() => {
 	]);
 	$('#setObjectAnimation')?.on?.('open', () => {
 		$('#setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	$('#setObjectAnimation')?.on?.('closed', () => {
-		clear($('#setObjectAnimation-easingId'));
 	});
 });
 </script>

@@ -61,7 +61,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -114,9 +113,6 @@ onMounted(() => {
 	$('#getMultipleActors')?.on?.('open', function (_event: Event) {
 		const items = Data.createTeamItems!();
 		$('#getMultipleActors-teamId')?.loadItems?.(items);
-	});
-	$('#getMultipleActors')?.on?.('closed', function (_event: Event) {
-		clear($('#getMultipleActors-teamId'));
 	});
 });
 </script>

@@ -40,7 +40,6 @@ import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetVolumeCommandSchema } from '@app/composables/useSetVolumeCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -76,9 +75,6 @@ onMounted(() => {
 	]);
 	$('#setVolume')?.on?.('open', () => {
 		$('#setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	$('#setVolume')?.on?.('closed', () => {
-		clear($('#setVolume-easingId'));
 	});
 });
 </script>

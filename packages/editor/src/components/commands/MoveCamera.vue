@@ -35,7 +35,6 @@ import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -75,9 +74,6 @@ onMounted(() => {
 	]);
 	$('#moveCamera')?.on?.('open', () => {
 		$('#moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	$('#moveCamera')?.on?.('closed', () => {
-		clear($('#moveCamera-easingId'));
 	});
 });
 </script>

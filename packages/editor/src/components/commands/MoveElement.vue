@@ -69,7 +69,6 @@ onMounted(() => {
 	});
 	$('#moveElement')?.on?.('closed', () => {
 		clear($('#moveElement-properties'));
-		clear($('#moveElement-easingId'));
 	});
 });
 </script>

@@ -39,7 +39,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetZoomFactorCommandSchema } from '@app/composables/commands/useSetZoomFactorCommandSchema';
 import { $ } from '@app/utils/dom';
-import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -61,9 +60,6 @@ onMounted(() => {
 	]);
 	$('#setZoomFactor')?.on?.('open', () => {
 		$('#setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	$('#setZoomFactor')?.on?.('closed', () => {
-		clear($('#setZoomFactor-easingId'));
 	});
 });
 </script>
