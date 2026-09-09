@@ -877,6 +877,8 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
+import LayoutPaletteHost from '@app/components/layout/LayoutPaletteHost.vue';
+import PaletteNode from '@app/components/layout/PaletteNode.vue';
 import { getAnimationStore } from '@app/stores/animation';
 import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
