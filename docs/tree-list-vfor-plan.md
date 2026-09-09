@@ -1,4 +1,4 @@
-﻿# YMTreeList tree-api.ts 行渲染 v-for 化设计方案
+# YMTreeList tree-api.ts 行渲染 v-for 化设计方案
 
 - 状态：设计稿（未实施）
 - 日期：2026-09-02
@@ -215,6 +215,23 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 ## 5. 分步实施计划（每步独立可验证）
 
 ### 步骤 1：行为锁定测试补齐（在**现有命令式实现**上写，作为金标准）
+
+> **进度（2026-09-09）**：金标准测试已补齐至 **80 用例**（YMTreeList.spec 13 + tree-list-interactions.spec 26 + **tree-list-golden.spec 新增 25** + tree-core.spec 14 + null-data 2），ui-kit 全量 627→652 绿、oxlint 0 警告。本次 `tree-list-golden.spec.ts` 覆盖的缺口：
+>
+> | 缺口 | 覆盖用例 |
+> | --- | --- |
+> | dragend 清理 | 取消路径复位 dragging/hint/监听；进入目标后取消清除 hint class |
+> | F2 重命名 | F2 入口→textBox 挂载→提交改名→rename record 派发；未聚焦不进入 |
+> | 删除级联 | 删除含选中子孙的 folder：unselect 事件携带被移除项、选中清空；不影响子树外选中 |
+> | undo/redo（restore 全类型） | rename/delete/remove × undo+redo（create 的 undo→redo 循环） |
+> | element 契约 | update 后窗口内行连接；refresh 后 element 重建为新节点（旧节点断开）；折叠→展开引用不变 |
+> | duplicate 唯一名 | 连续 duplicate 生成 `Actor N` 递增序列、插位相邻、选中副本、folder 副本展开收集 |
+> | 虚拟滚动窗口 | 200 行窗口 [0,21) 只挂载窗口行 + 首尾 margin 占位；scroll→resize 窗口迁移 [150,171) 且滚动锚点正确 |
+> | scrollToSelection | active/middle 定位公式、滚动位置不变不重写、无滚动条时 no-op |
+> | Ctrl+Arrow 纯滚动 | ArrowUp/Down 各 ±20px 不改变选中；Ctrl+ 其它键不滚动不改选中 |
+> | 快/慢双击 | 慢双击（500ms Timer）进入重命名并提交改名；快双击文件 → open、不进入重命名；快双击 folder → 切换展开态 |
+>
+> **仍未覆盖（当前实现无对应键位映射，待步骤 2 定义行为后补测）**：PageUp/PageDown（keydown 未映射）；大数据（1000+ 节点）性能基准（步骤 2 前置）。
 
 现有 29 个测试缺口（全部先于任何重构落地，重构期间只允许改断言方式不允许改断言语义）：
 

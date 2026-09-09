@@ -1,6 +1,6 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + **LayoutPanel 12 页整壳接线**均已交付（接线当前未提交）；剩余 F.5 真机冒烟验收，见附录 F）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 12 页整壳接线均已交付并提交；**F.5 真机冒烟核心项已于 2026-09-09 自动验证通过**，见附录 F.5 验收记录；下一步 M4 交互数据化）
 - 日期：2026-09-03
 - 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`engine/layout/layout.ts`（M3b-2 后 ~1815 行，文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
@@ -157,7 +157,7 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - 二次同 scheme 加载（else 分支）与命令式共用同一恢复逻辑（不重建组树）；重载（先删 `page.scheme`）会先卸载旧树再重建单根。
 - 金标准 `layout-vue-scheme-load.spec.ts`（6 用例）：Vue 首载 vs 命令式首载逐叶状态/叶子宿主类/激活/palette 清空一致；默认关仍走命令式；点击+二次加载 lastValue 恢复且组树不重建；重载卸载重建单根；跨工作区 pageTargets 归属；双路快照等价。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 
-**M3b-2b（引擎 Teleport 模式 + LayoutPanel 整壳接线已落地；剩余 F.5 真机冒烟验收）**：
+**M3b-2b（引擎 Teleport 模式 + LayoutPanel 整壳接线已交付；F.5 真机冒烟核心项已自动验证通过，见 F.5 验收记录）**：
 - 整壳 Teleport 机制已探针验证（`layout-shell-teleport.spec.ts` 4 用例）：①整壳 `.page-frame`（壳+内容）经 LayoutPalettePage 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、`collectPageTargets` DOM walk 仍能发现归属；②nav-item Teleport 顺序 = palette 声明序，引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻可收敛到 tabs 序且幂等、nav.write 选中不受影响；③visible 类随节点搬家——真实序列依赖离开工作区前 `saveNavStates → write(nav,null) → switch(null)` 先清 visible，探针已按此前置模拟并收敛。
 - **引擎 Teleport 模式已落地（默认关，`YM_LAYOUT_VUE_RENDER=2|teleport`）**：新增 `Layout.loadLayoutSchemeVueTeleport`——宿主 page 只渲染/挂载 Vue 组树（不做 clear），按叶子发布归属（页→manager、页签→nav，store `pageTargets`/`tabTargets`，新增 `removePageTargets`/`removeTabTargets` 供卸载前收回），等 Teleport 落位后按 group.tabs 排序收敛每个叶子 nav/manager、激活首 tab（首载）或 `nav.lastValue`（二次进入）；组树重载时先收回旧树归属再卸载。端到端金标准 `layout-vue-teleport-load.spec.ts`（4 用例）：palette 复刻（整壳 page/nav wrappers）+ 真实引擎入口——首载落位激活、跨工作区只搬家不重建 + 返回 lastValue 恢复组树不重建、重载收回再发布节点身份不变、默认关命令式对照组。layout __tests__ 76→80 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。
 - 接线设计见**附录 F**：整壳 Teleport 模型、归属源、排序 pass、clear 终版语义；**LayoutPanel 12 页/12 nav-item 整壳接线已落地（工作区未提交）**——`LayoutPaletteHost`（纯模板实现，无 DOM API）包裹 `#layout-content` 内 NavBar/PageManager 子树，`PaletteNode`（source=page/tab）分别包 12 `.page-frame`/12 `.nav-item`；默认关透传 DOM 与现状一致（`layout-palette-wrappers.spec.ts` 护栏：单/多节点无额外元素、host 不产生 body 容器），teleport 模式把 palette 搬入 body 隐藏容器供引擎挂 Vue 组树；真机冒烟验收见 F.5。layout __tests__ 85→86（新增空 value 透传用例）。
@@ -166,8 +166,14 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 
 ### M4：交互数据化
 
+- **前置金标准（部分落地，2026-09-09）**：新增 `layout-nav-drop.spec.ts`（4 用例）锁定 navDrop 生效动作——①同组 drop 到 nav 空白（append）：页签/页移到底部、group.tabs 同步、saveLayoutScheme 往返保真；②同组 drop 到指定页签前（insert-before）；③跨组搬入：页签/页迁入目标组、源组剩余项重新激活、双方 tabs 同步；④源组被搬空：源组移除 + `prev.end=1`、同向根收敛为单组（含 flatten）。几何无关的 DOM/数据语义全部钉死，供 navDrop 数据化改造对照。
+- 剩余 jsdom 不可覆盖（几何依赖，留真机冒烟）：region 落点方向（left/right/top/bottom/center 阈值与相邻组判定）、border 缩放（computeSizes/setGroupSize/pointermove）、navDragenter 的 location 计算。
+- **真机拖拽冒烟（2026-09-09，`scripts/smoke-layout.mjs` drag-mode0/drag-mode2，合成 DragEvent 序列）**：
+  - mode0 跨组搬入（project → inspector 组）：源组搬空 → 组移除 + `prev.end=1` + 根 flatten 为单组 [inspector, project]，与 `layout-nav-drop.spec.ts` 第 4 例 jsdom 语义逐点一致（几何真实路径验证通过）。
+  - mode2（Teleport）同组重排：`[inspector, project] → [project, inspector]`，group.tabs 同步；随后页签 pointerdown 往返切换与 scene↔directory 往返均正常，节点身份不变、渲染日志仅预存 CSP 提示。**结论：当前命令式 navDrop 在 Teleport 模式下无即时 vnode/DOM 失配**；M4 数据化定位为一致性加固（消除命令式 insertBefore 与 Vue patch 的潜在竞争），非救火。
+  - 仍缺真机用例：region 分割（左/右/上/下）与 border 缩放（几何最重），留 M4 改造后补。
 - nav 拖拽 drop：`removeItemTo` 落点计算保留命令式（测坐标/邻居），但**生效动作**改为更新 tabs 数据 + `list.updateGroupTabs` 读数据；region 分割/合并、border 缩放改 `updateGroups` 读数据重排，移除命令式 replaceChild/insertBefore 路径。
-- 验证：M1 拖拽/缩放缺口用例 + 冒烟清单。
+- 验证：nav-drop 金标准 + M1 拖拽/缩放缺口用例 + 真机冒烟清单。
 
 ### M5：清除脚手架 & 解锁 tree v-for
 
@@ -365,8 +371,13 @@ loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLay
 - 所有机制先 jsdom 结构断言（layout-shell-teleport.spec.ts 等），LayoutPanel 真机改动独立 PR 默认关。
 
 ### F.5 M3b-2b 接线真机验收（增量）
-1. 开关开进入 directory：目录内 12 页壳仍在 palette（隐藏宿主），可见页/页签出现在各组 manager/nav；首 tab 激活、selected/visible 正确。
-2. 页签点击/拖跨组后：DOM 归属与 store.pageTargets/tabTargets 一致，nav 顺序 = tabs（排序 pass 生效），页/页签节点身份不变。
-3. scene/ui/animation/particle 画布页往返：挂载计数 1、GL.canvas 正常、dpr/尺寸 resize 正常；inspector 嵌套页不受影响。
-4. saveLayoutScheme/saveToConfig 往返保真；重启恢复（loadFromConfig）后布局一致。
-5. 关回默认开关：与现状行为逐项一致（回归护栏）。
+
+> **验收记录（2026-09-09，自动冒烟）**：以真实项目（E:\17835\Documents\Project1\game.yamirpg）驱动完成，驱动脚本 `scripts/smoke-layout.mjs`（CDP，Node>=22 全局 WebSocket；`pnpm -F @yami/editor build:all` 后 `electron --remote-debugging-port=9223 .` 启动，跑 `mode2-directory`/`roundtrip-scene`/`mode0-control` 各阶段）。结果：渲染进程日志仅一条预存 Electron CSP 提示，无 Vue/TypeError/未捕获异常。
+
+1. ✅ 开关开进入 directory：活动工作区叶子组 project/inspector 的 nav 顺序 = tabs（排序 pass 生效）、首 tab 激活（两帧均 selected/visible）；组 manager 内每叶恰一页帧、无重复壳。
+2. ✅ 页/页签 DOM 归属：可见页物理位于 group manager；directory↔scene 往返后同批帧节点 `isConnected` 恒真、父级随工作区迁移，身份不重建。
+3. ✅ scene 画布页往返：scene 工作区 7 组、4 个 GL canvas、scene-body/palette-body/sprite-body 存在，返回 directory 后恢复正确；inspector 页（#inspector-page-manager 43 子页）全程不受影响。
+4. ⏳ saveLayoutScheme/saveToConfig 往返 + 重启恢复：未覆盖（需驱动真实保存与进程重启），留人工抽查（jsdom 层已有 layout-config.spec 5 用例钉死）。
+5. ✅ 关回默认开关：mode0 对照组与 mode2 同构（project/inspector 两叶、首 tab 激活、inManager 4），回归护栏通过。
+
+**M3b-2b 至此完结，下一项 M4 交互数据化。**
