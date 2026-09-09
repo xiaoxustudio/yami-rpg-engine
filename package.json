@@ -39,14 +39,14 @@
 		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^21.0.1",
-		"@commitlint/config-conventional": "^21.0.1",
+		"@commitlint/cli": "^21.2.2",
+		"@commitlint/config-conventional": "^21.2.2",
 		"archiver": "^7.0.1",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
 		"oxfmt": "^0.60.0",
-		"oxlint": "^1.75.0",
+		"oxlint": "^1.82.0",
 		"oxlint-tsgolint": "^7.0.2001"
 	},
-	"packageManager": "pnpm@12.0.0-rc.9+sha512.8919de615394189e5f1ebf999b78839366952de76d8f2b12eedba282efb7f8c91250c5718247c479938f86168e73765968e94fb62b3603ab481a334061201979"
+	"packageManager": "pnpm@12.3.4+sha512.961aa41fb077da3a04a441d9f8e15ebc0c96da8ef710b2eb67bf9ee7cb0610eabd48f1fd85f51cffe73846785fa0f87c56a3a872a1d893f8446741b5cce45457"
 }
