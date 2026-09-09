@@ -1413,6 +1413,113 @@
 }
 
 /* --------------------------------
+ * 设置文本框
+ * --------------------------------
+ */
+#setTextBox {
+	width: 324px;
+	height: 204px;
+}
+
+#setTextBox-properties {
+	height: 102px;
+}
+
+#setTextBox-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setTextBox-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+/* --------------------------------
+ * 设置文本框 - 属性
+ * --------------------------------
+ */
+#setTextBox-property {
+	width: 324px;
+	height: 122px;
+}
+
+#setTextBox-property-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setTextBox-property-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+/* --------------------------------
+ * 设置按钮
+ * --------------------------------
+ */
+#setButton {
+	width: 324px;
+	height: 204px;
+}
+
+#setButton-properties {
+	height: 102px;
+}
+
+#setButton-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setButton-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+/* --------------------------------
+ * 设置按钮 - 属性
+ * --------------------------------
+ */
+#setButton-property {
+	width: 324px;
+	height: 194px;
+}
+
+#setButton-property-content {
+	height: 92px;
+}
+
+#setButton-property-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#setButton-property-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+/* --------------------------------
+ * 控制按钮
+ * --------------------------------
+ */
+#controlButton {
+	width: 324px;
+	height: 122px;
+}
+
+#controlButton-confirm {
+	right: 108px;
+	bottom: 10px;
+}
+
+#controlButton-cancel {
+	right: 10px;
+	bottom: 10px;
+}
+
+/* --------------------------------
  * 设置对话�? * --------------------------------
  */
 #setDialogBox {
