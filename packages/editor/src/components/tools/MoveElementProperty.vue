@@ -174,7 +174,10 @@ const { t } = useI18n();
 
 const form = TransformProperty.form;
 
-onMounted(() => {});
+onMounted(() => {
+	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动
+	TransformProperty.ensureSetup?.();
+});
 </script>
 
 <style>

@@ -132,7 +132,10 @@ const color = stringField('color');
 const font = stringField('font');
 const effectColor = stringField('effect-color');
 
-onMounted(() => {});
+onMounted(() => {
+	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动
+	DialogBoxProperty.ensureSetup?.();
+});
 </script>
 
 <style>

@@ -143,7 +143,10 @@ const imageOpacity = numberField('imageOpacity');
 const size = numberField('size');
 const letterSpacing = numberField('letterSpacing');
 
-onMounted(() => {});
+onMounted(() => {
+	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动
+	ButtonProperty.ensureSetup?.();
+});
 </script>
 
 <style>
