@@ -166,20 +166,38 @@ const waitActive = async (send, workspace, ms = 15000) => {
 };
 
 async function openRecentProject(send) {
-	await waitForSelector(send, '#home-recent-list .home-recent-item', 20000);
-	const clicked = await evaluate(
-		send,
-		`(() => {
-			const item = [...document.querySelectorAll('#home-recent-list .home-recent-item')].find(
-				(el) => /game\\.yamirpg/.test(el.textContent || '')
-			);
-			if (!item) return false;
-			item.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-			return true;
-		})()`
-	);
-	if (!clicked) throw new Error('no recent project item found');
-	await waitActive(send, 'directory', 25000);
+	await waitForSelector(send, '#home-recent-list .home-recent-item', 25000);
+	let ok = false;
+	let lastState = null;
+	for (let attempt = 0; attempt < 3 && !ok; attempt++) {
+		const clicked = await evaluate(
+			send,
+			`(() => {
+				const item = [...document.querySelectorAll('#home-recent-list .home-recent-item')].find(
+					(el) => /game\\.yamirpg/.test(el.textContent || '')
+				);
+				if (!item) return 'no-item';
+				item.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+				item.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+				item.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
+				return 'clicked';
+			})()`
+		);
+		await sleep(3000);
+		ok = await waitActive(send, 'directory', 12000);
+		lastState = clicked;
+		if (!ok) {
+			log('open attempt', attempt, 'failed, state:', await evaluate(
+				send,
+				`(() => {
+					const ws = document.getElementById('workspace-page-manager');
+					const active = ws ? [...ws.children].find((c) => c.classList.contains('visible')) : null;
+					return active?.getAttribute('value') ?? null;
+				})()`
+			));
+		}
+	}
+	if (!ok) throw new Error('open recent project failed (last click: ' + lastState + ')');
 }
 
 async function switchTo(send, value) {
@@ -325,103 +343,117 @@ async function mode0Control() {
 	ws.close();
 }
 
+// 真机拖拽探针（M4）：
+// - dragend 统一派发到「存活 nav 集合」（结构折叠后原 item 可能已脱离可冒泡容器，见 2026-09-09 记录）
+// - 场景自适应：优先同组重排；若活动工作区无多页签叶子，先跨组合并再造多页签叶，再同组重排
 async function dragReorderPhase() {
 	const { ws, send } = await connect();
 	await send('Runtime.enable');
 	await waitActive(send, 'directory', 20000);
-	const before = await evaluate(
-		send,
-		`(() => {
-			const ws = document.getElementById('workspace-page-manager');
-			const frame = [...ws.children].find((c) => c.getAttribute('value') === 'directory');
-			const navs = [...frame.querySelectorAll('.nav-bar')];
-			return navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value')));
-		})()`
-	);
-	const drag = await evaluate(
-		send,
-		`(() => {
-			const ws = document.getElementById('workspace-page-manager');
-			const frame = [...ws.children].find((c) => c.getAttribute('value') === 'directory');
-			const navs = [...frame.querySelectorAll('.nav-bar')];
-			const values = (n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'));
-			const multi = navs.find((n) => values(n).length >= 2);
-			let item, trigger, dropTarget;
-			if (multi) {
-				// 同组重排：拖最后一个页签到第一个页签之前
-				const list = values(multi);
-				item = multi.querySelector('.nav-item[value="' + list[list.length - 1] + '"]');
-				trigger = multi.querySelector('.nav-item[value="' + list[0] + '"]');
-				dropTarget = multi;
-			} else if (navs.length >= 2) {
-				// 跨组搬入：把第一个组唯一页签 append 到第二个组 nav
-				const a = navs[0];
-				const b = navs[1];
-				item = a.querySelector('.nav-item');
-				trigger = b;
-				dropTarget = b;
-			} else {
-				return { error: 'no drag target', values: navs.map(values) };
+	const probe = async (expression) => {
+		const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+		if (r.exceptionDetails)
+			throw new Error(
+				'probe failed: ' +
+					JSON.stringify(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)
+			);
+		return r.result?.value;
+	};
+	const before = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		return {
+			workspace: frame?.getAttribute('value') ?? null,
+			navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value')))
+		};
+	})()`);
+	const drag = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const navs = () => frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		const values = (n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'));
+		const log = [];
+		const cleanup = () => {
+			for (const n of navs()) {
+				n.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true }));
 			}
-			const log = [];
-			const fire = (el, type, dt) => {
-				const e = new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: dt });
-				el.dispatchEvent(e);
-				log.push(type + ':' + (e.defaultPrevented ? 'prevented' : 'ok'));
-			};
-			const dt = new DataTransfer();
+		};
+		const fire = (el, type, dt) => {
+			const e = new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: dt });
+			el.dispatchEvent(e);
+			log.push(type + ':' + (e.defaultPrevented ? 'prevented' : 'ok'));
+		};
+		const dt = new DataTransfer();
+		cleanup(); // 清残留 dragging
+		let multi = navs().find((n) => values(n).length >= 2);
+		let merged = false;
+		if (!multi && navs().length >= 2) {
+			// 跨组合并：第一组唯一页签 append 进第二组，造出多页签叶
+			const a = navs()[0];
+			const b = navs()[1];
+			const item = a.querySelector('.nav-item');
+			log.push('cross:' + item.getAttribute('value') + '->' + values(b).join(','));
 			fire(item, 'dragstart', dt);
-			fire(trigger, 'dragenter', dt);
-			fire(trigger, 'dragover', dt);
-			fire(dropTarget, 'drop', dt);
-			fire(item, 'dragend', dt);
-			return { log, item: item.getAttribute('value') };
-		})()`
-	);
-	await sleep(400);
-	const after = await evaluate(
-		send,
-		`(() => {
-			const ws = document.getElementById('workspace-page-manager');
-			const frame = [...ws.children].find((c) => c.getAttribute('value') === 'directory');
-			const navs = [...frame.querySelectorAll('.nav-bar')];
-			const root = frame.querySelector(':scope > .group, .group');
-			return {
-				navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'))),
-				groups: frame.querySelectorAll('.group').length,
-				rootTabs: root && root.tabs ? [...root.tabs] : null,
-				firstGroupIsLeaf: !!(root && root.manager)
-			};
-		})()`
-	);
-	// 完整性探针：拖拽后切页签往返仍正常（检测 Vue/命令式 DOM 是否失配）
-	const integrity = await evaluate(
-		send,
-		`(() => {
-			const ws = document.getElementById('workspace-page-manager');
-			const frame = [...ws.children].find((c) => c.getAttribute('value') === 'directory');
-			const navs = [...frame.querySelectorAll('.nav-bar')];
-			const leafNav = navs.find((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).length >= 2) ?? navs[0];
-			const items = [...leafNav.children].filter((c) => c.classList.contains('nav-item'));
-			const first = items[0].getAttribute('value');
-			const second = items[1] ? items[1].getAttribute('value') : null;
-			const click = (v) => {
-				const el = leafNav.querySelector('.nav-item[value="' + v + '"]');
-				if (!el) return 'missing:' + v;
-				el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-				el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
-				return 'ok';
-			};
-			const r1 = click(second ?? first);
-			const r2 = click(first);
-			const mgr = leafNav.parentNode.querySelector('.group-manager');
-			return {
-				clicks: [r1, r2],
-				selectedAfter: leafNav.querySelector('.nav-item.selected')?.getAttribute('value') ?? null,
-				visible: mgr ? [...mgr.children].filter((c) => c.classList.contains('visible')).map((c) => c.getAttribute('value')) : null
-			};
-		})()`
-	);
+			fire(b, 'dragenter', dt);
+			fire(b, 'dragover', dt);
+			fire(b, 'drop', dt);
+			cleanup();
+			merged = true;
+			multi = navs().find((n) => values(n).length >= 2) ?? null;
+		}
+		if (!multi) return { error: 'no drag target after merge', navs: navs().map(values), log };
+		// 同组重排：末位页签拖到首位页签前
+		const list = values(multi);
+		const lastItem = multi.querySelector('.nav-item[value="' + list[list.length - 1] + '"]');
+		const firstItem = multi.querySelector('.nav-item[value="' + list[0] + '"]');
+		fire(lastItem, 'dragstart', dt);
+		fire(firstItem, 'dragenter', dt);
+		fire(firstItem, 'dragover', dt);
+		fire(multi, 'drop', dt);
+		cleanup();
+		return { merged, log, dragValue: list[list.length - 1], anchor: list[0] };
+	})()`);
+	await sleep(500);
+	const after = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		const root = frame ? frame.querySelector(':scope > .group, .group') : null;
+		return {
+			navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'))),
+			groups: frame ? frame.querySelectorAll('.group').length : 0,
+			rootTabs: root && root.tabs ? [...root.tabs] : null,
+			firstGroupIsLeaf: !!(root && root.manager),
+			staleRegions: document.querySelectorAll('group-region').length
+		};
+	})()`);
+	// 完整性探针：拖拽后切页签往返仍正常
+	const integrity = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		const leafNav = navs.find((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).length >= 2) ?? navs[0];
+		const items = [...leafNav.children].filter((c) => c.classList.contains('nav-item'));
+		if (items.length < 2) return { skipped: true };
+		const first = items[0].getAttribute('value');
+		const second = items[1].getAttribute('value');
+		const click = (v) => {
+			const el = leafNav.querySelector('.nav-item[value="' + v + '"]');
+			if (!el) return 'missing:' + v;
+			el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+			el.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
+			return 'ok';
+		};
+		const r1 = click(second);
+		const r2 = click(first);
+		const mgr = leafNav.parentNode.querySelector('.group-manager');
+		return {
+			clicks: [r1, r2],
+			selectedAfter: leafNav.querySelector('.nav-item.selected')?.getAttribute('value') ?? null,
+			visible: mgr ? [...mgr.children].filter((c) => c.classList.contains('visible')).map((c) => c.getAttribute('value')) : null
+		};
+	})()`);
 	out('drag', { before, drag, after, integrity });
 	ws.close();
 }
