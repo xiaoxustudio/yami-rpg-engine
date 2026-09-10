@@ -1,135 +1,24 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout, getPageScheme, setItemPage } from '@app/engine/layout/layout.ts';
-import { createPageManagerElement, type PageManagerApi } from '@ui-kit';
+import { Layout, getPageScheme } from '@app/engine/layout/layout.ts';
+import {
+	buildLayoutFixture,
+	clickNavItem,
+	collectLeaves,
+	managerValues,
+	mountScheme,
+	navValues,
+	registerLayout,
+	selectedOf,
+	switchWorkspace,
+	visibleOf,
+	type SchemeNode
+} from './layout-spec-utils';
 import '@app/utils/css';
 
-// layout Vue 化的行为金标准（docs/layout-vue-plan.md M1）
-// 锁定：palette 消耗/清理、scheme 首载 group 结构、首 tab 激活、页签点击切换、
-// 跨工作区搬移（节点对象不变、parent 迁移）、二次加载 lastValue 恢复、scheme 往返保真。
-// 这些是后续 M3（Vue 渲染 group + Teleport）必须保持的"最终 DOM 形态等价"基线。
-
-type SchemeNode = {
-	end: number;
-	split?: string;
-	children?: SchemeNode[];
-	tabs?: string[];
-};
-
-type LayoutLeafElement = {
-	nav: HTMLElement;
-	manager: PageManagerApi;
-};
-
-type LayoutItemElement = HTMLElement & { page: HTMLElement };
-
-interface LayoutFixture {
-	workspace: PageManagerApi;
-	directory: HTMLElement;
-	scene: HTMLElement;
-	items: Record<string, LayoutItemElement> & { list: LayoutItemElement[] };
-	paletteNav: HTMLElement;
-	paletteManager: HTMLElement;
-}
-
-const TAB_VALUES = ['project', 'scene', 'inspector'] as const;
-
-const createPageFrame = (value: string): HTMLElement => {
-	const frame = document.createElement('div');
-	frame.className = 'page-frame';
-	frame.id = value;
-	frame.setAttribute('value', value);
-	return frame;
-};
-
-const buildFixture = (): LayoutFixture => {
-	document.body.innerHTML = '';
-	const workspace = createPageManagerElement();
-	workspace.id = 'workspace-page-manager';
-	const directory = createPageFrame('directory');
-	const scene = createPageFrame('scene');
-	workspace.append(directory, scene);
-	document.body.append(workspace);
-
-	const paletteNav = document.createElement('div');
-	paletteNav.id = 'layout-nav';
-	const paletteManager = document.createElement('div');
-	paletteManager.id = 'layout-page-manager';
-	paletteManager.className = 'page-manager';
-	directory.append(paletteNav, paletteManager);
-
-	const items = {} as Record<string, LayoutItemElement> & { list: LayoutItemElement[] };
-	const list: LayoutItemElement[] = [];
-	for (const value of TAB_VALUES) {
-		const navItem = document.createElement('div') as unknown as LayoutItemElement;
-		navItem.className = 'nav-item';
-		navItem.draggable = true;
-		navItem.setAttribute('value', value);
-		paletteNav.append(navItem);
-		const page = createPageFrame(value);
-		paletteManager.append(page);
-		navItem.page = page;
-		// M5-a：登记到引擎内部配对（生产路径由 Layout.initialize 完成）
-		setItemPage(navItem, page);
-		items[value] = navItem;
-		list.push(navItem);
-	}
-	items.list = list;
-
-	return { workspace, directory, scene, items, paletteNav, paletteManager };
-};
-
-const registerLayout = (fixture: LayoutFixture): void => {
-	Layout.manager = fixture.workspace as unknown as typeof Layout.manager;
-	Layout.items = fixture.items as unknown as typeof Layout.items;
-	Layout.layout = null;
-	Layout.default = null;
-};
-
-const loadScheme = (key: string, scheme: SchemeNode): void => {
-	Layout.layout = { [key]: scheme } as unknown as typeof Layout.layout;
-	Layout.loadLayoutScheme!(key);
-};
-
-const schemeOf = (root: HTMLElement): unknown => getPageScheme(root);
-
-const collectLeaves = (group: Element): LayoutLeafElement[] => {
-	const leaves: LayoutLeafElement[] = [];
-	for (const child of group.children) {
-		if (child.classList.contains('group')) {
-			if ((child as HTMLElement & { manager?: PageManagerApi }).manager) {
-				leaves.push(child as unknown as LayoutLeafElement);
-			} else {
-				leaves.push(...collectLeaves(child));
-			}
-		}
-	}
-	return leaves;
-};
-
-const navValues = (nav: HTMLElement): string[] =>
-	Array.from(nav.children)
-		.filter((child) => child.classList.contains('nav-item'))
-		.map((child) => child.getAttribute('value')!);
-
-const managerValues = (manager: HTMLElement): string[] =>
-	Array.from(manager.children)
-		.filter((child) => child.classList.contains('page-frame'))
-		.map((child) => child.getAttribute('value')!);
-
-const selectedOf = (nav: HTMLElement): string | null =>
-	nav.querySelector('.nav-item.selected')?.getAttribute('value') ?? null;
-
-const visibleOf = (manager: HTMLElement): string[] =>
-	Array.from(manager.children)
-		.filter(
-			(child) => child.classList.contains('page-frame') && child.classList.contains('visible')
-		)
-		.map((child) => child.getAttribute('value')!);
-
-const clickNavItem = (nav: HTMLElement, value: string): void => {
-	const item = nav.querySelector(`.nav-item[value="${value}"]`) as HTMLElement;
-	item.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-};
+// layout 行为金标准（M5-b 后：唯一装载路径 = Vue 组树 + 整壳 Teleport）
+// 锁定：palette 支架常驻 body 隐藏容器（不再被 clear 摧毁）、首载 group 结构、
+// 首 tab 激活、页签点击切换、跨工作区搬移（节点对象不变、parent 迁移）、
+// 二次加载会话值恢复、scheme 往返保真。
 
 const directoryScheme: SchemeNode = {
 	end: 1,
@@ -153,15 +42,16 @@ beforeEach(() => {
 	document.body.innerHTML = '';
 });
 
-describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
-	it('首次加载：clear 摧毁 palette 挂载，页面/页签被搬进 group（现状语义锁定）', () => {
-		const fixture = buildFixture();
+describe('Layout scheme 行为金标准（Vue 组树 + 整壳 Teleport）', () => {
+	it('首载：palette 支架移入 body 隐藏容器（不再被 clear 摧毁），页/页签落位到叶子', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 
-		expect(fixture.paletteNav.parentNode).toBeNull();
-		expect(fixture.paletteManager.parentNode).toBeNull();
+		const holder = document.body.querySelector('.layout-palette-holder');
+		expect(holder).not.toBeNull();
+		expect(holder?.contains(fixture.paletteNav)).toBe(true);
 		expect(fixture.directory.querySelector('#layout-nav')).toBeNull();
 		expect(fixture.directory.querySelector('#layout-page-manager')).toBeNull();
 
@@ -178,16 +68,14 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 
 		expect(fixture.items.project.parentNode).toBe(leaves[0].nav);
 		expect(fixture.items.project.page.parentNode).toBe(leaves[0].manager);
-		expect(schemeOf(fixture.directory)).toBe(
-			getPageScheme(fixture.workspace.active as HTMLElement)
-		);
+		expect(getPageScheme(fixture.directory)).toBe(Layout.layout!.directory);
 	});
 
-	it('首次加载：每个 group 激活首 tab（nav selected + page visible）', () => {
-		const fixture = buildFixture();
+	it('首次加载：每个 group 激活首 tab（nav selected + page visible）', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 
 		const leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
 		expect(selectedOf(leaves[0].nav)).toBe('project');
@@ -200,11 +88,11 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 		expect(leaves[1].manager.index).toBe('scene');
 	});
 
-	it('点击页签：nav write → manager.switch，selected/visible 迁移到目标页', () => {
-		const fixture = buildFixture();
+	it('点击页签：nav write → manager.switch，selected/visible 迁移到目标页', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 
 		const leaf = collectLeaves(fixture.directory.firstElementChild as HTMLElement)[0];
 		clickNavItem(leaf.nav, 'inspector');
@@ -215,16 +103,16 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 		expect(leaf.manager.index).toBe('inspector');
 	});
 
-	it('跨工作区：同一批节点搬到新 group，旧 group 清空但保留', () => {
-		const fixture = buildFixture();
+	it('跨工作区：同一批节点搬到新 group，旧 group 清空但保留', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 		const directoryRoot = fixture.directory.firstElementChild as HTMLElement;
 		const directoryLeaves = collectLeaves(directoryRoot);
 
-		fixture.workspace.switch('scene');
-		loadScheme('scene', sceneScheme);
+		switchWorkspace(fixture, 'scene');
+		await mountScheme('scene', sceneScheme);
 		const sceneRoot = fixture.scene.firstElementChild as HTMLElement;
 		const sceneLeaves = collectLeaves(sceneRoot);
 
@@ -243,22 +131,22 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 		expect(directoryRoot.isConnected).toBe(true);
 	});
 
-	it('返回工作区：二次加载幂等恢复并把 lastValue 选回上次页签', () => {
-		const fixture = buildFixture();
+	it('返回工作区：二次加载幂等恢复并把会话值选回上次页签', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 		const directoryRoot = fixture.directory.firstElementChild as HTMLElement;
 		const directoryLeaves = collectLeaves(directoryRoot);
 
 		clickNavItem(directoryLeaves[0].nav, 'inspector');
 		Layout.saveNavStates!();
 
-		fixture.workspace.switch('scene');
-		loadScheme('scene', sceneScheme);
+		switchWorkspace(fixture, 'scene');
+		await mountScheme('scene', sceneScheme);
 
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 
 		const leaves = collectLeaves(directoryRoot);
 		expect(managerValues(leaves[0].manager)).toEqual(['project', 'inspector']);
@@ -266,17 +154,17 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 
 		expect(selectedOf(leaves[0].nav)).toBe('inspector');
 		expect(visibleOf(leaves[0].manager)).toEqual(['inspector']);
-		expect(leaves[0].manager.index).toBe('inspector');
+		expect(leaves[0].manager.active).toBe(fixture.items.inspector.page);
 
 		expect(selectedOf(leaves[1].nav)).toBe('scene');
 		expect(visibleOf(leaves[1].manager)).toEqual(['scene']);
 	});
 
-	it('saveLayoutScheme 往返：结构保真（end/split/tabs 顺序不变）', () => {
-		const fixture = buildFixture();
+	it('saveLayoutScheme 往返：结构保真（end/split/tabs 顺序不变）', async () => {
+		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
-		fixture.workspace.switch('directory');
-		loadScheme('directory', directoryScheme);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', directoryScheme);
 		const root = fixture.directory.firstElementChild as HTMLElement;
 
 		clickNavItem(collectLeaves(root)[0].nav, 'inspector');

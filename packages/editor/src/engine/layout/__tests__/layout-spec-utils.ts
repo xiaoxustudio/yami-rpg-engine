@@ -1,5 +1,12 @@
 import { createPageManagerElement, type PageManagerApi } from '@ui-kit';
-import { Layout, setItemPage } from '@app/engine/layout/layout.ts';
+import {
+	Layout,
+	setItemPage,
+	awaitVueLayoutLoad,
+	refreshLayoutTargets,
+	getNavLastValue
+} from '@app/engine/layout/layout.ts';
+import * as elementUtils from '@app/utils/element-utils';
 
 // layout 行为金标准共享 fixture（docs/layout-vue-plan.md M1）
 // 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再驱动 Layout 命令式构建，
@@ -109,16 +116,85 @@ export function buildLayoutFixture(values: readonly string[] = [...TAB_VALUES]):
 	return { workspace, directory, scene, items, paletteNav, paletteManager };
 }
 
+let currentFixture: LayoutFixture | null = null;
+
 export function registerLayout(fixture: LayoutFixture): void {
+	currentFixture = fixture;
 	Layout.manager = fixture.workspace as unknown as typeof Layout.manager;
 	Layout.items = fixture.items as unknown as typeof Layout.items;
 	Layout.layout = null;
 	Layout.default = null;
 }
 
-export function mountScheme(key: string, scheme: SchemeNode): void {
+/** 模拟 LayoutPalettePage 的「整壳 Teleport」：按叶子 tabs 把 palette 页签/页放进叶子宿主 */
+export function placePaletteIntoLeaves(fixture: LayoutFixture | null = currentFixture): void {
+	if (!fixture) return;
+	const page =
+		(Layout.manager as unknown as { active?: HTMLElement | null } | null)?.active ?? null;
+	if (!page) return;
+	const root = Array.from(page.children).find((child) => child.classList.contains('group'));
+	if (!root) return;
+	const leaves: Array<
+		HTMLElement & { tabs?: string[]; nav?: HTMLElement; manager?: PageManagerApi }
+	> = [];
+	const walk = (el: Element): void => {
+		if (!el.classList.contains('group')) return;
+		const host = el as (typeof leaves)[number];
+		if (host.nav !== undefined && host.manager !== undefined) {
+			leaves.push(host);
+			return;
+		}
+		for (const child of Array.from(el.children)) {
+			if (child.classList.contains('group')) walk(child);
+		}
+	};
+	walk(root);
+	const { write } = elementUtils;
+	for (const leaf of leaves) {
+		for (const tab of leaf.tabs ?? []) {
+			const item = fixture.items[tab];
+			if (!item) continue;
+			leaf.nav!.appendChild(item);
+			if (item.page) leaf.manager!.appendChild(item.page);
+		}
+		// 与 teleport 装载一致：激活「既有选中 ?? 会话恢复值 ?? 首 tab」，并驱动 manager.switch
+		// （YMNavBar.write 在 dataValue 相同——装载期已写过——时不再派发 write 事件）
+		if (leaf.nav && (leaf.tabs ?? []).length !== 0) {
+			const selectedEl = leaf.nav.querySelector('.nav-item.selected') as HTMLElement | null;
+			const target =
+				selectedEl?.getAttribute('value') ?? getNavLastValue(leaf.nav) ?? leaf.tabs![0];
+			write(leaf.nav, target);
+			const manager = leaf.manager as PageManagerApi & { switch?: (value: string) => void };
+			manager.switch?.(target);
+		}
+	}
+	refreshLayoutTargets();
+}
+
+/** 模拟 LayoutPaletteHost：palette 支架移出宿主页到 body 隐藏容器（teleport 形态） */
+export function movePaletteToHolder(fixture: LayoutFixture | null = currentFixture): void {
+	if (!fixture) return;
+	let holder = document.body.querySelector('.layout-palette-holder') as HTMLElement | null;
+	if (holder === null) {
+		holder = document.createElement('div');
+		holder.className = 'layout-palette-holder';
+		holder.style.display = 'none';
+		document.body.append(holder);
+	}
+	holder.append(fixture.paletteNav, fixture.paletteManager);
+}
+
+/**
+ * M5-b：装载路径唯一（Vue 组树 + 整壳 Teleport）。fixture 环境没有 Vue palette 包装，
+ * 因此装载前模拟 LayoutPaletteHost（palette 支架移出宿主页到 body 隐藏容器），
+ * 装载后由 placePaletteIntoLeaves 模拟整壳落位，语义与真机一致。
+ */
+export async function mountScheme(key: string, scheme: SchemeNode): Promise<void> {
+	movePaletteToHolder();
 	Layout.layout = { [key]: scheme } as unknown as typeof Layout.layout;
 	Layout.loadLayoutScheme!(key);
+	await awaitVueLayoutLoad();
+	placePaletteIntoLeaves();
 }
 
 export function switchWorkspace(fixture: LayoutFixture, key: string): void {

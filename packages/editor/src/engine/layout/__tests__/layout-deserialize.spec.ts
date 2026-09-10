@@ -18,17 +18,17 @@ import {
 // saveLayoutScheme 已改为 toLayoutScheme(deserializeGroupElement(root))，
 // 本文件独立锁定反序列化字段契约与 active 跟踪。
 
-const loadDirectory = (): ReturnType<typeof buildLayoutFixture> => {
+const loadDirectory = async (): Promise<ReturnType<typeof buildLayoutFixture>> => {
 	const fixture = buildLayoutFixture();
 	registerLayout(fixture);
 	switchWorkspace(fixture, 'directory');
-	mountScheme('directory', DIRECTORY_SCHEME);
+	await mountScheme('directory', DIRECTORY_SCHEME);
 	return fixture;
 };
 
 describe('deserializeGroupElement / deserializePage 字段契约', () => {
-	it('首载 DIRECTORY：反序列化还原 scheme 结构（end/split/tabs）', () => {
-		const fixture = loadDirectory();
+	it('首载 DIRECTORY：反序列化还原 scheme 结构（end/split/tabs）', async () => {
+		const fixture = await loadDirectory();
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		const tree = deserializeGroupElement(root);
 		expect(tree.kind).toBe('split');
@@ -39,8 +39,8 @@ describe('deserializeGroupElement / deserializePage 字段契约', () => {
 		expect(toLayoutScheme(pageTree as LayoutTreeNode)).toEqual(DIRECTORY_SCHEME);
 	});
 
-	it('active 读取 manager.index：首载首 tab 激活，点击后迁移', () => {
-		const fixture = loadDirectory();
+	it('active 读取 manager.index：首载首 tab 激活，点击后迁移', async () => {
+		const fixture = await loadDirectory();
 		const root = fixture.directory.firstElementChild as HTMLElement;
 
 		let tree = deserializeGroupElement(root);
@@ -56,8 +56,8 @@ describe('deserializeGroupElement / deserializePage 字段契约', () => {
 		expect(leaves[0]?.active).toBe('inspector');
 	});
 
-	it('saveNavStates 清空激活后 index 为 undefined → active 归一为 null', () => {
-		const fixture = loadDirectory();
+	it('saveNavStates 清空激活后 index 为 undefined → active 归一为 null', async () => {
+		const fixture = await loadDirectory();
 		Layout.saveNavStates!();
 		const leaves = leavesOf(
 			deserializeGroupElement(fixture.directory.firstElementChild as HTMLElement)
@@ -66,8 +66,8 @@ describe('deserializeGroupElement / deserializePage 字段契约', () => {
 		expect(leaves[1]?.active).toBeNull();
 	});
 
-	it('空/未物化宿主页（scene 未加载、home 无 group 树）返回 null', () => {
-		const fixture = loadDirectory();
+	it('空/未物化宿主页（scene 未加载、home 无 group 树）返回 null', async () => {
+		const fixture = await loadDirectory();
 		expect(deserializePage(fixture.scene)).toBeNull();
 		const home = document.createElement('div');
 		home.className = 'page-frame';
@@ -79,11 +79,11 @@ describe('deserializeGroupElement / deserializePage 字段契约', () => {
 });
 
 describe('deserialize 与布局结构同步', () => {
-	it('mergeGroups 平铺后反序列化反映新结构与新 end', () => {
+	it('mergeGroups 平铺后反序列化反映新结构与新 end', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', NESTED_MERGE_SCHEME);
+		await mountScheme('directory', NESTED_MERGE_SCHEME);
 		Layout.mergeGroups!();
 
 		const tree = deserializePage(fixture.directory) as LayoutTreeNode;
@@ -99,12 +99,12 @@ describe('deserialize 与布局结构同步', () => {
 		expect(ends[2]).toBeCloseTo(1, 6);
 	});
 
-	it('跨工作区 SCENE 加载后 directory 树仍保持原样（DOM 事实源可重复读）', () => {
-		const fixture = loadDirectory();
+	it('跨工作区 SCENE 加载后 directory 树仍保持原样（DOM 事实源可重复读）', async () => {
+		const fixture = await loadDirectory();
 		const before = toLayoutScheme(deserializePage(fixture.directory) as LayoutTreeNode);
 
 		switchWorkspace(fixture, 'scene');
-		mountScheme('scene', SCENE_SCHEME);
+		await mountScheme('scene', SCENE_SCHEME);
 		const sceneRoot = fixture.scene.firstElementChild as HTMLElement;
 		expect(toLayoutScheme(deserializeGroupElement(sceneRoot))).toEqual(SCENE_SCHEME);
 

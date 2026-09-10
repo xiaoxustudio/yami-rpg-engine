@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout, setLayoutVueRenderMode } from '@app/engine/layout/layout.ts';
+import { nextTick } from 'vue';
+import { Layout, awaitVueLayoutLoad } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import {
 	buildLayoutFixture,
@@ -8,6 +9,7 @@ import {
 	managerValues,
 	mountScheme,
 	navValues,
+	placePaletteIntoLeaves,
 	registerLayout,
 	switchWorkspace
 } from './layout-spec-utils';
@@ -46,12 +48,12 @@ const createDragEvent = (): DragEventLike => ({
 	clientY: 0
 });
 
-const mountDirectory = () => {
+const mountDirectory = async () => {
 	const fixture = buildLayoutFixture();
 	registerLayout(fixture);
 	Layout.heads = [];
 	switchWorkspace(fixture, 'directory');
-	mountScheme('directory', DIRECTORY_SCHEME);
+	await mountScheme('directory', DIRECTORY_SCHEME);
 	const leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
 	return { fixture, leaves };
 };
@@ -86,8 +88,8 @@ const dragDrop = (
 };
 
 describe('navDrop 同组重排', () => {
-	it('drop 到组 nav 空白（append 语义）：页签与页移到底部、tabs 同步、往返保真', () => {
-		const { leaves } = mountDirectory();
+	it('drop 到组 nav 空白（append 语义）：页签与页移到底部、tabs 同步、往返保真', async () => {
+		const { leaves } = await mountDirectory();
 		const leaf = leaves[0];
 		const group = leaf.nav.parentNode as HTMLElement & { tabs?: string[] };
 		expect(navValues(leaf.nav)).toEqual(['project', 'inspector']);
@@ -113,8 +115,8 @@ describe('navDrop 同组重排', () => {
 		});
 	});
 
-	it('drop 到目标页签前（insert-before 语义）：页签与页移到指定位置', () => {
-		const { leaves } = mountDirectory();
+	it('drop 到目标页签前（insert-before 语义）：页签与页移到指定位置', async () => {
+		const { leaves } = await mountDirectory();
 		const leaf = leaves[0];
 		dragDrop(leaf, {
 			dragItem: 'inspector',
@@ -129,11 +131,10 @@ describe('navDrop 同组重排', () => {
 });
 
 describe('navDrop 跨组搬入', () => {
-	it('drop 到另一组：页签/页迁入目标组，源组激活首项，双方 tabs 同步', () => {
-		const { leaves } = mountDirectory();
+	it('drop 到另一组：页签/页迁入目标组，源组激活首项，双方 tabs 同步', async () => {
+		const { fixture, leaves } = await mountDirectory();
 		const sLeaf = leaves[0];
 		const dLeaf = leaves[1];
-		const sGroup = sLeaf.nav.parentNode as HTMLElement & { tabs?: string[] };
 		const dGroup = dLeaf.nav.parentNode as HTMLElement & { tabs?: string[] };
 		expect(navValues(sLeaf.nav)).toEqual(['project', 'inspector']);
 		expect(navValues(dLeaf.nav)).toEqual(['scene']);
@@ -144,17 +145,28 @@ describe('navDrop 跨组搬入', () => {
 			target: dGroup,
 			direction: 'inside'
 		});
-
-		expect(navValues(sLeaf.nav)).toEqual(['project']);
-		expect(managerValues(sLeaf.manager)).toEqual(['project']);
-		expect(navValues(dLeaf.nav)).toEqual(['scene', 'inspector']);
-		expect(managerValues(dLeaf.manager)).toEqual(['scene', 'inspector']);
-		expect(sGroup.tabs).toEqual(['project']);
-		expect(dGroup.tabs).toEqual(['scene', 'inspector']);
+		// 跨组 drop 触发 M4-2 重挂载（Vue 树与 DOM 重新一致），再模拟整壳落位
+		await awaitVueLayoutLoad();
+		placePaletteIntoLeaves(fixture);
+		const root = fixture.directory.firstElementChild as HTMLElement;
+		const next = collectLeaves(root);
+		expect(next.map((l) => navValues(l.nav))).toEqual([['project'], ['scene', 'inspector']]);
+		expect(next.map((l) => managerValues(l.manager))).toEqual([
+			['project'],
+			['scene', 'inspector']
+		]);
+		expect(Layout.saveLayoutScheme!(root as never)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.5, tabs: ['project'] },
+				{ end: 1, tabs: ['scene', 'inspector'] }
+			]
+		});
 	});
 
-	it('源组被搬空：页签/页迁入目标组后源组折叠（prev.end=1），根收敛为单组', () => {
-		const { fixture, leaves } = mountDirectory();
+	it('源组被搬空：页签/页迁入目标组后源组折叠，根收敛为单组', async () => {
+		const { fixture, leaves } = await mountDirectory();
 		const sLeaf = leaves[1]; // [scene] 单页签组
 		const dLeaf = leaves[0]; // [project, inspector]
 		const dGroup = dLeaf.nav.parentNode as HTMLElement & { tabs?: string[] };
@@ -165,15 +177,21 @@ describe('navDrop 跨组搬入', () => {
 			target: dGroup,
 			direction: 'inside'
 		});
+		await awaitVueLayoutLoad();
+		placePaletteIntoLeaves(fixture);
 
-		// 源组已从根移除，根收敛为该叶子组
+		// 源组已折叠，根收敛为单组（根自身即叶子）
 		const root = fixture.directory.firstElementChild as HTMLElement;
-		expect(root).toBe(dLeaf.nav.parentNode);
 		expect(root.classList.contains('group')).toBe(true);
 		expect((root as HTMLElement & { split?: string }).split).toBeUndefined();
-		expect(navValues(dLeaf.nav)).toEqual(['project', 'inspector', 'scene']);
-		expect(managerValues(dLeaf.manager)).toEqual(['project', 'inspector', 'scene']);
-		expect(dGroup.tabs).toEqual(['project', 'inspector', 'scene']);
+		const host = root as HTMLElement & { nav?: HTMLElement; manager?: LayoutLeaf['manager'] };
+		const merged: LayoutLeaf[] =
+			host.nav && host.manager
+				? [{ nav: host.nav, manager: host.manager }]
+				: collectLeaves(root);
+		expect(merged).toHaveLength(1);
+		expect(navValues(merged[0].nav)).toEqual(['project', 'inspector', 'scene']);
+		expect(managerValues(merged[0].manager)).toEqual(['project', 'inspector', 'scene']);
 		expect(Layout.saveLayoutScheme!(root as never)).toEqual({
 			end: 1,
 			tabs: ['project', 'inspector', 'scene']
@@ -182,8 +200,8 @@ describe('navDrop 跨组搬入', () => {
 });
 
 describe('navDrop region 边缘（结构性分割，M4 几何用例的 jsdom 侧）', () => {
-	it('drop 到目标组右缘：右侧新建叶子承接页签，源组保留其余页签', () => {
-		const { fixture, leaves } = mountDirectory();
+	it('drop 到目标组右缘：右侧新建叶子承接页签，源组保留其余页签', async () => {
+		const { fixture, leaves } = await mountDirectory();
 		const leaf = leaves[0]; // [project, inspector]
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(navValues(leaf.nav)).toEqual(['project', 'inspector']);
@@ -203,59 +221,28 @@ describe('navDrop region 边缘（结构性分割，M4 几何用例的 jsdom 侧
 			if (getLayoutStore().dragging) Layout.navDragend!(event as never);
 		}
 
-		const nextLeaves = collectLeaves(root);
-		expect(nextLeaves.map((l) => navValues(l.nav))).toEqual([
-			['project'],
-			['inspector'],
-			['scene']
-		]);
+		// region drop 的生效动作是同步的：先锁定结构语义（右侧新叶子承接页签，源组保留其余）
 		const scheme = Layout.saveLayoutScheme!(root as never) as {
 			children?: Array<{ tabs?: string[] }>;
 		};
+		expect(
+			Array.from(root.children)
+				.filter((child) => child.classList.contains('group'))
+				.map((child) =>
+					Array.from(child.querySelectorAll(':scope > .nav-bar > .nav-item')).map(
+						(item) => item.getAttribute('value')
+					)
+				)
+		).toEqual([['project'], ['inspector'], ['scene']]);
 		expect(scheme.children?.map((child) => child.tabs)).toEqual([
 			['project'],
 			['inspector'],
 			['scene']
 		]);
-	});
-});
 
-describe('M4 Teleport 模式同组 drop 数据化（moveTabWithin 数据路径）', () => {
-	it('mode2：append 到 nav 空白 → tabs 数据驱动收敛，与命令式结果一致', () => {
-		const { leaves } = mountDirectory();
-		const leaf = leaves[0];
-		const group = leaf.nav.parentNode as HTMLElement & { tabs?: string[] };
-		setLayoutVueRenderMode(2);
-		try {
-			dragDrop(leaf, {
-				dragItem: 'project',
-				trigger: leaf.nav,
-				target: group,
-				direction: 'inside'
-			});
-		} finally {
-			setLayoutVueRenderMode(0);
-		}
-		expect(navValues(leaf.nav)).toEqual(['inspector', 'project']);
-		expect(managerValues(leaf.manager)).toEqual(['inspector', 'project']);
-		expect(group.tabs).toEqual(['inspector', 'project']);
-	});
-
-	it('mode2：insert-before 指定页签 → 顺序重排，页签与页同步', () => {
-		const { leaves } = mountDirectory();
-		const leaf = leaves[0];
-		setLayoutVueRenderMode(2);
-		try {
-			dragDrop(leaf, {
-				dragItem: 'inspector',
-				trigger: itemOf(leaf, 'project'),
-				target: leaf.nav.parentNode as HTMLElement,
-				direction: 'inside'
-			});
-		} finally {
-			setLayoutVueRenderMode(0);
-		}
-		expect(navValues(leaf.nav)).toEqual(['inspector', 'project']);
-		expect(managerValues(leaf.manager)).toEqual(['inspector', 'project']);
+		// M4-2：随后完成 Vue 组树重挂载（一致性由 teleport 端到端 spec 覆盖）
+		await awaitVueLayoutLoad();
+		await nextTick();
+		placePaletteIntoLeaves(fixture);
 	});
 });

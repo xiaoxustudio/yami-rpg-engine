@@ -112,7 +112,7 @@ describe('LayoutPalettePage 与 layout 收敛点联动', () => {
 			registerLayout(fixture);
 			switchWorkspace(fixture, 'directory');
 			expect(host.contains(content())).toBe(true);
-			mountScheme('directory', DIRECTORY_SCHEME);
+			await mountScheme('directory', DIRECTORY_SCHEME);
 			await nextTick();
 
 			const directorySceneManager = store.pageTargets.scene;
@@ -121,7 +121,7 @@ describe('LayoutPalettePage 与 layout 收敛点联动', () => {
 			expect(mounts).toBe(1);
 
 			switchWorkspace(fixture, 'scene');
-			mountScheme('scene', {
+			await mountScheme('scene', {
 				end: 1,
 				split: 'horizontal',
 				children: [
@@ -136,7 +136,7 @@ describe('LayoutPalettePage 与 layout 收敛点联动', () => {
 			expect(mounts).toBe(1);
 
 			switchWorkspace(fixture, 'directory');
-			mountScheme('directory', DIRECTORY_SCHEME);
+			await mountScheme('directory', DIRECTORY_SCHEME);
 			await nextTick();
 			expect(content().parentNode).toBe(directorySceneManager);
 			expect(mounts).toBe(1);

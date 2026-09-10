@@ -192,9 +192,13 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - 导出测试/工具用访问器：`getPageScheme`/`resetPageLayoutState`/`clearLayoutMirror`/`getNavLastValue`/`setNavLastValue`/`setItemPage`；各 spec fixture 改用 `setItemPage` 登记配对。
   - `Layout.initialize` 加固：teleport 模式下 palette 整壳可能已被搬进叶子宿主、palette 容器为空 → 回退全文档扫描（nav-item 唯一、page-frame 按 id 判定）保证 items/配对在两种形态下成立。
   - 验证：layout __tests__ + engine/layout.spec **112/112**、editor 全量 **1893/1893**、oxlint 0、`tsc` 0；真机 mode2 拖拽（跨组搬空折叠 + 重挂载）与 mode0 对照（同组重排）正常，工作区切走返回恢复上次页签（会话值链路）。
-- 剩余：`renderElement(h('group'))`/`createGroups` 命令式渲染路径与 `clear(page)` 销毁 palette 行为（需先把默认渲染切到 Vue/teleport 并适配受影响基线测试，见 M5-b）；palette 双实现同步点；随后重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
-- `clear(page)` 销毁 palette 的行为删除（palette 退化为纯 Vue 组件模板，不再被清）。
-- 在 M5 全量绿后，重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
+- **M5-b（2026-09-09 已交付）命令式装载路径退场，Vue 组树 + 整壳 Teleport 成为唯一路径**：
+  - 引擎：删除 `YM_LAYOUT_VUE_RENDER` 门控与 `vueRenderMode`（`isLayoutVueRenderEnabled`/`setLayoutVueRenderEnabled`/`getLayoutVueRenderMode`/`setLayoutVueRenderMode` 一并移除）、删除 `Layout.createGroups`（`renderElement(h('group'))` 方案渲染路径）与 `loadLayoutSchemeVue`（M3b-2a 中间态）、`clear(page)` 不再被布局装载调用；`loadLayoutScheme` 首载/承接分支统一走 `loadLayoutSchemeVueTeleport`（首载判据 = `pageSchemes`）；同组 drop 恒走数据路径；`rebuildVueLayoutFromDom` 只在「宿主有 Vue 组树」时重挂载（手工 DOM 环境自然跳过）。
+  - 组件：`LayoutPaletteHost` 恒把 palette 支架 Teleport 到 body 隐藏容器；`PaletteNode` 恒按归属搬家（空 value 透传）。
+  - 加固：`mergeGroups` 前序兄弟按元素回溯到「组」（Vue 锚点不再导致 `prev.end` undefined → NaN）；新增 `refreshLayoutTargets()`（归属表 + 镜像刷新，供 fixture 落位后调用）。
+  - 测试：`layout-spec-utils` 装载改为异步 `mountScheme`（模拟 LayoutPaletteHost 移出 palette + 整壳落位 + 会话值激活/manager.switch）；删除命令式专项 spec（`engine/__tests__/layout.spec.ts`、`layout-group-render.spec.ts`、`layout-vue-scheme-load.spec.ts`）；`layout-tree-view.spec` 改为 Vue 渲染契约；`layout-palette-wrappers.spec`/`layout-scheme-baseline.spec` 按唯一路径重写。
+  - 验证：layout __tests__ **87/87**、editor 全量 **1868/1868**（206 文件）、oxlint 0、`tsc` 0、vue-tsc 0；**真机**（清空 localStorage 开关后）默认加载 directory 两叶各含自身 nav/manager、palette 支架在 body 隐藏容器、跨组搬空折叠 + 重挂载正常、页签切换完整性正常。
+- 剩余：palette 双实现同步点清除；`renderElement(h('group'))` 在 navDrop 分割分支的临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；随后重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
 
 ### M6：B 路线评估（可选）
 

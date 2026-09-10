@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout, getNavLastValue } from '@app/engine/layout/layout.ts';
+import { Layout, getNavLastValue, awaitVueLayoutLoad } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import '@app/utils/math';
 import {
@@ -32,11 +32,11 @@ beforeEach(() => {
 });
 
 describe('saveNavStates / lastValue 会话恢复', () => {
-	it('离开工作区：selected→nav.lastValue，随后 write(null) 清空 selected 与激活页', () => {
+	it('离开工作区：selected→nav.lastValue，随后 write(null) 清空 selected 与激活页', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		const leaves = collectLeaves(root);
 
@@ -53,11 +53,11 @@ describe('saveNavStates / lastValue 会话恢复', () => {
 		expect(leaves[1].manager.index).toBeUndefined();
 	});
 
-	it('同页二次加载走 else 分支：从 nav.lastValue 恢复上次激活页签', () => {
+	it('同页二次加载走 else 分支：从 nav.lastValue 恢复上次激活页签', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		const leaves = collectLeaves(root);
 
@@ -65,6 +65,7 @@ describe('saveNavStates / lastValue 会话恢复', () => {
 		Layout.saveNavStates!();
 
 		Layout.loadLayoutScheme!('directory');
+		await awaitVueLayoutLoad();
 
 		const restored = collectLeaves(root);
 		expect(selectedOf(restored[0].nav)).toBe('inspector');
@@ -76,11 +77,11 @@ describe('saveNavStates / lastValue 会话恢复', () => {
 });
 
 describe('updateGroupTabs 结构同步', () => {
-	it('DOM 重排后读 nav 子序重建 group.tabs，并进入 saveLayoutScheme 往返', () => {
+	it('DOM 重排后读 nav 子序重建 group.tabs，并进入 saveLayoutScheme 往返', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		const leaf = collectLeaves(root)[0];
 		const group = leaf.manager.parentNode as HTMLElement & { tabs?: string[] };
@@ -102,11 +103,11 @@ describe('updateGroupTabs 结构同步', () => {
 });
 
 describe('mergeGroups 折叠合并', () => {
-	it('同向嵌套 split 合并为平铺叶子，并重算 end 比例', () => {
+	it('同向嵌套 split 合并为平铺叶子，并重算 end 比例', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', NESTED_MERGE_SCHEME);
+		await mountScheme('directory', NESTED_MERGE_SCHEME);
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(
 			Array.from(root.children).filter((child) => child.classList.contains('group'))
@@ -142,11 +143,11 @@ describe('navDragstart / navDragend 生命周期', () => {
 		clientY: 0
 	});
 
-	it('拖拽期：store.dragging 建立、每个 group 插入 region、head 屏蔽指针；结束后全部还原', () => {
+	it('拖拽期：store.dragging 建立、每个 group 插入 region、head 屏蔽指针；结束后全部还原', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
 		const nav = leaves[0].nav;
 		const group = nav.parentNode as HTMLElement;

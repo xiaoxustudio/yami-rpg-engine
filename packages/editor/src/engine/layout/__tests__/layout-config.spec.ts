@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout, clearLayoutMirror, getPageScheme } from '@app/engine/layout/layout.ts';
+import {
+	Layout,
+	clearLayoutMirror,
+	getPageScheme,
+	awaitVueLayoutLoad
+} from '@app/engine/layout/layout.ts';
 import { toLayoutScheme } from '../layout-scheme';
 import { deserializeGroupElement } from '../layout-deserialize';
 import '@app/utils/math';
@@ -7,6 +12,8 @@ import {
 	buildLayoutFixture,
 	collectLeaves,
 	DIRECTORY_SCHEME,
+	placePaletteIntoLeaves,
+	movePaletteToHolder,
 	SCENE_SCHEME,
 	mountScheme,
 	registerLayout,
@@ -19,9 +26,19 @@ import {
 
 type ConfigShape = { layout?: Record<string, SchemeNode> | null };
 
-const load = (fixture: ReturnType<typeof buildLayoutFixture>, key: string): void => {
+const load = async (
+	fixture: ReturnType<typeof buildLayoutFixture>,
+	key: string,
+	scheme?: SchemeNode
+): Promise<void> => {
+	if (scheme !== undefined) {
+		Layout.layout = { [key]: scheme } as unknown as typeof Layout.layout;
+	}
+	movePaletteToHolder(fixture);
 	fixture.workspace.switch(key);
 	Layout.loadLayoutScheme!(key);
+	await awaitVueLayoutLoad();
+	placePaletteIntoLeaves(fixture);
 };
 
 beforeEach(() => {
@@ -29,11 +46,11 @@ beforeEach(() => {
 });
 
 describe('saveToConfig 回写 DOM 变更', () => {
-	it('已物化页把 DOM（含重排后的 tabs）反序列化回 layout，未物化页保持原样', () => {
+	it('已物化页把 DOM（含重排后的 tabs）反序列化回 layout，未物化页保持原样', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		const leaf = collectLeaves(root)[0];
@@ -55,11 +72,11 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		expect(Object.keys(config.layout ?? {})).toEqual(['directory']);
 	});
 
-	it('M4-2/M5-a：退化（无页签）树不覆盖既有 layout —— 镜像缺失时不写坏 config', () => {
+	it('M4-2/M5-a：退化（无页签）树不覆盖既有 layout —— 镜像缺失时不写坏 config', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 
 		// 模拟半挂载/空树：宿主只剩一个空 group（无 nav/manager 页签）
 		const host = fixture.directory;
@@ -82,11 +99,11 @@ describe('saveToConfig 回写 DOM 变更', () => {
 });
 
 describe('switchLayout 缓存失效与重建', () => {
-	it('切换整本字典后删除旧 page.scheme 并按新字典重建当前页', () => {
+	it('切换整本字典后删除旧 page.scheme 并按新字典重建当前页', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const oldRoot = fixture.directory.firstElementChild as HTMLElement;
 
 		const singleLeaf: SchemeNode = {
@@ -94,9 +111,11 @@ describe('switchLayout 缓存失效与重建', () => {
 			tabs: ['project', 'scene', 'inspector']
 		};
 		Layout.switchLayout!({ directory: singleLeaf, scene: SCENE_SCHEME } as never);
+		await awaitVueLayoutLoad();
 
 		const newRoot = fixture.directory.firstElementChild as HTMLElement;
 		expect(newRoot).not.toBe(oldRoot);
+		placePaletteIntoLeaves(fixture);
 		expect(toLayoutScheme(deserializeGroupElement(newRoot))).toEqual(singleLeaf);
 		expect(newRoot.querySelector('.nav-bar')).not.toBeNull();
 		expect(
@@ -106,11 +125,11 @@ describe('switchLayout 缓存失效与重建', () => {
 });
 
 describe('loadFromConfig 接管字典', () => {
-	it('以 config.layout 驱动对应工作区加载', () => {
+	it('以 config.layout 驱动对应工作区加载', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		Layout.loadFromConfig!({ layout: { directory: SCENE_SCHEME } } as never);
-		load(fixture, 'directory');
+		await load(fixture, 'directory');
 
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(toLayoutScheme(deserializeGroupElement(root))).toEqual(SCENE_SCHEME);
@@ -118,12 +137,12 @@ describe('loadFromConfig 接管字典', () => {
 });
 
 describe('loadLayoutScheme default 兜底', () => {
-	it('layout 缺 key 时回落到 Layout.default 建树', () => {
+	it('layout 缺 key 时回落到 Layout.default 建树', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		Layout.layout = {} as unknown as typeof Layout.layout;
 		Layout.default = { directory: DIRECTORY_SCHEME } as unknown as typeof Layout.default;
-		load(fixture, 'directory');
+		await load(fixture, 'directory');
 
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(root).toBeTruthy();
@@ -131,7 +150,7 @@ describe('loadLayoutScheme default 兜底', () => {
 		expect(getPageScheme(fixture.directory)).toBe(DIRECTORY_SCHEME);
 	});
 
-	it('layout 与 default 都缺 key 时不构建（当前页保持为空）', () => {
+	it('layout 与 default 都缺 key 时不构建（当前页保持为空）', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		Layout.layout = {} as unknown as typeof Layout.layout;

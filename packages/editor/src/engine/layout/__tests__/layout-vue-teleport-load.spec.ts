@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import { defineComponent, h, nextTick, onMounted, type PropType } from 'vue';
 import {
 	Layout,
-	setLayoutVueRenderMode,
 	awaitVueLayoutLoad,
 	getPageScheme,
 	resetPageLayoutState,
@@ -156,18 +155,16 @@ beforeEach(() => {
 	mounts.value = 0;
 	getLayoutStore().resetPageTargets();
 	getLayoutStore().resetTabTargets();
-	setLayoutVueRenderMode(0);
 	document.body.innerHTML = '';
 });
 
 afterEach(async () => {
 	paletteWrapper?.unmount();
 	paletteWrapper = undefined;
-	setLayoutVueRenderMode(0);
 	await nextTick();
 });
 
-describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=teleport）', () => {
+describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
 	it('首载：整壳页/页签经归属发布落位到叶子，激活首 tab；palette 壳节点不被命令式搬移', async () => {
 		const paletteHost = document.createElement('div');
 		document.body.append(paletteHost);
@@ -178,8 +175,6 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		workspaceA.className = 'page-frame';
 		workspaceA.id = 'workspace-a';
 		document.body.append(workspaceA);
-
-		setLayoutVueRenderMode(2);
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 
 		const root = workspaceA.firstElementChild as HTMLElement;
@@ -227,8 +222,6 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		workspaceB.className = 'page-frame';
 		workspaceB.id = 'workspace-b';
 		document.body.append(workspaceA, workspaceB);
-
-		setLayoutVueRenderMode(2);
 
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 		const directoryRoot = workspaceA.firstElementChild as HTMLElement;
@@ -285,8 +278,6 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		workspaceA.className = 'page-frame';
 		workspaceA.id = 'workspace-a';
 		document.body.append(workspaceA);
-
-		setLayoutVueRenderMode(2);
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 		const oldRoot = workspaceA.firstElementChild as HTMLElement;
 		const projectFrame = frameOf('project');
@@ -318,8 +309,6 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		workspaceA.id = 'workspace-a';
 		workspaceA.setAttribute('value', 'directory');
 		document.body.append(workspaceA);
-
-		setLayoutVueRenderMode(2);
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 		const root = workspaceA.firstElementChild as HTMLElement;
 		const leaves = leavesOf(root);
@@ -395,8 +384,6 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		residual.id = 'layout-content';
 		workspaceA.append(residual);
 		document.body.append(workspaceA);
-
-		setLayoutVueRenderMode(2);
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 
 		const root = Array.from(workspaceA.children).find((child) =>
@@ -427,44 +414,5 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		Layout.navDragend!(event as never);
 		expect(workspaceA.querySelectorAll('group-region')).toHaveLength(0);
 		expect(mounts.value).toBe(VALUES.length);
-	});
-
-	it('默认关时不受影响：命令式首载照常（对照组）', async () => {
-		const paletteHost = document.createElement('div');
-		document.body.append(paletteHost);
-		paletteWrapper = mount(Palette, { props: { values: VALUES }, attachTo: paletteHost });
-		pairItems(VALUES);
-
-		const workspaceA = document.createElement('div');
-		workspaceA.className = 'page-frame';
-		document.body.append(workspaceA);
-		// 命令式路径需要 items（palette 页/页签由引擎命令式搬移）；此处只验证 teleport 模式开关
-		// 不影响默认路径路由：mode 0 时 loadLayoutScheme 同步构建命令式组树
-		Layout.manager = { index: 'directory', active: workspaceA } as never;
-		Layout.layout = { directory: DIRECTORY_SCHEME } as never;
-		Layout.items = (() => {
-			const items = {} as Record<string, HTMLElement & { page: HTMLElement }> & {
-				list: (HTMLElement & { page: HTMLElement })[];
-			};
-			items.list = [];
-			for (const value of VALUES) {
-				const item = document.createElement('div') as unknown as HTMLElement & {
-					page: HTMLElement;
-				};
-				item.className = 'nav-item';
-				item.setAttribute('value', value);
-				item.page = frameOf(value);
-				items[value] = item;
-				items.list.push(item);
-			}
-			return items;
-		})() as never;
-
-		Layout.loadLayoutScheme!('directory');
-		await nextTick();
-		expect(workspaceA.firstElementChild?.classList.contains('group')).toBe(true);
-		const leaves = leavesOf(workspaceA.firstElementChild as HTMLElement);
-		expect(leaves).toHaveLength(2);
-		expect(leaves[0].nav.children.length).toBeGreaterThan(0);
 	});
 });

@@ -59,11 +59,11 @@ const countLeaves = (root: Element): number =>
 	).length;
 
 /** 命令式基线：进入 directory 工作区并加载 scheme（palette 被清、页/页签搬进 group）。 */
-const commandState = (scheme: LayoutSchemeData): LayoutFixture => {
+const commandState = async (scheme: LayoutSchemeData): Promise<LayoutFixture> => {
 	const fixture = buildLayoutFixture();
 	registerLayout(fixture);
 	fixture.workspace.switch('directory');
-	mountScheme('directory', scheme);
+	await mountScheme('directory', scheme);
 	return fixture;
 };
 
@@ -97,7 +97,7 @@ async function vueState(
 describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
 	for (const { name, scheme } of SCHEMES) {
 		it(`${name}：组树结构/叶子宿主类/叶子数一致`, async () => {
-			const cmd = commandState(scheme);
+			const cmd = await commandState(scheme);
 			const cmdRoot = cmd.directory.firstElementChild as HTMLElement;
 
 			const vueFixture = buildLayoutFixture();
@@ -162,7 +162,7 @@ describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
 
 	it('双路行为等价：首载激活与页签点击切换（目录 scheme）', async () => {
 		// 命令式 oracle
-		const cmd = commandState(DIRECTORY_SCHEME as LayoutSchemeData);
+		const cmd = await commandState(DIRECTORY_SCHEME as LayoutSchemeData);
 		const cmdRoot = cmd.directory.firstElementChild as HTMLElement;
 		const cmdLeaves = [] as { nav: HTMLElement; manager: PageManagerApi }[];
 		const collect = (group: Element): void => {

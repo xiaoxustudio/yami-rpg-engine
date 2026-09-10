@@ -13,7 +13,7 @@ import {
 // 应精确反映「value → 归属 group-manager」，跨工作区切换整表刷新。
 
 describe('collectPageTargets 单元', () => {
-	it('空根返回空映射', () => {
+	it('空根返回空映射', async () => {
 		expect(collectPageTargets(null)).toEqual({});
 		expect(collectPageTargets(document.createElement('div'))).toEqual({});
 	});
@@ -27,17 +27,17 @@ describe('store.pageTargets 运行时同步', () => {
 		document.body.innerHTML = '';
 	});
 
-	it('未加载任何工作区时为空', () => {
+	it('未加载任何工作区时为空', async () => {
 		expect(Object.keys(store.pageTargets)).toHaveLength(0);
 	});
 
-	it('载入 directory 后每个 page-frame 归属其 leaf group-manager', () => {
+	it('载入 directory 后每个 page-frame 归属其 leaf group-manager', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
 		expect(Object.keys(store.pageTargets)).toHaveLength(0);
 
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 
 		expect(store.pageTargets.project).toBe(fixture.items.project.page.parentNode);
 		expect(store.pageTargets.inspector).toBe(fixture.items.inspector.page.parentNode);
@@ -45,16 +45,16 @@ describe('store.pageTargets 运行时同步', () => {
 		expect(Object.keys(store.pageTargets).sort()).toEqual(['inspector', 'project', 'scene']);
 	});
 
-	it('切换到 scene 工作区后整表刷新到新 group-manager', () => {
+	it('切换到 scene 工作区后整表刷新到新 group-manager', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 		const directoryScene = store.pageTargets.scene;
 		const directoryProject = store.pageTargets.project;
 
 		switchWorkspace(fixture, 'scene');
-		mountScheme('scene', {
+		await mountScheme('scene', {
 			end: 1,
 			split: 'horizontal',
 			children: [
@@ -67,14 +67,14 @@ describe('store.pageTargets 运行时同步', () => {
 		expect(store.pageTargets.project).toBe(fixture.items.project.page.parentNode);
 		expect(store.pageTargets.scene).not.toBe(directoryScene);
 		expect(store.pageTargets.project).not.toBe(directoryProject);
-		expect(store.pageTargets.scene?.className).toBe('page-manager group-manager');
+		expect(store.pageTargets.scene?.classList.contains('group-manager')).toBe(true);
 	});
 
-	it('切页签只改激活不改归属', () => {
+	it('切页签只改激活不改归属', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
-		mountScheme('directory', DIRECTORY_SCHEME);
+		await mountScheme('directory', DIRECTORY_SCHEME);
 
 		const keysBefore = Object.keys(store.pageTargets).sort().join(',');
 		const sceneTarget = store.pageTargets.scene;
