@@ -297,6 +297,8 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 - 删除 `elements` shim、`item.element` defineProperty、`tree-core.deleteCaches` 中 element 分支、NodeElement 类型；
 - TreeItem 回归纯数据（parent 链保留或同样收口为显式 API，另行评估）。
 
+> **真机验证发现并修复（2026-09-09，第二处）**：`setItemText`/`setTreeItemClass` 只 bump 版本，但派生行的 `name`/`extraClasses` 是 flatten 时的快照 → 覆盖值与注册 class **不会反映到已渲染行**（队伍/过渡的序号前缀、weak/related-event 类名均失效）。已改为组件侧 `windowRows` 以 `version` 为依赖合成（`withRegistryOverrides`：文本覆盖 + itemClasses 合并），保持 O(窗口行) 且无需整体重派生；新增 2 条回归用例（文本覆盖 / 类名注册的即时反映，含取消注册）。真机复核：队伍 `0:NPC/1:玩家/2:魔物`、过渡 `0:线性/1:平滑/2:加速` 均正确。
+> **真机窗口覆盖（自动可达，2026-09-09）**：经 CDP 真实鼠标点击「窗口」菜单逐窗打开并核对「绑定行数 / 渲染行数」——全局变量 20/20、对象属性 42/**32**（虚拟窗口）、枚举 115/**32**、本地化 0/0（`data` 为空数组，数据驱动非渲染问题）、过渡 5/5（带序号前缀）、队伍 3/3（带序号前缀）、插件 13/13（`removeTextTags` 文本）、指令 16/16；`extras` 容器在各窗口均按行数就位。全局变量窗口另完成交互链路验证：选中→折叠(20→16)→展开（选中保留）→F2 重命名（派生文本即时刷新）。
 > **真机验证发现并修复（2026-09-09）**：`updateItemName` 仍按旧语义直写 `element.textNode`，派生行不会重算 → **重命名后行文本不刷新**（jsdom 金标准未覆盖该路径）。已改为「名称变更即 `syncRenderRows()` 重派生」，新增 `tree-list-vue-rows.spec` 回归用例；真机 F3 打开全局变量窗口后重命名，行文本正确变为 `RenamedVar`（数据 `read().name` 同步）。
 > **真机窗口冒烟（自动可达部分）**：用 CDP 真实按键（`Input.dispatchKeyEvent`）触发加速键可打开窗口——`F3`（全局变量）已验证：`#variable-list` 渲染 **20 行真实数据**（`.node-text` 真实名称、`tree-node-icon` 自定义图标、4 个折叠标记、spacer 就位）；交互链路验证通过：点击选中（`selected` 落位）→ 点折叠标记 20→16 行（`expanded` 4→3）→ 再展开 20 行且选中项保留 → F2 重命名生效。其余窗口缺少可达加速键（或需场景/页面上下文），仍留人工冒烟。
 

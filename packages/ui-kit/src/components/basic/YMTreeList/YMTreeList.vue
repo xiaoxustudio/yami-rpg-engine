@@ -28,21 +28,26 @@ const props = withDefaults(defineProps<Props>(), {
 
 const root = ref<HTMLElement | null>(null);
 const state = shallowRef<TreeRenderState | null>(null);
+// 合成单行的注册表覆盖（文本/class）；无覆盖时直接复用派生行对象
+const withRegistryOverrides = (current: TreeRenderState, row: TreeRenderRow): TreeRenderRow => {
+	const override = current.textOverrides.get(row.item);
+	const classes = current.itemClasses.get(row.item);
+	if (override === undefined && classes === undefined) return row;
+	const next = { ...row };
+	if (override !== undefined) next.name = override;
+	if (classes !== undefined) next.extraClasses = Array.from(classes);
+	return next;
+};
+
 // 窗口行：以 version 为依赖合成「显示文本覆盖 + 业务注册 class」，
 // 使 setItemText/setItemClass 这类只 bump 版本的变更即时反映（避免整体重派生 O(n²)）。
 const windowRows = computed<TreeRenderRow[]>(() => {
 	const current = state.value;
 	if (current === null) return [];
 	void current.version.value;
-	return current.rows.value.slice(current.start.value, current.end.value).map((row) => {
-		const override = current.textOverrides.get(row.item);
-		const classes = current.itemClasses.get(row.item);
-		return {
-			...row,
-			name: override ?? row.name,
-			extraClasses: classes === undefined ? row.extraClasses : Array.from(classes)
-		};
-	});
+	return current.rows.value
+		.slice(current.start.value, current.end.value)
+		.map((row) => withRegistryOverrides(current, row));
 });
 
 const listOf = (): TreeListRootElement | null => (root.value as TreeListRootElement | null) ?? null;
