@@ -494,6 +494,17 @@ body.border > .window-frame.maximized {
 	inset: 0;
 }
 
+/* Teleport 组树里的 Vue 版 page-manager（YMPageManager 的 CSS Module）自带
+ * `position: relative; height: 100%`（特异性 0,2,0），会压过本文件 `.group-manager` 的
+ * `top: 25px; bottom: 0`，使 manager 取整组高度 → 底部溢出 25px（= nav-bar 高度，
+ * 即 LayoutDiagnostics 报的「超出窗口底部 25.0px」）。此处以更高特异性恢复拉伸定位。 */
+.group > .page-manager.group-manager {
+	position: absolute;
+	top: 25px;
+	bottom: 0;
+	height: auto;
+}
+
 /* --------------------------------
  * 选框区域
  * --------------------------------
