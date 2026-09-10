@@ -1,6 +1,6 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 12 页整壳接线均已交付并提交；**F.5 真机冒烟核心项已于 2026-09-09 自动验证通过**（见附录 F.5 验收记录）；**M4-1 已交付**：navDrop 金标准 4 用例 + Teleport 模式同组 drop 数据化（moveTabWithin/applyTabDropWithin，默认关）；下一步 M4-2 交互数据化剩余项）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 整壳接线 / **M4-1 同组 drop 数据化 / M4-2 结构性 drop 一致性 + 整壳接线修正** 均已交付并提交；F.5 真机冒烟核心项与 M4 真机用例（同组重排、跨组搬空折叠、region 右缘分割、border 缩放）均已通过）；下一步 M5 清脚手架与解锁 tree v-for）
 - 日期：2026-09-03
 - 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`engine/layout/layout.ts`（M3b-2 后 ~1815 行，文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
@@ -179,7 +179,8 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - **结构性 drop 收敛**：新增 `Layout.rebuildVueLayoutFromDom(key?, activateTab?)`——命令式效果（含源组搬空折叠）后把「当前 DOM → scheme」写回 `layout[key]`，经新增纯函数 `collapseRedundantSplits`（Teleport 组树无容器 border，按同一折叠语义提升单子组）规整，收回归属 → 卸载旧树 → 清组树 → 重挂载 → 重发布归属/排序/激活被拖页签；`navDrop` 在 mode2 跨组/分割分支尾部触发（同组重排走 M4-1 数据路径，不触发）。
   - **共存加固**：`updateGroupTabs`/`navDragenter`/`regionDragover` 跳过 Teleport 锚点等非元素子节点；`navDrop` 源组余量按元素判定；`updateGroups` 容忍瞬态缺 manager/脱离文档的组（此前真机抛 `reading 'active' of undefined` 会中断 navDrop，令 rebuild 跑不到）；`navDragstart/navDragend` 的 `heads` 遍历跳过空项（真机抛 `reading 'style' of null`）。
   - **持久化防退化**：`saveToConfig` 仅在序列化 scheme 含页签时回写 `layout[key]`（半挂载/空树不再覆盖用户布局，+1 用例）。
-  - **真机验证（`scripts/smoke-layout.mjs`）**：mode2 directory 首载两叶各含自身 nav-item/page-frame；跨组搬空 drop → 单叶收敛（groups:1、rootTabs 同步）+ M4-2 重挂载生效；同组重排独立探针 `['project','inspector'] → ['inspector','project']`（tabs 同步）；mode0 对照同组重排正常。驱动修复：等待改 Node 侧 CDP 轮询（隐藏窗口页内定时器被 Chromium 节流）、dragend 统一派发到存活 nav、open 最近项目重试。**注**：冒烟曾把用户 `~/.openyami/config.json` 的 `directory` 布局写成空叶（备份 `config.json.smoke-backup`，已移除该键回落 `Project/default.json`；`saveToConfig` 防退化即根因修复）。
+  - **真机验证（`scripts/smoke-layout.mjs`）**：mode2 directory 首载两叶各含自身 nav-item/page-frame；跨组搬空 drop → 单叶收敛（groups:1、rootTabs 同步）+ M4-2 重挂载生效；同组重排独立探针 `['project','inspector'] → ['inspector','project']`（tabs 同步）；**region 右缘 drop → 目标组右侧新建叶子承接页签、源叶折叠（真机几何路径）**；**border 缩放 → 叶 `end` 0.910→0.979 数据驱动重排、`.group-info` 挂卸正常**；mode0 对照同组重排正常。jsdom 侧新增 region 右缘结构性金标准（`layout-nav-drop.spec` 7 用例）。驱动修复：等待改 Node 侧 CDP 轮询（隐藏窗口页内定时器被 Chromium 节流）、dragend 统一派发到存活 nav、open 最近项目重试。**注**：冒烟曾把用户 `~/.openyami/config.json` 的 `directory` 布局写成空叶（备份 `config.json.smoke-backup`，已移除该键回落 `Project/default.json`；`saveToConfig` 防退化即根因修复）。
+- **M4 完成判据与残余（2026-09-09）**：Teleport 路径的 drop（同组/跨组/结构性分割）与缩放均为数据驱动并经真机验证；**模式 0/1 的命令式 `replaceChild/insertBefore` 按计划保留到 M5 清除脚手架**；region 左/上/下方向未逐一真机走查（左缘对紧邻右侧叶子按设计 no-op，已由 `regionDragover` 相邻判定覆盖）；合成拖拽驱动在「结构性 drop 后同一 tick 再拖」存在与异步重挂载的竞争（已记录，真人操作不受影响）。
 - nav 拖拽 drop：`removeItemTo` 落点计算保留命令式（测坐标/邻居），但**生效动作**改为更新 tabs 数据 + `list.updateGroupTabs` 读数据；region 分割/合并、border 缩放改 `updateGroups` 读数据重排，移除命令式 replaceChild/insertBefore 路径。
 - 验证：nav-drop 金标准 + M1 拖拽/缩放缺口用例 + 真机冒烟清单。
 

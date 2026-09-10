@@ -181,6 +181,45 @@ describe('navDrop 跨组搬入', () => {
 	});
 });
 
+describe('navDrop region 边缘（结构性分割，M4 几何用例的 jsdom 侧）', () => {
+	it('drop 到目标组右缘：右侧新建叶子承接页签，源组保留其余页签', () => {
+		const { fixture, leaves } = mountDirectory();
+		const leaf = leaves[0]; // [project, inspector]
+		const root = fixture.directory.firstElementChild as HTMLElement;
+		expect(navValues(leaf.nav)).toEqual(['project', 'inspector']);
+
+		const event = createDragEvent();
+		try {
+			Layout.navDragstart!.call(leaf.nav, event as never);
+			const state = getLayoutStore().dragging as unknown as DragState;
+			state.target = itemOf(leaf, 'inspector');
+			state.location = {
+				trigger: leaf.nav,
+				target: leaf.nav.parentNode as HTMLElement,
+				direction: 'right'
+			};
+			leaf.nav.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
+		} finally {
+			if (getLayoutStore().dragging) Layout.navDragend!(event as never);
+		}
+
+		const nextLeaves = collectLeaves(root);
+		expect(nextLeaves.map((l) => navValues(l.nav))).toEqual([
+			['project'],
+			['inspector'],
+			['scene']
+		]);
+		const scheme = Layout.saveLayoutScheme!(root as never) as {
+			children?: Array<{ tabs?: string[] }>;
+		};
+		expect(scheme.children?.map((child) => child.tabs)).toEqual([
+			['project'],
+			['inspector'],
+			['scene']
+		]);
+	});
+});
+
 describe('M4 Teleport 模式同组 drop 数据化（moveTabWithin 数据路径）', () => {
 	it('mode2：append 到 nav 空白 → tabs 数据驱动收敛，与命令式结果一致', () => {
 		const { leaves } = mountDirectory();
