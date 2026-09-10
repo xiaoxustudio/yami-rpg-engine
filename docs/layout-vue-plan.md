@@ -198,7 +198,10 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - 加固：`mergeGroups` 前序兄弟按元素回溯到「组」（Vue 锚点不再导致 `prev.end` undefined → NaN）；新增 `refreshLayoutTargets()`（归属表 + 镜像刷新，供 fixture 落位后调用）。
   - 测试：`layout-spec-utils` 装载改为异步 `mountScheme`（模拟 LayoutPaletteHost 移出 palette + 整壳落位 + 会话值激活/manager.switch）；删除命令式专项 spec（`engine/__tests__/layout.spec.ts`、`layout-group-render.spec.ts`、`layout-vue-scheme-load.spec.ts`）；`layout-tree-view.spec` 改为 Vue 渲染契约；`layout-palette-wrappers.spec`/`layout-scheme-baseline.spec` 按唯一路径重写。
   - 验证：layout __tests__ **87/87**、editor 全量 **1868/1868**（206 文件）、oxlint 0、`tsc` 0、vue-tsc 0；**真机**（清空 localStorage 开关后）默认加载 directory 两叶各含自身 nav/manager、palette 支架在 body 隐藏容器、跨组搬空折叠 + 重挂载正常、页签切换完整性正常。
-- 剩余：palette 双实现同步点清除；`renderElement(h('group'))` 在 navDrop 分割分支的临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；随后重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
+- **M5-c（palette 单实现收尾，已交付）**：引擎新增 `registerLayoutItems`/`resetRegisteredLayoutItems`（`RegisteredLayoutItem`），`Layout.initialize` 改为「登记项优先 + DOM 发现合并兜底」，不再按 DOM 形态猜测 palette 位置；`LayoutPanel.vue` 在 mount 后登记 palette 节点（经 `components/layout/palette-items.ts`：`elementOfRef` 兼容元素/组件 `$el` 两种 ref 形态 + `collectPaletteItems` 安全遍历，遵守 DOM 迁移阶段 0 规则不新增 `document.querySelector*`）。
+  - 修复记录：首版直接把 `ref`（组件上）当元素读 `children`，导致运行期 `Array.from(undefined)` 抛 `undefined is not iterable`（用户上报 `LayoutPanel.vue:1421`），登记实际未生效、由 DOM 兜底掩盖；已按上述模块化修复并加 5 条单测（含「组件 ref 无 `$el`」这一缺陷形态）。真机复核：登记生效（palette 全 12 个 value）+ 打开项目/窗口菜单/树窗口渲染 20 行 + 渲染器无异常。
+  - 验证：`layout-item-registry.spec.ts` 3 用例、`palette-items.spec.ts` 5 用例；editor 全量（含全局挂载审计）全绿。
+- 剩余：`renderElement(h('group'))` 在 navDrop 分割分支的临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；tree v-for 步骤 5b 收口（`elements` shim/`item.element`/NodeElement，需先迁移 eslints 与 useVariableGetterWindow 的按行号访问）。
 
 ### M6：B 路线评估（可选）
 

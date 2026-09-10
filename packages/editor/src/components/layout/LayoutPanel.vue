@@ -885,6 +885,7 @@ import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { registerLayoutItems } from '@app/engine/layout/layout.ts';
+import { collectPaletteItems } from '@app/components/layout/palette-items';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -1414,23 +1415,8 @@ onMounted(() => {
 		getAnimationStore().initialize();
 		// M5-c：palette 显式登记（此时 palette 节点仍在 palette 宿主内，
 		// 引擎装载前即可拿到权威 items 列表，无需按 DOM 形态猜测）。
-		// 容器用模板 ref，子节点遍历（不新增 document.querySelector*）。
-		const navRoot = paletteNavEl.value;
-		const managerRoot = paletteManagerEl.value;
-		const navEntries = navRoot
-			? Array.from(navRoot.children)
-					.filter((node) => node.classList.contains('nav-item'))
-					.map((nav) => ({ value: nav.getAttribute('value') ?? '', nav: nav as HTMLElement }))
-			: [];
-		const pageEntries = managerRoot
-			? Array.from(managerRoot.children)
-					.filter((node) => node.classList.contains('page-frame'))
-					.map((page) => ({
-						value: page.getAttribute('value') ?? '',
-						page: page as HTMLElement
-					}))
-			: [];
-		registerLayoutItems([...navEntries, ...pageEntries]);
+		// 容器 ref 指向组件（NavBar/PageManager）→ 经 $el 取根元素后遍历子节点。
+		registerLayoutItems(collectPaletteItems(paletteNavEl.value, paletteManagerEl.value));
 	});
 });
 
