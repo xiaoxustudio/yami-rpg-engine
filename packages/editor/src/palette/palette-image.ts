@@ -1,7 +1,7 @@
 import { Palette } from './palette.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { rect, show, write } from '@app/utils/element-utils.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { getPaletteStore } from '@app/stores/palette';
 
 Palette.setZoom = (function IIFE() {
@@ -209,9 +209,11 @@ Palette.loadImages = async function (this: typeof Palette) {
 Palette.updateHead = function (this: typeof Palette) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement(head);
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild as HTMLElement);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 	}

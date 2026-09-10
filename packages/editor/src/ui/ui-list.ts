@@ -11,7 +11,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { ctrl } from '@app/utils/event-accessors';
 import { dispatchChangeEvent, read, rect, write } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
 
@@ -410,9 +410,11 @@ UI.list.cancelSearch = function (this: UIShape) {
 UI.list.updateHead = function (this: UIShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement!(head)!;
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 	}

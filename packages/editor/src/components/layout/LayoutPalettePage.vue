@@ -20,9 +20,12 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { source: 'page' });
 
 const store = getLayoutStore();
-const target = computed<HTMLElement | null>(() =>
-	props.source === 'tab'
-		? (store.tabTargets[props.value] ?? null)
-		: (store.pageTargets[props.value] ?? null)
-);
+const target = computed<HTMLElement | null>(() => {
+	const candidate =
+		props.source === 'tab' ? store.tabTargets[props.value] : store.pageTargets[props.value];
+	if (candidate === undefined || candidate === null) return null;
+	// 重建/重挂载窗口内旧叶子可能已脱离文档：此时退回「原地渲染」，
+	// 避免 Teleport 向已分离容器搬运（真机曾报 moveTeleport: insertBefore of null）。
+	return candidate.isConnected ? candidate : null;
+});
 </script>

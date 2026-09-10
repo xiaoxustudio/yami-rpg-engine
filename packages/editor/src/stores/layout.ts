@@ -95,6 +95,21 @@ export const useLayoutStore = defineStore('layout', () => {
 		tabTargetActions.remove(keys);
 	}
 
+	/**
+	 * 清理已脱离文档的归属目标（重建/重挂载窗口的陈旧叶子）。
+	 * Teleport 的 :to 若指向已分离元素会把内容搬进死容器；调用方在卸载旧树前清理。
+	 */
+	function pruneDetachedTargets(): void {
+		for (const record of [pageTargets, tabTargets]) {
+			for (const key of Object.keys(record)) {
+				const element = record[key];
+				if (element !== null && element !== undefined && !element.isConnected) {
+					delete record[key];
+				}
+			}
+		}
+	}
+
 	function switchLayout(name: string) {
 		Layout?.switchLayout?.(name);
 	}
@@ -113,10 +128,6 @@ export const useLayoutStore = defineStore('layout', () => {
 
 	function initialize() {
 		Layout?.initialize?.();
-	}
-
-	function createGroups(item: LayoutSchemeShape, parent: HTMLElement) {
-		Layout?.createGroups?.(item, parent);
 	}
 
 	function updateGroupTabs(group: LayoutGroupShape) {
@@ -268,12 +279,12 @@ export const useLayoutStore = defineStore('layout', () => {
 		setTabTargets,
 		resetTabTargets,
 		removeTabTargets,
+		pruneDetachedTargets,
 		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,
 		updateGroups,
 		initialize,
-		createGroups,
 		updateGroupTabs,
 		updateGroupInfo,
 		mergeGroups,

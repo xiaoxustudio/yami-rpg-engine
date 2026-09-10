@@ -6,7 +6,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { read, rect } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Title } from '@app/title/title-bar.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 UI.setSize = function (this: UIShape, width: number, height: number) {
@@ -308,9 +308,11 @@ UI.deleteElement = function (this: UIShape, target: UINodeShape) {
 UI.updateHead = function (this: UIShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement!(head)!;
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 		// 调整居中组件的位置 const width = nRect.right - iRect.right if (head.width !== width) { head.width = width const [start, center, end] = head.children end.style.marginLeft = '0' const sRect = start.rect() const cRect = center.rect() const eRect = end.rect() const spacing = eRect.left - sRect.right - cRect.width const difference = sRect.right - nRect.left - eRect.width const margin = Math.min(spacing, difference) end.style.marginLeft = `${margin}px` }

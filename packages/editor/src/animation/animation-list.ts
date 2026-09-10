@@ -19,7 +19,7 @@ import { Menu } from '@app/components/menu-list.ts';
 import { TreeList } from '@app/components/tree-list.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { SceneShift } from '@app/scene/move-scene.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -940,9 +940,11 @@ Animation.list.cancelSearch = function (this: typeof Animation) {
 Animation.list.updateHead = function (this: typeof Animation) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement(head);
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild as HTMLElement);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 	}
@@ -1042,9 +1044,11 @@ getListConfig(Animation.layerList).onDelete = function (
 Animation.timeline.updateHead = function (this: typeof Animation) {
 	const { head } = this;
 	if (this.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement(head);
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild as HTMLElement);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 		const bRect = rect(Animation.outerTimelineList);

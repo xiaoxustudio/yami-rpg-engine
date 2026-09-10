@@ -79,6 +79,74 @@ describe('LayoutPalettePage 纯 store 驱动', () => {
 	});
 });
 
+describe('LayoutPalettePage 陈旧/分离目标（Teleport 安全）', () => {
+	const store = getLayoutStore();
+
+	beforeEach(() => {
+		store.resetPageTargets();
+		store.resetTabTargets();
+		document.body.innerHTML = '';
+	});
+
+	it('归属指向已脱离文档的叶子时退回原地渲染（不搬进死容器）', async () => {
+		let mounts = 0;
+		const Marker = defineComponent({
+			setup() {
+				onMounted(() => {
+					mounts += 1;
+				});
+				return () => h('span', { class: 'palette-marker' }, 'page');
+			}
+		});
+		const detached = createManager('manager-detached'); // 未 append：不在文档中
+		const host = document.createElement('div');
+		document.body.append(host);
+
+		const wrapper = mount(LayoutPalettePage, {
+			props: { value: 'scene' },
+			attachTo: host,
+			slots: { default: () => h(Marker) }
+		});
+		const content = (): HTMLElement => document.querySelector('.palette-marker') as HTMLElement;
+
+		try {
+			store.setPageTargets({ scene: detached });
+			await nextTick();
+			// 目标未连文档 → 不 Teleport，内容留在宿主
+			expect(host.contains(content())).toBe(true);
+			expect(content().parentNode).not.toBe(detached);
+
+			// 目标接入文档后（按生产路径：先收回归属再重新发布）正常搬家，且不重建
+			document.body.append(detached);
+			store.removePageTargets(['scene']);
+			await nextTick();
+			store.setPageTargets({ scene: detached });
+			await nextTick();
+			expect(content().parentNode).toBe(detached);
+			expect(mounts).toBe(1);
+		} finally {
+			wrapper.unmount();
+		}
+	});
+
+	it('pruneDetachedTargets 只清理已分离目标，保留在线目标', () => {
+		const online = createManager('manager-online');
+		const offline = createManager('manager-offline');
+		document.body.append(online);
+		const nav = document.createElement('div');
+		nav.className = 'nav-bar';
+		document.body.append(nav);
+
+		store.setPageTargets({ scene: online, project: offline });
+		store.setTabTargets({ scene: nav });
+		store.pruneDetachedTargets();
+
+		expect(store.pageTargets.scene).toBe(online);
+		expect(store.pageTargets.project).toBeUndefined();
+		expect(store.tabTargets.scene).toBe(nav);
+	});
+});
+
 describe('LayoutPalettePage 与 layout 收敛点联动', () => {
 	const store = getLayoutStore();
 

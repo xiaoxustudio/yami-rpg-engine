@@ -16,9 +16,9 @@
 - 2026-08-31 阶段 4 启动：①静态 getFocus 清理——14 个 TS 文件 41 处 `getFocus($('#静态id'))` → requestFocus，17 个模板补 30 个 v-focus（含 ui-kit YMRequestKeyValue）；静态残留 0，保留 2 处动态反引号 id 与约 15 处元素引用形式（元素在手直调，属合理用法）。②inspector 批次 1——10 个 scene/element 页面删 36 处冗余 write 回填：7 个 scene 页面的 write() 外部回写路径（原 Scene 拖动回写，已无调用方）统一改走 `$('#xxx-vue-mount')?.sync?.()`；element-window/element-animation 新建 useUIWindowPage/useUIAnimationPage（18 字段 form 化 + v-model + sync 桥）。ParamList（conditions/events/scripts）无 v-model 协议，其 write 暂留。
 - 2026-08-31 阶段 4 inspector 批次 2+3 完成：批次 2（8 个 file/element 页面）——新建 useFileTilesetPage/useFileUIPage/useUIVideoPage 3 个 composable、复用扩展 5 个，补 37 处 v-model，删 37 处 write 回填、5 处 read 改 form（file-audio paramInput 整体移除）；批次 3（4 个动态键重建页面）——particle-layer 43 处 + file-trigger 7 + element-button/text 各 6 处 read(DOM) 清零，切型重建改读 form（经 `#xxx-vue-mount` 桥暴露 form，可选链复刻元素不存在语义），paramInput 保留控件 API 直读（NumberBox v-model 在 change 才提交，@input 时 form 是旧值——e2e 实测确认，新增 particle-layer-page-form.spec.ts 固化）。批次 2 发现的横切问题待办：ui-kit SelectBox/SliderBox 的 onInput 先 emit('input') 后 emit('update:modelValue') 的顺序问题，需统一修。
 - 2026-09-01 阶段 4 批次 4 + emit 顺序统一修复完成：
-  - 批次 4a（transition-window/Easing）：新建 useEasingWindow（form: points×8/mode/preview/scale + clampEasingPointX/Y 与 NumberBox readValue 等价），Easing.vue 补 20 处 v-model，transition-window.ts 删 38 处 write、24 处 read，clamp 往返全部函数化（canvas/TreeList/RadioBox 保留）。
-  - 批次 4b（inspector History + palette）：`processors['inspector-change']` 改为 write(DOM) + form 桥赋值（三级键解析：直接键/camelCase/嵌套路径）+ dispatch input，无桥/键不可解析时回退原路径；palette auto-tile 的 rule-0..7 开关 v-model 化（store.ruleBits），canvas/TreeList 交互入白名单。新增 13 个测试用例。
-  - emit 顺序统一：ui-kit 9 组件 11 处 `emit('input')` 先于 `emit('update:modelValue')` 的顺序倒置全部修正（ColorBox/FileVar×2/NumberVar/SelectBox×2/SelectVar/SliderBox/StringVar/TextAreaVar/CustomBox），`@input` handler 现在能读到 v-model 更新后的 form 值。ui-kit 450/450、editor 1781/1782（唯一失败为预存 global-mounting 审计）、lint 0 警告、typecheck 过。
+    - 批次 4a（transition-window/Easing）：新建 useEasingWindow（form: points×8/mode/preview/scale + clampEasingPointX/Y 与 NumberBox readValue 等价），Easing.vue 补 20 处 v-model，transition-window.ts 删 38 处 write、24 处 read，clamp 往返全部函数化（canvas/TreeList/RadioBox 保留）。
+    - 批次 4b（inspector History + palette）：`processors['inspector-change']` 改为 write(DOM) + form 桥赋值（三级键解析：直接键/camelCase/嵌套路径）+ dispatch input，无桥/键不可解析时回退原路径；palette auto-tile 的 rule-0..7 开关 v-model 化（store.ruleBits），canvas/TreeList 交互入白名单。新增 13 个测试用例。
+    - emit 顺序统一：ui-kit 9 组件 11 处 `emit('input')` 先于 `emit('update:modelValue')` 的顺序倒置全部修正（ColorBox/FileVar×2/NumberVar/SelectBox×2/SelectVar/SliderBox/StringVar/TextAreaVar/CustomBox），`@input` handler 现在能读到 v-model 更新后的 form 值。ui-kit 450/450、editor 1781/1782（唯一失败为预存 global-mounting 审计）、lint 0 警告、typecheck 过。
 - 2026-09-01 阶段 4 prototype patch 拆除完成：`HTMLElement.prototype` 的 name/innerHeight/addScrollListener/on/off 五个 monkey-patch 全部删除（name/innerHeight 消费者为零直接删；addScrollListener 迁至新模块 `utils/scroll-listener.ts`，palette/scene/animation 画布区显式导入；on/off patch 删除但全局 on()/off() 函数保留 `el.on` 探测——它是 ui-kit 元素 API 的路由机制（YMTreeList.on 启用事件派发开关），误删后 5 测试失败已恢复）。修复 animation-list 的 this 陷阱（addEventListener 回调的 this 是元素非单例）。36 文件 58 处 `.on(` 元素方法调用改全局函数。
 - 2026-09-01 阶段 4 收官（editor/components 模板 ref 化）完成：inspector 页面 .vue 的 onMounted 中 `document.getElementById('自己模板的id')` 全部改为模板 ref——子组件用 `ref<InstanceType<typeof X> | null>` 调 expose API（loadItems/bind/relate/enableHiddenMode），普通 div 用 `ref<HTMLElement | null>`。三个批次共 42 个 inspector 页面 + 4 个 tools 页面，editor/components 的 getElementById 从 387 → 54，剩余全部合理保留（37 个 vue-mount 挂载容器跨组件 + 5 个 specialTarget 容器 + 12 处动态 id 循环）。commands/animation/data 残留确认为动态拼接 id 与 monaco 容器（保留）。dom-guard 矩阵：全仓待迁移豁免文件 299 → 157、getElementById 1164 → 231。全量 1781/1782、lint 0 警告、typecheck 过。
 - 剩余集中在：ui-kit/components 的 37 个豁免文件（createElement/appendChild 大头，阶段 5 巨石组件：tree-api/command-api/FileBodyPane 等）、editor/composables 的 170 处（动态 id：variableGetter/presetGetter 的 prefix 循环）、engine/scene/palette 画布白名单区。
@@ -30,32 +30,33 @@
 - 2026-09-01 vue-tsc baseline 存量清零（736 → 0）：三个并行 agent 按目录消减——tools（283→0，97 文件：死代码删除 ~190、confirm 补参 ~27、writable computed ~35、popup handler 签名对齐等）、inspector（221→0，38 文件：onParamInput 解构重命名统一包装 ~140、bindInput owner cast 16、tint 可空 computed 16 等）、ui-kit+commands+common（剩余 ~230→1，我修最后 1 处 commandListOptions 导出收窄）。**editor + ui-kit 全部 .vue 现在处于 vue-tsc 零错误状态，baseline 为空数组**——后续任何 .vue 类型错误都会被门禁拦截。全量：editor 1781/1782（预存审计）、ui-kit 548/548、lint 0 警告、typecheck:vue 通过。
 - 2026-09-01 阶段 5 巨石 core 抽取完成：①command-core.ts（279 行）——parseSearchRegExp/parseScript（多行折叠 20 行截断）/computeSelectRange（多选区间）等纯函数 + 27 个单测，command-api 改委托调用（断连遗留的 1 个错误断言已修正：无斜杠搜索串因 flags 非法实际返回 null）。②file-body-core.ts（159 行）——虚拟滚动窗口计算（computeListGridMetrics/computeTileGridMetrics/computeVisibleRange）与键盘网格导航索引（computeNavigationIndex）参数化纯函数 + 16 个单测（含零项负偏移经 Uint32Array 强转的原始边界行为），DOM 读取留在 .vue 传参。至此三巨石均完成纯数据层分离：tree-core 179 行 + command-core 279 行 + file-body-core 159 行，DOM 渲染层暂保留命令式。全量：ui-kit 511/511（较阶段 5 开始时 +43 测试）、editor 1781/1782（预存审计失败）、lint 0 警告、typecheck 过。
 - 2026-09-03 ⚠️ tree v-for 化第 2 步（渲染层 v-for）已回滚（revert `648773f0` 及依赖的 `0001ee0e`/`05b69561`）：真实运行「首次点击 TabBar 标签页」即崩（Vue `insertBefore null`/`__vnode null`）。根因是架构级——layout 系统在首次 `loadLayoutScheme` 的 `createGroups`（layout.ts:243-244）把 Vue 渲染的 PageManager（`#workspace-page-manager`/`#layout-page-manager`，LayoutPanel.vue 内 `<PageManager>`）子页命令式 `appendChild` 搬运进新建 group，Vue vnode 仍持旧父子关系；v-for 化 TreeList 的同步 flushRender（绕过 Vue scheduler 直接 instance.update()）频繁触发 patch，与搬运交错即 vnode/DOM 失配。v-for 化前命令式行渲染无 Vue patch 故不暴露。
-  - **前置条件结论**：YMTreeList 行渲染 Vue 化的前提是先做 layout 页面组织 Vue 化（PageManager/group/nav 结构改为 Vue 渲染或 Teleport，消除命令式 reparent）。
-  - **护栏保留**：金标准测试 26 用例（tree-list-interactions.spec.ts，行为级断言新旧实现均绿）与 41303633 一并保留，供将来重做。
-  - **保留**：element-utils clear 委托修复（ef5d3173，与 v-for 无关）、小件 core 抽取（a49a5ffd）、SFC 小件收敛、vue-tsc 清零等全部前置成果。
-  - 当前 YMTreeList 回到旧命令式渲染，全量测试绿（editor 1781/1782 仅预存审计、ui-kit 55/55 tree 目录）。
-- 2026-09-03 layout/PageManager 页面组织 Vue 化开工：新增 `docs/layout-vue-plan.md`（现状模型 + 方案对比[推荐 Teleport 起步/组件化远期] + M1-M6 分步计划 + 风险回滚）。Phase 0 摸底测试落地 `layout-scheme-baseline.spec.ts`（6 用例）锁定现状语义：首载 `clear` 摧毁 palette 挂载与节点搬移、group 递归结构、首 tab 激活、页签点击切换（nav write→manager.switch）、跨工作区节点对象不变仅 parent 迁移、二次加载 lastValue 恢复、saveLayoutScheme 往返保真。layout __tests__ 10/10 绿、lint 0。M2（scheme 数据化）为下一项。
-- 2026-09-03 layout M2 数据层交付：新增 `engine/layout/layout-scheme.ts` 纯数据模型（SplitNode/GroupNode，稳定 id，`active` 用页签 value）与不可变变换 `parseLayoutScheme/toLayoutScheme/leavesOf/findGroup/activateLayoutTab/moveLayoutTab`（同组重排/跨组插入/源组清空后折叠：空 split 删除、单子组提升继承父 end，对齐 navDrop DOM 折叠语义）+ `layout-scheme.spec.ts` 19 用例。sub-agent 同步盘点布局状态读写面并并入 layout-vue-plan 附录 B（含 `Layout.layout/default` 与 editor store `config.layout` 同引用、`afterChange` 死代码等线索）。本轮刻意不接入渲染，M1 基线零扰动：layout __tests__ 29/29 绿、lint 0 警告。M2b（config 读写收敛 + 响应式宿主）为下一项。
-- 2026-09-03 layout M1 补齐完成 + 两个接线调研落档：新增共享 fixture `layout-spec-utils.ts` 与 `layout-lifecycle.spec.ts`（5 用例）——saveNavStates 全路径（selected→lastValue + write(null) 清空）、同页二次加载 lastValue 恢复、updateGroupTabs 重建 tabs 并进 saveLayoutScheme 往返、mergeGroups 同向嵌套平铺合并与 end 重算、navDragstart/dragend 生命周期。layout __tests__ 34/34 绿、lint 0。sub-agent 调研并入 layout-vue-plan 附录 C（M3 接线：页面成分/双实现桥接/Teleport 语义与坑/createGroups 调用面/建议次序）、附录 D（DOM→树反序列化契约与 mirror 结论：M2b 走「DOM 为事实源 + 7 个收敛点快照」改动面最小）。M2b（mirror 快照 + saveToConfig 从树落盘）为下一项。
-- 2026-09-03 layout M2b 反序列化接入：新增 `engine/layout/layout-deserialize.ts`（附录 D 契约：`deserializeGroupElement`/`deserializePage`，kind 以 expando split 为准、tabs 读 group.tabs、active 读 manager.index 且 undefined→null、空/未物化页返回 null）+ `layout-deserialize.spec.ts`（6 用例，含 merge 平铺后新 end 与跨工作区往返一致性）。`Layout.saveLayoutScheme` 改为 `toLayoutScheme(deserializeGroupElement(root))`，删除原手写递归序列化（L785-808）；既有基线往返/updateGroupTabs/merge 测试钉死行为零变化。layout __tests__ 40/40 绿、oxlint 0、editor typecheck 通过。下一步 M3（叶子 group Vue 组件 + 页/页签 Teleport）为下一项。
-- 2026-09-03 layout M3a 交付：新增递归数据渲染组件 `components/layout/LayoutTreeView.vue`（LayoutTreeNode → group DOM，稳定 key，结构/类与命令式一致，node=null 空渲染）+ `layout-tree-view.spec.ts`（5 用例：4 个 scheme 与命令式 createGroups 结构签名/叶子数/叶子宿主等价 + 空树）。layout __tests__ 45/45、oxlint 0、editor typecheck 通过、vue-tsc 门禁 0 新增。editor 全量回归 1825/1827（2 失败均为预存 global-mounting 审计，单跑同样失败与本次无关）、ui-kit 627/627。M3b（双路开关接线 + Teleport 换源）需真机冒烟阶段实施，见 layout-vue-plan M3 小节。
-- 2026-09-03 layout M3 方案 A 前提试验通过：新增 `layout-teleport-probe.spec.ts`——动态 `Teleport :to` 挂「命令式创建的 manager 元素」在 A↔B 间切换**只移动不重建**（mounted 计数恒 1）、manager 内命令式插入的外部兄弟节点在 teleport 子树 patch 期间不被吞、目标清空（disabled 兜底）回宿主仍不重建。风险表 R1/R2 标注 jsdom 层已验证，剩余真机拖拽压测。layout __tests__ 46/46、oxlint 0。M3b（双路开关接线 + Teleport 换源）待真机冒烟阶段。
-- 2026-09-03 layout M3b 归属源落地：新增 `engine/layout/layout-page-targets.ts`（DOM walker 收集 value→归属 group-manager）；`stores/layout.ts` 加响应式 `pageTargets`/`setPageTargets`/`resetPageTargets`；`layout.ts` 在 loadLayoutScheme 与 navDrop 收敛点后 `syncPageTargets` 刷新（layout-page-targets.spec.ts 5 用例：空态/载入归属/跨工作区整表刷新/切页签不改归属）。layout __tests__ 51/51、oxlint 0、editor typecheck 通过。下一步 M3b 渲染接线（LayoutPalettePage Teleport 组件 + 双路开关）仍待真机冒烟阶段。
-- 2026-09-03 layout M3b 页面 Teleport 组件落地：新增 `components/layout/LayoutPalettePage.vue`（slot 经 Teleport 挂 `store.pageTargets[value]`，无归属 disabled 留宿主）+ `layout-palette-page.spec.ts`（2 用例：纯 store 驱动搬家/清归属不重建；与真实 loadLayoutScheme 联动、跨工作区往返目标一致且不重建）。layout __tests__ 53/53、oxlint 0、editor typecheck 与 vue-tsc 门禁通过。剩余 M3b 渲染接线（12 页接入 + 双路开关 + clear 语义替换）待真机冒烟阶段。
-- 2026-09-03 layout M2b 收尾完成：新增 `layout-config.spec.ts`（5 用例）钉死布局字典生命周期——saveToConfig 把已物化页 DOM（含重排后 tabs）反序列化回 layout、未物化页保持原样；switchLayout 整本字典切换立即重建当前页；loadFromConfig 接管后驱动加载；loadLayoutScheme 在 layout 缺 key 时回落 Layout.default；双缺不构建。layout __tests__ 58/58、oxlint 0。M2 至此闭环（数据层 + 反序列化 + 序列化落盘统一走 layout-scheme/layout-deserialize），M3b 渲染接线为下一项（需真机冒烟）。
-- 2026-09-03 layout M3b-1（C.5#1 叶子宿主 Vue 化）交付：`LayoutTreeView.vue` 叶子改由 `YMNavBar`/`YMPageManager`(.vue) 渲染——组件 onMounted 把 read/write/unselect/on 与 switch/on/index/active 命令式 API 挂到 root，命令式消费方零改动，`.nav-bar`/`.page-manager.group-manager`/`.group-border` 结构与类不变（M3a 结构断言继续绿）；新增 `engine/layout/layout-vue-tree.ts` 水合层 `mountVueGroupTree(host, scheme, handlers)`（parseLayoutScheme → render(LayoutTreeView) → nextTick 后按先序绑 end/split/tabs/nav/manager/border expando + 与 createGroupContent/createGroupBorder 一致的事件接线）+ `unmount()` 幂等只卸载组树。金标准 `layout-vue-leaf.spec.ts` 6 用例：Vue 宿主 vs 命令式 loadLayoutScheme 的结构签名/叶子宿主类/首载激活/页签点击切换双路等价 + expando 与数据树一致 + unmount/重挂。layout __tests__ 58→64 全绿、oxlint 0 警告、editor typecheck 过、vue-tsc 门禁 0 新增（含 0 存量基线）。M3b-2（双路开关接线 + LayoutPanel 12 页 LayoutPalettePage 接入 + clear 语义替换 + async 时序）待真机冒烟阶段，实施要点见 layout-vue-plan 附录 E。
-- 2026-09-03 layout M3b-2a（引擎双路分支，默认关）交付：`layout.ts` 加 `YM_LAYOUT_VUE_RENDER` 门控（localStorage，导出 is/setLayoutVueRenderEnabled + `awaitVueLayoutLoad`）；`loadLayoutScheme` 首载开关开时改走异步 `Layout.loadLayoutSchemeVue`——先 unmount 宿主 page 旧 Vue 树（vueTreeHandles WeakMap）→ clear(page) → mountVueGroupTree 渲染+水合 → 搬 palette 页/页签入叶子宿主 → 激活首 tab/updateGroups/syncPageTargets，尾部与命令式首载逐点等价，命令式分支一字未动；二次同 scheme 走共用 else 恢复（不重建）、重载先卸载再重建单根。金标准 `layout-vue-scheme-load.spec.ts` 6 用例（Vue vs 命令式首载逐叶状态/palette 清空/默认关命令式/点击+lastValue 恢复不重建/重载单根/跨工作区 pageTargets/双路快照等价）。layout __tests__ 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。M3b-2b（LayoutPanel 12 页 LayoutPalettePage 接线 + clear 终版语义）待真机冒烟阶段（见 layout-vue-plan 附录 E）。
-- 2026-09-03 layout M3b-2b 接线设计定稿：新增 `layout-shell-teleport.spec.ts`（4 用例 jsdom 探针）——整壳 `.page-frame` Teleport 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、collectPageTargets DOM walk 仍成立；nav-item Teleport 顺序可由引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻幂等收敛、write/selected 不受影响；visible 随节点搬家需 saveNavStates→switch(null) 前置清空（已按真实序列模拟）。layout __tests__ 70→74 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。接线设计定稿写入 layout-vue-plan **附录 F**（整壳 Teleport 模型、pageTargets/tabTargets 归属源、排序 pass 收敛点、clear 终版语义、真机验收增量清单）；LayoutPanel 接线实施待真机冒烟阶段。
-- 2026-09-03 layout M3b-2b 前置件落地：stores/layout.ts 新增 `tabTargets`/`setTabTargets`/`resetTabTargets`（与 pageTargets 同构共用 targets 工厂）；`LayoutPalettePage` 增加 `source?: 'page' | 'tab'`（默认 page，'tab' 读 tabTargets → leaf nav）。layout-palette-page.spec.ts +2 用例（tab 归属搬家/换归属不重建/清归属回宿主、page/tab 双通道互不干扰），layout __tests__ 74→76 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。LayoutPanel 12 页接线（整壳 Teleport 应用 + clear 终版语义 + 引擎 teleport 模式换源）仍待真机冒烟阶段，见 layout-vue-plan 附录 F。
-- 2026-09-03 layout M3b-2b 引擎 Teleport 模式交付（默认关，`YM_LAYOUT_VUE_RENDER=2|teleport`）：`layout.ts` 门控升级为模式 0/1/2（导出 get/setLayoutVueRenderMode）；新增 `Layout.loadLayoutSchemeVueTeleport`——宿主 page 只渲染/挂载 Vue 组树（不执行 clear），按叶子发布归属（页→manager/页签→nav 到 store pageTargets/tabTargets，卸载前用新增 removePageTargets/removeTabTargets 收回），等 Teleport 落位后按 group.tabs 排序收敛叶子 nav/manager 并激活首 tab 或 nav.lastValue；二次进入不重建组树；重载先收回再卸载。端到端金标准 `layout-vue-teleport-load.spec.ts`（4 用例：palette 整壳 wrappers 复刻 + 真实引擎入口——首载落位激活、跨工作区只搬家不重建+返回 lastValue 恢复、重载收回再发布节点身份不变、默认关命令式对照）。layout __tests__ 76→80 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。剩余：LayoutPanel 12 页/12 nav-item 实际接线（按附录 F 整壳 Teleport + source=page/tab）与真机冒烟（E.3/F.5）。
+    - **前置条件结论**：YMTreeList 行渲染 Vue 化的前提是先做 layout 页面组织 Vue 化（PageManager/group/nav 结构改为 Vue 渲染或 Teleport，消除命令式 reparent）。
+    - **护栏保留**：金标准测试 26 用例（tree-list-interactions.spec.ts，行为级断言新旧实现均绿）与 41303633 一并保留，供将来重做。
+    - **保留**：element-utils clear 委托修复（ef5d3173，与 v-for 无关）、小件 core 抽取（a49a5ffd）、SFC 小件收敛、vue-tsc 清零等全部前置成果。
+    - 当前 YMTreeList 回到旧命令式渲染，全量测试绿（editor 1781/1782 仅预存审计、ui-kit 55/55 tree 目录）。
+- 2026-09-03 layout/PageManager 页面组织 Vue 化开工：新增 `docs/layout-vue-plan.md`（现状模型 + 方案对比[推荐 Teleport 起步/组件化远期] + M1-M6 分步计划 + 风险回滚）。Phase 0 摸底测试落地 `layout-scheme-baseline.spec.ts`（6 用例）锁定现状语义：首载 `clear` 摧毁 palette 挂载与节点搬移、group 递归结构、首 tab 激活、页签点击切换（nav write→manager.switch）、跨工作区节点对象不变仅 parent 迁移、二次加载 lastValue 恢复、saveLayoutScheme 往返保真。layout **tests** 10/10 绿、lint 0。M2（scheme 数据化）为下一项。
+- 2026-09-03 layout M2 数据层交付：新增 `engine/layout/layout-scheme.ts` 纯数据模型（SplitNode/GroupNode，稳定 id，`active` 用页签 value）与不可变变换 `parseLayoutScheme/toLayoutScheme/leavesOf/findGroup/activateLayoutTab/moveLayoutTab`（同组重排/跨组插入/源组清空后折叠：空 split 删除、单子组提升继承父 end，对齐 navDrop DOM 折叠语义）+ `layout-scheme.spec.ts` 19 用例。sub-agent 同步盘点布局状态读写面并并入 layout-vue-plan 附录 B（含 `Layout.layout/default` 与 editor store `config.layout` 同引用、`afterChange` 死代码等线索）。本轮刻意不接入渲染，M1 基线零扰动：layout **tests** 29/29 绿、lint 0 警告。M2b（config 读写收敛 + 响应式宿主）为下一项。
+- 2026-09-03 layout M1 补齐完成 + 两个接线调研落档：新增共享 fixture `layout-spec-utils.ts` 与 `layout-lifecycle.spec.ts`（5 用例）——saveNavStates 全路径（selected→lastValue + write(null) 清空）、同页二次加载 lastValue 恢复、updateGroupTabs 重建 tabs 并进 saveLayoutScheme 往返、mergeGroups 同向嵌套平铺合并与 end 重算、navDragstart/dragend 生命周期。layout **tests** 34/34 绿、lint 0。sub-agent 调研并入 layout-vue-plan 附录 C（M3 接线：页面成分/双实现桥接/Teleport 语义与坑/createGroups 调用面/建议次序）、附录 D（DOM→树反序列化契约与 mirror 结论：M2b 走「DOM 为事实源 + 7 个收敛点快照」改动面最小）。M2b（mirror 快照 + saveToConfig 从树落盘）为下一项。
+- 2026-09-03 layout M2b 反序列化接入：新增 `engine/layout/layout-deserialize.ts`（附录 D 契约：`deserializeGroupElement`/`deserializePage`，kind 以 expando split 为准、tabs 读 group.tabs、active 读 manager.index 且 undefined→null、空/未物化页返回 null）+ `layout-deserialize.spec.ts`（6 用例，含 merge 平铺后新 end 与跨工作区往返一致性）。`Layout.saveLayoutScheme` 改为 `toLayoutScheme(deserializeGroupElement(root))`，删除原手写递归序列化（L785-808）；既有基线往返/updateGroupTabs/merge 测试钉死行为零变化。layout **tests** 40/40 绿、oxlint 0、editor typecheck 通过。下一步 M3（叶子 group Vue 组件 + 页/页签 Teleport）为下一项。
+- 2026-09-03 layout M3a 交付：新增递归数据渲染组件 `components/layout/LayoutTreeView.vue`（LayoutTreeNode → group DOM，稳定 key，结构/类与命令式一致，node=null 空渲染）+ `layout-tree-view.spec.ts`（5 用例：4 个 scheme 与命令式 createGroups 结构签名/叶子数/叶子宿主等价 + 空树）。layout **tests** 45/45、oxlint 0、editor typecheck 通过、vue-tsc 门禁 0 新增。editor 全量回归 1825/1827（2 失败均为预存 global-mounting 审计，单跑同样失败与本次无关）、ui-kit 627/627。M3b（双路开关接线 + Teleport 换源）需真机冒烟阶段实施，见 layout-vue-plan M3 小节。
+- 2026-09-03 layout M3 方案 A 前提试验通过：新增 `layout-teleport-probe.spec.ts`——动态 `Teleport :to` 挂「命令式创建的 manager 元素」在 A↔B 间切换**只移动不重建**（mounted 计数恒 1）、manager 内命令式插入的外部兄弟节点在 teleport 子树 patch 期间不被吞、目标清空（disabled 兜底）回宿主仍不重建。风险表 R1/R2 标注 jsdom 层已验证，剩余真机拖拽压测。layout **tests** 46/46、oxlint 0。M3b（双路开关接线 + Teleport 换源）待真机冒烟阶段。
+- 2026-09-03 layout M3b 归属源落地：新增 `engine/layout/layout-page-targets.ts`（DOM walker 收集 value→归属 group-manager）；`stores/layout.ts` 加响应式 `pageTargets`/`setPageTargets`/`resetPageTargets`；`layout.ts` 在 loadLayoutScheme 与 navDrop 收敛点后 `syncPageTargets` 刷新（layout-page-targets.spec.ts 5 用例：空态/载入归属/跨工作区整表刷新/切页签不改归属）。layout **tests** 51/51、oxlint 0、editor typecheck 通过。下一步 M3b 渲染接线（LayoutPalettePage Teleport 组件 + 双路开关）仍待真机冒烟阶段。
+- 2026-09-03 layout M3b 页面 Teleport 组件落地：新增 `components/layout/LayoutPalettePage.vue`（slot 经 Teleport 挂 `store.pageTargets[value]`，无归属 disabled 留宿主）+ `layout-palette-page.spec.ts`（2 用例：纯 store 驱动搬家/清归属不重建；与真实 loadLayoutScheme 联动、跨工作区往返目标一致且不重建）。layout **tests** 53/53、oxlint 0、editor typecheck 与 vue-tsc 门禁通过。剩余 M3b 渲染接线（12 页接入 + 双路开关 + clear 语义替换）待真机冒烟阶段。
+- 2026-09-03 layout M2b 收尾完成：新增 `layout-config.spec.ts`（5 用例）钉死布局字典生命周期——saveToConfig 把已物化页 DOM（含重排后 tabs）反序列化回 layout、未物化页保持原样；switchLayout 整本字典切换立即重建当前页；loadFromConfig 接管后驱动加载；loadLayoutScheme 在 layout 缺 key 时回落 Layout.default；双缺不构建。layout **tests** 58/58、oxlint 0。M2 至此闭环（数据层 + 反序列化 + 序列化落盘统一走 layout-scheme/layout-deserialize），M3b 渲染接线为下一项（需真机冒烟）。
+- 2026-09-03 layout M3b-1（C.5#1 叶子宿主 Vue 化）交付：`LayoutTreeView.vue` 叶子改由 `YMNavBar`/`YMPageManager`(.vue) 渲染——组件 onMounted 把 read/write/unselect/on 与 switch/on/index/active 命令式 API 挂到 root，命令式消费方零改动，`.nav-bar`/`.page-manager.group-manager`/`.group-border` 结构与类不变（M3a 结构断言继续绿）；新增 `engine/layout/layout-vue-tree.ts` 水合层 `mountVueGroupTree(host, scheme, handlers)`（parseLayoutScheme → render(LayoutTreeView) → nextTick 后按先序绑 end/split/tabs/nav/manager/border expando + 与 createGroupContent/createGroupBorder 一致的事件接线）+ `unmount()` 幂等只卸载组树。金标准 `layout-vue-leaf.spec.ts` 6 用例：Vue 宿主 vs 命令式 loadLayoutScheme 的结构签名/叶子宿主类/首载激活/页签点击切换双路等价 + expando 与数据树一致 + unmount/重挂。layout **tests** 58→64 全绿、oxlint 0 警告、editor typecheck 过、vue-tsc 门禁 0 新增（含 0 存量基线）。M3b-2（双路开关接线 + LayoutPanel 12 页 LayoutPalettePage 接入 + clear 语义替换 + async 时序）待真机冒烟阶段，实施要点见 layout-vue-plan 附录 E。
+- 2026-09-03 layout M3b-2a（引擎双路分支，默认关）交付：`layout.ts` 加 `YM_LAYOUT_VUE_RENDER` 门控（localStorage，导出 is/setLayoutVueRenderEnabled + `awaitVueLayoutLoad`）；`loadLayoutScheme` 首载开关开时改走异步 `Layout.loadLayoutSchemeVue`——先 unmount 宿主 page 旧 Vue 树（vueTreeHandles WeakMap）→ clear(page) → mountVueGroupTree 渲染+水合 → 搬 palette 页/页签入叶子宿主 → 激活首 tab/updateGroups/syncPageTargets，尾部与命令式首载逐点等价，命令式分支一字未动；二次同 scheme 走共用 else 恢复（不重建）、重载先卸载再重建单根。金标准 `layout-vue-scheme-load.spec.ts` 6 用例（Vue vs 命令式首载逐叶状态/palette 清空/默认关命令式/点击+lastValue 恢复不重建/重载单根/跨工作区 pageTargets/双路快照等价）。layout **tests** 64→70 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。M3b-2b（LayoutPanel 12 页 LayoutPalettePage 接线 + clear 终版语义）待真机冒烟阶段（见 layout-vue-plan 附录 E）。
+- 2026-09-03 layout M3b-2b 接线设计定稿：新增 `layout-shell-teleport.spec.ts`（4 用例 jsdom 探针）——整壳 `.page-frame` Teleport 进 YMPageManager(group-manager) 后 manager.switch/index/active/visible 语义正常、换归属只搬家不重建（挂载计数恒 1）、collectPageTargets DOM walk 仍成立；nav-item Teleport 顺序可由引擎「nav 排序 pass」（按 group.tabs appendChild）任意时刻幂等收敛、write/selected 不受影响；visible 随节点搬家需 saveNavStates→switch(null) 前置清空（已按真实序列模拟）。layout **tests** 70→74 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。接线设计定稿写入 layout-vue-plan **附录 F**（整壳 Teleport 模型、pageTargets/tabTargets 归属源、排序 pass 收敛点、clear 终版语义、真机验收增量清单）；LayoutPanel 接线实施待真机冒烟阶段。
+- 2026-09-03 layout M3b-2b 前置件落地：stores/layout.ts 新增 `tabTargets`/`setTabTargets`/`resetTabTargets`（与 pageTargets 同构共用 targets 工厂）；`LayoutPalettePage` 增加 `source?: 'page' | 'tab'`（默认 page，'tab' 读 tabTargets → leaf nav）。layout-palette-page.spec.ts +2 用例（tab 归属搬家/换归属不重建/清归属回宿主、page/tab 双通道互不干扰），layout **tests** 74→76 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。LayoutPanel 12 页接线（整壳 Teleport 应用 + clear 终版语义 + 引擎 teleport 模式换源）仍待真机冒烟阶段，见 layout-vue-plan 附录 F。
+- 2026-09-03 layout M3b-2b 引擎 Teleport 模式交付（默认关，`YM_LAYOUT_VUE_RENDER=2|teleport`）：`layout.ts` 门控升级为模式 0/1/2（导出 get/setLayoutVueRenderMode）；新增 `Layout.loadLayoutSchemeVueTeleport`——宿主 page 只渲染/挂载 Vue 组树（不执行 clear），按叶子发布归属（页→manager/页签→nav 到 store pageTargets/tabTargets，卸载前用新增 removePageTargets/removeTabTargets 收回），等 Teleport 落位后按 group.tabs 排序收敛叶子 nav/manager 并激活首 tab 或 nav.lastValue；二次进入不重建组树；重载先收回再卸载。端到端金标准 `layout-vue-teleport-load.spec.ts`（4 用例：palette 整壳 wrappers 复刻 + 真实引擎入口——首载落位激活、跨工作区只搬家不重建+返回 lastValue 恢复、重载收回再发布节点身份不变、默认关命令式对照）。layout **tests** 76→80 全绿、oxlint 0、editor typecheck 过、vue-tsc 门禁 0 新增。剩余：LayoutPanel 12 页/12 nav-item 实际接线（按附录 F 整壳 Teleport + source=page/tab）与真机冒烟（E.3/F.5）。
 - 2026-09-03 layout M3b-2b LayoutPanel 整壳接线落地（工作区未提交）：`LayoutPanel.vue` 目录宿主页按附录 F 套包装——`LayoutPaletteHost` 包 `#layout-content`（teleport 模式把整个 palette 支架搬进 body 隐藏容器，宿主页留空供引擎挂 Vue 组树；默认关透传内联 DOM 与现状一致，纯模板实现无 DOM API）、新增 `PaletteNode.vue`（source=page/tab，默认透传/teleport 模式交给 LayoutPalettePage 做整壳归属搬家）包裹 12 个 `.page-frame` 与 12 个 `.nav-item`（闭合精确配对，div 数不变、+50 行）。全量 editor 回归 1865/1867（2 失败均预存 global-mounting 审计）、oxlint 0、editor typecheck 与 vue-tsc 门禁 0 新增。剩余 F.5 真机冒烟验收（开关开冒烟 5 项 + 默认关回归护栏）。
-- 2026-09-03 layout 接线件护栏补全：新增 `layout-palette-wrappers.spec.ts`（5 用例）——默认关（mode 0）PaletteNode 单/多节点「透传等价」不产生额外 DOM 元素、LayoutPaletteHost slot 原样内联且不产生 body 隐藏容器；teleport 模式（mode 2）LayoutPaletteHost 把 palette 支架搬进 body 隐藏容器、宿主处留空且卸载移除容器，PaletteNode 归属发布后经 LayoutPalettePage 搬进 manager（空 value 仍透传）。layout __tests__ 80→86 全绿（86 含空 value 透传用例；为循环展开的运行时口径）、oxlint 0。剩余 F.5 真机冒烟验收。
+- 2026-09-03 layout 接线件护栏补全：新增 `layout-palette-wrappers.spec.ts`（5 用例）——默认关（mode 0）PaletteNode 单/多节点「透传等价」不产生额外 DOM 元素、LayoutPaletteHost slot 原样内联且不产生 body 隐藏容器；teleport 模式（mode 2）LayoutPaletteHost 把 palette 支架搬进 body 隐藏容器、宿主处留空且卸载移除容器，PaletteNode 归属发布后经 LayoutPalettePage 搬进 manager（空 value 仍透传）。layout **tests** 80→86 全绿（86 含空 value 透传用例；为循环展开的运行时口径）、oxlint 0。剩余 F.5 真机冒烟验收。
 - 阶段 5 后续（调整后顺序）：layout/PageManager 页面组织 Vue 化 →（前置完成后再）重做 tree 行渲染 v-for 化 → 其余巨石 core 化与 editor 消费方迁移。
-- 2026-09-09 tree 金标准测试补齐（docs/tree-list-vfor-plan.md 步骤 1 续）：新增 `tree-list-golden.spec.ts` 20 用例锁定 8 类行为缺口——dragend 取消清理、F2 重命名全链路（含 rename record）、删除级联 unselect、restore undo/redo 全类型（rename/delete/remove/create 循环）、element 契约（refresh 重建/折叠展开引用不变）、duplicate 唯一名序列、虚拟滚动窗口迁移与 margin 锚点、scrollToSelection 定位公式/no-op。tree 目录测试 55→75。**基线刷新**：editor 全量 1877/1877（预存 global-mounting 审计失败已随 9689cd14 修正清零）、ui-kit 627→647、layout __tests__ 86/86、oxlint 0 警告。补记：仓库于 2026-09-09 并行完成全局 CSS→SFC 样式迁移（9689cd14 等 + `scripts/migrate-window-css.cjs`），与阶段计划无冲突，dom-guard tracker 已按当前代码刷新（LayoutPanel.vue 1584→1861 等行数漂移即源于此）。layout M3b-2b 接线已提交（0c65cb63），剩余 F.5 真机冒烟 + M4/M5。
+- 2026-09-09 tree 金标准测试补齐（docs/tree-list-vfor-plan.md 步骤 1 续）：新增 `tree-list-golden.spec.ts` 20 用例锁定 8 类行为缺口——dragend 取消清理、F2 重命名全链路（含 rename record）、删除级联 unselect、restore undo/redo 全类型（rename/delete/remove/create 循环）、element 契约（refresh 重建/折叠展开引用不变）、duplicate 唯一名序列、虚拟滚动窗口迁移与 margin 锚点、scrollToSelection 定位公式/no-op。tree 目录测试 55→75。**基线刷新**：editor 全量 1877/1877（预存 global-mounting 审计失败已随 9689cd14 修正清零）、ui-kit 627→647、layout **tests** 86/86、oxlint 0 警告。补记：仓库于 2026-09-09 并行完成全局 CSS→SFC 样式迁移（9689cd14 等 + `scripts/migrate-window-css.cjs`），与阶段计划无冲突，dom-guard tracker 已按当前代码刷新（LayoutPanel.vue 1584→1861 等行数漂移即源于此）。layout M3b-2b 接线已提交（0c65cb63），剩余 F.5 真机冒烟 + M4/M5。
 - 2026-09-09 tree 金标准测试补齐（第二批）：`tree-list-golden.spec.ts` +5（Ctrl+Arrow 纯滚动 ±20px 不改选中/Ctrl+其它键 inert；快双击文件 → open 不重命名、快双击 folder → 切换展开、慢双击 500ms Timer → 重命名提交）。tree 目录 75→80、ui-kit 全量 647→652、oxlint 0。步骤 1 至此仅剩 **PageUp/PageDown**（当前 keydown 无映射，留步骤 2 定义后补测）与步骤 2 前置的 1000+ 节点性能基准。
 - 2026-09-09 layout M3b-2b F.5 真机冒烟（CDP 自动化）完成：新增 `scripts/smoke-layout.mjs`（Node 全局 WebSocket 直连 electron `--remote-debugging-port`；build:all 产物 + 真实项目 E:\17835\Documents\Project1\game.yamirpg 驱动）。mode2（`YM_LAYOUT_VUE_RENDER=2`）directory 首载：活动叶子 nav=tabs、首 tab 激活、组内单帧无重复壳；directory↔scene 往返帧节点 isConnected 恒真、身份不重建；scene 工作区 7 组 + 4 GL canvas + scene/palette/sprite body 正常，inspector 嵌套 43 子页不受影响；mode0 对照组与 mode2 同构。渲染日志仅预存 CSP 提示、无 Vue/异常。F.5 #4（saveLayoutScheme/saveToConfig + 重启恢复）留人工。**M3b-2b 完结 → 下一步 M4 交互数据化**。详见 docs/layout-vue-plan.md 附录 F.5 验收记录。
-- 2026-09-09 layout M4 前置金标准（M1 拖拽缺口用例第一批）落地：新增 `layout-nav-drop.spec.ts` 4 用例锁定 navDrop 生效动作（同组 append 重排 + saveLayoutScheme 往返、同组 insert-before、跨组搬入双方 tabs 同步、源组搬空折叠 + 根 flatten），layout __tests__ 86→90 全绿、oxlint 0。剩余几何依赖缺口（region 落点方向、border 缩放）留真机冒烟；下一步 M4 生效动作数据化（moveLayoutTab/updateGroupTabs 读数据）。
-- 2026-09-09 layout M4-1（Teleport 模式同组 drop 数据化，默认关）交付：layout-scheme.ts 新增纯函数 `moveTabWithin`（+4 单测，与命令式 insert-before/append 语义等价）；layout.ts 新增 `applyTabDropWithin`（tabs 数据推导 → nav/manager 排序 pass 收敛，无 insertBefore 差量），`navDrop` 在 `vueRenderMode === 2` 同组 inside 时走数据路径，命令式路径（模式 0/1）保留到 M5。`layout-nav-drop.spec.ts` +2（mode2 开关下与命令式结果一致），layout __tests__ 90→96、lint 0、typecheck 过。真机：新构建跨组搬入/折叠正常；同组重排合成 DragEvent 冒烟受 dragend 挂载点限制留 M4-2/人工复核。下一步 M4-2：region 分割/跨组剩余路径数据化 + 真机拖拽复核。
+- 2026-09-09 layout M4 前置金标准（M1 拖拽缺口用例第一批）落地：新增 `layout-nav-drop.spec.ts` 4 用例锁定 navDrop 生效动作（同组 append 重排 + saveLayoutScheme 往返、同组 insert-before、跨组搬入双方 tabs 同步、源组搬空折叠 + 根 flatten），layout **tests** 86→90 全绿、oxlint 0。剩余几何依赖缺口（region 落点方向、border 缩放）留真机冒烟；下一步 M4 生效动作数据化（moveLayoutTab/updateGroupTabs 读数据）。
+- 2026-09-09 layout M4-1（Teleport 模式同组 drop 数据化，默认关）交付：layout-scheme.ts 新增纯函数 `moveTabWithin`（+4 单测，与命令式 insert-before/append 语义等价）；layout.ts 新增 `applyTabDropWithin`（tabs 数据推导 → nav/manager 排序 pass 收敛，无 insertBefore 差量），`navDrop` 在 `vueRenderMode === 2` 同组 inside 时走数据路径，命令式路径（模式 0/1）保留到 M5。`layout-nav-drop.spec.ts` +2（mode2 开关下与命令式结果一致），layout **tests** 90→96、lint 0、typecheck 过。真机：新构建跨组搬入/折叠正常；同组重排合成 DragEvent 冒烟受 dragend 挂载点限制留 M4-2/人工复核。下一步 M4-2：region 分割/跨组剩余路径数据化 + 真机拖拽复核。
+- 2026-09-09 修复用户上报的 resize/Teleport 运行期异常（Vue 化后的 nav 锚点与归属竞态）：① `Scene.updateHead` 等 **10 处**（scene/scene-list/animation-list ×2/animation-motion/useCurveWindow/palette-image/particle-motion/ui-transform/ui-list）都用 `rect(nav.lastChild)` 取「最后一个页签」——组树 nav 现由 Vue 渲染，末尾可能是**注释/文本锚点**，于是抛 `el.getBoundingClientRect is not a function`。统一改为引擎导出的 `headNavOf(head)`（head→所属组 nav，非组内返回 null）+ `lastNavItemOf(nav)`（取最后一个**元素**子节点），并统一补上「组不存在/无页签」守卫。② `LayoutPalettePage` 的 Teleport 目标增加**连通性校验**（`isConnected` 为假时退回原地渲染），store 新增 `pruneDetachedTargets()` 并在两处卸载旧树前调用，避免向已分离容器搬运（真机 `moveTeleport: insertBefore of null`）。③ 顺带删除 M5-b 遗留的死接口 `store.createGroups`。验证：CDP 真机对**全部 64 个 page-frame 派发 resize + 3 次真实视口缩放 → 0 异常**（修复前该路径即抛上述 TypeError）；editor 全量 **1878/1878**（208 文件）、oxlint 0、tsc/vue-tsc 0；新增 `layout-palette-page.spec` 2 用例（分离目标原地渲染、prune 只清离线目标）。注：真机仍可见两条**既有**非本次引入的现象——`LayoutDiagnostics` 的 3 条「元素底部溢出 25px」告警（复测后归 0，属视口覆盖后的瞬时重排）与某窗口打开时的 `t.scenes is not iterable`（属测试项目数据），二者与本次改动无关。
 - 2026-09-09 修复用户上报的 LayoutPanel 运行期异常（M5-c 登记回归）：`ref` 打在组件 `<NavBar>`/`<PageManager>` 上拿到的是**组件实例**而非 DOM 元素，直接读 `instance.children` → `Array.from(undefined)` 抛 `undefined is not iterable`（`LayoutPanel.vue:1421`），导致登记从未生效、一直被 `Layout.initialize` 的 DOM 兜底掩盖。修复：抽出 `components/layout/palette-items.ts`（`elementOfRef` 支持元素/组件 `$el` 两种 ref 形态 + `collectPaletteItems` 子节点遍历，全部空值安全），`LayoutPanel` 改为调用该模块；新增 `palette-items.spec.ts` 5 用例（元素 ref / 组件 `$el` ref / 组件无 `$el` / null·undefined / `elementOfRef` 形态判定）覆盖该缺陷。真机复核（重建后 CDP 采集渲染器异常）：打开项目 + 窗口菜单开「全局变量」→ 20/20 行真实数据、布局 3 组 2 nav、**无任何异常**（修复前同一流程可见该 TypeError）。注：验证期间曾加过只读诊断全局 `__yamiLayoutRegistryCount`，因触发仓库「全局挂载审计」护栏（`global-mounting.spec`）已撤销，改以单测 + 无异常为验证依据。验证：editor 全量 **1876/1876**（208 文件）、oxlint 0、tsc/vue-tsc 0。
 - 2026-09-09 真机深挖修复（第二轮窗口验证，M5 收尾）：① 修复 `setItemText`/`setTreeItemClass` 只 bump 版本但派生行持有快照导致「文本覆盖/注册 class 不反映到已渲染行」——组件侧 `windowRows` 改为按 `version` 合成（`withRegistryOverrides`），新增 2 条回归用例；② 真机窗口覆盖：经 CDP 真实鼠标点击「窗口」菜单逐窗核对绑定/渲染行数（全局变量 20/20、对象属性 42/32、枚举 115/32、本地化 0/0 数据为空、过渡 5/5 带序号前缀、队伍 3/3 带序号前缀、插件 13/13、指令 16/16），并完成选中→折叠→展开→重命名交互链路；③ 修掉 `no-map-spread` 性能告警。验证：ui-kit 全量 **659/659**、editor 全量 **1871/1871**、oxlint 0、tsc/vue-tsc 0。
 - 2026-09-09 M5-c：palette 显式登记 + 真机窗口验证（含一处真实回归修复）。① 引擎新增 `registerLayoutItems`/`resetRegisteredLayoutItems`（`RegisteredLayoutItem`），`Layout.initialize` 改为「登记项优先 + DOM 发现合并兜底」，不再依赖「palette 容器子节点 / 全文档扫描」的形态猜测；`LayoutPanel.vue` 在 mount 后用模板 ref（`paletteNavEl`/`paletteManagerEl`）遍历子节点登记（不新增 `document.querySelector*`，遵守 DOM 迁移阶段 0 规则）。② 新增 `layout-item-registry.spec.ts` 3 用例（登记优先/兜底合并/页配对）。③ **真机验证发现并修复回归**：`updateItemName` 直写 textNode 导致重命名后派生行文本不刷新 → 改为触发 `syncRenderRows()`，新增 ui-kit 回归用例。④ 真机自动化可达验证：CDP 真实加速键打开窗口，`F3` 全局变量窗口渲染 20 行真实数据（真实名称/自定义图标/折叠标记/spacer），选中→折叠(20→16)→展开→重命名交互链路全通过；`open-project`+`drag-here` 亦通过。验证：ui-kit 全量 **658/658**、editor 全量 **1871/1871**（207 文件）、oxlint 0、tsc/vue-tsc 0。剩余：少量窗口需人工冒烟；步骤 5b（elements shim/`item.element`/NodeElement 收口）。
@@ -63,22 +64,22 @@
 - 2026-09-09 tree v-for 步骤 4 交付（editor 消费方逐类迁移）：ui-kit 新增渲染模式无关消费方 API（`setTreeItemClass`/`setTreeItemText`/`clearTreeItemText`/`isTreeItemRendered`/`treeOwnerListOf`/`treeRowCount`/`treeRowItemAt`/`treeRowIndexOf` + `TreeListRowApi<T>`；v-for 走派生行、命令式回退 `elements`/DOM）。迁移：① textNode 直写（plugin-list、transition-window/Easing、useTeamWindow）→ `setTreeItemText`；② class 修饰（event-editor commands/events/open、script-list、event-list、command-tip、text-tip）→ `setTreeItemClass`；③ 反查 list（script/event/condition-list）→ `treeOwnerListOf`；④ 兄弟遍历（tree-utils.find_dItem）→ 行 API；⑤ 可见性（command/text-tip）→ `isTreeItemRendered`；另迁移 list-clipboard delete、preset 窗口 searcherInput、useVariableGetterWindow 行遍历、eslints.range/hover 窗口守卫、attribute/enum 窗口 `element?.group`。验证：ui-kit **656/656**、editor **1868/1868**、oxlint 0、tsc/vue-tsc 0；真机翻默认后 `open-project`+`drag-here` 端到端通过、渲染器日志无新增错误。剩余：LayoutPanel 7 处 `closest('.tree-list')`（可选优化）、真机数据绑定窗口逐窗人工冒烟、步骤 5 清理（删 elements shim/命令式渲染/insertPaddingAndClear/padding）、步骤 3 class 收口收尾。
 - 2026-09-09 tree v-for 翻默认完成（M5-d 主体）：`vueRowRender` 默认切到 **v-for 数据派生渲染**（开关仅留测试/回滚）。适配：断言补 `await nextTick()`；`elements[i]` 仅物化窗口内行 + 占位改 `.scroll-spacer` 断言；折叠/窗口外行 `item.element` 回收、展开回填新行；`refresh()` 后按 key 复用元素；search 模式先取行元素；图标回退 `createIcon`（编辑器覆写路径保持）。修复：`addNodeTo` parent 初始化提前（unset 触发重派生不再 `No parent!`）、`insertPaddingAndClear` 在 v-for 路径 no-op、`nodeIcon` 空值判断。验证：ui-kit 树 **84/84**、editor 树 bridge/icons/extras **19/19**、ui-kit 全量 **656/656**、editor 全量 **1868/1868**、oxlint 0、tsc/vue-tsc 0；真机确认 19 个树列表均为 v-for 形态（spacer 就位）。剩余：删除 insertPaddingAndClear/padding（留步骤 5）、数据绑定型窗口逐窗真机冒烟。
 - 2026-09-09 tree v-for 步骤 2 地基（M5-d 开工）：新增 ui-kit `YMTreeList/tree-render.ts`（`flattenRows` 与旧 createIndentedItems/createFlatItems 逐点等价、WeakMap 稳定 rowKey、`computeWindow` 窗口公式、`bindRowElement` element/内部字段回写桥、`itemClasses` 注册表）＋ `YMTreeList.vue` 模板 v-for（windowRows + 上下 spacer + folder-mark/node-icon/node-text/extras 占位 + `:ref` 桥）＋ tree-api 实例钩子（syncRenderRows/syncElementsShim/bindRow/bindNodeIcon/bindNodeExtras/applyRowUpdaters/rowIndexOf/rowItemAt/rowCount/setItemClass）与导航/滚动/翻页数据源切换到 rows ＋ `clear()` 不再手清 DOM；开关 `setVueRowRenderEnabled()`（默认仍走旧路径，仓库保持全绿），新路径由 `tree-list-vue-rows.spec.ts` 4 用例覆盖。实测「翻默认」差距 28 处，全部是机制差异（断言紧接 update 同步读 DOM 需补 `await nextTick()`；`elements[i]` 仅物化窗口内行；margin 占位改 spacer 高度），非语义差异。验证：ui-kit 全量 **656/656**、editor 侧 tree bridge/icons/extras **19/19**、oxlint 0。下一步：翻默认 + 适配 5 个 spec 与 editor 侧 + 真机工具窗口冒烟 + 删除 insertPaddingAndClear/padding。
-- 2026-09-09 layout M5-b 交付（命令式装载路径退场）：删除 `YM_LAYOUT_VUE_RENDER` 门控/`vueRenderMode` 与 4 个 mode 访问器、删除 `Layout.createGroups`（`renderElement(h('group'))` 方案渲染路径）与 `loadLayoutSchemeVue`（M3b-2a 中间态）、装载不再 `clear(page)`；`loadLayoutScheme` 统一走 `loadLayoutSchemeVueTeleport`（首载判据 `pageSchemes`），同组 drop 恒数据路径，`rebuildVueLayoutFromDom` 仅在有 Vue 组树时重挂载。组件侧 `LayoutPaletteHost`/`PaletteNode` 恒为整壳 Teleport（空 value 透传）。加固：`mergeGroups` 前序兄弟按元素回溯（Vue 锚点导致的 `prev.end` undefined→NaN 已修）、新增 `refreshLayoutTargets()`。测试：fixture 装载异步化（模拟 palette 出页 + 整壳落位 + 会话值激活），删除 3 个命令式专项 spec，重写 tree-view/palette-wrappers/baseline。验证：layout __tests__ **87/87**、editor 全量 **1868/1868**（206 文件）、oxlint/tsc/vue-tsc 全 0；**真机**（清空开关）默认路径加载两叶 + palette 隐藏容器 + 跨组折叠重挂载 + 页签完整性均正常。
+- 2026-09-09 layout M5-b 交付（命令式装载路径退场）：删除 `YM_LAYOUT_VUE_RENDER` 门控/`vueRenderMode` 与 4 个 mode 访问器、删除 `Layout.createGroups`（`renderElement(h('group'))` 方案渲染路径）与 `loadLayoutSchemeVue`（M3b-2a 中间态）、装载不再 `clear(page)`；`loadLayoutScheme` 统一走 `loadLayoutSchemeVueTeleport`（首载判据 `pageSchemes`），同组 drop 恒数据路径，`rebuildVueLayoutFromDom` 仅在有 Vue 组树时重挂载。组件侧 `LayoutPaletteHost`/`PaletteNode` 恒为整壳 Teleport（空 value 透传）。加固：`mergeGroups` 前序兄弟按元素回溯（Vue 锚点导致的 `prev.end` undefined→NaN 已修）、新增 `refreshLayoutTargets()`。测试：fixture 装载异步化（模拟 palette 出页 + 整壳落位 + 会话值激活），删除 3 个命令式专项 spec，重写 tree-view/palette-wrappers/baseline。验证：layout **tests** **87/87**、editor 全量 **1868/1868**（206 文件）、oxlint/tsc/vue-tsc 全 0；**真机**（清空开关）默认路径加载两叶 + palette 隐藏容器 + 跨组折叠重挂载 + 页签完整性均正常。
 - 2026-09-09 layout M5-a 交付（DOM 耦合读法 → 引擎内部状态 + 运行时镜像）：`page.scheme`→`pageSchemes`、`nav.lastValue`→`navLastValues`、`items.page`→`itemPages`（WeakMap，`initialize` 登记；导出 `getPageScheme/resetPageLayoutState/clearLayoutMirror/getNavLastValue/setNavLastValue/setItemPage` 供测试）；新增 `pageTrees` 运行时镜像（装载/rebuild/updateGroupTabs/navDrop/缩放 pointerup 收敛点刷新），`saveToConfig` 改读镜像（缺镜像回退 DOM 快照 + `hasAnyTabs` 守卫）；`Layout.initialize` 在 palette 整壳被 Teleport 搬空时回退全文档扫描配对。验证：layout+engine 布局用例 112/112、editor 全量 1893/1893、oxlint 0、tsc 0；真机 mode2 跨组搬空折叠 + 重挂载、mode0 同组重排、工作区切走返回恢复上次页签均正常。
-- 2026-09-09 layout M4 完成（真机几何用例补齐）：`smoke-layout.mjs` 加 `drag-region` 阶段——region 右缘 drop 真机通过（目标组右侧新建叶子承接页签、源叶折叠、组数不变）；border 缩放真机通过（`.group-info` 挂卸 + 叶 `end` 0.910→0.979 数据驱动重排）；jsdom 侧新增 region 右缘结构性金标准（`layout-nav-drop.spec` 7 用例），layout __tests__ 101→102 全绿、lint 0。M4 判据：Teleport 路径 drop（同组/跨组/结构分割）与缩放均已数据驱动并经真机验证；模式 0/1 命令式 `replaceChild/insertBefore` 按计划留到 M5 清除脚手架。
+- 2026-09-09 layout M4 完成（真机几何用例补齐）：`smoke-layout.mjs` 加 `drag-region` 阶段——region 右缘 drop 真机通过（目标组右侧新建叶子承接页签、源叶折叠、组数不变）；border 缩放真机通过（`.group-info` 挂卸 + 叶 `end` 0.910→0.979 数据驱动重排）；jsdom 侧新增 region 右缘结构性金标准（`layout-nav-drop.spec` 7 用例），layout **tests** 101→102 全绿、lint 0。M4 判据：Teleport 路径 drop（同组/跨组/结构分割）与缩放均已数据驱动并经真机验证；模式 0/1 命令式 `replaceChild/insertBefore` 按计划留到 M5 清除脚手架。
 
 ## 一、现状总览
 
-| 指标 | 数值 |
-| --- | --- |
-| 扫描文件总数 | 1083 |
-| 仍带 oxlint-disable 豁免的待迁移文件 | 299 |
-| `getElementById` 调用 | 1164（editor/composables 占 830） |
-| `document.createElement` 调用 | 149（ui-kit/components 占 117） |
-| `appendChild` 调用 | 134 |
-| `addEventListener` 调用 | 597 |
-| 使用 `useCommandSchema` 的命令表单 | 142 个 |
-| ui-kit 命令式 API 文件（`*-api.ts`） | 27 个 |
+| 指标                                 | 数值                              |
+| ------------------------------------ | --------------------------------- |
+| 扫描文件总数                         | 1083                              |
+| 仍带 oxlint-disable 豁免的待迁移文件 | 299                               |
+| `getElementById` 调用                | 1164（editor/composables 占 830） |
+| `document.createElement` 调用        | 149（ui-kit/components 占 117）   |
+| `appendChild` 调用                   | 134                               |
+| `addEventListener` 调用              | 597                               |
+| 使用 `useCommandSchema` 的命令表单   | 142 个                            |
+| ui-kit 命令式 API 文件（`*-api.ts`） | 27 个                             |
 
 现状判断：项目已完成「阶段 0」——Vue 3 壳、Pinia store、模板组件（153 个命令表单 .vue、ui-kit 组件 .vue）已就位，且模板内已大量使用 `v-model` / `@input`。**但状态与视图仍是"双轨制"**：reactive form 与 DOM 元素同时作为数据源，靠 `id` 互相找回，属于典型的"伪 Vue"。
 
@@ -156,6 +157,7 @@ Vue 模板（v-for / v-if / <component :is> / Teleport）
 ```
 
 原则：
+
 1. **单一数据源**：任何值只存在于 reactive/store，DOM 只读渲染。
 2. **id 仅用于测试与无障碍**，不得作为模块间寻址手段。
 3. **删除一个反模式必须连根删除其支撑层**（P1 删完 → P5 的 `read/write` 才能删）。
@@ -185,8 +187,13 @@ export const useWindowStore = defineStore('window', () => {
 ```html
 <!-- WindowHost.vue：唯一窗口渲染点 -->
 <Teleport to="body">
-	<WindowFrame v-for="win in windowStore.stack" :key="win.id" v-bind="win.props"
-		@confirm="win.resolve" @close="windowStore.close(win.id)" />
+	<WindowFrame
+		v-for="win in windowStore.stack"
+		:key="win.id"
+		v-bind="win.props"
+		@confirm="win.resolve"
+		@close="windowStore.close(win.id)"
+	/>
 </Teleport>
 ```
 
@@ -208,8 +215,12 @@ export const useWindowStore = defineStore('window', () => {
 const value = defineModel<string>({ default: '' });
 const disabled = defineModel<boolean>('disabled', { default: false });
 const inputEl = ref<HTMLInputElement | null>(null);
-function insert(text: string) { /* 操作 inputEl，emit input 事件 */ }
-function focus(mode?: 'all' | 'end') { /* 内部实现，替代全局 getFocus */ }
+function insert(text: string) {
+	/* 操作 inputEl，emit input 事件 */
+}
+function focus(mode?: 'all' | 'end') {
+	/* 内部实现，替代全局 getFocus */
+}
 defineExpose({ insert, focus, inputEl });
 ```
 
@@ -240,7 +251,12 @@ const save = () => {
 	for (const field of fields) {
 		if (field.required && isEmpty(form[field.key])) return; // 校验读 form，不读 DOM
 	}
-	commit(pick(form, fields.map((f) => f.key)));
+	commit(
+		pick(
+			form,
+			fields.map((f) => f.key)
+		)
+	);
 };
 ```
 
@@ -250,7 +266,9 @@ const save = () => {
 // composables/useFocusField.ts
 export function useFocusField() {
 	const focusTarget = ref<string | null>(null); // 存字段 key，不存元素
-	const requestFocus = (key: string, mode?: 'all' | 'end') => { focusTarget.value = `${key}:${mode ?? ''}`; };
+	const requestFocus = (key: string, mode?: 'all' | 'end') => {
+		focusTarget.value = `${key}:${mode ?? ''}`;
+	};
 	return { focusTarget, requestFocus };
 }
 ```
@@ -271,9 +289,9 @@ export function useFocusField() {
 前置条件：阶段 2/3 完成后，`read/write/getFocus/on/off` 的外部引用归零。
 
 1. `HTMLElement.prototype` 的 `on/off/name/innerHeight/addScrollListener` 全部删除：
-   - `on/off` → `@event` 指令或 `useEventListener`
-   - `innerHeight` → `useElementSize`（@vueuse）或 computed
-   - `addScrollListener` → `useScroll`/自定义指令
+    - `on/off` → `@event` 指令或 `useEventListener`
+    - `innerHeight` → `useElementSize`（@vueuse）或 computed
+    - `addScrollListener` → `useScroll`/自定义指令
 2. `utils/dom.ts` 的 `show/hide/css/addClass` → `v-show/:style/:class`；`$()` 选择器删除。
 3. `element-utils.ts` 收缩为纯工具（`rect`、`dispatchResizeEvent` 等少量保留），删除 `read/write/getFocus/clear/hasClass` 等。
 4. tooltip（`element-utils.ts` 中 `h()/render()` 手动挂载）→ 改为 store 驱动的 `<YTooltip>` 组件。
@@ -282,13 +300,13 @@ export function useFocusField() {
 
 ### 阶段 5：大型命令式渲染重写（P6 + P7）— 高风险，最后做
 
-| 目标 | 行数 | 方案 |
-| --- | --- | --- |
+| 目标                           | 行数 | 方案                                                              |
+| ------------------------------ | ---- | ----------------------------------------------------------------- |
 | `YMCommandList/command-api.ts` | 2762 | 命令树用 `v-for` + 数据驱动展开/折叠/拖拽；虚拟滚动用数据驱动组件 |
-| `YMTreeList/tree-api.ts` | 1795 | 扁平化可见节点数组 computed + `v-for`；折叠/选中是数组/Map 状态 |
-| `YMFileBodyPane.vue` | 2399 | 文件列表数据化，`v-for` 渲染，拖拽用事件而非手动 DOM |
-| `engine/layout/layout.ts` | 1556 | 区分：纯布局计算保留；DOM 生成部分改声明式 |
-| `module/resource.ts:655` | - | `innerHTML = ''` → `v-if` / 列表数据清空 |
+| `YMTreeList/tree-api.ts`       | 1795 | 扁平化可见节点数组 computed + `v-for`；折叠/选中是数组/Map 状态   |
+| `YMFileBodyPane.vue`           | 2399 | 文件列表数据化，`v-for` 渲染，拖拽用事件而非手动 DOM              |
+| `engine/layout/layout.ts`      | 1556 | 区分：纯布局计算保留；DOM 生成部分改声明式                        |
+| `module/resource.ts:655`       | -    | `innerHTML = ''` → `v-if` / 列表数据清空                          |
 
 策略：先补集成测试快照（现有 `__tests__` 模式）锁行为，再重写；一次只动一个组件。
 
@@ -300,14 +318,14 @@ export function useFocusField() {
 
 ## 五、优先级与排期建议
 
-| 阶段 | 内容 | 预估规模 | 风险 | 依赖 |
-| --- | --- | --- | --- | --- |
-| 1 | 窗口栈数据化 | 小（约 5 个文件） | 中 | 无 |
-| 2 | ui-kit 契约化 | 中（27 组件，可分批） | 中 | 无（可与 1 并行） |
-| 3 | 命令表单去 DOM | 大（142 文件，机械性强） | 低（可逐文件灰度） | 2 |
-| 4 | 工具层/原型回收 | 中（删代码为主） | 低 | 2、3 |
-| 5 | 大型组件重写 | 大（5 个巨石文件） | 高 | 2 |
-| 6 | 拆除脚手架 | 小 | 低 | 全部 |
+| 阶段 | 内容            | 预估规模                 | 风险               | 依赖              |
+| ---- | --------------- | ------------------------ | ------------------ | ----------------- |
+| 1    | 窗口栈数据化    | 小（约 5 个文件）        | 中                 | 无                |
+| 2    | ui-kit 契约化   | 中（27 组件，可分批）    | 中                 | 无（可与 1 并行） |
+| 3    | 命令表单去 DOM  | 大（142 文件，机械性强） | 低（可逐文件灰度） | 2                 |
+| 4    | 工具层/原型回收 | 中（删代码为主）         | 低                 | 2、3              |
+| 5    | 大型组件重写    | 大（5 个巨石文件）       | 高                 | 2                 |
+| 6    | 拆除脚手架      | 小                       | 低                 | 全部              |
 
 ## 六、度量与防回归
 

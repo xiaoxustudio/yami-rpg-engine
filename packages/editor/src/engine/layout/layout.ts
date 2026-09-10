@@ -967,6 +967,25 @@ Layout.getGroupOfElement = function (element: HTMLElement): LayoutGroupElement |
 	return null;
 };
 
+/**
+ * 窗口 head 定位（各窗口 updateHead 的公共前置）：
+ * - head 可能不在任何组内（窗口关闭/页面未落位）→ 返回 null，调用方直接跳过；
+ * - nav 内由 Vue 渲染，末尾可能是**注释/文本锚点**，`lastChild` 未必是元素
+ *   （旧实现 `rect(nav.lastChild)` 因此抛 `el.getBoundingClientRect is not a function`）。
+ */
+export const headNavOf = (head: HTMLElement | null | undefined): HTMLElement | null => {
+	if (!head) return null;
+	const group = Layout.getGroupOfElement!(head);
+	const nav = group?.nav as HTMLElement | undefined;
+	return nav instanceof HTMLElement ? nav : null;
+};
+
+export const lastNavItemOf = (nav: HTMLElement | null | undefined): HTMLElement | null => {
+	if (!nav) return null;
+	const last = nav.lastElementChild;
+	return last instanceof HTMLElement ? last : null;
+};
+
 // 准备获得焦点 在获得焦点之前给群组添加ready-to-focus类来防止闪烁
 // preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
 Layout.readyToFocus = function (element: HTMLElement) {
@@ -1100,6 +1119,8 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 			if (values.length !== 0) {
 				getLayoutStore().removePageTargets(values);
 				getLayoutStore().removeTabTargets(values);
+				// 陈旧（已脱离文档）归属一并清掉：否则 Teleport 会向死容器搬运
+				getLayoutStore().pruneDetachedTargets?.();
 				await nextTick();
 			}
 			prior.unmount();
@@ -1183,6 +1204,8 @@ Layout.rebuildVueLayoutFromDom = async function (
 			const list = Array.from(values);
 			getLayoutStore().removePageTargets(list);
 			getLayoutStore().removeTabTargets(list);
+			// 陈旧（已脱离文档）归属一并清掉：否则 Teleport 会向死容器搬运
+			getLayoutStore().pruneDetachedTargets?.();
 			await nextTick();
 		}
 		prior.unmount();

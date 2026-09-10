@@ -41,16 +41,23 @@ vi.mock('@app/data/transition-window.ts', () => {
 	};
 });
 
-vi.mock('@app/engine/layout/layout.ts', () => ({
-	Layout: {
-		getGroupOfElement: vi.fn(() => ({
-			nav: {
-				getBoundingClientRect: () => ({ left: 10, right: 50 }),
-				lastChild: { getBoundingClientRect: () => ({ right: 90 }) }
-			}
-		}))
-	}
-}));
+vi.mock('@app/engine/layout/layout.ts', () => {
+	// 与新 API 对齐：head → nav（headNavOf）、nav → 最后一个元素子节点（lastNavItemOf）
+	const nav = {
+		getBoundingClientRect: () => ({ left: 10, right: 50 }),
+		lastElementChild: { getBoundingClientRect: () => ({ right: 90 }) }
+	};
+	return {
+		Layout: {
+			getGroupOfElement: vi.fn(() => ({ nav }))
+		},
+		headNavOf: vi.fn(() => nav),
+		lastNavItemOf: vi.fn(
+			(target: { lastElementChild?: unknown } | null | undefined) =>
+				target?.lastElementChild ?? null
+		)
+	};
+});
 
 vi.mock('@app/utils/timer', () => ({
 	Timer: { appendUpdater: vi.fn(), removeUpdater: vi.fn() }

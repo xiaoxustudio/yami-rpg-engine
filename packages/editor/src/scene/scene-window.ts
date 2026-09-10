@@ -1,4 +1,4 @@
-﻿import { $ } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
@@ -11,7 +11,7 @@ import { GUID } from '@app/services/file-system/guid.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Palette } from '@app/palette/palette.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { ObjectFolder } from './default-object-folder.ts';
@@ -1414,9 +1414,11 @@ Scene.updateActorTeams = function (this: SceneShape) {
 Scene.updateHead = function (this: SceneShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement!(head)!;
+		const nav = headNavOf(head);
+		const item = lastNavItemOf(nav);
+		if (!nav || !item) return;
 		const nRect = rect(nav);
-		const iRect = rect(nav.lastChild);
+		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
 		const width = nRect.right - iRect.right;
