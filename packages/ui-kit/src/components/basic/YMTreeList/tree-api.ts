@@ -1,4 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
+/* oxlint-disable eslint/no-restricted-properties */
 import { h, render } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { getListConfig } from '../../../utils/list-config';
@@ -30,8 +30,30 @@ import {
 	type DragAndDropHintApi
 } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
 import { createTreeCore, type NodeElement, type TreeItem } from './tree-core';
+import {
+	createTreeRenderState,
+	flattenRows,
+	computeWindow,
+	setItemClass,
+	bindRowElement,
+	ROW_HEIGHT,
+	type TreeRenderState
+} from './tree-render';
 
 const treeCore = createTreeCore();
+
+// 步骤 2 渲染开关（docs/tree-list-vfor-plan.md）：默认沿用命令式渲染，
+// 打开后行由 YMTreeList.vue 的 v-for 渲染（数据派生 + 虚拟窗口 + element 回写桥）。
+let vueRowRender = false;
+
+export const isVueRowRenderEnabled = (): boolean => vueRowRender;
+
+export const setVueRowRenderEnabled = (enabled: boolean): void => {
+	vueRowRender = enabled;
+};
+
+// oxlint-disable-next-line no-explicit-any
+const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderState;
 
 const isSSR = typeof document === 'undefined';
 
@@ -241,6 +263,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	update: function (this: any): void {
+		if (this.renderState !== undefined) {
+			this.syncRenderRows();
+			if (this.updateEventEnabled) {
+				dispatchUpdateEvent(this);
+			}
+			return;
+		}
 		const { elements } = this;
 		elements.start = -1;
 		elements.count = 0;
@@ -275,6 +304,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
+		if (renderStateOf(this) !== undefined) {
+			(this as unknown as { syncElementsShim: () => void }).syncElementsShim();
+			return;
+		}
 		return commonListResize(this as unknown as CommonListLike);
 	},
 
@@ -922,6 +955,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			if (item.element !== undefined) {
 				addClass(item.element, 'selected');
 			}
+			// 步骤 2：行 class 由数据派生，选中变化需刷新派生行
+			if (this.renderState !== undefined) this.syncRenderRows();
 			if (this.selectEventEnabled) {
 				const select: ValueEvent = new Event('select') as ValueEvent;
 				select.value = this.read();
@@ -960,6 +995,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.dispatchEvent(select);
 			}
 			this.selections = [];
+			if (this.renderState !== undefined) {
+				(this as unknown as { syncRenderRows: () => void }).syncRenderRows();
+			}
 		}
 	},
 
@@ -983,14 +1021,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectRelative: function (this: any, direction: string): void {
+		const vueRows = this.renderState !== undefined;
+		const rows: { item: TreeItem }[] | null = vueRows ? this.renderState.rows.value : null;
 		const elements = this.elements;
-		const count = elements.count;
+		const count = vueRows ? rows!.length : elements.count;
 		if (count > 0) {
 			let index = -1;
 			const last = count - 1;
 			const selection = this.read();
 			if (selection) {
-				index = elements.indexOf(selection.element);
+				index = vueRows
+					? this.rowIndexOf(selection)
+					: (elements.indexOf(selection.element) as number);
 			}
 			switch (direction) {
 				case 'up':
@@ -1008,7 +1050,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 					break;
 			}
-			this.select(elements[index]?.item);
+			this.select(vueRows ? rows![index]?.item : elements[index]?.item);
 			this.scrollToSelection();
 		}
 	},
@@ -1054,10 +1096,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		const selection = this.read();
 		if (selection && hasScrollBar(this)) {
 			const elements = this.elements;
-			const count = elements.count;
+			const vueRows = this.renderState !== undefined;
+			const count = vueRows ? this.renderState.rows.value.length : elements.count;
+			let found = -1;
 			for (let i = 0; i < count; i++) {
-				const { item } = elements[i];
+				const item = vueRows ? this.renderState.rows.value[i]?.item : elements[i]?.item;
 				if (item === selection) {
+					found = i;
 					let scrollTop;
 					switch (mode) {
 						case 'active':
@@ -1075,9 +1120,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 					if (this.scrollTop !== scrollTop) {
 						this.scrollTop = scrollTop;
+						if (vueRows) this.syncElementsShim();
 					}
 					break;
 				}
+			}
+			if (!vueRows && found === -1) {
+				/* 未找到选中行：与旧实现一致保持不滚动 */
 			}
 		}
 	},
@@ -1103,6 +1152,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	// oxlint-disable-next-line no-explicit-any
+	rowItemAt: function (this: any, index: number): TreeItem | undefined {
+		if (this.renderState !== undefined) return this.renderState.rows.value[index]?.item;
+		return (this.elements[index] as NodeElement | undefined)?.item;
+	},
+
+	// oxlint-disable-next-line no-explicit-any
+	rowCount: function (this: any): number {
+		if (this.renderState !== undefined) return this.renderState.rows.value.length;
+		return this.elements.count;
+	},
+
+	// oxlint-disable-next-line no-explicit-any
 	pageUp: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
@@ -1111,7 +1172,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			let index = this.getElementIndexOfSelection(Infinity);
 			index = Math.min(index, bottomIndex) - scrollLines;
 			index = Math.max(index, 0);
-			this.select(this.elements[index]?.item);
+			this.select(this.rowItemAt(index));
 		}
 		this.scrollBy(0, -scrollLines * 20);
 	},
@@ -1120,12 +1181,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	pageDown: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
-			const count = this.elements.count;
+			const count = this.rowCount();
 			const topIndex = Math.floor(this.scrollTop / 20);
 			let index = this.getElementIndexOfSelection(0);
 			index = Math.max(index, topIndex) + scrollLines;
 			index = Math.min(index, count - 1);
-			this.select(this.elements[index]?.item);
+			this.select(this.rowItemAt(index));
 		}
 		this.scrollBy(0, +scrollLines * 20);
 	},
@@ -1133,7 +1194,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	getElementIndexOfSelection: function (this: any, defIndex: number): number {
 		const item = this.read();
-		return item ? this.elements.indexOf(item.element) : defIndex;
+		if (!item) return defIndex;
+		if (this.renderState !== undefined) {
+			const index = this.rowIndexOf(item);
+			return index === -1 ? defIndex : index;
+		}
+		return this.elements.indexOf(item.element);
 	},
 
 	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
@@ -1204,6 +1270,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			this.searchResults = [];
 		}
 		this.unselect();
+		if (this.renderState !== undefined) {
+			// 步骤 2：Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
+			this.syncRenderRows([]);
+			return this;
+		}
 		this.textContent = '';
 		commonListClearElements(this, 0);
 		this.elements.count = 0;
@@ -1584,6 +1655,10 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
+	// 步骤 2：v-for 行渲染（数据派生）开关，关闭时保持旧命令式渲染路径
+	if (vueRowRender) {
+		list.renderState = createTreeRenderState();
+	}
 	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {
@@ -1612,6 +1687,122 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	elements.head = null;
 	elements.foot = null;
 	list.elements = elements;
+	if (vueRowRender) {
+		list.syncRenderRows = function (
+			this: HTMLElement & { [k: string]: unknown },
+			overrideRows?: unknown
+		): void {
+			const state = renderStateOf(this) as TreeRenderState;
+			// oxlint-disable-next-line no-explicit-any
+			const self = this as any;
+			self.initialize();
+			const rows =
+				overrideRows !== undefined
+					? (overrideRows as ReturnType<typeof flattenRows>)
+					: flattenRows(state, {
+							display: self.display,
+							data: self.data ?? null,
+							searchResults: self.searchResults ?? [],
+							foldable: getListConfig(self).foldable === true,
+							parseName: (item: TreeItem) => self.parseName(item),
+							selections: (self.selections ?? []) as TreeItem[],
+							hintItem: self.dragging?.hint?.target?.item ?? null
+						});
+			state.rows.value = rows;
+			state.bump();
+			(self.syncElementsShim as () => void)();
+		};
+		list.syncElementsShim = function (this: HTMLElement & { [k: string]: unknown }): void {
+			const state = renderStateOf(this) as TreeRenderState;
+			// oxlint-disable-next-line no-explicit-any
+			const self = this as any;
+			const rows = state.rows.value;
+			const { start, end } = computeWindow(
+				self.scrollTop ?? 0,
+				self.clientHeight ?? 0,
+				rows.length
+			);
+			state.start.value = start;
+			state.end.value = end;
+			elements.count = rows.length;
+			elements.start = start;
+			elements.end = end;
+			for (let i = 0; i < rows.length; i++) {
+				const el = state.rowElements.get(rows[i].key);
+				elements[i] = el !== undefined && el.isConnected ? el : (undefined as never);
+			}
+			commonListClearElements(self as unknown as CommonListLike, rows.length);
+		};
+		list.rowIndexOf = function (
+			this: HTMLElement & { [k: string]: unknown },
+			item: TreeItem
+		): number {
+			const state = renderStateOf(this) as TreeRenderState;
+			const rows = state.rows.value;
+			for (let i = 0; i < rows.length; i++) {
+				if (rows[i].item === item) return i;
+			}
+			return -1;
+		};
+		list.setItemClass = function (
+			this: HTMLElement & { [k: string]: unknown },
+			item: TreeItem,
+			className: string,
+			on = true
+		): void {
+			const state = renderStateOf(this) as TreeRenderState;
+			setItemClass(state, item, className, on);
+		};
+		list.rowHeight = ROW_HEIGHT;
+		// 行元素绑定桥（模板 :ref 回调）：维护 item.element 与内部字段，并跑 creators/updaters 钩子
+		list.bindRow = function (
+			this: HTMLElement & { [k: string]: unknown },
+			item: TreeItem,
+			el: unknown
+		): void {
+			const state = renderStateOf(this);
+			if (state === undefined) return;
+			// oxlint-disable-next-line no-explicit-any
+			const self = this as any;
+			const firstBind = el instanceof HTMLElement && item.element !== el;
+			bindRowElement(state, item, el);
+			if (firstBind) {
+				for (const creator of getListConfig(self).creators) creator(item);
+			}
+		};
+		list.bindNodeIcon = function (
+			this: HTMLElement & { [k: string]: unknown },
+			item: TreeItem,
+			el: HTMLElement
+		): void {
+			if (item.element !== undefined) item.element.nodeIcon = el;
+		};
+		list.bindNodeExtras = function (
+			this: HTMLElement & { [k: string]: unknown },
+			item: TreeItem,
+			el: HTMLElement
+		): void {
+			if (item.element !== undefined) item.element.extras = el;
+		};
+		list.applyRowUpdaters = function (this: HTMLElement & { [k: string]: unknown }): void {
+			const state = renderStateOf(this);
+			if (state === undefined) return;
+			// oxlint-disable-next-line no-explicit-any
+			const self = this as any;
+			const updaters = getListConfig(self).updaters as ((item: TreeItem) => void)[];
+			for (const el of state.rowElements.values()) {
+				const item = el.item;
+				if (item === undefined) continue;
+				for (const updater of updaters) updater(item);
+				if (typeof self.renderNodeExtras === 'function' && el.extras) {
+					self.renderNodeExtras(item, el.extras);
+				}
+				if (typeof self.renderNodeIcon === 'function' && el.nodeIcon) {
+					self.renderNodeIcon(item, el.nodeIcon);
+				}
+			}
+		};
+	}
 	list.root = Object.defineProperty({}, 'children', {
 		get: () => list.data
 	});

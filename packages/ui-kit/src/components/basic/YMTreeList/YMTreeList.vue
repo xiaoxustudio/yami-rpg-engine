@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { createTreeListApi } from './tree-api';
+import type { TreeRenderRow, TreeRenderState } from './tree-render';
 
 interface Props {
 	id?: string;
@@ -17,6 +18,8 @@ interface TreeListRootElement extends HTMLElement {
 	dragstart: EventListener;
 	dragend: EventListener;
 	dataChange: EventListener;
+	// oxlint-disable-next-line no-explicit-any
+	[k: string]: any;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,6 +27,34 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const root = ref<HTMLElement | null>(null);
+const state = shallowRef<TreeRenderState | null>(null);
+const windowRows = computed<TreeRenderRow[]>(() => {
+	const current = state.value;
+	if (current === null) return [];
+	return current.rows.value.slice(current.start.value, current.end.value);
+});
+
+const listOf = (): TreeListRootElement | null => (root.value as TreeListRootElement | null) ?? null;
+
+// 行 class：受控状态（选中/展开/拖拽提示）+ 业务注册 class（itemClasses）
+const rowClasses = (row: TreeRenderRow): unknown[] => [
+	row.selected ? 'selected' : '',
+	row.expanded ? 'expanded' : '',
+	row.hint ? 'hint' : '',
+	...row.extraClasses
+];
+
+const onRowRef = (item: unknown, el: unknown): void => {
+	listOf()?.bindRow?.(item, el);
+};
+
+const onIconRef = (item: unknown, el: unknown): void => {
+	if (el instanceof HTMLElement) listOf()?.bindNodeIcon?.(item, el);
+};
+
+const onExtrasRef = (item: unknown, el: unknown): void => {
+	if (el instanceof HTMLElement) listOf()?.bindNodeExtras?.(item, el);
+};
 
 onMounted(() => {
 	const el = root.value;
@@ -33,6 +64,15 @@ onMounted(() => {
 		renderNodeExtras: props.renderNodeExtras,
 		renderNodeIcon: props.renderNodeIcon
 	});
+	const list = el as TreeListRootElement;
+	state.value = (list.renderState as TreeRenderState | undefined) ?? null;
+	if (state.value !== null) {
+		// 行集合变化后刷新派生内容（updaters / extras / icon 回调）
+		watch(windowRows, () => {
+			void nextTick(() => list.applyRowUpdaters?.());
+		});
+		void nextTick(() => list.applyRowUpdaters?.());
+	}
 });
 
 onBeforeUnmount(() => {
@@ -49,7 +89,43 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div ref="root" class="tree-list" :id="props.id" />
+	<div ref="root" class="tree-list" :id="props.id" tabindex="0">
+		<template v-if="state !== null">
+			<div class="scroll-spacer top" :style="{ height: state.start.value * 20 + 'px' }" />
+			<div
+				v-for="row in windowRows"
+				:key="row.key"
+				:ref="(el) => onRowRef(row.item, el)"
+				class="node-item"
+				:class="rowClasses(row)"
+				:style="{ textIndent: row.textIndent + 'px' }"
+				draggable="true"
+			>
+				<span
+					v-if="row.hasChildrenMark"
+					class="folder-mark"
+					:class="{ expanded: row.expanded }"
+					:style="{ visibility: row.markVisible ? 'inherit' : 'hidden' }"
+				/>
+				<span
+					v-if="props.renderNodeIcon"
+					class="tree-node-icon"
+					:ref="(el) => onIconRef(row.item, el)"
+				/>
+				<span v-else :class="row.iconClass" />
+				<span class="node-text">{{ row.name }}</span>
+				<div
+					v-if="props.renderNodeExtras"
+					class="tree-node-extras"
+					:ref="(el) => onExtrasRef(row.item, el)"
+				/>
+			</div>
+			<div
+				class="scroll-spacer bottom"
+				:style="{ height: (state.rows.value.length - state.end.value) * 20 + 'px' }"
+			/>
+		</template>
+	</div>
 </template>
 
 <style module>

@@ -252,6 +252,10 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 
 ### 步骤 2：YMTreeList.vue 模板 v-for 化（ui-kit 包内，对外零感知）
 
+> **进度（2026-09-09，地基已落地）**：新增 `tree-render.ts`（数据派生层：`flattenRows` 与旧 `createIndentedItems/createFlatItems` 逐点等价、`rowKeyOf` WeakMap 稳定 key、`computeWindow` 虚拟窗口公式、`bindRowElement` element 回写桥、`itemClasses` 注册表、`ROW_HEIGHT`）＋ `YMTreeList.vue` 模板 v-for（windowRows + 上下 spacer + folder-mark/node-icon/node-text/extras 容器 + `:ref` 回写桥）＋ tree-api 实例钩子（`syncRenderRows`/`syncElementsShim`/`bindRow`/`bindNodeIcon`/`bindNodeExtras`/`applyRowUpdaters`/`rowIndexOf`/`rowItemAt`/`rowCount`/`setItemClass`）＋ 导航/滚动/翻页数据源切到 rows（`selectRelative`/`scrollToSelection`/`pageUp`/`pageDown`/`getElementIndexOfSelection`）＋ `clear()` 不再手清 DOM。开关 `setVueRowRenderEnabled()`（`isVueRowRenderEnabled()`）双路可选，**当前默认仍为旧命令式路径**（保证仓库全绿），新路径由 `tree-list-vue-rows.spec.ts`（4 用例）覆盖：派生行/折叠标记/元素桥、选中与折叠刷新 + element 引用稳定、虚拟窗口 + spacer 迁移、搜索平铺。
+> **翻默认前的实测差距**：把默认切到新路径后，ui-kit 树用例 84 → 56 通过（28 处失败），全部属两类**机制差异**、非语义差异：① 断言紧接 `update()` 同步读 DOM（Vue patch 异步，需补 `await nextTick()`）；② `elements[i]` 语义——新路径只为「窗口内行」物化元素（计划 2.2 桥 1 明确认可），旧断言（如 `elements[21].parentNode === null`、`scrollToElement` 类）需按窗口语义改写；另 margin 占位断言需改为 spacer 高度（语义不变）。
+> **下一步**：翻默认 → 按上述两类逐一适配 5 个 spec 文件 + editor 侧 bridge/icons/extras → 全量 + 真机 15 个工具窗口冒烟 → 删除 `insertPaddingAndClear`/`treeListStatics.padding`。
+
 - 引入 renderVersion/rows/windowRows/rowKey/bindRowEl/itemClasses/elements shim；
 - 删除 createNodeElement/updateNodeElement/createIndentedItems/createFlatItems/updateOnResize 调用路径（treeListPrototype 对应方法保留为 API 门面，内部改为 bump version）；
 - `update()` 语义 = bump renderVersion（触发 computed 重算 + Vue patch），对 136 处调用方完全透明；
