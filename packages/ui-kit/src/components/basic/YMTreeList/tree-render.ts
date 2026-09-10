@@ -124,6 +124,7 @@ export const itemClassesOf = (state: TreeRenderState, item: TreeItem): string[] 
 export const setItemText = (state: TreeRenderState, item: TreeItem, text: string): void => {
 	if (state.textOverrides.get(item) === text) return;
 	state.textOverrides.set(item, text);
+	// 仅 bump：组件侧 windowRows 依赖 version 合成显示文本（无需整体重派生）
 	state.bump();
 };
 

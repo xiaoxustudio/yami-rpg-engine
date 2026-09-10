@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
+import { setTreeItemClass, setTreeItemText } from '../tree-api';
 
 // 数据派生行渲染（docs/tree-list-vfor-plan.md 步骤 2；步骤 5 后为唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
@@ -185,6 +186,23 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		);
 		await nextTick();
 		expect(el.querySelectorAll('.node-item')[1].textContent?.trim()).toBe('Child 1 renamed');
+		wrapper.unmount();
+	});
+
+	it('setTreeItemText/setTreeItemClass 只 bump 版本也即时反映到已渲染行', async () => {
+		const data = makeData();
+		const { wrapper, el } = await mountList(data);
+		const child = data[0].children![0];
+		setTreeItemText(child, '0:Child 1');
+		setTreeItemClass(child, 'weak', true);
+		await nextTick();
+		const row = el.querySelectorAll('.node-item')[1];
+		expect(row.textContent?.trim()).toBe('0:Child 1');
+		expect(row.classList.contains('weak')).toBe(true);
+		// 取消注册后 class 消失
+		setTreeItemClass(child, 'weak', false);
+		await nextTick();
+		expect(el.querySelectorAll('.node-item')[1].classList.contains('weak')).toBe(false);
 		wrapper.unmount();
 	});
 });
