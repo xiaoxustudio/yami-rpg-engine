@@ -200,7 +200,8 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - 验证：layout __tests__ **87/87**、editor 全量 **1868/1868**（206 文件）、oxlint 0、`tsc` 0、vue-tsc 0；**真机**（清空 localStorage 开关后）默认加载 directory 两叶各含自身 nav/manager、palette 支架在 body 隐藏容器、跨组搬空折叠 + 重挂载正常、页签切换完整性正常。
 - **M5-c（palette 单实现收尾，已交付）**：引擎新增 `registerLayoutItems`/`resetRegisteredLayoutItems`（`RegisteredLayoutItem`），`Layout.initialize` 改为「登记项优先 + DOM 发现合并兜底」，不再按 DOM 形态猜测 palette 位置；`LayoutPanel.vue` 在 mount 后登记 palette 节点（经 `components/layout/palette-items.ts`：`elementOfRef` 兼容元素/组件 `$el` 两种 ref 形态 + `collectPaletteItems` 安全遍历，遵守 DOM 迁移阶段 0 规则不新增 `document.querySelector*`）。
   - 修复记录：首版直接把 `ref`（组件上）当元素读 `children`，导致运行期 `Array.from(undefined)` 抛 `undefined is not iterable`（用户上报 `LayoutPanel.vue:1421`），登记实际未生效、由 DOM 兜底掩盖；已按上述模块化修复并加 5 条单测（含「组件 ref 无 `$el`」这一缺陷形态）。真机复核：登记生效（palette 全 12 个 value）+ 打开项目/窗口菜单/树窗口渲染 20 行 + 渲染器无异常。
-  - 验证：`layout-item-registry.spec.ts` 3 用例、`palette-items.spec.ts` 5 用例；editor 全量（含全局挂载审计）全绿。
+  - 修复记录 2（Teleport 重建期 `insertBefore of null`）：`LayoutPalettePage` 原先 `:to="target ?? 'body'" :disabled="target === null"`，在「清空归属」patch 中 Vue `moveTeleport` 以 null 容器搬运（真机 `drag-region` 稳定复现，诊断表明发生在 `removePageTargets → nextTick` 这一步）。已改为 **Teleport 恒用稳定元素容器**：有归属用叶子宿主，否则回落本组件所在容器（原地渲染，DOM 位置与旧行为一致），不再有字符串目标/disabled 翻转。
+  - 验证：`layout-item-registry.spec.ts` 3 用例、`palette-items.spec.ts` 5 用例、布局 spec 92 用例；editor 全量（含全局挂载审计）全绿。
 - 剩余：`renderElement(h('group'))` 在 navDrop 分割分支的临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；tree v-for 步骤 5b 收口（`elements` shim/`item.element`/NodeElement，需先迁移 eslints 与 useVariableGetterWindow 的按行号访问）。
 
 ### M6：B 路线评估（可选）
