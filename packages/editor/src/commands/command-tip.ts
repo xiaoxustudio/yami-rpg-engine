@@ -1,9 +1,14 @@
-﻿import { getListConfig } from '@ui-kit';
+import {
+	getListConfig,
+	isTreeItemRendered,
+	setTreeItemClass,
+	treeRowIndexOf,
+	type TreeListRowApi
+} from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import {
-	addClass,
 	dispatchUpdateEvent,
 	getFocus,
 	hasClass,
@@ -38,7 +43,7 @@ export interface CommandSuggestionItem {
 // oxlint-disable-next-line no-explicit-any
 type ListMethod = ((...args: any[]) => any) | null;
 
-interface CommandSuggestionList {
+interface CommandSuggestionList extends TreeListRowApi<CommandSuggestionItem> {
 	searchNodesAlgorithm: ListMethod;
 	updateCommandNames: ListMethod;
 	createCommandTip: ListMethod;
@@ -228,20 +233,18 @@ function bindListMethods() {
 			}
 			const tip1 = item.class === 'folder' ? '' : `$${item.name}\n${item.desc ?? ''}\n`;
 			const tip2 = `$${t('command.keywords')}\n${words.join(', ')}`;
-			addClass(element, 'command-suggestion-item');
+			// 步骤 4：行 class 经派生层注册（跨重挂载保持）；tooltip 仍挂当前行元素
+			setTreeItemClass(item, 'command-suggestion-item', true);
 			setTooltip(element, parseLocalTip(tip1 + tip2, ''));
 		};
 	})();
 
 	list.selectDefaultCommand = function (this: CommandSuggestionList): void {
-		const { selection, elements } = this;
-		const { count } = elements;
+		const { selection } = this;
 		if (selection && selection.class !== 'folder') {
-			for (let i = 0; i < count; i++) {
-				if (elements[i].item === selection) {
-					this.scrollToSelection('middle');
-					return;
-				}
+			// 步骤 4：按行号判断选中项是否在列表内（渲染模式无关）
+			if (treeRowIndexOf(this, selection) !== -1) {
+				this.scrollToSelection('middle');
 			}
 		}
 	};
@@ -437,7 +440,8 @@ CommandSuggestion.listUpdate = function (_event: Event): void {
 
 CommandSuggestion.listOpen = function (event: Event & { value: CommandSuggestionItem }): void {
 	const item = event.value;
-	if (item.class !== 'folder' && item.element!.parentNode) {
+	// 步骤 4：可见性改为「该行是否在窗口内物化」，不再读 element.parentNode
+	if (item.class !== 'folder' && isTreeItemRendered(item)) {
 		CommandSuggestion.select!(item);
 	}
 };

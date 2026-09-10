@@ -1,3 +1,4 @@
+import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
 /* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
@@ -24,7 +25,7 @@ export interface PresetObjectListItem {
 	teamId?: string;
 }
 
-export interface PresetObjectListElement extends HTMLElement {
+export interface PresetObjectListElement extends HTMLElement, TreeListRowApi<PresetObjectListItem> {
 	elements: Array<{ item: PresetObjectListItem }>;
 	bind(getter: () => PresetObjectNode[] | null): void;
 	clear(): void;
@@ -182,10 +183,11 @@ function searcherKeydown(event: KeyboardEvent): void {
 function searcherInput(event: { value?: string }): void {
 	const text = event.value ?? '';
 	list.searchNodes(text);
-	const elements = list.elements as Array<{ item: PresetObjectListItem }> & { count: number };
-	for (let i = 0; i < elements.count; i++) {
-		const { item } = elements[i];
-		if (item.class !== 'folder') {
+	// 步骤 4：按行 API 遍历（渲染模式无关；窗口外行亦可取）
+	const count = treeRowCount(list);
+	for (let i = 0; i < count; i++) {
+		const item = treeRowItemAt<PresetObjectListItem>(list, i);
+		if (item !== undefined && item.class !== 'folder') {
 			list.select(item);
 			break;
 		}

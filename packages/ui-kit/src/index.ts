@@ -1,4 +1,4 @@
-﻿export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
+export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
 export { default as YMCheckBox } from './components/basic/YMCheckBox/YMCheckBox.vue';
 export { default as YMSwitchItem } from './components/basic/YMSwitchItem/YMSwitchItem.vue';
 export { default as YMEmptyState } from './components/basic/YMEmptyState/YMEmptyState.vue';
@@ -39,6 +39,19 @@ export {
 	createTreeListElement,
 	treeListPrototype,
 	treeListStatics,
+	// 步骤 4 消费方 API：按 item 操作行状态，不再触碰 DOM
+	setTreeItemClass,
+	setTreeItemText,
+	clearTreeItemText,
+	isTreeItemRendered,
+	treeListOfItem,
+	treeRowCount,
+	treeRowItemAt,
+	treeRowIndexOf,
+	treeOwnerListOf,
+	isVueRowRenderEnabled,
+	setVueRowRenderEnabled,
+	type TreeListRowApi,
 	type TreeListApiOptions
 } from './components/basic/YMTreeList/tree-api';
 export { default as YMSelectList } from './components/basic/YMSelectList/YMSelectList.vue';

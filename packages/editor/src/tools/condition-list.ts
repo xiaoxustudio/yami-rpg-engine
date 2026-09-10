@@ -1,4 +1,5 @@
-﻿import { reactive } from 'vue';
+import { reactive } from 'vue';
+import { treeOwnerListOf } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -119,11 +120,9 @@ export class ConditionListInterface implements IListInterface {
 			element?: { parentNode?: Node };
 		};
 		if (item?.conditions === list.read()) {
-			const element = item.element;
-			const list = element?.parentNode;
-			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				(list as HTMLElement & { update: () => void }).update();
-			}
+			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
+			const owner = treeOwnerListOf(item as never) as { update?: () => void } | undefined;
+			owner?.update?.();
 		}
 	}
 

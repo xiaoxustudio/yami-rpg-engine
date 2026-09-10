@@ -4,6 +4,7 @@ import { getSelectorInstance } from '@app/stores/selector.ts';
 import { read } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getYamiI18n } from '@app/i18n';
+import { setTreeItemText } from '@ui-kit';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -241,11 +242,8 @@ PluginManager.list_restoreSelection = function (this: TreeListElement) {
 	this.scrollToSelection();
 };
 
-// 列表 - 更新文本节点
+// 列表 - 更新文本节点（步骤 4：显示文本经派生层覆盖，不再直写 textNode）
 PluginManager.list_updateTextNode = function (this: TreeListElement, item: PluginItemShape) {
-	const textNode = item.element!.textNode;
 	const text = Command.removeTextTags(Command.parseFileName(item.id));
-	if (textNode.nodeValue !== text) {
-		textNode.nodeValue = text;
-	}
+	setTreeItemText(item, text);
 };

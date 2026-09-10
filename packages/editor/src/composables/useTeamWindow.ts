@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getListConfig } from '@ui-kit';
+import { getListConfig, setTreeItemText } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
@@ -530,16 +530,13 @@ function list_updateItemName(this: TeamListElement, item: TeamData): void {
 }
 
 function list_updateTextNode(this: TeamListElement, item: TeamData): void {
-	const textNode = item.element.textNode;
 	const items = item.parent.children;
 	const index = items.indexOf(item);
 	const length = items.length;
 	const digits = Number.computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
-	const text = `${sn}:${item.name}`;
-	if (textNode.nodeValue !== text) {
-		textNode.nodeValue = text;
-	}
+	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
+	setTreeItemText(item, `${sn}:${item.name}`);
 }
 
 export function useTeamWindow(): TeamWindow {

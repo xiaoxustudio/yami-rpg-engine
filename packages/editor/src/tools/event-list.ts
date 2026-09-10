@@ -1,6 +1,5 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig, setTreeItemClass, treeOwnerListOf } from '@ui-kit';
 import { Command } from '@app/commands/command-object.ts';
-import { addClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -110,7 +109,6 @@ export class EventListInterface implements IListInterface {
 	}
 
 	update(list: HTMLElement) {
-		const elements = list.elements;
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
@@ -118,7 +116,7 @@ export class EventListInterface implements IListInterface {
 			for (let i = length - 1; i >= 0; i--) {
 				const { type } = items[i];
 				if (flags[type]) {
-					addClass(elements[i], 'weak');
+					setTreeItemClass(items[i], 'weak', true);
 				} else {
 					flags[type] = true;
 				}
@@ -127,11 +125,9 @@ export class EventListInterface implements IListInterface {
 
 		const item = this.editor?.target as EventListTargetShape | undefined;
 		if (item?.events === list.read()) {
-			const element = item!.element;
-			const list = element?.parentNode;
-			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				(list as unknown as { update: () => void }).update();
-			}
+			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
+			const owner = treeOwnerListOf(item) as { update?: () => void } | undefined;
+			owner?.update?.();
 		}
 	}
 

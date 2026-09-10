@@ -38,6 +38,9 @@ type PresetElementListEl = HTMLElement & {
 	pageDown(select: boolean): void;
 	searchNodes(text: string): void;
 	elements: Array<{ item: { class: string } }> & { count: number };
+	// 步骤 4：行 API（rowCount/rowItemAt）为消费方契约
+	rowCount(): number;
+	rowItemAt(index: number): { class: string } | undefined;
 };
 
 const getList = (): PresetElementListEl =>
@@ -233,11 +236,11 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		const list = getList();
 		const searchNodes = vi.spyOn(list, 'searchNodes').mockImplementation(() => undefined);
 		const select = vi.spyOn(list, 'select').mockImplementation(() => undefined);
-		list.elements = [
-			{ item: { class: 'folder' } },
-			{ item: { class: 'text' } }
-		] as unknown as PresetElementListEl['elements'];
-		list.elements.count = 2;
+		// 步骤 4：行遍历走列表行 API（rowCount/rowItemAt），不再依赖 elements shim
+		vi.spyOn(list, 'rowCount').mockImplementation(() => 2);
+		vi.spyOn(list, 'rowItemAt').mockImplementation(
+			(i: number) => [{ class: 'folder' }, { class: 'text' }][i] as never
+		);
 		presetElement.searcherInput({ value: 'label' });
 		expect(searchNodes).toHaveBeenCalledWith('label');
 		expect(select).toHaveBeenCalledWith({ class: 'text' });

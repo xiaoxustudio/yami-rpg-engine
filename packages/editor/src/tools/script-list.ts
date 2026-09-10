@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getListConfig } from '@ui-kit';
+/* oxlint-disable eslint/no-restricted-properties */
+import { getListConfig, setTreeItemClass, treeOwnerListOf } from '@ui-kit';
 import { File } from '@app/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
@@ -102,7 +102,6 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	update(list: ScriptListElement) {
-		const elements = list.elements;
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
@@ -110,7 +109,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			for (let i = length - 1; i >= 0; i--) {
 				const { id } = items[i];
 				if (flags[id]) {
-					addClass(elements[i], 'weak');
+					setTreeItemClass(items[i], 'weak', true);
 				} else {
 					flags[id] = true;
 				}
@@ -119,11 +118,9 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const item = this.editor?.target;
 		if (item?.scripts === list.read()) {
-			const element = item.element;
-			const list = element?.parentNode;
-			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				list.update();
-			}
+			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
+			const owner = treeOwnerListOf(item) as { update?: () => void } | undefined;
+			owner?.update?.();
 		}
 	}
 

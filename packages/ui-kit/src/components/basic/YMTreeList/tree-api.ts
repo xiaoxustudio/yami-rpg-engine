@@ -35,15 +35,19 @@ import {
 	flattenRows,
 	computeWindow,
 	setItemClass,
+	setItemText,
+	clearItemText,
+	isItemRendered,
 	bindRowElement,
+	stateOfItem,
 	ROW_HEIGHT,
 	type TreeRenderState
 } from './tree-render';
 
 const treeCore = createTreeCore();
 
-// 步骤 2 渲染开关（docs/tree-list-vfor-plan.md）：默认沿用命令式渲染，
-// 打开后行由 YMTreeList.vue 的 v-for 渲染（数据派生 + 虚拟窗口 + element 回写桥）。
+// 步骤 2 渲染开关（docs/tree-list-vfor-plan.md）：v-for 数据派生渲染为默认路径，
+// 关闭时回到旧命令式渲染（仅测试/回滚用）。
 let vueRowRender = true;
 
 export const isVueRowRenderEnabled = (): boolean => vueRowRender;
@@ -54,6 +58,89 @@ export const setVueRowRenderEnabled = (enabled: boolean): void => {
 
 // oxlint-disable-next-line no-explicit-any
 const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderState;
+
+/**
+ * 消费方 API（步骤 4）：按 item 直接操作行状态，无需触碰 DOM。
+ * - setTreeItemClass：行 class（selected/weak/related-event 等）注册到派生层；
+ * - setTreeItemText / clearTreeItemText：覆盖或恢复行显示文本（不再直写 textNode）；
+ * - isTreeItemRendered：该行当前是否在虚拟窗口内物化（旧 `item.element.parentNode` 语义）；
+ * - treeListOfItem：按 item 反查所属列表（窗口外 item 亦可）。
+ */
+export interface TreeListRowApi<T = unknown> {
+	/** 行总数（全部数据行，与虚拟窗口无关） */
+	rowCount(): number;
+	/** 第 index 行对应的 item（窗口外同样可取） */
+	rowItemAt(index: number): T | undefined;
+	/** item 的行号（不在列表内返回 -1） */
+	rowIndexOf(item: T): number;
+}
+
+export const setTreeItemClass = (item: unknown, className: string, on = true): void => {
+	const state = stateOfItem(item as TreeItem);
+	if (state !== undefined) setItemClass(state, item as TreeItem, className, on);
+};
+
+export const setTreeItemText = (item: unknown, text: string): void => {
+	const state = stateOfItem(item as TreeItem);
+	if (state !== undefined) setItemText(state, item as TreeItem, text);
+};
+
+export const clearTreeItemText = (item: unknown): void => {
+	const state = stateOfItem(item as TreeItem);
+	if (state !== undefined) clearItemText(state, item as TreeItem);
+};
+
+export const isTreeItemRendered = (item: unknown): boolean => {
+	const state = stateOfItem(item as TreeItem);
+	if (state !== undefined) return isItemRendered(state, item as TreeItem);
+	// 旧命令式路径：element 存在且已挂载
+	const element = (item as { element?: { parentNode?: unknown } }).element;
+	return element !== undefined && element.parentNode !== null && element.parentNode !== undefined;
+};
+
+export const treeListOfItem = (item: unknown): unknown => stateOfItem(item as TreeItem)?.owner;
+
+/**
+ * 渲染模式无关的行 API：v-for 路径走派生行（覆盖窗口外行），
+ * 命令式路径（开关关闭/旧列表）回退 `elements` shim。
+ */
+export const treeRowCount = (list: unknown): number => {
+	const target = list as { rowCount?: () => number; elements?: { count?: number } };
+	if (typeof target.rowCount === 'function') return target.rowCount();
+	return target.elements?.count ?? 0;
+};
+
+export const treeRowItemAt = <T>(list: unknown, index: number): T | undefined => {
+	const target = list as {
+		rowItemAt?: (i: number) => T | undefined;
+		elements?: Array<{ item?: T } | undefined>;
+	};
+	if (typeof target.rowItemAt === 'function') return target.rowItemAt(index);
+	return target.elements?.[index]?.item;
+};
+
+export const treeRowIndexOf = (list: unknown, item: unknown): number => {
+	const target = list as {
+		rowIndexOf?: (i: unknown) => number;
+		elements?: Array<{ item?: unknown; element?: unknown } | undefined>;
+	};
+	if (typeof target.rowIndexOf === 'function') return target.rowIndexOf(item);
+	const elements = target.elements;
+	if (elements === undefined) return -1;
+	const element = (item as { element?: unknown } | undefined)?.element;
+	if (element === undefined) return -1;
+	return elements.findIndex((row) => row?.element === element || row === element);
+};
+
+/** 渲染模式无关的列表归属反查：v-for 走归属登记，命令式回退 element.parentNode */
+export const treeOwnerListOf = (item: unknown): unknown => {
+	const owner = treeListOfItem(item);
+	if (owner !== undefined) return owner;
+	const element = (item as { element?: HTMLElement } | undefined)?.element;
+	const parent = element?.parentNode;
+	if (parent instanceof HTMLElement && parent.classList.contains('tree-list')) return parent;
+	return undefined;
+};
 
 const isSSR = typeof document === 'undefined';
 
@@ -1659,7 +1746,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.renderNodeIcon = options?.renderNodeIcon;
 	// 步骤 2：v-for 行渲染（数据派生）开关，关闭时保持旧命令式渲染路径
 	if (vueRowRender) {
-		list.renderState = createTreeRenderState();
+		list.renderState = createTreeRenderState(list);
 	}
 	attachApi(list, { getMenuState });
 

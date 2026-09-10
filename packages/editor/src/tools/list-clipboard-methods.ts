@@ -4,6 +4,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Window } from '@app/tools/window-object.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
+import type { TreeListRowApi } from '@ui-kit';
+import { treeRowCount, treeRowIndexOf, treeRowItemAt } from '@ui-kit';
 
 const Clipboard = GlobalClipboard;
 
@@ -15,7 +17,7 @@ interface ListItem {
 	[k: string]: unknown;
 }
 
-interface ListWithElements {
+interface ListWithElements extends Partial<TreeListRowApi<ListItem>> {
 	elements?: Array<HTMLElement & { item: ListItem }> & { count?: number };
 	addNodeTo?: (item: ListItem, dItem: unknown) => void;
 	deleteNode?: (item: ListItem) => void;
@@ -76,16 +78,19 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 					{
 						label: get!('yes'),
 						click: () => {
-							const elements = this.elements ?? [];
-							const index = elements.indexOf(
-								item.element as HTMLElement & { item: ListItem }
-							);
+							// 步骤 4：删除后按行号选中相邻项（渲染模式无关）
+							const index = treeRowIndexOf(this, item);
 							this.deleteNode?.(item);
 							closePanel();
-							const last = (elements.count ?? elements.length) - 1;
-							const element = elements[Math.min(index, last)];
-							if (element instanceof HTMLElement) {
-								this.select?.(element.item);
+							const count = treeRowCount(this);
+							if (count !== 0) {
+								const next = treeRowItemAt<ListItem>(
+									this,
+									Math.min(Math.max(index, 0), count - 1)
+								);
+								if (next !== undefined) {
+									this.select?.(next);
+								}
 							}
 						}
 					},

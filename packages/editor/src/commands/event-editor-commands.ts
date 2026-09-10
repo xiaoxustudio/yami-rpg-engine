@@ -6,7 +6,8 @@ import type {
 	EventEditorShape,
 	EventListItem
 } from './event-editor.ts';
-import { addClass, clear, hide, removeClass, show } from '@app/utils/element-utils.ts';
+import { addClass, clear, hide, show } from '@app/utils/element-utils.ts';
+import { setTreeItemClass } from '@ui-kit';
 import { $, getElementWriter } from '@app/utils/dom';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -14,9 +15,9 @@ import { Data } from '@app/data/data-object.ts';
 
 EventEditor.clearAllEventClasses = function (this: EventEditorShape, ...items: EventListItem[]) {
 	for (const item of items) {
-		removeClass(item.element, 'local-event');
-		removeClass(item.element, 'global-event');
-		removeClass(item.element, 'related-event');
+		setTreeItemClass(item, 'local-event', false);
+		setTreeItemClass(item, 'global-event', false);
+		setTreeItemClass(item, 'related-event', false);
 	}
 };
 
@@ -25,7 +26,7 @@ EventEditor.clearRelatedEventClasses = function (
 	...items: EventListItem[]
 ) {
 	for (const item of items) {
-		removeClass(item.element, 'related-event');
+		setTreeItemClass(item, 'related-event', false);
 	}
 };
 

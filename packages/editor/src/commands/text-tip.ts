@@ -1,7 +1,15 @@
+import {
+	isTreeItemRendered,
+	setTreeItemClass,
+	treeRowCount,
+	treeRowIndexOf,
+	treeRowItemAt,
+	type TreeListRowApi
+} from '@ui-kit';
 /* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { getWindowStore } from '@app/stores/window';
-import { addClass, hasClass, hide, on, rect, show } from '@app/utils/element-utils';
+import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { Fragment, h, render, type VNode } from 'vue';
 
 interface TextSuggestionItem {
@@ -17,7 +25,7 @@ interface TextSuggestionItem {
 // oxlint-disable-next-line no-explicit-any
 type ListMethod = ((...args: any[]) => any) | null;
 
-interface TextSuggestionList {
+interface TextSuggestionList extends Partial<TreeListRowApi<TextSuggestionItem>> {
 	selectDefaultCommand: ListMethod;
 	updateNodeElement: ListMethod;
 	elements: Array<{ item: TextSuggestionItem }> & { count: number };
@@ -323,7 +331,8 @@ TextSuggestion.listOpen = function (
 	event: Event & { value: TextSuggestionItem }
 ): void {
 	const item = event.value;
-	if (item.element!.parentNode) {
+	// 步骤 4：可见性改为「该行是否在窗口内物化」，不再读 element.parentNode
+	if (isTreeItemRendered(item)) {
 		TextSuggestion.select!(item);
 	}
 };
@@ -348,24 +357,23 @@ TextSuggestion.list.updateNodeElement = function (
 			nodes.push(h('div', { class: 'text-suggestion-comment text' }, item.comment));
 		}
 		render(h(Fragment, nodes), element);
-		addClass(element, 'text-suggestion-item');
+		setTreeItemClass(item, 'text-suggestion-item', true);
 	}
 };
 
 TextSuggestion.list.selectDefaultCommand = function (this: TextSuggestionList): void {
-	const { selection, elements } = this;
-	const { count } = elements;
-	if (selection) {
-		for (let i = 0; i < count; i++) {
-			if (elements[i].item === selection) {
-				this.scrollToSelection('middle');
-				return;
-			}
-		}
-	}
-	for (let i = 0; i < count; i++) {
-		this.select(elements[i].item);
+	const { selection } = this;
+	// 步骤 4：行号/行项经渲染模式无关的行 API 取得（窗口外行无 element）
+	const count = treeRowCount(this);
+	if (selection && treeRowIndexOf(this, selection) !== -1) {
 		this.scrollToSelection('middle');
 		return;
+	}
+	if (count !== 0) {
+		const first = treeRowItemAt<TextSuggestionItem>(this, 0);
+		if (first !== undefined) {
+			this.select(first);
+			this.scrollToSelection('middle');
+		}
 	}
 };

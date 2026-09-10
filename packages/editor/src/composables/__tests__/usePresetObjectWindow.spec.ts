@@ -42,6 +42,9 @@ type PresetObjectListEl = HTMLElement & {
 	pageDown(select: boolean): void;
 	searchNodes(text: string): void;
 	elements: Array<{ item: { class: string } }> & { count: number };
+	// 步骤 4：行 API（rowCount/rowItemAt）为消费方契约
+	rowCount(): number;
+	rowItemAt(index: number): { class: string } | undefined;
 };
 
 interface SearcherEl extends HTMLElement {
@@ -241,12 +244,11 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 		const list = getList();
 		const searchNodes = vi.spyOn(list, 'searchNodes').mockImplementation(() => undefined);
 		const select = vi.spyOn(list, 'select').mockImplementation(() => undefined);
-		list.elements = [
-			{ item: { class: 'folder' } },
-			{ item: { class: 'actor' } },
-			{ item: { class: 'light' } }
-		] as unknown as PresetObjectListEl['elements'];
-		list.elements.count = 3;
+		// 步骤 4：行遍历走列表行 API（rowCount/rowItemAt），不再依赖 elements shim
+		vi.spyOn(list, 'rowCount').mockImplementation(() => 3);
+		vi.spyOn(list, 'rowItemAt').mockImplementation(
+			(i: number) => [{ class: 'folder' }, { class: 'actor' }, { class: 'light' }][i] as never
+		);
 		presetObject.searcherInput({ value: 'hero' });
 		expect(searchNodes).toHaveBeenCalledWith('hero');
 		expect(select).toHaveBeenCalledWith({ class: 'actor' });

@@ -2,6 +2,7 @@ import { EventEditor } from './event-editor.ts';
 import type { EventEditorShape, EventListItem } from './event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { addClass, clear, hasClass, read, removeClass, write } from '@app/utils/element-utils';
+import { setTreeItemClass } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { getYamiI18n } from '@app/i18n';
@@ -177,9 +178,8 @@ EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEv
 EventEditor.listSelect = function (this: EventEditorShape, event: Event) {
 	const item = event.value;
 	EventEditor.openCommandList!(item);
-	if (item.element instanceof HTMLElement) {
-		removeClass(item.element, 'related-event');
-	}
+	// 步骤 4：行 class 经派生层注册（窗口外行同样生效）
+	setTreeItemClass(item, 'related-event', false);
 };
 
 EventEditor.listPopup = function (this: EventEditorShape, event: Event) {

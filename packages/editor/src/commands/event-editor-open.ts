@@ -6,7 +6,8 @@ import type {
 	EventRelatedContext
 } from './event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { addClass, getFocus, read } from '@app/utils/element-utils.ts';
+import { getFocus, read } from '@app/utils/element-utils.ts';
+import { setTreeItemClass } from '@ui-kit';
 import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 
@@ -103,7 +104,7 @@ EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: Even
 		list.update!();
 		let index = Infinity;
 		for (const item of items) {
-			addClass(item.element, 'related-event');
+			setTreeItemClass(item, 'related-event', true);
 			index = Math.min(index, this.data!.indexOf(item));
 		}
 		list.unselect!();

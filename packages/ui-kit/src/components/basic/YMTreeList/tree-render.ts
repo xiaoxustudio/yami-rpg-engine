@@ -52,9 +52,18 @@ export interface TreeRenderState {
 	rowElements: Map<string, NodeElement>;
 	/** key → 当前派生行（绑定回写 expando 字段用） */
 	rowData: Map<string, TreeRenderRow>;
+	/** 消费方覆盖的显示文本（parseName 之外，供 setItemText 使用） */
+	textOverrides: WeakMap<TreeItem, string>;
+	/** 本 state 所属的列表元素（消费方按 item 反查 list） */
+	owner: unknown;
 	keyMap: WeakMap<TreeItem, string>;
 	bump: () => void;
 }
+
+/** item → 所属 state（flattenRows 时登记，窗口外 item 亦可反查） */
+const itemOwners = new WeakMap<TreeItem, TreeRenderState>();
+
+export const stateOfItem = (item: TreeItem): TreeRenderState | undefined => itemOwners.get(item);
 
 const rowKeys = new WeakMap<TreeItem, string>();
 let rowKeySeq = 0;
@@ -67,7 +76,7 @@ export const rowKeyOf = (item: TreeItem): string => {
 	return key;
 };
 
-export const createTreeRenderState = (): TreeRenderState => {
+export const createTreeRenderState = (owner?: unknown): TreeRenderState => {
 	const version = shallowRef(0);
 	const rows = shallowRef<TreeRenderRow[]>([]);
 	const start = ref(0);
@@ -80,6 +89,8 @@ export const createTreeRenderState = (): TreeRenderState => {
 		itemClasses: new WeakMap<TreeItem, Set<string>>(),
 		rowElements: new Map<string, NodeElement>(),
 		rowData: new Map<string, TreeRenderRow>(),
+		textOverrides: new WeakMap<TreeItem, string>(),
+		owner,
 		keyMap: rowKeys,
 		bump: () => {
 			version.value += 1;
@@ -109,6 +120,22 @@ export const itemClassesOf = (state: TreeRenderState, item: TreeItem): string[] 
 	return set === undefined ? [] : Array.from(set);
 };
 
+/** 覆盖行显示文本（parseName 之外；窗口外行同样生效，无需 element 存在） */
+export const setItemText = (state: TreeRenderState, item: TreeItem, text: string): void => {
+	if (state.textOverrides.get(item) === text) return;
+	state.textOverrides.set(item, text);
+	state.bump();
+};
+
+/** 清除显示文本覆盖，回到 parseName 派生 */
+export const clearItemText = (state: TreeRenderState, item: TreeItem): void => {
+	if (state.textOverrides.delete(item)) state.bump();
+};
+
+/** 该行当前是否已物化（在虚拟窗口内渲染） */
+export const isItemRendered = (state: TreeRenderState, item: TreeItem): boolean =>
+	state.rowElements.has(rowKeyOf(item));
+
 interface FlattenOptions {
 	display: string;
 	data: TreeItem[] | null;
@@ -132,6 +159,8 @@ export const flattenRows = (state: TreeRenderState, options: FlattenOptions): Tr
 		const markVisible = hasChildrenMark && item.children!.length !== 0;
 		// 与 legacy updateNodeElement 等价：children 为数组时 markIndent=0（空数组亦占位）
 		const markIndent = hasChildrenMark ? 0 : foldable ? 16 : 0;
+		// 消费方按 item 反查 list（含窗口外 item）：派生期登记归属
+		itemOwners.set(item, state);
 		out.push({
 			key: rowKeyOf(item),
 			item,
@@ -140,7 +169,7 @@ export const flattenRows = (state: TreeRenderState, options: FlattenOptions): Tr
 			markVisible,
 			hasChildrenMark,
 			expanded: markVisible && item.expanded === true,
-			name: parseName(item),
+			name: state.textOverrides.get(item) ?? parseName(item),
 			iconClass: ['node-icon', item.class === 'folder' ? 'icon-folder' : 'icon-file'],
 			selected: selectedSet.has(item),
 			hint: hintItem === item,

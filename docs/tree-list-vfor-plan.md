@@ -273,6 +273,11 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 
 ### 步骤 4：editor 消费方逐类迁移（按用途①→⑤分五个小 PR）
 
+> **进度（2026-09-09，已交付）**：ui-kit 新增**渲染模式无关**的消费方 API（v-for 路径走派生行，命令式路径回退 `elements`/DOM，保证开关两侧都可用）：`setTreeItemClass(item, cls, on)`、`setTreeItemText(item, text)`、`clearTreeItemText(item)`、`isTreeItemRendered(item)`、`treeOwnerListOf(item)`、`treeRowCount(list)`、`treeRowItemAt(list, i)`、`treeRowIndexOf(list, item)`，类型 `TreeListRowApi<T>` 供 editor 列表接口 extends/Partial。
+> 迁移清单（逐类，全部经 API 不再直接摸 DOM）：① textNode 直写 → `plugin-list.list_updateTextNode`、`transition-window`(Easing)、`useTeamWindow` 改 `setTreeItemText`（窗口外行同样生效）；② class 修饰 → `event-editor-commands/events/open`（local/global/related-event）、`script-list`/`event-list`（weak）、`command-tip`（command-suggestion-item）、`text-tip`（text-suggestion-item）改 `setTreeItemClass`；③ 反查 list → `script-list`/`event-list`/`condition-list` 的 `element.parentNode` 改 `treeOwnerListOf`；④ 兄弟遍历 → `module/tree-utils.find_dItem` 改 `treeRowIndexOf`+`treeRowItemAt`（DOM nextSibling 退役）；⑤ 可见性判断 → `command-tip.listOpen`/`text-tip.listOpen` 改 `isTreeItemRendered`；另：`list-clipboard-methods.delete`（行号选中相邻项）、`usePresetObject/ElementWindow.searcherInput`（行遍历）、`useVariableGetterWindow`（命令列表行遍历 + 窗口外行跳过）、`eslints.range`+hover 循环（窗口边界守卫）、`attribute-window`/`enum-window`（`item.element?.group` 按需读）全部迁移。
+> 验证：ui-kit 全量 **656/656**、editor 全量 **1868/1868**（206 文件）、oxlint 0、`tsc`/`vue-tsc` 0；**真机**（翻默认后重建）`open-project` + `drag-here` 端到端通过（跨组 drop/折叠/页签完整性），渲染器日志无新增错误。
+> 剩余：`LayoutPanel.vue` 7 处 `container.closest('.tree-list')`（extras 回调内 DOM 反查，行为仍正确、属可选优化）+ 真机「数据绑定型窗口」逐窗人工冒烟。
+
 | 用途 | 迁移目标 |
 | --- | --- |
 | ① textNode 直写 | `list.renameNode(item, text)` / `updateItemName`（已 bump version） |

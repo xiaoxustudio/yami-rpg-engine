@@ -809,7 +809,8 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 		});
 	}
 	if (selected && item.class === 'folder') {
-		const group = item.element.group;
+		// 步骤 4：行元素仅在窗口内物化，按需读取
+		const group = item.element?.group;
 		const submenu = [
 			{
 				label: get('set-as.none'),

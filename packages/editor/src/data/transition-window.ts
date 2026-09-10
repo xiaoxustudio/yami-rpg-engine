@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getListConfig } from '@ui-kit';
+import { getListConfig, setTreeItemText } from '@ui-kit';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -1325,16 +1325,13 @@ Easing.list_updateItemName = function (this: HTMLElement, item: EasingListItem) 
 };
 
 Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) {
-	const textNode = item.element.textNode;
 	const items = item.parent.children;
 	const index = items.indexOf(item);
 	const length = items.length;
 	const digits = Number.computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
-	const text = `${sn}:${item.name}`;
-	if (textNode.nodeValue !== text) {
-		textNode.nodeValue = text;
-	}
+	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
+	setTreeItemText(item, `${sn}:${item.name}`);
 };
 
 import { getEasingStore } from '@app/stores/easing';

@@ -73,6 +73,8 @@ export function updateCommandElement(
 			);
 			for (let i = start; i <= end; i++) {
 				const element = list[i];
+				// 步骤 4：虚拟窗口外行未物化（elements[i] 为空），跳过
+				if (!element) continue;
 				if (indent === null) {
 					indent = element.dataIndent;
 				}
@@ -89,6 +91,7 @@ export function updateCommandElement(
 			);
 			for (let i = start; i <= end; i++) {
 				const element = list[i];
+				if (!element) continue;
 				if (indent === null) {
 					indent = element.dataIndent;
 				}
@@ -231,14 +234,17 @@ export function range(
 	end = Math.clamp(end, 0, count - 1);
 	let indent = Infinity;
 	for (let i = start; i <= end; i++) {
-		const { dataIndent } = elements[i];
+		// 步骤 4：窗口外行未物化，跳过（elements[i] 为空）
+		const element = elements[i];
+		if (!element) continue;
+		const { dataIndent } = element;
 		if (dataIndent < indent) {
 			indent = dataIndent;
 		}
 	}
 	for (let i = start; i >= 0; i--) {
 		const element = elements[i];
-		if (element.dataIndent === indent && element.dataKey === true) {
+		if (element && element.dataIndent === indent && element.dataKey === true) {
 			start = i;
 			break;
 		}
@@ -246,8 +252,9 @@ export function range(
 	for (let i = end + 1; i < count; i++) {
 		const element = elements[i];
 		if (
-			element.dataIndent < indent ||
-			(element.dataIndent === indent && element.dataKey === true)
+			element &&
+			(element.dataIndent < indent ||
+				(element.dataIndent === indent && element.dataKey === true))
 		) {
 			end = i - 1;
 			break;
@@ -255,7 +262,7 @@ export function range(
 	}
 	if (start !== end) {
 		const element = elements[end];
-		if (!element.dataItem) {
+		if (element && !element.dataItem) {
 			end--;
 		}
 	}
