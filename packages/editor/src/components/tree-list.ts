@@ -9,7 +9,6 @@ import { Menu } from './menu-list.ts';
 const getMenuState = (): string => Menu.state;
 
 interface TreeListStaticsType {
-	padding: HTMLElement;
 	createParents: typeof treeListStatics.createParents;
 	deleteCaches: typeof treeListStatics.deleteCaches;
 	textBox: HTMLElement & { input: HTMLInputElement };
@@ -18,7 +17,6 @@ interface TreeListStaticsType {
 }
 
 export const TreeList: TreeListStaticsType = {
-	padding: treeListStatics.padding,
 	createParents: treeListStatics.createParents,
 	deleteCaches: treeListStatics.deleteCaches,
 	textBox: treeListStatics.textBox,

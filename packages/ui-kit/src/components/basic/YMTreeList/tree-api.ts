@@ -22,8 +22,7 @@ import { Timer } from '../../../utils/timer';
 import {
 	type CommonListLike,
 	commonListClearElements,
-	commonListUpdateHeadAndFoot,
-	commonListResize
+	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
 import {
 	createDragAndDropHintElement,
@@ -46,16 +45,7 @@ import {
 
 const treeCore = createTreeCore();
 
-// 步骤 2 渲染开关（docs/tree-list-vfor-plan.md）：v-for 数据派生渲染为默认路径，
-// 关闭时回到旧命令式渲染（仅测试/回滚用）。
-let vueRowRender = true;
-
-export const isVueRowRenderEnabled = (): boolean => vueRowRender;
-
-export const setVueRowRenderEnabled = (enabled: boolean): void => {
-	vueRowRender = enabled;
-};
-
+// 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
 // oxlint-disable-next-line no-explicit-any
 const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderState;
 
@@ -170,17 +160,6 @@ export const treeListStatics = {
 	deleteCaches: (data: TreeItem[] & { initialized?: unknown }): void => {
 		treeCore.deleteCaches(data);
 	},
-
-	padding: (function IIFE() {
-		if (isSSR) {
-			return null as unknown as HTMLDivElement & { count?: number };
-		}
-		const padding: HTMLDivElement & { count?: number } = document.createElement('div');
-		addClass(padding, 'box');
-		padding.style.display = 'block';
-		padding.style.width = '1px';
-		return padding;
-	})(),
 
 	textBox: (function IIFE() {
 		if (isSSR) {
@@ -348,40 +327,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
+	// 步骤 5：唯一渲染路径 = 数据派生（v-for），命令式差量渲染实现已删除
 	// oxlint-disable-next-line no-explicit-any
 	update: function (this: any): void {
-		if (this.renderState !== undefined) {
-			this.syncRenderRows();
-			if (this.updateEventEnabled) {
-				dispatchUpdateEvent(this);
-			}
-			return;
-		}
-		const { elements } = this;
-		elements.start = -1;
-		elements.count = 0;
-
-		this.initialize();
-
-		switch (this.display) {
-			case 'normal':
-				if (this.data) {
-					this.createIndentedItems(this.data, this.root, 0);
-				}
-				break;
-			case 'search':
-				if (this.searchResults.length !== 0) {
-					this.createFlatItems(this.searchResults);
-				}
-		}
-
-		commonListClearElements(this, elements.count);
-
+		this.syncRenderRows();
 		if (this.updateEventEnabled) {
 			dispatchUpdateEvent(this);
 		}
-
-		this.resize();
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -391,55 +343,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
-		if (renderStateOf(this) !== undefined) {
-			(this as unknown as { syncElementsShim: () => void }).syncElementsShim();
-			return;
-		}
-		return commonListResize(this as unknown as CommonListLike);
+		(this as unknown as { syncElementsShim: () => void }).syncElementsShim();
 	},
 
 	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
 		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	updateOnResize: function (this: any, element: NodeElement): void {
-		if (element.changed) {
-			element.changed = false;
-			this.updateNodeElement(element);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	createFlatItems: function (this: any, data: TreeItem[]): void {
-		const elements = this.elements;
-		const length = data.length;
-		for (let i = 0; i < length; i++) {
-			const item = data[i];
-			elements[elements.count++] = this.createNodeElement(item, 0);
-		}
-	},
-
-	createIndentedItems: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
-		data: TreeItem[],
-		parent: TreeItem | null,
-		indent: number
-	): void {
-		const elements = this.elements;
-		const length = data.length;
-		for (let i = 0; i < length; i++) {
-			const item = data[i];
-			elements[elements.count++] = this.createNodeElement(item, indent);
-			if (item.parent === undefined) {
-				throw new Error('No parent!');
-			}
-			item.parent = parent;
-			if (item.expanded && item.children!.length !== 0) {
-				this.createIndentedItems(item.children!, item, indent + 1);
-			}
-		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -485,133 +393,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		list: TreeItem[]
 	): void {
 		treeCore.searchNodesAlgorithm(data, keyword, list);
-	},
-
-	createNodeElement: function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem,
-		indent: number
-	): NodeElement {
-		let element: NodeElement | undefined = item.element;
-		if (element === undefined) {
-			element = document.createElement('div') as unknown as NodeElement;
-			addClass(element, 'node-item');
-			element.item = item;
-			Object.defineProperty(item, 'element', {
-				configurable: true,
-				value: element
-			});
-
-			if ((this.selections as (TreeItem | undefined)[]).includes(item)) {
-				addClass(element, 'selected');
-			}
-		}
-		element.indent = indent;
-		element.changed = true;
-		return element;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	updateNodeElement: function (this: any, element: NodeElement): void {
-		const { item } = element;
-		if (!element.textNode) {
-			let folderMark = null;
-			let markVisible = false;
-			let markIndent = getListConfig(this).foldable ? 16 : 0;
-			if (item!.children instanceof Array) {
-				folderMark = renderElement(h('span', { class: 'folder-mark' }));
-				markVisible = true;
-				markIndent = 0;
-				element.appendChild(folderMark);
-			}
-
-			let nodeIcon: HTMLElement;
-			if (typeof this.renderNodeIcon === 'function') {
-				nodeIcon = document.createElement('div');
-				addClass(nodeIcon, 'tree-node-icon');
-			} else {
-				nodeIcon = this.createIcon(item!);
-			}
-			element.appendChild(nodeIcon);
-
-			const textNode = this.createText(item!);
-			element.appendChild(textNode);
-
-			element.draggable = true;
-			element.expanded = false;
-			element.markVisible = markVisible;
-			element.markIndent = markIndent;
-			element.textIndent = 0;
-			element.folderMark = folderMark;
-			element.nodeIcon = nodeIcon;
-			element.textNode = textNode;
-
-			for (const creator of getListConfig(this).creators) {
-				creator(item!);
-			}
-
-			if (typeof this.renderNodeExtras === 'function') {
-				const extras = document.createElement('div');
-				addClass(extras, 'tree-node-extras');
-				element.appendChild(extras);
-				element.extras = extras;
-			}
-		}
-
-		if (item!.expanded !== undefined) {
-			const markVisible = item!.children!.length !== 0;
-			if (element.markVisible !== markVisible) {
-				element.markVisible = markVisible;
-				element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
-			}
-
-			const expanded = markVisible && item!.expanded;
-			if (item!.class === 'folder') {
-				if (element.expanded !== expanded) {
-					element.expanded = expanded;
-					switch (expanded) {
-						case true:
-							addClass(element.folderMark, 'expanded');
-							addClass(element.nodeIcon, 'expanded');
-							break;
-						case false:
-							removeClass(element.folderMark, 'expanded');
-							removeClass(element.nodeIcon, 'expanded');
-							break;
-					}
-				}
-			} else {
-				if (element.expanded !== expanded) {
-					element.expanded = expanded;
-					switch (expanded) {
-						case true:
-							addClass(element.folderMark, 'expanded');
-							break;
-						case false:
-							removeClass(element.folderMark, 'expanded');
-							break;
-					}
-				}
-			}
-		}
-
-		const textIndent = element.markIndent + element.indent * 12;
-		if (element.textIndent !== textIndent) {
-			element.textIndent = textIndent;
-			element.style.textIndent = `${textIndent}px`;
-		}
-
-		for (const updater of getListConfig(this).updaters) {
-			updater(item);
-		}
-
-		if (element.extras && typeof this.renderNodeExtras === 'function') {
-			this.renderNodeExtras(item!, element.extras);
-		}
-
-		if (typeof this.renderNodeIcon === 'function') {
-			this.renderNodeIcon(item!, element.nodeIcon);
-		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -847,8 +628,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				record.value = response;
 				this.dispatchEvent(record);
 			}
-
-			this.insertPaddingAndClear();
 			this.update();
 			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
@@ -895,8 +674,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				record.value = response;
 				this.dispatchEvent(record);
 			}
-
-			this.insertPaddingAndClear();
 			this.update();
 			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
@@ -1011,8 +788,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						this.expandToItem(item, false);
 					}
 				}
-
-				this.insertPaddingAndClear();
 				this.update();
 				this.select(item);
 				getListConfig(this).onRemove?.(item);
@@ -1325,25 +1100,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		if (timer.running) {
 			timer.running = false;
 			timer.remove();
-		}
-	},
-
-	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {
-		// 步骤 2：v-for 路径下 DOM 归 Vue 管理，锚定占位由模板 spacer 承担，这里不再动 DOM
-		if (renderStateOf(this) !== undefined) return;
-		const padding = treeListStatics.padding;
-		let count = (this.elements as CommonListLike['elements']).count;
-		if (getListConfig(this).padded) count++;
-		if (padding.count !== count) {
-			padding.count = count;
-			padding.style.height = `${count * 20}px`;
-		}
-		const head = this.childNodes[0];
-		this.insertBefore(padding, head);
-		const { childNodes } = this;
-		const { length } = childNodes;
-		for (let i = length - 1; i > 0; i--) {
-			childNodes[i].remove();
 		}
 	},
 
@@ -1744,10 +1500,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
-	// 步骤 2：v-for 行渲染（数据派生）开关，关闭时保持旧命令式渲染路径
-	if (vueRowRender) {
-		list.renderState = createTreeRenderState(list);
-	}
+	// 步骤 5：渲染状态恒存在（数据派生 + v-for）
+	list.renderState = createTreeRenderState(list);
 	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {
@@ -1776,136 +1530,139 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	elements.head = null;
 	elements.foot = null;
 	list.elements = elements;
-	if (vueRowRender) {
-		list.syncRenderRows = function (
-			this: HTMLElement & { [k: string]: unknown },
-			overrideRows?: unknown
-		): void {
-			const state = renderStateOf(this) as TreeRenderState;
-			// oxlint-disable-next-line no-explicit-any
-			const self = this as any;
-			self.initialize();
-			const rows =
-				overrideRows !== undefined
-					? (overrideRows as ReturnType<typeof flattenRows>)
-					: flattenRows(state, {
-							display: self.display,
-							data: self.data ?? null,
-							searchResults: self.searchResults ?? [],
-							foldable: getListConfig(self).foldable === true,
-							parseName: (item: TreeItem) => self.parseName(item),
-							selections: (self.selections ?? []) as TreeItem[],
-							hintItem: self.dragging?.hint?.target?.item ?? null,
-							root: (self.root ?? null) as TreeItem | null
-						});
-			state.rows.value = rows;
-			state.bump();
-			(self.syncElementsShim as () => void)();
-		};
-		list.syncElementsShim = function (this: HTMLElement & { [k: string]: unknown }): void {
-			const state = renderStateOf(this) as TreeRenderState;
-			// oxlint-disable-next-line no-explicit-any
-			const self = this as any;
-			const rows = state.rows.value;
-			const { start, end } = computeWindow(
-				self.scrollTop ?? 0,
-				self.clientHeight ?? 0,
-				rows.length
-			);
-			state.start.value = start;
-			state.end.value = end;
-			elements.count = rows.length;
-			elements.start = start;
-			elements.end = end;
-			for (let i = 0; i < rows.length; i++) {
-				const el = state.rowElements.get(rows[i].key);
-				elements[i] = el !== undefined ? el : (undefined as never);
-			}
-			commonListClearElements(self as unknown as CommonListLike, rows.length);
-		};
-		list.rowIndexOf = function (
-			this: HTMLElement & { [k: string]: unknown },
-			item: TreeItem
-		): number {
-			const state = renderStateOf(this) as TreeRenderState;
-			const rows = state.rows.value;
-			for (let i = 0; i < rows.length; i++) {
-				if (rows[i].item === item) return i;
-			}
-			return -1;
-		};
-		list.setItemClass = function (
-			this: HTMLElement & { [k: string]: unknown },
-			item: TreeItem,
-			className: string,
-			on = true
-		): void {
-			const state = renderStateOf(this) as TreeRenderState;
-			setItemClass(state, item, className, on);
-		};
-		list.rowHeight = ROW_HEIGHT;
-		// 行元素绑定桥（模板 :ref 回调）：维护 item.element 与内部字段，并跑 creators/updaters 钩子
-		list.bindRow = function (
-			this: HTMLElement & { [k: string]: unknown },
-			item: TreeItem,
-			el: unknown
-		): void {
-			const state = renderStateOf(this);
-			if (state === undefined) return;
-			// oxlint-disable-next-line no-explicit-any
-			const self = this as any;
-			const firstBind = el instanceof HTMLElement && item.element !== el;
-			bindRowElement(state, item, el);
-			if (firstBind) {
-				for (const creator of getListConfig(self).creators) creator(item);
-			}
-		};
-		list.bindNodeIcon = function (
-			this: HTMLElement & { [k: string]: unknown },
-			item: TreeItem,
-			el: HTMLElement
-		): void {
-			if (item.element !== undefined) item.element.nodeIcon = el;
-		};
-		list.bindNodeExtras = function (
-			this: HTMLElement & { [k: string]: unknown },
-			item: TreeItem,
-			el: HTMLElement
-		): void {
-			if (item.element !== undefined) item.element.extras = el;
-		};
-		list.applyRowUpdaters = function (this: HTMLElement & { [k: string]: unknown }): void {
-			const state = renderStateOf(this);
-			if (state === undefined) return;
-			// oxlint-disable-next-line no-explicit-any
-			const self = this as any;
-			const updaters = getListConfig(self).updaters as ((item: TreeItem) => void)[];
-			for (const el of state.rowElements.values()) {
-				const item = el.item;
-				if (item === undefined) continue;
-				// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
-				if (typeof self.renderNodeIcon === 'function') {
-					if (el.nodeIcon) self.renderNodeIcon(item, el.nodeIcon);
-				} else if (
-					el.nodeIcon === undefined ||
-					el.nodeIcon === null ||
-					el.nodeIcon.classList?.contains('tree-node-icon-placeholder')
-				) {
-					const created = self.createIcon(item) as HTMLElement;
-					if (el.nodeIcon != null && el.nodeIcon.parentNode === el) {
-						el.nodeIcon.replaceWith(created);
-					} else {
-						el.appendChild(created);
-					}
-					el.nodeIcon = created;
+	list.syncRenderRows = function (
+		this: HTMLElement & { [k: string]: unknown },
+		overrideRows?: unknown
+	): void {
+		const state = renderStateOf(this) as TreeRenderState;
+		// oxlint-disable-next-line no-explicit-any
+		const self = this as any;
+		self.initialize();
+		const rows =
+			overrideRows !== undefined
+				? (overrideRows as ReturnType<typeof flattenRows>)
+				: flattenRows(state, {
+						display: self.display,
+						data: self.data ?? null,
+						searchResults: self.searchResults ?? [],
+						foldable: getListConfig(self).foldable === true,
+						parseName: (item: TreeItem) => self.parseName(item),
+						selections: (self.selections ?? []) as TreeItem[],
+						hintItem: self.dragging?.hint?.target?.item ?? null,
+						root: (self.root ?? null) as TreeItem | null
+					});
+		state.rows.value = rows;
+		state.bump();
+		(self.syncElementsShim as () => void)();
+	};
+	list.syncElementsShim = function (this: HTMLElement & { [k: string]: unknown }): void {
+		const state = renderStateOf(this) as TreeRenderState;
+		// oxlint-disable-next-line no-explicit-any
+		const self = this as any;
+		const rows = state.rows.value;
+		const { start, end } = computeWindow(
+			self.scrollTop ?? 0,
+			self.clientHeight ?? 0,
+			rows.length
+		);
+		state.start.value = start;
+		state.end.value = end;
+		elements.count = rows.length;
+		elements.start = start;
+		elements.end = end;
+		for (let i = 0; i < rows.length; i++) {
+			const el = state.rowElements.get(rows[i].key);
+			elements[i] = el !== undefined ? el : (undefined as never);
+		}
+		commonListClearElements(self as unknown as CommonListLike, rows.length);
+	};
+	list.rowIndexOf = function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem
+	): number {
+		const state = renderStateOf(this) as TreeRenderState;
+		const rows = state.rows.value;
+		for (let i = 0; i < rows.length; i++) {
+			if (rows[i].item === item) return i;
+		}
+		return -1;
+	};
+	list.setItemClass = function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem,
+		className: string,
+		on = true
+	): void {
+		const state = renderStateOf(this) as TreeRenderState;
+		setItemClass(state, item, className, on);
+	};
+	list.rowHeight = ROW_HEIGHT;
+	// 行元素绑定桥（模板 :ref 回调）：维护 item.element 与内部字段，并跑 creators/updaters 钩子
+	list.bindRow = function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem,
+		el: unknown
+	): void {
+		const state = renderStateOf(this);
+		if (state === undefined) return;
+		// oxlint-disable-next-line no-explicit-any
+		const self = this as any;
+		const firstBind = el instanceof HTMLElement && item.element !== el;
+		bindRowElement(state, item, el);
+		if (firstBind) {
+			for (const creator of getListConfig(self).creators) creator(item);
+		}
+	};
+	list.bindNodeIcon = function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem,
+		el: HTMLElement
+	): void {
+		if (item.element !== undefined) item.element.nodeIcon = el;
+	};
+	list.bindNodeExtras = function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem,
+		el: HTMLElement
+	): void {
+		if (item.element !== undefined) item.element.extras = el;
+	};
+	list.applyRowUpdaters = function (this: HTMLElement & { [k: string]: unknown }): void {
+		const state = renderStateOf(this);
+		if (state === undefined) return;
+		// oxlint-disable-next-line no-explicit-any
+		const self = this as any;
+		const updaters = getListConfig(self).updaters as ((item: TreeItem) => void)[];
+		for (const el of state.rowElements.values()) {
+			const item = el.item;
+			if (item === undefined) continue;
+			// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
+			if (typeof self.renderNodeIcon === 'function') {
+				if (el.nodeIcon) self.renderNodeIcon(item, el.nodeIcon);
+			} else if (
+				el.nodeIcon === undefined ||
+				el.nodeIcon === null ||
+				el.nodeIcon.classList?.contains('tree-node-icon-placeholder')
+			) {
+				const created = self.createIcon(item) as HTMLElement;
+				if (el.nodeIcon != null && el.nodeIcon.parentNode === el) {
+					el.nodeIcon.replaceWith(created);
+				} else {
+					el.appendChild(created);
 				}
-				for (const updater of updaters) updater(item);
-				if (typeof self.renderNodeExtras === 'function' && el.extras) {
-					self.renderNodeExtras(item, el.extras);
-				}
+				el.nodeIcon = created;
 			}
-		};
-	}
+			for (const updater of updaters) updater(item);
+			if (typeof self.renderNodeExtras === 'function' && el.extras) {
+				self.renderNodeExtras(item, el.extras);
+			}
+			// 兼容扩展点：消费方实例级覆写 updateNodeElement（如 text-tip 的富行内容）
+			// 时按其语义调用；默认实现已在步骤 5 删除，故此处不会触发内置渲染。
+			if (typeof self.updateNodeElement === 'function') {
+				self.updateNodeElement(el);
+			}
+		}
+	};
 	list.root = Object.defineProperty({}, 'children', {
 		get: () => list.data
 	});

@@ -288,6 +288,12 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 
 ### 步骤 5：清理与最终态
 
+> **进度（2026-09-09，主体已交付）**：删除命令式行渲染实现与相关脚手架——
+> `createNodeElement`、默认 `updateNodeElement`、`createIndentedItems`、`createFlatItems`、`updateOnResize`、`insertPaddingAndClear` + `treeListStatics.padding`（editor `components/tree-list.ts` 同步去掉 padding 暴露）、`vueRowRender` 开关与 `isVueRowRenderEnabled`/`setVueRowRenderEnabled`、`commonListResize` 依赖。`update()`/`clear()`/`resize()`/`select()`/`unselect()`/导航翻页全部只保留派生行路径（`renderState` 恒存在）。
+> 兼容扩展点保留：消费方**实例级** `updateNodeElement` 覆写（text-tip 富行内容）由行绑定桥在 patch 后调用（`tree-list-vue-rows.spec` 新增用例锁定）；`createIcon` 覆写、`creators`/`updaters`/`renderNodeIcon`/`renderNodeExtras` 均为正式扩展点。
+> 验证：ui-kit **656/656**、editor **1868/1868**、oxlint 0、`tsc`/`vue-tsc` 0；真机翻默认后 `open-project` + `drag-here` 通过。
+> **仍保留（步骤 5b，另行评估）**：`elements` shim（现仅作「窗口行视图」，供 eslints 缩进线、`useVariableGetterWindow` 等按行号访问）、`item.element` 回写桥（行就是 DOM，`treeOwnerListOf` 回退用）、`tree-core.deleteCaches` 的 element 分支与 `NodeElement` 类型——它们不再是渲染路径的一部分，删除属纯收口、需一并迁移上述少数按行号访问的消费方。
+
 - 删除 `elements` shim、`item.element` defineProperty、`tree-core.deleteCaches` 中 element 分支、NodeElement 类型；
 - TreeItem 回归纯数据（parent 链保留或同样收口为显式 API，另行评估）。
 

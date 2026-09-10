@@ -49,8 +49,6 @@ export {
 	treeRowItemAt,
 	treeRowIndexOf,
 	treeOwnerListOf,
-	isVueRowRenderEnabled,
-	setVueRowRenderEnabled,
 	type TreeListRowApi,
 	type TreeListApiOptions
 } from './components/basic/YMTreeList/tree-api';

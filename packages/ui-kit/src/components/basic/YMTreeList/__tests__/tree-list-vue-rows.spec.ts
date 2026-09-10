@@ -2,10 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { setVueRowRenderEnabled } from '../tree-api';
 
-// 步骤 2（docs/tree-list-vfor-plan.md）：行渲染 v-for 化后的数据派生渲染路径。
-// 旧命令式路径由既有 spec 覆盖；本 spec 打开新路径（setVueRowRenderEnabled(true)）验证：
+// 数据派生行渲染（docs/tree-list-vfor-plan.md 步骤 2；步骤 5 后为唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
 
 interface TreeData {
@@ -68,12 +66,10 @@ const mountList = async (
 };
 
 beforeEach(() => {
-	setVueRowRenderEnabled(true);
 	document.body.innerHTML = '';
 });
 
 afterEach(() => {
-	setVueRowRenderEnabled(false);
 	document.body.innerHTML = '';
 });
 
@@ -161,6 +157,21 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 			'Child 2'
 		]);
 		expect((el.renderState.rows.value.length as number) ?? 0).toBeGreaterThan(0);
+		wrapper.unmount();
+	});
+
+	it('消费方实例级 updateNodeElement 覆写仍是受支持扩展点（步骤 5 删除默认实现后）', async () => {
+		const data = makeData();
+		const { wrapper, el } = await mountList(data);
+		// 模拟 text-tip 一类窗口：把富行内容渲染挂到列表实例上
+		(el as unknown as { updateNodeElement: (row: HTMLElement) => void }).updateNodeElement = (
+			row: HTMLElement
+		): void => {
+			row.dataset.decorated = 'yes';
+		};
+		el.update();
+		await nextTick();
+		expect(el.querySelectorAll('.node-item[data-decorated="yes"]')).toHaveLength(4);
 		wrapper.unmount();
 	});
 });
