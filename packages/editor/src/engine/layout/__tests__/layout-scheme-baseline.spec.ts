@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, getPageScheme, setItemPage } from '@app/engine/layout/layout.ts';
 import { createPageManagerElement, type PageManagerApi } from '@ui-kit';
 import '@app/utils/css';
 
@@ -68,6 +68,8 @@ const buildFixture = (): LayoutFixture => {
 		const page = createPageFrame(value);
 		paletteManager.append(page);
 		navItem.page = page;
+		// M5-a：登记到引擎内部配对（生产路径由 Layout.initialize 完成）
+		setItemPage(navItem, page);
 		items[value] = navItem;
 		list.push(navItem);
 	}
@@ -88,8 +90,7 @@ const loadScheme = (key: string, scheme: SchemeNode): void => {
 	Layout.loadLayoutScheme!(key);
 };
 
-const schemeOf = (root: HTMLElement): unknown =>
-	(root as HTMLElement & { scheme?: unknown }).scheme;
+const schemeOf = (root: HTMLElement): unknown => getPageScheme(root);
 
 const collectLeaves = (group: Element): LayoutLeafElement[] => {
 	const leaves: LayoutLeafElement[] = [];
@@ -178,7 +179,7 @@ describe('Layout scheme 行为金标准（layout Vue 化基线）', () => {
 		expect(fixture.items.project.parentNode).toBe(leaves[0].nav);
 		expect(fixture.items.project.page.parentNode).toBe(leaves[0].manager);
 		expect(schemeOf(fixture.directory)).toBe(
-			(fixture.workspace.active as HTMLElement & { scheme?: unknown }).scheme
+			getPageScheme(fixture.workspace.active as HTMLElement)
 		);
 	});
 

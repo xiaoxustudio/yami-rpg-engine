@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, setItemPage } from '@app/engine/layout/layout.ts';
 import { parseLayoutScheme, type LayoutSchemeData } from '@app/engine/layout/layout-scheme';
 import LayoutTreeView from '../../../components/layout/LayoutTreeView.vue';
 
@@ -96,6 +96,7 @@ const renderCommand = (scheme: SchemeNode): Element => {
 		navItem.className = 'nav-item';
 		navItem.setAttribute('value', value);
 		navItem.page = document.createElement('div');
+		setItemPage(navItem, navItem.page);
 		items[value] = navItem;
 		list.push(navItem);
 	}

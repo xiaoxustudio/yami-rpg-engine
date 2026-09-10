@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach } from 'vitest';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, setItemPage } from '@app/engine/layout/layout.ts';
 import '@app/utils/css';
 
 function createLeafGroup(tabs: string[] = []): HTMLElement {
@@ -11,6 +11,7 @@ function createLeafGroup(tabs: string[] = []): HTMLElement {
 		el.setAttribute('value', tab);
 		const page = document.createElement('div');
 		(el as any).page = page;
+		setItemPage(el, page);
 		Layout.items[tab] = el;
 		Layout.items.list.push(el);
 	}

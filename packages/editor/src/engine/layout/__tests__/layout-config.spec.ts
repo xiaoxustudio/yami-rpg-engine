@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, clearLayoutMirror, getPageScheme } from '@app/engine/layout/layout.ts';
 import { toLayoutScheme } from '../layout-scheme';
 import { deserializeGroupElement } from '../layout-deserialize';
 import '@app/utils/math';
@@ -55,7 +55,7 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		expect(Object.keys(config.layout ?? {})).toEqual(['directory']);
 	});
 
-	it('M4-2：退化（无页签）树不覆盖既有 layout —— 半挂载不写坏 config', () => {
+	it('M4-2/M5-a：退化（无页签）树不覆盖既有 layout —— 镜像缺失时不写坏 config', () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
@@ -67,12 +67,17 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		const empty = document.createElement('div');
 		empty.className = 'group';
 		host.append(empty);
-		(fixture.directory as HTMLElement & { scheme?: unknown }).scheme = DIRECTORY_SCHEME;
 
+		// M5-a：镜像仍在 → saveToConfig 读镜像，不受退化 DOM 影响
 		const config: ConfigShape = {};
 		Layout.saveToConfig!(config);
-
 		expect(config.layout?.directory).toEqual(DIRECTORY_SCHEME);
+
+		// 镜像缺失（异常态）→ 回退 DOM 快照，hasAnyTabs 守卫拦住退化 scheme
+		clearLayoutMirror(fixture.directory);
+		const config2: ConfigShape = {};
+		Layout.saveToConfig!(config2);
+		expect(config2.layout?.directory).toEqual(DIRECTORY_SCHEME);
 	});
 });
 
@@ -123,9 +128,7 @@ describe('loadLayoutScheme default 兜底', () => {
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(root).toBeTruthy();
 		expect(toLayoutScheme(deserializeGroupElement(root))).toEqual(DIRECTORY_SCHEME);
-		expect((fixture.directory as HTMLElement & { scheme?: unknown }).scheme).toBe(
-			DIRECTORY_SCHEME
-		);
+		expect(getPageScheme(fixture.directory)).toBe(DIRECTORY_SCHEME);
 	});
 
 	it('layout 与 default 都缺 key 时不构建（当前页保持为空）', () => {

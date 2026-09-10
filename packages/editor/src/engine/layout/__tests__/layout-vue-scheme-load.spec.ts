@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
 	Layout,
 	setLayoutVueRenderEnabled,
-	awaitVueLayoutLoad
+	awaitVueLayoutLoad,
+	resetPageLayoutState
 } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import {
@@ -140,7 +141,7 @@ describe('M3b-2 Vue 渲染加载 vs 命令式 loadLayoutScheme', () => {
 		const page = await loadVue(fixture, 'directory', asScheme(DIRECTORY_SCHEME));
 		const oldRoot = page.firstElementChild as HTMLElement;
 
-		delete (page as HTMLElement & { scheme?: unknown }).scheme;
+		resetPageLayoutState(page);
 		await loadVue(fixture, 'directory', asScheme(DIRECTORY_SCHEME));
 
 		const newRoot = page.firstElementChild as HTMLElement;

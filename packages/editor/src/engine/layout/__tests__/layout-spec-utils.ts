@@ -1,5 +1,5 @@
 import { createPageManagerElement, type PageManagerApi } from '@ui-kit';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, setItemPage } from '@app/engine/layout/layout.ts';
 
 // layout 行为金标准共享 fixture（docs/layout-vue-plan.md M1）
 // 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再驱动 Layout 命令式构建，
@@ -99,6 +99,8 @@ export function buildLayoutFixture(values: readonly string[] = [...TAB_VALUES]):
 		const page = createPageFrame(value);
 		paletteManager.append(page);
 		navItem.page = page;
+		// M5-a：同时登记到引擎内部配对（生产路径由 Layout.initialize 登记）
+		setItemPage(navItem, page);
 		items[value] = navItem;
 		list.push(navItem);
 	}

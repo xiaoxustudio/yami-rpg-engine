@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Layout } from '@app/engine/layout/layout.ts';
+import { Layout, getNavLastValue } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import '@app/utils/math';
 import {
@@ -45,8 +45,8 @@ describe('saveNavStates / lastValue 会话恢复', () => {
 
 		Layout.saveNavStates!();
 
-		expect((leaves[0].nav as HTMLElement & { lastValue?: string }).lastValue).toBe('project');
-		expect((leaves[1].nav as HTMLElement & { lastValue?: string }).lastValue).toBe('scene');
+		expect(getNavLastValue(leaves[0].nav)).toBe('project');
+		expect(getNavLastValue(leaves[1].nav)).toBe('scene');
 		expect(selectedOf(leaves[0].nav)).toBeNull();
 		expect(visibleOf(leaves[0].manager)).toEqual([]);
 		expect(leaves[0].manager.index).toBeUndefined();

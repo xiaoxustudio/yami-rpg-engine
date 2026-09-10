@@ -1,7 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { defineComponent, h, nextTick, onMounted, type PropType } from 'vue';
-import { Layout, setLayoutVueRenderMode, awaitVueLayoutLoad } from '@app/engine/layout/layout.ts';
+import {
+	Layout,
+	setLayoutVueRenderMode,
+	awaitVueLayoutLoad,
+	getPageScheme,
+	resetPageLayoutState,
+	setItemPage,
+	setNavLastValue
+} from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 import type { LayoutSchemeData } from '../layout-scheme';
@@ -128,10 +136,10 @@ const clickTab = (nav: HTMLElement, value: string): void => {
 	item.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 };
 
-// 引擎 navPointerdown/拖拽假设 nav-item 带 .page（Layout.initialize 的配对语义）；palette 复刻后补上
+// 引擎 navPointerdown/拖拽假设「页签 ↔ 页」已登记（生产路径由 Layout.initialize 完成）
 const pairItems = (values: readonly string[]): void => {
 	for (const value of values) {
-		(tabOf(value) as HTMLElement & { page: HTMLElement }).page = frameOf(value);
+		setItemPage(tabOf(value), frameOf(value));
 	}
 };
 
@@ -229,8 +237,8 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		const sceneTab = tabOf('scene');
 		clickTab(directoryLeaves[0].nav, 'inspector');
 		expect(visibleOf(directoryLeaves[0].manager)).toEqual(['inspector']);
-		// 模拟 saveNavStates 记录的 lastValue
-		(directoryLeaves[0].nav as HTMLElement & { lastValue?: string }).lastValue = 'inspector';
+		// 模拟 saveNavStates 记录的会话恢复值（M5-a：引擎内部状态）
+		setNavLastValue(directoryLeaves[0].nav, 'inspector');
 
 		// 进入 scene 工作区：帧/页签搬进 B 的组
 		await runLoad(workspaceB, 'scene', SCENE_SCHEME);
@@ -283,7 +291,7 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		const oldRoot = workspaceA.firstElementChild as HTMLElement;
 		const projectFrame = frameOf('project');
 
-		delete (workspaceA as HTMLElement & { scheme?: unknown }).scheme;
+		resetPageLayoutState(workspaceA);
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 
 		const newRoot = workspaceA.firstElementChild as HTMLElement;
@@ -356,14 +364,12 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		expect(frameOf('scene').parentNode).toBe(nextLeaves[0].manager);
 		expect(tabOf('scene').parentNode).toBe(nextLeaves[0].nav);
 
-		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定
+		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定（M5-a：引擎内部状态）
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			tabs: ['project', 'inspector', 'scene']
 		});
-		expect((workspaceA as HTMLElement & { scheme?: unknown }).scheme).toBe(
-			Layout.layout!.directory
-		);
+		expect(getPageScheme(workspaceA)).toBe(Layout.layout!.directory);
 
 		// 归属重发布 + 被拖页签激活
 		expect(getLayoutStore().tabTargets.scene).toBe(nextLeaves[0].nav);

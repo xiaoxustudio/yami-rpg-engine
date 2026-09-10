@@ -165,6 +165,49 @@ const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 	return (node.children ?? []).some((child) => hasAnyTabs(child));
 };
 
+// M5-a（docs/layout-vue-plan.md M5）：以引擎内部状态取代 DOM expando 读法。
+// page.scheme → pageSchemes（幂等判据）、nav.lastValue → navLastValues（会话恢复）、
+// item.page → itemPages（页签↔页配对）；pageTrees 为运行时布局镜像（收敛点刷新），
+// saveToConfig 由「每次读 DOM」改为读镜像。
+const pageSchemes = new WeakMap<HTMLElement, LayoutScheme>();
+const pageTrees = new WeakMap<HTMLElement, LayoutScheme>();
+const navLastValues = new WeakMap<HTMLElement, string | null>();
+const itemPages = new WeakMap<HTMLElement, HTMLElement>();
+
+export const getPageScheme = (page: HTMLElement): LayoutScheme | undefined => pageSchemes.get(page);
+
+export const resetPageLayoutState = (page: HTMLElement): void => {
+	pageSchemes.delete(page);
+	pageTrees.delete(page);
+};
+
+// 仅清镜像（保留「已物化」判据），用于验证退化 DOM 不写回的兜底路径
+export const clearLayoutMirror = (page: HTMLElement): void => {
+	pageTrees.delete(page);
+};
+
+export const getNavLastValue = (nav: HTMLElement): string | null => navLastValues.get(nav) ?? null;
+
+export const setNavLastValue = (nav: HTMLElement, value: string | null): void => {
+	navLastValues.set(nav, value);
+};
+
+// 登记「页签 ↔ 页」配对（Layout.initialize 生产路径调用；测试 fixture 亦用）
+export const setItemPage = (item: HTMLElement, page: HTMLElement): void => {
+	itemPages.set(item, page);
+};
+
+// 收敛点后用当前 DOM 刷新运行时镜像（结构 + end/dp 比例的单一数据副本）
+const syncLayoutMirror = (page: HTMLElement | null | undefined): void => {
+	if (!page) return;
+	const root = layoutRootOf(page);
+	if (root === null) {
+		pageTrees.delete(page);
+		return;
+	}
+	pageTrees.set(page, toLayoutScheme(deserializeGroupElement(root)));
+};
+
 // 结构/归属收敛点后把「value → 归属 manager」刷进 layout store，供 Vue 层 Teleport :to 使用。
 const syncPageTargets = (
 	manager: {
@@ -272,7 +315,7 @@ const applyTabDropWithin = (
 			}
 		}
 	}
-	const page = item.page;
+	const page = itemPages.get(item as HTMLElement);
 	if (page) {
 		(page as HTMLElement & { width: unknown; height: unknown }).width = null;
 		(page as HTMLElement & { width: unknown; height: unknown }).height = null;
@@ -371,17 +414,32 @@ Layout.initialize = function () {
 	const nav = $('#layout-nav');
 	const manager = $('#layout-page-manager');
 	const items = (this.items = {} as LayoutItems);
-	for (const item of nav.childNodes) {
-		if (item.nodeType !== 1) continue;
+	// M5-a：teleport 模式下 palette 整壳可能已被搬到叶子宿主，palette 容器会空；
+	// 此时回退到全文档扫描（页签唯一、页带 id），保证 items/配对在两种形态下都成立。
+	const isElement = (node: Node): boolean => node.nodeType === 1;
+	const paletteNavs = Array.from(nav?.childNodes ?? []).filter(isElement) as HTMLElement[];
+	const palettePages = Array.from(manager?.childNodes ?? []).filter(isElement) as HTMLElement[];
+	const navItems =
+		paletteNavs.length !== 0
+			? paletteNavs
+			: (Array.from(document.querySelectorAll('.nav-item[value]')) as HTMLElement[]);
+	const pageFrames =
+		palettePages.length !== 0
+			? palettePages
+			: (Array.from(document.querySelectorAll('.page-frame[value]')) as HTMLElement[]).filter(
+					(frame) => frame.id !== '' || frame.closest('#layout-page-manager') !== null
+				);
+	for (const item of navItems) {
 		const key = item.getAttribute('value');
-		(item as HTMLElement).draggable = true;
+		item.draggable = true;
 		items[key!] = item as LayoutItemElement;
 	}
-	for (const page of manager.childNodes) {
-		if (page.nodeType !== 1) continue;
+	for (const page of pageFrames) {
 		const key = page.getAttribute('value');
-		if (key && items[key]) {
-			items[key].page = page as HTMLElement;
+		const item = key ? items[key] : undefined;
+		if (key && item) {
+			// M5-a：页签↔页配对存引擎内部（原为 items[key].page expando）
+			itemPages.set(item, page as HTMLElement);
 		}
 	}
 
@@ -424,9 +482,8 @@ Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
 	this.layout = layout;
 	const { manager } = this;
 	for (const page of manager.childNodes) {
-		if (page.scheme !== undefined) {
-			delete page.scheme;
-		}
+		// M5-a：失效整本字典时清掉引擎内部页状态（原为 delete page.scheme）
+		resetPageLayoutState(page as HTMLElement);
 	}
 	const key = manager.index;
 	if (layout[key] !== undefined) {
@@ -455,9 +512,10 @@ Layout.createGroups = function (item: LayoutScheme, parent: HTMLElement) {
 		const manager = (group as LayoutGroupElement).manager;
 		for (const tab of tabs!) {
 			const item = this.items![tab];
+			const itemPage = item ? itemPages.get(item) : undefined;
 			if (item) {
 				nav.appendChild(item);
-				manager.appendChild(item.page!);
+				if (itemPage) manager.appendChild(itemPage);
 			} else {
 				console.warn('missing item for tab:', tab);
 			}
@@ -571,6 +629,8 @@ Layout.updateGroupTabs = function (group: LayoutGroupElement) {
 		tabs.push((item as HTMLElement).getAttribute('value')!);
 	}
 	group.tabs = tabs;
+	// M5-a：tabs 是运行时镜像的一部分，写入即刷新
+	syncLayoutMirror(this.manager?.active as HTMLElement | null | undefined);
 };
 
 Layout.updateGroupInfo = function () {
@@ -1001,8 +1061,9 @@ Layout.disableFocusableElements = function () {
 Layout.saveNavStates = function () {
 	for (const item of this.items!.list) {
 		if (hasClass(item, 'selected')) {
-			const nav = item.parentNode;
-			nav.lastValue = item.getAttribute('value');
+			const nav = item.parentNode as HTMLElement;
+			// M5-a：会话恢复值存引擎内部（原为 nav.lastValue expando）
+			navLastValues.set(nav, item.getAttribute('value'));
 			write(nav, null);
 		}
 	}
@@ -1022,8 +1083,9 @@ Layout.loadLayoutScheme = function (key?: string) {
 	if (scheme === undefined || page === null) {
 		return;
 	}
-	if (page.scheme !== scheme) {
-		page.scheme = scheme;
+	if (pageSchemes.get(page) !== scheme) {
+		// M5-a：幂等判据存引擎内部（原为 page.scheme expando）
+		pageSchemes.set(page, scheme);
 		if (vueRenderMode === 2) {
 			// Teleport 模式（M3b-2b，默认关）：组树 Vue 渲染+水合后按叶子发布归属，
 			// palette 页/页签经整壳 Teleport 落位，不做命令式搬移（docs/layout-vue-plan.md 附录 F）。
@@ -1050,6 +1112,7 @@ Layout.loadLayoutScheme = function (key?: string) {
 		for (const group of groups) {
 			write(group.nav, group.tabs[0]);
 		}
+		syncLayoutMirror(page);
 	} else {
 		if (vueRenderMode === 2) {
 			// 二次进入：不重建组树，只重算归属并激活 nav.lastValue（Teleport 负责落位）
@@ -1066,14 +1129,18 @@ Layout.loadLayoutScheme = function (key?: string) {
 			const { tabs, nav, manager } = group;
 			for (const tab of tabs) {
 				const item = items[tab];
+				const itemPage = item ? itemPages.get(item) : undefined;
+				if (!item) continue;
 				nav.appendChild(item);
-				manager.appendChild(item.page!);
+				if (itemPage) manager.appendChild(itemPage);
 			}
 		}
 		this.updateGroups!(true);
 		for (const { nav } of groups) {
-			write(nav, nav.lastValue);
+			// M5-a：从引擎内部读会话恢复值（原为 nav.lastValue expando）
+			write(nav, navLastValues.get(nav) ?? null);
 		}
+		syncLayoutMirror(page);
 	}
 	syncPageTargets(this.manager);
 };
@@ -1110,9 +1177,10 @@ Layout.loadLayoutSchemeVue = async function (
 	for (const leaf of handle.leaves) {
 		for (const tab of leaf.tabs) {
 			const item = items[tab];
+			const itemPage = item ? itemPages.get(item) : undefined;
 			if (item) {
 				leaf.nav.appendChild(item);
-				leaf.manager.appendChild(item.page!);
+				if (itemPage) leaf.manager.appendChild(itemPage);
 			} else {
 				console.warn('missing item for tab:', tab);
 			}
@@ -1123,6 +1191,7 @@ Layout.loadLayoutSchemeVue = async function (
 	for (const group of groups) {
 		write(group.nav, group.tabs[0]);
 	}
+	syncLayoutMirror(page);
 	syncPageTargets(this.manager);
 };
 
@@ -1176,13 +1245,12 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 		if (isFirst) {
 			write(leaf.nav!, leaf.tabs?.[0]);
 		} else {
-			write(
-				leaf.nav!,
-				(leaf.nav as HTMLElement & { lastValue?: string }).lastValue ?? leaf.tabs?.[0]
-			);
+			// M5-a：二次进入的会话恢复值读引擎内部（原为 nav.lastValue expando）
+			write(leaf.nav!, navLastValues.get(leaf.nav!) ?? leaf.tabs?.[0]);
 		}
 	}
 	this.updateGroups!();
+	syncLayoutMirror(page);
 	syncPageTargets(this.manager);
 };
 
@@ -1216,7 +1284,7 @@ Layout.rebuildVueLayoutFromDom = async function (
 	);
 	const layout = (this.layout ??= {} as Record<string, LayoutScheme>);
 	layout[layoutKey] = scheme;
-	page.scheme = scheme;
+	pageSchemes.set(page, scheme);
 
 	const prior = vueTreeHandles.get(page);
 	if (prior !== undefined) {
@@ -1254,6 +1322,7 @@ Layout.rebuildVueLayoutFromDom = async function (
 		write(leaf.nav!, leaf.tabs?.[0]);
 	}
 	this.updateGroups!();
+	syncLayoutMirror(page);
 	syncPageTargets(this.manager);
 
 	if (activateTab !== undefined) {
@@ -1270,13 +1339,14 @@ Layout.saveToConfig = function (config: { layout?: Record<string, LayoutScheme> 
 	const { layout } = this;
 	for (const page of this.manager.childNodes) {
 		const key = page.getAttribute('value');
-		if (page.scheme !== undefined && page.scheme === layout![key]) {
-			const root = layoutRootOf(page);
-			if (root !== null) {
-				const scheme = this.saveLayoutScheme!(root);
-				// M4-2：半挂载/空树不覆盖既有布局（否则一次失败挂载会写坏 config.layout）
-				if (hasAnyTabs(scheme)) layout![key] = scheme;
-			}
+		if (pageSchemes.get(page as HTMLElement) === layout![key]) {
+			// M5-a：优先读运行时镜像（收敛点刷新），无镜像时再按 DOM 兜底快照
+			const mirrored = pageTrees.get(page as HTMLElement);
+			const scheme =
+				mirrored ??
+				(layoutRootOf(page) !== null ? this.saveLayoutScheme!(layoutRootOf(page)!) : null);
+			// M4-2：半挂载/空树不覆盖既有布局（否则一次失败挂载会写坏 config.layout）
+			if (scheme !== null && hasAnyTabs(scheme)) layout![key] = scheme;
 		}
 	}
 	config.layout = layout;
@@ -1421,7 +1491,9 @@ Layout.navPointerdown = function (event: { button: number; target: LayoutItemEle
 						Layout.readyToFocus!(Inspector.manager);
 						break;
 					default: {
-						const page = element.page!;
+						// M5-a：页签↔页配对读引擎内部（原为 element.page expando）
+						const page = itemPages.get(element);
+						if (!page) break;
 						const nodes = page.querySelectorAll(
 							'[tabindex]'
 						) as NodeListOf<HTMLElement>;
@@ -1563,6 +1635,7 @@ Layout.navDrop = function (event: EditorEvent) {
 		// 避免对 Vue/Teleport 管理的子节点直接 insertBefore；命令式路径（模式 0/1）保留到 M5。
 		if (vueRenderMode === 2 && direction === 'inside' && target === sGroup) {
 			applyTabDropWithin(sGroup, item, trigger);
+			syncLayoutMirror(Layout.manager?.active);
 			syncPageTargets(Layout.manager);
 			return;
 		}
@@ -1628,21 +1701,28 @@ Layout.navDrop = function (event: EditorEvent) {
 			sManager.active = null;
 		}
 
-		const page = item.page;
-		if (hasClass(trigger, 'nav-item')) {
+		// M5-a：页签↔页配对读引擎内部（原为 item.page / trigger.page expando）
+		const page = itemPages.get(item as HTMLElement);
+		const triggerPage = itemPages.get(trigger);
+		if (hasClass(trigger, 'nav-item') && page && triggerPage) {
 			dNav.insertBefore(item, trigger);
-			dManager.insertBefore(page, trigger.page);
-		} else {
+			dManager.insertBefore(page, triggerPage);
+		} else if (page) {
 			dNav.appendChild(item);
 			dManager.appendChild(page);
+		} else {
+			dNav.appendChild(item);
 		}
 
 		Layout.updateGroupTabs!(sGroup);
 		Layout.updateGroupTabs!(dGroup);
 
 		// 擦除页面的宽高属性 调整节点树后滚动条会重置 需要触发调整事件来恢复
-		page.width = null;
-		page.height = null;
+		if (page) {
+			const sized = page as HTMLElement & { width: unknown; height: unknown };
+			sized.width = null;
+			sized.height = null;
+		}
 
 		if (sNav !== dNav) {
 			// M4-2：以元素子节点判定源组是否还有页签（Teleport 锚点不算）
@@ -1697,6 +1777,7 @@ Layout.navDrop = function (event: EditorEvent) {
 			console.warn('[rebuildVueLayoutFromDom] failed:', error);
 		});
 	}
+	syncLayoutMirror(Layout.manager?.active);
 	syncPageTargets(Layout.manager);
 };
 
@@ -1955,6 +2036,8 @@ Layout.pointerup = function (event?: EditorEvent) {
 			info.remove();
 		}
 		getLayoutStore().resizing = null;
+		// M5-a：缩放结束刷新布局镜像（end 比例是镜像的一部分）
+		syncLayoutMirror(this.manager?.active as HTMLElement | null | undefined);
 		window.removeEventListener('pointerup', Layout.pointerup!);
 		window.removeEventListener('pointermove', Layout.pointermove!);
 	}

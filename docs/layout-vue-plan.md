@@ -186,7 +186,13 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 
 ### M5：清除脚手架 & 解锁 tree v-for
 
-- 删除 `page.scheme`/`nav.lastValue`/`items.page` 的 DOM 耦合读法、`renderElement(h('group'))` 渲染路径、palette 双实现同步点；`saveToConfig` 读数据。
+- **M5-a（2026-09-09 已交付）DOM 耦合读法 → 引擎内部状态**：
+  - `page.scheme` → `pageSchemes: WeakMap`（首载幂等判据；`switchLayout` 改为 `resetPageLayoutState`）；`nav.lastValue` → `navLastValues: WeakMap`（`saveNavStates` 写、二次进入读）；`items.page` → `itemPages: WeakMap`（`initialize` 登记，`createGroups`/mode1 装载/`navPointerDown`/`navDrop` 读）。
+  - 新增运行时布局镜像 `pageTrees`（收敛点刷新：装载/rebuild/`updateGroupTabs`/`navDrop` 尾/缩放 `pointerup`），`saveToConfig` 由「每次读 DOM」改为**读镜像**（镜像缺失才回退 DOM 快照，`hasAnyTabs` 守卫保留）。
+  - 导出测试/工具用访问器：`getPageScheme`/`resetPageLayoutState`/`clearLayoutMirror`/`getNavLastValue`/`setNavLastValue`/`setItemPage`；各 spec fixture 改用 `setItemPage` 登记配对。
+  - `Layout.initialize` 加固：teleport 模式下 palette 整壳可能已被搬进叶子宿主、palette 容器为空 → 回退全文档扫描（nav-item 唯一、page-frame 按 id 判定）保证 items/配对在两种形态下成立。
+  - 验证：layout __tests__ + engine/layout.spec **112/112**、editor 全量 **1893/1893**、oxlint 0、`tsc` 0；真机 mode2 拖拽（跨组搬空折叠 + 重挂载）与 mode0 对照（同组重排）正常，工作区切走返回恢复上次页签（会话值链路）。
+- 剩余：`renderElement(h('group'))`/`createGroups` 命令式渲染路径与 `clear(page)` 销毁 palette 行为（需先把默认渲染切到 Vue/teleport 并适配受影响基线测试，见 M5-b）；palette 双实现同步点；随后重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
 - `clear(page)` 销毁 palette 的行为删除（palette 退化为纯 Vue 组件模板，不再被清）。
 - 在 M5 全量绿后，重做 `docs/tree-list-vfor-plan.md` 步骤 2（渲染层 v-for）。
 
