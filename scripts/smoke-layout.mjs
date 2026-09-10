@@ -507,6 +507,88 @@ async function dragScene() {
 	await dragReorderPhase();
 }
 
+// region 边缘拖拽（M4 几何用例）：把叶子 A 的唯一页签拖到叶子 B 的 region 左缘，
+// 期望产生左/右分割（结构性变更）并由 M4-2 rebuild 收敛。
+async function dragRegionPhase() {
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	await waitForActiveWorkspace(send, 20000);
+	const probe = async (expression) => {
+		const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+		if (r.exceptionDetails)
+			throw new Error(
+				'probe failed: ' +
+					JSON.stringify(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)
+			);
+		return r.result?.value;
+	};
+	const before = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		return {
+			workspace: frame?.getAttribute('value') ?? null,
+			navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'))),
+			groups: frame ? frame.querySelectorAll('.group').length : 0
+		};
+	})()`);
+	let drag;
+	try {
+		drag = await probe(`(() => {
+			const ws = document.getElementById('workspace-page-manager');
+			const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+			const navs = [...frame.querySelectorAll('.nav-bar')];
+			const values = (n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'));
+			const srcNav = navs.find((n) => values(n).length === 1);
+			const dstNav = navs.find((n) => values(n).length >= 1 && n !== srcNav);
+			if (!srcNav || !dstNav) return { error: 'need two leaves', navs: navs.map(values) };
+			const item = srcNav.querySelector('.nav-item');
+			const dt = new DataTransfer();
+			const log = [];
+			const fire = (el, type, init) => {
+				const e = new DragEvent(type, Object.assign({ bubbles: true, cancelable: true, dataTransfer: dt }, init || {}));
+				el.dispatchEvent(e);
+				log.push(type + ':' + (e.defaultPrevented ? 'prevented' : 'ok'));
+			};
+			fire(item, 'dragstart');
+			const region = dstNav.parentNode.querySelector('group-region');
+			if (!region) return { error: 'no group-region (navDragstart 未注册)', navs: navs.map(values), log };
+			const rect = region.getBoundingClientRect();
+			const y = Math.round(rect.top + rect.height / 2);
+			const xLeft = Math.round(rect.left + 2);
+			fire(region, 'dragover', { clientX: xLeft, clientY: y });
+			fire(region, 'drop', { clientX: xLeft, clientY: y });
+			for (const n of [...frame.querySelectorAll('.nav-bar')]) {
+				n.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true }));
+			}
+			return { log, dragged: item.getAttribute('value'), regionRect: { x: rect.left, y: rect.top, w: rect.width, h: rect.height } };
+		})()`);
+	} catch (error) {
+		drag = { error: String(error?.message ?? error) };
+	}
+	await sleep(1200);
+	const after = await probe(`(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
+		const root = frame ? frame.querySelector(':scope > .group, .group') : null;
+		return {
+			navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'))),
+			groups: frame ? frame.querySelectorAll('.group').length : 0,
+			rootSplit: root && root.split ? root.split : null,
+			rootTabs: root && root.tabs ? [...root.tabs] : null,
+			staleRegions: document.querySelectorAll('group-region').length
+		};
+	})()`);
+	out('region', { before, drag, after });
+	ws.close();
+}
+
+async function dragRegion() {
+	await evaluateMode(2);
+	await dragRegionPhase();
+}
+
 const phases = {
 	debug,
 	'open-project': openProject,
@@ -516,6 +598,7 @@ const phases = {
 	'drag-mode0': dragMode0,
 	'drag-mode2': dragMode2,
 	'drag-here': dragHere,
-	'drag-scene': dragScene
+	'drag-scene': dragScene,
+	'drag-region': dragRegion
 };
 await runPhase(phases[phase]);
