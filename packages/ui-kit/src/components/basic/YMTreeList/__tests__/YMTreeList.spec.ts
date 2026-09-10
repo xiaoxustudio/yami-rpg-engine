@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeListStatics } from '../tree-api';
@@ -61,7 +62,7 @@ interface TreeListElement extends HTMLElement {
 }
 
 describe('YMTreeList', () => {
-	it('attach exposes full api on root element', () => {
+	it('attach exposes full api on root element', async () => {
 		const wrapper = mount(YMTreeList, { attrs: { id: 'tl1' } });
 		const el = wrapper.element as unknown as TreeListElement;
 		expect(el.classList.contains('tree-list')).toBe(true);
@@ -87,13 +88,15 @@ describe('YMTreeList', () => {
 		}
 	});
 
-	it('bind and update render nodes with indentation', () => {
+	it('bind and update render nodes with indentation', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.elements.count).toBe(4);
 		expect(el.querySelectorAll('.node-item').length).toBe(4);
 		const folder = el.elements[0];
@@ -103,104 +106,130 @@ describe('YMTreeList', () => {
 		expect(data[0].children[0].parent).toBe(data[0]);
 	});
 
-	it('select highlights element and read returns item', () => {
+	it('select highlights element and read returns item', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		el.select(data[1]);
+		await nextTick();
 		expect(el.read()).toBe(data[1]);
 		expect(data[1].element!.classList.contains('selected')).toBe(true);
 		el.unselect();
+		await nextTick();
 		expect(el.read()).toBe(null);
 		expect(data[1].element!.classList.contains('selected')).toBe(false);
 	});
 
-	it('select dispatches select event when enabled', () => {
+	it('select dispatches select event when enabled', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		let selected: unknown = null;
 		el.on('select', (e: Event & { value: unknown }) => (selected = e.value));
 		el.select(data[1]);
+		await nextTick();
 		expect(selected).toBe(data[1]);
 	});
 
-	it('expandSelection toggles folder expansion', () => {
+	it('expandSelection toggles folder expansion', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		el.select(data[0]);
+		await nextTick();
 		el.expandSelection();
+		await nextTick();
 		expect(data[0].expanded).toBe(false);
 		expect(el.elements.count).toBe(2);
 		el.expandSelection();
+		await nextTick();
 		expect(data[0].expanded).toBe(true);
 		expect(el.elements.count).toBe(4);
 	});
 
-	it('addNodeTo inserts node and expands ancestors', () => {
+	it('addNodeTo inserts node and expands ancestors', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const node = { id: 'new', name: 'New Node', class: 'file', children: [] };
 		el.addNodeTo(node, data[0].children[0]);
+		await nextTick();
 		expect(data[0].children[0].children).toContain(node);
 		expect(el.read()).toBe(node);
 	});
 
-	it('deleteNode removes node', () => {
+	it('deleteNode removes node', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		el.deleteNode(data[1]);
+		await nextTick();
 		expect(data).not.toContain(data[1]);
 		expect(el.elements.count).toBe(3);
 	});
 
-	it('searchNodes filters to matches', () => {
+	it('searchNodes filters to matches', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		el.searchNodes('Child');
+		await nextTick();
 		expect(el.display).toBe('search');
 		expect(el.searchResults.map((i: { name: string }) => i.name)).toEqual([
 			'Child A',
 			'Child B'
 		]);
 		el.searchNodes('');
+		await nextTick();
 		expect(el.display).toBe('normal');
 	});
 
-	it('restore undo create removes node', () => {
+	it('restore undo create removes node', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const node = { id: 'new', name: 'New Node', class: 'file', children: [] };
 		const response = { type: 'create', sItem: node, dItem: data[0], insertBefore: false };
 		el.restore('redo', response);
+		await nextTick();
 		expect(data[0].children).toContain(node);
 		el.restore('undo', response);
+		await nextTick();
 		expect(data[0].children).not.toContain(node);
 	});
 
@@ -210,12 +239,16 @@ describe('YMTreeList', () => {
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		el.renamable = true;
 		el.focus();
 		const item = data[1];
 		el.select(item);
+		await nextTick();
 		el.rename(item);
+		await nextTick();
 		const textBox = treeListStatics.textBox;
 		expect(textBox.parentNode).toBe(item.element!);
 		textBox.write('Renamed');
@@ -225,13 +258,15 @@ describe('YMTreeList', () => {
 		expect(item.element!.querySelector('.text-box')).toBe(null);
 	});
 
-	it('getItemByProperties finds nested node', () => {
+	it('getItemByProperties finds nested node', async () => {
 		const wrapper = mount(YMTreeList);
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const found = el.getItemByProperties({ id: 'child2' });
 		expect(found).toBe(data[0].children[1]);
 	});
@@ -254,7 +289,9 @@ describe('renderNodeExtras', () => {
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const folders = el.querySelectorAll('.tree-node-extras');
 		expect(folders.length).toBe(4);
 		expect(folders[0].querySelector('.extras-test')!.textContent).toBe('star');
@@ -274,9 +311,12 @@ describe('renderNodeExtras', () => {
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		renderCount = 0;
 		el.update();
+		await nextTick();
 		expect(renderCount).toBeGreaterThan(0);
 		wrapper.unmount();
 	});

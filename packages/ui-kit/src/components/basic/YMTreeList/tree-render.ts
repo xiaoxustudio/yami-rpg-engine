@@ -50,6 +50,8 @@ export interface TreeRenderState {
 	/** 行元素绑定（:ref 回调）后由引擎回写 */
 	itemClasses: WeakMap<TreeItem, Set<string>>;
 	rowElements: Map<string, NodeElement>;
+	/** key → 当前派生行（绑定回写 expando 字段用） */
+	rowData: Map<string, TreeRenderRow>;
 	keyMap: WeakMap<TreeItem, string>;
 	bump: () => void;
 }
@@ -77,6 +79,7 @@ export const createTreeRenderState = (): TreeRenderState => {
 		end,
 		itemClasses: new WeakMap<TreeItem, Set<string>>(),
 		rowElements: new Map<string, NodeElement>(),
+		rowData: new Map<string, TreeRenderRow>(),
 		keyMap: rowKeys,
 		bump: () => {
 			version.value += 1;
@@ -114,11 +117,14 @@ interface FlattenOptions {
 	parseName: (item: TreeItem) => string;
 	selections: TreeItem[];
 	hintItem: TreeItem | null;
+	/** 顶层项的 parent（legacy 为合成 root：children getter 指向 data） */
+	root: TreeItem | null;
 }
 
 /** 行派生：与旧 createIndentedItems/createFlatItems 逐点等价（含 parent 链与 childNoParent 防御） */
 export const flattenRows = (state: TreeRenderState, options: FlattenOptions): TreeRenderRow[] => {
-	const { display, data, searchResults, foldable, parseName, selections, hintItem } = options;
+	const { display, data, searchResults, foldable, parseName, selections, hintItem, root } =
+		options;
 	const out: TreeRenderRow[] = [];
 	const selectedSet = new Set<TreeItem>(selections);
 	const push = (item: TreeItem, indent: number): void => {
@@ -156,8 +162,10 @@ export const flattenRows = (state: TreeRenderState, options: FlattenOptions): Tr
 	if (display === 'search') {
 		for (const item of searchResults) push(item, 0);
 	} else if (data !== null) {
-		walk(data, null, 0);
+		walk(data, root, 0);
 	}
+	state.rowData.clear();
+	for (const row of out) state.rowData.set(row.key, row);
 	return out;
 };
 
@@ -185,7 +193,6 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 			Object.defineProperty(item, 'element', { configurable: true, value: element });
 		}
 		element.item = item;
-		element.indent = 0;
 		element.changed = false;
 		const folderMark = element.querySelector(':scope > .folder-mark') as HTMLElement | null;
 		const nodeIcon = element.querySelector(
@@ -197,19 +204,28 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 		element.nodeIcon = nodeIcon as HTMLElement;
 		element.extras = extras;
 		element.textNode = (textHost?.firstChild ?? null) as Text | null;
-		element.markVisible = folderMark !== null;
-		element.markIndent = folderMark === null ? 16 : 0;
-		element.textIndent = 0;
-		element.expanded = false;
+		// expando 字段与派生行对齐（旧实现里这些字段是渲染期的值缓存，消费方/测试会读）
+		const row = state.rowData.get(key);
+		if (row !== undefined) {
+			element.indent = row.indent;
+			element.textIndent = row.textIndent;
+			element.markIndent = row.textIndent - row.indent * 12;
+			element.markVisible = row.markVisible;
+			element.expanded = row.expanded;
+		} else {
+			element.indent = 0;
+			element.textIndent = 0;
+			element.markIndent = folderMark === null ? 16 : 0;
+			element.markVisible = folderMark !== null;
+			element.expanded = false;
+		}
 		state.rowElements.set(key, element);
 		return;
 	}
-	// 行被移除（折叠/移出窗口/删节点）
+	// 行被移除（折叠/移出窗口/删节点/卸载）：ref 回调收到 null 即代表该行已卸载
 	const current = state.rowElements.get(key);
-	if (current !== undefined && !current.isConnected) {
-		state.rowElements.delete(key);
-		if (item.element === current) {
-			delete item.element;
-		}
+	state.rowElements.delete(key);
+	if (current !== undefined && item.element === current) {
+		delete item.element;
 	}
 };

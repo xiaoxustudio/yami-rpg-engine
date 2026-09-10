@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { h, type VNode } from 'vue';
+import { h, nextTick, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
 
@@ -54,7 +54,9 @@ describe('TreeList nodeExtras（节点装饰 Vue 渲染回归保护）', () => {
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.querySelectorAll('.tree-node-extras').length).toBe(3);
 		const group = el.querySelector('.extras-group');
 		expect(group).toBeTruthy();
@@ -75,9 +77,12 @@ describe('TreeList nodeExtras（节点装饰 Vue 渲染回归保护）', () => {
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		(data[1] as ExtrasData & { key?: string }).key = 'mp';
 		el.update();
+		await nextTick();
 		const init = el.querySelector('.extras-init');
 		expect(init).toBeTruthy();
 		expect(init!.textContent).toBe(' = hp');

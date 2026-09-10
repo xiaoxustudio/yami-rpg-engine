@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { h, type VNode } from 'vue';
+import { h, nextTick, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
 
@@ -70,7 +70,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.querySelectorAll('.tree-node-icon').length).toBe(3);
 		expect(iconClasses(el)).toEqual(['icon-folder', 'icon-number', 'icon-string']);
 		wrapper.unmount();
@@ -104,9 +106,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		(data[1] as IconsData & { type?: string }).type = 'boolean';
 		el.update();
+		await nextTick();
 		expect(iconClasses(el)).toEqual(['icon-folder', 'icon-number', 'icon-boolean']);
 		wrapper.unmount();
 	});
@@ -129,7 +134,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(iconClasses(el)).toEqual(['icon-folder', 'icon-string', 'icon-string']);
 		wrapper.unmount();
 	});
@@ -165,7 +172,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const el = wrapper.element as unknown as IconsListEl;
 		mockHeight(el);
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(iconClasses(el)).toEqual(['icon-folder', 'icon-boolean', 'icon-object']);
 		wrapper.unmount();
 	});
@@ -187,7 +196,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		};
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.querySelectorAll('.tree-node-icon').length).toBe(0);
 		expect(el.querySelectorAll('.node-item .node-icon').length).toBe(3);
 		expect(el.querySelectorAll('.node-item .node-icon.icon-custom').length).toBe(3);
@@ -212,7 +223,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.querySelectorAll('.tree-node-icon').length).toBe(3);
 		expect(iconClasses(el)).toEqual(['icon-folder', 'icon-string', 'icon-string']);
 		wrapper.unmount();
@@ -316,7 +329,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const el = wrapper.element as unknown as IconsListEl;
 		mockHeight(el);
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const icons = Array.from(
 			el.querySelectorAll('.tree-node-icon .node-icon')
 		) as HTMLElement[];
@@ -366,9 +381,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const el = wrapper.element as unknown as IconsListEl;
 		mockHeight(el);
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		(data[0] as { teamId: string }).teamId = 't2';
 		el.update();
+		await nextTick();
 		const icon = el.querySelector('.tree-node-icon .node-icon') as HTMLElement;
 		expect(icon.style.color).toBe('rgb(0, 255, 0)');
 		wrapper.unmount();
@@ -404,7 +422,9 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const el = wrapper.element as unknown as IconsListEl;
 		mockHeight(el);
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		const icons = Array.from(
 			el.querySelectorAll('.tree-node-icon .node-icon')
 		) as HTMLElement[];
@@ -443,9 +463,12 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 		const el = wrapper.element as unknown as IconsListEl;
 		mockHeight(el);
 		el.bind(() => data);
+		await nextTick();
 		el.update();
+		await nextTick();
 		(data[0] as { color: string }).color = '00ff00ff';
 		el.update();
+		await nextTick();
 		const icon = el.querySelector('.tree-node-icon .node-icon') as HTMLElement;
 		expect(icon.style.backgroundColor).toBe('rgb(0, 255, 0)');
 		wrapper.unmount();
@@ -489,7 +512,11 @@ describe('TreeList nodeIconRenderer（节点图标 Vue 渲染回归保护）', (
 			const el = wrapper.element as unknown as IconsListEl;
 			mockHeight(el);
 			el.bind(() => data);
+			// oxlint-disable-next-line no-await-in-loop
+			await nextTick();
 			el.update();
+			// oxlint-disable-next-line no-await-in-loop
+			await nextTick();
 			const icons = el.querySelectorAll('.tree-node-icon .node-icon');
 			expect(icons.length).toBe(2);
 			expect(icons[0].className).toContain('icon-folder');

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, shallowRef, watch } from 'vue';
 import { createTreeListApi } from './tree-api';
 import type { TreeRenderRow, TreeRenderState } from './tree-render';
 
@@ -75,6 +75,14 @@ onMounted(() => {
 	}
 });
 
+// patch 之后：elements shim 与派生内容（updaters/extras/icon）都以真实绑定结果为准
+onUpdated(() => {
+	const list = listOf();
+	if (list?.renderState === undefined) return;
+	list.syncElementsShim?.();
+	list.applyRowUpdaters?.();
+});
+
 onBeforeUnmount(() => {
 	const el = root.value as TreeListRootElement | null;
 	if (!el) return;
@@ -108,11 +116,9 @@ onBeforeUnmount(() => {
 					:style="{ visibility: row.markVisible ? 'inherit' : 'hidden' }"
 				/>
 				<span
-					v-if="props.renderNodeIcon"
-					class="tree-node-icon"
+					:class="props.renderNodeIcon ? 'tree-node-icon' : 'tree-node-icon-placeholder'"
 					:ref="(el) => onIconRef(row.item, el)"
 				/>
-				<span v-else :class="row.iconClass" />
 				<span class="node-text">{{ row.name }}</span>
 				<div
 					v-if="props.renderNodeExtras"

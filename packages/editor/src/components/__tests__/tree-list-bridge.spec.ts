@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
 
@@ -24,6 +25,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 		expect(el.selectEventEnabled).toBe(true);
 		const item = { name: 'ItemA', children: [] };
 		el.select(item);
+		await nextTick();
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('select');
 		expect(emitted).toBeTruthy();
@@ -67,6 +69,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 		const el = wrapper.element as unknown as TreeListBridgeEl;
 		const item = { name: 'A', children: [] };
 		el.bind(() => [item]);
+		await nextTick();
 		el.initialize();
 		const record = new Event('record');
 		(
@@ -91,6 +94,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 		const el = wrapper.element as unknown as TreeListBridgeEl;
 		const item = { name: 'B', children: [] };
 		el.bind(() => [item]);
+		await nextTick();
 		el.initialize();
 		el.open(item);
 		await wrapper.vm.$nextTick();

@@ -44,7 +44,7 @@ const treeCore = createTreeCore();
 
 // 步骤 2 渲染开关（docs/tree-list-vfor-plan.md）：默认沿用命令式渲染，
 // 打开后行由 YMTreeList.vue 的 v-for 渲染（数据派生 + 虚拟窗口 + element 回写桥）。
-let vueRowRender = false;
+let vueRowRender = true;
 
 export const isVueRowRenderEnabled = (): boolean => vueRowRender;
 
@@ -663,11 +663,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 		if (dList) {
 			dList.splice(dIndex, 0, sItem);
-			this.unselect();
-
+			// 步骤 2：unselect() 会触发派生重算，新节点必须先把 parent 建好（否则派生抛 No parent!）
 			if (sItem.parent === undefined) {
 				treeListStatics.createParents([sItem], null);
 			}
+			this.unselect();
 
 			let item = dItem!;
 			while (item.parent !== undefined) {
@@ -1242,6 +1242,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {
+		// 步骤 2：v-for 路径下 DOM 归 Vue 管理，锚定占位由模板 spacer 承担，这里不再动 DOM
+		if (renderStateOf(this) !== undefined) return;
 		const padding = treeListStatics.padding;
 		let count = (this.elements as CommonListLike['elements']).count;
 		if (getListConfig(this).padded) count++;
@@ -1706,7 +1708,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 							foldable: getListConfig(self).foldable === true,
 							parseName: (item: TreeItem) => self.parseName(item),
 							selections: (self.selections ?? []) as TreeItem[],
-							hintItem: self.dragging?.hint?.target?.item ?? null
+							hintItem: self.dragging?.hint?.target?.item ?? null,
+							root: (self.root ?? null) as TreeItem | null
 						});
 			state.rows.value = rows;
 			state.bump();
@@ -1729,7 +1732,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			elements.end = end;
 			for (let i = 0; i < rows.length; i++) {
 				const el = state.rowElements.get(rows[i].key);
-				elements[i] = el !== undefined && el.isConnected ? el : (undefined as never);
+				elements[i] = el !== undefined ? el : (undefined as never);
 			}
 			commonListClearElements(self as unknown as CommonListLike, rows.length);
 		};
@@ -1793,12 +1796,25 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			for (const el of state.rowElements.values()) {
 				const item = el.item;
 				if (item === undefined) continue;
+				// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
+				if (typeof self.renderNodeIcon === 'function') {
+					if (el.nodeIcon) self.renderNodeIcon(item, el.nodeIcon);
+				} else if (
+					el.nodeIcon === undefined ||
+					el.nodeIcon === null ||
+					el.nodeIcon.classList?.contains('tree-node-icon-placeholder')
+				) {
+					const created = self.createIcon(item) as HTMLElement;
+					if (el.nodeIcon != null && el.nodeIcon.parentNode === el) {
+						el.nodeIcon.replaceWith(created);
+					} else {
+						el.appendChild(created);
+					}
+					el.nodeIcon = created;
+				}
 				for (const updater of updaters) updater(item);
 				if (typeof self.renderNodeExtras === 'function' && el.extras) {
 					self.renderNodeExtras(item, el.extras);
-				}
-				if (typeof self.renderNodeIcon === 'function' && el.nodeIcon) {
-					self.renderNodeIcon(item, el.nodeIcon);
 				}
 			}
 		};
