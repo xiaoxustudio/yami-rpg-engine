@@ -299,6 +299,130 @@ describe('M3b-2b Teleport 模式端到端（默认关，YM_LAYOUT_VUE_RENDER=tel
 		expect(mounts.value).toBe(VALUES.length);
 	});
 
+	it('M4-2：跨组搬空 drop 后按 DOM 回写 scheme 并重挂载组树（命令式变更与 Vue 树重新一致）', async () => {
+		const paletteHost = document.createElement('div');
+		document.body.append(paletteHost);
+		paletteWrapper = mount(Palette, { props: { values: VALUES }, attachTo: paletteHost });
+		pairItems(VALUES);
+
+		const workspaceA = document.createElement('div');
+		workspaceA.className = 'page-frame';
+		workspaceA.id = 'workspace-a';
+		workspaceA.setAttribute('value', 'directory');
+		document.body.append(workspaceA);
+
+		setLayoutVueRenderMode(2);
+		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
+		const root = workspaceA.firstElementChild as HTMLElement;
+		const leaves = leavesOf(root);
+		expect(leaves).toHaveLength(2);
+
+		// 伪造跨组搬空 drop：leaf1（仅 scene）的页签 append 到 leaf0
+		const store = getLayoutStore();
+		const sceneFrame = frameOf('scene');
+		store.dragging = {
+			group: leaves[1],
+			target: tabOf('scene'),
+			hint: { classList: { contains: () => false } },
+			location: { trigger: leaves[0].nav, target: leaves[0], direction: 'inside' },
+			navs: [],
+			regions: []
+		} as never;
+		Layout.navDrop!({ stopPropagation: () => {}, target: leaves[0].nav } as never);
+		store.dragging = null;
+		// drop 的命令式效果为同步（组树折叠）；scheme 回写 + Vue 重挂载在
+		// rebuildVueLayoutFromDom（已登记到 awaitVueLayoutLoad）中异步完成。
+		expect(
+			Array.from(workspaceA.children).filter((child) => child.classList.contains('group'))
+		).toHaveLength(1);
+
+		await awaitVueLayoutLoad();
+		await nextTick();
+
+		// 组树按 DOM 重挂载：收敛为单叶，页/页签身份不变
+		expect(
+			Array.from(workspaceA.children).filter((child) => child.classList.contains('group'))
+		).toHaveLength(1);
+		const nextLeaves = leavesOf(workspaceA.firstElementChild as HTMLElement);
+		expect(nextLeaves).toHaveLength(1);
+		expect(valuesOf(nextLeaves[0].nav, 'nav-item')).toEqual(['project', 'inspector', 'scene']);
+		expect(valuesOf(nextLeaves[0].manager, 'page-frame')).toEqual([
+			'project',
+			'inspector',
+			'scene'
+		]);
+		expect(frameOf('scene')).toBe(sceneFrame);
+		expect(frameOf('scene').isConnected).toBe(true);
+		expect(frameOf('scene').parentNode).toBe(nextLeaves[0].manager);
+		expect(tabOf('scene').parentNode).toBe(nextLeaves[0].nav);
+
+		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定
+		expect(Layout.layout!.directory).toEqual({
+			end: 1,
+			tabs: ['project', 'inspector', 'scene']
+		});
+		expect((workspaceA as HTMLElement & { scheme?: unknown }).scheme).toBe(
+			Layout.layout!.directory
+		);
+
+		// 归属重发布 + 被拖页签激活
+		expect(getLayoutStore().tabTargets.scene).toBe(nextLeaves[0].nav);
+		expect(getLayoutStore().pageTargets.scene).toBe(nextLeaves[0].manager);
+		expect(selectedOf(nextLeaves[0].nav)).toBe('scene');
+		expect(visibleOf(nextLeaves[0].manager)).toEqual(['scene']);
+		expect(mounts.value).toBe(VALUES.length);
+	});
+
+	it('M4-2：宿主页残留 palette 空壳（#layout-content）时组根发现与拖拽注册仍可用', async () => {
+		const paletteHost = document.createElement('div');
+		document.body.append(paletteHost);
+		paletteWrapper = mount(Palette, { props: { values: VALUES }, attachTo: paletteHost });
+		pairItems(VALUES);
+
+		const workspaceA = document.createElement('div');
+		workspaceA.className = 'page-frame';
+		workspaceA.id = 'workspace-a';
+		workspaceA.setAttribute('value', 'directory');
+		// 真机实况：LayoutPaletteHost 只搬 NavBar/PageManager，盒子残留在宿主页首位
+		const residual = document.createElement('div');
+		residual.className = 'box';
+		residual.id = 'layout-content';
+		workspaceA.append(residual);
+		document.body.append(workspaceA);
+
+		setLayoutVueRenderMode(2);
+		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
+
+		const root = Array.from(workspaceA.children).find((child) =>
+			child.classList.contains('group')
+		) as HTMLElement;
+		expect(root).toBeTruthy();
+		expect(workspaceA.firstElementChild).toBe(residual);
+		const leaves = leavesOf(root);
+		expect(leaves).toHaveLength(2);
+		expect(frameOf('project').parentNode).toBe(leaves[0].manager);
+		expect(valuesOf(leaves[0].nav, 'nav-item')).toEqual(['project', 'inspector']);
+
+		// 组发现：不因空壳占首子而丢失叶子（拖拽 drop 落点依赖）
+		expect(Layout.getKeyGroups!()).toHaveLength(2);
+
+		// 拖拽可用性：navDragstart 为每个组注册 region，dragend 清理
+		const head = document.createElement('div');
+		document.body.append(head);
+		Layout.heads = [head];
+		const event = {
+			dataTransfer: { setDragImage: () => {} },
+			preventDefault: () => {},
+			clientX: 0,
+			clientY: 0
+		};
+		Layout.navDragstart!.call(leaves[0].nav, event as never);
+		expect(workspaceA.querySelectorAll('group-region')).toHaveLength(2);
+		Layout.navDragend!(event as never);
+		expect(workspaceA.querySelectorAll('group-region')).toHaveLength(0);
+		expect(mounts.value).toBe(VALUES.length);
+	});
+
 	it('默认关时不受影响：命令式首载照常（对照组）', async () => {
 		const paletteHost = document.createElement('div');
 		document.body.append(paletteHost);

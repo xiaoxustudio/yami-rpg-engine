@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	activateLayoutTab,
+	collapseRedundantSplits,
 	findGroup,
 	groupActiveTab,
 	leavesOf,
@@ -279,5 +280,53 @@ describe('moveTabWithin 同组顺序（M4 navDrop 数据层）', () => {
 		]);
 		expect(moveTabWithin(tabs, 'missing', null)).toEqual(tabs);
 		expect(moveTabWithin(tabs, 'missing', 'project')).toEqual(tabs);
+	});
+});
+
+describe('collapseRedundantSplits 冗余容器规整（M4-2 Teleport 折叠）', () => {
+	it('单子组 split 递归提升并继承父 end', () => {
+		const root = parseLayoutScheme({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{
+					end: 0.5,
+					split: 'vertical',
+					children: [{ end: 1, tabs: ['project', 'inspector', 'scene'] }]
+				}
+			]
+		});
+		const out = collapseRedundantSplits(root);
+		expect(out).toMatchObject({
+			kind: 'group',
+			end: 1,
+			tabs: ['project', 'inspector', 'scene']
+		});
+		expect(toLayoutScheme(out)).toEqual({
+			end: 1,
+			tabs: ['project', 'inspector', 'scene']
+		});
+	});
+
+	it('多子组 split 与叶子原样保留结构', () => {
+		const root = parseLayoutScheme({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.5, tabs: ['a'] },
+				{ end: 1, tabs: ['b'] }
+			]
+		});
+		const out = collapseRedundantSplits(root);
+		expect(toLayoutScheme(out)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.5, tabs: ['a'] },
+				{ end: 1, tabs: ['b'] }
+			]
+		});
+		const leaf = parseLayoutScheme({ end: 1, tabs: ['only'] });
+		expect(collapseRedundantSplits(leaf)).toBe(leaf);
 	});
 });

@@ -92,7 +92,14 @@ export async function mountVueGroupTree(
 	render(vnode, host);
 	await nextTick();
 
-	const root = host.firstElementChild as HTMLElement | null;
+	// M4-2：宿主页可能残留 palette 空壳（#layout-content 盒子等，teleport 模式下
+	// LayoutPaletteHost 只搬 NavBar/PageManager），因此以本次渲染产物 vnode.el 为根，
+	// 而不是假定 host.firstElementChild 就是组根。
+	const rendered = (vnode.el as HTMLElement | null) ?? null;
+	const root =
+		rendered !== null && isGroup(rendered)
+			? rendered
+			: ((host.firstElementChild as HTMLElement | null) ?? null);
 	if (root === null || !isGroup(root)) {
 		throw new Error('[mountVueGroupTree] LayoutTreeView 未在宿主内渲染出 group 根');
 	}

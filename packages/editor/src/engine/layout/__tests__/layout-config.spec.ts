@@ -54,6 +54,26 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		});
 		expect(Object.keys(config.layout ?? {})).toEqual(['directory']);
 	});
+
+	it('M4-2：退化（无页签）树不覆盖既有 layout —— 半挂载不写坏 config', () => {
+		const fixture = buildLayoutFixture();
+		registerLayout(fixture);
+		switchWorkspace(fixture, 'directory');
+		mountScheme('directory', DIRECTORY_SCHEME);
+
+		// 模拟半挂载/空树：宿主只剩一个空 group（无 nav/manager 页签）
+		const host = fixture.directory;
+		host.innerHTML = '';
+		const empty = document.createElement('div');
+		empty.className = 'group';
+		host.append(empty);
+		(fixture.directory as HTMLElement & { scheme?: unknown }).scheme = DIRECTORY_SCHEME;
+
+		const config: ConfigShape = {};
+		Layout.saveToConfig!(config);
+
+		expect(config.layout?.directory).toEqual(DIRECTORY_SCHEME);
+	});
 });
 
 describe('switchLayout 缓存失效与重建', () => {

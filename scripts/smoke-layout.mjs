@@ -80,28 +80,18 @@ async function evaluate(send, expression) {
 	return result.result?.value;
 }
 
-const withTimeout = (p, ms, label) =>
-	Promise.race([
-		p,
-		new Promise((_, rej) => setTimeout(() => rej(new Error('timeout: ' + label)), ms))
-	]);
-
+// 等待一律走「Node 侧 CDP 轮询」：Chromium 会节流隐藏窗口的页内 setTimeout/setInterval，
+// 页内轮询会假超时（2026-09-09 实测：mode2 首载 33s，页内 30s 轮询先耗尽）。
 const waitForSelector = async (send, selector, ms = 15000) => {
-	await withTimeout(
-		evaluate(
-			send,
-			`new Promise((r) => {
-				if (document.querySelector(${JSON.stringify(selector)})) return r(true);
-				let n = 0;
-				const iv = setInterval(() => {
-					if (document.querySelector(${JSON.stringify(selector)})) { clearInterval(iv); r(true); }
-					else if (++n > ${Math.ceil(ms / 100)}) { clearInterval(iv); r(false); }
-				}, 100);
-			})`
-		),
-		ms + 5000,
-		'wait ' + selector
-	);
+	const deadline = Date.now() + ms;
+	for (;;) {
+		// oxlint-disable-next-line no-await-in-loop
+		const found = await evaluate(send, `!!document.querySelector(${JSON.stringify(selector)})`);
+		if (found) return true;
+		if (Date.now() >= deadline) return false;
+		// oxlint-disable-next-line no-await-in-loop
+		await sleep(250);
+	}
 };
 
 const out = (name, value) => {
@@ -115,7 +105,7 @@ const SNAPSHOT = `(() => {
 	const report = { home: null, workspace: null, leaves: [] };
 	if (!ws) return report;
 	report.home = !!document.querySelector('#workspace-page-manager > .page-frame[value="home"]');
-	const activeFrame = [...ws.children].find((c) => c.classList.contains('visible'));
+	const activeFrame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 	report.workspace = activeFrame?.getAttribute('value') ?? null;
 	const root = activeFrame ? [...activeFrame.children].find((c) => c.classList.contains('group')) : null;
 	if (!root) return report;
@@ -145,31 +135,41 @@ const SNAPSHOT = `(() => {
 })()`;
 
 const waitActive = async (send, workspace, ms = 15000) => {
-	await withTimeout(
-		evaluate(
-			send,
-			`new Promise((r) => {
-				let n = 0;
-				const check = () => {
-					const ws = document.getElementById('workspace-page-manager');
-					const f = ws && [...ws.children].find((c) => c.classList.contains('visible'));
-					if (f?.getAttribute('value') === ${JSON.stringify(workspace)}) return r(true);
-					if (++n > ${Math.ceil(ms / 100)}) return r(false);
-					setTimeout(check, 100);
-				};
-				check();
-			})`
-		),
-		ms + 5000,
-		'active ' + workspace
-	);
+	const selector = `.page-frame[value="${workspace}"].visible`;
+	const deadline = Date.now() + ms;
+	for (;;) {
+		// oxlint-disable-next-line no-await-in-loop
+		const ok = await evaluate(send, `!!document.querySelector(${JSON.stringify(selector)})`);
+		if (ok) return true;
+		if (Date.now() >= deadline) return false;
+		// oxlint-disable-next-line no-await-in-loop
+		await sleep(250);
+	}
+};
+
+// 等待任一非 home 工作区激活，并返回其 value
+const waitForActiveWorkspace = async (send, ms = 15000) => {
+	const expression = `(() => {
+		const ws = document.getElementById('workspace-page-manager');
+		const frame = ws && [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+		return frame ? frame.getAttribute('value') : null;
+	})()`;
+	const deadline = Date.now() + ms;
+	for (;;) {
+		// oxlint-disable-next-line no-await-in-loop
+		const value = await evaluate(send, expression);
+		if (value) return value;
+		if (Date.now() >= deadline) return null;
+		// oxlint-disable-next-line no-await-in-loop
+		await sleep(250);
+	}
 };
 
 async function openRecentProject(send) {
 	await waitForSelector(send, '#home-recent-list .home-recent-item', 25000);
 	let ok = false;
 	let lastState = null;
-	for (let attempt = 0; attempt < 3 && !ok; attempt++) {
+	for (let attempt = 0; attempt < 2 && !ok; attempt++) {
 		const clicked = await evaluate(
 			send,
 			`(() => {
@@ -184,14 +184,15 @@ async function openRecentProject(send) {
 			})()`
 		);
 		await sleep(3000);
-		ok = await waitActive(send, 'directory', 12000);
+		// mode2（Teleport）首载含 Vue 组树挂载 + 整壳 Teleport 落位，实测可达 30s 量级
+		ok = await waitActive(send, 'directory', 90000);
 		lastState = clicked;
 		if (!ok) {
 			log('open attempt', attempt, 'failed, state:', await evaluate(
 				send,
 				`(() => {
 					const ws = document.getElementById('workspace-page-manager');
-					const active = ws ? [...ws.children].find((c) => c.classList.contains('visible')) : null;
+					const active = ws ? [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home') : null;
 					return active?.getAttribute('value') ?? null;
 				})()`
 			));
@@ -244,7 +245,7 @@ async function openProject() {
 		send,
 		`(() => {
 			const ws = document.getElementById('workspace-page-manager');
-			const activeFrame = [...ws.children].find((c) => c.classList.contains('visible'));
+			const activeFrame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 			return {
 				workspace: activeFrame?.getAttribute('value') ?? null,
 				groups: document.querySelectorAll('#workspace-page-manager .group').length,
@@ -349,7 +350,7 @@ async function mode0Control() {
 async function dragReorderPhase() {
 	const { ws, send } = await connect();
 	await send('Runtime.enable');
-	await waitActive(send, 'directory', 20000);
+	await waitForActiveWorkspace(send, 20000);
 	const probe = async (expression) => {
 		const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
 		if (r.exceptionDetails)
@@ -361,16 +362,18 @@ async function dragReorderPhase() {
 	};
 	const before = await probe(`(() => {
 		const ws = document.getElementById('workspace-page-manager');
-		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
 		return {
 			workspace: frame?.getAttribute('value') ?? null,
 			navs: navs.map((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value')))
 		};
 	})()`);
-	const drag = await probe(`(() => {
+	let drag;
+	try {
+		drag = await probe(`(() => {
 		const ws = document.getElementById('workspace-page-manager');
-		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 		const navs = () => frame ? [...frame.querySelectorAll('.nav-bar')] : [];
 		const values = (n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'));
 		const log = [];
@@ -393,6 +396,7 @@ async function dragReorderPhase() {
 			const a = navs()[0];
 			const b = navs()[1];
 			const item = a.querySelector('.nav-item');
+			if (!item) return { error: 'source leaf has no nav-item', navs: navs().map(values), log };
 			log.push('cross:' + item.getAttribute('value') + '->' + values(b).join(','));
 			fire(item, 'dragstart', dt);
 			fire(b, 'dragenter', dt);
@@ -407,6 +411,7 @@ async function dragReorderPhase() {
 		const list = values(multi);
 		const lastItem = multi.querySelector('.nav-item[value="' + list[list.length - 1] + '"]');
 		const firstItem = multi.querySelector('.nav-item[value="' + list[0] + '"]');
+		if (!lastItem || !firstItem) return { error: 'merged leaf items missing', navs: navs().map(values), log };
 		fire(lastItem, 'dragstart', dt);
 		fire(firstItem, 'dragenter', dt);
 		fire(firstItem, 'dragover', dt);
@@ -414,10 +419,18 @@ async function dragReorderPhase() {
 		cleanup();
 		return { merged, log, dragValue: list[list.length - 1], anchor: list[0] };
 	})()`);
+	} catch (error) {
+		drag = { error: String(error?.message ?? error) };
+	}
 	await sleep(500);
+	if (drag.error) {
+		out('drag', { before, drag });
+		ws.close();
+		return;
+	}
 	const after = await probe(`(() => {
 		const ws = document.getElementById('workspace-page-manager');
-		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
 		const root = frame ? frame.querySelector(':scope > .group, .group') : null;
 		return {
@@ -431,7 +444,7 @@ async function dragReorderPhase() {
 	// 完整性探针：拖拽后切页签往返仍正常
 	const integrity = await probe(`(() => {
 		const ws = document.getElementById('workspace-page-manager');
-		const frame = [...ws.children].find((c) => c.classList.contains('visible'));
+		const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
 		const navs = frame ? [...frame.querySelectorAll('.nav-bar')] : [];
 		const leafNav = navs.find((n) => [...n.children].filter((c) => c.classList.contains('nav-item')).length >= 2) ?? navs[0];
 		const items = [...leafNav.children].filter((c) => c.classList.contains('nav-item'));
@@ -484,6 +497,16 @@ async function dragHere() {
 	await dragReorderPhase();
 }
 
+// 切到 scene 工作区后跑拖拽探针（directory 的持久化 scheme 可能为空时用）
+async function dragScene() {
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	await evaluate(send, `document.getElementById('workspace-page-manager').switch('scene')`);
+	await waitActive(send, 'scene', 30000);
+	ws.close();
+	await dragReorderPhase();
+}
+
 const phases = {
 	debug,
 	'open-project': openProject,
@@ -492,6 +515,7 @@ const phases = {
 	'mode0-control': mode0Control,
 	'drag-mode0': dragMode0,
 	'drag-mode2': dragMode2,
-	'drag-here': dragHere
+	'drag-here': dragHere,
+	'drag-scene': dragScene
 };
 await runPhase(phases[phase]);

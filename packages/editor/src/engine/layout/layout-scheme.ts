@@ -206,6 +206,19 @@ export function moveLayoutTab(
 	}));
 }
 
+// M4-2（docs/layout-vue-plan.md M4）：规整冗余容器。
+// Teleport 组树不渲染容器 border，命令式「源组搬空折叠」后容器可能只剩单个子组
+// （命令式模式的 flatten 依赖 border 子节点计数），此处按同一收敛语义提升单子组并继承父 end。
+export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
+	const walk = (node: LayoutTreeNode): LayoutTreeNode => {
+		if (node.kind === 'group') return node;
+		const children = node.children.map(walk);
+		if (children.length === 1) return { ...children[0], end: node.end };
+		return { ...node, children };
+	};
+	return walk(root);
+}
+
 // M4（docs/layout-vue-plan.md M4）：同组内页签顺序移动（数据先行）。
 // 与现状 navDrop 的 DOM 语义等价：先移除该页签，anchor=null 视为 append 到末尾，
 // 否则插到 anchor 页签（移除后）所在位置之前；anchor 不存在时回退 append。
