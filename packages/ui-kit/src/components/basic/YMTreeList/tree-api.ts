@@ -433,17 +433,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	updateItemName: function (this: any, item: TreeItem): void {
-		if (item?.element?.textNode) {
-			const element = item.element;
-			const text = element.textNode!;
-			const last = text.nodeValue;
+		// 步骤 5：行文本由派生层渲染 —— 名称变更触发重派生（直写 textNode 会被 patch 覆盖）
+		const last = item?.name;
+		this.syncRenderRows();
+		if (this.display === 'search') {
+			const keyword = this.keyword;
 			const name = this.parseName(item);
-			text.nodeValue = name;
-			if (this.display === 'search') {
-				const keyword = this.keyword;
-				if (keyword!.test(last) || keyword!.test(name)) {
-					this.searchNodes(this.keyword);
-				}
+			if (keyword!.test(last) || keyword!.test(name)) {
+				this.searchNodes(this.keyword);
 			}
 		}
 	},

@@ -171,6 +171,30 @@ export const refreshLayoutTargets = (): void => {
 	syncPageTargets(Layout.manager);
 };
 
+// M5-c：palette 显式登记（LayoutPanel 拥有 palette 节点，装载前一次性登记，
+// 取代「按 DOM 形态猜测 palette 位置」的双形态发现；DOM 发现降级为缺失项兜底）。
+export interface RegisteredLayoutItem {
+	value: string;
+	nav?: HTMLElement;
+	page?: HTMLElement;
+}
+
+const registeredLayoutItems = new Map<string, RegisteredLayoutItem>();
+
+export const registerLayoutItems = (entries: RegisteredLayoutItem[]): void => {
+	for (const entry of entries) {
+		if (entry.value === '') continue;
+		const current = registeredLayoutItems.get(entry.value) ?? { value: entry.value };
+		if (entry.nav !== undefined) current.nav = entry.nav;
+		if (entry.page !== undefined) current.page = entry.page;
+		registeredLayoutItems.set(entry.value, current);
+	}
+};
+
+export const resetRegisteredLayoutItems = (): void => {
+	registeredLayoutItems.clear();
+};
+
 // 收敛点后用当前 DOM 刷新运行时镜像（结构 + end/dp 比例的单一数据副本）
 const syncLayoutMirror = (page: HTMLElement | null | undefined): void => {
 	if (!page) return;
@@ -384,21 +408,36 @@ Layout.initialize = function () {
 	const nav = $('#layout-nav');
 	const manager = $('#layout-page-manager');
 	const items = (this.items = {} as LayoutItems);
-	// M5-a：teleport 模式下 palette 整壳可能已被搬到叶子宿主，palette 容器会空；
-	// 此时回退到全文档扫描（页签唯一、页带 id），保证 items/配对在两种形态下都成立。
+	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）；
+	// DOM 发现（palette 容器子节点 → 全文档回退）仅作登记缺失项的兜底，
+	// 保证 fixture/手工 DOM 与真机两种形态都能成全 items/配对。
 	const isElement = (node: Node): boolean => node.nodeType === 1;
 	const paletteNavs = Array.from(nav?.childNodes ?? []).filter(isElement) as HTMLElement[];
 	const palettePages = Array.from(manager?.childNodes ?? []).filter(isElement) as HTMLElement[];
-	const navItems =
+	const domNavs =
 		paletteNavs.length !== 0
 			? paletteNavs
 			: (Array.from(document.querySelectorAll('.nav-item[value]')) as HTMLElement[]);
-	const pageFrames =
+	const domPages =
 		palettePages.length !== 0
 			? palettePages
 			: (Array.from(document.querySelectorAll('.page-frame[value]')) as HTMLElement[]).filter(
 					(frame) => frame.id !== '' || frame.closest('#layout-page-manager') !== null
 				);
+	const navItems: HTMLElement[] = [];
+	const pageFrames: HTMLElement[] = [];
+	const seenValues = new Set<string>();
+	for (const entry of registeredLayoutItems.values()) {
+		if (entry.nav !== undefined) navItems.push(entry.nav);
+		if (entry.page !== undefined) pageFrames.push(entry.page);
+		if (entry.value !== undefined) seenValues.add(entry.value);
+	}
+	for (const node of [...domNavs, ...domPages]) {
+		const value = node.getAttribute('value');
+		if (value !== null && seenValues.has(value)) continue;
+		if (node.classList.contains('nav-item')) navItems.push(node);
+		else pageFrames.push(node);
+	}
 	for (const item of navItems) {
 		const key = item.getAttribute('value');
 		item.draggable = true;

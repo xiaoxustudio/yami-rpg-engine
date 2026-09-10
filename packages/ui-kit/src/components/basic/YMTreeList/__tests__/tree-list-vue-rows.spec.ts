@@ -174,4 +174,17 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		expect(el.querySelectorAll('.node-item[data-decorated="yes"]')).toHaveLength(4);
 		wrapper.unmount();
 	});
+
+	it('重命名后派生行文本立即刷新（updateItemName 触发重派生，非直写 textNode）', async () => {
+		const data = makeData();
+		const { wrapper, el } = await mountList(data);
+		expect(el.querySelectorAll('.node-item')[1].textContent?.trim()).toBe('Child 1');
+		(el as unknown as { renameNode: (item: unknown, name: string) => void }).renameNode(
+			data[0].children![0],
+			'Child 1 renamed'
+		);
+		await nextTick();
+		expect(el.querySelectorAll('.node-item')[1].textContent?.trim()).toBe('Child 1 renamed');
+		wrapper.unmount();
+	});
 });

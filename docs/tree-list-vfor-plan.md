@@ -297,6 +297,9 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 - 删除 `elements` shim、`item.element` defineProperty、`tree-core.deleteCaches` 中 element 分支、NodeElement 类型；
 - TreeItem 回归纯数据（parent 链保留或同样收口为显式 API，另行评估）。
 
+> **真机验证发现并修复（2026-09-09）**：`updateItemName` 仍按旧语义直写 `element.textNode`，派生行不会重算 → **重命名后行文本不刷新**（jsdom 金标准未覆盖该路径）。已改为「名称变更即 `syncRenderRows()` 重派生」，新增 `tree-list-vue-rows.spec` 回归用例；真机 F3 打开全局变量窗口后重命名，行文本正确变为 `RenamedVar`（数据 `read().name` 同步）。
+> **真机窗口冒烟（自动可达部分）**：用 CDP 真实按键（`Input.dispatchKeyEvent`）触发加速键可打开窗口——`F3`（全局变量）已验证：`#variable-list` 渲染 **20 行真实数据**（`.node-text` 真实名称、`tree-node-icon` 自定义图标、4 个折叠标记、spacer 就位）；交互链路验证通过：点击选中（`selected` 落位）→ 点折叠标记 20→16 行（`expanded` 4→3）→ 再展开 20 行且选中项保留 → F2 重命名生效。其余窗口缺少可达加速键（或需场景/页面上下文），仍留人工冒烟。
+
 ### 步骤间回归闸门
 
 每步：`pnpm test`（ui-kit + editor 全量）+ 冒烟清单 + 大数据性能对比（1000 节点展开/折叠/滚动帧时间，阈值：不劣于现状 10%）。

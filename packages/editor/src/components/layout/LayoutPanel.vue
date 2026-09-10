@@ -19,7 +19,7 @@
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
 			<LayoutPaletteHost>
-				<NavBar id="layout-nav">
+				<NavBar id="layout-nav" ref="paletteNavEl">
 					<PaletteNode value="project" source="tab">
 					<div class="nav-item" value="project">
 						<div class="nav-icon">&#xf07b;</div>
@@ -93,7 +93,7 @@
 					</div>
 					</PaletteNode>
 				</NavBar>
-				<PageManager id="layout-page-manager">
+				<PageManager id="layout-page-manager" ref="paletteManagerEl">
 					<PaletteNode value="project" source="page">
 					<div class="page-frame" id="project" value="project">
 						<div class="file-browser" id="project-browser"></div>
@@ -884,6 +884,7 @@ import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { registerLayoutItems } from '@app/engine/layout/layout.ts';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -1367,6 +1368,9 @@ const particleNodeIcon = (item: unknown, container: HTMLElement): VNode[] => {
 const dirs = ref<string[]>([]);
 const direction = ref(-1);
 const dirListEl = ref<HTMLElement | null>(null);
+// M5-c：palette 容器 ref（显式登记 items 用）
+const paletteNavEl = ref<HTMLElement | null>(null);
+const paletteManagerEl = ref<HTMLElement | null>(null);
 
 const animation = getAnimationStore();
 
@@ -1408,6 +1412,25 @@ onMounted(() => {
 		getParticleStore().initialize();
 		getSceneStore().initialize();
 		getAnimationStore().initialize();
+		// M5-c：palette 显式登记（此时 palette 节点仍在 palette 宿主内，
+		// 引擎装载前即可拿到权威 items 列表，无需按 DOM 形态猜测）。
+		// 容器用模板 ref，子节点遍历（不新增 document.querySelector*）。
+		const navRoot = paletteNavEl.value;
+		const managerRoot = paletteManagerEl.value;
+		const navEntries = navRoot
+			? Array.from(navRoot.children)
+					.filter((node) => node.classList.contains('nav-item'))
+					.map((nav) => ({ value: nav.getAttribute('value') ?? '', nav: nav as HTMLElement }))
+			: [];
+		const pageEntries = managerRoot
+			? Array.from(managerRoot.children)
+					.filter((node) => node.classList.contains('page-frame'))
+					.map((page) => ({
+						value: page.getAttribute('value') ?? '',
+						page: page as HTMLElement
+					}))
+			: [];
+		registerLayoutItems([...navEntries, ...pageEntries]);
 	});
 });
 
