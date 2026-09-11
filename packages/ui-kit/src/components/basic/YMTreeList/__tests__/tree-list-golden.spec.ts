@@ -152,8 +152,11 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		});
 		const folder = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
+		// 步骤 4：hint class 由派生行渲染，需等一次 patch
+		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(el, 'dragend', {});
+		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(false);
 		expect(el.dragging).toBe(null);
 		expect(el.querySelector('.drag-and-drop-hint')).toBe(null);
@@ -358,14 +361,14 @@ describe('YMTreeList element 契约（金标准）', () => {
 		wrapper.unmount();
 	});
 
-	it('refresh（deleteNodeElements + update）后缓存清空并按 key 复用行元素', async () => {
+	it('refresh() 后按 key 复用同一行元素', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
 		const folder = treeRowElement(data[0]) as HTMLElement;
 		const child = treeRowElement(data[0].children![0]) as HTMLElement;
 		el.refresh();
 		await nextTick();
-		// 步骤 2 语义：deleteNodeElements 清掉 treeRowElement(item) as HTMLElement 缓存，update 后按 key 复用同一行元素回填
+		// 步骤 5b：行元素由渲染状态持有，refresh/update 后 key 稳定 ⇒ 复用同一元素回填
 		expect(folder!.isConnected).toBe(true);
 		expect(child!.isConnected).toBe(true);
 		expect(treeRowElement(data[0]) as HTMLElement).toBeDefined();
@@ -374,7 +377,7 @@ describe('YMTreeList element 契约（金标准）', () => {
 		wrapper.unmount();
 	});
 
-	it('折叠→展开：窗口外行元素被回收，展开后回填新行元素（窗口内才有 element）', async () => {
+	it('折叠→展开：窗口外行元素被回收，展开后回填新行元素（窗口内才有行元素）', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
 		const childEl = treeRowElement(data[0].children![0]) as HTMLElement;

@@ -88,9 +88,7 @@ describe('TreeList nodeExtras（节点装饰 Vue 渲染回归保护）', () => {
 		expect(init).toBeTruthy();
 		expect(init!.textContent).toBe(' = hp');
 		const item1 = data[1];
-		const item1El = treeRowElement(item1) as HTMLElement as unknown as
-			| { extras: HTMLElement }
-			| undefined;
+		const item1El = treeRowElement(item1) as unknown as { extras: HTMLElement } | undefined;
 		expect(item1El?.extras?.textContent).toBe(' = mp');
 		wrapper.unmount();
 	});

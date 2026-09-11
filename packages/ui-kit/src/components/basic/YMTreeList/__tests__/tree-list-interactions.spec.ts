@@ -162,6 +162,8 @@ describe('YMTreeList 拖拽交互', () => {
 		expect(el.dragging!.hint.target).toBe(folder);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
 		expect(el.dragging!.hint.position).toBe('into');
+		// 步骤 4：hint class 由派生行渲染，需等一次 patch
+		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 20 });
 		expect(el.dragging!.hint.position).toBe('after');

@@ -1270,9 +1270,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	dragend: function (this: any, _event?: DragEvent): void {
 		if (this.dragging) {
 			removeClass(this, 'dragging');
-			removeClass(this.dragging.hint.target, 'hint');
 			this.parentNode.removeChild(this.dragging.hint);
 			this.dragging = null;
+			// 步骤 4：hint 行 class 由派生行渲染，拖拽结束需重派生清除
+			this.syncRenderRows();
 			this.removeEventListener('dragenter', this.dragenter);
 			this.removeEventListener('dragleave', this.dragleave);
 			this.removeEventListener('dragover', this.dragover);
@@ -1330,11 +1331,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					case 'into':
 						if (hint.target !== element || hint.position !== position) {
 							const r = hint.measure(element);
-							removeClass(hint.target, 'hint');
 							hint.target = element;
 							hint.position = position;
 							hint.moveDown().set(r);
-							addClass(element, 'hint');
+							// 步骤 4：行 hint class 由派生行渲染（position 变化需重派生）
+							this.syncRenderRows();
 						}
 						break;
 					case 'before':
@@ -1342,10 +1343,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 							const r = hint.measure(element);
 							r.top -= 1;
 							r.height = 2;
-							removeClass(hint.target, 'hint');
 							hint.target = element;
 							hint.position = position;
 							hint.moveUp().set(r);
+							this.syncRenderRows();
 						}
 						break;
 					case 'after':
@@ -1353,10 +1354,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 							const r = hint.measure(element);
 							r.top += r.height - 1;
 							r.height = 2;
-							removeClass(hint.target, 'hint');
 							hint.target = element;
 							hint.position = position;
 							hint.moveUp().set(r);
+							this.syncRenderRows();
 						}
 						break;
 				}
@@ -1374,10 +1375,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					const r = hint.measure(element);
 					r.top += r.height - 1;
 					r.height = 2;
-					removeClass(hint.target, 'hint');
 					hint.target = element;
 					hint.position = 'append';
 					hint.moveUp().set(r);
+					this.syncRenderRows();
 				}
 			}
 		}
@@ -1473,7 +1474,11 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 						foldable: getListConfig(self).foldable === true,
 						parseName: (item: TreeItem) => self.parseName(item),
 						selections: (self.selections ?? []) as TreeItem[],
-						hintItem: self.dragging?.hint?.target?.item ?? null,
+						// 步骤 4：与旧实现一致——只有 'into' 位置才给目标行加 hint class
+						hintItem:
+							self.dragging?.hint?.position === 'into'
+								? (self.dragging?.hint?.target?.item ?? null)
+								: null,
 						root: (self.root ?? null) as TreeItem | null
 					});
 		state.rows.value = rows;
