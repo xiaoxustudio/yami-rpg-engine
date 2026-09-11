@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
 
 const SwitchBranch = useSwitchBranchSchema();

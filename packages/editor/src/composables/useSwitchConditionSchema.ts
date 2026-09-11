@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
 import { $ } from '@app/utils/dom';
 import { read, write } from '@app/utils/element-utils';

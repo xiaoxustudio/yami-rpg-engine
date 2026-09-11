@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { reactive } from 'vue';
+﻿import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 import { removeTextTags, parseVariableTag } from '@app/composables/useCommandParse.ts';

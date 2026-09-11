@@ -26,7 +26,6 @@ interface WindowShape extends DynamicShape {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
 	};
-	afterChange: (() => void) | null;
 	initialize: (() => void) | null;
 	open: ((id: string) => void) | null;
 	close: ((id?: string | null) => void) | null;
@@ -55,7 +54,6 @@ export const Window: WindowShape = {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
 	},
-	afterChange: null,
 	initialize: null,
 	open: null,
 	close: null,
@@ -138,7 +136,6 @@ Window.open = function (this: typeof Window, id: string) {
 				}
 			});
 		}
-		this.afterChange?.();
 	} else if (element.classList.contains('open')) {
 		// 已在栈中且可见：静默 no-op 会掩盖焦点/层级异常，这里补齐置顶与焦点
 		console.warn('[window] open no-op (already stacked & open):', id);
@@ -182,7 +179,6 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		if (modalActive() && frames.length === 0) {
 			deactivateModalMode();
 		}
-		this.afterChange?.();
 	}
 };
 

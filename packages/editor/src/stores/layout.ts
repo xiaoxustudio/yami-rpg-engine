@@ -110,10 +110,6 @@ export const useLayoutStore = defineStore('layout', () => {
 		}
 	}
 
-	function switchLayout(name: string) {
-		Layout?.switchLayout?.(name);
-	}
-
 	function loadLayoutScheme(key?: string) {
 		Layout?.loadLayoutScheme?.(key);
 	}
@@ -280,7 +276,6 @@ export const useLayoutStore = defineStore('layout', () => {
 		resetTabTargets,
 		removeTabTargets,
 		pruneDetachedTargets,
-		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,
 		updateGroups,

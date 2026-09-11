@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { GL } from './webgl-init.ts';
 import type { BaseTexture } from './base-texture.ts';
 

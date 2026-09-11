@@ -40,7 +40,6 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 		Window.activeElement = null;
 		Window.overlapRoot = null;
 		Window.positionMode = 'center';
-		Window.afterChange = null;
 		document.body.style.pointerEvents = '';
 		window.removeEventListener('keydown', Window.keydown!);
 		vi.unstubAllGlobals();

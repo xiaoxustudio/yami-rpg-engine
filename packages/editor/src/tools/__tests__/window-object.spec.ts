@@ -80,7 +80,6 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		Window.activeElement = null;
 		Window.overlapRoot = null;
 		Window.positionMode = 'center';
-		Window.afterChange = null;
 		document.body.style.pointerEvents = '';
 		for (const frame of createdFrames) {
 			frame.remove();

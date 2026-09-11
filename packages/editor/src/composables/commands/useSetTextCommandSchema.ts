@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { TextProperty } from '@app/commands/property-window/set-text-property-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';

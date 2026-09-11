@@ -9,16 +9,16 @@
 | editor/App.vue      | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/AppShell.vue | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/animation    | 10 | 7 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 48 | 0 | 0 |
-| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 11 | 0 | 0 |
+| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 11 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 29 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 153 | 0 | 0 |
 | editor/components   | 359 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 722 | 0 | 0 |
-| editor/composables  | 228 | 47 | 43 | 177 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
+| editor/composables  | 228 | 47 | 43 | 43 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 6 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 15 | 0 | 0 |
 | editor/directives   | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/engine       | 52 | 9 | 5 | 6 | 1 | 2 | 0 | 0 | 0 | 6 | 17 | 1 | 9 | 22 | 0 | 14 | 0 | 15 | 0 | 0 |
+| editor/engine       | 52 | 9 | 5 | 5 | 1 | 2 | 0 | 0 | 0 | 6 | 17 | 1 | 9 | 22 | 0 | 14 | 0 | 15 | 0 | 0 |
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 9 | 0 | 0 |
 | editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 1 | 1 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
@@ -48,17 +48,18 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1111 |  | 160 | 295 | 244 | 57 | 1 | 17 | 0 | 138 | 122 | 20 | 29 | 132 | 3 | 575 | 173 | 1489 | 1 | 0 |
+| 合计                  | 1111 |  | 160 | 160 | 244 | 57 | 1 | 17 | 0 | 138 | 122 | 20 | 29 | 132 | 3 | 575 | 172 | 1489 | 1 | 0 |
 
 ## 口径
 
 - 扫描文件：**1111**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**160**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**295**
-- 陈旧豁免文件：**135**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
-- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**1**
-- 正则命中但无豁免注释：**1**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 豁免注释文件：**160**
+- 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
+- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
+- 正则命中但无豁免注释：**2**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
   - `packages/editor/src/components/layout/palette-items.ts`
+  - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1489** 处 / **239** 文件、`new DOMParser()` **1** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -95,7 +96,7 @@
 | --- | --- | --- | --- |
 | packages/editor/src/components/tools/IfCondition.vue | 812 | 78 | - |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 767 | 60 | 是 |
-| packages/editor/src/engine/layout/layout.ts | 2083 | 59 | 是 |
+| packages/editor/src/engine/layout/layout.ts | 2081 | 59 | 是 |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1715 | 57 | 是 |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
 | packages/editor/src/components/commands/SetString.vue | 531 | 44 | - |
@@ -133,13 +134,13 @@
 | packages/editor/src/components/commands/ForEach.vue | 144 | 15 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 774 | 15 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
-| packages/editor/src/attribute/attribute-window.ts | 1054 | 14 | - |
 | packages/editor/src/commands/accessors/position-accessor-window.ts | 62 | 14 | - |
 | packages/editor/src/components/commands/Return.vue | 114 | 14 | - |
 | packages/editor/src/components/commands/SetObject.vue | 140 | 14 | - |
 | packages/editor/src/local/local-window.ts | 906 | 14 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
+| packages/editor/src/attribute/attribute-window.ts | 1052 | 13 | - |
 | packages/editor/src/commands/custom-command-window.ts | 575 | 13 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 13 | 是 |
@@ -163,7 +164,7 @@
 | packages/editor/src/particle/particle-initialize.ts | 134 | 11 | - |
 | packages/editor/src/title/new-project-window.ts | 363 | 11 | - |
 | packages/editor/src/tools/image-crop-window.ts | 366 | 11 | - |
-| packages/editor/src/tools/window-object.ts | 510 | 11 | 是 |
+| packages/editor/src/tools/window-object.ts | 506 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -310,7 +311,7 @@
 | packages/editor/src/components/inspector/ParticleLayerPage.vue | 1371 | 4 | 是 |
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
 | packages/editor/src/composables/usePointerObjectWindow.ts | 39 | 4 | 是 |
-| packages/editor/src/composables/useSwitchConditionSchema.ts | 298 | 4 | 是 |
+| packages/editor/src/composables/useSwitchConditionSchema.ts | 297 | 4 | - |
 | packages/editor/src/engine/webgl/webgl-init.ts | 113 | 4 | 是 |
 | packages/editor/src/i18n/index.ts | 154 | 4 | 是 |
 | packages/editor/src/inspector/element-textbox-page.ts | 156 | 4 | - |
@@ -424,7 +425,7 @@
 | packages/editor/src/composables/useTextCaptureWindow.ts | 152 | 2 | 是 |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
 | packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
-| packages/editor/src/engine/webgl/texture.ts | 133 | 2 | 是 |
+| packages/editor/src/engine/webgl/texture.ts | 132 | 2 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 98 | 2 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 89 | 2 | - |
 | packages/editor/src/inspector/animation-particle-frame-page.ts | 100 | 2 | - |
@@ -763,136 +764,136 @@
 | packages/editor/src/components/tree-list.ts | 39 | 0 | - |
 | packages/editor/src/components/type-registry.ts | 13 | 0 | - |
 | packages/editor/src/components/var-factories.ts | 19 | 0 | - |
-| packages/editor/src/composables/commands/useActivateSceneCommandSchema.ts | 40 | 0 | 是 |
-| packages/editor/src/composables/commands/useAppendTargetCommandSchema.ts | 44 | 0 | 是 |
-| packages/editor/src/composables/commands/useBlockCommandSchema.ts | 64 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorAnimationCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorMotionCommandSchema.ts | 44 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorPortraitCommandSchema.ts | 97 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorSkillCommandSchema.ts | 90 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorStateCommandSchema.ts | 87 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangePassableTerrainCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeThreatCommandSchema.ts | 61 | 0 | 是 |
-| packages/editor/src/composables/commands/useClampCameraCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useCommandLineCommandSchema.ts | 118 | 0 | 是 |
-| packages/editor/src/composables/commands/useCommentCommandSchema.ts | 35 | 0 | 是 |
-| packages/editor/src/composables/commands/useControlButtonCommandSchema.ts | 64 | 0 | 是 |
-| packages/editor/src/composables/commands/useControlDialogCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useCreateActorCommandSchema.ts | 68 | 0 | 是 |
-| packages/editor/src/composables/commands/useCreateElementCommandSchema.ts | 133 | 0 | 是 |
-| packages/editor/src/composables/commands/useCreateGlobalActorCommandSchema.ts | 39 | 0 | 是 |
-| packages/editor/src/composables/commands/useCreateObjectCommandSchema.ts | 41 | 0 | 是 |
-| packages/editor/src/composables/commands/useCreateTriggerCommandSchema.ts | 84 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteActorCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteElementCommandSchema.ts | 68 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteGlobalActorCommandSchema.ts | 33 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteObjectCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteTileCommandSchema.ts | 48 | 0 | 是 |
-| packages/editor/src/composables/commands/useDeleteVariableCommandSchema.ts | 43 | 0 | 是 |
-| packages/editor/src/composables/commands/useDetectTargetsCommandSchema.ts | 70 | 0 | 是 |
-| packages/editor/src/composables/commands/useDiscardTargetsCommandSchema.ts | 50 | 0 | 是 |
-| packages/editor/src/composables/commands/useFixAngleCommandSchema.ts | 45 | 0 | 是 |
-| packages/editor/src/composables/commands/useFollowActorCommandSchema.ts | 152 | 0 | 是 |
-| packages/editor/src/composables/commands/useForEachCommandSchema.ts | 282 | 0 | 是 |
-| packages/editor/src/composables/commands/useGameDataCommandSchema.ts | 77 | 0 | 是 |
-| packages/editor/src/composables/commands/useGetMultipleActorsCommandSchema.ts | 125 | 0 | 是 |
-| packages/editor/src/composables/commands/useGetObjectPropertyCommandSchema.ts | 168 | 0 | 是 |
-| packages/editor/src/composables/commands/useHttpRequestCommandSchema.ts | 155 | 0 | 是 |
-| packages/editor/src/composables/commands/useIfCommandSchema.ts | 110 | 0 | 是 |
-| packages/editor/src/composables/commands/useJumpToCommandSchema.ts | 94 | 0 | 是 |
-| packages/editor/src/composables/commands/useLabelCommandSchema.ts | 33 | 0 | 是 |
-| packages/editor/src/composables/commands/useLoadSceneCommandSchema.ts | 74 | 0 | 是 |
-| packages/editor/src/composables/commands/useLoadSubsceneCommandSchema.ts | 48 | 0 | 是 |
-| packages/editor/src/composables/commands/useLoopCommandSchema.ts | 74 | 0 | 是 |
-| packages/editor/src/composables/commands/useMoveActorCommandSchema.ts | 95 | 0 | 是 |
-| packages/editor/src/composables/commands/useMoveCameraCommandSchema.ts | 92 | 0 | 是 |
-| packages/editor/src/composables/commands/useMoveElementCommandSchema.ts | 73 | 0 | 是 |
-| packages/editor/src/composables/commands/useMoveLightCommandSchema.ts | 73 | 0 | 是 |
-| packages/editor/src/composables/commands/useNestElementCommandSchema.ts | 37 | 0 | 是 |
-| packages/editor/src/composables/commands/usePlayActorAnimationCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/usePlayAudioCommandSchema.ts | 80 | 0 | 是 |
-| packages/editor/src/composables/commands/useRemoveTargetCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useRenderOutlineCommandSchema.ts | 80 | 0 | 是 |
-| packages/editor/src/composables/commands/useRequestURLCommandSchema.ts | 153 | 0 | 是 |
-| packages/editor/src/composables/commands/useResetTargetsCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useRestoreAudioCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSaveAudioCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetActiveCommandSchema.ts | 44 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetAmbientLightCommandSchema.ts | 58 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 55 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetCursorCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetDialogBoxCommandSchema.ts | 59 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetElementCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetEventCommandSchema.ts | 110 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetFocusCommandSchema.ts | 85 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetGameSpeedCommandSchema.ts | 51 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetImageCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetInventoryCommandSchema.ts | 162 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetItemCommandSchema.ts | 53 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetListCommandSchema.ts | 373 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetLoopCommandSchema.ts | 44 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetMovementSpeedCommandSchema.ts | 75 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetNumberCommandSchema.ts | 137 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetObjectAnimationCommandSchema.ts | 245 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetObjectCommandSchema.ts | 186 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetPanCommandSchema.ts | 55 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetPartyMemberCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetPlayerActorCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetPointerEventRootCommandSchema.ts | 60 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetProgressBarCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetResolutionCommandSchema.ts | 55 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetReverbCommandSchema.ts | 59 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetSkillCommandSchema.ts | 68 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetStateCommandSchema.ts | 43 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTargetCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTeamRelationCommandSchema.ts | 52 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTerrainCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTextBoxCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTextCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTileCommandSchema.ts | 77 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTriggerAngleCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTriggerDurationCommandSchema.ts | 48 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTriggerMotionCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetTriggerSpeedCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetVideoCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetWeightCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetWindowCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetZoomFactorCommandSchema.ts | 51 | 0 | 是 |
-| packages/editor/src/composables/commands/useShakeScreenCommandSchema.ts | 59 | 0 | 是 |
-| packages/editor/src/composables/commands/useShowChoicesCommandSchema.ts | 118 | 0 | 是 |
-| packages/editor/src/composables/commands/useShowTextCommandSchema.ts | 193 | 0 | 是 |
-| packages/editor/src/composables/commands/useStopActorAnimationCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useStopAudioCommandSchema.ts | 33 | 0 | 是 |
-| packages/editor/src/composables/commands/useStopEventCommandSchema.ts | 146 | 0 | 是 |
-| packages/editor/src/composables/commands/useSwitchCollisionSystemCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useSwitchCommandSchema.ts | 126 | 0 | 是 |
-| packages/editor/src/composables/commands/useTransferGlobalActorCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useTranslateActorCommandSchema.ts | 76 | 0 | 是 |
-| packages/editor/src/composables/commands/useUnloadSubsceneCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useUploadFileCommandSchema.ts | 116 | 0 | 是 |
-| packages/editor/src/composables/commands/useWaitCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useWaitForVideoCommandSchema.ts | 32 | 0 | 是 |
-| packages/editor/src/composables/commands/useWebSocketCloseCommandSchema.ts | 61 | 0 | 是 |
-| packages/editor/src/composables/commands/useWebSocketConnectCommandSchema.ts | 74 | 0 | 是 |
-| packages/editor/src/composables/useActorGetterWindow.ts | 116 | 0 | 是 |
-| packages/editor/src/composables/useAncestorGetterWindow.ts | 89 | 0 | 是 |
-| packages/editor/src/composables/useAngleGetterWindow.ts | 83 | 0 | 是 |
+| packages/editor/src/composables/commands/useActivateSceneCommandSchema.ts | 39 | 0 | - |
+| packages/editor/src/composables/commands/useAppendTargetCommandSchema.ts | 43 | 0 | - |
+| packages/editor/src/composables/commands/useBlockCommandSchema.ts | 63 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorAnimationCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorMotionCommandSchema.ts | 43 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorPortraitCommandSchema.ts | 96 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorSkillCommandSchema.ts | 89 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorStateCommandSchema.ts | 86 | 0 | - |
+| packages/editor/src/composables/commands/useChangePassableTerrainCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useChangeThreatCommandSchema.ts | 60 | 0 | - |
+| packages/editor/src/composables/commands/useClampCameraCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useCommandLineCommandSchema.ts | 117 | 0 | - |
+| packages/editor/src/composables/commands/useCommentCommandSchema.ts | 34 | 0 | - |
+| packages/editor/src/composables/commands/useControlButtonCommandSchema.ts | 63 | 0 | - |
+| packages/editor/src/composables/commands/useControlDialogCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useCreateActorCommandSchema.ts | 67 | 0 | - |
+| packages/editor/src/composables/commands/useCreateElementCommandSchema.ts | 132 | 0 | - |
+| packages/editor/src/composables/commands/useCreateGlobalActorCommandSchema.ts | 38 | 0 | - |
+| packages/editor/src/composables/commands/useCreateObjectCommandSchema.ts | 40 | 0 | - |
+| packages/editor/src/composables/commands/useCreateTriggerCommandSchema.ts | 83 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteActorCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteElementCommandSchema.ts | 67 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteGlobalActorCommandSchema.ts | 32 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteObjectCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteTileCommandSchema.ts | 47 | 0 | - |
+| packages/editor/src/composables/commands/useDeleteVariableCommandSchema.ts | 42 | 0 | - |
+| packages/editor/src/composables/commands/useDetectTargetsCommandSchema.ts | 69 | 0 | - |
+| packages/editor/src/composables/commands/useDiscardTargetsCommandSchema.ts | 49 | 0 | - |
+| packages/editor/src/composables/commands/useFixAngleCommandSchema.ts | 44 | 0 | - |
+| packages/editor/src/composables/commands/useFollowActorCommandSchema.ts | 151 | 0 | - |
+| packages/editor/src/composables/commands/useForEachCommandSchema.ts | 281 | 0 | - |
+| packages/editor/src/composables/commands/useGameDataCommandSchema.ts | 76 | 0 | - |
+| packages/editor/src/composables/commands/useGetMultipleActorsCommandSchema.ts | 124 | 0 | - |
+| packages/editor/src/composables/commands/useGetObjectPropertyCommandSchema.ts | 167 | 0 | - |
+| packages/editor/src/composables/commands/useHttpRequestCommandSchema.ts | 154 | 0 | - |
+| packages/editor/src/composables/commands/useIfCommandSchema.ts | 109 | 0 | - |
+| packages/editor/src/composables/commands/useJumpToCommandSchema.ts | 93 | 0 | - |
+| packages/editor/src/composables/commands/useLabelCommandSchema.ts | 32 | 0 | - |
+| packages/editor/src/composables/commands/useLoadSceneCommandSchema.ts | 73 | 0 | - |
+| packages/editor/src/composables/commands/useLoadSubsceneCommandSchema.ts | 47 | 0 | - |
+| packages/editor/src/composables/commands/useLoopCommandSchema.ts | 73 | 0 | - |
+| packages/editor/src/composables/commands/useMoveActorCommandSchema.ts | 94 | 0 | - |
+| packages/editor/src/composables/commands/useMoveCameraCommandSchema.ts | 91 | 0 | - |
+| packages/editor/src/composables/commands/useMoveElementCommandSchema.ts | 72 | 0 | - |
+| packages/editor/src/composables/commands/useMoveLightCommandSchema.ts | 72 | 0 | - |
+| packages/editor/src/composables/commands/useNestElementCommandSchema.ts | 36 | 0 | - |
+| packages/editor/src/composables/commands/usePlayActorAnimationCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/usePlayAudioCommandSchema.ts | 79 | 0 | - |
+| packages/editor/src/composables/commands/useRemoveTargetCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useRenderOutlineCommandSchema.ts | 79 | 0 | - |
+| packages/editor/src/composables/commands/useRequestURLCommandSchema.ts | 152 | 0 | - |
+| packages/editor/src/composables/commands/useResetTargetsCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useRestoreAudioCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSaveAudioCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSetActiveCommandSchema.ts | 43 | 0 | - |
+| packages/editor/src/composables/commands/useSetAmbientLightCommandSchema.ts | 57 | 0 | - |
+| packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 54 | 0 | - |
+| packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetCursorCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSetDialogBoxCommandSchema.ts | 58 | 0 | - |
+| packages/editor/src/composables/commands/useSetElementCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetEventCommandSchema.ts | 109 | 0 | - |
+| packages/editor/src/composables/commands/useSetFocusCommandSchema.ts | 84 | 0 | - |
+| packages/editor/src/composables/commands/useSetGameSpeedCommandSchema.ts | 50 | 0 | - |
+| packages/editor/src/composables/commands/useSetImageCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetInventoryCommandSchema.ts | 161 | 0 | - |
+| packages/editor/src/composables/commands/useSetItemCommandSchema.ts | 52 | 0 | - |
+| packages/editor/src/composables/commands/useSetListCommandSchema.ts | 372 | 0 | - |
+| packages/editor/src/composables/commands/useSetLoopCommandSchema.ts | 43 | 0 | - |
+| packages/editor/src/composables/commands/useSetMovementSpeedCommandSchema.ts | 74 | 0 | - |
+| packages/editor/src/composables/commands/useSetNumberCommandSchema.ts | 136 | 0 | - |
+| packages/editor/src/composables/commands/useSetObjectAnimationCommandSchema.ts | 244 | 0 | - |
+| packages/editor/src/composables/commands/useSetObjectCommandSchema.ts | 185 | 0 | - |
+| packages/editor/src/composables/commands/useSetPanCommandSchema.ts | 54 | 0 | - |
+| packages/editor/src/composables/commands/useSetPartyMemberCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetPlayerActorCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSetPointerEventRootCommandSchema.ts | 59 | 0 | - |
+| packages/editor/src/composables/commands/useSetProgressBarCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetResolutionCommandSchema.ts | 54 | 0 | - |
+| packages/editor/src/composables/commands/useSetReverbCommandSchema.ts | 58 | 0 | - |
+| packages/editor/src/composables/commands/useSetSkillCommandSchema.ts | 67 | 0 | - |
+| packages/editor/src/composables/commands/useSetStateCommandSchema.ts | 42 | 0 | - |
+| packages/editor/src/composables/commands/useSetTargetCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSetTeamRelationCommandSchema.ts | 51 | 0 | - |
+| packages/editor/src/composables/commands/useSetTerrainCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetTextBoxCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetTextCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetTileCommandSchema.ts | 76 | 0 | - |
+| packages/editor/src/composables/commands/useSetTriggerAngleCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetTriggerDurationCommandSchema.ts | 47 | 0 | - |
+| packages/editor/src/composables/commands/useSetTriggerMotionCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetTriggerSpeedCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetVideoCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetWeightCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useSetWindowCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetZoomFactorCommandSchema.ts | 50 | 0 | - |
+| packages/editor/src/composables/commands/useShakeScreenCommandSchema.ts | 58 | 0 | - |
+| packages/editor/src/composables/commands/useShowChoicesCommandSchema.ts | 117 | 0 | - |
+| packages/editor/src/composables/commands/useShowTextCommandSchema.ts | 192 | 0 | - |
+| packages/editor/src/composables/commands/useStopActorAnimationCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useStopAudioCommandSchema.ts | 32 | 0 | - |
+| packages/editor/src/composables/commands/useStopEventCommandSchema.ts | 145 | 0 | - |
+| packages/editor/src/composables/commands/useSwitchCollisionSystemCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useSwitchCommandSchema.ts | 125 | 0 | - |
+| packages/editor/src/composables/commands/useTransferGlobalActorCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useTranslateActorCommandSchema.ts | 75 | 0 | - |
+| packages/editor/src/composables/commands/useUnloadSubsceneCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useUploadFileCommandSchema.ts | 115 | 0 | - |
+| packages/editor/src/composables/commands/useWaitCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useWaitForVideoCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useWebSocketCloseCommandSchema.ts | 60 | 0 | - |
+| packages/editor/src/composables/commands/useWebSocketConnectCommandSchema.ts | 73 | 0 | - |
+| packages/editor/src/composables/useActorGetterWindow.ts | 115 | 0 | - |
+| packages/editor/src/composables/useAncestorGetterWindow.ts | 88 | 0 | - |
+| packages/editor/src/composables/useAngleGetterWindow.ts | 82 | 0 | - |
 | packages/editor/src/composables/useAnimJointFramePage.ts | 78 | 0 | - |
 | packages/editor/src/composables/useAnimMotionPage.ts | 44 | 0 | - |
 | packages/editor/src/composables/useAnimParticleFramePage.ts | 60 | 0 | - |
 | packages/editor/src/composables/useAnimParticleLayerPage.ts | 52 | 0 | - |
 | packages/editor/src/composables/useAnimSpriteFramePage.ts | 68 | 0 | - |
 | packages/editor/src/composables/useAnimSpriteLayerPage.ts | 46 | 0 | - |
-| packages/editor/src/composables/useChoicesSchema.ts | 94 | 0 | 是 |
-| packages/editor/src/composables/useColorWindow.ts | 85 | 0 | 是 |
+| packages/editor/src/composables/useChoicesSchema.ts | 93 | 0 | - |
+| packages/editor/src/composables/useColorWindow.ts | 84 | 0 | - |
 | packages/editor/src/composables/useCommandColor.ts | 77 | 0 | - |
 | packages/editor/src/composables/useCommandParse.ts | 913 | 0 | - |
 | packages/editor/src/composables/useCommandState.ts | 49 | 0 | - |
 | packages/editor/src/composables/useEasingWindow.ts | 41 | 0 | - |
-| packages/editor/src/composables/useElementGetterWindow.ts | 135 | 0 | 是 |
-| packages/editor/src/composables/useEquipmentGetterWindow.ts | 114 | 0 | 是 |
+| packages/editor/src/composables/useElementGetterWindow.ts | 134 | 0 | - |
+| packages/editor/src/composables/useEquipmentGetterWindow.ts | 113 | 0 | - |
 | packages/editor/src/composables/useFileActorPage.ts | 71 | 0 | - |
 | packages/editor/src/composables/useFileAudioPage.ts | 68 | 0 | - |
 | packages/editor/src/composables/useFileEquipmentPage.ts | 43 | 0 | - |
@@ -908,13 +909,13 @@
 | packages/editor/src/composables/useFileUIPage.ts | 42 | 0 | - |
 | packages/editor/src/composables/useFileVideoPage.ts | 41 | 0 | - |
 | packages/editor/src/composables/useImageClipWindow.ts | 40 | 0 | - |
-| packages/editor/src/composables/useItemGetterWindow.ts | 115 | 0 | 是 |
+| packages/editor/src/composables/useItemGetterWindow.ts | 114 | 0 | - |
 | packages/editor/src/composables/useMenuService.ts | 2 | 0 | - |
 | packages/editor/src/composables/useParamHistory.ts | 141 | 0 | - |
 | packages/editor/src/composables/useParticleLayerPage.ts | 275 | 0 | - |
-| packages/editor/src/composables/usePositionGetterWindow.ts | 142 | 0 | 是 |
-| packages/editor/src/composables/useRegionGetterWindow.ts | 74 | 0 | 是 |
-| packages/editor/src/composables/useRenameWindow.ts | 47 | 0 | 是 |
+| packages/editor/src/composables/usePositionGetterWindow.ts | 141 | 0 | - |
+| packages/editor/src/composables/useRegionGetterWindow.ts | 73 | 0 | - |
+| packages/editor/src/composables/useRenameWindow.ts | 46 | 0 | - |
 | packages/editor/src/composables/useSceneActorPage.ts | 57 | 0 | - |
 | packages/editor/src/composables/useSceneAnimationPage.ts | 69 | 0 | - |
 | packages/editor/src/composables/useSceneLightPage.ts | 75 | 0 | - |
@@ -922,15 +923,15 @@
 | packages/editor/src/composables/useSceneParticlePage.ts | 59 | 0 | - |
 | packages/editor/src/composables/useSceneRegionPage.ts | 46 | 0 | - |
 | packages/editor/src/composables/useSceneTilemapPage.ts | 73 | 0 | - |
-| packages/editor/src/composables/useSetKeyWindow.ts | 47 | 0 | 是 |
-| packages/editor/src/composables/useSetQuantityWindow.ts | 40 | 0 | 是 |
-| packages/editor/src/composables/useSetVolumeCommandSchema.ts | 54 | 0 | 是 |
-| packages/editor/src/composables/useSimulateKeyCommandSchema.ts | 37 | 0 | 是 |
-| packages/editor/src/composables/useSkillGetterWindow.ts | 115 | 0 | 是 |
-| packages/editor/src/composables/useStateGetterWindow.ts | 98 | 0 | 是 |
-| packages/editor/src/composables/useTilemapGetterWindow.ts | 87 | 0 | 是 |
+| packages/editor/src/composables/useSetKeyWindow.ts | 46 | 0 | - |
+| packages/editor/src/composables/useSetQuantityWindow.ts | 39 | 0 | - |
+| packages/editor/src/composables/useSetVolumeCommandSchema.ts | 53 | 0 | - |
+| packages/editor/src/composables/useSimulateKeyCommandSchema.ts | 36 | 0 | - |
+| packages/editor/src/composables/useSkillGetterWindow.ts | 114 | 0 | - |
+| packages/editor/src/composables/useStateGetterWindow.ts | 97 | 0 | - |
+| packages/editor/src/composables/useTilemapGetterWindow.ts | 86 | 0 | - |
 | packages/editor/src/composables/useToastService.ts | 21 | 0 | - |
-| packages/editor/src/composables/useTriggerGetterWindow.ts | 76 | 0 | 是 |
+| packages/editor/src/composables/useTriggerGetterWindow.ts | 75 | 0 | - |
 | packages/editor/src/composables/useUIAnimationPage.ts | 60 | 0 | - |
 | packages/editor/src/composables/useUIButtonPage.ts | 162 | 0 | - |
 | packages/editor/src/composables/useUIContainerPage.ts | 31 | 0 | - |
@@ -943,7 +944,7 @@
 | packages/editor/src/composables/useUIVideoPage.ts | 45 | 0 | - |
 | packages/editor/src/composables/useUIWindowPage.ts | 61 | 0 | - |
 | packages/editor/src/composables/useWordList.ts | 2 | 0 | - |
-| packages/editor/src/composables/useZoomWindow.ts | 46 | 0 | 是 |
+| packages/editor/src/composables/useZoomWindow.ts | 45 | 0 | - |
 | packages/editor/src/constants/editor.ts | 20 | 0 | - |
 | packages/editor/src/data/data-object.ts | 774 | 0 | - |
 | packages/editor/src/data/metadata-manifest.ts | 103 | 0 | - |
@@ -1099,7 +1100,7 @@
 | packages/editor/src/stores/history.ts | 44 | 0 | - |
 | packages/editor/src/stores/home.ts | 95 | 0 | - |
 | packages/editor/src/stores/inspector.ts | 89 | 0 | - |
-| packages/editor/src/stores/layout.ts | 327 | 0 | - |
+| packages/editor/src/stores/layout.ts | 322 | 0 | - |
 | packages/editor/src/stores/local.ts | 48 | 0 | - |
 | packages/editor/src/stores/localization.ts | 107 | 0 | - |
 | packages/editor/src/stores/log.ts | 209 | 0 | - |

@@ -15,14 +15,14 @@
 | R1 | `module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查） | 中 | 无 | 未开始（规模由小改判） |
 | R2a | i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询（`[name=confirm/cancel]` 写 hotkey、`#menu` 加 `.visible`） | 小 | 无 | 未开始 |
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 **2130** 个键在启动时逐键做 DOM 查询（2112 按 id + 18 按 name） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
-| R3 | 死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子 | 小 | 无（零行为风险） | 未开始 |
+| R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址，**1489 处 / 252 文件**） | 大 | 需按模块分批，先度量后动手 | 未开始（**此前不在任何报表内**） |
 | P2b | **ui-kit 元素 API 收尾**：`*-api.ts` 文件 **26** 个（21 个调用 `attachApi`）+ `utils/attach-api.ts` 退役，调用方改用类型化组件 API | 大 | 与 P5b 的「组件 API」桶合并排序 | 未开始（**此前不在任何报表内**） |
 | P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **83** 个字段的 get/set（共 166 访问器），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 未开始（**此前不在任何报表内**） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | 未开始 |
-| C2 | 删除 **135 个陈旧豁免注释**（注释在、命中已为 0） | 小 | 无（零行为风险） | 未开始 |
-| E1 | **窗口事件面收口**：34 个事件名 / **265** 处 `window.addEventListener`；16 个自定义事件靠"往 Event 挂字段"传载荷；1 个死事件；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 未开始（**此前不在任何报表内**） |
+| C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
+| E1 | **窗口事件面收口**：34 个事件名 / **265** 处 `window.addEventListener`；16 个自定义事件靠"往 Event 挂字段"传载荷；1 个死事件；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
 | O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | 可选 |
 
 ## 计划条目对照（阶段 / 里程碑 → 状态与出处）
@@ -80,7 +80,7 @@
 
 | 批次 | 内容 | 前置 / 并行 | 涉及面 | 预期指标变化 | 回滚 |
 | --- | --- | --- | --- | --- | --- |
-| **B0 零风险** | C2（删陈旧豁免注释）→ R3（死代码 8 点）→ E1①（删 `attributechange`） | 无；可与任何批并行 | C2 **135 文件 / 135 行**；R3 **5 文件 8 点**；E1① 1 处派发 | 豁免注释 **295 → 160**、陈旧豁免 **135 → 0**；死事件 **1 → 0**；R3 批**不应**改变 tracker 任何口径 | `git checkout -- packages` / revert |
+| ✅ **B0 零风险（已完成 2026-09-11）** | C2（删陈旧豁免注释）→ R3（死代码 8 点）→ E1①（删 `attributechange`） | 无；可与任何批并行 | C2 **135 文件 / 135 行**；R3 **6 文件 8 点**；E1① 1 处派发 | **实测结果**：豁免注释 **295 → 160**、陈旧豁免 **135 → 0**（`stale-exemptions --check` 退出 0）；死事件 **1 → 0**（事件名 34 → 33、自定义 16 → 15、单侧事件 0）；tracker 其它口径未变（待迁移命中仍 **160**） | `git revert` 单个提交 |
 | **B1 小收口** | R1（资源列表数据化）→ R2a（i18n 启动副作用）→ T1b（PageUp/PageDown 行为 + 1000+ 基准） | 无 | R1 `resource.ts` 667 行 + `Resource.vue`；R2a `i18n/index.ts` 3 处；T1b keydown + 基准脚本 | `editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **1 → 0**；`editor/i18n` 查询 **3 → 0**；tree 用例 **+2~4**（含基准数据） | 各自单提交 revert |
 | **B2 tree 收口** | **T5b**：4 组消费方迁移 → 删 `elements` shim / `item.element` / `NodeElement` / `clearTreeItemText` → 收口 class 直写；**顺带修 `element.group` 幽灵属性** | 无（方案含实测行号） | ~12 个源文件 + 3 个 spec（17 处断言改写） | `ui-kit/components` 与 `editor/tools` 命中下降；`item.element` 引用 **17 → 0**；**1 处行为变更**（菜单勾选开始显示） | 4 步各自 revert；渲染路径与数据层未动 |
 | **B3 元素 API 与原型** | **P2b + P4b 合并**：按组件把鸭子调用收敛为类型化 expose + props/emits → 删 `*-api.ts` → 删 `attach-api.ts`；随后删 `DATA_FIELDS` 原型访问器（先删 11 个死字段） | 依赖 B2 的 expose 手法经验；与 **P5b 批次 1–3 同批评审**（R-11） | `*-api.ts` **26 文件**（41 个 importer）；`element-data.ts` **83 字段 / 166 访问器**（`this.<字段>` 近似 **774 处 / 123 文件**） | 门禁：`*-api.ts` **26 → 0**、`DATA_FIELDS` **83 → 0**；鸭子调用 **682 → 0**；tracker 辅助口径「prototype 访问器定义」**1 → 0** | 按组件粒度 revert；先删死字段那一刀可单独回滚 |
@@ -156,6 +156,8 @@
 - **来源**：2026-09-11 第二十二轮度量审计（`components` 键数实测；此前 R2 只按源码处数记为"小"）。
 
 ## R3 — 死代码清理（layout 死转发 + 未赋值钩子）
+
+> ✅ **已完成（2026-09-11，B0）**：8 个删除点全部执行——`stores/layout.ts` 的 `switchLayout` 函数与其导出项；`engine/layout/layout.ts` 的 `afterChange` 成员与 `pageSwitch` 末尾调用；`tools/window-object.ts` 的接口成员、初始化与两处调用；两个 spec 里的 `Window.afterChange = null;`。**tracker 三类口径未变**（符合"误删探测器"预期）；editor 全量 **1884/1884**、`tsc` strict 与 `vue-tsc` 门禁全过。
 
 - **现状证据（2026-09-11 实测）**：① `packages/editor/src/stores/layout.ts` 的 `switchLayout(name)`（L113）只是 `Layout?.switchLayout?.(name)` 的转发，导出在 L283，但**全仓无调用方**——唯一的 `Layout.switchLayout` 调用在 `packages/editor/src/title/menu-bar.ts`（L519，直接走引擎）；② `packages/editor/src/engine/layout/layout.ts` 的 `afterChange`（L364 声明、L1407 `?.()` 调用）与 `packages/editor/src/tools/window-object.ts` 的 `afterChange`（L29 声明、L58 置 null、L141/L185 调用）**声明后从无任何赋值**（仅测试里被置 null）→ 永远不会触发。
 - **验收标准**：① 删除 store 的 `switchLayout` 转发与其导出（若有消费方则改为直接调引擎并同步文档）；② 删除两处 `afterChange` 成员与调用点，并清理 `packages/editor/src/tools/__tests__/window-command-modal.spec.ts`（L43）与 `window-object.spec.ts`（L83）里对它的置空语句；③ `pnpm -F @yami/editor test`、`pnpm lint`、`pnpm typecheck` 全绿。
@@ -311,6 +313,8 @@
 
 ## C2 — 删除 135 个陈旧豁免注释
 
+> ✅ **已完成（2026-09-11，B0）**：`pnpm stale-exemptions --apply` 删除 **135 个文件 / 135 行**（跳过 0），随即自动复跑 oxlint → 0 警告 0 错误；tracker 口径区变为「待迁移命中 **160** / 豁免注释 **160** / 陈旧豁免 **0**」，`pnpm stale-exemptions --check` 退出码 **0**；两个测试套件复跑仍全绿（editor **1884/1884**、ui-kit **659/659**）。
+
 - **现状证据（2026-09-11 实测，判定来源 oxlint）**：**295** 个文件带 `/* oxlint-disable eslint/no-restricted-properties */`，其中 **160** 个文件的豁免指令仍在使用（真命中），**135 个已无命中**（`oxlint --report-unused-disable-directives` 直接报告 "Unused oxlint-disable directive"）。分布上 `composables` 最集中（177 个带注释、其中仅 43 个仍命中 → ~134 处陈旧，多为一轮轮迁移后遗留的命令表单）；样例：`packages/editor/src/composables/commands/useBlockCommandSchema.ts`、`packages/editor/src/composables/useAngleGetterWindow.ts`、`packages/editor/src/composables/commands/useSetAngleCommandSchema.ts` 等。
 - **为什么先做这条**：这是**纯注释删除、零运行时行为风险**，且能把"豁免面"从 295 收敛到 160，让 C1 的收尾口径真正可信（否则无法判断哪些注释是必要的）。
 - **操作要点**：只删文件顶部那一行/那一块 `/* oxlint-disable eslint/no-restricted-properties */`，**不要误删**行内的 `// oxlint-disable-next-line <其它规则>`（例如 `no-explicit-any`、`no-unused-vars`）；权威待删清单直接用 `node node_modules/oxlint/bin/oxlint -c .oxlintrc.json --report-unused-disable-directives packages/editor packages/ui-kit` 生成（只取报告行文本含 `no-restricted-properties` 的条目，另有 ~31 个文件是**其它规则**的未使用指令，可顺带清理）。
@@ -326,6 +330,8 @@
 - **来源**：2026-09-11 第七轮口径审计新登记（本轮先修了度量本身：正则漏计带类型实参的 `document.querySelector<T>(...)`，已改为「属性访问」计数并把命中判定改为 oxlint 权威口径）。
 
 ## E1 — 窗口事件面收口（34 事件名 / 265 监听点 / 16 自定义事件）
+
+> 🚧 **部分完成（2026-09-11，B0）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。余项 ②（自定义事件改强类型通道）③（`.vue` 监听配对）④（`mitt` 去留）待做。
 
 - **复现命令**：`pnpm events:surface`（`scripts/event-surface.mjs`；只统计落在 `window` 上的监听与派发，且**含"变量形式"派发**——`const e = new Event('x'); window.dispatchEvent(e)`，这是纯按名字做正则最容易漏的一类）。
 - **现状证据（2026-09-11 实测）**：`window.addEventListener` **265 处 / 92 文件**、`window.removeEventListener` **122 处**；事件名 **34 个**，其中**自定义 16 个**——`attributechange`、`datachange`、`dirchange`、`dprchange`、`enumchange`、`home-recent-update`、`localizationchange`、`localize`、`os-dragend`、`os-dragstart`、`script-change`、`themechange`、`update-log-update`、`variablechange`、`vue-app-mounted`、`yami:error`。载荷普遍靠**往 Event 对象上挂字段**传递（`datachange.key = 'teams'`、`themechange.value = theme`；见 `composables/useTeamWindow.ts:422`、`data/transition-window.ts:1201`、`title/title-bar.ts:387`）——无类型、无契约，监听方只能自己断言形状。

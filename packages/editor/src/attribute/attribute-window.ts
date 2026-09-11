@@ -963,8 +963,6 @@ Attribute.apply = function (this: typeof Attribute, _event?: Event) {
 
 		this.packAttribute();
 		File.planToSave!(Data.manifest.project.attribute);
-
-		window.dispatchEvent(new Event('attributechange'));
 	}
 }.bind(Attribute);
 

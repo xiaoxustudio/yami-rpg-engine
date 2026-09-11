@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';

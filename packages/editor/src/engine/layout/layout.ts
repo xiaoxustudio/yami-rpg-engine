@@ -361,7 +361,6 @@ export const Layout: DynamicShape = {
 	layouts: null,
 	layout: null as Record<string, LayoutScheme> | null,
 	default: null,
-	afterChange: null as (() => void) | null,
 	initialize: null as (() => void) | null,
 	switchLayout: null as ((layout: Record<string, LayoutScheme>) => void) | null,
 	updateGroups: null as ((force?: boolean) => void) | null,
@@ -1404,7 +1403,6 @@ Layout.pageSwitch = function (event: EditorEvent) {
 	} catch (error) {
 		console.warn('[pageSwitch] loadLayoutScheme failed:', error);
 	}
-	this.afterChange?.();
 };
 
 Layout.navWrite = function (this: typeof Layout, event: EditorEvent) {
