@@ -1,9 +1,10 @@
 # Layout / PageManager 页面组织 Vue 化设计方案
 
-- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 整壳接线 / **M4-1 同组 drop 数据化 / M4-2 结构性 drop 一致性 + 整壳接线修正** 均已交付并提交；F.5 真机冒烟核心项与 M4 真机用例（同组重排、跨组搬空折叠、region 右缘分割、border 缩放）均已通过）；下一步 M5 清脚手架与解锁 tree v-for）
-- 日期：2026-09-03
-- 范围：`packages/editor/src/components/layout/LayoutPanel.vue`、`engine/layout/layout.ts`（M3b-2 后 ~1815 行，文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
+- 状态：实施中（M1 摸底 / M2 数据层+反序列化 / M3a 骨架 / M3b-1 叶子宿主 / M3b-2a 引擎双路 / M3b-2b 引擎 Teleport 模式 + LayoutPanel 整壳接线 / M4-1 同组 drop 数据化 / M4-2 结构性 drop 一致性 + 整壳接线修正 / **M5-a 布局状态内部化 / M5-b 命令式装载路径退场（Vue 组树 + 整壳 Teleport 成为唯一装载路径）/ M5-c palette 显式登记** 均已交付并提交；F.5 真机冒烟核心项与 M4 真机用例（同组重排、跨组搬空折叠、region 右缘分割、border 缩放）均已通过；**其上的 tree v-for 化已翻默认**（`docs/tree-list-vfor-plan.md` 步骤 2/4/5 交付，仅剩步骤 5b 收口））；剩余：M5 残余（navDrop 分割分支的 `renderElement(h('group'))` 临时建组、tree 步骤 5b）、真机回归（region 左/上/下方向、数据绑定型窗口逐窗冒烟）、M6 路线评估（可选）
+- 日期：2026-09-03（末次更新 2026-09-11：M5-a/b/c 与 M4/M5 后续修复记录）
+- 范围：`packages/editor/src/components/layout/LayoutPanel.vue`（2026-09-11 实测 1870 行）、`engine/layout/layout.ts`（2026-09-11 实测 2082 行；文内行号多为早期快照、随代码漂移，判定以函数名为准）、`stores/layout.ts`、`components/layout/LayoutTreeView/LayoutPalettePage/LayoutPaletteHost/PaletteNode.vue`、`ui-kit` 的 `YMPageManager`/`YMNavBar`（命令式 api 与 .vue 双实现）
 - 来源：vue3-migration-plan.md「阶段 5（调整后）」首项 —— tree v-for 化回滚（revert `648773f0`）暴露的**前置架构障碍**
+- 索引：文档地图、快照与维护约定见 [README.md](./README.md)
 
 ---
 
@@ -20,6 +21,15 @@ tree v-for 化第 2 步回滚根因（vue3-migration-plan.md L32-34）：
 ---
 
 ## 1. 现状模型（必须原样理解的运行结构）
+
+> **阅读提示（2026-09-11）**：第 1–3 节是 **2026-09-03 设计时快照**（描述当时的命令式布局与拟议路线），其中下列机制**已被后续里程碑替换或删除**，核对实现时不要照抄：
+> - `loadLayoutScheme` 的 `clear(page)` 与 `createGroups`（`renderElement(h('group'))`）**已删除**（M5-b）——Vue 组树 + 整壳 Teleport 是唯一装载路径，装载不再 `clear`；
+> - 命令式 `nav.appendChild(item)` / `manager.appendChild(item.page)` 搬运**已由 Teleport 归属取代**（pageTargets/tabTargets）；
+> - `page.scheme` / `nav.lastValue` / `items.page` expando **已删除**（M5-a），改为引擎内部 `pageSchemes` / `navLastValues` / `itemPages` WeakMap；
+> - 门控 `YM_LAYOUT_VUE_RENDER`（0/1/2 模式）**已删除**（M5-b）；
+> - §1.2 表里的行号是**迁移前快照**（`layout.ts` 由 ~1555 行增至现 **2082** 行），判定以函数名为准；本轮 `pageSwitch` 等函数名仍存在，但尾部行为已变（例如末尾会调 `Layout.activateLayoutPage` / 重排收敛）。
+>
+> **判断当前状态**请看文首状态行、各 M 小节，以及附录 B–F 的阅读提示。
 
 ### 1.1 两级 PageManager + 两处 "palette"
 
@@ -110,6 +120,8 @@ type LayoutScheme = {
 1. A 直接命中根因（vnode/DOM 归属），对既有页面常驻假设零破坏，风险面最小；
 2. A 的中间产物（响应式 scheme、Vue 渲染 group 树、数据化 tabs）是 B 的必经之路，不浪费；
 3. 拖拽/缩放改造（M4）在 A 的数据模型上做，之后切 B 只换叶子渲染层。
+
+> **路线结论落地（2026-09-11 复核）**：**A 已落地并成为唯一路径**（M3a/M3b-1/M3b-2a/M3b-2b → M5-b 删除命令式分支），方案 C 从未采纳；**B 仍未启动**，其评估入口保留在 M6（可选）。本节表格中的"group 后建/页先挂""命令式 reparent"等**问题描述**已在 A 路线下消除，可作为历史背景阅读。
 
 ---
 
@@ -202,7 +214,11 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
   - 修复记录：首版直接把 `ref`（组件上）当元素读 `children`，导致运行期 `Array.from(undefined)` 抛 `undefined is not iterable`（用户上报 `LayoutPanel.vue:1421`），登记实际未生效、由 DOM 兜底掩盖；已按上述模块化修复并加 5 条单测（含「组件 ref 无 `$el`」这一缺陷形态）。真机复核：登记生效（palette 全 12 个 value）+ 打开项目/窗口菜单/树窗口渲染 20 行 + 渲染器无异常。
   - 修复记录 2（Teleport 重建期 `insertBefore of null`）：`LayoutPalettePage` 原先 `:to="target ?? 'body'" :disabled="target === null"`，在「清空归属」patch 中 Vue `moveTeleport` 以 null 容器搬运（真机 `drag-region` 稳定复现，诊断表明发生在 `removePageTargets → nextTick` 这一步）。已改为 **Teleport 恒用稳定元素容器**：有归属用叶子宿主，否则回落本组件所在容器（原地渲染，DOM 位置与旧行为一致），不再有字符串目标/disabled 翻转。
   - 验证：`layout-item-registry.spec.ts` 3 用例、`palette-items.spec.ts` 5 用例、布局 spec 92 用例；editor 全量（含全局挂载审计）全绿。
-- 剩余：`renderElement(h('group'))` 在 navDrop 分割分支的临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；tree v-for 步骤 5b 收口（`elements` shim/`item.element`/NodeElement，需先迁移 eslints 与 useVariableGetterWindow 的按行号访问）。
+  - 修复记录 3（`1314b3bb`）：`Scene.updateHead` 及 `scene-list`/`animation-list`/`animation-motion`/`ui-list`/`ui-transform`/`palette-image`/`particle-motion`/`useCurveWindow` 共 **9 个文件**的消费方用 `rect(nav.lastChild)` 取「最后一个页签」——Vue 渲染的组树 nav 末尾可能是注释/文本锚点，于是抛 `el.getBoundingClientRect is not a function`；统一改用引擎导出的 `headNavOf(head)` + `lastNavItemOf(nav)`（取最后一个**元素**子节点）并补「组不存在/无页签」守卫。同批给 `LayoutPalettePage` 的 Teleport 目标加 `isConnected` 连通性校验（离线回退原地渲染），store 新增 `pruneDetachedTargets()` 并在卸载旧树前调用。真机：对全部 64 个 `page-frame` 派发 resize + 3 次真实视口缩放 → 0 异常；新增 `layout-palette-page.spec` 2 用例。
+  - 修复记录 4（`4994a004`）：`YMPageManager.vue` 根元素带 scoped CSS Module 的 `position: relative; height: 100%`（特异性 0,2,0），压过 `Project/css/layout.css` 的 `.group-manager { position:absolute; top:25px; bottom:0 }`（0,1,0）→ 叶子 manager 取整组高度、底部精确溢出 25px（= nav-bar 高）；在 layout.css 追加更高特异性规则 `.group > .page-manager.group-manager { position:absolute; top:25px; bottom:0; height:auto }`，`LayoutDiagnostics` 3 条告警 → 0 条。
+  - 修复记录 5（`ae389ca9`，由布局装载时序引出的场景侧修复）：新增 `Layout.activateLayoutPage(page)`（打开窗口时把其页面切到前台；若仍有装载在途则完成后幂等补一次）并让 `navWrite` 切页签后下一帧再收敛一次（新可见页此前 `display:none`、尺寸缓存缺失，必须再派发 resize 才会重新量尺寸）；`SceneAnimateEngine` 绘制循环在绘制缓冲 0×0 时跳过绘制（消除 `GL_INVALID_FRAMEBUFFER_OPERATION` 刷屏，尺寸恢复后自动继续、无需重挂 updater）。真机：`#scene` 页面可见 198×477、canvas 绘制缓冲 248 = CSS×dpr、GL 错误 0；新增 `layout-activate-page.spec` 3 用例。
+- **M4 后修（`a893f4c4`）region 落位 `end` 语义 + 兄弟遍历组元素化**：真机事实链定位到「region 落位时新叶初始比例正确，但随后 `setGroupSize` 取到的 `prev` 是 **Vue 注释锚点**」（`prev.end` undefined → `end` NaN → `computeSizesBefore/After` 把锚点也当组 → 兄弟比例被写坏、序列化 `endOf` 兜底成 1、边界线跑到窗口右缘打不到）。修复：① region 落位的 `end` 按拖拽 hint「目标盒子一半」对分（left/top：新组取 `spanMid`、目标不变；right/bottom：目标收缩到 `spanMid`、新组承接原边界）；② 新增 `groupChildrenOf/prevGroupOf/nextGroupOf`，`setGroupSize` 与 `computeSizesBefore/After` 只对**组元素**收敛比例，锚点/border 不再进入运算。验证：真机 left-region 落位 `[0.180339, 1]`（新叶 277px、边界线在 x=276 可命中）且**紧随其后的边界拖拽生效**（`[0.180339,1] → [0.232422,1]`）；新增 `layout-group-sizing.spec` 2 用例 + `layout-nav-drop.spec` region 左右缘 `end` 断言（`[0.25, 0.5, 1]`）。
+- 剩余：① navDrop 分割分支仍用 `renderElement(h('group'))` 临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；② tree v-for 步骤 5b 收口（`elements` shim/`item.element`/NodeElement；真实阻塞项为 `attribute-window`/`enum-window` 的 `item.element?.group`、`text-tip` 的 `elements` shim、`title-bar`/`menu-bar` 的 `childNodes[i].item`——`eslints` 与 `useVariableGetterWindow` 已在步骤 4 迁移完毕，见 `docs/remaining-work.md` T5b）；③ 真机未走查项：region 左/上/下方向（左缘对紧邻右叶按设计 no-op，已由 `regionDragover` 相邻判定覆盖）、数据绑定型窗口逐窗人工冒烟；④ M6（B 路线）评估仍为可选项。逐条验收标准与验证命令见 `docs/remaining-work.md`（L1 / S1 / O1）。
 
 ### M6：B 路线评估（可选）
 
@@ -231,7 +247,7 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 ## 附录 A：涉及文件
 
 - editor：`components/layout/LayoutPanel.vue`（两级 palette + 宿主页 + 整壳接线）、`components/layout/LayoutTreeView.vue`（M3a 递归渲染）、`LayoutPalettePage.vue`（M3b Teleport 归属）、`LayoutPaletteHost.vue`/`PaletteNode.vue`（M3b-2b LayoutPanel 接线件）、`engine/layout/layout.ts`、`layout-scheme.ts`（M2 数据层）、`layout-deserialize.ts`、`layout-page-targets.ts`、`layout-vue-tree.ts`（水合层）、`stores/layout.ts`（pageTargets/tabTargets）、`utils/element-utils.ts`（clear/write/read）、`title/title-bar.ts`（workspace 切换源）、`scene/ui/animation/particle` 各 window 模块（`Layout.manager.switch('directory')` 消费方，M5 改 store）
-- tests：`engine/layout/__tests__/`（layout-scheme/layout-deserialize/layout-config/layout-lifecycle/layout-page-targets/layout-tree-view/layout-vue-leaf/layout-vue-scheme-load/layout-shell-teleport/layout-palette-page/layout-palette-wrappers/layout-vue-teleport-load/layout-group-render + layout-spec-utils 共享 fixture；用例数为循环展开的运行时口径）
+- tests（2026-09-11 实测，17 个 spec + 1 个共享 fixture）：`engine/layout/__tests__/` 下 `layout-scheme` / `layout-scheme-baseline` / `layout-deserialize` / `layout-config` / `layout-lifecycle` / `layout-page-targets` / `layout-tree-view` / `layout-vue-leaf` / `layout-vue-teleport-load` / `layout-shell-teleport` / `layout-teleport-probe` / `layout-palette-page` / `layout-palette-wrappers` / `layout-item-registry` / `layout-nav-drop` / `layout-group-sizing` / `layout-activate-page`，另有 `layout-spec-utils.ts` 共享 fixture。**已删除（M5-b）**：`layout-vue-scheme-load.spec.ts`、`layout-group-render.spec.ts`、`engine/__tests__/layout.spec.ts`；用例数为循环展开的运行时口径
 - ui-kit：`YMPageManager/`、`YMNavBar/`（命令式 api 与 .vue 双实现，M3 后决定收敛）
 - docs：`vue3-migration-plan.md`（进展记录）、`tree-list-vfor-plan.md`（解锁后重做）
 
@@ -240,6 +256,21 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 路径简称：LAY=`engine/layout/layout.ts`、LST=`stores/layout.ts`、CFG=`services/project/config.ts`、OPEN=`services/project/open.ts`、CLOSE=`services/project/close.ts`、TITLE=`title/title-bar.ts`、MENU=`title/menu-bar.ts`、INIT=`main/initialize.ts`、UCFG=`utils/config.ts`、PMA=`ui-kit/YMPageManager/page-manager-api.ts`、NBA=`ui-kit/YMNavBar/nav-bar-api.ts`、PMV/NBV=对应 .vue、LPV=`components/layout/LayoutPanel.vue`。
 
 > 行号口径说明：下文 LAY/LPV 行号为早期快照（layout.ts 由 ~1555 增至 ~1815，M3b 双路/Teleport 逻辑插桩后），附录 C/D/E/F 的 L 引用同理会漂移；核对实现请以函数名/符号为准。
+
+> **附录 B–F 阅读提示（2026-09-11 复核）**：附录 B–F 是 **2026-09-03 设计时盘点**，下列标识符/机制已被后续里程碑替换，核对实现时按此换算：
+>
+> - B.2 `page.scheme` → **已删除**，改为引擎内部 `pageSchemes`（WeakMap）+ 访问器 `getPageScheme` / `resetPageLayoutState`（M5-a；全仓 `.scheme` 仅剩 3 处注释）
+> - B.3 `nav.lastValue` → **已删除**，改为 `navLastValues` + `getNavLastValue` / `setNavLastValue`（M5-a）
+> - B.4 `items.page` → **已删除**，改为 `itemPages` + `setItemPage`（M5-a）；`createGroups` **已删除**（M5-b，全仓 0 处）
+> - B.5 `saveToConfig` 不再逐次读 DOM：改读运行时镜像 `pageTrees`（缺镜像才回退 DOM 快照，`hasAnyTabs` 守卫保留）（M5-a）
+> - C.4 小节标题里的「createGroups / clear / page.scheme 调用面」三项**均已作废**（M5-a/M5-b）
+> - E.1 的门控 `YM_LAYOUT_VUE_RENDER`（0/1/2 模式）**已删除**（M5-b）——Vue 组树 + 整壳 Teleport 是唯一装载路径，附录 E 描述的「双路分支」不复存在
+> - F.3「clear 终版语义」在 M5-b 后进一步简化为**装载不再调用 clear**；F.1/F.2 的 `pageTargets`/`tabTargets` 与 nav 排序 pass **仍然有效**
+> - **D.1 的函数签名未按建议实现**：落地为 `deserializeGroupElement(group)` / `deserializePage(page)`（`engine/layout/layout-deserialize.ts` L46/L72），**没有** `key` / `lastValueOf` / `handles` 返回值；根节点取法也不是 `page.childNodes[0]`，而是 `Array.from(page.children).find(isGroup)`（容忍非组首子节点/Vue 锚点）。`handles` 归引擎（`vueTreeHandles`，`layout.ts:48`）、lastValue 归 `navLastValues`（M5-a）。
+> - **D.2 字段契约逐点核对（2026-09-11）**：`kind`（`split` expando 权威，新增方向白名单——仅 `horizontal`/`vertical` 视为 split）✓、`id`（先序 `layout-N`；注意 `seq` 每次调用重置，跨调用**不保证稳定**）✓、`split` ✓、`children`（`page.children` 中 `hasClass('group')`，非 childNodes）✓、`active`（`manager.index` 为 string 否则 null）✓；**三处需按实现修正**——① `end` 的 `roundTo 6` 发生在**写入侧**（`layout.ts` L773/L826/L833 的 `Math.roundTo(..., 6)`），反序列化只做有限性校验（`endOf`：非有限值回落 1），并非读时取整；② `tabs` 兜底不是 `[...el.nav.childNodes].map(value)`，而是 `nav.children` 过滤 `.nav-item` 且丢弃空 value；③ `lastValue` 一行**已作废**（不再有 `nav.lastValue` expando）。
+> - **D.4 的「M2b 走 mirror（DOM 为事实源）」结论已被 M5-a 取代**：现在的事实源是引擎内部状态（`pageSchemes` / `navLastValues` / `itemPages`）＋ 运行时镜像 `pageTrees`；镜像在收敛点刷新（`layout.ts` L167/L172/L221 清、L224 写、L1275 读），`saveToConfig` 读镜像、缺镜像才回退 DOM 快照。
+> - **E.2 的异步时序说明已作废**（M5-b 删除双路后不存在"等 mount 完成"的问题）；E.3 的真机冒烟清单仍可复用。
+> - **仍成立的线索（已复核）**：`stores/layout.ts` 的 `switchLayout(name)` 仍是**无调用方的死转发**（L113/L283；唯一的 `Layout.switchLayout` 调用在 `menu-bar.ts:519`）；`Layout.afterChange`（`layout.ts:364`）与 `Window.afterChange`（`window-object.ts:29`）**声明后从无赋值**（仅 `?.()` 调用 + 测试置 null）→ 死代码；内存里 `Layout.layout` 与 editor store `config.layout` 仍指向同一对象。
 
 ### B.1 `Layout.layout` / `Layout.default`
 - LAY:188-193 `initialize` 载入 `default.json` → `Layout.default`（write）。
@@ -329,6 +360,8 @@ function deserializeLayoutPage(page: HTMLElement): {
 ```
 根 = `page.childNodes[0]`，非 `.group` 即返回 root:null（home 无布局树；未物化工作区由 config/default 解析而非反序列化空 DOM）。
 
+> **实现差异（2026-09-11）**：实际导出为 `deserializeGroupElement` / `deserializePage`，根取 `page.children` 中第一个 `.group`（见文首阅读提示）。
+
 ### D.2 字段契约
 | 目标字段 | DOM 读法 |
 |---|---|
@@ -340,6 +373,8 @@ function deserializeLayoutPage(page: HTMLElement): {
 | tabs | `el.tabs`，兜底 `[...el.nav.childNodes].map(n=>n.getAttribute('value'))` |
 | active | `el.manager.index`（string\|null，比 nav.selected 可靠——navDrop 跨组后 selected 缺失） |
 | lastValue | `el.nav.lastValue`（会话态不入盘） |
+
+> **已按 2026-09-11 复核修正**：`lastValue` 行**作废**（改 `navLastValues` WeakMap），`end`／`tabs` 两行按实现改写，D.1 签名亦未按此落地——详见文首「附录 B–F 阅读提示」。
 
 ### D.3 一致性钩子（在这些点后快照，勿在读中间态）
 loadLayoutScheme if/else 分支尾、navDrop 尾、saveNavStates 尾、switchLayout 尾、pointerup（缩放结束）、navWrite（仅刷对应叶子 active）。禁止：dragstart/dragover/drop 中间、pointermove 帧内、saveNavStates 与 loadLayoutScheme 之间。

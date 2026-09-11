@@ -1,122 +1,253 @@
 # DOM 迁移矩阵
 
-> 由 `node scripts/dom-guard.mjs tracker` 自动生成。`待迁移` = 仍带 oxlint-disable 豁免的存量文件，迁移完成后应移除豁免注释。
+> 由 `node scripts/dom-guard.mjs tracker` 自动生成。两个口径别混淆：
+> `待迁移命中` = 仍真正使用受限 API（`eslint/no-restricted-properties`）的文件数——迁移债，靠豁免注释才让 `pnpm lint` 干净；
+> `豁免注释` = 仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数，其中一部分**已无命中**（`待迁移命中 + 陈旧豁免 = 豁免注释`）。
 
-| 模块 | 文件 | 命中 | 待迁移 | getElementById | querySelector | getElementsByClass | getElementsByName | getElementsByTag | createElement | appendChild | removeChild | insertBefore | parentNode | innerHTML | addEventListener | dispatchEvent | protoExt |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| editor/App.vue      | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/AppShell.vue | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/animation    | 10 | 6 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 0 |
-| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 |
-| editor/audio        | 4 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |
-| editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/commands     | 41 | 9 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 0 |
-| editor/components   | 358 | 71 | 49 | 54 | 28 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 10 | 0 | 41 | 17 | 0 |
-| editor/composables  | 228 | 40 | 39 | 171 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 0 |
-| editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/data         | 6 | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 |
-| editor/directives   | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/engine       | 52 | 8 | 6 | 1 | 0 | 0 | 0 | 0 | 6 | 21 | 1 | 9 | 22 | 0 | 14 | 0 | 0 |
-| editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 |
-| editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| editor/i18n         | 3 | 1 | 1 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
-| editor/inspector    | 40 | 8 | 3 | 1 | 4 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 8 | 7 | 0 |
-| editor/local        | 4 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 0 | 3 | 2 | 0 |
-| editor/localize     | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/log          | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 |
-| editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |
-| editor/main.ts      | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 |
-| editor/module       | 14 | 5 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 2 | 2 | 0 | 1 | 4 | 1 | 0 |
-| editor/palette      | 12 | 4 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 0 |
-| editor/particle     | 8 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 |
-| editor/plugin       | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 0 |
-| editor/printer      | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
-| editor/scene        | 27 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 |
-| editor/services     | 45 | 6 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 |
-| editor/stores       | 37 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |
-| editor/title        | 5 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 11 | 2 | 0 |
-| editor/tools        | 17 | 7 | 3 | 1 | 0 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 0 |
-| editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/ui           | 9 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 |
-| editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 30 | 9 | 3 | 0 | 2 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 0 |
-| editor/variable     | 10 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 |
-| ui-kit/components   | 95 | 70 | 34 | 0 | 0 | 0 | 7 | 0 | 110 | 83 | 13 | 13 | 61 | 2 | 263 | 103 | 0 |
-| ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/utils        | 11 | 5 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 |
-| 合计                  | 1109 |  | 155 | 232 | 38 | 1 | 17 | 0 | 142 | 129 | 20 | 30 | 125 | 3 | 575 | 173 | 0 |
+| 模块 | 文件 | 命中 | 待迁移命中 | 豁免注释 | getElementById | querySelector | getElementsByClass | getElementsByName | getElementsByTag | createElement | appendChild | removeChild | insertBefore | parentNode | innerHTML | addEventListener | dispatchEvent | dollarLookup | domParser | protoExt |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| editor/App.vue      | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/AppShell.vue | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/animation    | 10 | 7 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 48 | 0 | 0 |
+| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 11 | 0 | 0 |
+| editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
+| editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/commands     | 41 | 29 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 153 | 0 | 0 |
+| editor/components   | 359 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 722 | 0 | 0 |
+| editor/composables  | 228 | 47 | 43 | 177 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
+| editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/data         | 6 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 15 | 0 | 0 |
+| editor/directives   | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/engine       | 52 | 9 | 5 | 6 | 1 | 2 | 0 | 0 | 0 | 6 | 17 | 1 | 9 | 22 | 0 | 14 | 0 | 15 | 0 | 0 |
+| editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 9 | 0 | 0 |
+| editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| editor/i18n         | 3 | 1 | 1 | 1 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| editor/inspector    | 40 | 38 | 3 | 3 | 1 | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 8 | 7 | 168 | 0 | 0 |
+| editor/local        | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 0 | 3 | 2 | 18 | 0 | 0 |
+| editor/localize     | 1 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/log          | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 5 | 0 | 0 |
+| editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
+| editor/main.ts      | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
+| editor/module       | 14 | 7 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 2 | 2 | 0 | 1 | 4 | 1 | 25 | 1 | 0 |
+| editor/palette      | 12 | 5 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 29 | 0 | 0 |
+| editor/particle     | 8 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 22 | 0 | 0 |
+| editor/plugin       | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 7 | 0 | 0 |
+| editor/printer      | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
+| editor/scene        | 27 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 36 | 0 | 0 |
+| editor/services     | 45 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 14 | 0 | 0 |
+| editor/stores       | 37 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 21 | 0 | 0 |
+| editor/title        | 5 | 5 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 11 | 2 | 40 | 0 | 0 |
+| editor/tools        | 17 | 8 | 3 | 3 | 1 | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 79 | 0 | 0 |
+| editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/ui           | 9 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 18 | 0 | 0 |
+| editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/utils        | 30 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/variable     | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 15 | 0 | 0 |
+| ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 67 | 2 | 263 | 103 | 0 | 0 | 0 |
+| ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
+| 合计                  | 1111 |  | 160 | 295 | 244 | 57 | 1 | 17 | 0 | 138 | 122 | 20 | 29 | 132 | 3 | 575 | 173 | 1489 | 1 | 0 |
+
+## 口径
+
+- 扫描文件：**1111**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 待迁移命中文件：**160**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**295**
+- 陈旧豁免文件：**135**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
+- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**1**
+- 正则命中但无豁免注释：**1**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+  - `packages/editor/src/components/layout/palette-items.ts`
+- 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1489** 处 / **239** 文件、`new DOMParser()` **1** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+
+## 辅助口径（未门禁，仅计数）
+
+> 同属 DOM 耦合，但既不在 lint 规则内、也不进每模块列（避免表过宽）。**只作覆盖面清单**——2026-09-11 的度量审计表明这类耦合最容易被漏记（`$('#id')` 就是这么发现的）。
+
+| 类别 | 处数 | 文件数 |
+| --- | --- | --- |
+| style.* 赋值 | 336 | 78 |
+| .children 遍历 | 229 | 73 |
+| hasClass() 读 class 当状态 | 215 | 51 |
+| textContent 赋值 | 145 | 45 |
+| clientWidth/Height 读 | 139 | 40 |
+| classList.add/remove/toggle | 134 | 43 |
+| get/set/removeAttribute | 87 | 36 |
+| scrollTop 写 | 84 | 39 |
+| parentElement | 47 | 46 |
+| closest() | 28 | 13 |
+| next/prevElementSibling | 22 | 7 |
+| element.append/prepend | 20 | 15 |
+| nodeValue 赋值 | 6 | 3 |
+| offsetWidth/Height 读 | 6 | 3 |
+| getComputedStyle | 6 | 5 |
+| innerHTML 赋值 | 2 | 2 |
+| prototype 访问器定义（逗号形式） | 1 | 1 |
+| replaceChildren/insertAdjacentHTML/matches() | 0 | 0 |
+| customElements.define / attachShadow | 0 | 0 |
+| dataset.* 状态（R-8 监测位） | 0 | 0 |
 
 ## 明细
 
-| 文件 | 行数 | 命中 | 待迁移豁免 |
+| 文件 | 行数 | 命中 | 豁免注释 |
 | --- | --- | --- | --- |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1667 | 59 | 是 |
-| packages/editor/src/engine/layout/layout.ts | 1815 | 58 | 是 |
+| packages/editor/src/components/tools/IfCondition.vue | 812 | 78 | - |
+| packages/editor/src/components/tools/SetNumberOperand.vue | 767 | 60 | 是 |
+| packages/editor/src/engine/layout/layout.ts | 2083 | 59 | 是 |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1715 | 57 | 是 |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
+| packages/editor/src/components/commands/SetString.vue | 531 | 44 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2328 | 42 | 是 |
-| packages/editor/src/composables/useProjectSettingsWindow.ts | 551 | 37 | 是 |
+| packages/editor/src/composables/useProjectSettingsWindow.ts | 551 | 41 | 是 |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2610 | 37 | 是 |
-| packages/editor/src/composables/useVariableGetterWindow.ts | 643 | 34 | 是 |
+| packages/editor/src/composables/useVariableGetterWindow.ts | 645 | 35 | 是 |
+| packages/editor/src/inspector/element-page.ts | 367 | 31 | 是 |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | 是 |
+| packages/editor/src/animation/animation-initialize.ts | 500 | 30 | - |
+| packages/editor/src/tools/text-capture.ts | 978 | 29 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1436 | 29 | 是 |
-| packages/editor/src/utils/element-utils.ts | 620 | 27 | 是 |
+| packages/editor/src/tools/color-picker-window.ts | 443 | 28 | 是 |
+| packages/editor/src/utils/element-utils.ts | 620 | 28 | 是 |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | 是 |
+| packages/editor/src/scene/scene-window.ts | 1527 | 25 | - |
+| packages/editor/src/animation/animation-window.ts | 543 | 24 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
+| packages/editor/src/components/commands/SetList.vue | 240 | 23 | - |
+| packages/editor/src/data/transition-window.ts | 1385 | 23 | 是 |
+| packages/editor/src/title/menu-bar.ts | 1179 | 22 | 是 |
+| packages/editor/src/tools/condition-list.ts | 307 | 22 | - |
+| packages/editor/src/components/commands/SetObjectAnimation.vue | 252 | 21 | - |
+| packages/editor/src/components/commands/GetActor.vue | 183 | 20 | - |
+| packages/editor/src/palette/palette-initialize.ts | 147 | 20 | 是 |
+| packages/editor/src/components/commands/CallEvent.vue | 146 | 19 | - |
+| packages/editor/src/components/commands/StopEvent.vue | 146 | 19 | - |
+| packages/editor/src/inspector/file-actor-page.ts | 522 | 19 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 525 | 19 | 是 |
+| packages/editor/src/stores/search-string.ts | 207 | 17 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
+| packages/editor/src/components/commands/SetAnimationComponent.vue | 230 | 16 | - |
+| packages/editor/src/components/commands/TintImage.vue | 207 | 16 | - |
+| packages/editor/src/palette/tile-frame-index.ts | 371 | 16 | - |
+| packages/editor/src/components/commands/ForEach.vue | 144 | 15 | - |
+| packages/editor/src/engine/sprite/sprite.ts | 774 | 15 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
+| packages/editor/src/attribute/attribute-window.ts | 1054 | 14 | - |
+| packages/editor/src/commands/accessors/position-accessor-window.ts | 62 | 14 | - |
+| packages/editor/src/components/commands/Return.vue | 114 | 14 | - |
+| packages/editor/src/components/commands/SetObject.vue | 140 | 14 | - |
+| packages/editor/src/local/local-window.ts | 906 | 14 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
+| packages/editor/src/commands/custom-command-window.ts | 575 | 13 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
+| packages/editor/src/composables/useArrayWindow.ts | 298 | 13 | 是 |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 13 | 是 |
+| packages/editor/src/inspector/scene-actor-page.ts | 172 | 13 | - |
+| packages/editor/src/ui/ui-initialize.ts | 330 | 13 | - |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 405 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
+| packages/editor/src/components/commands/FollowActor.vue | 166 | 12 | - |
+| packages/editor/src/components/tools/SwitchCondition.vue | 162 | 12 | - |
+| packages/editor/src/enum/enum-window.ts | 893 | 12 | - |
+| packages/editor/src/plugin/plugin-initialize.ts | 144 | 12 | - |
+| packages/editor/src/variable/variable.ts | 362 | 12 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
+| packages/editor/src/commands/event-editor-initialize.ts | 498 | 11 | - |
+| packages/editor/src/components/commands/GetMultipleActors.vue | 138 | 11 | - |
+| packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 11 | 是 |
+| packages/editor/src/inspector/inspector.ts | 507 | 11 | - |
+| packages/editor/src/module/editdata.ts | 381 | 11 | 是 |
+| packages/editor/src/particle/particle-initialize.ts | 134 | 11 | - |
+| packages/editor/src/title/new-project-window.ts | 363 | 11 | - |
+| packages/editor/src/tools/image-crop-window.ts | 366 | 11 | - |
+| packages/editor/src/tools/window-object.ts | 510 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
+| packages/editor/src/commands/accessors/element-accessor-window.ts | 55 | 10 | - |
+| packages/editor/src/commands/accessors/skill-accessor-window.ts | 47 | 10 | - |
+| packages/editor/src/commands/text-tip.ts | 380 | 10 | 是 |
+| packages/editor/src/components/commands/CommandLine.vue | 95 | 10 | - |
+| packages/editor/src/components/commands/LoadImage.vue | 108 | 10 | - |
+| packages/editor/src/components/commands/SetBoolean.vue | 144 | 10 | - |
+| packages/editor/src/components/commands/SetInventory.vue | 150 | 10 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 10 | 是 |
-| packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 10 | 是 |
+| packages/editor/src/module/resource.ts | 668 | 10 | - |
+| packages/editor/src/palette/auto-tile.ts | 979 | 10 | 是 |
+| packages/editor/src/title/title-bar.ts | 757 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
-| packages/editor/src/components/layout/LayoutPanel.vue | 1861 | 9 | - |
-| packages/editor/src/inspector/inspector.ts | 507 | 9 | - |
-| packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
+| packages/editor/src/commands/accessors/equipment-accessor-window.ts | 44 | 9 | - |
+| packages/editor/src/commands/accessors/item-accessor-window.ts | 44 | 9 | - |
+| packages/editor/src/commands/command-custom.ts | 371 | 9 | - |
+| packages/editor/src/commands/property-window/property-window-factory.ts | 198 | 9 | 是 |
+| packages/editor/src/components/commands/ChangeActorEquipment.vue | 112 | 9 | - |
+| packages/editor/src/components/layout/LayoutPanel.vue | 1870 | 9 | - |
+| packages/editor/src/services/ipc/webserver.ts | 110 | 9 | - |
+| packages/editor/src/title/deploy-project-window.ts | 699 | 9 | - |
+| packages/editor/src/ui/ui-window.ts | 316 | 9 | - |
+| packages/editor/src/utils/dom.ts | 192 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 155 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 63 | 9 | 是 |
-| packages/editor/src/animation/animation-list.ts | 1111 | 8 | - |
+| packages/editor/src/animation/animation-list.ts | 1115 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
-| packages/editor/src/commands/text-tip.ts | 372 | 8 | 是 |
-| packages/editor/src/inspector/element-page.ts | 367 | 8 | 是 |
+| packages/editor/src/commands/event-editor-commands.ts | 247 | 8 | 是 |
+| packages/editor/src/components/commands/CreateElement.vue | 99 | 8 | - |
+| packages/editor/src/components/commands/DownloadFile.vue | 123 | 8 | - |
+| packages/editor/src/tools/property-list.ts | 257 | 8 | - |
 | packages/editor/src/ui/ui-pointer.ts | 583 | 8 | - |
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
+| packages/editor/src/commands/accessors/actor-accessor-window.ts | 43 | 7 | - |
+| packages/editor/src/commands/accessors/ancestor-accessor-window.ts | 39 | 7 | - |
+| packages/editor/src/commands/accessors/state-accessor-window.ts | 39 | 7 | - |
+| packages/editor/src/commands/command-tip.ts | 448 | 7 | - |
+| packages/editor/src/components/commands/CastSkill.vue | 87 | 7 | - |
+| packages/editor/src/components/commands/MoveActor.vue | 97 | 7 | - |
+| packages/editor/src/components/commands/MoveCamera.vue | 99 | 7 | - |
+| packages/editor/src/components/commands/PlayAnimation.vue | 137 | 7 | - |
+| packages/editor/src/components/commands/SetFocus.vue | 92 | 7 | - |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 241 | 7 | 是 |
-| packages/editor/src/composables/useCurveWindow.ts | 455 | 7 | 是 |
+| packages/editor/src/composables/useCurveWindow.ts | 457 | 7 | 是 |
 | packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 7 | 是 |
-| packages/editor/src/composables/useTeamWindow.ts | 581 | 7 | 是 |
-| packages/editor/src/data/transition-window.ts | 1388 | 7 | 是 |
-| packages/editor/src/local/local-window.ts | 906 | 7 | - |
-| packages/editor/src/title/menu-bar.ts | 1179 | 7 | 是 |
-| packages/editor/src/tools/color-picker-window.ts | 443 | 7 | 是 |
-| packages/editor/src/tools/text-capture.ts | 978 | 7 | - |
-| packages/editor/src/tools/window-object.ts | 510 | 7 | 是 |
+| packages/editor/src/composables/useTeamWindow.ts | 578 | 7 | 是 |
+| packages/editor/src/inspector/file-event-page.ts | 245 | 7 | - |
+| packages/editor/src/inspector/scene-animation-page.ts | 190 | 7 | - |
+| packages/editor/src/inspector/scene-tilemap-page.ts | 210 | 7 | 是 |
+| packages/editor/src/particle/particle-window.ts | 421 | 7 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 132 | 7 | 是 |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
-| packages/editor/src/animation/animation-initialize.ts | 500 | 6 | - |
-| packages/editor/src/commands/custom-command-window.ts | 575 | 6 | - |
-| packages/editor/src/module/eslints.ts | 268 | 6 | 是 |
-| packages/editor/src/title/title-bar.ts | 757 | 6 | - |
-| packages/editor/src/tools/image-crop-window.ts | 366 | 6 | - |
-| packages/editor/src/utils/dom.ts | 192 | 6 | 是 |
+| packages/editor/src/commands/accessors/tilemap-accessor-window.ts | 35 | 6 | - |
+| packages/editor/src/components/commands/ChangeActorPortrait.vue | 90 | 6 | - |
+| packages/editor/src/components/commands/GetTarget.vue | 106 | 6 | - |
+| packages/editor/src/components/commands/MoveElement.vue | 98 | 6 | - |
+| packages/editor/src/components/commands/MoveLight.vue | 98 | 6 | - |
+| packages/editor/src/components/commands/TintScreen.vue | 162 | 6 | - |
+| packages/editor/src/components/commands/UseItem.vue | 88 | 6 | - |
+| packages/editor/src/components/inspector/SceneActorPage.vue | 241 | 6 | 是 |
+| packages/editor/src/components/inspector/SceneParallaxPage.vue | 489 | 6 | 是 |
+| packages/editor/src/inspector/element-button-page.ts | 275 | 6 | - |
+| packages/editor/src/inspector/element-text-page.ts | 211 | 6 | - |
+| packages/editor/src/inspector/file-scene-page.ts | 180 | 6 | - |
+| packages/editor/src/inspector/file-trigger-page.ts | 207 | 6 | - |
+| packages/editor/src/inspector/file-ui-page.ts | 120 | 6 | 是 |
+| packages/editor/src/inspector/scene-light-page.ts | 148 | 6 | - |
+| packages/editor/src/inspector/scene-parallax-page.ts | 181 | 6 | - |
+| packages/editor/src/inspector/scene-particle-page.ts | 152 | 6 | - |
+| packages/editor/src/inspector/scene-region-page.ts | 108 | 6 | - |
+| packages/editor/src/local/export-language-window.ts | 117 | 6 | - |
+| packages/editor/src/module/eslints.ts | 275 | 6 | 是 |
+| packages/editor/src/scene/tilemap-shortcut-list.ts | 94 | 6 | - |
+| packages/editor/src/services/project/setting-config/renderer.ts | 172 | 6 | 是 |
+| packages/editor/src/title/home-page.ts | 510 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 306 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/file-var-api.ts | 192 | 6 | 是 |
 | packages/ui-kit/src/components/basic/YMFileVar/YMFileVar.vue | 245 | 6 | - |
@@ -130,18 +261,30 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/textarea-var-api.ts | 200 | 6 | 是 |
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 110 | 6 | 是 |
-| packages/editor/src/components/inspector/SceneActorPage.vue | 241 | 5 | 是 |
-| packages/editor/src/components/inspector/SceneParallaxPage.vue | 489 | 5 | 是 |
+| packages/editor/src/commands/accessors/angle-accessor-window.ts | 37 | 5 | - |
+| packages/editor/src/commands/accessors/trigger-accessor-window.ts | 29 | 5 | - |
+| packages/editor/src/components/commands/GameData.vue | 82 | 5 | - |
+| packages/editor/src/components/commands/RegisterEvent.vue | 106 | 5 | - |
+| packages/editor/src/components/commands/RenderOutline.vue | 82 | 5 | - |
+| packages/editor/src/components/commands/SetEvent.vue | 109 | 5 | - |
+| packages/editor/src/components/commands/SetShortcut.vue | 87 | 5 | - |
+| packages/editor/src/components/inspector/FileScenePage.vue | 256 | 5 | 是 |
+| packages/editor/src/components/inspector/SceneAnimationPage.vue | 330 | 5 | 是 |
+| packages/editor/src/components/inspector/SceneLightPage.vue | 505 | 5 | 是 |
+| packages/editor/src/components/inspector/SceneParticlePage.vue | 302 | 5 | 是 |
+| packages/editor/src/components/inspector/SceneTilemapPage.vue | 323 | 5 | 是 |
 | packages/editor/src/composables/commands/useRegisterEventCommandSchema.ts | 421 | 5 | 是 |
 | packages/editor/src/composables/useIfBranchSchema.ts | 131 | 5 | 是 |
+| packages/editor/src/composables/useIfConditionSchema.ts | 975 | 5 | 是 |
 | packages/editor/src/composables/usePresetElementWindow.ts | 241 | 5 | 是 |
-| packages/editor/src/composables/usePresetObjectWindow.ts | 262 | 5 | 是 |
-| packages/editor/src/engine/sprite/sprite.ts | 774 | 5 | - |
-| packages/editor/src/palette/auto-tile.ts | 979 | 5 | 是 |
-| packages/editor/src/palette/palette-initialize.ts | 147 | 5 | 是 |
-| packages/editor/src/plugin/plugin-initialize.ts | 144 | 5 | - |
+| packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 5 | 是 |
+| packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
+| packages/editor/src/local/import-language-window.ts | 124 | 5 | - |
+| packages/editor/src/log/related-references.ts | 927 | 5 | - |
+| packages/editor/src/module/set-tile-tag.ts | 45 | 5 | - |
+| packages/editor/src/particle/particle-motion.ts | 684 | 5 | - |
+| packages/editor/src/scene/scene-animate.ts | 189 | 5 | - |
 | packages/editor/src/scene/scene-events-window.ts | 367 | 5 | - |
-| packages/editor/src/scene/scene-window.ts | 1521 | 5 | - |
 | packages/ui-kit/src/components/basic/YMGamepadBox/YMGamepadBox.vue | 216 | 5 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 185 | 5 | - |
@@ -150,33 +293,71 @@
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 140 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 407 | 4 | - |
 | packages/editor/src/animation/animation-timeline.ts | 1183 | 4 | 是 |
-| packages/editor/src/commands/command-tip.ts | 444 | 4 | - |
-| packages/editor/src/components/inspector/FileScenePage.vue | 256 | 4 | 是 |
+| packages/editor/src/commands/accessors/region-accessor-window.ts | 28 | 4 | - |
+| packages/editor/src/commands/schema.ts | 434 | 4 | - |
+| packages/editor/src/components/commands/ChangeActorSkill.vue | 90 | 4 | - |
+| packages/editor/src/components/commands/ChangeActorState.vue | 88 | 4 | - |
+| packages/editor/src/components/commands/HttpRequest.vue | 126 | 4 | - |
+| packages/editor/src/components/commands/JumpTo.vue | 75 | 4 | - |
+| packages/editor/src/components/commands/LoadScene.vue | 84 | 4 | - |
+| packages/editor/src/components/commands/Loop.vue | 75 | 4 | - |
+| packages/editor/src/components/commands/SetMovementSpeed.vue | 98 | 4 | - |
+| packages/editor/src/components/commands/SetPan.vue | 100 | 4 | - |
+| packages/editor/src/components/commands/SetReverb.vue | 109 | 4 | - |
+| packages/editor/src/components/commands/SetTeamRelation.vue | 69 | 4 | - |
+| packages/editor/src/components/commands/SetVolume.vue | 100 | 4 | - |
+| packages/editor/src/components/commands/ShakeScreen.vue | 107 | 4 | - |
 | packages/editor/src/components/inspector/ParticleLayerPage.vue | 1371 | 4 | 是 |
-| packages/editor/src/components/inspector/SceneAnimationPage.vue | 330 | 4 | 是 |
-| packages/editor/src/components/inspector/SceneLightPage.vue | 505 | 4 | 是 |
-| packages/editor/src/components/inspector/SceneParticlePage.vue | 302 | 4 | 是 |
-| packages/editor/src/components/inspector/SceneTilemapPage.vue | 323 | 4 | 是 |
-| packages/editor/src/composables/useArrayWindow.ts | 298 | 4 | 是 |
-| packages/editor/src/composables/useIfConditionSchema.ts | 975 | 4 | 是 |
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
 | packages/editor/src/composables/usePointerObjectWindow.ts | 39 | 4 | 是 |
+| packages/editor/src/composables/useSwitchConditionSchema.ts | 298 | 4 | 是 |
 | packages/editor/src/engine/webgl/webgl-init.ts | 113 | 4 | 是 |
 | packages/editor/src/i18n/index.ts | 154 | 4 | 是 |
+| packages/editor/src/inspector/element-textbox-page.ts | 156 | 4 | - |
+| packages/editor/src/inspector/particle-layer-page.ts | 453 | 4 | - |
+| packages/editor/src/particle/particle-events.ts | 213 | 4 | - |
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
-| packages/editor/src/title/home-page.ts | 510 | 4 | - |
-| packages/editor/src/tools/script-list.ts | 207 | 4 | 是 |
+| packages/editor/src/scene/move-scene.ts | 56 | 4 | - |
+| packages/editor/src/services/project/setting-config/index.ts | 143 | 4 | - |
+| packages/editor/src/stores/selector.ts | 433 | 4 | - |
+| packages/editor/src/tools/script-list.ts | 204 | 4 | 是 |
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
-| packages/editor/src/ui/ui-initialize.ts | 330 | 4 | - |
+| packages/editor/src/variable/open.ts | 85 | 4 | - |
 | packages/ui-kit/src/components/basic/YMDetailBox/detail-box-api.ts | 96 | 4 | 是 |
 | packages/ui-kit/src/components/basic/YMDetailSummary/detail-summary-api.ts | 78 | 4 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/YMScrollBar.vue | 421 | 4 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-core.ts | 378 | 4 | - |
 | packages/ui-kit/src/components/business/YMFileHeadPane/YMFileHeadPane.vue | 495 | 4 | - |
 | packages/ui-kit/src/utils/common-list.ts | 92 | 4 | - |
-| packages/editor/src/attribute/attribute-window.ts | 1053 | 3 | - |
 | packages/editor/src/commands/event-editor-events.ts | 304 | 3 | - |
+| packages/editor/src/commands/property-window/set-image-property-window.ts | 60 | 3 | - |
+| packages/editor/src/commands/property-window/set-video-property-window.ts | 47 | 3 | - |
+| packages/editor/src/components/commands/ControlButton.vue | 81 | 3 | - |
+| packages/editor/src/components/commands/DeleteElement.vue | 74 | 3 | - |
+| packages/editor/src/components/commands/GetObjectProperty.vue | 82 | 3 | - |
+| packages/editor/src/components/commands/If.vue | 78 | 3 | - |
+| packages/editor/src/components/commands/PlayAudio.vue | 93 | 3 | - |
+| packages/editor/src/components/commands/RequestURL.vue | 88 | 3 | - |
+| packages/editor/src/components/commands/SetAmbientLight.vue | 89 | 3 | - |
+| packages/editor/src/components/commands/SetAngle.vue | 80 | 3 | - |
+| packages/editor/src/components/commands/SetAnimation.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetButton.vue | 67 | 3 | - |
+| packages/editor/src/components/commands/SetDialogBox.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetGameSpeed.vue | 85 | 3 | - |
+| packages/editor/src/components/commands/SetImage.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetNumber.vue | 76 | 3 | - |
+| packages/editor/src/components/commands/SetObjectProperty.vue | 84 | 3 | - |
+| packages/editor/src/components/commands/SetPointerEventRoot.vue | 76 | 3 | - |
+| packages/editor/src/components/commands/SetProgressBar.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetText.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetTextBox.vue | 67 | 3 | - |
+| packages/editor/src/components/commands/SetVideo.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetWindow.vue | 68 | 3 | - |
+| packages/editor/src/components/commands/SetZoomFactor.vue | 85 | 3 | - |
+| packages/editor/src/components/commands/Switch.vue | 81 | 3 | - |
+| packages/editor/src/components/commands/TranslateActor.vue | 90 | 3 | - |
 | packages/editor/src/components/common/CheckBox.vue | 216 | 3 | - |
+| packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 167 | 3 | 是 |
 | packages/editor/src/components/inspector/FileFontPage.vue | 104 | 3 | 是 |
 | packages/editor/src/components/inspector/FileScriptPage.vue | 82 | 3 | 是 |
 | packages/editor/src/components/inspector/UIButtonPage.vue | 695 | 3 | 是 |
@@ -184,44 +365,54 @@
 | packages/editor/src/components/inspector/UIImagePage.vue | 576 | 3 | 是 |
 | packages/editor/src/components/inspector/UIProgressBarPage.vue | 364 | 3 | 是 |
 | packages/editor/src/components/inspector/UITextPage.vue | 369 | 3 | 是 |
+| packages/editor/src/components/toast.ts | 42 | 3 | 是 |
+| packages/editor/src/components/tools/IfBranch.vue | 71 | 3 | - |
+| packages/editor/src/components/tools/Reference.vue | 78 | 3 | 是 |
+| packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 3 | 是 |
-| packages/editor/src/enum/enum-window.ts | 892 | 3 | - |
-| packages/editor/src/inspector/file-ui-page.ts | 120 | 3 | 是 |
+| packages/editor/src/inspector/file-script-page.ts | 84 | 3 | - |
+| packages/editor/src/inspector/file-tileset-page.ts | 160 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 89 | 3 | 是 |
+| packages/editor/src/log/log-window.ts | 184 | 3 | - |
 | packages/editor/src/main.ts | 27 | 3 | 是 |
-| packages/editor/src/module/editdata.ts | 381 | 3 | 是 |
-| packages/editor/src/particle/particle-initialize.ts | 134 | 3 | - |
-| packages/editor/src/services/project/setting-config/renderer.ts | 172 | 3 | 是 |
+| packages/editor/src/module/apkbuilder.ts | 78 | 3 | - |
+| packages/editor/src/module/constants.ts | 106 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
-| packages/editor/src/variable/open.ts | 85 | 3 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 134 | 3 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-core.ts | 134 | 3 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 356 | 3 | - |
-| packages/editor/src/animation/animation-motion.ts | 1127 | 2 | 是 |
+| packages/editor/src/animation/animation-motion.ts | 1129 | 2 | 是 |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
-| packages/editor/src/commands/command-custom.ts | 371 | 2 | - |
-| packages/editor/src/commands/event-editor-commands.ts | 246 | 2 | 是 |
-| packages/editor/src/commands/event-editor-open.ts | 299 | 2 | - |
-| packages/editor/src/commands/property-window/property-window-factory.ts | 198 | 2 | 是 |
+| packages/editor/src/commands/event-editor-open.ts | 300 | 2 | - |
+| packages/editor/src/commands/property-window/set-dialog-property-window.ts | 163 | 2 | - |
+| packages/editor/src/commands/property-window/set-progress-property-window.ts | 54 | 2 | - |
+| packages/editor/src/commands/property-window/set-text-property-window.ts | 161 | 2 | - |
+| packages/editor/src/components/commands/AddAnimationComponent.vue | 111 | 2 | - |
+| packages/editor/src/components/commands/ChangeActorTeam.vue | 62 | 2 | - |
+| packages/editor/src/components/commands/CreateActor.vue | 80 | 2 | - |
+| packages/editor/src/components/commands/CreateGlobalActor.vue | 68 | 2 | - |
+| packages/editor/src/components/commands/DetectTargets.vue | 83 | 2 | - |
+| packages/editor/src/components/commands/SetLoop.vue | 66 | 2 | - |
+| packages/editor/src/components/commands/ShowChoices.vue | 68 | 2 | - |
+| packages/editor/src/components/commands/Transition.vue | 94 | 2 | - |
+| packages/editor/src/components/commands/UploadFile.vue | 90 | 2 | - |
 | packages/editor/src/components/common/ColorBox.vue | 132 | 2 | - |
 | packages/editor/src/components/common/DetailBox.vue | 91 | 2 | - |
 | packages/editor/src/components/common/SwitchItem.vue | 113 | 2 | - |
 | packages/editor/src/components/common/WindowFrame.vue | 169 | 2 | - |
-| packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 167 | 2 | 是 |
 | packages/editor/src/components/inspector/AnimSpriteLayerPage.vue | 131 | 2 | 是 |
 | packages/editor/src/components/inspector/FileImagePage.vue | 77 | 2 | 是 |
 | packages/editor/src/components/inspector/FileVideoPage.vue | 69 | 2 | 是 |
 | packages/editor/src/components/inspector/SceneRegionPage.vue | 162 | 2 | 是 |
 | packages/editor/src/components/inspector/UITextBoxPage.vue | 195 | 2 | 是 |
 | packages/editor/src/components/inspector/UIWindowPage.vue | 188 | 2 | 是 |
-| packages/editor/src/components/toast.ts | 42 | 2 | 是 |
+| packages/editor/src/components/tools/Choice.vue | 65 | 2 | - |
 | packages/editor/src/components/tools/ExportLanguage.vue | 91 | 2 | 是 |
 | packages/editor/src/components/tools/LightGetter.vue | 106 | 2 | 是 |
 | packages/editor/src/components/tools/ObjectGetter.vue | 106 | 2 | 是 |
-| packages/editor/src/components/tools/Reference.vue | 78 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 95 | 2 | 是 |
-| packages/editor/src/components/tools/SetNumberOperand.vue | 767 | 2 | 是 |
+| packages/editor/src/components/tools/SwitchBranch.vue | 63 | 2 | - |
 | packages/editor/src/components/tools/VariableGetter2.vue | 114 | 2 | 是 |
 | packages/editor/src/composables/commands/useDownloadFileCommandSchema.ts | 140 | 2 | 是 |
 | packages/editor/src/composables/commands/useGetActorCommandSchema.ts | 279 | 2 | 是 |
@@ -229,26 +420,61 @@
 | packages/editor/src/composables/commands/useSetShortcutCommandSchema.ts | 115 | 2 | 是 |
 | packages/editor/src/composables/commands/useTransitionCommandSchema.ts | 115 | 2 | 是 |
 | packages/editor/src/composables/commands/useWebSocketSendCommandSchema.ts | 63 | 2 | 是 |
+| packages/editor/src/composables/useAnimSoundFramePage.ts | 113 | 2 | - |
 | packages/editor/src/composables/useTextCaptureWindow.ts | 152 | 2 | 是 |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
+| packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
 | packages/editor/src/engine/webgl/texture.ts | 133 | 2 | 是 |
-| packages/editor/src/inspector/file-script-page.ts | 84 | 2 | - |
+| packages/editor/src/inspector/animation-action-page.ts | 98 | 2 | - |
+| packages/editor/src/inspector/animation-bone-frame-page.ts | 89 | 2 | - |
+| packages/editor/src/inspector/animation-particle-frame-page.ts | 100 | 2 | - |
+| packages/editor/src/inspector/animation-sprite-frame-page.ts | 120 | 2 | - |
+| packages/editor/src/inspector/animation-sprite-layer-page.ts | 77 | 2 | - |
+| packages/editor/src/inspector/element-animation-page.ts | 128 | 2 | - |
+| packages/editor/src/inspector/file-audio-page.ts | 411 | 2 | - |
+| packages/editor/src/inspector/file-font-page.ts | 100 | 2 | - |
+| packages/editor/src/inspector/file-image-page.ts | 97 | 2 | - |
+| packages/editor/src/inspector/file-video-page.ts | 113 | 2 | - |
 | packages/editor/src/local/local-object.ts | 169 | 2 | - |
-| packages/editor/src/log/log-window.ts | 184 | 2 | - |
-| packages/editor/src/log/related-references.ts | 927 | 2 | - |
+| packages/editor/src/log/update-log-window.ts | 62 | 2 | - |
 | packages/editor/src/main/startup.ts | 43 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
-| packages/editor/src/module/constants.ts | 106 | 2 | - |
-| packages/editor/src/particle/particle-events.ts | 213 | 2 | - |
+| packages/editor/src/palette/tile-frame-generator.ts | 59 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1403 | 2 | 是 |
-| packages/editor/src/tools/event-list.ts | 189 | 2 | - |
+| packages/editor/src/stores/browser.ts | 582 | 2 | - |
+| packages/editor/src/tools/event-list.ts | 185 | 2 | - |
 | packages/editor/src/utils/dpr.ts | 13 | 2 | - |
 | packages/editor/src/utils/keyboard.ts | 43 | 2 | - |
+| packages/editor/src/variable/panel.ts | 129 | 2 | - |
 | packages/ui-kit/src/components/basic/YMEmptyState/YMEmptyState.vue | 64 | 2 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/YMSelectBox.vue | 377 | 2 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/drag-and-drop-hint-api.ts | 97 | 2 | 是 |
 | packages/editor/src/audio/audio-manager.ts | 145 | 1 | 是 |
-| packages/editor/src/commands/event-editor-initialize.ts | 498 | 1 | - |
+| packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 1 | - |
+| packages/editor/src/commands/property-window/set-textbox-property-window.ts | 46 | 1 | - |
+| packages/editor/src/components/commands/ActivateScene.vue | 59 | 1 | - |
+| packages/editor/src/components/commands/Block.vue | 88 | 1 | - |
+| packages/editor/src/components/commands/ChangeActorMotion.vue | 64 | 1 | - |
+| packages/editor/src/components/commands/ChangePassableTerrain.vue | 66 | 1 | - |
+| packages/editor/src/components/commands/ChangeThreat.vue | 73 | 1 | - |
+| packages/editor/src/components/commands/ControlDialog.vue | 70 | 1 | - |
+| packages/editor/src/components/commands/DiscardTargets.vue | 76 | 1 | - |
+| packages/editor/src/components/commands/FixAngle.vue | 62 | 1 | - |
+| packages/editor/src/components/commands/PlayActorAnimation.vue | 74 | 1 | - |
+| packages/editor/src/components/commands/RestoreAudio.vue | 60 | 1 | - |
+| packages/editor/src/components/commands/SaveAudio.vue | 60 | 1 | - |
+| packages/editor/src/components/commands/SetActive.vue | 62 | 1 | - |
+| packages/editor/src/components/commands/SetCooldown.vue | 75 | 1 | - |
+| packages/editor/src/components/commands/SetElement.vue | 79 | 1 | - |
+| packages/editor/src/components/commands/SetItem.vue | 65 | 1 | - |
+| packages/editor/src/components/commands/SetPartyMember.vue | 62 | 1 | - |
+| packages/editor/src/components/commands/SetSkill.vue | 72 | 1 | - |
+| packages/editor/src/components/commands/SetState.vue | 66 | 1 | - |
+| packages/editor/src/components/commands/SetTerrain.vue | 63 | 1 | - |
+| packages/editor/src/components/commands/SetTriggerDuration.vue | 77 | 1 | - |
+| packages/editor/src/components/commands/SimulateKey.vue | 67 | 1 | - |
+| packages/editor/src/components/commands/StopAudio.vue | 62 | 1 | - |
+| packages/editor/src/components/commands/SwitchCollisionSystem.vue | 61 | 1 | - |
 | packages/editor/src/components/common/CustomBox.vue | 122 | 1 | - |
 | packages/editor/src/components/common/PageManager.vue | 63 | 1 | - |
 | packages/editor/src/components/common/RadioBox.vue | 182 | 1 | - |
@@ -272,6 +498,8 @@
 | packages/editor/src/components/inspector/UIReferencePage.vue | 71 | 1 | 是 |
 | packages/editor/src/components/inspector/UIVideoPage.vue | 108 | 1 | 是 |
 | packages/editor/src/components/layout/HomeRecentList.vue | 76 | 1 | - |
+| packages/editor/src/components/layout/LayoutPalettePage.vue | 47 | 1 | - |
+| packages/editor/src/components/layout/palette-items.ts | 35 | 1 | - |
 | packages/editor/src/components/menu-list.ts | 68 | 1 | 是 |
 | packages/editor/src/components/tools/AutoTile.vue | 290 | 1 | - |
 | packages/editor/src/components/tools/Command.vue | 224 | 1 | - |
@@ -284,8 +512,10 @@
 | packages/editor/src/components/tools/Variable.vue | 343 | 1 | - |
 | packages/editor/src/composables/commands/useAddAnimationComponentCommandSchema.ts | 91 | 1 | 是 |
 | packages/editor/src/composables/commands/useCastSkillCommandSchema.ts | 125 | 1 | 是 |
+| packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 150 | 1 | 是 |
 | packages/editor/src/composables/commands/useChangeActorSpriteCommandSchema.ts | 62 | 1 | 是 |
 | packages/editor/src/composables/commands/useChangeActorTeamCommandSchema.ts | 41 | 1 | 是 |
+| packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 132 | 1 | 是 |
 | packages/editor/src/composables/commands/usePlayAnimationCommandSchema.ts | 166 | 1 | 是 |
 | packages/editor/src/composables/commands/useRemoveAnimationComponentCommandSchema.ts | 59 | 1 | 是 |
 | packages/editor/src/composables/commands/useReturnCommandSchema.ts | 182 | 1 | 是 |
@@ -295,29 +525,28 @@
 | packages/editor/src/composables/commands/useSetStringCommandSchema.ts | 578 | 1 | 是 |
 | packages/editor/src/composables/commands/useTintImageCommandSchema.ts | 141 | 1 | 是 |
 | packages/editor/src/composables/commands/useTintScreenCommandSchema.ts | 96 | 1 | 是 |
+| packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 100 | 1 | 是 |
+| packages/editor/src/composables/useAnimSoundLayerPage.ts | 116 | 1 | - |
 | packages/editor/src/composables/useCommandSchema.ts | 62 | 1 | 是 |
 | packages/editor/src/composables/useFileImagePage.ts | 74 | 1 | 是 |
 | packages/editor/src/engine/scene/draw-start-position.ts | 81 | 1 | 是 |
-| packages/editor/src/engine/ui/reference-element.ts | 356 | 1 | - |
+| packages/editor/src/engine/ui/ui-engine.ts | 674 | 1 | - |
 | packages/editor/src/engine/webgl/webgl-methods.ts | 1757 | 1 | 是 |
 | packages/editor/src/file/directory-object.ts | 96 | 1 | - |
-| packages/editor/src/inspector/file-audio-page.ts | 411 | 1 | - |
-| packages/editor/src/inspector/file-video-page.ts | 113 | 1 | - |
-| packages/editor/src/inspector/scene-actor-page.ts | 172 | 1 | - |
-| packages/editor/src/inspector/scene-tilemap-page.ts | 210 | 1 | 是 |
-| packages/editor/src/log/update-log-window.ts | 62 | 1 | - |
-| packages/editor/src/module/resource.ts | 668 | 1 | - |
+| packages/editor/src/inspector/animation-particle-layer-page.ts | 84 | 1 | - |
+| packages/editor/src/inspector/element-dialog-page.ts | 156 | 1 | - |
+| packages/editor/src/inspector/element-progress-page.ts | 126 | 1 | - |
+| packages/editor/src/inspector/element-reference-page.ts | 103 | 1 | - |
+| packages/editor/src/inspector/element-video-page.ts | 114 | 1 | - |
+| packages/editor/src/inspector/element-window-page.ts | 121 | 1 | - |
+| packages/editor/src/inspector/file-animation-page.ts | 191 | 1 | - |
 | packages/editor/src/plugin/plugin-overview.ts | 75 | 1 | - |
 | packages/editor/src/plugin/plugin-parse-meta.ts | 834 | 1 | - |
-| packages/editor/src/scene/move-scene.ts | 56 | 1 | - |
+| packages/editor/src/scene/default-object-folder.ts | 71 | 1 | - |
+| packages/editor/src/scene/scene-camera.ts | 182 | 1 | - |
 | packages/editor/src/services/file-system/directory-tree.ts | 491 | 1 | - |
 | packages/editor/src/services/ipc/net.ts | 89 | 1 | - |
-| packages/editor/src/services/ipc/webserver.ts | 110 | 1 | - |
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
-| packages/editor/src/services/project/setting-config/index.ts | 143 | 1 | - |
-| packages/editor/src/stores/browser.ts | 582 | 1 | - |
-| packages/editor/src/stores/selector.ts | 433 | 1 | - |
-| packages/editor/src/tools/condition-list.ts | 308 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
@@ -337,7 +566,6 @@
 | packages/ui-kit/src/components/business/YMZoom/YMZoom.vue | 65 | 1 | - |
 | packages/ui-kit/src/utils/scroll-listener.ts | 152 | 1 | - |
 | packages/editor/src/animation/animation-file.ts | 156 | 0 | - |
-| packages/editor/src/animation/animation-window.ts | 543 | 0 | - |
 | packages/editor/src/animation/curve-window.ts | 130 | 0 | - |
 | packages/editor/src/animation/register.ts | 8 | 0 | - |
 | packages/editor/src/App.vue | 15 | 0 | - |
@@ -347,19 +575,6 @@
 | packages/editor/src/audio/reverb.ts | 105 | 0 | - |
 | packages/editor/src/bootstrap.ts | 10 | 0 | - |
 | packages/editor/src/commands/accessors/accessor-factory.ts | 38 | 0 | - |
-| packages/editor/src/commands/accessors/actor-accessor-window.ts | 43 | 0 | - |
-| packages/editor/src/commands/accessors/ancestor-accessor-window.ts | 39 | 0 | - |
-| packages/editor/src/commands/accessors/angle-accessor-window.ts | 37 | 0 | - |
-| packages/editor/src/commands/accessors/element-accessor-window.ts | 55 | 0 | - |
-| packages/editor/src/commands/accessors/equipment-accessor-window.ts | 44 | 0 | - |
-| packages/editor/src/commands/accessors/item-accessor-window.ts | 44 | 0 | - |
-| packages/editor/src/commands/accessors/position-accessor-window.ts | 62 | 0 | - |
-| packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 0 | - |
-| packages/editor/src/commands/accessors/region-accessor-window.ts | 28 | 0 | - |
-| packages/editor/src/commands/accessors/skill-accessor-window.ts | 47 | 0 | - |
-| packages/editor/src/commands/accessors/state-accessor-window.ts | 39 | 0 | - |
-| packages/editor/src/commands/accessors/tilemap-accessor-window.ts | 35 | 0 | - |
-| packages/editor/src/commands/accessors/trigger-accessor-window.ts | 29 | 0 | - |
 | packages/editor/src/commands/accessors/variable-accessor-window.ts | 172 | 0 | - |
 | packages/editor/src/commands/command-object.ts | 508 | 0 | - |
 | packages/editor/src/commands/command-registry.ts | 4 | 0 | - |
@@ -369,166 +584,55 @@
 | packages/editor/src/commands/property-window/move-light-property-window.ts | 23 | 0 | - |
 | packages/editor/src/commands/property-window/set-animation-property-window.ts | 27 | 0 | - |
 | packages/editor/src/commands/property-window/set-button-property-window.ts | 194 | 0 | - |
-| packages/editor/src/commands/property-window/set-dialog-property-window.ts | 163 | 0 | - |
-| packages/editor/src/commands/property-window/set-image-property-window.ts | 60 | 0 | - |
-| packages/editor/src/commands/property-window/set-progress-property-window.ts | 54 | 0 | - |
-| packages/editor/src/commands/property-window/set-text-property-window.ts | 161 | 0 | - |
-| packages/editor/src/commands/property-window/set-textbox-property-window.ts | 46 | 0 | - |
-| packages/editor/src/commands/property-window/set-video-property-window.ts | 47 | 0 | - |
 | packages/editor/src/commands/property-window/set-window-property-window.ts | 19 | 0 | - |
-| packages/editor/src/commands/schema.ts | 434 | 0 | - |
 | packages/editor/src/commands/token.ts | 51 | 0 | - |
 | packages/editor/src/components/check-box.ts | 6 | 0 | - |
 | packages/editor/src/components/color-box.ts | 7 | 0 | - |
 | packages/editor/src/components/command-list.ts | 115 | 0 | - |
-| packages/editor/src/components/commands/ActivateScene.vue | 59 | 0 | - |
-| packages/editor/src/components/commands/AddAnimationComponent.vue | 111 | 0 | - |
 | packages/editor/src/components/commands/AppendTarget.vue | 52 | 0 | - |
-| packages/editor/src/components/commands/Block.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/Break.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/CallEvent.vue | 146 | 0 | - |
-| packages/editor/src/components/commands/CastSkill.vue | 87 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorAnimation.vue | 57 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorEquipment.vue | 112 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorMotion.vue | 64 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorPortrait.vue | 90 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorSkill.vue | 90 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorSprite.vue | 72 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorState.vue | 88 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorTeam.vue | 62 | 0 | - |
-| packages/editor/src/components/commands/ChangePassableTerrain.vue | 66 | 0 | - |
-| packages/editor/src/components/commands/ChangeThreat.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/ClampCamera.vue | 85 | 0 | - |
-| packages/editor/src/components/commands/CommandLine.vue | 95 | 0 | - |
 | packages/editor/src/components/commands/Comment.vue | 64 | 0 | - |
 | packages/editor/src/components/commands/Continue.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/ContinueGame.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/ControlButton.vue | 81 | 0 | - |
-| packages/editor/src/components/commands/ControlDialog.vue | 70 | 0 | - |
-| packages/editor/src/components/commands/CreateActor.vue | 80 | 0 | - |
-| packages/editor/src/components/commands/CreateElement.vue | 99 | 0 | - |
-| packages/editor/src/components/commands/CreateGlobalActor.vue | 68 | 0 | - |
 | packages/editor/src/components/commands/CreateObject.vue | 58 | 0 | - |
 | packages/editor/src/components/commands/CreateTrigger.vue | 91 | 0 | - |
 | packages/editor/src/components/commands/DeleteActor.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/DeleteElement.vue | 74 | 0 | - |
 | packages/editor/src/components/commands/DeleteGlobalActor.vue | 56 | 0 | - |
 | packages/editor/src/components/commands/DeleteObject.vue | 50 | 0 | - |
 | packages/editor/src/components/commands/DeleteScene.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/DeleteTile.vue | 55 | 0 | - |
 | packages/editor/src/components/commands/DeleteVariable.vue | 56 | 0 | - |
-| packages/editor/src/components/commands/DetectTargets.vue | 83 | 0 | - |
-| packages/editor/src/components/commands/DiscardTargets.vue | 76 | 0 | - |
-| packages/editor/src/components/commands/DownloadFile.vue | 123 | 0 | - |
-| packages/editor/src/components/commands/FixAngle.vue | 62 | 0 | - |
-| packages/editor/src/components/commands/FollowActor.vue | 166 | 0 | - |
-| packages/editor/src/components/commands/ForEach.vue | 144 | 0 | - |
-| packages/editor/src/components/commands/GameData.vue | 82 | 0 | - |
-| packages/editor/src/components/commands/GetActor.vue | 183 | 0 | - |
-| packages/editor/src/components/commands/GetMultipleActors.vue | 138 | 0 | - |
-| packages/editor/src/components/commands/GetObjectProperty.vue | 82 | 0 | - |
-| packages/editor/src/components/commands/GetTarget.vue | 106 | 0 | - |
-| packages/editor/src/components/commands/HttpRequest.vue | 126 | 0 | - |
-| packages/editor/src/components/commands/If.vue | 78 | 0 | - |
 | packages/editor/src/components/commands/Independent.vue | 42 | 0 | - |
-| packages/editor/src/components/commands/JumpTo.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/Label.vue | 58 | 0 | - |
-| packages/editor/src/components/commands/LoadImage.vue | 108 | 0 | - |
-| packages/editor/src/components/commands/LoadScene.vue | 84 | 0 | - |
 | packages/editor/src/components/commands/LoadSubscene.vue | 55 | 0 | - |
-| packages/editor/src/components/commands/Loop.vue | 75 | 0 | - |
-| packages/editor/src/components/commands/MoveActor.vue | 97 | 0 | - |
-| packages/editor/src/components/commands/MoveCamera.vue | 99 | 0 | - |
-| packages/editor/src/components/commands/MoveElement.vue | 98 | 0 | - |
-| packages/editor/src/components/commands/MoveLight.vue | 98 | 0 | - |
 | packages/editor/src/components/commands/NestElement.vue | 52 | 0 | - |
 | packages/editor/src/components/commands/PauseGame.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/PlayActorAnimation.vue | 74 | 0 | - |
-| packages/editor/src/components/commands/PlayAnimation.vue | 137 | 0 | - |
-| packages/editor/src/components/commands/PlayAudio.vue | 93 | 0 | - |
 | packages/editor/src/components/commands/PreventSceneInput.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/RegisterEvent.vue | 106 | 0 | - |
 | packages/editor/src/components/commands/RelaunchApp.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/RemoveAnimationComponent.vue | 70 | 0 | - |
 | packages/editor/src/components/commands/RemoveTarget.vue | 52 | 0 | - |
-| packages/editor/src/components/commands/RenderOutline.vue | 82 | 0 | - |
-| packages/editor/src/components/commands/RequestURL.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/Reset.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/ResetTargets.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/RestoreAudio.vue | 60 | 0 | - |
 | packages/editor/src/components/commands/RestoreSceneInput.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/Return.vue | 114 | 0 | - |
-| packages/editor/src/components/commands/SaveAudio.vue | 60 | 0 | - |
 | packages/editor/src/components/commands/Script.vue | 69 | 0 | - |
-| packages/editor/src/components/commands/SetActive.vue | 62 | 0 | - |
-| packages/editor/src/components/commands/SetAmbientLight.vue | 89 | 0 | - |
-| packages/editor/src/components/commands/SetAngle.vue | 80 | 0 | - |
-| packages/editor/src/components/commands/SetAnimation.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetAnimationComponent.vue | 230 | 0 | - |
-| packages/editor/src/components/commands/SetBoolean.vue | 144 | 0 | - |
-| packages/editor/src/components/commands/SetButton.vue | 67 | 0 | - |
-| packages/editor/src/components/commands/SetCooldown.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/SetCursor.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/SetDialogBox.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetElement.vue | 79 | 0 | - |
-| packages/editor/src/components/commands/SetEvent.vue | 109 | 0 | - |
-| packages/editor/src/components/commands/SetFocus.vue | 92 | 0 | - |
-| packages/editor/src/components/commands/SetGameSpeed.vue | 85 | 0 | - |
-| packages/editor/src/components/commands/SetImage.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetInventory.vue | 150 | 0 | - |
-| packages/editor/src/components/commands/SetItem.vue | 65 | 0 | - |
 | packages/editor/src/components/commands/SetLanguage.vue | 49 | 0 | - |
-| packages/editor/src/components/commands/SetList.vue | 240 | 0 | - |
-| packages/editor/src/components/commands/SetLoop.vue | 66 | 0 | - |
-| packages/editor/src/components/commands/SetMovementSpeed.vue | 98 | 0 | - |
-| packages/editor/src/components/commands/SetNumber.vue | 76 | 0 | - |
-| packages/editor/src/components/commands/SetObject.vue | 140 | 0 | - |
-| packages/editor/src/components/commands/SetObjectAnimation.vue | 252 | 0 | - |
-| packages/editor/src/components/commands/SetObjectProperty.vue | 84 | 0 | - |
-| packages/editor/src/components/commands/SetPan.vue | 100 | 0 | - |
-| packages/editor/src/components/commands/SetPartyMember.vue | 62 | 0 | - |
 | packages/editor/src/components/commands/SetPlayerActor.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/SetPointerEventRoot.vue | 76 | 0 | - |
-| packages/editor/src/components/commands/SetProgressBar.vue | 68 | 0 | - |
 | packages/editor/src/components/commands/SetResolution.vue | 81 | 0 | - |
-| packages/editor/src/components/commands/SetReverb.vue | 109 | 0 | - |
-| packages/editor/src/components/commands/SetShortcut.vue | 87 | 0 | - |
-| packages/editor/src/components/commands/SetSkill.vue | 72 | 0 | - |
-| packages/editor/src/components/commands/SetState.vue | 66 | 0 | - |
-| packages/editor/src/components/commands/SetString.vue | 531 | 0 | - |
 | packages/editor/src/components/commands/SetTarget.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/SetTeamRelation.vue | 69 | 0 | - |
-| packages/editor/src/components/commands/SetTerrain.vue | 63 | 0 | - |
-| packages/editor/src/components/commands/SetText.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetTextBox.vue | 67 | 0 | - |
 | packages/editor/src/components/commands/SetTile.vue | 67 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerAngle.vue | 52 | 0 | - |
-| packages/editor/src/components/commands/SetTriggerDuration.vue | 77 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerMotion.vue | 52 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerSpeed.vue | 60 | 0 | - |
-| packages/editor/src/components/commands/SetVideo.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetVolume.vue | 100 | 0 | - |
 | packages/editor/src/components/commands/SetWeight.vue | 60 | 0 | - |
-| packages/editor/src/components/commands/SetWindow.vue | 68 | 0 | - |
-| packages/editor/src/components/commands/SetZoomFactor.vue | 85 | 0 | - |
-| packages/editor/src/components/commands/ShakeScreen.vue | 107 | 0 | - |
-| packages/editor/src/components/commands/ShowChoices.vue | 68 | 0 | - |
 | packages/editor/src/components/commands/ShowText.vue | 95 | 0 | - |
-| packages/editor/src/components/commands/SimulateKey.vue | 67 | 0 | - |
 | packages/editor/src/components/commands/StopActorAnimation.vue | 50 | 0 | - |
-| packages/editor/src/components/commands/StopAudio.vue | 62 | 0 | - |
-| packages/editor/src/components/commands/StopEvent.vue | 146 | 0 | - |
-| packages/editor/src/components/commands/Switch.vue | 81 | 0 | - |
-| packages/editor/src/components/commands/SwitchCollisionSystem.vue | 61 | 0 | - |
-| packages/editor/src/components/commands/TintImage.vue | 207 | 0 | - |
-| packages/editor/src/components/commands/TintScreen.vue | 162 | 0 | - |
 | packages/editor/src/components/commands/TransferGlobalActor.vue | 52 | 0 | - |
-| packages/editor/src/components/commands/Transition.vue | 94 | 0 | - |
-| packages/editor/src/components/commands/TranslateActor.vue | 90 | 0 | - |
 | packages/editor/src/components/commands/UnclampCamera.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/UnloadSubscene.vue | 56 | 0 | - |
-| packages/editor/src/components/commands/UploadFile.vue | 90 | 0 | - |
-| packages/editor/src/components/commands/UseItem.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/Wait.vue | 50 | 0 | - |
 | packages/editor/src/components/commands/WaitForVideo.vue | 50 | 0 | - |
 | packages/editor/src/components/commands/WebSocketClose.vue | 63 | 0 | - |
@@ -565,10 +669,9 @@
 | packages/editor/src/components/file-var.ts | 8 | 0 | - |
 | packages/editor/src/components/inspector/FileAnimationPage.vue | 34 | 0 | - |
 | packages/editor/src/components/keyboard-box.ts | 6 | 0 | - |
-| packages/editor/src/components/layout/LayoutPaletteHost.vue | 23 | 0 | - |
-| packages/editor/src/components/layout/LayoutPalettePage.vue | 29 | 0 | - |
+| packages/editor/src/components/layout/LayoutPaletteHost.vue | 14 | 0 | - |
 | packages/editor/src/components/layout/LayoutTreeView.vue | 37 | 0 | - |
-| packages/editor/src/components/layout/PaletteNode.vue | 28 | 0 | - |
+| packages/editor/src/components/layout/PaletteNode.vue | 25 | 0 | - |
 | packages/editor/src/components/number-var.ts | 8 | 0 | - |
 | packages/editor/src/components/select-box.ts | 37 | 0 | - |
 | packages/editor/src/components/select-list.ts | 14 | 0 | - |
@@ -586,7 +689,6 @@
 | packages/editor/src/components/tools/AutoTileFrameIndex.vue | 78 | 0 | - |
 | packages/editor/src/components/tools/AutoTileGenerateFrames.vue | 61 | 0 | - |
 | packages/editor/src/components/tools/AutoTileSelectNode.vue | 59 | 0 | - |
-| packages/editor/src/components/tools/Choice.vue | 65 | 0 | - |
 | packages/editor/src/components/tools/Color.vue | 219 | 0 | - |
 | packages/editor/src/components/tools/CommandSuggestions.vue | 49 | 0 | - |
 | packages/editor/src/components/tools/CommandWidget.vue | 27 | 0 | - |
@@ -608,8 +710,6 @@
 | packages/editor/src/components/tools/FileEventParameter.vue | 64 | 0 | - |
 | packages/editor/src/components/tools/Font.vue | 45 | 0 | - |
 | packages/editor/src/components/tools/FontSize.vue | 45 | 0 | - |
-| packages/editor/src/components/tools/IfBranch.vue | 71 | 0 | - |
-| packages/editor/src/components/tools/IfCondition.vue | 812 | 0 | - |
 | packages/editor/src/components/tools/ImageClip.vue | 122 | 0 | - |
 | packages/editor/src/components/tools/ImportLanguage.vue | 46 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 66 | 0 | - |
@@ -651,8 +751,6 @@
 | packages/editor/src/components/tools/SetWindowProperty.vue | 118 | 0 | - |
 | packages/editor/src/components/tools/SkillGetter.vue | 81 | 0 | - |
 | packages/editor/src/components/tools/StateGetter.vue | 78 | 0 | - |
-| packages/editor/src/components/tools/SwitchBranch.vue | 63 | 0 | - |
-| packages/editor/src/components/tools/SwitchCondition.vue | 162 | 0 | - |
 | packages/editor/src/components/tools/TextEffect.vue | 80 | 0 | - |
 | packages/editor/src/components/tools/TextPosition.vue | 63 | 0 | - |
 | packages/editor/src/components/tools/TextSuggestions.vue | 18 | 0 | - |
@@ -662,14 +760,13 @@
 | packages/editor/src/components/tools/WindowProgress.vue | 49 | 0 | - |
 | packages/editor/src/components/tools/Zoom.vue | 24 | 0 | - |
 | packages/editor/src/components/tree-data-context.ts | 17 | 0 | - |
-| packages/editor/src/components/tree-list.ts | 41 | 0 | - |
+| packages/editor/src/components/tree-list.ts | 39 | 0 | - |
 | packages/editor/src/components/type-registry.ts | 13 | 0 | - |
 | packages/editor/src/components/var-factories.ts | 19 | 0 | - |
 | packages/editor/src/composables/commands/useActivateSceneCommandSchema.ts | 40 | 0 | 是 |
 | packages/editor/src/composables/commands/useAppendTargetCommandSchema.ts | 44 | 0 | 是 |
 | packages/editor/src/composables/commands/useBlockCommandSchema.ts | 64 | 0 | 是 |
 | packages/editor/src/composables/commands/useChangeActorAnimationCommandSchema.ts | 38 | 0 | 是 |
-| packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 150 | 0 | 是 |
 | packages/editor/src/composables/commands/useChangeActorMotionCommandSchema.ts | 44 | 0 | 是 |
 | packages/editor/src/composables/commands/useChangeActorPortraitCommandSchema.ts | 97 | 0 | 是 |
 | packages/editor/src/composables/commands/useChangeActorSkillCommandSchema.ts | 90 | 0 | 是 |
@@ -704,7 +801,6 @@
 | packages/editor/src/composables/commands/useIfCommandSchema.ts | 110 | 0 | 是 |
 | packages/editor/src/composables/commands/useJumpToCommandSchema.ts | 94 | 0 | 是 |
 | packages/editor/src/composables/commands/useLabelCommandSchema.ts | 33 | 0 | 是 |
-| packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 132 | 0 | 是 |
 | packages/editor/src/composables/commands/useLoadSceneCommandSchema.ts | 74 | 0 | 是 |
 | packages/editor/src/composables/commands/useLoadSubsceneCommandSchema.ts | 48 | 0 | 是 |
 | packages/editor/src/composables/commands/useLoopCommandSchema.ts | 74 | 0 | 是 |
@@ -725,7 +821,6 @@
 | packages/editor/src/composables/commands/useSetAmbientLightCommandSchema.ts | 58 | 0 | 是 |
 | packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 55 | 0 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 56 | 0 | 是 |
-| packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 0 | 是 |
 | packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 56 | 0 | 是 |
 | packages/editor/src/composables/commands/useSetCursorCommandSchema.ts | 32 | 0 | 是 |
 | packages/editor/src/composables/commands/useSetDialogBoxCommandSchema.ts | 59 | 0 | 是 |
@@ -777,7 +872,6 @@
 | packages/editor/src/composables/commands/useTranslateActorCommandSchema.ts | 76 | 0 | 是 |
 | packages/editor/src/composables/commands/useUnloadSubsceneCommandSchema.ts | 32 | 0 | 是 |
 | packages/editor/src/composables/commands/useUploadFileCommandSchema.ts | 116 | 0 | 是 |
-| packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 100 | 0 | 是 |
 | packages/editor/src/composables/commands/useWaitCommandSchema.ts | 32 | 0 | 是 |
 | packages/editor/src/composables/commands/useWaitForVideoCommandSchema.ts | 32 | 0 | 是 |
 | packages/editor/src/composables/commands/useWebSocketCloseCommandSchema.ts | 61 | 0 | 是 |
@@ -789,8 +883,6 @@
 | packages/editor/src/composables/useAnimMotionPage.ts | 44 | 0 | - |
 | packages/editor/src/composables/useAnimParticleFramePage.ts | 60 | 0 | - |
 | packages/editor/src/composables/useAnimParticleLayerPage.ts | 52 | 0 | - |
-| packages/editor/src/composables/useAnimSoundFramePage.ts | 113 | 0 | - |
-| packages/editor/src/composables/useAnimSoundLayerPage.ts | 116 | 0 | - |
 | packages/editor/src/composables/useAnimSpriteFramePage.ts | 68 | 0 | - |
 | packages/editor/src/composables/useAnimSpriteLayerPage.ts | 46 | 0 | - |
 | packages/editor/src/composables/useChoicesSchema.ts | 94 | 0 | 是 |
@@ -836,7 +928,6 @@
 | packages/editor/src/composables/useSimulateKeyCommandSchema.ts | 37 | 0 | 是 |
 | packages/editor/src/composables/useSkillGetterWindow.ts | 115 | 0 | 是 |
 | packages/editor/src/composables/useStateGetterWindow.ts | 98 | 0 | 是 |
-| packages/editor/src/composables/useSwitchConditionSchema.ts | 298 | 0 | 是 |
 | packages/editor/src/composables/useTilemapGetterWindow.ts | 87 | 0 | 是 |
 | packages/editor/src/composables/useToastService.ts | 21 | 0 | - |
 | packages/editor/src/composables/useTriggerGetterWindow.ts | 76 | 0 | 是 |
@@ -865,8 +956,8 @@
 | packages/editor/src/engine/codec/codec.ts | 455 | 0 | - |
 | packages/editor/src/engine/layout/layout-deserialize.ts | 76 | 0 | - |
 | packages/editor/src/engine/layout/layout-page-targets.ts | 31 | 0 | - |
-| packages/editor/src/engine/layout/layout-scheme.ts | 208 | 0 | - |
-| packages/editor/src/engine/layout/layout-vue-tree.ts | 167 | 0 | - |
+| packages/editor/src/engine/layout/layout-scheme.ts | 240 | 0 | - |
+| packages/editor/src/engine/layout/layout-vue-tree.ts | 174 | 0 | - |
 | packages/editor/src/engine/palette/auto-tile-engine.ts | 141 | 0 | - |
 | packages/editor/src/engine/particle/particle-engine.ts | 1293 | 0 | - |
 | packages/editor/src/engine/scene/draw-core.ts | 189 | 0 | - |
@@ -877,7 +968,7 @@
 | packages/editor/src/engine/scene/draw-terrain.ts | 240 | 0 | - |
 | packages/editor/src/engine/scene/draw-tilemap.ts | 277 | 0 | - |
 | packages/editor/src/engine/scene/draw-wireframes.ts | 156 | 0 | - |
-| packages/editor/src/engine/scene/scene-animate-engine.ts | 65 | 0 | - |
+| packages/editor/src/engine/scene/scene-animate-engine.ts | 76 | 0 | - |
 | packages/editor/src/engine/scene/scene-camera-engine.ts | 194 | 0 | - |
 | packages/editor/src/engine/scene/scene-draw-engine.ts | 53 | 0 | - |
 | packages/editor/src/engine/scene/scene-edit-engine.ts | 573 | 0 | - |
@@ -895,7 +986,6 @@
 | packages/editor/src/engine/ui/root-element.ts | 75 | 0 | - |
 | packages/editor/src/engine/ui/text-box-element.ts | 315 | 0 | - |
 | packages/editor/src/engine/ui/text-element.ts | 474 | 0 | - |
-| packages/editor/src/engine/ui/ui-engine.ts | 674 | 0 | - |
 | packages/editor/src/engine/ui/video-element.ts | 35 | 0 | - |
 | packages/editor/src/engine/ui/window-element.ts | 361 | 0 | - |
 | packages/editor/src/engine/webgl/base-texture.ts | 86 | 0 | - |
@@ -908,78 +998,38 @@
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
 | packages/editor/src/i18n/convert.ts | 94 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
-| packages/editor/src/inspector/animation-action-page.ts | 98 | 0 | - |
-| packages/editor/src/inspector/animation-bone-frame-page.ts | 89 | 0 | - |
-| packages/editor/src/inspector/animation-particle-frame-page.ts | 100 | 0 | - |
-| packages/editor/src/inspector/animation-particle-layer-page.ts | 84 | 0 | - |
-| packages/editor/src/inspector/animation-sprite-frame-page.ts | 120 | 0 | - |
-| packages/editor/src/inspector/animation-sprite-layer-page.ts | 77 | 0 | - |
-| packages/editor/src/inspector/element-animation-page.ts | 128 | 0 | - |
-| packages/editor/src/inspector/element-button-page.ts | 275 | 0 | - |
 | packages/editor/src/inspector/element-container-page.ts | 73 | 0 | - |
-| packages/editor/src/inspector/element-dialog-page.ts | 156 | 0 | - |
 | packages/editor/src/inspector/element-image-page.ts | 121 | 0 | - |
-| packages/editor/src/inspector/element-progress-page.ts | 126 | 0 | - |
-| packages/editor/src/inspector/element-reference-page.ts | 103 | 0 | - |
-| packages/editor/src/inspector/element-text-page.ts | 211 | 0 | - |
-| packages/editor/src/inspector/element-textbox-page.ts | 156 | 0 | - |
-| packages/editor/src/inspector/element-video-page.ts | 114 | 0 | - |
-| packages/editor/src/inspector/element-window-page.ts | 121 | 0 | - |
-| packages/editor/src/inspector/file-actor-page.ts | 522 | 0 | - |
-| packages/editor/src/inspector/file-animation-page.ts | 191 | 0 | - |
-| packages/editor/src/inspector/file-entity-page.ts | 115 | 0 | - |
-| packages/editor/src/inspector/file-event-page.ts | 245 | 0 | - |
-| packages/editor/src/inspector/file-font-page.ts | 100 | 0 | - |
-| packages/editor/src/inspector/file-image-page.ts | 97 | 0 | - |
-| packages/editor/src/inspector/file-scene-page.ts | 180 | 0 | - |
-| packages/editor/src/inspector/file-tileset-page.ts | 160 | 0 | - |
-| packages/editor/src/inspector/file-trigger-page.ts | 207 | 0 | - |
-| packages/editor/src/inspector/particle-layer-page.ts | 453 | 0 | - |
-| packages/editor/src/inspector/scene-animation-page.ts | 190 | 0 | - |
-| packages/editor/src/inspector/scene-light-page.ts | 148 | 0 | - |
-| packages/editor/src/inspector/scene-parallax-page.ts | 181 | 0 | - |
-| packages/editor/src/inspector/scene-particle-page.ts | 152 | 0 | - |
-| packages/editor/src/inspector/scene-region-page.ts | 108 | 0 | - |
-| packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
-| packages/editor/src/local/import-language-window.ts | 124 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
 | packages/editor/src/main/register.ts | 17 | 0 | - |
-| packages/editor/src/module/apkbuilder.ts | 78 | 0 | - |
 | packages/editor/src/module/global.ts | 9 | 0 | - |
 | packages/editor/src/module/markdown.ts | 12 | 0 | - |
 | packages/editor/src/module/monaco-dts.ts | 51 | 0 | - |
 | packages/editor/src/module/monkey-patches.ts | 193 | 0 | - |
-| packages/editor/src/module/set-tile-tag.ts | 45 | 0 | - |
-| packages/editor/src/module/tree-utils.ts | 39 | 0 | - |
+| packages/editor/src/module/tree-utils.ts | 44 | 0 | - |
 | packages/editor/src/module/update-log.ts | 77 | 0 | - |
 | packages/editor/src/module/zip.ts | 71 | 0 | - |
 | packages/editor/src/palette/palette-autotile.ts | 67 | 0 | - |
 | packages/editor/src/palette/palette-events.ts | 326 | 0 | - |
 | packages/editor/src/palette/palette-file.ts | 82 | 0 | - |
-| packages/editor/src/palette/palette-image.ts | 291 | 0 | - |
+| packages/editor/src/palette/palette-image.ts | 293 | 0 | - |
 | packages/editor/src/palette/palette-selection.ts | 53 | 0 | - |
 | packages/editor/src/palette/palette.ts | 143 | 0 | - |
 | packages/editor/src/palette/register.ts | 8 | 0 | - |
-| packages/editor/src/palette/tile-frame-generator.ts | 59 | 0 | - |
 | packages/editor/src/particle/particle-file.ts | 135 | 0 | - |
 | packages/editor/src/particle/particle-list.ts | 232 | 0 | - |
-| packages/editor/src/particle/particle-motion.ts | 682 | 0 | - |
-| packages/editor/src/particle/particle-window.ts | 421 | 0 | - |
 | packages/editor/src/particle/register.ts | 7 | 0 | - |
 | packages/editor/src/plugin/language-map.ts | 95 | 0 | - |
 | packages/editor/src/plugin/plugin-events.ts | 97 | 0 | - |
-| packages/editor/src/plugin/plugin-list.ts | 252 | 0 | - |
+| packages/editor/src/plugin/plugin-list.ts | 250 | 0 | - |
 | packages/editor/src/plugin/plugin-reconstruct.ts | 333 | 0 | - |
 | packages/editor/src/plugin/plugin.ts | 194 | 0 | - |
 | packages/editor/src/plugin/register.ts | 7 | 0 | - |
 | packages/editor/src/scene/coordinate-point.ts | 18 | 0 | - |
-| packages/editor/src/scene/default-object-folder.ts | 71 | 0 | - |
 | packages/editor/src/scene/light.ts | 183 | 0 | - |
 | packages/editor/src/scene/parallax.ts | 175 | 0 | - |
 | packages/editor/src/scene/register.ts | 22 | 0 | - |
-| packages/editor/src/scene/scene-animate.ts | 189 | 0 | - |
-| packages/editor/src/scene/scene-camera.ts | 182 | 0 | - |
 | packages/editor/src/scene/scene-context.ts | 534 | 0 | - |
 | packages/editor/src/scene/scene-create-default-animation.ts | 63 | 0 | - |
 | packages/editor/src/scene/scene-draw.ts | 31 | 0 | - |
@@ -988,14 +1038,13 @@
 | packages/editor/src/scene/scene-events-list.ts | 490 | 0 | - |
 | packages/editor/src/scene/scene-events-scroll.ts | 90 | 0 | - |
 | packages/editor/src/scene/scene-events.ts | 22 | 0 | - |
-| packages/editor/src/scene/scene-list.ts | 313 | 0 | - |
+| packages/editor/src/scene/scene-list.ts | 315 | 0 | - |
 | packages/editor/src/scene/scene-map-record.ts | 146 | 0 | - |
 | packages/editor/src/scene/scene-marquee.ts | 14 | 0 | - |
 | packages/editor/src/scene/scene-selection.ts | 14 | 0 | - |
 | packages/editor/src/scene/scene-target.ts | 270 | 0 | - |
 | packages/editor/src/scene/scene-utility.ts | 83 | 0 | - |
 | packages/editor/src/scene/texture-set.ts | 54 | 0 | - |
-| packages/editor/src/scene/tilemap-shortcut-list.ts | 94 | 0 | - |
 | packages/editor/src/services/file-system/file-item.ts | 451 | 0 | - |
 | packages/editor/src/services/file-system/fs-bridge.ts | 11 | 0 | - |
 | packages/editor/src/services/file-system/guid.ts | 19 | 0 | - |
@@ -1050,7 +1099,7 @@
 | packages/editor/src/stores/history.ts | 44 | 0 | - |
 | packages/editor/src/stores/home.ts | 95 | 0 | - |
 | packages/editor/src/stores/inspector.ts | 89 | 0 | - |
-| packages/editor/src/stores/layout.ts | 316 | 0 | - |
+| packages/editor/src/stores/layout.ts | 327 | 0 | - |
 | packages/editor/src/stores/local.ts | 48 | 0 | - |
 | packages/editor/src/stores/localization.ts | 107 | 0 | - |
 | packages/editor/src/stores/log.ts | 209 | 0 | - |
@@ -1062,7 +1111,6 @@
 | packages/editor/src/stores/printer.ts | 19 | 0 | - |
 | packages/editor/src/stores/project.ts | 55 | 0 | - |
 | packages/editor/src/stores/scene.ts | 160 | 0 | - |
-| packages/editor/src/stores/search-string.ts | 207 | 0 | - |
 | packages/editor/src/stores/team.ts | 89 | 0 | - |
 | packages/editor/src/stores/timer.ts | 59 | 0 | - |
 | packages/editor/src/stores/title.ts | 105 | 0 | - |
@@ -1070,11 +1118,8 @@
 | packages/editor/src/stores/ui.ts | 327 | 0 | - |
 | packages/editor/src/stores/variable.ts | 207 | 0 | - |
 | packages/editor/src/stores/window.ts | 112 | 0 | - |
-| packages/editor/src/title/deploy-project-window.ts | 699 | 0 | - |
-| packages/editor/src/title/new-project-window.ts | 363 | 0 | - |
 | packages/editor/src/tools/history.ts | 84 | 0 | - |
-| packages/editor/src/tools/list-clipboard-methods.ts | 100 | 0 | - |
-| packages/editor/src/tools/property-list.ts | 257 | 0 | - |
+| packages/editor/src/tools/list-clipboard-methods.ts | 105 | 0 | - |
 | packages/editor/src/tools/set-number-window.ts | 18 | 0 | - |
 | packages/editor/src/tools/shortcut-registry.ts | 220 | 0 | - |
 | packages/editor/src/tools/tool-registry.ts | 30 | 0 | - |
@@ -1090,9 +1135,8 @@
 | packages/editor/src/types/shapes.ts | 23 | 0 | - |
 | packages/editor/src/ui/register.ts | 8 | 0 | - |
 | packages/editor/src/ui/ui-file.ts | 258 | 0 | - |
-| packages/editor/src/ui/ui-list.ts | 448 | 0 | - |
-| packages/editor/src/ui/ui-transform.ts | 358 | 0 | - |
-| packages/editor/src/ui/ui-window.ts | 316 | 0 | - |
+| packages/editor/src/ui/ui-list.ts | 450 | 0 | - |
+| packages/editor/src/ui/ui-transform.ts | 360 | 0 | - |
 | packages/editor/src/update/updater-hooks.ts | 21 | 0 | - |
 | packages/editor/src/utils/array.ts | 66 | 0 | - |
 | packages/editor/src/utils/attach-element-api.ts | 2 | 0 | - |
@@ -1120,9 +1164,7 @@
 | packages/editor/src/variable/keyboard-events.ts | 71 | 0 | - |
 | packages/editor/src/variable/list-events.ts | 161 | 0 | - |
 | packages/editor/src/variable/list-methods.ts | 66 | 0 | - |
-| packages/editor/src/variable/panel.ts | 129 | 0 | - |
 | packages/editor/src/variable/register.ts | 9 | 0 | - |
-| packages/editor/src/variable/variable.ts | 362 | 0 | - |
 | packages/editor/src/variable/window-events.ts | 44 | 0 | - |
 | packages/ui-kit/src/components/basic/YMButton/YMButton.vue | 116 | 0 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/YMCheckBox.vue | 149 | 0 | - |
@@ -1136,7 +1178,8 @@
 | packages/ui-kit/src/components/basic/YMSelectList/YMSelectList.vue | 86 | 0 | - |
 | packages/ui-kit/src/components/basic/YMSwitchItem/YMSwitchItem.vue | 103 | 0 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-core.ts | 176 | 0 | - |
-| packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 558 | 0 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-render.ts | 262 | 0 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 373 | 0 | - |
@@ -1152,7 +1195,7 @@
 | packages/ui-kit/src/composables/useMenuService.ts | 16 | 0 | - |
 | packages/ui-kit/src/composables/useTheme.ts | 8 | 0 | - |
 | packages/ui-kit/src/composables/useWordList.ts | 45 | 0 | - |
-| packages/ui-kit/src/index.ts | 229 | 0 | - |
+| packages/ui-kit/src/index.ts | 240 | 0 | - |
 | packages/ui-kit/src/theme/theme.ts | 52 | 0 | - |
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |

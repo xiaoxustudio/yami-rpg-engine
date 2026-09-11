@@ -120,6 +120,16 @@
 			}
 		},
 		{
+			"files": ["scripts/**/*.mjs"],
+			"env": {
+				"node": true
+			},
+			"rules": {
+				"eslint/no-undef": "off",
+				"eslint/no-console": "off"
+			}
+		},
+		{
 			"files": ["packages/export-electron/scripts/**/*.js"],
 			"env": {
 				"node": true,

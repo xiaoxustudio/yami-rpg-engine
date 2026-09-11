@@ -3,7 +3,7 @@
 //   electron --remote-debugging-port=9223 <packages/editor>（home 需有最近项目 game.yamirpg 可打开）
 // 用法: node scripts/smoke-layout.mjs <phase> [port]
 // phase: debug | open-project | mode2-directory | roundtrip-scene | mode0-control
-//        | drag-mode0 | drag-mode2
+//        | drag-mode0 | drag-mode2 | drag-here | drag-scene | drag-region
 import { writeFileSync } from 'node:fs';
 
 const port = Number(process.argv[3] || 9223);

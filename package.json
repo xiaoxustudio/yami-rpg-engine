@@ -35,6 +35,9 @@
 		"dom:guard:exempt": "node scripts/dom-guard.mjs exempt",
 		"dom:guard:tracker": "node scripts/dom-guard.mjs tracker",
 		"dom:guard:fix": "node scripts/dom-guard.mjs fix",
+		"docs:check": "node scripts/docs-check.mjs",
+		"stale-exemptions": "node scripts/stale-exemptions.mjs",
+		"events:surface": "node scripts/event-surface.mjs",
 		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor",
 		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
 	},

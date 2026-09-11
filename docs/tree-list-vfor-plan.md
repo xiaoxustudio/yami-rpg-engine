@@ -1,13 +1,16 @@
 # YMTreeList tree-api.ts 行渲染 v-for 化设计方案
 
-- 状态：设计稿（未实施）
-- 日期：2026-09-02
+- 状态：**步骤 1–5 已交付**（v-for 派生行渲染已成 YMTreeList 唯一渲染路径，命令式行渲染与开关已删除；2026-09-11 复核）；仅剩**步骤 5b 收口**（`elements` shim / `item.element` / `NodeElement` 类型，需先迁移 eslints 与 useVariableGetterWindow 的按行号访问）与「数据绑定型窗口」逐窗真机冒烟
+- 日期：2026-09-02（末次更新 2026-09-11）
 - 范围：`packages/ui-kit/src/components/basic/YMTreeList/`（tree-api.ts、YMTreeList.vue），及 editor 侧消费方迁移路径
 - 原则：**纯渲染层重构**。对外命令式 API（`bind/update/select/unselect/drop/...` 约 136 处直调）、事件协议（select/record/popup/open/change/update）、`getListConfig`（creators/updaters/renamable/...）全部保持兼容
+- 索引：文档地图、快照与维护约定见 [README.md](./README.md)
 
 ---
 
 ## 0. 背景与现状
+
+> **阅读提示（2026-09-11）**：第 0–4 节是 **2026-09-02 设计时快照**——描述当时的命令式实现与拟议数据模型。其中 `createNodeElement` / `updateNodeElement`（默认实现）/ `createIndentedItems` / `createFlatItems` / `updateOnResize` / `insertPaddingAndClear` / `treeListStatics.padding` / `commonListResize` 依赖 **已在步骤 5 删除**，`0.1` 表的行号（L370-392 等）对应的是当时那份 1666 行的 `tree-api.ts`。**判断当前状态请看「进展记录」与步骤 5b 实施方案**；计划名与实现名的对照见 **1.5**。
 
 ### 0.1 渲染管线现状（tree-api.ts，1666 行）
 
@@ -130,6 +133,24 @@ const rowKey = (item: TreeItem) => {
 - `folder-mark` / `node-icon` 从"懒建 + 手工 visibility 切换"变为 `v-if`/`:class`，删除 `element.markVisible/markIndent/textIndent/expanded` 等字段式 diff 逻辑。
 - 事件监听（scroll/keydown/pointerdown/pointerup/dblclick/dragstart/dragend）仍挂 root，通过 `seek(event.target, '.node-item')` 找行——**行内 DOM 结构不变**，事件分发代码零改动。
 
+### 1.5 实现对照（计划名 → 实现名，2026-09-11 实测）
+
+第 1–4 节是设计稿措辞，落地时标识符有出入；查代码请按下表：
+
+| 计划（第 1–4 节） | 实现（`tree-render.ts` / `YMTreeList.vue` / `tree-api.ts`） |
+| --- | --- |
+| `renderVersion: ref(0)` | `TreeRenderState.version: ShallowRef<number>` + `bump()`（`createTreeRenderState`，bump 同时 `triggerRef(rows)`） |
+| `visibleNodes: computed<VisibleRow[]>`、`flatten(data, expandedState)` | `TreeRenderState.rows`（由 `flattenRows(state, options)` 填充）+ `windowRowsOf(state)` |
+| `VisibleRow` | `TreeRenderRow`（多出 `hasChildrenMark` / `selected` / `hint` / `extraClasses`） |
+| `rowKey`（WeakMap 发号，1.3） | `rowKeyOf`（模块级 `rowKeys` WeakMap + `rowKeySeq`；state 上的 `keyMap` 只是同一张表的引用） |
+| `bindRowEl` + `attachRowInternals` | `bindRowElement(state, item, el)`：写回 `item.element`，并回填 `element.item / folderMark / nodeIcon / extras / textNode / indent / textIndent / markIndent / markVisible / expanded`；ref 收到 `null` 时删 `item.element` |
+| `rowClass(row)` | 组件内 `rowClasses(row)` = 受控态（`selected` / `expanded` / `hint`）+ `row.extraClasses ← itemClassesOf` |
+| `itemClasses` 注册表（2.2 桥 2） | `TreeRenderState.itemClasses` + `setItemClass` / `itemClassesOf` |
+| `start` / `end` + spacer 高度公式 | `computeWindow(scrollTop, clientHeight, count)`（`ROW_HEIGHT = 20`）+ `state.start/end`；模板上下 `.scroll-spacer` |
+| textNode 桥（2.2 桥 1） | 模板显式 `<span class="node-text">`，`textNode = textHost.firstChild`；显示文本覆盖走 `setItemText` / `state.textOverrides`（窗口外 item 同样生效） |
+| `elements` 数组 shim | `syncElementsShim()`（步骤 5b 待删，见下） |
+| search 模式平铺（第 4 节） | `flattenRows` 内部的 `display === 'search'` 分支 |
+
 ---
 
 ## 2. element 缓存语义迁移方案（核心难点）
@@ -161,7 +182,7 @@ const bindRowEl = (item: TreeItem, el: unknown) => {
 ```
 
 - 因 1.3 的稳定 key，Vue 只移动/复用行，`item.element` 引用在 item 生命周期内不变 → 消费方 ①②③④⑤ 全部照常工作。
-- **textNode 桥**：模板中 `{{ row.name }}` 由 Vue 生成文本节点，`bindRowEl` 时 `element.textNode = el.lastChild`（或渲染一个显式 `<span class="node-text">`，取其 firstChild 保持 `textNode` 是 Text 节点）——plugin-list/transition-window 的 `textNode.nodeValue` 直写继续生效，但**必须同时 bump renderVersion**，否则下次 patch 会用旧 name 覆盖（见 2.4）。
+- **textNode 桥**：模板中 `{{ row.name }}` 由 Vue 生成文本节点，`bindRowEl` 时 `element.textNode = el.lastChild`（或渲染一个显式 `<span class="node-text">`，取其 firstChild 保持 `textNode` 是 Text 节点）——plugin-list/transition-window 的 `textNode.nodeValue` 直写继续生效，但**必须同时 bump renderVersion**，否则下次 patch 会用旧 name 覆盖（落地做法见 1.5 的 textNode 桥一行：覆盖文本走 `setItemText` → `state.textOverrides`，组件侧 `withRegistryOverrides` 以 `version` 为依赖合成显示文本；本节早期指向的 §2.4 从未写出，改由该实现说明取代）。
 - **elements 数组 shim**：flatten 后（`watchEffect`）同步 `list.elements = rows.map(r => r.item.element)` 并维护 `count/start/end`。event-list:113、script-list:105、list-clipboard-methods:81 的索引访问、ui-kit 内部 `elements.indexOf(...)` 契约不变。
 
 **阶段桥 2：class 受控化（防 Vue patch 覆盖命令式 class）**
@@ -195,6 +216,12 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 | 搜索结果无高亮标记 | **维持现状** | 现实现仅过滤不高亮，不新增 |
 | weak/invalid/reference/highlight 等业务 class | **阶段 3 改 `setItemClass`** | 见 2.2 桥 2 |
 | renderNodeExtras / renderNodeIcon | **保留命令式容器填充** | 行模板渲染空 `.tree-node-extras` / `.tree-node-icon` 容器，`:ref`/`onUpdated` 时调用回调填充；editor TreeList.vue 的 vnode bridge（render into container）零改动；`container.parentNode` 上下文（用途⑥）照常有效 |
+
+> **落地状态（2026-09-11 实测）**：
+> - ✅ 已实现：hint 的派生态（`row.hint`）与业务 class 注册表（`setItemClass`）、`insertPaddingAndClear` 与 `treeListStatics.padding` 的删除、重命名 `textBox` 单例保留（`element.textNode` 桥字段由 `bindRowElement` 回填）、搜索改走 `flattenRows` 的 search 分支、extras/icon 容器填充（`bindNodeExtras` / `bindNodeIcon`）。
+> - ⚠️ 仍双轨（并入步骤 5b）：拖拽 `hint` 的**命令式 `addClass(element,'hint')` 仍在**（`tree-api.ts` L1401 等）——与派生 `row.hint` 并存、结果一致；`select`/`unselect` 的 `addClass/removeClass('selected')` 同样保留。
+> - ✅ 数据源已切 rows：`scrollToSelection`（L962 起）与 `pageUp/pageDown`（L1026/L1040）走 `renderState.rows` / `rowItemAt` / `rowIndexOf`；`getElementIndexOfSelection`（L1054–1062）只在**无 renderState 的遗留分支**里回退 `elements.indexOf(item.element)` —— 该回退分支随步骤 5b 一并删。
+> - ⚠️ `item.element` 桥仍被 `rename`（L1064 起，读 `element.folderMark/nodeIcon` 挂 textBox）等路径使用，属 5b 待收口。
 
 ---
 
@@ -231,7 +258,7 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 > | Ctrl+Arrow 纯滚动 | ArrowUp/Down 各 ±20px 不改变选中；Ctrl+ 其它键不滚动不改选中 |
 > | 快/慢双击 | 慢双击（500ms Timer）进入重命名并提交改名；快双击文件 → open、不进入重命名；快双击 folder → 切换展开态 |
 >
-> **仍未覆盖（当前实现无对应键位映射，待步骤 2 定义行为后补测）**：PageUp/PageDown（keydown 未映射）；大数据（1000+ 节点）性能基准（步骤 2 前置）。
+> **仍未覆盖（2026-09-11 复核仍成立）**：PageUp/PageDown（`tree-api.ts` 有 `pageUp`/`pageDown` 方法，但 keydown 未映射 `'PageUp'`/`'PageDown'`，浏览器默认滚动仍会触发；补测前需先定义「选中 + 滚动联动」行为）；大数据（1000+ 节点）性能基准（步骤 2 前置，见步骤间回归闸门）。
 
 现有 29 个测试缺口（全部先于任何重构落地，重构期间只允许改断言方式不允许改断言语义）：
 
@@ -257,7 +284,7 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 > **翻默认已完成（2026-09-09）**：`vueRowRender` 默认改为 **true**（v-for 为唯一默认渲染路径，开关仅留给测试/回滚）。适配结果：ui-kit 树用例 **84/84**、editor 侧 bridge/icons/extras **19/19**、**ui-kit 全量 656/656**、**editor 全量 1868/1868**、oxlint 0、`tsc`/`vue-tsc` 0。
 > 适配清单（均为机制差异，语义保留）：① 断言前补 `await nextTick()`（Vue patch 异步）；② `elements[i]` 仅物化窗口内行（`elements[21] === undefined`），占位改由 `.scroll-spacer` 高度断言（累计偏移语义不变）；③ 折叠/窗口外行卸载 → `item.element` 回收，展开后回填新行；④ `refresh()` 后按 key 复用同一行元素（不再“重建新节点”）；⑤ search 模式先取行元素再切 display；⑥ 图标：未提供 `renderNodeIcon` 时回退 `this.createIcon(item)`（编辑器覆写 `createIcon` 的自定义图标路径保持）。
 > **新增修复**：`addNodeTo` 中 parent 初始化提前到 `unselect()` 之前（unselect 现在会触发重派生，避免 `No parent!`）；`insertPaddingAndClear` 在 v-for 路径 no-op；`nodeIcon` 可能为 null 的空值判断。
-> **剩余**：删除 `insertPaddingAndClear`/`treeListStatics.padding`（命令式路径保留到步骤 5 一并删）；真机「数据绑定型窗口」逐窗冒烟（本轮真机确认 19 个树列表已全部是 v-for 形态、spacer 就位，行渲染需打开对应窗口逐窗验证）。
+> **剩余（截至 2026-09-11）**：前半项已由步骤 5 完成——`insertPaddingAndClear`、`treeListStatics.padding`、`vueRowRender` 开关均已删除（命令式渲染实现一并退场）；仍待人工冒烟的是「数据绑定型窗口」逐窗渲染核对（真机已确认 19 个树列表全部为 v-for 形态、spacer 就位；自动可达的 8 个窗口已在步骤 5 记录中逐窗核对）。
 
 - 引入 renderVersion/rows/windowRows/rowKey/bindRowEl/itemClasses/elements shim；
 - 删除 createNodeElement/updateNodeElement/createIndentedItems/createFlatItems/updateOnResize 调用路径（treeListPrototype 对应方法保留为 API 门面，内部改为 bump version）；
@@ -268,6 +295,10 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 
 ### 步骤 3：class 受控化收口
 
+> **进度（2026-09-11，主体已交付）**：行 class 已收敛到模板单点输出——`YMTreeList.vue` 的 `rowClasses(row)` 合成「受控状态（`selected`/`expanded`/`hint`）+ 业务注册 class（`row.extraClasses` ← `tree-render.ts#itemClassesOf`）」，`tree-render.ts` 导出 `setItemClass`/`itemClassesOf`，编辑器侧统一经消费方 API `setTreeItemClass` 写入（步骤 4 的 script/event/condition-list 与 event-editor、command-tip、text-tip 等已迁移）。
+> **遗留（并入步骤 5b）**：`tree-api.ts` 的 `select`/`unselect` 仍直接 `addClass/removeClass(item.element,'selected')`（L815/L848）、拖拽路径仍直接 `addClass(element,'hint')`（L1401/…）——与派生 class 重复但无害（DOM 断言仍成立）；收口时随 `elements` shim 一并删除，改为只 bump 派生状态。
+> 说明：`weak`/`related-event` 等业务语义 class 由 editor 侧注册（不属 ui-kit 内置状态），这是本步骤的设计选择而非缺口。
+
 - selected/hint/weak/dragging 全部经 rowClass；导出 `setItemClass`；
 - ui-kit 测试从 `data[1].element!.classList.contains('selected')` 改为读 API（`el.read()` + class 断言保留——DOM 断言依然有效且应保留）。
 
@@ -277,6 +308,7 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 > 迁移清单（逐类，全部经 API 不再直接摸 DOM）：① textNode 直写 → `plugin-list.list_updateTextNode`、`transition-window`(Easing)、`useTeamWindow` 改 `setTreeItemText`（窗口外行同样生效）；② class 修饰 → `event-editor-commands/events/open`（local/global/related-event）、`script-list`/`event-list`（weak）、`command-tip`（command-suggestion-item）、`text-tip`（text-suggestion-item）改 `setTreeItemClass`；③ 反查 list → `script-list`/`event-list`/`condition-list` 的 `element.parentNode` 改 `treeOwnerListOf`；④ 兄弟遍历 → `module/tree-utils.find_dItem` 改 `treeRowIndexOf`+`treeRowItemAt`（DOM nextSibling 退役）；⑤ 可见性判断 → `command-tip.listOpen`/`text-tip.listOpen` 改 `isTreeItemRendered`；另：`list-clipboard-methods.delete`（行号选中相邻项）、`usePresetObject/ElementWindow.searcherInput`（行遍历）、`useVariableGetterWindow`（命令列表行遍历 + 窗口外行跳过）、`eslints.range`+hover 循环（窗口边界守卫）、`attribute-window`/`enum-window`（`item.element?.group` 按需读）全部迁移。
 > 验证：ui-kit 全量 **656/656**、editor 全量 **1868/1868**（206 文件）、oxlint 0、`tsc`/`vue-tsc` 0；**真机**（翻默认后重建）`open-project` + `drag-here` 端到端通过（跨组 drop/折叠/页签完整性），渲染器日志无新增错误。
 > 剩余：`LayoutPanel.vue` 7 处 `container.closest('.tree-list')`（extras 回调内 DOM 反查，行为仍正确、属可选优化）+ 真机「数据绑定型窗口」逐窗人工冒烟。
+> **覆盖度量（2026-09-11 实测）**：editor 侧共 **15 个文件 / 61 个调用点**使用「渲染模式无关」的行 API——`setTreeItemClass` 17、`treeRowItemAt` 10、`treeRowCount` 8、`treeOwnerListOf` 8、`treeRowIndexOf` 8、`setTreeItemText` 6、`isTreeItemRendered` 4（`clearTreeItemText` 在 editor 侧 **0 调用**，仅 ui-kit 定义 + `index.ts` 导出 → 列入步骤 5b 死代码候选）。
 
 | 用途 | 迁移目标 |
 | --- | --- |
@@ -292,7 +324,42 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 > `createNodeElement`、默认 `updateNodeElement`、`createIndentedItems`、`createFlatItems`、`updateOnResize`、`insertPaddingAndClear` + `treeListStatics.padding`（editor `components/tree-list.ts` 同步去掉 padding 暴露）、`vueRowRender` 开关与 `isVueRowRenderEnabled`/`setVueRowRenderEnabled`、`commonListResize` 依赖。`update()`/`clear()`/`resize()`/`select()`/`unselect()`/导航翻页全部只保留派生行路径（`renderState` 恒存在）。
 > 兼容扩展点保留：消费方**实例级** `updateNodeElement` 覆写（text-tip 富行内容）由行绑定桥在 patch 后调用（`tree-list-vue-rows.spec` 新增用例锁定）；`createIcon` 覆写、`creators`/`updaters`/`renderNodeIcon`/`renderNodeExtras` 均为正式扩展点。
 > 验证：ui-kit **656/656**、editor **1868/1868**、oxlint 0、`tsc`/`vue-tsc` 0；真机翻默认后 `open-project` + `drag-here` 通过。
-> **仍保留（步骤 5b，另行评估）**：`elements` shim（现仅作「窗口行视图」，供 eslints 缩进线、`useVariableGetterWindow` 等按行号访问）、`item.element` 回写桥（行就是 DOM，`treeOwnerListOf` 回退用）、`tree-core.deleteCaches` 的 element 分支与 `NodeElement` 类型——它们不再是渲染路径的一部分，删除属纯收口、需一并迁移上述少数按行号访问的消费方。
+### 步骤 5b：兼容层收口（实施方案，2026-09-11 定稿）
+
+> **判据**：`elements` shim / `item.element` 回写桥 / `NodeElement` 类型 / `clearTreeItemText` 全部删除，且 ui-kit + editor 全量测试、真机冒烟、tracker 与文档口径全部通过；渲染路径不变（仍是派生行）。
+>
+> **待删清单（实测行号，2026-09-11）**
+>
+> | 目标 | 位置 |
+> | --- | --- |
+> | `NodeElement` 类型 | `tree-core.ts` L13（含 `TreeItem.element?: NodeElement` 字段） |
+> | `deleteCaches` 的 element 分支 | `tree-core.ts` L65（`delete item.element`） |
+> | `item.element` 写回/清理 | `tree-api.ts` L403–404（`deleteNodeElements`）、L920、L1061（`elements.indexOf(item.element)`）、L814–815（`select` 里 `addClass(item.element,'selected')`） |
+> | `elements` shim | `tree-api.ts` L982（`syncElementsShim`）、L1016（`elements[index].item`）、L1515 起 `elements` 构造 |
+> | `clearTreeItemText` | `tree-api.ts` L78 定义 + `packages/ui-kit/src/index.ts` 导出（editor 侧 0 调用） |
+> | 行 class 直写 | `tree-api.ts` L814–815 / L835–850（`select`/`unselect` 的 `addClass/removeClass('selected')`）、拖拽 `addClass(element,'hint')`（L1401 等）——与派生 class 重复 |
+>
+> **阻塞消费方与替换方案（4 组，替换用的行 API 已在 `tree-api.ts` L97–115 就位）**
+>
+> | # | 消费方 | 现状 | 替换方案 |
+> | --- | --- | --- | --- |
+> | 1 | `packages/editor/src/attribute/attribute-window.ts` L813/817/826 | `const group = item.element?.group` 决定「set-as」子菜单的 `checked` | 改为**数据面**读取：与同文件 `Attribute.setFolderGroup`（L427–445）里的 `oldGroup` 同式——`Object.keys(getAttributeStore().state.settings!).find((k) => settings[k] === item.id) ?? ''`，建议抽成 `folderGroupOf(settings, id)` 供属性和枚举共用 |
+> | 2 | `packages/editor/src/enum/enum-window.ts` L757/761 | 同上（`Enum.setFolderGroup` L384 起有同式 `oldGroup`） | 同 #1（共用 helper） |
+> | 3 | `packages/editor/src/commands/text-tip.ts` L312/316 | `this.elements.count`、`this.elements[0].item.name` | `treeRowCount(this)`、`treeRowItemAt<TextSuggestionItem>(this, 0)?.name` |
+> | 4 | `packages/editor/src/title/title-bar.ts` L495–503、`packages/editor/src/title/menu-bar.ts` L1063–1066 | `tabBar.childNodes[i].item`（DOM 子节点 + expando） | `treeRowCount(tabBar)` 循环 + `treeRowItemAt<TitleTabItem>(tabBar, i)`；`#title-tabBar` 本身就是挂了 tree API 的元素（`title-bar.ts` L165），无需其它改动 |
+>
+> **⚠️ 顺带修复的潜在缺陷（#1/#2 不是纯重构）**：全仓检索确认**没有任何代码写行元素的 `group` 属性**（唯一的 `.group =` 赋值在 `engine/layout/layout.ts` L1499/L1989，那是拖拽事件对象），因此 `item.element?.group` 恒为 `undefined` → `checked: group === ''` 与 `checked: group === groupKey` **恒为 false**，即"设为分组 / 设为无分组"菜单项从来不显示勾选。改成数据面读取会**修复**该显示（属行为变更），因此必须先补一条断言锁定新行为，并在提交信息里写明"fix"而非"refactor"。
+>
+> **执行顺序（4 个独立可回滚的小步）**
+>
+> 1. **#3 + #4**（ui-kit 外部的纯替换）：`text-tip` / `title-bar` / `menu-bar` 改用行 API；跑 `pnpm -F @yami/editor test`。
+> 2. **#1 + #2 + 缺陷修复**：抽 `folderGroupOf`；补 attribute/enum 菜单断言（先写"当前恒 false"的失败用例，再改成数据面读取使其转绿，作为行为变更的证据）；跑 editor 全量。
+> 3. **删 shim 与桥**：按上表删 `elements`/`item.element`/`NodeElement`/`clearTreeItemText`，同时把 ui-kit 中依赖它们的断言（`tree-list-golden.spec.ts` 10 处、`tree-list-vue-rows.spec.ts` 3 处、`YMTreeList.spec.ts` 4 处 `item.element`/`elements[` 引用）改写为行 API 或 `bindRowElement` 内部态断言。
+> 4. **收口 class 直写**：删 `select`/`unselect` 的 `addClass/removeClass('selected')` 与拖拽路径的 `addClass(...,'hint')`，只保留派生 class；跑 ui-kit 全量（`YMTreeList.spec.ts` 的 class 断言应继续通过，因为它们断言的是渲染结果）。
+>
+> **验收命令**：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`（`ui-kit/components` 与 `editor/tools` 行数应下降）、`pnpm docs:check`；真机 `node scripts/smoke-layout.mjs open-project` + `drag-here`，并逐窗核对树列表渲染行数。
+>
+> **风险与回滚**：风险集中在 #3/#4 的"窗口外行"语义（`elements` 只物化窗口内行，行 API 语义一致但断言方式不同）与 #4 的 class 时序；每一步独立提交、可单独 revert，渲染路径与数据层全程不动。详见 `docs/remaining-work.md` T5b。
 
 - 删除 `elements` shim、`item.element` defineProperty、`tree-core.deleteCaches` 中 element 分支、NodeElement 类型；
 - TreeItem 回归纯数据（parent 链保留或同样收口为显式 API，另行评估）。
@@ -321,16 +388,18 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 | R7 | 性能回退（computed 全量 flatten 在超大树频繁 bump） | 低 | 卡顿 | flatten 为 O(n) 纯遍历，与现 createIndentedItems 等价；必要时增量：只对展开区间重算 |
 | R8 | editor 侧 hidden spec 依赖旧 DOM 时序（icons/extras spec 56 个断言） | 中 | 测试失败阻塞 | 步骤 2 前跑通基线；断言语义不变，仅等待方式（await nextTick）调整 |
 
+**风险收敛状态（2026-09-11 复核）**：R1（class 被 patch 覆盖）、R2（textNode 直写被覆盖）、R3（key 不稳定）、R4（margin→spacer 差异）、R6（`clear()` 清 DOM）、R8（editor 侧 spec 时序）**均已解决**——分别由 `itemClasses` 注册表 + `rowClasses`、`setItemText`/`textOverrides`（含真机发现的两处修复）、`rowKeyOf` 稳定弱键、`.scroll-spacer` + 断言改写、`clear()` 改为只 bump（不再手清 DOM）、断言前补 `await nextTick()` 落地，并有对应用例锁定。**R5（`elements` shim 时序）仍开放**，收口范围即步骤 5b；**R7 的防护已落地**（窗口内 O(窗口行) 合成，不整体重派生），但 1000+ 节点性能基准仍缺（见 remaining-work T1b）。
+
 **回滚策略**：
 
-1. 步骤 2-3 各为独立 PR（ui-kit 包内），回滚 = revert 单个 commit，渲染路径回到 createNodeElement 命令实现（**该实现保留到步骤 5 才删**，中间版本可用包内开关 `YM_TREE_LEGACY_RENDER` 环境变量双路切换，默认新路径）；
+1. 步骤 2-3 各为独立 PR（ui-kit 包内），回滚 = revert 对应 commit：步骤 2/3 期间命令式实现仍在，双路由**实例级开关** `setVueRowRenderEnabled()` 切换（**计划中的 `YM_TREE_LEGACY_RENDER` 环境变量最终未采用**，仓库历史中不存在该标识）；**步骤 5（`1e9665f8`）已删除命令式渲染与开关**，此后若需回退，只能 revert 步骤 5 的提交回到「双路可选」中间态，再按需 revert 步骤 2；
 2. 步骤 4 每类用途独立 PR，任一类出问题单独 revert，不影响其他；
-3. 数据层（tree-core/TreeItem 结构）全程不动，任何时刻旧渲染路径可完整恢复；
+3. 数据层（tree-core/TreeItem 结构）全程未动（步骤 5 只删渲染层），恢复渲染路径不涉及数据迁移；
 4. 金标准测试（步骤 1）在旧实现上录制，双路径共用 → 切换/回滚均有同一套行为断言护航。
 
 ---
 
 ## 附录 A：涉及文件清单
 
-- ui-kit：`YMTreeList.vue`、`tree-api.ts`、`tree-core.ts`（仅类型）、`utils/common-list.ts`（废弃引用）、`utils/dom.ts`（部分）、`__tests__/`
+- ui-kit：`YMTreeList.vue`、`tree-render.ts`（步骤 2 新增的派生层：`flattenRows`/`computeWindow`/`bindRowElement`/`itemClasses`）、`tree-api.ts`、`tree-core.ts`（仅类型）、`utils/common-list.ts`（`commonListClearElements`/`commonListUpdateHeadAndFoot` 仍被 tree-api 使用；`commonListResize` 已与 tree 解耦，现服务于 `select-list-api`/`command-api`/`YMFileNavPane`）、`utils/dom.ts`（部分）、`__tests__/`
 - editor：`components/common/TreeList.vue`（零改动，验证）、`components/layout/LayoutPanel.vue`（7 处 closest + extras）、`tools/{script,event,condition}-list.ts`、`module/tree-utils.ts`、`commands/{command-tip,text-tip,event-editor-*}.ts`、`plugin/plugin-list.ts`、`data/transition-window.ts`、`animation/animation-initialize.ts` 等（步骤 4 全量清单以 grep 基线为准，见 0.3）
