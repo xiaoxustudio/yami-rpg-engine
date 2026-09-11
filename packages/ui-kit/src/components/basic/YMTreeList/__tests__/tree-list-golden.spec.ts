@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeListStatics } from '../tree-api';
+import { treeListStatics, treeRowCount } from '../tree-api';
 
 /**
  * docs/tree-list-vfor-plan.md 步骤 1 的金标准测试补充（2026-09-09）。
@@ -49,7 +49,12 @@ interface TreeListElement extends HTMLElement {
 		| null
 		| (MouseEvent & { target: HTMLElement; hint: HTMLElement & { [k: string]: unknown } });
 	root: TreeData | null;
-	elements: { count: number; start: number; end: number } & { [i: number]: HTMLElement };
+	/** 步骤 5b：`elements` shim 已删，虚拟窗口改从渲染状态读取 */
+	renderState: {
+		rows: { value: unknown[] };
+		start: { value: number };
+		end: { value: number };
+	};
 }
 
 const makeDataTransfer = (): DataTransfer => {
@@ -368,13 +373,13 @@ describe('YMTreeList element 契约（金标准）', () => {
 		await nextTick();
 		el.expandSelection();
 		await nextTick();
-		expect(el.elements.count).toBe(2);
+		expect(treeRowCount(el)).toBe(2);
 		// 行被卸载（fold 折叠）→ element 缓存回收；消费方须按「窗口内行才有 element」适配
 		expect(childEl!.isConnected).toBe(false);
 		expect(data[0].children![0].element).toBeUndefined();
 		el.expandSelection();
 		await nextTick();
-		expect(el.elements.count).toBe(4);
+		expect(treeRowCount(el)).toBe(4);
 		expect(data[0].children![0].element).toBeDefined();
 		expect(data[0].children![0].element!.isConnected).toBe(true);
 		wrapper.unmount();
@@ -441,7 +446,7 @@ describe('YMTreeList duplicate 唯一名序列（金标准）', () => {
 		const copy = data[1];
 		expect(copy.name).toBe('Folder 1');
 		expect(copy.children).toHaveLength(2);
-		expect(el.elements.count).toBe(6);
+		expect(treeRowCount(el)).toBe(6);
 		wrapper.unmount();
 	});
 });
@@ -455,20 +460,15 @@ describe('YMTreeList 虚拟滚动窗口（金标准）', () => {
 	it('200 行初始窗口 [0,21)：仅窗口行挂载，上下 spacer 占位正确', async () => {
 		const data = makeFlatData(200);
 		const { wrapper, el } = await mountList(data);
-		const elements = el.elements as unknown as {
-			count: number;
-			start: number;
-			end: number;
-			[i: number]: HTMLElement;
-		};
-		expect(elements.count).toBe(200);
-		expect(elements.start).toBe(0);
-		expect(elements.end).toBe(21);
-		expect(el.querySelectorAll('.node-item').length).toBe(21);
-		expect(elements[0].parentNode).toBe(el);
-		expect(elements[20].parentNode).toBe(el);
-		// 步骤 2：窗口外行不物化（element 为空），占位由 spacer 承担（语义：累计偏移保持）
-		expect(elements[21]).toBeUndefined();
+		// 步骤 5b：`elements` shim 已删——窗口看 renderState，物化看真实 DOM
+		expect(treeRowCount(el)).toBe(200);
+		expect(el.renderState.start.value).toBe(0);
+		expect(el.renderState.end.value).toBe(21);
+		const rendered = el.querySelectorAll<HTMLElement>('.node-item');
+		expect(rendered.length).toBe(21);
+		expect(rendered[0].parentNode).toBe(el);
+		expect(rendered[20].parentNode).toBe(el);
+		// 窗口外行不物化：渲染行数就是窗口大小，其余高度由 spacer 承担（累计偏移保持）
 		expect(spacerHeights(el)).toEqual({ top: '0px', bottom: `${(200 - 21) * 20}px` });
 		wrapper.unmount();
 	});
@@ -476,22 +476,15 @@ describe('YMTreeList 虚拟滚动窗口（金标准）', () => {
 	it('滚动到 row 150：窗口迁移且仅新窗口行挂载（scroll 事件驱动 resize）', async () => {
 		const data = makeFlatData(200);
 		const { wrapper, el } = await mountList(data);
-		const elements = el.elements as unknown as {
-			count: number;
-			start: number;
-			end: number;
-			[i: number]: HTMLElement;
-		};
 		el.scrollTop = 3000;
 		el.dispatchEvent(new Event('scroll'));
 		await nextTick();
-		expect(elements.start).toBe(150);
-		expect(elements.end).toBe(171);
-		expect(el.querySelectorAll('.node-item').length).toBe(21);
-		expect(elements[149]).toBeUndefined();
-		expect(elements[150].parentNode).toBe(el);
-		expect(elements[170].parentNode).toBe(el);
-		expect(elements[171]).toBeUndefined();
+		expect(el.renderState.start.value).toBe(150);
+		expect(el.renderState.end.value).toBe(171);
+		const rendered = el.querySelectorAll<HTMLElement>('.node-item');
+		expect(rendered.length).toBe(21);
+		expect(rendered[0].parentNode).toBe(el);
+		expect(rendered[20].parentNode).toBe(el);
 		expect(spacerHeights(el)).toEqual({ top: '3000px', bottom: `${(200 - 171) * 20}px` });
 		wrapper.unmount();
 	});
@@ -710,7 +703,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 		fireMouse(row, 'pointerup', { button: 0, clientX: 200, clientY: 10 });
 		expect(opened).toBe(null);
 		expect(data[0].expanded).toBe(false);
-		expect(el.elements.count).toBe(2);
+		expect(treeRowCount(el)).toBe(2);
 		wrapper.unmount();
 	});
 });

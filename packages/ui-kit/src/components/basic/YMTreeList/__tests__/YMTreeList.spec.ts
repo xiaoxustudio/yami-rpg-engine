@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeListStatics } from '../tree-api';
+import { treeListStatics, treeRowCount } from '../tree-api';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -54,7 +54,6 @@ interface TreeListElement extends HTMLElement {
 	drop: () => void;
 	expandSelection: () => void;
 	getItemByProperties: (props: { id: string }) => TreeData | null;
-	elements: { count: number } & { [i: number]: HTMLElement & { textIndent?: number } };
 	root: TreeData | null;
 	renamable: boolean;
 	display: string;
@@ -97,11 +96,11 @@ describe('YMTreeList', () => {
 		await nextTick();
 		el.update();
 		await nextTick();
-		expect(el.elements.count).toBe(4);
-		expect(el.querySelectorAll('.node-item').length).toBe(4);
-		const folder = el.elements[0];
-		expect(folder.textIndent).toBe(0);
-		expect(el.elements[1].textIndent).toBe(12);
+		expect(treeRowCount(el)).toBe(4);
+		const rendered = el.querySelectorAll<HTMLElement & { textIndent?: number }>('.node-item');
+		expect(rendered.length).toBe(4);
+		expect(rendered[0].textIndent).toBe(0);
+		expect(rendered[1].textIndent).toBe(12);
 		expect(data[0].parent).toBe(el.root);
 		expect(data[0].children[0].parent).toBe(data[0]);
 	});
@@ -155,11 +154,11 @@ describe('YMTreeList', () => {
 		el.expandSelection();
 		await nextTick();
 		expect(data[0].expanded).toBe(false);
-		expect(el.elements.count).toBe(2);
+		expect(treeRowCount(el)).toBe(2);
 		el.expandSelection();
 		await nextTick();
 		expect(data[0].expanded).toBe(true);
-		expect(el.elements.count).toBe(4);
+		expect(treeRowCount(el)).toBe(4);
 	});
 
 	it('addNodeTo inserts node and expands ancestors', async () => {
@@ -190,7 +189,7 @@ describe('YMTreeList', () => {
 		el.deleteNode(data[1]);
 		await nextTick();
 		expect(data).not.toContain(data[1]);
-		expect(el.elements.count).toBe(3);
+		expect(treeRowCount(el)).toBe(3);
 	});
 
 	it('searchNodes filters to matches', async () => {

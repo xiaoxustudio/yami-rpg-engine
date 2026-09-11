@@ -25,7 +25,7 @@
 - **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **213 文件 1897/1897**。
 - **基线时效**：2026-09-11 执行 **B0/B1/B2** 时已改动源码并已重跑套件（B1 后 ui-kit 659 → **667**、editor 1884 → **1891**；B2 步 1–2 后 editor → **1897**：新增 `folder-group.spec.ts` 4 例 + `attribute-folder-group-menu.spec.ts` 2 例）；**下次改动源码后同样需要重跑并同步本行与 `remaining-work.md`**——`pnpm docs:check` 会拦"两处基线数字不一致"（历史进展条目里的旧数字不受影响）。
 - **已交付里程碑**：阶段 1（窗口栈数据化）、阶段 2（ui-kit 契约化 + core 去重）、阶段 3（命令表单去 DOM，`read(getElementById)` = 0、125 个 schema 开 `skipWrite`）、阶段 4（inspector/工具层/原型回收）、layout M1–M5、tree 行渲染 v-for 翻默认、**B0（C2 + R3 + E1①）**、**B1（R2a + T1b + R1）**。
-- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：B2（tree 步骤 5b：**步 1–2 已完成**（消费方替换 + `element.group` 缺陷修复），步 3–4 待做）、B3（P2b + P4b）、B4（P5b 四批）、B5（R2b 本地化器）、B6（巨石 B1）、B7（L1/S1/C1），另 E1 余项与 O1 可并行。
+- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：B2（tree 步骤 5b：**步 1–3a 已完成**（消费方替换 5 处 + `element.group` 缺陷修复 + `elements` shim 删除），步 3b–4 待做）、B3（P2b + P4b）、B4（P5b 四批）、B5（R2b 本地化器）、B6（巨石 B1）、B7（L1/S1/C1），另 E1 余项与 O1 可并行。
 
 ## 维护约定（避免再次漂移）
 

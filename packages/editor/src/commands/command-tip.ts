@@ -2,6 +2,7 @@ import {
 	getListConfig,
 	isTreeItemRendered,
 	setTreeItemClass,
+	treeRowCount,
 	treeRowIndexOf,
 	type TreeListRowApi
 } from '@ui-kit';
@@ -425,7 +426,7 @@ CommandSuggestion.listUpdate = function (_event: Event): void {
 	const space = window.innerHeight - y - 20;
 	const below = space >= 200;
 	const capacity = below ? Math.floor(space / 20) : Math.floor(y / 20);
-	const lines = Math.min(this.elements.count, capacity, MAX_LINES);
+	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
 	const top = below ? y + 20 : y - lines * 20;
 	if (lines !== 0) {
 		this.style.left = `${x}px`;

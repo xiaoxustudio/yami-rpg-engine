@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { setTreeItemClass, setTreeItemText } from '../tree-api';
+import { treeRowCount, setTreeItemClass, setTreeItemText } from '../tree-api';
 
 // 数据派生行渲染（docs/tree-list-vfor-plan.md 步骤 2；步骤 5 后为唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
@@ -27,8 +27,11 @@ interface TreeListElement extends HTMLElement {
 	expandSelection: () => void;
 	searchNodes: (keyword: string) => void;
 	scrollToSelection: (mode?: string) => void;
-	elements: { count: number; start: number; end: number } & { [i: number]: HTMLElement };
-	renderState: { rows: { value: unknown[] } };
+	renderState: {
+		rows: { value: unknown[] };
+		start: { value: number };
+		end: { value: number };
+	};
 }
 
 const mockHeight = (el: HTMLElement): void => {
@@ -97,7 +100,7 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		expect(
 			(data[0].element as HTMLElement & { nodeIcon?: HTMLElement }).nodeIcon
 		).not.toBeNull();
-		expect(el.elements.count).toBe(4);
+		expect(treeRowCount(el)).toBe(4);
 		wrapper.unmount();
 	});
 
@@ -124,9 +127,9 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 	it('虚拟窗口：窗口行渲染 + 上下 spacer 占位；滚动后窗口迁移', async () => {
 		const data = makeFlat(200);
 		const { wrapper, el } = await mountList(data);
-		expect(el.elements.count).toBe(200);
-		expect(el.elements.start).toBe(0);
-		expect(el.elements.end).toBe(21);
+		expect(treeRowCount(el)).toBe(200);
+		expect(el.renderState.start.value).toBe(0);
+		expect(el.renderState.end.value).toBe(21);
 		expect(el.querySelectorAll('.node-item')).toHaveLength(21);
 		const top = el.querySelector('.scroll-spacer.top') as HTMLElement;
 		const bottom = el.querySelector('.scroll-spacer.bottom') as HTMLElement;
@@ -136,8 +139,8 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		el.scrollTop = 3000;
 		el.dispatchEvent(new Event('scroll'));
 		await nextTick();
-		expect(el.elements.start).toBe(150);
-		expect(el.elements.end).toBe(171);
+		expect(el.renderState.start.value).toBe(150);
+		expect(el.renderState.end.value).toBe(171);
 		expect(el.querySelectorAll('.node-item')).toHaveLength(21);
 		expect((el.querySelector('.scroll-spacer.top') as HTMLElement).style.height).toBe('3000px');
 		expect((el.querySelector('.scroll-spacer.bottom') as HTMLElement).style.height).toBe(

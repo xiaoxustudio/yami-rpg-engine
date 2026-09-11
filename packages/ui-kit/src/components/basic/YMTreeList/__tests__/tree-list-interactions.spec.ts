@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
+import { treeRowCount } from '../tree-api';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -37,7 +38,6 @@ interface TreeListElement extends HTMLElement {
 		| null
 		| (MouseEvent & { target: HTMLElement; hint: HTMLElement & { [k: string]: unknown } });
 	root: TreeData | null;
-	elements: { count: number } & { [i: number]: HTMLElement };
 }
 
 const makeData = (): TreeData[] => [
@@ -329,10 +329,10 @@ describe('YMTreeList 键盘导航', () => {
 		data[0].expanded = false;
 		el.update();
 		await nextTick();
-		expect(el.elements.count).toBe(2);
+		expect(treeRowCount(el)).toBe(2);
 		fireKey(el, { code: 'ArrowRight' });
 		expect(data[0].expanded).toBe(true);
-		expect(el.elements.count).toBe(4);
+		expect(treeRowCount(el)).toBe(4);
 		wrapper.unmount();
 	});
 

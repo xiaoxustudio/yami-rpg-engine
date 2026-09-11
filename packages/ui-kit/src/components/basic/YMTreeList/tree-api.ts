@@ -19,11 +19,7 @@ import {
 	attachDoubleclick
 } from '../../../utils/dom';
 import { Timer } from '../../../utils/timer';
-import {
-	type CommonListLike,
-	commonListClearElements,
-	commonListUpdateHeadAndFoot
-} from '../../../utils/common-list';
+import { type CommonListLike, commonListUpdateHeadAndFoot } from '../../../utils/common-list';
 import {
 	createDragAndDropHintElement,
 	type DragAndDropHintApi
@@ -91,46 +87,26 @@ export const isTreeItemRendered = (item: unknown): boolean => {
 export const treeListOfItem = (item: unknown): unknown => stateOfItem(item as TreeItem)?.owner;
 
 /**
- * 渲染模式无关的行 API：v-for 路径走派生行（覆盖窗口外行），
- * 命令式路径（开关关闭/旧列表）回退 `elements` shim。
+ * 渲染模式无关的行 API（步骤 5b 后只有派生行一条路径）：走 `rowCount/rowItemAt/rowIndexOf`，
+ * 覆盖窗口外行；`elements` shim 已删除。
  */
 export const treeRowCount = (list: unknown): number => {
-	const target = list as { rowCount?: () => number; elements?: { count?: number } };
-	if (typeof target.rowCount === 'function') return target.rowCount();
-	return target.elements?.count ?? 0;
+	const target = list as { rowCount?: () => number };
+	return typeof target.rowCount === 'function' ? target.rowCount() : 0;
 };
 
 export const treeRowItemAt = <T>(list: unknown, index: number): T | undefined => {
-	const target = list as {
-		rowItemAt?: (i: number) => T | undefined;
-		elements?: Array<{ item?: T } | undefined>;
-	};
-	if (typeof target.rowItemAt === 'function') return target.rowItemAt(index);
-	return target.elements?.[index]?.item;
+	const target = list as { rowItemAt?: (i: number) => T | undefined };
+	return typeof target.rowItemAt === 'function' ? target.rowItemAt(index) : undefined;
 };
 
 export const treeRowIndexOf = (list: unknown, item: unknown): number => {
-	const target = list as {
-		rowIndexOf?: (i: unknown) => number;
-		elements?: Array<{ item?: unknown; element?: unknown } | undefined>;
-	};
-	if (typeof target.rowIndexOf === 'function') return target.rowIndexOf(item);
-	const elements = target.elements;
-	if (elements === undefined) return -1;
-	const element = (item as { element?: unknown } | undefined)?.element;
-	if (element === undefined) return -1;
-	return elements.findIndex((row) => row?.element === element || row === element);
+	const target = list as { rowIndexOf?: (i: unknown) => number };
+	return typeof target.rowIndexOf === 'function' ? target.rowIndexOf(item) : -1;
 };
 
-/** 渲染模式无关的列表归属反查：v-for 走归属登记，命令式回退 element.parentNode */
-export const treeOwnerListOf = (item: unknown): unknown => {
-	const owner = treeListOfItem(item);
-	if (owner !== undefined) return owner;
-	const element = (item as { element?: HTMLElement } | undefined)?.element;
-	const parent = element?.parentNode;
-	if (parent instanceof HTMLElement && parent.classList.contains('tree-list')) return parent;
-	return undefined;
-};
+/** 列表归属反查：行归属登记（`stateOfItem(item).owner`） */
+export const treeOwnerListOf = (item: unknown): unknown => treeListOfItem(item);
 
 const isSSR = typeof document === 'undefined';
 
@@ -343,7 +319,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
-		(this as unknown as { syncElementsShim: () => void }).syncElementsShim();
+		(this as unknown as { syncRenderWindow: () => void }).syncRenderWindow();
 	},
 
 	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
@@ -880,18 +856,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectRelative: function (this: any, direction: string): void {
-		const vueRows = this.renderState !== undefined;
-		const rows: { item: TreeItem }[] | null = vueRows ? this.renderState.rows.value : null;
-		const elements = this.elements;
-		const count = vueRows ? rows!.length : elements.count;
+		const rows: { item: TreeItem }[] = this.renderState.rows.value;
+		const count = rows.length;
 		if (count > 0) {
 			let index = -1;
 			const last = count - 1;
 			const selection = this.read();
 			if (selection) {
-				index = vueRows
-					? this.rowIndexOf(selection)
-					: (elements.indexOf(selection.element) as number);
+				index = this.rowIndexOf(selection);
 			}
 			switch (direction) {
 				case 'up':
@@ -909,7 +881,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 					break;
 			}
-			this.select(vueRows ? rows![index]?.item : elements[index]?.item);
+			this.select(rows[index]?.item);
 			this.scrollToSelection();
 		}
 	},
@@ -954,14 +926,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	scrollToSelection: function (this: any, mode = 'active'): void {
 		const selection = this.read();
 		if (selection && hasScrollBar(this)) {
-			const elements = this.elements;
-			const vueRows = this.renderState !== undefined;
-			const count = vueRows ? this.renderState.rows.value.length : elements.count;
-			let found = -1;
-			for (let i = 0; i < count; i++) {
-				const item = vueRows ? this.renderState.rows.value[i]?.item : elements[i]?.item;
+			const rows: { item: TreeItem }[] = this.renderState.rows.value;
+			for (let i = 0; i < rows.length; i++) {
+				const item = rows[i]?.item;
 				if (item === selection) {
-					found = i;
 					let scrollTop;
 					switch (mode) {
 						case 'active':
@@ -979,47 +947,40 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 					if (this.scrollTop !== scrollTop) {
 						this.scrollTop = scrollTop;
-						if (vueRows) this.syncElementsShim();
+						this.syncRenderWindow();
 					}
 					break;
 				}
-			}
-			if (!vueRows && found === -1) {
-				/* 未找到选中行：与旧实现一致保持不滚动 */
 			}
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	scrollToHome: function (this: any): void {
-		const element = this.elements[0];
-		if (element instanceof HTMLElement) {
-			this.select((element as NodeItemElement).item);
+		const item = this.rowItemAt(0);
+		if (item !== undefined) {
+			this.select(item);
 		}
 		this.scroll(0, 0);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	scrollToEnd: function (this: any): void {
-		const elements = this.elements;
-		const index = elements.count - 1;
-		const element = elements[index];
-		if (element instanceof HTMLElement) {
-			this.select((element as NodeItemElement).item);
+		const item = this.rowItemAt(this.rowCount() - 1);
+		if (item !== undefined) {
+			this.select(item);
 		}
 		this.scroll(0, this.scrollHeight);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	rowItemAt: function (this: any, index: number): TreeItem | undefined {
-		if (this.renderState !== undefined) return this.renderState.rows.value[index]?.item;
-		return (this.elements[index] as NodeElement | undefined)?.item;
+		return this.renderState.rows.value[index]?.item;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	rowCount: function (this: any): number {
-		if (this.renderState !== undefined) return this.renderState.rows.value.length;
-		return this.elements.count;
+		return this.renderState.rows.value.length;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1056,11 +1017,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	getElementIndexOfSelection: function (this: any, defIndex: number): number {
 		const item = this.read();
 		if (!item) return defIndex;
-		if (this.renderState !== undefined) {
-			const index = this.rowIndexOf(item);
-			return index === -1 ? defIndex : index;
-		}
-		return this.elements.indexOf(item.element);
+		const index = this.rowIndexOf(item);
+		return index === -1 ? defIndex : index;
 	},
 
 	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
@@ -1102,10 +1060,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	clearElements: function (this: HTMLElement & { [k: string]: unknown }, start: number): void {
-		commonListClearElements(this as unknown as CommonListLike, start);
-	},
-
 	// oxlint-disable-next-line no-explicit-any
 	clear: function (this: any): HTMLElement {
 		if (this.display === 'search') {
@@ -1114,17 +1068,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			this.searchResults = [];
 		}
 		this.unselect();
-		if (this.renderState !== undefined) {
-			// 步骤 2：Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
-			this.syncRenderRows([]);
-			return this;
-		}
-		this.textContent = '';
-		commonListClearElements(this, 0);
-		this.elements.count = 0;
-		this.elements.start = -1;
-		this.elements.end = -1;
-		this.updateHeadAndFoot();
+		// 步骤 5b：只有派生行一条路径——Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
+		this.syncRenderRows([]);
 		return this;
 	},
 
@@ -1437,9 +1382,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						break;
 				}
 			} else {
-				const elements = this.elements;
-				const index = elements.count - 1;
-				const element = elements[index];
+				// 步骤 5b：取"最后一行"的已物化元素（窗口外行同样为空 ⇒ 与旧 `elements[count-1]` 语义一致）
+				const state = renderStateOf(this) as TreeRenderState;
+				const rows = state.rows.value;
+				const lastRow = rows[rows.length - 1];
+				const element =
+					lastRow === undefined ? undefined : state.rowElements.get(lastRow.key);
 				if (
 					element !== undefined &&
 					(hint.target !== element || hint.position !== 'append')
@@ -1479,9 +1427,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					break;
 				case 'after':
 				case 'append': {
-					const elements = this.elements;
-					const index = elements.indexOf(hint.target);
-					const next = elements[index + 1]?.item;
+					// 步骤 5b：先定位 hint.target 所在行，再取下一行的 item（语义同旧 `elements.indexOf` + 1）
+					const state = renderStateOf(this) as TreeRenderState;
+					const rows = state.rows.value;
+					const index = rows.findIndex(
+						(row) => state.rowElements.get(row.key) === hint.target
+					);
+					const next = rows[index + 1]?.item;
 					if (next) {
 						this.removeItemToInsert(sItem, next);
 					} else {
@@ -1524,21 +1476,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const listConfig = getListConfig(list);
 	list.creators = listConfig.creators = [];
 	list.updaters = listConfig.updaters = [];
-	const elements = [] as unknown as (NodeElement | undefined)[] & {
-		versionId: number;
-		count: number;
-		start: number;
-		end: number;
-		head: unknown;
-		foot: unknown;
-	};
-	elements.versionId = 0;
-	elements.count = 0;
-	elements.start = -1;
-	elements.end = -1;
-	elements.head = null;
-	elements.foot = null;
-	list.elements = elements;
 	list.syncRenderRows = function (
 		this: HTMLElement & { [k: string]: unknown },
 		overrideRows?: unknown
@@ -1562,9 +1499,10 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 					});
 		state.rows.value = rows;
 		state.bump();
-		(self.syncElementsShim as () => void)();
+		(self.syncRenderWindow as () => void)();
 	};
-	list.syncElementsShim = function (this: HTMLElement & { [k: string]: unknown }): void {
+	/** 同步虚拟窗口（start/end）——步骤 5b 后 `elements` shim 已删，这里只剩窗口计算 */
+	list.syncRenderWindow = function (this: HTMLElement & { [k: string]: unknown }): void {
 		const state = renderStateOf(this) as TreeRenderState;
 		// oxlint-disable-next-line no-explicit-any
 		const self = this as any;
@@ -1576,14 +1514,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		);
 		state.start.value = start;
 		state.end.value = end;
-		elements.count = rows.length;
-		elements.start = start;
-		elements.end = end;
-		for (let i = 0; i < rows.length; i++) {
-			const el = state.rowElements.get(rows[i].key);
-			elements[i] = el !== undefined ? el : (undefined as never);
-		}
-		commonListClearElements(self as unknown as CommonListLike, rows.length);
 	};
 	list.rowIndexOf = function (
 		this: HTMLElement & { [k: string]: unknown },

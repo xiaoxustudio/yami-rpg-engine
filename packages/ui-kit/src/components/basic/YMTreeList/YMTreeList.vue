@@ -91,11 +91,11 @@ onMounted(() => {
 	}
 });
 
-// patch 之后：elements shim 与派生内容（updaters/extras/icon）都以真实绑定结果为准
+// patch 之后：同步虚拟窗口，并刷新派生内容（updaters/extras/icon）
 onUpdated(() => {
 	const list = listOf();
 	if (list?.renderState === undefined) return;
-	list.syncElementsShim?.();
+	list.syncRenderWindow?.();
 	list.applyRowUpdaters?.();
 });
 
