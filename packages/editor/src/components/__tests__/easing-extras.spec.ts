@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { h, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
+import { treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -39,7 +40,7 @@ describe('Easing 列表经 tree-api 渲染（updateNodeElement 覆写清理后�
 		el.bind(() => data);
 		el.update();
 		await wrapper.vm.$nextTick();
-		const itemEl = data[0].element as HTMLElement | undefined;
+		const itemEl = treeRowElement(data[0]) as HTMLElement | undefined;
 		expect(itemEl?.querySelector('.tree-node-extras')).toBeTruthy();
 		expect(itemEl?.querySelector('.tree-node-extras .variable-init-text')?.textContent).toBe(
 			' = p1'

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
+import { treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -40,7 +41,7 @@ describe('tree-api 原生 updateNodeElement（默认路径）', () => {
 		el.bind(() => data);
 		el.update();
 		await wrapper.vm.$nextTick();
-		const itemEl = data[0].element as HTMLElement | undefined;
+		const itemEl = treeRowElement(data[0]) as HTMLElement | undefined;
 		expect(itemEl?.querySelector('.tree-node-extras')).toBeTruthy();
 		expect(itemEl?.classList.contains('plugin-item')).toBe(true);
 		expect(['', '0px']).toContain(itemEl?.style.textIndent);

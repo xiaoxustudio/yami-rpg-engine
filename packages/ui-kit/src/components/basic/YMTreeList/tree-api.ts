@@ -31,9 +31,9 @@ import {
 	computeWindow,
 	setItemClass,
 	setItemText,
-	clearItemText,
 	isItemRendered,
 	bindRowElement,
+	rowElementOf,
 	stateOfItem,
 	ROW_HEIGHT,
 	type TreeRenderState
@@ -48,8 +48,8 @@ const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderSt
 /**
  * 消费方 API（步骤 4）：按 item 直接操作行状态，无需触碰 DOM。
  * - setTreeItemClass：行 class（selected/weak/related-event 等）注册到派生层；
- * - setTreeItemText / clearTreeItemText：覆盖或恢复行显示文本（不再直写 textNode）；
- * - isTreeItemRendered：该行当前是否在虚拟窗口内物化（旧 `item.element.parentNode` 语义）；
+ * - setTreeItemText：覆盖行显示文本（不再直写 textNode）；恢复由重派生负责（`clearItemText` 内部态）；
+ * - isTreeItemRendered：该行当前是否在虚拟窗口内物化（步骤 5b 后由渲染状态判定）；
  * - treeListOfItem：按 item 反查所属列表（窗口外 item 亦可）。
  */
 export interface TreeListRowApi<T = unknown> {
@@ -71,18 +71,18 @@ export const setTreeItemText = (item: unknown, text: string): void => {
 	if (state !== undefined) setItemText(state, item as TreeItem, text);
 };
 
-export const clearTreeItemText = (item: unknown): void => {
-	const state = stateOfItem(item as TreeItem);
-	if (state !== undefined) clearItemText(state, item as TreeItem);
-};
-
 export const isTreeItemRendered = (item: unknown): boolean => {
 	const state = stateOfItem(item as TreeItem);
-	if (state !== undefined) return isItemRendered(state, item as TreeItem);
-	// 旧命令式路径：element 存在且已挂载
-	const element = (item as { element?: { parentNode?: unknown } }).element;
-	return element !== undefined && element.parentNode !== null && element.parentNode !== undefined;
+	if (state === undefined) return false;
+	return isItemRendered(state, item as TreeItem);
 };
+
+/**
+ * 消费方 API（步骤 5b）：取某 item 当前**已物化**的行元素；窗口外 / 未渲染返回 undefined。
+ * 取代旧的 `item.element` 桥——需要挂 DOM 的场景（行 tooltip 等）用它。
+ */
+export const treeRowElement = (item: unknown): HTMLElement | undefined =>
+	rowElementOf(item as TreeItem);
 
 export const treeListOfItem = (item: unknown): unknown => stateOfItem(item as TreeItem)?.owner;
 
@@ -314,7 +314,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	refresh: function (this: any): void {
-		this.deleteNodeElements(this.data);
 		this.update();
 	},
 
@@ -369,21 +368,6 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		list: TreeItem[]
 	): void {
 		treeCore.searchNodesAlgorithm(data, keyword, list);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	deleteNodeElements: function (this: any, data: TreeItem[]): void {
-		const length = data.length;
-		for (let i = 0; i < length; i++) {
-			const item = data[i];
-			if (item.element !== undefined) {
-				delete item.element;
-			}
-			const { children } = item;
-			if (children && children.length > 0) {
-				this.deleteNodeElements(children);
-			}
-		}
 	},
 
 	createIcon: function (
@@ -787,11 +771,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		if (item instanceof Object && this.read() !== item) {
 			this.unselect();
 			this.selections.push(item);
-			if (item.element !== undefined) {
-				addClass(item.element, 'selected');
-			}
-			// 步骤 2：行 class 由数据派生，选中变化需刷新派生行
-			if (this.renderState !== undefined) this.syncRenderRows();
+			// 步骤 5b：不再直写行元素 class——选中态由派生行（row.selected）渲染，下面 syncRenderRows 即刷新
+			this.syncRenderRows();
 			if (this.selectEventEnabled) {
 				const select: ValueEvent = new Event('select') as ValueEvent;
 				select.value = this.read();
@@ -818,12 +799,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 		if (selections.length !== 0) {
 			treeListStatics.textBox.input.blur();
-			for (const selected of selections) {
-				const { element } = selected;
-				if (element !== undefined) {
-					removeClass(element, 'selected');
-				}
-			}
+			// 步骤 5b：不再直写行元素 class——取消选中由派生行（row.selected）渲染，末尾 syncRenderRows 即刷新
 			if (this.unselectEventEnabled) {
 				const select: ValueEvent = new Event('unselect') as ValueEvent;
 				select.value = selections;
@@ -889,7 +865,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	expandSelection: function (this: any): void {
 		const item = this.read();
-		if (item !== null && item.expanded !== undefined && item.element !== undefined) {
+		if (item !== null && item.expanded !== undefined && rowElementOf(item) !== undefined) {
 			item.expanded = !item.expanded;
 			this.update();
 			dispatchChangeEvent(this);
@@ -1023,12 +999,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
 		if (getListConfig(this).renamable) {
-			const { element } = item;
+			// 步骤 5b：行元素由渲染状态持有（窗口外的行未物化 → 直接不进入重命名）
+			const element = rowElementOf(item);
 			const { textBox } = treeListStatics;
-			if (document.activeElement === this && !textBox.parentNode && element!.parentNode) {
+			if (
+				element !== undefined &&
+				document.activeElement === this &&
+				!textBox.parentNode &&
+				element.parentNode
+			) {
 				const nodes = [];
-				const { folderMark, nodeIcon } = element!;
-				for (const node of element!.childNodes) {
+				const { folderMark, nodeIcon } = element;
+				for (const node of element.childNodes) {
 					if (
 						node instanceof HTMLElement &&
 						node !== folderMark &&
@@ -1038,9 +1020,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						nodes.push(node);
 					}
 				}
-				textBox.lastText = element!.textNode!.nodeValue as string;
-				element!.textNode!.nodeValue = '';
-				element!.appendChild(textBox);
+				textBox.lastText = element.textNode!.nodeValue as string;
+				element.textNode!.nodeValue = '';
+				element.appendChild(textBox);
 				textBox.hiddenNodes = nodes;
 				textBox.write(item.name);
 				textBox.getFocus('all');
@@ -1188,7 +1170,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					dispatchChangeEvent(this);
 				} else {
 					if (hasClass(element, 'node-item')) {
-						if (!hasClass(element, 'selected')) {
+						// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
+						if (element.item !== undefined && this.read() !== element.item) {
 							this.select(element.item);
 						} else if (
 							getListConfig(this).renamable &&
@@ -1204,8 +1187,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 			case 2: {
 				const element = seek(event.target, '.node-item');
-				if (hasClass(element, 'node-item') && !hasClass(element, 'selected')) {
-					this.select((element as NodeItemElement).item);
+				const item = (element as NodeItemElement).item;
+				if (hasClass(element, 'node-item') && item !== undefined && this.read() !== item) {
+					this.select(item);
 				}
 				break;
 			}
@@ -1228,19 +1212,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			case 2:
 				if (this.popupEventEnabled && document.activeElement === this) {
 					const element = seek(event.target, '.node-item');
-					if (hasClass(element, 'node-item') && hasClass(element, 'selected')) {
-						const popup: PopupEvent = new Event('popup') as PopupEvent;
-						popup.value = (element as NodeItemElement).item;
-						popup.clientX = event.clientX;
-						popup.clientY = event.clientY;
-						this.dispatchEvent(popup);
-					} else {
-						const popup: PopupEvent = new Event('popup') as PopupEvent;
-						popup.value = null;
-						popup.clientX = event.clientX;
-						popup.clientY = event.clientY;
-						this.dispatchEvent(popup);
-					}
+					const item = (element as NodeItemElement).item;
+					// 步骤 5b：是否已选中按数据判断（pointerdown 选中后派生 class 要等一次 patch）
+					const isSelected = item !== undefined && this.read() === item;
+					const popup: PopupEvent = new Event('popup') as PopupEvent;
+					popup.value = hasClass(element, 'node-item') && isSelected ? item : null;
+					popup.clientX = event.clientX;
+					popup.clientY = event.clientY;
+					this.dispatchEvent(popup);
 				}
 				break;
 		}
@@ -1536,7 +1515,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		setItemClass(state, item, className, on);
 	};
 	list.rowHeight = ROW_HEIGHT;
-	// 行元素绑定桥（模板 :ref 回调）：维护 item.element 与内部字段，并跑 creators/updaters 钩子
+	// 行元素绑定（模板 :ref 回调）：维护行元素上的内部字段，并跑 creators/updaters 钩子
 	list.bindRow = function (
 		this: HTMLElement & { [k: string]: unknown },
 		item: TreeItem,
@@ -1546,7 +1525,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		if (state === undefined) return;
 		// oxlint-disable-next-line no-explicit-any
 		const self = this as any;
-		const firstBind = el instanceof HTMLElement && item.element !== el;
+		const firstBind = el instanceof HTMLElement && rowElementOf(item) !== el;
 		bindRowElement(state, item, el);
 		if (firstBind) {
 			for (const creator of getListConfig(self).creators) creator(item);
@@ -1557,14 +1536,16 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		item: TreeItem,
 		el: HTMLElement
 	): void {
-		if (item.element !== undefined) item.element.nodeIcon = el;
+		const row = rowElementOf(item);
+		if (row !== undefined) row.nodeIcon = el;
 	};
 	list.bindNodeExtras = function (
 		this: HTMLElement & { [k: string]: unknown },
 		item: TreeItem,
 		el: HTMLElement
 	): void {
-		if (item.element !== undefined) item.element.extras = el;
+		const row = rowElementOf(item);
+		if (row !== undefined) row.extras = el;
 	};
 	list.applyRowUpdaters = function (this: HTMLElement & { [k: string]: unknown }): void {
 		const state = renderStateOf(this);
@@ -1611,8 +1592,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			const item = list.read();
 			if (item instanceof Object) {
 				const target = timer.target;
-				const element = item.element;
-				if (element.contains(target)) {
+				const element = rowElementOf(item);
+				if (element !== undefined && element.contains(target as Node | null)) {
 					list.rename(item);
 				}
 			}

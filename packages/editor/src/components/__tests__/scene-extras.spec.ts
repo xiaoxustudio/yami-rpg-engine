@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { h, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
+import { treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -96,7 +97,7 @@ describe('scene 列表图标渲染（事件/脚本/条件/可见性/锁定）', 
 		expect(el.querySelector('.icon-conditional')).toBeTruthy();
 		expect(el.querySelector('.visibility-icon')).toBeTruthy();
 		expect(el.querySelector('.lock-icon')).toBeTruthy();
-		const itemEl = data[0].element as HTMLElement | undefined;
+		const itemEl = treeRowElement(data[0]) as HTMLElement | undefined;
 		expect(itemEl?.querySelector('.icon-eventEnabled')?.textContent).toBe('E');
 		wrapper.unmount();
 	});

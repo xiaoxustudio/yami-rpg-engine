@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeListStatics, treeRowCount } from '../tree-api';
+import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
 
 /**
  * docs/tree-list-vfor-plan.md 步骤 1 的金标准测试补充（2026-09-09）。
@@ -127,7 +127,9 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		expect(el.dragging).not.toBe(null);
 		const hint = el.dragging!.hint;
 		expect(el.classList.contains('dragging')).toBe(true);
@@ -145,8 +147,10 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		const folder = data[0].element!;
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		const folder = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(el, 'dragend', {});
@@ -169,12 +173,12 @@ describe('YMTreeList 键盘 F2 重命名全链路（金标准）', () => {
 		await nextTick();
 		fireKey(el, { code: 'F2' });
 		const textBox = treeListStatics.textBox;
-		expect(textBox.parentNode).toBe(data[1].element);
+		expect(textBox.parentNode).toBe(treeRowElement(data[1]) as HTMLElement);
 		textBox.write('Renamed F2');
 		textBox.input.blur();
 		await new Promise((r) => setTimeout(r, 10));
 		expect(data[1].name).toBe('Renamed F2');
-		expect(textOf(data[1].element)).toBe('Renamed F2');
+		expect(textOf(treeRowElement(data[1]) as HTMLElement)).toBe('Renamed F2');
 		expect(records).toHaveLength(1);
 		expect(records[0]).toMatchObject({
 			type: 'rename',
@@ -242,11 +246,11 @@ describe('YMTreeList restore undo/redo 全类型（金标准）', () => {
 		el.restore('redo', record);
 		await nextTick();
 		expect(item.name).toBe('Renamed');
-		expect(textOf(item.element)).toBe('Renamed');
+		expect(textOf(treeRowElement(item) as HTMLElement)).toBe('Renamed');
 		el.restore('undo', record);
 		await nextTick();
 		expect(item.name).toBe('Item 1');
-		expect(textOf(item.element)).toBe('Item 1');
+		expect(textOf(treeRowElement(item) as HTMLElement)).toBe('Item 1');
 		expect(el.read()).toBe(item);
 		el.restore('redo', record);
 		await nextTick();
@@ -318,8 +322,13 @@ describe('YMTreeList restore undo/redo 全类型（金标准）', () => {
 		el.removable = true;
 		el.select(source);
 		await nextTick();
-		fireMouse(source.element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		fireMouse(data[1].element!, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
+		fireMouse(treeRowElement(source) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragover', {
+			dataTransfer: makeDataTransfer(),
+			offsetY: 8
+		});
 		fireMouse(el, 'drop', { dataTransfer: makeDataTransfer() });
 		expect(data[0].children!.map((c) => c.id)).toEqual(['a1']);
 		expect(data[1].children!.map((c) => c.id)).toEqual(['a2']);
@@ -343,32 +352,32 @@ describe('YMTreeList element 契约（金标准）', () => {
 	it('update 后渲染窗口内行 element 均已连接', async () => {
 		const data = makeData();
 		const { wrapper } = await mountList(data);
-		expect(data[0].element!.isConnected).toBe(true);
-		expect(data[0].children![0].element!.isConnected).toBe(true);
-		expect(data[1].element!.isConnected).toBe(true);
+		expect((treeRowElement(data[0]) as HTMLElement).isConnected).toBe(true);
+		expect((treeRowElement(data[0].children![0]) as HTMLElement).isConnected).toBe(true);
+		expect((treeRowElement(data[1]) as HTMLElement).isConnected).toBe(true);
 		wrapper.unmount();
 	});
 
 	it('refresh（deleteNodeElements + update）后缓存清空并按 key 复用行元素', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		const folder = data[0].element;
-		const child = data[0].children![0].element;
+		const folder = treeRowElement(data[0]) as HTMLElement;
+		const child = treeRowElement(data[0].children![0]) as HTMLElement;
 		el.refresh();
 		await nextTick();
-		// 步骤 2 语义：deleteNodeElements 清掉 item.element 缓存，update 后按 key 复用同一行元素回填
+		// 步骤 2 语义：deleteNodeElements 清掉 treeRowElement(item) as HTMLElement 缓存，update 后按 key 复用同一行元素回填
 		expect(folder!.isConnected).toBe(true);
 		expect(child!.isConnected).toBe(true);
-		expect(data[0].element).toBeDefined();
-		expect(data[0].element).toBe(folder);
-		expect(data[0].children![0].element).toBe(child);
+		expect(treeRowElement(data[0]) as HTMLElement).toBeDefined();
+		expect(treeRowElement(data[0]) as HTMLElement).toBe(folder);
+		expect(treeRowElement(data[0].children![0]) as HTMLElement).toBe(child);
 		wrapper.unmount();
 	});
 
 	it('折叠→展开：窗口外行元素被回收，展开后回填新行元素（窗口内才有 element）', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		const childEl = data[0].children![0].element;
+		const childEl = treeRowElement(data[0].children![0]) as HTMLElement;
 		el.select(data[0]);
 		await nextTick();
 		el.expandSelection();
@@ -376,12 +385,12 @@ describe('YMTreeList element 契约（金标准）', () => {
 		expect(treeRowCount(el)).toBe(2);
 		// 行被卸载（fold 折叠）→ element 缓存回收；消费方须按「窗口内行才有 element」适配
 		expect(childEl!.isConnected).toBe(false);
-		expect(data[0].children![0].element).toBeUndefined();
+		expect(treeRowElement(data[0].children![0]) as HTMLElement).toBeUndefined();
 		el.expandSelection();
 		await nextTick();
 		expect(treeRowCount(el)).toBe(4);
-		expect(data[0].children![0].element).toBeDefined();
-		expect(data[0].children![0].element!.isConnected).toBe(true);
+		expect(treeRowElement(data[0].children![0]) as HTMLElement).toBeDefined();
+		expect((treeRowElement(data[0].children![0]) as HTMLElement).isConnected).toBe(true);
 		wrapper.unmount();
 	});
 });
@@ -421,8 +430,8 @@ describe('YMTreeList duplicate 唯一名序列（金标准）', () => {
 			'Actor 4',
 			'Actor 2'
 		]);
-		expect(copy2.element).toBeDefined();
-		expect(copy2.element).not.toBe(copy1.element);
+		expect(treeRowElement(copy2) as HTMLElement).toBeDefined();
+		expect(treeRowElement(copy2) as HTMLElement).not.toBe(copy1.element);
 		expect(el.read()).toBe(copy2);
 		wrapper.unmount();
 	});
@@ -656,7 +665,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 		el.focus();
 		el.select(data[1]);
 		await nextTick();
-		const row = data[1].element!;
+		const row = treeRowElement(data[1]) as HTMLElement;
 		fireMouse(row, 'pointerdown', { button: 0, clientX: 300, clientY: 10 });
 		fireMouse(row, 'pointerup', { button: 0, clientX: 300, clientY: 10 });
 		expect(treeListStatics.textBox.parentNode).toBe(null);
@@ -666,7 +675,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 		treeListStatics.textBox.input.blur();
 		await sleep(10);
 		expect(data[1].name).toBe('Slow Renamed');
-		expect(textOf(data[1].element)).toBe('Slow Renamed');
+		expect(textOf(treeRowElement(data[1]) as HTMLElement)).toBe('Slow Renamed');
 		wrapper.unmount();
 	});
 
@@ -678,7 +687,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 		el.focus();
 		el.select(data[1]);
 		await nextTick();
-		const row = data[1].element!;
+		const row = treeRowElement(data[1]) as HTMLElement;
 		fireMouse(row, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });
 		fireMouse(row, 'pointerup', { button: 0, clientX: 200, clientY: 10 });
 		fireMouse(row, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });
@@ -696,7 +705,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 		el.focus();
 		el.select(data[0]);
 		await nextTick();
-		const row = data[0].element!;
+		const row = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(row, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });
 		fireMouse(row, 'pointerup', { button: 0, clientX: 200, clientY: 10 });
 		fireMouse(row, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });

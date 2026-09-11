@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeListStatics, treeRowCount } from '../tree-api';
+import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -117,11 +117,11 @@ describe('YMTreeList', () => {
 		el.select(data[1]);
 		await nextTick();
 		expect(el.read()).toBe(data[1]);
-		expect(data[1].element!.classList.contains('selected')).toBe(true);
+		expect((treeRowElement(data[1]) as HTMLElement).classList.contains('selected')).toBe(true);
 		el.unselect();
 		await nextTick();
 		expect(el.read()).toBe(null);
-		expect(data[1].element!.classList.contains('selected')).toBe(false);
+		expect((treeRowElement(data[1]) as HTMLElement).classList.contains('selected')).toBe(false);
 	});
 
 	it('select dispatches select event when enabled', async () => {
@@ -249,12 +249,12 @@ describe('YMTreeList', () => {
 		el.rename(item);
 		await nextTick();
 		const textBox = treeListStatics.textBox;
-		expect(textBox.parentNode).toBe(item.element!);
+		expect(textBox.parentNode).toBe(treeRowElement(item) as HTMLElement);
 		textBox.write('Renamed');
 		textBox.input.blur();
 		await new Promise((r) => setTimeout(r, 10));
 		expect(item.name).toBe('Renamed');
-		expect(item.element!.querySelector('.text-box')).toBe(null);
+		expect((treeRowElement(item) as HTMLElement).querySelector('.text-box')).toBe(null);
 	});
 
 	it('getItemByProperties finds nested node', async () => {

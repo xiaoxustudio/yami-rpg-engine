@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { h, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
+import { treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -55,7 +56,7 @@ describe('plugin/custom-command 编辑按钮渲染（createEditIcon Vue 化回�
 		el.bind(() => data);
 		el.update();
 		await wrapper.vm.$nextTick();
-		const itemEl = data[0].element as HTMLElement | undefined;
+		const itemEl = treeRowElement(data[0]) as HTMLElement | undefined;
 		expect(itemEl?.classList.contains('plugin-item')).toBe(true);
 		expect(itemEl?.classList.contains('weak')).toBe(true);
 		const btn = itemEl?.querySelector('.script-edit-button');

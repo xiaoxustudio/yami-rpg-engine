@@ -46,15 +46,11 @@ describe('tree-core', () => {
 	});
 
 	describe('deleteCaches', () => {
-		it('递归删除 element 与 parent 缓存', () => {
+		it('递归删除 parent 缓存', () => {
 			const data = makeTree();
 			core.createParents(data, null);
-			data[0].element = {} as TreeItem['element'];
-			data[0].children![0].element = {} as TreeItem['element'];
 			core.deleteCaches(data);
-			expect(data[0].element).toBeUndefined();
 			expect(data[0].parent).toBeUndefined();
-			expect(data[0].children![0].element).toBeUndefined();
 			expect(data[0].children![0].parent).toBeUndefined();
 		});
 
@@ -79,12 +75,10 @@ describe('tree-core', () => {
 			expect(copy.children![1].presetId).toBe('preset-x');
 		});
 
-		it('不复制 element 与 parent 引用', () => {
+		it('不复制 parent 引用（行元素不再挂在 item 上）', () => {
 			const data = makeTree();
 			core.createParents(data, null);
-			data[0].element = {} as TreeItem['element'];
 			const copy = core.cloneNode(data[0]);
-			expect('element' in copy).toBe(false);
 			expect('parent' in copy).toBe(false);
 			expect(copy.children![0].parent).toBeUndefined();
 		});

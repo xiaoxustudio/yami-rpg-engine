@@ -3,6 +3,7 @@ import {
 	isTreeItemRendered,
 	setTreeItemClass,
 	treeRowCount,
+	treeRowElement,
 	treeRowIndexOf,
 	type TreeListRowApi
 } from '@ui-kit';
@@ -63,9 +64,8 @@ interface CommandSuggestionList extends TreeListRowApi<CommandSuggestionItem> {
 	hide(): HTMLElement | void;
 	show(): HTMLElement | void;
 	scrollToSelection(mode?: string): void;
-	deleteNodeElements(
-		data: CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null
-	): void;
+	/** 步骤 5b：重派生行（替代旧的「手清 DOM + deleteNodeElements」本地化刷新） */
+	syncRenderRows(): void;
 	searchNodes(text: string): void;
 	selectRelative(direction: string): void;
 	pageUp(select: boolean): void;
@@ -218,7 +218,9 @@ function bindListMethods() {
 	list.createCommandTip = (function IIFE() {
 		const separator = /\s*,\s*/;
 		return function (item: CommandSuggestionItem): void {
-			const element = item.element!;
+			// 步骤 5b：行元素改由行 API 取（creator 在 bindRow 之后调用，正常必有元素）
+			const element = treeRowElement(item);
+			if (element === undefined) return;
 			const words = Command.words as unknown as {
 				push(s: string): number;
 				join(j?: string): string;
@@ -318,12 +320,11 @@ CommandSuggestion.select = function (item: CommandSuggestionItem): void {
 };
 
 CommandSuggestion.windowLocalize = function (_event: Event): void {
-	// 用重置textContent代替clear来保留选中项
-	const { list, data } = CommandSuggestion;
+	// 步骤 5b：行由 v-for 渲染，不能再手清 DOM（会炸掉 vnode）；改为重派生以刷新本地化文本
+	const { list } = CommandSuggestion;
 	if (list.initialized) {
 		list.initialized = false;
-		list.textContent = '';
-		list.deleteNodeElements(data);
+		list.syncRenderRows();
 	}
 };
 

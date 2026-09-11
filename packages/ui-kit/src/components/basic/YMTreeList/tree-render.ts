@@ -214,14 +214,18 @@ export const computeWindow = (
 export const windowRowsOf = (state: TreeRenderState): ComputedRef<TreeRenderRow[]> =>
 	computed(() => state.rows.value.slice(state.start.value, state.end.value));
 
-/** 行元素绑定：维护 item.element 桥 + 内部字段（textNode/folderMark/nodeIcon/extras） */
+/** item → 当前已物化的行元素（未物化 / 已卸载返回 undefined）——替代旧的 `item.element` 桥 */
+export const rowElementOf = (item: TreeItem): NodeElement | undefined => {
+	const state = stateOfItem(item);
+	if (state === undefined) return undefined;
+	return state.rowElements.get(rowKeyOf(item));
+};
+
+/** 行元素绑定：维护行元素上的内部字段（textNode/folderMark/nodeIcon/extras）与反查指针 */
 export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unknown): void => {
 	const key = rowKeyOf(item);
 	if (el instanceof HTMLElement) {
 		const element = el as NodeElement;
-		if (item.element !== element) {
-			Object.defineProperty(item, 'element', { configurable: true, value: element });
-		}
 		element.item = item;
 		element.changed = false;
 		const folderMark = element.querySelector(':scope > .folder-mark') as HTMLElement | null;
@@ -253,9 +257,5 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 		return;
 	}
 	// 行被移除（折叠/移出窗口/删节点/卸载）：ref 回调收到 null 即代表该行已卸载
-	const current = state.rowElements.get(key);
 	state.rowElements.delete(key);
-	if (current !== undefined && item.element === current) {
-		delete item.element;
-	}
 };

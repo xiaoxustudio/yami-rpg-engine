@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { h, nextTick, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
+import { treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -87,7 +88,9 @@ describe('TreeList nodeExtras（节点装饰 Vue 渲染回归保护）', () => {
 		expect(init).toBeTruthy();
 		expect(init!.textContent).toBe(' = hp');
 		const item1 = data[1];
-		const item1El = item1.element as unknown as { extras: HTMLElement } | undefined;
+		const item1El = treeRowElement(item1) as HTMLElement as unknown as
+			| { extras: HTMLElement }
+			| undefined;
 		expect(item1El?.extras?.textContent).toBe(' = mp');
 		wrapper.unmount();
 	});

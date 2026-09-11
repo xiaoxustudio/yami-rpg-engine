@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeRowCount } from '../tree-api';
+import { treeRowCount, treeRowElement } from '../tree-api';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -100,7 +100,9 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		expect(el.dragging).not.toBe(null);
 		const hint = el.dragging!.hint;
 		expect(hint.classList.contains('drag-and-drop-hint')).toBe(true);
@@ -120,11 +122,15 @@ describe('YMTreeList 拖拽交互', () => {
 		el.lockDirectory = true;
 		el.select(data[0]);
 		await nextTick();
-		fireMouse(data[0].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		expect(el.dragging).toBe(null);
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		expect(el.dragging).not.toBe(null);
 		wrapper.unmount();
 	});
@@ -133,7 +139,7 @@ describe('YMTreeList 拖拽交互', () => {
 		const { wrapper, el, data } = await mountList();
 		el.removable = true;
 		// 步骤 2：display 切换会重派生行（search 结果为空 → 行卸载），先取行元素再切模式
-		const row = data[0].element!;
+		const row = treeRowElement(data[0]) as HTMLElement;
 		el.display = 'search';
 		el.select(data[0]);
 		await nextTick();
@@ -147,8 +153,10 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		const folder = data[0].element!;
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		const folder = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 2 });
 		expect(el.dragging!.hint.position).toBe('before');
 		expect(el.dragging!.hint.target).toBe(folder);
@@ -166,8 +174,10 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		const child = data[0].children![0].element!;
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		const child = treeRowElement(data[0].children![0]) as HTMLElement;
 		fireMouse(child, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 5 });
 		expect(el.dragging!.hint.position).toBe('before');
 		fireMouse(child, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 12 });
@@ -181,11 +191,13 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		fireMouse(el, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 100 });
 		const hint = el.dragging!.hint;
 		expect(hint.position).toBe('append');
-		expect(hint.target).toBe(data[1].element);
+		expect(hint.target).toBe(treeRowElement(data[1]) as HTMLElement);
 		fireMouse(el, 'dragend', {});
 		wrapper.unmount();
 	});
@@ -198,8 +210,13 @@ describe('YMTreeList 拖拽交互', () => {
 		el.on('record', (e: Event & { value: unknown }) => records.push({ value: e.value }));
 		el.select(source);
 		await nextTick();
-		fireMouse(source.element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		fireMouse(data[0].element!, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
+		fireMouse(treeRowElement(source) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragover', {
+			dataTransfer: makeDataTransfer(),
+			offsetY: 8
+		});
 		fireMouse(el, 'drop', { dataTransfer: makeDataTransfer() });
 		expect(data[0].children!.map((c: TreeData) => c.id)).toEqual(['child1', 'child2', 'item1']);
 		expect(records).toEqual([
@@ -222,8 +239,10 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		fireMouse(data[0].children![0].element!, 'dragover', {
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		fireMouse(treeRowElement(data[0].children![0]) as HTMLElement, 'dragover', {
 			dataTransfer: makeDataTransfer(),
 			offsetY: 3
 		});
@@ -238,8 +257,13 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[0].children![1]);
 		await nextTick();
-		fireMouse(data[0].children![1].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		fireMouse(data[1].element!, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 15 });
+		fireMouse(treeRowElement(data[0].children![1]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragover', {
+			dataTransfer: makeDataTransfer(),
+			offsetY: 15
+		});
 		fireMouse(el, 'drop', { dataTransfer: makeDataTransfer() });
 		expect(data[0].children!.map((c: TreeData) => c.id)).toEqual(['child1']);
 		expect(data.map((i: TreeData) => i.id)).toEqual(['folder1', 'item1', 'child2']);
@@ -251,7 +275,9 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[0].children![0]);
 		await nextTick();
-		fireMouse(data[0].children![0].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
+		fireMouse(treeRowElement(data[0].children![0]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
 		fireMouse(el, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 100 });
 		fireMouse(el, 'drop', { dataTransfer: makeDataTransfer() });
 		expect(data[0].children!.map((c: TreeData) => c.id)).toEqual(['child2']);
@@ -264,8 +290,10 @@ describe('YMTreeList 拖拽交互', () => {
 		el.removable = true;
 		el.select(data[0]);
 		await nextTick();
-		fireMouse(data[0].element!, 'dragstart', { dataTransfer: makeDataTransfer() });
-		fireMouse(data[0].children![0].element!, 'dragover', {
+		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragstart', {
+			dataTransfer: makeDataTransfer()
+		});
+		fireMouse(treeRowElement(data[0].children![0]) as HTMLElement, 'dragover', {
 			dataTransfer: makeDataTransfer(),
 			offsetY: 3
 		});
@@ -359,8 +387,16 @@ describe('YMTreeList 右键 popup', () => {
 		});
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'pointerdown', { button: 2, clientX: 100, clientY: 40 });
-		fireMouse(data[1].element!, 'pointerup', { button: 2, clientX: 100, clientY: 40 });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerdown', {
+			button: 2,
+			clientX: 100,
+			clientY: 40
+		});
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerup', {
+			button: 2,
+			clientX: 100,
+			clientY: 40
+		});
 		expect(popup!.value).toBe(data[1]);
 		expect(popup!.clientX).toBe(100);
 		expect(popup!.clientY).toBe(40);
@@ -382,9 +418,17 @@ describe('YMTreeList 右键 popup', () => {
 		el.focus();
 		let popup: (Event & { value: unknown }) | null = null;
 		el.on('popup', (e) => (popup = e as Event & { value: unknown }));
-		fireMouse(data[1].element!, 'pointerdown', { button: 2, clientX: 100, clientY: 40 });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerdown', {
+			button: 2,
+			clientX: 100,
+			clientY: 40
+		});
 		expect(el.read()).toBe(data[1]);
-		fireMouse(data[1].element!, 'pointerup', { button: 2, clientX: 100, clientY: 40 });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerup', {
+			button: 2,
+			clientX: 100,
+			clientY: 40
+		});
 		expect(popup!.value).toBe(data[1]);
 		wrapper.unmount();
 	});
@@ -395,7 +439,11 @@ describe('YMTreeList 右键 popup', () => {
 		el.on('popup', (e) => (popup = e as Event & { value: unknown }));
 		el.select(data[1]);
 		await nextTick();
-		fireMouse(data[1].element!, 'pointerup', { button: 2, clientX: 100, clientY: 40 });
+		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerup', {
+			button: 2,
+			clientX: 100,
+			clientY: 40
+		});
 		expect(popup).toBe(null);
 		wrapper.unmount();
 	});
@@ -458,8 +506,8 @@ describe('YMTreeList duplicate', () => {
 		expect(copy).not.toBe(target);
 		expect(copy.id).toBe(target.id);
 		expect(copy.name).toBe('Child 3');
-		expect(copy.element).toBeDefined();
-		expect(copy.element).not.toBe(target.element);
+		expect(treeRowElement(copy) as HTMLElement).toBeDefined();
+		expect(treeRowElement(copy) as HTMLElement).not.toBe(target.element);
 		expect(el.read()).toBe(copy);
 		wrapper.unmount();
 	});

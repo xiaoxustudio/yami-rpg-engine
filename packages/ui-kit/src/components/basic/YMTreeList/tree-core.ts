@@ -3,7 +3,6 @@ export type TreeItem = {
 	class?: string;
 	children?: TreeItem[];
 	parent?: TreeItem | null;
-	element?: NodeElement;
 	expanded?: boolean;
 	id?: string;
 	presetId?: string;
@@ -62,7 +61,6 @@ export function createTreeCore(): TreeCore {
 	const deleteCaches = (data: TreeItem[] & { initialized?: unknown }): void => {
 		const uninstall = (items: TreeItem[]): void => {
 			for (const item of items) {
-				delete item.element;
 				delete item.parent;
 				if (item.children !== undefined) {
 					uninstall(item.children);

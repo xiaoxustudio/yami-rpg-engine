@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeRowCount, setTreeItemClass, setTreeItemText } from '../tree-api';
+import { treeRowCount, treeRowElement, setTreeItemClass, setTreeItemText } from '../tree-api';
 
 // 数据派生行渲染（docs/tree-list-vfor-plan.md 步骤 2；步骤 5 后为唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
@@ -92,22 +92,22 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		// 折叠标记：folder 有、file 无
 		expect(rows[0].querySelector('.folder-mark')).not.toBeNull();
 		expect(rows[1].querySelector('.folder-mark')).toBeNull();
-		// 元素桥：item.element 指向渲染出的行，且内部字段挂载
-		expect(data[0].element).toBe(rows[0]);
-		expect((data[0].element as HTMLElement & { textNode?: Text }).textNode?.nodeValue).toBe(
-			'Folder'
-		);
+		// 元素桥：treeRowElement(item) as HTMLElement 指向渲染出的行，且内部字段挂载
+		expect(treeRowElement(data[0]) as HTMLElement).toBe(rows[0]);
 		expect(
-			(data[0].element as HTMLElement & { nodeIcon?: HTMLElement }).nodeIcon
+			(treeRowElement(data[0]) as HTMLElement & { textNode?: Text }).textNode?.nodeValue
+		).toBe('Folder');
+		expect(
+			(treeRowElement(data[0]) as HTMLElement & { nodeIcon?: HTMLElement }).nodeIcon
 		).not.toBeNull();
 		expect(treeRowCount(el)).toBe(4);
 		wrapper.unmount();
 	});
 
-	it('选中/折叠：row class 与行数随数据刷新（item.element 引用稳定）', async () => {
+	it('选中/折叠：row class 与行数随数据刷新（treeRowElement(item) as HTMLElement 引用稳定）', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		const folderElement = data[0].element;
+		const folderElement = treeRowElement(data[0]) as HTMLElement;
 		el.select(data[0]);
 		await nextTick();
 		expect(el.querySelectorAll('.node-item.selected')).toHaveLength(1);
@@ -119,8 +119,8 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		el.expandSelection();
 		await nextTick();
 		expect(el.querySelectorAll('.node-item')).toHaveLength(4);
-		// 折叠→展开后行元素复用（item.element 引用不变）
-		expect(data[0].element).toBe(folderElement);
+		// 折叠→展开后行元素复用（treeRowElement(item) as HTMLElement 引用不变）
+		expect(treeRowElement(data[0]) as HTMLElement).toBe(folderElement);
 		wrapper.unmount();
 	});
 

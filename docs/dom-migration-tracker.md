@@ -43,12 +43,12 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 31 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 15 | 0 | 0 |
-| ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 65 | 2 | 263 | 103 | 0 | 0 | 0 |
+| ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 130 | 2 | 575 | 172 | 1481 | 0 | 0 |
+| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1481 | 0 | 0 |
 
 ## 口径
 
@@ -71,10 +71,10 @@
 | --- | --- | --- |
 | style.* 赋值 | 312 | 77 |
 | .children 遍历 | 229 | 73 |
-| hasClass() 读 class 当状态 | 215 | 51 |
+| hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 139 | 40 |
 | classList.add/remove/toggle | 133 | 42 |
-| textContent 赋值 | 127 | 44 |
+| textContent 赋值 | 126 | 43 |
 | get/set/removeAttribute | 85 | 35 |
 | scrollTop 写 | 84 | 39 |
 | parentElement | 47 | 46 |
@@ -98,7 +98,7 @@
 | packages/editor/src/components/tools/SetNumberOperand.vue | 767 | 60 | 是 |
 | packages/editor/src/engine/layout/layout.ts | 2081 | 59 | 是 |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1657 | 55 | 是 |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1638 | 51 | 是 |
 | packages/editor/src/components/commands/SetString.vue | 531 | 44 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2328 | 42 | 是 |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 551 | 41 | 是 |
@@ -208,7 +208,7 @@
 | packages/editor/src/commands/accessors/actor-accessor-window.ts | 43 | 7 | - |
 | packages/editor/src/commands/accessors/ancestor-accessor-window.ts | 39 | 7 | - |
 | packages/editor/src/commands/accessors/state-accessor-window.ts | 39 | 7 | - |
-| packages/editor/src/commands/command-tip.ts | 449 | 7 | - |
+| packages/editor/src/commands/command-tip.ts | 450 | 7 | - |
 | packages/editor/src/components/commands/CastSkill.vue | 87 | 7 | - |
 | packages/editor/src/components/commands/MoveActor.vue | 97 | 7 | - |
 | packages/editor/src/components/commands/MoveCamera.vue | 99 | 7 | - |
@@ -1181,7 +1181,7 @@
 | packages/ui-kit/src/components/basic/YMRadioBox/YMRadioBox.vue | 162 | 0 | - |
 | packages/ui-kit/src/components/basic/YMSelectList/YMSelectList.vue | 86 | 0 | - |
 | packages/ui-kit/src/components/basic/YMSwitchItem/YMSwitchItem.vue | 103 | 0 | - |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-core.ts | 176 | 0 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-core.ts | 174 | 0 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-render.ts | 262 | 0 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |

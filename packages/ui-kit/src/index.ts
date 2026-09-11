@@ -42,8 +42,8 @@ export {
 	// 步骤 4 消费方 API：按 item 操作行状态，不再触碰 DOM
 	setTreeItemClass,
 	setTreeItemText,
-	clearTreeItemText,
 	isTreeItemRendered,
+	treeRowElement,
 	treeListOfItem,
 	treeRowCount,
 	treeRowItemAt,
