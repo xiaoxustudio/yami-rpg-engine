@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.positionGetter-type.label') }}</div>
-			<SelectBox id="positionGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="positionGetter-type"
+				:ref="fieldRef('positionGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.positionGetter-common-x.label') }}</div>
 			<NumberVar
 				id="positionGetter-common-x"
+				:ref="fieldRef('positionGetter-common-x')"
 				min="-512"
 				max="512"
 				decimals="4"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.positionGetter-common-y.label') }}</div>
 			<NumberVar
 				id="positionGetter-common-y"
+				:ref="fieldRef('positionGetter-common-y')"
 				min="-512"
 				max="512"
 				decimals="4"
@@ -28,18 +31,24 @@
 				v-model="form.y"
 			/>
 			<div class="text">{{ t('components.positionGetter-actor.label') }}</div>
-			<CustomBox id="positionGetter-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="positionGetter-actor"
+				:ref="fieldRef('positionGetter-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.positionGetter-trigger.label') }}</div>
-			<CustomBox id="positionGetter-trigger" type="trigger" v-model="form.trigger" />
+			<CustomBox id="positionGetter-trigger"
+				:ref="fieldRef('positionGetter-trigger')" type="trigger" v-model="form.trigger" />
 			<div class="text">{{ t('components.positionGetter-light.label') }}</div>
-			<CustomBox id="positionGetter-light" type="light" v-model="form.light" />
+			<CustomBox id="positionGetter-light"
+				:ref="fieldRef('positionGetter-light')" type="light" v-model="form.light" />
 			<div class="text">{{ t('components.positionGetter-region.label') }}</div>
-			<CustomBox id="positionGetter-region" type="region" v-model="form.region" />
+			<CustomBox id="positionGetter-region"
+				:ref="fieldRef('positionGetter-region')" type="region" v-model="form.region" />
 			<div class="text">{{ t('components.positionGetter-region-mode.label') }}</div>
-			<SelectBox id="positionGetter-region-mode" v-model="form.mode" />
+			<SelectBox id="positionGetter-region-mode"
+				:ref="fieldRef('positionGetter-region-mode')" v-model="form.mode" />
 			<div class="text">{{ t('components.positionGetter-objectId.label') }}</div>
 			<CustomBox
 				id="positionGetter-objectId"
+				:ref="fieldRef('positionGetter-objectId')"
 				v-focus
 				type="preset-object"
 				filter="any"
@@ -53,6 +62,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { PositionGetter } from '@app/commands/accessors/position-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { usePositionGetterWindow } from '@app/composables/usePositionGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -65,6 +75,10 @@ const { t } = useI18n();
 
 const positionGetter = usePositionGetterWindow();
 const form = positionGetter.form;
+
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+PositionGetter.fields = fields;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 

@@ -1,5 +1,3 @@
-﻿import { $ } from '@app/utils/dom';
-import { on } from '@app/utils/element-utils.ts';
 import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import type { AccessorTarget } from '@app/types/shapes.ts';
@@ -8,22 +6,28 @@ import { createAccessor } from './accessor-factory.ts';
 export const AncestorGetter = createAccessor(
 	{
 		initialize() {
-			if (!$('#ancestorGetter-type')) return;
+			if (!this.fields?.get('ancestorGetter-type')) return;
 			const inclusions = new Set(['trigger', 'latest', 'by-id', 'variable']);
-			$('#ancestorGetter-type').loadItems(
-				$('#elementGetter-type').dataItems?.filter((a) =>
-					inclusions.has((a as { value: string }).value)
-				)
-			);
+			this.fields
+				?.get('ancestorGetter-type')
+				?.loadItems?.(
+					this.fields
+						?.get('elementGetter-type')
+						?.root?.dataItems?.filter((a) =>
+							inclusions.has((a as { value: string }).value)
+						) ?? []
+				);
 
-			$('#ancestorGetter-type')
-				.enableHiddenMode()
-				.relate([
-					{ case: 'by-id', targets: [$('#ancestorGetter-presetId')] },
-					{ case: 'variable', targets: [$('#ancestorGetter-variable')] }
+			this.fields
+				?.get('ancestorGetter-type')
+				?.enableHiddenMode?.()
+				?.relate?.([
+					{ case: 'by-id', targets: [this.fields?.get('ancestorGetter-presetId')?.root] },
+					{
+						case: 'variable',
+						targets: [this.fields?.get('ancestorGetter-variable')?.root]
+					}
 				]);
-
-			on($('#ancestorGetter-confirm'), 'click', this.confirm!);
 		},
 		open(target: AccessorTarget) {
 			useAncestorGetterWindow().open(target, {

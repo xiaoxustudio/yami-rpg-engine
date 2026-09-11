@@ -8,14 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.equipmentGetter-type.label') }}</div>
-			<SelectBox id="equipmentGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="equipmentGetter-type"
+				:ref="fieldRef('equipmentGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.equipmentGetter-actor.label') }}</div>
-			<CustomBox id="equipmentGetter-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="equipmentGetter-actor"
+				:ref="fieldRef('equipmentGetter-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.equipmentGetter-slot.label') }}</div>
-			<SelectVar id="equipmentGetter-slot" v-focus v-model="form.slot" />
+			<SelectVar id="equipmentGetter-slot"
+				:ref="fieldRef('equipmentGetter-slot')" v-focus v-model="form.slot" />
 			<div class="text">{{ t('components.equipmentGetter-equipmentId.label') }}</div>
 			<CustomBox
 				id="equipmentGetter-equipmentId"
+				:ref="fieldRef('equipmentGetter-equipmentId')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -24,6 +28,7 @@
 			<div class="text">{{ t('components.equipmentGetter-variable.label') }}</div>
 			<CustomBox
 				id="equipmentGetter-variable"
+				:ref="fieldRef('equipmentGetter-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -37,6 +42,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { EquipmentGetter } from '@app/commands/accessors/equipment-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -49,6 +55,10 @@ const { t } = useI18n();
 
 const equipmentGetter = useEquipmentGetterWindow();
 const form = equipmentGetter.form;
+
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+EquipmentGetter.fields = fields;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 

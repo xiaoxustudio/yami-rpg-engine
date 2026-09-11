@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { useElementGetterWindow } from '@app/composables/useElementGetterWindow';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import type { AccessorTarget } from '@app/types/shapes.ts';
@@ -6,8 +5,8 @@ import { createAccessor } from './accessor-factory.ts';
 
 export const ElementGetter = createAccessor({
 	initialize() {
-		if (!$('#elementGetter-type')) return;
-		$('#elementGetter-type').loadItems([
+		if (!this.fields?.get('elementGetter-type')) return;
+		this.fields?.get('elementGetter-type')?.loadItems?.([
 			{ name: 'Event Trigger Element', value: 'trigger' },
 			{ name: 'Latest Element', value: 'latest' },
 			{ name: 'By Element ID', value: 'by-id' },
@@ -20,25 +19,32 @@ export const ElementGetter = createAccessor({
 			{ name: 'Variable', value: 'variable' }
 		]);
 
-		$('#elementGetter-type')
-			.enableHiddenMode()
-			.relate([
-				{ case: 'by-id', targets: [$('#elementGetter-presetId')] },
+		this.fields
+			?.get('elementGetter-type')
+			?.enableHiddenMode?.()
+			?.relate?.([
+				{ case: 'by-id', targets: [this.fields?.get('elementGetter-presetId')?.root] },
 				{
 					case: 'by-ancestor-and-id',
-					targets: [$('#elementGetter-ancestor'), $('#elementGetter-presetId')]
+					targets: [
+						this.fields?.get('elementGetter-ancestor')?.root,
+						this.fields?.get('elementGetter-presetId')?.root
+					]
 				},
 				{
 					case: ['by-index', 'by-button-index'],
-					targets: [$('#elementGetter-ancestor'), $('#elementGetter-index')]
+					targets: [
+						this.fields?.get('elementGetter-ancestor')?.root,
+						this.fields?.get('elementGetter-index')?.root
+					]
 				},
 				{
 					case: 'selected-button',
-					targets: [$('#elementGetter-ancestor')]
+					targets: [this.fields?.get('elementGetter-ancestor')?.root]
 				},
 				{
 					case: ['parent', 'variable'],
-					targets: [$('#elementGetter-variable')]
+					targets: [this.fields?.get('elementGetter-variable')?.root]
 				}
 			]);
 	},

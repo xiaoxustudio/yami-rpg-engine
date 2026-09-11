@@ -1,6 +1,6 @@
 ﻿<template>
 	<!-- 触发器访问器窗口 -->
-	<WindowFrame ref="frame" id="triggerGetter">
+	<WindowFrame ref="frame" id="triggerGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.triggerGetter.title') }}
@@ -9,10 +9,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.triggerGetter-type.label') }}</div>
-			<SelectBox id="triggerGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="triggerGetter-type"
+				:ref="fieldRef('triggerGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.triggerGetter-variable.label') }}</div>
 			<CustomBox
 				id="triggerGetter-variable"
+				:ref="fieldRef('triggerGetter-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -24,6 +26,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { TriggerGetter } from '@app/commands/accessors/trigger-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useI18n } from 'vue-i18n';
 import { useTriggerGetterWindow } from '@app/composables/useTriggerGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -37,7 +41,15 @@ const { t } = useI18n();
 const triggerGetter = useTriggerGetterWindow();
 const form = triggerGetter.form;
 
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+TriggerGetter.fields = fields;
+
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
+const onConfirm = () => {
+	TriggerGetter?.confirm?.(new Event('click'));
+};
 
 onMounted(() => {
 	const el = frame.value?.root;

@@ -12,7 +12,7 @@
 | editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 11 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/commands     | 41 | 29 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 153 | 0 | 0 |
+| editor/commands     | 41 | 17 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 60 | 0 | 0 |
 | editor/components   | 360 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 588 | 0 | 0 |
 | editor/composables  | 228 | 47 | 43 | 43 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -38,7 +38,7 @@
 | editor/stores       | 38 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 21 | 0 | 0 |
 | editor/title        | 5 | 5 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 11 | 2 | 40 | 0 | 0 |
 | editor/tools        | 17 | 8 | 3 | 3 | 1 | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 79 | 0 | 0 |
-| editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| editor/types        | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
 | editor/ui           | 9 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 18 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 31 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
@@ -48,7 +48,7 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1347 | 0 | 0 |
+| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1255 | 0 | 0 |
 
 ## 口径
 
@@ -61,7 +61,7 @@
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1347** 处 / **238** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1255** 处 / **227** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -132,7 +132,6 @@
 | packages/editor/src/components/commands/ForEach.vue | 144 | 15 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 774 | 15 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
-| packages/editor/src/commands/accessors/position-accessor-window.ts | 62 | 14 | - |
 | packages/editor/src/components/commands/Return.vue | 114 | 14 | - |
 | packages/editor/src/components/commands/SetObject.vue | 140 | 14 | - |
 | packages/editor/src/local/local-window.ts | 906 | 14 | - |
@@ -166,8 +165,6 @@
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
-| packages/editor/src/commands/accessors/element-accessor-window.ts | 55 | 10 | - |
-| packages/editor/src/commands/accessors/skill-accessor-window.ts | 47 | 10 | - |
 | packages/editor/src/commands/text-tip.ts | 383 | 10 | 是 |
 | packages/editor/src/components/commands/CommandLine.vue | 95 | 10 | - |
 | packages/editor/src/components/commands/LoadImage.vue | 108 | 10 | - |
@@ -180,8 +177,6 @@
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
-| packages/editor/src/commands/accessors/equipment-accessor-window.ts | 44 | 9 | - |
-| packages/editor/src/commands/accessors/item-accessor-window.ts | 44 | 9 | - |
 | packages/editor/src/commands/command-custom.ts | 371 | 9 | - |
 | packages/editor/src/commands/property-window/property-window-factory.ts | 198 | 9 | 是 |
 | packages/editor/src/components/commands/ChangeActorEquipment.vue | 112 | 9 | - |
@@ -203,9 +198,6 @@
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
-| packages/editor/src/commands/accessors/actor-accessor-window.ts | 43 | 7 | - |
-| packages/editor/src/commands/accessors/ancestor-accessor-window.ts | 39 | 7 | - |
-| packages/editor/src/commands/accessors/state-accessor-window.ts | 39 | 7 | - |
 | packages/editor/src/commands/command-tip.ts | 450 | 7 | - |
 | packages/editor/src/components/commands/CastSkill.vue | 87 | 7 | - |
 | packages/editor/src/components/commands/MoveActor.vue | 97 | 7 | - |
@@ -223,7 +215,6 @@
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 132 | 7 | 是 |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
-| packages/editor/src/commands/accessors/tilemap-accessor-window.ts | 35 | 6 | - |
 | packages/editor/src/components/commands/ChangeActorPortrait.vue | 90 | 6 | - |
 | packages/editor/src/components/commands/GetTarget.vue | 106 | 6 | - |
 | packages/editor/src/components/commands/MoveElement.vue | 98 | 6 | - |
@@ -259,8 +250,6 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/textarea-var-api.ts | 200 | 6 | 是 |
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 110 | 6 | 是 |
-| packages/editor/src/commands/accessors/angle-accessor-window.ts | 37 | 5 | - |
-| packages/editor/src/commands/accessors/trigger-accessor-window.ts | 29 | 5 | - |
 | packages/editor/src/components/commands/GameData.vue | 82 | 5 | - |
 | packages/editor/src/components/commands/RegisterEvent.vue | 106 | 5 | - |
 | packages/editor/src/components/commands/RenderOutline.vue | 82 | 5 | - |
@@ -291,7 +280,6 @@
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 140 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 407 | 4 | - |
 | packages/editor/src/animation/animation-timeline.ts | 1183 | 4 | 是 |
-| packages/editor/src/commands/accessors/region-accessor-window.ts | 28 | 4 | - |
 | packages/editor/src/commands/schema.ts | 434 | 4 | - |
 | packages/editor/src/components/commands/ChangeActorSkill.vue | 90 | 4 | - |
 | packages/editor/src/components/commands/ChangeActorState.vue | 88 | 4 | - |
@@ -547,6 +535,7 @@
 | packages/editor/src/services/file-system/directory-tree.ts | 491 | 1 | - |
 | packages/editor/src/services/ipc/net.ts | 89 | 1 | - |
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
+| packages/editor/src/types/shapes.ts | 41 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
@@ -574,7 +563,19 @@
 | packages/editor/src/audio/audio-player.ts | 72 | 0 | - |
 | packages/editor/src/audio/reverb.ts | 105 | 0 | - |
 | packages/editor/src/bootstrap.ts | 10 | 0 | - |
-| packages/editor/src/commands/accessors/accessor-factory.ts | 38 | 0 | - |
+| packages/editor/src/commands/accessors/accessor-factory.ts | 56 | 0 | - |
+| packages/editor/src/commands/accessors/actor-accessor-window.ts | 44 | 0 | - |
+| packages/editor/src/commands/accessors/ancestor-accessor-window.ts | 43 | 0 | - |
+| packages/editor/src/commands/accessors/angle-accessor-window.ts | 37 | 0 | - |
+| packages/editor/src/commands/accessors/element-accessor-window.ts | 61 | 0 | - |
+| packages/editor/src/commands/accessors/equipment-accessor-window.ts | 52 | 0 | - |
+| packages/editor/src/commands/accessors/item-accessor-window.ts | 50 | 0 | - |
+| packages/editor/src/commands/accessors/position-accessor-window.ts | 71 | 0 | - |
+| packages/editor/src/commands/accessors/region-accessor-window.ts | 30 | 0 | - |
+| packages/editor/src/commands/accessors/skill-accessor-window.ts | 50 | 0 | - |
+| packages/editor/src/commands/accessors/state-accessor-window.ts | 39 | 0 | - |
+| packages/editor/src/commands/accessors/tilemap-accessor-window.ts | 32 | 0 | - |
+| packages/editor/src/commands/accessors/trigger-accessor-window.ts | 28 | 0 | - |
 | packages/editor/src/commands/accessors/variable-accessor-window.ts | 172 | 0 | - |
 | packages/editor/src/commands/command-object.ts | 508 | 0 | - |
 | packages/editor/src/commands/command-registry.ts | 4 | 0 | - |
@@ -679,9 +680,9 @@
 | packages/editor/src/components/string-var.ts | 8 | 0 | - |
 | packages/editor/src/components/textarea-var.ts | 8 | 0 | - |
 | packages/editor/src/components/tools/About.vue | 76 | 0 | - |
-| packages/editor/src/components/tools/ActorGetter.vue | 91 | 0 | - |
-| packages/editor/src/components/tools/AncestorGetter.vue | 74 | 0 | - |
-| packages/editor/src/components/tools/AngleGetter.vue | 76 | 0 | - |
+| packages/editor/src/components/tools/ActorGetter.vue | 101 | 0 | - |
+| packages/editor/src/components/tools/AncestorGetter.vue | 87 | 0 | - |
+| packages/editor/src/components/tools/AngleGetter.vue | 84 | 0 | - |
 | packages/editor/src/components/tools/ArrayList.vue | 121 | 0 | - |
 | packages/editor/src/components/tools/ArrayListNumber.vue | 19 | 0 | - |
 | packages/editor/src/components/tools/ArrayListString.vue | 19 | 0 | - |
@@ -697,9 +698,9 @@
 | packages/editor/src/components/tools/CopyProgress.vue | 57 | 0 | - |
 | packages/editor/src/components/tools/Deployment.vue | 125 | 0 | - |
 | packages/editor/src/components/tools/EditData.vue | 57 | 0 | - |
-| packages/editor/src/components/tools/ElementGetter.vue | 88 | 0 | - |
+| packages/editor/src/components/tools/ElementGetter.vue | 98 | 0 | - |
 | packages/editor/src/components/tools/Enum.vue | 181 | 0 | - |
-| packages/editor/src/components/tools/EquipmentGetter.vue | 85 | 0 | - |
+| packages/editor/src/components/tools/EquipmentGetter.vue | 95 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 85 | 0 | - |
 | packages/editor/src/components/tools/ExportApk.vue | 141 | 0 | - |
 | packages/editor/src/components/tools/FileActorEquipment.vue | 63 | 0 | - |
@@ -713,7 +714,7 @@
 | packages/editor/src/components/tools/ImageClip.vue | 122 | 0 | - |
 | packages/editor/src/components/tools/ImportLanguage.vue | 46 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 66 | 0 | - |
-| packages/editor/src/components/tools/ItemGetter.vue | 85 | 0 | - |
+| packages/editor/src/components/tools/ItemGetter.vue | 95 | 0 | - |
 | packages/editor/src/components/tools/Language.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/LocalVariable.vue | 51 | 0 | - |
 | packages/editor/src/components/tools/Log.vue | 38 | 0 | - |
@@ -725,12 +726,12 @@
 | packages/editor/src/components/tools/ObjectFolder.vue | 56 | 0 | - |
 | packages/editor/src/components/tools/ObjectPropertyIndex.vue | 51 | 0 | - |
 | packages/editor/src/components/tools/PluginOverview.vue | 164 | 0 | - |
-| packages/editor/src/components/tools/PositionGetter.vue | 108 | 0 | - |
+| packages/editor/src/components/tools/PositionGetter.vue | 122 | 0 | - |
 | packages/editor/src/components/tools/PresetElement.vue | 147 | 0 | - |
 | packages/editor/src/components/tools/PresetObject.vue | 181 | 0 | - |
 | packages/editor/src/components/tools/ProjectSettings.vue | 475 | 0 | - |
 | packages/editor/src/components/tools/QrCode.vue | 88 | 0 | - |
-| packages/editor/src/components/tools/RegionGetter.vue | 72 | 0 | - |
+| packages/editor/src/components/tools/RegionGetter.vue | 79 | 0 | - |
 | packages/editor/src/components/tools/Rename.vue | 25 | 0 | - |
 | packages/editor/src/components/tools/RequestKeyValue.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/resource/ResourceList.vue | 133 | 0 | - |
@@ -750,13 +751,13 @@
 | packages/editor/src/components/tools/Setting.vue | 100 | 0 | - |
 | packages/editor/src/components/tools/SetVideoProperty.vue | 75 | 0 | - |
 | packages/editor/src/components/tools/SetWindowProperty.vue | 118 | 0 | - |
-| packages/editor/src/components/tools/SkillGetter.vue | 81 | 0 | - |
-| packages/editor/src/components/tools/StateGetter.vue | 78 | 0 | - |
+| packages/editor/src/components/tools/SkillGetter.vue | 96 | 0 | - |
+| packages/editor/src/components/tools/StateGetter.vue | 92 | 0 | - |
 | packages/editor/src/components/tools/TextEffect.vue | 80 | 0 | - |
 | packages/editor/src/components/tools/TextPosition.vue | 63 | 0 | - |
 | packages/editor/src/components/tools/TextSuggestions.vue | 18 | 0 | - |
-| packages/editor/src/components/tools/TilemapGetter.vue | 76 | 0 | - |
-| packages/editor/src/components/tools/TriggerGetter.vue | 68 | 0 | - |
+| packages/editor/src/components/tools/TilemapGetter.vue | 89 | 0 | - |
+| packages/editor/src/components/tools/TriggerGetter.vue | 80 | 0 | - |
 | packages/editor/src/components/tools/VariableGetter.vue | 89 | 0 | - |
 | packages/editor/src/components/tools/WindowProgress.vue | 49 | 0 | - |
 | packages/editor/src/components/tools/Zoom.vue | 24 | 0 | - |
@@ -1135,7 +1136,6 @@
 | packages/editor/src/types/file-browser-links.ts | 24 | 0 | - |
 | packages/editor/src/types/history.ts | 67 | 0 | - |
 | packages/editor/src/types/list-interface.ts | 28 | 0 | - |
-| packages/editor/src/types/shapes.ts | 23 | 0 | - |
 | packages/editor/src/ui/register.ts | 8 | 0 | - |
 | packages/editor/src/ui/ui-file.ts | 258 | 0 | - |
 | packages/editor/src/ui/ui-list.ts | 450 | 0 | - |

@@ -1,30 +1,30 @@
-﻿import { $ } from '@app/utils/dom';
-import { on } from '@app/utils/element-utils';
 import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
 import type { AccessorTarget } from '@app/types/shapes.ts';
 import { createAccessor } from './accessor-factory.ts';
 
 export const StateGetter = createAccessor({
 	initialize() {
-		if (!$('#stateGetter-type')) return;
-		$('#stateGetter-type').loadItems([
+		if (!this.fields?.get('stateGetter-type')) return;
+		this.fields?.get('stateGetter-type')?.loadItems?.([
 			{ name: 'Event Trigger State', value: 'trigger' },
 			{ name: 'Latest State', value: 'latest' },
 			{ name: 'By State ID', value: 'by-id' },
 			{ name: 'Variable', value: 'variable' }
 		]);
 
-		$('#stateGetter-type')
-			.enableHiddenMode()
-			.relate([
+		this.fields
+			?.get('stateGetter-type')
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'by-id',
-					targets: [$('#stateGetter-actor'), $('#stateGetter-stateId')]
+					targets: [
+						this.fields?.get('stateGetter-actor')?.root,
+						this.fields?.get('stateGetter-stateId')?.root
+					]
 				},
-				{ case: 'variable', targets: [$('#stateGetter-variable')] }
+				{ case: 'variable', targets: [this.fields?.get('stateGetter-variable')?.root] }
 			]);
-
-		on($('#stateGetter-confirm'), 'click', this.confirm!);
 	},
 	open(target: AccessorTarget) {
 		useStateGetterWindow().open(target);

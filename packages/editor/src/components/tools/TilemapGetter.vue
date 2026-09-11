@@ -1,6 +1,6 @@
 ﻿<template>
 	<!-- 瓦片地图访问器窗口 -->
-	<WindowFrame ref="frame" id="tilemapGetter">
+	<WindowFrame ref="frame" id="tilemapGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.tilemapGetter.title') }}
@@ -9,10 +9,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.tilemapGetter-type.label') }}</div>
-			<SelectBox id="tilemapGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="tilemapGetter-type"
+				:ref="fieldRef('tilemapGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div>
 			<CustomBox
 				id="tilemapGetter-presetId"
+				:ref="fieldRef('tilemapGetter-presetId')"
 				v-focus
 				type="preset-object"
 				filter="tilemap"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.tilemapGetter-variable.label') }}</div>
 			<CustomBox
 				id="tilemapGetter-variable"
+				:ref="fieldRef('tilemapGetter-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -32,6 +35,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { TilemapGetter } from '@app/commands/accessors/tilemap-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useI18n } from 'vue-i18n';
 import { useTilemapGetterWindow } from '@app/composables/useTilemapGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -45,7 +50,15 @@ const { t } = useI18n();
 const tilemapGetter = useTilemapGetterWindow();
 const form = tilemapGetter.form;
 
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+TilemapGetter.fields = fields;
+
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
+const onConfirm = () => {
+	TilemapGetter?.confirm?.(new Event('click'));
+};
 
 onMounted(() => {
 	const el = frame.value?.root;

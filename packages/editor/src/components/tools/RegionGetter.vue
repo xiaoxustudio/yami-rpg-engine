@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.regionGetter-type.label') }}</div>
-			<SelectBox id="regionGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="regionGetter-type"
+				:ref="fieldRef('regionGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.regionGetter-presetId.label') }}</div>
 			<CustomBox
 				id="regionGetter-presetId"
+				:ref="fieldRef('regionGetter-presetId')"
 				v-focus
 				v-model="form.presetId"
 				type="preset-object"
@@ -25,6 +27,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -36,6 +39,10 @@ const { t } = useI18n();
 
 const regionGetter = useRegionGetterWindow();
 const form = regionGetter.form;
+
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+RegionGetter.fields = fields;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 

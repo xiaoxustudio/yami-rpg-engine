@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
 import { Enum } from '@app/enum/enum-window.ts';
 import type { AccessorTarget } from '@app/types/shapes.ts';
@@ -6,8 +5,8 @@ import { createAccessor } from './accessor-factory.ts';
 
 export const EquipmentGetter = createAccessor({
 	initialize() {
-		if (!$('#equipmentGetter-type')) return;
-		$('#equipmentGetter-type').loadItems([
+		if (!this.fields?.get('equipmentGetter-type')) return;
+		this.fields?.get('equipmentGetter-type')?.loadItems?.([
 			{ name: 'Event Trigger Equipment', value: 'trigger' },
 			{ name: 'Latest Equipment', value: 'latest' },
 			{ name: 'By Equipment Slot', value: 'by-slot' },
@@ -16,22 +15,31 @@ export const EquipmentGetter = createAccessor({
 			{ name: 'Variable', value: 'variable' }
 		]);
 
-		$('#equipmentGetter-type')
-			.enableHiddenMode()
-			.relate([
+		this.fields
+			?.get('equipmentGetter-type')
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'by-slot',
-					targets: [$('#equipmentGetter-actor'), $('#equipmentGetter-slot')]
+					targets: [
+						this.fields?.get('equipmentGetter-actor')?.root,
+						this.fields?.get('equipmentGetter-slot')?.root
+					]
 				},
 				{
 					case: ['by-id-equipped', 'by-id-inventory'],
-					targets: [$('#equipmentGetter-actor'), $('#equipmentGetter-equipmentId')]
+					targets: [
+						this.fields?.get('equipmentGetter-actor')?.root,
+						this.fields?.get('equipmentGetter-equipmentId')?.root
+					]
 				},
-				{ case: 'variable', targets: [$('#equipmentGetter-variable')] }
+				{ case: 'variable', targets: [this.fields?.get('equipmentGetter-variable')?.root] }
 			]);
 	},
 	open(target: AccessorTarget) {
-		$('#equipmentGetter-slot').loadItems(Enum.getStringItems('equipment-slot'));
+		this.fields
+			?.get('equipmentGetter-slot')
+			?.loadItems?.(Enum.getStringItems('equipment-slot'));
 		useEquipmentGetterWindow().open(target, { slot: Enum.getDefStringId('equipment-slot') });
 	},
 	checkDataForPlugin: (data: unknown) =>

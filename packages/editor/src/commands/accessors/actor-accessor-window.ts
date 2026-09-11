@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import type { AccessorTarget } from '@app/types/shapes.ts';
@@ -6,8 +5,9 @@ import { createAccessor } from './accessor-factory.ts';
 
 export const ActorGetter = createAccessor({
 	initialize() {
-		if (!$('#actorGetter-type')) return;
-		$('#actorGetter-type').loadItems([
+		// P5b 批次 2：控件从 SFC 登记的注册表取（不再按 id 查 DOM）
+		if (!this.fields?.get('actorGetter-type')) return;
+		this.fields?.get('actorGetter-type')?.loadItems?.([
 			{ name: 'Event Trigger Actor', value: 'trigger' },
 			{ name: 'Skill Caster', value: 'caster' },
 			{ name: 'Latest Actor', value: 'latest' },
@@ -19,13 +19,14 @@ export const ActorGetter = createAccessor({
 			{ name: 'Variable', value: 'variable' }
 		]);
 
-		$('#actorGetter-type')
-			.enableHiddenMode()
-			.relate([
-				{ case: 'member', targets: [$('#actorGetter-memberId')] },
-				{ case: 'global', targets: [$('#actorGetter-actorId')] },
-				{ case: 'by-id', targets: [$('#actorGetter-presetId')] },
-				{ case: 'variable', targets: [$('#actorGetter-variable')] }
+		this.fields
+			?.get('actorGetter-type')
+			?.enableHiddenMode?.()
+			?.relate?.([
+				{ case: 'member', targets: [this.fields?.get('actorGetter-memberId')?.root] },
+				{ case: 'global', targets: [this.fields?.get('actorGetter-actorId')?.root] },
+				{ case: 'by-id', targets: [this.fields?.get('actorGetter-presetId')?.root] },
+				{ case: 'variable', targets: [this.fields?.get('actorGetter-variable')?.root] }
 			]);
 	},
 	open(target: AccessorTarget) {

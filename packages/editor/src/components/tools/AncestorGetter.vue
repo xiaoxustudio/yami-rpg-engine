@@ -1,5 +1,5 @@
 ﻿<template>
-	<WindowFrame ref="frame" id="ancestorGetter">
+	<WindowFrame ref="frame" id="ancestorGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.ancestorGetter.title') }}
@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.ancestorGetter-type.label') }}</div>
-			<SelectBox id="ancestorGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="ancestorGetter-type"
+				:ref="fieldRef('ancestorGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div>
 			<CustomBox
 				id="ancestorGetter-presetId"
+				:ref="fieldRef('ancestorGetter-presetId')"
 				v-focus
 				type="preset-element"
 				v-model="form.presetId"
@@ -19,6 +21,7 @@
 			<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div>
 			<CustomBox
 				id="ancestorGetter-variable"
+				:ref="fieldRef('ancestorGetter-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -30,6 +33,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { AncestorGetter } from '@app/commands/accessors/ancestor-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useI18n } from 'vue-i18n';
 import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -43,7 +48,15 @@ const { t } = useI18n();
 const ancestorGetter = useAncestorGetterWindow();
 const form = ancestorGetter.form;
 
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+AncestorGetter.fields = fields;
+
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
+const onConfirm = () => {
+	AncestorGetter?.confirm?.(new Event('click'));
+};
 
 onMounted(() => {
 	const el = frame.value?.root;

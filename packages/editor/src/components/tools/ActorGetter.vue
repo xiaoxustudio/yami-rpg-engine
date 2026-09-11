@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.actorGetter-type.label') }}</div>
-			<SelectBox id="actorGetter-type" v-focus v-model="form.type" />
+			<SelectBox id="actorGetter-type"
+				:ref="fieldRef('actorGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.actorGetter-memberId.label') }}</div>
-			<NumberVar id="actorGetter-memberId" min="0" max="10000" v-model="form.memberId" />
+			<NumberVar id="actorGetter-memberId"
+				:ref="fieldRef('actorGetter-memberId')" min="0" max="10000" v-model="form.memberId" />
 			<div class="text">{{ t('components.actorGetter-actorId.label') }}</div>
 			<CustomBox
 				id="actorGetter-actorId"
+				:ref="fieldRef('actorGetter-actorId')"
 				v-focus
 				type="file"
 				filter="actor"
@@ -22,6 +25,7 @@
 			<div class="text">{{ t('components.actorGetter-presetId.label') }}</div>
 			<CustomBox
 				id="actorGetter-presetId"
+				:ref="fieldRef('actorGetter-presetId')"
 				v-focus
 				type="preset-object"
 				filter="actor"
@@ -30,6 +34,7 @@
 			<div class="text">{{ t('components.actorGetter-variable.label') }}</div>
 			<CustomBox
 				id="actorGetter-variable"
+				:ref="fieldRef('actorGetter-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -43,6 +48,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -55,6 +61,10 @@ const { t } = useI18n();
 
 const actorGetter = useActorGetterWindow();
 const form = actorGetter.form;
+
+// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+ActorGetter.fields = fields;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 

@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { usePositionGetterWindow } from '@app/composables/usePositionGetterWindow';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import type { AccessorTarget } from '@app/types/shapes.ts';
@@ -6,8 +5,8 @@ import { createAccessor } from './accessor-factory.ts';
 
 export const PositionGetter = createAccessor({
 	initialize() {
-		if (!$('#positionGetter-type')) return;
-		$('#positionGetter-type').loadItems([
+		if (!this.fields?.get('positionGetter-type')) return;
+		this.fields?.get('positionGetter-type')?.loadItems?.([
 			{ name: 'Absolute Coordinates', value: 'absolute' },
 			{ name: 'Relative Coordinates', value: 'relative' },
 			{ name: 'Position of Actor', value: 'actor' },
@@ -18,28 +17,38 @@ export const PositionGetter = createAccessor({
 			{ name: 'Position of Mouse', value: 'mouse' }
 		]);
 
-		$('#positionGetter-type')
-			.enableHiddenMode()
-			.relate([
+		this.fields
+			?.get('positionGetter-type')
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'absolute',
-					targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
+					targets: [
+						this.fields?.get('positionGetter-common-x')?.root,
+						this.fields?.get('positionGetter-common-y')?.root
+					]
 				},
 				{
 					case: 'relative',
-					targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
+					targets: [
+						this.fields?.get('positionGetter-common-x')?.root,
+						this.fields?.get('positionGetter-common-y')?.root
+					]
 				},
-				{ case: 'actor', targets: [$('#positionGetter-actor')] },
-				{ case: 'trigger', targets: [$('#positionGetter-trigger')] },
-				{ case: 'light', targets: [$('#positionGetter-light')] },
+				{ case: 'actor', targets: [this.fields?.get('positionGetter-actor')?.root] },
+				{ case: 'trigger', targets: [this.fields?.get('positionGetter-trigger')?.root] },
+				{ case: 'light', targets: [this.fields?.get('positionGetter-light')?.root] },
 				{
 					case: 'region',
-					targets: [$('#positionGetter-region'), $('#positionGetter-region-mode')]
+					targets: [
+						this.fields?.get('positionGetter-region')?.root,
+						this.fields?.get('positionGetter-region-mode')?.root
+					]
 				},
-				{ case: 'object', targets: [$('#positionGetter-objectId')] }
+				{ case: 'object', targets: [this.fields?.get('positionGetter-objectId')?.root] }
 			]);
 
-		$('#positionGetter-region-mode').loadItems([
+		this.fields?.get('positionGetter-region-mode')?.loadItems?.([
 			{ name: 'Center', value: 'center' },
 			{ name: 'Random', value: 'random' },
 			{ name: 'Random - Land', value: 'random-land' },
