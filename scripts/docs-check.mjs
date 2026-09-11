@@ -515,7 +515,7 @@ function checkApiFileCount(files) {
 			}
 		});
 	}
-	if (declared > 0) notes.push(`ui-kit *-api.ts 文件数一致（${count}，目标 0）`);
+	if (declared > 0) notes.push(`ui-kit *-api.ts 文件数一致（${count}，目标：不增长）`);
 }
 
 /**
