@@ -13,7 +13,7 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 29 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 153 | 0 | 0 |
-| editor/components   | 360 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 722 | 0 | 0 |
+| editor/components   | 360 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 588 | 0 | 0 |
 | editor/composables  | 228 | 47 | 43 | 43 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 6 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 15 | 0 | 0 |
@@ -48,7 +48,7 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1481 | 0 | 0 |
+| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1347 | 0 | 0 |
 
 ## 口径
 
@@ -61,7 +61,7 @@
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1481** 处 / **238** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1347** 处 / **238** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -94,8 +94,6 @@
 
 | 文件 | 行数 | 命中 | 豁免注释 |
 | --- | --- | --- | --- |
-| packages/editor/src/components/tools/IfCondition.vue | 812 | 78 | - |
-| packages/editor/src/components/tools/SetNumberOperand.vue | 767 | 60 | 是 |
 | packages/editor/src/engine/layout/layout.ts | 2081 | 59 | 是 |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1643 | 51 | 是 |
@@ -367,6 +365,7 @@
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
 | packages/editor/src/components/tools/IfBranch.vue | 71 | 3 | - |
 | packages/editor/src/components/tools/Reference.vue | 78 | 3 | 是 |
+| packages/editor/src/components/tools/SetNumberOperand.vue | 819 | 3 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 3 | 是 |
 | packages/editor/src/inspector/file-script-page.ts | 84 | 3 | - |
@@ -504,6 +503,7 @@
 | packages/editor/src/components/tools/Command.vue | 224 | 1 | - |
 | packages/editor/src/components/tools/Easing.vue | 398 | 1 | - |
 | packages/editor/src/components/tools/Event.vue | 154 | 1 | - |
+| packages/editor/src/components/tools/IfCondition.vue | 819 | 1 | - |
 | packages/editor/src/components/tools/Localization.vue | 156 | 1 | - |
 | packages/editor/src/components/tools/Plugin.vue | 176 | 1 | - |
 | packages/editor/src/components/tools/Team.vue | 119 | 1 | - |

@@ -8,42 +8,52 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setNumber-operation.label') }}</div>
-			<SelectBox id="setNumber-operation" v-focus />
-			<SelectBox id="setNumber-operand-operation" v-focus :model-value="form.operation" />
+			<SelectBox id="setNumber-operation"
+				:ref="fieldRef('setNumber-operation')" v-focus />
+			<SelectBox id="setNumber-operand-operation"
+				:ref="fieldRef('setNumber-operand-operation')" v-focus :model-value="form.operation" />
 			<div class="text">{{ t('components.setNumber-operand-type.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-type"
+				:ref="fieldRef('setNumber-operand-type')"
 				:model-value="form.operandType"
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-constant-value.label') }}</div>
 			<NumberBox
 				id="setNumber-operand-constant-value"
+				:ref="fieldRef('setNumber-operand-constant-value')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				:model-value="form.constantValue"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-method.label') }}</div>
-			<SelectBox id="setNumber-operand-math-method" :model-value="form.mathMethod" />
+			<SelectBox id="setNumber-operand-math-method"
+				:ref="fieldRef('setNumber-operand-math-method')" :model-value="form.mathMethod" />
 			<div class="text">{{ t('components.setNumber-operand-string-method.label') }}</div>
-			<SelectBox id="setNumber-operand-string-method" :model-value="form.stringMethod" />
+			<SelectBox id="setNumber-operand-string-method"
+				:ref="fieldRef('setNumber-operand-string-method')" :model-value="form.stringMethod" />
 			<div class="text">{{ t('components.setNumber-operand-object-property.label') }}</div>
-			<SelectBox id="setNumber-operand-object-property" :model-value="form.objectProperty" />
+			<SelectBox id="setNumber-operand-object-property"
+				:ref="fieldRef('setNumber-operand-object-property')" :model-value="form.objectProperty" />
 			<div class="text">{{ t('components.setNumber-operand-element-property.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-element-property"
+				:ref="fieldRef('setNumber-operand-element-property')"
 				:model-value="form.elementProperty"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-element-element.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-element-element"
+				:ref="fieldRef('setNumber-operand-element-element')"
 				type="element"
 				:model-value="form.elementElement"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-variable.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-variable"
+				:ref="fieldRef('setNumber-operand-common-variable')"
 				v-focus
 				type="variable"
 				filter="all"
@@ -52,54 +62,63 @@
 			<div class="text">{{ t('components.setNumber-operand-common-actor.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-actor"
+				:ref="fieldRef('setNumber-operand-common-actor')"
 				type="actor"
 				:model-value="form.commonActor"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-skill.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-skill"
+				:ref="fieldRef('setNumber-operand-common-skill')"
 				type="skill"
 				:model-value="form.commonSkill"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-state.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-state"
+				:ref="fieldRef('setNumber-operand-common-state')"
 				type="state"
 				:model-value="form.commonState"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-equipment.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-equipment"
+				:ref="fieldRef('setNumber-operand-common-equipment')"
 				type="equipment"
 				:model-value="form.commonEquipment"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-item.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-item"
+				:ref="fieldRef('setNumber-operand-common-item')"
 				type="item"
 				:model-value="form.commonItem"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-trigger.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-trigger"
+				:ref="fieldRef('setNumber-operand-common-trigger')"
 				type="trigger"
 				:model-value="form.commonTrigger"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-common-tilemap.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-tilemap"
+				:ref="fieldRef('setNumber-operand-common-tilemap')"
 				type="tilemap"
 				:model-value="form.commonTilemap"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-tilemapPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-tilemapPosition"
+				:ref="fieldRef('setNumber-operand-tilemapPosition')"
 				type="position"
 				:model-value="form.tilemapPosition"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-object-itemId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-itemId"
+				:ref="fieldRef('setNumber-operand-object-itemId')"
 				v-focus
 				type="file"
 				filter="item"
@@ -108,6 +127,7 @@
 			<div class="text">{{ t('components.setNumber-operand-object-equipmentId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-equipmentId"
+				:ref="fieldRef('setNumber-operand-object-equipmentId')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -116,12 +136,14 @@
 			<div class="text">{{ t('components.setNumber-operand-string-search.label') }}</div>
 			<StringVar
 				id="setNumber-operand-string-search"
+				:ref="fieldRef('setNumber-operand-string-search')"
 				v-focus
 				:model-value="form.stringSearch"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-decimals.label') }}</div>
 			<NumberBox
 				id="setNumber-operand-math-decimals"
+				:ref="fieldRef('setNumber-operand-math-decimals')"
 				min="0"
 				max="10"
 				:model-value="form.mathDecimals"
@@ -129,6 +151,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-min.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-math-min"
+				:ref="fieldRef('setNumber-operand-math-min')"
 				min="-1000000000"
 				max="1000000000"
 				:model-value="form.mathMin"
@@ -136,6 +159,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-max.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-math-max"
+				:ref="fieldRef('setNumber-operand-math-max')"
 				min="-1000000000"
 				max="1000000000"
 				:model-value="form.mathMax"
@@ -143,24 +167,28 @@
 			<div class="text">{{ t('components.setNumber-operand-math-startPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-math-startPosition"
+				:ref="fieldRef('setNumber-operand-math-startPosition')"
 				type="position"
 				:model-value="form.mathStartPosition"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-endPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-math-endPosition"
+				:ref="fieldRef('setNumber-operand-math-endPosition')"
 				type="position"
 				:model-value="form.mathEndPosition"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-cooldown-key.label') }}</div>
 			<SelectVar
 				id="setNumber-operand-cooldown-key"
+				:ref="fieldRef('setNumber-operand-cooldown-key')"
 				v-focus
 				:model-value="form.cooldownKey"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-list-index"
+				:ref="fieldRef('setNumber-operand-list-index')"
 				min="0"
 				max="1000000000"
 				:model-value="form.listIndex"
@@ -168,22 +196,27 @@
 			<div class="text">{{ t('components.setNumber-operand-parameter-key.label') }}</div>
 			<StringVar
 				id="setNumber-operand-parameter-key"
+				:ref="fieldRef('setNumber-operand-parameter-key')"
 				v-focus
 				:model-value="form.parameterKey"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-script.label') }}</div>
-			<TextBox id="setNumber-operand-script" v-focus :model-value="form.script" />
+			<TextBox id="setNumber-operand-script"
+				:ref="fieldRef('setNumber-operand-script')" v-focus :model-value="form.script" />
 			<div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div>
-			<SelectBox id="setNumber-operand-other-data" :model-value="form.otherData" />
+			<SelectBox id="setNumber-operand-other-data"
+				:ref="fieldRef('setNumber-operand-other-data')" :model-value="form.otherData" />
 			<div class="text">{{ t('components.setNumber-operand-other-touchId.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-other-touchId"
+				:ref="fieldRef('setNumber-operand-other-touchId')"
 				min="0"
 				max="10"
 				:model-value="form.otherTouchId"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-other-teamId.label') }}</div>
-			<SelectBox id="setNumber-operand-other-teamId" :model-value="form.otherTeamId" />
+			<SelectBox id="setNumber-operand-other-teamId"
+				:ref="fieldRef('setNumber-operand-other-teamId')" :model-value="form.otherTeamId" />
 		</div>
 	</WindowFrame>
 </template>
@@ -192,7 +225,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { Data } from '@app/data/data-object.ts';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
@@ -309,6 +341,26 @@ const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 	'setNumber-operand-other-teamId': 'otherTeamId'
 };
 
+/**
+ * 控件实例的最小接口（模板里用 `:ref="fieldRef(id)"` 登记）。
+ * P5b 批次 1：不再用 `$('#id')` 找元素，改为从注册表取组件实例直调其 expose 方法；
+ * `root` 供仍需元素的地方使用（如 relate 的 targets）。
+ */
+interface FieldControl {
+	read?: () => unknown;
+	write?: (value: unknown) => void;
+	loadItems?: (items: unknown[]) => unknown;
+	enableHiddenMode?: () => { relate?: (entries: unknown) => unknown } | undefined;
+	restore?: () => unknown;
+	root?: HTMLElement | null;
+}
+
+const fieldEls = new Map<string, FieldControl | null>();
+
+const fieldRef = (id: string) => (el: unknown) => {
+	fieldEls.set(id, el as FieldControl | null);
+};
+
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 const onWrite = (value: unknown) => {
@@ -325,9 +377,9 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
-	const opEl = $('#setNumber-operation');
+	const opEl = fieldEls.get('setNumber-operation');
 	if (!opEl) return;
-	opEl.loadItems([
+	opEl.loadItems?.([
 		{ name: 'Set', value: 'set' },
 		{ name: 'Add', value: 'add' },
 		{ name: 'Sub', value: 'sub' },
@@ -336,7 +388,7 @@ onMounted(() => {
 		{ name: 'Mod', value: 'mod' }
 	]);
 
-	$('#setNumber-operand-operation')?.loadItems([
+	fieldEls.get('setNumber-operand-operation')?.loadItems?.([
 		{ name: 'Add', value: 'add' },
 		{ name: 'Sub', value: 'sub' },
 		{ name: 'Mul', value: 'mul' },
@@ -349,7 +401,7 @@ onMounted(() => {
 		{ name: '(Mod)', value: 'mod()' }
 	]);
 
-	$('#setNumber-operand-type')?.loadItems([
+	fieldEls.get('setNumber-operand-type')?.loadItems?.([
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' },
 		{ name: 'Math', value: 'math' },
@@ -362,52 +414,52 @@ onMounted(() => {
 		{ name: 'Other', value: 'other' }
 	]);
 
-	$('#setNumber-operand-type')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('setNumber-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: 'constant',
-				targets: [$('#setNumber-operand-constant-value')]
+				targets: [fieldEls.get('setNumber-operand-constant-value')?.root]
 			},
 			{
 				case: 'variable',
-				targets: [$('#setNumber-operand-common-variable')]
+				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
 			},
-			{ case: 'math', targets: [$('#setNumber-operand-math-method')] },
+			{ case: 'math', targets: [fieldEls.get('setNumber-operand-math-method')?.root] },
 			{
 				case: 'string',
 				targets: [
-					$('#setNumber-operand-string-method'),
-					$('#setNumber-operand-common-variable')
+					fieldEls.get('setNumber-operand-string-method')?.root,
+					fieldEls.get('setNumber-operand-common-variable')?.root
 				]
 			},
 			{
 				case: 'object',
-				targets: [$('#setNumber-operand-object-property')]
+				targets: [fieldEls.get('setNumber-operand-object-property')?.root]
 			},
 			{
 				case: 'element',
 				targets: [
-					$('#setNumber-operand-element-property'),
-					$('#setNumber-operand-element-element')
+					fieldEls.get('setNumber-operand-element-property')?.root,
+					fieldEls.get('setNumber-operand-element-element')?.root
 				]
 			},
 			{
 				case: 'list',
 				targets: [
-					$('#setNumber-operand-common-variable'),
-					$('#setNumber-operand-list-index')
+					fieldEls.get('setNumber-operand-common-variable')?.root,
+					fieldEls.get('setNumber-operand-list-index')?.root
 				]
 			},
 			{
 				case: 'parameter',
-				targets: [$('#setNumber-operand-parameter-key')]
+				targets: [fieldEls.get('setNumber-operand-parameter-key')?.root]
 			},
-			{ case: 'script', targets: [$('#setNumber-operand-script')] },
-			{ case: 'other', targets: [$('#setNumber-operand-other-data')] }
+			{ case: 'script', targets: [fieldEls.get('setNumber-operand-script')?.root] },
+			{ case: 'other', targets: [fieldEls.get('setNumber-operand-other-data')?.root] }
 		]);
 
-	$('#setNumber-operand-math-method')?.loadItems([
+	fieldEls.get('setNumber-operand-math-method')?.loadItems?.([
 		{ name: 'Round', value: 'round' },
 		{ name: 'Floor', value: 'floor' },
 		{ name: 'Ceil', value: 'ceil' },
@@ -424,56 +476,56 @@ onMounted(() => {
 		{ name: 'Relative Angle', value: 'relative-angle' }
 	]);
 
-	$('#setNumber-operand-math-method')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('setNumber-operand-math-method')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: 'round',
 				targets: [
-					$('#setNumber-operand-common-variable'),
-					$('#setNumber-operand-math-decimals')
+					fieldEls.get('setNumber-operand-common-variable')?.root,
+					fieldEls.get('setNumber-operand-math-decimals')?.root
 				]
 			},
 			{
 				case: ['floor', 'ceil', 'sqrt', 'abs', 'cos', 'sin', 'tan'],
-				targets: [$('#setNumber-operand-common-variable')]
+				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
 			},
 			{
 				case: 'random-int',
-				targets: [$('#setNumber-operand-math-min'), $('#setNumber-operand-math-max')]
+				targets: [fieldEls.get('setNumber-operand-math-min')?.root, fieldEls.get('setNumber-operand-math-max')?.root]
 			},
 			{
 				case: ['distance', 'distance-x', 'distance-y', 'relative-angle'],
 				targets: [
-					$('#setNumber-operand-math-startPosition'),
-					$('#setNumber-operand-math-endPosition')
+					fieldEls.get('setNumber-operand-math-startPosition')?.root,
+					fieldEls.get('setNumber-operand-math-endPosition')?.root
 				]
 			}
 		]);
 
-	$('#setNumber-operand-string-method')?.loadItems([
+	fieldEls.get('setNumber-operand-string-method')?.loadItems?.([
 		{ name: 'Get Length', value: 'length' },
 		{ name: 'Parse Number', value: 'parse' },
 		{ name: 'Get Index of Substring', value: 'search' }
 	]);
 
-	$('#setNumber-operand-string-method')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('setNumber-operand-string-method')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: ['length', 'parse'],
-				targets: [$('#setNumber-operand-common-variable')]
+				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
 			},
 			{
 				case: 'search',
 				targets: [
-					$('#setNumber-operand-common-variable'),
-					$('#setNumber-operand-string-search')
+					fieldEls.get('setNumber-operand-common-variable')?.root,
+					fieldEls.get('setNumber-operand-string-search')?.root
 				]
 			}
 		]);
 
-	$('#setNumber-operand-object-property')?.loadItems([
+	fieldEls.get('setNumber-operand-object-property')?.loadItems?.([
 		{ name: 'Actor - X', value: 'actor-x' },
 		{ name: 'Actor - Y', value: 'actor-y' },
 		{ name: 'Actor - UI X', value: 'actor-ui-x' },
@@ -530,9 +582,9 @@ onMounted(() => {
 		{ name: 'List - Length', value: 'list-length' }
 	]);
 
-	$('#setNumber-operand-object-property')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('setNumber-operand-object-property')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: [
 					'actor-x',
@@ -558,67 +610,67 @@ onMounted(() => {
 					'actor-animation-duration',
 					'actor-animation-progress'
 				],
-				targets: [$('#setNumber-operand-common-actor')]
+				targets: [fieldEls.get('setNumber-operand-common-actor')?.root]
 			},
 			{
 				case: 'actor-inventory-item-quantity',
 				targets: [
-					$('#setNumber-operand-common-actor'),
-					$('#setNumber-operand-object-itemId')
+					fieldEls.get('setNumber-operand-common-actor')?.root,
+					fieldEls.get('setNumber-operand-object-itemId')?.root
 				]
 			},
 			{
 				case: 'actor-inventory-equipment-quantity',
 				targets: [
-					$('#setNumber-operand-common-actor'),
-					$('#setNumber-operand-object-equipmentId')
+					fieldEls.get('setNumber-operand-common-actor')?.root,
+					fieldEls.get('setNumber-operand-object-equipmentId')?.root
 				]
 			},
 			{
 				case: ['actor-cooldown-time', 'actor-cooldown-duration', 'actor-cooldown-progress'],
 				targets: [
-					$('#setNumber-operand-common-actor'),
-					$('#setNumber-operand-cooldown-key')
+					fieldEls.get('setNumber-operand-common-actor')?.root,
+					fieldEls.get('setNumber-operand-cooldown-key')?.root
 				]
 			},
 			{
 				case: ['skill-cooldown-time', 'skill-cooldown-duration', 'skill-cooldown-progress'],
-				targets: [$('#setNumber-operand-common-skill')]
+				targets: [fieldEls.get('setNumber-operand-common-skill')?.root]
 			},
 			{
 				case: ['state-current-time', 'state-duration', 'state-progress'],
-				targets: [$('#setNumber-operand-common-state')]
+				targets: [fieldEls.get('setNumber-operand-common-state')?.root]
 			},
 			{
 				case: 'equipment-order',
-				targets: [$('#setNumber-operand-common-equipment')]
+				targets: [fieldEls.get('setNumber-operand-common-equipment')?.root]
 			},
 			{
 				case: ['item-order', 'item-quantity'],
-				targets: [$('#setNumber-operand-common-item')]
+				targets: [fieldEls.get('setNumber-operand-common-item')?.root]
 			},
 			{
 				case: ['trigger-speed', 'trigger-angle'],
-				targets: [$('#setNumber-operand-common-trigger')]
+				targets: [fieldEls.get('setNumber-operand-common-trigger')?.root]
 			},
 			{
 				case: ['tilemap-width', 'tilemap-height'],
-				targets: [$('#setNumber-operand-common-tilemap')]
+				targets: [fieldEls.get('setNumber-operand-common-tilemap')?.root]
 			},
 			{
 				case: 'tilemap-tag',
 				targets: [
-					$('#setNumber-operand-common-tilemap'),
-					$('#setNumber-operand-tilemapPosition')
+					fieldEls.get('setNumber-operand-common-tilemap')?.root,
+					fieldEls.get('setNumber-operand-tilemapPosition')?.root
 				]
 			},
 			{
 				case: 'list-length',
-				targets: [$('#setNumber-operand-common-variable')]
+				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
 			}
 		]);
 
-	$('#setNumber-operand-element-property')?.loadItems([
+	fieldEls.get('setNumber-operand-element-property')?.loadItems?.([
 		{ name: 'Element - X', value: 'element-x' },
 		{ name: 'Element - Y', value: 'element-y' },
 		{ name: 'Element - Width', value: 'element-width' },
@@ -659,7 +711,7 @@ onMounted(() => {
 		{ name: 'Dialog Box - Print End Y', value: 'dialogBox-printEndY' }
 	]);
 
-	$('#setNumber-operand-other-data')?.loadItems([
+	fieldEls.get('setNumber-operand-other-data')?.loadItems?.([
 		{ name: 'Event Trigger Mouse Button', value: 'trigger-button' },
 		{ name: 'Event Trigger Wheel Delta Y', value: 'trigger-wheel-y' },
 		{
@@ -716,9 +768,9 @@ onMounted(() => {
 		}
 	]);
 
-	$('#setNumber-operand-other-data')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('setNumber-operand-other-data')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: [
 					'touch-screen-x',
@@ -728,20 +780,20 @@ onMounted(() => {
 					'touch-scene-x',
 					'touch-scene-y'
 				],
-				targets: [$('#setNumber-operand-other-touchId')]
+				targets: [fieldEls.get('setNumber-operand-other-touchId')?.root]
 			},
 			{
 				case: 'actor-count',
-				targets: [$('#setNumber-operand-other-teamId')]
+				targets: [fieldEls.get('setNumber-operand-other-teamId')?.root]
 			}
 		]);
 
-	on($('#setNumber-operand'), 'open', () => {
-		$('#setNumber-operand-other-teamId')?.loadItems(Data.createTeamItems!());
+	on(frame.value?.root, 'open', () => {
+		fieldEls.get('setNumber-operand-other-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 
-	on($('#setNumber-operand'), 'closed', () => {
-		$('#setNumber-operation').restore();
+	on(frame.value?.root, 'closed', () => {
+		fieldEls.get('setNumber-operation')?.root?.restore();
 	});
 });
 </script>

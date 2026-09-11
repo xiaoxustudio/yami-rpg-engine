@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="if-condition" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -297,7 +297,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
@@ -426,9 +425,17 @@ const FIELD_BY_ID: Record<string, keyof IfConditionForm> = {
 	'if-condition-other-key': 'otherKey'
 };
 
+/**
+ * 控件实例的最小接口（模板里用 `:ref="fieldRef(id)"` 登记）。
+ * P5b 批次 1：不再用 `$('#id')` 找元素，改为从注册表取组件实例直调其 expose 方法；
+ * `root` 供仍需元素的地方使用（如 relate 的 targets）。
+ */
 interface FieldControl {
 	read?: () => unknown;
 	write?: (value: unknown) => void;
+	loadItems?: (items: unknown[]) => unknown;
+	enableHiddenMode?: () => { relate?: (entries: unknown) => unknown } | undefined;
+	root?: HTMLElement | null;
 }
 
 const fieldEls = new Map<string, FieldControl | null>();
@@ -453,9 +460,9 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
-	const typeEl = $('#if-condition-type');
+	const typeEl = fieldEls.get('if-condition-type');
 	if (!typeEl) return;
-	typeEl.loadItems([
+	typeEl.loadItems?.([
 		{ name: 'Boolean', value: 'boolean' },
 		{ name: 'Number', value: 'number' },
 		{ name: 'String', value: 'string' },
@@ -469,93 +476,93 @@ onMounted(() => {
 		{ name: 'Other', value: 'other' }
 	]);
 
-	typeEl.enableHiddenMode().relate([
+	typeEl.enableHiddenMode?.()?.relate?.([
 		{
 			case: 'boolean',
 			targets: [
-				$('#if-condition-common-variable'),
-				$('#if-condition-boolean-operation'),
-				$('#if-condition-boolean-operand-type')
+				fieldEls.get('if-condition-common-variable')?.root,
+				fieldEls.get('if-condition-boolean-operation')?.root,
+				fieldEls.get('if-condition-boolean-operand-type')?.root
 			]
 		},
 		{
 			case: 'number',
 			targets: [
-				$('#if-condition-common-variable'),
-				$('#if-condition-number-operation'),
-				$('#if-condition-number-operand-type')
+				fieldEls.get('if-condition-common-variable')?.root,
+				fieldEls.get('if-condition-number-operation')?.root,
+				fieldEls.get('if-condition-number-operand-type')?.root
 			]
 		},
 		{
 			case: 'string',
 			targets: [
-				$('#if-condition-common-variable'),
-				$('#if-condition-string-operation'),
-				$('#if-condition-string-operand-type')
+				fieldEls.get('if-condition-common-variable')?.root,
+				fieldEls.get('if-condition-string-operation')?.root,
+				fieldEls.get('if-condition-string-operand-type')?.root
 			]
 		},
 		{
 			case: 'object',
-			targets: [$('#if-condition-common-variable'), $('#if-condition-object-operation')]
+			targets: [fieldEls.get('if-condition-common-variable')?.root, fieldEls.get('if-condition-object-operation')?.root]
 		},
 		{
 			case: 'actor',
-			targets: [$('#if-condition-common-actor'), $('#if-condition-actor-operation')]
+			targets: [fieldEls.get('if-condition-common-actor')?.root, fieldEls.get('if-condition-actor-operation')?.root]
 		},
 		{
 			case: 'element',
-			targets: [$('#if-condition-common-element'), $('#if-condition-element-operation')]
+			targets: [fieldEls.get('if-condition-common-element')?.root, fieldEls.get('if-condition-element-operation')?.root]
 		},
 		{
 			case: 'keyboard',
-			targets: [$('#if-condition-keyboard-keycode'), $('#if-condition-keyboard-state')]
+			targets: [fieldEls.get('if-condition-keyboard-keycode')?.root, fieldEls.get('if-condition-keyboard-state')?.root]
 		},
 		{
 			case: 'gamepad',
-			targets: [$('#if-condition-gamepad-button'), $('#if-condition-gamepad-state')]
+			targets: [fieldEls.get('if-condition-gamepad-button')?.root, fieldEls.get('if-condition-gamepad-state')?.root]
 		},
 		{
 			case: 'mouse',
-			targets: [$('#if-condition-mouse-button'), $('#if-condition-mouse-state')]
+			targets: [fieldEls.get('if-condition-mouse-button')?.root, fieldEls.get('if-condition-mouse-state')?.root]
 		},
 		{
 			case: 'list',
 			targets: [
-				$('#if-condition-common-variable'),
-				$('#if-condition-list-operation'),
-				$('#if-condition-operand-variable')
+				fieldEls.get('if-condition-common-variable')?.root,
+				fieldEls.get('if-condition-list-operation')?.root,
+				fieldEls.get('if-condition-operand-variable')?.root
 			]
 		},
-		{ case: 'other', targets: [$('#if-condition-other-key')] }
+		{ case: 'other', targets: [fieldEls.get('if-condition-other-key')?.root] }
 	]);
 
-	$('#if-condition-boolean-operation')?.loadItems([
+	fieldEls.get('if-condition-boolean-operation')?.loadItems?.([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' }
 	]);
 
-	$('#if-condition-boolean-operand-type')?.loadItems([
+	fieldEls.get('if-condition-boolean-operand-type')?.loadItems?.([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	$('#if-condition-boolean-operand-type')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('if-condition-boolean-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: 'constant',
-				targets: [$('#if-condition-boolean-constant-value')]
+				targets: [fieldEls.get('if-condition-boolean-constant-value')?.root]
 			},
-			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
 		]);
 
-	$('#if-condition-boolean-constant-value')?.loadItems([
+	fieldEls.get('if-condition-boolean-constant-value')?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
 
-	$('#if-condition-number-operation')?.loadItems([
+	fieldEls.get('if-condition-number-operation')?.loadItems?.([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: '>=', value: 'greater-or-equal' },
@@ -564,51 +571,51 @@ onMounted(() => {
 		{ name: '<', value: 'less' }
 	]);
 
-	$('#if-condition-number-operand-type')?.loadItems([
+	fieldEls.get('if-condition-number-operand-type')?.loadItems?.([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	$('#if-condition-number-operand-type')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('if-condition-number-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: 'constant',
-				targets: [$('#if-condition-number-constant-value')]
+				targets: [fieldEls.get('if-condition-number-constant-value')?.root]
 			},
-			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
 		]);
 
-	$('#if-condition-string-operation')?.loadItems([
+	fieldEls.get('if-condition-string-operation')?.loadItems?.([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: 'Include', value: 'include' },
 		{ name: 'Exclude', value: 'exclude' }
 	]);
 
-	$('#if-condition-string-operand-type')?.loadItems([
+	fieldEls.get('if-condition-string-operand-type')?.loadItems?.([
 		{ name: 'None', value: 'none' },
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' },
 		{ name: 'Enumeration', value: 'enum' }
 	]);
 
-	$('#if-condition-string-operand-type')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('if-condition-string-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: 'constant',
-				targets: [$('#if-condition-string-constant-value')]
+				targets: [fieldEls.get('if-condition-string-constant-value')?.root]
 			},
 			{
 				case: 'variable',
-				targets: [$('#if-condition-operand-variable')]
+				targets: [fieldEls.get('if-condition-operand-variable')?.root]
 			},
-			{ case: 'enum', targets: [$('#if-condition-string-enum-stringId')] }
+			{ case: 'enum', targets: [fieldEls.get('if-condition-string-enum-stringId')?.root] }
 		]);
 
-	$('#if-condition-object-operation')?.loadItems([
+	fieldEls.get('if-condition-object-operation')?.loadItems?.([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: 'Is Actor', value: 'is-actor' },
@@ -621,16 +628,16 @@ onMounted(() => {
 		{ name: 'Is Element', value: 'is-element' }
 	]);
 
-	$('#if-condition-object-operation')
-		.enableHiddenMode()
-		.relate([
+	fieldEls.get('if-condition-object-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
 			{
 				case: ['equal', 'unequal'],
-				targets: [$('#if-condition-object-operand-type')]
+				targets: [fieldEls.get('if-condition-object-operand-type')?.root]
 			}
 		]);
 
-	$('#if-condition-object-operand-type')?.loadItems([
+	fieldEls.get('if-condition-object-operand-type')?.loadItems?.([
 		{ name: 'None', value: 'none' },
 		{ name: 'Actor', value: 'actor' },
 		{ name: 'Skill', value: 'skill' },
@@ -643,24 +650,24 @@ onMounted(() => {
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	$('#if-condition-object-operand-type')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'actor', targets: [$('#if-condition-common-actor')] },
-			{ case: 'skill', targets: [$('#if-condition-common-skill')] },
-			{ case: 'state', targets: [$('#if-condition-common-state')] },
+	fieldEls.get('if-condition-object-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'actor', targets: [fieldEls.get('if-condition-common-actor')?.root] },
+			{ case: 'skill', targets: [fieldEls.get('if-condition-common-skill')?.root] },
+			{ case: 'state', targets: [fieldEls.get('if-condition-common-state')?.root] },
 			{
 				case: 'equipment',
-				targets: [$('#if-condition-common-equipment')]
+				targets: [fieldEls.get('if-condition-common-equipment')?.root]
 			},
-			{ case: 'item', targets: [$('#if-condition-common-item')] },
-			{ case: 'trigger', targets: [$('#if-condition-common-trigger')] },
-			{ case: 'light', targets: [$('#if-condition-common-light')] },
-			{ case: 'element', targets: [$('#if-condition-common-element')] },
-			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+			{ case: 'item', targets: [fieldEls.get('if-condition-common-item')?.root] },
+			{ case: 'trigger', targets: [fieldEls.get('if-condition-common-trigger')?.root] },
+			{ case: 'light', targets: [fieldEls.get('if-condition-common-light')?.root] },
+			{ case: 'element', targets: [fieldEls.get('if-condition-common-element')?.root] },
+			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
 		]);
 
-	$('#if-condition-actor-operation')?.loadItems([
+	fieldEls.get('if-condition-actor-operation')?.loadItems?.([
 		{ name: 'Present and Active', value: 'present-active' },
 		{ name: 'Present', value: 'present' },
 		{ name: 'Absent', value: 'absent' },
@@ -686,38 +693,38 @@ onMounted(() => {
 		{ name: 'Is an Enemy of Team ...', value: 'is-team-enemy' }
 	]);
 
-	$('#if-condition-actor-operation')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'has-skill', targets: [$('#if-condition-actor-skillId')] },
-			{ case: 'has-state', targets: [$('#if-condition-actor-stateId')] },
+	fieldEls.get('if-condition-actor-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'has-skill', targets: [fieldEls.get('if-condition-actor-skillId')?.root] },
+			{ case: 'has-state', targets: [fieldEls.get('if-condition-actor-stateId')?.root] },
 			{
 				case: 'has-items',
-				targets: [$('#if-condition-actor-itemId'), $('#if-condition-actor-quantity')]
+				targets: [fieldEls.get('if-condition-actor-itemId')?.root, fieldEls.get('if-condition-actor-quantity')?.root]
 			},
 			{
 				case: 'has-equipments',
-				targets: [$('#if-condition-actor-equipmentId'), $('#if-condition-actor-quantity')]
+				targets: [fieldEls.get('if-condition-actor-equipmentId')?.root, fieldEls.get('if-condition-actor-quantity')?.root]
 			},
 			{
 				case: ['has-skill-shortcut', 'has-item-shortcut'],
-				targets: [$('#if-condition-actor-shortcutKey')]
+				targets: [fieldEls.get('if-condition-actor-shortcutKey')?.root]
 			},
 			{
 				case: 'equipped',
-				targets: [$('#if-condition-actor-equipmentId')]
+				targets: [fieldEls.get('if-condition-actor-equipmentId')?.root]
 			},
 			{
 				case: ['is-teammate', 'is-friend', 'is-enemy'],
-				targets: [$('#if-condition-actor-target')]
+				targets: [fieldEls.get('if-condition-actor-target')?.root]
 			},
 			{
 				case: ['is-team-member', 'is-team-friend', 'is-team-enemy'],
-				targets: [$('#if-condition-actor-teamId')]
+				targets: [fieldEls.get('if-condition-actor-teamId')?.root]
 			}
 		]);
 
-	$('#if-condition-element-operation')?.loadItems([
+	fieldEls.get('if-condition-element-operation')?.loadItems?.([
 		{ name: 'Present', value: 'present' },
 		{ name: 'Absent', value: 'absent' },
 		{ name: 'Visible', value: 'visible' },
@@ -729,21 +736,21 @@ onMounted(() => {
 		{ name: 'Dialog Box - is Complete', value: 'dialogbox-is-complete' }
 	]);
 
-	$('#if-condition-keyboard-state')?.loadItems([
+	fieldEls.get('if-condition-keyboard-state')?.loadItems?.([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-gamepad-state')?.loadItems([
+	fieldEls.get('if-condition-gamepad-state')?.loadItems?.([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-mouse-button')?.loadItems([
+	fieldEls.get('if-condition-mouse-button')?.loadItems?.([
 		{ name: 'Left Button', value: 0 },
 		{ name: 'Middle Button', value: 1 },
 		{ name: 'Right Button', value: 2 },
@@ -751,19 +758,19 @@ onMounted(() => {
 		{ name: 'Forward Button', value: 4 }
 	]);
 
-	$('#if-condition-mouse-state')?.loadItems([
+	fieldEls.get('if-condition-mouse-state')?.loadItems?.([
 		{ name: 'Just Pressed', value: 'just-pressed' },
 		{ name: 'Just Released', value: 'just-released' },
 		{ name: 'Pressed', value: 'pressed' },
 		{ name: 'Released', value: 'released' }
 	]);
 
-	$('#if-condition-list-operation')?.loadItems([
+	fieldEls.get('if-condition-list-operation')?.loadItems?.([
 		{ name: 'Include', value: 'include' },
 		{ name: 'Exclude', value: 'exclude' }
 	]);
 
-	$('#if-condition-other-key')?.loadItems([
+	fieldEls.get('if-condition-other-key')?.loadItems?.([
 		{ name: 'Mouse has entered the window', value: 'mouse-entered' },
 		{ name: 'Mouse has left the window', value: 'mouse-left' },
 		{ name: 'Game is paused', value: 'game-is-paused' },
@@ -780,8 +787,8 @@ onMounted(() => {
 		{ name: 'Running on a mobile platform', value: 'platform-mobile' }
 	]);
 
-	$('#if-condition')?.on?.('open', () => {
-		$('#if-condition-actor-teamId')?.loadItems(Data.createTeamItems!());
+	fieldEls.get('if-condition')?.root?.on?.('open', () => {
+		fieldEls.get('if-condition-actor-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 
 });
