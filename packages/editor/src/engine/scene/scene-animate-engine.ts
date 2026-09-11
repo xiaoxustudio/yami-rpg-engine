@@ -11,6 +11,16 @@ SceneAnimateEngine.requestAnimation = function (this: typeof Scene) {
 	}
 };
 
+/**
+ * 绘制缓冲是否可渲染：页面隐藏 / 窗口最小化 / 布局重建瞬间画布会退化为 0×0，
+ * 此时继续 `gl.clear` 会持续刷 `GL_INVALID_FRAMEBUFFER_OPERATION: Attachment has zero size`。
+ * 渲染循环据此跳过绘制（尺寸恢复后自动继续，无需重挂 updater）。
+ */
+const hasRenderableCanvas = (): boolean => {
+	const screen = Scene.screen as HTMLCanvasElement | null | undefined;
+	return screen !== null && screen !== undefined && screen.width !== 0 && screen.height !== 0;
+};
+
 SceneAnimateEngine.updateAnimation = function (this: typeof Scene, deltaTime: number) {
 	const { animationInterval } = Scene;
 	if (animationInterval > 0) {
@@ -23,7 +33,7 @@ SceneAnimateEngine.updateAnimation = function (this: typeof Scene, deltaTime: nu
 	Scene.updateParallaxes!(deltaTime);
 	Scene.updateAnimations!(deltaTime);
 	Scene.updateParticles!(deltaTime);
-	if (Timer.updaters.stageRendering !== Scene.renderingFunction) {
+	if (Timer.updaters.stageRendering !== Scene.renderingFunction && hasRenderableCanvas()) {
 		Scene.drawScene!();
 	}
 };
@@ -39,6 +49,7 @@ SceneAnimateEngine.requestRendering = function (this: typeof Scene) {
 };
 
 SceneAnimateEngine.renderingFunction = function (this: typeof Scene) {
+	if (!hasRenderableCanvas()) return;
 	Scene.updateAnimations!(0);
 	Scene.drawScene!();
 };

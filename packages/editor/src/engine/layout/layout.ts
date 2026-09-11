@@ -364,6 +364,7 @@ export const Layout: DynamicShape = {
 	getKeyGroups: null as (() => LayoutGroupElement[]) | null,
 	getGroupOfElement: null as ((element: HTMLElement) => LayoutGroupElement | null) | null,
 	readyToFocus: null as ((element: HTMLElement) => void) | null,
+	activateLayoutPage: null as ((page: HTMLElement | null | undefined) => boolean) | null,
 	createGroupContent: null as ((group: LayoutGroupElement) => void) | null,
 	createGroupBorder: null as ((group: LayoutGroupElement) => void) | null,
 	enableFocusableElements: null as (() => void) | null,
@@ -1388,6 +1389,50 @@ Layout.pageSwitch = function (event: EditorEvent) {
 Layout.navWrite = function (this: typeof Layout, event: EditorEvent) {
 	const index = event.value;
 	(this as typeof Layout).parentNode.manager.switch(index);
+	// 切页签后重新量尺寸：新激活的页面此前可能处于隐藏态（宽高缓存缺失/dpr 未记录），
+	// 不派发 resize 会让其画布停在 0×0（场景/动画预览空白 + WebGL 零尺寸帧缓冲报错）。
+	Layout.updateGroups!();
+	// 同 tick 内新页面尚未完成布局（读到 0 尺寸），下一帧再收敛一次尺寸并派发 resize
+	if (typeof requestAnimationFrame === 'function') {
+		requestAnimationFrame(() => Layout.updateGroups!());
+	}
+};
+
+/**
+ * 把某个页面切到所属叶子的前台（打开窗口时调用）。
+ * 页面可能因同一叶子激活了其它页签而处于 `display:none`（此时画布/尺寸为 0），
+ * 打开窗口却不激活它就会出现「窗口开了但内容空白」。
+ *
+ * 注意：工作区布局装载是异步的（`loadLayoutSchemeVueTeleport`），其尾部会按默认页签激活叶子；
+ * 若此刻直接写 nav 会被随后完成的装载覆盖（真机表现为 resize 量到 clientWidth 0），
+ * 因此这里串行到装载完成之后再激活。
+ */
+Layout.activateLayoutPage = function (
+	this: typeof Layout,
+	page: HTMLElement | null | undefined
+): boolean {
+	const value = page?.getAttribute('value') ?? '';
+	if (value === '') return false;
+	const apply = (): boolean => {
+		if (!page?.isConnected) return false;
+		const group = this.getGroupOfElement?.(page);
+		const nav = group?.nav as HTMLElement | undefined;
+		if (!nav) return false;
+		if ((group as LayoutGroupElement).manager?.index === value) return true;
+		write(nav, value);
+		return true;
+	};
+	const pending = lastVueSchemeLoad;
+	// 先立即生效；若仍有装载在途，装载尾部的默认页签激活会覆盖它，故装载完成后再补一次（幂等）
+	const applied = apply();
+	if (pending !== null) {
+		void pending
+			.catch(() => {})
+			.then(() => {
+				apply();
+			});
+	}
+	return applied;
 };
 
 Layout.navPointerdown = function (event: { button: number; target: LayoutItemElement }) {

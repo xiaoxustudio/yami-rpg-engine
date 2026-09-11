@@ -929,6 +929,10 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 
 	Particle.Element.stage = this;
 
+	// M5 收尾：把场景页切到所属叶子前台。否则同叶子若激活了其它页签，场景页是 display:none
+	// → 画布与 screen 宽高为 0 → 预览空白且渲染循环刷 WebGL 零尺寸帧缓冲报错。
+	Layout.activateLayoutPage?.(this.page);
+
 	if (context.scene) {
 		getSceneStore().state = 'open';
 		this.load!(context);
