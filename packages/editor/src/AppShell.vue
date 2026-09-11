@@ -3,6 +3,7 @@
 		<div
 			class="box"
 			id="menu"
+			:class="{ visible: local.ready }"
 			@pointerdown="onMenuPointerdown"
 			@pointerup="onMenuPointerup"
 			@pointerover="onMenuPointerover"
@@ -87,6 +88,7 @@ import { defineAsyncComponent, onMounted, ref } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
+import { useLocalStore } from '@app/stores/local';
 import { resolveLazyComponentsReady } from '@app/bootstrap';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
@@ -95,6 +97,7 @@ provideMenuService({ getState: () => Menu.state });
 
 const title = useTitleStore();
 const menubar = useMenubarStore();
+const local = useLocalStore();
 
 const onPlayClick = () => {
 	title.playGame();

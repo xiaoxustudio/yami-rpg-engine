@@ -586,6 +586,73 @@ describe('YMTreeList Ctrl+Arrow 纯滚动（金标准）', () => {
 	});
 });
 
+describe('YMTreeList PageUp/PageDown 分页（金标准）', () => {
+	// clientHeight 400 → 每页 19 行（floor(400 / 20) - 1）
+	it('PageDown：选中下移一页并滚动联动', async () => {
+		const data = makeFlatData(100);
+		const { wrapper, el } = await mountList(data);
+		el.select(data[0]);
+		await nextTick();
+		el.scrollTop = 0;
+		fireKey(el, { code: 'PageDown' });
+		await nextTick();
+		expect(el.read()).toBe(data[19]);
+		expect(el.scrollTop).toBe(380);
+		wrapper.unmount();
+	});
+
+	it('PageUp：选中上移一页并滚动联动', async () => {
+		const data = makeFlatData(100);
+		const { wrapper, el } = await mountList(data);
+		el.select(data[50]);
+		await nextTick();
+		el.scrollTop = 800;
+		fireKey(el, { code: 'PageUp' });
+		await nextTick();
+		expect(el.read()).toBe(data[31]);
+		expect(el.scrollTop).toBe(420);
+		wrapper.unmount();
+	});
+
+	it('边界：PageDown 停在最后一行、PageUp 停在首行', async () => {
+		const data = makeFlatData(30);
+		const { wrapper, el } = await mountList(data);
+		el.select(data[20]);
+		await nextTick();
+		el.scrollTop = 400;
+		fireKey(el, { code: 'PageDown' });
+		await nextTick();
+		expect(el.read()).toBe(data[29]);
+		el.select(data[5]);
+		await nextTick();
+		el.scrollTop = 400;
+		fireKey(el, { code: 'PageUp' });
+		await nextTick();
+		expect(el.read()).toBe(data[0]);
+		wrapper.unmount();
+	});
+
+	it('分页键被列表消费（阻止浏览器默认滚动）且不改动数据', async () => {
+		const data = makeFlatData(50);
+		const { wrapper, el } = await mountList(data);
+		el.select(data[3]);
+		await nextTick();
+		// 注意：列表自身在 keydown 末尾会 stopImmediatePropagation，故不能用"后加的监听器"探测，
+		// 直接看事件对象上的 defaultPrevented（cancelable 事件被 preventDefault 后即为 true）。
+		const event = new KeyboardEvent('keydown', {
+			bubbles: true,
+			cancelable: true,
+			code: 'PageDown'
+		});
+		el.dispatchEvent(event);
+		await nextTick();
+		expect(event.defaultPrevented).toBe(true);
+		expect(data).toHaveLength(50);
+		expect(el.read()).toBe(data[22]);
+		wrapper.unmount();
+	});
+});
+
 describe('YMTreeList 快/慢双击语义（金标准）', () => {
 	const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 

@@ -24,6 +24,7 @@ const dispatch = (type: string, event: MouseEvent): void => {
 	<button
 		:id="idPrefix + '-confirm'"
 		name="confirm"
+		hotkey="Ctrl+Enter"
 		@click="dispatch('confirm', $event)"
 		>{{ confirmLabel }}</button
 	>
@@ -37,6 +38,7 @@ const dispatch = (type: string, event: MouseEvent): void => {
 	<button
 		:id="idPrefix + '-cancel'"
 		name="cancel"
+		hotkey="Escape"
 		@click="dispatch('cancel', $event)"
 		>{{ cancelLabel }}</button
 	>

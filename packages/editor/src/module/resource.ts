@@ -3,8 +3,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { GlobalPath, Path } from '@app/utils/config';
 import { SettingConfig } from '@app/services/project/setting-config';
 import { PING_SLOW_MS, PING_WARN_MS } from '@app/constants/editor.ts';
-import { $ } from '@app/utils/dom';
-import { disable, enable, on, write } from '@app/utils/element-utils.ts';
+import { getResourceStore, type ResourceRow } from '@app/stores/resource';
 
 import { Net } from '@app/services/ipc/net.ts';
 import {
@@ -23,26 +22,17 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
-interface TextBoxElement extends HTMLElement {
-	input?: HTMLInputElement | null;
-	write?: (value: unknown) => unknown;
-}
+/**
+ * 资源包管理模块（R1 数据化后不再直接操作 DOM）：
+ * 列表数据在 `stores/resource.ts`，视图是 `components/tools/resource/ResourceList.vue` +
+ * `components/tools/Resource.vue`；本模块只负责取数、下载/解压/删除与节点信息。
+ */
 export const Resources = new (class {
-	get window() {
-		return $('#resource');
-	}
-	get content() {
-		return $('#resource-content');
-	}
-	get nodeInfoBox() {
-		return $('#resource-node-info');
-	}
-	get currentNodeText() {
-		return $('#resource-current-node');
-	}
-	get nodePingText() {
-		return $('#resource-node-ping');
-	}
+	/** key -> 下载取消函数（暂停用） */
+	private _cancels = new Map<string, () => void>();
+	/** key -> 上次速度采样的字节数与时间戳 */
+	private _speedMarks = new Map<string, { loaded: number; time: number }>();
+
 	_fastGithubArray = [];
 	get fastGithubPrefix() {
 		const config = SettingConfig.config?.github?.accelerationNode || 'auto';
@@ -70,8 +60,6 @@ export const Resources = new (class {
 	}
 
 	loaded = false;
-	checkVersionText = '';
-	openDirText = '';
 
 	constructor() {
 		void this.updateFastGithubArray().then((data) => {
@@ -99,15 +87,14 @@ export const Resources = new (class {
 	}
 
 	async initialize() {
-		if (!$('#resource-check-version')) return;
-		this.checkVersionText = t('confirmation.resource-check-version');
-		this.openDirText = t('confirmation.resource-open-dir');
-		(this.window as HTMLElement & { update?: () => void }).update?.();
-
-		on($('#resource-check-version'), 'click', () => this.checkVersion());
-		on($('#resource-open-dir'), 'click', () => YamiIpc.send.openPath(GlobalPath));
-
+		// R1：不再在这里查 DOM / 注册按钮点击（视图组件自己 @click 调 checkVersion/openDir），
+		// 只保留「刷新节点信息」这一件事；状态写进 store，窗口未打开时也不会有副作用。
 		void this.updateNodeInfo();
+	}
+
+	/** 「打开目录」按钮（原为 initialize() 里注册到 resource-open-dir 元素上的 click） */
+	openDir() {
+		YamiIpc.send.openPath(GlobalPath);
 	}
 
 	getCurrentNodeInfo() {
@@ -209,41 +196,29 @@ export const Resources = new (class {
 	}
 
 	async updateNodeInfo() {
+		const store = getResourceStore();
 		const { nodeName, nodeUrl } = this.getCurrentNodeInfo();
 		const get = (key: string) => t('confirmation.' + key);
 
 		const nodeLabel = get('resource-current-node-label') || '当前节点';
-		if (this.currentNodeText) {
-			this.currentNodeText.textContent = `${nodeLabel}: ${nodeName}`;
-			this.currentNodeText.style.display = 'block';
-			this.currentNodeText.style.visibility = 'visible';
-		}
+		store.setNodeText(`${nodeLabel}: ${nodeName}`);
 
 		const testingLabel = get('resource-node-ping-testing') || '测试中';
-		if (this.nodePingText) {
-			this.nodePingText.textContent = `Ping: ${testingLabel}...`;
-			this.nodePingText.style.color = '#888';
-			this.nodePingText.style.display = 'block';
-			this.nodePingText.style.visibility = 'visible';
-		}
+		store.setPing(`Ping: ${testingLabel}...`, '#888');
 
 		const ping = await this.pingNode(nodeUrl);
 
-		if (this.nodePingText) {
-			if (ping >= 0) {
-				let color = '#4caf50';
-				if (ping > PING_WARN_MS) {
-					color = '#f44336';
-				} else if (ping > PING_SLOW_MS) {
-					color = '#ff9800';
-				}
-				this.nodePingText.textContent = `Ping: ${ping}ms`;
-				this.nodePingText.style.color = color;
-			} else {
-				const failedLabel = get('resource-node-ping-failed') || '失败';
-				this.nodePingText.textContent = `Ping: ${failedLabel}`;
-				this.nodePingText.style.color = '#f44336';
+		if (ping >= 0) {
+			let color = '#4caf50';
+			if (ping > PING_WARN_MS) {
+				color = '#f44336';
+			} else if (ping > PING_SLOW_MS) {
+				color = '#ff9800';
 			}
+			store.setPing(`Ping: ${ping}ms`, color);
+		} else {
+			const failedLabel = get('resource-node-ping-failed') || '失败';
+			store.setPing(`Ping: ${failedLabel}`, '#f44336');
 		}
 	}
 
@@ -418,244 +393,171 @@ export const Resources = new (class {
 		void this.checkEditorVersion();
 	}
 
-	temp(val: string) {
-		const value = val.replace(/[.]/g, '_');
-		const targetPath = Path.resolve(TemplatesPath, `${val}_pack.zip`);
-		const _check = () => {
-			setNoResourceObj(isNoResource());
-			if (NoResourceObj[val].check) {
-				disable(button);
-				enable(buttonDelete);
-				enable(textbox);
-				write(textbox, `v${PackMeta[val]}`);
-			} else {
-				if (!fs.existsSync(tempPath)) disable(buttonDelete);
-				enable(button);
-				disable(textbox);
-				write(textbox, '');
-			}
-			// 判断目录下是否有zip文件，有则删除它节省空间
-			if (fs.existsSync(targetPath)) void fs.unlink(targetPath);
+	/** 行模型初值（对应旧实现那段 HTML 模板里的初始文案） */
+	private blankRow(key: string): ResourceRow {
+		const sizeLabel = t('confirmation.resource-size-label') || '大小';
+		return {
+			key,
+			value: key.replace(/[.]/g, '_'),
+			version: '',
+			installed: false,
+			hasTemp: false,
+			sizeText: `${sizeLabel}: ${t('confirmation.resource-size-unknown') || '未知'}`,
+			speedText: t('confirmation.resource-speed') || '速度: 0 KB/s',
+			progress: 0,
+			phase: 'idle'
 		};
-		const get = (key: string) => t('confirmation.' + key);
-
-		const domPase = new DOMParser().parseFromString(
-			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-          <div class="text" style="flex: 0 0 auto;">${value}:&emsp;</div>
-          <div class="text-box" style="flex: 1;"><input class="text-box-input" type="text" readonly /></div>
-          <button id='resource-item-${value}-download' name='resource-download'></button>
-          <button id='resource-item-${value}-pause' name='pause' style="display: none;">暂停</button>
-          <button id='resource-item-${value}-delete' name='delete'></button>
-        </div>
-        <div id='resource-item-${value}-progress' style="display: none; flex-direction: column; gap: 4px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="flex: 1; height: 20px; background: var(--panel-background); border: 1px solid var(--border-color); border-radius: 3px; overflow: hidden;">
-              <div id='resource-item-${value}-progress-bar' style="height: 100%; background: linear-gradient(90deg, #4caf50, #66bb6a); transition: width 0.3s; width: 0%;"></div>
-            </div>
-            <div class="text" id='resource-item-${value}-progress-text' style="flex: 0 0 auto; min-width: 50px; text-align: right;">0%</div>
-          </div>
-          <div class="text" id='resource-item-${value}-speed' style="font-size: 12px; color: #888;">速度: 0 KB/s</div>
-        </div>
-        <div class="text" id='resource-item-${value}-size' style="font-size: 12px; color: #888; margin-top: 4px;">大小: 获取中...</div>
-        </div>`,
-			'text/html'
-		);
-		const boxDom = domPase.body.firstChild!;
-		this.content.append(boxDom);
-		const textbox = boxDom.querySelector('.text-box') as unknown as TextBoxElement;
-		const textboxInput = textbox.querySelector('input') as HTMLInputElement;
-		textbox.input = textboxInput;
-		textbox.write = (value: unknown): void => {
-			textboxInput.value = value as string;
-		};
-		disable(textbox);
-		textboxInput.readOnly = true;
-
-		const button = boxDom.querySelector(`#resource-item-${value}-download`)!;
-		const pauseButton = boxDom.querySelector(`#resource-item-${value}-pause`)!;
-		const progressContainer = boxDom.querySelector(`#resource-item-${value}-progress`)!;
-		const progressBar = boxDom.querySelector(`#resource-item-${value}-progress-bar`)!;
-		const progressText = boxDom.querySelector(`#resource-item-${value}-progress-text`)!;
-		const speedText = boxDom.querySelector(`#resource-item-${value}-speed`)!;
-		const sizeText = boxDom.querySelector(`#resource-item-${value}-size`)!;
-
-		button.textContent = t('confirmation.resource-download');
-
-		this.getFileSize(val)
-			.then((size) => {
-				const get = (key: string) => t('confirmation.' + key);
-				const sizeLabel = get('resource-size-label') || '大小';
-				if (size > 0) {
-					sizeText.textContent = `${sizeLabel}: ${this.formatFileSize(size)}`;
-				} else {
-					sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
-				}
-			})
-			.catch(() => {
-				const get = (key: string) => t('confirmation.' + key);
-				const sizeLabel = get('resource-size-label') || '大小';
-				sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
-			});
-
-		let cancelDownload: (() => void) | null = null;
-		let isDownloading = false;
-		let isDecompressing = false;
-		let lastLoaded = 0;
-		let lastTime = Date.now();
-
-		on(button, 'click', () => {
-			if (isDownloading || isDecompressing) return;
-			const url = `https://github.com/Open-Yami-Community/yami-rpg-editor/releases/download/win/${val}_pack.zip`;
-			const downloadurl = `${this.fastGithubPrefix}${url}`;
-
-			isDownloading = true;
-			disable(button);
-			pauseButton.style.display = 'inline-block';
-			pauseButton.textContent = t('confirmation.resource-pause') || '暂停';
-			progressContainer.style.display = 'flex';
-
-			progressBar.style.width = '0%';
-			progressText.textContent = '0%';
-			speedText.textContent = t('confirmation.resource-speed') || '速度: 0 KB/s';
-			lastLoaded = 0;
-			lastTime = Date.now();
-
-			Net.downloadFileWithProgress({
-				url: downloadurl,
-				outputPath: targetPath,
-				onCancelToken: (cancel: () => void) => {
-					cancelDownload = cancel;
-				},
-				onProgress: (progressEvent: unknown) => {
-					if (!isDownloading) return;
-
-					const ev = progressEvent as { loaded: number; total: number };
-					const percent = Math.round((ev.loaded / ev.total) * 100);
-
-					progressBar.style.width = `${percent}%`;
-					progressText.textContent = `${percent}%`;
-
-					const now = Date.now();
-					const timeDiff = (now - lastTime) / 1000;
-					const loadedDiff = ev.loaded - lastLoaded;
-
-					if (timeDiff > 0.5) {
-						const speed = loadedDiff / timeDiff;
-						let speedText_str = '';
-
-						if (speed < 1024) {
-							speedText_str = `${speed.toFixed(0)} B/s`;
-						} else if (speed < 1024 * 1024) {
-							speedText_str = `${(speed / 1024).toFixed(2)} KB/s`;
-						} else {
-							speedText_str = `${(speed / 1024 / 1024).toFixed(2)} MB/s`;
-						}
-
-						const speedLabel = t('confirmation.resource-speed-label') || '速度';
-						speedText.textContent = `${speedLabel}: ${speedText_str}`;
-
-						lastLoaded = ev.loaded;
-						lastTime = now;
-					}
-				}
-			})
-				.then(() => {
-					isDownloading = false;
-					isDecompressing = true;
-					progressContainer.style.display = 'none';
-					pauseButton.style.display = 'none';
-
-					button.textContent = t('confirmation.resource-decompression');
-					disable(button);
-					progressContainer.style.display = 'flex';
-					progressBar.style.background = 'linear-gradient(90deg, #2196f3, #42a5f5)';
-
-					unzipWithProgress({
-						zipPath: targetPath,
-						outputDir: Path.resolve(Path.dirname(targetPath), val),
-						onProgress: (percent: number) => {
-							progressBar.style.width = `${percent}%`;
-							progressText.textContent = `${percent}%`;
-						}
-					})
-						.then(async () => {
-							const remoteData = (await this.downloadNetMeta()).data;
-							const j = this.readTemplate();
-							j[val] =
-								remoteData.find(
-									(v: { path: string; version?: string }) => val === v.path
-								)?.version ?? '1.0.0';
-							this.writeTemplate(j);
-							setPackMeta(this.readTemplate());
-							isDecompressing = false;
-							_check();
-							button.textContent = t('confirmation.resource-download');
-							progressContainer.style.display = 'none';
-							progressBar.style.background =
-								'linear-gradient(90deg, #4caf50, #66bb6a)';
-						})
-						.catch((e) => {
-							isDecompressing = false;
-							enable(button);
-							progressContainer.style.display = 'none';
-							progressBar.style.background =
-								'linear-gradient(90deg, #4caf50, #66bb6a)';
-
-							Window.confirm!({ message: e.message }, [
-								{
-									label: get('yes')
-								}
-							]);
-						});
-				})
-				.catch((e) => {
-					isDownloading = false;
-					isDecompressing = false;
-					enable(button);
-					pauseButton.style.display = 'none';
-					progressContainer.style.display = 'none';
-
-					if (!Net.isCancel(e)) {
-						Window.confirm!({ message: e.message }, [
-							{
-								label: get('yes')
-							}
-						]);
-					}
-				});
-		});
-
-		on(pauseButton, 'click', () => {
-			if (!isDownloading) return;
-
-			if (cancelDownload) {
-				cancelDownload();
-				cancelDownload = null;
-			}
-
-			isDownloading = false;
-			enable(button);
-			pauseButton.style.display = 'none';
-			progressContainer.style.display = 'none';
-		});
-
-		const buttonDelete = boxDom.querySelector(`#resource-item-${value}-delete`)!;
-		buttonDelete.textContent = t('common.delete');
-		const tempPath = Path.resolve(TemplatesPath, val);
-		on(buttonDelete, 'click', () => {
-			if (fs.existsSync(tempPath)) fs.rmSync(tempPath, { recursive: true, force: true });
-			_check();
-		});
-		_check();
 	}
 
+	/** 旧的 `_check()`：按模板目录状态刷新「已安装 / 版本 / 删除可用」，并清理遗留 zip */
+	refreshRow(row: ResourceRow): void {
+		setNoResourceObj(isNoResource());
+		const tempPath = Path.resolve(TemplatesPath, row.key);
+		const targetPath = Path.resolve(TemplatesPath, `${row.key}_pack.zip`);
+		const installed = Boolean(NoResourceObj[row.key]?.check);
+		getResourceStore().patchRow(row.key, {
+			installed,
+			hasTemp: fs.existsSync(tempPath),
+			version: installed ? `v${PackMeta[row.key]}` : ''
+		});
+		// 判断目录下是否有zip文件，有则删除它节省空间
+		if (fs.existsSync(targetPath)) void fs.unlink(targetPath);
+	}
+
+	/** 异步取远端包大小并写回行（旧实现里在行元素上直接改 sizeText.textContent） */
+	private async fillSize(row: ResourceRow): Promise<void> {
+		const get = (key: string) => t('confirmation.' + key);
+		const sizeLabel = get('resource-size-label') || '大小';
+		let sizeText: string;
+		try {
+			const size = await this.getFileSize(row.key);
+			sizeText =
+				size > 0
+					? `${sizeLabel}: ${this.formatFileSize(size)}`
+					: `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
+		} catch {
+			sizeText = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
+		}
+		getResourceStore().patchRow(row.key, { sizeText });
+	}
+
+	/** 行内「下载」按钮（旧为 on(button, 'click') 内的整段流程） */
+	download(key: string): void {
+		const store = getResourceStore();
+		const row = store.rows.find((item) => item.key === key);
+		if (!row || row.phase !== 'idle') return;
+
+		const get = (item: string) => t('confirmation.' + item);
+		const targetPath = Path.resolve(TemplatesPath, `${key}_pack.zip`);
+		const url = `https://github.com/Open-Yami-Community/yami-rpg-editor/releases/download/win/${key}_pack.zip`;
+		const downloadurl = `${this.fastGithubPrefix}${url}`;
+
+		store.patchRow(key, {
+			phase: 'downloading',
+			progress: 0,
+			speedText: t('confirmation.resource-speed') || '速度: 0 KB/s'
+		});
+		this._speedMarks.set(key, { loaded: 0, time: Date.now() });
+
+		Net.downloadFileWithProgress({
+			url: downloadurl,
+			outputPath: targetPath,
+			onCancelToken: (cancel: () => void) => {
+				this._cancels.set(key, cancel);
+			},
+			onProgress: (progressEvent: unknown) => {
+				const current = store.rows.find((item) => item.key === key);
+				if (!current || current.phase !== 'downloading') return;
+
+				const ev = progressEvent as { loaded: number; total: number };
+				const percent = Math.round((ev.loaded / ev.total) * 100);
+				store.patchRow(key, { progress: percent });
+
+				const mark = this._speedMarks.get(key) ?? { loaded: 0, time: Date.now() };
+				const now = Date.now();
+				const timeDiff = (now - mark.time) / 1000;
+				const loadedDiff = ev.loaded - mark.loaded;
+
+				if (timeDiff > 0.5) {
+					const speed = loadedDiff / timeDiff;
+					let speedText: string;
+
+					if (speed < 1024) {
+						speedText = `${speed.toFixed(0)} B/s`;
+					} else if (speed < 1024 * 1024) {
+						speedText = `${(speed / 1024).toFixed(2)} KB/s`;
+					} else {
+						speedText = `${(speed / 1024 / 1024).toFixed(2)} MB/s`;
+					}
+
+					const speedLabel = t('confirmation.resource-speed-label') || '速度';
+					store.patchRow(key, { speedText: `${speedLabel}: ${speedText}` });
+					this._speedMarks.set(key, { loaded: ev.loaded, time: now });
+				}
+			}
+		})
+			.then(() => {
+				store.patchRow(key, { phase: 'decompressing' });
+
+				unzipWithProgress({
+					zipPath: targetPath,
+					outputDir: Path.resolve(Path.dirname(targetPath), key),
+					onProgress: (percent: number) => {
+						store.patchRow(key, { progress: percent });
+					}
+				})
+					.then(async () => {
+						const remoteData = (await this.downloadNetMeta()).data;
+						const j = this.readTemplate();
+						j[key] =
+							remoteData.find(
+								(v: { path: string; version?: string }) => key === v.path
+							)?.version ?? '1.0.0';
+						this.writeTemplate(j);
+						setPackMeta(this.readTemplate());
+						store.patchRow(key, { phase: 'idle' });
+						this.refreshRow(row);
+					})
+					.catch((e) => {
+						store.patchRow(key, { phase: 'idle' });
+						Window.confirm!({ message: e.message }, [{ label: get('yes') }]);
+					});
+			})
+			.catch((e) => {
+				store.patchRow(key, { phase: 'idle' });
+				if (!Net.isCancel(e)) {
+					Window.confirm!({ message: e.message }, [{ label: get('yes') }]);
+				}
+			});
+	}
+
+	/** 行内「暂停」按钮 */
+	pause(key: string): void {
+		const store = getResourceStore();
+		const row = store.rows.find((item) => item.key === key);
+		if (!row || row.phase !== 'downloading') return;
+
+		this._cancels.get(key)?.();
+		this._cancels.delete(key);
+		this._speedMarks.delete(key);
+		store.patchRow(key, { phase: 'idle' });
+	}
+
+	/** 行内「删除」按钮 */
+	remove(key: string): void {
+		const tempPath = Path.resolve(TemplatesPath, key);
+		if (fs.existsSync(tempPath)) fs.rmSync(tempPath, { recursive: true, force: true });
+		const row = getResourceStore().rows.find((item) => item.key === key);
+		if (row) this.refreshRow(row);
+	}
 	load() {
 		setNoResourceObj(isNoResource());
-		this.content.innerHTML = '';
-		const list = Object.keys(NoResourceObj);
-		for (let i of list) {
-			this.temp(i);
+		const store = getResourceStore();
+		const rows = Object.keys(NoResourceObj).map((key) => this.blankRow(key));
+		store.setRows(rows);
+		for (const row of rows) {
+			this.refreshRow(row);
+			void this.fillSize(row);
 		}
 	}
 

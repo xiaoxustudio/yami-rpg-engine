@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { createI18n, type I18nOptions } from 'vue-i18n';
 import {
 	convertLocaleData,
@@ -138,16 +137,11 @@ export function getYamiI18n() {
 	return i18n;
 }
 
-// 启动初始化：注册 confirm/cancel hotkey → 加载语言 → 显示主菜单
+// 启动初始化：加载语言 → 标记本地化就绪（主菜单由 AppShell 依 store 状态显示）
+// 说明：confirm/cancel 的 hotkey 已改为在 YMFormButtons.vue 模板里声明，不再启动时扫 DOM；
+// 主菜单可见性同理改由 stores/local 的 ready 驱动（原实现给 #menu 加 .visible）。
 export async function initI18n(): Promise<string> {
-	for (const button of document.getElementsByName('confirm')) {
-		button.setAttribute('hotkey', 'Ctrl+Enter');
-	}
-	for (const button of document.getElementsByName('cancel')) {
-		button.setAttribute('hotkey', 'Escape');
-	}
 	const language = await loadI18n(Editor.config?.language ?? '');
-	const menu = document.getElementById('menu');
-	if (menu) menu.classList.add('visible');
+	getLocalStore().setReady(true);
 	return language;
 }

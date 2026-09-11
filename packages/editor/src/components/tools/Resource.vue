@@ -1,5 +1,5 @@
-﻿<template>
-	<WindowFrame ref="frame" id="resource" no-buttons>
+<template>
+	<WindowFrame id="resource" no-buttons>
 		<template #title
 			><TitleBar> <div class="close"></div> </TitleBar
 		></template>
@@ -26,47 +26,57 @@
 						margin-bottom: 4px;
 					"
 				>
-					当前节点: 加载中...
+					{{ resource.nodeText }}
 				</div>
 				<div
 					id="resource-node-ping"
-					style="font-size: 13px; line-height: 1.8; color: var(--text-color-weak)"
+					:style="{
+						fontSize: '13px',
+						lineHeight: 1.8,
+						color: resource.pingColor
+					}"
 				>
-					Ping: --
+					{{ resource.pingText }}
 				</div>
 			</div>
-			<div class="box" id="resource-content" style="flex: 1; overflow: auto" />
+			<div class="box" id="resource-content" style="flex: 1; overflow: auto">
+				<ResourceList
+					:rows="resource.rows"
+					@download="onDownload"
+					@pause="onPause"
+					@remove="onRemove"
+				/>
+			</div>
 			<div class="grid-box" style="flex-shrink: 0">
-				<button id="resource-check-version">{{ checkVersionText }}</button>
-				<button id="resource-open-dir">{{ openDirText }}</button>
+				<button id="resource-check-version" @click="onCheckVersion">
+					{{ t('confirmation.resource-check-version') }}
+				</button>
+				<button id="resource-open-dir" @click="onOpenDir">
+					{{ t('confirmation.resource-open-dir') }}
+				</button>
 			</div>
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+import ResourceList from './resource/ResourceList.vue';
 import { Resources } from '@app/module/resource';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { getResourceStore } from '@app/stores/resource';
 
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const { t } = useI18n();
+const resource = getResourceStore();
 
-const checkVersionText = ref('check version');
-const openDirText = ref('open dir');
-
-const update = (): void => {
-	checkVersionText.value = Resources?.checkVersionText || checkVersionText.value;
-	openDirText.value = Resources?.openDirText || openDirText.value;
-};
-
-onMounted(() => {
-	const el = frame.value?.root;
-	if (!el) return;
-	attachElementApi(el, { update });
-	update();
-});
+// R1 数据化：行与节点信息都走 store，按钮标签走 i18n，故不再需要
+// 旧的 `attachElementApi(root, { update })` + initI18n 时给 #menu/#resource 打补丁那套。
+const onDownload = (key: string): void => Resources.download(key);
+const onPause = (key: string): void => Resources.pause(key);
+const onRemove = (key: string): void => Resources.remove(key);
+const onCheckVersion = (): void => void Resources.checkVersion();
+const onOpenDir = (): void => Resources.openDir();
 </script>
 
 <style>
@@ -86,4 +96,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

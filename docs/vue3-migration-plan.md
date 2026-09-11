@@ -102,32 +102,34 @@
 - 2026-09-11 覆盖面审计收束：24 个轴的判定表 + 3 条新监测轴（第二十八轮，纯文档+报表）：把前几轮"找漏档"的成果收成一份**结论表**（`remaining-work.md`「覆盖面审计结论」），逐轴给出实测值与判定，回答"还有没有像 `$('#id')` 那样没进报表的债"——共核查 **24 个 DOM 耦合轴**，结论是**未发现新类别**：四处新发现（`$('#id')` 1489、本地化器 2130 键、元素 API 682 鸭子调用、原型访问器 83 字段）已分别登记为 P5b/R2b/P2b/P4b；其余轴或属已登记项的症状（`hasClass()` 215、`classList` 134、`style.*` 336、`textContent=` 145、`get/set/removeAttribute` 87），或属**合法优先**（`clientWidth/Height` 139、`scrollTop=` 84、`rect()` 73、`getComputedStyle` 6——画布与虚拟滚动必须测量），或**已为 0**（`dataset.*`、`localStorage`、`style.setProperty` 内联 CSS 变量、`window.__*`、`customElements.define`/`attachShadow`/`replaceChildren`/`insertAdjacentHTML`/`matches()`）。配套：tracker 的「辅助口径」新增 3 条监测轴（`hasClass()` 215/51、`get/set/removeAttribute` 87/36、`dataset.*` **0**/0 作为 R-8 的常驻监测位），`README.md` 的「度量覆盖范围」与文档地图同步。**方法学价值**：这条"漏档猎捕"线索自第十轮起共发现 4 处未登记工作面（合计 ~4400 处代码点），此后任何新写法都应先落进这张表（R-8）。
 - 2026-09-11 P5b 批次 1 执行清单（第二十九轮，纯文档）：把"批次 1 = `components/tools` 两个文件 136 处"细化成**可照做**的清单——① **站点分布实测**：`IfCondition.vue`（811 行）78 处 = 组件 API 调用 18 + 作为实参 32 + 句柄捕获 1 + 续行 19；`SetNumberOperand.vue` 58 处 = 9 + 22 + 1 + 25。② **关键事实（降低难度）**：`IfCondition.vue` **已有 ref 注册表**（`fieldEls: Map<string, FieldControl|null>` + `fieldRef(id)`，L434-438；模板每个控件都挂了 `:ref="fieldRef(...)"`），但脚本仍在用 `$('#…')` 取元素、注册表实际未消费 → 该文件的最小改造是"把 78 处换成读注册表"，**无需改模板**；`SetNumberOperand.vue` 则需先照该形态补 `fieldRef` + `:ref`（约 11 个控件）。③ **目标组件侧不必等 P2b**：`YMSelectBox.vue` 的 `defineExpose` 已含 `loadItems`/`setItemNames`/`enableHiddenMode`/`relate`/`toggleRelatedElements`/`root` 等（L172-196）。④ **逐形态配方**：句柄捕获 → 读注册表/新增 ref；组件 API 调用 → 实例方法直调（保留可选链）；`targets: [$('#a')]` → `[fieldEls.get('a')?.root]`（`relate` 按元素切 display，故过渡期仍需元素；终态改由目标控件收 `hidden`/`enabled` props，并入 P2b）。⑤ **验收与复现**：grep 命令列出 136 处；验收含 `dollarLookup` 在 `components/tools` 归零 + editor 全量 + **真机核对条件类型切换的显隐/启用联动**。⑥ 明确边界：本批后鸭子调用仍在（`fieldEls.get('x')?.loadItems?.()`），**682 处清零属 P2b**（R-11 建议两批连续做）。
 - 2026-09-11 **B0 执行完成（首个代码批次）**：按 `remaining-work.md` 的批次计划逐项开工并跑门禁自证——① **C2**：`pnpm stale-exemptions --apply` 删除 **135 个文件 / 135 行**陈旧豁免注释（跳过 0），随即自动复跑 oxlint → 0 警告 0 错误；tracker 口径区变为「待迁移命中 **160**（不变）/ 豁免注释 **160**（295 → 160）/ 陈旧豁免 **0**（135 → 0）」，`--check` 退出码 0。② **R3**：8 个删除点全部执行（`stores/layout.ts` 的 `switchLayout` 函数 + 导出项；`engine/layout/layout.ts` 的 `afterChange` 成员与 `pageSwitch` 末尾调用；`tools/window-object.ts` 的接口成员/初始化/两处调用；`window-command-modal.spec.ts` 与 `window-object.spec.ts` 的置空语句），共 **6 个文件**——tracker 三类口径**未变**（符合"误删探测器"预期）。③ **E1①**：删除死事件 `attributechange` 的派发点；`pnpm events:surface` 复测事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**。**B0 门禁全绿**：editor **1884/1884**（210 文件）、ui-kit **659/659**（96 文件）、`pnpm lint` 0 警告 0 错误（1504 文件）、`tsc` strict 通过、`vue-tsc` 增量门禁 0 新增；文档侧同步更新了 README 快照/基线时效、`remaining-work.md` 的 C2/R3/E1 状态与完成记录、批次表 B0 行（写入实测结果）以及本文「现状总览」「口径」两处。下一批 **B1**（R1 资源列表数据化 / R2a i18n 启动副作用 / T1b PageUp 行为与基准）。
+- 2026-09-11 **B1 前半完成（R2a + T1b）**：① **R2a（i18n 启动副作用）**——confirm/cancel 的 `hotkey` 改为 `YMFormButtons.vue` 模板声明（该属性只被 tooltip 逻辑读取，语义不变）；主菜单可见性改由 `stores/local.ts` 新增的 `ready` 状态驱动（`AppShell.vue` 的 `:class="{ visible: local.ready }"`，`initI18n` 加载完成后 `setReady(true)`）。结果：`editor/i18n` 的受限 API **3 → 0**（整体待迁移命中 **160 → 159**、`getElementById` **244 → 243**）；该文件随之产生的 1 处陈旧豁免由 `pnpm stale-exemptions --apply` 清掉（豁免注释 160 → 159，陈旧维持 0）——**这是"改完即自动销账"闭环的首次实证**；`stores/__tests__/local.spec.ts` 同步为 4 个状态键并覆盖 `setReady`。② **T1b（tree 步骤 1 缺口）**——PageUp/PageDown 键位语义定为「选中随页移动 + 滚动联动」（与搜索框既有语义一致，此前只有焦点在列表本身时无映射），在 `tree-api.ts` keydown 映射并补 4 个金标准用例（下移一页/上移一页/两端边界/事件被消费且不改数据）；新增 `tree-list-perf.spec.ts` 提供 1000 节点基准：首次 `update()` **47.7 ms**（窗口 21 行）、20 次 update **6.2 ms**、200 次 `selectRelative` **106.8 ms**、20 次滚动窗口迁移 **8.4 ms**（阈值取观测值 5~10 倍，拦数量级回退）。③ **顺带修一个测试环境盲区**：`pageUp/pageDown` 原用 `this.scrollBy(...)`，而 jsdom 未实现 `Element.scrollBy`（浏览器有），导致该路径在 jsdom 下会抛 `TypeError`、此前从未被覆盖——已改为等价的 `this.scrollTop ±= delta`（`select-list-api.ts` L220/L233 有同根因写法，留待其所在批次）。**B1 门禁**：editor **1884/1884**（210 文件）、ui-kit **667/667**（97 文件，+8 用例）、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 通过、`stale-exemptions --check` 退出 0、tracker 重跑一致。**R1（资源列表数据化）为 B1 剩余项**，`editor/module` 的 `innerHTML`/`DOMParser` 仍各 1 处。
+- 2026-09-11 **B1 完成（R2a + T1b + R1）**：在"前半"（R2a/T1b，见上条）之上补齐 **R1 资源列表数据化**——把 `module/resource.ts` 的"DOMParser 字符串模板 + 逐个 id 反查 + 行内挂事件"整条链路拆成数据与组件两层：① 新增 `stores/resource.ts`（`ResourceRow` 模型 + `setRows`/`patchRow`/`setNodeText`/`setPing`）；② 新增 `components/tools/resource/ResourceList.vue`（v-for 渲染行与进度/速度/大小/版本，交互 `emit` 上抛；**刻意放在 `resource/` 子目录**，否则会被 AppShell 的 `import.meta.glob('./components/tools/*.vue')` 当成窗口组件）；③ `Resource.vue` 绑定 store 并把两个底部按钮改成 `@click` + `t()` 文案；④ `module/resource.ts` **彻底不碰 DOM**（667 → 569 行）：`temp(val)` → `blankRow()/refreshRow()/fillSize()/download()/pause()/remove()`、`load()` 只写 store，删掉 5 个 `$('#…')` getter、`initialize()` 的 3 处查询与自服务的 `attachElementApi(root, { update })`。**行为保真**：旧的 `disable()/enable()` 只加/删 `disabled` 类，而全仓**没有对应的 `.disabled` 规则**（已核对），故禁用态本无视觉差异——保留同样的类绑定、类名、全部 DOM id、内联样式与进度条配色，真正的门禁仍在点击处理里。**指标**：`editor/module` 的 `innerHTML` **1 → 0**、`domParser` **1 → 0**（P5 轴 `new DOMParser()` 全仓 **1 → 0**）、该模块 `dollarLookup` **25 → 17**、全仓 `$('#…')` **1489 → 1481** 处 / **239 → 238** 文件。**测试**：新增 `stores/__tests__/resource.spec.ts`（5 例）并把 `resource-bridge.spec.ts` 由"update 桥接"（已随 R1 移除）改写为 4 例新契约（store 驱动渲染/交互上抛/节点信息/按钮文案来自 i18n）。**B1 门禁**：editor **211 文件 1891/1891**、ui-kit **97 文件 667/667**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 通过、`stale-exemptions --check` 退出 0、`docs:check` OK、tracker 重跑一致。下一批 **B2**（tree 步骤 5b 收口 + `element.group` 幽灵属性修复）。
 
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-11 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1111                                |
-| 待迁移命中文件（oxlint 判定仍在用）  | 160（初始 299）                     |
-| 带豁免注释文件（`oxlint-disable`）   | 160（C2 执行前 295）                |
+| 扫描文件总数                         | 1113（B1/R1 新增 store 与列表组件）  |
+| 待迁移命中文件（oxlint 判定仍在用）  | 159（初始 299；B1/R2a 后 −1）        |
+| 带豁免注释文件（`oxlint-disable`）   | 159（C2 执行前 295）                |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
-| `getElementById` 属性访问处数        | 244（composables 183 / components 54） |
+| `getElementById` 属性访问处数        | 243（composables 183 / components 54；B1/R2a 后 −1） |
 | `document.querySelector*` 处数       | 57                                  |
 | `document.createElement` 处数        | 138（ui-kit/components 106）        |
 | `appendChild` 调用                   | 122                                 |
 | `addEventListener` 调用              | 575                                 |
-| `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 1489（239 个文件）          |
-| `new DOMParser()` 处数（字符串模板建 DOM） | 1                             |
+| `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 1481（238 个文件；B1/R1 前 1489 / 239） |
+| `new DOMParser()` 处数（字符串模板建 DOM） | 0（B1/R1 前 1 处，见 P7）      |
 | 使用 `useCommandSchema` 的命令表单   | 142 个                              |
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（其中 21 个调用 `attachApi`；目标 0，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 160**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；
-> ② **豁免注释 160**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**已由 C2 清零**（执行前 135，见 [remaining-work.md](./remaining-work.md) C2 的完成记录）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（160 + 0 = 160）。
+> ① **待迁移命中 159**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零，故 160 → 159；
+> ② **豁免注释 159**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；R2a 后 i18n 那条也随命中归零而删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（159 + 0 = 159）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
-> **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 160、`getElementById` 1164 → 244、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 575；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
-> **口径自检（2026-09-11，正反双向 + 权威来源）**：① **正向**——160 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **160** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零（`pnpm stale-exemptions --check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中（此前「待迁移列 = 仍在使用豁免的文件数」的写法已作废）。
+> **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 159、`getElementById` 1164 → 243、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 575；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
+> **口径自检（2026-09-11，正反双向 + 权威来源）**：① **正向**——159 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **159** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中（此前「待迁移列 = 仍在使用豁免的文件数」的写法已作废）。
 > **残余面实测（2026-09-11，供逐项销账）**：
 >
 > - **命令表单** `composables/commands`（22 个文件 44 处 `getElementById`）：`read(document.getElementById(...))` = **0**（阶段 3 口径成立）、`write(document.getElementById(...))` = **2**（`useTintImageCommandSchema.ts:107`、`useTintScreenCommandSchema.ts:81` 的 `*-filter` 组合值——控件需要整段数组，故仍走 DOM 写入）；其余为元素句柄直调（`loadItems`/`enable`/`querySelector`）。`skipWrite: true` = **125**（与 2026-08-31 记录一致）。
@@ -198,6 +200,8 @@ const load = (params: Record<string, unknown>): void => {
 ### P7 innerHTML / 字符串拼接视图
 
 **现象**：`module/resource.ts:655` `this.content.innerHTML = ''`；测试文件大量 `document.body.innerHTML = ...`（已被 dom-guard 的 `EXCLUDE_RE` 排除，不算债务）。
+
+> **2026-09-11 已收口（B1/R1）**：资源列表改成 `stores/resource.ts` 行数据 + `components/tools/resource/ResourceList.vue` 的 v-for，`innerHTML = ''` 与 DOMParser 字符串模板一并下线（tracker：`editor/module` 的 `innerHTML` **1 → 0**、`domParser` **1 → 0**，全仓 `new DOMParser()` **1 → 0**）；`$('#…')` 同批 −8（该模块 25 → 17）。详见 [remaining-work.md](./remaining-work.md) R1 的完成记录。
 
 ### P8 合理豁免区（不建议迁移）
 

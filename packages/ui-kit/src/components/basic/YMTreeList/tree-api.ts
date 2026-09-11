@@ -1033,7 +1033,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			index = Math.max(index, 0);
 			this.select(this.rowItemAt(index));
 		}
-		this.scrollBy(0, -scrollLines * 20);
+		// 等价于 scrollBy(0, -delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
+		this.scrollTop -= scrollLines * 20;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1047,7 +1048,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			index = Math.min(index, count - 1);
 			this.select(this.rowItemAt(index));
 		}
-		this.scrollBy(0, +scrollLines * 20);
+		// 等价于 scrollBy(0, +delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
+		this.scrollTop += scrollLines * 20;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1200,6 +1202,16 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				case 'ArrowDown':
 					event.preventDefault();
 					this.selectRelative('down');
+					break;
+				// 分页键（步骤 1 缺口收口）：与搜索框的 searcherKeydown 语义一致——
+				// 选中随页移动 + 滚动联动；preventDefault 抑制浏览器自身的 PageUp/PageDown 滚动。
+				case 'PageUp':
+					event.preventDefault();
+					this.pageUp(true);
+					break;
+				case 'PageDown':
+					event.preventDefault();
+					this.pageDown(true);
 					break;
 				case 'F2': {
 					const item = this.read();

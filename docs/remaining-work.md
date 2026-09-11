@@ -9,11 +9,11 @@
 | ID | 事项 | 规模 | 依赖 | 状态 |
 | --- | --- | --- | --- | --- |
 | T5b | tree 步骤 5b：`elements` shim / `item.element` / `NodeElement` 收口 | 中 | 先迁移 4 处按 DOM 访问的消费方 | 未开始 |
-| T1b | tree 步骤 1 剩余缺口：PageUp/PageDown 行为 + 1000+ 节点性能基准 | 小 | 需先定义键位语义 | 未开始 |
+| T1b | ~~tree 步骤 1 剩余缺口：PageUp/PageDown 行为 + 1000+ 节点性能基准~~ | 小 | 需先定义键位语义 | ✅ **已完成**（B1，2026-09-11：4 个分页金标准 + 4 个基准用例） |
 | L1 | layout region 左/上/下方向真机走查 | 小 | 构建产物 + 可打开的真实项目 | 部分完成（右缘已过） |
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
-| R1 | `module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查） | 中 | 无 | 未开始（规模由小改判） |
-| R2a | i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询（`[name=confirm/cancel]` 写 hotkey、`#menu` 加 `.visible`） | 小 | 无 | 未开始 |
+| R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
+| R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 **2130** 个键在启动时逐键做 DOM 查询（2112 按 id + 18 按 name） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址，**1489 处 / 252 文件**） | 大 | 需按模块分批，先度量后动手 | 未开始（**此前不在任何报表内**） |
@@ -34,7 +34,7 @@
 | 主计划 阶段 1 窗口系统数据化（P3） | ✅ 已交付：`stores/window.ts` 的 `stack`/`syncStack`/`isWindowOpen`/`getTopWindowId`，`frames.append/remove` 为唯一同步点 | — | 进展记录 2026-08-31；设计块里的 `WindowHost.vue` 从未实现（原文已标注） |
 | 主计划 阶段 2 ui-kit 组件契约化（P2） | ⚠️ **部分**：core 去重已完成，但「api 文件 27 → 0」未达成 | **P2b** | `pnpm docs:check` 的 `*-api.ts` 计数门禁（现 26，目标 0）+ 鸭子调用 682 处 |
 | 主计划 阶段 3 表单读写去 getElementById（P1） | ✅ 已交付：`read(getElementById)` = 0、125 个 schema 开 `skipWrite`、`v-focus` 183 文件 / 323 处、`requestFocus` 396 处 | — | tracker `getElementById` 列（244）；动态 id 残留 78 处仍在 `composables` |
-| 主计划 阶段 4 原型扩展与工具层回收（P4 + P5） | ⚠️ **部分**：五处 monkey-patch 已删；`$()` 1489 处未删、`element-data` 83 个原型访问器仍在、i18n/localize 未收 | **P4b** / **P5b** / **R2a** / **R2b** | tracker `dollarLookup` 列 + 辅助口径「prototype 访问器定义」+ 本地化键数门禁 |
+| 主计划 阶段 4 原型扩展与工具层回收（P4 + P5） | ⚠️ **部分**：五处 monkey-patch 已删；`$()` **1481** 处未删、`element-data` 83 个原型访问器仍在、localize 选择器本地化器未收（i18n 启动副作用已由 B1/R2a 收口） | **P4b** / **P5b** / **R2b** | tracker `dollarLookup` 列 + 辅助口径「prototype 访问器定义」+ 本地化键数门禁 |
 | 主计划 阶段 5 大型命令式渲染重写（P6 + P7） | ⚠️ **部分**：tree 已成默认 v-for（剩 5b）；`command-api` / `FileBodyPane` 只抽了 core | **T5b** / **B1** / **R1** | tracker 每模块列 + 三份计划文档 |
 | 主计划 收尾：拆除脚手架 | ⬜ 未开始（机制与执行器已就绪） | **C1** / **C2** | `pnpm stale-exemptions --check`（现退出码 1）+ tracker 口径区 |
 | layout M1 金标准 / M2 数据层 / M3 系列 | ✅ 已交付（M5-b 后 Teleport 为唯一装载路径） | — | layout **tests** 17 个 spec + 共享 fixture |
@@ -81,7 +81,7 @@
 | 批次 | 内容 | 前置 / 并行 | 涉及面 | 预期指标变化 | 回滚 |
 | --- | --- | --- | --- | --- | --- |
 | ✅ **B0 零风险（已完成 2026-09-11）** | C2（删陈旧豁免注释）→ R3（死代码 8 点）→ E1①（删 `attributechange`） | 无；可与任何批并行 | C2 **135 文件 / 135 行**；R3 **6 文件 8 点**；E1① 1 处派发 | **实测结果**：豁免注释 **295 → 160**、陈旧豁免 **135 → 0**（`stale-exemptions --check` 退出 0）；死事件 **1 → 0**（事件名 34 → 33、自定义 16 → 15、单侧事件 0）；tracker 其它口径未变（待迁移命中仍 **160**） | `git revert` 单个提交 |
-| **B1 小收口** | R1（资源列表数据化）→ R2a（i18n 启动副作用）→ T1b（PageUp/PageDown 行为 + 1000+ 基准） | 无 | R1 `resource.ts` 667 行 + `Resource.vue`；R2a `i18n/index.ts` 3 处；T1b keydown + 基准脚本 | `editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **1 → 0**；`editor/i18n` 查询 **3 → 0**；tree 用例 **+2~4**（含基准数据） | 各自单提交 revert |
+| ✅ **B1 小收口（已完成 2026-09-11）** | R2a（i18n 启动副作用）→ T1b（分页键 + 1000+ 基准）→ R1（资源列表数据化） | 无 | R2a `i18n/index.ts` + `YMFormButtons.vue` + `stores/local.ts`；T1b `tree-api.ts` + 2 个 spec；R1 `resource.ts` 667 → 569 行 + 新 store + 新组件 + `Resource.vue` | **实测**：`editor/i18n` 受限 API **3 → 0**（待迁移命中 160 → **159**、`getElementById` 244 → **243**）；tree 用例 **+8**（ui-kit 659 → 667）；**R1**：`editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **全仓 1 → 0**、`$('#…')` **1489 → 1481** 处 / 239 → **238** 文件；editor 新增 5 个 store 用例 | ✅ 各提交独立 revert |
 | **B2 tree 收口** | **T5b**：4 组消费方迁移 → 删 `elements` shim / `item.element` / `NodeElement` / `clearTreeItemText` → 收口 class 直写；**顺带修 `element.group` 幽灵属性** | 无（方案含实测行号） | ~12 个源文件 + 3 个 spec（17 处断言改写） | `ui-kit/components` 与 `editor/tools` 命中下降；`item.element` 引用 **17 → 0**；**1 处行为变更**（菜单勾选开始显示） | 4 步各自 revert；渲染路径与数据层未动 |
 | **B3 元素 API 与原型** | **P2b + P4b 合并**：按组件把鸭子调用收敛为类型化 expose + props/emits → 删 `*-api.ts` → 删 `attach-api.ts`；随后删 `DATA_FIELDS` 原型访问器（先删 11 个死字段） | 依赖 B2 的 expose 手法经验；与 **P5b 批次 1–3 同批评审**（R-11） | `*-api.ts` **26 文件**（41 个 importer）；`element-data.ts` **83 字段 / 166 访问器**（`this.<字段>` 近似 **774 处 / 123 文件**） | 门禁：`*-api.ts` **26 → 0**、`DATA_FIELDS` **83 → 0**；鸭子调用 **682 → 0**；tracker 辅助口径「prototype 访问器定义」**1 → 0** | 按组件粒度 revert；先删死字段那一刀可单独回滚 |
 | **B4 `$()` 退役** | **P5b 四批**：批次 1 `components/tools`（136 处 / 2 文件）→ 批次 2 `components/commands`（153 / 27）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1353 → … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
@@ -112,6 +112,11 @@
 
 ## T1b — tree 步骤 1 剩余缺口
 
+> ✅ **已完成（2026-09-11，B1）**：① **PageUp/PageDown 键位语义**＝「选中随页移动 + 滚动联动」，与搜索框的 `searcherKeydown` 既有语义一致（搜索框早就把这两个键转发给列表，只有焦点在列表本身时无映射）；实现于 `tree-api.ts` 的 `keydown`（`pageUp(true)` / `pageDown(true)` + `preventDefault` 抑制浏览器自身翻页 + 沿用末尾的 `stopImmediatePropagation`）。
+> ② **金标准用例 4 个**（`tree-list-golden.spec.ts`）：PageDown 下移一页（clientHeight 400 → 19 行）与 `scrollTop` 联动、PageUp 上移一页、两端边界（末行/首行停住）、以及「事件被列表消费（`defaultPrevented = true`）且不改动数据」。
+> ③ **1000 节点性能基准 4 项**（新增 `tree-list-perf.spec.ts`，10 个 folder × 99 子项 + 10 顶层文件）：首次 `update()` **47.7 ms**（窗口内 21 行）、20 次 `update()` **6.2 ms**（0.31 ms/次）、200 次 `selectRelative` **106.8 ms**（0.53 ms/次）、20 次滚动窗口迁移 **8.4 ms**（0.42 ms/次）。口径：循环内不再 `await nextTick()`——Vue 调度器会把 patch 合并成一次 flush，量的是「bump + 重派生」同步开销；阈值取观测值 5~10 倍，只拦数量级回退。
+> ④ 顺带修掉一个**测试环境盲区**：`pageUp/pageDown` 原先用 `this.scrollBy(0, ±delta)`，而 **jsdom 未实现 `Element.scrollBy`**（真实浏览器有）→ 分页路径在 jsdom 下会抛 `TypeError`，因此此前没有任何用例覆盖它；已改为等价的 `this.scrollTop ±= delta`（浏览器语义相同，jsdom 可运行）。同类写法在 `select-list-api.ts`（L220/L233）仍存在，属同一根因，留给其所在批次处理。
+
 - **现状证据**：`tree-api.ts` 有 `pageUp`/`pageDown` 方法（L1026/L1040），但 keydown 未映射 `'PageUp'`/`'PageDown'`（浏览器默认滚动仍会触发）；1000+ 节点性能基准未做（步骤间回归闸门要求「不劣于现状 10%」）。
 - **验收标准**：① 定义 PageUp/PageDown 语义（选中 + 滚动联动）并补金标准用例（`packages/ui-kit/src/components/basic/YMTreeList/__tests__/tree-list-golden.spec.ts` 同批）；② 给出 1000 节点展开/折叠/滚动的帧时间数据并写入步骤 2/5 记录。
 - **验证命令**：`pnpm -F @yami/ui-kit test`。
@@ -133,12 +138,22 @@
 
 ## R1 — `module/resource.ts` 的 `innerHTML = ''`（P7）
 
+> ✅ **已完成（2026-09-11，B1）**：整条「命令式建表」链路拆成数据 + 组件两层——
+> ① 新增 `stores/resource.ts`（`ResourceRow` 模型：`key`/`value`/`version`/`installed`/`hasTemp`/`sizeText`/`speedText`/`progress`/`phase`，配 `setRows`/`patchRow`/`setNodeText`/`setPing`）；
+> ② 新增 `components/tools/resource/ResourceList.vue`（v-for 渲染行、进度条/速度/大小/版本框，交互用 `emit('download'|'pause'|'remove')` 上抛；**放在 `resource/` 子目录**，避免被 AppShell 的 `import.meta.glob('./components/tools/*.vue')` 当成窗口组件）；
+> ③ `Resource.vue` 改为绑定 store（节点信息 + `:style` 描边色）并把两个按钮改成 `@click`，标签用 `t()`；
+> ④ `module/resource.ts` 从此**不碰 DOM**：`temp(val)` → `blankRow()/refreshRow()/fillSize()/download()/pause()/remove()`，`load()` 只负责把行数据写进 store；删掉 5 个 `$('#…')` getter、`initialize()` 里的 3 处查询与 `attachElementApi(root, { update })`（唯一调用方就是它自己）。
+> **行为保真说明**：旧的 `disable()/enable()` 只是加/删 `disabled` 类，而全仓没有对应的 `.disabled` 规则（已核对），故按钮禁用态本来就没有视觉差异——改造后保留同样的类绑定，真正的门禁仍在点击处理里；`.resource-item` 等类名、全部 DOM id、内联样式与进度条配色都原样保留。
+> **指标**：tracker `editor/module` 的 `innerHTML` **1 → 0**、`domParser` **1 → 0**（P5 轴 `new DOMParser()` 全仓 **1 → 0**）、该模块 `dollarLookup` **25 → 17**（全仓 `$('#…')` **1489 → 1481** 处 / 239 → **238** 文件）；新增 `stores/__tests__/resource.spec.ts` 5 个用例（状态键/补丁语义/no-op/节点信息）。
+
 - **现状证据（2026-09-11 复核后升级）**：`packages/editor/src/module/resource.ts`（667 行）的**整段资源列表是字符串模板命令式构建**——`load()`（L653-660）先 `this.content.innerHTML = ''`（`content` 是 `$('#resource-content')`，见 L34-35），再对每个资源调 `temp(val)`（L421 起）：`new DOMParser().parseFromString(...)`（L442）解析一段 HTML、`this.content.append(boxDom)`（L465）、随后按 **动态 id/class 反查**（10 处 `querySelector`，如 `#resource-item-${value}-download`）并直接调元素 API（`write`/`disable`/`enable`/`on`）。宿主是 Vue 页 `Resource.vue` 的 `<div class="box" id="resource-content">`（L38）。所以这不是"删一行 `innerHTML`"，而是一次**小型列表数据化**（规模由「小」改判为「中」）。
 - **验收标准**：资源列表改为数据驱动（`v-for` + 行数据），行内交互走组件 props/emits 或 expose API；删除 `innerHTML = ''` 与按 id 反查，移除该文件的 `oxlint-disable` 豁免；tracker 中 `editor/module` 的 `innerHTML` / `domParser` 列归零。
 - **验证命令**：`pnpm -F @yami/editor test`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机打开资源窗口核对列表渲染与下载/删除按钮。
 - **来源**：[vue3-migration-plan.md](./vue3-migration-plan.md) 阶段 5 表；2026-09-11 第十二轮复核（发现 `DOMParser` 构建路径不在原度量内）。
 
 ## R2a — i18n 启动副作用（3 处 DOM 查询）
+
+> ✅ **已完成（2026-09-11，B1）**：① confirm/cancel 的 `hotkey` 改为在 `YMFormButtons.vue` 模板里声明（`hotkey="Ctrl+Enter"` / `hotkey="Escape"`）——该属性只被 `element-utils.ts` 的 tooltip 逻辑读取，语义不变；② 主菜单可见性改由 `stores/local.ts` 新增的 `ready` 状态 + `AppShell.vue` 的 `:class="{ visible: local.ready }"` 驱动（`initI18n` 加载完成后 `setReady(true)`），CSS `#menu.visible` 规则不变；③ `editor/i18n` 的受限 API 归零（tracker 该模块「待迁移命中」1 → **0**），并且它那条豁免注释随即变成陈旧豁免——用 `pnpm stale-exemptions --apply` 顺带清掉（1 个文件），整体「待迁移命中」**160 → 159**、「豁免注释」**160 → 159**、「陈旧豁免」维持 **0**；④ `stores/__tests__/local.spec.ts` 同步为 4 个状态键并覆盖 `setReady`。
 
 - **现状证据**：`packages/editor/src/i18n/index.ts` 的 `initI18n`（L141-153）——`document.getElementsByName('confirm')`（L143）逐个写 `hotkey="Ctrl+Enter"`、`document.getElementsByName('cancel')`（L146）写 `hotkey="Escape"`、`document.getElementById('menu')`（L150）加 `.visible` 类。
 - **替换方向**：① hotkey 应来自 `YMFormButtons.vue` 的 props/常量（该组件正是渲染 `name="confirm"|"apply"|"cancel"` 的地方，L26/L33/L39），或由 `YMWindowFrame` 统一注入；② 主菜单可见性改 store 状态（如 title store 的 `menuVisible`）+ 模板 `:class`，而不是启动时改 DOM 类。
@@ -181,7 +196,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B1/R1 后为 1481 处 / 238 文件）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -356,7 +371,7 @@
 | 轴 | 实测 | 判定 |
 | --- | --- | --- |
 | 受限 API（`document.*` 7 成员） | `getElementById` 244 处 / 待迁移命中 **160** 文件 | ✅ 唯一被 lint 门禁的轴 → C1 / C2 |
-| `$('#id')` 反查 | **1489 处 / 239 文件** | ⚠️ **新登记** → P5b（此前不在报表内） |
+| `$('#id')` 反查 | **1489 处 / 239 文件**（B1/R1 后 **1481 / 238**） | ⚠️ **新登记** → P5b（此前不在报表内） |
 | 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name） | ⚠️ **新登记** → R2b（门禁已核对键数） |
 | 鸭子式元素 API 调用 | **682 处 / 246 文件** | ⚠️ **新登记** → P2b（`*-api.ts` 26 件门禁） |
 | 原型访问器（逗号形式） | **83 字段 / 166 访问器** | ⚠️ **新登记** → P4b（门禁已核对字段数） |

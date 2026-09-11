@@ -258,7 +258,7 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 > | Ctrl+Arrow 纯滚动 | ArrowUp/Down 各 ±20px 不改变选中；Ctrl+ 其它键不滚动不改选中 |
 > | 快/慢双击 | 慢双击（500ms Timer）进入重命名并提交改名；快双击文件 → open、不进入重命名；快双击 folder → 切换展开态 |
 >
-> **仍未覆盖（2026-09-11 复核仍成立）**：PageUp/PageDown（`tree-api.ts` 有 `pageUp`/`pageDown` 方法，但 keydown 未映射 `'PageUp'`/`'PageDown'`，浏览器默认滚动仍会触发；补测前需先定义「选中 + 滚动联动」行为）；大数据（1000+ 节点）性能基准（步骤 2 前置，见步骤间回归闸门）。
+> **~~仍未覆盖~~ 已补齐（2026-09-11，B1/T1b）**：① **PageUp/PageDown**——键位语义确定为「选中随页移动 + 滚动联动」（与搜索框 `searcherKeydown` 既有语义一致），已在 `tree-api.ts` 的 `keydown` 映射（`pageUp(true)` / `pageDown(true)` + `preventDefault` 抑制浏览器默认翻页），并补 4 个金标准用例（下移一页/上移一页/两端边界/事件被消费且不改数据）；顺带发现并修掉测试环境盲区：`pageUp/pageDown` 原用 `this.scrollBy(...)`，而 **jsdom 未实现 `Element.scrollBy`**（浏览器有），故该路径此前无任何 jsdom 覆盖，已改为等价的 `this.scrollTop ±= delta`。② **1000+ 节点性能基准**——新增 `tree-list-perf.spec.ts`（10 folder × 99 子项 + 10 顶层文件，窗口 21 行）：首次 `update()` **47.7 ms**、20 次 `update()` **6.2 ms**（0.31 ms/次）、200 次 `selectRelative` **106.8 ms**（0.53 ms/次）、20 次滚动窗口迁移 **8.4 ms**（0.42 ms/次）；阈值取观测值 5~10 倍，用于拦数量级回退（步骤间回归闸门的"不劣于现状 10%"现在有了可对照的绝对快照）。
 
 现有 29 个测试缺口（全部先于任何重构落地，重构期间只允许改断言方式不允许改断言语义）：
 
@@ -371,7 +371,7 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 
 ### 步骤间回归闸门
 
-每步：`pnpm test`（ui-kit + editor 全量）+ 冒烟清单 + 大数据性能对比（1000 节点展开/折叠/滚动帧时间，阈值：不劣于现状 10%）。
+每步：`pnpm test`（ui-kit + editor 全量）+ 冒烟清单 + 大数据性能对比（1000 节点展开/折叠/滚动帧时间，阈值：不劣于现状 10%）。**基准快照（2026-09-11，jsdom，`tree-list-perf.spec.ts`）**：首次 `update()` 47.7 ms、20 次 `update()` 6.2 ms、200 次 `selectRelative` 106.8 ms、20 次滚动窗口迁移 8.4 ms——后续步骤若超过其 10% 即视为回退。
 
 ---
 
