@@ -223,7 +223,7 @@ describe('navDrop region 边缘（结构性分割，M4 几何用例的 jsdom 侧
 
 		// region drop 的生效动作是同步的：先锁定结构语义（右侧新叶子承接页签，源组保留其余）
 		const scheme = Layout.saveLayoutScheme!(root as never) as {
-			children?: Array<{ tabs?: string[] }>;
+			children?: Array<{ tabs?: string[]; end?: number }>;
 		};
 		expect(
 			Array.from(root.children)
@@ -239,8 +239,48 @@ describe('navDrop region 边缘（结构性分割，M4 几何用例的 jsdom 侧
 			['inspector'],
 			['scene']
 		]);
+		// 落位分割点 = 目标跨度中点（与拖拽 hint 的「一半」语义一致）：
+		// 目标叶子 [0, 0.5] 收缩到 0.25，新叶子承接原右边界 0.5；
+		// 若两叶 end 都留在 1（历史缺陷）会互相重叠 → 边界线不可命中、无法拖拽缩放。
+		expect(scheme.children?.map((child) => child.end)).toEqual([0.25, 0.5, 1]);
 
 		// M4-2：随后完成 Vue 组树重挂载（一致性由 teleport 端到端 spec 覆盖）
+		await awaitVueLayoutLoad();
+		await nextTick();
+		placePaletteIntoLeaves(fixture);
+	});
+
+	it('drop 到目标组左缘：左侧新建叶子承接页签，目标页签保留且 end 对分', async () => {
+		const { fixture, leaves } = await mountDirectory();
+		const leaf = leaves[0]; // [project, inspector]
+		const root = fixture.directory.firstElementChild as HTMLElement;
+
+		const event = createDragEvent();
+		try {
+			Layout.navDragstart!.call(leaf.nav, event as never);
+			const state = getLayoutStore().dragging as unknown as DragState;
+			state.target = itemOf(leaf, 'inspector');
+			state.location = {
+				trigger: leaf.nav,
+				target: leaf.nav.parentNode as HTMLElement,
+				direction: 'left'
+			};
+			leaf.nav.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
+		} finally {
+			if (getLayoutStore().dragging) Layout.navDragend!(event as never);
+		}
+
+		const scheme = Layout.saveLayoutScheme!(root as never) as {
+			children?: Array<{ tabs?: string[]; end?: number }>;
+		};
+		expect(scheme.children?.map((child) => child.tabs)).toEqual([
+			['inspector'],
+			['project'],
+			['scene']
+		]);
+		// 左缘：新叶子取 [0, 0.25]，目标叶子保持原 end 0.5
+		expect(scheme.children?.map((child) => child.end)).toEqual([0.25, 0.5, 1]);
+
 		await awaitVueLayoutLoad();
 		await nextTick();
 		placePaletteIntoLeaves(fixture);

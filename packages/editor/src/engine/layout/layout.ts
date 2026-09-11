@@ -133,6 +133,24 @@ const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 	return (node.children ?? []).some((child) => hasAnyTabs(child));
 };
 
+// 组容器的兄弟遍历必须是「组元素」序列：Vue 组树会在容器内留注释/文本锚点，
+// 按 childNodes/previousSibling 取会拿到锚点（end 为 undefined → 比例算成 NaN →
+// 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。见 docs/layout-vue-plan.md 修复记录。
+const groupChildrenOf = (parent: Element): LayoutGroupElement[] =>
+	Array.from(parent.children).filter((child) => hasClass(child, 'group')) as LayoutGroupElement[];
+
+const prevGroupOf = (group: Element): LayoutGroupElement | null => {
+	let node: Element | null = group.previousElementSibling;
+	while (node !== null && !hasClass(node, 'group')) node = node.previousElementSibling;
+	return node as LayoutGroupElement | null;
+};
+
+const nextGroupOf = (group: Element): LayoutGroupElement | null => {
+	let node: Element | null = group.nextElementSibling;
+	while (node !== null && !hasClass(node, 'group')) node = node.nextElementSibling;
+	return node as LayoutGroupElement | null;
+};
+
 // M5-a（docs/layout-vue-plan.md M5）：以引擎内部状态取代 DOM expando 读法。
 // page.scheme → pageSchemes（幂等判据）、nav.lastValue → navLastValues（会话恢复）、
 // item.page → itemPages（页签↔页配对）；pageTrees 为运行时布局镜像（收敛点刷新），
@@ -777,8 +795,9 @@ Layout.setGroupSize = function (
 	direction: 'forward' | 'backward'
 ) {
 	const parent = group.parentNode as LayoutGroupElement;
-	const prev = group.previousSibling as LayoutGroupElement | null;
-	const next = group.nextSibling as LayoutGroupElement | null;
+	// 按「组元素」取兄弟：锚点/border 会让 end 运算变成 NaN
+	const prev = prevGroupOf(group);
+	const next = nextGroupOf(group);
 	let space: number | undefined;
 	let size: number | undefined;
 	switch (parent.split) {
@@ -791,7 +810,7 @@ Layout.setGroupSize = function (
 			size = group.clientTop + hint.height;
 			break;
 	}
-	if (hasClass(next!, 'group')) {
+	if (next !== null) {
 		size! += 1;
 	}
 	if (space !== 0) {
@@ -801,7 +820,7 @@ Layout.setGroupSize = function (
 				if (prev) {
 					end = prev.end + end;
 				}
-				if (next === parent.border) {
+				if (next === null) {
 					end = 1;
 				}
 				group.end = Math.roundTo(end, 6);
@@ -829,21 +848,22 @@ Layout.computeSizesBefore = function (group: LayoutGroupElement) {
 				? parent.clientHeight
 				: 0;
 	if (space !== 0) {
-		const nodes = parent.childNodes as unknown as LayoutGroupElement[];
-		const index = Array.prototype.indexOf.call(nodes, group);
-		const groups = Array.prototype.slice.call(nodes, 0, index + 1) as LayoutGroupElement[];
-		const head = nodes[0];
-		const length = groups.length;
+		// 只对「组元素」序列做比例收敛（跳过锚点/border，否则 end 变 NaN）
+		const groups = groupChildrenOf(parent);
+		const index = groups.indexOf(group);
+		const run = groups.slice(0, index + 1);
+		const head = groups[0];
+		const length = run.length;
 		const min = Math.min(0.1, 32 / space);
 		for (let i = length - 2, end = group.end; i >= 0; i--) {
-			const group = groups[i];
+			const group = run[i];
 			const pad = 2;
 			end = Math.min(group.end, end - min - pad / space);
 			end = Math.roundTo(end, 6);
 			group.end = end;
 		}
 		for (let i = 0, end = 0; i < length; i++) {
-			const group = groups[i];
+			const group = run[i];
 			const pad = (group === head ? 0 : 1) + 1;
 			end = Math.max(group.end, end + min + pad / space);
 			end = Math.roundTo(end, 6);
@@ -861,10 +881,11 @@ Layout.computeSizesAfter = function (group: LayoutGroupElement) {
 				? parent.clientHeight
 				: 0;
 	if (space !== 0) {
-		const nodes = parent.childNodes as unknown as LayoutGroupElement[];
-		const index = Array.prototype.indexOf.call(nodes, group);
-		const groups = Array.prototype.slice.call(nodes, index, -1) as LayoutGroupElement[];
-		const foot = nodes[nodes.length - 2];
+		// 同上：按组元素序列收敛
+		const all = groupChildrenOf(parent);
+		const start = all.indexOf(group);
+		const groups = start === -1 ? all : all.slice(start);
+		const foot = all[all.length - 1];
 		const last = groups.length - 1;
 		const min = Math.min(0.1, 32 / space);
 		for (let i = 0, end = 0; i < last; i++) {
@@ -1621,6 +1642,17 @@ Layout.navDrop = function (event: EditorEvent) {
 			Layout.createGroupBorder!(parent);
 		}
 
+		// 落位分割点：hint 语义为「目标盒子的一半」（见 updateHint），
+		// 因此新叶子与目标叶子在目标跨度中点处对分；此前 left/top 分支未设 end、
+		// right/bottom 分支未收缩目标 end，导致两叶 end 都为 1（重叠 → 边界线不可拖拽缩放）。
+		let prev = target.previousElementSibling as LayoutGroupElement | null;
+		while (prev !== null && !hasClass(prev, 'group')) {
+			prev = prev.previousElementSibling as LayoutGroupElement | null;
+		}
+		const spanStart = prev?.end ?? 0;
+		const spanEnd = target.end ?? 1;
+		const spanMid = (spanStart + spanEnd) / 2;
+
 		switch (direction) {
 			case 'inside':
 				dGroup = target;
@@ -1628,6 +1660,7 @@ Layout.navDrop = function (event: EditorEvent) {
 			case 'left':
 			case 'top':
 				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
+				dGroup.end = spanMid;
 				parent.insertBefore(dGroup, target);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
@@ -1635,7 +1668,8 @@ Layout.navDrop = function (event: EditorEvent) {
 			case 'right':
 			case 'bottom':
 				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
-				dGroup.end = target.end;
+				dGroup.end = spanEnd;
+				target.end = spanMid;
 				parent.insertBefore(dGroup, target.nextSibling);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
@@ -1685,19 +1719,21 @@ Layout.navDrop = function (event: EditorEvent) {
 			if (remaining !== undefined) {
 				write(sNav, remaining.getAttribute('value'));
 			} else {
-				const pGroup = sGroup.parentNode;
-				const prev = sGroup.previousSibling;
-				const next = sGroup.nextSibling;
-				const border = pGroup.border;
-				const nodes = pGroup.childNodes;
-				if (prev && next === border) {
+				const pGroup = sGroup.parentNode as LayoutGroupElement;
+				// 按组元素判定（锚点会让 childNodes/previousSibling 判定失真）
+				const siblings = groupChildrenOf(pGroup);
+				const prev = prevGroupOf(sGroup);
+				if (prev !== null && nextGroupOf(sGroup) === null) {
 					prev.end = 1;
 				}
 				sGroup.remove();
 
-				if (nodes.length === 2) {
-					nodes[0].end = pGroup.end;
-					pGroup.parentNode.replaceChild(nodes[0], pGroup);
+				if (siblings.length === 2) {
+					const survivor = siblings.find((group) => group !== sGroup);
+					if (survivor !== undefined) {
+						survivor.end = pGroup.end;
+						pGroup.parentNode!.replaceChild(survivor, pGroup);
+					}
 				}
 			}
 
