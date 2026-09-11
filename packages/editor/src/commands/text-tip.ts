@@ -309,11 +309,14 @@ TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): 
 	const space = window.innerHeight - rb;
 	const below = space >= 200;
 	const capacity = below ? Math.floor(space / 20) : Math.floor(rt / 20);
-	const lines = Math.min(this.elements.count, capacity, MAX_LINES);
+	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
 	const top = below ? rb : rt - lines * 20;
 	if (
 		lines !== 0 &&
-		!(lines === 1 && this.elements[0].item.name === TextSuggestion.target!.read?.())
+		!(
+			lines === 1 &&
+			treeRowItemAt<TextSuggestionItem>(this, 0)?.name === TextSuggestion.target!.read?.()
+		)
 	) {
 		this.style.left = `${rl}px`;
 		this.style.top = `${top}px`;

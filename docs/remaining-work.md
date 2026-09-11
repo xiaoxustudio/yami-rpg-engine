@@ -8,7 +8,7 @@
 
 | ID | 事项 | 规模 | 依赖 | 状态 |
 | --- | --- | --- | --- | --- |
-| T5b | tree 步骤 5b：`elements` shim / `item.element` / `NodeElement` 收口 | 中 | 先迁移 4 处按 DOM 访问的消费方 | 未开始 |
+| T5b | tree 步骤 5b：`elements` shim / `item.element` / `NodeElement` 收口 | 中 | 先迁移 4 处按 DOM 访问的消费方 | 🚧 **部分完成**（B2：步 1–2 完成——4 组消费方已迁 + `element.group` 缺陷已修；步 3–4 = 删 shim 与 class 收口待做） |
 | T1b | ~~tree 步骤 1 剩余缺口：PageUp/PageDown 行为 + 1000+ 节点性能基准~~ | 小 | 需先定义键位语义 | ✅ **已完成**（B1，2026-09-11：4 个分页金标准 + 4 个基准用例） |
 | L1 | layout region 左/上/下方向真机走查 | 小 | 构建产物 + 可打开的真实项目 | 部分完成（右缘已过） |
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
@@ -82,7 +82,7 @@
 | --- | --- | --- | --- | --- | --- |
 | ✅ **B0 零风险（已完成 2026-09-11）** | C2（删陈旧豁免注释）→ R3（死代码 8 点）→ E1①（删 `attributechange`） | 无；可与任何批并行 | C2 **135 文件 / 135 行**；R3 **6 文件 8 点**；E1① 1 处派发 | **实测结果**：豁免注释 **295 → 160**、陈旧豁免 **135 → 0**（`stale-exemptions --check` 退出 0）；死事件 **1 → 0**（事件名 34 → 33、自定义 16 → 15、单侧事件 0）；tracker 其它口径未变（待迁移命中仍 **160**） | `git revert` 单个提交 |
 | ✅ **B1 小收口（已完成 2026-09-11）** | R2a（i18n 启动副作用）→ T1b（分页键 + 1000+ 基准）→ R1（资源列表数据化） | 无 | R2a `i18n/index.ts` + `YMFormButtons.vue` + `stores/local.ts`；T1b `tree-api.ts` + 2 个 spec；R1 `resource.ts` 667 → 569 行 + 新 store + 新组件 + `Resource.vue` | **实测**：`editor/i18n` 受限 API **3 → 0**（待迁移命中 160 → **159**、`getElementById` 244 → **243**）；tree 用例 **+8**（ui-kit 659 → 667）；**R1**：`editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **全仓 1 → 0**、`$('#…')` **1489 → 1481** 处 / 239 → **238** 文件；editor 新增 5 个 store 用例 | ✅ 各提交独立 revert |
-| **B2 tree 收口** | **T5b**：4 组消费方迁移 → 删 `elements` shim / `item.element` / `NodeElement` / `clearTreeItemText` → 收口 class 直写；**顺带修 `element.group` 幽灵属性** | 无（方案含实测行号） | ~12 个源文件 + 3 个 spec（17 处断言改写） | `ui-kit/components` 与 `editor/tools` 命中下降；`item.element` 引用 **17 → 0**；**1 处行为变更**（菜单勾选开始显示） | 4 步各自 revert；渲染路径与数据层未动 |
+| 🚧 **B2 tree 收口（步 1–2 已完成 2026-09-11；步 3–4 待做）** | **T5b**：4 组消费方迁移（**#1–#4 已完成**）→ 删 `elements` shim / `item.element` / `NodeElement` / `clearTreeItemText`（**待做**）→ 收口 class 直写（**待做**）；**`element.group` 幽灵属性已修** | 无（方案含实测行号） | 步 1–2：`text-tip.ts`、`title-bar.ts`、`menu-bar.ts`、`attribute-window.ts`、`enum-window.ts` + 新 `utils/folder-group.ts` + 2 个新 spec；步 3–4：~7 个源文件 + 3 个 spec（17 处断言改写） | **步 1–2 实测**：4 组消费方改用行 API / 数据面读取（`item.element` 外部引用清零）；**行为变更 1 处**——菜单勾选由"恒 false"变为按 settings 正确显示（先写失败用例 `attribute-folder-group-menu.spec.ts`（实收 `false`）→ 改数据面读取后转绿）；步 3–4 预期：`item.element` 引用 **17 → 0**、`ui-kit/components` 与 `editor/tools` 命中下降 | 4 步各自 revert；渲染路径与数据层全程未动 |
 | **B3 元素 API 与原型** | **P2b + P4b 合并**：按组件把鸭子调用收敛为类型化 expose + props/emits → 删 `*-api.ts` → 删 `attach-api.ts`；随后删 `DATA_FIELDS` 原型访问器（先删 11 个死字段） | 依赖 B2 的 expose 手法经验；与 **P5b 批次 1–3 同批评审**（R-11） | `*-api.ts` **26 文件**（41 个 importer）；`element-data.ts` **83 字段 / 166 访问器**（`this.<字段>` 近似 **774 处 / 123 文件**） | 门禁：`*-api.ts` **26 → 0**、`DATA_FIELDS` **83 → 0**；鸭子调用 **682 → 0**；tracker 辅助口径「prototype 访问器定义」**1 → 0** | 按组件粒度 revert；先删死字段那一刀可单独回滚 |
 | **B4 `$()` 退役** | **P5b 四批**：批次 1 `components/tools`（136 处 / 2 文件）→ 批次 2 `components/commands`（153 / 27）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1353 → … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
 | **B5 i18n 工程线** | **R2b**：按承载者给 2130 个键分类 → 先迁 Vue 承担部分 → 目标元素自注册 → 语言文件不再以选择器为键 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
@@ -95,6 +95,17 @@
 ---
 
 ## T5b — tree 步骤 5b：`elements` shim / `item.element` / `NodeElement` 收口
+
+> 🚧 **部分完成（2026-09-11，B2）**——按定稿方案的 4 步执行，**步 1–2 已完成**：
+>
+> **步 1（#3 + #4：ui-kit 外部的纯替换）**：`commands/text-tip.ts` 的 `this.elements.count` / `this.elements[0].item.name` → `treeRowCount(this)` / `treeRowItemAt<TextSuggestionItem>(this, 0)?.name`；`title/title-bar.ts`（恢复页签时按 guid 找活动页签）与 `title/menu-bar.ts`（Alt+1..9 切页签）的 `tabBar.childNodes[i].item` → `treeRowCount(tabBar)` 循环 + `treeRowItemAt<TitleTabItem>(tabBar, i)`（`TitleTabItem` 顺带从 `title-bar.ts` 导出供 menu-bar 使用）。
+>
+> **步 2（#1 + #2 + 缺陷修复）**：新增 `utils/folder-group.ts` 的 `folderGroupOf(settings, id)`（与 `setFolderGroup` 里的 `oldGroup` 同式），attribute/enum 两个右键菜单的「set-as」勾选改由**数据面**读取；同时把两处 `setFolderGroup` 也换成该 helper。
+> **行为变更（有意为之）**：旧写法 `item.element?.group` 恒为 `undefined`（全仓无任何代码写行元素的 `group`），故菜单勾选**从来不显示**；改数据面后按 `state.settings` 正确勾选。证据链：先写 `attribute/__tests__/attribute-folder-group-menu.spec.ts`（stub `Menu.popup` 捕获菜单项）→ 运行 **2 例失败**（`expected false to be true`，即"恒不勾选"）→ 改数据面读取 → **2 例转绿**；另加 `utils/__tests__/folder-group.spec.ts` 4 例覆盖命中/空槽位/空 settings/异常重复。
+>
+> **步 3–4（待做）**：删 `elements` shim / `item.element` 写回桥 / `NodeElement` 类型 / `clearTreeItemText`（含 3 个 spec 共 17 处断言改写），再收口 `select`/`unselect` 与拖拽的 class 直写。**已确认的前置条件**：`item.element` 的外部消费方现已清零（步 1–2 完成），`clearTreeItemText` 在 editor 侧 0 调用；`vueRows = this.renderState !== undefined`，v-for 已是唯一渲染路径，故 shim 服务的 `!vueRows` 分支实际是死代码——步 3 可连带简化。
+>
+> **本步门禁**：editor **213 文件 1897/1897**（新增 2 个 spec / 6 例）、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、tracker 重跑一致（扫描文件 1113 → 1114，来自新 helper）。
 
 - **现状证据**：v-for 派生行是唯一渲染路径，但三样兼容层仍在——`tree-core.ts` 定义 `NodeElement` 类型（L13）与 `deleteCaches` 的 `delete item.element` 分支（L65）；`tree-api.ts` 仍写回 `item.element`（L403–404、L814–815、L920、L1061 的 `elements.indexOf(item.element)`）；`clearTreeItemText` 在 editor 侧**零调用**（仅定义 + `index.ts` 导出）。
 - **仍按 DOM 访问的消费方（2026-09-11 实测，4 处）**：
@@ -403,4 +414,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-11 实跑）：ui-kit 96 文件 659/659；editor 210 文件 1884/1884。
+- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **213 文件 1897/1897**（B0/B1/B2 三批改动后的最新实跑值）。

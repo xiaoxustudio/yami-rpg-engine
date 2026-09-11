@@ -350,6 +350,8 @@ Vue 的 class patch：绑定值**不变**时不触碰 DOM，但**一旦变化**�
 >
 > **⚠️ 顺带修复的潜在缺陷（#1/#2 不是纯重构）**：全仓检索确认**没有任何代码写行元素的 `group` 属性**（唯一的 `.group =` 赋值在 `engine/layout/layout.ts` L1499/L1989，那是拖拽事件对象），因此 `item.element?.group` 恒为 `undefined` → `checked: group === ''` 与 `checked: group === groupKey` **恒为 false**，即"设为分组 / 设为无分组"菜单项从来不显示勾选。改成数据面读取会**修复**该显示（属行为变更），因此必须先补一条断言锁定新行为，并在提交信息里写明"fix"而非"refactor"。
 >
+> **进度（2026-09-11，B2 批次的步 1–2 已落地）**：① **#3 + #4** 完成——`text-tip.ts` 与 `title-bar.ts`/`menu-bar.ts` 的 `elements` / `childNodes[i].item` 全部改用 `treeRowCount` + `treeRowItemAt`（`TitleTabItem` 已从 `title-bar.ts` 导出）；② **#1 + #2 + 缺陷修复** 完成——新增 `utils/folder-group.ts` 的 `folderGroupOf(settings, id)`，attribute/enum 的「set-as」勾选改数据面读取（`setFolderGroup` 里的 oldGroup 同批换用）。**这是本文档预告的行为变更，已按"先失败后转绿"取证**：`attribute/__tests__/attribute-folder-group-menu.spec.ts` 在修复前 2 例失败（`checked` 实收 `false`，即勾选恒不显示），改完后转绿；另有 `folder-group.spec.ts` 4 例。**步 3–4 仍待做**（删 shim/桥/类型/`clearTreeItemText` + class 直写收口）；前置条件已就绪：`item.element` 的外部消费方清零、`clearTreeItemText` 在 editor 侧 0 调用、`vueRows = renderState !== undefined` 使 `!vueRows` 分支成为死代码。
+
 > **执行顺序（4 个独立可回滚的小步）**
 >
 > 1. **#3 + #4**（ui-kit 外部的纯替换）：`text-tip` / `title-bar` / `menu-bar` 改用行 API；跑 `pnpm -F @yami/editor test`。

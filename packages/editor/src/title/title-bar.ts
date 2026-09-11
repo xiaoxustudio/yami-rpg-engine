@@ -10,6 +10,7 @@ import { UI } from '@app/ui/ui-window.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Menu } from '@app/components/menu-list.ts';
+import { treeRowCount, treeRowItemAt } from '@ui-kit';
 import { Data } from '@app/data/data-object.ts';
 import { Directory } from '@app/file/directory-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
@@ -45,7 +46,7 @@ interface TitleTab {
 	[k: string]: unknown;
 }
 
-interface TitleTabItem extends TitleTab {
+export interface TitleTabItem extends TitleTab {
 	icon?: string;
 	name?: string;
 	tab?: { text: HTMLElement };
@@ -492,16 +493,17 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	tabBar.update();
 
 	if (activeTab) {
-		const elements = tabBar.childNodes as NodeListOf<ChildNode & { item?: TitleTabItem }>;
-		for (const element of elements) {
-			const context = element.item;
+		// 步骤 5b：按行 API 遍历（不再读 DOM 子节点的 item expando）
+		const count = treeRowCount(tabBar);
+		for (let i = 0; i < count; i++) {
+			const context = treeRowItemAt<TitleTabItem>(tabBar, i);
 			if (context?.meta.guid === activeTab) {
-				return tabBar.select(context!);
+				return tabBar.select(context);
 			}
 		}
-		if (elements.length !== 0) {
-			const context = elements[0].item;
-			return tabBar.select(context!);
+		if (count !== 0) {
+			const context = treeRowItemAt<TitleTabItem>(tabBar, 0);
+			if (context) return tabBar.select(context);
 		}
 	}
 	Layout.manager.switch('directory');

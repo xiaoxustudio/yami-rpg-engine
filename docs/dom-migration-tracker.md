@@ -41,18 +41,18 @@
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 9 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 18 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 30 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/utils        | 31 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 15 | 0 | 0 |
 | ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 67 | 2 | 263 | 103 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1113 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 132 | 2 | 575 | 172 | 1481 | 0 | 0 |
+| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 132 | 2 | 575 | 172 | 1481 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1113**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1114**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**159**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**159**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -117,7 +117,7 @@
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/editor/src/components/commands/SetList.vue | 240 | 23 | - |
 | packages/editor/src/data/transition-window.ts | 1385 | 23 | 是 |
-| packages/editor/src/title/menu-bar.ts | 1179 | 22 | 是 |
+| packages/editor/src/title/menu-bar.ts | 1183 | 22 | 是 |
 | packages/editor/src/tools/condition-list.ts | 307 | 22 | - |
 | packages/editor/src/components/commands/SetObjectAnimation.vue | 252 | 21 | - |
 | packages/editor/src/components/commands/GetActor.vue | 183 | 20 | - |
@@ -140,7 +140,7 @@
 | packages/editor/src/local/local-window.ts | 906 | 14 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
-| packages/editor/src/attribute/attribute-window.ts | 1052 | 13 | - |
+| packages/editor/src/attribute/attribute-window.ts | 1054 | 13 | - |
 | packages/editor/src/commands/custom-command-window.ts | 575 | 13 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 13 | 是 |
@@ -151,7 +151,7 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/editor/src/components/commands/FollowActor.vue | 166 | 12 | - |
 | packages/editor/src/components/tools/SwitchCondition.vue | 162 | 12 | - |
-| packages/editor/src/enum/enum-window.ts | 893 | 12 | - |
+| packages/editor/src/enum/enum-window.ts | 895 | 12 | - |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 12 | - |
 | packages/editor/src/variable/variable.ts | 362 | 12 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
@@ -170,7 +170,7 @@
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/editor/src/commands/accessors/element-accessor-window.ts | 55 | 10 | - |
 | packages/editor/src/commands/accessors/skill-accessor-window.ts | 47 | 10 | - |
-| packages/editor/src/commands/text-tip.ts | 380 | 10 | 是 |
+| packages/editor/src/commands/text-tip.ts | 383 | 10 | 是 |
 | packages/editor/src/components/commands/CommandLine.vue | 95 | 10 | - |
 | packages/editor/src/components/commands/LoadImage.vue | 108 | 10 | - |
 | packages/editor/src/components/commands/SetBoolean.vue | 144 | 10 | - |
@@ -178,7 +178,7 @@
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 10 | 是 |
 | packages/editor/src/palette/auto-tile.ts | 979 | 10 | 是 |
-| packages/editor/src/title/title-bar.ts | 757 | 10 | - |
+| packages/editor/src/title/title-bar.ts | 759 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
@@ -1150,6 +1150,7 @@
 | packages/editor/src/utils/element-data.ts | 120 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
+| packages/editor/src/utils/folder-group.ts | 16 | 0 | - |
 | packages/editor/src/utils/function.ts | 4 | 0 | - |
 | packages/editor/src/utils/icon-clip.ts | 45 | 0 | - |
 | packages/editor/src/utils/math.ts | 44 | 0 | - |

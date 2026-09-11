@@ -18,14 +18,14 @@
 
 ## 当前快照（2026-09-11 实测）
 
-- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1113**；待迁移命中 **159**（初始 299；B1/R2a 后再降 1）；豁免注释 **159**；陈旧豁免 **0**；`getElementById` 243；`createElement` 138；`appendChild` 122；`addEventListener` 575。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（159 + 0 = 159）。（扫描文件数较 B0 的 1111 增 2，来自 B1/R1 新增的 store 与列表组件。）
+- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1114**；待迁移命中 **159**（初始 299；B1/R2a 后再降 1）；豁免注释 **159**；陈旧豁免 **0**；`getElementById` 243；`createElement` 138；`appendChild` 122；`addEventListener` 575。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（159 + 0 = 159）。（扫描文件数较 B0 的 1111 增 3：B1/R1 的 store 与列表组件、B2 的 `utils/folder-group.ts`。）
 - **第二条债轴（P5，不在 lint 规则内）**：`$('#id')` 反查 **1481 处 / 238 文件**（element-utils 的 jQuery 风格寻址；B1/R1 前为 1489 处 / 239 文件）；`new DOMParser()` **0 处**（B1/R1 前 1 处——字符串模板建 DOM 的最后一处已随资源列表数据化下线）。它不进入「待迁移命中」，故单列——见 [remaining-work.md](./remaining-work.md) P5b。
 - **度量覆盖范围（重要）**：lint 门禁只覆盖 `document.*` 的 7 个成员（= 待迁移命中 160）；tracker 另有**每模块列**（`appendChild`/`insertBefore`/`parentNode`/`innerHTML`/`addEventListener`…）、**P5 轴**（`$('#id')`/`DOMParser`）与 **`## 辅助口径`** 一节（`style.*` 336、`.children` 229、`hasClass()` 215、`textContent=` 145、`classList` 134、`get/set/removeAttribute` 87、`scrollTop=` 84 …）。**24 个轴的完整判定表**（哪些已登记为待办、哪些属合法用法、哪些为 0）见 [remaining-work.md](./remaining-work.md) 的「覆盖面审计结论」。引用任何"还剩多少"之前先确认它属于哪一档——2026-09-11 多次度量审计都因"漏档"修正过结论。
 - **按"源码处数"会低估的第三种情形（运行期放大 / 写法变体）**：`localize/dom-localizer.ts` 源码里只有 3 处字面查询，但它按语言文件的 **2130** 个键在启动时逐键查 DOM（2112 按 id + 18 按 name）；`utils/element-data.ts` 只写了一次 `Object.defineProperty(HTMLElement.prototype, field, …)`，实际在原型上定义了 **83** 个字段的 get/set（166 访问器）——而 tracker 原 `protoExt` 列要求 `prototype.` 跟点，**逗号形式**看不见，现已单列在「辅助口径」。同类还有 `$('#id')`（1489 处）与 `DOMParser` 字符串模板。详见 [remaining-work.md](./remaining-work.md) R2b / P4b。
-- **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **211 文件 1891/1891**。
-- **基线时效**：2026-09-11 执行 **B0/B1** 时已改动源码并已重跑两个套件（B1 后 ui-kit 659 → **667**、editor 1884 → **1891**：新增 4 个分页金标准 + 4 个性能基准 + 5 个资源 store 用例，另把 `resource-bridge.spec.ts` 由 2 例改写为 4 例）；**下次改动源码后同样需要重跑并同步本行与 `remaining-work.md`**——`pnpm docs:check` 会拦"两处基线数字不一致"（历史进展条目里的旧数字不受影响）。
+- **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **213 文件 1897/1897**。
+- **基线时效**：2026-09-11 执行 **B0/B1/B2** 时已改动源码并已重跑套件（B1 后 ui-kit 659 → **667**、editor 1884 → **1891**；B2 步 1–2 后 editor → **1897**：新增 `folder-group.spec.ts` 4 例 + `attribute-folder-group-menu.spec.ts` 2 例）；**下次改动源码后同样需要重跑并同步本行与 `remaining-work.md`**——`pnpm docs:check` 会拦"两处基线数字不一致"（历史进展条目里的旧数字不受影响）。
 - **已交付里程碑**：阶段 1（窗口栈数据化）、阶段 2（ui-kit 契约化 + core 去重）、阶段 3（命令表单去 DOM，`read(getElementById)` = 0、125 个 schema 开 `skipWrite`）、阶段 4（inspector/工具层/原型回收）、layout M1–M5、tree 行渲染 v-for 翻默认、**B0（C2 + R3 + E1①）**、**B1（R2a + T1b + R1）**。
-- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：B2（tree 步骤 5b + `element.group` 缺陷）、B3（P2b + P4b）、B4（P5b 四批）、B5（R2b 本地化器）、B6（巨石 B1）、B7（L1/S1/C1），另 E1 余项与 O1 可并行。
+- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：B2（tree 步骤 5b：**步 1–2 已完成**（消费方替换 + `element.group` 缺陷修复），步 3–4 待做）、B3（P2b + P4b）、B4（P5b 四批）、B5（R2b 本地化器）、B6（巨石 B1）、B7（L1/S1/C1），另 E1 余项与 O1 可并行。
 
 ## 维护约定（避免再次漂移）
 

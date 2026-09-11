@@ -5,6 +5,7 @@ import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
+import { treeRowCount, treeRowItemAt } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import {
 	addClass,
@@ -43,6 +44,7 @@ import { Particle } from '@app/particle/particle-window.ts';
 import { PluginManager } from '@app/plugin/plugin.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Title } from './title-bar.ts';
+import type { TitleTabItem } from './title-bar.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
 import { showInExplorerCommand } from '@app/utils/platform';
 import { getYamiI18n, loadI18n } from '@app/i18n';
@@ -1060,10 +1062,12 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 			case 'Digit7':
 			case 'Digit8':
 			case 'Digit9': {
-				const elements = Title.tabBar.childNodes;
+				// 步骤 5b：按行 API 取第 N 个页签（不再读 DOM 子节点的 item expando）
+				const count = treeRowCount(Title.tabBar);
 				const index = parseInt(event.code.slice(-1)) - 1;
-				if (index < elements.length) {
-					Title.tabBar.select(elements[index].item);
+				if (index < count) {
+					const item = treeRowItemAt<TitleTabItem>(Title.tabBar, index);
+					if (item) Title.tabBar.select(item);
 				}
 				break;
 			}

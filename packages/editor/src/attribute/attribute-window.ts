@@ -3,6 +3,7 @@ import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
+import { folderGroupOf } from '@app/utils/folder-group';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Shortcuts } from '@app/tools/shortcut-registry.ts';
@@ -430,7 +431,7 @@ Attribute.setFolderGroup = function (
 	newGroup: string
 ) {
 	const settings = getAttributeStore().state.settings!;
-	const oldGroup = Object.keys(settings).find((key) => settings[key] === folder.id) ?? '';
+	const oldGroup = folderGroupOf(settings, folder.id);
 	if (oldGroup !== newGroup) {
 		const copy = Object.clone(settings);
 		if (oldGroup) settings[oldGroup] = '';
@@ -809,8 +810,9 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 		});
 	}
 	if (selected && item.class === 'folder') {
-		// 步骤 4：行元素仅在窗口内物化，按需读取
-		const group = item.element?.group;
+		// 步骤 5b：改为数据面读取（与 setFolderGroup 的 oldGroup 同式）——
+		// 旧写法 `item.element?.group` 恒为 undefined，导致菜单勾选从来不显示。
+		const group = folderGroupOf(getAttributeStore().state.settings, item.id);
 		const submenu = [
 			{
 				label: get('set-as.none'),
