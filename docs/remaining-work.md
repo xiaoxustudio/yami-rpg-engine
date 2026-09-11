@@ -17,8 +17,8 @@
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 **2130** 个键在启动时逐键做 DOM 查询（2112 按 id + 18 按 name） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址，**1489 处 / 252 文件**） | 大 | 需按模块分批，先度量后动手 | 未开始（**此前不在任何报表内**） |
-| P2b | **ui-kit 元素 API 收尾**：`*-api.ts` 文件 **26** 个（21 个调用 `attachApi`）+ `utils/attach-api.ts` 退役，调用方改用类型化组件 API | 大 | 与 P5b 的「组件 API」桶合并排序 | 未开始（**此前不在任何报表内**） |
-| P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **83** 个字段的 get/set（共 166 访问器），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 未开始（**此前不在任何报表内**） |
+| P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
+| P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **72** 个字段的 get/set（共 144 访问器；B3 已先删 11 个零访问字段），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | 未开始 |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
@@ -83,7 +83,7 @@
 | ✅ **B0 零风险（已完成 2026-09-11）** | C2（删陈旧豁免注释）→ R3（死代码 8 点）→ E1①（删 `attributechange`） | 无；可与任何批并行 | C2 **135 文件 / 135 行**；R3 **6 文件 8 点**；E1① 1 处派发 | **实测结果**：豁免注释 **295 → 160**、陈旧豁免 **135 → 0**（`stale-exemptions --check` 退出 0）；死事件 **1 → 0**（事件名 34 → 33、自定义 16 → 15、单侧事件 0）；tracker 其它口径未变（待迁移命中仍 **160**） | `git revert` 单个提交 |
 | ✅ **B1 小收口（已完成 2026-09-11）** | R2a（i18n 启动副作用）→ T1b（分页键 + 1000+ 基准）→ R1（资源列表数据化） | 无 | R2a `i18n/index.ts` + `YMFormButtons.vue` + `stores/local.ts`；T1b `tree-api.ts` + 2 个 spec；R1 `resource.ts` 667 → 569 行 + 新 store + 新组件 + `Resource.vue` | **实测**：`editor/i18n` 受限 API **3 → 0**（待迁移命中 160 → **159**、`getElementById` 244 → **243**）；tree 用例 **+8**（ui-kit 659 → 667）；**R1**：`editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **全仓 1 → 0**、`$('#…')` **1489 → 1481** 处 / 239 → **238** 文件；editor 新增 5 个 store 用例 | ✅ 各提交独立 revert |
 | ✅ **B2 tree 收口（已完成 2026-09-11）** | **T5b**：消费方迁移（含方案漏列的 `command-tip.ts` 两处）→ 删 `elements` shim → 删 `item.element` 写回桥 / `TreeItem.element` / `clearTreeItemText` / `deleteNodeElements`（+ 新增 `treeRowElement` 公开 API）→ 收口 class 直写（**select/unselect/pointer 判断/hint 全清**）；**`element.group` 幽灵属性已修** | 无（方案含实测行号） | 步 1–2：5 个消费方文件 + `utils/folder-group.ts` + 2 个新 spec；步 3a：`tree-api.ts` 内部 7 点 + shim/`syncElementsShim`/`clearElements` + 4 个 spec 20 处；步 3b：`tree-render`/`tree-core`/`tree-api`/`index.ts`/`command-tip.ts` + **9 个 spec 71 处断言**；步 4：4 支 dragover + `dragend` + `hintItem` 限定 + 2 处断言 | **实测**：`tree-api.ts` **1726 → 1637 行**（−89）；tracker `parentNode` **130 → 127**、`dispatchEvent` **172 → 171**；待迁移命中/豁免注释/陈旧豁免 **159 / 159 / 0** 与 `$('#…')` **1481** 不变；**行为变更 1 处**（菜单勾选由"恒 false"→正确，先失败后转绿）；**顺带修复 3 处**（`windowLocalize` 手清 vnode、pointer 选中判断耦合 DOM class、`rename` 对窗口外行抛错） | 4 步各自 revert（已分别提交） |
-| **B3 元素 API 与原型** | **P2b + P4b 合并**：按组件把鸭子调用收敛为类型化 expose + props/emits → 删 `*-api.ts` → 删 `attach-api.ts`；随后删 `DATA_FIELDS` 原型访问器（先删 11 个死字段） | 依赖 B2 的 expose 手法经验；与 **P5b 批次 1–3 同批评审**（R-11） | `*-api.ts` **26 文件**（41 个 importer）；`element-data.ts` **83 字段 / 166 访问器**（`this.<字段>` 近似 **774 处 / 123 文件**） | 门禁：`*-api.ts` **26 → 0**、`DATA_FIELDS` **83 → 0**；鸭子调用 **682 → 0**；tracker 辅助口径「prototype 访问器定义」**1 → 0** | 按组件粒度 revert；先删死字段那一刀可单独回滚 |
+| 🚧 **B3 元素 API 与原型（2026-09-11 首刀完成）** | **P4b 首刀**：删 11 个零访问原型字段（83 → 72）；**P2b 目标重定义**：实测 25 个组件 api 文件全部是元素优先实现、零死文件 → 验收从「26 → 0」改为「类型化契约 + Vue 内子集随 P5b + 豁免收窄」 | P2b 依赖 P5b 的 ref 化节奏（Vue 内子集） | `element-data.ts` 一行删字段；P2b 侧 25 个 api 文件 + 682 处鸭子调用 | **实测（P4b 首刀）**：`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck/vue-tsc/oxlint + 两个套件全绿；`stores/localization.ts` 的一处类型残留（`initText`/`attrValue`）一并清理。**P2b 复核**：api 文件计数门禁保留、目标改为"不增长" | 各自单提交 revert |
 | **B4 `$()` 退役** | **P5b 四批**：批次 1 `components/tools`（136 处 / 2 文件）→ 批次 2 `components/commands`（153 / 27）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1353 → … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
 | **B5 i18n 工程线** | **R2b**：按承载者给 2130 个键分类 → 先迁 Vue 承担部分 → 目标元素自注册 → 语言文件不再以选择器为键 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
@@ -281,17 +281,32 @@
 - **现状证据（2026-09-11 实测）**：`packages/ui-kit/src/**/*-api.ts` **26** 个文件（其中 **21** 个调用 `attachApi`）；`packages/ui-kit/src/utils/attach-api.ts` 本体仅 8 行，却被 **41** 个文件 import；editor + ui-kit 侧的**鸭子式可选链 API 调用**（`?.loadItems?.(` / `?.write?.(` / `?.enable?.(` / `?.relate?.(` …）合计 **682 处 / 246 文件**。也就是说：**阶段 2 的"去重"（core 抽取）已完成，但其验收条件「`-api.ts` 文件数从 27 → 0」远未达成，且从未登记为待办**。
 - **为什么单列**：这是 P2「ui-kit 组件契约化」的**另一半**——把 `read/write/enable/disable/loadItems/relate/…` 从"挂在元素实例上的鸭子方法"改为**类型化组件 API**（props/emits + `defineExpose`）。它与 P5b **同源**：P5b 里那 247 行「组件 API」桶（`$('#id')?.loadItems?.()`）正是元素 API 的调用面——不退役元素 API，调用点只会从 `$('#x')` 变成 `ref.value`，鸭子调用照旧。
 - **推进策略（与 P5b 合并排序，按组件逐个收口）**：① 盘点 26 个 api 文件的**调用面**（哪些方法、被谁以鸭子方式调用、对应组件是否已有 expose）；② 选一个高频组件（`YMSelectBox` / `YMNumberBox` 之类）做样板：`defineExpose` 补类型 + 调用方改用模板 ref（SFC）或注入实例（非 SFC）；③ 每完成一个组件就删它的 `*-api.ts` 并清掉调用方可选链；④ 26 个全部退役后删 `attach-api.ts`、更新 playground demo 与文档口径。
-- **验收标准**：① `*-api.ts` 由 **26 → 0**；② `attach-api.ts` 删除、其 41 个 import 清零；③ 鸭子调用从 **682 处**归零（或降到有白名单说明的少量）；④ `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；⑤ 文档口径（现状总览的 api 文件数）同步为 **0**。
+- **验收标准**：① 「`*-api.ts` 归零」**已作废**（见上方 B3 复核）；② 改为：**P2b-1** 每个被鸭子调用的组件都有消费方可直接 import 的 `XxxApi` 类型、`attachApi` 泛型化并在编译期校验键集合；**P2b-2** Vue 内使用的组件随 P5b 走 ref/expose、Vue 外的元素工厂保留；**P2b-3** 25 个 api 文件的 `oxlint-disable` 面随类型化收窄；③ 鸭子调用（现 **682 处**）在完成 P2b-1/P2b-2 后**显著下降**（不追求归零，Canvas/引擎侧属合理用法）；④ `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；⑤ `*-api.ts` 计数门禁保留，目标改为**不增长**。
 - **验证命令**：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`。
 - **来源**：2026-09-11 第二十三轮度量审计（阶段 2 验收条件未达成且未登记；`docs/vue3-migration-plan.md` 阶段 2 段已补完成度更正）。
 
+
+> **⚠️ 2026-09-11 B3 复核：P2b 的目标需要重新定义（原「26 → 0」不成立）**
+>
+> **实测（本轮）**：`packages/ui-kit/src/components/**/*-api.ts` 共 **25** 个（第 26 个是 `utils/attach-api.ts` 自身，即门禁在数的那个集合）。逐个核查后确认——
+> ① **全部 25 个都是「元素优先实现」**：每个都自己 `export function createXxxElement(...)` 并调用 `attachApi(...)` 把方法挂到元素上，**不是**临时的兼容桥；
+> ② **零死文件**：每个 api 的导出都被真实引用（消费方是 editor 侧的工厂文件——`components/check-box.ts`、`select-box.ts`、`var-factories.ts`、`command-list.ts`、`select-list.ts`、`tree-list.ts`、`menu-list.ts`、`detail-box.ts`、`color-box.ts`、`number-var.ts`、`toast.ts`、`keyboard-box.ts` 等——以及 `ui-kit/src/index.ts` 的对外导出）；
+> ③ **不存在 SFC/元素 双实现**：`YMSelectBox`/`YMTextBox`/`YMNumberBox` 的 SFC 与 api **共享同一个 `*-core.ts`**（阶段 2 的去重成立），`YMSelectList.vue` 则直接 import 自己的 api。
+>
+> **∴ 结论**：把「`*-api.ts` 归零」当作验收，等于要求删掉 ui-kit 的对外元素 API 架构，与"ui-kit 供 editor 以元素/工厂方式使用"的现实冲突。真实的技术债是另外三条：
+> - **P2b-1（类型化契约）**：`attachApi` 目前是 `Record<string, unknown>` 式无类型挂载 → 消费方只能靠 `?.` 兜底（鸭子调用 682 处 / 246 文件）；应让每个组件的 `XxxApi` 接口成为消费方的**唯一入口**（多个已存在：`ScrollBarApi`/`DetailSummaryApi`/`TreeListApi`…），并让 `attachApi` 泛型化、编译期校验键集合。
+> - **P2b-2（元素 API 留在 Vue 内使用的子集）**：Vue 内使用的组件（选择/文本框/数字框…）随 **P5b** 一起走模板 ref + `defineExpose`；Vue 外（Canvas/引擎/命令模块）继续用元素工厂——**不强行统一**。
+> - **P2b-3（豁免收窄）**：25 个 api 文件都带 `oxlint-disable eslint/no-restricted-properties`；类型化后逐步把其中的 `document.createElement` 等收敛到 `create*Element` 少数几处，缩小豁免面。
+>
+> **门禁相应调整**：`pnpm docs:check` 的 `*-api.ts` 计数仍与磁盘核对，但**目标由「0」改为「不增长」**（数字本身只作趋势）；P2b 的验收改为上述三条，不再以文件数归零为准。
 ## P4b — 原型访问器退役（`utils/element-data.ts`）
 
-- **现状证据（2026-09-11 实测）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的 **83** 个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（合计 **166 个访问器**），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
+> 🚧 **进行中（2026-09-11，B3 首刀）**：**11 个零访问字段已删除**（`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`）——删前逐一复核「全仓无任何引用」（`initText` 的 4 处命中经查是 `Variable.vue` 的局部变量与 `stores/localization.ts` 的一处类型残留，已一并清掉）。`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck / vue-tsc / oxlint 全绿。剩余：按组件把 `this.x` / `el.x` 改成显式 `getElementData(el)`（与 P2b 同批）。
+
+- **现状证据（2026-09-11 实测）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 **83** 个字段 / **166** 个访问器；现 **72 / 144**），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
 - **为什么此前没被记到**：tracker 的 `protoExt` 模式要求 `prototype` 后跟**点**（`…\.prototype\.`），而这里是 `Object.defineProperty(HTMLElement.prototype, field, …)` 的**逗号形式**，因此长期显示为 0。本轮已在 tracker 的「辅助口径」新增列「prototype 访问器定义（逗号形式）」把它暴露出来（当前 **1 处 / 1 文件**）。
-- **调用面（近似，2026-09-11 实测）**：`this.<83 字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**注意**：83 个字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
-- **可立即做的第一步**：**11 个字段零访问**——`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`——可直接从 `DATA_FIELDS` 删除（纯删定义、零风险），跑测试确认即可。
-- **推进策略**：① 先删 11 个死字段；② 按组件把 `this.x` / `el.x` 改为显式 API（模块已导出 `getElementData(el)`；与 **P2b** 的元素 API 收尾同批做最省事）；③ 每组件一个提交 + 真机冒烟；④ 终态删除 `defineDataAccessors()` 与 `main.ts` 的副作用导入——届时 P4 的验收「全仓无 `HTMLElement.prototype` 扩展」才真正成立。
+- **调用面（近似，2026-09-11 实测）**：`this.<字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**注意**：字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
+- **推进策略**：① ~~先删 11 个死字段~~（已完成）；② 按组件把 `this.x` / `el.x` 改为显式 API（模块已导出 `getElementData(el)`；与 **P2b** 的元素 API 收尾同批做最省事）；③ 每组件一个提交 + 真机冒烟；④ 终态删除 `defineDataAccessors()` 与 `main.ts` 的副作用导入——届时 P4 的验收「全仓无 `HTMLElement.prototype` 扩展」才真正成立。
 - **验收标准**：① `DATA_FIELDS` 与 `defineDataAccessors` 消失，tracker 新列「prototype 访问器定义（逗号形式）」= **0**；② `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；③ 真机冒烟覆盖依赖"元素上存状态"的交互：树列表拖拽/多选、命令行折叠与选区、场景指针、文本捕获。
 - **验证命令**：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`。
 - **来源**：2026-09-11 第二十四轮度量审计（P4 的"改头换面"形态；`docs/vue3-migration-plan.md` 阶段 4 的验收表述同步更正）。
@@ -395,7 +410,7 @@
 | `$('#id')` 反查 | **1489 处 / 239 文件**（B1/R1 后 **1481 / 238**） | ⚠️ **新登记** → P5b（此前不在报表内） |
 | 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name） | ⚠️ **新登记** → R2b（门禁已核对键数） |
 | 鸭子式元素 API 调用 | **682 处 / 246 文件** | ⚠️ **新登记** → P2b（`*-api.ts` 26 件门禁） |
-| 原型访问器（逗号形式） | **83 字段 / 166 访问器** | ⚠️ **新登记** → P4b（门禁已核对字段数） |
+| 原型访问器（逗号形式） | **72 字段 / 144 访问器**（B3 前 83/166） | ⚠️ **新登记** → P4b（门禁已核对字段数） |
 | 窗口事件面 | 265 add / 16 自定义事件 / 1 死事件 | ⚠️ **新登记** → E1（`pnpm events:surface`） |
 | `style.*` 赋值 | 336 处 / 78 文件 | 计数（辅助口径）；多为画布/布局测量，属 C1 白名单讨论范围 |
 | `.children` 遍历 | 229 / 73 | 计数；随 P5b / B1 下降 |

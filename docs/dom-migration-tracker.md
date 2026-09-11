@@ -1103,7 +1103,7 @@
 | packages/editor/src/stores/inspector.ts | 89 | 0 | - |
 | packages/editor/src/stores/layout.ts | 322 | 0 | - |
 | packages/editor/src/stores/local.ts | 56 | 0 | - |
-| packages/editor/src/stores/localization.ts | 107 | 0 | - |
+| packages/editor/src/stores/localization.ts | 106 | 0 | - |
 | packages/editor/src/stores/log.ts | 209 | 0 | - |
 | packages/editor/src/stores/menubar.ts | 122 | 0 | - |
 | packages/editor/src/stores/palette.ts | 95 | 0 | - |
@@ -1147,7 +1147,7 @@
 | packages/editor/src/utils/color-utils.ts | 2 | 0 | - |
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
-| packages/editor/src/utils/element-data.ts | 120 | 0 | - |
+| packages/editor/src/utils/element-data.ts | 109 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |

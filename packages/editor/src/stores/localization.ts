@@ -11,7 +11,6 @@ type LocalizationItemShape = {
 	expanded?: boolean;
 	children?: LocalizationItemShape[];
 	contents?: Record<string, string>;
-	element?: HTMLElement & { initText?: HTMLElement; attrValue?: string };
 };
 
 export const localizationStateKeys = ['state', 'strings'] as const;
