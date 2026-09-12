@@ -18,14 +18,14 @@
 
 ## 当前快照（2026-09-11 实测）
 
-- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1134**；待迁移命中 **158**（初始 299；B1/R2a 后 −1，B4 批 2 后 −1）；豁免注释 **158**；陈旧豁免 **0**；`getElementById` 242；`createElement` 138；`appendChild` 122；`addEventListener` 568。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（158 + 0 = 158）。（扫描文件数较 B0 的 1111 增 3：B1/R1 的 store 与列表组件、B2 的 `utils/folder-group.ts`。）
+- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1134**；待迁移命中 **155**（初始 299；B1/R2a 后 −1，B4 批 2 后 −1，P5b 后续批次第 1 刀后 −3）；豁免注释 **155**；陈旧豁免 **0**；`getElementById` 168；`createElement` 138；`appendChild` 122；`addEventListener` 568。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（155 + 0 = 155）。（扫描文件数较 B0 的 1111 增 3：B1/R1 的 store 与列表组件、B2 的 `utils/folder-group.ts`。）
 - **第二条债轴（P5，不在 lint 规则内）**：`$('#id')` 反查 **22 处 / 11 文件**（element-utils 的 jQuery 风格寻址；**P5b 批次 1–4 完成后的残余 = 动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1**；B4 起点 1481，最初 1489）；`new DOMParser()` **0 处**（B1/R1 前 1 处——字符串模板建 DOM 的最后一处已随资源列表数据化下线）。它不进入「待迁移命中」，故单列——见 [remaining-work.md](./remaining-work.md) P5b。
 - **度量覆盖范围（重要）**：lint 门禁只覆盖 `document.*` 的 7 个成员（= 待迁移命中 160）；tracker 另有**每模块列**（`appendChild`/`insertBefore`/`parentNode`/`innerHTML`/`addEventListener`…）、**P5 轴**（`$('#id')`/`DOMParser`）与 **`## 辅助口径`** 一节（`style.*` 336、`.children` 229、`hasClass()` 215、`textContent=` 145、`classList` 134、`get/set/removeAttribute` 87、`scrollTop=` 84 …）。**24 个轴的完整判定表**（哪些已登记为待办、哪些属合法用法、哪些为 0）见 [remaining-work.md](./remaining-work.md) 的「覆盖面审计结论」。引用任何"还剩多少"之前先确认它属于哪一档——2026-09-11 多次度量审计都因"漏档"修正过结论。
 - **按"源码处数"会低估的第三种情形（运行期放大 / 写法变体）**：`localize/dom-localizer.ts` 源码里只有 3 处字面查询，但它按语言文件的 `components` **2130** 个键在启动时逐键查 DOM（R2b 迁移②③④后 **1782 键改为模板承担、扫描面降到 347**）（2112 按 id + 18 按 name）；`utils/element-data.ts` 只写了一次 `Object.defineProperty(HTMLElement.prototype, field, …)`，实际在原型上定义了 **72** 个字段的 get/set（144 访问器；B3 前 83/166）——而 tracker 原 `protoExt` 列要求 `prototype.` 跟点，**逗号形式**看不见，现已单列在「辅助口径」。同类还有 `$('#id')`（1489 处）与 `DOMParser` 字符串模板。详见 [remaining-work.md](./remaining-work.md) R2b / P4b。
-- **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **223 文件 1934/1934**。
-- **基线时效**：2026-09-11 执行 **B0/B1/B2** 时已改动源码并已重跑套件（B1 后 ui-kit 659 → **667**、editor 1884 → **1891**；B2 步 1–2 后 editor → **1897**：新增 `folder-group.spec.ts` 4 例 + `attribute-folder-group-menu.spec.ts` 2 例）；**下次改动源码后同样需要重跑并同步本行与 `remaining-work.md`**——`pnpm docs:check` 会拦"两处基线数字不一致"（历史进展条目里的旧数字不受影响）。
-- **已交付里程碑**：阶段 1（窗口栈数据化）、阶段 2（ui-kit 契约化 + core 去重）、阶段 3（命令表单去 DOM，`read(getElementById)` = 0、125 个 schema 开 `skipWrite`）、阶段 4（inspector/工具层/原型回收）、layout M1–M5、tree 行渲染 v-for 翻默认、**B0（C2 + R3 + E1①）**、**B1（R2a + T1b + R1）**、**B2（T5b 四步：消费方迁移 + `element.group` 缺陷 + `elements` shim + `item.element` 桥 + class 直写收口）**。
-- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：B3（P2b `*-api.ts` 退役 + P4b 原型访问器）、B4（P5b 四批）、B5（R2b 本地化器）、B6（巨石 B1）、B7（L1/S1/C1），另 E1 余项与 O1 可并行。
+- **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **226 文件 1945/1945**。
+- **基线时效**：2026-09-11 执行 **B0/B1/B2**、2026-09-12 执行 **B4/B5 与 P5b 后续批次第 1 刀** 时均已改动源码并重跑套件（B1 后 ui-kit 659 → **667**、editor 1884 → **1891**；B2 步 1–2 后 editor → **1897**；P5b 后续批次第 1 刀后 editor 1934 → **1945**：新增 `variable-getter-registry.spec.ts` 6 例 + `project-settings-registry.spec.ts` 4 例 + `language-window-registry.spec.ts` 1 例）；**下次改动源码后同样需要重跑并同步本行与 `remaining-work.md`**——`pnpm docs:check` 会拦"两处基线数字不一致"（历史进展条目里的旧数字不受影响）。
+- **已交付里程碑**：阶段 1（窗口栈数据化）、阶段 2（ui-kit 契约化 + core 去重）、阶段 3（命令表单去 DOM，`read(getElementById)` = 0、125 个 schema 开 `skipWrite`）、阶段 4（inspector/工具层/原型回收）、layout M1–M5、tree 行渲染 v-for 翻默认、**B0（C2 + R3 + E1①）**、**B1（R2a + T1b + R1）**、**B2（T5b 四步：消费方迁移 + `element.group` 缺陷 + `elements` shim + `item.element` 桥 + class 直写收口）**、**B3 首刀（P4b 删 11 个零访问原型字段 + P2b 目标重定义）**、**B4（P5b 批次 1–4：`$('#…')` 1489 → 22 处 / 239 → 11 文件）**、**B5 迁移②③④（`v-tip` 指令 + 模板 `t()` 承担 1782 键，本地化器扫描面 2130 → 347）**、**P5b 后续第 1 刀（P1b：两个窗口 composable 71 处 `document.getElementById` → 0）**。
+- **在办 / 待办**（逐条验收标准与验证命令见 [remaining-work.md](./remaining-work.md)）：**P1b**（受限 API 直查收尾，155 个文件——C1 的前置）、P2b（元素 API 类型化契约）、P4b（原型访问器 72 字段）、R2b 余项（扫描面 347 → 白名单）、B6（巨石渲染层 B1 的 M1–M5）、B7（L1/S1 真机 + C1 拆脚手架），另 E1 余项与 O1 可并行。
 
 ## 维护约定（避免再次漂移）
 
@@ -46,6 +46,7 @@
 | `packages/editor/scripts/check-vue-types.mjs` | `pnpm -F @yami/editor typecheck:vue` | **vue-tsc 增量门禁**：baseline 模式只拦新增错误，baseline 存同目录 `vue-types-baseline.json` |
 | `scripts/i18n-skip-list.mjs` | `node scripts/i18n-skip-list.mjs [--check]` | **生成器**：写出 `packages/editor/src/localize/template-localized.ts`（「全部字段已由模板 `t()`/`v-tip` 承担」的本地化键集合，本地化器对其跳过 DOM 查询）；`--check` 只比对不写入。防漂移同源：`localize/__tests__/template-localized.spec.ts` |
 | `scripts/element-registry-migrate.mjs` | `node scripts/element-registry-migrate.mjs audit <src 子目录…>` / `… migrate --registry=… --registry-file=… --sfcs=… --modules=… [--apply]` | **P5b 分组迁移工具**：`audit` 列出某目录各模块用到的 `$('#id')` 及其渲染 SFC；`migrate` 生成分组注册表、改写模块侧读取、给渲染 SFC 补 `:ref`/命令式登记（默认干跑，`--apply` 才写）。文件头写明判据约定（只看 import 语句 / 不做 import 合并 / 清理前剥离注释与正则字面量） |
+| `scripts/element-ref-annotate.mjs` | `node scripts/element-ref-annotate.mjs --registry=… --registry-file=… --ids=… --sfcs=… [--apply]` | **P1b 登记注解器**：模块侧已改完（`document.getElementById('id')` → `<registry>.get('id')`）后，只补渲染 SFC 的 `:ref`/`registerElement` 登记；`:ref` 已被占用时**跳过并报 unresolved**（不静默） |
 
 分工原则：**生成器只写自己的产物、门禁只读代码与文档、执行器默认干跑**——任何会改源码的操作都必须显式加 `--apply`。
 

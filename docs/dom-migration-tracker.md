@@ -13,8 +13,8 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
-| editor/components   | 360 | 73 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 44 | 43 | 43 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/components   | 360 | 72 | 50 | 50 | 52 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
+| editor/composables  | 229 | 43 | 41 | 41 | 111 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,17 +48,18 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 155 | 155 | 168 | 56 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**158**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**158**
+- 待迁移命中文件：**155**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**155**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**2**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**3**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
   - `packages/editor/src/components/layout/palette-items.ts`
+  - `packages/editor/src/composables/useProjectSettingsWindow.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
@@ -98,9 +99,7 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1643 | 51 | 是 |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2328 | 42 | 是 |
-| packages/editor/src/composables/useProjectSettingsWindow.ts | 551 | 41 | 是 |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2610 | 37 | 是 |
-| packages/editor/src/composables/useVariableGetterWindow.ts | 645 | 35 | 是 |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | 是 |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1436 | 29 | 是 |
 | packages/editor/src/utils/element-utils.ts | 620 | 28 | 是 |
@@ -230,6 +229,7 @@
 | packages/editor/src/components/inspector/UITextPage.vue | 390 | 3 | 是 |
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
+| packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
 | packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 3 | 是 |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/inspector/file-ui-page.ts | 120 | 3 | 是 |
@@ -264,7 +264,6 @@
 | packages/editor/src/components/tools/Reference.vue | 86 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 852 | 2 | 是 |
-| packages/editor/src/components/tools/VariableGetter2.vue | 119 | 2 | 是 |
 | packages/editor/src/composables/commands/useDownloadFileCommandSchema.ts | 140 | 2 | 是 |
 | packages/editor/src/composables/commands/useGetActorCommandSchema.ts | 279 | 2 | 是 |
 | packages/editor/src/composables/commands/useGetTargetCommandSchema.ts | 147 | 2 | 是 |
@@ -661,7 +660,7 @@
 | packages/editor/src/components/tools/ImportLanguage.vue | 56 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 77 | 0 | - |
 | packages/editor/src/components/tools/ItemGetter.vue | 100 | 0 | - |
-| packages/editor/src/components/tools/Language.vue | 55 | 0 | - |
+| packages/editor/src/components/tools/Language.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/LocalVariable.vue | 54 | 0 | - |
 | packages/editor/src/components/tools/Log.vue | 38 | 0 | - |
 | packages/editor/src/components/tools/LogMessage.vue | 94 | 0 | - |
@@ -675,7 +674,7 @@
 | packages/editor/src/components/tools/PositionGetter.vue | 131 | 0 | - |
 | packages/editor/src/components/tools/PresetElement.vue | 147 | 0 | - |
 | packages/editor/src/components/tools/PresetObject.vue | 181 | 0 | - |
-| packages/editor/src/components/tools/ProjectSettings.vue | 522 | 0 | - |
+| packages/editor/src/components/tools/ProjectSettings.vue | 578 | 0 | - |
 | packages/editor/src/components/tools/QrCode.vue | 94 | 0 | - |
 | packages/editor/src/components/tools/RegionGetter.vue | 81 | 0 | - |
 | packages/editor/src/components/tools/Rename.vue | 25 | 0 | - |
@@ -706,7 +705,8 @@
 | packages/editor/src/components/tools/TextSuggestions.vue | 25 | 0 | - |
 | packages/editor/src/components/tools/TilemapGetter.vue | 92 | 0 | - |
 | packages/editor/src/components/tools/TriggerGetter.vue | 82 | 0 | - |
-| packages/editor/src/components/tools/VariableGetter.vue | 99 | 0 | - |
+| packages/editor/src/components/tools/VariableGetter.vue | 111 | 0 | - |
+| packages/editor/src/components/tools/VariableGetter2.vue | 125 | 0 | - |
 | packages/editor/src/components/tools/WindowProgress.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/Zoom.vue | 24 | 0 | - |
 | packages/editor/src/components/tree-data-context.ts | 17 | 0 | - |
@@ -896,6 +896,7 @@
 | packages/editor/src/composables/useUITextPage.ts | 105 | 0 | - |
 | packages/editor/src/composables/useUIVideoPage.ts | 45 | 0 | - |
 | packages/editor/src/composables/useUIWindowPage.ts | 61 | 0 | - |
+| packages/editor/src/composables/useVariableGetterWindow.ts | 645 | 0 | - |
 | packages/editor/src/composables/useWordList.ts | 2 | 0 | - |
 | packages/editor/src/composables/useZoomWindow.ts | 45 | 0 | - |
 | packages/editor/src/constants/editor.ts | 20 | 0 | - |
