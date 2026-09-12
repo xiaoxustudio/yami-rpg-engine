@@ -1,6 +1,7 @@
 <template>
 	<!-- 公告窗口 -->
-	<WindowFrame id="update-log" no-buttons>
+	<WindowFrame id="update-log"
+				:ref="registryRef(logEls, 'update-log')" no-buttons>
 		<template #title
 			><TitleBar
 				>{{ t('components.update-log.title') }}
@@ -67,6 +68,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { logEls } from '@app/log/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { UpdateLog, type UpdateLogItem } from '@app/log/update-log-window.ts';
 import { markndownToHtml } from '@app/module/global.ts';

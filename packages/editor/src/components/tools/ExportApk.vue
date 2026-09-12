@@ -58,8 +58,9 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
+import { moduleEls } from '@app/module/element-registry';
 import { titleEls } from '@app/title/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -82,6 +83,7 @@ const update = (): void => {
 };
 
 onMounted(() => {
+	registerElement(moduleEls, 'export-apk-content', elContent.value);
 	const el = elContent.value;
 	if (!el) return;
 	attachElementApi(el, { update });

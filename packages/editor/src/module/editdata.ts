@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
+import { moduleEls } from '@app/module/element-registry';
+import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -42,7 +43,7 @@ export const EditDataInstance = new (class {
 		theme: ''
 	};
 	isCreated = false;
-	mark = $('#edit-data-mark');
+	mark = moduleEls.get('edit-data-mark') as HTMLElement;
 	editorParent: HTMLElement | null = null;
 	editorDom: HTMLElement | null = null;
 	eventListDom: HTMLElement | null = null;
@@ -52,14 +53,14 @@ export const EditDataInstance = new (class {
 
 	bindDom() {
 		if (this.editorParent) return;
-		this.mark = $('#edit-data-mark');
-		this.editorParent = $('#edit-data');
-		this.editorDom = $('#edit-data-current');
-		this.eventListDom = $('#event-commands');
-		on($('#edit-data'), 'resize', () => {
+		this.mark = moduleEls.get('edit-data-mark') as HTMLElement;
+		this.editorParent = moduleEls.get('edit-data') as HTMLElement;
+		this.editorDom = moduleEls.get('edit-data-current') as HTMLElement;
+		this.eventListDom = eventEditorEls.get('event-commands') as HTMLElement;
+		on(moduleEls.get('edit-data') as HTMLElement, 'resize', () => {
 			this.resize();
 		});
-		on($('#edit-data-confirm'), 'click', this.save.bind(this));
+		// confirm 由 EditData.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 
 		on(this.editorParent, 'close', (event: Event) => {
 			if (this.changed) {
@@ -103,7 +104,7 @@ export const EditDataInstance = new (class {
 		});
 	}
 	isMaximized() {
-		return hasClass($('#edit-data'), 'maximized');
+		return hasClass(moduleEls.get('edit-data') as HTMLElement, 'maximized');
 	}
 	resize() {
 		const content = this.editorDom!;

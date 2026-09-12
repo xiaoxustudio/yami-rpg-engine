@@ -110,7 +110,9 @@ if (!existsSync(registryFile)) {
 let total = 0;
 const idsUsed = new Set();
 for (const p of modulePaths) {
-	let src = readFileSync(p, 'utf8');
+	const raw = readFileSync(p, 'utf8');
+	const hasBom = raw.charCodeAt(0) === 0xfeff; // 部分文件带 BOM，^import 会匹配不到
+	let src = hasBom ? raw.slice(1) : raw;
 	const before = src;
 	const eol = eolOf(src);
 	total += (src.match(RE) ?? []).length;
@@ -137,7 +139,7 @@ for (const p of modulePaths) {
 			});
 		}
 	}
-	if (APPLY && src !== before) writeFileSync(p, src);
+	if (APPLY && src !== before) writeFileSync(p, (hasBom ? '\uFEFF' : '') + src);
 }
 console.log(`模块侧 ${total} 处 / ${modulePaths.length} 文件；用到 ${idsUsed.size} 个 id`);
 

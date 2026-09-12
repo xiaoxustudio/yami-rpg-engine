@@ -18,6 +18,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { logEls } from '@app/log/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { Log } from '@app/log/log-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -82,6 +84,7 @@ const onMessageClick = (event: MouseEvent): void => {
 };
 
 onMounted(() => {
+	registerElement(logEls, 'log-message', rootEl.value);
 	const el = rootEl.value;
 	if (!el) return;
 	attachElementApi(el, { update });

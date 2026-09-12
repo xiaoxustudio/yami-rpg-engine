@@ -1,22 +1,33 @@
 <template>
-	<WindowFrame id="edit-data">
+	<WindowFrame id="edit-data"
+				:ref="registryRef(moduleEls, 'edit-data')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.edit-data.title') }}
-				<div class="text hidden" id="edit-data-mark">✱</div>
+				<div class="text hidden" id="edit-data-mark"
+				:ref="registryRef(moduleEls, 'edit-data-mark')">✱</div>
 				<div class="maximize" id="edit-data-maximize" />
 				<div class="close" /> </TitleBar
 		></template>
 
-		<div class="box" id="edit-data-current"></div>
+		<div class="box" id="edit-data-current"
+				:ref="registryRef(moduleEls, 'edit-data-current')"></div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { EditDataInstance } from '@app/module/editdata.ts';
 import { onMounted } from 'vue';
+import { moduleEls } from '@app/module/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+
+// P5b 批次 4：edit-data-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	EditDataInstance?.save?.();
+};
 
 const { t } = useI18n();
 

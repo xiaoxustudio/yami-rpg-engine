@@ -1,5 +1,5 @@
-﻿import { $ } from '@app/utils/dom';
-import { Window } from '@app/tools/window-object.ts';
+﻿import { Window } from '@app/tools/window-object.ts';
+import { logEls } from '@app/log/element-registry';
 import { on } from '@app/utils/element-utils.ts';
 import { Updater } from '@app/services/updater/updater.ts';
 import { initializeUpdateLog } from '@app/module/global.ts';
@@ -31,7 +31,7 @@ UpdateLog.initialize = function () {
 	this.currentMode = 'internal';
 	this.internalItems = [];
 	this.communityItems = [];
-	const el = $('#update-log');
+	const el = logEls.get('update-log') as HTMLElement;
 	if (el) on(el, 'closed', this.windowClosed!);
 };
 

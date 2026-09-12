@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { moduleEls } from '@app/module/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read, write } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -22,15 +22,15 @@ export const SetTileTag: {
 };
 
 SetTileTag.initialize = function () {
-	if (!$('#setTileTag')) return;
-	on($('#setTileTag'), 'closed', this.windowClosed!);
-	on($('#setTileTag-confirm'), 'click', this.confirm!);
+	if (!moduleEls.get('setTileTag')) return;
+	on(moduleEls.get('setTileTag') as HTMLElement, 'closed', this.windowClosed!);
+	// confirm 由 SetTileTag.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 };
 
 SetTileTag.open = function (tag: unknown, callback: (tag: unknown) => void) {
 	this.callback = callback;
 	Window.open!('setTileTag');
-	write($('#setTileTag-tag'), tag);
+	write(moduleEls.get('setTileTag-tag') as HTMLElement, tag);
 	requestFocus('setTileTag-tag', 'all');
 };
 
@@ -39,6 +39,6 @@ SetTileTag.windowClosed = function (this: typeof SetTileTag) {
 }.bind(SetTileTag);
 
 SetTileTag.confirm = function (this: typeof SetTileTag) {
-	this.callback!(read($('#setTileTag-tag')));
+	this.callback!(read(moduleEls.get('setTileTag-tag') as HTMLElement));
 	Window.close!('setTileTag');
 }.bind(SetTileTag);

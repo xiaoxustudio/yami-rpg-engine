@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { logEls } from '@app/log/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -100,10 +100,10 @@ export const Reference = {
 };
 
 Reference.initialize = function () {
-	const refEl = $('#reference');
+	const refEl = logEls.get('reference') as HTMLElement;
 	if (!refEl) return;
 	on(refEl, 'closed', this.windowClosed!);
-	const refListEl = $('#reference-list');
+	const refListEl = logEls.get('reference-list') as HTMLElement;
 	if (refListEl) on(refListEl, 'popup', this.listPopup!);
 };
 
@@ -817,7 +817,7 @@ Reference.update = function (items: ReferenceItem[]) {
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (_event: Event) {
-	clear($('#reference-list'));
+	clear(logEls.get('reference-list') as HTMLElement);
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {

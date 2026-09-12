@@ -6,7 +6,8 @@
 			<div class="box" id="home-content"
 				:ref="registryRef(titleEls, 'home-content')">
 				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
-				<div class="text" id="home-version"></div>
+				<div class="text" id="home-version"
+				:ref="registryRef(moduleEls, 'home-version')"></div>
 				<div class="box" id="home-start-list" @click="onHomeStartClick">
 					<div class="item home-list-label" id="home-start-label">Start</div>
 					<div class="item home-start-item" id="home-start-new" value="new">
@@ -982,6 +983,7 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { moduleEls } from '@app/module/element-registry';
 import { titleEls } from '@app/title/element-registry';
 import { particleEls } from '@app/particle/element-registry';
 import { engineEls } from '@app/engine/element-registry';

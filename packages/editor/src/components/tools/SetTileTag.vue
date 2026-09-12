@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setTileTag">
+	<WindowFrame id="setTileTag"
+				:ref="registryRef(moduleEls, 'setTileTag')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTileTag.title') }}
@@ -8,17 +9,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTileTag-tag.label') }}</div>
-			<NumberBox id="setTileTag-tag" min="0" max="99999" />
+			<NumberBox id="setTileTag-tag"
+				:ref="registryRef(moduleEls, 'setTileTag-tag')" min="0" max="99999" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { SetTileTag } from '@app/module/set-tile-tag.ts';
 import { onMounted } from 'vue';
+import { moduleEls } from '@app/module/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
+
+// P5b 批次 4：setTileTag-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	SetTileTag?.confirm?.();
+};
 
 const { t } = useI18n();
 

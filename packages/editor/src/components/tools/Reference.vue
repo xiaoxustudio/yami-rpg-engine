@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="reference" no-buttons>
+	<WindowFrame id="reference"
+				:ref="registryRef(logEls, 'reference')" no-buttons>
 		<template #title
 			><TitleBar
 				>Reference
@@ -12,7 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
+import { logEls } from '@app/log/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry();
@@ -56,6 +58,8 @@ const updateItems = (items: ReferenceItem[]): void => {
 };
 
 onMounted(() => {
+	// 模块（related-references.ts）从 logEls 读 #reference-list → 由本组件镜像登记
+	registerElement(logEls, 'reference-list', fieldEls.get('reference-list'));
 	registerReferenceUpdate(updateItems);
 });
 </script>

@@ -1,9 +1,9 @@
 import Path from 'node:path';
+import { moduleEls } from '@app/module/element-registry';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import fsExtra from 'fs-extra';
 import nodeYauzl from 'yauzl';
-import { $ } from '@app/utils/dom';
 import { Resources } from './resource.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import { Updater } from '@app/services/updater/updater.ts';
@@ -89,7 +89,7 @@ export let homeElem: HTMLElement | null = null;
 window.addEventListener(
 	'vue-app-mounted',
 	() => {
-		homeElem = $('#home-version');
+		homeElem = moduleEls.get('home-version') as HTMLElement;
 		if (homeElem) {
 			homeElem.textContent = `当前社区版本：${CommunityVersion} 当前编辑器版本：${Updater.latestEditorVersion} 
 当前项目版本：${Updater.latestProjectVersion}`;

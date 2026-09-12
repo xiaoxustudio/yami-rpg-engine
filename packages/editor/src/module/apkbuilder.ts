@@ -1,6 +1,7 @@
 ﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { moduleEls } from '@app/module/element-registry';
+import { titleEls } from '@app/title/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { $ } from '@app/utils/dom';
 import { enable } from '@app/utils/element-utils.ts';
 import { Path } from '@app/utils/config';
 import { Editor } from '@app/services/project/editor.ts';
@@ -30,18 +31,18 @@ export const ApkBuilder = new (class {
 		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
-		($('#export-apk-content') as HTMLElement & { update?: () => void }).update?.();
+		(moduleEls.get('export-apk-content') as HTMLElement & { update?: () => void }).update?.();
 	}
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();
 		if (log.done) {
-			enable($('#export-apk-button'));
+			enable(titleEls.get('export-apk-button') as HTMLElement);
 		}
 	}
 	reset() {
 		this.logs.length = 0;
 		this.notifyLogContent();
-		enable($('#export-apk-button'));
+		enable(titleEls.get('export-apk-button') as HTMLElement);
 	}
 	clearLog() {
 		this.logs = [];

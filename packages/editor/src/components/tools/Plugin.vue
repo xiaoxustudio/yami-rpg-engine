@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="plugin" show-apply @apply="onApply">
+	<WindowFrame id="plugin"
+				:ref="registryRef(pluginEls, 'plugin')" show-apply @apply="onApply">
 		<template #title
 			><TitleBar
 				>{{ t('components.plugin.title') }}
@@ -10,6 +11,7 @@
 			<div class="legend">{{ t('components.plugin-list.label') }}</div>
 			<TreeList
 				id="plugin-list"
+				:ref="registryRef(pluginEls, 'plugin-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -20,13 +22,16 @@
 			/>
 		</div>
 		<div class="box" id="plugin-inspector">
-			<DetailBox id="plugin-overview-detail" open>
+			<DetailBox id="plugin-overview-detail"
+				:ref="registryRef(pluginEls, 'plugin-overview-detail')" open>
 				<DetailSummary>Overview</DetailSummary>
-				<div class="box" id="plugin-overview" @update="syncOverview">
+				<div class="box" id="plugin-overview"
+				:ref="registryRef(pluginEls, 'plugin-overview')" @update="syncOverview">
 					<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
 				</div>
 			</DetailBox>
-			<ParameterPane id="plugin-parameter-pane">
+			<ParameterPane id="plugin-parameter-pane"
+				:ref="registryRef(pluginEls, 'plugin-parameter-pane')">
 				<DetailBox id="plugin-parameter-detail" open>
 					<DetailSummary>Parameters</DetailSummary>
 					<div class="detail-grid" id="plugin-parameter-grid" />
@@ -38,6 +43,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
+import { pluginEls } from '@app/plugin/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';

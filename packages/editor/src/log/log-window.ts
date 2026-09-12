@@ -1,5 +1,5 @@
-﻿import { $ } from '@app/utils/dom';
-import { Editor } from '@app/services/project/editor.ts';
+﻿import { Editor } from '@app/services/project/editor.ts';
+import { logEls } from '@app/log/element-registry';
 
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
@@ -31,7 +31,7 @@ interface LogShape {
 
 export const Log: LogShape = {
 	get box() {
-		return $('#log-message');
+		return logEls.get('log-message') as HTMLElement;
 	},
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,

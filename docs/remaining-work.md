@@ -16,7 +16,7 @@
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 **2130** 个键在启动时逐键做 DOM 查询（2112 按 id + 18 按 name） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
-| P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址，**1489 处 / 252 文件**） | 大 | 需按模块分批，先度量后动手 | 未开始（**此前不在任何报表内**） |
+| P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
 | P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **72** 个字段的 get/set（共 144 访问器；B3 已先删 11 个零访问字段），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
@@ -84,7 +84,7 @@
 | ✅ **B1 小收口（已完成 2026-09-11）** | R2a（i18n 启动副作用）→ T1b（分页键 + 1000+ 基准）→ R1（资源列表数据化） | 无 | R2a `i18n/index.ts` + `YMFormButtons.vue` + `stores/local.ts`；T1b `tree-api.ts` + 2 个 spec；R1 `resource.ts` 667 → 569 行 + 新 store + 新组件 + `Resource.vue` | **实测**：`editor/i18n` 受限 API **3 → 0**（待迁移命中 160 → **159**、`getElementById` 244 → **243**）；tree 用例 **+8**（ui-kit 659 → 667）；**R1**：`editor/module` 的 `innerHTML` **1 → 0**、`DOMParser` **全仓 1 → 0**、`$('#…')` **1489 → 1481** 处 / 239 → **238** 文件；editor 新增 5 个 store 用例 | ✅ 各提交独立 revert |
 | ✅ **B2 tree 收口（已完成 2026-09-11）** | **T5b**：消费方迁移（含方案漏列的 `command-tip.ts` 两处）→ 删 `elements` shim → 删 `item.element` 写回桥 / `TreeItem.element` / `clearTreeItemText` / `deleteNodeElements`（+ 新增 `treeRowElement` 公开 API）→ 收口 class 直写（**select/unselect/pointer 判断/hint 全清**）；**`element.group` 幽灵属性已修** | 无（方案含实测行号） | 步 1–2：5 个消费方文件 + `utils/folder-group.ts` + 2 个新 spec；步 3a：`tree-api.ts` 内部 7 点 + shim/`syncElementsShim`/`clearElements` + 4 个 spec 20 处；步 3b：`tree-render`/`tree-core`/`tree-api`/`index.ts`/`command-tip.ts` + **9 个 spec 71 处断言**；步 4：4 支 dragover + `dragend` + `hintItem` 限定 + 2 处断言 | **实测**：`tree-api.ts` **1726 → 1637 行**（−89）；tracker `parentNode` **130 → 127**、`dispatchEvent` **172 → 171**；待迁移命中/豁免注释/陈旧豁免 **159 / 159 / 0** 与 `$('#…')` **1481** 不变；**行为变更 1 处**（菜单勾选由"恒 false"→正确，先失败后转绿）；**顺带修复 3 处**（`windowLocalize` 手清 vnode、pointer 选中判断耦合 DOM class、`rename` 对窗口外行抛错） | 4 步各自 revert（已分别提交） |
 | 🚧 **B3 元素 API 与原型（2026-09-11 首刀完成）** | **P4b 首刀**：删 11 个零访问原型字段（83 → 72）；**P2b 目标重定义**：实测 25 个组件 api 文件全部是元素优先实现、零死文件 → 验收从「26 → 0」改为「类型化契约 + Vue 内子集随 P5b + 豁免收窄」 | P2b 依赖 P5b 的 ref 化节奏（Vue 内子集） | `element-data.ts` 一行删字段；P2b 侧 25 个 api 文件 + 682 处鸭子调用 | **实测（P4b 首刀）**：`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck/vue-tsc/oxlint + 两个套件全绿；`stores/localization.ts` 的一处类型残留（`initText`/`attrValue`）一并清理。**P2b 复核**：api 文件计数门禁保留、目标改为"不增长" | 各自单提交 revert |
-| 🚧 **B4 `$()` 退役（批 1 已完成 2026-09-11）** | **P5b 四批**：~~批次 1 `components/tools`（136 处 / 2 文件）~~**已完成**（实测 78 + 58 = 136 处全清）→ 批次 2 `editor/commands` 模块（153 / 27；**批 2 全部完成**）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1347（实测，含 2 处注释）→ … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
+| ✅ **B4 `$()` 退役（批 1–4 全部完成 2026-09-11）** | **P5b 四批**：~~批次 1 `components/tools`（136 处 / 2 文件）~~**已完成**（实测 78 + 58 = 136 处全清）→ 批次 2 `editor/commands` 模块（153 / 27；**批 2 全部完成**）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1347（实测，含 2 处注释）→ … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
 | **B5 i18n 工程线** | **R2b**：按承载者给 2130 个键分类 → 先迁 Vue 承担部分 → 目标元素自注册 → 语言文件不再以选择器为键 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
 | **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役） | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 4 完成 title/particle 后为 56 处 / 23 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；P5b 批次 1–4 完成后为 22 处 / 11 文件，残余全部为动态 id / 外壳元素 / 基础设施 / 白名单，见下方 P5b 结项）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -534,6 +534,39 @@
 - **🆕 新登记的尾项（本轮发现，不在原计划内）——「确认按钮启用态属性化」**：
   `deploy-project-window.ts` / `new-project-window.ts` 里各有若干 `disable(...)`/`enable(titleEls.get('…-confirm'))` 调用（共 **7 处**），用来在表单无效时禁用确认按钮；而 `…-confirm` 按钮由 `WindowFrame` → `YMFormButtons` 生成、模板里没有、注册表取不到 → 迁移后这些调用恒为 no-op ✗。而两个模块的 `confirm()` **自带校验**（没有 early-return），所以按钮保持可点意味着**无效输入也能提交**（虽然会走 copy/mkdir 的分支，属边界行为）。处置：**删除已成死代码的 7 处调用**（并在 `new-project-window.ts` 处留说明注释保留原意图），同时把它登记为独立尾项——正确修法是给 `WindowFrame` 增 `confirm-disabled` 属性透传到 `YMFormButtons` 的 `button[name="confirm"]`，由 SFC 绑定模块的响应式状态。**涉及共享组件，故不在本刀顺手改**（U 型风险），列入 `remaining-work.md` 清单。
 - 另有 **10 个文件**（8 个 registry 回归 spec + `types/shapes.ts` + `utils/element-registry.ts`）注释里带字面 `$('#id')`，造成假命中，已统一改写（58 → 56 中的 2 处来自这里）。
+
+**批 4 第七刀（`src/module` 17 + `src/log` 5 + `src/plugin` 7 = 29 处 / 8 文件 → 0）**
+
+- `log`：`log-window.ts`(1) + `related-references.ts`(3) + `update-log-window.ts`(1) → `logEls` + `LogMessage.vue`(具名) / `Reference.vue` / `UpdateLog.vue`。
+- `plugin`：`plugin-initialize.ts`(7) → `pluginEls` + `Plugin.vue`(5 ref)；`plugin-confirm` 由 SFC `@confirm` 承接。
+- `module`：`apkbuilder.ts`(3) + `constants.ts`(1) + `editdata.ts`(8) + `set-tile-tag.ts`(5) → `moduleEls` + `ExportApk.vue` / `LayoutPanel.vue` / `EditData.vue` / `SetTileTag.vue`。
+  - **跨注册表复用（第 5、6 次）**：`editdata.ts` 的 `#event-commands` 属 **`eventEditorEls`**（批 2 产物）→ 改读它；`apkbuilder.ts` 的 `#export-apk-button` 属 **`titleEls`**（`menu-bar.ts` 那批）→ 改读它。
+  - **两个 confirm**：`edit-data-confirm` → `EditData.vue` 的 `@confirm` 调 `EditDataInstance.save?.()`（模块导出的是类实例，不是 `EditData` ✗ 首版导入名写错，typecheck 抓到）；`setTileTag-confirm` → `SetTileTag.vue` 的 `@confirm` 调 **无参** `SetTileTag.confirm?.()`（首版误传 `new Event('click')`，TS2554 抓到）。
+  - **`Reference.vue` 的 `#reference-list` 已在局部 `fieldEls`**（批 4 第一刀产物）→ 按"镜像登记"处理（`registerElement(logEls, 'reference-list', fieldEls.get('reference-list'))`），与 `SwitchCondition.vue` 同一手法。
+
+**🔎 本轮修掉一个隐蔽的工具缺陷：BOM**
+
+`log-window.ts` / `update-log-window.ts` 保留着未使用的 `$` 导入（TS6133），而工具的"清理未用 `$` 导入"没生效——根因是这两个文件带 **UTF-8 BOM**（`\uFEFF`）→ 正则 `^import` 匹配不到。已把工具改为**读时剥离 BOM、写回时保留**（`dom-guard.mjs fix` 子命令处理的是同一类问题，说明这是本仓库的已知坑）。
+
+---
+
+### ✅ P5b 批次 1–4 结项（2026-09-11）
+
+**`$('#…')` 从 1481 处 / 238 文件降到 22 处 / 11 文件（−98.5%）**，且**残余全部落在计划认可的类别内**（白名单外为 0）：
+
+| 类别 | 处数 | 说明 |
+| --- | --- | --- |
+| **动态 id**（模板拼接，运行时才知道） | **16** | `commands/schema.ts`(4)：`` $(`#${this.name}-${field.domId ?? field.key}`) ``；`inspector/file-entity-page.ts`(5)：`` $(`#${domKey}-…`) ``；`services/.../renderer.ts`(3)：`` $(`#${this.id}`) `` 等；`commands/accessors/preset-accessor-factory.ts`(1)、`data/transition-window.ts`(1)、`engine/ui/reference-element.ts`(1)、`variable/open.ts`(1) |
+| **外壳元素**（`index.html` 里的静态 HTML） | **2** | `utils/element-utils.ts` 的 `#tooltip`、`tools/window-object.ts` 的 `#window-ambient`——二者都在 `index.html` 且 `vitest.setup.ts` 为测试预建，不属"组件控件" |
+| **基础设施**（`$` 助手与其派生工具自身） | **2** | `utils/dom.ts` 的 `$` 定义与 `getElementReader/Writer` 内部 |
+| **白名单**（运行时才知道目标控件 id） | **1** | `tools/image-crop-window.ts`：`` read($('#' + id)) ``，`id` 取自 target 元素的 `image` 属性 |
+
+**四个批次的做法沉淀**（可复用）：
+- **批 1**：SFC 内模板 ref + 组件局部注册表（`components/**` 588 处）；
+- **批 2**：非 SFC 模块 → SFC 登记的注册表（accessor 用控件实例注册表，属性窗口/命令窗口/tips 用元素注册表）；
+- **批 3**：跨 37 个模块的**共享**注册表（`inspectorEls`）+ id 粒度归属审计；
+- **批 4**：分组注册表工具链（`scripts/element-registry-migrate.mjs`：`audit` + `migrate`），逐组推进并逐组提交。
+- **跨注册表复用共 6 次**（`fileTileset`→`inspectorEls`、`animSpriteFrame-vue-mount`→`inspectorEls`、`title`→`windowShellEls`、`event-commands`→`eventEditorEls`、`export-apk-button`→`titleEls`、`reference-list`→局部 `fieldEls` 镜像）——**先查"是否已被别的注册表登记"，再决定新建还是复用**。
 
 ## B1 — 巨石渲染层重写
 

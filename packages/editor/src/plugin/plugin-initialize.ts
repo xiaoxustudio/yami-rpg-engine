@@ -1,7 +1,7 @@
 import { PluginManager } from './plugin.ts';
+import { pluginEls } from '@app/plugin/element-registry';
 import type { PluginItemShape } from './plugin.ts';
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
 import { clear, getFocus, hide, on, show } from '@app/utils/element-utils.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
@@ -10,13 +10,13 @@ import type { TreeListElement } from '@app/components/tree-list.ts';
 
 function ensureDomBound() {
 	if (PluginManager.list) return;
-	const list = $('#plugin-list');
+	const list = pluginEls.get('plugin-list') as HTMLElement;
 	if (!list) return;
 	PluginManager.list = list;
-	PluginManager.overviewPane = $('#plugin-overview-detail');
+	PluginManager.overviewPane = pluginEls.get('plugin-overview-detail') as HTMLElement;
 	hide(PluginManager.overviewPane);
-	PluginManager.overview = $('#plugin-overview');
-	PluginManager.parameterPane = $('#plugin-parameter-pane');
+	PluginManager.overview = pluginEls.get('plugin-overview') as HTMLElement;
+	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as HTMLElement;
 	hide(PluginManager.parameterPane);
 	// oxlint-disable-next-line no-explicit-any
 	list.insert = null as unknown as (...args: unknown[]) => any;
@@ -72,15 +72,15 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 		(this.parameterPane as TreeListElement).bind(list);
 	}
 
-	on($('#plugin'), 'close', this.windowClose!);
-	on($('#plugin'), 'closed', this.windowClosed!);
+	on(pluginEls.get('plugin') as HTMLElement, 'close', this.windowClose!);
+	on(pluginEls.get('plugin') as HTMLElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect!);
 	// list change 经 Vue 模板转发（Plugin.vue @change → PluginManager.listChange）
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate!);
-	on($('#plugin-confirm'), 'click', this.confirm!);
+	on(pluginEls.get('plugin-confirm') as HTMLElement, 'click', this.confirm!);
 };
 
 PluginManager.open = function (this: typeof PluginManager) {
