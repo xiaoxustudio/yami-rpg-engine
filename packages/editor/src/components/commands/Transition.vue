@@ -36,7 +36,8 @@
 				v-model="form.end"
 			/>
 			<div class="text">{{ t('components.transition-easingId.label') }}</div>
-			<SelectBox id="transition-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="transition-easingId"
+				:ref="registryRef(fieldEls, 'transition-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">{{ t('components.transition-duration.label') }}</div>
 			<NumberVar
 				id="transition-duration"
@@ -53,9 +54,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils';

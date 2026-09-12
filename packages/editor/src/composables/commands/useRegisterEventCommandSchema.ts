@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -149,8 +149,8 @@ const switchTypeAndTagInput = (): void => {
 		hide(input.previousElementSibling);
 		hide(input);
 	};
-	const typeInput = document.getElementById('registerEvent-type')!;
-	const tagInput = document.getElementById('registerEvent-tag')!;
+	const typeInput = composableEls.get('registerEvent-type') as HTMLElement;
+	const tagInput = composableEls.get('registerEvent-tag') as HTMLElement;
 	const target = form.target;
 	const operation = form.operation;
 	switch (target) {
@@ -208,7 +208,7 @@ const switchPriority = (): void => {
 	const target = form.target;
 	const operation = form.operation;
 	const type = form.type;
-	const priority = document.getElementById('registerEvent-priority')!;
+	const priority = composableEls.get('registerEvent-priority') as HTMLElement;
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
 		show(priority);
@@ -221,7 +221,7 @@ const switchPriority = (): void => {
 };
 
 const switchNamespace = (): void => {
-	const namespace = document.getElementById('registerEvent-namespace')!;
+	const namespace = composableEls.get('registerEvent-namespace') as HTMLElement;
 	const operation = form.operation;
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);
@@ -246,7 +246,7 @@ const createEventTypeItems = (target: string): Array<{ name: string; value: stri
 
 // 依据 target 加载 Type 下拉选项；用户主动切换 target 时强制回到该组首个事件类型
 const syncEventTypes = (target: string): void => {
-	const elEventType = document.getElementById('registerEvent-type');
+	const elEventType = composableEls.get('registerEvent-type');
 	if (!elEventType) {
 		return;
 	}

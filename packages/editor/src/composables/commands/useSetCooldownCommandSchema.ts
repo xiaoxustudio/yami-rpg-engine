@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -50,7 +50,7 @@ export function useSetCooldownCommandSchema() {
 	return useCommandSchema('setCooldown', {
 		skipWrite: true,
 		onLoad() {
-			const el = document.getElementById('setCooldown-key')!;
+			const el = composableEls.get('setCooldown-key') as HTMLElement;
 			el.loadItems(Enum.getStringItems!('cooldown-key'));
 			requestFocus('setCooldown-actor');
 		}

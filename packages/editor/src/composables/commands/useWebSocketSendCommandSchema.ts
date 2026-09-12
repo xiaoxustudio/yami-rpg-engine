@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 
@@ -43,13 +43,13 @@ export function useWebSocketSendCommandSchema() {
 		}
 	});
 	const onSave = (): void => {
-		const elId = document.getElementById('webSocketSend-id');
+		const elId = composableEls.get('webSocketSend-id');
 		const id = read(elId) ?? form.id;
 		if (!id || VariableGetter.isNone!(id)) {
 			getFocus(elId);
 			return;
 		}
-		const elData = document.getElementById('webSocketSend-data');
+		const elData = composableEls.get('webSocketSend-data');
 		const data = read(elData) ?? form.data;
 		if (!data || VariableGetter.isNone!(data)) {
 			getFocus(elData);

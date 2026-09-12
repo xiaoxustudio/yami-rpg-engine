@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Token } from '@app/commands/token.ts';
@@ -77,7 +77,7 @@ const createDefault = (): Record<string, unknown> => {
 };
 
 const load = (params: Record<string, unknown> = {}): void => {
-	document.getElementById('castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
+	composableEls.get('castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 	Object.assign(form, createDefault(), params);
 	requestFocus('castSkill-actor');
 };

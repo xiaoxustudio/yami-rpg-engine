@@ -21,6 +21,7 @@
 			/>
 			<div class="text">{{ t('components.changeActorSprite-spriteId.label') }}</div>
 			<SelectBox id="changeActorSprite-spriteId"
+				:ref="registryRef(fieldEls, 'changeActorSprite-spriteId')"
 				v-tip="t('components.changeActorSprite-spriteId.tip')" v-model="form.spriteId" />
 			<div class="text">{{ t('components.changeActorSprite-image.label') }}</div>
 			<CustomBox
@@ -36,6 +37,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { composableEls } from '@app/composables/element-registry';
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { useChangeActorSpriteCommandSchema } from '@app/composables/commands/useChangeActorSpriteCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -43,6 +46,9 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
+
+// 本组件的控件元素注册表
+const fieldEls = createElementRegistry(composableEls);
 
 const { form, save, writeHandler } = useChangeActorSpriteCommandSchema();
 

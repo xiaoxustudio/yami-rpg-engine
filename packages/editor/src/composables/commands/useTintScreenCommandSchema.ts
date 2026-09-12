@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -78,7 +78,7 @@ export function useTintScreenCommandSchema() {
 			'tint-2': tint[2],
 			'tint-3': tint[3]
 		});
-		write(document.getElementById('tintScreen-filter'), tint);
+		write(composableEls.get('tintScreen-filter'), tint);
 	};
 	const onSave = (): void => {
 		const tint = [form['tint-0'], form['tint-1'], form['tint-2'], form['tint-3']];

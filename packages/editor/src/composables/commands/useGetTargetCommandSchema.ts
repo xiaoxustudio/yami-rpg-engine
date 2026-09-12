@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { commit } from '@app/composables/useCommandSchema';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Token } from '@app/commands/token.ts';
@@ -85,8 +85,8 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	const attrItems = Attribute.getAttributeItems!('actor', 'number');
-	document.getElementById('getTarget-attribute')?.loadItems?.(attrItems);
-	document.getElementById('getTarget-divisor')?.loadItems?.(attrItems);
+	composableEls.get('getTarget-attribute')?.loadItems?.(attrItems);
+	composableEls.get('getTarget-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), params);
 	requestFocus('getTarget-actor');
 };

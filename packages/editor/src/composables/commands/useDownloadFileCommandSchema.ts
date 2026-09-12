@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { disable, enable } from '@app/utils/element-utils';
+﻿import { disable, enable } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -110,9 +110,9 @@ export function useDownloadFileCommandSchema() {
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
 		if (params.isBackground) {
-			enable(document.getElementById('downloadFile-isBackground-path')!);
+			enable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
 		} else {
-			disable(document.getElementById('downloadFile-isBackground-path')!);
+			disable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
 		}
 		load(params);
 	};

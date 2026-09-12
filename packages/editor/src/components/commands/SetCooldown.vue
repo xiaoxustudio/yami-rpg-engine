@@ -16,6 +16,7 @@
 				:ref="registryRef(fieldEls, 'setCooldown-operation')" v-model="form.operation" />
 			<div class="text">{{ t('components.setCooldown-key.label') }}</div>
 			<SelectVar id="setCooldown-key"
+				:ref="registryRef(fieldEls, 'setCooldown-key')"
 				v-tip="t('components.setCooldown-key.tip')" v-model="form.key" />
 			<div class="text">{{ t('components.setCooldown-cooldown.label') }}</div>
 			<NumberVar
@@ -32,9 +33,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';

@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { read } from '@app/utils/element-utils';
+﻿import { read } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -107,7 +107,7 @@ export function usePlayAnimationCommandSchema() {
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = document.getElementById('playAnimation-motion')!;
+		const elMotion = composableEls.get('playAnimation-motion') as HTMLElement;
 		elMotion?.loadItems?.(Animation.getMotionListItems!(event.value));
 		elMotion?.write2?.(read(elMotion));
 	};

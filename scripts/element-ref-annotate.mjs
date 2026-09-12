@@ -21,6 +21,14 @@
  *     --registry-file=packages/editor/src/composables/element-registry.ts \
  *     --ids=a,b,c --sfcs=packages/editor/src/components/tools/VariableGetter.vue [--apply]
  *   省略 --apply 为干跑（只打印将做的改动）。
+ *
+ * 变体（P1b 命令表单批次用）：
+ *   --local                     主注册表定义在 SFC 自身（如局部 `fieldEls`）→ 不补它的 import
+ *   --mirror-to=composableEls --mirror-file=<路径>
+ *                               把 SFC 的局部注册表改成**创建时镜像**（`createElementRegistry(composableEls)`），
+ *                               写入即同步进共享注册表，供跨模块 composable 读取——命令表单 SFC 的
+ *                               控件早已挂在局部 `fieldEls` 上，`$('#id')` → `composableEls.get('id')` 需要它。
+ *                               **不要**改用 onMounted 循环拷贝：子组件 onMounted 早于父组件，会慢一拍。
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -35,12 +43,24 @@ const registry = opt('registry');
 const registryFile = opt('registry-file');
 const ids = (opt('ids') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 const sfcPaths = (opt('sfcs') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+/** 主注册表定义在 SFC 自身（如命令表单的局部 `fieldEls`）→ 不补它的 import */
+const LOCAL_REGISTRY = args.includes('--local');
+/** 镜像目标：在 onMounted 里把主注册表的条目整体镜像进另一个（跨模块共享的）注册表 */
+const mirrorTo = opt('mirror-to');
+const mirrorFile = opt('mirror-file');
 
-if (!registry || !registryFile || ids.length === 0 || sfcPaths.length === 0) {
-	console.error('缺少参数：--registry --registry-file --ids --sfcs');
+if (!registry || ids.length === 0 || sfcPaths.length === 0 || (!LOCAL_REGISTRY && !registryFile)) {
+	console.error(
+		'缺少参数：--registry --ids --sfcs [--registry-file | --local] [--mirror-to=… --mirror-file=…]'
+	);
 	process.exit(1);
 }
-const regImport = registryFile.replace('packages/editor/src/', '@app/').replace(/\.ts$/, '');
+if (mirrorTo && !mirrorFile) {
+	console.error('--mirror-to 需要同时给 --mirror-file');
+	process.exit(1);
+}
+const regImport = (registryFile ?? '').replace('packages/editor/src/', '@app/').replace(/\.ts$/, '');
+const mirrorImport = (mirrorFile ?? '').replace('packages/editor/src/', '@app/').replace(/\.ts$/, '');
 
 const hasImport = (src, symbol, mod) =>
 	new RegExp(
@@ -49,6 +69,7 @@ const hasImport = (src, symbol, mod) =>
 
 let fresh = 0;
 let namedCount = 0;
+let mirroredCount = 0;
 const unresolved = [];
 const missed = [];
 
@@ -113,6 +134,13 @@ for (const rel of sfcPaths) {
 	) {
 		helpers.push('registerElement');
 	}
+	if (
+		mirrorTo &&
+		new RegExp(`createElementRegistry\\(${mirrorTo}\\)`).test(sfc) &&
+		!/import \{[^}]*\bcreateElementRegistry\b[^}]*\} from '@app\/utils\/element-registry'/.test(sfc)
+	) {
+		helpers.push('createElementRegistry');
+	}
 	if (helpers.length > 0) {
 		if (/import \{[^}]*\} from '@app\/utils\/element-registry';/.test(sfc)) {
 			sfc = sfc.replace(
@@ -135,14 +163,41 @@ for (const rel of sfcPaths) {
 			);
 		}
 	}
-	if (!hasImport(sfc, registry, regImport)) {
+	if (!LOCAL_REGISTRY && !hasImport(sfc, registry, regImport)) {
 		sfc = sfc.replace(/^(import [^\n]*\r?\n)/m, `$1import { ${registry} } from '${regImport}';${eol}`);
 	}
 
+	// 镜像：把局部注册表改成「创建时镜像」——写入即同步进共享注册表，供跨模块 composable 读取。
+	// 不在 SFC 的 onMounted 里循环拷贝：子组件 onMounted 早于父组件（Vue post-flush 顺序），
+	// 而命令表单控件会在自己的 onMounted 里 emit write/input 触发模块侧代码，拷贝会慢一拍。
+	if (mirrorTo && new RegExp(`registryRef\\(${registry}`).test(sfc)) {
+		const declared = new RegExp(`createElementRegistry\\(\\s*${mirrorTo}\\s*\\)`).test(sfc);
+		if (declared) {
+			// 已是创建时镜像
+		} else if (/createElementRegistry\(\s*\)/.test(sfc)) {
+			sfc = sfc.replace(/createElementRegistry\(\s*\)/g, `createElementRegistry(${mirrorTo})`);
+			mirroredCount++;
+		} else if (/const\s+\w+\s*=\s*new Map/.test(sfc)) {
+			console.error(`  !! ${rel} 注册表不是 createElementRegistry()，镜像需人工`);
+		} else {
+			console.error(`  !! ${rel} 未找到 createElementRegistry()，镜像需人工`);
+		}
+		if (!hasImport(sfc, mirrorTo, mirrorImport)) {
+			sfc = sfc.replace(
+				/^(import [^\n]*\r?\n)/m,
+				`$1import { ${mirrorTo} } from '${mirrorImport}';${eol}`
+			);
+		}
+	}
+
 	if (APPLY) writeFileSync(path, sfc);
-	console.log(`  ${rel.split('/').pop()}: +${freshHere} :ref, ${namedHere.length} 具名`);
+	console.log(
+		`  ${rel.split('/').pop()}: +${freshHere} :ref, ${namedHere.length} 具名${mirrorTo ? '，创建时镜像 ✓' : ''}`
+	);
 }
 
-console.log(`合计：新增 ${fresh} 个 :ref、${namedCount} 个具名 ref 命令式登记`);
+console.log(`合计：新增 ${fresh} 个 :ref、${namedCount} 个具名 ref 命令式登记、${mirroredCount} 个创建时镜像`);
+if (unresolved.length > 0) console.log(`需人工（:ref 已占用）: ${unresolved.join(', ')}`);
+if (missed.length > 0) console.log(`未在模板中找到（请核对 id）: ${missed.join(', ')}`);
 if (unresolved.length > 0) console.log(`需人工（:ref 已占用）: ${unresolved.join(', ')}`);
 if (missed.length > 0) console.log(`未在模板中找到（请核对 id）: ${missed.join(', ')}`);

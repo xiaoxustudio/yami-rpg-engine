@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.removeAnimationComponent-motion.label') }}</div>
 			<SelectBox id="removeAnimationComponent-motion"
+				:ref="registryRef(fieldEls, 'removeAnimationComponent-motion')"
 				v-tip="t('components.removeAnimationComponent-motion.tip')" v-model="form.motion" />
 		</div>
 	</WindowFrame>
@@ -33,6 +34,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { composableEls } from '@app/composables/element-registry';
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { useRemoveAnimationComponentCommandSchema } from '@app/composables/commands/useRemoveAnimationComponentCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -40,6 +43,9 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
+
+// 本组件的控件元素注册表
+const fieldEls = createElementRegistry(composableEls);
 
 const { form, save, writeHandler } = useRemoveAnimationComponentCommandSchema();
 

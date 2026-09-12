@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { read, write } from '@app/utils/element-utils';
+﻿import { read, write } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
@@ -53,7 +53,7 @@ export function useChangeActorSpriteCommandSchema() {
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
 		const items = Animation.getSpriteListItems!(event.value);
-		const elSpriteId = document.getElementById('changeActorSprite-spriteId')!;
+		const elSpriteId = composableEls.get('changeActorSprite-spriteId') as HTMLElement;
 		elSpriteId.loadItems(items);
 		write(elSpriteId, read(elSpriteId));
 	};

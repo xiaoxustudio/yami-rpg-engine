@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { clear } from '@app/utils/element-utils';
+﻿import { clear } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -97,11 +97,11 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(document.getElementById('transition-easingId'));
+	clear(composableEls.get('transition-easingId'));
 };
 
 const open = (): void => {
-	document.getElementById('transition-easingId')?.loadItems?.(Data.createEasingItems!());
+	composableEls.get('transition-easingId')?.loadItems?.(Data.createEasingItems!());
 };
 
 const schema = Command.cases.transition;

@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
@@ -180,8 +180,8 @@ const load = (params: Record<string, unknown> = {}): void => {
 		params.active as boolean | undefined
 	);
 	const attrItems = Attribute.getAttributeItems!('actor', 'number');
-	document.getElementById('getActor-attribute')?.loadItems?.(attrItems);
-	document.getElementById('getActor-divisor')?.loadItems?.(attrItems);
+	composableEls.get('getActor-attribute')?.loadItems?.(attrItems);
+	composableEls.get('getActor-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), { ...params, selector, activation });
 	requestFocus('getActor-variable');
 };

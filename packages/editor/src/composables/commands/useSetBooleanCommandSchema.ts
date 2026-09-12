@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 import { requestFocus } from '@app/directives/focus';
@@ -82,7 +82,7 @@ const writeHandler = (event: { value: string }): void => {
 			filter = 'object';
 			break;
 	}
-	const element = document.getElementById('setBoolean-common-variable');
+	const element = composableEls.get('setBoolean-common-variable');
 	if (element) {
 		element.filter = filter;
 	}

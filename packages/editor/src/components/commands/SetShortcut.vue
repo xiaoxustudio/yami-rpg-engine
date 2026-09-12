@@ -16,6 +16,7 @@
 				:ref="registryRef(fieldEls, 'setShortcut-operation')" v-focus v-model="form.operation" />
 			<div class="text">{{ t('components.setShortcut-key.label') }}</div>
 			<SelectVar id="setShortcut-key"
+				:ref="registryRef(fieldEls, 'setShortcut-key')"
 				v-tip="t('components.setShortcut-key.tip')" v-focus v-model="form.key" />
 			<div class="text">{{ t('components.setShortcut-key2.label') }}</div>
 			<SelectVar id="setShortcut-key2"
@@ -35,9 +36,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetShortcutCommandSchema } from '@app/composables/commands/useSetShortcutCommandSchema';

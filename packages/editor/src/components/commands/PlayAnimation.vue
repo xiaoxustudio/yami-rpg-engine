@@ -32,6 +32,7 @@
 			/>
 			<div class="text">{{ t('components.playAnimation-motion.label') }}</div>
 			<SelectBox id="playAnimation-motion"
+				:ref="registryRef(fieldEls, 'playAnimation-motion')"
 				v-tip="t('components.playAnimation-motion.tip')" v-focus v-model="form.motion" />
 			<div class="text">{{ t('components.playAnimation-rotatable.label') }}</div>
 			<SelectBox id="playAnimation-rotatable"
@@ -78,9 +79,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';

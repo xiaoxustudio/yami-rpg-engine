@@ -29,19 +29,23 @@
 			/>
 			<div class="text">{{ t('components.registerEvent-type.label') }}</div>
 			<SelectBox id="registerEvent-type"
+				:ref="registryRef(fieldEls, 'registerEvent-type')"
 				v-tip="t('components.registerEvent-type.tip')" v-model="form.type" @write="onTypeWrite" />
 			<div class="text">{{ t('components.registerEvent-priority.label') }}</div>
 			<CheckBox id="registerEvent-priority"
+				:ref="registryRef(fieldEls, 'registerEvent-priority')"
 				v-tip="t('components.registerEvent-priority.tip')" class="standard large" v-model="form.priority" />
 			<div class="text">{{ t('components.registerEvent-namespace.label') }}</div>
 			<CheckBox
 				id="registerEvent-namespace"
+				:ref="registryRef(fieldEls, 'registerEvent-namespace')"
 				v-tip="t('components.registerEvent-namespace.tip')"
 				class="standard large"
 				v-model="form.namespace"
 			/>
 			<div class="text">{{ t('components.registerEvent-tag.label') }}</div>
 			<StringVar id="registerEvent-tag"
+				:ref="registryRef(fieldEls, 'registerEvent-tag')"
 				v-tip="t('components.registerEvent-tag.tip')" v-focus v-model="form.tag" />
 		</div>
 	</WindowFrame>
@@ -49,9 +53,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';

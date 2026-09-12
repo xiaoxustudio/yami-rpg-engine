@@ -1,5 +1,6 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
+/* oxlint-disable eslint/no-restricted-properties */
 import { getFocus, read, write } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
 import { createTextAreaVar } from '@app/components/textarea-var.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -84,8 +85,8 @@ Command.cases.callEvent = new CommandSchema({
 	parseEventArgInput(arg: CallEventArg) {
 		switch (arg.type) {
 			case 'boolean':
-				// oxlint-disable-next-line no-base-to-string
-				return Command.setBooleanColor!(arg.value!.toString());
+				// 该分支的 value 就是布尔值：显式收窄类型，避免类型感知规则按 object 报 no-base-to-string
+				return Command.setBooleanColor!((arg.value as boolean).toString());
 			case 'number':
 				return Command.parseVariableNumber!(arg.value);
 			case 'string':
@@ -267,11 +268,10 @@ export function useCallEventCommandSchema() {
 	let createdEventId: string | null = null;
 
 	const getGridBox = (): HTMLElement | null =>
-		(document.getElementById('callEvent')?.querySelector('.grid-box') as HTMLElement | null) ??
-		null;
+		(composableEls.get('callEvent')?.querySelector('.grid-box') as HTMLElement | null) ?? null;
 
 	const resizeWindow = (): void => {
-		const frame = document.getElementById('callEvent');
+		const frame = composableEls.get('callEvent');
 		const gridBox = getGridBox();
 		if (frame && gridBox) {
 			frame.style.height = `${gridBox.clientHeight + 78}px`;
@@ -495,7 +495,7 @@ export function useCallEventCommandSchema() {
 	const typeWrite = (event: { value: string }): void => {
 		const type = event.value;
 		if (type !== 'inherited') {
-			const elEventType = document.getElementById('callEvent-eventType')!;
+			const elEventType = composableEls.get('callEvent-eventType') as HTMLElement;
 			const source = EventEditor.types?.[type] ?? EventEditor.types?.all;
 			if (!source) return;
 			const eventTypes = Enum.getMergedItems!(source, type + '-event');

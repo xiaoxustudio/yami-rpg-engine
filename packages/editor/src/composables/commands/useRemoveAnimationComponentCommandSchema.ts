@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { read } from '@app/utils/element-utils';
+﻿import { read } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Command } from '@app/commands/command-object.ts';
@@ -50,7 +50,7 @@ export function useRemoveAnimationComponentCommandSchema() {
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = document.getElementById('removeAnimationComponent-motion')!;
+		const elMotion = composableEls.get('removeAnimationComponent-motion') as HTMLElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	};

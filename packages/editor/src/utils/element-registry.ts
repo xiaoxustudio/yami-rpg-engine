@@ -8,7 +8,26 @@
  */
 export type ElementRegistry = Map<string, HTMLElement | null>;
 
-export const createElementRegistry = (): ElementRegistry => new Map();
+/**
+ * 建一个注册表。可选 `mirror`：本注册表的每次写入（含卸载时的 `null`）同时镜像一份过去——
+ * 用于「SFC 局部注册表 + 跨模块共享注册表」并存的情形（P1b：命令表单 SFC 的控件挂在局部
+ * `fieldEls`，而 composable 侧要读共享的 `composableEls`）。
+ *
+ * 为什么在**写入时**镜像、而不是在 SFC 的 `onMounted` 里循环拷贝：子组件的 `onMounted`
+ * 早于父组件的 `onMounted` 执行（Vue 的 post-flush 顺序），而命令表单控件会在自己的
+ * `onMounted` 里 emit `write`/`input` 触发模块侧代码——那时父组件的 `onMounted` 还没跑，
+ * 循环拷贝会「慢一拍」。
+ */
+export const createElementRegistry = (mirror?: ElementRegistry): ElementRegistry => {
+	const registry: ElementRegistry = new Map();
+	if (!mirror) return registry;
+	const set = registry.set.bind(registry);
+	registry.set = (id: string, el: HTMLElement | null): ElementRegistry => {
+		mirror.set(id, el);
+		return set(id, el);
+	};
+	return registry;
+};
 
 /** 生成模板 ref 回调：组件实例取 `$el`，元素直接用；卸载（null）时清空该项 */
 export const registryRef =

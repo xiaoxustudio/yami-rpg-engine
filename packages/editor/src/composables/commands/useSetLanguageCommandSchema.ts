@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -44,7 +44,7 @@ export function useSetLanguageCommandSchema() {
 	return useCommandSchema('setLanguage', {
 		skipWrite: true,
 		onLoad(params) {
-			const el = document.getElementById('setLanguage-language')!;
+			const el = composableEls.get('setLanguage-language') as HTMLElement;
 			el.loadItems(Command.cases.setLanguage.createLanguageItems!());
 			write(el, params.language ?? 'auto');
 			getFocus(el);

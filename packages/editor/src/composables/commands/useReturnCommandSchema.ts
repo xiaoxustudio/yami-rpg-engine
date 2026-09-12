@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { commandState } from '@app/composables/useCommandState.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -101,7 +101,7 @@ export function useReturnCommandSchema() {
 	const { form, load, commit } = useCommandSchema('return', { skipWrite: true });
 	const loadTypeItems = (type: string): void => {
 		const items = Command.cases.return.typeItems;
-		document.getElementById('return-type')?.loadItems?.([items[type] ?? items.none]);
+		composableEls.get('return-type')?.loadItems?.([items[type] ?? items.none]);
 	};
 	const onLoad = (params: Record<string, unknown>): void => {
 		const type = (params.type ?? commandState.returnType) as string;

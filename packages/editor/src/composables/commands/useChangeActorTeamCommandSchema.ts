@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -33,7 +33,7 @@ export function useChangeActorTeamCommandSchema() {
 		skipWrite: true,
 		onLoad() {
 			// 每次打开（插入/编辑）都按当前队伍数据刷新下拉，避免依赖窗口 open 事件导致默认无文本
-			document.getElementById('changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
+			composableEls.get('changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
 			requestFocus('changeActorTeam-actor');
 		}
 	});

@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -104,7 +104,7 @@ export function useTintImageCommandSchema() {
 			'tint-2': tint[2],
 			'tint-3': tint[3]
 		});
-		write(document.getElementById('tintImage-filter'), tint);
+		write(composableEls.get('tintImage-filter'), tint);
 	};
 	const onSave = (): void => {
 		const element = form.element;
