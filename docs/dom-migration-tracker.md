@@ -30,29 +30,29 @@
 | editor/main.ts      | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
 | editor/module       | 14 | 6 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 2 | 2 | 0 | 0 | 4 | 1 | 17 | 0 | 0 |
 | editor/palette      | 13 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
-| editor/particle     | 8 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 22 | 0 | 0 |
+| editor/particle     | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |
 | editor/plugin       | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 7 | 0 | 0 |
 | editor/printer      | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/scene        | 28 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
 | editor/services     | 46 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 3 | 0 | 0 |
 | editor/stores       | 39 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 |
-| editor/title        | 5 | 5 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 11 | 2 | 40 | 0 | 0 |
+| editor/title        | 6 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 8 | 2 | 0 | 0 | 0 |
 | editor/tools        | 17 | 7 | 3 | 3 | 1 | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 2 | 0 | 0 |
-| editor/types        | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 32 | 10 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 4 | 0 | 0 |
+| editor/utils        | 32 | 9 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
 | ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1127 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 571 | 171 | 120 | 0 | 0 |
+| 合计                  | 1129 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 56 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1127**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1129**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**158**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**158**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -61,7 +61,7 @@
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **120** 处 / **34** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **56** 处 / **23** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -106,7 +106,6 @@
 | packages/editor/src/utils/element-utils.ts | 620 | 28 | 是 |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | 是 |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
-| packages/editor/src/title/menu-bar.ts | 1183 | 22 | 是 |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 525 | 19 | 是 |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
@@ -121,23 +120,19 @@
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
 | packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 11 | 是 |
 | packages/editor/src/module/editdata.ts | 381 | 11 | 是 |
-| packages/editor/src/particle/particle-initialize.ts | 134 | 11 | - |
-| packages/editor/src/title/new-project-window.ts | 363 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 10 | 是 |
 | packages/editor/src/data/transition-window.ts | 1390 | 10 | 是 |
-| packages/editor/src/title/title-bar.ts | 759 | 10 | - |
 | packages/editor/src/tools/window-object.ts | 512 | 10 | 是 |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
-| packages/editor/src/components/layout/LayoutPanel.vue | 1980 | 9 | - |
+| packages/editor/src/components/layout/LayoutPanel.vue | 1997 | 9 | - |
 | packages/editor/src/inspector/element-page.ts | 372 | 9 | 是 |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
-| packages/editor/src/title/deploy-project-window.ts | 699 | 9 | - |
 | packages/editor/src/utils/dom.ts | 192 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 155 | 9 | 是 |
@@ -155,7 +150,6 @@
 | packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 7 | 是 |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 7 | 是 |
 | packages/editor/src/local/local-window.ts | 910 | 7 | - |
-| packages/editor/src/particle/particle-window.ts | 421 | 7 | - |
 | packages/editor/src/tools/color-picker-window.ts | 450 | 7 | 是 |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/editor/src/tools/text-capture.ts | 988 | 7 | - |
@@ -168,7 +162,7 @@
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 495 | 6 | 是 |
 | packages/editor/src/module/eslints.ts | 275 | 6 | 是 |
 | packages/editor/src/services/project/setting-config/renderer.ts | 172 | 6 | 是 |
-| packages/editor/src/title/home-page.ts | 510 | 6 | - |
+| packages/editor/src/title/title-bar.ts | 761 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 306 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/file-var-api.ts | 192 | 6 | 是 |
 | packages/ui-kit/src/components/basic/YMFileVar/YMFileVar.vue | 245 | 6 | - |
@@ -198,9 +192,9 @@
 | packages/editor/src/module/set-tile-tag.ts | 45 | 5 | - |
 | packages/editor/src/palette/auto-tile.ts | 979 | 5 | 是 |
 | packages/editor/src/palette/palette-initialize.ts | 148 | 5 | 是 |
-| packages/editor/src/particle/particle-motion.ts | 684 | 5 | - |
 | packages/editor/src/scene/scene-events-window.ts | 367 | 5 | - |
 | packages/editor/src/scene/scene-window.ts | 1531 | 5 | - |
+| packages/editor/src/title/menu-bar.ts | 1193 | 5 | 是 |
 | packages/ui-kit/src/components/basic/YMGamepadBox/YMGamepadBox.vue | 216 | 5 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 185 | 5 | - |
@@ -215,8 +209,8 @@
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
 | packages/editor/src/composables/usePointerObjectWindow.ts | 39 | 4 | 是 |
 | packages/editor/src/engine/webgl/webgl-init.ts | 113 | 4 | 是 |
-| packages/editor/src/particle/particle-events.ts | 213 | 4 | - |
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
+| packages/editor/src/title/home-page.ts | 510 | 4 | - |
 | packages/editor/src/tools/script-list.ts | 204 | 4 | 是 |
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
@@ -247,6 +241,7 @@
 | packages/editor/src/main.ts | 27 | 3 | 是 |
 | packages/editor/src/module/apkbuilder.ts | 78 | 3 | - |
 | packages/editor/src/module/constants.ts | 106 | 3 | - |
+| packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 134 | 3 | 是 |
@@ -292,6 +287,7 @@
 | packages/editor/src/log/update-log-window.ts | 62 | 2 | - |
 | packages/editor/src/main/startup.ts | 43 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
+| packages/editor/src/particle/particle-events.ts | 216 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1403 | 2 | 是 |
 | packages/editor/src/tools/event-list.ts | 185 | 2 | - |
 | packages/editor/src/utils/dpr.ts | 13 | 2 | - |
@@ -377,9 +373,7 @@
 | packages/editor/src/stores/browser.ts | 582 | 1 | - |
 | packages/editor/src/stores/element-registry.ts | 7 | 1 | - |
 | packages/editor/src/tools/condition-list.ts | 320 | 1 | - |
-| packages/editor/src/types/shapes.ts | 41 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
-| packages/editor/src/utils/element-registry.ts | 34 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
 | packages/editor/src/utils/timer.ts | 244 | 1 | 是 |
@@ -403,7 +397,7 @@
 | packages/editor/src/animation/element-registry.ts | 9 | 0 | - |
 | packages/editor/src/animation/register.ts | 8 | 0 | - |
 | packages/editor/src/App.vue | 15 | 0 | - |
-| packages/editor/src/AppShell.vue | 298 | 0 | - |
+| packages/editor/src/AppShell.vue | 302 | 0 | - |
 | packages/editor/src/attribute/attribute-context.ts | 71 | 0 | - |
 | packages/editor/src/audio/audio-player.ts | 72 | 0 | - |
 | packages/editor/src/audio/reverb.ts | 105 | 0 | - |
@@ -634,7 +628,7 @@
 | packages/editor/src/components/select-var.ts | 8 | 0 | - |
 | packages/editor/src/components/string-var.ts | 8 | 0 | - |
 | packages/editor/src/components/textarea-var.ts | 8 | 0 | - |
-| packages/editor/src/components/tools/About.vue | 76 | 0 | - |
+| packages/editor/src/components/tools/About.vue | 84 | 0 | - |
 | packages/editor/src/components/tools/ActorGetter.vue | 101 | 0 | - |
 | packages/editor/src/components/tools/AncestorGetter.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/AngleGetter.vue | 84 | 0 | - |
@@ -651,14 +645,14 @@
 | packages/editor/src/components/tools/CommandWidget.vue | 29 | 0 | - |
 | packages/editor/src/components/tools/Condition.vue | 97 | 0 | - |
 | packages/editor/src/components/tools/Confirmation.vue | 43 | 0 | - |
-| packages/editor/src/components/tools/CopyProgress.vue | 57 | 0 | - |
-| packages/editor/src/components/tools/Deployment.vue | 125 | 0 | - |
+| packages/editor/src/components/tools/CopyProgress.vue | 61 | 0 | - |
+| packages/editor/src/components/tools/Deployment.vue | 129 | 0 | - |
 | packages/editor/src/components/tools/EditData.vue | 57 | 0 | - |
 | packages/editor/src/components/tools/ElementGetter.vue | 98 | 0 | - |
 | packages/editor/src/components/tools/Enum.vue | 194 | 0 | - |
 | packages/editor/src/components/tools/EquipmentGetter.vue | 95 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 92 | 0 | - |
-| packages/editor/src/components/tools/ExportApk.vue | 141 | 0 | - |
+| packages/editor/src/components/tools/ExportApk.vue | 146 | 0 | - |
 | packages/editor/src/components/tools/FileActorEquipment.vue | 66 | 0 | - |
 | packages/editor/src/components/tools/FileActorInventoryGoods.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/FileActorSkill.vue | 60 | 0 | - |
@@ -679,7 +673,7 @@
 | packages/editor/src/components/tools/LogMessage.vue | 91 | 0 | - |
 | packages/editor/src/components/tools/MoveElementProperty.vue | 200 | 0 | - |
 | packages/editor/src/components/tools/MoveLightProperty.vue | 152 | 0 | - |
-| packages/editor/src/components/tools/NewProject.vue | 113 | 0 | - |
+| packages/editor/src/components/tools/NewProject.vue | 117 | 0 | - |
 | packages/editor/src/components/tools/ObjectAttribute.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/ObjectFolder.vue | 61 | 0 | - |
 | packages/editor/src/components/tools/ObjectPropertyIndex.vue | 51 | 0 | - |
@@ -719,7 +713,7 @@
 | packages/editor/src/components/tools/TilemapGetter.vue | 89 | 0 | - |
 | packages/editor/src/components/tools/TriggerGetter.vue | 80 | 0 | - |
 | packages/editor/src/components/tools/VariableGetter.vue | 89 | 0 | - |
-| packages/editor/src/components/tools/WindowProgress.vue | 49 | 0 | - |
+| packages/editor/src/components/tools/WindowProgress.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/Zoom.vue | 24 | 0 | - |
 | packages/editor/src/components/tree-data-context.ts | 17 | 0 | - |
 | packages/editor/src/components/tree-list.ts | 39 | 0 | - |
@@ -1019,8 +1013,11 @@
 | packages/editor/src/palette/palette.ts | 143 | 0 | - |
 | packages/editor/src/palette/register.ts | 8 | 0 | - |
 | packages/editor/src/palette/tile-frame-generator.ts | 58 | 0 | - |
+| packages/editor/src/particle/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/particle/particle-file.ts | 135 | 0 | - |
 | packages/editor/src/particle/particle-list.ts | 232 | 0 | - |
+| packages/editor/src/particle/particle-motion.ts | 684 | 0 | - |
+| packages/editor/src/particle/particle-window.ts | 423 | 0 | - |
 | packages/editor/src/particle/register.ts | 7 | 0 | - |
 | packages/editor/src/plugin/language-map.ts | 95 | 0 | - |
 | packages/editor/src/plugin/plugin-events.ts | 97 | 0 | - |
@@ -1129,6 +1126,9 @@
 | packages/editor/src/stores/ui.ts | 327 | 0 | - |
 | packages/editor/src/stores/variable.ts | 207 | 0 | - |
 | packages/editor/src/stores/window.ts | 112 | 0 | - |
+| packages/editor/src/title/deploy-project-window.ts | 700 | 0 | - |
+| packages/editor/src/title/element-registry.ts | 7 | 0 | - |
+| packages/editor/src/title/new-project-window.ts | 362 | 0 | - |
 | packages/editor/src/tools/history.ts | 84 | 0 | - |
 | packages/editor/src/tools/list-clipboard-methods.ts | 105 | 0 | - |
 | packages/editor/src/tools/property-list.ts | 260 | 0 | - |
@@ -1144,6 +1144,7 @@
 | packages/editor/src/types/file-browser-links.ts | 24 | 0 | - |
 | packages/editor/src/types/history.ts | 67 | 0 | - |
 | packages/editor/src/types/list-interface.ts | 28 | 0 | - |
+| packages/editor/src/types/shapes.ts | 41 | 0 | - |
 | packages/editor/src/ui/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/ui/register.ts | 8 | 0 | - |
 | packages/editor/src/ui/ui-file.ts | 258 | 0 | - |
@@ -1158,6 +1159,7 @@
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
 | packages/editor/src/utils/element-data.ts | 109 | 0 | - |
+| packages/editor/src/utils/element-registry.ts | 34 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |

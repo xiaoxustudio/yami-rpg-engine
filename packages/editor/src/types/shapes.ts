@@ -14,7 +14,7 @@ export interface AccessorTarget {
 
 /**
  * 访问器窗口的控件接口（P5b 批次 2）：SFC 用 `:ref="fieldRef(id)"` 把控件实例登记进
- * `AccessorFields`，模块的 `initialize()` 从这里按 id 取用——不再用 `$('#id')` 查 DOM。
+ * `AccessorFields`，模块的 `initialize()` 从这里按 id 取用——不再用 `按 id` 查 DOM。
  */
 export interface AccessorFieldControl {
 	read?: () => unknown;

@@ -17,6 +17,7 @@
 		</div>
 		<TabBar
 			id="title-tabBar"
+				:ref="registryRef(titleEls, 'title-tabBar')"
 			@select="onTabBarSelect"
 			@closed="onTabBarClosed"
 			@popup="onTabBarPopup"
@@ -25,6 +26,7 @@
 			<div
 				class="box"
 				id="title-play"
+				:ref="registryRef(titleEls, 'title-play')"
 				hotkey="F4"
 				:class="{ selected: title.playing }"
 				@click="onPlayClick"
@@ -35,7 +37,8 @@
 			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
 			<div class="close" id="title-close" @click="onCloseClick"></div>
 		</div>
-		<div id="title-app-region" />
+		<div id="title-app-region"
+				:ref="registryRef(titleEls, 'title-app-region')" />
 	</div>
 	<LayoutPanel />
 	<Teleport to="#project-browser">
@@ -78,6 +81,7 @@
 
 <script setup lang="ts">
 import TabBar from './components/common/TabBar.vue';
+import { titleEls } from '@app/title/element-registry';
 import { windowShellEls } from '@app/tools/window-object.ts';
 import { registryRef } from '@app/utils/element-registry';
 import FileBrowser from './components/file-browser/FileBrowser.vue';

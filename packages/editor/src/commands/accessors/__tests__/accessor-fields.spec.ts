@@ -9,7 +9,7 @@ import { SkillGetter } from '../skill-accessor-window.ts';
 import type { AccessorFieldControl } from '@app/types/shapes.ts';
 
 /**
- * P5b 批次 2 回归：访问器窗口的控件不再用 `$('#id')` 查 DOM，而由对应 SFC 在 setup 期
+ * P5b 批次 2 回归：访问器窗口的控件不再用 `按 id` 查 DOM，而由对应 SFC 在 setup 期
  * 通过 `createAccessorFields()` 登记、模块的 `initialize()` 从 `this.fields` 取。
  * 本用例锁住「登记 → initialize 真正作用到控件」这条链路（此前无覆盖）。
  */

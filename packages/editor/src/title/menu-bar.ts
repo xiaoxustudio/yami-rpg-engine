@@ -1,12 +1,12 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { macRedoKey } from '@app/utils/event-accessors';
+import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
 import { treeRowCount, treeRowItemAt } from '@ui-kit';
-import { $ } from '@app/utils/dom';
 import {
 	addClass,
 	disable,
@@ -693,12 +693,17 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
 						Window.open!('about');
-						$('#editor-version').textContent = Editor.config!.version!;
-						$('#electron-version').textContent = process.versions.electron;
-						$('#chrome-version').textContent = process.versions.chrome;
-						$('#node-version').textContent = process.versions.node;
-						$('#v8-version').textContent = process.versions.v8;
-						$('#os-version').textContent = osversion;
+						(titleEls.get('editor-version') as HTMLElement).textContent =
+							Editor.config!.version!;
+						(titleEls.get('electron-version') as HTMLElement).textContent =
+							process.versions.electron;
+						(titleEls.get('chrome-version') as HTMLElement).textContent =
+							process.versions.chrome;
+						(titleEls.get('node-version') as HTMLElement).textContent =
+							process.versions.node;
+						(titleEls.get('v8-version') as HTMLElement).textContent =
+							process.versions.v8;
+						(titleEls.get('os-version') as HTMLElement).textContent = osversion;
 					}
 				},
 				{
@@ -769,9 +774,9 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 					click: async () => {
 						Window.open!('export-apk');
 						Window.open!('windowProgress');
-						const progressInfo = $('#windowProgress-info');
+						const progressInfo = titleEls.get('windowProgress-info') as HTMLElement;
 						progressInfo.textContent = '加载中...';
-						$('#export-apk').addEventListener(
+						(titleEls.get('export-apk') as HTMLElement)?.addEventListener?.(
 							'closed',
 							() => {
 								if (stopExportApkFormWatch) {
@@ -835,30 +840,35 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 								});
 								apkConfigSave();
 							});
-							$('#export-apk-apkIcon').addEventListener('mouseenter', (_e: Event) =>
-								setTooltip(
-									$('#export-apk-apkIcon'),
-									ApkBuilder.processPathOnly!(config.iconPath)
-								)
+							(titleEls.get('export-apk-apkIcon') as HTMLElement)?.addEventListener?.(
+								'mouseenter',
+								(_e: Event) =>
+									setTooltip(
+										titleEls.get('export-apk-apkIcon') as HTMLElement,
+										ApkBuilder.processPathOnly!(config.iconPath)
+									)
 							);
-							$('#export-apk-button').addEventListener('click', (_e: Event) => {
-								disable($('#export-apk-button'));
-								apkConfigSave();
-								SettingConfig.load(); // 更新配置
-								ApkBuilder.build!({
-									...config,
-									...SettingConfig.config.apkbuild,
-									...SettingConfig.config.signed
-								});
-							});
+							(titleEls.get('export-apk-button') as HTMLElement)?.addEventListener?.(
+								'click',
+								(_e: Event) => {
+									disable(titleEls.get('export-apk-button') as HTMLElement);
+									apkConfigSave();
+									SettingConfig.load(); // 更新配置
+									ApkBuilder.build!({
+										...config,
+										...SettingConfig.config.apkbuild,
+										...SettingConfig.config.signed
+									});
+								}
+							);
 							// 加载状态
 							if (ApkBuilder.isBuilding!()) {
-								disable($('#export-apk-button'));
+								disable(titleEls.get('export-apk-button') as HTMLElement);
 								ApkBuilder.logs.forEach((log) => {
 									ApkBuilder.apkLog!(log);
 								});
 							} else {
-								enable($('#export-apk-button'));
+								enable(titleEls.get('export-apk-button') as HTMLElement);
 							}
 							Window.close!('windowProgress');
 						});

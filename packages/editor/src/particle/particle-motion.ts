@@ -1,10 +1,10 @@
 import { Particle } from './particle-window.ts';
+import { particleEls } from '@app/particle/element-registry';
 import type { ParticleShape } from './particle-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getParticleStore, type ParticleTargetShape } from '@app/stores/particle';
-import { $ } from '@app/utils/dom';
 import { addClass, read, rect, removeClass, write } from '@app/utils/element-utils.ts';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
@@ -26,14 +26,14 @@ Particle.redo = function () {
 Particle.setSpeed = (function IIFE() {
 	return function (this: ParticleShape, speed: number) {
 		getParticleStore().speed = speed;
-		const numberBox = $('#particle-speed');
+		const numberBox = particleEls.get('particle-speed') as HTMLElement;
 		if (numberBox) write(numberBox, speed);
 	};
 })();
 
 Particle.setZoom = (function IIFE() {
 	return function (this: ParticleShape, zoom: number) {
-		const slider = $('#particle-zoom');
+		const slider = particleEls.get('particle-zoom') as HTMLElement;
 		if (getParticleStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -644,7 +644,7 @@ Particle.stopRendering = function () {
 
 Particle.switchWireframe = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showWireframe) {
-		const item = $('#particle-view-wireframe');
+		const item = particleEls.get('particle-view-wireframe') as HTMLElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -657,7 +657,7 @@ Particle.switchWireframe = (function IIFE() {
 
 Particle.switchAnchor = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showAnchor) {
-		const item = $('#particle-view-anchor');
+		const item = particleEls.get('particle-view-anchor') as HTMLElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -670,7 +670,7 @@ Particle.switchAnchor = (function IIFE() {
 
 Particle.switchPause = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().paused) {
-		const item = $('#particle-control-pause');
+		const item = particleEls.get('particle-control-pause') as HTMLElement;
 		getParticleStore().paused = enabled;
 		if (enabled) {
 			addClass(item, 'selected');

@@ -1,7 +1,7 @@
 import { Particle } from './particle-window.ts';
+import { particleEls } from '@app/particle/element-registry';
 import type { ParticleHistoryData } from './particle-window.ts';
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
 import { addSetScrollMethod, hide, on } from '@app/utils/element-utils.ts';
 import { History } from '@app/tools/history.ts';
 import { Timer } from '@app/utils/timer';
@@ -11,21 +11,25 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { ParticleEngine } from '@app/engine/particle/particle-engine.ts';
 
 Particle.initialize = function () {
-	this.page = $('#particle');
-	this.head = $('#particle-head') as unknown as HTMLElement & { width: number };
-	this.body = hide($('#particle-body'));
-	this.info = $('#particle-info');
-	this.screen = $('#particle-screen') as unknown as HTMLElement & {
+	this.page = particleEls.get('particle') as HTMLElement;
+	this.head = particleEls.get('particle-head') as HTMLElement as unknown as HTMLElement & {
+		width: number;
+	};
+	this.body = hide(particleEls.get('particle-body') as HTMLElement);
+	this.info = particleEls.get('particle-info') as HTMLElement;
+	this.screen = particleEls.get('particle-screen') as HTMLElement as unknown as HTMLElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};
 	const oldMarquee = this.marquee;
-	this.marquee = $('#particle-marquee') as unknown as HTMLElement & { pointerevent: unknown };
+	this.marquee = particleEls.get('particle-marquee') as HTMLElement as unknown as HTMLElement & {
+		pointerevent: unknown;
+	};
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	const oldList = this.list;
-	this.list = $('#particle-list') as unknown as never;
+	this.list = particleEls.get('particle-list') as HTMLElement as unknown as never;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -115,7 +119,7 @@ Particle.initialize = function () {
 	on(this.page, 'resize', this.windowResize!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
 	// head/toolbar/control/zoom/screen(keydown/wheel)/marquee(pointerdown) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
-	on($('#particle-speed'), 'input', this.speedInput!);
+	on(particleEls.get('particle-speed') as HTMLElement, 'input', this.speedInput!);
 	on(this.screen, 'userscroll', this.screenUserscroll!);
 	on(this.screen, 'blur', this.screenBlur!);
 	on(this.marquee, 'pointermove', this.marqueePointermove!);

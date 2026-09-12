@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 4 完成 engine/variable/services 后为 120 处 / 34 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 4 完成 title/particle 后为 56 处 / 23 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -299,6 +299,14 @@
 > - **P2b-3（豁免收窄）**：25 个 api 文件都带 `oxlint-disable eslint/no-restricted-properties`；类型化后逐步把其中的 `document.createElement` 等收敛到 `create*Element` 少数几处，缩小豁免面。
 >
 > **门禁相应调整**：`pnpm docs:check` 的 `*-api.ts` 计数仍与磁盘核对，但**目标由「0」改为「不增长」**（数字本身只作趋势）；P2b 的验收改为上述三条，不再以文件数归零为准。
+### P5b 尾项 — 确认按钮启用态属性化（2026-09-11 登记，未开始）
+
+- **现状**：`title/deploy-project-window.ts`、`title/new-project-window.ts` 原先用 `disable(...)` / `enable(titleEls.get('…-confirm'))`（共 **7 处**调用）在表单无效时禁用确认按钮；而 `<id>-confirm` 由 `WindowFrame` → `YMFormButtons` 生成、模板里没有、元素注册表取不到 → 改造后这些调用恒为 no-op（已删除死调用，原意图以注释留在 `new-project-window.ts`）。
+- **影响**：两个模块的 `confirm()` 自带校验（无 early-return）→ 按钮保持可点意味着**无效输入也能提交**（边界行为，非崩溃）。
+- **正解**：给 `WindowFrame` 增 `confirm-disabled` 属性 → 透传到 ui-kit `YMFormButtons` 的 `button[name="confirm"]` 绑 `:disabled`；两个 SFC 绑定模块导出的响应式标志（`ref<boolean>`）。
+- **涉及共享组件**（`WindowFrame` 被所有窗口使用、`YMFormButtons` 在 ui-kit）→ 单独一刀，带回归用例（`confirmDisabled` 为真时确认按钮带 disabled、为假时可点）。
+- **验证**：`pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` 全绿；`WindowFrame` 现有用例（`@confirm`/`@apply` 事件）不回归。
+
 ## P4b — 原型访问器退役（`utils/element-data.ts`）
 
 > 🚧 **进行中（2026-09-11，B3 首刀）**：**11 个零访问字段已删除**（`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`）——删前逐一复核「全仓无任何引用」（`initText` 的 4 处命中经查是 `Variable.vue` 的局部变量与 `stores/localization.ts` 的一处类型残留，已一并清掉）。`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck / vue-tsc / oxlint 全绿。剩余：按组件把 `this.x` / `el.x` 改成显式 `getElementData(el)`（与 P2b 同批）。
@@ -517,6 +525,15 @@
 - `services`：`ipc/webserver.ts`(8) → `serviceEls` + `QrCode.vue`（3 ref + 1 具名）；`project/setting-config/index.ts`(3) → `Setting.vue`（1 ref），`setting-confirm` 接线删除、改由 SFC `@confirm` 调 `Window.close('setting')`（并清理随之未使用的 `Window` 导入）。
 
 **批 4 剩余**：120 处 / 34 文件 —— `title` 40、`particle` 22，以及 `plugin` 7、`log` 5、`utils` 4、`types` 1 等小组。
+
+**批 4 第六刀（`src/title` 40 + `src/particle` 22 = 62 处 / 9 文件 → 0）**
+
+- `particle`：4 个模块 → `particleEls` + `LayoutPanel.vue`（13 个 `:ref`），与 animation/scene/palette/ui 同形。
+- `title`：5 个模块 → `titleEls`，渲染方 8 个 SFC（`Deployment.vue` 2 / `CopyProgress.vue` 2 / `LayoutPanel.vue` 2 / `About.vue` 6 / `WindowProgress.vue` 1 / `ExportApk.vue` 3 / `NewProject.vue` 2 / **`AppShell.vue` 3**）。
+- **跨注册表复用（第 4 次）**：`title-bar.ts` 的 `#title` **已由 AppShell 登记在 `windowShellEls`**（早前 `window-object.ts` 那批的产物）→ 单点改读 `windowShellEls`，不重复登记。
+- **🆕 新登记的尾项（本轮发现，不在原计划内）——「确认按钮启用态属性化」**：
+  `deploy-project-window.ts` / `new-project-window.ts` 里各有若干 `disable(...)`/`enable(titleEls.get('…-confirm'))` 调用（共 **7 处**），用来在表单无效时禁用确认按钮；而 `…-confirm` 按钮由 `WindowFrame` → `YMFormButtons` 生成、模板里没有、注册表取不到 → 迁移后这些调用恒为 no-op ✗。而两个模块的 `confirm()` **自带校验**（没有 early-return），所以按钮保持可点意味着**无效输入也能提交**（虽然会走 copy/mkdir 的分支，属边界行为）。处置：**删除已成死代码的 7 处调用**（并在 `new-project-window.ts` 处留说明注释保留原意图），同时把它登记为独立尾项——正确修法是给 `WindowFrame` 增 `confirm-disabled` 属性透传到 `YMFormButtons` 的 `button[name="confirm"]`，由 SFC 绑定模块的响应式状态。**涉及共享组件，故不在本刀顺手改**（U 型风险），列入 `remaining-work.md` 清单。
+- 另有 **10 个文件**（8 个 registry 回归 spec + `types/shapes.ts` + `utils/element-registry.ts`）注释里带字面 `$('#id')`，造成假命中，已统一改写（58 → 56 中的 2 处来自这里）。
 
 ## B1 — 巨石渲染层重写
 

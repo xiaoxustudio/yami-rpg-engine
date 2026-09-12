@@ -4,13 +4,16 @@
 		<template #title><TitleBar>进度</TitleBar></template>
 
 		<div class="flex-box" id="windowProgress-flex">
-			<div class="text" id="windowProgress-info" />
+			<div class="text" id="windowProgress-info"
+				:ref="registryRef(titleEls, 'windowProgress-info')" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { titleEls } from '@app/title/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 

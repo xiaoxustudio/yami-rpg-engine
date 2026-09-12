@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.deployment-platform.label') }}</div>
 			<SelectBox
 				id="deployment-platform"
+				:ref="registryRef(titleEls, 'deployment-platform')"
 				v-focus
 				v-model="Deployment.form.platform"
 				@input="onPlatformInput"
@@ -33,12 +34,15 @@
 			<div class="text">{{ t('components.deployment-compress.label') }}</div>
 			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
 		</div>
-		<div class="text" id="deployment-warning" />
+		<div class="text" id="deployment-warning"
+				:ref="registryRef(titleEls, 'deployment-warning')" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { titleEls } from '@app/title/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

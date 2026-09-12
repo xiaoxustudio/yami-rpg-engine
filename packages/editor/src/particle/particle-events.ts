@@ -1,10 +1,10 @@
 import { Particle } from './particle-window.ts';
+import { particleEls } from '@app/particle/element-registry';
 import type { ParticleConfigShape, ParticleShape } from './particle-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { getParticleStore } from '@app/stores/particle';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
-import { $ } from '@app/utils/dom';
 import { addClass, hasClass, read, removeClass } from '@app/utils/element-utils.ts';
 import { StageColor } from '@app/utils/stage-color';
 
@@ -75,7 +75,10 @@ Particle.keydown = function (event: KeyboardEvent) {
 					if (!Particle.restartKey) {
 						Particle.restartKey = true;
 						Particle.restart!();
-						addClass($('#particle-control-restart'), 'selected');
+						addClass(
+							particleEls.get('particle-control-restart') as HTMLElement,
+							'selected'
+						);
 						window.addEventListener('keyup', Particle.restartKeyup!);
 						window.addEventListener('blur', Particle.restartKeyup!);
 					}
@@ -99,7 +102,7 @@ Particle.restartKeyup = function (event: KeyboardEvent) {
 		case undefined:
 			if (Particle.restartKey) {
 				Particle.restartKey = false;
-				removeClass($('#particle-control-restart'), 'selected');
+				removeClass(particleEls.get('particle-control-restart') as HTMLElement, 'selected');
 				window.removeEventListener('keyup', Particle.restartKeyup!);
 				window.removeEventListener('blur', Particle.restartKeyup!);
 			}

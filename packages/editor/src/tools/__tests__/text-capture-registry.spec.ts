@@ -10,7 +10,7 @@ import LocalVariableWindow from '@app/components/tools/LocalVariable.vue';
 import { textCaptureEls } from '../text-capture.ts';
 
 /**
- * P5b 批次 3 回归：文本捕获族不再用 `$('#id')` 查 DOM——14 个控件由五个 SFC（Font /
+ * P5b 批次 3 回归：文本捕获族不再用 `按 id` 查 DOM——14 个控件由五个 SFC（Font /
  * TextPosition / TextEffect / InsertImage / LocalVariable）共同登记进 `textCaptureEls`，
  * 其中 `font` 同时充当 `Selection.initialize()` 的"窗口已挂载"启动门（原先用 `$('#font-confirm')`）。
  */

@@ -1,6 +1,6 @@
-import { $ } from '@app/utils/dom';
+import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable } from '@app/utils/element-utils';
+
 import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -131,7 +131,7 @@ export const Deployment: DeploymentShape = {
 };
 
 Deployment.initialize = function (this: typeof Deployment) {
-	const platform = $('#deployment-platform');
+	const platform = titleEls.get('deployment-platform') as HTMLElement;
 	if (!platform) return;
 	platform.loadItems([
 		{ name: 'Windows x64', value: 'windows-x64' },
@@ -165,20 +165,21 @@ Deployment.check = function (this: typeof Deployment) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			$('#deployment-warning').textContent = t('confirmation.enterFolderName');
-			disable($('#deployment-confirm'));
+			(titleEls.get('deployment-warning') as HTMLElement).textContent = t(
+				'confirmation.enterFolderName'
+			);
 		}
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			$('#deployment-warning').textContent = t('confirmation.folderAlreadyExists');
-			disable($('#deployment-confirm'));
+			(titleEls.get('deployment-warning') as HTMLElement).textContent = t(
+				'confirmation.folderAlreadyExists'
+			);
 		}
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			$('#deployment-warning').textContent = '';
-			enable($('#deployment-confirm'));
+			(titleEls.get('deployment-warning') as HTMLElement).textContent = '';
 		}
 	}
 };
@@ -474,8 +475,8 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	Window.open!('copyProgress');
 	const platform = DeploymentForm.platform;
-	const progressBar = $('#copyProgress-bar');
-	const progressInfo = $('#copyProgress-info');
+	const progressBar = titleEls.get('copyProgress-bar') as HTMLElement;
+	const progressInfo = titleEls.get('copyProgress-info') as HTMLElement;
 	const { extnameToTypeMap } = FolderItem;
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';

@@ -1,8 +1,10 @@
 <template>
 	<PageManager id="workspace-page-manager"
 				:ref="registryRef(engineEls, 'workspace-page-manager')">
-		<div class="page-frame" id="home" value="home">
-			<div class="box" id="home-content">
+		<div class="page-frame" id="home"
+				:ref="registryRef(titleEls, 'home')" value="home">
+			<div class="box" id="home-content"
+				:ref="registryRef(titleEls, 'home-content')">
 				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
 				<div class="text" id="home-version"></div>
 				<div class="box" id="home-start-list" @click="onHomeStartClick">
@@ -656,10 +658,12 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="particle" source="page">
-					<div class="page-frame" id="particle" value="particle">
+					<div class="page-frame" id="particle"
+				:ref="registryRef(particleEls, 'particle')" value="particle">
 						<div
 							class="box"
 							id="particle-head"
+				:ref="registryRef(particleEls, 'particle-head')"
 							@pointerdown="onParticleHeadPointerdown"
 						>
 							<div
@@ -670,11 +674,13 @@
 								<div
 									class="item toolbar-item"
 									id="particle-view-wireframe"
+				:ref="registryRef(particleEls, 'particle-view-wireframe')"
 									value="wireframe"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="particle-view-anchor"
+				:ref="registryRef(particleEls, 'particle-view-anchor')"
 									value="anchor"
 								></div>
 							</div>
@@ -687,18 +693,21 @@
 									<div
 										class="item toolbar-item"
 										id="particle-control-restart"
+				:ref="registryRef(particleEls, 'particle-control-restart')"
 										value="restart"
 										hotkey="R"
 									></div>
 									<div
 										class="item toolbar-item"
 										id="particle-control-pause"
+				:ref="registryRef(particleEls, 'particle-control-pause')"
 										value="pause"
 										hotkey="P"
 									></div>
 								</div>
 								<NumberBox
 									id="particle-speed"
+				:ref="registryRef(particleEls, 'particle-speed')"
 									min="0"
 									max="4"
 									step="0.05"
@@ -709,6 +718,7 @@
 							<div class="box" id="particle-head-end">
 								<SliderBox
 									id="particle-zoom"
+				:ref="registryRef(particleEls, 'particle-zoom')"
 									name="zoom"
 									min="0"
 									max="4"
@@ -719,20 +729,24 @@
 								></SliderBox>
 							</div>
 						</div>
-						<div class="box" id="particle-body">
+						<div class="box" id="particle-body"
+				:ref="registryRef(particleEls, 'particle-body')">
 							<div
 								class="box"
 								id="particle-screen"
+				:ref="registryRef(particleEls, 'particle-screen')"
 								tabindex="-1"
 								@keydown="onParticleScreenKeydown"
 								@wheel="onParticleScreenWheel"
 							>
 								<MarqueeArea
 									id="particle-marquee"
+				:ref="registryRef(particleEls, 'particle-marquee')"
 									@pointerdown="onParticleMarqueePointerdown"
 								></MarqueeArea>
 							</div>
-							<div class="text" id="particle-info"></div>
+							<div class="text" id="particle-info"
+				:ref="registryRef(particleEls, 'particle-info')"></div>
 						</div>
 					</div>
 					</PaletteNode>
@@ -740,6 +754,7 @@
 					<div class="page-frame" id="particle-layer" value="particle-layer">
 						<TreeList
 							id="particle-list"
+				:ref="registryRef(particleEls, 'particle-list')"
 							padded
 							:node-extras="particleNodeExtras"
 							:node-icon-renderer="particleNodeIcon"
@@ -967,6 +982,8 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { titleEls } from '@app/title/element-registry';
+import { particleEls } from '@app/particle/element-registry';
 import { engineEls } from '@app/engine/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 import { uiEls } from '@app/ui/element-registry';

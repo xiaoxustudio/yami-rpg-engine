@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { particleEls } from '@app/particle/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { getParticleStore } from '@app/stores/particle';
 
@@ -259,21 +259,23 @@ export interface ParticleShape {
 }
 
 export const Particle: ParticleShape = {
-	page: $('#particle'),
-	head: $('#particle-head') as unknown as HTMLElement & {
+	page: particleEls.get('particle') as HTMLElement,
+	head: particleEls.get('particle-head') as HTMLElement as unknown as HTMLElement & {
 		left: number;
 		width: number;
 		padding?: number;
 	},
-	body: hide($('#particle-body')),
-	info: $('#particle-info'),
-	screen: $('#particle-screen') as unknown as HTMLElement & {
+	body: hide(particleEls.get('particle-body') as HTMLElement),
+	info: particleEls.get('particle-info') as HTMLElement,
+	screen: particleEls.get('particle-screen') as HTMLElement as unknown as HTMLElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 		pointerevent: unknown;
 	},
-	marquee: $('#particle-marquee') as unknown as HTMLElement & { pointerevent: unknown },
-	list: ($('#particle-list') as unknown as never) || ({} as never),
+	marquee: particleEls.get('particle-marquee') as HTMLElement as unknown as HTMLElement & {
+		pointerevent: unknown;
+	},
+	list: (particleEls.get('particle-list') as unknown as never) || ({} as never),
 	dragging: null,
 	history: null,
 	restartKey: false,

@@ -7,15 +7,19 @@
 		<div class="flex-box" id="copyProgress-flex">
 			<div class="text">{{ t('components.copyProgress-box.label') }}</div>
 			<div class="box" id="copyProgress-box">
-				<div class="box" id="copyProgress-bar" />
+				<div class="box" id="copyProgress-bar"
+				:ref="registryRef(titleEls, 'copyProgress-bar')" />
 			</div>
-			<div class="text" id="copyProgress-info" />
+			<div class="text" id="copyProgress-info"
+				:ref="registryRef(titleEls, 'copyProgress-info')" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { titleEls } from '@app/title/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

@@ -1,5 +1,5 @@
 import { SettingConfig } from '@app/services/project/setting-config';
-import { $ } from '@app/utils/dom';
+import { titleEls } from '@app/title/element-registry';
 import { addClass, hasClass, on, rect, removeClass } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
@@ -104,8 +104,8 @@ Home.initialize = function (this: typeof Home) {
 
 Home.updateCenterPosition = function (this: typeof Home) {
 	if (Layout.manager?.index === 'home') {
-		const elPage = $('#home');
-		const elContent = $('#home-content');
+		const elPage = titleEls.get('home') as HTMLElement;
+		const elContent = titleEls.get('home-content') as HTMLElement;
 		const pageRect = rect(elPage);
 		const contentRect = rect(elContent);
 		const left = (pageRect.width - contentRect.width) / 2;

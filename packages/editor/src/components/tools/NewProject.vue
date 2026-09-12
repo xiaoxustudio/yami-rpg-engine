@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.newProject-template.label') }}</div>
 			<SelectBox
 				id="newProject-template"
+				:ref="registryRef(titleEls, 'newProject-template')"
 				v-focus
 				v-model="form.template"
 				@input="onTemplateInput"
@@ -31,12 +32,15 @@
 				<button id="newProject-choose" @click="onChooseClick">…</button>
 			</div>
 		</div>
-		<div class="text" id="newProject-warning" />
+		<div class="text" id="newProject-warning"
+				:ref="registryRef(titleEls, 'newProject-warning')" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { titleEls } from '@app/title/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { NewProject } from '@app/title/new-project-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

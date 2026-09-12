@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
-import { $ } from '@app/utils/dom';
+import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { disable, enable, read } from '@app/utils/element-utils';
+import { read } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Data } from '@app/data/data-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -79,7 +79,7 @@ export const NewProject: NewProjectShape = {
 };
 
 NewProject.initialize = function (this: typeof NewProject) {
-	const template = $('#newProject-template');
+	const template = titleEls.get('newProject-template') as HTMLElement;
 	if (!template) return;
 	template.loadItems([
 		{ name: 'ARPG - English', value: 'arpg-ts-english' },
@@ -116,26 +116,25 @@ NewProject.check = function (this: typeof NewProject) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			$('#newProject-warning').textContent = t('confirmation.enterFolderName');
+			(titleEls.get('newProject-warning') as HTMLElement).textContent = t(
+				'confirmation.enterFolderName'
+			);
 		}
-		disable($('#newProject-confirm'));
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			$('#newProject-warning').textContent = t('confirmation.folderAlreadyExists');
+			(titleEls.get('newProject-warning') as HTMLElement).textContent = t(
+				'confirmation.folderAlreadyExists'
+			);
 		}
-		disable($('#newProject-confirm'));
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			$('#newProject-warning').textContent = '';
+			(titleEls.get('newProject-warning') as HTMLElement).textContent = '';
 		}
-		const template = form.template;
-		if (template === 'minimized-project' && Editor.state === 'closed') {
-			disable($('#newProject-confirm'));
-		} else {
-			enable($('#newProject-confirm'));
-		}
+		// P5b 尾项（已登记）：原先在此 disable/enable 确认按钮——仅当 template === 'minimized-project'
+		// 且编辑器已关闭时才允许确认。按钮由 WindowFrame → YMFormButtons 生成、注册表取不到，
+		// 改为「确认按钮启用态属性化」（WindowFrame 增 confirmDisabled）单独收口。
 	}
 };
 
@@ -189,8 +188,8 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 	const dPath = args[1] as string;
 	const idFilter = args[2];
 	Window.open!('copyProgress');
-	const progressBar = $('#copyProgress-bar');
-	const progressInfo = $('#copyProgress-info');
+	const progressBar = titleEls.get('copyProgress-bar') as HTMLElement;
+	const progressInfo = titleEls.get('copyProgress-info') as HTMLElement;
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';
 	return this.readFileList!(sPath, idFilter).then(
@@ -348,7 +347,7 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 const newProjectConfirmOriginal = NewProject.confirm;
 
 NewProject.confirm = function (this: typeof NewProject) {
-	const template = read($('#newProject-template'));
+	const template = read(titleEls.get('newProject-template') as HTMLElement);
 	const noResourceObj = isNoResource();
 	if (
 		(template == 'arpg-ts-english' && noResourceObj['arpg-ts-english'].check) ||

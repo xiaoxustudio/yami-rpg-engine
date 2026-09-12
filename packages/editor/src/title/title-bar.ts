@@ -1,4 +1,6 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { windowShellEls } from '@app/tools/window-object.ts';
+import { titleEls } from '@app/title/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -162,8 +164,8 @@ export const Title: TitleShape = {
 };
 
 Title.initialize = function (this: TitleShape) {
-	this.target = $('#title');
-	this.tabBar = $('#title-tabBar') as unknown as TitleTabBarShape;
+	this.target = windowShellEls.get('title') as HTMLElement;
+	this.tabBar = titleEls.get('title-tabBar') as HTMLElement as unknown as TitleTabBarShape;
 	if (this.tabBar) this.tabBar.data = [];
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
@@ -179,7 +181,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = $('#title-app-region') as HTMLElement;
+	this.target.element = titleEls.get('title-app-region') as HTMLElement as HTMLElement;
 
 	this.pointerenter!();
 
@@ -394,7 +396,7 @@ Title.dispatchThemechangeEvent = (function IIFE() {
 })();
 
 Title.playGame = async function (this: TitleShape) {
-	const element = $('#title-play');
+	const element = titleEls.get('title-play') as HTMLElement;
 	if (Editor.state === 'open' && !getTitleStore().playing) {
 		getTitleStore().setPlaying(true);
 		addClass(element, 'selected');

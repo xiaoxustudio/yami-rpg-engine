@@ -7,7 +7,7 @@ import ColorWindow from '@app/components/tools/Color.vue';
 import { Color, colorEls } from '../color-picker-window.ts';
 
 /**
- * P5b 批次 3 回归：取色窗口不再用 `$('#id')` 查 DOM——元素由 `Color.vue` 登记进 `colorEls`，
+ * P5b 批次 3 回归：取色窗口不再用 `按 id` 查 DOM——元素由 `Color.vue` 登记进 `colorEls`，
  * 而 16 个 `name="color-index"` 单选组的元素 API 由 ui-kit 的 `radioProxyMap` 提供
  * （原先 `$('#color-index')` 命中的正是 RadioProxy 生成的代理 div）。
  * 锁住「登记 → initialize 绑定」链路（此前无覆盖）。
