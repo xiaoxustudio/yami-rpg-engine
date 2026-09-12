@@ -14,7 +14,7 @@
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 72 | 50 | 50 | 52 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 43 | 41 | 41 | 111 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 229 | 23 | 21 | 21 | 78 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,13 +48,13 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 155 | 155 | 168 | 56 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 135 | 135 | 135 | 56 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**155**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**155**
+- 待迁移命中文件：**135**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**135**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
 - 正则命中但无豁免注释：**3**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
@@ -121,7 +121,6 @@
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
-| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 10 | 是 |
 | packages/editor/src/data/transition-window.ts | 1390 | 10 | 是 |
 | packages/editor/src/tools/window-object.ts | 512 | 10 | 是 |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
@@ -143,6 +142,7 @@
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 249 | 7 | 是 |
+| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 625 | 7 | 是 |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 7 | 是 |
 | packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 7 | 是 |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 7 | 是 |
@@ -178,7 +178,6 @@
 | packages/editor/src/components/inspector/SceneLightPage.vue | 531 | 5 | 是 |
 | packages/editor/src/components/inspector/SceneParticlePage.vue | 320 | 5 | 是 |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 346 | 5 | 是 |
-| packages/editor/src/composables/commands/useRegisterEventCommandSchema.ts | 421 | 5 | 是 |
 | packages/editor/src/composables/useIfBranchSchema.ts | 131 | 5 | 是 |
 | packages/editor/src/composables/useIfConditionSchema.ts | 975 | 5 | 是 |
 | packages/editor/src/composables/usePresetElementWindow.ts | 241 | 5 | 是 |
@@ -264,12 +263,6 @@
 | packages/editor/src/components/tools/Reference.vue | 86 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 852 | 2 | 是 |
-| packages/editor/src/composables/commands/useDownloadFileCommandSchema.ts | 140 | 2 | 是 |
-| packages/editor/src/composables/commands/useGetActorCommandSchema.ts | 279 | 2 | 是 |
-| packages/editor/src/composables/commands/useGetTargetCommandSchema.ts | 147 | 2 | 是 |
-| packages/editor/src/composables/commands/useSetShortcutCommandSchema.ts | 115 | 2 | 是 |
-| packages/editor/src/composables/commands/useTransitionCommandSchema.ts | 115 | 2 | 是 |
-| packages/editor/src/composables/commands/useWebSocketSendCommandSchema.ts | 63 | 2 | 是 |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 2 | 是 |
 | packages/editor/src/composables/useTextCaptureWindow.ts | 152 | 2 | 是 |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
@@ -329,21 +322,8 @@
 | packages/editor/src/components/tools/Team.vue | 119 | 1 | - |
 | packages/editor/src/components/tools/UpdateLog.vue | 179 | 1 | - |
 | packages/editor/src/components/tools/Variable.vue | 374 | 1 | - |
-| packages/editor/src/composables/commands/useAddAnimationComponentCommandSchema.ts | 91 | 1 | 是 |
-| packages/editor/src/composables/commands/useCastSkillCommandSchema.ts | 125 | 1 | 是 |
 | packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 150 | 1 | 是 |
-| packages/editor/src/composables/commands/useChangeActorSpriteCommandSchema.ts | 62 | 1 | 是 |
-| packages/editor/src/composables/commands/useChangeActorTeamCommandSchema.ts | 41 | 1 | 是 |
 | packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 132 | 1 | 是 |
-| packages/editor/src/composables/commands/usePlayAnimationCommandSchema.ts | 166 | 1 | 是 |
-| packages/editor/src/composables/commands/useRemoveAnimationComponentCommandSchema.ts | 59 | 1 | 是 |
-| packages/editor/src/composables/commands/useReturnCommandSchema.ts | 182 | 1 | 是 |
-| packages/editor/src/composables/commands/useSetBooleanCommandSchema.ts | 202 | 1 | 是 |
-| packages/editor/src/composables/commands/useSetCooldownCommandSchema.ts | 59 | 1 | 是 |
-| packages/editor/src/composables/commands/useSetLanguageCommandSchema.ts | 54 | 1 | 是 |
-| packages/editor/src/composables/commands/useSetStringCommandSchema.ts | 578 | 1 | 是 |
-| packages/editor/src/composables/commands/useTintImageCommandSchema.ts | 141 | 1 | 是 |
-| packages/editor/src/composables/commands/useTintScreenCommandSchema.ts | 96 | 1 | 是 |
 | packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 100 | 1 | 是 |
 | packages/editor/src/composables/useCommandSchema.ts | 62 | 1 | 是 |
 | packages/editor/src/composables/useFileImagePage.ts | 74 | 1 | 是 |
@@ -429,20 +409,20 @@
 | packages/editor/src/components/color-box.ts | 7 | 0 | - |
 | packages/editor/src/components/command-list.ts | 115 | 0 | - |
 | packages/editor/src/components/commands/ActivateScene.vue | 64 | 0 | - |
-| packages/editor/src/components/commands/AddAnimationComponent.vue | 123 | 0 | - |
+| packages/editor/src/components/commands/AddAnimationComponent.vue | 125 | 0 | - |
 | packages/editor/src/components/commands/AppendTarget.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/Block.vue | 94 | 0 | - |
 | packages/editor/src/components/commands/Break.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/CallEvent.vue | 170 | 0 | - |
-| packages/editor/src/components/commands/CastSkill.vue | 102 | 0 | - |
+| packages/editor/src/components/commands/CallEvent.vue | 171 | 0 | - |
+| packages/editor/src/components/commands/CastSkill.vue | 103 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorAnimation.vue | 59 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorEquipment.vue | 124 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorMotion.vue | 71 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorPortrait.vue | 100 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorSkill.vue | 96 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorSprite.vue | 76 | 0 | - |
+| packages/editor/src/components/commands/ChangeActorSprite.vue | 83 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorState.vue | 98 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorTeam.vue | 69 | 0 | - |
+| packages/editor/src/components/commands/ChangeActorTeam.vue | 70 | 0 | - |
 | packages/editor/src/components/commands/ChangePassableTerrain.vue | 72 | 0 | - |
 | packages/editor/src/components/commands/ChangeThreat.vue | 81 | 0 | - |
 | packages/editor/src/components/commands/ClampCamera.vue | 89 | 0 | - |
@@ -466,15 +446,15 @@
 | packages/editor/src/components/commands/DeleteVariable.vue | 57 | 0 | - |
 | packages/editor/src/components/commands/DetectTargets.vue | 92 | 0 | - |
 | packages/editor/src/components/commands/DiscardTargets.vue | 83 | 0 | - |
-| packages/editor/src/components/commands/DownloadFile.vue | 139 | 0 | - |
+| packages/editor/src/components/commands/DownloadFile.vue | 140 | 0 | - |
 | packages/editor/src/components/commands/FixAngle.vue | 68 | 0 | - |
 | packages/editor/src/components/commands/FollowActor.vue | 187 | 0 | - |
 | packages/editor/src/components/commands/ForEach.vue | 169 | 0 | - |
 | packages/editor/src/components/commands/GameData.vue | 91 | 0 | - |
-| packages/editor/src/components/commands/GetActor.vue | 213 | 0 | - |
+| packages/editor/src/components/commands/GetActor.vue | 214 | 0 | - |
 | packages/editor/src/components/commands/GetMultipleActors.vue | 158 | 0 | - |
 | packages/editor/src/components/commands/GetObjectProperty.vue | 90 | 0 | - |
-| packages/editor/src/components/commands/GetTarget.vue | 118 | 0 | - |
+| packages/editor/src/components/commands/GetTarget.vue | 119 | 0 | - |
 | packages/editor/src/components/commands/HttpRequest.vue | 143 | 0 | - |
 | packages/editor/src/components/commands/If.vue | 81 | 0 | - |
 | packages/editor/src/components/commands/Independent.vue | 42 | 0 | - |
@@ -491,12 +471,12 @@
 | packages/editor/src/components/commands/NestElement.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/PauseGame.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/PlayActorAnimation.vue | 81 | 0 | - |
-| packages/editor/src/components/commands/PlayAnimation.vue | 156 | 0 | - |
+| packages/editor/src/components/commands/PlayAnimation.vue | 158 | 0 | - |
 | packages/editor/src/components/commands/PlayAudio.vue | 102 | 0 | - |
 | packages/editor/src/components/commands/PreventSceneInput.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/RegisterEvent.vue | 121 | 0 | - |
+| packages/editor/src/components/commands/RegisterEvent.vue | 126 | 0 | - |
 | packages/editor/src/components/commands/RelaunchApp.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/RemoveAnimationComponent.vue | 73 | 0 | - |
+| packages/editor/src/components/commands/RemoveAnimationComponent.vue | 80 | 0 | - |
 | packages/editor/src/components/commands/RemoveTarget.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/RenderOutline.vue | 91 | 0 | - |
 | packages/editor/src/components/commands/RequestURL.vue | 99 | 0 | - |
@@ -504,7 +484,7 @@
 | packages/editor/src/components/commands/ResetTargets.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/RestoreAudio.vue | 65 | 0 | - |
 | packages/editor/src/components/commands/RestoreSceneInput.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/Return.vue | 143 | 0 | - |
+| packages/editor/src/components/commands/Return.vue | 144 | 0 | - |
 | packages/editor/src/components/commands/SaveAudio.vue | 65 | 0 | - |
 | packages/editor/src/components/commands/Script.vue | 69 | 0 | - |
 | packages/editor/src/components/commands/SetActive.vue | 68 | 0 | - |
@@ -512,9 +492,9 @@
 | packages/editor/src/components/commands/SetAngle.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/SetAnimation.vue | 74 | 0 | - |
 | packages/editor/src/components/commands/SetAnimationComponent.vue | 258 | 0 | - |
-| packages/editor/src/components/commands/SetBoolean.vue | 161 | 0 | - |
+| packages/editor/src/components/commands/SetBoolean.vue | 162 | 0 | - |
 | packages/editor/src/components/commands/SetButton.vue | 73 | 0 | - |
-| packages/editor/src/components/commands/SetCooldown.vue | 83 | 0 | - |
+| packages/editor/src/components/commands/SetCooldown.vue | 85 | 0 | - |
 | packages/editor/src/components/commands/SetCursor.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/SetDialogBox.vue | 74 | 0 | - |
 | packages/editor/src/components/commands/SetElement.vue | 85 | 0 | - |
@@ -524,7 +504,7 @@
 | packages/editor/src/components/commands/SetImage.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/SetInventory.vue | 172 | 0 | - |
 | packages/editor/src/components/commands/SetItem.vue | 72 | 0 | - |
-| packages/editor/src/components/commands/SetLanguage.vue | 50 | 0 | - |
+| packages/editor/src/components/commands/SetLanguage.vue | 57 | 0 | - |
 | packages/editor/src/components/commands/SetList.vue | 269 | 0 | - |
 | packages/editor/src/components/commands/SetLoop.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/SetMovementSpeed.vue | 108 | 0 | - |
@@ -539,10 +519,10 @@
 | packages/editor/src/components/commands/SetProgressBar.vue | 74 | 0 | - |
 | packages/editor/src/components/commands/SetResolution.vue | 85 | 0 | - |
 | packages/editor/src/components/commands/SetReverb.vue | 119 | 0 | - |
-| packages/editor/src/components/commands/SetShortcut.vue | 100 | 0 | - |
+| packages/editor/src/components/commands/SetShortcut.vue | 102 | 0 | - |
 | packages/editor/src/components/commands/SetSkill.vue | 79 | 0 | - |
 | packages/editor/src/components/commands/SetState.vue | 73 | 0 | - |
-| packages/editor/src/components/commands/SetString.vue | 598 | 0 | - |
+| packages/editor/src/components/commands/SetString.vue | 599 | 0 | - |
 | packages/editor/src/components/commands/SetTarget.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/SetTeamRelation.vue | 79 | 0 | - |
 | packages/editor/src/components/commands/SetTerrain.vue | 69 | 0 | - |
@@ -567,10 +547,10 @@
 | packages/editor/src/components/commands/StopEvent.vue | 169 | 0 | - |
 | packages/editor/src/components/commands/Switch.vue | 85 | 0 | - |
 | packages/editor/src/components/commands/SwitchCollisionSystem.vue | 66 | 0 | - |
-| packages/editor/src/components/commands/TintImage.vue | 225 | 0 | - |
-| packages/editor/src/components/commands/TintScreen.vue | 173 | 0 | - |
+| packages/editor/src/components/commands/TintImage.vue | 226 | 0 | - |
+| packages/editor/src/components/commands/TintScreen.vue | 174 | 0 | - |
 | packages/editor/src/components/commands/TransferGlobalActor.vue | 54 | 0 | - |
-| packages/editor/src/components/commands/Transition.vue | 101 | 0 | - |
+| packages/editor/src/components/commands/Transition.vue | 103 | 0 | - |
 | packages/editor/src/components/commands/TranslateActor.vue | 99 | 0 | - |
 | packages/editor/src/components/commands/UnclampCamera.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/UnloadSubscene.vue | 57 | 0 | - |
@@ -580,7 +560,7 @@
 | packages/editor/src/components/commands/WaitForVideo.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/WebSocketClose.vue | 66 | 0 | - |
 | packages/editor/src/components/commands/WebSocketConnect.vue | 90 | 0 | - |
-| packages/editor/src/components/commands/WebSocketSend.vue | 54 | 0 | - |
+| packages/editor/src/components/commands/WebSocketSend.vue | 62 | 0 | - |
 | packages/editor/src/components/common/CommandList.vue | 109 | 0 | - |
 | packages/editor/src/components/common/CommonList.vue | 137 | 0 | - |
 | packages/editor/src/components/common/DetailSummary.vue | 53 | 0 | - |
@@ -714,13 +694,17 @@
 | packages/editor/src/components/type-registry.ts | 13 | 0 | - |
 | packages/editor/src/components/var-factories.ts | 19 | 0 | - |
 | packages/editor/src/composables/commands/useActivateSceneCommandSchema.ts | 39 | 0 | - |
+| packages/editor/src/composables/commands/useAddAnimationComponentCommandSchema.ts | 91 | 0 | - |
 | packages/editor/src/composables/commands/useAppendTargetCommandSchema.ts | 43 | 0 | - |
 | packages/editor/src/composables/commands/useBlockCommandSchema.ts | 63 | 0 | - |
+| packages/editor/src/composables/commands/useCastSkillCommandSchema.ts | 125 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorAnimationCommandSchema.ts | 37 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorMotionCommandSchema.ts | 43 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorPortraitCommandSchema.ts | 96 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorSkillCommandSchema.ts | 89 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorSpriteCommandSchema.ts | 62 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorStateCommandSchema.ts | 86 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorTeamCommandSchema.ts | 41 | 0 | - |
 | packages/editor/src/composables/commands/useChangePassableTerrainCommandSchema.ts | 37 | 0 | - |
 | packages/editor/src/composables/commands/useChangeThreatCommandSchema.ts | 60 | 0 | - |
 | packages/editor/src/composables/commands/useClampCameraCommandSchema.ts | 55 | 0 | - |
@@ -741,12 +725,15 @@
 | packages/editor/src/composables/commands/useDeleteVariableCommandSchema.ts | 42 | 0 | - |
 | packages/editor/src/composables/commands/useDetectTargetsCommandSchema.ts | 69 | 0 | - |
 | packages/editor/src/composables/commands/useDiscardTargetsCommandSchema.ts | 49 | 0 | - |
+| packages/editor/src/composables/commands/useDownloadFileCommandSchema.ts | 140 | 0 | - |
 | packages/editor/src/composables/commands/useFixAngleCommandSchema.ts | 44 | 0 | - |
 | packages/editor/src/composables/commands/useFollowActorCommandSchema.ts | 151 | 0 | - |
 | packages/editor/src/composables/commands/useForEachCommandSchema.ts | 281 | 0 | - |
 | packages/editor/src/composables/commands/useGameDataCommandSchema.ts | 76 | 0 | - |
+| packages/editor/src/composables/commands/useGetActorCommandSchema.ts | 279 | 0 | - |
 | packages/editor/src/composables/commands/useGetMultipleActorsCommandSchema.ts | 124 | 0 | - |
 | packages/editor/src/composables/commands/useGetObjectPropertyCommandSchema.ts | 167 | 0 | - |
+| packages/editor/src/composables/commands/useGetTargetCommandSchema.ts | 147 | 0 | - |
 | packages/editor/src/composables/commands/useHttpRequestCommandSchema.ts | 154 | 0 | - |
 | packages/editor/src/composables/commands/useIfCommandSchema.ts | 109 | 0 | - |
 | packages/editor/src/composables/commands/useJumpToCommandSchema.ts | 93 | 0 | - |
@@ -760,18 +747,24 @@
 | packages/editor/src/composables/commands/useMoveLightCommandSchema.ts | 72 | 0 | - |
 | packages/editor/src/composables/commands/useNestElementCommandSchema.ts | 36 | 0 | - |
 | packages/editor/src/composables/commands/usePlayActorAnimationCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/usePlayAnimationCommandSchema.ts | 166 | 0 | - |
 | packages/editor/src/composables/commands/usePlayAudioCommandSchema.ts | 79 | 0 | - |
+| packages/editor/src/composables/commands/useRegisterEventCommandSchema.ts | 421 | 0 | - |
+| packages/editor/src/composables/commands/useRemoveAnimationComponentCommandSchema.ts | 59 | 0 | - |
 | packages/editor/src/composables/commands/useRemoveTargetCommandSchema.ts | 37 | 0 | - |
 | packages/editor/src/composables/commands/useRenderOutlineCommandSchema.ts | 79 | 0 | - |
 | packages/editor/src/composables/commands/useRequestURLCommandSchema.ts | 152 | 0 | - |
 | packages/editor/src/composables/commands/useResetTargetsCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useRestoreAudioCommandSchema.ts | 31 | 0 | - |
+| packages/editor/src/composables/commands/useReturnCommandSchema.ts | 182 | 0 | - |
 | packages/editor/src/composables/commands/useSaveAudioCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useSetActiveCommandSchema.ts | 43 | 0 | - |
 | packages/editor/src/composables/commands/useSetAmbientLightCommandSchema.ts | 57 | 0 | - |
 | packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 54 | 0 | - |
 | packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetBooleanCommandSchema.ts | 202 | 0 | - |
 | packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetCooldownCommandSchema.ts | 59 | 0 | - |
 | packages/editor/src/composables/commands/useSetCursorCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useSetDialogBoxCommandSchema.ts | 58 | 0 | - |
 | packages/editor/src/composables/commands/useSetElementCommandSchema.ts | 37 | 0 | - |
@@ -781,6 +774,7 @@
 | packages/editor/src/composables/commands/useSetImageCommandSchema.ts | 55 | 0 | - |
 | packages/editor/src/composables/commands/useSetInventoryCommandSchema.ts | 161 | 0 | - |
 | packages/editor/src/composables/commands/useSetItemCommandSchema.ts | 52 | 0 | - |
+| packages/editor/src/composables/commands/useSetLanguageCommandSchema.ts | 54 | 0 | - |
 | packages/editor/src/composables/commands/useSetListCommandSchema.ts | 372 | 0 | - |
 | packages/editor/src/composables/commands/useSetLoopCommandSchema.ts | 43 | 0 | - |
 | packages/editor/src/composables/commands/useSetMovementSpeedCommandSchema.ts | 74 | 0 | - |
@@ -794,8 +788,10 @@
 | packages/editor/src/composables/commands/useSetProgressBarCommandSchema.ts | 55 | 0 | - |
 | packages/editor/src/composables/commands/useSetResolutionCommandSchema.ts | 54 | 0 | - |
 | packages/editor/src/composables/commands/useSetReverbCommandSchema.ts | 58 | 0 | - |
+| packages/editor/src/composables/commands/useSetShortcutCommandSchema.ts | 115 | 0 | - |
 | packages/editor/src/composables/commands/useSetSkillCommandSchema.ts | 67 | 0 | - |
 | packages/editor/src/composables/commands/useSetStateCommandSchema.ts | 42 | 0 | - |
+| packages/editor/src/composables/commands/useSetStringCommandSchema.ts | 578 | 0 | - |
 | packages/editor/src/composables/commands/useSetTargetCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useSetTeamRelationCommandSchema.ts | 51 | 0 | - |
 | packages/editor/src/composables/commands/useSetTerrainCommandSchema.ts | 37 | 0 | - |
@@ -818,7 +814,10 @@
 | packages/editor/src/composables/commands/useStopEventCommandSchema.ts | 145 | 0 | - |
 | packages/editor/src/composables/commands/useSwitchCollisionSystemCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useSwitchCommandSchema.ts | 125 | 0 | - |
+| packages/editor/src/composables/commands/useTintImageCommandSchema.ts | 141 | 0 | - |
+| packages/editor/src/composables/commands/useTintScreenCommandSchema.ts | 96 | 0 | - |
 | packages/editor/src/composables/commands/useTransferGlobalActorCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useTransitionCommandSchema.ts | 115 | 0 | - |
 | packages/editor/src/composables/commands/useTranslateActorCommandSchema.ts | 75 | 0 | - |
 | packages/editor/src/composables/commands/useUnloadSubsceneCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useUploadFileCommandSchema.ts | 115 | 0 | - |
@@ -826,6 +825,7 @@
 | packages/editor/src/composables/commands/useWaitForVideoCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useWebSocketCloseCommandSchema.ts | 60 | 0 | - |
 | packages/editor/src/composables/commands/useWebSocketConnectCommandSchema.ts | 73 | 0 | - |
+| packages/editor/src/composables/commands/useWebSocketSendCommandSchema.ts | 63 | 0 | - |
 | packages/editor/src/composables/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/composables/useActorGetterWindow.ts | 115 | 0 | - |
 | packages/editor/src/composables/useAncestorGetterWindow.ts | 88 | 0 | - |
@@ -1165,7 +1165,7 @@
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
 | packages/editor/src/utils/element-data.ts | 109 | 0 | - |
-| packages/editor/src/utils/element-registry.ts | 34 | 0 | - |
+| packages/editor/src/utils/element-registry.ts | 53 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |

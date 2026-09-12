@@ -17,7 +17,7 @@
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④后扫描面 **347**） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
-| P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` 一族（**155 个文件 / `getElementById` 168 处**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1 刀：`useProjectSettingsWindow` + `useVariableGetterWindow` + `VariableGetter2.vue` 共 71 处 → 0） |
+| P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` 一族（**135 个文件 / `getElementById` 135 处**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1 刀：两个窗口 composable 71 处 → 0；第 2 刀：命令表单线 21 个 schema composable 44 处 → 0） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
 | P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **72** 个字段的 get/set（共 144 访问器；B3 已先删 11 个零访问字段），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
@@ -89,7 +89,7 @@
 | 🚧 **B5 i18n 工程线** | **R2b**：按承载者给键分类（✅）→ 把 Vue 承担的部分改为模板 `t()`/`v-tip`/标签 `t()`（🚧 迁移②③④：1436 处 `v-tip` + 612 处标签 `t()` + 43 处 `loadItems` 选项 ⇒ 1782 键跳过，扫描面 2130 → 347）→ 其余键的目标元素自注册 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
 | **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役） | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
-| 🚧 **P1b 受限 API 直查** | 把 `document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族改读分组注册表（沿用 P5b 手法 + `@confirm` 覆盖框架按钮），逐模块成刀 | 无；与 B6 在 `ui-kit/components` 上汇合 | **155 个文件 / `getElementById` 168 处**（components 50、composables 41、ui-kit/components 34…） | 第 1 刀实测：待迁移命中 **158 → 155**、`getElementById` **242 → 168**；终点 = 白名单外为 0（与 C1 同一终点） | 每刀独立提交 revert |
+| 🚧 **P1b 受限 API 直查** | 把 `document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族改读分组注册表（沿用 P5b 手法 + `@confirm` 覆盖框架按钮 + `createElementRegistry(mirror)` 创建时镜像），逐模块成刀 | 无；与 B6 在 `ui-kit/components` 上汇合 | **135 个文件 / `getElementById` 135 处**（components 50、ui-kit/components 34、composables 21…） | 第 1 刀实测：待迁移命中 **158 → 155**、`getElementById` **242 → 168**；第 2 刀实测：**155 → 135**、**168 → 135**；终点 = 白名单外为 0（与 C1 同一终点） | 每刀独立提交 revert |
 | **并行/旁路** | E1 余项（自定义事件改强类型通道、`.vue` 监听配对、`mitt` 去留）、O1（layout M6 评估） | 不阻塞主线 | E1：16 个自定义事件 + 5 个 `.vue` + 13 处内联匿名 | `pnpm events:surface` 的"单侧事件""未配对 .vue"归零 | 按事件逐个提交 |
 
 **批次纪律**：① 每批开工前跑一次 `pnpm dom:guard:tracker` 与 `pnpm docs:check` 记录基线；② 收尾时把该批的指标变化**写回本表与 README 快照**（门禁会拦数字不一致）；③ 任何一批若让 tracker 出现"本不该变"的口径变化，先当误删处理。
@@ -610,7 +610,7 @@
 
 ## P1b — 受限 API 直查收尾（`document.*` 7 成员）
 
-> 🚧 **进行中（2026-09-12，第 1 刀）**——P5b 把 `$('#id')` 降到 22 处后，**同一条债轴上的另一批站点**浮出水面：这些文件从来不用 `$()`，而是直接 `document.getElementById('静态id')`（因此既不在 P5b 的 `dollarLookup` 列里，也没被任何批次登记）。它们正是 `pnpm docs:check` 的 lint 门禁口径「待迁移命中」，也是 **C1 的"白名单外为 0"** 必须先清掉的部分。
+> 🚧 **进行中（2026-09-12，已出两刀）**——P5b 把 `$('#id')` 降到 22 处后，**同一条债轴上的另一批站点**浮出水面：这些文件从来不用 `$()`，而是直接 `document.getElementById('静态id')`（因此既不在 P5b 的 `dollarLookup` 列里，也没被任何批次登记）。它们正是 `pnpm docs:check` 的 lint 门禁口径「待迁移命中」，也是 **C1 的"白名单外为 0"** 必须先清掉的部分。
 >
 > **第 1 刀（已完成）**：`composables/useProjectSettingsWindow.ts`（35 处）+ `composables/useVariableGetterWindow.ts`（34 处）+ `components/tools/VariableGetter2.vue`（2 处）→ **71 处归零**，渲染方 4 个 SFC（`ProjectSettings.vue` 48 个 `:ref`、`VariableGetter.vue` 10、`Language.vue` 3、`VariableGetter2.vue` 5）登记进 `composableEls`。
 > - **模块侧**：`document.getElementById('x')!` → `el('x')`（`el = (id) => composableEls.get(id) as HTMLElement`，**保留原先的非空断言语义**）、`?.` 形态保持 `?.`、`document.querySelectorAll('#a, #b, …')` 的 45 个参数控件改为遍历 `PARAM_IDS` 读注册表、动态前缀（`` `${prefix}-type` `` 一族）直接以模板串作注册键（注册表是 Map，天然支持）。
@@ -618,14 +618,25 @@
 > - **新工具**：`scripts/element-ref-annotate.mjs`（只做 SFC 侧的登记注解，`--ids` + `--sfcs` + `--apply`，默认干跑）——沿用 `element-registry-migrate.mjs` 的判据约定（检查 import 语句、不做 import 合并、`:ref` 被占用时不硬塞而是跳过并报 unresolved）。
 > - **回归**：新增 3 个 spec（`variable-getter-registry.spec.ts` 6 例 / `project-settings-registry.spec.ts` 4 例 / `language-window-registry.spec.ts` 1 例），断言「注册键 ↔ 元素 id 一致」「`initialize()` 的 `relate` 目标与 `loadItems` 确实是注册表里的控件」「点 `#…-confirm` 真的走到 composable」。`language-window-registry.spec.ts` 单独成文件的原因写在其头部：`languages.initialize` 会被 `ParamList.bind()` 消费一次后置空（与生产一致），跨用例复用会掩盖这条路径。
 > - **指标**：待迁移命中 **158 → 155**、豁免注释 **158 → 155**、陈旧豁免维持 **0**、`getElementById` **242 → 168**（composables 183 → 111、components 54 → 52）；editor **226 文件 1945/1945**（+3 文件 / +11 例）、ui-kit **97 文件 667/667**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+>
+> **第 2 刀（已完成）：命令表单线——21 个 schema composable 的 44 处直查归零**
+>
+> `composables/commands/useXxxCommandSchema.ts` 一族（含 `composables/` 根下的 `useNumberOperandSchema` 之外的命令 schema）原先按 id 直查控件再调元素 API（`loadItems`/`write`/`clear`/`enable`/`disable`/`show`/`hide`），而它们的渲染方命令 SFC 的控件只挂在**组件局部** `fieldEls` 上（批 4 第一刀产物）→ 本轮的做法是给注册表加**创建时镜像**：
+> - **新 API**：`createElementRegistry(mirror?)`——局部注册表的每次写入（含卸载时的 `null`）同步镜像进共享注册表；SFC 侧只把 `createElementRegistry()` 改写成 `createElementRegistry(composableEls)`（21 个 SFC，其中 `ChangeActorSprite`/`RemoveAnimationComponent`/`SetLanguage`/`WebSocketSend` 四个原本连局部注册表都没有，一并补上 `fieldEls`）。
+> - **🔴 时序坑（值得全项目警戒）**：镜像最初写在 SFC 的 `onMounted` 里做「循环拷贝」，`RegisterEvent` 的两个用例立刻失败（`Cannot read properties of undefined (reading 'previousElementSibling')`）——**Vue 的 post-flush 顺序是子组件 `onMounted` 先于父组件**，而命令控件（SelectBox 等）会在自己的 `onMounted` 里 `emit('write'/'input')`，那一刻父组件的拷贝还没执行 → 注册表为空。改成写入时镜像即通过；helper 与工具（`--mirror-to`）都按这条改，并写进注释避免后人重犯。
+> - **补登记**：为 13 个此前模板里没有 `:ref` 的控件补登记（`registerEvent-type/tag/priority/namespace`、`addAnimationComponent-motion`、`changeActorSprite-spriteId`、`playAnimation-motion`、`removeAnimationComponent-motion`、`setCooldown-key`、`setLanguage-language`、`setShortcut-key`、`transition-easingId`、`webSocketSend-id/data`）——它们正是「只在 `document.getElementById` 里出现、所以批 4 漏掉」的那批。
+> - **未纳入本刀（单独一刀）**：`useScriptCommandSchema`（11 处：monaco 容器 `script-script`、`script` 窗口 close/resize/closed/keydown、`script-mark` 显隐、`createElement('div')` 占位）与 `useCallEventCommandSchema`（`createElement('div')` 标签 + `.call-event-component` 类选择器）——两者都含**非静态 id 查找**（monaco 宿主、类选择器），需按各自形态单独设计。
+> - **回归**：新增 `composables/__tests__/command-schema-registry.spec.ts`（5 例：镜像键 ↔ 元素 id 一致、`Transition.open` 与 `RegisterEvent.targetWrite` 真的调到注册表里的控件、无局部注册表的 SFC 也已登记、注册表为空时安全 no-op）与 `utils/__tests__/element-registry.spec.ts`（5 例：`registryRef` 取 `$el`、镜像写入/清空、重复登记、`registerElement` 路径）；**退回 onMounted 循环拷贝会让前者的第 2/3 例失败**。
+> - **指标**：待迁移命中 **155 → 135**（`editor/composables` 41 → 21）、豁免注释 **155 → 135**、陈旧豁免 **0**、`getElementById` **168 → 135**（composables 111 → 78）；editor **228 文件 1955/1955**（+2 文件 / +10 例）、ui-kit **97 文件 667/667**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
-- **现状证据（2026-09-12 实测，`pnpm dom:guard:tracker`）**：待迁移命中 **155** 个文件，按模块分布 —— `editor/components` **50**、`editor/composables` **41**、`ui-kit/components` **34**、`editor/engine` 5、`editor/tools` 3、`editor/utils` 3、`editor/inspector` 3、`editor/commands` 2、`editor/animation` 2、`editor/module` 2、`editor/palette` 2，其余 8 个模块各 1。API 处数：`getElementById` **168**（composables 111 / components 52 / 其余 5）、`document.querySelector*` **56**、`getElementsByName` 15、`getElementsByClassName` 1、`createElement` **138**。
+- **现状证据（2026-09-12 实测，`pnpm dom:guard:tracker`）**：待迁移命中 **135** 个文件，按模块分布 —— `editor/components` **50**、`ui-kit/components` **34**、`editor/composables` **21**、`editor/engine` 5、`editor/tools` 3、`editor/utils` 3、`editor/inspector` 3、`editor/commands` 2、`editor/animation` 2、`editor/module` 2、`editor/palette` 2，其余 8 个模块各 1。API 处数：`getElementById` **135**（composables 78 / components 52 / 其余 5）、`document.querySelector*` **56**、`getElementsByName` 15、`getElementsByClassName` 1、`createElement` **138**。
 - **`createElement` 单列说明**：138 处里 106 在 `ui-kit/components`——那是「元素优先」的组件工厂（`*-api.ts` 的 `createXxxElement`），属 **P2b / B6（巨石渲染层）** 的范围，不按本条逐文件搬；本条优先做**静态 id 查找**（`getElementById` / `querySelectorAll` 的选择器表）。
-- **替换配方（第 1 刀已验证，后续照此执行）**：① 模块侧取注册表（`el(id)` 助手保留 `!` 语义，或直接 `?.`）；② SFC 侧用 `scripts/element-ref-annotate.mjs` 补 `:ref="registryRef(reg, 'id')"`（已有具名 `ref` 的标签改在 `onMounted` 里 `registerElement`）；③ `*-confirm` 等框架生成的按钮一律改 SFC `@confirm`；④ 目标 SFC 已有自己的局部注册表时**镜像登记**（`registerElement(reg, id, fieldEls.get(id))`），不要硬塞第二个 `:ref`；⑤ 每刀补 1 个 registry 回归 spec。
+- **替换配方（两刀已验证，后续照此执行）**：① 模块侧取注册表（`el(id)` 助手保留 `!` 语义，或直接 `?.`；动态前缀直接以模板串作键）；② SFC 侧用 `scripts/element-ref-annotate.mjs` 补 `:ref="registryRef(reg, 'id')"`（已有具名 `ref` 的标签改在 `onMounted` 里 `registerElement`）；③ `*-confirm` 等框架生成的按钮一律改 SFC `@confirm`；④ 目标 SFC 已有自己的局部注册表时用 **`createElementRegistry(共享注册表)` 创建时镜像**（**不要**在 `onMounted` 里循环拷贝——子组件 `onMounted` 先跑，会慢一拍）；⑤ 每刀补 1 个 registry 回归 spec。
 - **下一批候选（按文件数）**：
   - `editor/components/inspector/*.vue` 一族（约 23 个页面 SFC）：形态统一为 `document.querySelectorAll('#a, #b, …')` + `getElementById('<page>-vue-mount')`——后者**已由 LayoutPanel 登记在 `inspectorEls`**（批 3 产物），前者可按 id 列表批量走 `inspectorEls`。
-  - `editor/composables/commands/useXxxCommandSchema.ts`（约 20 个文件，每文件 1–11 处）：目标是**命令表单 SFC**（批 4 第一刀已给它们建了局部 `fieldEls`）→ 镜像登记进 `composableEls` 后模块侧改读注册表。
-  - `usePresetGetterWindow`(7) / `useCurveWindow`(5) / `usePresetElementWindow`(4) / `usePresetObjectWindow`(4) / `useTeamWindow`(4) / `useTileNodeWindow`(4) / `usePointerObjectWindow`(4) / `useTextCaptureWindow`(2) / `useFileImagePage`(1) / `useCommandSchema`(1) 等 composables。
+  - `components/tools` 的命令 schema（`useNumberOperandSchema` 10 / `useIfBranchSchema` 5 / `useIfConditionSchema` 4 / `useSwitchBranchSchema` 3）：目标 SFC（`SetNumberOperand.vue` / `IfBranch.vue` / `IfCondition.vue` / `SwitchBranch.vue`）同样是批 1/批 4 的局部注册表 → 与第 2 刀同法（创建时镜像）。
+  - `useScriptCommandSchema`（monaco 宿主 + `script-*` 窗口事件）与 `useCallEventCommandSchema`（`createElement('div')` + 类选择器）单独一刀（含非静态查找）。
+  - `usePresetGetterWindow`(7) / `useCurveWindow`(5) / `usePresetElementWindow`(4) / `usePresetObjectWindow`(4) / `useTeamWindow`(4) / `useTileNodeWindow`(4) / `usePointerObjectWindow`(4) / `useTextCaptureWindow`(2) / `useFileImagePage`(1) / `useCommandSchema`(1) 等 composables（窗口族，按第 1 刀recipe）。
   - `ui-kit/components/**` 的 34 个文件：随 **B6** 的模板化一并销账（`command-api` / `YMFileBodyPane` / `YMParameterPane` / `YMParamList` / `YMTabBar` / `YMFileNavPane` 等），不单独立刀。
 - **验收标准**：① 待迁移命中按模块逐组下降，终点与 C1 相同（**白名单外为 0**）；② 每刀 editor + ui-kit 全量绿、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`pnpm docs:check` OK；③ 每刀至少 1 个 registry 回归 spec（防"注册表链路断了却静默 no-op"）；④ 真机冒烟覆盖该刀的窗口（本刀：项目设置窗口改参数 → 确认保存、语言窗口新增/重名、变量访问器的类型切换与预设键）。
 - **验证命令**：`pnpm dom:guard:tracker`、`pnpm -F @yami/editor test`、`pnpm -F @yami/ui-kit test`、`pnpm lint`、`pnpm typecheck`、`pnpm -F @yami/editor typecheck:vue`、`pnpm docs:check`。
@@ -699,7 +710,7 @@
 
 | 轴 | 实测 | 判定 |
 | --- | --- | --- |
-| 受限 API（`document.*` 7 成员） | `getElementById` **168** 处 / 待迁移命中 **155** 文件（P5b 后续第 1 刀后：242 → 168、158 → 155） | ✅ 唯一被 lint 门禁的轴 → **P1b** / C1 / C2 |
+| 受限 API（`document.*` 7 成员） | `getElementById` **135** 处 / 待迁移命中 **135** 文件（P1b 两刀后：242 → 135、158 → 135） | ✅ 唯一被 lint 门禁的轴 → **P1b** / C1 / C2 |
 | `$('#id')` 反查 | **1489 处 / 239 文件**（B1/R1 后 1481；B4 批 1 后 **1347 / 238**） | ⚠️ **新登记** → P5b（此前不在报表内） |
 | 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name）；**R2b 迁移②③④后扫描面降到 347 键**（1782 键已由模板 `t()`/`v-tip` 承担并跳过，−84%） | ⚠️ **新登记** → R2b（门禁已核对键数） |
 | 鸭子式元素 API 调用 | **682 处 / 246 文件** | ⚠️ **新登记** → P2b（`*-api.ts` 26 件门禁） |
@@ -732,4 +743,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-12 实跑）：ui-kit **97 文件 667/667**；editor **226 文件 1945/1945**（B0–B5 与 P5b 后续批次改动后的最新实跑值；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P5b 后续第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」与「模块侧真的调到了注册表里的控件」）。
+- 测试基线（2026-09-12 实跑）：ui-kit **97 文件 667/667**；editor **228 文件 1955/1955**（B0–B5 与 P1b 两刀改动后的最新实跑值；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P1b 第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，第 2 刀新增 2 个——`command-schema-registry` / `utils/__tests__/element-registry`，它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」与「模块侧真的调到了注册表里的控件」）。
