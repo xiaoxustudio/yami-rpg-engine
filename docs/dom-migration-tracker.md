@@ -9,7 +9,7 @@
 | editor/App.vue      | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/AppShell.vue | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/animation    | 10 | 7 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 48 | 0 | 0 |
-| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 11 | 0 | 0 |
+| editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
@@ -19,7 +19,7 @@
 | editor/data         | 6 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 15 | 0 | 0 |
 | editor/directives   | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/engine       | 52 | 9 | 5 | 5 | 1 | 2 | 0 | 0 | 0 | 6 | 17 | 1 | 9 | 22 | 0 | 14 | 0 | 15 | 0 | 0 |
-| editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 9 | 0 | 0 |
+| editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 |
 | editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/inspector    | 40 | 38 | 3 | 3 | 1 | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 8 | 7 | 168 | 0 | 0 |
@@ -48,7 +48,7 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1115 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1201 | 0 | 0 |
+| 合计                  | 1115 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1181 | 0 | 0 |
 
 ## 口径
 
@@ -61,7 +61,7 @@
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1201** 处 / **215** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1181** 处 / **213** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -137,7 +137,6 @@
 | packages/editor/src/local/local-window.ts | 906 | 14 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
-| packages/editor/src/attribute/attribute-window.ts | 1054 | 13 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 13 | 是 |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 13 | 是 |
@@ -147,7 +146,6 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/editor/src/components/commands/FollowActor.vue | 166 | 12 | - |
 | packages/editor/src/components/tools/SwitchCondition.vue | 162 | 12 | - |
-| packages/editor/src/enum/enum-window.ts | 895 | 12 | - |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 12 | - |
 | packages/editor/src/variable/variable.ts | 362 | 12 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
@@ -350,6 +348,7 @@
 | packages/editor/src/components/tools/SetNumberOperand.vue | 819 | 3 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 3 | 是 |
+| packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/inspector/file-script-page.ts | 84 | 3 | - |
 | packages/editor/src/inspector/file-tileset-page.ts | 160 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 89 | 3 | 是 |
@@ -363,6 +362,7 @@
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-core.ts | 134 | 3 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 356 | 3 | - |
 | packages/editor/src/animation/animation-motion.ts | 1129 | 2 | 是 |
+| packages/editor/src/attribute/attribute-window.ts | 1057 | 2 | - |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
 | packages/editor/src/commands/command-custom.ts | 377 | 2 | - |
 | packages/editor/src/commands/event-editor-commands.ts | 252 | 2 | 是 |
@@ -687,7 +687,7 @@
 | packages/editor/src/components/tools/ArrayList.vue | 121 | 0 | - |
 | packages/editor/src/components/tools/ArrayListNumber.vue | 19 | 0 | - |
 | packages/editor/src/components/tools/ArrayListString.vue | 19 | 0 | - |
-| packages/editor/src/components/tools/Attribute.vue | 262 | 0 | - |
+| packages/editor/src/components/tools/Attribute.vue | 277 | 0 | - |
 | packages/editor/src/components/tools/AutoTileFrameIndex.vue | 78 | 0 | - |
 | packages/editor/src/components/tools/AutoTileGenerateFrames.vue | 61 | 0 | - |
 | packages/editor/src/components/tools/AutoTileSelectNode.vue | 59 | 0 | - |
@@ -700,7 +700,7 @@
 | packages/editor/src/components/tools/Deployment.vue | 125 | 0 | - |
 | packages/editor/src/components/tools/EditData.vue | 57 | 0 | - |
 | packages/editor/src/components/tools/ElementGetter.vue | 98 | 0 | - |
-| packages/editor/src/components/tools/Enum.vue | 181 | 0 | - |
+| packages/editor/src/components/tools/Enum.vue | 194 | 0 | - |
 | packages/editor/src/components/tools/EquipmentGetter.vue | 95 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 85 | 0 | - |
 | packages/editor/src/components/tools/ExportApk.vue | 141 | 0 | - |

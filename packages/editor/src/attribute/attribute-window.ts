@@ -1,7 +1,8 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { ctrl } from '@app/utils/event-accessors';
 import { folderGroupOf } from '@app/utils/folder-group';
 import { Data } from '@app/data/data-object.ts';
@@ -22,6 +23,9 @@ import { type TreeListElement } from '@app/components/tree-list.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import type { AttributeItemShape } from '@app/stores/attribute';
+
+/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+export const attributeEls = createElementRegistry();
 
 interface AttributeItem {
 	id: string;
@@ -188,17 +192,17 @@ export const Attribute: AttributeWindowShape = {
 
 function ensureDomBound() {
 	if (Attribute.list) return;
-	const list = $('#attribute-list');
+	const list = attributeEls.get('attribute-list');
 	if (!list) return;
 	Attribute.list = list;
-	Attribute.panel = $('#attribute-properties-flex');
+	Attribute.panel = attributeEls.get('attribute-properties-flex') as HTMLElement;
 	hide(Attribute.panel);
-	Attribute.searcher = $('#attribute-searcher');
-	Attribute.inputs.name = $('#attribute-name');
-	Attribute.inputs.key = $('#attribute-key');
-	Attribute.inputs.note = $('#attribute-note');
-	Attribute.inputs.enum = $('#attribute-enum');
-	Attribute.inputs.enumBox = $('#attribute-enum-box');
+	Attribute.searcher = attributeEls.get('attribute-searcher') as HTMLElement;
+	Attribute.inputs.name = attributeEls.get('attribute-name') as HTMLElement;
+	Attribute.inputs.key = attributeEls.get('attribute-key') as HTMLElement;
+	Attribute.inputs.note = attributeEls.get('attribute-note') as HTMLElement;
+	Attribute.inputs.enum = attributeEls.get('attribute-enum') as HTMLElement;
+	Attribute.inputs.enumBox = attributeEls.get('attribute-enum-box') as HTMLElement;
 	list.copy = null as unknown as (...args: unknown[]) => void;
 	list.paste = null as unknown as (...args: unknown[]) => void;
 	list.delete = null as unknown as (...args: unknown[]) => void;
@@ -345,8 +349,8 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 
-	on($('#attribute'), 'close', this.windowClose);
-	on($('#attribute'), 'closed', this.windowClosed);
+	on(attributeEls.get('attribute'), 'close', this.windowClose);
+	on(attributeEls.get('attribute'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
@@ -362,7 +366,6 @@ Attribute.initialize = function (this: typeof Attribute) {
 	on(this.panel, 'keydown', this.panelKeydown);
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
-	on($('#attribute-confirm'), 'click', this.confirm);
 };
 
 Attribute.open = function (

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="enum" show-apply mode="center" @apply="onApply">
+	<WindowFrame id="enum"
+				:ref="registryRef(enumEls, 'enum')" show-apply mode="center" @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.enum.title') }}
@@ -10,6 +11,7 @@
 			<div class="legend">{{ t('components.enum-list.label') }}</div>
 			<TreeList
 				id="enum-list"
+				:ref="registryRef(enumEls, 'enum-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -21,32 +23,38 @@
 		</div>
 		<div class="field-set" id="enum-properties-fieldset">
 			<div class="legend">{{ t('components.enum-properties-flex.label') }}</div>
-			<div class="flex-box" id="enum-properties-flex">
+			<div class="flex-box" id="enum-properties-flex"
+				:ref="registryRef(enumEls, 'enum-properties-flex')">
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-name.label') }}</div>
-					<TextBox id="enum-name" menu="tag-localization" @input="onNameInput" />
+					<TextBox id="enum-name"
+				:ref="registryRef(enumEls, 'enum-name')" menu="tag-localization" @input="onNameInput" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-value.label') }}</div>
-					<TextBox id="enum-value" menu="tag-localization" @input="onValueInput" />
+					<TextBox id="enum-value"
+				:ref="registryRef(enumEls, 'enum-value')" menu="tag-localization" @input="onValueInput" />
 				</div>
 				<div class="flex-item" id="enum-spacing-box" />
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-note.label') }}</div>
-					<TextArea id="enum-note" />
+					<TextArea id="enum-note"
+				:ref="registryRef(enumEls, 'enum-note')" />
 				</div>
 			</div>
 		</div>
-		<TextBox id="enum-searcher" name="search" />
+		<TextBox id="enum-searcher"
+				:ref="registryRef(enumEls, 'enum-searcher')" name="search" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Enum } from '@app/enum/enum-window.ts';
+import { Enum, enumEls } from '@app/enum/enum-window.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
+import { registryRef } from '@app/utils/element-registry';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { getEnumStore } from '@app/stores/enum';
 import TextArea from '@app/components/common/TextArea.vue';
@@ -113,6 +121,11 @@ const onValueInput = (value: string) => {
 
 const onApply = () => {
 	Enum?.apply?.();
+};
+
+// P5b 批次 3：`enum-confirm` 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Enum?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {});

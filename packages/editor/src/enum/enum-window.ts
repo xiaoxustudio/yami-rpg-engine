@@ -1,7 +1,8 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { ctrl } from '@app/utils/event-accessors';
 import { folderGroupOf } from '@app/utils/folder-group';
 import { Data } from '@app/data/data-object.ts';
@@ -21,6 +22,9 @@ import { type TreeListElement } from '@app/components/tree-list.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import type { EnumItemShape } from '@app/stores/enum';
+
+/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+export const enumEls = createElementRegistry();
 
 interface EnumItem {
 	id: string;
@@ -158,15 +162,15 @@ export const Enum: EnumModule = {
 
 function ensureDomBound() {
 	if (Enum.list) return;
-	const list = $('#enum-list');
+	const list = enumEls.get('enum-list');
 	if (!list) return;
 	Enum.list = list;
-	Enum.panel = $('#enum-properties-flex');
+	Enum.panel = enumEls.get('enum-properties-flex') as HTMLElement;
 	hide(Enum.panel!);
-	Enum.searcher = $('#enum-searcher');
-	Enum.inputs.name = $('#enum-name');
-	Enum.inputs.value = $('#enum-value');
-	Enum.inputs.note = $('#enum-note');
+	Enum.searcher = enumEls.get('enum-searcher') as HTMLElement;
+	Enum.inputs.name = enumEls.get('enum-name') as HTMLElement;
+	Enum.inputs.value = enumEls.get('enum-value') as HTMLElement;
+	Enum.inputs.note = enumEls.get('enum-note') as HTMLElement;
 	Enum.list.copy = null as unknown as (...args: unknown[]) => void;
 	Enum.list.paste = null as unknown as (...args: unknown[]) => void;
 	Enum.list.delete = null as unknown as (...args: unknown[]) => void;
@@ -305,8 +309,8 @@ Enum.initialize = function (this: typeof Enum) {
 		getEnumStore().state.changed = true;
 	};
 
-	on($('#enum'), 'close', this.windowClose);
-	on($('#enum'), 'closed', this.windowClosed);
+	on(enumEls.get('enum'), 'close', this.windowClose);
+	on(enumEls.get('enum'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
@@ -320,7 +324,6 @@ Enum.initialize = function (this: typeof Enum) {
 	on(this.panel, 'keydown', this.panelKeydown);
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
-	on($('#enum-confirm'), 'click', this.confirm);
 };
 
 Enum.open = function (

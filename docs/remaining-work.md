@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 2 后为 1201 处 / 215 文件，批 1/批 2 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1181 处 / 213 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -230,9 +230,9 @@
 | 模块 | 处数 | 文件数 | 批次 | 状态 |
 | --- | --- | --- | --- | --- |
 | `editor/components` | 722（批 1 已消 134：IfCondition 78 + SetNumberOperand 58） | 111 | 批次 1–2 | 🚧 批 1 完成 |
-| `editor/inspector` | 168 | 38 | 批次 3 | 未开始 |
+| `editor/inspector` | 168（**实测口径：`src/inspector/**` 的 37 个 `.ts` 页面模块**；`components/inspector/*.vue` 侧为 0 处） | 38 | 批次 3 | 🚧 未开始（本轮先做 attribute/enum） |
 | `editor/commands` | **0**（批 2 全部完成：accessor 12 个 + 属性窗口族 + tips 2 个 + 自定义命令窗口 + 事件编辑器族） | 27 | 批次 2 | ✅ **已完成** |
-| `editor/tools` | 79 | 6 | 批次 3 | 未开始 |
+| `editor/tools` | 78（`text-capture` 22 / `color-picker-window` 21 / `condition-list` 21 / `property-list` 8 / `image-crop-window` 4 / `window-object` 2） | 6 | 批次 3 | 🚧 未开始 |
 | `editor/animation` | 48 | 2 | 批次 4 | 未开始 |
 | `editor/title` | 40 | 5 | 批次 4 | 未开始 |
 | `editor/scene` | 36 | 6 | 批次 4 | 未开始 |
@@ -247,8 +247,8 @@
 | `editor/engine` | 15 | 4 | 批次 4（画布区需与白名单口径对齐） | 未开始 |
 | `editor/variable` | 15 | 3 | 批次 4 | 未开始 |
 | `editor/services` | 14 | 3 | 批次 4 | 未开始 |
-| `editor/attribute` | 11 | 1 | 批次 3（与 T5b 的 #1/#2 同文件，建议合并做） | 未开始 |
-| `editor/enum` | 9 | 1 | 批次 3（同上） | 未开始 |
+| `editor/attribute` | **0**（批 3：`attribute-window.ts` 改读 `attributeEls`） | 1 | 批次 3 | ✅ **已完成** |
+| `editor/enum` | **0**（批 3：`enum-window.ts` 改读 `enumEls`） | 1 | 批次 3 | ✅ **已完成** |
 | `editor/plugin` | 7 | 1 | 批次 4 | 未开始 |
 | `editor/log` | 5 | 3 | 批次 4 | 未开始 |
 | `editor/utils` | 3 | 2 | 批次 4 | 未开始 |
@@ -372,6 +372,25 @@
 >
 > **批 2 收口（五个子批合计）**：`editor/commands` 模块 **153 处 / 27 文件 → 0 处 / 0 文件**；全仓 `$('#…')` **1347 → 1201 处**（−146）、文件 **238 → 215**（−23）。新基建三件：控件实例注册表 `createAccessorFields()`（accessor 族）、元素注册表 `createElementRegistry()`／`registryRef()`（tips、自定义命令窗口、事件编辑器、属性窗口）、`AccessorFieldControl`／`AccessorFields` 类型。**尚未覆盖**：`createElementRegistry` 目前依赖各模块自行导出注册表，命名与放置位置各不相同（`commandSuggestionEls`／`textSuggestionEls`／`customCommandEls`／`scriptCommandEls`／`eventEditorEls`）——统一命名规范留待 C1 收尾或后续批次。
 
+### 批次 3 执行清单（`src/inspector` 168 + `src/tools` 78 + `attribute` 11 + `enum` 9 = 267 处 / 46 文件）——**🚧 进行中（attribute / enum 已完成）**
+
+> **口径澄清（本轮踩过的坑，2026-09-11）**：计划表的模块名按 **`packages/editor/src/` 下的顶层目录**分组。我一开始按 `packages/editor/src/components/inspector` 去量，得到「inspector = 0 处」，据此怀疑计划表有误；改用顶层目录分组后复测确认计划表**无误**——`src/inspector/**`（37 个 `.ts` 页面模块）确实 163 处、`src/tools/**` 78 处，而 `components/inspector/*.vue` 侧是 **0 处**（页面 SFC 是纯模板，DOM 查找全在模块里）。教训：**度量脚本的路径口径必须与计划表一致**，否则会得出"计划错了"的假结论。
+
+**本批已完成的部分（2026-09-11）**
+
+| 子族 | 模块 | SFC | 处数 | 做法 |
+| --- | --- | --- | --- | --- |
+| 属性窗口 | `attribute/attribute-window.ts` | `Attribute.vue`（登记 9 个元素） | 11 → 0 | 新增 `attributeEls` 元素注册表；`ensureDomBound()` 的 list/panel/searcher/inputs×5 与 `initialize()` 的 `#attribute` close/closed 改读注册表；`on($('#attribute-confirm'),'click',…)` 删除，改由 `@confirm` 驱动 |
+| 枚举窗口 | `enum/enum-window.ts` | `Enum.vue`（登记 7 个元素） | 9 → 0 | 同上（`enumEls`）；`#enum-confirm` 同理 |
+
+- **新增回归**：`attribute/__tests__/attribute-enum-registry.spec.ts`（4 例）——挂载真实 SFC 后断言"注册表 9/7 项、元素 id 与注册键一致"，`Attribute.initialize()` 绑定 list/panel/searcher/inputs 且 panel 被 `hide()`（`hidden` class），`Enum.initialize()` 同理，以及"注册表为空时安全 no-op"。此前这两窗的 DOM 绑定**无任何 spec 覆盖**。
+- **注意**：`Attribute.panel` 等字段类型是非空 `HTMLElement`，注册表在挂载前为 `undefined`，因此沿用原先 `$()` 的**非空断言语义**（`as HTMLElement`）。
+
+**批 3 剩余（下一轮起）**
+
+- `src/inspector/**`（163 处 / 37 页面模块）：全部是**元素用法**（104 处作为元素实参传给 `read`/`write`/`enable`/`disable`/`show`/`hide`，25 处 `const el = $(…)`，9 处 `this.x = $(…)`，5 处 `.loadItems(…)`，2 处存在性判断，其余为 `return $(…)` 与 `*-vue-mount` 动态挂载点）→ 适用元素注册表；需按页面前缀（`uiElement-`/`fileActor-`/`animMotion-`…）为每个页面 SFC 建立注册表。
+- `src/tools/**`（78 处 / 6 模块）：`text-capture`(22)、`color-picker-window`(21)、`condition-list`(21)、`property-list`(8)、`image-crop-window`(4)、`window-object`(2)。其中 `property-list.ts` 的 `#object-attribute-*` 属 `ObjectAttribute.vue`，`window-object.ts` 的 `#window-ambient`/`#title` 属窗口对象 API。
+
 ## B1 — 巨石渲染层重写
 
 - **现状证据**：`packages/ui-kit/src/components/business/YMCommandList/command-api.ts` 2609 行（纯数据层已抽 `command-core.ts` 269 行）、`packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue` 2327 行（已抽 `file-body-core.ts` 154 行）；DOM 渲染层仍命令式。**契约面远大于测试面**：命令列表经 `packages/editor/src/components/common/CommandList.vue` 暴露 **67 个方法**、editor 侧约 **259 处**列表方法调用，而组件级只有 **12 个用例**；文件body 组件级 **5 个用例**（另有 editor 侧 2 个 / 3 个）。
@@ -472,4 +491,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **215 文件 1903/1903**（B0–B4 批 2 改动后的最新实跑值；B4 批 2 新增 `accessor-fields.spec.ts` 与 `event-editor-registry.spec.ts` 各 3 例）。
+- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **216 文件 1907/1907**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 `accessor-fields.spec.ts`、`event-editor-registry.spec.ts`、`attribute-enum-registry.spec.ts`）。

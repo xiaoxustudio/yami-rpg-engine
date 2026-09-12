@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="attribute" show-apply @apply="onApply">
+	<WindowFrame id="attribute"
+				:ref="registryRef(attributeEls, 'attribute')" show-apply @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.attribute.title') }}
@@ -10,6 +11,7 @@
 			<div class="legend">{{ t('components.attribute-list.label') }}</div>
 			<TreeList
 				id="attribute-list"
+				:ref="registryRef(attributeEls, 'attribute-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -21,14 +23,17 @@
 		</div>
 		<div class="field-set" id="attribute-properties-fieldset">
 			<div class="legend">{{ t('components.attribute-properties-flex.label') }}</div>
-			<div class="flex-box" id="attribute-properties-flex">
+			<div class="flex-box" id="attribute-properties-flex"
+				:ref="registryRef(attributeEls, 'attribute-properties-flex')">
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-name.label') }}</div>
-					<TextBox id="attribute-name" menu="tag-localization" @input="onNameInput" />
+					<TextBox id="attribute-name"
+				:ref="registryRef(attributeEls, 'attribute-name')" menu="tag-localization" @input="onNameInput" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-key.label') }}</div>
-					<TextBox id="attribute-key" @input="onKeyInput" />
+					<TextBox id="attribute-key"
+				:ref="registryRef(attributeEls, 'attribute-key')" @input="onKeyInput" />
 				</div>
 				<div class="flex-item" id="attribute-type-box">
 					<div class="text">{{ t('components.attribute-type-boolean.label') }}</div>
@@ -88,25 +93,30 @@
 						</div></RadioBox
 					>
 				</div>
-				<div class="flex-item" id="attribute-enum-box">
+				<div class="flex-item" id="attribute-enum-box"
+				:ref="registryRef(attributeEls, 'attribute-enum-box')">
 					<div class="text">{{ t('components.attribute-enum.label') }}</div>
-					<CustomBox id="attribute-enum" type="enum-group" />
+					<CustomBox id="attribute-enum"
+				:ref="registryRef(attributeEls, 'attribute-enum')" type="enum-group" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-note.label') }}</div>
-					<TextArea id="attribute-note" />
+					<TextArea id="attribute-note"
+				:ref="registryRef(attributeEls, 'attribute-note')" />
 				</div>
 			</div>
 		</div>
-		<TextBox id="attribute-searcher" name="search" />
+		<TextBox id="attribute-searcher"
+				:ref="registryRef(attributeEls, 'attribute-searcher')" name="search" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Attribute } from '@app/attribute/attribute-window.ts';
+import { Attribute, attributeEls } from '@app/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
+import { registryRef } from '@app/utils/element-registry';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { getAttributeStore } from '@app/stores/attribute';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -194,6 +204,11 @@ const onTypeWrite = (value: number | string | boolean) => {
 
 const onApply = () => {
 	Attribute?.apply?.();
+};
+
+// P5b 批次 3：`attribute-confirm` 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Attribute?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {});
