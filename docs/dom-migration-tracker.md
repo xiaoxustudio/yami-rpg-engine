@@ -14,7 +14,7 @@
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 46 | 9 | 9 | 10 | 3 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 16 | 13 | 13 | 45 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 229 | 15 | 8 | 8 | 22 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,13 +48,13 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 86 | 86 | 60 | 22 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 81 | 81 | 37 | 22 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**86**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**86**
+- 待迁移命中文件：**81**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**81**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
 - 正则命中但无豁免注释：**4**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
@@ -112,7 +112,6 @@
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
-| packages/editor/src/composables/useTileNodeWindow.ts | 541 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 405 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
@@ -127,6 +126,7 @@
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
 | packages/editor/src/components/layout/LayoutPanel.vue | 2008 | 9 | - |
+| packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/inspector/element-page.ts | 372 | 9 | 是 |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/editor/src/utils/dom.ts | 192 | 9 | 是 |
@@ -142,8 +142,6 @@
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 7 | 是 |
-| packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 7 | 是 |
-| packages/editor/src/composables/useTeamWindow.ts | 578 | 7 | 是 |
 | packages/editor/src/local/local-window.ts | 910 | 7 | - |
 | packages/editor/src/tools/color-picker-window.ts | 450 | 7 | 是 |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
@@ -170,8 +168,6 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 110 | 6 | 是 |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 249 | 5 | - |
-| packages/editor/src/composables/usePresetElementWindow.ts | 241 | 5 | 是 |
-| packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 5 | 是 |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
 | packages/editor/src/palette/auto-tile.ts | 979 | 5 | 是 |
@@ -211,6 +207,7 @@
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
+| packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/inspector/file-ui-page.ts | 120 | 3 | 是 |
 | packages/editor/src/localize/dom-localizer.ts | 92 | 3 | 是 |
@@ -237,8 +234,8 @@
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 576 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/components/tools/ExportLanguage.vue | 104 | 2 | 是 |
-| packages/editor/src/components/tools/LightGetter.vue | 109 | 2 | 是 |
-| packages/editor/src/components/tools/ObjectGetter.vue | 109 | 2 | 是 |
+| packages/editor/src/components/tools/LightGetter.vue | 115 | 2 | 是 |
+| packages/editor/src/components/tools/ObjectGetter.vue | 115 | 2 | 是 |
 | packages/editor/src/components/tools/Reference.vue | 87 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 872 | 2 | 是 |
@@ -289,12 +286,14 @@
 | packages/editor/src/components/tools/Event.vue | 182 | 1 | - |
 | packages/editor/src/components/tools/Localization.vue | 169 | 1 | - |
 | packages/editor/src/components/tools/Plugin.vue | 183 | 1 | - |
-| packages/editor/src/components/tools/Team.vue | 119 | 1 | - |
+| packages/editor/src/components/tools/Team.vue | 128 | 1 | - |
 | packages/editor/src/components/tools/UpdateLog.vue | 179 | 1 | - |
 | packages/editor/src/components/tools/Variable.vue | 374 | 1 | - |
 | packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 150 | 1 | 是 |
 | packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 132 | 1 | 是 |
 | packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 100 | 1 | 是 |
+| packages/editor/src/composables/usePresetElementWindow.ts | 241 | 1 | - |
+| packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 1 | - |
 | packages/editor/src/engine/scene/draw-start-position.ts | 81 | 1 | 是 |
 | packages/editor/src/engine/webgl/webgl-methods.ts | 1757 | 1 | 是 |
 | packages/editor/src/file/directory-object.ts | 96 | 1 | - |
@@ -606,7 +605,7 @@
 | packages/editor/src/components/tools/Attribute.vue | 286 | 0 | - |
 | packages/editor/src/components/tools/AutoTileFrameIndex.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/AutoTileGenerateFrames.vue | 73 | 0 | - |
-| packages/editor/src/components/tools/AutoTileSelectNode.vue | 59 | 0 | - |
+| packages/editor/src/components/tools/AutoTileSelectNode.vue | 65 | 0 | - |
 | packages/editor/src/components/tools/Choice.vue | 71 | 0 | - |
 | packages/editor/src/components/tools/Color.vue | 235 | 0 | - |
 | packages/editor/src/components/tools/CommandSuggestions.vue | 52 | 0 | - |
@@ -647,8 +646,8 @@
 | packages/editor/src/components/tools/ObjectPropertyIndex.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/PluginOverview.vue | 164 | 0 | - |
 | packages/editor/src/components/tools/PositionGetter.vue | 131 | 0 | - |
-| packages/editor/src/components/tools/PresetElement.vue | 147 | 0 | - |
-| packages/editor/src/components/tools/PresetObject.vue | 181 | 0 | - |
+| packages/editor/src/components/tools/PresetElement.vue | 153 | 0 | - |
+| packages/editor/src/components/tools/PresetObject.vue | 187 | 0 | - |
 | packages/editor/src/components/tools/ProjectSettings.vue | 578 | 0 | - |
 | packages/editor/src/components/tools/QrCode.vue | 94 | 0 | - |
 | packages/editor/src/components/tools/RegionGetter.vue | 81 | 0 | - |
@@ -866,6 +865,7 @@
 | packages/editor/src/composables/useParamHistory.ts | 141 | 0 | - |
 | packages/editor/src/composables/useParticleLayerPage.ts | 275 | 0 | - |
 | packages/editor/src/composables/usePositionGetterWindow.ts | 141 | 0 | - |
+| packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 0 | - |
 | packages/editor/src/composables/useRegionGetterWindow.ts | 73 | 0 | - |
 | packages/editor/src/composables/useRenameWindow.ts | 46 | 0 | - |
 | packages/editor/src/composables/useSceneActorPage.ts | 57 | 0 | - |
