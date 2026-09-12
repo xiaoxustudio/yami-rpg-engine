@@ -7,7 +7,7 @@ import {
 	treeRowIndexOf,
 	type TreeListRowApi
 } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import {
@@ -143,14 +143,20 @@ export const CommandSuggestion: CommandSuggestionShape = {
 	listOpen: null
 };
 
+/** P5b 批次 2：控件元素注册表——由 `CommandWidget.vue` / `CommandSuggestions.vue` 在模板里登记 */
+export const commandSuggestionEls = createElementRegistry();
+
 function ensureDomBound() {
 	if (CommandSuggestion.widget) return;
-	const widget = $('#command-widget');
+	const widget = commandSuggestionEls.get('command-widget');
 	if (!widget) return;
 	CommandSuggestion.widget = widget as unknown as CommandSuggestionWidget;
-	CommandSuggestion.searcher = $('#command-searcher') as unknown as CommandSuggestionSearcher;
-	CommandSuggestion.list = $('#command-suggestions') as unknown as HTMLElement &
-		CommandSuggestionList;
+	CommandSuggestion.searcher = commandSuggestionEls.get(
+		'command-searcher'
+	) as unknown as CommandSuggestionSearcher;
+	CommandSuggestion.list = commandSuggestionEls.get(
+		'command-suggestions'
+	) as unknown as HTMLElement & CommandSuggestionList;
 	bindListMethods();
 }
 

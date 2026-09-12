@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
@@ -173,15 +173,24 @@ export const CustomCommand: CustomCommandShape = {
 	close: null as ((id?: string) => void) | null
 };
 
+/** P5b 批次 2：控件元素注册表——由 `Command.vue` 在模板里登记 */
+export const customCommandEls = createElementRegistry();
+
 function ensureDomBound() {
 	if (CustomCommand.list) return;
-	const list = $('#command-list');
+	const list = customCommandEls.get('command-list');
 	if (!list) return;
 	CustomCommand.list = list as unknown as CustomCommandList;
-	CustomCommand.overviewPane = $('#command-overview-detail');
+	CustomCommand.overviewPane = customCommandEls.get(
+		'command-overview-detail'
+	) as unknown as CustomCommandShape['overviewPane'];
 	hide(CustomCommand.overviewPane);
-	CustomCommand.overview = $('#command-overview') as unknown as CustomCommandShape['overview'];
-	CustomCommand.settingsPane = $('#command-settings-detail');
+	CustomCommand.overview = customCommandEls.get(
+		'command-overview'
+	) as unknown as CustomCommandShape['overview'];
+	CustomCommand.settingsPane = customCommandEls.get(
+		'command-settings-detail'
+	) as unknown as CustomCommandShape['settingsPane'];
 	hide(CustomCommand.settingsPane);
 	list.insert = null as unknown as (...args: unknown[]) => void;
 	list.toggle = null as unknown as (...args: unknown[]) => void;
@@ -209,12 +218,13 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	list.bind(() => this.data);
 	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
 
-	$('#command')?.addEventListener('close', this.windowClose!);
-	$('#command')?.addEventListener('closed', this.windowClosed!);
+	const frame = customCommandEls.get('command');
+	frame?.addEventListener('close', this.windowClose!);
+	frame?.addEventListener('closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	on(list, 'unselect', this.listUnselect!);
-	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
+	// confirm 由 SFC 的 @confirm 驱动（`command-confirm` 按钮由 WindowFrame 生成，注册表取不到）
 };
 
 CustomCommand.open = function (this: CustomCommandShape): void {

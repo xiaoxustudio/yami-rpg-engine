@@ -8,7 +8,8 @@ import type {
 } from './event-editor.ts';
 import { addClass, clear, hide, show } from '@app/utils/element-utils.ts';
 import { setTreeItemClass } from '@ui-kit';
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { eventEditorEls } from './event-editor-initialize.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -81,16 +82,18 @@ EventEditor.getItemByEvent = function (this: EventEditorShape, event: EventEdito
 
 EventEditor.openCommandList = function (this: EventEditorShape, item: EventListItem) {
 	this.fetchCommandBuffer!(item);
-	show($('#event-commands-fieldset'));
-	show($('#event-type'));
+	const fieldset = eventEditorEls.get('event-commands-fieldset');
+	const typeEl = eventEditorEls.get('event-type');
+	if (fieldset) show(fieldset);
+	if (typeEl) show(typeEl);
 
 	const { commands, filter } = item;
 
-	$('#event-type').loadItems(
+	typeEl?.loadItems?.(
 		Enum.getMergedItems!(this.types?.[filter] ?? this.types?.all, filter + '-event')
 	);
 
-	$('#event-type').createTooltip();
+	typeEl?.createTooltip?.();
 
 	const write = getElementWriter('event');
 	write('commands', commands);
@@ -107,8 +110,10 @@ EventEditor.openCommandList = function (this: EventEditorShape, item: EventListI
 
 EventEditor.closeCommandList = function (this: EventEditorShape) {
 	clear(this.commandList);
-	hide($('#event-commands-fieldset'));
-	hide($('#event-type'));
+	const fieldset = eventEditorEls.get('event-commands-fieldset');
+	const typeEl = eventEditorEls.get('event-type');
+	if (fieldset) hide(fieldset);
+	if (typeEl) hide(typeEl);
 };
 
 EventEditor.unpackOpenEvents = function (this: EventEditorShape) {

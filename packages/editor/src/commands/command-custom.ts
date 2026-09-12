@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
@@ -76,6 +76,9 @@ interface ParameterPane extends HTMLElement {
 	scriptChange: (event: Event) => void;
 }
 
+/** P5b 批次 2：脚本命令窗口的元素注册表——由 `ScriptCommand.vue` 在模板里登记 */
+export const scriptCommandEls = createElementRegistry();
+
 Command.custom = {
 	customFolder: null as CustomFolder | null,
 	commandNameMap: null as Record<string, string> | null,
@@ -83,26 +86,29 @@ Command.custom = {
 	windowY: null as number | null,
 	parsingScript: { id: '', parameters: null } as ScriptObject,
 	loadedScript: { id: '', parameters: null } as ScriptObject,
-	windowFrame: $('#scriptCommand') as HTMLElement & {
+	// P5b 批次 2：这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
+	windowFrame: null as unknown as HTMLElement & {
 		style: CSSStyleDeclaration;
 		absolute(x: number | null, y: number | null): void;
 		setTitle(title: string): void;
 		addEventListener(type: string, listener: (event: Event) => void): void;
 	},
-	parameterPane: $('#scriptCommand-parameter-pane') as ParameterPane,
-	parameterGrid: $('#scriptCommand-parameter-grid') as HTMLElement,
+	parameterPane: null as unknown as ParameterPane,
+	parameterGrid: null as unknown as HTMLElement,
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
 
-		this.windowFrame = $('#scriptCommand') as HTMLElement & {
+		this.windowFrame = scriptCommandEls.get('scriptCommand') as unknown as HTMLElement & {
 			style: CSSStyleDeclaration;
 			absolute(x: number | null, y: number | null): void;
 			setTitle(title: string): void;
 			addEventListener(type: string, listener: (event: Event) => void): void;
 		};
-		this.parameterPane = $('#scriptCommand-parameter-pane') as ParameterPane;
-		this.parameterGrid = $('#scriptCommand-parameter-grid') as HTMLElement;
+		this.parameterPane = scriptCommandEls.get(
+			'scriptCommand-parameter-pane'
+		) as unknown as ParameterPane;
+		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as HTMLElement;
 
 		if (!this.parameterPane) return;
 		const scriptList: ScriptObject[] = [this.loadedScript];
@@ -116,7 +122,7 @@ Command.custom = {
 			this.windowFrame.absolute(this.windowX, this.windowY);
 		};
 
-		const box = $('#scriptCommand-parameter-detail') as ParameterWrapBox;
+		const box = scriptCommandEls.get('scriptCommand-parameter-detail') as ParameterWrapBox;
 		const wrap = { box, grid, children: [] } as ParameterWrap;
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {

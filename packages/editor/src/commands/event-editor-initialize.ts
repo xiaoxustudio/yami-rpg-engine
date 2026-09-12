@@ -7,7 +7,7 @@ import type {
 	EventListItem
 } from './event-editor.ts';
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -18,14 +18,20 @@ import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
 
+/** P5b 批次 2：事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
+export const eventEditorEls = createElementRegistry();
+
 function ensureDomBound() {
 	if (EventEditor.list) return;
-	const list = $('#event-open-list');
+	const list = eventEditorEls.get('event-open-list');
 	if (!list) return;
 	EventEditor.list = list as unknown as HTMLElement & EventEditorList;
-	EventEditor.commandList = $('#event-commands') as unknown as EventCommandListShape;
-	EventEditor.outerGutter = $('#event-commands-gutter-outer');
-	EventEditor.innerGutter = $('#event-commands-gutter-inner');
+	EventEditor.commandList = eventEditorEls.get(
+		'event-commands'
+	) as unknown as EventCommandListShape;
+	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
+	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as HTMLElement;
+	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as HTMLElement;
 	EventEditor.list.lastScrollTop = 0;
 	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.close = null;
@@ -483,15 +489,20 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	this.innerGutter.style.paddingBottom = `${PADDING_BOTTOM}px`;
 
 	window.addEventListener('localize', this.windowLocalize!);
-	on($('#event'), 'close', this.windowClose!);
-	on($('#event'), 'closed', this.windowClosed!);
-	on($('#event'), 'resize', this.windowResize!);
+	const frame = eventEditorEls.get('event');
+	if (frame) {
+		on(frame, 'close', this.windowClose!);
+		on(frame, 'closed', this.windowClosed!);
+		on(frame, 'resize', this.windowResize!);
+	}
 	on(this.list, 'pointerdown', this.listPointerdown!, { capture: true });
 	on(this.list, 'select', this.listSelect!);
 	on(this.list, 'popup', this.listPopup!);
-	on($('#event-type'), 'input', this.typeInput!);
-	on($('#event-commands'), 'change', this.commandListChange!);
+	const typeEl = eventEditorEls.get('event-type');
+	if (typeEl) on(typeEl, 'input', this.typeInput!);
+	const commandListEl = eventEditorEls.get('event-commands');
+	if (commandListEl) on(commandListEl, 'change', this.commandListChange!);
 	on(this.commandList, 'update', this.commandListUpdate!);
 	on(this.commandList, 'scroll', this.commandListScroll!);
-	on($('#event-confirm'), 'click', this.confirm!);
+	// confirm 由 SFC 的 @confirm 驱动（`event-confirm` 按钮由 WindowFrame 生成，注册表取不到）
 };

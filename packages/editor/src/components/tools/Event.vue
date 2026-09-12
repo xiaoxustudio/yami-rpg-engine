@@ -1,5 +1,12 @@
 <template>
-	<WindowFrame id="event" show-apply class="opaque" @apply="onApply">
+	<WindowFrame
+		id="event"
+		:ref="registryRef(eventEditorEls, 'event')"
+		show-apply
+		class="opaque"
+		@apply="onApply"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar id="event-title"
 				>{{ t('components.event.title') }}
@@ -11,19 +18,32 @@
 			<div class="legend">{{ t('components.event-open-list.label') }}</div>
 			<TreeList
 				id="event-open-list"
+				:ref="registryRef(eventEditorEls, 'event-open-list')"
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
 			/>
 		</div>
-		<div class="field-set input pad" id="event-commands-fieldset">
+		<div
+			class="field-set input pad"
+			id="event-commands-fieldset"
+			:ref="registryRef(eventEditorEls, 'event-commands-fieldset')"
+		>
 			<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
 			<div class="box" id="event-commands-gutter-background" />
-			<CommandList id="event-commands" />
-			<div class="box" id="event-commands-gutter-outer">
-				<div class="box" id="event-commands-gutter-inner" />
+			<CommandList id="event-commands" :ref="registryRef(eventEditorEls, 'event-commands')" />
+			<div
+				class="box"
+				id="event-commands-gutter-outer"
+				:ref="registryRef(eventEditorEls, 'event-commands-gutter-outer')"
+			>
+				<div
+					class="box"
+					id="event-commands-gutter-inner"
+					:ref="registryRef(eventEditorEls, 'event-commands-gutter-inner')"
+				/>
 			</div>
 		</div>
-		<SelectBox id="event-type" />
+		<SelectBox id="event-type" :ref="registryRef(eventEditorEls, 'event-type')" />
 	</WindowFrame>
 </template>
 
@@ -32,6 +52,8 @@ import { h, onMounted, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { removeTextTags, parseEventType } from '@app/composables/useCommandParse.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
+import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
+import { registryRef } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CommandList from '@app/components/common/CommandList.vue';
@@ -76,6 +98,11 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 
 const onApply = () => {
 	EventEditor?.apply?.();
+};
+
+// P5b 批次 2：`event-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
+const onConfirm = () => {
+	EventEditor?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {});

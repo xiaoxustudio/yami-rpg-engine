@@ -1,5 +1,11 @@
 <template>
-	<WindowFrame id="command" show-apply @apply="onApply">
+	<WindowFrame
+		id="command"
+		:ref="registryRef(customCommandEls, 'command')"
+		show-apply
+		@apply="onApply"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.command.title') }}
@@ -10,6 +16,7 @@
 			<div class="legend">{{ t('components.command-list.label') }}</div>
 			<TreeList
 				id="command-list"
+				:ref="registryRef(customCommandEls, 'command-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -20,13 +27,26 @@
 			/>
 		</div>
 		<div class="box" id="command-inspector">
-			<DetailBox id="command-overview-detail" open>
+			<DetailBox
+				id="command-overview-detail"
+				:ref="registryRef(customCommandEls, 'command-overview-detail')"
+				open
+			>
 				<DetailSummary>Overview</DetailSummary>
-				<div class="box" id="command-overview" @update="syncOverview">
+				<div
+					class="box"
+					id="command-overview"
+					:ref="registryRef(customCommandEls, 'command-overview')"
+					@update="syncOverview"
+				>
 					<PluginOverview :meta="overviewMeta" detailed />
 				</div>
 			</DetailBox>
-			<DetailBox id="command-settings-detail" open>
+			<DetailBox
+				id="command-settings-detail"
+				:ref="registryRef(customCommandEls, 'command-settings-detail')"
+				open
+			>
 				<DetailSummary>Settings</DetailSummary>
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
@@ -48,7 +68,8 @@ import { h, onMounted, ref, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
-import { CustomCommand, commandForm } from '@app/commands/custom-command-window.ts';
+import { CustomCommand, commandForm, customCommandEls } from '@app/commands/custom-command-window.ts';
+import { registryRef } from '@app/utils/element-registry';
 import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -125,6 +146,11 @@ const onParamInput = (_value: string) => {
 
 const onApply = () => {
 	(CustomCommand?.apply as ((event?: Event) => void) | null)?.();
+};
+
+// P5b 批次 2：`command-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
+const onConfirm = () => {
+	CustomCommand?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {});

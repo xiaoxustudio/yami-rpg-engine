@@ -1,14 +1,29 @@
 <template>
-	<WindowFrame id="scriptCommand" @confirm="onConfirm">
+	<WindowFrame
+		id="scriptCommand"
+		:ref="registryRef(scriptCommandEls, 'scriptCommand')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>Custom Command
 				<div class="close"></div></TitleBar
 		></template>
 
-		<ParameterPane id="scriptCommand-parameter-pane">
-			<DetailBox id="scriptCommand-parameter-detail" open>
-				<div class="detail-grid" id="scriptCommand-parameter-grid" />
+		<ParameterPane
+			id="scriptCommand-parameter-pane"
+			:ref="registryRef(scriptCommandEls, 'scriptCommand-parameter-pane')"
+		>
+			<DetailBox
+				id="scriptCommand-parameter-detail"
+				:ref="registryRef(scriptCommandEls, 'scriptCommand-parameter-detail')"
+				open
+			>
+				<div
+					class="detail-grid"
+					id="scriptCommand-parameter-grid"
+					:ref="registryRef(scriptCommandEls, 'scriptCommand-parameter-grid')"
+				/>
 			</DetailBox>
 		</ParameterPane>
 	</WindowFrame>
@@ -17,6 +32,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Command } from '@app/commands/command-object.ts';
+import { scriptCommandEls } from '@app/commands/command-custom.ts';
+import { registryRef } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';

@@ -7,7 +7,7 @@ import {
 	type TreeListRowApi
 } from '@ui-kit';
 /* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { Fragment, h, render, type VNode } from 'vue';
@@ -133,8 +133,13 @@ function createEmptyList(): TextSuggestionList {
 	};
 }
 
+/** P5b 批次 2：控件元素注册表——由 `TextSuggestions.vue` 在模板里登记 */
+export const textSuggestionEls = createElementRegistry();
+
 export const TextSuggestion: TextSuggestionShape = {
-	list: ($('#text-suggestions') as unknown as TextSuggestionList) ?? createEmptyList(),
+	list:
+		(textSuggestionEls.get('text-suggestions') as unknown as TextSuggestionList) ??
+		createEmptyList(),
 	inserting: false,
 	target: null,
 	data: null,
@@ -157,7 +162,7 @@ TextSuggestion.list.updateNodeElement = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
-	const element = $('#text-suggestions');
+	const element = textSuggestionEls.get('text-suggestions');
 	if (element && element !== (this.list as unknown as HTMLElement)) {
 		element.updateNodeElement = this.list.updateNodeElement as unknown as (
 			item: unknown
