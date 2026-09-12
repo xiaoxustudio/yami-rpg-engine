@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.object-attribute-key.label') }}</div>
-			<SelectBox id="object-attribute-key" v-focus v-model="form.key" @write="onKeyWrite" />
+			<SelectBox id="object-attribute-key"
+				:ref="registryRef(objectAttributeEls, 'object-attribute-key')" v-focus v-model="form.key" @write="onKeyWrite" />
 			<div class="text">{{ t('components.object-attribute-boolean-value.label') }}</div>
-			<SelectBox id="object-attribute-boolean-value" v-focus v-model="form.booleanValue" />
+			<SelectBox id="object-attribute-boolean-value"
+				:ref="registryRef(objectAttributeEls, 'object-attribute-boolean-value')" v-focus v-model="form.booleanValue" />
 			<div class="text">{{ t('components.object-attribute-number-value.label') }}</div>
 			<NumberBox
 				id="object-attribute-number-value"
+				:ref="registryRef(objectAttributeEls, 'object-attribute-number-value')"
 				v-focus
 				min="-1000000000"
 				max="1000000000"
@@ -23,18 +26,22 @@
 			<div class="text">{{ t('components.object-attribute-string-value.label') }}</div>
 			<TextArea
 				id="object-attribute-string-value"
+				:ref="registryRef(objectAttributeEls, 'object-attribute-string-value')"
 				v-focus
 				menu="tag-localization"
 				v-model="form.stringValue"
 			/>
 			<div class="text">{{ t('components.object-attribute-enum-value.label') }}</div>
-			<SelectBox id="object-attribute-enum-value" v-focus v-model="form.enumValue" />
+			<SelectBox id="object-attribute-enum-value"
+				:ref="registryRef(objectAttributeEls, 'object-attribute-enum-value')" v-focus v-model="form.enumValue" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { objectAttributeEls } from '@app/tools/property-list';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

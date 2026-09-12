@@ -1,4 +1,5 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $ } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/utils/doubleclick';
@@ -10,6 +11,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Path } from '@app/utils/config';
+
+/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+export const imageClipEls = createElementRegistry();
 
 type CropTarget = {
 	getAttribute?: (name: string) => string | null;
@@ -63,13 +67,13 @@ export const ImageClip = {
 
 function ensureDomBound() {
 	if (ImageClip.window) return;
-	const win = $('#imageClip');
+	const win = imageClipEls.get('imageClip');
 	if (!win) return;
 	ImageClip.window = win;
-	ImageClip.screen = $('#imageClip-screen');
-	ImageClip.image = $('#imageClip-image') as HTMLImageElement;
+	ImageClip.screen = imageClipEls.get('imageClip-screen') as HTMLElement;
+	ImageClip.image = imageClipEls.get('imageClip-image') as HTMLImageElement;
 	hide(ImageClip.image!);
-	ImageClip.marquee = $('#imageClip-marquee') as CropMarquee;
+	ImageClip.marquee = imageClipEls.get('imageClip-marquee') as CropMarquee;
 	hide(ImageClip.marquee!);
 }
 
@@ -99,6 +103,7 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 	this.window.setTitle('');
 
 	const id = this.target?.getAttribute?.('image');
+	// P5b 白名单：动态 id（取值来自 target 的 image 属性），不是静态控件查找，故保留 $()
 	const guid = read($('#' + id));
 	const path = File.getPath!(guid);
 	if (path) {

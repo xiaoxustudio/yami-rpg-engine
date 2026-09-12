@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { treeOwnerListOf } from '@ui-kit';
-import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -12,6 +12,9 @@ import { IListInterface } from '@app/types/list-interface.ts';
 import { IEditableHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
+
+/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+export const conditionEls = createElementRegistry();
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -221,13 +224,14 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-boolean':
 			case 'global-number':
 			case 'global-string':
-				$('#condition-key').filter = type.slice(7);
+				const keyEl = conditionEls.get('condition-key');
+				if (keyEl) keyEl.filter = type.slice(7);
 				break;
 		}
 	}
 
 	static initialize() {
-		const typeEl = $('#condition-type');
+		const typeEl = conditionEls.get('condition-type');
 		if (!typeEl) return;
 		typeEl.loadItems([
 			{ name: 'Global - Boolean', value: 'global-boolean' },
@@ -242,52 +246,61 @@ export class ConditionListInterface implements IListInterface {
 			{
 				case: 'global-boolean',
 				targets: [
-					$('#condition-key'),
-					$('#condition-boolean-operation'),
-					$('#condition-boolean-value')
+					conditionEls.get('condition-key'),
+					conditionEls.get('condition-boolean-operation'),
+					conditionEls.get('condition-boolean-value')
 				]
 			},
 			{
 				case: 'global-number',
 				targets: [
-					$('#condition-key'),
-					$('#condition-number-operation'),
-					$('#condition-number-value')
+					conditionEls.get('condition-key'),
+					conditionEls.get('condition-number-operation'),
+					conditionEls.get('condition-number-value')
 				]
 			},
 			{
 				case: 'global-string',
 				targets: [
-					$('#condition-key'),
-					$('#condition-string-operation'),
-					$('#condition-string-value')
+					conditionEls.get('condition-key'),
+					conditionEls.get('condition-string-operation'),
+					conditionEls.get('condition-string-value')
 				]
 			},
 			{
 				case: 'self-boolean',
-				targets: [$('#condition-boolean-operation'), $('#condition-boolean-value')]
+				targets: [
+					conditionEls.get('condition-boolean-operation'),
+					conditionEls.get('condition-boolean-value')
+				]
 			},
 			{
 				case: 'self-number',
-				targets: [$('#condition-number-operation'), $('#condition-number-value')]
+				targets: [
+					conditionEls.get('condition-number-operation'),
+					conditionEls.get('condition-number-value')
+				]
 			},
 			{
 				case: 'self-string',
-				targets: [$('#condition-string-operation'), $('#condition-string-value')]
+				targets: [
+					conditionEls.get('condition-string-operation'),
+					conditionEls.get('condition-string-value')
+				]
 			}
 		]);
 
-		$('#condition-boolean-operation').loadItems([
+		conditionEls.get('condition-boolean-operation')?.loadItems?.([
 			{ name: '==', value: 'equal' },
 			{ name: '!=', value: 'unequal' }
 		]);
 
-		$('#condition-boolean-value').loadItems([
+		conditionEls.get('condition-boolean-value')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
 
-		$('#condition-number-operation').loadItems([
+		conditionEls.get('condition-number-operation')?.loadItems?.([
 			{ name: '==', value: 'equal' },
 			{ name: '!=', value: 'unequal' },
 			{ name: '>=', value: 'greater-or-equal' },
@@ -296,7 +309,7 @@ export class ConditionListInterface implements IListInterface {
 			{ name: '<', value: 'less' }
 		]);
 
-		$('#condition-string-operation').loadItems([
+		conditionEls.get('condition-string-operation')?.loadItems?.([
 			{ name: '==', value: 'equal' },
 			{ name: '!=', value: 'unequal' }
 		]);

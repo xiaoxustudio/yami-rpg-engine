@@ -7,9 +7,12 @@
 				<div class="close"></div> </TitleBar
 		></template>
 
-		<div class="box" id="imageClip-screen" tabindex="-1">
-			<img id="imageClip-image" />
-			<MarqueeArea id="imageClip-marquee" />
+		<div class="box" id="imageClip-screen"
+				:ref="registryRef(imageClipEls, 'imageClip-screen')" tabindex="-1">
+			<img id="imageClip-image"
+				:ref="registryRef(imageClipEls, 'imageClip-image')" />
+			<MarqueeArea id="imageClip-marquee"
+				:ref="registryRef(imageClipEls, 'imageClip-marquee')" />
 		</div>
 		<div class="flex-box" id="imageClip-flex">
 			<NumberBox id="imageClip-x" min="0" max="10000" v-model="form.x" @input="onParamInput"
@@ -40,6 +43,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { imageClipEls } from '@app/tools/image-crop-window';
+import { registryRef } from '@app/utils/element-registry';
 import { ImageClip } from '@app/tools/image-crop-window.ts';
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

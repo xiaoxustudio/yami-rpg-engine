@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1181 处 / 213 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1148 处 / 211 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -232,7 +232,7 @@
 | `editor/components` | 722（批 1 已消 134：IfCondition 78 + SetNumberOperand 58） | 111 | 批次 1–2 | 🚧 批 1 完成 |
 | `editor/inspector` | 168（**实测口径：`src/inspector/**` 的 37 个 `.ts` 页面模块**；`components/inspector/*.vue` 侧为 0 处） | 38 | 批次 3 | 🚧 未开始（本轮先做 attribute/enum） |
 | `editor/commands` | **0**（批 2 全部完成：accessor 12 个 + 属性窗口族 + tips 2 个 + 自定义命令窗口 + 事件编辑器族） | 27 | 批次 2 | ✅ **已完成** |
-| `editor/tools` | 78（`text-capture` 22 / `color-picker-window` 21 / `condition-list` 21 / `property-list` 8 / `image-crop-window` 4 / `window-object` 2） | 6 | 批次 3 | 🚧 未开始 |
+| `editor/tools` | 78 → **46**（批 3 已消 32：`condition-list` 21→0、`property-list` 8→0、`image-crop-window` 4→1 动态白名单；**余 `text-capture` 22 / `color-picker-window` 21 / `window-object` 2 / `image-crop` 1**） | 6 | 批次 3 | 🚧 部分完成 |
 | `editor/animation` | 48 | 2 | 批次 4 | 未开始 |
 | `editor/title` | 40 | 5 | 批次 4 | 未开始 |
 | `editor/scene` | 36 | 6 | 批次 4 | 未开始 |
@@ -390,6 +390,17 @@
 
 - `src/inspector/**`（163 处 / 37 页面模块）：全部是**元素用法**（104 处作为元素实参传给 `read`/`write`/`enable`/`disable`/`show`/`hide`，25 处 `const el = $(…)`，9 处 `this.x = $(…)`，5 处 `.loadItems(…)`，2 处存在性判断，其余为 `return $(…)` 与 `*-vue-mount` 动态挂载点）→ 适用元素注册表；需按页面前缀（`uiElement-`/`fileActor-`/`animMotion-`…）为每个页面 SFC 建立注册表。
 - `src/tools/**`（78 处 / 6 模块）：`text-capture`(22)、`color-picker-window`(21)、`condition-list`(21)、`property-list`(8)、`image-crop-window`(4)、`window-object`(2)。其中 `property-list.ts` 的 `#object-attribute-*` 属 `ObjectAttribute.vue`，`window-object.ts` 的 `#window-ambient`/`#title` 属窗口对象 API。
+
+**批 3 的第二刀（src/tools 三个模块，2026-09-11）**
+
+| 模块 | SFC | 处数 | 做法 |
+| --- | --- | --- | --- |
+| `tools/condition-list.ts` | `Condition.vue`（登记 8 个元素） | 21 → 0 | `conditionEls`；`static initialize()` 的 type/key/operation/value 控件与 `relate` targets 改读注册表；`static typeWrite()` 里 `$('#condition-key').filter = …` 改为"先取元素再守空赋值" |
+| `tools/property-list.ts` | `ObjectAttribute.vue`（登记 5 个元素） | 8 → 0 | `objectAttributeEls`；`loadItems` 与 `relate` targets 改读注册表（取值处补 `?.`） |
+| `tools/image-crop-window.ts` | `ImageClip.vue`（登记 3 个元素） | 4 → **1** | `imageClipEls`；window/screen/image/marquee 改读注册表 |
+
+- **保留 1 处（动态 id 白名单）**：`tools/image-crop-window.ts:106` 的 `read($('#' + id))`——`id` 来自 **target 元素的 `image` 属性**（运行时才知道目标控件 id），不是静态控件查找，属计划中预留的"动态 id 类残余"，已在代码处加注释说明。
+- **一条通用判据（差点重犯批 2 的错）**：**不要用 `grep '<X>.initialize'` 判定 `initialize` 是死代码**——`main/initialize.ts` 的 `initSingleton(name)` 会从 `window-cluster` 动态取单例再 `shape.initialize.call(singleton)`（`ConditionListInterface` 就在 cluster 里）；`Schema.initAll` 的 `subMap[name].initialize!()` 同理。批 2 的 accessor 与本次的 condition-list 都属此类。
 
 ## B1 — 巨石渲染层重写
 

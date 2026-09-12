@@ -8,39 +8,49 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.condition-type.label') }}</div>
-			<SelectBox id="condition-type" v-focus v-model="form.type" @write="onTypeWrite" />
+			<SelectBox id="condition-type"
+				:ref="registryRef(conditionEls, 'condition-type')" v-focus v-model="form.type" @write="onTypeWrite" />
 			<div class="text">{{ t('components.condition-key.label') }}</div>
 			<CustomBox
 				id="condition-key"
+				:ref="registryRef(conditionEls, 'condition-key')"
 				v-focus
 				type="global-variable"
 				filter="all"
 				v-model="form.key"
 			/>
 			<div class="text">{{ t('components.condition-boolean-operation.label') }}</div>
-			<SelectBox id="condition-boolean-operation" v-model="form.booleanOperation" />
+			<SelectBox id="condition-boolean-operation"
+				:ref="registryRef(conditionEls, 'condition-boolean-operation')" v-model="form.booleanOperation" />
 			<div class="text">{{ t('components.condition-boolean-value.label') }}</div>
-			<SelectBox id="condition-boolean-value" v-model="form.booleanValue" />
+			<SelectBox id="condition-boolean-value"
+				:ref="registryRef(conditionEls, 'condition-boolean-value')" v-model="form.booleanValue" />
 			<div class="text">{{ t('components.condition-number-operation.label') }}</div>
-			<SelectBox id="condition-number-operation" v-model="form.numberOperation" />
+			<SelectBox id="condition-number-operation"
+				:ref="registryRef(conditionEls, 'condition-number-operation')" v-model="form.numberOperation" />
 			<div class="text">{{ t('components.condition-number-value.label') }}</div>
 			<NumberBox
 				id="condition-number-value"
+				:ref="registryRef(conditionEls, 'condition-number-value')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="form.numberValue"
 			/>
 			<div class="text">{{ t('components.condition-string-operation.label') }}</div>
-			<SelectBox id="condition-string-operation" v-model="form.stringOperation" />
+			<SelectBox id="condition-string-operation"
+				:ref="registryRef(conditionEls, 'condition-string-operation')" v-model="form.stringOperation" />
 			<div class="text">{{ t('components.condition-string-value.label') }}</div>
-			<TextArea id="condition-string-value" v-model="form.stringValue" />
+			<TextArea id="condition-string-value"
+				:ref="registryRef(conditionEls, 'condition-string-value')" v-model="form.stringValue" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { conditionEls } from '@app/tools/condition-list';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { ConditionListInterface, form } from '@app/tools/condition-list.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

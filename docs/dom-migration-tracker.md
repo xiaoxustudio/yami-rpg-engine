@@ -37,7 +37,7 @@
 | editor/services     | 45 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 14 | 0 | 0 |
 | editor/stores       | 38 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 21 | 0 | 0 |
 | editor/title        | 5 | 5 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 11 | 2 | 40 | 0 | 0 |
-| editor/tools        | 17 | 8 | 3 | 3 | 1 | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 79 | 0 | 0 |
+| editor/tools        | 17 | 7 | 3 | 3 | 1 | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 17 | 3 | 46 | 0 | 0 |
 | editor/types        | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
 | editor/ui           | 9 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 18 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,7 +48,7 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1115 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1181 | 0 | 0 |
+| 合计                  | 1115 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1148 | 0 | 0 |
 
 ## 口径
 
@@ -61,7 +61,7 @@
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1181** 处 / **213** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1148** 处 / **211** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -116,7 +116,6 @@
 | packages/editor/src/components/commands/SetList.vue | 240 | 23 | - |
 | packages/editor/src/data/transition-window.ts | 1385 | 23 | 是 |
 | packages/editor/src/title/menu-bar.ts | 1183 | 22 | 是 |
-| packages/editor/src/tools/condition-list.ts | 307 | 22 | - |
 | packages/editor/src/components/commands/SetObjectAnimation.vue | 252 | 21 | - |
 | packages/editor/src/components/commands/GetActor.vue | 183 | 20 | - |
 | packages/editor/src/palette/palette-initialize.ts | 147 | 20 | 是 |
@@ -156,7 +155,6 @@
 | packages/editor/src/module/editdata.ts | 381 | 11 | 是 |
 | packages/editor/src/particle/particle-initialize.ts | 134 | 11 | - |
 | packages/editor/src/title/new-project-window.ts | 363 | 11 | - |
-| packages/editor/src/tools/image-crop-window.ts | 366 | 11 | - |
 | packages/editor/src/tools/window-object.ts | 506 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
@@ -186,7 +184,6 @@
 | packages/editor/src/commands/text-tip.ts | 388 | 8 | 是 |
 | packages/editor/src/components/commands/CreateElement.vue | 99 | 8 | - |
 | packages/editor/src/components/commands/DownloadFile.vue | 123 | 8 | - |
-| packages/editor/src/tools/property-list.ts | 257 | 8 | - |
 | packages/editor/src/ui/ui-pointer.ts | 583 | 8 | - |
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
@@ -204,6 +201,7 @@
 | packages/editor/src/inspector/scene-animation-page.ts | 190 | 7 | - |
 | packages/editor/src/inspector/scene-tilemap-page.ts | 210 | 7 | 是 |
 | packages/editor/src/particle/particle-window.ts | 421 | 7 | - |
+| packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 132 | 7 | 是 |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
@@ -529,6 +527,7 @@
 | packages/editor/src/services/file-system/directory-tree.ts | 491 | 1 | - |
 | packages/editor/src/services/ipc/net.ts | 89 | 1 | - |
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
+| packages/editor/src/tools/condition-list.ts | 320 | 1 | - |
 | packages/editor/src/types/shapes.ts | 41 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/element-registry.ts | 25 | 1 | - |
@@ -694,7 +693,7 @@
 | packages/editor/src/components/tools/Color.vue | 219 | 0 | - |
 | packages/editor/src/components/tools/CommandSuggestions.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/CommandWidget.vue | 29 | 0 | - |
-| packages/editor/src/components/tools/Condition.vue | 87 | 0 | - |
+| packages/editor/src/components/tools/Condition.vue | 97 | 0 | - |
 | packages/editor/src/components/tools/Confirmation.vue | 43 | 0 | - |
 | packages/editor/src/components/tools/CopyProgress.vue | 57 | 0 | - |
 | packages/editor/src/components/tools/Deployment.vue | 125 | 0 | - |
@@ -712,7 +711,7 @@
 | packages/editor/src/components/tools/FileEventParameter.vue | 64 | 0 | - |
 | packages/editor/src/components/tools/Font.vue | 45 | 0 | - |
 | packages/editor/src/components/tools/FontSize.vue | 45 | 0 | - |
-| packages/editor/src/components/tools/ImageClip.vue | 122 | 0 | - |
+| packages/editor/src/components/tools/ImageClip.vue | 127 | 0 | - |
 | packages/editor/src/components/tools/ImportLanguage.vue | 46 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 66 | 0 | - |
 | packages/editor/src/components/tools/ItemGetter.vue | 95 | 0 | - |
@@ -723,7 +722,7 @@
 | packages/editor/src/components/tools/MoveElementProperty.vue | 200 | 0 | - |
 | packages/editor/src/components/tools/MoveLightProperty.vue | 152 | 0 | - |
 | packages/editor/src/components/tools/NewProject.vue | 113 | 0 | - |
-| packages/editor/src/components/tools/ObjectAttribute.vue | 80 | 0 | - |
+| packages/editor/src/components/tools/ObjectAttribute.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/ObjectFolder.vue | 56 | 0 | - |
 | packages/editor/src/components/tools/ObjectPropertyIndex.vue | 51 | 0 | - |
 | packages/editor/src/components/tools/PluginOverview.vue | 164 | 0 | - |
@@ -1125,6 +1124,7 @@
 | packages/editor/src/stores/window.ts | 112 | 0 | - |
 | packages/editor/src/tools/history.ts | 84 | 0 | - |
 | packages/editor/src/tools/list-clipboard-methods.ts | 105 | 0 | - |
+| packages/editor/src/tools/property-list.ts | 260 | 0 | - |
 | packages/editor/src/tools/set-number-window.ts | 18 | 0 | - |
 | packages/editor/src/tools/shortcut-registry.ts | 220 | 0 | - |
 | packages/editor/src/tools/tool-registry.ts | 30 | 0 | - |

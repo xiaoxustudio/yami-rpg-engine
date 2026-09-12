@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -11,6 +11,9 @@ import { GameLocal } from '@app/local/local-object.ts';
 
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IEditableHistory } from '@app/types/history.ts';
+
+/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+export const objectAttributeEls = createElementRegistry();
 
 interface AttributeItemShape {
 	key: string;
@@ -137,8 +140,8 @@ export class AttributeListInterface implements IListInterface {
 		const numberValue = type === 'number' ? (item.value as number) : 0;
 		const stringValue = type === 'string' ? (item.value as string) : '';
 		const enumValue = type === 'enum' ? (item.value as string) : '';
-		const keyBox = $('#object-attribute-key');
-		keyBox.loadItems(Attribute.getAttributeItems(this.group, 'boolean number string'));
+		const keyBox = objectAttributeEls.get('object-attribute-key');
+		keyBox?.loadItems?.(Attribute.getAttributeItems(this.group, 'boolean number string'));
 		const invalid = !Attribute.getGroupAttribute(this.group, key);
 		if (invalid) AttributeListInterface.typeBox.write(type);
 		Object.assign(form, { key, booleanValue, numberValue, stringValue, enumValue });
@@ -154,9 +157,9 @@ export class AttributeListInterface implements IListInterface {
 				return requestFocus('object-attribute-string-value', 'all');
 			case 'enum': {
 				const attr = Attribute.getGroupAttribute(this.group, key);
-				const enumBox = $('#object-attribute-enum-value');
+				const enumBox = objectAttributeEls.get('object-attribute-enum-value');
 				if (attr && enumBox) {
-					enumBox.loadItems(Enum.getStringItems(attr.enum));
+					enumBox?.loadItems?.(Enum.getStringItems(attr.enum));
 				}
 				return requestFocus('object-attribute-enum-value');
 			}
@@ -204,14 +207,14 @@ export class AttributeListInterface implements IListInterface {
 		this.typeBox.enableHiddenMode().relate([
 			{
 				case: 'boolean',
-				targets: [$('#object-attribute-boolean-value')]
+				targets: [objectAttributeEls.get('object-attribute-boolean-value')]
 			},
-			{ case: 'number', targets: [$('#object-attribute-number-value')] },
-			{ case: 'string', targets: [$('#object-attribute-string-value')] },
-			{ case: 'enum', targets: [$('#object-attribute-enum-value')] }
+			{ case: 'number', targets: [objectAttributeEls.get('object-attribute-number-value')] },
+			{ case: 'string', targets: [objectAttributeEls.get('object-attribute-string-value')] },
+			{ case: 'enum', targets: [objectAttributeEls.get('object-attribute-enum-value')] }
 		]);
 
-		const boolValEl = $('#object-attribute-boolean-value');
+		const boolValEl = objectAttributeEls.get('object-attribute-boolean-value');
 		if (!boolValEl) return;
 		boolValEl.loadItems([
 			{ name: 'False', value: false },
@@ -240,8 +243,8 @@ export class AttributeListInterface implements IListInterface {
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);
 			if (attr.type === 'enum') {
-				const enumBox = $('#object-attribute-enum-value');
-				enumBox.loadItems(Enum.getStringItems(attr.enum));
+				const enumBox = objectAttributeEls.get('object-attribute-enum-value');
+				enumBox?.loadItems?.(Enum.getStringItems(attr.enum));
 				form.enumValue = Enum.getDefStringId(attr.enum);
 			}
 		}
