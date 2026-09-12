@@ -47,8 +47,8 @@ onMounted(() => {
 	const animSoundLayer = Inspector.animSoundLayer;
 	if (animSoundLayer) {
 		elPlaybackRate.value?.loadItems([
-			{ name: 'Default', value: 'default' },
-			{ name: 'Inherit', value: 'inherit' }
+			{ name: t('components.animSoundLayer-playbackRate.options.default.name'), tip: t('components.animSoundLayer-playbackRate.options.default.tip'), value: 'default'  },
+			{ name: t('components.animSoundLayer-playbackRate.options.inherit.name'), tip: t('components.animSoundLayer-playbackRate.options.inherit.tip'), value: 'inherit'  }
 		]);
 		const el = elPlaybackRate.value?.root;
 		if (el) {

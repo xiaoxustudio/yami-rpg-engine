@@ -127,19 +127,19 @@ onMounted(() => {
 	}
 
 	elReturnType.value?.loadItems([
-		{ name: 'None', value: 'none' },
-		{ name: 'Boolean', value: 'boolean' },
-		{ name: 'Number', value: 'number' },
-		{ name: 'String', value: 'string' },
-		{ name: 'Object', value: 'object' },
-		{ name: 'Actor', value: 'actor' },
-		{ name: 'Skill', value: 'skill' },
-		{ name: 'State', value: 'state' },
-		{ name: 'Equipment', value: 'equipment' },
-		{ name: 'Item', value: 'item' },
-		{ name: 'Trigger', value: 'trigger' },
-		{ name: 'Light', value: 'light' },
-		{ name: 'Element', value: 'element' }
+		{ name: t('components.fileEvent-returnType.options.none.name'), tip: t('components.fileEvent-returnType.options.none.tip'), value: 'none'  },
+		{ name: t('components.fileEvent-returnType.options.boolean.name'), tip: t('components.fileEvent-returnType.options.boolean.tip'), value: 'boolean'  },
+		{ name: t('components.fileEvent-returnType.options.number.name'), tip: t('components.fileEvent-returnType.options.number.tip'), value: 'number'  },
+		{ name: t('components.fileEvent-returnType.options.string.name'), tip: t('components.fileEvent-returnType.options.string.tip'), value: 'string'  },
+		{ name: t('components.fileEvent-returnType.options.object.name'), tip: t('components.fileEvent-returnType.options.object.tip'), value: 'object'  },
+		{ name: t('components.fileEvent-returnType.options.actor.name'), tip: t('components.fileEvent-returnType.options.actor.tip'), value: 'actor'  },
+		{ name: t('components.fileEvent-returnType.options.skill.name'), tip: t('components.fileEvent-returnType.options.skill.tip'), value: 'skill'  },
+		{ name: t('components.fileEvent-returnType.options.state.name'), tip: t('components.fileEvent-returnType.options.state.tip'), value: 'state'  },
+		{ name: t('components.fileEvent-returnType.options.equipment.name'), tip: t('components.fileEvent-returnType.options.equipment.tip'), value: 'equipment'  },
+		{ name: t('components.fileEvent-returnType.options.item.name'), tip: t('components.fileEvent-returnType.options.item.tip'), value: 'item'  },
+		{ name: t('components.fileEvent-returnType.options.trigger.name'), tip: t('components.fileEvent-returnType.options.trigger.tip'), value: 'trigger'  },
+		{ name: t('components.fileEvent-returnType.options.light.name'), tip: t('components.fileEvent-returnType.options.light.tip'), value: 'light'  },
+		{ name: t('components.fileEvent-returnType.options.element.name'), tip: t('components.fileEvent-returnType.options.element.tip'), value: 'element'  }
 	]);
 
 	elParameters.value?.bind(editor.parameters);

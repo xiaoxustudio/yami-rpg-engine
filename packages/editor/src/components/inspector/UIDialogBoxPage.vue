@@ -236,21 +236,21 @@ onMounted(() => {
 	if (!uiDialogBox) return;
 
 	elTypeface.value?.loadItems([
-		{ name: 'Regular', value: 'regular' },
-		{ name: 'Bold', value: 'bold' },
-		{ name: 'Italic', value: 'italic' },
-		{ name: 'Bold Italic', value: 'bold-italic' }
+		{ name: t('components.uiDialogBox-typeface.options.regular.name'), tip: t('components.uiDialogBox-typeface.options.regular.tip'), value: 'regular'  },
+		{ name: t('components.uiDialogBox-typeface.options.bold.name'), tip: t('components.uiDialogBox-typeface.options.bold.tip'), value: 'bold'  },
+		{ name: t('components.uiDialogBox-typeface.options.italic.name'), tip: t('components.uiDialogBox-typeface.options.italic.tip'), value: 'italic'  },
+		{ name: t('components.uiDialogBox-typeface.options.bold-italic.name'), tip: t('components.uiDialogBox-typeface.options.bold-italic.tip'), value: 'bold-italic'  }
 	]);
 	elEffectType.value?.loadItems([
-		{ name: 'None', value: 'none' },
-		{ name: 'Shadow', value: 'shadow' },
-		{ name: 'Stroke', value: 'stroke' },
-		{ name: 'Outline', value: 'outline' }
+		{ name: t('components.uiDialogBox-effect-type.options.none.name'), tip: t('components.uiDialogBox-effect-type.options.none.tip'), value: 'none'  },
+		{ name: t('components.uiDialogBox-effect-type.options.shadow.name'), tip: t('components.uiDialogBox-effect-type.options.shadow.tip'), value: 'shadow'  },
+		{ name: t('components.uiDialogBox-effect-type.options.stroke.name'), tip: t('components.uiDialogBox-effect-type.options.stroke.tip'), value: 'stroke'  },
+		{ name: t('components.uiDialogBox-effect-type.options.outline.name'), tip: t('components.uiDialogBox-effect-type.options.outline.tip'), value: 'outline'  }
 	]);
 	elBlend.value?.loadItems([
-		{ name: 'Normal', value: 'normal' },
-		{ name: 'Additive', value: 'additive' },
-		{ name: 'Subtract', value: 'subtract' }
+		{ name: t('components.uiDialogBox-blend.options.normal.name'), tip: t('components.uiDialogBox-blend.options.normal.tip'), value: 'normal'  },
+		{ name: t('components.uiDialogBox-blend.options.additive.name'), tip: t('components.uiDialogBox-blend.options.additive.tip'), value: 'additive'  },
+		{ name: t('components.uiDialogBox-blend.options.subtract.name'), tip: t('components.uiDialogBox-blend.options.subtract.tip'), value: 'subtract'  }
 	]);
 	synchronize(elSizeSlider.value, elSize.value);
 	synchronize(elLineSpacingSlider.value, elLineSpacing.value);

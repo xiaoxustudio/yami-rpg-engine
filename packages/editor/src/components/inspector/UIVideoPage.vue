@@ -77,21 +77,21 @@ onMounted(() => {
 	if (!editor) return;
 
 	elLoop.value?.loadItems([
-		{ name: 'Once', value: false },
-		{ name: 'Loop', value: true }
+		{ name: t('components.uiVideo-loop.options.false.name'), tip: t('components.uiVideo-loop.options.false.tip'), value: false  },
+		{ name: t('components.uiVideo-loop.options.true.name'), tip: t('components.uiVideo-loop.options.true.tip'), value: true  }
 	]);
 
 	elFlip.value?.loadItems([
-		{ name: 'None', value: 'none' },
-		{ name: 'Horizontal', value: 'horizontal' },
-		{ name: 'Vertical', value: 'vertical' },
-		{ name: 'Both', value: 'both' }
+		{ name: t('components.uiVideo-flip.options.none.name'), tip: t('components.uiVideo-flip.options.none.tip'), value: 'none'  },
+		{ name: t('components.uiVideo-flip.options.horizontal.name'), tip: t('components.uiVideo-flip.options.horizontal.tip'), value: 'horizontal'  },
+		{ name: t('components.uiVideo-flip.options.vertical.name'), tip: t('components.uiVideo-flip.options.vertical.tip'), value: 'vertical'  },
+		{ name: t('components.uiVideo-flip.options.both.name'), tip: t('components.uiVideo-flip.options.both.tip'), value: 'both'  }
 	]);
 
 	elBlend.value?.loadItems([
-		{ name: 'Normal', value: 'normal' },
-		{ name: 'Additive', value: 'additive' },
-		{ name: 'Subtract', value: 'subtract' }
+		{ name: t('components.uiVideo-blend.options.normal.name'), tip: t('components.uiVideo-blend.options.normal.tip'), value: 'normal'  },
+		{ name: t('components.uiVideo-blend.options.additive.name'), tip: t('components.uiVideo-blend.options.additive.tip'), value: 'additive'  },
+		{ name: t('components.uiVideo-blend.options.subtract.name'), tip: t('components.uiVideo-blend.options.subtract.tip'), value: 'subtract'  }
 	]);
 
 	const elements = [

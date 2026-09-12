@@ -292,8 +292,8 @@ onMounted(() => {
 	}
 
 	elRotatable.value?.loadItems([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
+		{ name: t('components.sceneAnimation-rotatable.options.true.name'), tip: t('components.sceneAnimation-rotatable.options.true.tip'), value: true  },
+		{ name: t('components.sceneAnimation-rotatable.options.false.name'), tip: t('components.sceneAnimation-rotatable.options.false.tip'), value: false  }
 	]);
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));

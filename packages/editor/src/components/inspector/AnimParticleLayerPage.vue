@@ -85,13 +85,13 @@ onMounted(() => {
 	}
 
 	elPosition.value?.loadItems([
-		{ name: 'Absolute', value: 'absolute' },
-		{ name: 'Relative', value: 'relative' }
+		{ name: t('components.animParticleLayer-position.options.absolute.name'), tip: t('components.animParticleLayer-position.options.absolute.tip'), value: 'absolute'  },
+		{ name: t('components.animParticleLayer-position.options.relative.name'), tip: t('components.animParticleLayer-position.options.relative.tip'), value: 'relative'  }
 	]);
 
 	elAngle.value?.loadItems([
-		{ name: 'Default', value: 'default' },
-		{ name: 'Inherit', value: 'inherit' }
+		{ name: t('components.animParticleLayer-angle.options.default.name'), tip: t('components.animParticleLayer-angle.options.default.tip'), value: 'default'  },
+		{ name: t('components.animParticleLayer-angle.options.inherit.name'), tip: t('components.animParticleLayer-angle.options.inherit.tip'), value: 'inherit'  }
 	]);
 
 	elOrder.value?.loadItems([

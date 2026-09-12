@@ -1329,10 +1329,10 @@ onMounted(() => {
 	}
 
 	elAreaType.value?.loadItems([
-		{ name: 'Point', value: 'point' },
-		{ name: 'Rectangle', value: 'rectangle' },
-		{ name: 'Circle', value: 'circle' },
-		{ name: 'Screen Edge', value: 'edge' }
+		{ name: t('components.particleLayer-area-type.options.point.name'), tip: t('components.particleLayer-area-type.options.point.tip'), value: 'point'  },
+		{ name: t('components.particleLayer-area-type.options.rectangle.name'), tip: t('components.particleLayer-area-type.options.rectangle.tip'), value: 'rectangle'  },
+		{ name: t('components.particleLayer-area-type.options.circle.name'), tip: t('components.particleLayer-area-type.options.circle.tip'), value: 'circle'  },
+		{ name: t('components.particleLayer-area-type.options.edge.name'), tip: t('components.particleLayer-area-type.options.edge.tip'), value: 'edge'  }
 	]);
 	if (elAreaType.value) {
 		elAreaType.value.enableHiddenMode();
@@ -1382,15 +1382,15 @@ onMounted(() => {
 	}
 
 	elSort.value?.loadItems([
-		{ name: 'Youngest in Front', value: 'youngest-in-front' },
-		{ name: 'Oldest in Front', value: 'oldest-in-front' },
-		{ name: 'By Scale Factor', value: 'by-scale-factor' }
+		{ name: t('components.particleLayer-sort.options.youngest-in-front.name'), tip: t('components.particleLayer-sort.options.youngest-in-front.tip'), value: 'youngest-in-front'  },
+		{ name: t('components.particleLayer-sort.options.oldest-in-front.name'), tip: t('components.particleLayer-sort.options.oldest-in-front.tip'), value: 'oldest-in-front'  },
+		{ name: t('components.particleLayer-sort.options.by-scale-factor.name'), tip: t('components.particleLayer-sort.options.by-scale-factor.tip'), value: 'by-scale-factor'  }
 	]);
 
 	elSpriteMode.value?.loadItems([
-		{ name: 'Random', value: 'random' },
-		{ name: 'Animation', value: 'animation' },
-		{ name: 'Animation(Loop)', value: 'animation-loop' }
+		{ name: t('components.particleLayer-sprite-mode.options.random.name'), tip: t('components.particleLayer-sprite-mode.options.random.tip'), value: 'random'  },
+		{ name: t('components.particleLayer-sprite-mode.options.animation.name'), tip: t('components.particleLayer-sprite-mode.options.animation.tip'), value: 'animation'  },
+		{ name: t('components.particleLayer-sprite-mode.options.animation-loop.name'), tip: t('components.particleLayer-sprite-mode.options.animation-loop.tip'), value: 'animation-loop'  }
 	]);
 	if (elSpriteMode.value) {
 		elSpriteMode.value.enableHiddenMode();
@@ -1403,10 +1403,10 @@ onMounted(() => {
 	}
 
 	elColorMode.value?.loadItems([
-		{ name: 'Fixed', value: 'fixed' },
-		{ name: 'Random', value: 'random' },
-		{ name: 'Easing', value: 'easing' },
-		{ name: 'Texture Sampling', value: 'texture' }
+		{ name: t('components.particleLayer-color-mode.options.fixed.name'), tip: t('components.particleLayer-color-mode.options.fixed.tip'), value: 'fixed'  },
+		{ name: t('components.particleLayer-color-mode.options.random.name'), tip: t('components.particleLayer-color-mode.options.random.tip'), value: 'random'  },
+		{ name: t('components.particleLayer-color-mode.options.easing.name'), tip: t('components.particleLayer-color-mode.options.easing.tip'), value: 'easing'  },
+		{ name: t('components.particleLayer-color-mode.options.texture.name'), tip: t('components.particleLayer-color-mode.options.texture.tip'), value: 'texture'  }
 	]);
 	if (elColorMode.value) {
 		elColorMode.value.enableHiddenMode();

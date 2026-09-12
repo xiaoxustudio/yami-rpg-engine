@@ -262,9 +262,9 @@ onMounted(() => {
 	}
 
 	elLayer.value?.loadItems([
-		{ name: 'Background', value: 'background' },
-		{ name: 'Foreground', value: 'foreground' },
-		{ name: 'Object', value: 'object' }
+		{ name: t('components.sceneTilemap-layer.options.background.name'), tip: t('components.sceneTilemap-layer.options.background.tip'), value: 'background'  },
+		{ name: t('components.sceneTilemap-layer.options.foreground.name'), tip: t('components.sceneTilemap-layer.options.foreground.tip'), value: 'foreground'  },
+		{ name: t('components.sceneTilemap-layer.options.object.name'), tip: t('components.sceneTilemap-layer.options.object.tip'), value: 'object'  }
 	]);
 
 	const refreshLocalizedItems = () => {

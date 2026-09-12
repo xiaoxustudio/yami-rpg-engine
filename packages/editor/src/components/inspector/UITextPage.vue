@@ -302,32 +302,32 @@ onMounted(() => {
 	if (!uiText) return;
 
 	elDirection.value?.loadItems([
-		{ name: 'Horizontal - TB', value: 'horizontal-tb' },
-		{ name: 'Vertical - LR', value: 'vertical-lr' },
-		{ name: 'Vertical - RL', value: 'vertical-rl' }
+		{ name: t('components.uiText-direction.options.horizontal-tb.name'), tip: t('components.uiText-direction.options.horizontal-tb.tip'), value: 'horizontal-tb'  },
+		{ name: t('components.uiText-direction.options.vertical-lr.name'), tip: t('components.uiText-direction.options.vertical-lr.tip'), value: 'vertical-lr'  },
+		{ name: t('components.uiText-direction.options.vertical-rl.name'), tip: t('components.uiText-direction.options.vertical-rl.tip'), value: 'vertical-rl'  }
 	]);
 	elTypeface.value?.loadItems([
-		{ name: 'Regular', value: 'regular' },
-		{ name: 'Bold', value: 'bold' },
-		{ name: 'Italic', value: 'italic' },
-		{ name: 'Bold Italic', value: 'bold-italic' }
+		{ name: t('components.uiText-typeface.options.regular.name'), tip: t('components.uiText-typeface.options.regular.tip'), value: 'regular'  },
+		{ name: t('components.uiText-typeface.options.bold.name'), tip: t('components.uiText-typeface.options.bold.tip'), value: 'bold'  },
+		{ name: t('components.uiText-typeface.options.italic.name'), tip: t('components.uiText-typeface.options.italic.tip'), value: 'italic'  },
+		{ name: t('components.uiText-typeface.options.bold-italic.name'), tip: t('components.uiText-typeface.options.bold-italic.tip'), value: 'bold-italic'  }
 	]);
 	elEffectType.value?.loadItems([
-		{ name: 'None', value: 'none' },
-		{ name: 'Shadow', value: 'shadow' },
-		{ name: 'Stroke', value: 'stroke' },
-		{ name: 'Outline', value: 'outline' }
+		{ name: t('components.uiText-effect-type.options.none.name'), tip: t('components.uiText-effect-type.options.none.tip'), value: 'none'  },
+		{ name: t('components.uiText-effect-type.options.shadow.name'), tip: t('components.uiText-effect-type.options.shadow.tip'), value: 'shadow'  },
+		{ name: t('components.uiText-effect-type.options.stroke.name'), tip: t('components.uiText-effect-type.options.stroke.tip'), value: 'stroke'  },
+		{ name: t('components.uiText-effect-type.options.outline.name'), tip: t('components.uiText-effect-type.options.outline.tip'), value: 'outline'  }
 	]);
 	elOverflow.value?.loadItems([
-		{ name: 'Visible', value: 'visible' },
-		{ name: 'Wrap', value: 'wrap' },
-		{ name: 'Truncate', value: 'truncate' },
-		{ name: 'Wrap Truncate', value: 'wrap-truncate' }
+		{ name: t('components.uiText-overflow.options.visible.name'), tip: t('components.uiText-overflow.options.visible.tip'), value: 'visible'  },
+		{ name: t('components.uiText-overflow.options.wrap.name'), tip: t('components.uiText-overflow.options.wrap.tip'), value: 'wrap'  },
+		{ name: t('components.uiText-overflow.options.truncate.name'), tip: t('components.uiText-overflow.options.truncate.tip'), value: 'truncate'  },
+		{ name: t('components.uiText-overflow.options.wrap-truncate.name'), tip: t('components.uiText-overflow.options.wrap-truncate.tip'), value: 'wrap-truncate'  }
 	]);
 	elBlend.value?.loadItems([
-		{ name: 'Normal', value: 'normal' },
-		{ name: 'Additive', value: 'additive' },
-		{ name: 'Subtract', value: 'subtract' }
+		{ name: t('components.uiText-blend.options.normal.name'), tip: t('components.uiText-blend.options.normal.tip'), value: 'normal'  },
+		{ name: t('components.uiText-blend.options.additive.name'), tip: t('components.uiText-blend.options.additive.tip'), value: 'additive'  },
+		{ name: t('components.uiText-blend.options.subtract.name'), tip: t('components.uiText-blend.options.subtract.tip'), value: 'subtract'  }
 	]);
 	synchronize(elSizeSlider.value, elSize.value);
 	synchronize(elLineSpacingSlider.value, elLineSpacing.value);

@@ -440,8 +440,8 @@ onMounted(() => {
 	}
 
 	elLayer.value?.loadItems([
-		{ name: 'Background', value: 'background' },
-		{ name: 'Foreground', value: 'foreground' }
+		{ name: t('components.sceneParallax-layer.options.background.name'), tip: t('components.sceneParallax-layer.options.background.tip'), value: 'background'  },
+		{ name: t('components.sceneParallax-layer.options.foreground.name'), tip: t('components.sceneParallax-layer.options.foreground.tip'), value: 'foreground'  }
 	]);
 
 	const refreshLocalizedItems = () => {

@@ -153,9 +153,9 @@ onMounted(() => {
 	if (!uiWindow) return;
 
 	elLayout.value?.loadItems([
-		{ name: 'Normal', value: 'normal' },
-		{ name: 'Horizontal Grid', value: 'horizontal-grid' },
-		{ name: 'Vertical Grid', value: 'vertical-grid' }
+		{ name: t('components.uiWindow-layout.options.normal.name'), tip: t('components.uiWindow-layout.options.normal.tip'), value: 'normal'  },
+		{ name: t('components.uiWindow-layout.options.horizontal-grid.name'), tip: t('components.uiWindow-layout.options.horizontal-grid.tip'), value: 'horizontal-grid'  },
+		{ name: t('components.uiWindow-layout.options.vertical-grid.name'), tip: t('components.uiWindow-layout.options.vertical-grid.tip'), value: 'vertical-grid'  }
 	]);
 	elLayout.value?.enableHiddenMode();
 	elLayout.value?.relate([
@@ -178,8 +178,8 @@ onMounted(() => {
 		}
 	]);
 	elOverflow.value?.loadItems([
-		{ name: 'Visible', value: 'visible' },
-		{ name: 'Hidden', value: 'hidden' }
+		{ name: t('components.uiWindow-overflow.options.visible.name'), tip: t('components.uiWindow-overflow.options.visible.tip'), value: 'visible'  },
+		{ name: t('components.uiWindow-overflow.options.hidden.name'), tip: t('components.uiWindow-overflow.options.hidden.tip'), value: 'hidden'  }
 	]);
 
 	const elements = document.querySelectorAll(`#uiWindow-layout,

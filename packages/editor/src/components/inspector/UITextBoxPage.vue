@@ -171,13 +171,13 @@ onMounted(() => {
 	if (!uiTextBox) return;
 
 	elType.value?.loadItems([
-		{ name: 'Text', value: 'text' },
-		{ name: 'Number', value: 'number' }
+		{ name: t('components.uiTextBox-type.options.text.name'), tip: t('components.uiTextBox-type.options.text.tip'), value: 'text'  },
+		{ name: t('components.uiTextBox-type.options.number.name'), tip: t('components.uiTextBox-type.options.number.tip'), value: 'number'  }
 	]);
 	elAlign.value?.loadItems([
-		{ name: 'Left', value: 'left' },
-		{ name: 'Center', value: 'center' },
-		{ name: 'Right', value: 'right' }
+		{ name: t('components.uiTextBox-align.options.left.name'), tip: t('components.uiTextBox-align.options.left.tip'), value: 'left'  },
+		{ name: t('components.uiTextBox-align.options.center.name'), tip: t('components.uiTextBox-align.options.center.tip'), value: 'center'  },
+		{ name: t('components.uiTextBox-align.options.right.name'), tip: t('components.uiTextBox-align.options.right.tip'), value: 'right'  }
 	]);
 	elType.value?.enableHiddenMode();
 	elType.value?.relate([

@@ -84,14 +84,14 @@ onMounted(() => {
 	};
 
 	elMode.value?.loadItems([
-		{ name: '1 Directional', value: '1-dir' },
-		{ name: '2 Directional', value: '2-dir' },
-		{ name: '4 Directional', value: '4-dir' },
-		{ name: '8 Directional', value: '8-dir' },
-		{ name: '1 Directional - Mirror', value: '1-dir-mirror' },
-		{ name: '2 Directional - Mirror', value: '2-dir-mirror' },
-		{ name: '3 Directional - Mirror', value: '3-dir-mirror' },
-		{ name: '5 Directional - Mirror', value: '5-dir-mirror' }
+		{ name: t('components.animMotion-mode.options.1-dir.name'), tip: t('components.animMotion-mode.options.1-dir.tip'), value: '1-dir'  },
+		{ name: t('components.animMotion-mode.options.2-dir.name'), tip: t('components.animMotion-mode.options.2-dir.tip'), value: '2-dir'  },
+		{ name: t('components.animMotion-mode.options.4-dir.name'), tip: t('components.animMotion-mode.options.4-dir.tip'), value: '4-dir'  },
+		{ name: t('components.animMotion-mode.options.8-dir.name'), tip: t('components.animMotion-mode.options.8-dir.tip'), value: '8-dir'  },
+		{ name: t('components.animMotion-mode.options.1-dir-mirror.name'), tip: t('components.animMotion-mode.options.1-dir-mirror.tip'), value: '1-dir-mirror'  },
+		{ name: t('components.animMotion-mode.options.2-dir-mirror.name'), tip: t('components.animMotion-mode.options.2-dir-mirror.tip'), value: '2-dir-mirror'  },
+		{ name: t('components.animMotion-mode.options.3-dir-mirror.name'), tip: t('components.animMotion-mode.options.3-dir-mirror.tip'), value: '3-dir-mirror'  },
+		{ name: t('components.animMotion-mode.options.5-dir-mirror.name'), tip: t('components.animMotion-mode.options.5-dir-mirror.tip'), value: '5-dir-mirror'  }
 	]);
 
 	const loopStartEl = elLoopStart.value?.root;

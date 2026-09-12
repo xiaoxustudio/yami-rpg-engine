@@ -215,8 +215,8 @@ onMounted(() => {
 	}
 
 	elType.value?.loadItems([
-		{ name: 'Local Actor', value: 'local' },
-		{ name: 'Global Actor', value: 'global' }
+		{ name: t('components.sceneActor-type.options.local.name'), tip: t('components.sceneActor-type.options.local.tip'), value: 'local'  },
+		{ name: t('components.sceneActor-type.options.global.name'), tip: t('components.sceneActor-type.options.global.tip'), value: 'global'  }
 	]);
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));

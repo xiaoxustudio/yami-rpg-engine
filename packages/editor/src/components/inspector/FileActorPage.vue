@@ -292,24 +292,24 @@ onMounted(() => {
 	}
 
 	elRotatable.value?.loadItems([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
+		{ name: t('components.fileActor-rotatable.options.true.name'), tip: t('components.fileActor-rotatable.options.true.tip'), value: true  },
+		{ name: t('components.fileActor-rotatable.options.false.name'), tip: t('components.fileActor-rotatable.options.false.tip'), value: false  }
 	]);
 
 	elPassage.value?.loadItems([
-		{ name: 'Land', value: 'land' },
-		{ name: 'Water', value: 'water' },
-		{ name: 'Unrestricted', value: 'unrestricted' }
+		{ name: t('components.fileActor-passage.options.land.name'), tip: t('components.fileActor-passage.options.land.tip'), value: 'land'  },
+		{ name: t('components.fileActor-passage.options.water.name'), tip: t('components.fileActor-passage.options.water.tip'), value: 'water'  },
+		{ name: t('components.fileActor-passage.options.unrestricted.name'), tip: t('components.fileActor-passage.options.unrestricted.tip'), value: 'unrestricted'  }
 	]);
 
 	elShape.value?.loadItems([
-		{ name: 'Square', value: 'square' },
-		{ name: 'Circle', value: 'circle' }
+		{ name: t('components.fileActor-shape.options.square.name'), tip: t('components.fileActor-shape.options.square.tip'), value: 'square'  },
+		{ name: t('components.fileActor-shape.options.circle.name'), tip: t('components.fileActor-shape.options.circle.tip'), value: 'circle'  }
 	]);
 
 	elImmovable.value?.loadItems([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
+		{ name: t('components.fileActor-immovable.options.true.name'), tip: t('components.fileActor-immovable.options.true.tip'), value: true  },
+		{ name: t('components.fileActor-immovable.options.false.name'), tip: t('components.fileActor-immovable.options.false.tip'), value: false  }
 	]);
 
 	if (editor.sprites) elSprites.value?.bind(editor.sprites);

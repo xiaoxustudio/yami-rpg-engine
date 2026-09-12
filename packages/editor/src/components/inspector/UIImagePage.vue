@@ -556,10 +556,10 @@ onMounted(() => {
 	if (!uiImage) return;
 
 	elDisplay.value?.loadItems([
-		{ name: 'Stretch', value: 'stretch' },
-		{ name: 'Tile', value: 'tile' },
-		{ name: 'Clip', value: 'clip' },
-		{ name: 'Slice', value: 'slice' }
+		{ name: t('components.uiImage-display.options.stretch.name'), tip: t('components.uiImage-display.options.stretch.tip'), value: 'stretch'  },
+		{ name: t('components.uiImage-display.options.tile.name'), tip: t('components.uiImage-display.options.tile.tip'), value: 'tile'  },
+		{ name: t('components.uiImage-display.options.clip.name'), tip: t('components.uiImage-display.options.clip.tip'), value: 'clip'  },
+		{ name: t('components.uiImage-display.options.slice.name'), tip: t('components.uiImage-display.options.slice.tip'), value: 'slice'  }
 	]);
 	elDisplay.value?.enableHiddenMode();
 	elDisplay.value?.relate([
@@ -577,16 +577,16 @@ onMounted(() => {
 		}
 	]);
 	elFlip.value?.loadItems([
-		{ name: 'None', value: 'none' },
-		{ name: 'Horizontal', value: 'horizontal' },
-		{ name: 'Vertical', value: 'vertical' },
-		{ name: 'Both', value: 'both' }
+		{ name: t('components.uiImage-flip.options.none.name'), tip: t('components.uiImage-flip.options.none.tip'), value: 'none'  },
+		{ name: t('components.uiImage-flip.options.horizontal.name'), tip: t('components.uiImage-flip.options.horizontal.tip'), value: 'horizontal'  },
+		{ name: t('components.uiImage-flip.options.vertical.name'), tip: t('components.uiImage-flip.options.vertical.tip'), value: 'vertical'  },
+		{ name: t('components.uiImage-flip.options.both.name'), tip: t('components.uiImage-flip.options.both.tip'), value: 'both'  }
 	]);
 	elBlend.value?.loadItems([
-		{ name: 'Normal', value: 'normal' },
-		{ name: 'Additive', value: 'additive' },
-		{ name: 'Subtract', value: 'subtract' },
-		{ name: 'Mask', value: 'mask' }
+		{ name: t('components.uiImage-blend.options.normal.name'), tip: t('components.uiImage-blend.options.normal.tip'), value: 'normal'  },
+		{ name: t('components.uiImage-blend.options.additive.name'), tip: t('components.uiImage-blend.options.additive.tip'), value: 'additive'  },
+		{ name: t('components.uiImage-blend.options.subtract.name'), tip: t('components.uiImage-blend.options.subtract.tip'), value: 'subtract'  },
+		{ name: t('components.uiImage-blend.options.mask.name'), tip: t('components.uiImage-blend.options.mask.tip'), value: 'mask'  }
 	]);
 	synchronize(elTint0Slider.value, elTint0.value);
 	synchronize(elTint1Slider.value, elTint1.value);

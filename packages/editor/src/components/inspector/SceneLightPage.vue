@@ -426,15 +426,15 @@ onMounted(() => {
 
 	try {
 		elType.value?.loadItems([
-			{ name: 'Point', value: 'point' },
-			{ name: 'Area', value: 'area' }
+			{ name: t('components.sceneLight-type.options.point.name'), tip: t('components.sceneLight-type.options.point.tip'), value: 'point'  },
+			{ name: t('components.sceneLight-type.options.area.name'), tip: t('components.sceneLight-type.options.area.tip'), value: 'area'  }
 		]);
 
 		elBlend.value?.loadItems([
-			{ name: 'Screen', value: 'screen' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' },
-			{ name: 'Max', value: 'max' }
+			{ name: t('components.sceneLight-blend.options.screen.name'), tip: t('components.sceneLight-blend.options.screen.tip'), value: 'screen'  },
+			{ name: t('components.sceneLight-blend.options.additive.name'), tip: t('components.sceneLight-blend.options.additive.tip'), value: 'additive'  },
+			{ name: t('components.sceneLight-blend.options.subtract.name'), tip: t('components.sceneLight-blend.options.subtract.tip'), value: 'subtract'  },
+			{ name: t('components.sceneLight-blend.options.max.name'), tip: t('components.sceneLight-blend.options.max.tip'), value: 'max'  }
 		]);
 
 		if (elType.value) {
