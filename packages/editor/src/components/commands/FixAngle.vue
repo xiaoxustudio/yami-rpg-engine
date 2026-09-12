@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="fixAngle" @confirm="onConfirm">
+	<WindowFrame id="fixAngle"
+				:ref="registryRef(fieldEls, 'fixAngle')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.fixAngle.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fixAngle-actor.label') }}</div>
 			<CustomBox id="fixAngle-actor"
+				:ref="registryRef(fieldEls, 'fixAngle-actor')"
 				v-tip="t('components.fixAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.fixAngle-fixed.label') }}</div>
 			<SelectBox id="fixAngle-fixed"
@@ -20,9 +22,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFixAngleCommandSchema } from '@app/composables/commands/useFixAngleCommandSchema';

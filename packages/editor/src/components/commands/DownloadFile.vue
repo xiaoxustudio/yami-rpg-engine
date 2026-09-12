@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="downloadFile" @confirm="onConfirm">
+	<WindowFrame id="downloadFile"
+				:ref="registryRef(fieldEls, 'downloadFile')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.downloadFile.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.downloadFile-url.label') }}</div>
 			<StringVar id="downloadFile-url"
+				:ref="registryRef(fieldEls, 'downloadFile-url')"
 				v-tip="t('components.downloadFile-url.tip')" v-focus v-model="form.url" />
 			<div class="text">{{ t('components.downloadFile-header.label') }}</div>
 			<ParamList id="downloadFile-header"
@@ -25,6 +27,7 @@
 			<div class="text">{{ t('components.downloadFile-callback.label') }}</div>
 			<CustomBox
 				id="downloadFile-callback"
+				:ref="registryRef(fieldEls, 'downloadFile-callback')"
 				v-tip="t('components.downloadFile-callback.tip')"
 				type="file"
 				filter="event"
@@ -33,6 +36,7 @@
 			<div class="text">{{ t('components.downloadFile-rateCallback.label') }}</div>
 			<CustomBox
 				id="downloadFile-rateCallback"
+				:ref="registryRef(fieldEls, 'downloadFile-rateCallback')"
 				v-tip="t('components.downloadFile-rateCallback.tip')"
 				type="file"
 				filter="event"

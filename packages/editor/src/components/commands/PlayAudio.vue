@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="playAudio" @confirm="onConfirm">
+	<WindowFrame id="playAudio"
+				:ref="registryRef(fieldEls, 'playAudio')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playAudio.title') }}
@@ -14,6 +15,7 @@
 			<div class="text">{{ t('components.playAudio-audio.label') }}</div>
 			<CustomBox
 				id="playAudio-audio"
+				:ref="registryRef(fieldEls, 'playAudio-audio')"
 				v-tip="t('components.playAudio-audio.tip')"
 				v-focus
 				type="file"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.playAudio-volume.label') }}</div>
 			<NumberBox
 				id="playAudio-volume"
+				:ref="registryRef(fieldEls, 'playAudio-volume')"
 				v-tip="t('components.playAudio-volume.tip')"
 				min="0"
 				max="1"
@@ -40,9 +43,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAudioCommandSchema } from '@app/composables/commands/usePlayAudioCommandSchema';

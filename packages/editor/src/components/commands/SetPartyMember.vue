@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setPartyMember" @confirm="onConfirm">
+	<WindowFrame id="setPartyMember"
+				:ref="registryRef(fieldEls, 'setPartyMember')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setPartyMember.title') }}
@@ -13,6 +14,7 @@
 				:ref="registryRef(fieldEls, 'setPartyMember-operation')" v-focus v-model="form.operation" />
 			<div class="text">{{ t('components.setPartyMember-actor.label') }}</div>
 			<CustomBox id="setPartyMember-actor"
+				:ref="registryRef(fieldEls, 'setPartyMember-actor')"
 				v-tip="t('components.setPartyMember-actor.tip')" type="actor" v-model="form.actor" />
 		</div>
 	</WindowFrame>
@@ -20,9 +22,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPartyMemberCommandSchema } from '@app/composables/commands/useSetPartyMemberCommandSchema';

@@ -72,9 +72,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 
 // 模板里 WindowFrame 用 ref="frame"（已占用 :ref 槽位），故在 onMounted 里命令式登记
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);

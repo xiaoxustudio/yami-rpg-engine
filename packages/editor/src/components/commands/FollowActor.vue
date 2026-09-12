@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="followActor" @confirm="onConfirm">
+	<WindowFrame id="followActor"
+				:ref="registryRef(fieldEls, 'followActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.followActor.title') }}
@@ -9,9 +10,11 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.followActor-actor.label') }}</div>
 			<CustomBox id="followActor-actor"
+				:ref="registryRef(fieldEls, 'followActor-actor')"
 				v-tip="t('components.followActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.followActor-target.label') }}</div>
 			<CustomBox id="followActor-target"
+				:ref="registryRef(fieldEls, 'followActor-target')"
 				v-tip="t('components.followActor-target.tip')" type="actor" v-model="form.target" />
 			<div class="text">{{ t('components.followActor-mode.label') }}</div>
 			<SelectBox id="followActor-mode"
@@ -20,6 +23,7 @@
 			<div class="text">{{ t('components.followActor-minDist.label') }}</div>
 			<NumberVar
 				id="followActor-minDist"
+				:ref="registryRef(fieldEls, 'followActor-minDist')"
 				v-tip="t('components.followActor-minDist.tip')"
 				min="0"
 				max="16"
@@ -30,6 +34,7 @@
 			<div class="text">{{ t('components.followActor-maxDist.label') }}</div>
 			<NumberVar
 				id="followActor-maxDist"
+				:ref="registryRef(fieldEls, 'followActor-maxDist')"
 				v-tip="t('components.followActor-maxDist.tip')"
 				min="0"
 				max="20"
@@ -62,6 +67,7 @@
 			<div class="text">{{ t('components.followActor-bufferDist.label') }}</div>
 			<NumberBox
 				id="followActor-bufferDist"
+				:ref="registryRef(fieldEls, 'followActor-bufferDist')"
 				v-tip="t('components.followActor-bufferDist.tip')"
 				min="0"
 				max="4"
@@ -90,9 +96,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';

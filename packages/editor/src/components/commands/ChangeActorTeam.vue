@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorTeam-actor.label') }}</div>
 			<CustomBox id="changeActorTeam-actor"
+				:ref="registryRef(fieldEls, 'changeActorTeam-actor')"
 				v-tip="t('components.changeActorTeam-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changeActorTeam-teamId.label') }}</div>
 			<SelectBox id="changeActorTeam-teamId"

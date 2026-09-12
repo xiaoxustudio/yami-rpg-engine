@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="moveActor" @confirm="onConfirm">
+	<WindowFrame id="moveActor"
+				:ref="registryRef(fieldEls, 'moveActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveActor.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveActor-actor.label') }}</div>
 			<CustomBox id="moveActor-actor"
+				:ref="registryRef(fieldEls, 'moveActor-actor')"
 				v-tip="t('components.moveActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.moveActor-mode.label') }}</div>
 			<SelectBox id="moveActor-mode"
@@ -38,9 +40,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';

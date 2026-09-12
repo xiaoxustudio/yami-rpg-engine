@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setSkill" @confirm="onConfirm">
+	<WindowFrame id="setSkill"
+				:ref="registryRef(fieldEls, 'setSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setSkill.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setSkill-skill.label') }}</div>
 			<CustomBox id="setSkill-skill"
+				:ref="registryRef(fieldEls, 'setSkill-skill')"
 				v-tip="t('components.setSkill-skill.tip')" v-focus type="skill" v-model="form.skill" />
 			<div class="text">{{ t('components.setSkill-operation.label') }}</div>
 			<SelectBox id="setSkill-operation"
@@ -17,6 +19,7 @@
 			<div class="text">{{ t('components.setSkill-cooldown.label') }}</div>
 			<NumberVar
 				id="setSkill-cooldown"
+				:ref="registryRef(fieldEls, 'setSkill-cooldown')"
 				v-tip="t('components.setSkill-cooldown.tip')"
 				min="1"
 				max="3600000"
@@ -29,9 +32,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetSkillCommandSchema } from '@app/composables/commands/useSetSkillCommandSchema';

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changeActorMotion" @confirm="onConfirm">
+	<WindowFrame id="changeActorMotion"
+				:ref="registryRef(fieldEls, 'changeActorMotion')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorMotion.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorMotion-actor.label') }}</div>
 			<CustomBox id="changeActorMotion-actor"
+				:ref="registryRef(fieldEls, 'changeActorMotion-actor')"
 				v-tip="t('components.changeActorMotion-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changeActorMotion-type.label') }}</div>
 			<SelectBox id="changeActorMotion-type"
@@ -16,6 +18,7 @@
 				:ref="registryRef(fieldEls, 'changeActorMotion-type')" v-model="form.type" />
 			<div class="text">{{ t('components.changeActorMotion-motion.label') }}</div>
 			<CustomBox id="changeActorMotion-motion"
+				:ref="registryRef(fieldEls, 'changeActorMotion-motion')"
 				v-tip="t('components.changeActorMotion-motion.tip')" type="enum-string" v-model="form.motion" />
 		</div>
 	</WindowFrame>
@@ -23,9 +26,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorMotionCommandSchema } from '@app/composables/commands/useChangeActorMotionCommandSchema';

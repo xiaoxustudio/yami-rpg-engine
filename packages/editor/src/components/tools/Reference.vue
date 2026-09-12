@@ -14,10 +14,11 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 import { logEls } from '@app/log/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 /* oxlint-disable eslint/no-restricted-properties */
 import { h, onMounted, render, type VNode } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

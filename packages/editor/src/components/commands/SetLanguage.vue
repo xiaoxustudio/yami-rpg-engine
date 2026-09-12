@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setLanguage" @confirm="onConfirm">
+	<WindowFrame id="setLanguage"
+				:ref="registryRef(fieldEls, 'setLanguage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setLanguage.title') }}

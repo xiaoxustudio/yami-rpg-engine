@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { mount } from '@vue/test-utils';
 import AnimJointFramePage from '@app/components/inspector/AnimJointFramePage.vue';
 import AnimParticleFramePage from '@app/components/inspector/AnimParticleFramePage.vue';
@@ -72,6 +74,8 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 		const host = document.createElement('div');
 		host.id = mountId;
 		document.body.appendChild(host);
+		// P1b：页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
+		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(component, {
 			attachTo: document.body
 		});

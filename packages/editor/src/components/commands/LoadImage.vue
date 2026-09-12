@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="loadImage" @confirm="onConfirm">
+	<WindowFrame id="loadImage"
+				:ref="registryRef(fieldEls, 'loadImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loadImage.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 		<div class="text">{{ t('components.loadImage-element.label') }}</div>
 		<CustomBox id="loadImage-element"
+				:ref="registryRef(fieldEls, 'loadImage-element')"
 				v-tip="t('components.loadImage-element.tip')" v-focus type="element" v-model="form.element" />
 		<div class="text">{{ t('components.loadImage-type.label') }}</div>
 		<SelectBox id="loadImage-type"
@@ -54,9 +56,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoadImageCommandSchema } from '@app/composables/commands/useLoadImageCommandSchema';

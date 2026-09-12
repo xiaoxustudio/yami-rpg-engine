@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/element-video-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -103,7 +103,7 @@ onMounted(() => {
 	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, UI);
 
-	const el = document.getElementById('uiVideo-vue-mount');
+	const el = inspectorEls.get('uiVideo-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

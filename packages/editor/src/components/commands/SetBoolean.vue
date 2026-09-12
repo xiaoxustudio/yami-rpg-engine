@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setBoolean" @confirm="onConfirm">
+	<WindowFrame id="setBoolean"
+				:ref="registryRef(fieldEls, 'setBoolean')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setBoolean.title') }}
@@ -10,6 +11,7 @@
 			<div class="text">{{ t('components.setBoolean-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-variable"
+				:ref="registryRef(fieldEls, 'setBoolean-variable')"
 				v-tip="t('components.setBoolean-variable.tip')"
 				v-focus
 				type="variable"

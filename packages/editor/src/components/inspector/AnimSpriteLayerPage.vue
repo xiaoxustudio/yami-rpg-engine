@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
@@ -111,7 +110,7 @@ onMounted(() => {
 		data.direction = Animation.direction;
 	});
 
-	const el = document.getElementById('animSpriteLayer-vue-mount');
+	const el = inspectorEls.get('animSpriteLayer-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

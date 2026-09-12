@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="return" @confirm="onConfirm">
+	<WindowFrame id="return"
+				:ref="registryRef(fieldEls, 'return')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.return.title') }}

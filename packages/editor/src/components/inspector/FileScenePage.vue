@@ -220,7 +220,7 @@ onMounted(() => {
 	const editor = Inspector.fileScene;
 	if (!editor) return;
 
-	const el = document.getElementById('fileScene-vue-mount');
+	const el = inspectorEls.get('fileScene-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

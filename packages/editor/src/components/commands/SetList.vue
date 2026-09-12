@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setList" @confirm="onConfirm">
+	<WindowFrame id="setList"
+				:ref="registryRef(fieldEls, 'setList')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setList.title') }}
@@ -10,6 +11,7 @@
 		<div class="text">{{ t('components.setList-variable.label') }}</div>
 		<CustomBox
 			id="setList-variable"
+				:ref="registryRef(fieldEls, 'setList-variable')"
 				v-tip="t('components.setList-variable.tip')"
 			v-focus
 			type="variable"
@@ -111,9 +113,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';

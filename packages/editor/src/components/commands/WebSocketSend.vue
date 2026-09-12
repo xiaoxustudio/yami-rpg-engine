@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="webSocketSend" @confirm="onConfirm">
+	<WindowFrame id="webSocketSend"
+				:ref="registryRef(fieldEls, 'webSocketSend')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.webSocketSend.title') }}

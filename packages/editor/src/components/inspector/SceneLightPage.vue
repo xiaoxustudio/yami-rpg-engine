@@ -419,7 +419,7 @@ onMounted(() => {
 	const editor = Inspector.sceneLight;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneLight-vue-mount');
+	const el = inspectorEls.get('sceneLight-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

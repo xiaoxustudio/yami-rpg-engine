@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="getTarget" @confirm="onConfirm">
+	<WindowFrame id="getTarget"
+				:ref="registryRef(fieldEls, 'getTarget')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getTarget.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.getTarget-actor.label') }}</div>
 			<CustomBox id="getTarget-actor"
+				:ref="registryRef(fieldEls, 'getTarget-actor')"
 				v-tip="t('components.getTarget-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.getTarget-selector.label') }}</div>
 			<SelectBox id="getTarget-selector"

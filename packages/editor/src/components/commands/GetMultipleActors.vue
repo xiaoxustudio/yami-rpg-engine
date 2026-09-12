@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.getMultipleActors-variable.label') }}</div>
 			<CustomBox
 				id="getMultipleActors-variable"
+				:ref="registryRef(fieldEls, 'getMultipleActors-variable')"
 				v-tip="t('components.getMultipleActors-variable.tip')"
 				v-focus
 				type="variable"
@@ -19,6 +20,7 @@
 			/>
 			<div class="text">{{ t('components.getMultipleActors-position.label') }}</div>
 			<CustomBox id="getMultipleActors-position"
+				:ref="registryRef(fieldEls, 'getMultipleActors-position')"
 				v-tip="t('components.getMultipleActors-position.tip')" type="position" v-model="form.position" />
 			<div class="text">{{ t('components.getMultipleActors-area.label') }}</div>
 			<SelectBox id="getMultipleActors-area"
@@ -75,9 +77,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';

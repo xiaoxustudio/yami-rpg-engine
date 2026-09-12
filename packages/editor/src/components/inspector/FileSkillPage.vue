@@ -74,9 +74,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { AttributeListInterface } from '@app/tools/property-list.ts';
@@ -110,7 +110,7 @@ onMounted(() => {
 	const editor = Inspector.fileSkill;
 	if (!editor) return;
 
-	const el = document.getElementById('fileSkill-vue-mount');
+	const el = inspectorEls.get('fileSkill-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

@@ -286,7 +286,7 @@ onMounted(() => {
 	const editor = Inspector.sceneAnimation;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneAnimation-vue-mount');
+	const el = inspectorEls.get('sceneAnimation-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

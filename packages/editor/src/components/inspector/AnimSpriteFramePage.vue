@@ -274,8 +274,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { computed, onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { engineEls } from '@app/engine/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -385,7 +385,7 @@ onMounted(() => {
 	bindSliders(sliders);
 	Sprite.initialize();
 
-	const el = document.getElementById('animSpriteFrame-vue-mount');
+	const el = inspectorEls.get('animSpriteFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

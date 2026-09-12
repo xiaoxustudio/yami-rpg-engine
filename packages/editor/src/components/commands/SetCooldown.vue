@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setCooldown" @confirm="onConfirm">
+	<WindowFrame id="setCooldown"
+				:ref="registryRef(fieldEls, 'setCooldown')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setCooldown.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setCooldown-actor.label') }}</div>
 			<CustomBox id="setCooldown-actor"
+				:ref="registryRef(fieldEls, 'setCooldown-actor')"
 				v-tip="t('components.setCooldown-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.setCooldown-operation.label') }}</div>
 			<SelectBox id="setCooldown-operation"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.setCooldown-cooldown.label') }}</div>
 			<NumberVar
 				id="setCooldown-cooldown"
+				:ref="registryRef(fieldEls, 'setCooldown-cooldown')"
 				v-tip="t('components.setCooldown-cooldown.tip')"
 				min="1"
 				max="3600000"

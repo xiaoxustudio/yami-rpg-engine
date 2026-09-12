@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/file-ui-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -56,7 +56,7 @@ onMounted(() => {
 	const editor = Inspector.fileUI;
 	if (!editor) return;
 
-	const el = document.getElementById('fileUI-vue-mount');
+	const el = inspectorEls.get('fileUI-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

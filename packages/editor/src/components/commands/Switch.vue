@@ -10,13 +10,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-variable.label') }}</div>
 			<CustomBox id="switch-variable"
+				:ref="registryRef(fieldEls, 'switch-variable')"
 				v-tip="t('components.switch-variable.tip')" v-focus type="variable" filter="all" v-model="form.variable" />
 			<div class="text">{{ t('components.switch-branches.label') }}</div>
 			<ParamList id="switch-branches"
 				:ref="registryRef(fieldEls, 'switch-branches')" v-focus v-model="form.branches" />
 		</div>
-		<CheckBox id="switch-default" v-model="form.default" class="standard"
+		<CheckBox id="switch-default"
+				:ref="registryRef(fieldEls, 'switch-default')" v-model="form.default" class="standard"
 			><div class="text" id="switch-default-label"
+				:ref="registryRef(fieldEls, 'switch-default-label')"
 				v-tip="t('components.switch-default-label.tip')">Default</div></CheckBox
 		>
 	</WindowFrame>
@@ -24,9 +27,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';

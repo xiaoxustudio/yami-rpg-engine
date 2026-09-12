@@ -10,13 +10,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.translateActor-actor.label') }}</div>
 			<CustomBox id="translateActor-actor"
+				:ref="registryRef(fieldEls, 'translateActor-actor')"
 				v-tip="t('components.translateActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.translateActor-angle.label') }}</div>
 			<CustomBox id="translateActor-angle"
+				:ref="registryRef(fieldEls, 'translateActor-angle')"
 				v-tip="t('components.translateActor-angle.tip')" type="angle" v-model="form.angle" />
 			<div class="text">{{ t('components.translateActor-distance.label') }}</div>
 			<NumberVar
 				id="translateActor-distance"
+				:ref="registryRef(fieldEls, 'translateActor-distance')"
 				v-tip="t('components.translateActor-distance.tip')"
 				v-focus
 				min="0"
@@ -31,6 +34,7 @@
 			<div class="text">{{ t('components.translateActor-duration.label') }}</div>
 			<NumberVar
 				id="translateActor-duration"
+				:ref="registryRef(fieldEls, 'translateActor-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -46,9 +50,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTranslateActorCommandSchema } from '@app/composables/commands/useTranslateActorCommandSchema';

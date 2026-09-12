@@ -97,9 +97,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
@@ -152,7 +152,7 @@ onMounted(() => {
 		}
 
 		window.addEventListener('themechange', fileAudio.themechange);
-		const el = document.getElementById('fileAudio');
+		const el = inspectorEls.get('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
 		elFrequencyDetail.value?.on('toggle', fileAudio.windowResize);
 		progress.addEventListener('pointerdown', fileAudio.progressPointerdown);
@@ -160,7 +160,7 @@ onMounted(() => {
 		progress.addEventListener('pointerleave', fileAudio.progressPointerleave);
 	}
 
-	const el = document.getElementById('fileAudio');
+	const el = inspectorEls.get('fileAudio');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}

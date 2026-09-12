@@ -1,4 +1,4 @@
-/* oxlint-disable eslint/no-restricted-properties */
+import { animationEls } from '@app/animation/element-registry';
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -77,10 +77,10 @@ let index: number | null | '' = null;
 let curveMap: CurveMapInstance | null = null;
 
 const initialize = (): void => {
-	page = document.getElementById('animation-easing');
-	head = document.getElementById('animation-easing-head');
-	list = document.getElementById('animation-easing-id') as unknown as CurveList;
-	canvas = document.getElementById('animation-easing-canvas') as unknown as CurveCanvas;
+	page = animationEls.get('animation-easing') ?? null;
+	head = animationEls.get('animation-easing-head') ?? null;
+	list = animationEls.get('animation-easing-id') as unknown as CurveList;
+	canvas = animationEls.get('animation-easing-canvas') as unknown as CurveCanvas;
 	hide(page);
 	hide(list);
 
@@ -111,7 +111,7 @@ const initialize = (): void => {
 	window.addEventListener('datachange', datachange as unknown as EventListener);
 	on(page!, 'resize', windowResize as unknown as (event?: Event) => void);
 	on(
-		document.getElementById('animation-easing-settings'),
+		animationEls.get('animation-easing-settings'),
 		'pointerdown',
 		settingsPointerdown as unknown as (event: PointerEvent) => void
 	);

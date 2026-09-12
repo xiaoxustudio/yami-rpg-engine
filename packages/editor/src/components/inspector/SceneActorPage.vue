@@ -209,7 +209,7 @@ onMounted(() => {
 	const editor = Inspector.sceneActor;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneActor-vue-mount');
+	const el = inspectorEls.get('sceneActor-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

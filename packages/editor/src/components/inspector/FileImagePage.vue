@@ -24,11 +24,12 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -46,7 +47,10 @@ onMounted(() => {
 		fileImage.image = elImage.value;
 	}
 
-	const el = document.getElementById('fileImage');
+	// P1b：具名 ref 占用了 `:ref` 槽位 → 命令式登记（模块侧读注册表取图元素）
+	registerElement(inspectorEls, 'fileImage-image', elImage.value);
+
+	const el = inspectorEls.get('fileImage');
 	if (!el) return;
 	attachElementApi(el, { updateImage, update: sync });
 	el.addEventListener('resize', windowResize);

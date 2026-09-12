@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setState" @confirm="onConfirm">
+	<WindowFrame id="setState"
+				:ref="registryRef(fieldEls, 'setState')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setState.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setState-state.label') }}</div>
 			<CustomBox id="setState-state"
+				:ref="registryRef(fieldEls, 'setState-state')"
 				v-tip="t('components.setState-state.tip')" v-focus type="state" v-model="form.state" />
 			<div class="text">{{ t('components.setState-operation.label') }}</div>
 			<SelectBox id="setState-operation"
@@ -16,6 +18,7 @@
 				:ref="registryRef(fieldEls, 'setState-operation')" v-model="form.operation" />
 			<div class="text">{{ t('components.setState-time.label') }}</div>
 			<NumberVar id="setState-time"
+				:ref="registryRef(fieldEls, 'setState-time')"
 				v-tip="t('components.setState-time.tip')" min="0" max="36000000" unit="ms" v-model="form.time" />
 		</div>
 	</WindowFrame>
@@ -23,9 +26,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateCommandSchema';

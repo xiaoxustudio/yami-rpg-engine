@@ -121,9 +121,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
@@ -156,7 +156,7 @@ onMounted(() => {
 	const editor = Inspector.animParticleFrame;
 	if (!editor) return;
 
-	const el = document.getElementById('animParticleFrame-vue-mount');
+	const el = inspectorEls.get('animParticleFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

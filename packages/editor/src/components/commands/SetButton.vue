@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setButton-element.label') }}</div>
 			<CustomBox id="setButton-element"
+				:ref="registryRef(fieldEls, 'setButton-element')"
 				v-tip="t('components.setButton-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">{{ t('components.setButton-properties.label') }}</div>
 			<ParamList id="setButton-properties"
@@ -20,9 +21,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetButtonCommandSchema } from '@app/composables/commands/useSetButtonCommandSchema';

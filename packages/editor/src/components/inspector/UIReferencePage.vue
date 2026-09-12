@@ -29,9 +29,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -63,7 +63,7 @@ onMounted(() => {
 		);
 		bindInput(elements, uiReference, UI);
 	}
-	const el = document.getElementById('uiReference-vue-mount');
+	const el = inspectorEls.get('uiReference-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

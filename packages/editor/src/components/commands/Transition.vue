@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.transition-variable.label') }}</div>
 			<CustomBox
 				id="transition-variable"
+				:ref="registryRef(fieldEls, 'transition-variable')"
 				v-tip="t('components.transition-variable.tip')"
 				v-focus
 				type="variable"
@@ -20,6 +21,7 @@
 			<div class="text">{{ t('components.transition-start.label') }}</div>
 			<NumberVar
 				id="transition-start"
+				:ref="registryRef(fieldEls, 'transition-start')"
 				v-tip="t('components.transition-start.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -29,6 +31,7 @@
 			<div class="text">{{ t('components.transition-end.label') }}</div>
 			<NumberVar
 				id="transition-end"
+				:ref="registryRef(fieldEls, 'transition-end')"
 				v-tip="t('components.transition-end.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -41,6 +44,7 @@
 			<div class="text">{{ t('components.transition-duration.label') }}</div>
 			<NumberVar
 				id="transition-duration"
+				:ref="registryRef(fieldEls, 'transition-duration')"
 				v-focus
 				name="duration"
 				min="0"

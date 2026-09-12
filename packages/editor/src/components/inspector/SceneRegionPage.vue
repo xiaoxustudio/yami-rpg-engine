@@ -85,7 +85,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
@@ -135,7 +134,7 @@ onMounted(() => {
 	const editor = Inspector.sceneRegion;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneRegion-vue-mount');
+	const el = inspectorEls.get('sceneRegion-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import SceneLightPage from '@app/components/inspector/SceneLightPage.vue';
@@ -59,6 +61,8 @@ describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）',
 		const host = document.createElement('div');
 		host.id = 'sceneLight-vue-mount';
 		document.body.appendChild(host);
+		// P1b：页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
+		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(SceneLightPage, {
 			attachTo: document.body,
 			global: { plugins: [initYamiI18n()] }

@@ -642,20 +642,25 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="animation-easing" source="page">
-					<div class="page-frame" id="animation-easing" value="animation-easing">
-						<div class="box" id="animation-easing-head">
+					<div class="page-frame" id="animation-easing"
+				:ref="registryRef(animationEls, 'animation-easing')" value="animation-easing">
+						<div class="box" id="animation-easing-head"
+				:ref="registryRef(animationEls, 'animation-easing-head')">
 							<div
 								class="item toolbar-item"
 								id="animation-easing-settings"
+				:ref="registryRef(animationEls, 'animation-easing-settings')"
 								value="bezier"
 							></div>
 							<SelectBox
 								id="animation-easing-id"
+				:ref="registryRef(animationEls, 'animation-easing-id')"
 								@write="onEasingIdWrite"
 								@input="onEasingIdInput"
 							></SelectBox>
 						</div>
-						<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
+						<canvas id="animation-easing-canvas"
+				:ref="registryRef(animationEls, 'animation-easing-canvas')" width="0" height="0"></canvas>
 					</div>
 					</PaletteNode>
 					<PaletteNode value="particle" source="page">
@@ -792,6 +797,7 @@
 								class="page-frame"
 								value="fileSkill"
 								id="fileSkill-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileSkill-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
@@ -799,16 +805,19 @@
 								id="fileTrigger-vue-mount"
 				:ref="registryRef(inspectorEls, 'fileTrigger-vue-mount')"
 							></div>
-							<div class="page-frame" value="fileItem" id="fileItem-vue-mount"></div>
+							<div class="page-frame" value="fileItem" id="fileItem-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileItem-vue-mount')"></div>
 							<div
 								class="page-frame"
 								value="fileEquipment"
 								id="fileEquipment-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileEquipment-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="fileState"
 								id="fileState-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileState-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
@@ -983,6 +992,7 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry';
 import { moduleEls } from '@app/module/element-registry';
 import { titleEls } from '@app/title/element-registry';
 import { particleEls } from '@app/particle/element-registry';
@@ -992,7 +1002,6 @@ import { uiEls } from '@app/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
 import { animationEls } from '@app/animation/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryRef } from '@app/utils/element-registry';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';

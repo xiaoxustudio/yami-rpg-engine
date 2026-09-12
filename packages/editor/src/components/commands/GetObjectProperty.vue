@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.getObjectProperty-variable.label') }}</div>
 			<CustomBox
 				id="getObjectProperty-variable"
+				:ref="registryRef(fieldEls, 'getObjectProperty-variable')"
 				v-tip="t('components.getObjectProperty-variable.tip')"
 				v-focus
 				type="variable"
@@ -24,6 +25,7 @@
 			<div class="text">{{ t('components.getObjectProperty-save-variable.label') }}</div>
 			<CustomBox
 				id="getObjectProperty-save-variable"
+				:ref="registryRef(fieldEls, 'getObjectProperty-save-variable')"
 				v-tip="t('components.getObjectProperty-save-variable.tip')"
 				v-focus
 				type="variable"
@@ -36,9 +38,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';

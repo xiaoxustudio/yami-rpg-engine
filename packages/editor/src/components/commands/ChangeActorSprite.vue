@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changeActorSprite" @confirm="onConfirm">
+	<WindowFrame id="changeActorSprite"
+				:ref="registryRef(fieldEls, 'changeActorSprite')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorSprite.title') }}
@@ -9,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorSprite-actor.label') }}</div>
 			<CustomBox id="changeActorSprite-actor"
+				:ref="registryRef(fieldEls, 'changeActorSprite-actor')"
 				v-tip="t('components.changeActorSprite-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changeActorSprite-animationId.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-animationId"
+				:ref="registryRef(fieldEls, 'changeActorSprite-animationId')"
 				v-tip="t('components.changeActorSprite-animationId.tip')"
 				type="file"
 				filter="animation"
@@ -26,6 +29,7 @@
 			<div class="text">{{ t('components.changeActorSprite-image.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-image"
+				:ref="registryRef(fieldEls, 'changeActorSprite-image')"
 				v-tip="t('components.changeActorSprite-image.tip')"
 				type="file"
 				filter="image"

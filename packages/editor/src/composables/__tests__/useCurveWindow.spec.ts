@@ -1,10 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow';
+import { animationEls } from '@app/animation/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { Timer } from '@app/utils/timer';
+
+/** P1b：`useCurveWindow` 改读 `animationEls`（原先按 id 直查）→ 用例自建的 DOM 需登记进注册表 */
+const CURVE_IDS = [
+	'animation-easing',
+	'animation-easing-head',
+	'animation-easing-id',
+	'animation-easing-canvas',
+	'animation-easing-settings'
+];
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -112,6 +123,9 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		vi.stubGlobal('CSS', {
 			getDevicePixelContentBoxSize: () => ({ width: 100, height: 50 })
 		});
+		for (const id of CURVE_IDS) {
+			registerElement(animationEls, id, document.getElementById(id));
+		}
 		vi.mocked(Data).easings = { map: {} };
 		vi.mocked(Animation).history.save.mockClear();
 		vi.mocked(Animation).planToSave.mockClear();

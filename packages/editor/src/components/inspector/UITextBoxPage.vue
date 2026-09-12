@@ -202,7 +202,7 @@ onMounted(() => {
     #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
 	bindInput(elements, uiTextBox, UI);
 
-	const el = document.getElementById('uiTextBox-vue-mount');
+	const el = inspectorEls.get('uiTextBox-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setImage-element.label') }}</div>
-			<CustomBox id="setImage-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="setImage-element"
+				:ref="registryRef(fieldEls, 'setImage-element')" v-focus type="element" v-model="form.element" />
 			<div class="text">{{ t('components.setImage-properties.label') }}</div>
 			<ParamList id="setImage-properties"
 				:ref="registryRef(fieldEls, 'setImage-properties')" v-focus v-model="form.properties" />
@@ -19,9 +20,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetImageCommandSchema } from '@app/composables/commands/useSetImageCommandSchema';

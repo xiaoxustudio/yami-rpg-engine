@@ -179,6 +179,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -283,7 +284,7 @@ onMounted(() => {
 	bindInput(elements, uiDialogBox, UI);
 	bindSliders(sliders);
 
-	const el = document.getElementById('uiDialogBox-vue-mount');
+	const el = inspectorEls.get('uiDialogBox-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

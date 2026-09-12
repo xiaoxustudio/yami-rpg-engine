@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="addAnimationComponent" @confirm="onConfirm">
+	<WindowFrame id="addAnimationComponent"
+				:ref="registryRef(fieldEls, 'addAnimationComponent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.addAnimationComponent.title') }}
@@ -9,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.addAnimationComponent-actor.label') }}</div>
 			<CustomBox id="addAnimationComponent-actor"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-actor')"
 				v-tip="t('components.addAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.addAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-animationId')"
 				v-tip="t('components.addAnimationComponent-animationId.tip')"
 				type="file"
 				filter="animation"
@@ -34,6 +37,7 @@
 			<div class="text">{{ t('components.addAnimationComponent-priority.label') }}</div>
 			<NumberBox
 				id="addAnimationComponent-priority"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-priority')"
 				v-tip="t('components.addAnimationComponent-priority.tip')"
 				min="-100"
 				max="100"
@@ -42,6 +46,7 @@
 			<div class="text">{{ t('components.addAnimationComponent-offsetY.label') }}</div>
 			<NumberBox
 				id="addAnimationComponent-offsetY"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-offsetY')"
 				v-tip="t('components.addAnimationComponent-offsetY.tip')"
 				min="-100"
 				max="100"

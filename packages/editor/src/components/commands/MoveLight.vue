@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveLight-light.label') }}</div>
-			<CustomBox id="moveLight-light" v-focus type="light" v-model="form.light" />
+			<CustomBox id="moveLight-light"
+				:ref="registryRef(fieldEls, 'moveLight-light')" v-focus type="light" v-model="form.light" />
 			<div class="text">{{ t('components.moveLight-properties.label') }}</div>
 			<ParamList id="moveLight-properties"
 				:ref="registryRef(fieldEls, 'moveLight-properties')" v-focus v-model="form.properties" />
@@ -19,6 +20,7 @@
 			<div class="text">{{ t('components.moveLight-duration.label') }}</div>
 			<NumberBox
 				id="moveLight-duration"
+				:ref="registryRef(fieldEls, 'moveLight-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -34,9 +36,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';

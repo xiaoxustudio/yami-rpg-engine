@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.createGlobalActor-actorId.label') }}</div>
 			<CustomBox
 				id="createGlobalActor-actorId"
+				:ref="registryRef(fieldEls, 'createGlobalActor-actorId')"
 				v-tip="t('components.createGlobalActor-actorId.tip')"
 				v-focus
 				type="file"
@@ -27,9 +28,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';

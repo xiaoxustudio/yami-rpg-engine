@@ -1,8 +1,8 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-image-page.ts';
 import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 
 interface FileImageForm {
 	name: string;
@@ -27,7 +27,7 @@ export function useFileImagePage() {
 	};
 
 	const updateImage = (): void => {
-		const image = document.getElementById('fileImage-image') as HTMLImageElement | null;
+		const image = (inspectorEls.get('fileImage-image') as HTMLImageElement | null) ?? null;
 		if (!image) return;
 		hide(image);
 		const frame = image.parentElement!;

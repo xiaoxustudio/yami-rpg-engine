@@ -28,9 +28,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -49,7 +49,7 @@ onMounted(() => {
 		fileVideo.video = elVideo.value;
 	}
 	window.addEventListener('error', windowError);
-	const el = document.getElementById('fileVideo');
+	const el = inspectorEls.get('fileVideo');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}

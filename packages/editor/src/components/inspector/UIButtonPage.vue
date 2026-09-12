@@ -531,6 +531,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -723,7 +724,7 @@ onMounted(() => {
 	bindInput(elements, uiButton, UI);
 	bindSliders(sliders);
 
-	const el = document.getElementById('uiButton-vue-mount');
+	const el = inspectorEls.get('uiButton-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync, form });
 	}

@@ -15,6 +15,7 @@
 			<div class="text">{{ t('components.setReverb-dry.label') }}</div>
 			<NumberVar
 				id="setReverb-dry"
+				:ref="registryRef(fieldEls, 'setReverb-dry')"
 				v-tip="t('components.setReverb-dry.tip')"
 				min="0"
 				max="1"
@@ -25,6 +26,7 @@
 			<div class="text">{{ t('components.setReverb-wet.label') }}</div>
 			<NumberVar
 				id="setReverb-wet"
+				:ref="registryRef(fieldEls, 'setReverb-wet')"
 				v-tip="t('components.setReverb-wet.tip')"
 				min="0"
 				max="1"
@@ -38,6 +40,7 @@
 			<div class="text">{{ t('components.setReverb-duration.label') }}</div>
 			<NumberBox
 				id="setReverb-duration"
+				:ref="registryRef(fieldEls, 'setReverb-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -53,9 +56,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';

@@ -181,7 +181,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-tileset-page.ts';
 import { paletteEls } from '@app/palette/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -281,7 +280,7 @@ const paletteInfo = computed(() => {
 onMounted(() => {
 	palette.initialize();
 
-	const el = document.getElementById('fileTileset');
+	const el = inspectorEls.get('fileTileset');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

@@ -89,7 +89,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/element-animation-page.ts';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
@@ -145,7 +144,7 @@ onMounted(() => {
 	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, uiAnimation, UI);
 
-	const el = document.getElementById('uiAnimation-vue-mount');
+	const el = inspectorEls.get('uiAnimation-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

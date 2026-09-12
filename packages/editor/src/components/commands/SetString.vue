@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setString" @confirm="onConfirm">
+	<WindowFrame id="setString"
+				:ref="registryRef(fieldEls, 'setString')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setString.title') }}
@@ -10,6 +11,7 @@
 		<div class="text">{{ t('components.setString-variable.label') }}</div>
 		<CustomBox
 			id="setString-variable"
+				:ref="registryRef(fieldEls, 'setString-variable')"
 			v-focus
 			type="variable"
 			filter="writable-string"

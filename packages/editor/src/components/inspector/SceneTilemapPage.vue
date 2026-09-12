@@ -256,7 +256,7 @@ onMounted(() => {
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneTilemap-vue-mount');
+	const el = inspectorEls.get('sceneTilemap-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

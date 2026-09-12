@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changeThreat" @confirm="onConfirm">
+	<WindowFrame id="changeThreat"
+				:ref="registryRef(fieldEls, 'changeThreat')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeThreat.title') }}
@@ -9,9 +10,11 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeThreat-actor.label') }}</div>
 			<CustomBox id="changeThreat-actor"
+				:ref="registryRef(fieldEls, 'changeThreat-actor')"
 				v-tip="t('components.changeThreat-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changeThreat-target.label') }}</div>
 			<CustomBox id="changeThreat-target"
+				:ref="registryRef(fieldEls, 'changeThreat-target')"
 				v-tip="t('components.changeThreat-target.tip')" type="actor" v-model="form.target" />
 			<div class="text">{{ t('components.changeThreat-operation.label') }}</div>
 			<SelectBox id="changeThreat-operation"
@@ -20,6 +23,7 @@
 			<div class="text">{{ t('components.changeThreat-threat.label') }}</div>
 			<NumberVar
 				id="changeThreat-threat"
+				:ref="registryRef(fieldEls, 'changeThreat-threat')"
 				v-tip="t('components.changeThreat-threat.tip')"
 				min="0"
 				max="1000000000"
@@ -32,9 +36,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeThreatCommandSchema } from '@app/composables/commands/useChangeThreatCommandSchema';

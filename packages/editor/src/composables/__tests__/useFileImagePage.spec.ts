@@ -2,6 +2,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 
 const fileImage = vi.hoisted(() => ({
 	target: null as unknown,
@@ -53,6 +55,8 @@ describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 		Object.defineProperty(image, 'naturalHeight', { value: height });
 		frame.appendChild(image);
 		document.body.appendChild(frame);
+		// P1b：composable 改从 inspectorEls 取图元素（原先按 id 直查）→ 用例自建的图元素也要登记
+		registerElement(inspectorEls, 'fileImage-image', image);
 		return { frame, image };
 	};
 

@@ -10,12 +10,15 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAmbientLight-red.label') }}</div>
 			<NumberVar id="setAmbientLight-red"
+				:ref="registryRef(fieldEls, 'setAmbientLight-red')"
 				v-tip="t('components.setAmbientLight-red.tip')" v-focus min="0" max="255" step="5" v-model="form.red" />
 			<div class="text">{{ t('components.setAmbientLight-green.label') }}</div>
 			<NumberVar id="setAmbientLight-green"
+				:ref="registryRef(fieldEls, 'setAmbientLight-green')"
 				v-tip="t('components.setAmbientLight-green.tip')" min="0" max="255" step="5" v-model="form.green" />
 			<div class="text">{{ t('components.setAmbientLight-blue.label') }}</div>
 			<NumberVar id="setAmbientLight-blue"
+				:ref="registryRef(fieldEls, 'setAmbientLight-blue')"
 				v-tip="t('components.setAmbientLight-blue.tip')" min="0" max="255" step="5" v-model="form.blue" />
 			<div class="text">{{ t('components.setAmbientLight-easingId.label') }}</div>
 			<SelectBox id="setAmbientLight-easingId"
@@ -23,6 +26,7 @@
 			<div class="text">{{ t('components.setAmbientLight-duration.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-duration"
+				:ref="registryRef(fieldEls, 'setAmbientLight-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -38,9 +42,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAmbientLightCommandSchema } from '@app/composables/commands/useSetAmbientLightCommandSchema';

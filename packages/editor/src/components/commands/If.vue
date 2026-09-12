@@ -12,8 +12,10 @@
 			<ParamList id="if-branches"
 				:ref="registryRef(fieldEls, 'if-branches')" v-focus v-model="form.branches" />
 		</div>
-		<CheckBox id="if-else" v-model="form.else" class="standard"
+		<CheckBox id="if-else"
+				:ref="registryRef(fieldEls, 'if-else')" v-model="form.else" class="standard"
 			><div class="text" id="if-else-label"
+				:ref="registryRef(fieldEls, 'if-else-label')"
 				v-tip="t('components.if-else-label.tip')">Else</div></CheckBox
 		>
 	</WindowFrame>
@@ -21,9 +23,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';

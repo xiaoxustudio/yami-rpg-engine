@@ -31,9 +31,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useAnimSoundFramePage } from '@app/composables/useAnimSoundFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -69,7 +69,7 @@ onMounted(() => {
 			data.direction = Animation.direction;
 		});
 	}
-	const el = document.getElementById('animSoundFrame-vue-mount');
+	const el = inspectorEls.get('animSoundFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

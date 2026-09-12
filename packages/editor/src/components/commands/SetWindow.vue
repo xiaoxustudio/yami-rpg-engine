@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setWindow-element.label') }}</div>
 			<CustomBox id="setWindow-element"
+				:ref="registryRef(fieldEls, 'setWindow-element')"
 				v-tip="t('components.setWindow-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">{{ t('components.setWindow-properties.label') }}</div>
 			<ParamList id="setWindow-properties"
@@ -20,9 +21,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetWindowCommandSchema } from '@app/composables/commands/useSetWindowCommandSchema';

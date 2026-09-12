@@ -50,7 +50,7 @@ onMounted(() => {
 	if (!fileFont) return;
 	const previews = document.querySelectorAll('.fileFont-preview');
 	fileFont.previews = previews;
-	const el = document.getElementById('fileFont');
+	const el = inspectorEls.get('fileFont');
 	if (el) {
 		attachElementApi(el, { update: sync });
 		el.addEventListener('resize', fileFont.windowResize);

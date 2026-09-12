@@ -265,7 +265,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef, registerElement } from '@app/utils/element-registry';
@@ -322,7 +321,7 @@ onMounted(() => {
 	const editor = Inspector.fileTrigger;
 	if (!editor) return;
 
-	const el = document.getElementById('fileTrigger-vue-mount');
+	const el = inspectorEls.get('fileTrigger-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync, form });
 	}

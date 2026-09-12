@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { commandCases } from '@app/commands/command-registry.ts';
 import { write } from '@app/utils/element-utils';
@@ -31,10 +31,7 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 		Object.assign(form, createDefault(), params);
 		if (!options.skipWrite) {
 			for (const field of fields) {
-				write(
-					document.getElementById(`${name}-${field.domId ?? field.key}`),
-					form[field.key]
-				);
+				write(composableEls.get(`${name}-${field.domId ?? field.key}`), form[field.key]);
 			}
 		}
 		options.onLoad?.(params);

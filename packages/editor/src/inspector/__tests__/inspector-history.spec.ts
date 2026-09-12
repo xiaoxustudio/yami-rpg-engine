@@ -57,6 +57,8 @@ const createMount = (id: string, form?: unknown): HTMLElement => {
 		(mount as unknown as { form: unknown }).form = form;
 	}
 	document.body.appendChild(mount);
+	// P1b：页面模块改从 inspectorEls 取 `<page>-vue-mount`（不再按 id 直查）→ 用例自建的宿主也要登记
+	registerElement(inspectorEls, id, mount);
 	return mount;
 };
 

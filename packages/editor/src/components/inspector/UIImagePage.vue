@@ -603,7 +603,7 @@ onMounted(() => {
 	bindInput(elements, uiImage, UI);
 	bindSliders(sliders);
 
-	const el = document.getElementById('uiImage-vue-mount');
+	const el = inspectorEls.get('uiImage-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

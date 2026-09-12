@@ -114,6 +114,7 @@
 
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/element-window-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -188,7 +189,7 @@ onMounted(() => {
     #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
 	bindInput(elements, uiWindow, UI);
 
-	const el = document.getElementById('uiWindow-vue-mount');
+	const el = inspectorEls.get('uiWindow-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

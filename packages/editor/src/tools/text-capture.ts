@@ -1,4 +1,5 @@
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
+import { composableEls } from '@app/composables/element-registry';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { collect } from '@app/utils/event-scope';
@@ -17,8 +18,10 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Variable } from '@app/variable/variable.ts';
 
-/** P5b 批次 3：元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记 */
-export const textCaptureEls = createElementRegistry();
+/** P5b 批次 3：元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记。
+ *  P1b 第 4 刀：同时镜像进 `composableEls`——`useTextCaptureWindow` 的焦点目标 id 是运行时传入的
+ *  （`focusId`），模块侧只能按 id 从共享注册表取元素。 */
+export const textCaptureEls = createElementRegistry(composableEls);
 
 export type {
 	FontForm,

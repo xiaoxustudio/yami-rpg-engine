@@ -93,9 +93,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useAnimJointFramePage } from '@app/composables/useAnimJointFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -140,7 +140,7 @@ onMounted(() => {
 		data.direction = Animation.direction;
 	});
 
-	const el = document.getElementById('animJointFrame-vue-mount');
+	const el = inspectorEls.get('animJointFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

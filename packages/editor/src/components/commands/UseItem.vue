@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="useItem" @confirm="onConfirm">
+	<WindowFrame id="useItem"
+				:ref="registryRef(fieldEls, 'useItem')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.useItem.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.useItem-actor.label') }}</div>
 			<CustomBox id="useItem-actor"
+				:ref="registryRef(fieldEls, 'useItem-actor')"
 				v-tip="t('components.useItem-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.useItem-mode.label') }}</div>
 			<SelectBox id="useItem-mode"
@@ -41,9 +43,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUseItemCommandSchema } from '@app/composables/commands/useUseItemCommandSchema';

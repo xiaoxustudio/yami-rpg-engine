@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="detectTargets" @confirm="onConfirm">
+	<WindowFrame id="detectTargets"
+				:ref="registryRef(fieldEls, 'detectTargets')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.detectTargets.title') }}
@@ -9,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.detectTargets-actor.label') }}</div>
 			<CustomBox id="detectTargets-actor"
+				:ref="registryRef(fieldEls, 'detectTargets-actor')"
 				v-tip="t('components.detectTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.detectTargets-distance.label') }}</div>
 			<NumberVar
 				id="detectTargets-distance"
+				:ref="registryRef(fieldEls, 'detectTargets-distance')"
 				v-tip="t('components.detectTargets-distance.tip')"
 				v-focus
 				min="0"
@@ -35,9 +38,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';

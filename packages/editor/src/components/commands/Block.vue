@@ -8,9 +8,12 @@
 		></template>
 
 		<TextBox id="block-note"
+				:ref="registryRef(fieldEls, 'block-note')"
 				v-tip="t('components.block-note.tip')" v-focus v-model="note" />
-		<CheckBox id="block-asynchronous" class="standard" v-model="asynchronous"
+		<CheckBox id="block-asynchronous"
+				:ref="registryRef(fieldEls, 'block-asynchronous')" class="standard" v-model="asynchronous"
 			><div class="text" id="block-asynchronous-label"
+				:ref="registryRef(fieldEls, 'block-asynchronous-label')"
 				v-tip="t('components.block-asynchronous-label.tip')">Asynchronous</div></CheckBox
 		>
 	</WindowFrame>
@@ -18,9 +21,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';

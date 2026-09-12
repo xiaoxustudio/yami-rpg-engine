@@ -62,9 +62,11 @@ if (mirrorTo && !mirrorFile) {
 const regImport = (registryFile ?? '').replace('packages/editor/src/', '@app/').replace(/\.ts$/, '');
 const mirrorImport = (mirrorFile ?? '').replace('packages/editor/src/', '@app/').replace(/\.ts$/, '');
 
+/** 判据：**检查 import 语句**（不能用"标识符是否出现"——模板里的 `registryRef(reg, …)` 会让后者误判）。
+ *  路径末尾的 `.ts` 可有可无（本仓库两种写法都有；漏判会写出重复 import → TS2300/TS2440）。 */
 const hasImport = (src, symbol, mod) =>
 	new RegExp(
-		`import \\{[^}]*\\b${symbol}\\b[^}]*\\} from '${mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}';`
+		`import \\{[^}]*\\b${symbol}\\b[^}]*\\} from '${mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\.ts)?';`
 	).test(src);
 
 let fresh = 0;

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="removeAnimationComponent" @confirm="onConfirm">
+	<WindowFrame id="removeAnimationComponent"
+				:ref="registryRef(fieldEls, 'removeAnimationComponent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.removeAnimationComponent.title') }}
@@ -10,6 +11,7 @@
 			<div class="text">{{ t('components.removeAnimationComponent-actor.label') }}</div>
 			<CustomBox
 				id="removeAnimationComponent-actor"
+				:ref="registryRef(fieldEls, 'removeAnimationComponent-actor')"
 				v-tip="t('components.removeAnimationComponent-actor.tip')"
 				v-focus
 				type="actor"
@@ -18,6 +20,7 @@
 			<div class="text">{{ t('components.removeAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="removeAnimationComponent-animationId"
+				:ref="registryRef(fieldEls, 'removeAnimationComponent-animationId')"
 				v-tip="t('components.removeAnimationComponent-animationId.tip')"
 				type="file"
 				filter="animation"

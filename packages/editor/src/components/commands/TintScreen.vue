@@ -7,10 +7,12 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="tintScreen-grid-box">
+		<div class="grid-box" id="tintScreen-grid-box"
+				:ref="registryRef(fieldEls, 'tintScreen-grid-box')">
 			<div class="text">{{ t('components.tintScreen-tint-0.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-0"
+				:ref="registryRef(fieldEls, 'tintScreen-tint-0')"
 				v-tip="t('components.tintScreen-tint-0.tip')"
 				v-focus
 				min="-255"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.tintScreen-tint-1.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-1"
+				:ref="registryRef(fieldEls, 'tintScreen-tint-1')"
 				v-tip="t('components.tintScreen-tint-1.tip')"
 				min="-255"
 				max="255"
@@ -30,6 +33,7 @@
 			<div class="text">{{ t('components.tintScreen-tint-2.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-2"
+				:ref="registryRef(fieldEls, 'tintScreen-tint-2')"
 				v-tip="t('components.tintScreen-tint-2.tip')"
 				min="-255"
 				max="255"
@@ -38,6 +42,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-tint-3.label') }}</div>
 			<NumberBox id="tintScreen-tint-3"
+				:ref="registryRef(fieldEls, 'tintScreen-tint-3')"
 				v-tip="t('components.tintScreen-tint-3.tip')" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">{{ t('components.tintScreen-easingId.label') }}</div>
 			<SelectBox id="tintScreen-easingId"
@@ -45,6 +50,7 @@
 			<div class="text">{{ t('components.tintScreen-duration.label') }}</div>
 			<NumberBox
 				id="tintScreen-duration"
+				:ref="registryRef(fieldEls, 'tintScreen-duration')"
 				name="duration"
 				min="0"
 				max="3600000"

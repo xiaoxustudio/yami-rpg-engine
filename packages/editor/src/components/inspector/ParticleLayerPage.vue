@@ -1323,7 +1323,7 @@ onMounted(() => {
 	const editor = Inspector.particleLayer;
 	if (!editor) return;
 
-	const el = document.getElementById('particleLayer-vue-mount');
+	const el = inspectorEls.get('particleLayer-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync, form });
 	}

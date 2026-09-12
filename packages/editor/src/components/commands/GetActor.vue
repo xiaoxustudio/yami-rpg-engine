@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.getActor-variable.label') }}</div>
 			<CustomBox
 				id="getActor-variable"
+				:ref="registryRef(fieldEls, 'getActor-variable')"
 				v-tip="t('components.getActor-variable.tip')"
 				v-focus
 				type="variable"
@@ -19,6 +20,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-position.label') }}</div>
 			<CustomBox id="getActor-position"
+				:ref="registryRef(fieldEls, 'getActor-position')"
 				v-tip="t('components.getActor-position.tip')" type="position" v-model="form.position" />
 			<div class="text">{{ t('components.getActor-area.label') }}</div>
 			<SelectBox id="getActor-area"

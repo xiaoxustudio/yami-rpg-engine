@@ -434,7 +434,7 @@ onMounted(() => {
 	const editor = Inspector.sceneParallax;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneParallax-vue-mount');
+	const el = inspectorEls.get('sceneParallax-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

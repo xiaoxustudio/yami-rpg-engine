@@ -10,9 +10,11 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAngle-actor.label') }}</div>
 			<CustomBox id="setAngle-actor"
+				:ref="registryRef(fieldEls, 'setAngle-actor')"
 				v-tip="t('components.setAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.setAngle-angle.label') }}</div>
 			<CustomBox id="setAngle-angle"
+				:ref="registryRef(fieldEls, 'setAngle-angle')"
 				v-tip="t('components.setAngle-angle.tip')" type="angle" v-model="form.angle" />
 			<div class="text">{{ t('components.setAngle-easingId.label') }}</div>
 			<SelectBox id="setAngle-easingId"
@@ -20,6 +22,7 @@
 			<div class="text">{{ t('components.setAngle-duration.label') }}</div>
 			<NumberVar
 				id="setAngle-duration"
+				:ref="registryRef(fieldEls, 'setAngle-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -35,9 +38,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="requestURL" @confirm="onConfirm">
+	<WindowFrame id="requestURL"
+				:ref="registryRef(fieldEls, 'requestURL')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.requestURL.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.requestURL-url.label') }}</div>
 			<StringVar id="requestURL-url"
+				:ref="registryRef(fieldEls, 'requestURL-url')"
 				v-tip="t('components.requestURL-url.tip')" v-focus v-model="form.url" />
 			<div class="text">{{ t('components.requestURL-header.label') }}</div>
 			<ParamList id="requestURL-header"
@@ -25,6 +27,7 @@
 			<div class="text">{{ t('components.requestURL-callback.label') }}</div>
 			<CustomBox
 				id="requestURL-callback"
+				:ref="registryRef(fieldEls, 'requestURL-callback')"
 				v-tip="t('components.requestURL-callback.tip')"
 				type="file"
 				filter="event"
@@ -36,9 +39,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';

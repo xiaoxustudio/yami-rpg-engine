@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changePassableTerrain" @confirm="onConfirm">
+	<WindowFrame id="changePassableTerrain"
+				:ref="registryRef(fieldEls, 'changePassableTerrain')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changePassableTerrain.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.changePassableTerrain-actor.label') }}</div>
 			<CustomBox id="changePassableTerrain-actor"
+				:ref="registryRef(fieldEls, 'changePassableTerrain-actor')"
 				v-tip="t('components.changePassableTerrain-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changePassableTerrain-passage.label') }}</div>
 			<SelectBox id="changePassableTerrain-passage"
@@ -20,9 +22,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';

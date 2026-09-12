@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setShortcut" @confirm="onConfirm">
+	<WindowFrame id="setShortcut"
+				:ref="registryRef(fieldEls, 'setShortcut')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setShortcut.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setShortcut-actor.label') }}</div>
 			<CustomBox id="setShortcut-actor"
+				:ref="registryRef(fieldEls, 'setShortcut-actor')"
 				v-tip="t('components.setShortcut-actor.tip')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.setShortcut-operation.label') }}</div>
 			<SelectBox id="setShortcut-operation"

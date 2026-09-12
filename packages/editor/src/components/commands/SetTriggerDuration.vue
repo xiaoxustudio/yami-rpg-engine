@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setTriggerDuration" @confirm="onConfirm">
+	<WindowFrame id="setTriggerDuration"
+				:ref="registryRef(fieldEls, 'setTriggerDuration')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTriggerDuration.title') }}
@@ -10,6 +11,7 @@
 			<div class="text">{{ t('components.setTriggerDuration-trigger.label') }}</div>
 			<CustomBox
 			id="setTriggerDuration-trigger"
+				:ref="registryRef(fieldEls, 'setTriggerDuration-trigger')"
 				v-tip="t('components.setTriggerDuration-trigger.tip')"
 			v-focus
 			type="trigger"
@@ -22,6 +24,7 @@
 			<div class="text">{{ t('components.setTriggerDuration-duration.label') }}</div>
 			<NumberVar
 				id="setTriggerDuration-duration"
+				:ref="registryRef(fieldEls, 'setTriggerDuration-duration')"
 				v-tip="t('components.setTriggerDuration-duration.tip')"
 				min="0"
 				max="3600000"
@@ -34,9 +37,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTriggerDurationCommandSchema } from '@app/composables/commands/useSetTriggerDurationCommandSchema';

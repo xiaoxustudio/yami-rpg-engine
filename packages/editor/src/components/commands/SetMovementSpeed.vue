@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setMovementSpeed" @confirm="onConfirm">
+	<WindowFrame id="setMovementSpeed"
+				:ref="registryRef(fieldEls, 'setMovementSpeed')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setMovementSpeed.title') }}
@@ -10,6 +11,7 @@
 			<div class="text">{{ t('components.setMovementSpeed-actor.label') }}</div>
 			<CustomBox
 				id="setMovementSpeed-actor"
+				:ref="registryRef(fieldEls, 'setMovementSpeed-actor')"
 				v-tip="t('components.setMovementSpeed-actor.tip')"
 				v-focus
 				type="actor"
@@ -46,9 +48,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';

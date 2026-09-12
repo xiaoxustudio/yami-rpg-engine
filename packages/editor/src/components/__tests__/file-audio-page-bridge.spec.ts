@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { mount } from '@vue/test-utils';
 import FileAudioPage from '@app/components/inspector/FileAudioPage.vue';
 
@@ -48,6 +50,8 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 		const host = document.createElement('div');
 		host.id = 'fileAudio';
 		document.body.appendChild(host);
+		// P1b：页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
+		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(FileAudioPage, {
 			attachTo: document.body
 		});

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setTerrain" @confirm="onConfirm">
+	<WindowFrame id="setTerrain"
+				:ref="registryRef(fieldEls, 'setTerrain')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTerrain.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTerrain-position.label') }}</div>
 			<CustomBox id="setTerrain-position"
+				:ref="registryRef(fieldEls, 'setTerrain-position')"
 				v-tip="t('components.setTerrain-position.tip')" v-focus type="position" v-model="form.position" />
 			<div class="text">{{ t('components.setTerrain-terrain.label') }}</div>
 			<SelectBox id="setTerrain-terrain"
@@ -20,9 +22,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTerrainCommandSchema } from '@app/composables/commands/useSetTerrainCommandSchema';

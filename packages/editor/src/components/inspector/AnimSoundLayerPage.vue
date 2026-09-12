@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useAnimSoundLayerPage } from '@app/composables/useAnimSoundLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -64,7 +64,7 @@ onMounted(() => {
 			);
 		}
 	}
-	const el = document.getElementById('animSoundLayer-vue-mount');
+	const el = inspectorEls.get('animSoundLayer-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

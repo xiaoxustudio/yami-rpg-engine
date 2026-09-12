@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setObject" @confirm="onConfirm">
+	<WindowFrame id="setObject"
+				:ref="registryRef(fieldEls, 'setObject')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setObject.title') }}
@@ -10,6 +11,7 @@
 		<div class="text">{{ t('components.setObject-variable.label') }}</div>
 		<CustomBox
 			id="setObject-variable"
+				:ref="registryRef(fieldEls, 'setObject-variable')"
 				v-tip="t('components.setObject-variable.tip')"
 			v-focus
 			type="variable"
@@ -85,9 +87,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectCommandSchema } from '@app/composables/commands/useSetObjectCommandSchema';

@@ -7,7 +7,8 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="setObjectAnimation-grid-box">
+		<div class="grid-box" id="setObjectAnimation-grid-box"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-grid-box')">
 			<div class="text">{{ t('components.setObjectAnimation-sort.label') }}</div>
 			<SelectBox id="setObjectAnimation-sort"
 				v-tip="t('components.setObjectAnimation-sort.tip')"
@@ -107,6 +108,7 @@
 			<div class="text">{{ t('components.setObjectAnimation-duration.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-duration"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -122,9 +124,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectAnimationCommandSchema } from '@app/composables/commands/useSetObjectAnimationCommandSchema';

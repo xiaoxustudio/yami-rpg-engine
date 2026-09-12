@@ -13,9 +13,11 @@
 				:ref="registryRef(fieldEls, 'shakeScreen-mode')" v-focus v-model="form.mode" />
 			<div class="text">{{ t('components.shakeScreen-power.label') }}</div>
 			<NumberBox id="shakeScreen-power"
+				:ref="registryRef(fieldEls, 'shakeScreen-power')"
 				v-tip="t('components.shakeScreen-power.tip')" min="1" max="10" v-model="power" />
 			<div class="text">{{ t('components.shakeScreen-speed.label') }}</div>
 			<NumberBox id="shakeScreen-speed"
+				:ref="registryRef(fieldEls, 'shakeScreen-speed')"
 				v-tip="t('components.shakeScreen-speed.tip')" min="1" max="10" v-model="speed" />
 			<div class="text">{{ t('components.shakeScreen-easingId.label') }}</div>
 			<SelectBox id="shakeScreen-easingId"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.shakeScreen-duration.label') }}</div>
 			<NumberBox
 				id="shakeScreen-duration"
+				:ref="registryRef(fieldEls, 'shakeScreen-duration')"
 				name="duration"
 				min="1"
 				max="3600000"
@@ -38,9 +41,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShakeScreenCommandSchema } from '@app/composables/commands/useShakeScreenCommandSchema';

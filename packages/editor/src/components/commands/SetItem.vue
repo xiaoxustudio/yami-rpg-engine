@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setItem" @confirm="onConfirm">
+	<WindowFrame id="setItem"
+				:ref="registryRef(fieldEls, 'setItem')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setItem.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setItem-item.label') }}</div>
 			<CustomBox id="setItem-item"
+				:ref="registryRef(fieldEls, 'setItem-item')"
 				v-tip="t('components.setItem-item.tip')" v-focus type="item" v-model="form.item" />
 			<div class="text">{{ t('components.setItem-operation.label') }}</div>
 			<SelectBox id="setItem-operation"
@@ -16,6 +18,7 @@
 				:ref="registryRef(fieldEls, 'setItem-operation')" v-model="form.operation" />
 			<div class="text">{{ t('components.setItem-quantity.label') }}</div>
 			<NumberVar id="setItem-quantity"
+				:ref="registryRef(fieldEls, 'setItem-quantity')"
 				v-tip="t('components.setItem-quantity.tip')" min="1" max="10000" v-model="form.quantity" />
 		</div>
 	</WindowFrame>
@@ -23,9 +26,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetItemCommandSchema } from '@app/composables/commands/useSetItemCommandSchema';

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="castSkill" @confirm="onConfirm">
+	<WindowFrame id="castSkill"
+				:ref="registryRef(fieldEls, 'castSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.castSkill.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.castSkill-actor.label') }}</div>
 			<CustomBox id="castSkill-actor"
+				:ref="registryRef(fieldEls, 'castSkill-actor')"
 				v-tip="t('components.castSkill-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.castSkill-mode.label') }}</div>
 			<SelectBox id="castSkill-mode"

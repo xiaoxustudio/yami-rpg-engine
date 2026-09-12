@@ -257,7 +257,7 @@ onMounted(() => {
 	const editor = Inspector.sceneParticle;
 	if (!editor) return;
 
-	const el = document.getElementById('sceneParticle-vue-mount');
+	const el = inspectorEls.get('sceneParticle-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

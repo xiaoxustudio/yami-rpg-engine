@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="playActorAnimation" @confirm="onConfirm">
+	<WindowFrame id="playActorAnimation"
+				:ref="registryRef(fieldEls, 'playActorAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playActorAnimation.title') }}
@@ -9,13 +10,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.playActorAnimation-actor.label') }}</div>
 			<CustomBox id="playActorAnimation-actor"
+				:ref="registryRef(fieldEls, 'playActorAnimation-actor')"
 				v-tip="t('components.playActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.playActorAnimation-motion.label') }}</div>
 			<CustomBox id="playActorAnimation-motion"
+				:ref="registryRef(fieldEls, 'playActorAnimation-motion')"
 				v-tip="t('components.playActorAnimation-motion.tip')" type="enum-string" v-model="form.motion" />
 			<div class="text">{{ t('components.playActorAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playActorAnimation-speed"
+				:ref="registryRef(fieldEls, 'playActorAnimation-speed')"
 				v-tip="t('components.playActorAnimation-speed.tip')"
 				min="0.1"
 				max="10"
@@ -32,9 +36,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayActorAnimationCommandSchema } from '@app/composables/commands/usePlayActorAnimationCommandSchema';

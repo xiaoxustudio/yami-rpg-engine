@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changeActorSkill" @confirm="onConfirm">
+	<WindowFrame id="changeActorSkill"
+				:ref="registryRef(fieldEls, 'changeActorSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorSkill.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorSkill-actor.label') }}</div>
-			<CustomBox id="changeActorSkill-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorSkill-actor"
+				:ref="registryRef(fieldEls, 'changeActorSkill-actor')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.changeActorSkill-operation.label') }}</div>
 			<SelectBox id="changeActorSkill-operation"
 				:ref="registryRef(fieldEls, 'changeActorSkill-operation')" v-model="form.operation" />
@@ -30,9 +32,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';

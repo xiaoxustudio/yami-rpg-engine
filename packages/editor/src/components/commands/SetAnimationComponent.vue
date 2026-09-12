@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setAnimationComponent" @confirm="onConfirm">
+	<WindowFrame id="setAnimationComponent"
+				:ref="registryRef(fieldEls, 'setAnimationComponent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAnimationComponent.title') }}
@@ -9,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAnimationComponent-actor.label') }}</div>
 			<CustomBox id="setAnimationComponent-actor"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-actor')"
 				v-tip="t('components.setAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.setAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="setAnimationComponent-animationId"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-animationId')"
 				v-tip="t('components.setAnimationComponent-animationId.tip')"
 				v-focus
 				type="file"
@@ -110,9 +113,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';

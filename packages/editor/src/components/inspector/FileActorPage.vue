@@ -227,7 +227,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef, registerElement } from '@app/utils/element-registry';
@@ -286,7 +285,7 @@ onMounted(() => {
 	const editor = Inspector.fileActor;
 	if (!editor) return;
 
-	const el = document.getElementById('fileActor-vue-mount');
+	const el = inspectorEls.get('fileActor-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}

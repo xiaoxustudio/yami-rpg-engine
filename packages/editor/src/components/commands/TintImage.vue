@@ -7,9 +7,11 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="tintImage-grid-box">
+		<div class="grid-box" id="tintImage-grid-box"
+				:ref="registryRef(fieldEls, 'tintImage-grid-box')">
 			<div class="text">{{ t('components.tintImage-element.label') }}</div>
 			<CustomBox id="tintImage-element"
+				:ref="registryRef(fieldEls, 'tintImage-element')"
 				v-tip="t('components.tintImage-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">{{ t('components.tintImage-mode.label') }}</div>
 			<SelectBox id="tintImage-mode"
@@ -55,6 +57,7 @@
 			<div class="text">{{ t('components.tintImage-duration.label') }}</div>
 			<NumberBox
 				id="tintImage-duration"
+				:ref="registryRef(fieldEls, 'tintImage-duration')"
 				name="duration"
 				min="0"
 				max="3600000"

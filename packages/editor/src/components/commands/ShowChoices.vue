@@ -14,6 +14,7 @@
 				:ref="registryRef(fieldEls, 'showChoices-choices')" v-focus v-model="form.choices" />
 			<div class="text">{{ t('components.showChoices-parameters.label') }}</div>
 			<TextBox id="showChoices-parameters"
+				:ref="registryRef(fieldEls, 'showChoices-parameters')"
 				v-tip="t('components.showChoices-parameters.tip')" v-model="form.parameters" />
 		</div>
 	</WindowFrame>
@@ -21,9 +22,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';

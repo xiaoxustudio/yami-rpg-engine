@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="playAnimation" @confirm="onConfirm">
+	<WindowFrame id="playAnimation"
+				:ref="registryRef(fieldEls, 'playAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playAnimation.title') }}
@@ -40,10 +41,12 @@
 				:ref="registryRef(fieldEls, 'playAnimation-rotatable')" v-model="form.rotatable" />
 			<div class="text">{{ t('components.playAnimation-priority.label') }}</div>
 			<NumberBox id="playAnimation-priority"
+				:ref="registryRef(fieldEls, 'playAnimation-priority')"
 				v-tip="t('components.playAnimation-priority.tip')" min="-100" max="100" v-model="priority" />
 			<div class="text">{{ t('components.playAnimation-offsetY.label') }}</div>
 			<NumberVar
 				id="playAnimation-offsetY"
+				:ref="registryRef(fieldEls, 'playAnimation-offsetY')"
 				v-tip="t('components.playAnimation-offsetY.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -53,6 +56,7 @@
 			<div class="text">{{ t('components.playAnimation-angle.label') }}</div>
 			<NumberVar
 				id="playAnimation-angle"
+				:ref="registryRef(fieldEls, 'playAnimation-angle')"
 				v-tip="t('components.playAnimation-angle.tip')"
 				min="-360"
 				max="360"
@@ -63,6 +67,7 @@
 			<div class="text">{{ t('components.playAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playAnimation-speed"
+				:ref="registryRef(fieldEls, 'playAnimation-speed')"
 				v-tip="t('components.playAnimation-speed.tip')"
 				min="0.1"
 				max="10"

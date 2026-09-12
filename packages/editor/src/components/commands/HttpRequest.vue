@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="httpRequest" @confirm="onConfirm">
+	<WindowFrame id="httpRequest"
+				:ref="registryRef(fieldEls, 'httpRequest')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.httpRequest.title') }}
@@ -9,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.httpRequest-url.label') }}</div>
 			<StringVar id="httpRequest-url"
+				:ref="registryRef(fieldEls, 'httpRequest-url')"
 				v-tip="t('components.httpRequest-url.tip')" v-focus v-model="form.url" />
 			<div class="text">{{ t('components.httpRequest-method.label') }}</div>
 			<SelectBox id="httpRequest-method"
@@ -24,6 +26,7 @@
 				:ref="registryRef(fieldEls, 'httpRequest-data')" v-model="form.data" />
 			<div class="text">{{ t('components.httpRequest-timeout.label') }}</div>
 			<NumberBox id="httpRequest-timeout"
+				:ref="registryRef(fieldEls, 'httpRequest-timeout')"
 				v-tip="t('components.httpRequest-timeout.tip')" v-model="timeout" />
 			<div class="text">{{ t('components.httpRequest-responseType.label') }}</div>
 			<SelectBox id="httpRequest-responseType"
@@ -33,18 +36,22 @@
 			<CheckBox
 				class="standard"
 				id="httpRequest-withCredentials"
+				:ref="registryRef(fieldEls, 'httpRequest-withCredentials')"
 				v-tip="t('components.httpRequest-withCredentials.tip')"
 				v-model="withCredentials"
 			/>
 			<div class="text">{{ t('components.httpRequest-authUser.label') }}</div>
 			<StringVar id="httpRequest-authUser"
+				:ref="registryRef(fieldEls, 'httpRequest-authUser')"
 				v-tip="t('components.httpRequest-authUser.tip')" v-model="form.authUser" />
 			<div class="text">{{ t('components.httpRequest-authPass.label') }}</div>
 			<StringVar id="httpRequest-authPass"
+				:ref="registryRef(fieldEls, 'httpRequest-authPass')"
 				v-tip="t('components.httpRequest-authPass.tip')" v-model="form.authPass" />
 			<div class="text">{{ t('components.httpRequest-callback.label') }}</div>
 			<CustomBox
 				id="httpRequest-callback"
+				:ref="registryRef(fieldEls, 'httpRequest-callback')"
 				v-tip="t('components.httpRequest-callback.tip')"
 				type="file"
 				filter="event"
@@ -56,9 +63,10 @@
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHttpRequestCommandSchema } from '@app/composables/commands/useHttpRequestCommandSchema';
