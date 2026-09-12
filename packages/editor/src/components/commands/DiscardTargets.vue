@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.discardTargets-actor.label') }}</div>
 			<CustomBox id="discardTargets-actor"
 				v-tip="t('components.discardTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Selector</div>
+			<div class="text">{{ t('components.discardTargets-selector.label') }}</div>
 			<SelectBox id="discardTargets-selector"
 				v-tip="t('components.discardTargets-selector.tip')"
 				:ref="registryRef(fieldEls, 'discardTargets-selector')" v-model="form.selector" />
-			<div class="text">Distance</div>
+			<div class="text">{{ t('components.discardTargets-distance.label') }}</div>
 			<NumberVar
 				id="discardTargets-distance"
 				v-tip="t('components.discardTargets-distance.tip')"

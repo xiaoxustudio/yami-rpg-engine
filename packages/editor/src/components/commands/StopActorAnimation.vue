@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.stopActorAnimation-actor.label') }}</div>
 			<CustomBox id="stopActorAnimation-actor"
 				v-tip="t('components.stopActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
 		</div>

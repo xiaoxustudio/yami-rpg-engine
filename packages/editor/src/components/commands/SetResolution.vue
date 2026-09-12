@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Width</div>
+			<div class="text">{{ t('components.setResolution-width.label') }}</div>
 			<NumberVar
 				id="setResolution-width"
 				v-tip="t('components.setResolution-width.tip')"
@@ -17,7 +17,7 @@
 				unit="px"
 				v-model="form.width"
 			/>
-			<div class="text">Height</div>
+			<div class="text">{{ t('components.setResolution-height.label') }}</div>
 			<NumberVar
 				id="setResolution-height"
 				v-tip="t('components.setResolution-height.tip')"
@@ -26,7 +26,7 @@
 				unit="px"
 				v-model="form.height"
 			/>
-			<div class="text">Scene Scale</div>
+			<div class="text">{{ t('components.setResolution-sceneScale.label') }}</div>
 			<NumberVar
 				id="setResolution-sceneScale"
 				v-tip="t('components.setResolution-sceneScale.tip')"
@@ -35,7 +35,7 @@
 				decimals="10"
 				v-model="form.sceneScale"
 			/>
-			<div class="text">UI Scale</div>
+			<div class="text">{{ t('components.setResolution-uiScale.label') }}</div>
 			<NumberVar
 				id="setResolution-uiScale"
 				v-tip="t('components.setResolution-uiScale.tip')"

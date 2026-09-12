@@ -7,22 +7,22 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">URL</div>
+			<div class="text">{{ t('components.requestURL-url.label') }}</div>
 			<StringVar id="requestURL-url"
 				v-tip="t('components.requestURL-url.tip')" v-focus v-model="form.url" />
-			<div class="text">Header</div>
+			<div class="text">{{ t('components.requestURL-header.label') }}</div>
 			<ParamList id="requestURL-header"
 				v-tip="t('components.requestURL-header.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-header')" v-model="form.headers" />
-			<div class="text">Method</div>
+			<div class="text">{{ t('components.requestURL-method.label') }}</div>
 			<SelectBox id="requestURL-method"
 				v-tip="t('components.requestURL-method.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-method')" v-model="form.method" />
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.requestURL-data.label') }}</div>
 			<ParamList id="requestURL-data"
 				v-tip="t('components.requestURL-data.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-data')" v-model="form.data" />
-			<div class="text">CallBack</div>
+			<div class="text">{{ t('components.requestURL-callback.label') }}</div>
 			<CustomBox
 				id="requestURL-callback"
 				v-tip="t('components.requestURL-callback.tip')"

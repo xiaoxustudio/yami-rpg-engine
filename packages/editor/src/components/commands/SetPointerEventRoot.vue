@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setPointerEventRoot-operation.label') }}</div>
 			<SelectBox id="setPointerEventRoot-operation"
 				v-tip="t('components.setPointerEventRoot-operation.tip')"
 				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')" v-focus v-model="form.operation" />
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setPointerEventRoot-element.label') }}</div>
 			<CustomBox
 				id="setPointerEventRoot-element"
 				v-tip="t('components.setPointerEventRoot-element.tip')"

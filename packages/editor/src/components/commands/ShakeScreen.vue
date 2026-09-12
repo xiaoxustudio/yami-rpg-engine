@@ -8,19 +8,19 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Shake Mode</div>
+			<div class="text">{{ t('components.shakeScreen-mode.label') }}</div>
 			<SelectBox id="shakeScreen-mode"
 				:ref="registryRef(fieldEls, 'shakeScreen-mode')" v-focus v-model="form.mode" />
-			<div class="text">Power</div>
+			<div class="text">{{ t('components.shakeScreen-power.label') }}</div>
 			<NumberBox id="shakeScreen-power"
 				v-tip="t('components.shakeScreen-power.tip')" min="1" max="10" v-model="power" />
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.shakeScreen-speed.label') }}</div>
 			<NumberBox id="shakeScreen-speed"
 				v-tip="t('components.shakeScreen-speed.tip')" min="1" max="10" v-model="speed" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.shakeScreen-easingId.label') }}</div>
 			<SelectBox id="shakeScreen-easingId"
 				:ref="registryRef(fieldEls, 'shakeScreen-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.shakeScreen-duration.label') }}</div>
 			<NumberBox
 				id="shakeScreen-duration"
 				name="duration"
@@ -29,7 +29,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.shakeScreen-wait.label') }}</div>
 			<SelectBox id="shakeScreen-wait"
 				:ref="registryRef(fieldEls, 'shakeScreen-wait')" name="wait" v-model="form.wait" />
 		</div>

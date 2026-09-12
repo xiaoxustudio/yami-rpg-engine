@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.fixAngle-actor.label') }}</div>
 			<CustomBox id="fixAngle-actor"
 				v-tip="t('components.fixAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">State</div>
+			<div class="text">{{ t('components.fixAngle-fixed.label') }}</div>
 			<SelectBox id="fixAngle-fixed"
 				v-tip="t('components.fixAngle-fixed.tip')"
 				:ref="registryRef(fieldEls, 'fixAngle-fixed')" v-model="form.fixed" />

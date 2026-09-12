@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setEvent-operation.label') }}</div>
 			<SelectBox id="setEvent-operation"
 				v-tip="t('components.setEvent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-operation')" v-focus v-model="form.operation" />
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setEvent-variable.label') }}</div>
 			<CustomBox
 				id="setEvent-variable"
 				v-tip="t('components.setEvent-variable.tip')"
@@ -21,7 +21,7 @@
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">Event</div>
+			<div class="text">{{ t('components.setEvent-eventId.label') }}</div>
 			<CustomBox
 				id="setEvent-eventId"
 				v-tip="t('components.setEvent-eventId.tip')"
@@ -31,7 +31,7 @@
 				filter="event"
 				v-model="form.eventId"
 			/>
-			<div class="text">Choice Index</div>
+			<div class="text">{{ t('components.setEvent-choiceIndex.label') }}</div>
 			<NumberVar id="setEvent-choiceIndex"
 				v-tip="t('components.setEvent-choiceIndex.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')" min="0" max="255" v-model="form.choiceIndex" />

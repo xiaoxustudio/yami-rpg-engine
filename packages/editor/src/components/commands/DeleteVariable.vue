@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.deleteVariable-variable.label') }}</div>
 			<CustomBox
 				id="deleteVariable-variable"
 				v-tip="t('components.deleteVariable-variable.tip')"

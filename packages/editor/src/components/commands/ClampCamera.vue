@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Left</div>
+			<div class="text">{{ t('components.clampCamera-left.label') }}</div>
 			<NumberVar
 				id="clampCamera-left"
 				v-tip="t('components.clampCamera-left.tip')"
@@ -18,7 +18,7 @@
 				decimals="4"
 				v-model="form.left"
 			/>
-			<div class="text">Top</div>
+			<div class="text">{{ t('components.clampCamera-top.label') }}</div>
 			<NumberVar
 				id="clampCamera-top"
 				v-tip="t('components.clampCamera-top.tip')"
@@ -28,7 +28,7 @@
 				decimals="4"
 				v-model="form.top"
 			/>
-			<div class="text">Right</div>
+			<div class="text">{{ t('components.clampCamera-right.label') }}</div>
 			<NumberVar
 				id="clampCamera-right"
 				v-tip="t('components.clampCamera-right.tip')"
@@ -38,7 +38,7 @@
 				decimals="4"
 				v-model="form.right"
 			/>
-			<div class="text">Bottom</div>
+			<div class="text">{{ t('components.clampCamera-bottom.label') }}</div>
 			<NumberVar
 				id="clampCamera-bottom"
 				v-tip="t('components.clampCamera-bottom.tip')"

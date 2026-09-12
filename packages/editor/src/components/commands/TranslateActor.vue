@@ -8,13 +8,13 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.translateActor-actor.label') }}</div>
 			<CustomBox id="translateActor-actor"
 				v-tip="t('components.translateActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.translateActor-angle.label') }}</div>
 			<CustomBox id="translateActor-angle"
 				v-tip="t('components.translateActor-angle.tip')" type="angle" v-model="form.angle" />
-			<div class="text">Distance</div>
+			<div class="text">{{ t('components.translateActor-distance.label') }}</div>
 			<NumberVar
 				id="translateActor-distance"
 				v-tip="t('components.translateActor-distance.tip')"
@@ -25,10 +25,10 @@
 				unit="tile"
 				v-model="form.distance"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.translateActor-easingId.label') }}</div>
 			<SelectBox id="translateActor-easingId"
 				:ref="registryRef(fieldEls, 'translateActor-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.translateActor-duration.label') }}</div>
 			<NumberVar
 				id="translateActor-duration"
 				name="duration"
@@ -37,7 +37,7 @@
 				unit="ms"
 				v-model="form.duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.translateActor-wait.label') }}</div>
 			<SelectBox id="translateActor-wait"
 				:ref="registryRef(fieldEls, 'translateActor-wait')" name="wait" v-model="form.wait" />
 		</div>

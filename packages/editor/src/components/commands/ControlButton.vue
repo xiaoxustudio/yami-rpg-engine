@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.controlButton-operation.label') }}</div>
 			<SelectBox id="controlButton-operation"
 				v-tip="t('components.controlButton-operation.tip')"
 				:ref="registryRef(fieldEls, 'controlButton-operation')" v-focus v-model="form.operation" />
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.controlButton-element.label') }}</div>
 			<CustomBox id="controlButton-element"
 				v-tip="t('components.controlButton-element.tip')"
 				:ref="registryRef(fieldEls, 'controlButton-element')" type="element" v-model="form.element" />

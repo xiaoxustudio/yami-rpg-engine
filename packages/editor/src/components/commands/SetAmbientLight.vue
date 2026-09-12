@@ -8,19 +8,19 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Red</div>
+			<div class="text">{{ t('components.setAmbientLight-red.label') }}</div>
 			<NumberVar id="setAmbientLight-red"
 				v-tip="t('components.setAmbientLight-red.tip')" v-focus min="0" max="255" step="5" v-model="form.red" />
-			<div class="text">Green</div>
+			<div class="text">{{ t('components.setAmbientLight-green.label') }}</div>
 			<NumberVar id="setAmbientLight-green"
 				v-tip="t('components.setAmbientLight-green.tip')" min="0" max="255" step="5" v-model="form.green" />
-			<div class="text">Blue</div>
+			<div class="text">{{ t('components.setAmbientLight-blue.label') }}</div>
 			<NumberVar id="setAmbientLight-blue"
 				v-tip="t('components.setAmbientLight-blue.tip')" min="0" max="255" step="5" v-model="form.blue" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setAmbientLight-easingId.label') }}</div>
 			<SelectBox id="setAmbientLight-easingId"
 				:ref="registryRef(fieldEls, 'setAmbientLight-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setAmbientLight-duration.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-duration"
 				name="duration"
@@ -29,7 +29,7 @@
 				unit="ms"
 				v-model="form.duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setAmbientLight-wait.label') }}</div>
 			<SelectBox id="setAmbientLight-wait"
 				:ref="registryRef(fieldEls, 'setAmbientLight-wait')" name="wait" v-model="form.wait" />
 		</div>

@@ -7,13 +7,13 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">ID</div>
+			<div class="text">{{ t('components.webSocketClose-id.label') }}</div>
 			<StringVar id="webSocketClose-id"
 				v-tip="t('components.webSocketClose-id.tip')" v-focus v-model="form.id" />
-			<div class="text">Code</div>
+			<div class="text">{{ t('components.webSocketClose-code.label') }}</div>
 			<NumberBox id="webSocketClose-code"
 				v-tip="t('components.webSocketClose-code.tip')" min="1000" max="4999" v-model="code" />
-			<div class="text">Reason</div>
+			<div class="text">{{ t('components.webSocketClose-reason.label') }}</div>
 			<StringVar id="webSocketClose-reason"
 				v-tip="t('components.webSocketClose-reason.tip')" v-model="form.reason" />
 		</div>

@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setObjectProperty-variable.label') }}</div>
 			<CustomBox
 				id="setObjectProperty-variable"
 				v-tip="t('components.setObjectProperty-variable.tip')"
@@ -17,11 +17,11 @@
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">setObjectProperty</div>
+			<div class="text">{{ t('components.setObjectProperty-list.label') }}</div>
 			<ParamList id="setObjectProperty-list"
 				v-tip="t('components.setObjectProperty-list.tip')"
 				:ref="registryRef(fieldEls, 'setObjectProperty-list')" v-focus v-model="form.list" />
-			<div class="text">valueVariable</div>
+			<div class="text">{{ t('components.setObjectProperty-value-variable.label') }}</div>
 			<CustomBox
 				id="setObjectProperty-value-variable"
 				v-tip="t('components.setObjectProperty-value-variable.tip')"

@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.playAudio-type.label') }}</div>
 			<SelectBox id="playAudio-type"
 				v-tip="t('components.playAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'playAudio-type')" v-focus v-model="form.type" />
-			<div class="text">Audio</div>
+			<div class="text">{{ t('components.playAudio-audio.label') }}</div>
 			<CustomBox
 				id="playAudio-audio"
 				v-tip="t('components.playAudio-audio.tip')"
@@ -20,7 +20,7 @@
 				filter="audio"
 				v-model="form.audio"
 			/>
-			<div class="text">Volume</div>
+			<div class="text">{{ t('components.playAudio-volume.label') }}</div>
 			<NumberBox
 				id="playAudio-volume"
 				v-tip="t('components.playAudio-volume.tip')"
@@ -30,7 +30,7 @@
 				decimals="4"
 				v-model="volume"
 			/>
-			<div class="text">Sound Location</div>
+			<div class="text">{{ t('components.playAudio-location.label') }}</div>
 			<CustomBox id="playAudio-location"
 				v-tip="t('components.playAudio-location.tip')"
 				:ref="registryRef(fieldEls, 'playAudio-location')" type="position" v-model="form.location" />

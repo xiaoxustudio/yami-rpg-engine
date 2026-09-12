@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.controlDialog-element.label') }}</div>
 			<CustomBox id="controlDialog-element"
 				v-tip="t('components.controlDialog-element.tip')" v-focus type="element" v-model="form.element" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.controlDialog-operation.label') }}</div>
 			<SelectBox id="controlDialog-operation"
 				v-tip="t('components.controlDialog-operation.tip')"
 				:ref="registryRef(fieldEls, 'controlDialog-operation')" v-model="form.operation" />

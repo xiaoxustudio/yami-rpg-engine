@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.setTriggerMotion-trigger.label') }}</div>
 			<CustomBox id="setTriggerMotion-trigger"
 				v-tip="t('components.setTriggerMotion-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.setTriggerMotion-motion.label') }}</div>
 			<CustomBox id="setTriggerMotion-motion"
 				v-tip="t('components.setTriggerMotion-motion.tip')" type="enum-string" v-model="form.motion" />
 		</div>

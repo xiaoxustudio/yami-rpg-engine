@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.deleteActor-actor.label') }}</div>
 			<CustomBox id="deleteActor-actor"
 				v-tip="t('components.deleteActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 		</div>

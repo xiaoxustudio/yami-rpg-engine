@@ -7,13 +7,13 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.playActorAnimation-actor.label') }}</div>
 			<CustomBox id="playActorAnimation-actor"
 				v-tip="t('components.playActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.playActorAnimation-motion.label') }}</div>
 			<CustomBox id="playActorAnimation-motion"
 				v-tip="t('components.playActorAnimation-motion.tip')" type="enum-string" v-model="form.motion" />
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.playActorAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playActorAnimation-speed"
 				v-tip="t('components.playActorAnimation-speed.tip')"
@@ -23,7 +23,7 @@
 				decimals="4"
 				v-model="form.speed"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.playActorAnimation-wait.label') }}</div>
 			<SelectBox id="playActorAnimation-wait"
 				:ref="registryRef(fieldEls, 'playActorAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>

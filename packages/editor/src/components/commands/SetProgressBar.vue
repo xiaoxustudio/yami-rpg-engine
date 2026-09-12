@@ -8,10 +8,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setProgressBar-element.label') }}</div>
 			<CustomBox id="setProgressBar-element"
 				v-tip="t('components.setProgressBar-element.tip')" v-focus type="element" v-model="form.element" />
-			<div class="text">Properties</div>
+			<div class="text">{{ t('components.setProgressBar-properties.label') }}</div>
 			<ParamList id="setProgressBar-properties"
 				:ref="registryRef(fieldEls, 'setProgressBar-properties')" v-focus v-model="form.properties" />
 		</div>

@@ -7,24 +7,24 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">URL</div>
+			<div class="text">{{ t('components.uploadFile-url.label') }}</div>
 			<StringVar id="uploadFile-url"
 				v-tip="t('components.uploadFile-url.tip')" v-focus v-model="form.url" />
-			<div class="text">LocalPath</div>
+			<div class="text">{{ t('components.uploadFile-path.label') }}</div>
 			<StringVar id="uploadFile-path"
 				v-tip="t('components.uploadFile-path.tip')" v-focus v-model="form.path" />
-			<div class="text">Method</div>
+			<div class="text">{{ t('components.uploadFile-method.label') }}</div>
 			<SelectBox id="uploadFile-method"
 				v-tip="t('components.uploadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'uploadFile-method')" v-model="form.method" />
-			<div class="text">Field</div>
+			<div class="text">{{ t('components.uploadFile-field.label') }}</div>
 			<StringVar id="uploadFile-field"
 				v-tip="t('components.uploadFile-field.tip')" v-model="form.field" />
-			<div class="text">Header</div>
+			<div class="text">{{ t('components.uploadFile-header.label') }}</div>
 			<ParamList id="uploadFile-header"
 				v-tip="t('components.uploadFile-header.tip')"
 				:ref="registryRef(fieldEls, 'uploadFile-header')" v-model="form.header" />
-			<div class="text">CallBack</div>
+			<div class="text">{{ t('components.uploadFile-callback.label') }}</div>
 			<CustomBox
 				id="uploadFile-callback"
 				v-tip="t('components.uploadFile-callback.tip')"
@@ -32,7 +32,7 @@
 				filter="event"
 				v-model="form.callback"
 			/>
-			<div class="text">RateCallBack</div>
+			<div class="text">{{ t('components.uploadFile-rateCallback.label') }}</div>
 			<CustomBox
 				id="uploadFile-rateCallback"
 				v-tip="t('components.uploadFile-rateCallback.tip')"

@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorState-actor.label') }}</div>
 			<CustomBox id="changeActorState-actor"
 				v-tip="t('components.changeActorState-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.changeActorState-operation.label') }}</div>
 			<SelectBox id="changeActorState-operation"
 				v-tip="t('components.changeActorState-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeActorState-operation')" v-model="form.operation" />
-			<div class="text">State</div>
+			<div class="text">{{ t('components.changeActorState-stateId.label') }}</div>
 			<CustomBox
 				id="changeActorState-stateId"
 				v-tip="t('components.changeActorState-stateId.tip')"
@@ -24,7 +24,7 @@
 				filter="state"
 				v-model="form.stateId"
 			/>
-			<div class="text">State</div>
+			<div class="text">{{ t('components.changeActorState-state.label') }}</div>
 			<CustomBox id="changeActorState-state"
 				v-tip="t('components.changeActorState-state.tip')"
 				:ref="registryRef(fieldEls, 'changeActorState-state')" type="state" v-model="form.state" />

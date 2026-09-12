@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Write to Variable</div>
+			<div class="text">{{ t('components.getActor-variable.label') }}</div>
 			<CustomBox
 				id="getActor-variable"
 				v-tip="t('components.getActor-variable.tip')"
@@ -17,14 +17,14 @@
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.getActor-position.label') }}</div>
 			<CustomBox id="getActor-position"
 				v-tip="t('components.getActor-position.tip')" type="position" v-model="form.position" />
-			<div class="text">Area</div>
+			<div class="text">{{ t('components.getActor-area.label') }}</div>
 			<SelectBox id="getActor-area"
 				v-tip="t('components.getActor-area.tip')"
 				:ref="registryRef(fieldEls, 'getActor-area')" v-model="form.area" />
-			<div class="text">Size</div>
+			<div class="text">{{ t('components.getActor-size.label') }}</div>
 			<NumberVar
 				id="getActor-size"
 				v-tip="t('components.getActor-size.tip')"
@@ -35,7 +35,7 @@
 				unit="tile"
 				v-model="form.size"
 			/>
-			<div class="text">Radius</div>
+			<div class="text">{{ t('components.getActor-radius.label') }}</div>
 			<NumberVar
 				id="getActor-radius"
 				v-tip="t('components.getActor-radius.tip')"
@@ -46,39 +46,39 @@
 				unit="tile"
 				v-model="form.radius"
 			/>
-			<div class="text">Selector</div>
+			<div class="text">{{ t('components.getActor-selector.label') }}</div>
 			<SelectBox id="getActor-selector"
 				v-tip="t('components.getActor-selector.tip')"
 				:ref="registryRef(fieldEls, 'getActor-selector')" v-model="form.selector" />
-			<div class="text">Team</div>
+			<div class="text">{{ t('components.getActor-teamId.label') }}</div>
 			<SelectVar id="getActor-teamId"
 				v-tip="t('components.getActor-teamId.tip')"
 				:ref="registryRef(fieldEls, 'getActor-teamId')" v-model="form.teamId" />
-			<div class="text">Condition</div>
+			<div class="text">{{ t('components.getActor-condition.label') }}</div>
 			<SelectBox id="getActor-condition"
 				v-tip="t('components.getActor-condition.tip')"
 				:ref="registryRef(fieldEls, 'getActor-condition')" v-model="form.condition" />
-			<div class="text">Attribute</div>
+			<div class="text">{{ t('components.getActor-attribute.label') }}</div>
 			<SelectBox id="getActor-attribute"
 				v-tip="t('components.getActor-attribute.tip')"
 				:ref="registryRef(fieldEls, 'getActor-attribute')" v-focus v-model="form.attribute" />
-			<div class="text">Attribute 2</div>
+			<div class="text">{{ t('components.getActor-divisor.label') }}</div>
 			<SelectBox id="getActor-divisor"
 				v-tip="t('components.getActor-divisor.tip')"
 				:ref="registryRef(fieldEls, 'getActor-divisor')" v-focus v-model="form.divisor" />
-			<div class="text">Activation</div>
+			<div class="text">{{ t('components.getActor-activation.label') }}</div>
 			<SelectBox id="getActor-activation"
 				v-tip="t('components.getActor-activation.tip')"
 				:ref="registryRef(fieldEls, 'getActor-activation')" v-model="form.activation" />
-			<div class="text">Exclusion</div>
+			<div class="text">{{ t('components.getActor-exclusion.label') }}</div>
 			<SelectBox id="getActor-exclusion"
 				v-tip="t('components.getActor-exclusion.tip')"
 				:ref="registryRef(fieldEls, 'getActor-exclusion')" v-model="form.exclusion" />
-			<div class="text">Exclusion Actor</div>
+			<div class="text">{{ t('components.getActor-exclusionActor.label') }}</div>
 			<CustomBox id="getActor-exclusionActor"
 				v-tip="t('components.getActor-exclusionActor.tip')"
 				:ref="registryRef(fieldEls, 'getActor-exclusionActor')" type="actor" v-model="form.exclusionActor" />
-			<div class="text">Exclusion Team</div>
+			<div class="text">{{ t('components.getActor-exclusionTeamId.label') }}</div>
 			<SelectVar id="getActor-exclusionTeamId"
 				v-tip="t('components.getActor-exclusionTeamId.tip')"
 				:ref="registryRef(fieldEls, 'getActor-exclusionTeamId')" v-model="form.exclusionTeamId" />

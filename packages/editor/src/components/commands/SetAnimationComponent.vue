@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setAnimationComponent-actor.label') }}</div>
 			<CustomBox id="setAnimationComponent-actor"
 				v-tip="t('components.setAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.setAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="setAnimationComponent-animationId"
 				v-tip="t('components.setAnimationComponent-animationId.tip')"
@@ -20,19 +20,19 @@
 				v-model="form.animationId"
 				@write="onAnimationIdWrite"
 			/>
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.setAnimationComponent-motion.label') }}</div>
 			<SelectBox id="setAnimationComponent-motion"
 				v-tip="t('components.setAnimationComponent-motion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')" v-focus v-model="form.motion" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setAnimationComponent-operation.label') }}</div>
 			<SelectBox id="setAnimationComponent-operation"
 				v-tip="t('components.setAnimationComponent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')" v-model="form.operation" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.setAnimationComponent-angle.label') }}</div>
 			<CustomBox id="setAnimationComponent-angle"
 				v-tip="t('components.setAnimationComponent-angle.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-angle')" type="angle" v-model="form.angle" />
-			<div class="text">Scale</div>
+			<div class="text">{{ t('components.setAnimationComponent-scale.label') }}</div>
 			<NumberVar
 				id="setAnimationComponent-scale"
 				v-tip="t('components.setAnimationComponent-scale.tip')"
@@ -43,7 +43,7 @@
 				decimals="4"
 				v-model="form.scale"
 			/>
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.setAnimationComponent-speed.label') }}</div>
 			<NumberVar
 				id="setAnimationComponent-speed"
 				v-tip="t('components.setAnimationComponent-speed.tip')"
@@ -54,7 +54,7 @@
 				decimals="4"
 				v-model="form.speed"
 			/>
-			<div class="text">Opacity</div>
+			<div class="text">{{ t('components.setAnimationComponent-opacity.label') }}</div>
 			<NumberVar
 				id="setAnimationComponent-opacity"
 				v-tip="t('components.setAnimationComponent-opacity.tip')"
@@ -65,7 +65,7 @@
 				decimals="4"
 				v-model="form.opacity"
 			/>
-			<div class="text">Priority</div>
+			<div class="text">{{ t('components.setAnimationComponent-priority.label') }}</div>
 			<NumberBox
 				id="setAnimationComponent-priority"
 				v-tip="t('components.setAnimationComponent-priority.tip')"
@@ -74,7 +74,7 @@
 				max="100"
 				v-model="priority"
 			/>
-			<div class="text">Offset Y</div>
+			<div class="text">{{ t('components.setAnimationComponent-offsetY.label') }}</div>
 			<NumberBox
 				id="setAnimationComponent-offsetY"
 				v-tip="t('components.setAnimationComponent-offsetY.tip')"
@@ -84,11 +84,11 @@
 				unit="px"
 				v-model="offsetY"
 			/>
-			<div class="text">Sprite Name</div>
+			<div class="text">{{ t('components.setAnimationComponent-spriteId.label') }}</div>
 			<SelectBox id="setAnimationComponent-spriteId"
 				v-tip="t('components.setAnimationComponent-spriteId.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')" v-focus v-model="form.spriteId" />
-			<div class="text">Image</div>
+			<div class="text">{{ t('components.setAnimationComponent-image.label') }}</div>
 			<CustomBox
 				id="setAnimationComponent-image"
 				v-tip="t('components.setAnimationComponent-image.tip')"
@@ -97,11 +97,11 @@
 				filter="image"
 				v-model="form.image"
 			/>
-			<div class="text">Play Motion</div>
+			<div class="text">{{ t('components.setAnimationComponent-playMotion.label') }}</div>
 			<SelectBox id="setAnimationComponent-playMotion"
 				v-tip="t('components.setAnimationComponent-playMotion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')" v-focus v-model="form.playMotion" />
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setAnimationComponent-wait.label') }}</div>
 			<SelectBox id="setAnimationComponent-wait"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-wait')" name="wait" v-model="form.wait" />
 		</div>

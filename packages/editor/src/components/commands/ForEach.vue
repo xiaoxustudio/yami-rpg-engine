@@ -7,23 +7,23 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.forEach-data.label') }}</div>
 			<SelectBox id="forEach-data"
 				v-tip="t('components.forEach-data.tip')"
 				:ref="registryRef(fieldEls, 'forEach-data')" v-focus v-model="form.data" />
-			<div class="text">List Variable</div>
+			<div class="text">{{ t('components.forEach-list.label') }}</div>
 			<CustomBox id="forEach-list"
 				v-tip="t('components.forEach-list.tip')"
 				:ref="registryRef(fieldEls, 'forEach-list')" v-focus type="variable" filter="object" v-model="form.list" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.forEach-actor.label') }}</div>
 			<CustomBox id="forEach-actor"
 				v-tip="t('components.forEach-actor.tip')"
 				:ref="registryRef(fieldEls, 'forEach-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Parent Element</div>
+			<div class="text">{{ t('components.forEach-element.label') }}</div>
 			<CustomBox id="forEach-element"
 				v-tip="t('components.forEach-element.tip')"
 				:ref="registryRef(fieldEls, 'forEach-element')" type="element" v-model="form.element" />
-			<div class="text">Attribute Group</div>
+			<div class="text">{{ t('components.forEach-attribute-groupId.label') }}</div>
 			<CustomBox
 				id="forEach-attribute-groupId"
 				v-tip="t('components.forEach-attribute-groupId.tip')"
@@ -32,11 +32,11 @@
 				type="attribute-group"
 				v-model="form.attributeGroupId"
 			/>
-			<div class="text">Enum Group</div>
+			<div class="text">{{ t('components.forEach-enum-groupId.label') }}</div>
 			<CustomBox id="forEach-enum-groupId"
 				v-tip="t('components.forEach-enum-groupId.tip')"
 				:ref="registryRef(fieldEls, 'forEach-enum-groupId')" v-focus type="enum-group" v-model="form.enumGroupId" />
-			<div class="text">Write to Variable</div>
+			<div class="text">{{ t('components.forEach-variable.label') }}</div>
 			<CustomBox
 				id="forEach-variable"
 				v-tip="t('components.forEach-variable.tip')"
@@ -46,7 +46,7 @@
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">Write Save Index</div>
+			<div class="text">{{ t('components.forEach-saveIndex.label') }}</div>
 			<CustomBox
 				id="forEach-saveIndex"
 				v-tip="t('components.forEach-saveIndex.tip')"
@@ -56,7 +56,7 @@
 				filter="number"
 				v-model="form.saveIndex"
 			/>
-			<div class="text">Touch Id</div>
+			<div class="text">{{ t('components.forEach-touchId.label') }}</div>
 			<CustomBox
 				id="forEach-touchId"
 				v-tip="t('components.forEach-touchId.tip')"

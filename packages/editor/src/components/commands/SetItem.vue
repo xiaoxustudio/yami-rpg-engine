@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Item</div>
+			<div class="text">{{ t('components.setItem-item.label') }}</div>
 			<CustomBox id="setItem-item"
 				v-tip="t('components.setItem-item.tip')" v-focus type="item" v-model="form.item" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setItem-operation.label') }}</div>
 			<SelectBox id="setItem-operation"
 				v-tip="t('components.setItem-operation.tip')"
 				:ref="registryRef(fieldEls, 'setItem-operation')" v-model="form.operation" />
-			<div class="text">Quantity</div>
+			<div class="text">{{ t('components.setItem-quantity.label') }}</div>
 			<NumberVar id="setItem-quantity"
 				v-tip="t('components.setItem-quantity.tip')" min="1" max="10000" v-model="form.quantity" />
 		</div>

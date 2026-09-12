@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorSprite-actor.label') }}</div>
 			<CustomBox id="changeActorSprite-actor"
 				v-tip="t('components.changeActorSprite-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.changeActorSprite-animationId.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-animationId"
 				v-tip="t('components.changeActorSprite-animationId.tip')"
@@ -19,10 +19,10 @@
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
-			<div class="text">Sprite Name</div>
+			<div class="text">{{ t('components.changeActorSprite-spriteId.label') }}</div>
 			<SelectBox id="changeActorSprite-spriteId"
 				v-tip="t('components.changeActorSprite-spriteId.tip')" v-model="form.spriteId" />
-			<div class="text">Sprite</div>
+			<div class="text">{{ t('components.changeActorSprite-image.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-image"
 				v-tip="t('components.changeActorSprite-image.tip')"

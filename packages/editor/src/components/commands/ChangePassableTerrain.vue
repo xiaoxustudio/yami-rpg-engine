@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changePassableTerrain-actor.label') }}</div>
 			<CustomBox id="changePassableTerrain-actor"
 				v-tip="t('components.changePassableTerrain-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Passable Terrain</div>
+			<div class="text">{{ t('components.changePassableTerrain-passage.label') }}</div>
 			<SelectBox id="changePassableTerrain-passage"
 				v-tip="t('components.changePassableTerrain-passage.tip')"
 				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')" v-model="form.passage" />

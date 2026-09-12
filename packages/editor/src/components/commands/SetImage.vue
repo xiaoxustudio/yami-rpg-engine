@@ -8,9 +8,9 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setImage-element.label') }}</div>
 			<CustomBox id="setImage-element" v-focus type="element" v-model="form.element" />
-			<div class="text">Properties</div>
+			<div class="text">{{ t('components.setImage-properties.label') }}</div>
 			<ParamList id="setImage-properties"
 				:ref="registryRef(fieldEls, 'setImage-properties')" v-focus v-model="form.properties" />
 		</div>

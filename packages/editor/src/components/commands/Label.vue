@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Label Name</div>
+			<div class="text">{{ t('components.label-name.label') }}</div>
 			<TextBox id="label-name"
 				v-tip="t('components.label-name.tip')" v-focus v-model="name" />
 		</div>

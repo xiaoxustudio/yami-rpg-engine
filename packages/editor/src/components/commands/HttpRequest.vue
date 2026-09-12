@@ -7,25 +7,25 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">URL</div>
+			<div class="text">{{ t('components.httpRequest-url.label') }}</div>
 			<StringVar id="httpRequest-url"
 				v-tip="t('components.httpRequest-url.tip')" v-focus v-model="form.url" />
-			<div class="text">Method</div>
+			<div class="text">{{ t('components.httpRequest-method.label') }}</div>
 			<SelectBox id="httpRequest-method"
 				v-tip="t('components.httpRequest-method.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-method')" v-model="form.method" />
-			<div class="text">Header</div>
+			<div class="text">{{ t('components.httpRequest-header.label') }}</div>
 			<ParamList id="httpRequest-header"
 				v-tip="t('components.httpRequest-header.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-header')" v-model="form.headers" />
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.httpRequest-data.label') }}</div>
 			<ParamList id="httpRequest-data"
 				v-tip="t('components.httpRequest-data.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-data')" v-model="form.data" />
-			<div class="text">TimeOut</div>
+			<div class="text">{{ t('components.httpRequest-timeout.label') }}</div>
 			<NumberBox id="httpRequest-timeout"
 				v-tip="t('components.httpRequest-timeout.tip')" v-model="timeout" />
-			<div class="text">ResponseType</div>
+			<div class="text">{{ t('components.httpRequest-responseType.label') }}</div>
 			<SelectBox id="httpRequest-responseType"
 				v-tip="t('components.httpRequest-responseType.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-responseType')" v-model="form.responseType" />
@@ -36,13 +36,13 @@
 				v-tip="t('components.httpRequest-withCredentials.tip')"
 				v-model="withCredentials"
 			/>
-			<div class="text">AuthUser</div>
+			<div class="text">{{ t('components.httpRequest-authUser.label') }}</div>
 			<StringVar id="httpRequest-authUser"
 				v-tip="t('components.httpRequest-authUser.tip')" v-model="form.authUser" />
-			<div class="text">AuthPass</div>
+			<div class="text">{{ t('components.httpRequest-authPass.label') }}</div>
 			<StringVar id="httpRequest-authPass"
 				v-tip="t('components.httpRequest-authPass.tip')" v-model="form.authPass" />
-			<div class="text">CallBack</div>
+			<div class="text">{{ t('components.httpRequest-callback.label') }}</div>
 			<CustomBox
 				id="httpRequest-callback"
 				v-tip="t('components.httpRequest-callback.tip')"

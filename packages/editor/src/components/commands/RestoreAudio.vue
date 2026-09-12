@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.restoreAudio-type.label') }}</div>
 			<SelectBox id="restoreAudio-type"
 				v-tip="t('components.restoreAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'restoreAudio-type')" v-focus v-model="form.type" />

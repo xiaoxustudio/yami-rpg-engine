@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Language</div>
+			<div class="text">{{ t('components.setLanguage-language.label') }}</div>
 			<SelectBox id="setLanguage-language"
 				v-tip="t('components.setLanguage-language.tip')" v-model="form.language" />
 		</div>

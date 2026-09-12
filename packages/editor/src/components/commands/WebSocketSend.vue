@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">ID</div>
+			<div class="text">{{ t('components.webSocketSend-id.label') }}</div>
 			<StringVar id="webSocketSend-id"
 				v-tip="t('components.webSocketSend-id.tip')" v-focus v-model="form.id" />
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.webSocketSend-data.label') }}</div>
 			<StringVar id="webSocketSend-data"
 				v-tip="t('components.webSocketSend-data.tip')" v-model="form.data" />
 		</div>

@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Object</div>
+			<div class="text">{{ t('components.deleteObject-object.label') }}</div>
 			<CustomBox id="deleteObject-object" v-focus type="object" v-model="form.object" />
 		</div>
 	</WindowFrame>

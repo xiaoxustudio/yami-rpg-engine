@@ -7,19 +7,19 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Target</div>
+			<div class="text">{{ t('components.registerEvent-target.label') }}</div>
 			<SelectBox id="registerEvent-target"
 				v-tip="t('components.registerEvent-target.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-target')" v-focus v-model="form.target" @write="onTargetWrite" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.registerEvent-actor.label') }}</div>
 			<CustomBox id="registerEvent-actor"
 				v-tip="t('components.registerEvent-actor.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.registerEvent-element.label') }}</div>
 			<CustomBox id="registerEvent-element"
 				v-tip="t('components.registerEvent-element.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-element')" type="element" v-model="form.element" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.registerEvent-operation.label') }}</div>
 			<SelectBox
 				id="registerEvent-operation"
 				v-tip="t('components.registerEvent-operation.tip')"
@@ -27,20 +27,20 @@
 				v-model="form.operation"
 				@write="onOperationWrite"
 			/>
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.registerEvent-type.label') }}</div>
 			<SelectBox id="registerEvent-type"
 				v-tip="t('components.registerEvent-type.tip')" v-model="form.type" @write="onTypeWrite" />
-			<div class="text">Priority</div>
+			<div class="text">{{ t('components.registerEvent-priority.label') }}</div>
 			<CheckBox id="registerEvent-priority"
 				v-tip="t('components.registerEvent-priority.tip')" class="standard large" v-model="form.priority" />
-			<div class="text">Namespace</div>
+			<div class="text">{{ t('components.registerEvent-namespace.label') }}</div>
 			<CheckBox
 				id="registerEvent-namespace"
 				v-tip="t('components.registerEvent-namespace.tip')"
 				class="standard large"
 				v-model="form.namespace"
 			/>
-			<div class="text">Tag Name</div>
+			<div class="text">{{ t('components.registerEvent-tag.label') }}</div>
 			<StringVar id="registerEvent-tag"
 				v-tip="t('components.registerEvent-tag.tip')" v-focus v-model="form.tag" />
 		</div>

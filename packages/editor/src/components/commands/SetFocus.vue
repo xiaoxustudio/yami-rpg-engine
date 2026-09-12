@@ -7,19 +7,19 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setFocus-operation.label') }}</div>
 			<SelectBox id="setFocus-operation"
 				v-tip="t('components.setFocus-operation.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-operation')" v-focus v-model="form.operation" />
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setFocus-element.label') }}</div>
 			<CustomBox id="setFocus-element"
 				v-tip="t('components.setFocus-element.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-element')" type="element" v-model="form.element" />
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.setFocus-mode.label') }}</div>
 			<SelectBox id="setFocus-mode"
 				v-tip="t('components.setFocus-mode.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-mode')" v-model="form.mode" />
-			<div class="text">Cancelable</div>
+			<div class="text">{{ t('components.setFocus-cancelable.label') }}</div>
 			<CheckBox id="setFocus-cancelable"
 				v-tip="t('components.setFocus-cancelable.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-cancelable')" class="standard large" v-model="cancelable" />

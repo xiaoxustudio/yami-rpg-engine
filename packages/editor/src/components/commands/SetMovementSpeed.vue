@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setMovementSpeed-actor.label') }}</div>
 			<CustomBox
 				id="setMovementSpeed-actor"
 				v-tip="t('components.setMovementSpeed-actor.tip')"
@@ -15,11 +15,11 @@
 				type="actor"
 				v-model="form.actor"
 			/>
-			<div class="text">Property</div>
+			<div class="text">{{ t('components.setMovementSpeed-property.label') }}</div>
 			<SelectBox id="setMovementSpeed-property"
 				v-tip="t('components.setMovementSpeed-property.tip')"
 				:ref="registryRef(fieldEls, 'setMovementSpeed-property')" v-model="form.property" />
-			<div class="text">Base Speed</div>
+			<div class="text">{{ t('components.setMovementSpeed-base.label') }}</div>
 			<NumberVar
 				id="setMovementSpeed-base"
 				v-tip="t('components.setMovementSpeed-base.tip')"
@@ -30,7 +30,7 @@
 				unit="t/s"
 				v-model="form.base"
 			/>
-			<div class="text">Speed Factor</div>
+			<div class="text">{{ t('components.setMovementSpeed-factor.label') }}</div>
 			<NumberVar
 				id="setMovementSpeed-factor"
 				v-tip="t('components.setMovementSpeed-factor.tip')"

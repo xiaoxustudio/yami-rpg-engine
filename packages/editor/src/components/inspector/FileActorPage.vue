@@ -32,15 +32,15 @@
 				@input="onParamInput"
 				@write="onAnimationIdWrite"
 			/>
-			<div class="text">Idle Motion</div>
+			<div class="text">{{ t('components.fileActor-idleMotion.label') }}</div>
 			<SelectBox id="fileActor-idleMotion"
 				v-tip="t('components.fileActor-idleMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-idleMotion')" v-model="form.idleMotion" @input="onParamInput" />
-			<div class="text">Move Motion</div>
+			<div class="text">{{ t('components.fileActor-moveMotion.label') }}</div>
 			<SelectBox id="fileActor-moveMotion"
 				v-tip="t('components.fileActor-moveMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-moveMotion')" v-model="form.moveMotion" @input="onParamInput" />
-			<div class="text">Rotatable</div>
+			<div class="text">{{ t('components.fileActor-rotatable.label') }}</div>
 			<SelectBox
 				id="fileActor-rotatable"
 				v-tip="t('components.fileActor-rotatable.tip')"
@@ -48,7 +48,7 @@
 				v-model="form.rotatable"
 				@input="onParamInput"
 			/>
-			<div class="text">Passage Terrain</div>
+			<div class="text">{{ t('components.fileActor-passage.label') }}</div>
 			<SelectBox
 				id="fileActor-passage"
 				v-tip="t('components.fileActor-passage.tip')"
@@ -56,7 +56,7 @@
 				v-model="form.passage"
 				@input="onParamInput"
 			/>
-			<div class="text">Movement Speed</div>
+			<div class="text">{{ t('components.fileActor-speed.label') }}</div>
 			<NumberBox
 				id="fileActor-speed"
 				v-tip="t('components.fileActor-speed.tip')"
@@ -67,7 +67,7 @@
 				unit="t/s"
 				@input="onParamInput"
 			/>
-			<div class="text">Collision Shape</div>
+			<div class="text">{{ t('components.fileActor-shape.label') }}</div>
 			<SelectBox
 				id="fileActor-shape"
 				v-tip="t('components.fileActor-shape.tip')"
@@ -75,7 +75,7 @@
 				v-model="form.shape"
 				@input="onParamInput"
 			/>
-			<div class="text">Collision Size</div>
+			<div class="text">{{ t('components.fileActor-size.label') }}</div>
 			<NumberBox
 				id="fileActor-size"
 				v-tip="t('components.fileActor-size.tip')"
@@ -87,7 +87,7 @@
 				unit="t"
 				@input="onParamInput"
 			/>
-			<div class="text">Collision Weight</div>
+			<div class="text">{{ t('components.fileActor-weight.label') }}</div>
 			<NumberBox
 				id="fileActor-weight"
 				v-tip="t('components.fileActor-weight.tip')"
@@ -98,7 +98,7 @@
 				decimals="4"
 				@input="onParamInput"
 			/>
-			<div class="text">Immovable</div>
+			<div class="text">{{ t('components.fileActor-immovable.label') }}</div>
 			<SelectBox
 				id="fileActor-immovable"
 				v-tip="t('components.fileActor-immovable.tip')"
@@ -106,7 +106,7 @@
 				v-model="form.immovable"
 				@input="onParamInput"
 			/>
-			<div class="text">Scale</div>
+			<div class="text">{{ t('components.fileActor-scale.label') }}</div>
 			<NumberBox
 				id="fileActor-scale"
 				v-tip="t('components.fileActor-scale.tip')"
@@ -117,7 +117,7 @@
 				decimals="4"
 				@input="onParamInput"
 			/>
-			<div class="text">Priority</div>
+			<div class="text">{{ t('components.fileActor-priority.label') }}</div>
 			<NumberBox
 				id="fileActor-priority"
 				v-tip="t('components.fileActor-priority.tip')"
@@ -127,7 +127,7 @@
 				decimals="4"
 				@input="onParamInput"
 			/>
-			<div class="text">Inherit</div>
+			<div class="text">{{ t('components.fileActor-inherit.label') }}</div>
 			<CustomBox
 				id="fileActor-inherit"
 				v-tip="t('components.fileActor-inherit.tip')"

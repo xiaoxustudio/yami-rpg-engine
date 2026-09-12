@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">Variable</div>
+		<div class="text">{{ t('components.setList-variable.label') }}</div>
 		<CustomBox
 			id="setList-variable"
 				v-tip="t('components.setList-variable.tip')"
@@ -16,11 +16,11 @@
 			filter="object"
 			v-model="form.variable"
 		/>
-		<div class="text">Operation</div>
+		<div class="text">{{ t('components.setList-operation.label') }}</div>
 		<SelectBox id="setList-operation"
 				v-tip="t('components.setList-operation.tip')"
 				:ref="registryRef(fieldEls, 'setList-operation')" v-model="form.operation" />
-		<div class="text">Numbers</div>
+		<div class="text">{{ t('components.setList-numbers.label') }}</div>
 		<CustomBox
 			id="setList-numbers"
 				v-tip="t('components.setList-numbers.tip')"
@@ -30,7 +30,7 @@
 			filter="number"
 			v-model="form.numbers"
 		/>
-		<div class="text">Strings</div>
+		<div class="text">{{ t('components.setList-strings.label') }}</div>
 		<CustomBox
 			id="setList-strings"
 				v-tip="t('components.setList-strings.tip')"
@@ -40,15 +40,15 @@
 			filter="string"
 			v-model="form.strings"
 		/>
-			<div class="text">Index</div>
+			<div class="text">{{ t('components.setList-index.label') }}</div>
 			<NumberVar id="setList-index"
 				v-tip="t('components.setList-index.tip')"
 				:ref="registryRef(fieldEls, 'setList-index')" min="0" max="1000000000" v-model="form.index" />
-			<div class="text">Boolean</div>
+			<div class="text">{{ t('components.setList-boolean.label') }}</div>
 			<SelectBox id="setList-boolean"
 				v-tip="t('components.setList-boolean.tip')"
 				:ref="registryRef(fieldEls, 'setList-boolean')" v-model="form.boolean" />
-			<div class="text">Number</div>
+			<div class="text">{{ t('components.setList-number.label') }}</div>
 			<NumberBox
 				id="setList-number"
 				v-tip="t('components.setList-number.tip')"
@@ -58,11 +58,11 @@
 				decimals="10"
 				v-model="number"
 			/>
-			<div class="text">String</div>
+			<div class="text">{{ t('components.setList-string.label') }}</div>
 			<TextArea id="setList-string"
 				v-tip="t('components.setList-string.tip')"
 				:ref="registryRef(fieldEls, 'setList-string')" v-model="string" />
-		<div class="text">Variable</div>
+		<div class="text">{{ t('components.setList-operand.label') }}</div>
 		<CustomBox
 			id="setList-operand"
 				v-tip="t('components.setList-operand.tip')"
@@ -72,11 +72,11 @@
 			filter="all"
 			v-model="form.operand"
 		/>
-		<div class="text">Separator</div>
+		<div class="text">{{ t('components.setList-separator.label') }}</div>
 		<TextAreaVar id="setList-separator"
 				v-tip="t('components.setList-separator.tip')"
 				:ref="registryRef(fieldEls, 'setList-separator')" v-model="form.separator" />
-		<div class="text">Attribute Group</div>
+		<div class="text">{{ t('components.setList-attribute-groupId.label') }}</div>
 		<CustomBox
 			id="setList-attribute-groupId"
 				v-tip="t('components.setList-attribute-groupId.tip')"
@@ -85,7 +85,7 @@
 			type="attribute-group"
 			v-model="form.attributeGroupId"
 		/>
-		<div class="text">Enum Group</div>
+		<div class="text">{{ t('components.setList-enum-groupId.label') }}</div>
 		<CustomBox
 			id="setList-enum-groupId"
 				v-tip="t('components.setList-enum-groupId.tip')"
@@ -94,7 +94,7 @@
 			type="enum-group"
 			v-model="form.enumGroupId"
 		/>
-		<div class="text">Actor</div>
+		<div class="text">{{ t('components.setList-actor.label') }}</div>
 		<CustomBox id="setList-actor"
 				v-tip="t('components.setList-actor.tip')"
 				:ref="registryRef(fieldEls, 'setList-actor')" type="actor" v-model="form.actor" />

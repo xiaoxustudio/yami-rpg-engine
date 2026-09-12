@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.transferGlobalActor-actor.label') }}</div>
 			<CustomBox id="transferGlobalActor-actor"
 				v-tip="t('components.transferGlobalActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.transferGlobalActor-position.label') }}</div>
 			<CustomBox id="transferGlobalActor-position"
 				v-tip="t('components.transferGlobalActor-position.tip')" type="position" v-model="form.position" />
 		</div>

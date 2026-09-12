@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setWeight-actor.label') }}</div>
 			<CustomBox id="setWeight-actor"
 				v-tip="t('components.setWeight-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Weight</div>
+			<div class="text">{{ t('components.setWeight-weight.label') }}</div>
 			<NumberVar
 				id="setWeight-weight"
 				v-tip="t('components.setWeight-weight.tip')"

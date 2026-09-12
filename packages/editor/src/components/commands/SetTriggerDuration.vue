@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.setTriggerDuration-trigger.label') }}</div>
 			<CustomBox
 			id="setTriggerDuration-trigger"
 				v-tip="t('components.setTriggerDuration-trigger.tip')"
@@ -15,11 +15,11 @@
 			type="trigger"
 			v-model="form.trigger"
 		/>
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setTriggerDuration-operation.label') }}</div>
 			<SelectBox id="setTriggerDuration-operation"
 				v-tip="t('components.setTriggerDuration-operation.tip')"
 				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')" v-model="form.operation" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setTriggerDuration-duration.label') }}</div>
 			<NumberVar
 				id="setTriggerDuration-duration"
 				v-tip="t('components.setTriggerDuration-duration.tip')"

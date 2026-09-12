@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setBoolean-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-variable"
 				v-tip="t('components.setBoolean-variable.tip')"
@@ -16,10 +16,10 @@
 				filter="writable-boolean"
 				v-model="form.variable"
 			/>
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setBoolean-operation.label') }}</div>
 			<SelectBox id="setBoolean-operation"
 				:ref="registryRef(fieldEls, 'setBoolean-operation')" v-model="form.operation" />
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setBoolean-operand-type.label') }}</div>
 			<SelectBox
 				id="setBoolean-operand-type"
 				v-tip="t('components.setBoolean-operand-type.tip')"
@@ -27,11 +27,11 @@
 				v-model="form['operand-type']"
 				@write="onWrite"
 			/>
-			<div class="text">Constant</div>
+			<div class="text">{{ t('components.setBoolean-constant-value.label') }}</div>
 			<SelectBox id="setBoolean-constant-value"
 				v-tip="t('components.setBoolean-constant-value.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-constant-value')" v-model="form['constant-value']" />
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setBoolean-common-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-common-variable"
 				v-tip="t('components.setBoolean-common-variable.tip')"
@@ -41,7 +41,7 @@
 				filter="all"
 				v-model="form['common-variable']"
 			/>
-			<div class="text">Index</div>
+			<div class="text">{{ t('components.setBoolean-list-index.label') }}</div>
 			<NumberVar
 				id="setBoolean-list-index"
 				v-tip="t('components.setBoolean-list-index.tip')"
@@ -50,11 +50,11 @@
 				max="1000000000"
 				v-model="form['list-index']"
 			/>
-			<div class="text">Param Name</div>
+			<div class="text">{{ t('components.setBoolean-parameter-key.label') }}</div>
 			<StringVar id="setBoolean-parameter-key"
 				v-tip="t('components.setBoolean-parameter-key.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')" v-focus v-model="form['parameter-key']" />
-			<div class="text">Script</div>
+			<div class="text">{{ t('components.setBoolean-script.label') }}</div>
 			<TextBox id="setBoolean-script"
 				v-tip="t('components.setBoolean-script.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-script')" v-focus v-model="script" />

@@ -8,11 +8,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setPan-type.label') }}</div>
 			<SelectBox id="setPan-type"
 				v-tip="t('components.setPan-type.tip')"
 				:ref="registryRef(fieldEls, 'setPan-type')" v-focus v-model="form.type" />
-			<div class="text">Pan</div>
+			<div class="text">{{ t('components.setPan-pan.label') }}</div>
 			<NumberVar
 				id="setPan-pan"
 				v-tip="t('components.setPan-pan.tip')"
@@ -22,10 +22,10 @@
 				decimals="4"
 				v-model="form.pan"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setPan-easingId.label') }}</div>
 			<SelectBox id="setPan-easingId"
 				:ref="registryRef(fieldEls, 'setPan-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setPan-duration.label') }}</div>
 			<NumberBox
 				id="setPan-duration"
 				name="duration"
@@ -34,7 +34,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setPan-wait.label') }}</div>
 			<SelectBox id="setPan-wait"
 				:ref="registryRef(fieldEls, 'setPan-wait')" name="wait" v-model="form.wait" />
 		</div>

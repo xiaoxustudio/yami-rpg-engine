@@ -7,17 +7,17 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.followActor-actor.label') }}</div>
 			<CustomBox id="followActor-actor"
 				v-tip="t('components.followActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Target</div>
+			<div class="text">{{ t('components.followActor-target.label') }}</div>
 			<CustomBox id="followActor-target"
 				v-tip="t('components.followActor-target.tip')" type="actor" v-model="form.target" />
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.followActor-mode.label') }}</div>
 			<SelectBox id="followActor-mode"
 				v-tip="t('components.followActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'followActor-mode')" v-model="form.mode" />
-			<div class="text">Min Distance</div>
+			<div class="text">{{ t('components.followActor-minDist.label') }}</div>
 			<NumberVar
 				id="followActor-minDist"
 				v-tip="t('components.followActor-minDist.tip')"
@@ -27,7 +27,7 @@
 				unit="tile"
 				v-model="form.minDist"
 			/>
-			<div class="text">Max Distance</div>
+			<div class="text">{{ t('components.followActor-maxDist.label') }}</div>
 			<NumberVar
 				id="followActor-maxDist"
 				v-tip="t('components.followActor-maxDist.tip')"
@@ -37,7 +37,7 @@
 				unit="tile"
 				v-model="form.maxDist"
 			/>
-			<div class="text">Offset Ratio</div>
+			<div class="text">{{ t('components.followActor-offset.label') }}</div>
 			<NumberBox
 				id="followActor-offset"
 				v-tip="t('components.followActor-offset.tip')"
@@ -48,7 +48,7 @@
 				unit="r"
 				v-model="offset"
 			/>
-			<div class="text">Vert Distance</div>
+			<div class="text">{{ t('components.followActor-vertDist.label') }}</div>
 			<NumberBox
 				id="followActor-vertDist"
 				v-tip="t('components.followActor-vertDist.tip')"
@@ -59,7 +59,7 @@
 				unit="tile"
 				v-model="vertDist"
 			/>
-			<div class="text">Buffer Distance</div>
+			<div class="text">{{ t('components.followActor-bufferDist.label') }}</div>
 			<NumberBox
 				id="followActor-bufferDist"
 				v-tip="t('components.followActor-bufferDist.tip')"
@@ -69,19 +69,19 @@
 				unit="tile"
 				v-model="bufferDist"
 			/>
-			<div class="text">Navigate</div>
+			<div class="text">{{ t('components.followActor-navigate.label') }}</div>
 			<SelectBox id="followActor-navigate"
 				v-tip="t('components.followActor-navigate.tip')"
 				:ref="registryRef(fieldEls, 'followActor-navigate')" v-model="form.navigate" />
-			<div class="text">Bypass Actors</div>
+			<div class="text">{{ t('components.followActor-bypass.label') }}</div>
 			<SelectBox id="followActor-bypass"
 				v-tip="t('components.followActor-bypass.tip')"
 				:ref="registryRef(fieldEls, 'followActor-bypass')" v-model="form.bypass" />
-			<div class="text">Once</div>
+			<div class="text">{{ t('components.followActor-once.label') }}</div>
 			<SelectBox id="followActor-once"
 				v-tip="t('components.followActor-once.tip')"
 				:ref="registryRef(fieldEls, 'followActor-once')" v-model="form.once" />
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.followActor-wait.label') }}</div>
 			<SelectBox id="followActor-wait"
 				:ref="registryRef(fieldEls, 'followActor-wait')" name="wait" v-model="form.wait" />
 		</div>

@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorAnimation-actor.label') }}</div>
 			<CustomBox id="changeActorAnimation-actor"
 				v-tip="t('components.changeActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.changeActorAnimation-animationId.label') }}</div>
 			<CustomBox
 				id="changeActorAnimation-animationId"
 				v-tip="t('components.changeActorAnimation-animationId.tip')"

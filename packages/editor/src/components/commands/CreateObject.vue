@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Object</div>
+			<div class="text">{{ t('components.createObject-presetId.label') }}</div>
 			<CustomBox
 				id="createObject-presetId"
 				v-focus
@@ -15,7 +15,7 @@
 				filter="any"
 				v-model="form.presetId"
 			/>
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.createObject-position.label') }}</div>
 			<CustomBox id="createObject-position" type="position" v-model="form.position" />
 		</div>
 	</WindowFrame>

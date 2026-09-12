@@ -8,11 +8,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.loop-mode.label') }}</div>
 			<SelectBox id="loop-mode"
 				v-tip="t('components.loop-mode.tip')"
 				:ref="registryRef(fieldEls, 'loop-mode')" v-model="form.mode" />
-			<div class="text">Conditions</div>
+			<div class="text">{{ t('components.loop-conditions.label') }}</div>
 			<ParamList id="loop-conditions"
 				:ref="registryRef(fieldEls, 'loop-conditions')" v-focus v-model="form.conditions" />
 		</div>

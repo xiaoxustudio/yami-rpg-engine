@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setNumber-variable.label') }}</div>
 			<CustomBox
 				id="setNumber-variable"
 				v-tip="t('components.setNumber-variable.tip')"
@@ -17,7 +17,7 @@
 				filter="writable-number"
 				v-model="form.variable"
 			/>
-			<div class="text">Expression</div>
+			<div class="text">{{ t('components.setNumber-operands.label') }}</div>
 			<ParamList id="setNumber-operands"
 				:ref="registryRef(fieldEls, 'setNumber-operands')" v-focus v-model="form.operands" />
 		</div>

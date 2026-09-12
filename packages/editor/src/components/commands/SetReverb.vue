@@ -8,11 +8,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setReverb-type.label') }}</div>
 			<SelectBox id="setReverb-type"
 				v-tip="t('components.setReverb-type.tip')"
 				:ref="registryRef(fieldEls, 'setReverb-type')" v-focus v-model="form.type" />
-			<div class="text">Dry</div>
+			<div class="text">{{ t('components.setReverb-dry.label') }}</div>
 			<NumberVar
 				id="setReverb-dry"
 				v-tip="t('components.setReverb-dry.tip')"
@@ -22,7 +22,7 @@
 				decimals="4"
 				v-model="form.dry"
 			/>
-			<div class="text">Wet</div>
+			<div class="text">{{ t('components.setReverb-wet.label') }}</div>
 			<NumberVar
 				id="setReverb-wet"
 				v-tip="t('components.setReverb-wet.tip')"
@@ -32,10 +32,10 @@
 				decimals="4"
 				v-model="form.wet"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setReverb-easingId.label') }}</div>
 			<SelectBox id="setReverb-easingId"
 				:ref="registryRef(fieldEls, 'setReverb-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setReverb-duration.label') }}</div>
 			<NumberBox
 				id="setReverb-duration"
 				name="duration"
@@ -44,7 +44,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setReverb-wait.label') }}</div>
 			<SelectBox id="setReverb-wait"
 				:ref="registryRef(fieldEls, 'setReverb-wait')" name="wait" v-model="form.wait" />
 		</div>

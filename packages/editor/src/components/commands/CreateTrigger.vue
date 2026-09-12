@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.createTrigger-triggerId.label') }}</div>
 			<FileVar
 				id="createTrigger-triggerId"
 				v-tip="t('components.createTrigger-triggerId.tip')"
@@ -16,16 +16,16 @@
 				filter="trigger"
 				v-model="form.triggerId"
 			/>
-			<div class="text">Caster</div>
+			<div class="text">{{ t('components.createTrigger-caster.label') }}</div>
 			<CustomBox id="createTrigger-caster"
 				v-tip="t('components.createTrigger-caster.tip')" type="actor" v-model="form.caster" />
-			<div class="text">Origin</div>
+			<div class="text">{{ t('components.createTrigger-origin.label') }}</div>
 			<CustomBox id="createTrigger-origin"
 				v-tip="t('components.createTrigger-origin.tip')" type="position" v-model="form.origin" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.createTrigger-angle.label') }}</div>
 			<CustomBox id="createTrigger-angle"
 				v-tip="t('components.createTrigger-angle.tip')" type="angle" v-model="form.angle" />
-			<div class="text">Distance</div>
+			<div class="text">{{ t('components.createTrigger-distance.label') }}</div>
 			<NumberVar
 				id="createTrigger-distance"
 				v-tip="t('components.createTrigger-distance.tip')"
@@ -35,7 +35,7 @@
 				unit="tile"
 				v-model="form.distance"
 			/>
-			<div class="text">Scale</div>
+			<div class="text">{{ t('components.createTrigger-scale.label') }}</div>
 			<NumberVar
 				id="createTrigger-scale"
 				v-tip="t('components.createTrigger-scale.tip')"
@@ -45,7 +45,7 @@
 				decimals="4"
 				v-model="form.scale"
 			/>
-			<div class="text">Global Speed</div>
+			<div class="text">{{ t('components.createTrigger-timeScale.label') }}</div>
 			<NumberVar
 				id="createTrigger-timeScale"
 				v-tip="t('components.createTrigger-timeScale.tip')"

@@ -7,38 +7,38 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">Element</div>
+		<div class="text">{{ t('components.loadImage-element.label') }}</div>
 		<CustomBox id="loadImage-element"
 				v-tip="t('components.loadImage-element.tip')" v-focus type="element" v-model="form.element" />
-		<div class="text">Type</div>
+		<div class="text">{{ t('components.loadImage-type.label') }}</div>
 		<SelectBox id="loadImage-type"
 				v-tip="t('components.loadImage-type.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-type')" v-model="form.type" />
-		<div class="text">Actor</div>
+		<div class="text">{{ t('components.loadImage-actor.label') }}</div>
 		<CustomBox id="loadImage-actor"
 				v-tip="t('components.loadImage-actor.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-actor')" type="actor" v-model="form.actor" />
-		<div class="text">Skill</div>
+		<div class="text">{{ t('components.loadImage-skill.label') }}</div>
 		<CustomBox id="loadImage-skill"
 				v-tip="t('components.loadImage-skill.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-skill')" type="skill" v-model="form.skill" />
-		<div class="text">State</div>
+		<div class="text">{{ t('components.loadImage-state.label') }}</div>
 		<CustomBox id="loadImage-state"
 				v-tip="t('components.loadImage-state.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-state')" type="state" v-model="form.state" />
-		<div class="text">Equipment</div>
+		<div class="text">{{ t('components.loadImage-equipment.label') }}</div>
 		<CustomBox id="loadImage-equipment"
 				v-tip="t('components.loadImage-equipment.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-equipment')" type="equipment" v-model="form.equipment" />
-		<div class="text">Item</div>
+		<div class="text">{{ t('components.loadImage-item.label') }}</div>
 		<CustomBox id="loadImage-item"
 				v-tip="t('components.loadImage-item.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-item')" type="item" v-model="form.item" />
-		<div class="text">Shortcut Key</div>
+		<div class="text">{{ t('components.loadImage-key.label') }}</div>
 		<SelectVar id="loadImage-key"
 				v-tip="t('components.loadImage-key.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-key')" v-model="form.key" />
-		<div class="text">Base64 Coding</div>
+		<div class="text">{{ t('components.loadImage-variable.label') }}</div>
 		<CustomBox
 			id="loadImage-variable"
 				v-tip="t('components.loadImage-variable.tip')"

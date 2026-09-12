@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.simulateKey-operation.label') }}</div>
 			<SelectBox id="simulateKey-operation"
 				v-tip="t('components.simulateKey-operation.tip')"
 				:ref="registryRef(fieldEls, 'simulateKey-operation')" v-focus v-model="form.operation" />
-			<div class="text">Key Code</div>
+			<div class="text">{{ t('components.simulateKey-keycode.label') }}</div>
 			<KeyboardBox id="simulateKey-keycode"
 				v-tip="t('components.simulateKey-keycode.tip')" @input="onKeycode" />
 		</div>

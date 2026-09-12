@@ -7,22 +7,22 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">URL</div>
+			<div class="text">{{ t('components.downloadFile-url.label') }}</div>
 			<StringVar id="downloadFile-url"
 				v-tip="t('components.downloadFile-url.tip')" v-focus v-model="form.url" />
-			<div class="text">Header</div>
+			<div class="text">{{ t('components.downloadFile-header.label') }}</div>
 			<ParamList id="downloadFile-header"
 				v-tip="t('components.downloadFile-header.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-header')" v-model="form.header" />
-			<div class="text">Method</div>
+			<div class="text">{{ t('components.downloadFile-method.label') }}</div>
 			<SelectBox id="downloadFile-method"
 				v-tip="t('components.downloadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-method')" v-model="form.method" />
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.downloadFile-data.label') }}</div>
 			<ParamList id="downloadFile-data"
 				v-tip="t('components.downloadFile-data.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-data')" v-model="form.data" />
-			<div class="text">CallBack</div>
+			<div class="text">{{ t('components.downloadFile-callback.label') }}</div>
 			<CustomBox
 				id="downloadFile-callback"
 				v-tip="t('components.downloadFile-callback.tip')"
@@ -30,7 +30,7 @@
 				filter="event"
 				v-model="form.callback"
 			/>
-			<div class="text">RateCallBack</div>
+			<div class="text">{{ t('components.downloadFile-rateCallback.label') }}</div>
 			<CustomBox
 				id="downloadFile-rateCallback"
 				v-tip="t('components.downloadFile-rateCallback.tip')"
@@ -47,7 +47,7 @@
 				v-model="isBackground"
 				@input="onIsBackgroundInput"
 			/>
-			<div class="text">Path</div>
+			<div class="text">{{ t('components.downloadFile-isBackground-path.label') }}</div>
 			<StringVar id="downloadFile-isBackground-path"
 				v-tip="t('components.downloadFile-isBackground-path.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')" v-model="form.isBackgroundPath" />

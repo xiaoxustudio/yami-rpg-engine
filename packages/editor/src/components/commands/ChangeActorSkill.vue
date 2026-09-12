@@ -7,12 +7,12 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorSkill-actor.label') }}</div>
 			<CustomBox id="changeActorSkill-actor" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.changeActorSkill-operation.label') }}</div>
 			<SelectBox id="changeActorSkill-operation"
 				:ref="registryRef(fieldEls, 'changeActorSkill-operation')" v-model="form.operation" />
-			<div class="text">Skill</div>
+			<div class="text">{{ t('components.changeActorSkill-skillId.label') }}</div>
 			<FileVar
 				id="changeActorSkill-skillId"
 				:ref="registryRef(fieldEls, 'changeActorSkill-skillId')"
@@ -21,7 +21,7 @@
 				filter="skill"
 				v-model="form.skillId"
 			/>
-			<div class="text">Skill</div>
+			<div class="text">{{ t('components.changeActorSkill-skill.label') }}</div>
 			<CustomBox id="changeActorSkill-skill"
 				:ref="registryRef(fieldEls, 'changeActorSkill-skill')" type="skill" v-model="form.skill" />
 		</div>

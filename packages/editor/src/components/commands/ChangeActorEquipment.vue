@@ -7,18 +7,18 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorEquipment-actor.label') }}</div>
 			<CustomBox id="changeActorEquipment-actor"
 				v-tip="t('components.changeActorEquipment-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.changeActorEquipment-operation.label') }}</div>
 			<SelectBox id="changeActorEquipment-operation"
 				v-tip="t('components.changeActorEquipment-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')" v-model="form.operation" />
-			<div class="text">Shortcut Key</div>
+			<div class="text">{{ t('components.changeActorEquipment-slot.label') }}</div>
 			<SelectVar id="changeActorEquipment-slot"
 				v-tip="t('components.changeActorEquipment-slot.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')" v-focus v-model="form.slot" />
-			<div class="text">Equipment</div>
+			<div class="text">{{ t('components.changeActorEquipment-equipmentId.label') }}</div>
 			<CustomBox
 				id="changeActorEquipment-equipmentId"
 				v-tip="t('components.changeActorEquipment-equipmentId.tip')"
@@ -28,7 +28,7 @@
 				filter="equipment"
 				v-model="form.equipmentId"
 			/>
-			<div class="text">Equipment</div>
+			<div class="text">{{ t('components.changeActorEquipment-equipment.label') }}</div>
 			<CustomBox
 				id="changeActorEquipment-equipment"
 				v-tip="t('components.changeActorEquipment-equipment.tip')"

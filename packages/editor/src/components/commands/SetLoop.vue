@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setLoop-type.label') }}</div>
 			<SelectBox id="setLoop-type"
 				v-tip="t('components.setLoop-type.tip')"
 				:ref="registryRef(fieldEls, 'setLoop-type')" v-focus v-model="form.type" />
-			<div class="text">Loop</div>
+			<div class="text">{{ t('components.setLoop-loop.label') }}</div>
 			<SelectBox id="setLoop-loop"
 				v-tip="t('components.setLoop-loop.tip')"
 				:ref="registryRef(fieldEls, 'setLoop-loop')" v-model="form.loop" />

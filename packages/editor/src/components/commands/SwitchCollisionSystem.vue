@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.switchCollisionSystem-operation.label') }}</div>
 			<SelectBox id="switchCollisionSystem-operation"
 				v-tip="t('components.switchCollisionSystem-operation.tip')"
 				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')" v-focus v-model="form.operation" />

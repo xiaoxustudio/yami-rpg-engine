@@ -8,27 +8,27 @@
 		></template>
 
 		<div class="grid-box" id="setObjectAnimation-grid-box">
-			<div class="text">Sort</div>
+			<div class="text">{{ t('components.setObjectAnimation-sort.label') }}</div>
 			<SelectBox id="setObjectAnimation-sort"
 				v-tip="t('components.setObjectAnimation-sort.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')" v-focus v-model="form.sort" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setObjectAnimation-actor.label') }}</div>
 			<CustomBox id="setObjectAnimation-actor"
 				v-tip="t('components.setObjectAnimation-actor.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.setObjectAnimation-trigger.label') }}</div>
 			<CustomBox id="setObjectAnimation-trigger"
 				v-tip="t('components.setObjectAnimation-trigger.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')" type="trigger" v-model="form.trigger" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.setObjectAnimation-animation.label') }}</div>
 			<CustomBox id="setObjectAnimation-animation"
 				v-tip="t('components.setObjectAnimation-animation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')" type="object" v-model="form.animation" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setObjectAnimation-operation.label') }}</div>
 			<SelectBox id="setObjectAnimation-operation"
 				v-tip="t('components.setObjectAnimation-operation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')" v-model="form.operation" />
-			<div class="text">Tint - Red</div>
+			<div class="text">{{ t('components.setObjectAnimation-tint-0.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-tint-0"
 				v-tip="t('components.setObjectAnimation-tint-0.tip')"
@@ -38,7 +38,7 @@
 				step="5"
 				v-model="tint0"
 			/>
-			<div class="text">Tint - Green</div>
+			<div class="text">{{ t('components.setObjectAnimation-tint-1.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-tint-1"
 				v-tip="t('components.setObjectAnimation-tint-1.tip')"
@@ -48,7 +48,7 @@
 				step="5"
 				v-model="tint1"
 			/>
-			<div class="text">Tint - Blue</div>
+			<div class="text">{{ t('components.setObjectAnimation-tint-2.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-tint-2"
 				v-tip="t('components.setObjectAnimation-tint-2.tip')"
@@ -58,7 +58,7 @@
 				step="5"
 				v-model="tint2"
 			/>
-			<div class="text">Tint - Grayscale</div>
+			<div class="text">{{ t('components.setObjectAnimation-tint-3.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-tint-3"
 				v-tip="t('components.setObjectAnimation-tint-3.tip')"
@@ -68,7 +68,7 @@
 				step="5"
 				v-model="tint3"
 			/>
-			<div class="text">Opacity</div>
+			<div class="text">{{ t('components.setObjectAnimation-opacity.label') }}</div>
 			<NumberVar
 				id="setObjectAnimation-opacity"
 				v-tip="t('components.setObjectAnimation-opacity.tip')"
@@ -79,7 +79,7 @@
 				decimals="4"
 				v-model="form.opacity"
 			/>
-			<div class="text">OffsetY</div>
+			<div class="text">{{ t('components.setObjectAnimation-offsetY.label') }}</div>
 			<NumberVar
 				id="setObjectAnimation-offsetY"
 				v-tip="t('components.setObjectAnimation-offsetY.tip')"
@@ -90,7 +90,7 @@
 				decimals="4"
 				v-model="form.offsetY"
 			/>
-			<div class="text">Rotation</div>
+			<div class="text">{{ t('components.setObjectAnimation-rotation.label') }}</div>
 			<NumberVar
 				id="setObjectAnimation-rotation"
 				v-tip="t('components.setObjectAnimation-rotation.tip')"
@@ -101,10 +101,10 @@
 				decimals="4"
 				v-model="form.rotation"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setObjectAnimation-easingId.label') }}</div>
 			<SelectBox id="setObjectAnimation-easingId"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setObjectAnimation-duration.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-duration"
 				name="duration"
@@ -113,7 +113,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setObjectAnimation-wait.label') }}</div>
 			<SelectBox id="setObjectAnimation-wait"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>

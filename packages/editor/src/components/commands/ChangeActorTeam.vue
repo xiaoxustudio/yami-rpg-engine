@@ -8,10 +8,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorTeam-actor.label') }}</div>
 			<CustomBox id="changeActorTeam-actor"
 				v-tip="t('components.changeActorTeam-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Team</div>
+			<div class="text">{{ t('components.changeActorTeam-teamId.label') }}</div>
 			<SelectBox id="changeActorTeam-teamId"
 				v-tip="t('components.changeActorTeam-teamId.tip')"
 				:ref="registryRef(fieldEls, 'changeActorTeam-teamId')" v-model="form.teamId" />

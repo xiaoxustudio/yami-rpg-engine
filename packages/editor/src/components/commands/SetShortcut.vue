@@ -7,25 +7,25 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setShortcut-actor.label') }}</div>
 			<CustomBox id="setShortcut-actor"
 				v-tip="t('components.setShortcut-actor.tip')" type="actor" v-model="form.actor" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.setShortcut-operation.label') }}</div>
 			<SelectBox id="setShortcut-operation"
 				v-tip="t('components.setShortcut-operation.tip')"
 				:ref="registryRef(fieldEls, 'setShortcut-operation')" v-focus v-model="form.operation" />
-			<div class="text">Shortcut Key</div>
+			<div class="text">{{ t('components.setShortcut-key.label') }}</div>
 			<SelectVar id="setShortcut-key"
 				v-tip="t('components.setShortcut-key.tip')" v-focus v-model="form.key" />
-			<div class="text">Shortcut Key 2</div>
+			<div class="text">{{ t('components.setShortcut-key2.label') }}</div>
 			<SelectVar id="setShortcut-key2"
 				v-tip="t('components.setShortcut-key2.tip')"
 				:ref="registryRef(fieldEls, 'setShortcut-key2')" v-model="form.key2" />
-			<div class="text">Item</div>
+			<div class="text">{{ t('components.setShortcut-itemId.label') }}</div>
 			<FileVar id="setShortcut-itemId"
 				v-tip="t('components.setShortcut-itemId.tip')"
 				:ref="registryRef(fieldEls, 'setShortcut-itemId')" v-focus type="file" filter="item" v-model="form.itemId" />
-			<div class="text">Skill</div>
+			<div class="text">{{ t('components.setShortcut-skillId.label') }}</div>
 			<FileVar id="setShortcut-skillId"
 				v-tip="t('components.setShortcut-skillId.tip')"
 				:ref="registryRef(fieldEls, 'setShortcut-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />

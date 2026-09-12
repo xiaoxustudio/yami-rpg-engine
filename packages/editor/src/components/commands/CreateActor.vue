@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.createActor-actorId.label') }}</div>
 			<CustomBox
 				id="createActor-actorId"
 				v-tip="t('components.createActor-actorId.tip')"
@@ -17,14 +17,14 @@
 				filter="actor"
 				v-model="form.actorId"
 			/>
-			<div class="text">Team</div>
+			<div class="text">{{ t('components.createActor-teamId.label') }}</div>
 			<SelectBox id="createActor-teamId"
 				v-tip="t('components.createActor-teamId.tip')"
 				:ref="registryRef(fieldEls, 'createActor-teamId')" v-model="form.teamId" />
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.createActor-position.label') }}</div>
 			<CustomBox id="createActor-position"
 				v-tip="t('components.createActor-position.tip')" type="position" v-model="form.position" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.createActor-angle.label') }}</div>
 			<NumberVar
 				id="createActor-angle"
 				v-tip="t('components.createActor-angle.tip')"

@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.moveActor-actor.label') }}</div>
 			<CustomBox id="moveActor-actor"
 				v-tip="t('components.moveActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.moveActor-mode.label') }}</div>
 			<SelectBox id="moveActor-mode"
 				v-tip="t('components.moveActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-mode')" v-model="form.mode" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.moveActor-angle.label') }}</div>
 			<NumberVar
 				id="moveActor-angle"
 				v-tip="t('components.moveActor-angle.tip')"
@@ -25,11 +25,11 @@
 				unit="deg"
 				v-model="form.angle"
 			/>
-			<div class="text">Destination</div>
+			<div class="text">{{ t('components.moveActor-destination.label') }}</div>
 			<CustomBox id="moveActor-destination"
 				v-tip="t('components.moveActor-destination.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-destination')" type="position" v-model="form.destination" />
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.moveActor-wait.label') }}</div>
 			<SelectBox id="moveActor-wait"
 				:ref="registryRef(fieldEls, 'moveActor-wait')" name="wait" v-model="form.wait" />
 		</div>

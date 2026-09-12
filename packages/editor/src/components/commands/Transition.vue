@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Write to Variable</div>
+			<div class="text">{{ t('components.transition-variable.label') }}</div>
 			<CustomBox
 				id="transition-variable"
 				v-tip="t('components.transition-variable.tip')"
@@ -17,7 +17,7 @@
 				filter="number"
 				v-model="form.variable"
 			/>
-			<div class="text">Start Value</div>
+			<div class="text">{{ t('components.transition-start.label') }}</div>
 			<NumberVar
 				id="transition-start"
 				v-tip="t('components.transition-start.tip')"
@@ -26,7 +26,7 @@
 				decimals="10"
 				v-model="form.start"
 			/>
-			<div class="text">End Value</div>
+			<div class="text">{{ t('components.transition-end.label') }}</div>
 			<NumberVar
 				id="transition-end"
 				v-tip="t('components.transition-end.tip')"
@@ -35,9 +35,9 @@
 				decimals="10"
 				v-model="form.end"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.transition-easingId.label') }}</div>
 			<SelectBox id="transition-easingId" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.transition-duration.label') }}</div>
 			<NumberVar
 				id="transition-duration"
 				v-focus

@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.createGlobalActor-actorId.label') }}</div>
 			<CustomBox
 				id="createGlobalActor-actorId"
 				v-tip="t('components.createGlobalActor-actorId.tip')"
@@ -17,7 +17,7 @@
 				filter="actor"
 				v-model="form.actorId"
 			/>
-			<div class="text">Team</div>
+			<div class="text">{{ t('components.createGlobalActor-teamId.label') }}</div>
 			<SelectBox id="createGlobalActor-teamId"
 				v-tip="t('components.createGlobalActor-teamId.tip')"
 				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')" v-model="form.teamId" />

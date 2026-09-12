@@ -8,14 +8,14 @@
 		></template>
 
 		<div class="grid-box" id="tintImage-grid-box">
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.tintImage-element.label') }}</div>
 			<CustomBox id="tintImage-element"
 				v-tip="t('components.tintImage-element.tip')" v-focus type="element" v-model="form.element" />
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.tintImage-mode.label') }}</div>
 			<SelectBox id="tintImage-mode"
 				v-tip="t('components.tintImage-mode.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-mode')" v-model="form.mode" />
-			<div class="text">Tint - Red</div>
+			<div class="text">{{ t('components.tintImage-tint-0.label') }}</div>
 			<NumberBox
 				id="tintImage-tint-0"
 				v-tip="t('components.tintImage-tint-0.tip')"
@@ -25,7 +25,7 @@
 				step="5"
 				v-model="tint0"
 			/>
-			<div class="text">Tint - Green</div>
+			<div class="text">{{ t('components.tintImage-tint-1.label') }}</div>
 			<NumberBox
 				id="tintImage-tint-1"
 				v-tip="t('components.tintImage-tint-1.tip')"
@@ -35,7 +35,7 @@
 				step="5"
 				v-model="tint1"
 			/>
-			<div class="text">Tint - Blue</div>
+			<div class="text">{{ t('components.tintImage-tint-2.label') }}</div>
 			<NumberBox
 				id="tintImage-tint-2"
 				v-tip="t('components.tintImage-tint-2.tip')"
@@ -45,14 +45,14 @@
 				step="5"
 				v-model="tint2"
 			/>
-			<div class="text">Tint - Grayscale</div>
+			<div class="text">{{ t('components.tintImage-tint-3.label') }}</div>
 			<NumberBox id="tintImage-tint-3"
 				v-tip="t('components.tintImage-tint-3.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-tint-3')" min="0" max="255" step="5" v-model="tint3" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.tintImage-easingId.label') }}</div>
 			<SelectBox id="tintImage-easingId"
 				:ref="registryRef(fieldEls, 'tintImage-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.tintImage-duration.label') }}</div>
 			<NumberBox
 				id="tintImage-duration"
 				name="duration"
@@ -61,7 +61,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.tintImage-wait.label') }}</div>
 			<SelectBox id="tintImage-wait"
 				:ref="registryRef(fieldEls, 'tintImage-wait')" name="wait" v-model="form.wait" />
 		</div>

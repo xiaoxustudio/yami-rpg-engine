@@ -7,19 +7,19 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.playAnimation-mode.label') }}</div>
 			<SelectBox id="playAnimation-mode"
 				v-tip="t('components.playAnimation-mode.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-mode')" v-focus v-model="form.mode" />
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.playAnimation-position.label') }}</div>
 			<CustomBox id="playAnimation-position"
 				v-tip="t('components.playAnimation-position.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-position')" type="position" v-model="form.position" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.playAnimation-actor.label') }}</div>
 			<CustomBox id="playAnimation-actor"
 				v-tip="t('components.playAnimation-actor.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.playAnimation-animationId.label') }}</div>
 			<CustomBox
 				id="playAnimation-animationId"
 				v-tip="t('components.playAnimation-animationId.tip')"
@@ -30,17 +30,17 @@
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.playAnimation-motion.label') }}</div>
 			<SelectBox id="playAnimation-motion"
 				v-tip="t('components.playAnimation-motion.tip')" v-focus v-model="form.motion" />
-			<div class="text">Rotatable</div>
+			<div class="text">{{ t('components.playAnimation-rotatable.label') }}</div>
 			<SelectBox id="playAnimation-rotatable"
 				v-tip="t('components.playAnimation-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-rotatable')" v-model="form.rotatable" />
-			<div class="text">Priority</div>
+			<div class="text">{{ t('components.playAnimation-priority.label') }}</div>
 			<NumberBox id="playAnimation-priority"
 				v-tip="t('components.playAnimation-priority.tip')" min="-100" max="100" v-model="priority" />
-			<div class="text">Offset Y</div>
+			<div class="text">{{ t('components.playAnimation-offsetY.label') }}</div>
 			<NumberVar
 				id="playAnimation-offsetY"
 				v-tip="t('components.playAnimation-offsetY.tip')"
@@ -49,7 +49,7 @@
 				unit="px"
 				v-model="form.offsetY"
 			/>
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.playAnimation-angle.label') }}</div>
 			<NumberVar
 				id="playAnimation-angle"
 				v-tip="t('components.playAnimation-angle.tip')"
@@ -59,7 +59,7 @@
 				unit="deg"
 				v-model="form.angle"
 			/>
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.playAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playAnimation-speed"
 				v-tip="t('components.playAnimation-speed.tip')"
@@ -69,7 +69,7 @@
 				decimals="4"
 				v-model="form.speed"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.playAnimation-wait.label') }}</div>
 			<SelectBox id="playAnimation-wait"
 				:ref="registryRef(fieldEls, 'playAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>

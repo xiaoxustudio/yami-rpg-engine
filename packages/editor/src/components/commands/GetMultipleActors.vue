@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Write to List</div>
+			<div class="text">{{ t('components.getMultipleActors-variable.label') }}</div>
 			<CustomBox
 				id="getMultipleActors-variable"
 				v-tip="t('components.getMultipleActors-variable.tip')"
@@ -17,14 +17,14 @@
 				filter="object"
 				v-model="form.variable"
 			/>
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.getMultipleActors-position.label') }}</div>
 			<CustomBox id="getMultipleActors-position"
 				v-tip="t('components.getMultipleActors-position.tip')" type="position" v-model="form.position" />
-			<div class="text">Area</div>
+			<div class="text">{{ t('components.getMultipleActors-area.label') }}</div>
 			<SelectBox id="getMultipleActors-area"
 				v-tip="t('components.getMultipleActors-area.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-area')" v-model="form.area" />
-			<div class="text">Width</div>
+			<div class="text">{{ t('components.getMultipleActors-width.label') }}</div>
 			<NumberVar
 				id="getMultipleActors-width"
 				v-tip="t('components.getMultipleActors-width.tip')"
@@ -35,7 +35,7 @@
 				unit="tile"
 				v-model="form.width"
 			/>
-			<div class="text">Height</div>
+			<div class="text">{{ t('components.getMultipleActors-height.label') }}</div>
 			<NumberVar
 				id="getMultipleActors-height"
 				v-tip="t('components.getMultipleActors-height.tip')"
@@ -46,7 +46,7 @@
 				unit="tile"
 				v-model="form.height"
 			/>
-			<div class="text">Radius</div>
+			<div class="text">{{ t('components.getMultipleActors-radius.label') }}</div>
 			<NumberVar
 				id="getMultipleActors-radius"
 				v-tip="t('components.getMultipleActors-radius.tip')"
@@ -57,15 +57,15 @@
 				unit="tile"
 				v-model="form.radius"
 			/>
-			<div class="text">Selector</div>
+			<div class="text">{{ t('components.getMultipleActors-selector.label') }}</div>
 			<SelectBox id="getMultipleActors-selector"
 				v-tip="t('components.getMultipleActors-selector.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-selector')" v-model="form.selector" />
-			<div class="text">Team</div>
+			<div class="text">{{ t('components.getMultipleActors-teamId.label') }}</div>
 			<SelectVar id="getMultipleActors-teamId"
 				v-tip="t('components.getMultipleActors-teamId.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-teamId')" v-model="form.teamId" />
-			<div class="text">Activation</div>
+			<div class="text">{{ t('components.getMultipleActors-activation.label') }}</div>
 			<SelectBox id="getMultipleActors-activation"
 				v-tip="t('components.getMultipleActors-activation.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-activation')" v-model="form.activation" />

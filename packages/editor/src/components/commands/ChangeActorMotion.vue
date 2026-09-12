@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorMotion-actor.label') }}</div>
 			<CustomBox id="changeActorMotion-actor"
 				v-tip="t('components.changeActorMotion-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.changeActorMotion-type.label') }}</div>
 			<SelectBox id="changeActorMotion-type"
 				v-tip="t('components.changeActorMotion-type.tip')"
 				:ref="registryRef(fieldEls, 'changeActorMotion-type')" v-model="form.type" />
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.changeActorMotion-motion.label') }}</div>
 			<CustomBox id="changeActorMotion-motion"
 				v-tip="t('components.changeActorMotion-motion.tip')" type="enum-string" v-model="form.motion" />
 		</div>

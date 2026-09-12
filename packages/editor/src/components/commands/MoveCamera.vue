@@ -8,22 +8,22 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.moveCamera-mode.label') }}</div>
 			<SelectBox id="moveCamera-mode"
 				v-tip="t('components.moveCamera-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-mode')" v-focus v-model="form.mode" />
-			<div class="text">Position</div>
+			<div class="text">{{ t('components.moveCamera-position.label') }}</div>
 			<CustomBox id="moveCamera-position"
 				v-tip="t('components.moveCamera-position.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-position')" type="position" v-model="form.position" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.moveCamera-actor.label') }}</div>
 			<CustomBox id="moveCamera-actor"
 				v-tip="t('components.moveCamera-actor.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.moveCamera-easingId.label') }}</div>
 			<SelectBox id="moveCamera-easingId"
 				:ref="registryRef(fieldEls, 'moveCamera-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.moveCamera-duration.label') }}</div>
 			<NumberBox
 				id="moveCamera-duration"
 				name="duration"
@@ -32,7 +32,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.moveCamera-wait.label') }}</div>
 			<SelectBox id="moveCamera-wait"
 				:ref="registryRef(fieldEls, 'moveCamera-wait')" name="wait" v-model="form.wait" />
 		</div>

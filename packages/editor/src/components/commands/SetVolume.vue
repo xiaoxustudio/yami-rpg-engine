@@ -8,11 +8,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setVolume-type.label') }}</div>
 			<SelectBox id="setVolume-type"
 				v-tip="t('components.setVolume-type.tip')"
 				:ref="registryRef(fieldEls, 'setVolume-type')" v-focus v-model="form.type" />
-			<div class="text">Volume</div>
+			<div class="text">{{ t('components.setVolume-volume.label') }}</div>
 			<NumberVar
 				id="setVolume-volume"
 				v-tip="t('components.setVolume-volume.tip')"
@@ -22,10 +22,10 @@
 				decimals="4"
 				v-model="form.volume"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setVolume-easingId.label') }}</div>
 			<SelectBox id="setVolume-easingId"
 				:ref="registryRef(fieldEls, 'setVolume-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setVolume-duration.label') }}</div>
 			<NumberBox
 				id="setVolume-duration"
 				name="duration"
@@ -34,7 +34,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setVolume-wait.label') }}</div>
 			<SelectBox id="setVolume-wait"
 				:ref="registryRef(fieldEls, 'setVolume-wait')" name="wait" v-model="form.wait" />
 		</div>

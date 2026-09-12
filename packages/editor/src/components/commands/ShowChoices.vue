@@ -8,11 +8,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Choices</div>
+			<div class="text">{{ t('components.showChoices-choices.label') }}</div>
 			<ParamList id="showChoices-choices"
 				v-tip="t('components.showChoices-choices.tip')"
 				:ref="registryRef(fieldEls, 'showChoices-choices')" v-focus v-model="form.choices" />
-			<div class="text">Parameters</div>
+			<div class="text">{{ t('components.showChoices-parameters.label') }}</div>
 			<TextBox id="showChoices-parameters"
 				v-tip="t('components.showChoices-parameters.tip')" v-model="form.parameters" />
 		</div>

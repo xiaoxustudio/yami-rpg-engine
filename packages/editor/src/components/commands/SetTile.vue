@@ -7,16 +7,16 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Tilemap</div>
+			<div class="text">{{ t('components.setTile-tilemap.label') }}</div>
 			<CustomBox id="setTile-tilemap"
 				v-tip="t('components.setTile-tilemap.tip')" v-focus type="tilemap" v-model="form.tilemap" />
-			<div class="text">Tilemap X</div>
+			<div class="text">{{ t('components.setTile-tilemapX.label') }}</div>
 			<NumberVar id="setTile-tilemapX"
 				v-tip="t('components.setTile-tilemapX.tip')" min="0" max="511" v-model="form.tilemapX" />
-			<div class="text">Tilemap Y</div>
+			<div class="text">{{ t('components.setTile-tilemapY.label') }}</div>
 			<NumberVar id="setTile-tilemapY"
 				v-tip="t('components.setTile-tilemapY.tip')" min="0" max="511" v-model="form.tilemapY" />
-			<div class="text">Tileset</div>
+			<div class="text">{{ t('components.setTile-tilesetId.label') }}</div>
 			<CustomBox
 				id="setTile-tilesetId"
 				v-tip="t('components.setTile-tilesetId.tip')"
@@ -25,10 +25,10 @@
 				filter="tileset"
 				v-model="form.tilesetId"
 			/>
-			<div class="text">Tileset X</div>
+			<div class="text">{{ t('components.setTile-tilesetX.label') }}</div>
 			<NumberVar id="setTile-tilesetX"
 				v-tip="t('components.setTile-tilesetX.tip')" min="0" max="255" v-model="form.tilesetX" />
-			<div class="text">Tileset Y</div>
+			<div class="text">{{ t('components.setTile-tilesetY.label') }}</div>
 			<NumberVar id="setTile-tilesetY"
 				v-tip="t('components.setTile-tilesetY.tip')" min="0" max="255" v-model="form.tilesetY" />
 		</div>

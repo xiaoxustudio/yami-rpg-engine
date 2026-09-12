@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeActorPortrait-actor.label') }}</div>
 			<CustomBox id="changeActorPortrait-actor"
 				v-tip="t('components.changeActorPortrait-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Mode</div>
+			<div class="text">{{ t('components.changeActorPortrait-mode.label') }}</div>
 			<SelectBox id="changeActorPortrait-mode"
 				v-tip="t('components.changeActorPortrait-mode.tip')"
 				:ref="registryRef(fieldEls, 'changeActorPortrait-mode')" v-model="form.mode" />
-			<div class="text">Portrait</div>
+			<div class="text">{{ t('components.changeActorPortrait-portrait.label') }}</div>
 			<CustomBox
 				id="changeActorPortrait-portrait"
 				v-tip="t('components.changeActorPortrait-portrait.tip')"
@@ -23,7 +23,7 @@
 				filter="image"
 				v-model="form.portrait"
 			/>
-			<div class="text">Clip</div>
+			<div class="text">{{ t('components.changeActorPortrait-clip.label') }}</div>
 			<CustomBox
 				id="changeActorPortrait-clip"
 				v-tip="t('components.changeActorPortrait-clip.tip')"

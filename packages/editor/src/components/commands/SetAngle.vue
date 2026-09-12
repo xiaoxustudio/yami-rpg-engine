@@ -8,16 +8,16 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.setAngle-actor.label') }}</div>
 			<CustomBox id="setAngle-actor"
 				v-tip="t('components.setAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.setAngle-angle.label') }}</div>
 			<CustomBox id="setAngle-angle"
 				v-tip="t('components.setAngle-angle.tip')" type="angle" v-model="form.angle" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setAngle-easingId.label') }}</div>
 			<SelectBox id="setAngle-easingId"
 				:ref="registryRef(fieldEls, 'setAngle-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setAngle-duration.label') }}</div>
 			<NumberVar
 				id="setAngle-duration"
 				name="duration"
@@ -26,7 +26,7 @@
 				unit="ms"
 				v-model="form.duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setAngle-wait.label') }}</div>
 			<SelectBox id="setAngle-wait"
 				:ref="registryRef(fieldEls, 'setAngle-wait')" name="wait" v-model="form.wait" />
 		</div>

@@ -7,16 +7,16 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">URL</div>
+			<div class="text">{{ t('components.webSocketConnect-url.label') }}</div>
 			<StringVar id="webSocketConnect-url"
 				v-tip="t('components.webSocketConnect-url.tip')" v-focus v-model="form.url" />
-			<div class="text">ID</div>
+			<div class="text">{{ t('components.webSocketConnect-id.label') }}</div>
 			<StringVar id="webSocketConnect-id"
 				v-tip="t('components.webSocketConnect-id.tip')" v-model="form.id" />
-			<div class="text">Protocols</div>
+			<div class="text">{{ t('components.webSocketConnect-protocols.label') }}</div>
 			<StringVar id="webSocketConnect-protocols"
 				v-tip="t('components.webSocketConnect-protocols.tip')" v-model="form.protocols" />
-			<div class="text">OnOpen</div>
+			<div class="text">{{ t('components.webSocketConnect-onOpen.label') }}</div>
 			<CustomBox
 				id="webSocketConnect-onOpen"
 				v-tip="t('components.webSocketConnect-onOpen.tip')"
@@ -24,7 +24,7 @@
 				filter="event"
 				v-model="form.onOpen"
 			/>
-			<div class="text">OnMessage</div>
+			<div class="text">{{ t('components.webSocketConnect-onMessage.label') }}</div>
 			<CustomBox
 				id="webSocketConnect-onMessage"
 				v-tip="t('components.webSocketConnect-onMessage.tip')"
@@ -32,7 +32,7 @@
 				filter="event"
 				v-model="form.onMessage"
 			/>
-			<div class="text">OnError</div>
+			<div class="text">{{ t('components.webSocketConnect-onError.label') }}</div>
 			<CustomBox
 				id="webSocketConnect-onError"
 				v-tip="t('components.webSocketConnect-onError.tip')"
@@ -40,7 +40,7 @@
 				filter="event"
 				v-model="form.onError"
 			/>
-			<div class="text">OnClose</div>
+			<div class="text">{{ t('components.webSocketConnect-onClose.label') }}</div>
 			<CustomBox
 				id="webSocketConnect-onClose"
 				v-tip="t('components.webSocketConnect-onClose.tip')"

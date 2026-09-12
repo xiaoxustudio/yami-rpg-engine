@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Branches</div>
+			<div class="text">{{ t('components.if-branches.label') }}</div>
 			<ParamList id="if-branches"
 				:ref="registryRef(fieldEls, 'if-branches')" v-focus v-model="form.branches" />
 		</div>

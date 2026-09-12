@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.setTriggerSpeed-trigger.label') }}</div>
 			<CustomBox id="setTriggerSpeed-trigger"
 				v-tip="t('components.setTriggerSpeed-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.setTriggerSpeed-speed.label') }}</div>
 			<NumberVar
 				id="setTriggerSpeed-speed"
 				v-tip="t('components.setTriggerSpeed-speed.tip')"

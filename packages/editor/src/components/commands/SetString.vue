@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">Variable</div>
+		<div class="text">{{ t('components.setString-variable.label') }}</div>
 		<CustomBox
 			id="setString-variable"
 			v-focus
@@ -15,26 +15,26 @@
 			filter="writable-string"
 			v-model="form.variable"
 		/>
-		<div class="text">Operation</div>
+		<div class="text">{{ t('components.setString-operation.label') }}</div>
 			<SelectBox id="setString-operation"
 				v-tip="t('components.setString-operation.tip')"
 				:ref="registryRef(fieldEls, 'setString-operation')" v-model="form.operation" />
-			<div class="text">Type</div>
+			<div class="text">{{ t('components.setString-operand-type.label') }}</div>
 			<SelectBox id="setString-operand-type"
 				v-tip="t('components.setString-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-type')" v-model="form.operandType" @write="onWrite" />
-			<div class="text">String</div>
+			<div class="text">{{ t('components.setString-operand-common-value.label') }}</div>
 			<TextArea
 				id="setString-operand-common-value"
 				:ref="registryRef(fieldEls, 'setString-operand-common-value')"
 				menu="tag-local-var tag-global-var tag-localization"
 				v-model="commonValue"
 			/>
-			<div class="text">String Method</div>
+			<div class="text">{{ t('components.setString-operand-string-method.label') }}</div>
 			<SelectBox id="setString-operand-string-method"
 				v-tip="t('components.setString-operand-string-method.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-method')" v-model="form.stringMethod" />
-			<div class="text">Variable</div>
+			<div class="text">{{ t('components.setString-operand-common-variable.label') }}</div>
 		<CustomBox
 			id="setString-operand-common-variable"
 				v-tip="t('components.setString-operand-common-variable.tip')"
@@ -44,7 +44,7 @@
 			filter="all"
 			v-model="form.commonVariable"
 		/>
-			<div class="text">Index</div>
+			<div class="text">{{ t('components.setString-operand-string-char-index.label') }}</div>
 			<NumberVar
 				id="setString-operand-string-char-index"
 				v-tip="t('components.setString-operand-string-char-index.tip')"
@@ -53,7 +53,7 @@
 				max="1000000000"
 				v-model="form.stringCharIndex"
 			/>
-			<div class="text">Begin Index</div>
+			<div class="text">{{ t('components.setString-operand-string-slice-begin.label') }}</div>
 			<NumberVar
 				id="setString-operand-string-slice-begin"
 				v-tip="t('components.setString-operand-string-slice-begin.tip')"
@@ -62,7 +62,7 @@
 				max="1000000000"
 				v-model="form.stringSliceBegin"
 			/>
-			<div class="text">End Index</div>
+			<div class="text">{{ t('components.setString-operand-string-slice-end.label') }}</div>
 			<NumberVar
 				id="setString-operand-string-slice-end"
 				v-tip="t('components.setString-operand-string-slice-end.tip')"
@@ -71,7 +71,7 @@
 				max="1000000000"
 				v-model="form.stringSliceEnd"
 			/>
-			<div class="text">Target Length</div>
+			<div class="text">{{ t('components.setString-operand-string-pad-start-length.label') }}</div>
 			<NumberBox
 				id="setString-operand-string-pad-start-length"
 				v-tip="t('components.setString-operand-string-pad-start-length.tip')"
@@ -80,11 +80,11 @@
 				max="10"
 				v-model="stringPadStartLength"
 			/>
-			<div class="text">Pad String</div>
+			<div class="text">{{ t('components.setString-operand-string-pad-start-pad.label') }}</div>
 			<TextBox id="setString-operand-string-pad-start-pad"
 				v-tip="t('components.setString-operand-string-pad-start-pad.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')" v-model="stringPadStartPad" />
-			<div class="text">Substring</div>
+			<div class="text">{{ t('components.setString-operand-string-replace-pattern.label') }}</div>
 			<StringVar
 				id="setString-operand-string-replace-pattern"
 				v-tip="t('components.setString-operand-string-replace-pattern.tip')"
@@ -92,14 +92,14 @@
 				v-focus
 				v-model="form.stringReplacePattern"
 			/>
-			<div class="text">Replacement</div>
+			<div class="text">{{ t('components.setString-operand-string-replace-replacement.label') }}</div>
 			<StringVar
 				id="setString-operand-string-replace-replacement"
 				v-tip="t('components.setString-operand-string-replace-replacement.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-replace-replacement')"
 				v-model="form.stringReplaceReplacement"
 			/>
-			<div class="text">Attribute Key</div>
+			<div class="text">{{ t('components.setString-operand-attribute-attributeId.label') }}</div>
 		<CustomBox
 			id="setString-operand-attribute-attributeId"
 				v-tip="t('components.setString-operand-attribute-attributeId.tip')"
@@ -108,7 +108,7 @@
 			type="attribute"
 			v-model="form.attributeId"
 		/>
-			<div class="text">Enum String</div>
+			<div class="text">{{ t('components.setString-operand-enum-stringId.label') }}</div>
 		<CustomBox
 			id="setString-operand-enum-stringId"
 				v-tip="t('components.setString-operand-enum-stringId.tip')"
@@ -117,15 +117,15 @@
 			type="enum-string"
 			v-model="form.enumStringId"
 		/>
-			<div class="text">Property</div>
+			<div class="text">{{ t('components.setString-operand-object-property.label') }}</div>
 			<SelectBox id="setString-operand-object-property"
 				v-tip="t('components.setString-operand-object-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-object-property')" v-model="form.objectProperty" />
-			<div class="text">Property</div>
+			<div class="text">{{ t('components.setString-operand-element-property.label') }}</div>
 			<SelectBox id="setString-operand-element-property"
 				v-tip="t('components.setString-operand-element-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-element-property')" v-model="form.elementProperty" />
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setString-operand-element-element.label') }}</div>
 		<CustomBox
 			id="setString-operand-element-element"
 				v-tip="t('components.setString-operand-element-element.tip')"
@@ -133,15 +133,15 @@
 			type="element"
 			v-model="form.elementElement"
 		/>
-		<div class="text">Actor</div>
+		<div class="text">{{ t('components.setString-operand-common-actor.label') }}</div>
 		<CustomBox id="setString-operand-common-actor"
 				v-tip="t('components.setString-operand-common-actor.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-actor')" type="actor" v-model="form.commonActor" />
-		<div class="text">Skill</div>
+		<div class="text">{{ t('components.setString-operand-common-skill.label') }}</div>
 		<CustomBox id="setString-operand-common-skill"
 				v-tip="t('components.setString-operand-common-skill.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-skill')" type="skill" v-model="form.commonSkill" />
-		<div class="text">Trigger</div>
+		<div class="text">{{ t('components.setString-operand-common-trigger.label') }}</div>
 		<CustomBox
 			id="setString-operand-common-trigger"
 				v-tip="t('components.setString-operand-common-trigger.tip')"
@@ -149,11 +149,11 @@
 			type="trigger"
 			v-model="form.commonTrigger"
 		/>
-		<div class="text">State</div>
+		<div class="text">{{ t('components.setString-operand-common-state.label') }}</div>
 		<CustomBox id="setString-operand-common-state"
 				v-tip="t('components.setString-operand-common-state.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-state')" type="state" v-model="form.commonState" />
-		<div class="text">Equipment</div>
+		<div class="text">{{ t('components.setString-operand-common-equipment.label') }}</div>
 		<CustomBox
 			id="setString-operand-common-equipment"
 				v-tip="t('components.setString-operand-common-equipment.tip')"
@@ -161,11 +161,11 @@
 			type="equipment"
 			v-model="form.commonEquipment"
 		/>
-		<div class="text">Item</div>
+		<div class="text">{{ t('components.setString-operand-common-item.label') }}</div>
 		<CustomBox id="setString-operand-common-item"
 				v-tip="t('components.setString-operand-common-item.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-item')" type="item" v-model="form.commonItem" />
-		<div class="text">File</div>
+		<div class="text">{{ t('components.setString-operand-object-fileId.label') }}</div>
 		<CustomBox
 			id="setString-operand-object-fileId"
 				v-tip="t('components.setString-operand-object-fileId.tip')"
@@ -174,7 +174,7 @@
 			type="file"
 			v-model="form.objectFileId"
 		/>
-			<div class="text">Index</div>
+			<div class="text">{{ t('components.setString-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setString-operand-list-index"
 				v-tip="t('components.setString-operand-list-index.tip')"
@@ -183,18 +183,18 @@
 				max="1000000000"
 				v-model="form.listIndex"
 			/>
-			<div class="text">Param Name</div>
+			<div class="text">{{ t('components.setString-operand-parameter-key.label') }}</div>
 			<StringVar id="setString-operand-parameter-key"
 				:ref="registryRef(fieldEls, 'setString-operand-parameter-key')" v-focus v-model="form.parameterKey" />
-			<div class="text">Script</div>
+			<div class="text">{{ t('components.setString-operand-script.label') }}</div>
 			<TextBox id="setString-operand-script"
 				v-tip="t('components.setString-operand-script.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-script')" v-focus v-model="script" />
-			<div class="text">Data</div>
+			<div class="text">{{ t('components.setString-operand-other-data.label') }}</div>
 			<SelectBox id="setString-operand-other-data"
 				v-tip="t('components.setString-operand-other-data.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-other-data')" v-model="form.otherData" />
-			<div class="text">Choice Index</div>
+			<div class="text">{{ t('components.setString-operand-showChoices-content-choiceIndex.label') }}</div>
 			<NumberVar
 				id="setString-operand-showChoices-content-choiceIndex"
 				v-tip="t('components.setString-operand-showChoices-content-choiceIndex.tip')"
@@ -203,7 +203,7 @@
 				max="255"
 				v-model="form.showChoicesIndex"
 			/>
-			<div class="text">Timestamp</div>
+			<div class="text">{{ t('components.setString-operand-parse-timestamp-variable.label') }}</div>
 		<CustomBox
 			id="setString-operand-parse-timestamp-variable"
 				v-tip="t('components.setString-operand-parse-timestamp-variable.tip')"
@@ -213,14 +213,14 @@
 			filter="number"
 			v-model="form.parseTimestampVariable"
 		/>
-			<div class="text">Date Format</div>
+			<div class="text">{{ t('components.setString-operand-parse-timestamp-format.label') }}</div>
 			<TextBox
 				id="setString-operand-parse-timestamp-format"
 				v-tip="t('components.setString-operand-parse-timestamp-format.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-format')"
 				v-model="parseTimestampFormat"
 			/>
-			<div class="text">Image Width</div>
+			<div class="text">{{ t('components.setString-operand-screenshot-width.label') }}</div>
 			<NumberBox
 				id="setString-operand-screenshot-width"
 				v-tip="t('components.setString-operand-screenshot-width.tip')"
@@ -230,7 +230,7 @@
 				unit="px"
 				v-model="screenshotWidth"
 			/>
-			<div class="text">Image Height</div>
+			<div class="text">{{ t('components.setString-operand-screenshot-height.label') }}</div>
 			<NumberBox
 				id="setString-operand-screenshot-height"
 				v-tip="t('components.setString-operand-screenshot-height.tip')"

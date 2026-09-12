@@ -14,7 +14,7 @@
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
 | R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
-| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②后实际扫描面 **889**） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
+| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③后扫描面 **390**） | 大 | 需先确认 i18n 迁移口径（`t()` / props） | 未开始（**此前被记为"小"**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
@@ -85,7 +85,7 @@
 | ✅ **B2 tree 收口（已完成 2026-09-11）** | **T5b**：消费方迁移（含方案漏列的 `command-tip.ts` 两处）→ 删 `elements` shim → 删 `item.element` 写回桥 / `TreeItem.element` / `clearTreeItemText` / `deleteNodeElements`（+ 新增 `treeRowElement` 公开 API）→ 收口 class 直写（**select/unselect/pointer 判断/hint 全清**）；**`element.group` 幽灵属性已修** | 无（方案含实测行号） | 步 1–2：5 个消费方文件 + `utils/folder-group.ts` + 2 个新 spec；步 3a：`tree-api.ts` 内部 7 点 + shim/`syncElementsShim`/`clearElements` + 4 个 spec 20 处；步 3b：`tree-render`/`tree-core`/`tree-api`/`index.ts`/`command-tip.ts` + **9 个 spec 71 处断言**；步 4：4 支 dragover + `dragend` + `hintItem` 限定 + 2 处断言 | **实测**：`tree-api.ts` **1726 → 1637 行**（−89）；tracker `parentNode` **130 → 127**、`dispatchEvent` **172 → 171**；待迁移命中/豁免注释/陈旧豁免 **159 / 159 / 0** 与 `$('#…')` **1481** 不变；**行为变更 1 处**（菜单勾选由"恒 false"→正确，先失败后转绿）；**顺带修复 3 处**（`windowLocalize` 手清 vnode、pointer 选中判断耦合 DOM class、`rename` 对窗口外行抛错） | 4 步各自 revert（已分别提交） |
 | 🚧 **B3 元素 API 与原型（2026-09-11 首刀完成）** | **P4b 首刀**：删 11 个零访问原型字段（83 → 72）；**P2b 目标重定义**：实测 25 个组件 api 文件全部是元素优先实现、零死文件 → 验收从「26 → 0」改为「类型化契约 + Vue 内子集随 P5b + 豁免收窄」 | P2b 依赖 P5b 的 ref 化节奏（Vue 内子集） | `element-data.ts` 一行删字段；P2b 侧 25 个 api 文件 + 682 处鸭子调用 | **实测（P4b 首刀）**：`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck/vue-tsc/oxlint + 两个套件全绿；`stores/localization.ts` 的一处类型残留（`initText`/`attrValue`）一并清理。**P2b 复核**：api 文件计数门禁保留、目标改为"不增长" | 各自单提交 revert |
 | ✅ **B4 `$()` 退役（批 1–4 全部完成 2026-09-11）** | **P5b 四批**：~~批次 1 `components/tools`（136 处 / 2 文件）~~**已完成**（实测 78 + 58 = 136 处全清）→ 批次 2 `editor/commands` 模块（153 / 27；**批 2 全部完成**）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1347（实测，含 2 处注释）→ … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
-| 🚧 **B5 i18n 工程线** | **R2b**：按承载者给键分类（✅）→ 把 Vue 承担的部分改为模板 `t()`/`v-tip`（🚧 迁移②：1436 处 `v-tip` + 1241 键跳过，扫描面 2130 → 889）→ 其余键的目标元素自注册 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
+| 🚧 **B5 i18n 工程线** | **R2b**：按承载者给键分类（✅）→ 把 Vue 承担的部分改为模板 `t()`/`v-tip`/标签 `t()`（🚧 迁移②③：1436 处 `v-tip` + 612 处标签 `t()` ⇒ 1739 键跳过，扫描面 2130 → 390）→ 其余键的目标元素自注册 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
 | **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役） | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
 | **并行/旁路** | E1 余项（自定义事件改强类型通道、`.vue` 监听配对、`mitt` 去留）、O1（layout M6 评估） | 不阻塞主线 | E1：16 个自定义事件 + 5 个 `.vue` + 13 处内联匿名 | `pnpm events:surface` 的"单侧事件""未配对 .vue"归零 | 按事件逐个提交 |
@@ -184,7 +184,7 @@
 
 ## R2b — 选择器式本地化器（`localizeDomComponents`）
 
-- **现状证据（2026-09-11 实测；**R2b 迁移②后本地化器扫描面 2130 → 889 键**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
+- **现状证据（2026-09-11 实测；**R2b 迁移②③后本地化器扫描面 2130 → 390 键（−82%）**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
 - **现状证据（2026-09-11 实测；**R2b 迁移②后本地化器扫描面 2130 → 889 键**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
 - **推进策略（先分级后动手）**：① 按"承载者"给键分类（**已完成**：Vue 模板已全字段承担 1241 / 部分承担 712 / 零承担 881 / 非 Vue 17 / 孤儿 1）；② 把 Vue 承担的部分改为模板 `t()` 或 `v-tip`（**迁移②已完成 1436 处 `v-tip`**，覆盖 tip 字段；label 早已是 `t()`）；③ 本地化器**跳过**已由模板承担的键（**已实现**：`localize/template-localized.ts` 生成物 + 防漂移 spec，扫描面 2130 → 889）；④ 剩余键（`content`/`options`/`placeholder` 字段与 `[name]` 选择器键）继续按"目标元素自行注册/模板承载"迁移，直到扫描面收敛到白名单。
 - **验收标准**：① `localizeDomComponents` 的**扫描面**收敛（当前 2130 → **889**，目标=白名单）；② 中英切换在真机上行为不变（逐类抽查）；③ 文档给出**扫描面**下降曲线（**更正**：不再用"键数下降曲线"——键是翻译数据，不随承载方式减少）；④ `editor/localize` 的 `oxlint-disable` 豁免删除。
@@ -202,6 +202,17 @@
 2. **本地化器跳过模板已承担的键**：新增生成物 `localize/template-localized.ts`（**1241 个键**：其全部字段都已由 `t()` 或 `v-tip` 承担），`localizeDomComponents` 对其 `continue`——**扫描面 2130 → 889 键（−58%）**。防漂移由 `localize/__tests__/template-localized.spec.ts` 保证：它从源码反推同一集合与生成物逐项比对，并断言"集合内键不做 `getElementById`、集合外键仍被处理（对照组）"。
 
 **验收进度对照**：① 不再全表扫描 → 扫描面已降 58%（889），后续继续；③ 键数下降曲线 → **更正为"扫描面下降曲线"**（键是翻译数据，不随承载方式变化而减少）；④ `editor/localize` 的豁免删除 → 待扫描面进一步收敛后再做。
+
+**R2b 迁移③（2026-09-11，B5 第三刀）：把表单标签从"本地化器写 textContent"改为模板 `t()`**
+
+- **度量④（剩余扫描面 887 键的构成）**：字段分布 `label` 793 / `tip` 757 / `options` 253 / `content` 35 / `placeholder` 12 / `title` 8；承载者 213 个（`LayoutPanel.vue` 55、`SetString.vue` 34、`IfCondition.vue` 17、…）。
+  - **说明**：`tip` 虽已由 `v-tip` 承担，但这些键的 `label` 还没 `t()` 化 → 整个键仍在扫描面内（跳过集合要求**全部字段**都被模板承担）。
+- **迁移③**：把"标签 `<div class="text">硬编码文本</div>` 紧邻控件"这一形态**脚本化**替换为 `<div class="text">{{ t('components.<键>.label') }}</div>`——**612 处 / 139 个 SFC**（25 处结构不符留待人工，集中在 `Setting.vue`）。
+  - 前提校验：承载 SFC 必须已用 `useI18n()`；标签 div 与控件标签相邻；div 内不含 `<` 或 `{{`（避免误改）。
+  - 语义等价：本地化器原本就是把 `item.label` 写进 `element.previousElementSibling.textContent`；改为模板 `t()` 后**语言切换变成响应式**（原来靠重跑本地化器）。
+- **生成器固化进仓库**：`scripts/i18n-skip-list.mjs`（`--check` 只比对不写入），生成 `localize/template-localized.ts`；防漂移由 `template-localized.spec.ts` 从源码反推比对。
+
+**指标**：跳过键 **1241 → 1739**；本地化器**扫描面 2129 → 390（−82%）**（起点 2130）。
 
 - **验证命令**：`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机切换语言后抽查窗口标题/菜单/按钮/tooltip。
 - **来源**：2026-09-11 第二十二轮度量审计（`components` 键数实测；此前 R2 只按源码处数记为"小"）。
@@ -652,7 +663,7 @@
 | --- | --- | --- |
 | 受限 API（`document.*` 7 成员） | `getElementById` 244 处 / 待迁移命中 **160** 文件 | ✅ 唯一被 lint 门禁的轴 → C1 / C2 |
 | `$('#id')` 反查 | **1489 处 / 239 文件**（B1/R1 后 1481；B4 批 1 后 **1347 / 238**） | ⚠️ **新登记** → P5b（此前不在报表内） |
-| 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name）；**R2b 迁移②后本地化器的实际扫描面降到 889 键**（1241 键已由模板 `t()`/`v-tip` 承担并跳过） | ⚠️ **新登记** → R2b（门禁已核对键数） |
+| 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name）；**R2b 迁移②③后扫描面降到 390 键**（1739 键已由模板 `t()`/`v-tip` 承担并跳过，−82%） | ⚠️ **新登记** → R2b（门禁已核对键数） |
 | 鸭子式元素 API 调用 | **682 处 / 246 文件** | ⚠️ **新登记** → P2b（`*-api.ts` 26 件门禁） |
 | 原型访问器（逗号形式） | **72 字段 / 144 访问器**（B3 前 83/166） | ⚠️ **新登记** → P4b（门禁已核对字段数） |
 | 窗口事件面 | 265 add / 16 自定义事件 / 1 死事件 | ⚠️ **新登记** → E1（`pnpm events:surface`） |

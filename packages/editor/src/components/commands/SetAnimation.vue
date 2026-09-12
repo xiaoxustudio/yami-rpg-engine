@@ -8,10 +8,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Element</div>
+			<div class="text">{{ t('components.setAnimation-element.label') }}</div>
 			<CustomBox id="setAnimation-element"
 				v-tip="t('components.setAnimation-element.tip')" v-focus type="element" v-model="form.element" />
-			<div class="text">Properties</div>
+			<div class="text">{{ t('components.setAnimation-properties.label') }}</div>
 			<ParamList id="setAnimation-properties"
 				:ref="registryRef(fieldEls, 'setAnimation-properties')" v-focus v-model="form.properties" />
 		</div>

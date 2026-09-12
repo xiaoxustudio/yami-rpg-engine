@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">Variable</div>
+		<div class="text">{{ t('components.setObject-variable.label') }}</div>
 		<CustomBox
 			id="setObject-variable"
 				v-tip="t('components.setObject-variable.tip')"
@@ -16,23 +16,23 @@
 			filter="object"
 			v-model="form.variable"
 		/>
-		<div class="text">Type</div>
+		<div class="text">{{ t('components.setObject-operand-type.label') }}</div>
 		<SelectBox id="setObject-operand-type"
 				v-tip="t('components.setObject-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-type')" v-model="form['operand-type']" />
-		<div class="text">Actor</div>
+		<div class="text">{{ t('components.setObject-operand-actor.label') }}</div>
 		<CustomBox id="setObject-operand-actor"
 				v-tip="t('components.setObject-operand-actor.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-actor')" type="actor" v-model="form['operand-actor']" />
-		<div class="text">Skill</div>
+		<div class="text">{{ t('components.setObject-operand-skill.label') }}</div>
 		<CustomBox id="setObject-operand-skill"
 				v-tip="t('components.setObject-operand-skill.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-skill')" type="skill" v-model="form['operand-skill']" />
-		<div class="text">State</div>
+		<div class="text">{{ t('components.setObject-operand-state.label') }}</div>
 		<CustomBox id="setObject-operand-state"
 				v-tip="t('components.setObject-operand-state.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-state')" type="state" v-model="form['operand-state']" />
-		<div class="text">Equipment</div>
+		<div class="text">{{ t('components.setObject-operand-equipment.label') }}</div>
 		<CustomBox
 			id="setObject-operand-equipment"
 				v-tip="t('components.setObject-operand-equipment.tip')"
@@ -40,27 +40,27 @@
 			type="equipment"
 			v-model="form['operand-equipment']"
 		/>
-		<div class="text">Item</div>
+		<div class="text">{{ t('components.setObject-operand-item.label') }}</div>
 		<CustomBox id="setObject-operand-item"
 				v-tip="t('components.setObject-operand-item.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-item')" type="item" v-model="form['operand-item']" />
-		<div class="text">Trigger</div>
+		<div class="text">{{ t('components.setObject-operand-trigger.label') }}</div>
 		<CustomBox id="setObject-operand-trigger"
 				v-tip="t('components.setObject-operand-trigger.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-trigger')" type="trigger" v-model="form['operand-trigger']" />
-		<div class="text">Light</div>
+		<div class="text">{{ t('components.setObject-operand-light.label') }}</div>
 		<CustomBox id="setObject-operand-light"
 				v-tip="t('components.setObject-operand-light.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-light')" type="light" v-model="form['operand-light']" />
-		<div class="text">Object</div>
+		<div class="text">{{ t('components.setObject-operand-object.label') }}</div>
 		<CustomBox id="setObject-operand-object"
 				v-tip="t('components.setObject-operand-object.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-object')" type="object" v-model="form['operand-object']" />
-		<div class="text">Element</div>
+		<div class="text">{{ t('components.setObject-operand-element.label') }}</div>
 		<CustomBox id="setObject-operand-element"
 				v-tip="t('components.setObject-operand-element.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-element')" type="element" v-model="form['operand-element']" />
-		<div class="text">Variable</div>
+		<div class="text">{{ t('components.setObject-operand-variable.label') }}</div>
 		<CustomBox
 			id="setObject-operand-variable"
 				v-tip="t('components.setObject-operand-variable.tip')"
@@ -70,7 +70,7 @@
 			filter="object"
 			v-model="form['operand-variable']"
 		/>
-			<div class="text">Index</div>
+			<div class="text">{{ t('components.setObject-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setObject-operand-list-index"
 				v-tip="t('components.setObject-operand-list-index.tip')"

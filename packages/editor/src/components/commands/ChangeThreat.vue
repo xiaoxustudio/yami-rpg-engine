@@ -7,17 +7,17 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.changeThreat-actor.label') }}</div>
 			<CustomBox id="changeThreat-actor"
 				v-tip="t('components.changeThreat-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Target</div>
+			<div class="text">{{ t('components.changeThreat-target.label') }}</div>
 			<CustomBox id="changeThreat-target"
 				v-tip="t('components.changeThreat-target.tip')" type="actor" v-model="form.target" />
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.changeThreat-operation.label') }}</div>
 			<SelectBox id="changeThreat-operation"
 				v-tip="t('components.changeThreat-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeThreat-operation')" v-model="form.operation" />
-			<div class="text">Threat</div>
+			<div class="text">{{ t('components.changeThreat-threat.label') }}</div>
 			<NumberVar
 				id="changeThreat-threat"
 				v-tip="t('components.changeThreat-threat.tip')"

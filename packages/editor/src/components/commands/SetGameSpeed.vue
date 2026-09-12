@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Speed</div>
+			<div class="text">{{ t('components.setGameSpeed-speed.label') }}</div>
 			<NumberVar
 				id="setGameSpeed-speed"
 				v-tip="t('components.setGameSpeed-speed.tip')"
@@ -19,10 +19,10 @@
 				decimals="4"
 				v-model="form.speed"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setGameSpeed-easingId.label') }}</div>
 			<SelectBox id="setGameSpeed-easingId"
 				:ref="registryRef(fieldEls, 'setGameSpeed-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setGameSpeed-duration.label') }}</div>
 			<NumberVar
 				id="setGameSpeed-duration"
 				name="duration"
@@ -31,7 +31,7 @@
 				unit="ms"
 				v-model="form.duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setGameSpeed-wait.label') }}</div>
 			<SelectBox id="setGameSpeed-wait"
 				:ref="registryRef(fieldEls, 'setGameSpeed-wait')" name="wait" v-model="form.wait" />
 		</div>

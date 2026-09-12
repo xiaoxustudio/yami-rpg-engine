@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box" id="tintScreen-grid-box">
-			<div class="text">Tint - Red</div>
+			<div class="text">{{ t('components.tintScreen-tint-0.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-0"
 				v-tip="t('components.tintScreen-tint-0.tip')"
@@ -18,7 +18,7 @@
 				step="5"
 				v-model="tint0"
 			/>
-			<div class="text">Tint - Green</div>
+			<div class="text">{{ t('components.tintScreen-tint-1.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-1"
 				v-tip="t('components.tintScreen-tint-1.tip')"
@@ -27,7 +27,7 @@
 				step="5"
 				v-model="tint1"
 			/>
-			<div class="text">Tint - Blue</div>
+			<div class="text">{{ t('components.tintScreen-tint-2.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-2"
 				v-tip="t('components.tintScreen-tint-2.tip')"
@@ -36,13 +36,13 @@
 				step="5"
 				v-model="tint2"
 			/>
-			<div class="text">Tint - Grayscale</div>
+			<div class="text">{{ t('components.tintScreen-tint-3.label') }}</div>
 			<NumberBox id="tintScreen-tint-3"
 				v-tip="t('components.tintScreen-tint-3.tip')" min="0" max="255" step="5" v-model="tint3" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.tintScreen-easingId.label') }}</div>
 			<SelectBox id="tintScreen-easingId"
 				:ref="registryRef(fieldEls, 'tintScreen-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.tintScreen-duration.label') }}</div>
 			<NumberBox
 				id="tintScreen-duration"
 				name="duration"
@@ -51,7 +51,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.tintScreen-wait.label') }}</div>
 			<SelectBox id="tintScreen-wait"
 				:ref="registryRef(fieldEls, 'tintScreen-wait')" name="wait" v-model="form.wait" />
 		</div>

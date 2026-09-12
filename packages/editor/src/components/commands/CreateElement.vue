@@ -7,15 +7,15 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.createElement-operation.label') }}</div>
 			<SelectBox id="createElement-operation"
 				v-tip="t('components.createElement-operation.tip')"
 				:ref="registryRef(fieldEls, 'createElement-operation')" v-focus v-model="form.operation" />
-			<div class="text">Parent</div>
+			<div class="text">{{ t('components.createElement-parent.label') }}</div>
 			<CustomBox id="createElement-parent"
 				v-tip="t('components.createElement-parent.tip')"
 				:ref="registryRef(fieldEls, 'createElement-parent')" type="element" v-model="form.parent" />
-			<div class="text">UI Elements</div>
+			<div class="text">{{ t('components.createElement-uiId.label') }}</div>
 			<CustomBox
 				id="createElement-uiId"
 				v-tip="t('components.createElement-uiId.tip')"
@@ -25,7 +25,7 @@
 				filter="ui"
 				v-model="form.uiId"
 			/>
-			<div class="text">UI Element</div>
+			<div class="text">{{ t('components.createElement-presetId.label') }}</div>
 			<CustomBox
 				id="createElement-presetId"
 				v-tip="t('components.createElement-presetId.tip')"

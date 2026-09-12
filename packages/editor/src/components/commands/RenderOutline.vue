@@ -7,15 +7,15 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.renderOutline-operation.label') }}</div>
 			<SelectBox id="renderOutline-operation"
 				v-tip="t('components.renderOutline-operation.tip')"
 				:ref="registryRef(fieldEls, 'renderOutline-operation')" v-focus v-model="form.operation" />
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.renderOutline-actor.label') }}</div>
 			<CustomBox id="renderOutline-actor"
 				v-tip="t('components.renderOutline-actor.tip')"
 				:ref="registryRef(fieldEls, 'renderOutline-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Color</div>
+			<div class="text">{{ t('components.renderOutline-color.label') }}</div>
 			<ColorBox id="renderOutline-color"
 				v-tip="t('components.renderOutline-color.tip')"
 				:ref="registryRef(fieldEls, 'renderOutline-color')" v-model="color" />

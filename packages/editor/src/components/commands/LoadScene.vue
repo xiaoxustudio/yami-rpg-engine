@@ -7,14 +7,14 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Scene</div>
+			<div class="text">{{ t('components.loadScene-sceneId.label') }}</div>
 			<FileVar id="loadScene-sceneId"
 				v-tip="t('components.loadScene-sceneId.tip')" v-focus type="file" filter="scene" v-model="form.sceneId" />
-			<div class="text">Transfer Player</div>
+			<div class="text">{{ t('components.loadScene-transfer.label') }}</div>
 			<SelectBox id="loadScene-transfer"
 				v-tip="t('components.loadScene-transfer.tip')"
 				:ref="registryRef(fieldEls, 'loadScene-transfer')" v-model="form.transfer" />
-			<div class="text">X</div>
+			<div class="text">{{ t('components.loadScene-x.label') }}</div>
 			<NumberVar
 				id="loadScene-x"
 				v-tip="t('components.loadScene-x.tip')"
@@ -25,7 +25,7 @@
 				decimals="4"
 				v-model="form.x"
 			/>
-			<div class="text">Y</div>
+			<div class="text">{{ t('components.loadScene-y.label') }}</div>
 			<NumberVar
 				id="loadScene-y"
 				v-tip="t('components.loadScene-y.tip')"

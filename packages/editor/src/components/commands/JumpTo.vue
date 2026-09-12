@@ -7,11 +7,11 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Operation</div>
+			<div class="text">{{ t('components.jumpTo-operation.label') }}</div>
 			<SelectBox id="jumpTo-operation"
 				v-tip="t('components.jumpTo-operation.tip')"
 				:ref="registryRef(fieldEls, 'jumpTo-operation')" v-focus v-model="form.operation" />
-			<div class="text">Label Name</div>
+			<div class="text">{{ t('components.jumpTo-label.label') }}</div>
 			<TextBox id="jumpTo-label"
 				v-tip="t('components.jumpTo-label.tip')"
 				:ref="registryRef(fieldEls, 'jumpTo-label')" v-focus v-model="label" />

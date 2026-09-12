@@ -8,7 +8,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Zoom Factor</div>
+			<div class="text">{{ t('components.setZoomFactor-zoom.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-zoom"
 				v-tip="t('components.setZoomFactor-zoom.tip')"
@@ -19,10 +19,10 @@
 				decimals="4"
 				v-model="form.zoom"
 			/>
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.setZoomFactor-easingId.label') }}</div>
 			<SelectBox id="setZoomFactor-easingId"
 				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.setZoomFactor-duration.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-duration"
 				name="duration"
@@ -31,7 +31,7 @@
 				unit="ms"
 				v-model="form.duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.setZoomFactor-wait.label') }}</div>
 			<SelectBox id="setZoomFactor-wait"
 				:ref="registryRef(fieldEls, 'setZoomFactor-wait')" name="wait" v-model="form.wait" />
 		</div>

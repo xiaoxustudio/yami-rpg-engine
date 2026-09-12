@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Scene</div>
+			<div class="text">{{ t('components.unloadSubscene-sceneId.label') }}</div>
 			<FileVar
 				id="unloadSubscene-sceneId"
 				v-tip="t('components.unloadSubscene-sceneId.tip')"

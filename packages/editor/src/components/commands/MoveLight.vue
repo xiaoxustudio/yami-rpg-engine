@@ -8,15 +8,15 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Light</div>
+			<div class="text">{{ t('components.moveLight-light.label') }}</div>
 			<CustomBox id="moveLight-light" v-focus type="light" v-model="form.light" />
-			<div class="text">Properties</div>
+			<div class="text">{{ t('components.moveLight-properties.label') }}</div>
 			<ParamList id="moveLight-properties"
 				:ref="registryRef(fieldEls, 'moveLight-properties')" v-focus v-model="form.properties" />
-			<div class="text">Easing</div>
+			<div class="text">{{ t('components.moveLight-easingId.label') }}</div>
 			<SelectBox id="moveLight-easingId"
 				:ref="registryRef(fieldEls, 'moveLight-easingId')" name="easing" v-model="form.easingId" />
-			<div class="text">Duration</div>
+			<div class="text">{{ t('components.moveLight-duration.label') }}</div>
 			<NumberBox
 				id="moveLight-duration"
 				name="duration"
@@ -25,7 +25,7 @@
 				unit="ms"
 				v-model="duration"
 			/>
-			<div class="text">Wait</div>
+			<div class="text">{{ t('components.moveLight-wait.label') }}</div>
 			<SelectBox id="moveLight-wait"
 				:ref="registryRef(fieldEls, 'moveLight-wait')" name="wait" v-model="form.wait" />
 		</div>

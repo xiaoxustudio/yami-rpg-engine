@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Trigger</div>
+			<div class="text">{{ t('components.setTriggerAngle-trigger.label') }}</div>
 			<CustomBox id="setTriggerAngle-trigger"
 				v-tip="t('components.setTriggerAngle-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
-			<div class="text">Angle</div>
+			<div class="text">{{ t('components.setTriggerAngle-angle.label') }}</div>
 			<CustomBox id="setTriggerAngle-angle"
 				v-tip="t('components.setTriggerAngle-angle.tip')" type="angle" v-model="form.angle" />
 		</div>

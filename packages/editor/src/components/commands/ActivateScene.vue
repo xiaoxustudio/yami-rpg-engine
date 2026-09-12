@@ -7,7 +7,7 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Scene</div>
+			<div class="text">{{ t('components.activateScene-pointer.label') }}</div>
 			<SelectBox id="activateScene-pointer"
 				v-tip="t('components.activateScene-pointer.tip')"
 				:ref="registryRef(fieldEls, 'activateScene-pointer')" v-focus v-model="form.pointer" />

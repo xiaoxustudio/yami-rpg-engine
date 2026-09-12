@@ -7,10 +7,10 @@
 		></template>
 
 		<div class="grid-box">
-			<div class="text">Actor</div>
+			<div class="text">{{ t('components.addAnimationComponent-actor.label') }}</div>
 			<CustomBox id="addAnimationComponent-actor"
 				v-tip="t('components.addAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
-			<div class="text">Animation</div>
+			<div class="text">{{ t('components.addAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
 				v-tip="t('components.addAnimationComponent-animationId.tip')"
@@ -19,18 +19,18 @@
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
-			<div class="text">Motion</div>
+			<div class="text">{{ t('components.addAnimationComponent-motion.label') }}</div>
 			<SelectBox id="addAnimationComponent-motion"
 				v-tip="t('components.addAnimationComponent-motion.tip')" v-model="form.motion" />
-			<div class="text">Rotatable</div>
+			<div class="text">{{ t('components.addAnimationComponent-rotatable.label') }}</div>
 			<SelectBox id="addAnimationComponent-rotatable"
 				v-tip="t('components.addAnimationComponent-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')" v-model="form.rotatable" />
-			<div class="text">Sync Angle</div>
+			<div class="text">{{ t('components.addAnimationComponent-syncAngle.label') }}</div>
 			<SelectBox id="addAnimationComponent-syncAngle"
 				v-tip="t('components.addAnimationComponent-syncAngle.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')" v-model="form.syncAngle" />
-			<div class="text">Priority</div>
+			<div class="text">{{ t('components.addAnimationComponent-priority.label') }}</div>
 			<NumberBox
 				id="addAnimationComponent-priority"
 				v-tip="t('components.addAnimationComponent-priority.tip')"
@@ -38,7 +38,7 @@
 				max="100"
 				v-model="priority"
 			/>
-			<div class="text">Offset Y</div>
+			<div class="text">{{ t('components.addAnimationComponent-offsetY.label') }}</div>
 			<NumberBox
 				id="addAnimationComponent-offsetY"
 				v-tip="t('components.addAnimationComponent-offsetY.tip')"
