@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
@@ -150,51 +150,51 @@ const getTypeItems = (filter: string, prefix: string): VarTypeItem[] => {
 };
 
 const initialize = (): void => {
-	const typeEl = document.getElementById('variableGetter-type');
+	const typeEl = composableEls.get('variableGetter-type');
 	if (!typeEl) return;
 	typeEl.enableHiddenMode().relate([
-		{ case: 'local', targets: [document.getElementById('variableGetter-common-key')] },
-		{ case: 'global', targets: [document.getElementById('variableGetter-global-key')] },
+		{ case: 'local', targets: [composableEls.get('variableGetter-common-key')] },
+		{ case: 'global', targets: [composableEls.get('variableGetter-global-key')] },
 		{
 			case: 'actor',
 			targets: [
-				document.getElementById('variableGetter-actor'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-actor'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		},
 		{
 			case: 'skill',
 			targets: [
-				document.getElementById('variableGetter-skill'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-skill'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		},
 		{
 			case: 'state',
 			targets: [
-				document.getElementById('variableGetter-state'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-state'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		},
 		{
 			case: 'equipment',
 			targets: [
-				document.getElementById('variableGetter-equipment'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-equipment'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		},
 		{
 			case: 'item',
 			targets: [
-				document.getElementById('variableGetter-item'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-item'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		},
 		{
 			case: 'element',
 			targets: [
-				document.getElementById('variableGetter-element'),
-				document.getElementById('variableGetter-preset-key')
+				composableEls.get('variableGetter-element'),
+				composableEls.get('variableGetter-preset-key')
 			]
 		}
 	]);
@@ -209,22 +209,22 @@ const initialize = (): void => {
 		this.dataItems = backup;
 	};
 
-	const type2El = document.getElementById('variableGetter2-type');
+	const type2El = composableEls.get('variableGetter2-type');
 	if (type2El) {
 		type2El.enableHiddenMode().relate([
-			{ case: 'local', targets: [document.getElementById('variableGetter2-common-key')] },
-			{ case: 'global', targets: [document.getElementById('variableGetter2-global-key')] },
+			{ case: 'local', targets: [composableEls.get('variableGetter2-common-key')] },
+			{ case: 'global', targets: [composableEls.get('variableGetter2-global-key')] },
 			{
 				case: 'element',
 				targets: [
-					document.getElementById('variableGetter2-element'),
-					document.getElementById('variableGetter2-preset-key')
+					composableEls.get('variableGetter2-element'),
+					composableEls.get('variableGetter2-preset-key')
 				]
 			}
 		]);
 	}
 
-	const commonKey = document.getElementById('variableGetter-common-key');
+	const commonKey = composableEls.get('variableGetter-common-key');
 	if (commonKey) {
 		TextSuggestion.listen!(
 			commonKey as unknown as TextSuggestionTarget,
@@ -243,8 +243,8 @@ const open = (
 	const filter = defaults?.filter ?? target.filter ?? 'all';
 	states[prefix] = { target, filter };
 
-	document.getElementById(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
-	const globalKeyEl = document.getElementById(`${prefix}-global-key`);
+	composableEls.get(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
+	const globalKeyEl = composableEls.get(`${prefix}-global-key`);
 	if (globalKeyEl) {
 		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 	}
@@ -270,8 +270,8 @@ const open = (
 				presetKey = key;
 				break;
 		}
-		document
-			.getElementById(`${prefix}-preset-key`)
+		composableEls
+			.get(`${prefix}-preset-key`)
 			?.loadItems(Attribute.getAttributeItems('element', filter));
 		Object.assign(form, { type, element, commonKey, globalKey, presetKey });
 	} else {
@@ -335,7 +335,7 @@ const open = (
 			globalKey
 		});
 	}
-	getFocus(document.getElementById(`${prefix}-type`));
+	getFocus(composableEls.get(`${prefix}-type`));
 	getWindowStore().open(prefix);
 };
 
@@ -344,7 +344,7 @@ const isNone = (variable: { key: string }): boolean => {
 };
 
 const loadPresetKeys = (group: string): void => {
-	const keyBox = document.getElementById('variableGetter-preset-key');
+	const keyBox = composableEls.get('variableGetter-preset-key');
 	if (!keyBox) return;
 	let type: string | undefined = undefined;
 	switch (filterState.filter) {
@@ -474,7 +474,7 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = document.getElementById('variableGetter-preset-key') as
+			const keyBox = composableEls.get('variableGetter-preset-key') as
 				| (HTMLElement & {
 						selectBox?: HTMLElement & {
 							textContent: string;
@@ -519,7 +519,7 @@ const confirmCore = (prefix: string): void => {
 		case 'local':
 			key = data.commonKey.trim();
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-common-key`));
+				getFocus(composableEls.get(`${prefix}-common-key`));
 				return;
 			}
 			getter = { type, key };
@@ -530,7 +530,7 @@ const confirmCore = (prefix: string): void => {
 			const baseType =
 				filter === 'boolean' || filter === 'number' || filter === 'string' ? filter : null;
 			if (key === '' || (baseType && typeof variable?.value !== baseType)) {
-				getFocus(document.getElementById(`${prefix}-global-key`));
+				getFocus(composableEls.get(`${prefix}-global-key`));
 				return;
 			}
 			getter = { type, key };
@@ -540,7 +540,7 @@ const confirmCore = (prefix: string): void => {
 			const element = data.element;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, element, key };
@@ -553,7 +553,7 @@ const confirmCore = (prefix: string): void => {
 			const actor = data.actor;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, actor, key };
@@ -563,7 +563,7 @@ const confirmCore = (prefix: string): void => {
 			const skill = data.skill;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, skill, key };
@@ -573,7 +573,7 @@ const confirmCore = (prefix: string): void => {
 			const stateVal = data.state;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, state: stateVal, key };
@@ -583,7 +583,7 @@ const confirmCore = (prefix: string): void => {
 			const equipment = data.equipment;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, equipment, key };
@@ -593,7 +593,7 @@ const confirmCore = (prefix: string): void => {
 			const item = data.item;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(document.getElementById(`${prefix}-preset-key`));
+				getFocus(composableEls.get(`${prefix}-preset-key`));
 				return;
 			}
 			getter = { type, item, key };

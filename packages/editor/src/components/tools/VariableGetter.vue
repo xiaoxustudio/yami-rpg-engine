@@ -10,34 +10,44 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter-type.label') }}</div>
 			<SelectBox id="variableGetter-type"
+				:ref="registryRef(composableEls, 'variableGetter-type')"
 				v-tip="t('components.variableGetter-type.tip')" v-model="form.type" />
 			<div class="text">{{ t('components.variableGetter-actor.label') }}</div>
 			<CustomBox id="variableGetter-actor"
+				:ref="registryRef(composableEls, 'variableGetter-actor')"
 				v-tip="t('components.variableGetter-actor.tip')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.variableGetter-skill.label') }}</div>
 			<CustomBox id="variableGetter-skill"
+				:ref="registryRef(composableEls, 'variableGetter-skill')"
 				v-tip="t('components.variableGetter-skill.tip')" type="skill" v-model="form.skill" />
 			<div class="text">{{ t('components.variableGetter-state.label') }}</div>
 			<CustomBox id="variableGetter-state"
+				:ref="registryRef(composableEls, 'variableGetter-state')"
 				v-tip="t('components.variableGetter-state.tip')" type="state" v-model="form.state" />
 			<div class="text">{{ t('components.variableGetter-equipment.label') }}</div>
 			<CustomBox id="variableGetter-equipment"
+				:ref="registryRef(composableEls, 'variableGetter-equipment')"
 				v-tip="t('components.variableGetter-equipment.tip')" type="equipment" v-model="form.equipment" />
 			<div class="text">{{ t('components.variableGetter-item.label') }}</div>
 			<CustomBox id="variableGetter-item"
+				:ref="registryRef(composableEls, 'variableGetter-item')"
 				v-tip="t('components.variableGetter-item.tip')" type="item" v-model="form.item" />
 			<div class="text">{{ t('components.variableGetter-element.label') }}</div>
 			<CustomBox id="variableGetter-element"
+				:ref="registryRef(composableEls, 'variableGetter-element')"
 				v-tip="t('components.variableGetter-element.tip')" type="element" v-model="form.element" />
 			<div class="text">{{ t('components.variableGetter-common-key.label') }}</div>
 			<TextBox id="variableGetter-common-key"
+				:ref="registryRef(composableEls, 'variableGetter-common-key')"
 				v-tip="t('components.variableGetter-common-key.tip')" v-model="form.commonKey" />
 			<div class="text">{{ t('components.variableGetter-preset-key.label') }}</div>
 			<SelectVar id="variableGetter-preset-key"
+				:ref="registryRef(composableEls, 'variableGetter-preset-key')"
 				v-tip="t('components.variableGetter-preset-key.tip')" v-model="form.presetKey" />
 			<div class="text">{{ t('components.variableGetter-global-key.label') }}</div>
 			<CustomBox
 				id="variableGetter-global-key"
+				:ref="registryRef(composableEls, 'variableGetter-global-key')"
 				v-tip="t('components.variableGetter-global-key.tip')"
 				type="global-variable"
 				v-model="form.globalKey"
@@ -48,6 +58,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';

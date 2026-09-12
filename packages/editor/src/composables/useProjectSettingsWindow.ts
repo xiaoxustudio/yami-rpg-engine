@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getWindowStore } from '@app/stores/window';
@@ -45,6 +45,7 @@ type LanguagesInterface = {
 	update(): void;
 	createAllItems(): Array<{ name: string; value: string }>;
 	createValidItems(): Array<{ name: string; value: string }>;
+	confirm(): void;
 	target?: { save: () => void };
 };
 
@@ -183,115 +184,144 @@ const form = reactive<ProjectSettingsForm>({
 });
 let changed = false;
 let tscStarted = false;
+/** 语言列表控件（`bind()` 时由 ParamList 传入），供语言窗口的确认动作读取 */
+let languageList: { inserting?: boolean } = {};
+
+/** 取注册表里的控件元素（沿用原先 `document.getElementById(id)!` 的非空断言语义） */
+const el = (id: string): HTMLElement => composableEls.get(id) as HTMLElement;
+
+/** 参数控件 id：`initialize()` 给它们统一挂 `input` 监听（渲染方 ProjectSettings.vue 逐个 `:ref` 登记） */
+const PARAM_IDS = [
+	'config-window-title',
+	'config-window-width',
+	'config-window-height',
+	'config-window-display',
+	'config-resolution-width',
+	'config-resolution-height',
+	'config-resolution-sceneScale',
+	'config-resolution-uiScale',
+	'config-scene-padding',
+	'config-scene-animationInterval',
+	'config-tileArea-expansionTop',
+	'config-tileArea-expansionLeft',
+	'config-tileArea-expansionRight',
+	'config-tileArea-expansionBottom',
+	'config-animationArea-expansionTop',
+	'config-animationArea-expansionLeft',
+	'config-animationArea-expansionRight',
+	'config-animationArea-expansionBottom',
+	'config-lightArea-expansionTop',
+	'config-lightArea-expansionLeft',
+	'config-lightArea-expansionRight',
+	'config-lightArea-expansionBottom',
+	'config-virtualAxis-up',
+	'config-virtualAxis-down',
+	'config-virtualAxis-left',
+	'config-virtualAxis-right',
+	'config-collision-actor-enabled',
+	'config-collision-scene-enabled',
+	'config-collision-scene-actorSize',
+	'config-collision-trigger-collideWithActorShape',
+	'config-text-fontFamily',
+	'config-text-highDefinition',
+	'config-animation-frameRate',
+	'config-soundAttenuation-distance',
+	'config-soundAttenuation-easingId',
+	'config-webgl-desynchronized',
+	'config-webgl-textureMagFilter',
+	'config-webgl-textureMinFilter',
+	'config-script-autoCompile',
+	'config-save-location',
+	'config-save-subdir',
+	'config-localization-languages',
+	'config-localization-default',
+	'config-preload',
+	'config-deadzone'
+];
 
 function initialize(): void {
-	if (!document.getElementById('config-window-display')) return;
-	document.getElementById('config-window-display')!.loadItems([
+	if (!composableEls.get('config-window-display')) return;
+	el('config-window-display').loadItems([
 		{ name: 'Windowed', value: 'windowed' },
 		{ name: 'Maximized', value: 'maximized' },
 		{ name: 'Fullscreen', value: 'fullscreen' }
 	]);
 
-	document.getElementById('config-collision-actor-enabled')!.loadItems([
+	el('config-collision-actor-enabled').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-collision-scene-enabled')!.loadItems([
+	el('config-collision-scene-enabled').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document
-		.getElementById('config-collision-scene-enabled')!
+	el('config-collision-scene-enabled')
 		.enableHiddenMode()
-		.relate([
-			{ case: true, targets: [document.getElementById('config-collision-scene-actorSize')!] }
-		]);
+		.relate([{ case: true, targets: [el('config-collision-scene-actorSize')] }]);
 
-	document.getElementById('config-collision-trigger-collideWithActorShape')!.loadItems([
+	el('config-collision-trigger-collideWithActorShape').loadItems([
 		{ name: "Collide With Actor's Shape", value: true },
 		{ name: "Collide With Actor's Anchor", value: false }
 	]);
 
-	document.getElementById('config-text-importedFonts')!.bind(importedFonts);
+	el('config-text-importedFonts').bind(importedFonts);
 
-	document.getElementById('config-text-highDefinition')!.loadItems([
+	el('config-text-highDefinition').loadItems([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
 
-	document.getElementById('config-actor-tempAttributes')!.bind(new AttributeListInterface());
+	el('config-actor-tempAttributes').bind(new AttributeListInterface());
 
-	document.getElementById('config-webgl-desynchronized')!.loadItems([
+	el('config-webgl-desynchronized').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-webgl-textureMagFilter')!.loadItems([
+	el('config-webgl-textureMagFilter').loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	document.getElementById('config-webgl-textureMinFilter')!.loadItems([
+	el('config-webgl-textureMinFilter').loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	document.getElementById('config-script-autoCompile')!.loadItems([
+	el('config-script-autoCompile').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-save-location')!.loadItems([
+	el('config-save-location').loadItems([
 		{ name: 'App Data', value: 'app-data' },
 		{ name: 'Documents', value: 'documents' },
 		{ name: 'Local Directory', value: 'local' }
 	]);
 
-	document
-		.getElementById('config-save-location')!
+	el('config-save-location')
 		.enableHiddenMode()
-		.relate([
-			{
-				case: ['app-data', 'documents'],
-				targets: [document.getElementById('config-save-subdir')!]
-			}
-		]);
+		.relate([{ case: ['app-data', 'documents'], targets: [el('config-save-subdir')] }]);
 
-	document.getElementById('config-localization-languages')!.bind(languages);
+	el('config-localization-languages').bind(languages);
 
-	document.getElementById('config-preload')!.loadItems([
+	el('config-preload').loadItems([
 		{ name: 'Never', value: 'never' },
 		{ name: 'Always', value: 'always' },
 		{ name: 'Only on Deployment', value: 'deployed' }
 	]);
 
 	window.addEventListener('datachange', projectChange as EventListener);
-	on(document.getElementById('project-settings'), 'close', windowClose);
-	on(document.getElementById('project-settings'), 'closed', windowClosed);
-	on(document.getElementById('project-settings'), 'change', dataChange);
-	on(document.getElementById('project-confirm'), 'click', confirm);
-	document
-		.querySelectorAll(`#config-window-title, #config-window-width, #config-window-height,
-    #config-window-display, #config-resolution-width, #config-resolution-height,
-    #config-resolution-sceneScale, #config-resolution-uiScale,
-    #config-scene-padding, #config-scene-animationInterval,
-    #config-tileArea-expansionTop, #config-tileArea-expansionLeft,
-    #config-tileArea-expansionRight, #config-tileArea-expansionBottom,
-    #config-animationArea-expansionTop, #config-animationArea-expansionLeft,
-    #config-animationArea-expansionRight, #config-animationArea-expansionBottom,
-    #config-lightArea-expansionTop, #config-lightArea-expansionLeft,
-    #config-lightArea-expansionRight, #config-lightArea-expansionBottom,
-    #config-virtualAxis-up, #config-virtualAxis-down, #config-virtualAxis-left, #config-virtualAxis-right,
-    #config-collision-actor-enabled, #config-collision-scene-enabled, #config-collision-scene-actorSize,
-    #config-collision-trigger-collideWithActorShape, #config-text-fontFamily,
-    #config-text-highDefinition, #config-animation-frameRate,
-    #config-soundAttenuation-distance, #config-soundAttenuation-easingId,
-    #config-webgl-desynchronized, #config-webgl-textureMagFilter, #config-webgl-textureMinFilter,
-    #config-script-autoCompile, #config-save-location, #config-save-subdir,
-    #config-localization-languages, #config-localization-default, #config-preload, #config-deadzone`)
-		.forEach((el) => on(el, 'input', paramInput));
+	on(composableEls.get('project-settings'), 'close', windowClose);
+	on(composableEls.get('project-settings'), 'closed', windowClosed);
+	on(composableEls.get('project-settings'), 'change', dataChange);
+	// 确认按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到）→ 走 SFC 的 @confirm
+	for (const id of PARAM_IDS) {
+		const control = composableEls.get(id);
+		if (control) on(control, 'input', paramInput);
+	}
 }
 
 function open(): void {
@@ -302,17 +332,15 @@ function open(): void {
 
 	getProjectStore().state = 'open';
 
-	document
-		.getElementById('config-soundAttenuation-easingId')!
-		.loadItems(Data.createEasingItems());
+	el('config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
 
 	const data = getProjectStore().data;
 	if (data) {
 		Object.assign(form, data);
-		write(document.getElementById('config-virtualAxis-up'), data.virtualAxis.up);
-		write(document.getElementById('config-virtualAxis-down'), data.virtualAxis.down);
-		write(document.getElementById('config-virtualAxis-left'), data.virtualAxis.left);
-		write(document.getElementById('config-virtualAxis-right'), data.virtualAxis.right);
+		write(composableEls.get('config-virtualAxis-up'), data.virtualAxis.up);
+		write(composableEls.get('config-virtualAxis-down'), data.virtualAxis.down);
+		write(composableEls.get('config-virtualAxis-left'), data.virtualAxis.left);
+		write(composableEls.get('config-virtualAxis-right'), data.virtualAxis.right);
 	}
 }
 
@@ -454,17 +482,7 @@ const importedFonts: ImportedFonts = {
 
 const languages: LanguagesInterface = {
 	initialize: function (this: LanguagesInterface, list: { inserting?: boolean }) {
-		on(document.getElementById('language-confirm'), 'click', () => {
-			if (list.inserting) {
-				const languages = getProjectStore().data!.localization.languages;
-				const langName = read(document.getElementById('language-name'));
-				if (languages.find((lang: { name: string }) => lang.name === langName)) {
-					return requestFocus('language-name');
-				}
-			}
-			this.target?.save?.();
-			getWindowStore().close('language');
-		});
+		languageList = list;
 	},
 	parse: function (this: LanguagesInterface, language: { name: string }) {
 		return [
@@ -473,22 +491,37 @@ const languages: LanguagesInterface = {
 		];
 	},
 	open: function (language = { name: '', font: '', scale: 1 }) {
-		document.getElementById('language-name')!.loadItems(this.createAllItems());
-		document.getElementById('language-name')!.write2(language.name);
-		write(document.getElementById('language-font'), language.font);
-		write(document.getElementById('language-scale'), language.scale);
+		el('language-name').loadItems(this.createAllItems());
+		el('language-name').write2(language.name);
+		write(composableEls.get('language-font'), language.font);
+		write(composableEls.get('language-scale'), language.scale);
 		requestFocus('language-name');
 		getWindowStore().open('language');
 	},
+	/**
+	 * 语言窗口的确认：按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到），
+	 * 故由 `Language.vue` 的 `@confirm` 调用本方法（原先是在 `initialize` 里按 id 给按钮挂 click）。
+	 */
+	confirm: function (this: LanguagesInterface) {
+		if (languageList.inserting) {
+			const langList = getProjectStore().data!.localization.languages;
+			const langName = read(composableEls.get('language-name'));
+			if (langList.find((lang: { name: string }) => lang.name === langName)) {
+				return requestFocus('language-name');
+			}
+		}
+		this.target?.save?.();
+		getWindowStore().close('language');
+	},
 	save: function () {
 		return {
-			name: read(document.getElementById('language-name')),
-			font: read(document.getElementById('language-font')),
-			scale: read(document.getElementById('language-scale'))
+			name: read(composableEls.get('language-name')),
+			font: read(composableEls.get('language-font')),
+			scale: read(composableEls.get('language-scale'))
 		};
 	},
 	update: function () {
-		const selectBox = document.getElementById('config-localization-default')!;
+		const selectBox = el('config-localization-default');
 		const defaultLang = read(selectBox);
 		selectBox.loadItems(languages.createValidItems());
 		if (defaultLang) write(selectBox, defaultLang);

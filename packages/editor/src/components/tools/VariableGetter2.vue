@@ -10,26 +10,32 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter2-type.label') }}</div>
 			<SelectBox id="variableGetter2-type"
+				:ref="registryRef(composableEls, 'variableGetter2-type')"
 				v-tip="t('components.variableGetter2-type.tip')" />
 			<div class="text">{{ t('components.variableGetter2-element.label') }}</div>
 			<CustomBox id="variableGetter2-element"
+				:ref="registryRef(composableEls, 'variableGetter2-element')"
 				v-tip="t('components.variableGetter2-element.tip')" type="element" />
 			<div class="text">{{ t('components.variableGetter2-common-key.label') }}</div>
 			<TextBox id="variableGetter2-common-key"
+				:ref="registryRef(composableEls, 'variableGetter2-common-key')"
 				v-tip="t('components.variableGetter2-common-key.tip')" />
 			<div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div>
 			<SelectBox id="variableGetter2-preset-key"
+				:ref="registryRef(composableEls, 'variableGetter2-preset-key')"
 				v-tip="t('components.variableGetter2-preset-key.tip')" />
 			<div class="text">{{ t('components.variableGetter2-global-key.label') }}</div>
 			<CustomBox id="variableGetter2-global-key"
+				:ref="registryRef(composableEls, 'variableGetter2-global-key')"
 				v-tip="t('components.variableGetter2-global-key.tip')" type="global-variable" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import {
@@ -53,7 +59,7 @@ const setForm = (data: Partial<VariableGetterForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
@@ -65,7 +71,7 @@ const setForm = (data: Partial<VariableGetterForm>): void => {
 const getForm = (): VariableGetterForm => {
 	const data = { ...form } as VariableGetterForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {
