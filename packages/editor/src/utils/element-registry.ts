@@ -50,3 +50,10 @@ export const registryRef =
 export const registerElement = (registry: ElementRegistry, id: string, el: unknown): void => {
 	registryRef(registry, id)(el);
 };
+
+/**
+ * 按 id 列表取注册表里的元素（P1b：替代「一次批量取多个控件」的
+ * `document.querySelectorAll('#a, #b, …')`——返回顺序与传入 ids 一致，未登记的项跳过）。
+ */
+export const registryElements = (registry: ElementRegistry, ids: string[]): HTMLElement[] =>
+	ids.map((id) => registry.get(id)).filter((el): el is HTMLElement => el instanceof HTMLElement);

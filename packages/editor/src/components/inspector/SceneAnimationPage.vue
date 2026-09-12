@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneAnimation-general-grid">
 			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div>
 			<TextBox id="sceneAnimation-name"
+				:ref="registryRef(inspectorEls, 'sceneAnimation-name')"
 				v-tip="t('components.sceneAnimation-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}
@@ -41,6 +42,7 @@
 			<div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneAnimation-x"
+				:ref="registryRef(inspectorEls, 'sceneAnimation-x')"
 				v-tip="t('components.sceneAnimation-x.tip')"
 				v-model="form.x"
 				min="-128"
@@ -53,6 +55,7 @@
 			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneAnimation-y"
+				:ref="registryRef(inspectorEls, 'sceneAnimation-y')"
 				v-tip="t('components.sceneAnimation-y.tip')"
 				v-model="form.y"
 				min="-128"
@@ -219,10 +222,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { registryRef, registerElement, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -279,6 +281,19 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneAnimation-animationId', elAnimationId.value);
+	registerElement(inspectorEls, 'sceneAnimation-rotatable', elRotatable.value);
+	registerElement(inspectorEls, 'sceneAnimation-angle', elAngle.value);
+	registerElement(inspectorEls, 'sceneAnimation-scale', elScale.value);
+	registerElement(inspectorEls, 'sceneAnimation-speed', elSpeed.value);
+	registerElement(inspectorEls, 'sceneAnimation-opacity', elOpacity.value);
+	registerElement(inspectorEls, 'sceneAnimation-priority', elPriority.value);
+	registerElement(inspectorEls, 'sceneAnimation-angle-slider', elAngleSlider.value);
+	registerElement(inspectorEls, 'sceneAnimation-scale-slider', elScaleSlider.value);
+	registerElement(inspectorEls, 'sceneAnimation-speed-slider', elSpeedSlider.value);
+	registerElement(inspectorEls, 'sceneAnimation-opacity-slider', elOpacitySlider.value);
+	registerElement(inspectorEls, 'sceneAnimation-priority-slider', elPrioritySlider.value);
 	registerElement(inspectorEls, 'sceneAnimation-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneAnimation-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneAnimation-scripts', elScripts.value);
@@ -311,18 +326,29 @@ onMounted(() => {
 
 	elAnimationId.value?.on('write', editor.animationIdWrite);
 
-	const elements = document.querySelectorAll(
-		'#sceneAnimation-name, #sceneAnimation-animationId, #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y, #sceneAnimation-angle, #sceneAnimation-scale, #sceneAnimation-speed, #sceneAnimation-opacity, #sceneAnimation-priority'
-	);
-	const sliders = document.querySelectorAll(
-		'#sceneAnimation-angle-slider, #sceneAnimation-scale-slider, #sceneAnimation-speed-slider, #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider'
-	);
+	const elements = registryElements(inspectorEls, [
+		'sceneAnimation-name',
+		'sceneAnimation-animationId',
+		'sceneAnimation-motion',
+		'sceneAnimation-rotatable',
+		'sceneAnimation-x',
+		'sceneAnimation-y',
+		'sceneAnimation-angle',
+		'sceneAnimation-scale',
+		'sceneAnimation-speed',
+		'sceneAnimation-opacity',
+		'sceneAnimation-priority'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'sceneAnimation-angle-slider',
+		'sceneAnimation-scale-slider',
+		'sceneAnimation-speed-slider',
+		'sceneAnimation-opacity-slider',
+		'sceneAnimation-priority-slider'
+	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	document
-		.querySelectorAll(
-			'#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts'
-		)
+	registryElements(inspectorEls, ['sceneAnimation-conditions', 'sceneAnimation-events', 'sceneAnimation-scripts'])
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

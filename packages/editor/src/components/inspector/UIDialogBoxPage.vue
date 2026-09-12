@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiDialogBox-content.label') || 'Content' }}</div>
 			<TextArea
 				id="uiDialogBox-content"
+				:ref="registryRef(inspectorEls, 'uiDialogBox-content')"
 				v-tip="t('components.uiDialogBox-content.tip')"
 				:model-value="form.content"
 				menu="tag-localization"
@@ -17,6 +18,7 @@
 			</div>
 			<NumberBox
 				id="uiDialogBox-interval"
+				:ref="registryRef(inspectorEls, 'uiDialogBox-interval')"
 				v-tip="t('components.uiDialogBox-interval.tip')"
 				v-model="form.interval"
 				min="0"
@@ -94,9 +96,11 @@
 			</div>
 			<div class="text">{{ t('components.uiDialogBox-color.label') || 'Color' }}</div>
 			<ColorBox id="uiDialogBox-color"
+				:ref="registryRef(inspectorEls, 'uiDialogBox-color')"
 				v-tip="t('components.uiDialogBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div>
 			<TextBox id="uiDialogBox-font"
+				:ref="registryRef(inspectorEls, 'uiDialogBox-font')"
 				v-tip="t('components.uiDialogBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
@@ -176,8 +180,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { registryElements, registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
@@ -233,6 +237,20 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiDialogBox-size', elSize.value);
+	registerElement(inspectorEls, 'uiDialogBox-lineSpacing', elLineSpacing.value);
+	registerElement(inspectorEls, 'uiDialogBox-letterSpacing', elLetterSpacing.value);
+	registerElement(inspectorEls, 'uiDialogBox-typeface', elTypeface.value);
+	registerElement(inspectorEls, 'uiDialogBox-effect-type', elEffectType.value);
+	registerElement(inspectorEls, 'uiDialogBox-effect-shadowOffsetX', elShadowOffsetX.value);
+	registerElement(inspectorEls, 'uiDialogBox-effect-shadowOffsetY', elShadowOffsetY.value);
+	registerElement(inspectorEls, 'uiDialogBox-effect-strokeWidth', elStrokeWidth.value);
+	registerElement(inspectorEls, 'uiDialogBox-effect-color', elEffectColor.value);
+	registerElement(inspectorEls, 'uiDialogBox-blend', elBlend.value);
+	registerElement(inspectorEls, 'uiDialogBox-size-slider', elSizeSlider.value);
+	registerElement(inspectorEls, 'uiDialogBox-lineSpacing-slider', elLineSpacingSlider.value);
+	registerElement(inspectorEls, 'uiDialogBox-letterSpacing-slider', elLetterSpacingSlider.value);
 	const uiDialogBox = Inspector.uiDialogBox;
 	if (!uiDialogBox) return;
 
@@ -274,13 +292,23 @@ onMounted(() => {
 	]);
 
 	const elements =
-		document.querySelectorAll(`#uiDialogBox-content, #uiDialogBox-interval, #uiDialogBox-size,
-    #uiDialogBox-lineSpacing, #uiDialogBox-letterSpacing, #uiDialogBox-color, #uiDialogBox-font,
-    #uiDialogBox-typeface, #uiDialogBox-effect-type, #uiDialogBox-effect-shadowOffsetX, #uiDialogBox-effect-shadowOffsetY,
-    #uiDialogBox-effect-strokeWidth, #uiDialogBox-effect-color, #uiDialogBox-blend`);
-	const sliders = document.querySelectorAll(
-		'#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider'
-	);
+		registryElements(inspectorEls, [
+		'uiDialogBox-content',
+		'uiDialogBox-interval',
+		'uiDialogBox-size',
+		'uiDialogBox-lineSpacing',
+		'uiDialogBox-letterSpacing',
+		'uiDialogBox-color',
+		'uiDialogBox-font',
+		'uiDialogBox-typeface',
+		'uiDialogBox-effect-type',
+		'uiDialogBox-effect-shadowOffsetX',
+		'uiDialogBox-effect-shadowOffsetY',
+		'uiDialogBox-effect-strokeWidth',
+		'uiDialogBox-effect-color',
+		'uiDialogBox-blend'
+	]);
+	const sliders = registryElements(inspectorEls, ['uiDialogBox-size-slider', 'uiDialogBox-lineSpacing-slider', 'uiDialogBox-letterSpacing-slider']);
 	bindInput(elements, uiDialogBox, UI);
 	bindSliders(sliders);
 

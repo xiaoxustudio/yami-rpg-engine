@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
+import {
+	createElementRegistry,
+	registerElement,
+	registryElements,
+	registryRef
+} from '@app/utils/element-registry';
 
 /**
  * P1b：`createElementRegistry(mirror)` 的镜像语义——**写入时**同步（含卸载时的 `null`），
@@ -60,5 +65,23 @@ describe('元素注册表（element-registry）', () => {
 		registryRef(local, 'dup')(first);
 		registryRef(local, 'dup')(second);
 		expect(shared.get('dup')).toBe(second);
+	});
+
+	it('registryElements：按 id 列表取元素，保持顺序并跳过未登记项', () => {
+		const registry = createElementRegistry();
+		const a = document.createElement('div');
+		const b = document.createElement('div');
+		a.id = 'a';
+		b.id = 'b';
+
+		registryRef(registry, 'a')(a);
+		registryRef(registry, 'b')(b);
+
+		expect(registryElements(registry, ['b', 'a'])).toEqual([b, a]);
+		// 未登记 / 已清空的键直接跳过（不产生 undefined 占位）
+		expect(registryElements(registry, ['a', 'missing', 'b'])).toEqual([a, b]);
+		registryRef(registry, 'a')(null);
+		expect(registryElements(registry, ['a', 'b'])).toEqual([b]);
+		expect(registryElements(registry, [])).toEqual([]);
 	});
 });

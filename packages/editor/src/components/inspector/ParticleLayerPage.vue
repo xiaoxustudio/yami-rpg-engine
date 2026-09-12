@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="particleLayer-general-grid">
 			<div class="text">{{ t('components.particleLayer-name.label') || 'Name' }}</div>
 			<TextBox id="particleLayer-name"
+				:ref="registryRef(inspectorEls, 'particleLayer-name')"
 				v-tip="t('components.particleLayer-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.particleLayer-area-type.label') || 'Emission Area' }}
@@ -81,6 +82,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-count"
+				:ref="registryRef(inspectorEls, 'particleLayer-count')"
 				v-tip="t('components.particleLayer-count.tip')"
 				v-model="form.count"
 				@input="onParamInput"
@@ -92,6 +94,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-delay"
+				:ref="registryRef(inspectorEls, 'particleLayer-delay')"
 				v-tip="t('components.particleLayer-delay.tip')"
 				v-model="form.delay"
 				@input="onParamInput"
@@ -102,6 +105,7 @@
 			<div class="text">{{ t('components.particleLayer-interval.label') || 'Interval' }}</div>
 			<NumberBox
 				id="particleLayer-interval"
+				:ref="registryRef(inspectorEls, 'particleLayer-interval')"
 				v-tip="t('components.particleLayer-interval.tip')"
 				v-model="form.interval"
 				@input="onParamInput"
@@ -112,6 +116,7 @@
 			<div class="text">{{ t('components.particleLayer-lifetime.label') || 'Lifetime' }}</div>
 			<NumberBox
 				id="particleLayer-lifetime"
+				:ref="registryRef(inspectorEls, 'particleLayer-lifetime')"
 				v-tip="t('components.particleLayer-lifetime.tip')"
 				v-model="form.lifetime"
 				@input="onParamInput"
@@ -124,6 +129,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-lifetimeDev"
+				:ref="registryRef(inspectorEls, 'particleLayer-lifetimeDev')"
 				v-tip="t('components.particleLayer-lifetimeDev.tip')"
 				v-model="form.lifetimeDev"
 				@input="onParamInput"
@@ -134,6 +140,7 @@
 			<div class="text">{{ t('components.particleLayer-fadeout.label') || 'Fadeout' }}</div>
 			<NumberBox
 				id="particleLayer-fadeout"
+				:ref="registryRef(inspectorEls, 'particleLayer-fadeout')"
 				v-tip="t('components.particleLayer-fadeout.tip')"
 				v-model="form.fadeout"
 				@input="onParamInput"
@@ -154,6 +161,7 @@
 			<div class="flex-box" id="particleLayer-anchor-x-box">
 				<NumberBox
 					id="particleLayer-anchor-x-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-x-0')"
 				v-tip="t('components.particleLayer-anchor-x-0.tip')"
 					v-model="form.anchor.x[0]"
 					@input="onParamInput"
@@ -165,6 +173,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-x-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-x-1')"
 				v-tip="t('components.particleLayer-anchor-x-1.tip')"
 					v-model="form.anchor.x[1]"
 					@input="onParamInput"
@@ -181,6 +190,7 @@
 			<div class="flex-box" id="particleLayer-anchor-y-box">
 				<NumberBox
 					id="particleLayer-anchor-y-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-y-0')"
 				v-tip="t('components.particleLayer-anchor-y-0.tip')"
 					v-model="form.anchor.y[0]"
 					@input="onParamInput"
@@ -192,6 +202,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-y-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-y-1')"
 				v-tip="t('components.particleLayer-anchor-y-1.tip')"
 					v-model="form.anchor.y[1]"
 					@input="onParamInput"
@@ -208,6 +219,7 @@
 			<div class="flex-box" id="particleLayer-anchor-speedX-box">
 				<NumberBox
 					id="particleLayer-anchor-speedX-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedX-0')"
 				v-tip="t('components.particleLayer-anchor-speedX-0.tip')"
 					v-model="form.anchor.speedX[0]"
 					@input="onParamInput"
@@ -219,6 +231,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-speedX-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedX-1')"
 				v-tip="t('components.particleLayer-anchor-speedX-1.tip')"
 					v-model="form.anchor.speedX[1]"
 					@input="onParamInput"
@@ -235,6 +248,7 @@
 			<div class="flex-box" id="particleLayer-anchor-speedY-box">
 				<NumberBox
 					id="particleLayer-anchor-speedY-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedY-0')"
 				v-tip="t('components.particleLayer-anchor-speedY-0.tip')"
 					v-model="form.anchor.speedY[0]"
 					@input="onParamInput"
@@ -246,6 +260,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-speedY-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedY-1')"
 				v-tip="t('components.particleLayer-anchor-speedY-1.tip')"
 					v-model="form.anchor.speedY[1]"
 					@input="onParamInput"
@@ -269,6 +284,7 @@
 			<div class="flex-box" id="particleLayer-movement-angle-box">
 				<NumberBox
 					id="particleLayer-movement-angle-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-angle-0')"
 				v-tip="t('components.particleLayer-movement-angle-0.tip')"
 					v-model="form.movement.angle[0]"
 					@input="onParamInput"
@@ -281,6 +297,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-angle-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-angle-1')"
 				v-tip="t('components.particleLayer-movement-angle-1.tip')"
 					v-model="form.movement.angle[1]"
 					@input="onParamInput"
@@ -298,6 +315,7 @@
 			<div class="flex-box" id="particleLayer-movement-speed-box">
 				<NumberBox
 					id="particleLayer-movement-speed-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-speed-0')"
 				v-tip="t('components.particleLayer-movement-speed-0.tip')"
 					v-model="form.movement.speed[0]"
 					@input="onParamInput"
@@ -308,6 +326,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-speed-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-speed-1')"
 				v-tip="t('components.particleLayer-movement-speed-1.tip')"
 					v-model="form.movement.speed[1]"
 					@input="onParamInput"
@@ -323,6 +342,7 @@
 			<div class="flex-box" id="particleLayer-movement-accelAngle-box">
 				<NumberBox
 					id="particleLayer-movement-accelAngle-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-accelAngle-0')"
 				v-tip="t('components.particleLayer-movement-accelAngle-0.tip')"
 					v-model="form.movement.accelAngle[0]"
 					@input="onParamInput"
@@ -335,6 +355,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accelAngle-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-accelAngle-1')"
 				v-tip="t('components.particleLayer-movement-accelAngle-1.tip')"
 					v-model="form.movement.accelAngle[1]"
 					@input="onParamInput"
@@ -352,6 +373,7 @@
 			<div class="flex-box" id="particleLayer-movement-accel-box">
 				<NumberBox
 					id="particleLayer-movement-accel-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-accel-0')"
 				v-tip="t('components.particleLayer-movement-accel-0.tip')"
 					v-model="form.movement.accel[0]"
 					@input="onParamInput"
@@ -362,6 +384,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accel-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-movement-accel-1')"
 				v-tip="t('components.particleLayer-movement-accel-1.tip')"
 					v-model="form.movement.accel[1]"
 					@input="onParamInput"
@@ -384,6 +407,7 @@
 			<div class="flex-box" id="particleLayer-rotation-angle-box">
 				<NumberBox
 					id="particleLayer-rotation-angle-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-angle-0')"
 				v-tip="t('components.particleLayer-rotation-angle-0.tip')"
 					v-model="form.rotation.angle[0]"
 					@input="onParamInput"
@@ -396,6 +420,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-angle-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-angle-1')"
 				v-tip="t('components.particleLayer-rotation-angle-1.tip')"
 					v-model="form.rotation.angle[1]"
 					@input="onParamInput"
@@ -413,6 +438,7 @@
 			<div class="flex-box" id="particleLayer-rotation-speed-box">
 				<NumberBox
 					id="particleLayer-rotation-speed-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-speed-0')"
 				v-tip="t('components.particleLayer-rotation-speed-0.tip')"
 					v-model="form.rotation.speed[0]"
 					@input="onParamInput"
@@ -424,6 +450,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-speed-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-speed-1')"
 				v-tip="t('components.particleLayer-rotation-speed-1.tip')"
 					v-model="form.rotation.speed[1]"
 					@input="onParamInput"
@@ -440,6 +467,7 @@
 			<div class="flex-box" id="particleLayer-rotation-accel-box">
 				<NumberBox
 					id="particleLayer-rotation-accel-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-accel-0')"
 				v-tip="t('components.particleLayer-rotation-accel-0.tip')"
 					v-model="form.rotation.accel[0]"
 					@input="onParamInput"
@@ -451,6 +479,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-accel-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-rotation-accel-1')"
 				v-tip="t('components.particleLayer-rotation-accel-1.tip')"
 					v-model="form.rotation.accel[1]"
 					@input="onParamInput"
@@ -474,6 +503,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-radius-box">
 				<NumberBox
 					id="particleLayer-hRotation-radius-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-radius-0')"
 				v-tip="t('components.particleLayer-hRotation-radius-0.tip')"
 					v-model="form.hRotation.radius[0]"
 					@input="onParamInput"
@@ -485,6 +515,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-radius-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-radius-1')"
 				v-tip="t('components.particleLayer-hRotation-radius-1.tip')"
 					v-model="form.hRotation.radius[1]"
 					@input="onParamInput"
@@ -504,6 +535,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-expansionSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionSpeed-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionSpeed-0')"
 				v-tip="t('components.particleLayer-hRotation-expansionSpeed-0.tip')"
 					v-model="form.hRotation.expansionSpeed[0]"
 					@input="onParamInput"
@@ -514,6 +546,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-expansionSpeed-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionSpeed-1')"
 				v-tip="t('components.particleLayer-hRotation-expansionSpeed-1.tip')"
 					v-model="form.hRotation.expansionSpeed[1]"
 					@input="onParamInput"
@@ -532,6 +565,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-expansionAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionAccel-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionAccel-0')"
 				v-tip="t('components.particleLayer-hRotation-expansionAccel-0.tip')"
 					v-model="form.hRotation.expansionAccel[0]"
 					@input="onParamInput"
@@ -542,6 +576,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-expansionAccel-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionAccel-1')"
 				v-tip="t('components.particleLayer-hRotation-expansionAccel-1.tip')"
 					v-model="form.hRotation.expansionAccel[1]"
 					@input="onParamInput"
@@ -557,6 +592,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angle-box">
 				<NumberBox
 					id="particleLayer-hRotation-angle-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angle-0')"
 				v-tip="t('components.particleLayer-hRotation-angle-0.tip')"
 					v-model="form.hRotation.angle[0]"
 					@input="onParamInput"
@@ -569,6 +605,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angle-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angle-1')"
 				v-tip="t('components.particleLayer-hRotation-angle-1.tip')"
 					v-model="form.hRotation.angle[1]"
 					@input="onParamInput"
@@ -589,6 +626,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angularSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularSpeed-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularSpeed-0')"
 				v-tip="t('components.particleLayer-hRotation-angularSpeed-0.tip')"
 					v-model="form.hRotation.angularSpeed[0]"
 					@input="onParamInput"
@@ -600,6 +638,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angularSpeed-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularSpeed-1')"
 				v-tip="t('components.particleLayer-hRotation-angularSpeed-1.tip')"
 					v-model="form.hRotation.angularSpeed[1]"
 					@input="onParamInput"
@@ -619,6 +658,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angularAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularAccel-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularAccel-0')"
 				v-tip="t('components.particleLayer-hRotation-angularAccel-0.tip')"
 					v-model="form.hRotation.angularAccel[0]"
 					@input="onParamInput"
@@ -630,6 +670,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angularAccel-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularAccel-1')"
 				v-tip="t('components.particleLayer-hRotation-angularAccel-1.tip')"
 					v-model="form.hRotation.angularAccel[1]"
 					@input="onParamInput"
@@ -653,6 +694,7 @@
 			<div class="flex-box" id="particleLayer-scale-factor-box">
 				<NumberBox
 					id="particleLayer-scale-factor-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-factor-0')"
 				v-tip="t('components.particleLayer-scale-factor-0.tip')"
 					v-model="form.scale.factor[0]"
 					@input="onParamInput"
@@ -664,6 +706,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-factor-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-factor-1')"
 				v-tip="t('components.particleLayer-scale-factor-1.tip')"
 					v-model="form.scale.factor[1]"
 					@input="onParamInput"
@@ -680,6 +723,7 @@
 			<div class="flex-box" id="particleLayer-scale-speed-box">
 				<NumberBox
 					id="particleLayer-scale-speed-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-speed-0')"
 				v-tip="t('components.particleLayer-scale-speed-0.tip')"
 					v-model="form.scale.speed[0]"
 					@input="onParamInput"
@@ -691,6 +735,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-speed-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-speed-1')"
 				v-tip="t('components.particleLayer-scale-speed-1.tip')"
 					v-model="form.scale.speed[1]"
 					@input="onParamInput"
@@ -707,6 +752,7 @@
 			<div class="flex-box" id="particleLayer-scale-accel-box">
 				<NumberBox
 					id="particleLayer-scale-accel-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-accel-0')"
 				v-tip="t('components.particleLayer-scale-accel-0.tip')"
 					v-model="form.scale.accel[0]"
 					@input="onParamInput"
@@ -718,6 +764,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-accel-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-scale-accel-1')"
 				v-tip="t('components.particleLayer-scale-accel-1.tip')"
 					v-model="form.scale.accel[1]"
 					@input="onParamInput"
@@ -738,6 +785,7 @@
 			<div class="text">{{ t('components.particleLayer-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="particleLayer-image"
+				:ref="registryRef(inspectorEls, 'particleLayer-image')"
 				v-tip="t('components.particleLayer-image.tip')"
 				type="file"
 				filter="image"
@@ -785,6 +833,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-hframes"
+				:ref="registryRef(inspectorEls, 'particleLayer-sprite-hframes')"
 				v-tip="t('components.particleLayer-sprite-hframes.tip')"
 				v-model="form.sprite.hframes"
 				@input="onParamInput"
@@ -796,6 +845,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-vframes"
+				:ref="registryRef(inspectorEls, 'particleLayer-sprite-vframes')"
 				v-tip="t('components.particleLayer-sprite-vframes.tip')"
 				v-model="form.sprite.vframes"
 				@input="onParamInput"
@@ -831,6 +881,7 @@
 			<div class="flex-box" id="particleLayer-color-rgba-box" ref="elColorRgbaBox">
 				<NumberBox
 					id="particleLayer-color-rgba-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-0')"
 				v-tip="t('components.particleLayer-color-rgba-0.tip')"
 					v-model="form.color.rgba[0]"
 					@input="onParamInput"
@@ -841,6 +892,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-1')"
 				v-tip="t('components.particleLayer-color-rgba-1.tip')"
 					v-model="form.color.rgba[1]"
 					@input="onParamInput"
@@ -851,6 +903,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-2')"
 				v-tip="t('components.particleLayer-color-rgba-2.tip')"
 					v-model="form.color.rgba[2]"
 					@input="onParamInput"
@@ -861,6 +914,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-3')"
 				v-tip="t('components.particleLayer-color-rgba-3.tip')"
 					v-model="form.color.rgba[3]"
 					@input="onParamInput"
@@ -876,6 +930,7 @@
 			<div class="flex-box" id="particleLayer-color-min-box" ref="elColorMinBox">
 				<NumberBox
 					id="particleLayer-color-min-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-min-0')"
 				v-tip="t('components.particleLayer-color-min-0.tip')"
 					v-model="form.color.min[0]"
 					@input="onParamInput"
@@ -886,6 +941,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-min-1')"
 				v-tip="t('components.particleLayer-color-min-1.tip')"
 					v-model="form.color.min[1]"
 					@input="onParamInput"
@@ -896,6 +952,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-min-2')"
 				v-tip="t('components.particleLayer-color-min-2.tip')"
 					v-model="form.color.min[2]"
 					@input="onParamInput"
@@ -906,6 +963,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-min-3')"
 				v-tip="t('components.particleLayer-color-min-3.tip')"
 					v-model="form.color.min[3]"
 					@input="onParamInput"
@@ -921,6 +979,7 @@
 			<div class="flex-box" id="particleLayer-color-max-box" ref="elColorMaxBox">
 				<NumberBox
 					id="particleLayer-color-max-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-max-0')"
 				v-tip="t('components.particleLayer-color-max-0.tip')"
 					v-model="form.color.max[0]"
 					@input="onParamInput"
@@ -931,6 +990,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-max-1')"
 				v-tip="t('components.particleLayer-color-max-1.tip')"
 					v-model="form.color.max[1]"
 					@input="onParamInput"
@@ -941,6 +1001,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-max-2')"
 				v-tip="t('components.particleLayer-color-max-2.tip')"
 					v-model="form.color.max[2]"
 					@input="onParamInput"
@@ -951,6 +1012,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-max-3')"
 				v-tip="t('components.particleLayer-color-max-3.tip')"
 					v-model="form.color.max[3]"
 					@input="onParamInput"
@@ -976,6 +1038,7 @@
 			<div class="flex-box" id="particleLayer-color-startMin-box" ref="elColorStartMinBox">
 				<NumberBox
 					id="particleLayer-color-startMin-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-0')"
 				v-tip="t('components.particleLayer-color-startMin-0.tip')"
 					v-model="form.color.startMin[0]"
 					@input="onParamInput"
@@ -986,6 +1049,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-1')"
 				v-tip="t('components.particleLayer-color-startMin-1.tip')"
 					v-model="form.color.startMin[1]"
 					@input="onParamInput"
@@ -996,6 +1060,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-2')"
 				v-tip="t('components.particleLayer-color-startMin-2.tip')"
 					v-model="form.color.startMin[2]"
 					@input="onParamInput"
@@ -1006,6 +1071,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-3')"
 				v-tip="t('components.particleLayer-color-startMin-3.tip')"
 					v-model="form.color.startMin[3]"
 					@input="onParamInput"
@@ -1021,6 +1087,7 @@
 			<div class="flex-box" id="particleLayer-color-startMax-box" ref="elColorStartMaxBox">
 				<NumberBox
 					id="particleLayer-color-startMax-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-0')"
 				v-tip="t('components.particleLayer-color-startMax-0.tip')"
 					v-model="form.color.startMax[0]"
 					@input="onParamInput"
@@ -1031,6 +1098,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-1')"
 				v-tip="t('components.particleLayer-color-startMax-1.tip')"
 					v-model="form.color.startMax[1]"
 					@input="onParamInput"
@@ -1041,6 +1109,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-2')"
 				v-tip="t('components.particleLayer-color-startMax-2.tip')"
 					v-model="form.color.startMax[2]"
 					@input="onParamInput"
@@ -1051,6 +1120,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-3')"
 				v-tip="t('components.particleLayer-color-startMax-3.tip')"
 					v-model="form.color.startMax[3]"
 					@input="onParamInput"
@@ -1066,6 +1136,7 @@
 			<div class="flex-box" id="particleLayer-color-endMin-box" ref="elColorEndMinBox">
 				<NumberBox
 					id="particleLayer-color-endMin-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-0')"
 				v-tip="t('components.particleLayer-color-endMin-0.tip')"
 					v-model="form.color.endMin[0]"
 					@input="onParamInput"
@@ -1076,6 +1147,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-1')"
 				v-tip="t('components.particleLayer-color-endMin-1.tip')"
 					v-model="form.color.endMin[1]"
 					@input="onParamInput"
@@ -1086,6 +1158,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-2')"
 				v-tip="t('components.particleLayer-color-endMin-2.tip')"
 					v-model="form.color.endMin[2]"
 					@input="onParamInput"
@@ -1096,6 +1169,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-3')"
 				v-tip="t('components.particleLayer-color-endMin-3.tip')"
 					v-model="form.color.endMin[3]"
 					@input="onParamInput"
@@ -1111,6 +1185,7 @@
 			<div class="flex-box" id="particleLayer-color-endMax-box" ref="elColorEndMaxBox">
 				<NumberBox
 					id="particleLayer-color-endMax-0"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-0')"
 				v-tip="t('components.particleLayer-color-endMax-0.tip')"
 					v-model="form.color.endMax[0]"
 					@input="onParamInput"
@@ -1121,6 +1196,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-1"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-1')"
 				v-tip="t('components.particleLayer-color-endMax-1.tip')"
 					v-model="form.color.endMax[1]"
 					@input="onParamInput"
@@ -1131,6 +1207,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-2"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-2')"
 				v-tip="t('components.particleLayer-color-endMax-2.tip')"
 					v-model="form.color.endMax[2]"
 					@input="onParamInput"
@@ -1141,6 +1218,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-3"
+				:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-3')"
 				v-tip="t('components.particleLayer-color-endMax-3.tip')"
 					v-model="form.color.endMax[3]"
 					@input="onParamInput"
@@ -1247,10 +1325,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -1319,6 +1396,27 @@ const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'particleLayer-area-type', elAreaType.value);
+	registerElement(inspectorEls, 'particleLayer-area-x', elAreaX.value);
+	registerElement(inspectorEls, 'particleLayer-area-y', elAreaY.value);
+	registerElement(inspectorEls, 'particleLayer-area-width', elAreaWidth.value);
+	registerElement(inspectorEls, 'particleLayer-area-height', elAreaHeight.value);
+	registerElement(inspectorEls, 'particleLayer-area-radius', elAreaRadius.value);
+	registerElement(inspectorEls, 'particleLayer-blend', elBlend.value);
+	registerElement(inspectorEls, 'particleLayer-light', elLight.value);
+	registerElement(inspectorEls, 'particleLayer-sort', elSort.value);
+	registerElement(inspectorEls, 'particleLayer-sprite-mode', elSpriteMode.value);
+	registerElement(inspectorEls, 'particleLayer-sprite-interval', elSpriteInterval.value);
+	registerElement(inspectorEls, 'particleLayer-color-mode', elColorMode.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-0', elTint0.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-1', elTint1.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-2', elTint2.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-3', elTint3.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-0-slider', elTint0Slider.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-1-slider', elTint1Slider.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-2-slider', elTint2Slider.value);
+	registerElement(inspectorEls, 'particleLayer-color-tint-3-slider', elTint3Slider.value);
 	registerElement(inspectorEls, 'particleLayer-color-easingId', elColorEasingId.value);
 	const editor = Inspector.particleLayer;
 	if (!editor) return;
@@ -1438,12 +1536,109 @@ onMounted(() => {
 	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);
 	elTint3Slider.value?.synchronize(elTint3.value?.root as SyncTarget);
 
-	const elements = document.querySelectorAll(
-		'#particleLayer-name, #particleLayer-area-type, #particleLayer-area-x, #particleLayer-area-y, #particleLayer-area-width, #particleLayer-area-height, #particleLayer-area-radius, #particleLayer-count, #particleLayer-delay, #particleLayer-interval, #particleLayer-lifetime, #particleLayer-lifetimeDev, #particleLayer-fadeout, #particleLayer-anchor-x-0, #particleLayer-anchor-x-1, #particleLayer-anchor-y-0, #particleLayer-anchor-y-1, #particleLayer-anchor-speedX-0, #particleLayer-anchor-speedX-1, #particleLayer-anchor-speedY-0, #particleLayer-anchor-speedY-1, #particleLayer-movement-angle-0, #particleLayer-movement-angle-1, #particleLayer-movement-speed-0, #particleLayer-movement-speed-1, #particleLayer-movement-accelAngle-0, #particleLayer-movement-accelAngle-1, #particleLayer-movement-accel-0, #particleLayer-movement-accel-1, #particleLayer-rotation-angle-0, #particleLayer-rotation-angle-1, #particleLayer-rotation-speed-0, #particleLayer-rotation-speed-1, #particleLayer-rotation-accel-0, #particleLayer-rotation-accel-1, #particleLayer-hRotation-radius-0, #particleLayer-hRotation-radius-1, #particleLayer-hRotation-expansionSpeed-0, #particleLayer-hRotation-expansionSpeed-1, #particleLayer-hRotation-expansionAccel-0, #particleLayer-hRotation-expansionAccel-1, #particleLayer-hRotation-angle-0, #particleLayer-hRotation-angle-1, #particleLayer-hRotation-angularSpeed-0, #particleLayer-hRotation-angularSpeed-1, #particleLayer-hRotation-angularAccel-0, #particleLayer-hRotation-angularAccel-1, #particleLayer-scale-factor-0, #particleLayer-scale-factor-1, #particleLayer-scale-speed-0, #particleLayer-scale-speed-1, #particleLayer-scale-accel-0, #particleLayer-scale-accel-1, #particleLayer-image, #particleLayer-blend, #particleLayer-light, #particleLayer-sort, #particleLayer-sprite-mode, #particleLayer-sprite-hframes, #particleLayer-sprite-vframes, #particleLayer-sprite-interval, #particleLayer-color-mode, #particleLayer-color-rgba-0, #particleLayer-color-rgba-1, #particleLayer-color-rgba-2, #particleLayer-color-rgba-3, #particleLayer-color-min-0, #particleLayer-color-min-1, #particleLayer-color-min-2, #particleLayer-color-min-3, #particleLayer-color-max-0, #particleLayer-color-max-1, #particleLayer-color-max-2, #particleLayer-color-max-3, #particleLayer-color-easingId, #particleLayer-color-startMin-0, #particleLayer-color-startMin-1, #particleLayer-color-startMin-2, #particleLayer-color-startMin-3, #particleLayer-color-startMax-0, #particleLayer-color-startMax-1, #particleLayer-color-startMax-2, #particleLayer-color-startMax-3, #particleLayer-color-endMin-0, #particleLayer-color-endMin-1, #particleLayer-color-endMin-2, #particleLayer-color-endMin-3, #particleLayer-color-endMax-0, #particleLayer-color-endMax-1, #particleLayer-color-endMax-2, #particleLayer-color-endMax-3, #particleLayer-color-tint-0, #particleLayer-color-tint-1, #particleLayer-color-tint-2, #particleLayer-color-tint-3'
-	);
-	const sliders = document.querySelectorAll(
-		'#particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider, #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider'
-	);
+	const elements = registryElements(inspectorEls, [
+		'particleLayer-name',
+		'particleLayer-area-type',
+		'particleLayer-area-x',
+		'particleLayer-area-y',
+		'particleLayer-area-width',
+		'particleLayer-area-height',
+		'particleLayer-area-radius',
+		'particleLayer-count',
+		'particleLayer-delay',
+		'particleLayer-interval',
+		'particleLayer-lifetime',
+		'particleLayer-lifetimeDev',
+		'particleLayer-fadeout',
+		'particleLayer-anchor-x-0',
+		'particleLayer-anchor-x-1',
+		'particleLayer-anchor-y-0',
+		'particleLayer-anchor-y-1',
+		'particleLayer-anchor-speedX-0',
+		'particleLayer-anchor-speedX-1',
+		'particleLayer-anchor-speedY-0',
+		'particleLayer-anchor-speedY-1',
+		'particleLayer-movement-angle-0',
+		'particleLayer-movement-angle-1',
+		'particleLayer-movement-speed-0',
+		'particleLayer-movement-speed-1',
+		'particleLayer-movement-accelAngle-0',
+		'particleLayer-movement-accelAngle-1',
+		'particleLayer-movement-accel-0',
+		'particleLayer-movement-accel-1',
+		'particleLayer-rotation-angle-0',
+		'particleLayer-rotation-angle-1',
+		'particleLayer-rotation-speed-0',
+		'particleLayer-rotation-speed-1',
+		'particleLayer-rotation-accel-0',
+		'particleLayer-rotation-accel-1',
+		'particleLayer-hRotation-radius-0',
+		'particleLayer-hRotation-radius-1',
+		'particleLayer-hRotation-expansionSpeed-0',
+		'particleLayer-hRotation-expansionSpeed-1',
+		'particleLayer-hRotation-expansionAccel-0',
+		'particleLayer-hRotation-expansionAccel-1',
+		'particleLayer-hRotation-angle-0',
+		'particleLayer-hRotation-angle-1',
+		'particleLayer-hRotation-angularSpeed-0',
+		'particleLayer-hRotation-angularSpeed-1',
+		'particleLayer-hRotation-angularAccel-0',
+		'particleLayer-hRotation-angularAccel-1',
+		'particleLayer-scale-factor-0',
+		'particleLayer-scale-factor-1',
+		'particleLayer-scale-speed-0',
+		'particleLayer-scale-speed-1',
+		'particleLayer-scale-accel-0',
+		'particleLayer-scale-accel-1',
+		'particleLayer-image',
+		'particleLayer-blend',
+		'particleLayer-light',
+		'particleLayer-sort',
+		'particleLayer-sprite-mode',
+		'particleLayer-sprite-hframes',
+		'particleLayer-sprite-vframes',
+		'particleLayer-sprite-interval',
+		'particleLayer-color-mode',
+		'particleLayer-color-rgba-0',
+		'particleLayer-color-rgba-1',
+		'particleLayer-color-rgba-2',
+		'particleLayer-color-rgba-3',
+		'particleLayer-color-min-0',
+		'particleLayer-color-min-1',
+		'particleLayer-color-min-2',
+		'particleLayer-color-min-3',
+		'particleLayer-color-max-0',
+		'particleLayer-color-max-1',
+		'particleLayer-color-max-2',
+		'particleLayer-color-max-3',
+		'particleLayer-color-easingId',
+		'particleLayer-color-startMin-0',
+		'particleLayer-color-startMin-1',
+		'particleLayer-color-startMin-2',
+		'particleLayer-color-startMin-3',
+		'particleLayer-color-startMax-0',
+		'particleLayer-color-startMax-1',
+		'particleLayer-color-startMax-2',
+		'particleLayer-color-startMax-3',
+		'particleLayer-color-endMin-0',
+		'particleLayer-color-endMin-1',
+		'particleLayer-color-endMin-2',
+		'particleLayer-color-endMin-3',
+		'particleLayer-color-endMax-0',
+		'particleLayer-color-endMax-1',
+		'particleLayer-color-endMax-2',
+		'particleLayer-color-endMax-3',
+		'particleLayer-color-tint-0',
+		'particleLayer-color-tint-1',
+		'particleLayer-color-tint-2',
+		'particleLayer-color-tint-3'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'particleLayer-color-tint-0-slider',
+		'particleLayer-color-tint-1-slider',
+		'particleLayer-color-tint-2-slider',
+		'particleLayer-color-tint-3-slider'
+	]);
 	bindInput(elements, editor, Particle as unknown as { history: unknown });
 	bindSliders(sliders);
 	const refreshLocalizedItems = () => {

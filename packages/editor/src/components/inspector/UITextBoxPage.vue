@@ -83,6 +83,7 @@
 			<div class="text">{{ t('components.uiTextBox-padding.label') || 'Padding' }}</div>
 			<NumberBox
 				id="uiTextBox-padding"
+				:ref="registryRef(inspectorEls, 'uiTextBox-padding')"
 				v-tip="t('components.uiTextBox-padding.tip')"
 				v-model="form.padding"
 				min="0"
@@ -93,6 +94,7 @@
 			<div class="text">{{ t('components.uiTextBox-size.label') || 'Size' }}</div>
 			<NumberBox
 				id="uiTextBox-size"
+				:ref="registryRef(inspectorEls, 'uiTextBox-size')"
 				v-tip="t('components.uiTextBox-size.tip')"
 				v-model="form.size"
 				min="10"
@@ -102,15 +104,18 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-font.label') || 'Font' }}</div>
 			<TextBox id="uiTextBox-font"
+				:ref="registryRef(inspectorEls, 'uiTextBox-font')"
 				v-tip="t('components.uiTextBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiTextBox-color.label') || 'Text Color' }}</div>
 			<ColorBox id="uiTextBox-color"
+				:ref="registryRef(inspectorEls, 'uiTextBox-color')"
 				v-tip="t('components.uiTextBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">
 				{{ t('components.uiTextBox-selectionColor.label') || 'Selection Color' }}
 			</div>
 			<ColorBox
 				id="uiTextBox-selectionColor"
+				:ref="registryRef(inspectorEls, 'uiTextBox-selectionColor')"
 				v-tip="t('components.uiTextBox-selectionColor.tip')"
 				v-model="form.selectionColor"
 				@input="onParamInput"
@@ -120,6 +125,7 @@
 			</div>
 			<ColorBox
 				id="uiTextBox-selectionBgColor"
+				:ref="registryRef(inspectorEls, 'uiTextBox-selectionBgColor')"
 				v-tip="t('components.uiTextBox-selectionBgColor.tip')"
 				v-model="form.selectionBgColor"
 				@input="onParamInput"
@@ -129,10 +135,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -166,6 +171,14 @@ const elMax = ref<InstanceType<typeof NumberBox> | null>(null);
 const elDecimals = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiTextBox-type', elType.value);
+	registerElement(inspectorEls, 'uiTextBox-align', elAlign.value);
+	registerElement(inspectorEls, 'uiTextBox-text', elText.value);
+	registerElement(inspectorEls, 'uiTextBox-maxLength', elMaxLength.value);
+	registerElement(inspectorEls, 'uiTextBox-min', elMin.value);
+	registerElement(inspectorEls, 'uiTextBox-max', elMax.value);
+	registerElement(inspectorEls, 'uiTextBox-decimals', elDecimals.value);
 	registerElement(inspectorEls, 'uiTextBox-number', elNumber.value);
 	const uiTextBox = Inspector.uiTextBox;
 	if (!uiTextBox) return;
@@ -196,10 +209,22 @@ onMounted(() => {
 		}
 	]);
 
-	const elements = document.querySelectorAll(`#uiTextBox-type, #uiTextBox-align, #uiTextBox-text,
-    #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
-    #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
-    #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
+	const elements = registryElements(inspectorEls, [
+		'uiTextBox-type',
+		'uiTextBox-align',
+		'uiTextBox-text',
+		'uiTextBox-maxLength',
+		'uiTextBox-number',
+		'uiTextBox-min',
+		'uiTextBox-max',
+		'uiTextBox-decimals',
+		'uiTextBox-padding',
+		'uiTextBox-size',
+		'uiTextBox-font',
+		'uiTextBox-color',
+		'uiTextBox-selectionColor',
+		'uiTextBox-selectionBgColor'
+	]);
 	bindInput(elements, uiTextBox, UI);
 
 	const el = inspectorEls.get('uiTextBox-vue-mount');

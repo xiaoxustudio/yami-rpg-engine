@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneActor-general-grid">
 			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div>
 			<TextBox id="sceneActor-name"
+				:ref="registryRef(inspectorEls, 'sceneActor-name')"
 				v-tip="t('components.sceneActor-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
 			<SelectBox
@@ -19,6 +20,7 @@
 			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div>
 			<CustomBox
 				id="sceneActor-actorId"
+				:ref="registryRef(inspectorEls, 'sceneActor-actorId')"
 				v-tip="t('components.sceneActor-actorId.tip')"
 				:model-value="form.actorId"
 				type="file"
@@ -36,6 +38,7 @@
 			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneActor-x"
+				:ref="registryRef(inspectorEls, 'sceneActor-x')"
 				v-tip="t('components.sceneActor-x.tip')"
 				v-model="form.x"
 				min="-128"
@@ -47,6 +50,7 @@
 			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneActor-y"
+				:ref="registryRef(inspectorEls, 'sceneActor-y')"
 				v-tip="t('components.sceneActor-y.tip')"
 				v-model="form.y"
 				min="-128"
@@ -140,10 +144,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { registryRef, registerElement, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -202,6 +205,12 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneActor-type', elType.value);
+	registerElement(inspectorEls, 'sceneActor-angle', elAngle.value);
+	registerElement(inspectorEls, 'sceneActor-scale', elScale.value);
+	registerElement(inspectorEls, 'sceneActor-angle-slider', elAngleSlider.value);
+	registerElement(inspectorEls, 'sceneActor-scale-slider', elScaleSlider.value);
 	registerElement(inspectorEls, 'sceneActor-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneActor-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneActor-scripts', elScripts.value);
@@ -230,14 +239,20 @@ onMounted(() => {
 	synchronize(elScaleSlider.value, elScale.value);
 
 	window.addEventListener('datachange', editor.datachange as unknown as EventListener);
-	const elements = document.querySelectorAll(
-		'#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId, #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale'
-	);
-	const sliders = document.querySelectorAll('#sceneActor-angle-slider, #sceneActor-scale-slider');
+	const elements = registryElements(inspectorEls, [
+		'sceneActor-name',
+		'sceneActor-type',
+		'sceneActor-actorId',
+		'sceneActor-teamId',
+		'sceneActor-x',
+		'sceneActor-y',
+		'sceneActor-angle',
+		'sceneActor-scale'
+	]);
+	const sliders = registryElements(inspectorEls, ['sceneActor-angle-slider', 'sceneActor-scale-slider']);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	document
-		.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
+	registryElements(inspectorEls, ['sceneActor-conditions', 'sceneActor-events', 'sceneActor-scripts'])
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

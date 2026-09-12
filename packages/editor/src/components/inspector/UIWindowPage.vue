@@ -113,8 +113,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryElements, registerElement } from '@app/utils/element-registry';
 import '@app/inspector/element-window-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -150,6 +150,17 @@ const elPaddingX = ref<InstanceType<typeof NumberBox> | null>(null);
 const elPaddingY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiWindow-layout', elLayout.value);
+	registerElement(inspectorEls, 'uiWindow-scrollX', elScrollX.value);
+	registerElement(inspectorEls, 'uiWindow-scrollY', elScrollY.value);
+	registerElement(inspectorEls, 'uiWindow-gridWidth', elGridWidth.value);
+	registerElement(inspectorEls, 'uiWindow-gridHeight', elGridHeight.value);
+	registerElement(inspectorEls, 'uiWindow-gridGapX', elGridGapX.value);
+	registerElement(inspectorEls, 'uiWindow-gridGapY', elGridGapY.value);
+	registerElement(inspectorEls, 'uiWindow-paddingX', elPaddingX.value);
+	registerElement(inspectorEls, 'uiWindow-paddingY', elPaddingY.value);
+	registerElement(inspectorEls, 'uiWindow-overflow', elOverflow.value);
 	const uiWindow = Inspector.uiWindow;
 	if (!uiWindow) return;
 
@@ -183,10 +194,18 @@ onMounted(() => {
 		{ name: t('components.uiWindow-overflow.options.hidden.name'), tip: t('components.uiWindow-overflow.options.hidden.tip'), value: 'hidden'  }
 	]);
 
-	const elements = document.querySelectorAll(`#uiWindow-layout,
-    #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
-    #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
-    #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
+	const elements = registryElements(inspectorEls, [
+		'uiWindow-layout',
+		'uiWindow-scrollX',
+		'uiWindow-scrollY',
+		'uiWindow-gridWidth',
+		'uiWindow-gridHeight',
+		'uiWindow-gridGapX',
+		'uiWindow-gridGapY',
+		'uiWindow-paddingX',
+		'uiWindow-paddingY',
+		'uiWindow-overflow'
+	]);
 	bindInput(elements, uiWindow, UI);
 
 	const el = inspectorEls.get('uiWindow-vue-mount');

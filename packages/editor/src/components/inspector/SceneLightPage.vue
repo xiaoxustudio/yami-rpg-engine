@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneLight-general-grid">
 			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div>
 			<TextBox id="sceneLight-name"
+				:ref="registryRef(inspectorEls, 'sceneLight-name')"
 				v-tip="t('components.sceneLight-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div>
 			<SelectBox
@@ -26,6 +27,7 @@
 			<div class="text">{{ t('components.sceneLight-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneLight-x"
+				:ref="registryRef(inspectorEls, 'sceneLight-x')"
 				v-tip="t('components.sceneLight-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -37,6 +39,7 @@
 			<div class="text">{{ t('components.sceneLight-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneLight-y"
+				:ref="registryRef(inspectorEls, 'sceneLight-y')"
 				v-tip="t('components.sceneLight-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -336,10 +339,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -412,6 +414,32 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneLight-type', elType.value);
+	registerElement(inspectorEls, 'sceneLight-blend', elBlend.value);
+	registerElement(inspectorEls, 'sceneLight-range', elRange.value);
+	registerElement(inspectorEls, 'sceneLight-intensity', elIntensity.value);
+	registerElement(inspectorEls, 'sceneLight-mask', elMask.value);
+	registerElement(inspectorEls, 'sceneLight-anchorX', elAnchorX.value);
+	registerElement(inspectorEls, 'sceneLight-anchorY', elAnchorY.value);
+	registerElement(inspectorEls, 'sceneLight-width', elWidth.value);
+	registerElement(inspectorEls, 'sceneLight-height', elHeight.value);
+	registerElement(inspectorEls, 'sceneLight-angle', elAngle.value);
+	registerElement(inspectorEls, 'sceneLight-red', elRed.value);
+	registerElement(inspectorEls, 'sceneLight-green', elGreen.value);
+	registerElement(inspectorEls, 'sceneLight-blue', elBlue.value);
+	registerElement(inspectorEls, 'sceneLight-direct', elDirect.value);
+	registerElement(inspectorEls, 'sceneLight-range-slider', elRangeSlider.value);
+	registerElement(inspectorEls, 'sceneLight-intensity-slider', elIntensitySlider.value);
+	registerElement(inspectorEls, 'sceneLight-anchorX-slider', elAnchorXSlider.value);
+	registerElement(inspectorEls, 'sceneLight-anchorY-slider', elAnchorYSlider.value);
+	registerElement(inspectorEls, 'sceneLight-width-slider', elWidthSlider.value);
+	registerElement(inspectorEls, 'sceneLight-height-slider', elHeightSlider.value);
+	registerElement(inspectorEls, 'sceneLight-angle-slider', elAngleSlider.value);
+	registerElement(inspectorEls, 'sceneLight-red-slider', elRedSlider.value);
+	registerElement(inspectorEls, 'sceneLight-green-slider', elGreenSlider.value);
+	registerElement(inspectorEls, 'sceneLight-blue-slider', elBlueSlider.value);
+	registerElement(inspectorEls, 'sceneLight-direct-slider', elDirectSlider.value);
 	registerElement(inspectorEls, 'sceneLight-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneLight-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneLight-scripts', elScripts.value);
@@ -477,17 +505,42 @@ onMounted(() => {
 		elBlueSlider.value?.synchronize(elBlue.value?.root as SyncTarget);
 		elDirectSlider.value?.synchronize(elDirect.value?.root as SyncTarget);
 
-		const elements = document.querySelectorAll(
-			'#sceneLight-name, #sceneLight-type, #sceneLight-blend, #sceneLight-x, #sceneLight-y, #sceneLight-range, #sceneLight-intensity, #sceneLight-mask, #sceneLight-anchorX, #sceneLight-anchorY, #sceneLight-width, #sceneLight-height, #sceneLight-angle, #sceneLight-red, #sceneLight-green, #sceneLight-blue, #sceneLight-direct'
-		);
-		const sliders = document.querySelectorAll(
-			'#sceneLight-range-slider, #sceneLight-intensity-slider, #sceneLight-anchorX-slider, #sceneLight-anchorY-slider, #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider, #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider'
-		);
+		const elements = registryElements(inspectorEls, [
+		'sceneLight-name',
+		'sceneLight-type',
+		'sceneLight-blend',
+		'sceneLight-x',
+		'sceneLight-y',
+		'sceneLight-range',
+		'sceneLight-intensity',
+		'sceneLight-mask',
+		'sceneLight-anchorX',
+		'sceneLight-anchorY',
+		'sceneLight-width',
+		'sceneLight-height',
+		'sceneLight-angle',
+		'sceneLight-red',
+		'sceneLight-green',
+		'sceneLight-blue',
+		'sceneLight-direct'
+	]);
+		const sliders = registryElements(inspectorEls, [
+		'sceneLight-range-slider',
+		'sceneLight-intensity-slider',
+		'sceneLight-anchorX-slider',
+		'sceneLight-anchorY-slider',
+		'sceneLight-width-slider',
+		'sceneLight-height-slider',
+		'sceneLight-angle-slider',
+		'sceneLight-red-slider',
+		'sceneLight-green-slider',
+		'sceneLight-blue-slider',
+		'sceneLight-direct-slider'
+	]);
 		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
-		document
-			.querySelectorAll('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts')
+		registryElements(inspectorEls, ['sceneLight-conditions', 'sceneLight-events', 'sceneLight-scripts'])
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneLightPage] init skipped:', (e as Error)?.message);

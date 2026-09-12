@@ -17,6 +17,7 @@
 			</div>
 			<CustomBox
 				id="uiButton-normalImage"
+				:ref="registryRef(inspectorEls, 'uiButton-normalImage')"
 				v-tip="t('components.uiButton-normalImage.tip')"
 				:model-value="form.normalImage"
 				@input="onParamInput"
@@ -36,6 +37,7 @@
 			<div class="text">{{ t('components.uiButton-hoverImage.label') || 'Hover Image' }}</div>
 			<CustomBox
 				id="uiButton-hoverImage"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverImage')"
 				v-tip="t('components.uiButton-hoverImage.tip')"
 				:model-value="form.hoverImage"
 				@input="onParamInput"
@@ -57,6 +59,7 @@
 			</div>
 			<CustomBox
 				id="uiButton-activeImage"
+				:ref="registryRef(inspectorEls, 'uiButton-activeImage')"
 				v-tip="t('components.uiButton-activeImage.tip')"
 				:model-value="form.activeImage"
 				@input="onParamInput"
@@ -148,6 +151,7 @@
 				v-tip="t('components.uiButton-normalTint-box.tip')" ref="elNormalTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-normalTint-0"
+				:ref="registryRef(inspectorEls, 'uiButton-normalTint-0')"
 					v-model="form.normalTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -156,6 +160,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-1"
+				:ref="registryRef(inspectorEls, 'uiButton-normalTint-1')"
 					v-model="form.normalTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -164,6 +169,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-2"
+				:ref="registryRef(inspectorEls, 'uiButton-normalTint-2')"
 					v-model="form.normalTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -172,6 +178,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-3"
+				:ref="registryRef(inspectorEls, 'uiButton-normalTint-3')"
 					v-model="form.normalTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -186,6 +193,7 @@
 				v-tip="t('components.uiButton-hoverTint-box.tip')" ref="elHoverTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-hoverTint-0"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-0')"
 					v-model="form.hoverTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -194,6 +202,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-1"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-1')"
 					v-model="form.hoverTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -202,6 +211,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-2"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-2')"
 					v-model="form.hoverTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -210,6 +220,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-3"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-3')"
 					v-model="form.hoverTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -224,6 +235,7 @@
 				v-tip="t('components.uiButton-activeTint-box.tip')" ref="elActiveTintBox" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="uiButton-activeTint-0"
+				:ref="registryRef(inspectorEls, 'uiButton-activeTint-0')"
 					v-model="form.activeTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -232,6 +244,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-1"
+				:ref="registryRef(inspectorEls, 'uiButton-activeTint-1')"
 					v-model="form.activeTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -240,6 +253,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-2"
+				:ref="registryRef(inspectorEls, 'uiButton-activeTint-2')"
 					v-model="form.activeTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -248,6 +262,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-3"
+				:ref="registryRef(inspectorEls, 'uiButton-activeTint-3')"
 					v-model="form.activeTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -330,6 +345,7 @@
 			<div class="text">{{ t('components.uiButton-content.label') || 'Content' }}</div>
 			<TextBox
 				id="uiButton-content"
+				:ref="registryRef(inspectorEls, 'uiButton-content')"
 				v-tip="t('components.uiButton-content.tip')"
 				v-model="form.content"
 				@input="onParamInput"
@@ -407,6 +423,7 @@
 			</div>
 			<div class="text">{{ t('components.uiButton-font.label') || 'Font' }}</div>
 			<TextBox id="uiButton-font"
+				:ref="registryRef(inspectorEls, 'uiButton-font')"
 				v-tip="t('components.uiButton-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
@@ -478,6 +495,7 @@
 			</div>
 			<ColorBox
 				id="uiButton-normalColor"
+				:ref="registryRef(inspectorEls, 'uiButton-normalColor')"
 				v-tip="t('components.uiButton-normalColor.tip')"
 				v-model="form.normalColor"
 				@input="onParamInput"
@@ -485,6 +503,7 @@
 			<div class="text">{{ t('components.uiButton-hoverColor.label') || 'Hover Color' }}</div>
 			<ColorBox
 				id="uiButton-hoverColor"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverColor')"
 				v-tip="t('components.uiButton-hoverColor.tip')"
 				v-model="form.hoverColor"
 				@input="onParamInput"
@@ -494,6 +513,7 @@
 			</div>
 			<ColorBox
 				id="uiButton-activeColor"
+				:ref="registryRef(inspectorEls, 'uiButton-activeColor')"
 				v-tip="t('components.uiButton-activeColor.tip')"
 				v-model="form.activeColor"
 				@input="onParamInput"
@@ -508,6 +528,7 @@
 			<div class="text">{{ t('components.uiButton-hoverSound.label') || 'Hover SE' }}</div>
 			<CustomBox
 				id="uiButton-hoverSound"
+				:ref="registryRef(inspectorEls, 'uiButton-hoverSound')"
 				v-tip="t('components.uiButton-hoverSound.tip')"
 				:model-value="form.hoverSound"
 				@input="onParamInput"
@@ -517,6 +538,7 @@
 			<div class="text">{{ t('components.uiButton-clickSound.label') || 'Click SE' }}</div>
 			<CustomBox
 				id="uiButton-clickSound"
+				:ref="registryRef(inspectorEls, 'uiButton-clickSound')"
 				v-tip="t('components.uiButton-clickSound.tip')"
 				:model-value="form.clickSound"
 				@input="onParamInput"
@@ -528,8 +550,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { registryElements, registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
@@ -612,6 +634,31 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiButton-display', elDisplay.value);
+	registerElement(inspectorEls, 'uiButton-normalClip', elNormalClip.value);
+	registerElement(inspectorEls, 'uiButton-hoverClip', elHoverClip.value);
+	registerElement(inspectorEls, 'uiButton-activeClip', elActiveClip.value);
+	registerElement(inspectorEls, 'uiButton-flip', elFlip.value);
+	registerElement(inspectorEls, 'uiButton-border', elBorder.value);
+	registerElement(inspectorEls, 'uiButton-imagePadding', elImagePadding.value);
+	registerElement(inspectorEls, 'uiButton-imageOpacity', elImageOpacity.value);
+	registerElement(inspectorEls, 'uiButton-imageEffect', elImageEffect.value);
+	registerElement(inspectorEls, 'uiButton-direction', elDirection.value);
+	registerElement(inspectorEls, 'uiButton-size', elSize.value);
+	registerElement(inspectorEls, 'uiButton-letterSpacing', elLetterSpacing.value);
+	registerElement(inspectorEls, 'uiButton-textPadding', elTextPadding.value);
+	registerElement(inspectorEls, 'uiButton-typeface', elTypeface.value);
+	registerElement(inspectorEls, 'uiButton-textEffect-type', elTextEffectType.value);
+	registerElement(inspectorEls, 'uiButton-textEffect-shadowOffsetX', elShadowOffsetX.value);
+	registerElement(inspectorEls, 'uiButton-textEffect-shadowOffsetY', elShadowOffsetY.value);
+	registerElement(inspectorEls, 'uiButton-textEffect-strokeWidth', elStrokeWidth.value);
+	registerElement(inspectorEls, 'uiButton-textEffect-color', elEffectColor.value);
+	registerElement(inspectorEls, 'uiButton-imagePadding-slider', elImagePaddingSlider.value);
+	registerElement(inspectorEls, 'uiButton-imageOpacity-slider', elImageOpacitySlider.value);
+	registerElement(inspectorEls, 'uiButton-size-slider', elSizeSlider.value);
+	registerElement(inspectorEls, 'uiButton-letterSpacing-slider', elLetterSpacingSlider.value);
+	registerElement(inspectorEls, 'uiButton-textPadding-slider', elTextPaddingSlider.value);
 	const uiButton = Inspector.uiButton;
 	if (!uiButton) return;
 
@@ -704,23 +751,59 @@ onMounted(() => {
 	synchronize(elLetterSpacingSlider.value, elLetterSpacing.value);
 	synchronize(elTextPaddingSlider.value, elTextPadding.value);
 
-	const elements = document.querySelectorAll(`#uiButton-display,
-    #uiButton-normalImage, #uiButton-normalClip,
-    #uiButton-hoverImage, #uiButton-hoverClip,
-    #uiButton-activeImage, #uiButton-activeClip,
-    #uiButton-flip, #uiButton-border, #uiButton-imagePadding, #uiButton-imageOpacity, #uiButton-imageEffect,
-    #uiButton-normalTint-0, #uiButton-normalTint-1, #uiButton-normalTint-2, #uiButton-normalTint-3,
-    #uiButton-hoverTint-0, #uiButton-hoverTint-1, #uiButton-hoverTint-2, #uiButton-hoverTint-3,
-    #uiButton-activeTint-0, #uiButton-activeTint-1, #uiButton-activeTint-2, #uiButton-activeTint-3,
-    #uiButton-direction, #uiButton-horizontalAlign, #uiButton-verticalAlign,
-    #uiButton-content, #uiButton-size, #uiButton-letterSpacing, #uiButton-textPadding,
-    #uiButton-font, #uiButton-typeface, #uiButton-textEffect-type, #uiButton-textEffect-shadowOffsetX,
-    #uiButton-textEffect-shadowOffsetY, #uiButton-textEffect-strokeWidth, #uiButton-textEffect-color,
-    #uiButton-normalColor, #uiButton-hoverColor, #uiButton-activeColor,
-    #uiButton-hoverSound, #uiButton-clickSound`);
+	const elements = registryElements(inspectorEls, [
+		'uiButton-display',
+		'uiButton-normalImage',
+		'uiButton-normalClip',
+		'uiButton-hoverImage',
+		'uiButton-hoverClip',
+		'uiButton-activeImage',
+		'uiButton-activeClip',
+		'uiButton-flip',
+		'uiButton-border',
+		'uiButton-imagePadding',
+		'uiButton-imageOpacity',
+		'uiButton-imageEffect',
+		'uiButton-normalTint-0',
+		'uiButton-normalTint-1',
+		'uiButton-normalTint-2',
+		'uiButton-normalTint-3',
+		'uiButton-hoverTint-0',
+		'uiButton-hoverTint-1',
+		'uiButton-hoverTint-2',
+		'uiButton-hoverTint-3',
+		'uiButton-activeTint-0',
+		'uiButton-activeTint-1',
+		'uiButton-activeTint-2',
+		'uiButton-activeTint-3',
+		'uiButton-direction',
+		'uiButton-horizontalAlign',
+		'uiButton-verticalAlign',
+		'uiButton-content',
+		'uiButton-size',
+		'uiButton-letterSpacing',
+		'uiButton-textPadding',
+		'uiButton-font',
+		'uiButton-typeface',
+		'uiButton-textEffect-type',
+		'uiButton-textEffect-shadowOffsetX',
+		'uiButton-textEffect-shadowOffsetY',
+		'uiButton-textEffect-strokeWidth',
+		'uiButton-textEffect-color',
+		'uiButton-normalColor',
+		'uiButton-hoverColor',
+		'uiButton-activeColor',
+		'uiButton-hoverSound',
+		'uiButton-clickSound'
+	]);
 	const sliders =
-		document.querySelectorAll(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
-    #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
+		registryElements(inspectorEls, [
+		'uiButton-imagePadding-slider',
+		'uiButton-imageOpacity-slider',
+		'uiButton-size-slider',
+		'uiButton-letterSpacing-slider',
+		'uiButton-textPadding-slider'
+	]);
 	bindInput(elements, uiButton, UI);
 	bindSliders(sliders);
 

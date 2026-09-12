@@ -29,10 +29,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { registryRef, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -48,7 +47,7 @@ const { form, sync } = useFileFontPage();
 onMounted(() => {
 	const fileFont = Inspector.fileFont;
 	if (!fileFont) return;
-	const previews = document.querySelectorAll('.fileFont-preview');
+	const previews = registryElements(inspectorEls, []);
 	fileFont.previews = previews;
 	const el = inspectorEls.get('fileFont');
 	if (el) {

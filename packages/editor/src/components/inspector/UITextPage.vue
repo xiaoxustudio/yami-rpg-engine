@@ -72,6 +72,7 @@
 			<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div>
 			<TextArea
 				id="uiText-content"
+				:ref="registryRef(inspectorEls, 'uiText-content')"
 				v-tip="t('components.uiText-content.tip')"
 				v-model="form.content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
@@ -149,9 +150,11 @@
 			</div>
 			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div>
 			<ColorBox id="uiText-color"
+				:ref="registryRef(inspectorEls, 'uiText-color')"
 				v-tip="t('components.uiText-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
 			<TextBox id="uiText-font"
+				:ref="registryRef(inspectorEls, 'uiText-font')"
 				v-tip="t('components.uiText-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
@@ -239,8 +242,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { registryElements, registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUITextPage } from '@app/composables/useUITextPage';
@@ -299,6 +302,22 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiText-direction', elDirection.value);
+	registerElement(inspectorEls, 'uiText-size', elSize.value);
+	registerElement(inspectorEls, 'uiText-lineSpacing', elLineSpacing.value);
+	registerElement(inspectorEls, 'uiText-letterSpacing', elLetterSpacing.value);
+	registerElement(inspectorEls, 'uiText-typeface', elTypeface.value);
+	registerElement(inspectorEls, 'uiText-effect-type', elEffectType.value);
+	registerElement(inspectorEls, 'uiText-effect-shadowOffsetX', elShadowOffsetX.value);
+	registerElement(inspectorEls, 'uiText-effect-shadowOffsetY', elShadowOffsetY.value);
+	registerElement(inspectorEls, 'uiText-effect-strokeWidth', elStrokeWidth.value);
+	registerElement(inspectorEls, 'uiText-effect-color', elEffectColor.value);
+	registerElement(inspectorEls, 'uiText-overflow', elOverflow.value);
+	registerElement(inspectorEls, 'uiText-blend', elBlend.value);
+	registerElement(inspectorEls, 'uiText-size-slider', elSizeSlider.value);
+	registerElement(inspectorEls, 'uiText-lineSpacing-slider', elLineSpacingSlider.value);
+	registerElement(inspectorEls, 'uiText-letterSpacing-slider', elLetterSpacingSlider.value);
 	const uiText = Inspector.uiText;
 	if (!uiText) return;
 
@@ -351,13 +370,26 @@ onMounted(() => {
 	]);
 
 	const elements =
-		document.querySelectorAll(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
-    #uiText-content, #uiText-size, #uiText-lineSpacing, #uiText-letterSpacing, #uiText-color, #uiText-font,
-    #uiText-typeface, #uiText-effect-type, #uiText-effect-shadowOffsetX, #uiText-effect-shadowOffsetY,
-    #uiText-effect-strokeWidth, #uiText-effect-color, #uiText-overflow, #uiText-blend`);
-	const sliders = document.querySelectorAll(
-		'#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider'
-	);
+		registryElements(inspectorEls, [
+		'uiText-direction',
+		'uiText-horizontalAlign',
+		'uiText-verticalAlign',
+		'uiText-content',
+		'uiText-size',
+		'uiText-lineSpacing',
+		'uiText-letterSpacing',
+		'uiText-color',
+		'uiText-font',
+		'uiText-typeface',
+		'uiText-effect-type',
+		'uiText-effect-shadowOffsetX',
+		'uiText-effect-shadowOffsetY',
+		'uiText-effect-strokeWidth',
+		'uiText-effect-color',
+		'uiText-overflow',
+		'uiText-blend'
+	]);
+	const sliders = registryElements(inspectorEls, ['uiText-size-slider', 'uiText-lineSpacing-slider', 'uiText-letterSpacing-slider']);
 	bindInput(elements, uiText, UI);
 	bindSliders(sliders);
 

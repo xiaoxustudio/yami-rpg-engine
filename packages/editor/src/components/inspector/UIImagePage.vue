@@ -325,6 +325,7 @@
 			<div class="text">{{ t('components.uiImage-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiImage-image"
+				:ref="registryRef(inspectorEls, 'uiImage-image')"
 				v-tip="t('components.uiImage-image.tip')"
 				v-model="form.image"
 				type="file"
@@ -363,6 +364,7 @@
 			>
 				<NumberBox
 					id="uiImage-shiftX"
+				:ref="registryRef(inspectorEls, 'uiImage-shiftX')"
 				v-tip="t('components.uiImage-shiftX.tip')"
 					v-model="form.shiftX"
 					min="-10000"
@@ -372,6 +374,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiImage-shiftY"
+				:ref="registryRef(inspectorEls, 'uiImage-shiftY')"
 				v-tip="t('components.uiImage-shiftY.tip')"
 					v-model="form.shiftY"
 					min="-10000"
@@ -492,10 +495,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { registryRef, registryElements, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -552,6 +554,20 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiImage-display', elDisplay.value);
+	registerElement(inspectorEls, 'uiImage-flip', elFlip.value);
+	registerElement(inspectorEls, 'uiImage-blend', elBlend.value);
+	registerElement(inspectorEls, 'uiImage-clip', elClip.value);
+	registerElement(inspectorEls, 'uiImage-border', elBorder.value);
+	registerElement(inspectorEls, 'uiImage-tint-0', elTint0.value);
+	registerElement(inspectorEls, 'uiImage-tint-1', elTint1.value);
+	registerElement(inspectorEls, 'uiImage-tint-2', elTint2.value);
+	registerElement(inspectorEls, 'uiImage-tint-3', elTint3.value);
+	registerElement(inspectorEls, 'uiImage-tint-0-slider', elTint0Slider.value);
+	registerElement(inspectorEls, 'uiImage-tint-1-slider', elTint1Slider.value);
+	registerElement(inspectorEls, 'uiImage-tint-2-slider', elTint2Slider.value);
+	registerElement(inspectorEls, 'uiImage-tint-3-slider', elTint3Slider.value);
 	const uiImage = Inspector.uiImage;
 	if (!uiImage) return;
 
@@ -593,13 +609,26 @@ onMounted(() => {
 	synchronize(elTint2Slider.value, elTint2.value);
 	synchronize(elTint3Slider.value, elTint3.value);
 
-	const elements = document.querySelectorAll(`#uiImage-image,
-    #uiImage-display, #uiImage-flip, #uiImage-blend,
-    #uiImage-shiftX, #uiImage-shiftY, #uiImage-clip, #uiImage-border,
-    #uiImage-tint-0, #uiImage-tint-1, #uiImage-tint-2, #uiImage-tint-3`);
-	const sliders = document.querySelectorAll(`
-    #uiImage-tint-0-slider, #uiImage-tint-1-slider,
-    #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
+	const elements = registryElements(inspectorEls, [
+		'uiImage-image',
+		'uiImage-display',
+		'uiImage-flip',
+		'uiImage-blend',
+		'uiImage-shiftX',
+		'uiImage-shiftY',
+		'uiImage-clip',
+		'uiImage-border',
+		'uiImage-tint-0',
+		'uiImage-tint-1',
+		'uiImage-tint-2',
+		'uiImage-tint-3'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'uiImage-tint-0-slider',
+		'uiImage-tint-1-slider',
+		'uiImage-tint-2-slider',
+		'uiImage-tint-3-slider'
+	]);
 	bindInput(elements, uiImage, UI);
 	bindSliders(sliders);
 

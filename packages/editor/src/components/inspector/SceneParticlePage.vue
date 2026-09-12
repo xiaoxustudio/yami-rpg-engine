@@ -6,12 +6,14 @@
 		<div class="detail-grid" id="sceneParticle-general-grid">
 			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div>
 			<TextBox id="sceneParticle-name"
+				:ref="registryRef(inspectorEls, 'sceneParticle-name')"
 				v-tip="t('components.sceneParticle-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.sceneParticle-particleId.label') || 'Particle' }}
 			</div>
 			<CustomBox
 				id="sceneParticle-particleId"
+				:ref="registryRef(inspectorEls, 'sceneParticle-particleId')"
 				v-tip="t('components.sceneParticle-particleId.tip')"
 				:model-value="form.particleId"
 				@input="onParamInput"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneParticle-x"
+				:ref="registryRef(inspectorEls, 'sceneParticle-x')"
 				v-tip="t('components.sceneParticle-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -32,6 +35,7 @@
 			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneParticle-y"
+				:ref="registryRef(inspectorEls, 'sceneParticle-y')"
 				v-tip="t('components.sceneParticle-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -197,10 +201,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -250,6 +253,17 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneParticle-angle', elAngle.value);
+	registerElement(inspectorEls, 'sceneParticle-scale', elScale.value);
+	registerElement(inspectorEls, 'sceneParticle-speed', elSpeed.value);
+	registerElement(inspectorEls, 'sceneParticle-opacity', elOpacity.value);
+	registerElement(inspectorEls, 'sceneParticle-priority', elPriority.value);
+	registerElement(inspectorEls, 'sceneParticle-angle-slider', elAngleSlider.value);
+	registerElement(inspectorEls, 'sceneParticle-scale-slider', elScaleSlider.value);
+	registerElement(inspectorEls, 'sceneParticle-speed-slider', elSpeedSlider.value);
+	registerElement(inspectorEls, 'sceneParticle-opacity-slider', elOpacitySlider.value);
+	registerElement(inspectorEls, 'sceneParticle-priority-slider', elPrioritySlider.value);
 	registerElement(inspectorEls, 'sceneParticle-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneParticle-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneParticle-scripts', elScripts.value);
@@ -276,19 +290,28 @@ onMounted(() => {
 		elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
 		elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
 
-		const elements = document.querySelectorAll(
-			'#sceneParticle-name, #sceneParticle-particleId, #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle, #sceneParticle-scale, #sceneParticle-speed, #sceneParticle-opacity, #sceneParticle-priority'
-		);
-		const sliders = document.querySelectorAll(
-			'#sceneParticle-angle-slider, #sceneParticle-scale-slider, #sceneParticle-speed-slider, #sceneParticle-opacity-slider, #sceneParticle-priority-slider'
-		);
+		const elements = registryElements(inspectorEls, [
+		'sceneParticle-name',
+		'sceneParticle-particleId',
+		'sceneParticle-x',
+		'sceneParticle-y',
+		'sceneParticle-angle',
+		'sceneParticle-scale',
+		'sceneParticle-speed',
+		'sceneParticle-opacity',
+		'sceneParticle-priority'
+	]);
+		const sliders = registryElements(inspectorEls, [
+		'sceneParticle-angle-slider',
+		'sceneParticle-scale-slider',
+		'sceneParticle-speed-slider',
+		'sceneParticle-opacity-slider',
+		'sceneParticle-priority-slider'
+	]);
 		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
-		document
-			.querySelectorAll(
-				'#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts'
-			)
+		registryElements(inspectorEls, ['sceneParticle-conditions', 'sceneParticle-events', 'sceneParticle-scripts'])
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneParticlePage] init skipped:', (e as Error)?.message);

@@ -6,10 +6,12 @@
 		<div class="detail-grid" id="sceneParallax-general-grid">
 			<div class="text">{{ t('components.sceneParallax-name.label') || 'Name' }}</div>
 			<TextBox id="sceneParallax-name"
+				:ref="registryRef(inspectorEls, 'sceneParallax-name')"
 				v-tip="t('components.sceneParallax-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneParallax-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="sceneParallax-image"
+				:ref="registryRef(inspectorEls, 'sceneParallax-image')"
 				v-tip="t('components.sceneParallax-image.tip')"
 				:model-value="form.image"
 				@input="onParamInput"
@@ -27,6 +29,7 @@
 			<div class="text">{{ t('components.sceneParallax-order.label') || 'Order' }}</div>
 			<NumberBox
 				id="sceneParallax-order"
+				:ref="registryRef(inspectorEls, 'sceneParallax-order')"
 				v-tip="t('components.sceneParallax-order.tip')"
 				v-model="form.order"
 				@input="onParamInput"
@@ -54,6 +57,7 @@
 			<div class="text">{{ t('components.sceneParallax-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
 				id="sceneParallax-opacity"
+				:ref="registryRef(inspectorEls, 'sceneParallax-opacity')"
 				v-tip="t('components.sceneParallax-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
@@ -65,6 +69,7 @@
 			<div class="text">{{ t('components.sceneParallax-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneParallax-x"
+				:ref="registryRef(inspectorEls, 'sceneParallax-x')"
 				v-tip="t('components.sceneParallax-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -77,6 +82,7 @@
 			<div class="text">{{ t('components.sceneParallax-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneParallax-y"
+				:ref="registryRef(inspectorEls, 'sceneParallax-y')"
 				v-tip="t('components.sceneParallax-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -96,6 +102,7 @@
 			<div class="text">{{ t('components.sceneParallax-scaleX.label') || 'Scale X' }}</div>
 			<NumberBox
 				id="sceneParallax-scaleX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-scaleX')"
 				v-tip="t('components.sceneParallax-scaleX.tip')"
 				v-model="form.scaleX"
 				@input="onParamInput"
@@ -107,6 +114,7 @@
 			<div class="text">{{ t('components.sceneParallax-scaleY.label') || 'Scale Y' }}</div>
 			<NumberBox
 				id="sceneParallax-scaleY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-scaleY')"
 				v-tip="t('components.sceneParallax-scaleY.tip')"
 				v-model="form.scaleY"
 				@input="onParamInput"
@@ -118,6 +126,7 @@
 			<div class="text">{{ t('components.sceneParallax-repeatX.label') || 'Repeat X' }}</div>
 			<NumberBox
 				id="sceneParallax-repeatX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-repeatX')"
 				v-tip="t('components.sceneParallax-repeatX.tip')"
 				v-model="form.repeatX"
 				@input="onParamInput"
@@ -127,6 +136,7 @@
 			<div class="text">{{ t('components.sceneParallax-repeatY.label') || 'Repeat Y' }}</div>
 			<NumberBox
 				id="sceneParallax-repeatY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-repeatY')"
 				v-tip="t('components.sceneParallax-repeatY.tip')"
 				v-model="form.repeatY"
 				@input="onParamInput"
@@ -136,6 +146,7 @@
 			<div class="text">{{ t('components.sceneParallax-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
 				id="sceneParallax-anchorX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-anchorX')"
 				v-tip="t('components.sceneParallax-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
@@ -147,6 +158,7 @@
 			<div class="text">{{ t('components.sceneParallax-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
 				id="sceneParallax-anchorY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-anchorY')"
 				v-tip="t('components.sceneParallax-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
@@ -158,6 +170,7 @@
 			<div class="text">{{ t('components.sceneParallax-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
 				id="sceneParallax-offsetX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-offsetX')"
 				v-tip="t('components.sceneParallax-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
@@ -168,6 +181,7 @@
 			<div class="text">{{ t('components.sceneParallax-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="sceneParallax-offsetY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-offsetY')"
 				v-tip="t('components.sceneParallax-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
@@ -180,6 +194,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-parallaxFactorX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorX')"
 				v-tip="t('components.sceneParallax-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
@@ -193,6 +208,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-parallaxFactorY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorY')"
 				v-tip="t('components.sceneParallax-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
@@ -206,6 +222,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-shiftSpeedX"
+				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedX')"
 				v-tip="t('components.sceneParallax-shiftSpeedX.tip')"
 				v-model="form.shiftSpeedX"
 				@input="onParamInput"
@@ -220,6 +237,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-shiftSpeedY"
+				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedY')"
 				v-tip="t('components.sceneParallax-shiftSpeedY.tip')"
 				v-model="form.shiftSpeedY"
 				@input="onParamInput"
@@ -365,10 +383,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -427,6 +444,18 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneParallax-layer', elLayer.value);
+	registerElement(inspectorEls, 'sceneParallax-light', elLight.value);
+	registerElement(inspectorEls, 'sceneParallax-blend', elBlend.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-0', elTint0.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-1', elTint1.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-2', elTint2.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-3', elTint3.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-0-slider', elTint0Slider.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-1-slider', elTint1Slider.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-2-slider', elTint2Slider.value);
+	registerElement(inspectorEls, 'sceneParallax-tint-3-slider', elTint3Slider.value);
 	registerElement(inspectorEls, 'sceneParallax-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneParallax-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneParallax-scripts', elScripts.value);
@@ -479,18 +508,42 @@ onMounted(() => {
 	);
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-	const elements = document.querySelectorAll(
-		'#sceneParallax-name, #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order, #sceneParallax-light, #sceneParallax-blend, #sceneParallax-opacity, #sceneParallax-x, #sceneParallax-y, #sceneParallax-scaleX, #sceneParallax-scaleY, #sceneParallax-repeatX, #sceneParallax-repeatY, #sceneParallax-anchorX, #sceneParallax-anchorY, #sceneParallax-offsetX, #sceneParallax-offsetY, #sceneParallax-parallaxFactorX, #sceneParallax-parallaxFactorY, #sceneParallax-shiftSpeedX, #sceneParallax-shiftSpeedY, #sceneParallax-tint-0, #sceneParallax-tint-1, #sceneParallax-tint-2, #sceneParallax-tint-3'
-	);
-	const sliders = document.querySelectorAll(
-		'#sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider, #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider'
-	);
+	const elements = registryElements(inspectorEls, [
+		'sceneParallax-name',
+		'sceneParallax-image',
+		'sceneParallax-layer',
+		'sceneParallax-order',
+		'sceneParallax-light',
+		'sceneParallax-blend',
+		'sceneParallax-opacity',
+		'sceneParallax-x',
+		'sceneParallax-y',
+		'sceneParallax-scaleX',
+		'sceneParallax-scaleY',
+		'sceneParallax-repeatX',
+		'sceneParallax-repeatY',
+		'sceneParallax-anchorX',
+		'sceneParallax-anchorY',
+		'sceneParallax-offsetX',
+		'sceneParallax-offsetY',
+		'sceneParallax-parallaxFactorX',
+		'sceneParallax-parallaxFactorY',
+		'sceneParallax-shiftSpeedX',
+		'sceneParallax-shiftSpeedY',
+		'sceneParallax-tint-0',
+		'sceneParallax-tint-1',
+		'sceneParallax-tint-2',
+		'sceneParallax-tint-3'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'sceneParallax-tint-0-slider',
+		'sceneParallax-tint-1-slider',
+		'sceneParallax-tint-2-slider',
+		'sceneParallax-tint-3-slider'
+	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	document
-		.querySelectorAll(
-			'#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts'
-		)
+	registryElements(inspectorEls, ['sceneParallax-conditions', 'sceneParallax-events', 'sceneParallax-scripts'])
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();

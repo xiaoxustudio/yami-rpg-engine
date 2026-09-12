@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiProgressBar-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiProgressBar-image"
+				:ref="registryRef(inspectorEls, 'uiProgressBar-image')"
 				v-tip="t('components.uiProgressBar-image.tip')"
 				v-model="form.image"
 				type="file"
@@ -96,6 +97,7 @@
 			<div class="text">{{ t('components.uiProgressBar-step.label') || 'Step' }}</div>
 			<NumberBox
 				id="uiProgressBar-step"
+				:ref="registryRef(inspectorEls, 'uiProgressBar-step')"
 				v-tip="t('components.uiProgressBar-step.tip')"
 				v-model="form.step"
 				min="0"
@@ -105,6 +107,7 @@
 			<div class="text">{{ t('components.uiProgressBar-progress.label') || 'Progress' }}</div>
 			<NumberBox
 				id="uiProgressBar-progress"
+				:ref="registryRef(inspectorEls, 'uiProgressBar-progress')"
 				v-tip="t('components.uiProgressBar-progress.tip')"
 				v-model="form.progress"
 				min="0"
@@ -220,8 +223,8 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { registryElements, registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
@@ -295,6 +298,24 @@ const synchronize = (
 };
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'uiProgressBar-display', elDisplay.value);
+	registerElement(inspectorEls, 'uiProgressBar-clip', elClip.value);
+	registerElement(inspectorEls, 'uiProgressBar-type', elType.value);
+	registerElement(inspectorEls, 'uiProgressBar-centerX', elCenterX.value);
+	registerElement(inspectorEls, 'uiProgressBar-centerY', elCenterY.value);
+	registerElement(inspectorEls, 'uiProgressBar-startAngle', elStartAngle.value);
+	registerElement(inspectorEls, 'uiProgressBar-centralAngle', elCentralAngle.value);
+	registerElement(inspectorEls, 'uiProgressBar-blend', elBlend.value);
+	registerElement(inspectorEls, 'uiProgressBar-colorMode', elColorMode.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-0', elColor0.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-1', elColor1.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-2', elColor2.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-3', elColor3.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-0-slider', elColor0Slider.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-1-slider', elColor1Slider.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-2-slider', elColor2Slider.value);
+	registerElement(inspectorEls, 'uiProgressBar-color-3-slider', elColor3Slider.value);
 	const uiProgressBar = Inspector.uiProgressBar;
 	if (!uiProgressBar) return;
 
@@ -340,16 +361,30 @@ onMounted(() => {
 	synchronize(elColor2Slider.value, elColor2.value);
 	synchronize(elColor3Slider.value, elColor3.value);
 
-	const elements = document.querySelectorAll(`#uiProgressBar-image,
-    #uiProgressBar-display, #uiProgressBar-clip,
-    #uiProgressBar-type, #uiProgressBar-centerX, #uiProgressBar-centerY,
-    #uiProgressBar-startAngle, #uiProgressBar-centralAngle, #uiProgressBar-step,
-    #uiProgressBar-progress, #uiProgressBar-blend, #uiProgressBar-colorMode,
-    #uiProgressBar-color-0, #uiProgressBar-color-1,
-    #uiProgressBar-color-2, #uiProgressBar-color-3`);
-	const sliders = document.querySelectorAll(`
-    #uiProgressBar-color-0-slider, #uiProgressBar-color-1-slider,
-    #uiProgressBar-color-2-slider, #uiProgressBar-color-3-slider`);
+	const elements = registryElements(inspectorEls, [
+		'uiProgressBar-image',
+		'uiProgressBar-display',
+		'uiProgressBar-clip',
+		'uiProgressBar-type',
+		'uiProgressBar-centerX',
+		'uiProgressBar-centerY',
+		'uiProgressBar-startAngle',
+		'uiProgressBar-centralAngle',
+		'uiProgressBar-step',
+		'uiProgressBar-progress',
+		'uiProgressBar-blend',
+		'uiProgressBar-colorMode',
+		'uiProgressBar-color-0',
+		'uiProgressBar-color-1',
+		'uiProgressBar-color-2',
+		'uiProgressBar-color-3'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'uiProgressBar-color-0-slider',
+		'uiProgressBar-color-1-slider',
+		'uiProgressBar-color-2-slider',
+		'uiProgressBar-color-3-slider'
+	]);
 	bindInput(elements, uiProgressBar, UI);
 	bindSliders(sliders);
 

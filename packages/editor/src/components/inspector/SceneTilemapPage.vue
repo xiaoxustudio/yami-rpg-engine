@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneTilemap-general-grid">
 			<div class="text">{{ t('components.sceneTilemap-name.label') || 'Name' }}</div>
 			<TextBox id="sceneTilemap-name"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-name')"
 				v-tip="t('components.sceneTilemap-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
@@ -19,6 +20,7 @@
 			<div class="text">{{ t('components.sceneTilemap-order.label') || 'Order' }}</div>
 			<NumberBox
 				id="sceneTilemap-order"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-order')"
 				v-model="form.order"
 				@input="onParamInput"
 				min="0"
@@ -44,6 +46,7 @@
 			<div class="text">{{ t('components.sceneTilemap-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneTilemap-x"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-x')"
 				v-tip="t('components.sceneTilemap-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -56,6 +59,7 @@
 			<div class="text">{{ t('components.sceneTilemap-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-y"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-y')"
 				v-tip="t('components.sceneTilemap-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -88,6 +92,7 @@
 			<div class="text">{{ t('components.sceneTilemap-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorX"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorX')"
 				v-tip="t('components.sceneTilemap-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
@@ -99,6 +104,7 @@
 			<div class="text">{{ t('components.sceneTilemap-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorY"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorY')"
 				v-tip="t('components.sceneTilemap-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
@@ -110,6 +116,7 @@
 			<div class="text">{{ t('components.sceneTilemap-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetX"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetX')"
 				v-tip="t('components.sceneTilemap-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
@@ -120,6 +127,7 @@
 			<div class="text">{{ t('components.sceneTilemap-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetY"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetY')"
 				v-tip="t('components.sceneTilemap-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
@@ -132,6 +140,7 @@
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorX"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorX')"
 				v-tip="t('components.sceneTilemap-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
@@ -145,6 +154,7 @@
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorY"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorY')"
 				v-tip="t('components.sceneTilemap-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
@@ -156,6 +166,7 @@
 			<div class="text">{{ t('components.sceneTilemap-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
 				id="sceneTilemap-opacity"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-opacity')"
 				v-tip="t('components.sceneTilemap-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
@@ -203,10 +214,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -249,6 +259,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'sceneTilemap-layer', elLayer.value);
+	registerElement(inspectorEls, 'sceneTilemap-light', elLight.value);
+	registerElement(inspectorEls, 'sceneTilemap-blend', elBlend.value);
 	registerElement(inspectorEls, 'sceneTilemap-conditions', elConditions.value);
 	registerElement(inspectorEls, 'sceneTilemap-events', elEvents.value);
 	registerElement(inspectorEls, 'sceneTilemap-scripts', elScripts.value);
@@ -325,13 +339,25 @@ onMounted(() => {
 	);
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-	const elements = document.querySelectorAll(
-		'#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order, #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y, #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY, #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity'
-	);
+	const elements = registryElements(inspectorEls, [
+		'sceneTilemap-name',
+		'sceneTilemap-layer',
+		'sceneTilemap-order',
+		'sceneTilemap-light',
+		'sceneTilemap-blend',
+		'sceneTilemap-x',
+		'sceneTilemap-y',
+		'sceneTilemap-anchorX',
+		'sceneTilemap-anchorY',
+		'sceneTilemap-offsetX',
+		'sceneTilemap-offsetY',
+		'sceneTilemap-parallaxFactorX',
+		'sceneTilemap-parallaxFactorY',
+		'sceneTilemap-opacity'
+	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	elLayer.value?.on('input', editor.layerInput!);
-	document
-		.querySelectorAll('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts')
+	registryElements(inspectorEls, ['sceneTilemap-conditions', 'sceneTilemap-events', 'sceneTilemap-scripts'])
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	watch(

@@ -25,6 +25,7 @@
 			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div>
 			<NumberBox
 				id="fileScene-tileWidth"
+				:ref="registryRef(inspectorEls, 'fileScene-tileWidth')"
 				v-tip="t('components.fileScene-tileWidth.tip')"
 				v-model="form.tileWidth"
 				@input="onParamInput"
@@ -37,6 +38,7 @@
 			</div>
 			<NumberBox
 				id="fileScene-tileHeight"
+				:ref="registryRef(inspectorEls, 'fileScene-tileHeight')"
 				v-tip="t('components.fileScene-tileHeight.tip')"
 				v-model="form.tileHeight"
 				@input="onParamInput"
@@ -167,10 +169,9 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -214,6 +215,15 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	registerElement(inspectorEls, 'fileScene-ambient-red', elAmbientRed.value);
+	registerElement(inspectorEls, 'fileScene-ambient-green', elAmbientGreen.value);
+	registerElement(inspectorEls, 'fileScene-ambient-blue', elAmbientBlue.value);
+	registerElement(inspectorEls, 'fileScene-ambient-direct', elAmbientDirect.value);
+	registerElement(inspectorEls, 'fileScene-ambient-red-slider', elAmbientRedSlider.value);
+	registerElement(inspectorEls, 'fileScene-ambient-green-slider', elAmbientGreenSlider.value);
+	registerElement(inspectorEls, 'fileScene-ambient-blue-slider', elAmbientBlueSlider.value);
+	registerElement(inspectorEls, 'fileScene-ambient-direct-slider', elAmbientDirectSlider.value);
 	registerElement(inspectorEls, 'fileScene-events', elEvents.value);
 	registerElement(inspectorEls, 'fileScene-scripts', elScripts.value);
 	registerElement(inspectorEls, 'fileScene-parameter-pane', elParameterPane.value);
@@ -235,16 +245,23 @@ onMounted(() => {
 	elScripts.value?.bind(new ScriptListInterface(editor, owner));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
-	const elements = document.querySelectorAll(
-		'#fileScene-tileWidth, #fileScene-tileHeight, #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct'
-	);
-	const sliders = document.querySelectorAll(
-		'#fileScene-ambient-red-slider, #fileScene-ambient-green-slider, #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider'
-	);
+	const elements = registryElements(inspectorEls, [
+		'fileScene-tileWidth',
+		'fileScene-tileHeight',
+		'fileScene-ambient-red',
+		'fileScene-ambient-green',
+		'fileScene-ambient-blue',
+		'fileScene-ambient-direct'
+	]);
+	const sliders = registryElements(inspectorEls, [
+		'fileScene-ambient-red-slider',
+		'fileScene-ambient-green-slider',
+		'fileScene-ambient-blue-slider',
+		'fileScene-ambient-direct-slider'
+	]);
 	bindInput(elements, editor, owner);
 	bindSliders(sliders);
-	document
-		.querySelectorAll('#fileScene-events, #fileScene-scripts')
+	registryElements(inspectorEls, ['fileScene-events', 'fileScene-scripts'])
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
