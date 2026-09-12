@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="localization" show-apply mode="center" @apply="onApply">
+	<WindowFrame id="localization"
+				:ref="registryRef(localEls, 'localization')" show-apply mode="center" @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.localization.title') }}
@@ -10,6 +11,7 @@
 			<div class="legend">{{ t('components.localization-list.label') }}</div>
 			<TreeList
 				id="localization-list"
+				:ref="registryRef(localEls, 'localization-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -19,21 +21,32 @@
 				@popup="onListPopup"
 			/>
 		</div>
-		<div class="box" id="localization-inspector" />
-		<TextBox id="localization-searcher" name="search" />
-		<button id="localization-from-excel" name="from-excel">from-excel</button>
-		<button id="localization-to-excel" name="to-excel">to-excel</button>
+		<div class="box" id="localization-inspector"
+				:ref="registryRef(localEls, 'localization-inspector')" />
+		<TextBox id="localization-searcher"
+				:ref="registryRef(localEls, 'localization-searcher')" name="search" />
+		<button id="localization-from-excel"
+				:ref="registryRef(localEls, 'localization-from-excel')" name="from-excel">from-excel</button>
+		<button id="localization-to-excel"
+				:ref="registryRef(localEls, 'localization-to-excel')" name="to-excel">to-excel</button>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { localEls } from '@app/local/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Localization } from '@app/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+// P5b 批次 4：localization-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Localization?.confirm?.(new Event('click'));
+};
 
 const { t } = useI18n();
 

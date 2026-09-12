@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
+import { storesEls } from '@app/stores/element-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
-import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { disable, enable, on, read, write } from '@app/utils/element-utils.ts';
 
@@ -35,25 +35,29 @@ export const SearchString = new (class {
 	private bindButtons() {
 		getSearchStringStore().syncState();
 		if (this._bound) return;
-		const win = $('#event-search-string');
+		const win = storesEls.get('event-search-string') as HTMLElement;
 		if (!win) return;
 		this._bound = true;
 		this.window = win;
-		this.log = $('#event-search-string-log');
+		this.log = storesEls.get('event-search-string-log') as HTMLElement;
 		on(win, 'keydown', (e: KeyboardEvent) => {
 			if (e.key == 'Enter' && this.lastArr.length > 0) {
 				this.next();
 			}
 		});
 		on(win, 'closed', () => this.close());
-		on($('#event-search-string-previous'), 'click', () => this.previous());
-		on($('#event-search-string-next'), 'click', () => this.next());
-		on($('#event-search-string-search'), 'input', (e: Event) => this.input(e));
+		on(storesEls.get('event-search-string-previous') as HTMLElement, 'click', () =>
+			this.previous()
+		);
+		on(storesEls.get('event-search-string-next') as HTMLElement, 'click', () => this.next());
+		on(storesEls.get('event-search-string-search') as HTMLElement, 'input', (e: Event) =>
+			this.input(e)
+		);
 	}
 	refresh() {
-		if (read($('#event-search-string-search')))
+		if (read(storesEls.get('event-search-string-search') as HTMLElement))
 			this.input({
-				target: { value: read($('#event-search-string-search')) }
+				target: { value: read(storesEls.get('event-search-string-search') as HTMLElement) }
 			});
 	}
 	locationLine() {
@@ -76,7 +80,7 @@ export const SearchString = new (class {
 		});
 	}
 	clearHistory() {
-		write($('#event-search-string-search'), '');
+		write(storesEls.get('event-search-string-search') as HTMLElement, '');
 	}
 	input(e: { target?: { value?: unknown } } | Event) {
 		const val = (e.target as { value?: unknown })?.value as string;
@@ -95,11 +99,11 @@ export const SearchString = new (class {
 		});
 		this.log!.textContent = String(findArr.length);
 		if (this.lastArr.length == 0) {
-			disable($('#event-search-string-previous'));
-			disable($('#event-search-string-next'));
+			disable(storesEls.get('event-search-string-previous') as HTMLElement);
+			disable(storesEls.get('event-search-string-next') as HTMLElement);
 		} else {
-			enable($('#event-search-string-previous'));
-			enable($('#event-search-string-next'));
+			enable(storesEls.get('event-search-string-previous') as HTMLElement);
+			enable(storesEls.get('event-search-string-next') as HTMLElement);
 		}
 	}
 	clearCurrentHighlight() {
@@ -132,12 +136,12 @@ export const SearchString = new (class {
 		Window.open!('event-search-string');
 		this.index = 0;
 		this.current = eventWindow;
-		disable($('#event-search-string-previous'));
-		disable($('#event-search-string-next'));
-		$('#event-search-string-search').focus();
-		if (read($('#event-search-string-search')))
+		disable(storesEls.get('event-search-string-previous') as HTMLElement);
+		disable(storesEls.get('event-search-string-next') as HTMLElement);
+		storesEls.get('event-search-string-search')?.focus?.();
+		if (read(storesEls.get('event-search-string-search') as HTMLElement))
 			this.input({
-				target: { value: read($('#event-search-string-search')) }
+				target: { value: read(storesEls.get('event-search-string-search') as HTMLElement) }
 			});
 	}
 	close() {

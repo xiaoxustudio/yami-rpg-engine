@@ -1,6 +1,6 @@
-﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { on, read } from '@app/utils/element-utils.ts';
+import { localEls } from '@app/local/element-registry';
+import { read } from '@app/utils/element-utils';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -28,8 +28,7 @@ export const ImportLanguage: {
 };
 
 ImportLanguage.initialize = function (this: typeof ImportLanguage) {
-	if (!$('#importLanguage-confirm')) return;
-	on($('#importLanguage-confirm'), 'click', this.confirm);
+	if (!localEls.get('importLanguage')) return;
 };
 
 ImportLanguage.open = function (this: typeof ImportLanguage) {
@@ -56,8 +55,8 @@ ImportLanguage.open = function (this: typeof ImportLanguage) {
 			const basename = Path.basename!(filePath);
 			const extname = Path.extname!(basename);
 			const language = Path.basename!(filePath, extname);
-			$('#importLanguage-language').loadItems(items);
-			$('#importLanguage-language').write2(language);
+			localEls.get('importLanguage-language')?.loadItems?.(items);
+			localEls.get('importLanguage-language')?.write2?.(language);
 			requestFocus('importLanguage-language');
 			dialogs.import = Path.slash!(Path.dirname!(filePath));
 		}
@@ -94,7 +93,7 @@ ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string
 ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 	const get = (key: string) => t('confirmation.' + key);
 	const filename = Path.basename!(ImportLanguage.filePath);
-	const language = read($('#importLanguage-language'));
+	const language = read(localEls.get('importLanguage-language') as HTMLElement);
 	const langname = t('languages.' + language);
 	Window.confirm!(
 		{

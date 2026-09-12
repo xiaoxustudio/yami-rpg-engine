@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="easing">
+	<WindowFrame id="easing"
+				:ref="registryRef(dataEls, 'easing')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.easing.title') }}
@@ -10,6 +11,7 @@
 			<div class="legend">{{ t('components.easing-list.label') }}</div>
 			<TreeList
 				id="easing-list"
+				:ref="registryRef(dataEls, 'easing-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -21,9 +23,11 @@
 		</div>
 		<div class="field-set" id="easing-points-fieldset">
 			<div class="legend">{{ t('components.easing-points-grid.label') }}</div>
-			<div class="grid-box" id="easing-points-grid">
+			<div class="grid-box" id="easing-points-grid"
+				:ref="registryRef(dataEls, 'easing-points-grid')">
 				<div class="text">{{ t('components.easing-mode.label') }}</div>
-				<SelectBox id="easing-mode" v-model="form.mode" />
+				<SelectBox id="easing-mode"
+				:ref="registryRef(dataEls, 'easing-mode')" v-model="form.mode" />
 				<div class="text" id="easing-points-0">
 					{{ t('components.easing-points-0.content') }}
 				</div>
@@ -196,16 +200,19 @@
 		</div>
 		<div class="field-set" id="easing-curve-fieldset">
 			<div class="legend">{{ t('components.easing-curve-canvas.label') }}</div>
-			<canvas id="easing-curve-canvas" width="0" height="0" tabindex="-1" />
+			<canvas id="easing-curve-canvas"
+				:ref="registryRef(dataEls, 'easing-curve-canvas')" width="0" height="0" tabindex="-1" />
 			<RadioBox name="easing-scale" value="1">100%</RadioBox>
 			<RadioBox name="easing-scale" value="0.5">50%</RadioBox>
 		</div>
 		<div class="field-set" id="easing-preview-fieldset">
 			<div class="legend">{{ t('components.easing-preview-canvas.label') }}</div>
-			<canvas id="easing-preview-canvas" width="0" height="0" />
+			<canvas id="easing-preview-canvas"
+				:ref="registryRef(dataEls, 'easing-preview-canvas')" width="0" height="0" />
 			<div class="grid-box" id="easing-preview-grid">
 				<div class="text">{{ t('components.easing-preview-reverse.label') }}</div>
-				<SelectBox id="easing-preview-reverse" v-model="form.preview.reverse" />
+				<SelectBox id="easing-preview-reverse"
+				:ref="registryRef(dataEls, 'easing-preview-reverse')" v-model="form.preview.reverse" />
 				<div class="text">{{ t('components.easing-preview-duration.label') }}</div>
 				<NumberBox
 					id="easing-preview-duration"
@@ -231,6 +238,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { dataEls } from '@app/data/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Easing } from '@app/data/transition-window.ts';
 import { useEasingWindow } from '@app/composables/useEasingWindow';
@@ -240,6 +249,11 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+// P5b 批次 4：easing-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Easing?.confirm?.(new Event('click'));
+};
 
 const { t } = useI18n();
 

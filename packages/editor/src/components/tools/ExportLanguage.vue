@@ -1,5 +1,5 @@
 ﻿<template>
-	<WindowFrame ref="frame" id="exportLanguage">
+	<WindowFrame ref="frame" id="exportLanguage" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.exportLanguage.title') }}
@@ -8,16 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.exportLanguage-first.label') }}</div>
-			<SelectBox id="exportLanguage-first" v-model="form.first" />
+			<SelectBox id="exportLanguage-first"
+				:ref="registryRef(localEls, 'exportLanguage-first')" v-model="form.first" />
 			<div class="text">{{ t('components.exportLanguage-second.label') }}</div>
-			<SelectBox id="exportLanguage-second" v-model="form.second" />
+			<SelectBox id="exportLanguage-second"
+				:ref="registryRef(localEls, 'exportLanguage-second')" v-model="form.second" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { ExportLanguage } from '@app/local/export-language-window.ts';
+
+// P5b 批次 4：exportLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	ExportLanguage?.confirm?.(new Event('click'));
+};
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
+import { localEls } from '@app/local/element-registry';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import type { ExportLanguageForm } from '@app/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -63,6 +73,7 @@ const getForm = (): ExportLanguageForm => {
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 onMounted(() => {
+	registerElement(localEls, 'exportLanguage', frame.value);
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });

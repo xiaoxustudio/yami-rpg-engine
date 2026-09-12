@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="selector" mode="center">
+	<WindowFrame id="selector"
+				:ref="registryRef(storesEls, 'selector')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.selector.title') }}
@@ -14,11 +15,19 @@
 </template>
 
 <script setup lang="ts">
+import { useSelectorStore } from '@app/stores/selector.ts';
 import { onMounted } from 'vue';
+import { storesEls } from '@app/stores/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileBrowser from '../file-browser/FileBrowser.vue';
+
+// P5b 批次 4：selector-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	useSelectorStore().confirm?.();
+};
 
 const { t } = useI18n();
 

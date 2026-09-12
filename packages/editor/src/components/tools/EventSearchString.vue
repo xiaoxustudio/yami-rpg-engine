@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="event-search-string" no-buttons>
+	<WindowFrame id="event-search-string"
+				:ref="registryRef(storesEls, 'event-search-string')" no-buttons>
 		<template #title
 			><TitleBar
 				>{{ t('components.event-search-string.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text"></div>
-			<TextBox id="event-search-string-search" />
+			<TextBox id="event-search-string-search"
+				:ref="registryRef(storesEls, 'event-search-string-search')" />
 			<div class="text"></div>
 			<CheckBox
 				id="event-search-string-case-insensitive"
@@ -25,15 +27,20 @@
 			/>
 			<div class="text"></div>
 			<CheckBox id="event-search-string-match-line" class="standard" v-model="matchLine" />
-			<div class="text" id="event-search-string-log"></div>
+			<div class="text" id="event-search-string-log"
+				:ref="registryRef(storesEls, 'event-search-string-log')"></div>
 		</div>
-		<button id="event-search-string-previous" name="previous">上一个</button>
-		<button id="event-search-string-next" name="next">下一个</button>
+		<button id="event-search-string-previous"
+				:ref="registryRef(storesEls, 'event-search-string-previous')" name="previous">上一个</button>
+		<button id="event-search-string-next"
+				:ref="registryRef(storesEls, 'event-search-string-next')" name="next">下一个</button>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue';
+import { storesEls } from '@app/stores/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

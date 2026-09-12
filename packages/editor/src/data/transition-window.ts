@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { getListConfig, setTreeItemText } from '@ui-kit';
+import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
+import { dataEls } from '@app/data/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -168,11 +169,15 @@ export const Easing = {
 
 function ensureDomBound() {
 	if (Easing.list) return;
-	const list = $('#easing-list');
+	const list = dataEls.get('easing-list') as HTMLElement;
 	if (!list) return;
 	Easing.list = list as unknown as typeof Easing.list;
-	Easing.curve = $('#easing-curve-canvas') as unknown as EasingCanvasShape;
-	Easing.preview = $('#easing-preview-canvas') as unknown as EasingCanvasShape;
+	Easing.curve = dataEls.get(
+		'easing-curve-canvas'
+	) as HTMLElement as unknown as EasingCanvasShape;
+	Easing.preview = dataEls.get(
+		'easing-preview-canvas'
+	) as HTMLElement as unknown as EasingCanvasShape;
 	list.saveSelection = Easing.list_saveSelection;
 	list.restoreSelection = Easing.list_restoreSelection;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
@@ -194,13 +199,13 @@ Easing.initialize = () => {
 	// oxlint-disable-next-line unbound-method
 	getListConfig(list).updaters.push(list.updateTextNode);
 
-	$('#easing-mode').loadItems([
+	dataEls.get('easing-mode')?.loadItems?.([
 		{ name: 'Use 2 Points', value: 2 },
 		{ name: 'Use 5 Points', value: 5 },
 		{ name: 'Use 8 Points', value: 8 }
 	]);
 
-	$('#easing-preview-reverse').loadItems([
+	dataEls.get('easing-preview-reverse')?.loadItems?.([
 		{ name: 'ON', value: true },
 		{ name: 'OFF', value: false }
 	]);
@@ -209,8 +214,9 @@ Easing.initialize = () => {
 	for (let i = 0; i < 8; i++) {
 		inputs.push($(`#easing-points-${i}-x`), $(`#easing-points-${i}-y`));
 	}
-	$('#easing-mode')
-		.enableHiddenMode()
+	dataEls
+		.get('easing-mode')
+		?.enableHiddenMode?.()
 		.relate([
 			{ case: 2, targets: inputs.slice(0, 4) },
 			{ case: 5, targets: inputs.slice(0, 10) },
@@ -218,7 +224,7 @@ Easing.initialize = () => {
 		]);
 
 	Easing.scale = 1;
-	const easingScaleInit = $('#easing-scale');
+	const easingScaleInit = radioProxyMap['easing-scale'] as RadioProxyElement | undefined;
 	if (easingScaleInit) write(easingScaleInit, Easing.scale);
 
 	Easing.timer = new Timer({
@@ -265,20 +271,20 @@ Easing.initialize = () => {
 
 	window.addEventListener('dprchange', Easing.dprchange);
 	window.addEventListener('themechange', Easing.themechange);
-	on($('#easing'), 'close', Easing.windowClose);
-	on($('#easing'), 'closed', Easing.windowClosed);
-	on($('#easing-points-grid'), 'change', Easing.dataChange);
+	on(dataEls.get('easing') as HTMLElement, 'close', Easing.windowClose);
+	on(dataEls.get('easing') as HTMLElement, 'closed', Easing.windowClosed);
+	on(dataEls.get('easing-points-grid') as HTMLElement, 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
 	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
 	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
-	on($('#easing-mode'), 'input', Easing.modeSelect);
+	on(dataEls.get('easing-mode') as HTMLElement, 'input', Easing.modeSelect);
 	document
 		.querySelectorAll(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
     #easing-points-2-x, #easing-points-2-y, #easing-points-3-x, #easing-points-3-y,
     #easing-points-4-x, #easing-points-4-y, #easing-points-5-x, #easing-points-5-y,
     #easing-points-6-x, #easing-points-6-y, #easing-points-7-x, #easing-points-7-y`)
 		.forEach((el) => on(el, 'input', Easing.pointInput));
-	const easingScale = $('#easing-scale');
+	const easingScale = radioProxyMap['easing-scale'] as RadioProxyElement | undefined;
 	if (easingScale) on(easingScale, 'input', Easing.scaleInput);
 	if (Easing.curve) {
 		on(Easing.curve, 'keydown', Easing.curveKeydown);
@@ -286,8 +292,7 @@ Easing.initialize = () => {
 		on(Easing.curve, 'wheel', Easing.curveWheel, { passive: true });
 		on(Easing.curve, 'blur', Easing.curveBlur);
 	}
-	const easingConfirm = $('#easing-confirm');
-	if (easingConfirm) on(easingConfirm, 'click', Easing.confirm);
+	// confirm 由 Easing.vue 的 @confirm 驱动（按钮由 WindowFrame 生成）
 };
 
 (() => {

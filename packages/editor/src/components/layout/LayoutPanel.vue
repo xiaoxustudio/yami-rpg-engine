@@ -95,7 +95,8 @@
 				</NavBar>
 				<PageManager id="layout-page-manager" ref="paletteManagerEl">
 					<PaletteNode value="project" source="page">
-					<div class="page-frame" id="project" value="project">
+					<div class="page-frame" id="project"
+				:ref="registryRef(storesEls, 'project')" value="project">
 						<div class="file-browser" id="project-browser"></div>
 					</div>
 					</PaletteNode>
@@ -953,6 +954,7 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { storesEls } from '@app/stores/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
 import { animationEls } from '@app/animation/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';

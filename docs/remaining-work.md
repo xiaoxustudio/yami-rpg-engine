@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 4 完成 animation/scene/palette 三组后为 245 处 / 53 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 4 完成 data/stores/local 三组后为 196 处 / 50 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -483,6 +483,21 @@
 - **既有 spec 第 5 次抓到契约变化**：`palette-selection-render.spec.ts` 手工创建 `palette-*` 元素后调 `Palette.initialize()`，而模块现在从注册表取元素 → `marquee.customSelect is not a function` ✗；已按新契约在 `append()` 里 `registerElement(paletteEls, id, el)`（并单独登记 `inspectorEls` 的 `fileTileset`），5 例恢复全绿。
 
 **工具与教训**：脚本给 SFC 补 import 时曾把 `createElementRegistry` 一起塞进去（SFC 只需 `registryRef`/`registerElement`）→ TS6133；已修工具并统一"**只补真正缺失的助手**"。
+
+**批 4 第三刀（`src/data` 13 + `src/stores` 21 + `src/local` 18 = 52 处 / 7 文件 → 0）**
+
+- `data`：`transition-window.ts` → `dataEls` + `Easing.vue`；其中 **`easing-scale` 是 RadioBox 组**（`$('#组名')` 命中的是 RadioProxy 代理 div）→ 走 `radioProxyMap`；`easing-confirm` 接线删除、`Easing.vue` 补 `@confirm`。
+- `stores`：`browser.ts`(1→LayoutPanel) + `search-string.ts`(17→`EventSearchString.vue`) + `selector.ts`(3→`Selector.vue`)；`selector.ts` 的 `bindConfirm()`（`button.addEventListener('click', confirm)` 形态，我的通用 confirm 处理器认不出 `on(...)` 之外的形态）→ 改为 `Selector.vue` 的 `@confirm` 调 **store 的 `confirm` 动作**（`useSelectorStore().confirm?.()`），模块里 `bindConfirm`/`confirmBound` 全删。
+- `local`：三个窗口模块 → `localEls` + 三个 SFC；`export-language` / `import-language` 的 **`if (!$('#X-confirm')) return;` 是启动门** → 改为检查注册表里的窗口元素（`$('#exportLanguage')` 等）。
+
+**本轮踩到并修掉的四个问题（都属"脚本自身缺陷"，已固化教训）**
+
+1. **🔴 最严重：自作聪明的 import 去重把 23 个文件的 import 写坏**（用 `match(/[^ {}]+/g)` 拼符号，产出 `import { import, A,, B, from, 'x'; }` 这类垃圾，TS1003/TS1005 一片）。**处置**：`git checkout` 恢复全部 21 个被误改文件（工作树回到已提交状态）→ 重写脚本、去掉去重逻辑、判据一律改为**检查 import 语句**，再重做该组。教训：**批量改写要留在"可一步回滚"的边界内**（先 commit 再动下一组），且**别写"合并 import"这类聪明逻辑**——收益极小、破坏面极大。
+2. **`as HTMLElement?.m?.(`**：末位兜底规则把断言插在可选链前 → 语法错误；已改为 `(X.get('y') as HTMLElement)?.m?.(`，并全仓扫描确认 0 残留。
+3. **正则字面量里的 `$(` 造成误判**：`/\$([0-9a-f]{16})…/` 被当成"还在用 `$()`" → 未删未用导入；清理判据已加"剥离正则字面量"。
+4. **重复导入**：`Easing.vue` 里我插入的 `import { Easing }` 与既有重复（TS2300）→ 按 import 语句判据去重（这次只做"缺则加"，不做合并）。
+
+**批 4 剩余**：196 处 / 50 文件 —— `title` 40、`particle` 22、`ui` 18、`module` 17、`composables` 16、`engine` 15、`variable` 15、`services` 14，以及 `animation/scene/palette/data/stores/local` 之外的若干小组（`plugin` 7、`log` 5、`utils` 4、`types` 1 等）。
 
 ## B1 — 巨石渲染层重写
 

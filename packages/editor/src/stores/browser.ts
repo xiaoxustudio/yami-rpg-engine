@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { storesEls } from '@app/stores/element-registry';
 import { Editor } from '@app/services/project/editor.ts';
 import { shallowRef } from 'vue';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
@@ -21,7 +22,6 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { $ } from '@app/utils/dom';
 import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
 import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
@@ -381,7 +381,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			return;
 		}
 		initRetryCount = 0;
-		Browser.page = $('#project');
+		Browser.page = storesEls.get('project') as HTMLElement;
 		Browser.searcher = (
 			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
 		)?.searcher;

@@ -1,5 +1,5 @@
 import { createTextAreaElement, getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { localEls } from '@app/local/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
 import {
@@ -190,14 +190,18 @@ export const Localization: LocalizationShape = {
 
 function ensureDomBound() {
 	if (Localization.list) return;
-	const list = $('#localization-list');
+	const list = localEls.get('localization-list') as HTMLElement;
 	if (!list) return;
 	Localization.list = list as unknown as TreeListElement;
-	Localization.panel = $('#localization-inspector') as unknown as HTMLElement & {
+	Localization.panel = localEls.get(
+		'localization-inspector'
+	) as HTMLElement as unknown as HTMLElement & {
 		item: LocalizationItem | null;
 	};
 	hide(Localization.panel);
-	Localization.searcher = $('#localization-searcher') as unknown as HTMLElement & {
+	Localization.searcher = localEls.get(
+		'localization-searcher'
+	) as HTMLElement as unknown as HTMLElement & {
 		addCloseButton(): void;
 		deleteInputContent(): void;
 	};
@@ -265,7 +269,7 @@ Localization.initialize = function () {
 		this.changed = true;
 	};
 
-	on($('#localization'), 'close', this.windowClose);
+	on(localEls.get('localization') as HTMLElement, 'close', this.windowClose);
 
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
@@ -276,9 +280,9 @@ Localization.initialize = function () {
 	// list select/record/open/popup 经 Vue 模板转发（Localization.vue @select/@record/@open/@popup → Localization.list*）
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
-	on($('#localization-confirm'), 'click', this.confirm);
-	on($('#localization-to-excel'), 'click', this.toExcel);
-	on($('#localization-from-excel'), 'click', this.fromExcel);
+
+	on(localEls.get('localization-to-excel') as HTMLElement, 'click', this.toExcel);
+	on(localEls.get('localization-from-excel') as HTMLElement, 'click', this.fromExcel);
 
 	ExportLanguage.initialize();
 	ImportLanguage.initialize();

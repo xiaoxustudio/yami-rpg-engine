@@ -1,6 +1,5 @@
-﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { on } from '@app/utils/element-utils.ts';
+import { localEls } from '@app/local/element-registry';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -38,8 +37,7 @@ export const ExportLanguage: {
 };
 
 ExportLanguage.initialize = function (this: typeof ExportLanguage) {
-	if (!$('#exportLanguage-confirm')) return;
-	on($('#exportLanguage-confirm'), 'click', this.confirm);
+	if (!localEls.get('exportLanguage')) return;
 };
 
 ExportLanguage.open = function (this: typeof ExportLanguage) {
@@ -53,10 +51,10 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 			value: language.name
 		});
 	}
-	$('#exportLanguage-first').loadItems(items);
-	$('#exportLanguage-second').loadItems([none, ...items]);
+	localEls.get('exportLanguage-first')?.loadItems?.(items);
+	localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
 	const setForm = (
-		$('#exportLanguage') as
+		localEls.get('exportLanguage') as
 			| (HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void })
 			| null
 	)?.setForm;
@@ -101,7 +99,9 @@ ExportLanguage.confirm = function (this: typeof ExportLanguage, _event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
 	const getForm = (
-		$('#exportLanguage') as (HTMLElement & { getForm?: () => ExportLanguageForm }) | null
+		localEls.get('exportLanguage') as
+			| (HTMLElement & { getForm?: () => ExportLanguageForm })
+			| null
 	)?.getForm;
 	const { first, second } = getForm?.() ?? ({} as ExportLanguageForm);
 	File.showSaveDialog!({

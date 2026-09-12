@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
+import { storesEls } from '@app/stores/element-registry';
 import type { MenuItem } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { shallowRef } from 'vue';
-import { $ } from '@app/utils/dom';
 import { clear, hasClass } from '@app/utils/element-utils';
 import { getDataStore } from '@app/stores/data';
 import { AudioManager } from '@app/audio/audio-manager.ts';
@@ -95,16 +95,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		target.value = Selector?.target ?? null;
 	}
 
-	let confirmBound = false;
-
-	function bindConfirm() {
-		if (confirmBound) return;
-		const button = $('#selector-confirm');
-		if (!button) return;
-		button.addEventListener('click', confirm);
-		confirmBound = true;
-	}
-
+	// P5b 批次 4：confirm 按钮由 WindowFrame 生成 → 改由 Selector.vue 的 @confirm 调 store.confirm
 	let initRetryCount = 0;
 
 	function initialize() {
@@ -125,9 +116,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.on?.('open', bodyOpen);
 		Selector.body?.on?.('popup', bodyPopup);
 		Selector.head?.searcher?.on?.('keydown', searcherKeydown);
-		$('#selector')?.on?.('closed', windowClosed);
-		$('#selector')?.on?.('resize', windowResize);
-		bindConfirm();
+		(storesEls.get('selector') as HTMLElement)?.on?.('closed', windowClosed);
+		(storesEls.get('selector') as HTMLElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
 			if (Selector.head && Selector.head?.searcher) {
 				if (Selector.head?.searcher) {
@@ -144,7 +134,6 @@ export const useSelectorStore = defineStore('selector', () => {
 		const Selector = getSelector();
 		if (!Selector) return;
 		const Directory = getDirectoryTree();
-		bindConfirm();
 		Selector.target = t;
 		Selector.allowNone = allowNoneParam;
 		target.value = t;
