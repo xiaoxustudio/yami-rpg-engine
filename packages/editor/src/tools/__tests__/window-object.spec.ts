@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import '@app/utils/array';
 import { getConfirmationStore } from '@app/stores/confirmation';
-import { Window } from '@app/tools/window-object';
+import { Window, windowShellEls } from '@app/tools/window-object';
+import { registerElement } from '@app/utils/element-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
 const { layoutMock, titleMock } = vi.hoisted(() => ({
@@ -11,6 +12,7 @@ const { layoutMock, titleMock } = vi.hoisted(() => ({
 		enableFocusableElements: vi.fn()
 	},
 	titleMock: {
+		target: null as HTMLElement | null,
 		pointerenter: vi.fn(),
 		pointermove: vi.fn()
 	}
@@ -72,6 +74,9 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 			title.id = 'title';
 			document.body.appendChild(title);
 		}
+		// P5b 批次 3：外壳元素 #title 由 AppShell.vue 登记进 windowShellEls（Window.open 不再查 DOM）
+		titleMock.target = null;
+		registerElement(windowShellEls, 'title', document.getElementById('title'));
 	});
 
 	afterEach(() => {

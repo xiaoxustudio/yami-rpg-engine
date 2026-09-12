@@ -9,10 +9,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.textEffect-type.label') }}</div>
-			<SelectBox id="textEffect-type" v-model="form.type" />
+			<SelectBox id="textEffect-type"
+				:ref="registryRef(textCaptureEls, 'textEffect-type')" v-model="form.type" />
 			<div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div>
 			<NumberBox
 				id="textEffect-shadowOffsetX"
+				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetX')"
 				min="-9"
 				max="9"
 				unit="px"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div>
 			<NumberBox
 				id="textEffect-shadowOffsetY"
+				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetY')"
 				min="-9"
 				max="9"
 				unit="px"
@@ -29,20 +32,23 @@
 			<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div>
 			<NumberBox
 				id="textEffect-strokeWidth"
+				:ref="registryRef(textCaptureEls, 'textEffect-strokeWidth')"
 				min="1"
 				max="20"
 				unit="px"
 				v-model="form.strokeWidth"
 			/>
 			<div class="text">{{ t('components.textEffect-color.label') }}</div>
-			<ColorBox id="textEffect-color" v-model="form.color" />
+			<ColorBox id="textEffect-color"
+				:ref="registryRef(textCaptureEls, 'textEffect-color')" v-model="form.color" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { Selection } from '@app/tools/text-capture.ts';
+import { registryRef } from '@app/utils/element-registry';
+import { Selection, textCaptureEls } from '@app/tools/text-capture.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

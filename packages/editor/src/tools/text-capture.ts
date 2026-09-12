@@ -1,4 +1,5 @@
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { collect } from '@app/utils/event-scope';
 import type { TextSuggestionTarget } from '@app/commands/text-tip.ts';
@@ -15,6 +16,9 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Variable } from '@app/variable/variable.ts';
+
+/** P5b 批次 3：元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记 */
+export const textCaptureEls = createElementRegistry();
 
 export type {
 	FontForm,
@@ -160,7 +164,7 @@ export const Selection: SelectionShape = {
 const listenerScopes = new WeakMap<EventListenerElement, { off(): void }>();
 
 Selection.initialize = function (this: SelectionShape) {
-	if (!$('#font-confirm')) return;
+	if (!textCaptureEls.get('font')) return;
 
 	const exclusions: Record<string, boolean> = {
 		'color-hex': true,
@@ -713,8 +717,8 @@ Selection.fontSize = {
 
 Selection.textPosition = {
 	initialize: function () {
-		const axis = $('#textPosition-axis');
-		const operation = $('#textPosition-operation');
+		const axis = textCaptureEls.get('textPosition-axis');
+		const operation = textCaptureEls.get('textPosition-operation');
 		if (!axis || !operation) return;
 		axis.loadItems([
 			{ name: 'X', value: 'x' },
@@ -749,7 +753,7 @@ Selection.textPosition = {
 
 Selection.textEffect = {
 	initialize: function () {
-		const type = $('#textEffect-type');
+		const type = textCaptureEls.get('textEffect-type');
 		if (!type) return;
 		type.loadItems([
 			{ name: 'Shadow', value: 'shadow' },
@@ -760,16 +764,19 @@ Selection.textEffect = {
 			{
 				case: 'shadow',
 				targets: [
-					$('#textEffect-shadowOffsetX'),
-					$('#textEffect-shadowOffsetY'),
-					$('#textEffect-color')
+					textCaptureEls.get('textEffect-shadowOffsetX'),
+					textCaptureEls.get('textEffect-shadowOffsetY'),
+					textCaptureEls.get('textEffect-color')
 				]
 			},
 			{
 				case: 'stroke',
-				targets: [$('#textEffect-strokeWidth'), $('#textEffect-color')]
+				targets: [
+					textCaptureEls.get('textEffect-strokeWidth'),
+					textCaptureEls.get('textEffect-color')
+				]
 			},
-			{ case: 'outline', targets: [$('#textEffect-color')] }
+			{ case: 'outline', targets: [textCaptureEls.get('textEffect-color')] }
 		]);
 	},
 	open: function ({
@@ -811,7 +818,7 @@ Selection.textEffect = {
 
 Selection.image = {
 	initialize: function () {
-		const mode = $('#insertImage-mode');
+		const mode = textCaptureEls.get('insertImage-mode');
 		if (!mode) return;
 		mode.loadItems([
 			{ name: 'Image', value: 'image' },
@@ -820,26 +827,29 @@ Selection.image = {
 			{ name: 'Image - Clip - Size', value: 'image-clip-size' }
 		]);
 		mode.enableHiddenMode().relate([
-			{ case: 'image', targets: [$('#insertImage-image')] },
+			{ case: 'image', targets: [textCaptureEls.get('insertImage-image')] },
 			{
 				case: 'image-size',
 				targets: [
-					$('#insertImage-image'),
-					$('#insertImage-width'),
-					$('#insertImage-height')
+					textCaptureEls.get('insertImage-image'),
+					textCaptureEls.get('insertImage-width'),
+					textCaptureEls.get('insertImage-height')
 				]
 			},
 			{
 				case: 'image-clip',
-				targets: [$('#insertImage-image'), $('#insertImage-clip')]
+				targets: [
+					textCaptureEls.get('insertImage-image'),
+					textCaptureEls.get('insertImage-clip')
+				]
 			},
 			{
 				case: 'image-clip-size',
 				targets: [
-					$('#insertImage-image'),
-					$('#insertImage-clip'),
-					$('#insertImage-width'),
-					$('#insertImage-height')
+					textCaptureEls.get('insertImage-image'),
+					textCaptureEls.get('insertImage-clip'),
+					textCaptureEls.get('insertImage-width'),
+					textCaptureEls.get('insertImage-height')
 				]
 			}
 		]);
@@ -886,7 +896,7 @@ Selection.image = {
 Selection.localVariable = {
 	filter: 'all',
 	initialize: function (this: { filter: string }) {
-		const key = $('#localVariable-key');
+		const key = textCaptureEls.get('localVariable-key');
 		if (!key) return;
 		TextSuggestion.listen!(
 			key as unknown as TextSuggestionTarget,

@@ -1,6 +1,7 @@
 <template>
 	<YMFont
 		id="font"
+				:ref="registryRef(textCaptureEls, 'font')"
 		:model-value="form.font"
 		:label="t('components.font-font.label')"
 		:title="t('components.font.title')"
@@ -11,7 +12,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { Selection } from '@app/tools/text-capture.ts';
+import { registryRef } from '@app/utils/element-registry';
+import { Selection, textCaptureEls } from '@app/tools/text-capture.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { YMFont } from '@ui-kit';
 

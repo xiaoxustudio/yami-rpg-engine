@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1127 处 / 210 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1104 处 / 209 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -232,7 +232,7 @@
 | `editor/components` | 722（批 1 已消 134：IfCondition 78 + SetNumberOperand 58） | 111 | 批次 1–2 | 🚧 批 1 完成 |
 | `editor/inspector` | 168（**实测口径：`src/inspector/**` 的 37 个 `.ts` 页面模块**；`components/inspector/*.vue` 侧为 0 处） | 38 | 批次 3 | 🚧 未开始（本轮先做 attribute/enum） |
 | `editor/commands` | **0**（批 2 全部完成：accessor 12 个 + 属性窗口族 + tips 2 个 + 自定义命令窗口 + 事件编辑器族） | 27 | 批次 2 | ✅ **已完成** |
-| `editor/tools` | 78 → **25**（批 3 已消 53：`condition-list` 21→0、`color-picker-window` 21→0、`property-list` 8→0、`image-crop-window` 4→1 动态白名单；**余 `text-capture` 22 / `window-object` 2 / `image-crop` 1**） | 6 | 批次 3 | 🚧 部分完成 |
+| `editor/tools` | 78 → **2**（均为白名单：`image-crop-window` 的动态 id、`window-object` 的 `#window-ambient` 外壳元素） | 6 | 批次 3 | ✅ **已完成** |
 | `editor/animation` | 48 | 2 | 批次 4 | 未开始 |
 | `editor/title` | 40 | 5 | 批次 4 | 未开始 |
 | `editor/scene` | 36 | 6 | 批次 4 | 未开始 |
@@ -416,6 +416,20 @@
 - **警戒线**：`:ref` 被占用时脚本会"跳过已有 ref 的标签"，**跳过是静默的**——凡做此类迁移，必须用审计脚本（对比"模块用到的 id"与"模板已登记的 id"）复核，而不是只看脚本输出的 refs 计数。
 - 两个新回归 spec 正好锁住这条链路：`color-picker-registry.spec.ts`（4 例，含"initialize 把 radioProxy 设为 cancelable"）与 `image-crop-registry.spec.ts`（3 例，含"initialize 从注册表绑定 window/screen/image/marquee"）——**没有它们，这两个静默失效不会被任何测试发现**。
 
+**批 3 的第四刀（`tools/text-capture.ts` 22 处 + `tools/window-object.ts` 2 处）——`src/tools` 归零**
+
+| 模块 | SFC | 处数 | 做法 |
+| --- | --- | --- | --- |
+| `tools/text-capture.ts` | **五个** SFC 共享一个注册表：`Font.vue`(1)、`TextPosition.vue`(2)、`TextEffect.vue`(5)、`InsertImage.vue`(5)、`LocalVariable.vue`(1) | 22 → 0 | 新增 `textCaptureEls`（跨 SFC 共享，同批 2 的 `commandSuggestionEls`）；**启动门改写**：原先用 `if (!$('#font-confirm')) return;` 判断"窗口已挂载"，改为 `if (!textCaptureEls.get('font')) return;`（`Font.vue` 登记 `font`）。四个 SFC 早已有 `@confirm`，故无按钮迁移 |
+| `tools/window-object.ts` | `AppShell.vue` 登记 `title` | 2 → **1** | `Title.target` 改读 `windowShellEls`（新增外壳元素注册表）；`#window-ambient` **保留为白名单**——它是 **`index.html` 里的静态外壳元素**（不在任何组件模板里，`vitest.setup.ts` 也为测试预建它），不属"组件控件查找" |
+
+- **`#window-ambient` 的定性依据**：全仓检索后确认它只出现在 `index.html`、`Project/css/layout.css` 与 `vitest.setup.ts`（测试预置），没有组件渲染它 → 属外壳骨架，改造无收益（把查找挪进 AppShell 仍是 DOM 查找）。
+- **既有 spec 抓到契约变化**：`window-object.spec.ts` 断言"打开首个窗口后焦点让给 `#title`"，改造后 `Title.target` 只在注册表里有值时才被赋值 → 用例失败。已按新契约更新（在 `beforeEach` 里 `registerElement(windowShellEls, 'title', …)`，并重置 `titleMock.target`），21 例全绿。这正是"注册表化"应有的可见性：**没有默认回退**。
+- **新增回归**：`text-capture-registry.spec.ts`（6 例）——逐个 SFC 断言其登记的 id 与元素 id 一致，并断言"五个 SFC 全挂载后 14 个 id 都在注册表里（启动门可放行）"。
+- **另修一处脚本通病**：早期脚本用"标识符是否出现"判断是否需要补导入，而模板里的 `registryRef(reg, …)` 会让判断为真 → 漏导入（TS2339）。已写**通用修复器**扫全仓 SFC，凡用 `registryRef`/`registerElement` 者都校验"① 助手已导入 ② 注册表已从其定义模块导入"，本次修复 5 个 SFC；该修复器留在工具脚本口径里供后续批次复用。
+
+**批 3 进度**：`src/attribute` ✅、`src/enum` ✅、`src/tools` ✅（余 2 处白名单）、`src/inspector` 168 处 / 38 个页面模块 🚧 待做。
+
 ## B1 — 巨石渲染层重写
 
 - **现状证据**：`packages/ui-kit/src/components/business/YMCommandList/command-api.ts` 2609 行（纯数据层已抽 `command-core.ts` 269 行）、`packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue` 2327 行（已抽 `file-body-core.ts` 154 行）；DOM 渲染层仍命令式。**契约面远大于测试面**：命令列表经 `packages/editor/src/components/common/CommandList.vue` 暴露 **67 个方法**、editor 侧约 **259 处**列表方法调用，而组件级只有 **12 个用例**；文件body 组件级 **5 个用例**（另有 editor 侧 2 个 / 3 个）。
@@ -516,4 +530,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **218 文件 1914/1914**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 `accessor-fields`、`event-editor-registry`、`attribute-enum-registry`、`color-picker-registry`、`image-crop-registry` 五个 registry 回归 spec）。
+- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **219 文件 1920/1920**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 `accessor-fields`、`event-editor-registry`、`attribute-enum-registry`、`color-picker-registry`、`image-crop-registry`、`text-capture-registry` 六个 registry 回归 spec）。

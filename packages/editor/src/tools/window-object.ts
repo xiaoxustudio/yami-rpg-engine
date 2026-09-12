@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
 import { getLazyWindow } from '@app/tools/window-registry';
@@ -48,6 +49,7 @@ interface WindowShape extends DynamicShape {
 
 export const Window: WindowShape = {
 	get ambient() {
+		// P5b 白名单：#window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
 		return $('#window-ambient');
 	},
 	frames: [] as HTMLElement[] & {
@@ -120,7 +122,8 @@ Window.open = function (this: typeof Window, id: string) {
 		(element as WindowFrame).open();
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		if (!Title.target) {
-			Title.target = $('#title');
+			// 沿用原先 $() 的非空类型语义（运行时窗口可能尚未挂载）
+			Title.target = windowShellEls.get('title') as unknown as typeof Title.target;
 		}
 		if (Title.target) {
 			Title.target.tabIndex = -1;
@@ -350,6 +353,9 @@ Window.ambient.update = function (this: typeof Window) {
 
 const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeElement'] as const;
 import { getWindowStore } from '@app/stores/window';
+
+/** P5b 批次 3：应用外壳元素注册表——由 AppShell.vue 登记（如 `title`） */
+export const windowShellEls = createElementRegistry();
 
 for (const key of windowBridgeKeys) {
 	Object.defineProperty(Window, key, {

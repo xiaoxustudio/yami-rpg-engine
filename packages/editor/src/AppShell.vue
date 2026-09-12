@@ -1,5 +1,5 @@
 <template>
-	<div class="box" id="title" @pointerenter="onTitlePointerenter">
+	<div class="box" id="title" :ref="registryRef(windowShellEls, 'title')" @pointerenter="onTitlePointerenter">
 		<div
 			class="box"
 			id="menu"
@@ -78,6 +78,8 @@
 
 <script setup lang="ts">
 import TabBar from './components/common/TabBar.vue';
+import { windowShellEls } from '@app/tools/window-object.ts';
+import { registryRef } from '@app/utils/element-registry';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import SearchHistoryDropdown from './components/file-browser/SearchHistoryDropdown.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
