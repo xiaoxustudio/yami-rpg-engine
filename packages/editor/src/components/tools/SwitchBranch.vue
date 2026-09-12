@@ -1,6 +1,7 @@
 <template>
 	<!-- 匹配 - 分支 -->
-	<WindowFrame id="switch-branch" @confirm="onConfirm">
+	<WindowFrame id="switch-branch"
+				:ref="registryRef(fieldEls, 'switch-branch')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.switch-branch.title') }}
@@ -15,13 +16,18 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
+import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
 
 const SwitchBranch = useSwitchBranchSchema();
+const SwitchCondition = useSwitchConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
@@ -33,8 +39,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	on($('#switch-branch'), 'closed', () => SwitchBranch.windowClosed?.(new Event('closed')));
-	on($('#switch-branch-confirm'), 'click', () => SwitchBranch.confirm?.(new Event('click')));
+	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
+	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);
+	on(fieldEls.get('switch-branch'), 'closed', () => SwitchBranch.windowClosed?.(new Event('closed')));
 });
 </script>
 

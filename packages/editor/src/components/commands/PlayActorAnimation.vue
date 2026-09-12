@@ -21,16 +21,20 @@
 				v-model="form.speed"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="playActorAnimation-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="playActorAnimation-wait"
+				:ref="registryRef(fieldEls, 'playActorAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayActorAnimationCommandSchema } from '@app/composables/commands/usePlayActorAnimationCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -46,7 +50,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#playActorAnimation-wait')?.loadItems?.([
+	fieldEls.get('playActorAnimation-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

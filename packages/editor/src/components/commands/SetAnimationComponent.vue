@@ -19,14 +19,18 @@
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="setAnimationComponent-motion" v-focus v-model="form.motion" />
+			<SelectBox id="setAnimationComponent-motion"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')" v-focus v-model="form.motion" />
 			<div class="text">Operation</div>
-			<SelectBox id="setAnimationComponent-operation" v-model="form.operation" />
+			<SelectBox id="setAnimationComponent-operation"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')" v-model="form.operation" />
 			<div class="text">Angle</div>
-			<CustomBox id="setAnimationComponent-angle" type="angle" v-model="form.angle" />
+			<CustomBox id="setAnimationComponent-angle"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-angle')" type="angle" v-model="form.angle" />
 			<div class="text">Scale</div>
 			<NumberVar
 				id="setAnimationComponent-scale"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-scale')"
 				min="0"
 				max="10"
 				step="0.1"
@@ -36,6 +40,7 @@
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setAnimationComponent-speed"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-speed')"
 				min="0"
 				max="10"
 				step="0.1"
@@ -45,6 +50,7 @@
 			<div class="text">Opacity</div>
 			<NumberVar
 				id="setAnimationComponent-opacity"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-opacity')"
 				min="0"
 				max="1"
 				step="0.05"
@@ -54,6 +60,7 @@
 			<div class="text">Priority</div>
 			<NumberBox
 				id="setAnimationComponent-priority"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-priority')"
 				min="-100"
 				max="100"
 				v-model="priority"
@@ -61,33 +68,41 @@
 			<div class="text">Offset Y</div>
 			<NumberBox
 				id="setAnimationComponent-offsetY"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-offsetY')"
 				min="-100"
 				max="100"
 				unit="px"
 				v-model="offsetY"
 			/>
 			<div class="text">Sprite Name</div>
-			<SelectBox id="setAnimationComponent-spriteId" v-focus v-model="form.spriteId" />
+			<SelectBox id="setAnimationComponent-spriteId"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')" v-focus v-model="form.spriteId" />
 			<div class="text">Image</div>
 			<CustomBox
 				id="setAnimationComponent-image"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-image')"
 				type="file"
 				filter="image"
 				v-model="form.image"
 			/>
 			<div class="text">Play Motion</div>
-			<SelectBox id="setAnimationComponent-playMotion" v-focus v-model="form.playMotion" />
+			<SelectBox id="setAnimationComponent-playMotion"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')" v-focus v-model="form.playMotion" />
 			<div class="text">Wait</div>
-			<SelectBox id="setAnimationComponent-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setAnimationComponent-wait"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
-import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -117,9 +132,9 @@ const offsetY = computed({
 
 const onAnimationIdWrite = (value: unknown) => {
 	const animationId = value as string;
-	const elMotion = $('#setAnimationComponent-motion');
-	const elPlayMotion = $('#setAnimationComponent-playMotion');
-	const elSpriteId = $('#setAnimationComponent-spriteId');
+	const elMotion = fieldEls.get('setAnimationComponent-motion') as HTMLElement;
+	const elPlayMotion = fieldEls.get('setAnimationComponent-playMotion') as HTMLElement;
+	const elSpriteId = fieldEls.get('setAnimationComponent-spriteId') as HTMLElement;
 	const prevMotion = read(elMotion) || form.motion || '';
 	const prevSprite = read(elSpriteId) || form.spriteId || '';
 	const motionItems = Animation.getMotionListItems!(animationId);
@@ -140,7 +155,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setAnimationComponent-operation')?.loadItems?.([
+	fieldEls.get('setAnimationComponent-operation')?.loadItems?.([
 		{ name: t('command.setAnimationComponent.set-angle') || 'Set Angle', value: 'set-angle' },
 		{ name: t('command.setAnimationComponent.set-scale') || 'Set Scale', value: 'set-scale' },
 		{ name: t('command.setAnimationComponent.set-speed') || 'Set Speed', value: 'set-speed' },
@@ -166,43 +181,43 @@ onMounted(() => {
 			value: 'stop-motion'
 		}
 	]);
-	$('#setAnimationComponent-operation')
+	fieldEls.get('setAnimationComponent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'set-angle',
-				targets: [$('#setAnimationComponent-angle')]
+				targets: [fieldEls.get('setAnimationComponent-angle')]
 			},
 			{
 				case: 'set-scale',
-				targets: [$('#setAnimationComponent-scale')]
+				targets: [fieldEls.get('setAnimationComponent-scale')]
 			},
 			{
 				case: 'set-speed',
-				targets: [$('#setAnimationComponent-speed')]
+				targets: [fieldEls.get('setAnimationComponent-speed')]
 			},
 			{
 				case: 'set-opacity',
-				targets: [$('#setAnimationComponent-opacity')]
+				targets: [fieldEls.get('setAnimationComponent-opacity')]
 			},
 			{
 				case: 'set-priority',
-				targets: [$('#setAnimationComponent-priority')]
+				targets: [fieldEls.get('setAnimationComponent-priority')]
 			},
 			{
 				case: 'set-offsetY',
-				targets: [$('#setAnimationComponent-offsetY')]
+				targets: [fieldEls.get('setAnimationComponent-offsetY')]
 			},
 			{
 				case: 'set-sprite',
-				targets: [$('#setAnimationComponent-spriteId'), $('#setAnimationComponent-image')]
+				targets: [fieldEls.get('setAnimationComponent-spriteId'), fieldEls.get('setAnimationComponent-image')]
 			},
 			{
 				case: 'play-motion',
-				targets: [$('#setAnimationComponent-playMotion'), $('#setAnimationComponent-wait')]
+				targets: [fieldEls.get('setAnimationComponent-playMotion'), fieldEls.get('setAnimationComponent-wait')]
 			}
 		]);
-	$('#setAnimationComponent-wait')?.loadItems?.([
+	fieldEls.get('setAnimationComponent-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

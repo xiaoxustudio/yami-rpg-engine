@@ -10,7 +10,8 @@
 			<div class="text">Skill</div>
 			<CustomBox id="setSkill-skill" v-focus type="skill" v-model="form.skill" />
 			<div class="text">Operation</div>
-			<SelectBox id="setSkill-operation" v-model="form.operation" />
+			<SelectBox id="setSkill-operation"
+				:ref="registryRef(fieldEls, 'setSkill-operation')" v-model="form.operation" />
 			<div class="text">Cooldown</div>
 			<NumberVar
 				id="setSkill-cooldown"
@@ -24,10 +25,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetSkillCommandSchema } from '@app/composables/commands/useSetSkillCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -43,7 +47,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setSkill-operation')?.loadItems?.([
+	fieldEls.get('setSkill-operation')?.loadItems?.([
 		{ name: 'Set Cooldown Time', value: 'set-cooldown' },
 		{ name: 'Increase Cooldown Time', value: 'increase-cooldown' },
 		{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }

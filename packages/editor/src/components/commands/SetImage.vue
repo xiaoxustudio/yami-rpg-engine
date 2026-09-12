@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setImage" @confirm="onConfirm">
+	<WindowFrame id="setImage"
+				:ref="registryRef(fieldEls, 'setImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setImage.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setImage-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setImage-properties" v-focus v-model="form.properties" />
+			<ParamList id="setImage-properties"
+				:ref="registryRef(fieldEls, 'setImage-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetImageCommandSchema } from '@app/composables/commands/useSetImageCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { ImageProperty } from '@app/commands/property-window/set-image-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setImage-properties')?.bind?.(ImageProperty);
-	$('#setImage')?.on?.('closed', () => {
-		clear($('#setImage-properties'));
+	fieldEls.get('setImage-properties')?.bind?.(ImageProperty);
+	fieldEls.get('setImage')?.on?.('closed', () => {
+		clear(fieldEls.get('setImage-properties'));
 	});
 });
 </script>

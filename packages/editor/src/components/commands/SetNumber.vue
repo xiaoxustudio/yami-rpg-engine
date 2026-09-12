@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setNumber" @confirm="onConfirm">
+	<WindowFrame id="setNumber"
+				:ref="registryRef(fieldEls, 'setNumber')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setNumber.title') }}
@@ -16,16 +17,20 @@
 				v-model="form.variable"
 			/>
 			<div class="text">Expression</div>
-			<ParamList id="setNumber-operands" v-focus v-model="form.operands" />
+			<ParamList id="setNumber-operands"
+				:ref="registryRef(fieldEls, 'setNumber-operands')" v-focus v-model="form.operands" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetNumberCommandSchema } from '@app/composables/commands/useSetNumberCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 
@@ -44,9 +49,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setNumber-operands')?.bind?.(NumberOperand);
-	$('#setNumber')?.on?.('closed', (_event: Event) => {
-		clear($('#setNumber-operands'));
+	fieldEls.get('setNumber-operands')?.bind?.(NumberOperand);
+	fieldEls.get('setNumber')?.on?.('closed', (_event: Event) => {
+		clear(fieldEls.get('setNumber-operands'));
 	});
 });
 </script>

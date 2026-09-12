@@ -12,11 +12,13 @@
 			<div class="text">LocalPath</div>
 			<StringVar id="uploadFile-path" v-focus v-model="form.path" />
 			<div class="text">Method</div>
-			<SelectBox id="uploadFile-method" v-model="form.method" />
+			<SelectBox id="uploadFile-method"
+				:ref="registryRef(fieldEls, 'uploadFile-method')" v-model="form.method" />
 			<div class="text">Field</div>
 			<StringVar id="uploadFile-field" v-model="form.field" />
 			<div class="text">Header</div>
-			<ParamList id="uploadFile-header" v-model="form.header" />
+			<ParamList id="uploadFile-header"
+				:ref="registryRef(fieldEls, 'uploadFile-header')" v-model="form.header" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="uploadFile-callback"
@@ -36,10 +38,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUploadFileCommandSchema } from '@app/composables/commands/useUploadFileCommandSchema';
-import { $ } from '@app/utils/dom';
 import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -57,11 +62,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#uploadFile-method')?.loadItems?.([
+	fieldEls.get('uploadFile-method')?.loadItems?.([
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' }
 	]);
-	$('#uploadFile-header')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('uploadFile-header')?.bind?.(RequestkeyValueBind);
 });
 </script>
 

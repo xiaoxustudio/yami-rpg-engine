@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setVideo" @confirm="onConfirm">
+	<WindowFrame id="setVideo"
+				:ref="registryRef(fieldEls, 'setVideo')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setVideo.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setVideo-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setVideo-properties" v-focus v-model="form.properties" />
+			<ParamList id="setVideo-properties"
+				:ref="registryRef(fieldEls, 'setVideo-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetVideoCommandSchema } from '@app/composables/commands/useSetVideoCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { VideoProperty } from '@app/commands/property-window/set-video-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setVideo-properties')?.bind?.(VideoProperty);
-	$('#setVideo')?.on?.('closed', () => {
-		clear($('#setVideo-properties'));
+	fieldEls.get('setVideo-properties')?.bind?.(VideoProperty);
+	fieldEls.get('setVideo')?.on?.('closed', () => {
+		clear(fieldEls.get('setVideo-properties'));
 	});
 });
 </script>

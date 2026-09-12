@@ -12,7 +12,8 @@
 			<div class="text">Target</div>
 			<CustomBox id="changeThreat-target" type="actor" v-model="form.target" />
 			<div class="text">Operation</div>
-			<SelectBox id="changeThreat-operation" v-model="form.operation" />
+			<SelectBox id="changeThreat-operation"
+				:ref="registryRef(fieldEls, 'changeThreat-operation')" v-model="form.operation" />
 			<div class="text">Threat</div>
 			<NumberVar
 				id="changeThreat-threat"
@@ -26,10 +27,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeThreatCommandSchema } from '@app/composables/commands/useChangeThreatCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -45,7 +49,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changeThreat-operation')?.loadItems?.([
+	fieldEls.get('changeThreat-operation')?.loadItems?.([
 		{ name: t('command.changeThreat.increase') || 'Increase', value: 'increase' },
 		{ name: t('command.changeThreat.decrease') || 'Decrease', value: 'decrease' }
 	]);

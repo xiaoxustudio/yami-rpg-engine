@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="tintScreen" @confirm="onConfirm">
+	<WindowFrame id="tintScreen"
+				:ref="registryRef(fieldEls, 'tintScreen')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.tintScreen.title') }}
@@ -35,7 +36,8 @@
 			<div class="text">Tint - Grayscale</div>
 			<NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">Easing</div>
-			<SelectBox id="tintScreen-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="tintScreen-easingId"
+				:ref="registryRef(fieldEls, 'tintScreen-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="tintScreen-duration"
@@ -46,17 +48,22 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="tintScreen-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="tintScreen-wait"
+				:ref="registryRef(fieldEls, 'tintScreen-wait')" name="wait" v-model="form.wait" />
 		</div>
-		<FilterBox id="tintScreen-filter" width="96" height="160" />
+		<FilterBox id="tintScreen-filter"
+				:ref="registryRef(fieldEls, 'tintScreen-filter')" width="96" height="160" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintScreenCommandSchema } from '@app/composables/commands/useTintScreenCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -111,20 +118,20 @@ const onConfirm = () => {
 watch(
 	[() => form['tint-0'], () => form['tint-1'], () => form['tint-2'], () => form['tint-3']],
 	([red, green, blue, gray]) => {
-		write($('#tintScreen-filter'), [red, green, blue, gray]);
+		write(fieldEls.get('tintScreen-filter'), [red, green, blue, gray]);
 	}
 );
 
 onMounted(() => {
-	$('#tintScreen-wait')?.loadItems?.([
+	fieldEls.get('tintScreen-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#tintScreen')?.on?.('open', () => {
-		$('#tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('tintScreen')?.on?.('open', () => {
+		fieldEls.get('tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
-	$('#tintScreen')?.on?.('closed', () => {
-		clear($('#tintScreen-filter'));
+	fieldEls.get('tintScreen')?.on?.('closed', () => {
+		clear(fieldEls.get('tintScreen-filter'));
 	});
 });
 </script>

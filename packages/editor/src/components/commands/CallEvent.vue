@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="callEvent" @confirm="onConfirm">
+	<WindowFrame id="callEvent"
+				:ref="registryRef(fieldEls, 'callEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.callEvent.title') }}
@@ -8,24 +9,33 @@
 
 		<div class="grid-box">
 		<div class="text">Type</div>
-		<SelectBox id="callEvent-type" v-focus v-model="form.type" @write="onTypeWrite" />
+		<SelectBox id="callEvent-type"
+				:ref="registryRef(fieldEls, 'callEvent-type')" v-focus v-model="form.type" @write="onTypeWrite" />
 		<div class="text">Actor</div>
-		<CustomBox id="callEvent-actor" type="actor" v-model="form.actor" />
+		<CustomBox id="callEvent-actor"
+				:ref="registryRef(fieldEls, 'callEvent-actor')" type="actor" v-model="form.actor" />
 		<div class="text">Skill</div>
-		<CustomBox id="callEvent-skill" type="skill" v-model="form.skill" />
+		<CustomBox id="callEvent-skill"
+				:ref="registryRef(fieldEls, 'callEvent-skill')" type="skill" v-model="form.skill" />
 		<div class="text">State</div>
-		<CustomBox id="callEvent-state" type="state" v-model="form.state" />
+		<CustomBox id="callEvent-state"
+				:ref="registryRef(fieldEls, 'callEvent-state')" type="state" v-model="form.state" />
 		<div class="text">Equipment</div>
-		<CustomBox id="callEvent-equipment" type="equipment" v-model="form.equipment" />
+		<CustomBox id="callEvent-equipment"
+				:ref="registryRef(fieldEls, 'callEvent-equipment')" type="equipment" v-model="form.equipment" />
 		<div class="text">Item</div>
-		<CustomBox id="callEvent-item" type="item" v-model="form.item" />
+		<CustomBox id="callEvent-item"
+				:ref="registryRef(fieldEls, 'callEvent-item')" type="item" v-model="form.item" />
 		<div class="text">Light</div>
-		<CustomBox id="callEvent-light" type="light" v-model="form.light" />
+		<CustomBox id="callEvent-light"
+				:ref="registryRef(fieldEls, 'callEvent-light')" type="light" v-model="form.light" />
 		<div class="text">Element</div>
-		<CustomBox id="callEvent-element" type="element" v-model="form.element" />
+		<CustomBox id="callEvent-element"
+				:ref="registryRef(fieldEls, 'callEvent-element')" type="element" v-model="form.element" />
 		<div class="text">Event</div>
 		<CustomBox
 			id="callEvent-eventId"
+				:ref="registryRef(fieldEls, 'callEvent-eventId')"
 			v-focus
 			type="file"
 			filter="event"
@@ -34,16 +44,20 @@
 			@input="onEventIdInput"
 		/>
 			<div class="text">Event</div>
-			<SelectBox id="callEvent-eventType" v-focus v-model="form.eventType" />
+			<SelectBox id="callEvent-eventType"
+				:ref="registryRef(fieldEls, 'callEvent-eventType')" v-focus v-model="form.eventType" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCallEventCommandSchema } from '@app/composables/commands/useCallEventCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -71,7 +85,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#callEvent-type')?.loadItems?.([
+	fieldEls.get('callEvent-type')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
 		{ name: t('command.callEvent.inherited') || 'Inherited', value: 'inherited' },
 		{ name: t('command.callEvent.scene') || 'Scene', value: 'scene' },
@@ -84,42 +98,42 @@ onMounted(() => {
 		{ name: 'Element', value: 'element' }
 	]);
 
-	$('#callEvent-type')
+	fieldEls.get('callEvent-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'global', targets: [$('#callEvent-eventId')] },
-			{ case: 'scene', targets: [$('#callEvent-eventType')] },
+			{ case: 'global', targets: [fieldEls.get('callEvent-eventId')] },
+			{ case: 'scene', targets: [fieldEls.get('callEvent-eventType')] },
 			{
 				case: 'actor',
-				targets: [$('#callEvent-actor'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-actor'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'skill',
-				targets: [$('#callEvent-skill'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-skill'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'state',
-				targets: [$('#callEvent-state'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-state'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'equipment',
-				targets: [$('#callEvent-equipment'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-equipment'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'item',
-				targets: [$('#callEvent-item'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-item'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'light',
-				targets: [$('#callEvent-light'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-light'), fieldEls.get('callEvent-eventType')]
 			},
 			{
 				case: 'element',
-				targets: [$('#callEvent-element'), $('#callEvent-eventType')]
+				targets: [fieldEls.get('callEvent-element'), fieldEls.get('callEvent-eventType')]
 			}
 		]);
 
-	$('#callEvent')?.on?.('closed', () => {
+	fieldEls.get('callEvent')?.on?.('closed', () => {
 		onWindowClosed();
 	});
 });

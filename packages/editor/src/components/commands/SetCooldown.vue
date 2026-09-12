@@ -10,7 +10,8 @@
 			<div class="text">Actor</div>
 			<CustomBox id="setCooldown-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
-			<SelectBox id="setCooldown-operation" v-model="form.operation" />
+			<SelectBox id="setCooldown-operation"
+				:ref="registryRef(fieldEls, 'setCooldown-operation')" v-model="form.operation" />
 			<div class="text">Cooldown Key</div>
 			<SelectVar id="setCooldown-key" v-model="form.key" />
 			<div class="text">Cooldown Time</div>
@@ -26,10 +27,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -46,7 +50,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setCooldown-operation')?.loadItems?.([
+	fieldEls.get('setCooldown-operation')?.loadItems?.([
 		{ name: t('command.setCooldown.set') || 'Set', value: 'set' },
 		{ name: t('command.setCooldown.increase') || 'Increase', value: 'increase' },
 		{ name: t('command.setCooldown.decrease') || 'Decrease', value: 'decrease' }

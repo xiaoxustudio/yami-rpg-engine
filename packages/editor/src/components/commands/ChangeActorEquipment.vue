@@ -10,12 +10,15 @@
 			<div class="text">Actor</div>
 			<CustomBox id="changeActorEquipment-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
-			<SelectBox id="changeActorEquipment-operation" v-model="form.operation" />
+			<SelectBox id="changeActorEquipment-operation"
+				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')" v-model="form.operation" />
 			<div class="text">Shortcut Key</div>
-			<SelectVar id="changeActorEquipment-slot" v-focus v-model="form.slot" />
+			<SelectVar id="changeActorEquipment-slot"
+				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')" v-focus v-model="form.slot" />
 			<div class="text">Equipment</div>
 			<CustomBox
 				id="changeActorEquipment-equipmentId"
+				:ref="registryRef(fieldEls, 'changeActorEquipment-equipmentId')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -24,6 +27,7 @@
 			<div class="text">Equipment</div>
 			<CustomBox
 				id="changeActorEquipment-equipment"
+				:ref="registryRef(fieldEls, 'changeActorEquipment-equipment')"
 				type="equipment"
 				v-model="form.equipment"
 			/>
@@ -32,10 +36,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -51,7 +58,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changeActorEquipment-operation')?.loadItems?.([
+	fieldEls.get('changeActorEquipment-operation')?.loadItems?.([
 		{ name: t('command.changeActorEquipment.add') || 'Add', value: 'add' },
 		{ name: t('command.changeActorEquipment.remove') || 'Remove', value: 'remove' },
 		{
@@ -64,28 +71,28 @@ onMounted(() => {
 		},
 		{ name: t('command.changeActorEquipment.remove-slot') || 'Remove Slot', value: 'remove-slot' }
 	]);
-	$('#changeActorEquipment-operation')
+	fieldEls.get('changeActorEquipment-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [$('#changeActorEquipment-slot'), $('#changeActorEquipment-equipmentId')]
+				targets: [fieldEls.get('changeActorEquipment-slot'), fieldEls.get('changeActorEquipment-equipmentId')]
 			},
 			{
 				case: 'remove',
-				targets: [$('#changeActorEquipment-equipmentId')]
+				targets: [fieldEls.get('changeActorEquipment-equipmentId')]
 			},
 			{
 				case: 'add-instance',
-				targets: [$('#changeActorEquipment-slot'), $('#changeActorEquipment-equipment')]
+				targets: [fieldEls.get('changeActorEquipment-slot'), fieldEls.get('changeActorEquipment-equipment')]
 			},
 			{
 				case: 'remove-instance',
-				targets: [$('#changeActorEquipment-equipment')]
+				targets: [fieldEls.get('changeActorEquipment-equipment')]
 			},
 			{
 				case: 'remove-slot',
-				targets: [$('#changeActorEquipment-slot')]
+				targets: [fieldEls.get('changeActorEquipment-slot')]
 			}
 		]);
 });

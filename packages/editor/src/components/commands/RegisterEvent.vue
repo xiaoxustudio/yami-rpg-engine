@@ -8,14 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">Target</div>
-			<SelectBox id="registerEvent-target" v-focus v-model="form.target" @write="onTargetWrite" />
+			<SelectBox id="registerEvent-target"
+				:ref="registryRef(fieldEls, 'registerEvent-target')" v-focus v-model="form.target" @write="onTargetWrite" />
 			<div class="text">Actor</div>
-			<CustomBox id="registerEvent-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="registerEvent-actor"
+				:ref="registryRef(fieldEls, 'registerEvent-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Element</div>
-			<CustomBox id="registerEvent-element" type="element" v-model="form.element" />
+			<CustomBox id="registerEvent-element"
+				:ref="registryRef(fieldEls, 'registerEvent-element')" type="element" v-model="form.element" />
 			<div class="text">Operation</div>
 			<SelectBox
 				id="registerEvent-operation"
+				:ref="registryRef(fieldEls, 'registerEvent-operation')"
 				v-model="form.operation"
 				@write="onOperationWrite"
 			/>
@@ -36,9 +40,12 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -66,18 +73,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#registerEvent-target')?.loadItems?.([
+	fieldEls.get('registerEvent-target')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
 		{ name: 'Actor', value: 'actor' },
 		{ name: 'Element', value: 'element' }
 	]);
-	$('#registerEvent-target')
+	fieldEls.get('registerEvent-target')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'actor', targets: [$('#registerEvent-actor')] },
-			{ case: 'element', targets: [$('#registerEvent-element')] }
+			{ case: 'actor', targets: [fieldEls.get('registerEvent-actor')] },
+			{ case: 'element', targets: [fieldEls.get('registerEvent-element')] }
 		]);
-	$('#registerEvent-operation')?.loadItems?.([
+	fieldEls.get('registerEvent-operation')?.loadItems?.([
 		{ name: t('command.registerEvent.alias.register') || 'Register', value: 'register' },
 		{ name: t('command.registerEvent.alias.unregister') || 'Unregister', value: 'unregister' },
 		{ name: t('command.registerEvent.alias.reset') || 'Reset', value: 'reset' }

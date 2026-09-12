@@ -10,16 +10,20 @@
 			<div class="text">Actor</div>
 			<CustomBox id="fixAngle-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
-			<SelectBox id="fixAngle-fixed" v-model="form.fixed" />
+			<SelectBox id="fixAngle-fixed"
+				:ref="registryRef(fieldEls, 'fixAngle-fixed')" v-model="form.fixed" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFixAngleCommandSchema } from '@app/composables/commands/useFixAngleCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +38,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#fixAngle-fixed')?.loadItems?.([
+	fieldEls.get('fixAngle-fixed')?.loadItems?.([
 		{ name: t('command.fixAngle.fixed.true') || 'Fixed', value: true },
 		{ name: t('command.fixAngle.fixed.false') || 'Unfixed', value: false }
 	]);

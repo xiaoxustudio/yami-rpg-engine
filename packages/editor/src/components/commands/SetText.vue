@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setText" @confirm="onConfirm">
+	<WindowFrame id="setText"
+				:ref="registryRef(fieldEls, 'setText')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setText.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setText-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setText-properties" v-focus v-model="form.properties" />
+			<ParamList id="setText-properties"
+				:ref="registryRef(fieldEls, 'setText-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTextCommandSchema } from '@app/composables/commands/useSetTextCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { TextProperty } from '@app/commands/property-window/set-text-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setText-properties')?.bind?.(TextProperty);
-	$('#setText')?.on?.('closed', () => {
-		clear($('#setText-properties'));
+	fieldEls.get('setText-properties')?.bind?.(TextProperty);
+	fieldEls.get('setText')?.on?.('closed', () => {
+		clear(fieldEls.get('setText-properties'));
 	});
 });
 </script>

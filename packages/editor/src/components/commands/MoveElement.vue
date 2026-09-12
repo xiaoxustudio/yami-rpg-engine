@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="moveElement" @confirm="onConfirm">
+	<WindowFrame id="moveElement"
+				:ref="registryRef(fieldEls, 'moveElement')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveElement.title') }}
@@ -10,9 +11,11 @@
 			<div class="text">Element</div>
 			<CustomBox id="moveElement-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="moveElement-properties" v-focus v-model="form.properties" />
+			<ParamList id="moveElement-properties"
+				:ref="registryRef(fieldEls, 'moveElement-properties')" v-focus v-model="form.properties" />
 			<div class="text">Easing</div>
-			<SelectBox id="moveElement-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="moveElement-easingId"
+				:ref="registryRef(fieldEls, 'moveElement-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="moveElement-duration"
@@ -23,16 +26,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="moveElement-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="moveElement-wait"
+				:ref="registryRef(fieldEls, 'moveElement-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveElementCommandSchema } from '@app/composables/commands/useMoveElementCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { TransformProperty } from '@app/commands/property-window/move-element-property-window.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -59,16 +66,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#moveElement-properties')?.bind?.(TransformProperty);
-	$('#moveElement-wait')?.loadItems?.([
+	fieldEls.get('moveElement-properties')?.bind?.(TransformProperty);
+	fieldEls.get('moveElement-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#moveElement')?.on?.('open', () => {
-		$('#moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('moveElement')?.on?.('open', () => {
+		fieldEls.get('moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
-	$('#moveElement')?.on?.('closed', () => {
-		clear($('#moveElement-properties'));
+	fieldEls.get('moveElement')?.on?.('closed', () => {
+		clear(fieldEls.get('moveElement-properties'));
 	});
 });
 </script>

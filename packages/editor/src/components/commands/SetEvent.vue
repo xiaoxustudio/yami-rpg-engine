@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setEvent-operation" v-focus v-model="form.operation" />
+			<SelectBox id="setEvent-operation"
+				:ref="registryRef(fieldEls, 'setEvent-operation')" v-focus v-model="form.operation" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setEvent-variable"
+				:ref="registryRef(fieldEls, 'setEvent-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -20,22 +22,27 @@
 			<div class="text">Event</div>
 			<CustomBox
 				id="setEvent-eventId"
+				:ref="registryRef(fieldEls, 'setEvent-eventId')"
 				v-focus
 				type="file"
 				filter="event"
 				v-model="form.eventId"
 			/>
 			<div class="text">Choice Index</div>
-			<NumberVar id="setEvent-choiceIndex" min="0" max="255" v-model="form.choiceIndex" />
+			<NumberVar id="setEvent-choiceIndex"
+				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')" min="0" max="255" v-model="form.choiceIndex" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -51,7 +58,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setEvent-operation')?.loadItems?.([
+	fieldEls.get('setEvent-operation')?.loadItems?.([
 		{
 			name: t('command.setEvent.stop-propagation') || 'Stop Propagation',
 			value: 'stop-propagation'
@@ -69,20 +76,20 @@ onMounted(() => {
 			value: 'goto-choice-branch'
 		}
 	]);
-	$('#setEvent-operation')
+	fieldEls.get('setEvent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['pause', 'continue'],
-				targets: [$('#setEvent-variable')]
+				targets: [fieldEls.get('setEvent-variable')]
 			},
 			{
 				case: ['enable', 'disable', 'highest-priority'],
-				targets: [$('#setEvent-eventId')]
+				targets: [fieldEls.get('setEvent-eventId')]
 			},
 			{
 				case: 'goto-choice-branch',
-				targets: [$('#setEvent-choiceIndex')]
+				targets: [fieldEls.get('setEvent-choiceIndex')]
 			}
 		]);
 });

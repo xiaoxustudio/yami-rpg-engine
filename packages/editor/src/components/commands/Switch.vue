@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="switch" @confirm="onConfirm">
+	<WindowFrame id="switch"
+				:ref="registryRef(fieldEls, 'switch')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.switch.title') }}
@@ -10,7 +11,8 @@
 			<div class="text">Variable</div>
 			<CustomBox id="switch-variable" v-focus type="variable" filter="all" v-model="form.variable" />
 			<div class="text">Branches</div>
-			<ParamList id="switch-branches" v-focus v-model="form.branches" />
+			<ParamList id="switch-branches"
+				:ref="registryRef(fieldEls, 'switch-branches')" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="switch-default" v-model="form.default" class="standard"
 			><div class="text" id="switch-default-label">Default</div></CheckBox
@@ -19,15 +21,16 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
-import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
 
 const SwitchBranch = useSwitchBranchSchema();
-const SwitchCondition = useSwitchConditionSchema();
 import { useSwitchCommandSchema } from '@app/composables/commands/useSwitchCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -44,9 +47,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#switch-branches')?.bind?.(SwitchBranch);
-	$('#switch-branch-conditions')?.bind?.(SwitchCondition);
-	on($('#switch'), 'closed', () => windowClosed(new Event('closed')));
+	fieldEls.get('switch-branches')?.bind?.(SwitchBranch);
+	on(fieldEls.get('switch'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

@@ -8,14 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">Mode</div>
-			<SelectBox id="playAnimation-mode" v-focus v-model="form.mode" />
+			<SelectBox id="playAnimation-mode"
+				:ref="registryRef(fieldEls, 'playAnimation-mode')" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
-			<CustomBox id="playAnimation-position" type="position" v-model="form.position" />
+			<CustomBox id="playAnimation-position"
+				:ref="registryRef(fieldEls, 'playAnimation-position')" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
-			<CustomBox id="playAnimation-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="playAnimation-actor"
+				:ref="registryRef(fieldEls, 'playAnimation-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="playAnimation-animationId"
+				:ref="registryRef(fieldEls, 'playAnimation-animationId')"
 				v-focus
 				type="file"
 				filter="animation"
@@ -25,7 +29,8 @@
 			<div class="text">Motion</div>
 			<SelectBox id="playAnimation-motion" v-focus v-model="form.motion" />
 			<div class="text">Rotatable</div>
-			<SelectBox id="playAnimation-rotatable" v-model="form.rotatable" />
+			<SelectBox id="playAnimation-rotatable"
+				:ref="registryRef(fieldEls, 'playAnimation-rotatable')" v-model="form.rotatable" />
 			<div class="text">Priority</div>
 			<NumberBox id="playAnimation-priority" min="-100" max="100" v-model="priority" />
 			<div class="text">Offset Y</div>
@@ -55,16 +60,20 @@
 				v-model="form.speed"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="playAnimation-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="playAnimation-wait"
+				:ref="registryRef(fieldEls, 'playAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';
-import { $ } from '@app/utils/dom';
 import { read } from '@app/utils/element-utils';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -93,25 +102,25 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#playAnimation-mode')?.loadItems?.([
+	fieldEls.get('playAnimation-mode')?.loadItems?.([
 		{ name: 'Position', value: 'position' },
 		{ name: 'Actor', value: 'actor' }
 	]);
-	$('#playAnimation-mode')
+	fieldEls.get('playAnimation-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'position', targets: [$('#playAnimation-position')] },
-			{ case: 'actor', targets: [$('#playAnimation-actor')] }
+			{ case: 'position', targets: [fieldEls.get('playAnimation-position')] },
+			{ case: 'actor', targets: [fieldEls.get('playAnimation-actor')] }
 		]);
-	$('#playAnimation-rotatable')?.loadItems?.([
+	fieldEls.get('playAnimation-rotatable')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#playAnimation-wait')?.loadItems?.([
+	fieldEls.get('playAnimation-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	const animationId = read($('#playAnimation-animationId'));
+	const animationId = read(fieldEls.get('playAnimation-animationId'));
 	if (animationId) writeHandler({ value: animationId });
 });
 </script>

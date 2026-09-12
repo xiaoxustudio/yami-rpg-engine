@@ -16,18 +16,22 @@
 				v-model="form.variable"
 			/>
 			<div class="text">Operation</div>
-			<SelectBox id="setBoolean-operation" v-model="form.operation" />
+			<SelectBox id="setBoolean-operation"
+				:ref="registryRef(fieldEls, 'setBoolean-operation')" v-model="form.operation" />
 			<div class="text">Type</div>
 			<SelectBox
 				id="setBoolean-operand-type"
+				:ref="registryRef(fieldEls, 'setBoolean-operand-type')"
 				v-model="form['operand-type']"
 				@write="onWrite"
 			/>
 			<div class="text">Constant</div>
-			<SelectBox id="setBoolean-constant-value" v-model="form['constant-value']" />
+			<SelectBox id="setBoolean-constant-value"
+				:ref="registryRef(fieldEls, 'setBoolean-constant-value')" v-model="form['constant-value']" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setBoolean-common-variable"
+				:ref="registryRef(fieldEls, 'setBoolean-common-variable')"
 				v-focus
 				type="variable"
 				filter="all"
@@ -36,22 +40,28 @@
 			<div class="text">Index</div>
 			<NumberVar
 				id="setBoolean-list-index"
+				:ref="registryRef(fieldEls, 'setBoolean-list-index')"
 				min="0"
 				max="1000000000"
 				v-model="form['list-index']"
 			/>
 			<div class="text">Param Name</div>
-			<StringVar id="setBoolean-parameter-key" v-focus v-model="form['parameter-key']" />
+			<StringVar id="setBoolean-parameter-key"
+				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')" v-focus v-model="form['parameter-key']" />
 			<div class="text">Script</div>
-			<TextBox id="setBoolean-script" v-focus v-model="script" />
+			<TextBox id="setBoolean-script"
+				:ref="registryRef(fieldEls, 'setBoolean-script')" v-focus v-model="script" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -81,42 +91,42 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setBoolean-operation')?.loadItems?.([
+	fieldEls.get('setBoolean-operation')?.loadItems?.([
 		{ name: 'Set', value: 'set' },
 		{ name: 'Not', value: 'not' },
 		{ name: 'And', value: 'and' },
 		{ name: 'Or', value: 'or' },
 		{ name: 'Xor', value: 'xor' }
 	]);
-	$('#setBoolean-operand-type')?.loadItems?.([
+	fieldEls.get('setBoolean-operand-type')?.loadItems?.([
 		{ name: 'Constant', value: 'constant' },
 		{ name: 'Variable', value: 'variable' },
 		{ name: 'List', value: 'list' },
 		{ name: 'Parameter', value: 'parameter' },
 		{ name: 'Script', value: 'script' }
 	]);
-	$('#setBoolean-operand-type')
+	fieldEls.get('setBoolean-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'constant',
-				targets: [$('#setBoolean-constant-value')]
+				targets: [fieldEls.get('setBoolean-constant-value')]
 			},
 			{
 				case: 'variable',
-				targets: [$('#setBoolean-common-variable')]
+				targets: [fieldEls.get('setBoolean-common-variable')]
 			},
 			{
 				case: 'list',
-				targets: [$('#setBoolean-common-variable'), $('#setBoolean-list-index')]
+				targets: [fieldEls.get('setBoolean-common-variable'), fieldEls.get('setBoolean-list-index')]
 			},
 			{
 				case: 'parameter',
-				targets: [$('#setBoolean-parameter-key')]
+				targets: [fieldEls.get('setBoolean-parameter-key')]
 			},
-			{ case: 'script', targets: [$('#setBoolean-script')] }
+			{ case: 'script', targets: [fieldEls.get('setBoolean-script')] }
 		]);
-	$('#setBoolean-constant-value')?.loadItems?.([
+	fieldEls.get('setBoolean-constant-value')?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);

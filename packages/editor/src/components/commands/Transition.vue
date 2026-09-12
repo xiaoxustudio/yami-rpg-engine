@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="transition" @confirm="onConfirm">
+	<WindowFrame id="transition"
+				:ref="registryRef(fieldEls, 'transition')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.transition.title') }}
@@ -48,9 +49,12 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -68,8 +72,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	on($('#transition'), 'open', () => open());
-	on($('#transition'), 'closed', () => windowClosed(new Event('closed')));
+	on(fieldEls.get('transition'), 'open', () => open());
+	on(fieldEls.get('transition'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

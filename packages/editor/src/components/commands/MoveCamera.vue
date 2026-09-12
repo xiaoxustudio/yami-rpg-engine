@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="moveCamera" @confirm="onConfirm">
+	<WindowFrame id="moveCamera"
+				:ref="registryRef(fieldEls, 'moveCamera')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveCamera.title') }}
@@ -8,13 +9,17 @@
 
 		<div class="grid-box">
 			<div class="text">Mode</div>
-			<SelectBox id="moveCamera-mode" v-focus v-model="form.mode" />
+			<SelectBox id="moveCamera-mode"
+				:ref="registryRef(fieldEls, 'moveCamera-mode')" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
-			<CustomBox id="moveCamera-position" type="position" v-model="form.position" />
+			<CustomBox id="moveCamera-position"
+				:ref="registryRef(fieldEls, 'moveCamera-position')" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
-			<CustomBox id="moveCamera-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="moveCamera-actor"
+				:ref="registryRef(fieldEls, 'moveCamera-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Easing</div>
-			<SelectBox id="moveCamera-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="moveCamera-easingId"
+				:ref="registryRef(fieldEls, 'moveCamera-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="moveCamera-duration"
@@ -25,16 +30,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="moveCamera-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="moveCamera-wait"
+				:ref="registryRef(fieldEls, 'moveCamera-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -58,22 +67,22 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#moveCamera-mode')?.loadItems?.([
+	fieldEls.get('moveCamera-mode')?.loadItems?.([
 		{ name: t('command.moveCamera.position') || 'Move to Position', value: 'position' },
 		{ name: t('command.moveCamera.actor') || 'Follow Actor', value: 'actor' }
 	]);
-	$('#moveCamera-mode')
+	fieldEls.get('moveCamera-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'position', targets: [$('#moveCamera-position')] },
-			{ case: 'actor', targets: [$('#moveCamera-actor')] }
+			{ case: 'position', targets: [fieldEls.get('moveCamera-position')] },
+			{ case: 'actor', targets: [fieldEls.get('moveCamera-actor')] }
 		]);
-	$('#moveCamera-wait')?.loadItems?.([
+	fieldEls.get('moveCamera-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#moveCamera')?.on?.('open', () => {
-		$('#moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('moveCamera')?.on?.('open', () => {
+		fieldEls.get('moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

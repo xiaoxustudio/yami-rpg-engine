@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 3 的 inspector 完成后为 943 处 / 173 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 4 的 `components` 组完成后为 355 处 / 62 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -452,6 +452,25 @@
 
 **新增回归**：`inspector/__tests__/inspector-registry.spec.ts`（4 例）——分别锁住"模板 `:ref` 登记"（UIImagePage 9 个 id）与"具名 ref 命令式登记"（FileActorPage 8 个 id）两条机制，另断言"登记的是元素本身（id 与注册键一致）"与"卸载后项被清空（`registryRef` 收到 null）"。
 
+### 批次 4 执行清单（非 SFC 模块与其余 SFC，943 处 / 173 文件）——**🚧 进行中（`components` 组已完成）**
+
+> **批 4 第一刀（`src/components/**`，588 处 / 111 文件 → 0）**
+>
+> 这批是**命令表单 SFC**（`components/commands/**` 566 处 / 104 文件）+ `components/tools/**` 剩余（22 处 / 7 文件）。形态与批 1 的 `IfCondition.vue` 同源：站点**全部在 `<script>` 段**（104/104 文件），且**没有任何文件已有注册表** → 统一改造为**组件局部**注册表：
+> - `const fieldEls = createElementRegistry();` + 模板控件 `:ref="registryRef(fieldEls, id)"`（新补 **409** 个）；
+> - 已有具名 ref 的 1 处（`ForEach.vue` 的 `WindowFrame ref="frame"`）在 `onMounted` 里 `registerElement(...)`（并补了缺失的 `const frame = ref(...)` 声明——模板 ref 未声明时脚本里没有变量可用）；
+> - 脚本段替换规则同 inspector（存在性门、`this.x =`、`(as T)`、直接方法调用、元素实参）✓。
+>
+> **两处跨组件 DOM 查找被顺手消灭**：`If.vue` 过去用 `$('#if-branch-conditions')?.bind?.(IfCondition)` 去够**子组件** `tools/IfBranch.vue` 渲染的元素、`Switch.vue` 同理 → 改为由子 SFC 在自己的 `onMounted` 里绑定自己的元素（父 SFC 里已无用的实例与导入一并清理）。这是 P5b 想根治的"跨组件按 id 够 DOM"形态。
+>
+> **3 处重复接线删除**：`Choice.vue` / `IfBranch.vue` / `SwitchBranch.vue` 里 `on($('#x-confirm'), 'click', …)` 与各自的 `@confirm="onConfirm"` 是**同一件事的双份接线**（处理器内核都是 `X.confirm?.(new Event('click'))`）→ 删除 click 版。
+>
+> **注释污染计数（老问题复发并已修）**：脚本插入的注释含字面 `$('#id')`，使 109 个文件各贡献 1 处假命中（tracker 从 943 直降到 464 看着很好，其实是 **464 里含 109 处注释**）→ 统一改写为"按 id 查 DOM"，指标校正为 **355 处 / 62 文件**。教训：**插入注释时就避免写出与被统计的语法相同的字面量**。
+>
+> **新增回归**：`components/__tests__/command-form-registry.spec.ts`（3 例，端到端）——挂载 `SetString` / `ChangeActorEquipment` / `JumpTo` 后断言"控件确实拿到了 `dataItems`"，即 `onMounted` 里经注册表的 `loadItems` 真的执行了；**若注册表链路断（如 ref 未登记），这些断言会失败而不是静默不加载**。
+>
+> **批 4 剩余**：355 处 / 62 文件，分布在 21 个目录组——`animation` 48、`title` 40、`scene` 36、`palette` 29、`particle` 22、`stores` 21、`local` 18、`ui` 18、`module` 17、`composables` 16、`data` 15、`engine` 15、`variable` 15、`services` 14、其余 7 组共 9 处。
+
 ## B1 — 巨石渲染层重写
 
 - **现状证据**：`packages/ui-kit/src/components/business/YMCommandList/command-api.ts` 2609 行（纯数据层已抽 `command-core.ts` 269 行）、`packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue` 2327 行（已抽 `file-body-core.ts` 154 行）；DOM 渲染层仍命令式。**契约面远大于测试面**：命令列表经 `packages/editor/src/components/common/CommandList.vue` 暴露 **67 个方法**、editor 侧约 **259 处**列表方法调用，而组件级只有 **12 个用例**；文件body 组件级 **5 个用例**（另有 editor 侧 2 个 / 3 个）。
@@ -552,4 +571,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **220 文件 1924/1924**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 7 个 registry 回归 spec：`accessor-fields`、`event-editor-registry`、`attribute-enum-registry`、`color-picker-registry`、`image-crop-registry`、`text-capture-registry`、`inspector-registry`）。
+- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **221 文件 1927/1927**（B0–B4 批 4 改动后的最新实跑值；B4 批 2/3/4 共新增 8 个 registry 回归 spec，最新为 `command-form-registry`——它断言「挂载后控件确实拿到了选项」，直接证明注册表链路有效）。

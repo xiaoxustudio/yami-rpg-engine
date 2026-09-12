@@ -8,20 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="renderOutline-operation" v-focus v-model="form.operation" />
+			<SelectBox id="renderOutline-operation"
+				:ref="registryRef(fieldEls, 'renderOutline-operation')" v-focus v-model="form.operation" />
 			<div class="text">Actor</div>
-			<CustomBox id="renderOutline-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="renderOutline-actor"
+				:ref="registryRef(fieldEls, 'renderOutline-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Color</div>
-			<ColorBox id="renderOutline-color" v-model="color" />
+			<ColorBox id="renderOutline-color"
+				:ref="registryRef(fieldEls, 'renderOutline-color')" v-model="color" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
@@ -44,19 +50,19 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#renderOutline-operation')?.loadItems?.([
+	fieldEls.get('renderOutline-operation')?.loadItems?.([
 		{ name: t('command.renderOutline.add') || 'Add', value: 'add' },
 		{ name: t('command.renderOutline.remove') || 'Remove', value: 'remove' },
 		{ name: t('command.renderOutline.reset') || 'Reset', value: 'reset' }
 	]);
-	$('#renderOutline-operation')
+	fieldEls.get('renderOutline-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [$('#renderOutline-actor'), $('#renderOutline-color')]
+				targets: [fieldEls.get('renderOutline-actor'), fieldEls.get('renderOutline-color')]
 			},
-			{ case: 'remove', targets: [$('#renderOutline-actor')] }
+			{ case: 'remove', targets: [fieldEls.get('renderOutline-actor')] }
 		]);
 });
 </script>

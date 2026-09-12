@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="changeActorTeam" @confirm="onConfirm">
+	<WindowFrame id="changeActorTeam"
+				:ref="registryRef(fieldEls, 'changeActorTeam')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorTeam.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Actor</div>
 			<CustomBox id="changeActorTeam-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Team</div>
-			<SelectBox id="changeActorTeam-teamId" v-model="form.teamId" />
+			<SelectBox id="changeActorTeam-teamId"
+				:ref="registryRef(fieldEls, 'changeActorTeam-teamId')" v-model="form.teamId" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorTeamCommandSchema } from '@app/composables/commands/useChangeActorTeamCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -35,8 +40,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changeActorTeam')?.on?.('open', () => {
-		$('#changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
+	fieldEls.get('changeActorTeam')?.on?.('open', () => {
+		fieldEls.get('changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 });
 </script>

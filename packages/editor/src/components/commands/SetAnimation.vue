@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setAnimation" @confirm="onConfirm">
+	<WindowFrame id="setAnimation"
+				:ref="registryRef(fieldEls, 'setAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAnimation.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setAnimation-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setAnimation-properties" v-focus v-model="form.properties" />
+			<ParamList id="setAnimation-properties"
+				:ref="registryRef(fieldEls, 'setAnimation-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationCommandSchema } from '@app/composables/commands/useSetAnimationCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { AnimationProperty } from '@app/commands/property-window/set-animation-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setAnimation-properties')?.bind?.(AnimationProperty);
-	$('#setAnimation')?.on?.('closed', () => {
-		clear($('#setAnimation-properties'));
+	fieldEls.get('setAnimation-properties')?.bind?.(AnimationProperty);
+	fieldEls.get('setAnimation')?.on?.('closed', () => {
+		clear(fieldEls.get('setAnimation-properties'));
 	});
 });
 </script>

@@ -10,22 +10,29 @@
 			<div class="text">Actor</div>
 			<CustomBox id="getTarget-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
-			<SelectBox id="getTarget-selector" v-model="form.selector" />
+			<SelectBox id="getTarget-selector"
+				:ref="registryRef(fieldEls, 'getTarget-selector')" v-model="form.selector" />
 			<div class="text">Condition</div>
-			<SelectBox id="getTarget-condition" v-model="form.condition" />
+			<SelectBox id="getTarget-condition"
+				:ref="registryRef(fieldEls, 'getTarget-condition')" v-model="form.condition" />
 			<div class="text">Attribute</div>
-			<SelectBox id="getTarget-attribute" v-focus v-model="form.attribute" />
+			<SelectBox id="getTarget-attribute"
+				:ref="registryRef(fieldEls, 'getTarget-attribute')" v-focus v-model="form.attribute" />
 			<div class="text">Attribute 2</div>
-			<SelectBox id="getTarget-divisor" v-focus v-model="form.divisor" />
+			<SelectBox id="getTarget-divisor"
+				:ref="registryRef(fieldEls, 'getTarget-divisor')" v-focus v-model="form.divisor" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -40,7 +47,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#getTarget-selector')?.loadItems?.([
+	fieldEls.get('getTarget-selector')?.loadItems?.([
 		{ name: 'Enemy', value: 'enemy' },
 		{ name: 'Friend', value: 'friend' },
 		{ name: 'Team Member', value: 'team' },
@@ -48,7 +55,7 @@ onMounted(() => {
 		{ name: 'Any Except Self', value: 'any-except-self' },
 		{ name: 'Any', value: 'any' }
 	]);
-	$('#getTarget-condition')?.loadItems?.([
+	fieldEls.get('getTarget-condition')?.loadItems?.([
 		{ name: t('command.getTarget.condition.max-threat') || 'Max Threat', value: 'max-threat' },
 		{ name: t('command.getTarget.condition.nearest') || 'Nearest', value: 'nearest' },
 		{ name: t('command.getTarget.condition.farthest') || 'Farthest', value: 'farthest' },
@@ -70,16 +77,16 @@ onMounted(() => {
 		},
 		{ name: t('command.getTarget.condition.random') || 'Random', value: 'random' }
 	]);
-	$('#getTarget-condition')
+	fieldEls.get('getTarget-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['min-attribute-value', 'max-attribute-value'],
-				targets: [$('#getTarget-attribute')]
+				targets: [fieldEls.get('getTarget-attribute')]
 			},
 			{
 				case: ['min-attribute-ratio', 'max-attribute-ratio'],
-				targets: [$('#getTarget-attribute'), $('#getTarget-divisor')]
+				targets: [fieldEls.get('getTarget-attribute'), fieldEls.get('getTarget-divisor')]
 			}
 		]);
 });

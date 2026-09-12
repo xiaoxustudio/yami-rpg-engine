@@ -10,10 +10,12 @@
 			<div class="text">Actor</div>
 			<CustomBox id="moveActor-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
-			<SelectBox id="moveActor-mode" v-model="form.mode" />
+			<SelectBox id="moveActor-mode"
+				:ref="registryRef(fieldEls, 'moveActor-mode')" v-model="form.mode" />
 			<div class="text">Angle</div>
 			<NumberVar
 				id="moveActor-angle"
+				:ref="registryRef(fieldEls, 'moveActor-angle')"
 				min="-360"
 				max="360"
 				decimals="4"
@@ -21,18 +23,23 @@
 				v-model="form.angle"
 			/>
 			<div class="text">Destination</div>
-			<CustomBox id="moveActor-destination" type="position" v-model="form.destination" />
+			<CustomBox id="moveActor-destination"
+				:ref="registryRef(fieldEls, 'moveActor-destination')" type="position" v-model="form.destination" />
 			<div class="text">Wait</div>
-			<SelectBox id="moveActor-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="moveActor-wait"
+				:ref="registryRef(fieldEls, 'moveActor-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -48,7 +55,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#moveActor-mode')?.loadItems?.([
+	fieldEls.get('moveActor-mode')?.loadItems?.([
 		{ name: t('command.moveActor.mode.stop') || 'Stop', value: 'stop' },
 		{ name: t('command.moveActor.mode.keep') || 'Keep', value: 'keep' },
 		{ name: t('command.moveActor.mode.straight') || 'Straight', value: 'straight' },
@@ -59,17 +66,17 @@ onMounted(() => {
 		},
 		{ name: t('command.moveActor.mode.teleport') || 'Teleport', value: 'teleport' }
 	]);
-	$('#moveActor-mode')
+	fieldEls.get('moveActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'keep', targets: [$('#moveActor-angle')] },
+			{ case: 'keep', targets: [fieldEls.get('moveActor-angle')] },
 			{
 				case: ['straight', 'navigate', 'navigate-bypass'],
-				targets: [$('#moveActor-destination'), $('#moveActor-wait')]
+				targets: [fieldEls.get('moveActor-destination'), fieldEls.get('moveActor-wait')]
 			},
-			{ case: 'teleport', targets: [$('#moveActor-destination')] }
+			{ case: 'teleport', targets: [fieldEls.get('moveActor-destination')] }
 		]);
-	$('#moveActor-wait')?.loadItems?.([
+	fieldEls.get('moveActor-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

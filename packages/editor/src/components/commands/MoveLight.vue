@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="moveLight" @confirm="onConfirm">
+	<WindowFrame id="moveLight"
+				:ref="registryRef(fieldEls, 'moveLight')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveLight.title') }}
@@ -10,9 +11,11 @@
 			<div class="text">Light</div>
 			<CustomBox id="moveLight-light" v-focus type="light" v-model="form.light" />
 			<div class="text">Properties</div>
-			<ParamList id="moveLight-properties" v-focus v-model="form.properties" />
+			<ParamList id="moveLight-properties"
+				:ref="registryRef(fieldEls, 'moveLight-properties')" v-focus v-model="form.properties" />
 			<div class="text">Easing</div>
-			<SelectBox id="moveLight-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="moveLight-easingId"
+				:ref="registryRef(fieldEls, 'moveLight-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="moveLight-duration"
@@ -23,16 +26,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="moveLight-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="moveLight-wait"
+				:ref="registryRef(fieldEls, 'moveLight-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { LightProperty } from '@app/commands/property-window/move-light-property-window.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -59,16 +66,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#moveLight-properties')?.bind?.(LightProperty);
-	$('#moveLight-wait')?.loadItems?.([
+	fieldEls.get('moveLight-properties')?.bind?.(LightProperty);
+	fieldEls.get('moveLight-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#moveLight')?.on?.('open', () => {
-		$('#moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('moveLight')?.on?.('open', () => {
+		fieldEls.get('moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
-	$('#moveLight')?.on?.('closed', () => {
-		clear($('#moveLight-properties'));
+	fieldEls.get('moveLight')?.on?.('closed', () => {
+		clear(fieldEls.get('moveLight-properties'));
 	});
 });
 </script>

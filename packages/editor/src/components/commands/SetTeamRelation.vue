@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setTeamRelation" @confirm="onConfirm">
+	<WindowFrame id="setTeamRelation"
+				:ref="registryRef(fieldEls, 'setTeamRelation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTeamRelation.title') }}
@@ -8,20 +9,26 @@
 
 		<div class="grid-box">
 			<div class="text">Team A</div>
-			<SelectBox id="setTeamRelation-teamId1" v-focus v-model="form.teamId1" />
+			<SelectBox id="setTeamRelation-teamId1"
+				:ref="registryRef(fieldEls, 'setTeamRelation-teamId1')" v-focus v-model="form.teamId1" />
 			<div class="text">Team B</div>
-			<SelectBox id="setTeamRelation-teamId2" v-model="form.teamId2" />
+			<SelectBox id="setTeamRelation-teamId2"
+				:ref="registryRef(fieldEls, 'setTeamRelation-teamId2')" v-model="form.teamId2" />
 			<div class="text">Relation</div>
-			<SelectBox id="setTeamRelation-relation" v-model="form.relation" />
+			<SelectBox id="setTeamRelation-relation"
+				:ref="registryRef(fieldEls, 'setTeamRelation-relation')" v-model="form.relation" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTeamRelationCommandSchema } from '@app/composables/commands/useSetTeamRelationCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -36,14 +43,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setTeamRelation-relation')?.loadItems?.([
+	fieldEls.get('setTeamRelation-relation')?.loadItems?.([
 		{ name: 'Enemy', value: 0 },
 		{ name: 'Friend', value: 1 }
 	]);
-	$('#setTeamRelation')?.on?.('open', () => {
+	fieldEls.get('setTeamRelation')?.on?.('open', () => {
 		const items = Data.createTeamItems!();
-		$('#setTeamRelation-teamId1')?.loadItems?.(items);
-		$('#setTeamRelation-teamId2')?.loadItems?.(items);
+		fieldEls.get('setTeamRelation-teamId1')?.loadItems?.(items);
+		fieldEls.get('setTeamRelation-teamId2')?.loadItems?.(items);
 	});
 });
 </script>

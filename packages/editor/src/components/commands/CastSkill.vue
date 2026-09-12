@@ -10,26 +10,35 @@
 			<div class="text">Actor</div>
 			<CustomBox id="castSkill-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
-			<SelectBox id="castSkill-mode" v-model="form.mode" />
+			<SelectBox id="castSkill-mode"
+				:ref="registryRef(fieldEls, 'castSkill-mode')" v-model="form.mode" />
 			<div class="text">Shortcut Key</div>
-			<SelectBox id="castSkill-key" v-focus v-model="form.key" />
+			<SelectBox id="castSkill-key"
+				:ref="registryRef(fieldEls, 'castSkill-key')" v-focus v-model="form.key" />
 			<div class="text">Shortcut Key</div>
-			<StringVar id="castSkill-keyVar" v-model="form.keyVar" />
+			<StringVar id="castSkill-keyVar"
+				:ref="registryRef(fieldEls, 'castSkill-keyVar')" v-model="form.keyVar" />
 			<div class="text">Skill</div>
-			<CustomBox id="castSkill-skillId" v-focus type="file" filter="skill" v-model="form.skillId" />
+			<CustomBox id="castSkill-skillId"
+				:ref="registryRef(fieldEls, 'castSkill-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />
 			<div class="text">Skill</div>
-			<CustomBox id="castSkill-skill" type="skill" v-model="form.skill" />
+			<CustomBox id="castSkill-skill"
+				:ref="registryRef(fieldEls, 'castSkill-skill')" type="skill" v-model="form.skill" />
 			<div class="text">Wait</div>
-			<SelectBox id="castSkill-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="castSkill-wait"
+				:ref="registryRef(fieldEls, 'castSkill-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCastSkillCommandSchema } from '@app/composables/commands/useCastSkillCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -45,21 +54,21 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#castSkill-mode')?.loadItems?.([
+	fieldEls.get('castSkill-mode')?.loadItems?.([
 		{ name: 'By Shortcut Key', value: 'by-key' },
 		{ name: 'By Skill ID', value: 'by-id' },
 		{ name: 'By Skill Instance', value: 'by-skill' },
 		{ name: 'By Variable', value: 'by-variable' }
 	]);
-	$('#castSkill-mode')
+	fieldEls.get('castSkill-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'by-key', targets: [$('#castSkill-key')] },
-			{ case: 'by-id', targets: [$('#castSkill-skillId')] },
-			{ case: 'by-skill', targets: [$('#castSkill-skill')] },
-			{ case: 'by-variable', targets: [$('#castSkill-keyVar')] }
+			{ case: 'by-key', targets: [fieldEls.get('castSkill-key')] },
+			{ case: 'by-id', targets: [fieldEls.get('castSkill-skillId')] },
+			{ case: 'by-skill', targets: [fieldEls.get('castSkill-skill')] },
+			{ case: 'by-variable', targets: [fieldEls.get('castSkill-keyVar')] }
 		]);
-	$('#castSkill-wait')?.loadItems?.([
+	fieldEls.get('castSkill-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

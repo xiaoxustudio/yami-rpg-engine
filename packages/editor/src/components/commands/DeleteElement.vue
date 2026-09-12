@@ -8,18 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="deleteElement-operation" v-focus v-model="form.operation" />
+			<SelectBox id="deleteElement-operation"
+				:ref="registryRef(fieldEls, 'deleteElement-operation')" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="deleteElement-element" type="element" v-model="form.element" />
+			<CustomBox id="deleteElement-element"
+				:ref="registryRef(fieldEls, 'deleteElement-element')" type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDeleteElementCommandSchema } from '@app/composables/commands/useDeleteElementCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +39,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#deleteElement-operation')?.loadItems?.([
+	fieldEls.get('deleteElement-operation')?.loadItems?.([
 		{ name: 'Delete Element', value: 'delete-element' },
 		{
 			name: t('command.deleteElement.children') || 'Delete Children',
@@ -42,12 +47,12 @@ onMounted(() => {
 		},
 		{ name: t('command.deleteElement.all-elements') || 'Delete All', value: 'delete-all' }
 	]);
-	$('#deleteElement-operation')
+	fieldEls.get('deleteElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['delete-element', 'delete-children'],
-				targets: [$('#deleteElement-element')]
+				targets: [fieldEls.get('deleteElement-element')]
 			}
 		]);
 });

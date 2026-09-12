@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="getActor" @confirm="onConfirm">
+	<WindowFrame id="getActor"
+				:ref="registryRef(fieldEls, 'getActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getActor.title') }}
@@ -18,10 +19,12 @@
 			<div class="text">Position</div>
 			<CustomBox id="getActor-position" type="position" v-model="form.position" />
 			<div class="text">Area</div>
-			<SelectBox id="getActor-area" v-model="form.area" />
+			<SelectBox id="getActor-area"
+				:ref="registryRef(fieldEls, 'getActor-area')" v-model="form.area" />
 			<div class="text">Size</div>
 			<NumberVar
 				id="getActor-size"
+				:ref="registryRef(fieldEls, 'getActor-size')"
 				min="0"
 				max="512"
 				decimals="4"
@@ -31,6 +34,7 @@
 			<div class="text">Radius</div>
 			<NumberVar
 				id="getActor-radius"
+				:ref="registryRef(fieldEls, 'getActor-radius')"
 				min="0"
 				max="256"
 				decimals="4"
@@ -38,32 +42,44 @@
 				v-model="form.radius"
 			/>
 			<div class="text">Selector</div>
-			<SelectBox id="getActor-selector" v-model="form.selector" />
+			<SelectBox id="getActor-selector"
+				:ref="registryRef(fieldEls, 'getActor-selector')" v-model="form.selector" />
 			<div class="text">Team</div>
-			<SelectVar id="getActor-teamId" v-model="form.teamId" />
+			<SelectVar id="getActor-teamId"
+				:ref="registryRef(fieldEls, 'getActor-teamId')" v-model="form.teamId" />
 			<div class="text">Condition</div>
-			<SelectBox id="getActor-condition" v-model="form.condition" />
+			<SelectBox id="getActor-condition"
+				:ref="registryRef(fieldEls, 'getActor-condition')" v-model="form.condition" />
 			<div class="text">Attribute</div>
-			<SelectBox id="getActor-attribute" v-focus v-model="form.attribute" />
+			<SelectBox id="getActor-attribute"
+				:ref="registryRef(fieldEls, 'getActor-attribute')" v-focus v-model="form.attribute" />
 			<div class="text">Attribute 2</div>
-			<SelectBox id="getActor-divisor" v-focus v-model="form.divisor" />
+			<SelectBox id="getActor-divisor"
+				:ref="registryRef(fieldEls, 'getActor-divisor')" v-focus v-model="form.divisor" />
 			<div class="text">Activation</div>
-			<SelectBox id="getActor-activation" v-model="form.activation" />
+			<SelectBox id="getActor-activation"
+				:ref="registryRef(fieldEls, 'getActor-activation')" v-model="form.activation" />
 			<div class="text">Exclusion</div>
-			<SelectBox id="getActor-exclusion" v-model="form.exclusion" />
+			<SelectBox id="getActor-exclusion"
+				:ref="registryRef(fieldEls, 'getActor-exclusion')" v-model="form.exclusion" />
 			<div class="text">Exclusion Actor</div>
-			<CustomBox id="getActor-exclusionActor" type="actor" v-model="form.exclusionActor" />
+			<CustomBox id="getActor-exclusionActor"
+				:ref="registryRef(fieldEls, 'getActor-exclusionActor')" type="actor" v-model="form.exclusionActor" />
 			<div class="text">Exclusion Team</div>
-			<SelectVar id="getActor-exclusionTeamId" v-model="form.exclusionTeamId" />
+			<SelectVar id="getActor-exclusionTeamId"
+				:ref="registryRef(fieldEls, 'getActor-exclusionTeamId')" v-model="form.exclusionTeamId" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -81,31 +97,31 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#getActor-area')?.loadItems?.([
+	fieldEls.get('getActor-area')?.loadItems?.([
 		{ name: t('command.getActor.square') || 'Square', value: 'square' },
 		{ name: t('command.getActor.circle') || 'Circle', value: 'circle' }
 	]);
-	$('#getActor-area')
+	fieldEls.get('getActor-area')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'square', targets: [$('#getActor-size')] },
-			{ case: 'circle', targets: [$('#getActor-radius')] }
+			{ case: 'square', targets: [fieldEls.get('getActor-size')] },
+			{ case: 'circle', targets: [fieldEls.get('getActor-radius')] }
 		]);
-	$('#getActor-selector')?.loadItems?.([
+	fieldEls.get('getActor-selector')?.loadItems?.([
 		{ name: 'Team Enemy', value: 'enemy' },
 		{ name: 'Team Friend', value: 'friend' },
 		{ name: 'Team Member', value: 'team' },
 		{ name: 'Any', value: 'any' }
 	]);
-	$('#getActor-selector')
+	fieldEls.get('getActor-selector')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['enemy', 'friend', 'team'],
-				targets: [$('#getActor-teamId')]
+				targets: [fieldEls.get('getActor-teamId')]
 			}
 		]);
-	$('#getActor-condition')?.loadItems?.([
+	fieldEls.get('getActor-condition')?.loadItems?.([
 		{ name: t('command.getActor.condition.nearest') || 'Nearest', value: 'nearest' },
 		{ name: t('command.getActor.condition.farthest') || 'Farthest', value: 'farthest' },
 		{
@@ -126,38 +142,38 @@ onMounted(() => {
 		},
 		{ name: t('command.getActor.condition.random') || 'Random', value: 'random' }
 	]);
-	$('#getActor-condition')
+	fieldEls.get('getActor-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['min-attribute-value', 'max-attribute-value'],
-				targets: [$('#getActor-attribute')]
+				targets: [fieldEls.get('getActor-attribute')]
 			},
 			{
 				case: ['min-attribute-ratio', 'max-attribute-ratio'],
-				targets: [$('#getActor-attribute'), $('#getActor-divisor')]
+				targets: [fieldEls.get('getActor-attribute'), fieldEls.get('getActor-divisor')]
 			}
 		]);
-	$('#getActor-activation')?.loadItems?.([
+	fieldEls.get('getActor-activation')?.loadItems?.([
 		{ name: t('command.getActor.active') || 'Active', value: 'active' },
 		{ name: t('command.getActor.inactive') || 'Inactive', value: 'inactive' },
 		{ name: t('command.getActor.either') || 'Either', value: 'either' }
 	]);
-	$('#getActor-exclusion')?.loadItems?.([
+	fieldEls.get('getActor-exclusion')?.loadItems?.([
 		{ name: 'None', value: 'none' },
 		{ name: 'Exclude an Actor', value: 'actor' },
 		{ name: 'Exclude a Team', value: 'team' }
 	]);
-	$('#getActor-exclusion')
+	fieldEls.get('getActor-exclusion')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'actor', targets: [$('#getActor-exclusionActor')] },
-			{ case: 'team', targets: [$('#getActor-exclusionTeamId')] }
+			{ case: 'actor', targets: [fieldEls.get('getActor-exclusionActor')] },
+			{ case: 'team', targets: [fieldEls.get('getActor-exclusionTeamId')] }
 		]);
-	$('#getActor')?.on?.('open', () => {
+	fieldEls.get('getActor')?.on?.('open', () => {
 		const items = Data.createTeamItems!();
-		$('#getActor-teamId')?.loadItems?.(items);
-		$('#getActor-exclusionTeamId')?.loadItems?.(items);
+		fieldEls.get('getActor-teamId')?.loadItems?.(items);
+		fieldEls.get('getActor-exclusionTeamId')?.loadItems?.(items);
 	});
 });
 </script>

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setPan" @confirm="onConfirm">
+	<WindowFrame id="setPan"
+				:ref="registryRef(fieldEls, 'setPan')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setPan.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setPan-type" v-focus v-model="form.type" />
+			<SelectBox id="setPan-type"
+				:ref="registryRef(fieldEls, 'setPan-type')" v-focus v-model="form.type" />
 			<div class="text">Pan</div>
 			<NumberVar
 				id="setPan-pan"
@@ -19,7 +21,8 @@
 				v-model="form.pan"
 			/>
 			<div class="text">Easing</div>
-			<SelectBox id="setPan-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setPan-easingId"
+				:ref="registryRef(fieldEls, 'setPan-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="setPan-duration"
@@ -30,16 +33,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setPan-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setPan-wait"
+				:ref="registryRef(fieldEls, 'setPan-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -63,18 +70,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setPan-type')?.loadItems?.([
+	fieldEls.get('setPan-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
-	$('#setPan-wait')?.loadItems?.([
+	fieldEls.get('setPan-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setPan')?.on?.('open', () => {
-		$('#setPan-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setPan')?.on?.('open', () => {
+		fieldEls.get('setPan-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setAmbientLight" @confirm="onConfirm">
+	<WindowFrame id="setAmbientLight"
+				:ref="registryRef(fieldEls, 'setAmbientLight')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAmbientLight.title') }}
@@ -14,7 +15,8 @@
 			<div class="text">Blue</div>
 			<NumberVar id="setAmbientLight-blue" min="0" max="255" step="5" v-model="form.blue" />
 			<div class="text">Easing</div>
-			<SelectBox id="setAmbientLight-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setAmbientLight-easingId"
+				:ref="registryRef(fieldEls, 'setAmbientLight-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="setAmbientLight-duration"
@@ -25,16 +27,20 @@
 				v-model="form.duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setAmbientLight-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setAmbientLight-wait"
+				:ref="registryRef(fieldEls, 'setAmbientLight-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAmbientLightCommandSchema } from '@app/composables/commands/useSetAmbientLightCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -50,12 +56,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setAmbientLight-wait')?.loadItems?.([
+	fieldEls.get('setAmbientLight-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setAmbientLight')?.on?.('open', () => {
-		$('#setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setAmbientLight')?.on?.('open', () => {
+		fieldEls.get('setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

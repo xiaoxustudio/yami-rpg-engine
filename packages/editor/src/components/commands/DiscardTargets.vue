@@ -10,7 +10,8 @@
 			<div class="text">Actor</div>
 			<CustomBox id="discardTargets-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
-			<SelectBox id="discardTargets-selector" v-model="form.selector" />
+			<SelectBox id="discardTargets-selector"
+				:ref="registryRef(fieldEls, 'discardTargets-selector')" v-model="form.selector" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="discardTargets-distance"
@@ -25,10 +26,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDiscardTargetsCommandSchema } from '@app/composables/commands/useDiscardTargetsCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -44,7 +48,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#discardTargets-selector')?.loadItems?.([
+	fieldEls.get('discardTargets-selector')?.loadItems?.([
 		{ name: 'Enemy', value: 'enemy' },
 		{ name: 'Friend', value: 'friend' },
 		{ name: 'Team Member', value: 'team' },

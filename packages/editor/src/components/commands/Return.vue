@@ -8,52 +8,68 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="return-type" v-focus v-model="form.type" />
+			<SelectBox id="return-type"
+				:ref="registryRef(fieldEls, 'return-type')" v-focus v-model="form.type" />
 			<div class="text">Boolean</div>
-			<SelectBox id="return-boolean" v-model="form.boolean" />
+			<SelectBox id="return-boolean"
+				:ref="registryRef(fieldEls, 'return-boolean')" v-model="form.boolean" />
 			<div class="text">Number</div>
 			<NumberVar
 				id="return-number"
+				:ref="registryRef(fieldEls, 'return-number')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="form.number"
 			/>
 			<div class="text">String</div>
-			<StringVar id="return-string" v-model="form.string" />
+			<StringVar id="return-string"
+				:ref="registryRef(fieldEls, 'return-string')" v-model="form.string" />
 		<div class="text">Object</div>
 		<CustomBox
 			id="return-object"
+				:ref="registryRef(fieldEls, 'return-object')"
 			v-focus
 			type="variable"
 			filter="object"
 			v-model="form.object"
 		/>
 		<div class="text">Actor</div>
-		<CustomBox id="return-actor" type="actor" v-model="form.actor" />
+		<CustomBox id="return-actor"
+				:ref="registryRef(fieldEls, 'return-actor')" type="actor" v-model="form.actor" />
 		<div class="text">Skill</div>
-		<CustomBox id="return-skill" type="skill" v-model="form.skill" />
+		<CustomBox id="return-skill"
+				:ref="registryRef(fieldEls, 'return-skill')" type="skill" v-model="form.skill" />
 		<div class="text">State</div>
-		<CustomBox id="return-state" type="state" v-model="form.state" />
+		<CustomBox id="return-state"
+				:ref="registryRef(fieldEls, 'return-state')" type="state" v-model="form.state" />
 		<div class="text">Equipment</div>
-		<CustomBox id="return-equipment" type="equipment" v-model="form.equipment" />
+		<CustomBox id="return-equipment"
+				:ref="registryRef(fieldEls, 'return-equipment')" type="equipment" v-model="form.equipment" />
 		<div class="text">Item</div>
-		<CustomBox id="return-item" type="item" v-model="form.item" />
+		<CustomBox id="return-item"
+				:ref="registryRef(fieldEls, 'return-item')" type="item" v-model="form.item" />
 		<div class="text">Trigger</div>
-		<CustomBox id="return-trigger" type="trigger" v-model="form.trigger" />
+		<CustomBox id="return-trigger"
+				:ref="registryRef(fieldEls, 'return-trigger')" type="trigger" v-model="form.trigger" />
 		<div class="text">Light</div>
-		<CustomBox id="return-light" type="light" v-model="form.light" />
+		<CustomBox id="return-light"
+				:ref="registryRef(fieldEls, 'return-light')" type="light" v-model="form.light" />
 		<div class="text">Element</div>
-		<CustomBox id="return-element" type="element" v-model="form.element" />
+		<CustomBox id="return-element"
+				:ref="registryRef(fieldEls, 'return-element')" type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useReturnCommandSchema } from '@app/composables/commands/useReturnCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -70,25 +86,25 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#return-boolean')?.loadItems?.([
+	fieldEls.get('return-boolean')?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
-	$('#return-type')
+	fieldEls.get('return-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'boolean', targets: [$('#return-boolean')] },
-			{ case: 'number', targets: [$('#return-number')] },
-			{ case: 'string', targets: [$('#return-string')] },
-			{ case: 'object', targets: [$('#return-object')] },
-			{ case: 'actor', targets: [$('#return-actor')] },
-			{ case: 'skill', targets: [$('#return-skill')] },
-			{ case: 'state', targets: [$('#return-state')] },
-			{ case: 'equipment', targets: [$('#return-equipment')] },
-			{ case: 'item', targets: [$('#return-item')] },
-			{ case: 'trigger', targets: [$('#return-trigger')] },
-			{ case: 'light', targets: [$('#return-light')] },
-			{ case: 'element', targets: [$('#return-element')] }
+			{ case: 'boolean', targets: [fieldEls.get('return-boolean')] },
+			{ case: 'number', targets: [fieldEls.get('return-number')] },
+			{ case: 'string', targets: [fieldEls.get('return-string')] },
+			{ case: 'object', targets: [fieldEls.get('return-object')] },
+			{ case: 'actor', targets: [fieldEls.get('return-actor')] },
+			{ case: 'skill', targets: [fieldEls.get('return-skill')] },
+			{ case: 'state', targets: [fieldEls.get('return-state')] },
+			{ case: 'equipment', targets: [fieldEls.get('return-equipment')] },
+			{ case: 'item', targets: [fieldEls.get('return-item')] },
+			{ case: 'trigger', targets: [fieldEls.get('return-trigger')] },
+			{ case: 'light', targets: [fieldEls.get('return-light')] },
+			{ case: 'element', targets: [fieldEls.get('return-element')] }
 		]);
 });
 </script>

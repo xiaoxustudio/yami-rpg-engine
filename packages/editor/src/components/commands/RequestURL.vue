@@ -10,11 +10,14 @@
 			<div class="text">URL</div>
 			<StringVar id="requestURL-url" v-focus v-model="form.url" />
 			<div class="text">Header</div>
-			<ParamList id="requestURL-header" v-model="form.headers" />
+			<ParamList id="requestURL-header"
+				:ref="registryRef(fieldEls, 'requestURL-header')" v-model="form.headers" />
 			<div class="text">Method</div>
-			<SelectBox id="requestURL-method" v-model="form.method" />
+			<SelectBox id="requestURL-method"
+				:ref="registryRef(fieldEls, 'requestURL-method')" v-model="form.method" />
 			<div class="text">Data</div>
-			<ParamList id="requestURL-data" v-model="form.data" />
+			<ParamList id="requestURL-data"
+				:ref="registryRef(fieldEls, 'requestURL-data')" v-model="form.data" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="requestURL-callback"
@@ -27,10 +30,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';
-import { $ } from '@app/utils/dom';
 import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -48,14 +54,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#requestURL-method')?.loadItems?.([
+	fieldEls.get('requestURL-method')?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' }
 	]);
-	$('#requestURL-header')?.bind?.(RequestkeyValueBind);
-	$('#requestURL-data')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('requestURL-header')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('requestURL-data')?.bind?.(RequestkeyValueBind);
 });
 </script>
 

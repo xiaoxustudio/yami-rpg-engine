@@ -10,7 +10,8 @@
 			<div class="text">Actor</div>
 			<CustomBox id="changeActorMotion-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Type</div>
-			<SelectBox id="changeActorMotion-type" v-model="form.type" />
+			<SelectBox id="changeActorMotion-type"
+				:ref="registryRef(fieldEls, 'changeActorMotion-type')" v-model="form.type" />
 			<div class="text">Motion</div>
 			<CustomBox id="changeActorMotion-motion" type="enum-string" v-model="form.motion" />
 		</div>
@@ -18,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorMotionCommandSchema } from '@app/composables/commands/useChangeActorMotionCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -36,7 +40,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changeActorMotion-type')?.loadItems?.([
+	fieldEls.get('changeActorMotion-type')?.loadItems?.([
 		{ name: t('command.changeActorMotion.type.idle') || 'Idle', value: 'idle' },
 		{ name: t('command.changeActorMotion.type.move') || 'Move', value: 'move' }
 	]);

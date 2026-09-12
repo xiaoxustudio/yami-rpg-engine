@@ -10,16 +10,20 @@
 			<div class="text">Actor</div>
 			<CustomBox id="setActive-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
-			<SelectBox id="setActive-active" v-model="form.active" />
+			<SelectBox id="setActive-active"
+				:ref="registryRef(fieldEls, 'setActive-active')" v-model="form.active" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetActiveCommandSchema } from '@app/composables/commands/useSetActiveCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +38,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setActive-active')?.loadItems?.([
+	fieldEls.get('setActive-active')?.loadItems?.([
 		{ name: t('command.setActive.active.true') || 'Active', value: true },
 		{ name: t('command.setActive.active.false') || 'Inactive', value: false }
 	]);

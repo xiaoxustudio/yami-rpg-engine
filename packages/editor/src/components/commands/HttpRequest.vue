@@ -10,15 +10,19 @@
 			<div class="text">URL</div>
 			<StringVar id="httpRequest-url" v-focus v-model="form.url" />
 			<div class="text">Method</div>
-			<SelectBox id="httpRequest-method" v-model="form.method" />
+			<SelectBox id="httpRequest-method"
+				:ref="registryRef(fieldEls, 'httpRequest-method')" v-model="form.method" />
 			<div class="text">Header</div>
-			<ParamList id="httpRequest-header" v-model="form.headers" />
+			<ParamList id="httpRequest-header"
+				:ref="registryRef(fieldEls, 'httpRequest-header')" v-model="form.headers" />
 			<div class="text">Data</div>
-			<ParamList id="httpRequest-data" v-model="form.data" />
+			<ParamList id="httpRequest-data"
+				:ref="registryRef(fieldEls, 'httpRequest-data')" v-model="form.data" />
 			<div class="text">TimeOut</div>
 			<NumberBox id="httpRequest-timeout" v-model="timeout" />
 			<div class="text">ResponseType</div>
-			<SelectBox id="httpRequest-responseType" v-model="form.responseType" />
+			<SelectBox id="httpRequest-responseType"
+				:ref="registryRef(fieldEls, 'httpRequest-responseType')" v-model="form.responseType" />
 			<div class="text">WithCredentials</div>
 			<CheckBox
 				class="standard"
@@ -41,10 +45,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHttpRequestCommandSchema } from '@app/composables/commands/useHttpRequestCommandSchema';
-import { $ } from '@app/utils/dom';
 import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -77,14 +84,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#httpRequest-method')?.loadItems?.([
+	fieldEls.get('httpRequest-method')?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' },
 		{ name: 'PATCH', value: 'PATCH' }
 	]);
-	$('#httpRequest-responseType')?.loadItems?.([
+	fieldEls.get('httpRequest-responseType')?.loadItems?.([
 		{ name: 'JSON', value: 'json' },
 		{ name: 'Text', value: 'text' },
 		{ name: 'Blob', value: 'blob' },
@@ -92,8 +99,8 @@ onMounted(() => {
 		{ name: 'Document', value: 'document' },
 		{ name: 'Stream', value: 'stream' }
 	]);
-	$('#httpRequest-header')?.bind?.(RequestkeyValueBind);
-	$('#httpRequest-data')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('httpRequest-header')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('httpRequest-data')?.bind?.(RequestkeyValueBind);
 });
 </script>
 

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="showChoices" @confirm="onConfirm">
+	<WindowFrame id="showChoices"
+				:ref="registryRef(fieldEls, 'showChoices')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.showChoices.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Choices</div>
-			<ParamList id="showChoices-choices" v-focus v-model="form.choices" />
+			<ParamList id="showChoices-choices"
+				:ref="registryRef(fieldEls, 'showChoices-choices')" v-focus v-model="form.choices" />
 			<div class="text">Parameters</div>
 			<TextBox id="showChoices-parameters" v-model="form.parameters" />
 		</div>
@@ -16,9 +18,12 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 
@@ -38,8 +43,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#showChoices-choices')?.bind?.(Choices);
-	on($('#showChoices'), 'closed', () => windowClosed(new Event('closed')));
+	fieldEls.get('showChoices-choices')?.bind?.(Choices);
+	on(fieldEls.get('showChoices'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

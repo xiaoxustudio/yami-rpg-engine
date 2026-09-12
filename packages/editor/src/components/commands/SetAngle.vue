@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setAngle" @confirm="onConfirm">
+	<WindowFrame id="setAngle"
+				:ref="registryRef(fieldEls, 'setAngle')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAngle.title') }}
@@ -12,7 +13,8 @@
 			<div class="text">Angle</div>
 			<CustomBox id="setAngle-angle" type="angle" v-model="form.angle" />
 			<div class="text">Easing</div>
-			<SelectBox id="setAngle-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setAngle-easingId"
+				:ref="registryRef(fieldEls, 'setAngle-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="setAngle-duration"
@@ -23,16 +25,20 @@
 				v-model="form.duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setAngle-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setAngle-wait"
+				:ref="registryRef(fieldEls, 'setAngle-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -49,12 +55,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setAngle-wait')?.loadItems?.([
+	fieldEls.get('setAngle-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setAngle')?.on?.('open', () => {
-		$('#setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setAngle')?.on?.('open', () => {
+		fieldEls.get('setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

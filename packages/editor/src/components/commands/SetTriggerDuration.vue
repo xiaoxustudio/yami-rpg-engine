@@ -15,7 +15,8 @@
 			v-model="form.trigger"
 		/>
 			<div class="text">Operation</div>
-			<SelectBox id="setTriggerDuration-operation" v-model="form.operation" />
+			<SelectBox id="setTriggerDuration-operation"
+				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')" v-model="form.operation" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="setTriggerDuration-duration"
@@ -29,10 +30,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTriggerDurationCommandSchema } from '@app/composables/commands/useSetTriggerDurationCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -48,7 +52,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setTriggerDuration-operation')?.loadItems?.([
+	fieldEls.get('setTriggerDuration-operation')?.loadItems?.([
 		{ name: 'Set', value: 'set' },
 		{ name: 'Increase', value: 'increase' },
 		{ name: 'Decrease', value: 'decrease' }

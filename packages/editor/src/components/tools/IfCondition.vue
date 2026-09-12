@@ -427,7 +427,7 @@ const FIELD_BY_ID: Record<string, keyof IfConditionForm> = {
 
 /**
  * 控件实例的最小接口（模板里用 `:ref="fieldRef(id)"` 登记）。
- * P5b 批次 1：不再用 `$('#id')` 找元素，改为从注册表取组件实例直调其 expose 方法；
+ * P5b 批次 1：不再按 id 查 DOM，改为从注册表取组件实例直调其 expose 方法；
  * `root` 供仍需元素的地方使用（如 relate 的 targets）。
  */
 interface FieldControl {

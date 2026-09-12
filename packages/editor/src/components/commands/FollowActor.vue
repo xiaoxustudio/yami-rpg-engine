@@ -12,7 +12,8 @@
 			<div class="text">Target</div>
 			<CustomBox id="followActor-target" type="actor" v-model="form.target" />
 			<div class="text">Mode</div>
-			<SelectBox id="followActor-mode" v-model="form.mode" />
+			<SelectBox id="followActor-mode"
+				:ref="registryRef(fieldEls, 'followActor-mode')" v-model="form.mode" />
 			<div class="text">Min Distance</div>
 			<NumberVar
 				id="followActor-minDist"
@@ -34,6 +35,7 @@
 			<div class="text">Offset Ratio</div>
 			<NumberBox
 				id="followActor-offset"
+				:ref="registryRef(fieldEls, 'followActor-offset')"
 				min="-0.8"
 				max="0.8"
 				decimals="4"
@@ -43,6 +45,7 @@
 			<div class="text">Vert Distance</div>
 			<NumberBox
 				id="followActor-vertDist"
+				:ref="registryRef(fieldEls, 'followActor-vertDist')"
 				min="0"
 				max="4"
 				decimals="4"
@@ -59,22 +62,29 @@
 				v-model="bufferDist"
 			/>
 			<div class="text">Navigate</div>
-			<SelectBox id="followActor-navigate" v-model="form.navigate" />
+			<SelectBox id="followActor-navigate"
+				:ref="registryRef(fieldEls, 'followActor-navigate')" v-model="form.navigate" />
 			<div class="text">Bypass Actors</div>
-			<SelectBox id="followActor-bypass" v-model="form.bypass" />
+			<SelectBox id="followActor-bypass"
+				:ref="registryRef(fieldEls, 'followActor-bypass')" v-model="form.bypass" />
 			<div class="text">Once</div>
-			<SelectBox id="followActor-once" v-model="form.once" />
+			<SelectBox id="followActor-once"
+				:ref="registryRef(fieldEls, 'followActor-once')" v-model="form.once" />
 			<div class="text">Wait</div>
-			<SelectBox id="followActor-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="followActor-wait"
+				:ref="registryRef(fieldEls, 'followActor-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -110,35 +120,35 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#followActor-mode')?.loadItems?.([
+	fieldEls.get('followActor-mode')?.loadItems?.([
 		{ name: t('command.followActor.mode.circle') || 'Circle', value: 'circle' },
 		{ name: t('command.followActor.mode.rectangle') || 'Rectangle', value: 'rectangle' }
 	]);
-	$('#followActor-mode')
+	fieldEls.get('followActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'circle', targets: [$('#followActor-offset')] },
-			{ case: 'rectangle', targets: [$('#followActor-vertDist')] }
+			{ case: 'circle', targets: [fieldEls.get('followActor-offset')] },
+			{ case: 'rectangle', targets: [fieldEls.get('followActor-vertDist')] }
 		]);
-	$('#followActor-navigate')?.loadItems?.([
+	fieldEls.get('followActor-navigate')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#followActor-navigate')
+	fieldEls.get('followActor-navigate')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [$('#followActor-bypass')] }]);
-	$('#followActor-bypass')?.loadItems?.([
+		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-bypass')] }]);
+	fieldEls.get('followActor-bypass')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#followActor-once')?.loadItems?.([
+	fieldEls.get('followActor-once')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#followActor-once')
+	fieldEls.get('followActor-once')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [$('#followActor-wait')] }]);
-	$('#followActor-wait')?.loadItems?.([
+		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-wait')] }]);
+	fieldEls.get('followActor-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

@@ -10,26 +10,32 @@
 			<div class="text">Actor</div>
 			<CustomBox id="changeActorSkill-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
-			<SelectBox id="changeActorSkill-operation" v-model="form.operation" />
+			<SelectBox id="changeActorSkill-operation"
+				:ref="registryRef(fieldEls, 'changeActorSkill-operation')" v-model="form.operation" />
 			<div class="text">Skill</div>
 			<FileVar
 				id="changeActorSkill-skillId"
+				:ref="registryRef(fieldEls, 'changeActorSkill-skillId')"
 				v-focus
 				type="file"
 				filter="skill"
 				v-model="form.skillId"
 			/>
 			<div class="text">Skill</div>
-			<CustomBox id="changeActorSkill-skill" type="skill" v-model="form.skill" />
+			<CustomBox id="changeActorSkill-skill"
+				:ref="registryRef(fieldEls, 'changeActorSkill-skill')" type="skill" v-model="form.skill" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -45,7 +51,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changeActorSkill-operation')?.loadItems?.([
+	fieldEls.get('changeActorSkill-operation')?.loadItems?.([
 		{ name: t('command.changeActorSkill.add') || 'Add', value: 'add' },
 		{ name: t('command.changeActorSkill.remove') || 'Remove', value: 'remove' },
 		{
@@ -54,16 +60,16 @@ onMounted(() => {
 		},
 		{ name: t('command.changeActorSkill.sort-by-order') || 'Sort by Filename', value: 'sort-by-order' }
 	]);
-	$('#changeActorSkill-operation')
+	fieldEls.get('changeActorSkill-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['add', 'remove'],
-				targets: [$('#changeActorSkill-skillId')]
+				targets: [fieldEls.get('changeActorSkill-skillId')]
 			},
 			{
 				case: 'remove-instance',
-				targets: [$('#changeActorSkill-skill')]
+				targets: [fieldEls.get('changeActorSkill-skill')]
 			}
 		]);
 });

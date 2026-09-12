@@ -8,16 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="switchCollisionSystem-operation" v-focus v-model="form.operation" />
+			<SelectBox id="switchCollisionSystem-operation"
+				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')" v-focus v-model="form.operation" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSwitchCollisionSystemCommandSchema } from '@app/composables/commands/useSwitchCollisionSystemCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -31,7 +35,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#switchCollisionSystem-operation')?.loadItems?.([
+	fieldEls.get('switchCollisionSystem-operation')?.loadItems?.([
 		{ name: 'Enable Actor Collision', value: 'enable-actor-collision' },
 		{ name: 'Disable Actor Collision', value: 'disable-actor-collision' },
 		{ name: 'Enable Scene Collision', value: 'enable-scene-collision' },

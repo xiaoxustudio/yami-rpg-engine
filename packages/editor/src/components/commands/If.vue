@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="if" @confirm="onConfirm">
+	<WindowFrame id="if"
+				:ref="registryRef(fieldEls, 'if')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.if.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Branches</div>
-			<ParamList id="if-branches" v-focus v-model="form.branches" />
+			<ParamList id="if-branches"
+				:ref="registryRef(fieldEls, 'if-branches')" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="if-else" v-model="form.else" class="standard"
 			><div class="text" id="if-else-label">Else</div></CheckBox
@@ -17,15 +19,16 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
-import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
 const IfBranch = useIfBranchSchema();
-const IfCondition = useIfConditionSchema();
 import { useIfCommandSchema } from '@app/composables/commands/useIfCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -41,9 +44,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#if-branches')?.bind?.(IfBranch);
-	$('#if-branch-conditions')?.bind?.(IfCondition);
-	on($('#if'), 'closed', () => windowClosed(new Event('closed')));
+	fieldEls.get('if-branches')?.bind?.(IfBranch);
+	on(fieldEls.get('if'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

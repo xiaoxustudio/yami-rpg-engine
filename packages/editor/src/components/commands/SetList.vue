@@ -16,10 +16,12 @@
 			v-model="form.variable"
 		/>
 		<div class="text">Operation</div>
-		<SelectBox id="setList-operation" v-model="form.operation" />
+		<SelectBox id="setList-operation"
+				:ref="registryRef(fieldEls, 'setList-operation')" v-model="form.operation" />
 		<div class="text">Numbers</div>
 		<CustomBox
 			id="setList-numbers"
+				:ref="registryRef(fieldEls, 'setList-numbers')"
 			v-focus
 			type="array"
 			filter="number"
@@ -28,38 +30,46 @@
 		<div class="text">Strings</div>
 		<CustomBox
 			id="setList-strings"
+				:ref="registryRef(fieldEls, 'setList-strings')"
 			v-focus
 			type="array"
 			filter="string"
 			v-model="form.strings"
 		/>
 			<div class="text">Index</div>
-			<NumberVar id="setList-index" min="0" max="1000000000" v-model="form.index" />
+			<NumberVar id="setList-index"
+				:ref="registryRef(fieldEls, 'setList-index')" min="0" max="1000000000" v-model="form.index" />
 			<div class="text">Boolean</div>
-			<SelectBox id="setList-boolean" v-model="form.boolean" />
+			<SelectBox id="setList-boolean"
+				:ref="registryRef(fieldEls, 'setList-boolean')" v-model="form.boolean" />
 			<div class="text">Number</div>
 			<NumberBox
 				id="setList-number"
+				:ref="registryRef(fieldEls, 'setList-number')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="number"
 			/>
 			<div class="text">String</div>
-			<TextArea id="setList-string" v-model="string" />
+			<TextArea id="setList-string"
+				:ref="registryRef(fieldEls, 'setList-string')" v-model="string" />
 		<div class="text">Variable</div>
 		<CustomBox
 			id="setList-operand"
+				:ref="registryRef(fieldEls, 'setList-operand')"
 			v-focus
 			type="variable"
 			filter="all"
 			v-model="form.operand"
 		/>
 		<div class="text">Separator</div>
-		<TextAreaVar id="setList-separator" v-model="form.separator" />
+		<TextAreaVar id="setList-separator"
+				:ref="registryRef(fieldEls, 'setList-separator')" v-model="form.separator" />
 		<div class="text">Attribute Group</div>
 		<CustomBox
 			id="setList-attribute-groupId"
+				:ref="registryRef(fieldEls, 'setList-attribute-groupId')"
 			v-focus
 			type="attribute-group"
 			v-model="form.attributeGroupId"
@@ -67,15 +77,18 @@
 		<div class="text">Enum Group</div>
 		<CustomBox
 			id="setList-enum-groupId"
+				:ref="registryRef(fieldEls, 'setList-enum-groupId')"
 			v-focus
 			type="enum-group"
 			v-model="form.enumGroupId"
 		/>
 		<div class="text">Actor</div>
-		<CustomBox id="setList-actor" type="actor" v-model="form.actor" />
+		<CustomBox id="setList-actor"
+				:ref="registryRef(fieldEls, 'setList-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Default</div>
 			<CheckBox
 				id="setList-index-skip-check"
+				:ref="registryRef(fieldEls, 'setList-index-skip-check')"
 				class="standard"
 				v-model="indexSkipCheck"
 			/>
@@ -84,10 +97,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -128,7 +144,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setList-operation')?.loadItems?.([
+	fieldEls.get('setList-operation')?.loadItems?.([
 		{ name: 'Set to Empty', value: 'set-empty' },
 		{ name: 'Set Numbers', value: 'set-numbers' },
 		{ name: 'Set Strings', value: 'set-strings' },
@@ -163,51 +179,51 @@ onMounted(() => {
 			value: 'get-actor-targets'
 		}
 	]);
-	$('#setList-operation')
+	fieldEls.get('setList-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'set-numbers', targets: [$('#setList-numbers')] },
-			{ case: 'set-strings', targets: [$('#setList-strings')] },
+			{ case: 'set-numbers', targets: [fieldEls.get('setList-numbers')] },
+			{ case: 'set-strings', targets: [fieldEls.get('setList-strings')] },
 			{
 				case: 'set-boolean',
 				targets: [
-					$('#setList-index'),
-					$('#setList-index-skip-check'),
-					$('#setList-boolean')
+					fieldEls.get('setList-index'),
+					fieldEls.get('setList-index-skip-check'),
+					fieldEls.get('setList-boolean')
 				]
 			},
 			{
 				case: 'set-number',
-				targets: [$('#setList-index'), $('#setList-index-skip-check'), $('#setList-number')]
+				targets: [fieldEls.get('setList-index'), fieldEls.get('setList-index-skip-check'), fieldEls.get('setList-number')]
 			},
 			{
 				case: 'set-string',
-				targets: [$('#setList-index'), $('#setList-index-skip-check'), $('#setList-string')]
+				targets: [fieldEls.get('setList-index'), fieldEls.get('setList-index-skip-check'), fieldEls.get('setList-string')]
 			},
 			{
 				case: 'set-variable',
 				targets: [
-					$('#setList-index'),
-					$('#setList-index-skip-check'),
-					$('#setList-operand')
+					fieldEls.get('setList-index'),
+					fieldEls.get('setList-index-skip-check'),
+					fieldEls.get('setList-operand')
 				]
 			},
 			{
 				case: 'split-string',
-				targets: [$('#setList-operand'), $('#setList-separator')]
+				targets: [fieldEls.get('setList-operand'), fieldEls.get('setList-separator')]
 			},
-			{ case: ['push', 'remove'], targets: [$('#setList-operand')] },
+			{ case: ['push', 'remove'], targets: [fieldEls.get('setList-operand')] },
 			{
 				case: ['get-attribute-names', 'get-attribute-keys'],
-				targets: [$('#setList-attribute-groupId')]
+				targets: [fieldEls.get('setList-attribute-groupId')]
 			},
 			{
 				case: ['get-enum-names', 'get-enum-values'],
-				targets: [$('#setList-enum-groupId')]
+				targets: [fieldEls.get('setList-enum-groupId')]
 			},
-			{ case: 'get-actor-targets', targets: [$('#setList-actor')] }
+			{ case: 'get-actor-targets', targets: [fieldEls.get('setList-actor')] }
 		]);
-	$('#setList-boolean')?.loadItems?.([
+	fieldEls.get('setList-boolean')?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);

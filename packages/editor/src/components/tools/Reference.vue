@@ -6,21 +6,25 @@
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CommonList id="reference-list" />
+		<CommonList id="reference-list"
+				:ref="registryRef(fieldEls, 'reference-list')" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 /* oxlint-disable eslint/no-restricted-properties */
 import { h, onMounted, render, type VNode } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CommonList from '@app/components/common/CommonList.vue';
 import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
-import { $ } from '@app/utils/dom';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	const list = $('#reference-list') as HTMLElement & {
+	const list = fieldEls.get('reference-list') as HTMLElement & {
 		reload(): void;
 		appendElement(element: HTMLElement): void;
 		update(): void;

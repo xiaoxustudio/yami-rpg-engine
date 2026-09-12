@@ -8,18 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="controlButton-operation" v-focus v-model="form.operation" />
+			<SelectBox id="controlButton-operation"
+				:ref="registryRef(fieldEls, 'controlButton-operation')" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="controlButton-element" type="element" v-model="form.element" />
+			<CustomBox id="controlButton-element"
+				:ref="registryRef(fieldEls, 'controlButton-element')" type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +39,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#controlButton-operation')?.loadItems?.([
+	fieldEls.get('controlButton-operation')?.loadItems?.([
 		{
 			name: t('command.controlButton.select-default') || 'Select Default Button',
 			value: 'select-default'
@@ -50,12 +55,12 @@ onMounted(() => {
 			value: 'normal-mode'
 		}
 	]);
-	$('#controlButton-operation')
+	fieldEls.get('controlButton-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['select', 'hover-mode', 'active-mode', 'normal-mode'],
-				targets: [$('#controlButton-element')]
+				targets: [fieldEls.get('controlButton-element')]
 			}
 		]);
 });

@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setPointerEventRoot-operation" v-focus v-model="form.operation" />
+			<SelectBox id="setPointerEventRoot-operation"
+				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
 			<CustomBox
 				id="setPointerEventRoot-element"
+				:ref="registryRef(fieldEls, 'setPointerEventRoot-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -20,10 +22,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -38,18 +43,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setPointerEventRoot-operation')?.loadItems?.([
+	fieldEls.get('setPointerEventRoot-operation')?.loadItems?.([
 		{ name: 'Add Root Element', value: 'add' },
 		{ name: 'Remove Root Element', value: 'remove' },
 		{ name: 'Remove The Latest Root Element', value: 'remove-latest' },
 		{ name: 'Reset', value: 'reset' }
 	]);
-	$('#setPointerEventRoot-operation')
+	fieldEls.get('setPointerEventRoot-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['add', 'remove'],
-				targets: [$('#setPointerEventRoot-element')]
+				targets: [fieldEls.get('setPointerEventRoot-element')]
 			}
 		]);
 });

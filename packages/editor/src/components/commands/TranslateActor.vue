@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="translateActor" @confirm="onConfirm">
+	<WindowFrame id="translateActor"
+				:ref="registryRef(fieldEls, 'translateActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.translateActor.title') }}
@@ -22,7 +23,8 @@
 				v-model="form.distance"
 			/>
 			<div class="text">Easing</div>
-			<SelectBox id="translateActor-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="translateActor-easingId"
+				:ref="registryRef(fieldEls, 'translateActor-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="translateActor-duration"
@@ -33,16 +35,20 @@
 				v-model="form.duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="translateActor-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="translateActor-wait"
+				:ref="registryRef(fieldEls, 'translateActor-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTranslateActorCommandSchema } from '@app/composables/commands/useTranslateActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -59,12 +65,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#translateActor-wait')?.loadItems?.([
+	fieldEls.get('translateActor-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#translateActor')?.on?.('open', () => {
-		$('#translateActor-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('translateActor')?.on?.('open', () => {
+		fieldEls.get('translateActor-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

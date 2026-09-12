@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setReverb" @confirm="onConfirm">
+	<WindowFrame id="setReverb"
+				:ref="registryRef(fieldEls, 'setReverb')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setReverb.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="setReverb-type" v-focus v-model="form.type" />
+			<SelectBox id="setReverb-type"
+				:ref="registryRef(fieldEls, 'setReverb-type')" v-focus v-model="form.type" />
 			<div class="text">Dry</div>
 			<NumberVar
 				id="setReverb-dry"
@@ -28,7 +30,8 @@
 				v-model="form.wet"
 			/>
 			<div class="text">Easing</div>
-			<SelectBox id="setReverb-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setReverb-easingId"
+				:ref="registryRef(fieldEls, 'setReverb-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="setReverb-duration"
@@ -39,16 +42,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setReverb-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setReverb-wait"
+				:ref="registryRef(fieldEls, 'setReverb-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -72,18 +79,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setReverb-type')?.loadItems?.([
+	fieldEls.get('setReverb-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
-	$('#setReverb-wait')?.loadItems?.([
+	fieldEls.get('setReverb-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setReverb')?.on?.('open', () => {
-		$('#setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setReverb')?.on?.('open', () => {
+		fieldEls.get('setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

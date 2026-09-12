@@ -10,16 +10,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="controlDialog-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Operation</div>
-			<SelectBox id="controlDialog-operation" v-model="form.operation" />
+			<SelectBox id="controlDialog-operation"
+				:ref="registryRef(fieldEls, 'controlDialog-operation')" v-model="form.operation" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlDialogCommandSchema } from '@app/composables/commands/useControlDialogCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +38,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#controlDialog-operation')?.loadItems?.([
+	fieldEls.get('controlDialog-operation')?.loadItems?.([
 		{ name: t('command.controlDialog.pause') || 'Pause Printing', value: 'pause' },
 		{ name: t('command.controlDialog.continue') || 'Continue Printing', value: 'continue' },
 		{

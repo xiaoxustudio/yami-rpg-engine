@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="getObjectProperty" @confirm="onConfirm">
+	<WindowFrame id="getObjectProperty"
+				:ref="registryRef(fieldEls, 'getObjectProperty')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getObjectProperty.title') }}
@@ -16,7 +17,8 @@
 				v-model="form.variable"
 			/>
 			<div class="text">getObjectProperty</div>
-			<ParamList id="getObjectProperty-list" v-focus v-model="form.properties" />
+			<ParamList id="getObjectProperty-list"
+				:ref="registryRef(fieldEls, 'getObjectProperty-list')" v-focus v-model="form.properties" />
 			<div class="text">saveVariable</div>
 			<CustomBox
 				id="getObjectProperty-save-variable"
@@ -30,10 +32,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { IndexBind } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -50,9 +55,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#getObjectProperty-list')?.bind?.(IndexBind);
-	$('#getObjectProperty')?.on?.('closed', () => {
-		clear($('#getObjectProperty-list'));
+	fieldEls.get('getObjectProperty-list')?.bind?.(IndexBind);
+	fieldEls.get('getObjectProperty')?.on?.('closed', () => {
+		clear(fieldEls.get('getObjectProperty-list'));
 	});
 });
 </script>

@@ -8,22 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="setFocus-operation" v-focus v-model="form.operation" />
+			<SelectBox id="setFocus-operation"
+				:ref="registryRef(fieldEls, 'setFocus-operation')" v-focus v-model="form.operation" />
 			<div class="text">Element</div>
-			<CustomBox id="setFocus-element" type="element" v-model="form.element" />
+			<CustomBox id="setFocus-element"
+				:ref="registryRef(fieldEls, 'setFocus-element')" type="element" v-model="form.element" />
 			<div class="text">Mode</div>
-			<SelectBox id="setFocus-mode" v-model="form.mode" />
+			<SelectBox id="setFocus-mode"
+				:ref="registryRef(fieldEls, 'setFocus-mode')" v-model="form.mode" />
 			<div class="text">Cancelable</div>
-			<CheckBox id="setFocus-cancelable" class="standard large" v-model="cancelable" />
+			<CheckBox id="setFocus-cancelable"
+				:ref="registryRef(fieldEls, 'setFocus-cancelable')" class="standard large" v-model="cancelable" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -46,27 +53,27 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setFocus-operation')?.loadItems?.([
+	fieldEls.get('setFocus-operation')?.loadItems?.([
 		{ name: 'Add Focus', value: 'add' },
 		{ name: 'Remove Focus', value: 'remove' },
 		{ name: 'Remove The Latest Focus', value: 'remove-latest' },
 		{ name: 'Reset', value: 'reset' }
 	]);
-	$('#setFocus-mode')?.loadItems?.([
+	fieldEls.get('setFocus-mode')?.loadItems?.([
 		{ name: 'Control Child Buttons', value: 'control-child-buttons' },
 		{
 			name: 'Control Descendant Buttons',
 			value: 'control-descendant-buttons'
 		}
 	]);
-	$('#setFocus-operation')
+	fieldEls.get('setFocus-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [$('#setFocus-element'), $('#setFocus-mode'), $('#setFocus-cancelable')]
+				targets: [fieldEls.get('setFocus-element'), fieldEls.get('setFocus-mode'), fieldEls.get('setFocus-cancelable')]
 			},
-			{ case: 'remove', targets: [$('#setFocus-element')] }
+			{ case: 'remove', targets: [fieldEls.get('setFocus-element')] }
 		]);
 });
 </script>

@@ -10,16 +10,20 @@
 			<div class="text">Actor</div>
 			<CustomBox id="changePassableTerrain-actor" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Passable Terrain</div>
-			<SelectBox id="changePassableTerrain-passage" v-model="form.passage" />
+			<SelectBox id="changePassableTerrain-passage"
+				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')" v-model="form.passage" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +38,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#changePassableTerrain-passage')?.loadItems?.([
+	fieldEls.get('changePassableTerrain-passage')?.loadItems?.([
 		{ name: t('command.changePassableTerrain.land') || 'Land', value: 'land' },
 		{ name: t('command.changePassableTerrain.water') || 'Water', value: 'water' },
 		{

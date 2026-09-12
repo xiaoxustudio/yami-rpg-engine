@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="createElement-operation" v-focus v-model="form.operation" />
+			<SelectBox id="createElement-operation"
+				:ref="registryRef(fieldEls, 'createElement-operation')" v-focus v-model="form.operation" />
 			<div class="text">Parent</div>
-			<CustomBox id="createElement-parent" type="element" v-model="form.parent" />
+			<CustomBox id="createElement-parent"
+				:ref="registryRef(fieldEls, 'createElement-parent')" type="element" v-model="form.parent" />
 			<div class="text">UI Elements</div>
 			<CustomBox
 				id="createElement-uiId"
+				:ref="registryRef(fieldEls, 'createElement-uiId')"
 				v-focus
 				type="file"
 				filter="ui"
@@ -22,6 +25,7 @@
 			<div class="text">UI Element</div>
 			<CustomBox
 				id="createElement-presetId"
+				:ref="registryRef(fieldEls, 'createElement-presetId')"
 				v-focus
 				type="preset-element"
 				v-model="form.presetId"
@@ -31,10 +35,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateElementCommandSchema } from '@app/composables/commands/useCreateElementCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -49,30 +56,30 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#createElement-operation')?.loadItems?.([
+	fieldEls.get('createElement-operation')?.loadItems?.([
 		{ name: 'Append All to Root', value: 'append-all-to-root' },
 		{ name: 'Append One to Root', value: 'append-one-to-root' },
 		{ name: 'Append All to Element', value: 'append-all-to-element' },
 		{ name: 'Append One to Element', value: 'append-one-to-element' }
 	]);
-	$('#createElement-operation')
+	fieldEls.get('createElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'append-all-to-root',
-				targets: [$('#createElement-uiId')]
+				targets: [fieldEls.get('createElement-uiId')]
 			},
 			{
 				case: 'append-one-to-root',
-				targets: [$('#createElement-presetId')]
+				targets: [fieldEls.get('createElement-presetId')]
 			},
 			{
 				case: 'append-all-to-element',
-				targets: [$('#createElement-parent'), $('#createElement-uiId')]
+				targets: [fieldEls.get('createElement-parent'), fieldEls.get('createElement-uiId')]
 			},
 			{
 				case: 'append-one-to-element',
-				targets: [$('#createElement-parent'), $('#createElement-presetId')]
+				targets: [fieldEls.get('createElement-parent'), fieldEls.get('createElement-presetId')]
 			}
 		]);
 });

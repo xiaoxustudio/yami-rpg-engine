@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="if-branch" @confirm="onConfirm">
+	<WindowFrame id="if-branch"
+				:ref="registryRef(fieldEls, 'if-branch')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.if-branch.title') }}
@@ -8,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.if-branch-mode.label') }}</div>
-			<SelectBox id="if-branch-mode" />
+			<SelectBox id="if-branch-mode"
+				:ref="registryRef(fieldEls, 'if-branch-mode')" />
 			<div class="text">{{ t('components.if-branch-conditions.label') }}</div>
 			<ParamList id="if-branch-conditions" v-focus />
 		</div>
@@ -16,13 +18,18 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
+import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
 const IfBranch = useIfBranchSchema();
+const IfCondition = useIfConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
@@ -35,14 +42,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const modeEl = $('#if-branch-mode');
+	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
+	fieldEls.get('if-branch-conditions')?.bind?.(IfCondition);
+	const modeEl = fieldEls.get('if-branch-mode') as HTMLElement;
 	if (!modeEl) return;
 	modeEl.loadItems([
 		{ name: 'Meet All', value: 'all' },
 		{ name: 'Meet Any', value: 'any' }
 	]);
-	on($('#if-branch'), 'closed', () => IfBranch.windowClosed?.(new Event('closed')));
-	on($('#if-branch-confirm'), 'click', () => IfBranch.confirm?.(new Event('click')));
+	on(fieldEls.get('if-branch'), 'closed', () => IfBranch.windowClosed?.(new Event('closed')));
 });
 </script>
 

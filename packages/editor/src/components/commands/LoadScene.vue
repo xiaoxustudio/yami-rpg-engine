@@ -10,10 +10,12 @@
 			<div class="text">Scene</div>
 			<FileVar id="loadScene-sceneId" v-focus type="file" filter="scene" v-model="form.sceneId" />
 			<div class="text">Transfer Player</div>
-			<SelectBox id="loadScene-transfer" v-model="form.transfer" />
+			<SelectBox id="loadScene-transfer"
+				:ref="registryRef(fieldEls, 'loadScene-transfer')" v-model="form.transfer" />
 			<div class="text">X</div>
 			<NumberVar
 				id="loadScene-x"
+				:ref="registryRef(fieldEls, 'loadScene-x')"
 				min="0"
 				max="512"
 				step="0.5"
@@ -23,6 +25,7 @@
 			<div class="text">Y</div>
 			<NumberVar
 				id="loadScene-y"
+				:ref="registryRef(fieldEls, 'loadScene-y')"
 				min="0"
 				max="512"
 				step="0.5"
@@ -34,10 +37,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoadSceneCommandSchema } from '@app/composables/commands/useLoadSceneCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';
@@ -53,13 +59,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#loadScene-transfer')?.loadItems?.([
+	fieldEls.get('loadScene-transfer')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#loadScene-transfer')
+	fieldEls.get('loadScene-transfer')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
+		?.relate?.([{ case: true, targets: [fieldEls.get('loadScene-x'), fieldEls.get('loadScene-y')] }]);
 });
 </script>
 

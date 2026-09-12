@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setDialogBox" @confirm="onConfirm">
+	<WindowFrame id="setDialogBox"
+				:ref="registryRef(fieldEls, 'setDialogBox')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setDialogBox.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setDialogBox-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setDialogBox-properties" v-focus v-model="form.properties" />
+			<ParamList id="setDialogBox-properties"
+				:ref="registryRef(fieldEls, 'setDialogBox-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetDialogBoxCommandSchema } from '@app/composables/commands/useSetDialogBoxCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { DialogBoxProperty } from '@app/commands/property-window/set-dialog-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setDialogBox-properties')?.bind?.(DialogBoxProperty);
-	$('#setDialogBox')?.on?.('closed', () => {
-		clear($('#setDialogBox-properties'));
+	fieldEls.get('setDialogBox-properties')?.bind?.(DialogBoxProperty);
+	fieldEls.get('setDialogBox')?.on?.('closed', () => {
+		clear(fieldEls.get('setDialogBox-properties'));
 	});
 });
 </script>

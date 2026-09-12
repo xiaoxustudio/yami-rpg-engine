@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setTextBox" @confirm="onConfirm">
+	<WindowFrame id="setTextBox"
+				:ref="registryRef(fieldEls, 'setTextBox')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTextBox.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setTextBox-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setTextBox-properties" v-focus v-model="form.properties" />
+			<ParamList id="setTextBox-properties"
+				:ref="registryRef(fieldEls, 'setTextBox-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetTextBoxCommandSchema } from '@app/composables/commands/useSetTextBoxCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { TextBoxProperty } from '@app/commands/property-window/set-textbox-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setTextBox-properties')?.bind?.(TextBoxProperty);
-	$('#setTextBox')?.on?.('closed', () => {
-		clear($('#setTextBox-properties'));
+	fieldEls.get('setTextBox-properties')?.bind?.(TextBoxProperty);
+	fieldEls.get('setTextBox')?.on?.('closed', () => {
+		clear(fieldEls.get('setTextBox-properties'));
 	});
 });
 </script>

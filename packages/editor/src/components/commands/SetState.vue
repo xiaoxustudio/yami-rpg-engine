@@ -10,7 +10,8 @@
 			<div class="text">State</div>
 			<CustomBox id="setState-state" v-focus type="state" v-model="form.state" />
 			<div class="text">Operation</div>
-			<SelectBox id="setState-operation" v-model="form.operation" />
+			<SelectBox id="setState-operation"
+				:ref="registryRef(fieldEls, 'setState-operation')" v-model="form.operation" />
 			<div class="text">Time</div>
 			<NumberVar id="setState-time" min="0" max="36000000" unit="ms" v-model="form.time" />
 		</div>
@@ -18,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -37,7 +41,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setState-operation')?.loadItems?.([
+	fieldEls.get('setState-operation')?.loadItems?.([
 		{ name: 'Set Time', value: 'set-time' },
 		{ name: 'Increase Time', value: 'increase-time' },
 		{ name: 'Decrease Time', value: 'decrease-time' }

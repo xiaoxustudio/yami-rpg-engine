@@ -8,25 +8,32 @@
 
 		<div class="grid-box">
 			<div class="text">Data</div>
-			<SelectBox id="forEach-data" v-focus v-model="form.data" />
+			<SelectBox id="forEach-data"
+				:ref="registryRef(fieldEls, 'forEach-data')" v-focus v-model="form.data" />
 			<div class="text">List Variable</div>
-			<CustomBox id="forEach-list" v-focus type="variable" filter="object" v-model="form.list" />
+			<CustomBox id="forEach-list"
+				:ref="registryRef(fieldEls, 'forEach-list')" v-focus type="variable" filter="object" v-model="form.list" />
 			<div class="text">Actor</div>
-			<CustomBox id="forEach-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="forEach-actor"
+				:ref="registryRef(fieldEls, 'forEach-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Parent Element</div>
-			<CustomBox id="forEach-element" type="element" v-model="form.element" />
+			<CustomBox id="forEach-element"
+				:ref="registryRef(fieldEls, 'forEach-element')" type="element" v-model="form.element" />
 			<div class="text">Attribute Group</div>
 			<CustomBox
 				id="forEach-attribute-groupId"
+				:ref="registryRef(fieldEls, 'forEach-attribute-groupId')"
 				v-focus
 				type="attribute-group"
 				v-model="form.attributeGroupId"
 			/>
 			<div class="text">Enum Group</div>
-			<CustomBox id="forEach-enum-groupId" v-focus type="enum-group" v-model="form.enumGroupId" />
+			<CustomBox id="forEach-enum-groupId"
+				:ref="registryRef(fieldEls, 'forEach-enum-groupId')" v-focus type="enum-group" v-model="form.enumGroupId" />
 			<div class="text">Write to Variable</div>
 			<CustomBox
 				id="forEach-variable"
+				:ref="registryRef(fieldEls, 'forEach-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -35,6 +42,7 @@
 			<div class="text">Write Save Index</div>
 			<CustomBox
 				id="forEach-saveIndex"
+				:ref="registryRef(fieldEls, 'forEach-saveIndex')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -43,6 +51,7 @@
 			<div class="text">Touch Id</div>
 			<CustomBox
 				id="forEach-touchId"
+				:ref="registryRef(fieldEls, 'forEach-touchId')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -53,9 +62,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
+
+// 模板里 WindowFrame 用 ref="frame"（已占用 :ref 槽位），故在 onMounted 里命令式登记
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -72,7 +87,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#forEach-data')
+	registerElement(fieldEls, 'forEach', frame.value);
+	fieldEls.get('forEach-data')
 		?.loadItems?.([
 			{ name: t('command.forEach.list') || 'List', value: 'list' },
 			{ name: t('command.forEach.skill') || 'Skill', value: 'skill' },
@@ -94,32 +110,32 @@ onMounted(() => {
 		?.relate?.([
 			{
 				case: 'list',
-				targets: [$('#forEach-list'), $('#forEach-variable')]
+				targets: [fieldEls.get('forEach-list'), fieldEls.get('forEach-variable')]
 			},
 			{
 				case: ['skill', 'state', 'equipment', 'inventory'],
-				targets: [$('#forEach-actor'), $('#forEach-variable')]
+				targets: [fieldEls.get('forEach-actor'), fieldEls.get('forEach-variable')]
 			},
 			{
 				case: 'element',
-				targets: [$('#forEach-element'), $('#forEach-variable')]
+				targets: [fieldEls.get('forEach-element'), fieldEls.get('forEach-variable')]
 			},
-			{ case: 'member', targets: [$('#forEach-variable')] },
+			{ case: 'member', targets: [fieldEls.get('forEach-variable')] },
 			{
 				case: 'attribute',
-				targets: [$('#forEach-attribute-groupId'), $('#forEach-variable')]
+				targets: [fieldEls.get('forEach-attribute-groupId'), fieldEls.get('forEach-variable')]
 			},
 			{
 				case: 'enum',
-				targets: [$('#forEach-enum-groupId'), $('#forEach-variable')]
+				targets: [fieldEls.get('forEach-enum-groupId'), fieldEls.get('forEach-variable')]
 			},
-			{ case: 'save', targets: [$('#forEach-saveIndex')] },
+			{ case: 'save', targets: [fieldEls.get('forEach-saveIndex')] },
 			{
 				case: ['touch', 'changed-touch'],
-				targets: [$('#forEach-touchId')]
+				targets: [fieldEls.get('forEach-touchId')]
 			}
 		]);
-	on($('#forEach'), 'closed', () => windowClosed(new Event('closed')));
+	on(fieldEls.get('forEach'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

@@ -20,18 +20,23 @@
 				v-model="form.distance"
 			/>
 			<div class="text">Selector</div>
-			<SelectBox id="detectTargets-selector" v-model="form.selector" />
+			<SelectBox id="detectTargets-selector"
+				:ref="registryRef(fieldEls, 'detectTargets-selector')" v-model="form.selector" />
 			<div class="text">In Sight</div>
-			<SelectBox id="detectTargets-inSight" v-model="form.inSight" />
+			<SelectBox id="detectTargets-inSight"
+				:ref="registryRef(fieldEls, 'detectTargets-inSight')" v-model="form.inSight" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -47,7 +52,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#detectTargets-selector')?.loadItems?.([
+	fieldEls.get('detectTargets-selector')?.loadItems?.([
 		{ name: 'Enemy', value: 'enemy' },
 		{ name: 'Friend', value: 'friend' },
 		{ name: 'Team Member', value: 'team' },
@@ -55,7 +60,7 @@ onMounted(() => {
 		{ name: 'Any Except Self', value: 'any-except-self' },
 		{ name: 'Any', value: 'any' }
 	]);
-	$('#detectTargets-inSight')?.loadItems?.([
+	fieldEls.get('detectTargets-inSight')?.loadItems?.([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);

@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="block" @confirm="onConfirm">
+	<WindowFrame id="block"
+				:ref="registryRef(fieldEls, 'block')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.block.title') }}
@@ -14,10 +15,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -48,7 +52,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#block')?.on?.('closed', () => {
+	fieldEls.get('block')?.on?.('closed', () => {
 		reset();
 	});
 });

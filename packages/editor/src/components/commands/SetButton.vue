@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setButton" @confirm="onConfirm">
+	<WindowFrame id="setButton"
+				:ref="registryRef(fieldEls, 'setButton')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setButton.title') }}
@@ -10,16 +11,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setButton-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
-			<ParamList id="setButton-properties" v-focus v-model="form.properties" />
+			<ParamList id="setButton-properties"
+				:ref="registryRef(fieldEls, 'setButton-properties')" v-focus v-model="form.properties" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetButtonCommandSchema } from '@app/composables/commands/useSetButtonCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { ButtonProperty } from '@app/commands/property-window/set-button-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -36,9 +41,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setButton-properties')?.bind?.(ButtonProperty);
-	$('#setButton')?.on?.('closed', () => {
-		clear($('#setButton-properties'));
+	fieldEls.get('setButton-properties')?.bind?.(ButtonProperty);
+	fieldEls.get('setButton')?.on?.('closed', () => {
+		clear(fieldEls.get('setButton-properties'));
 	});
 });
 </script>

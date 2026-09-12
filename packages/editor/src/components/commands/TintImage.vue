@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="tintImage" @confirm="onConfirm">
+	<WindowFrame id="tintImage"
+				:ref="registryRef(fieldEls, 'tintImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.tintImage.title') }}
@@ -10,10 +11,12 @@
 			<div class="text">Element</div>
 			<CustomBox id="tintImage-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Mode</div>
-			<SelectBox id="tintImage-mode" v-model="form.mode" />
+			<SelectBox id="tintImage-mode"
+				:ref="registryRef(fieldEls, 'tintImage-mode')" v-model="form.mode" />
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="tintImage-tint-0"
+				:ref="registryRef(fieldEls, 'tintImage-tint-0')"
 				min="-255"
 				max="255"
 				step="5"
@@ -22,6 +25,7 @@
 			<div class="text">Tint - Green</div>
 			<NumberBox
 				id="tintImage-tint-1"
+				:ref="registryRef(fieldEls, 'tintImage-tint-1')"
 				min="-255"
 				max="255"
 				step="5"
@@ -30,15 +34,18 @@
 			<div class="text">Tint - Blue</div>
 			<NumberBox
 				id="tintImage-tint-2"
+				:ref="registryRef(fieldEls, 'tintImage-tint-2')"
 				min="-255"
 				max="255"
 				step="5"
 				v-model="tint2"
 			/>
 			<div class="text">Tint - Grayscale</div>
-			<NumberBox id="tintImage-tint-3" min="0" max="255" step="5" v-model="tint3" />
+			<NumberBox id="tintImage-tint-3"
+				:ref="registryRef(fieldEls, 'tintImage-tint-3')" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">Easing</div>
-			<SelectBox id="tintImage-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="tintImage-easingId"
+				:ref="registryRef(fieldEls, 'tintImage-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="tintImage-duration"
@@ -49,17 +56,22 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="tintImage-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="tintImage-wait"
+				:ref="registryRef(fieldEls, 'tintImage-wait')" name="wait" v-model="form.wait" />
 		</div>
-		<FilterBox id="tintImage-filter" width="96" height="208" />
+		<FilterBox id="tintImage-filter"
+				:ref="registryRef(fieldEls, 'tintImage-filter')" width="96" height="208" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -133,43 +145,43 @@ watch(
 				tint = [gray];
 				break;
 		}
-		write($('#tintImage-filter'), tint);
+		write(fieldEls.get('tintImage-filter'), tint);
 	}
 );
 
 onMounted(() => {
-	$('#tintImage-mode')?.loadItems?.([
+	fieldEls.get('tintImage-mode')?.loadItems?.([
 		{ name: t('command.tintImage.full') || 'Full', value: 'full' },
 		{ name: t('command.tintImage.rgb') || 'RGB', value: 'rgb' },
 		{ name: t('command.tintImage.gray') || 'Gray', value: 'gray' }
 	]);
-	$('#tintImage-mode')
+	fieldEls.get('tintImage-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'full',
 				targets: [
-					$('#tintImage-tint-0'),
-					$('#tintImage-tint-1'),
-					$('#tintImage-tint-2'),
-					$('#tintImage-tint-3')
+					fieldEls.get('tintImage-tint-0'),
+					fieldEls.get('tintImage-tint-1'),
+					fieldEls.get('tintImage-tint-2'),
+					fieldEls.get('tintImage-tint-3')
 				]
 			},
 			{
 				case: 'rgb',
-				targets: [$('#tintImage-tint-0'), $('#tintImage-tint-1'), $('#tintImage-tint-2')]
+				targets: [fieldEls.get('tintImage-tint-0'), fieldEls.get('tintImage-tint-1'), fieldEls.get('tintImage-tint-2')]
 			},
-			{ case: 'gray', targets: [$('#tintImage-tint-3')] }
+			{ case: 'gray', targets: [fieldEls.get('tintImage-tint-3')] }
 		]);
-	$('#tintImage-wait')?.loadItems?.([
+	fieldEls.get('tintImage-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#tintImage')?.on?.('open', () => {
-		$('#tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('tintImage')?.on?.('open', () => {
+		fieldEls.get('tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
-	$('#tintImage')?.on?.('closed', () => {
-		clear($('#tintImage-filter'));
+	fieldEls.get('tintImage')?.on?.('closed', () => {
+		clear(fieldEls.get('tintImage-filter'));
 	});
 });
 </script>

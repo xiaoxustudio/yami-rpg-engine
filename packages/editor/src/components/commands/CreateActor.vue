@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="createActor" @confirm="onConfirm">
+	<WindowFrame id="createActor"
+				:ref="registryRef(fieldEls, 'createActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.createActor.title') }}
@@ -16,7 +17,8 @@
 				v-model="form.actorId"
 			/>
 			<div class="text">Team</div>
-			<SelectBox id="createActor-teamId" v-model="form.teamId" />
+			<SelectBox id="createActor-teamId"
+				:ref="registryRef(fieldEls, 'createActor-teamId')" v-model="form.teamId" />
 			<div class="text">Position</div>
 			<CustomBox id="createActor-position" type="position" v-model="form.position" />
 			<div class="text">Angle</div>
@@ -33,10 +35,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateActorCommandSchema } from '@app/composables/commands/useCreateActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -53,8 +58,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#createActor')?.on?.('open', () => {
-		$('#createActor-teamId')?.loadItems?.(Data.createTeamItems!());
+	fieldEls.get('createActor')?.on?.('open', () => {
+		fieldEls.get('createActor-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 });
 </script>

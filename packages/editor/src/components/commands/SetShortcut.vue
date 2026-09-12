@@ -10,24 +10,31 @@
 			<div class="text">Actor</div>
 			<CustomBox id="setShortcut-actor" type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
-			<SelectBox id="setShortcut-operation" v-focus v-model="form.operation" />
+			<SelectBox id="setShortcut-operation"
+				:ref="registryRef(fieldEls, 'setShortcut-operation')" v-focus v-model="form.operation" />
 			<div class="text">Shortcut Key</div>
 			<SelectVar id="setShortcut-key" v-focus v-model="form.key" />
 			<div class="text">Shortcut Key 2</div>
-			<SelectVar id="setShortcut-key2" v-model="form.key2" />
+			<SelectVar id="setShortcut-key2"
+				:ref="registryRef(fieldEls, 'setShortcut-key2')" v-model="form.key2" />
 			<div class="text">Item</div>
-			<FileVar id="setShortcut-itemId" v-focus type="file" filter="item" v-model="form.itemId" />
+			<FileVar id="setShortcut-itemId"
+				:ref="registryRef(fieldEls, 'setShortcut-itemId')" v-focus type="file" filter="item" v-model="form.itemId" />
 			<div class="text">Skill</div>
-			<FileVar id="setShortcut-skillId" v-focus type="file" filter="skill" v-model="form.skillId" />
+			<FileVar id="setShortcut-skillId"
+				:ref="registryRef(fieldEls, 'setShortcut-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetShortcutCommandSchema } from '@app/composables/commands/useSetShortcutCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -44,24 +51,24 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setShortcut-operation')?.loadItems?.([
+	fieldEls.get('setShortcut-operation')?.loadItems?.([
 		{ name: 'Set Item Shortcut', value: 'set-item-shortcut' },
 		{ name: 'Set Skill Shortcut', value: 'set-skill-shortcut' },
 		{ name: 'Delete Shortcut', value: 'delete-shortcut' },
 		{ name: 'Swap Shortcuts', value: 'swap-shortcuts' }
 	]);
-	$('#setShortcut-operation')
+	fieldEls.get('setShortcut-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'set-item-shortcut',
-				targets: [$('#setShortcut-itemId')]
+				targets: [fieldEls.get('setShortcut-itemId')]
 			},
 			{
 				case: 'set-skill-shortcut',
-				targets: [$('#setShortcut-skillId')]
+				targets: [fieldEls.get('setShortcut-skillId')]
 			},
-			{ case: 'swap-shortcuts', targets: [$('#setShortcut-key2')] }
+			{ case: 'swap-shortcuts', targets: [fieldEls.get('setShortcut-key2')] }
 		]);
 });
 </script>

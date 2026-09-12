@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setZoomFactor" @confirm="onConfirm">
+	<WindowFrame id="setZoomFactor"
+				:ref="registryRef(fieldEls, 'setZoomFactor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setZoomFactor.title') }}
@@ -18,7 +19,8 @@
 				v-model="form.zoom"
 			/>
 			<div class="text">Easing</div>
-			<SelectBox id="setZoomFactor-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setZoomFactor-easingId"
+				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="setZoomFactor-duration"
@@ -29,16 +31,20 @@
 				v-model="form.duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setZoomFactor-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setZoomFactor-wait"
+				:ref="registryRef(fieldEls, 'setZoomFactor-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetZoomFactorCommandSchema } from '@app/composables/commands/useSetZoomFactorCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -54,12 +60,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setZoomFactor-wait')?.loadItems?.([
+	fieldEls.get('setZoomFactor-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setZoomFactor')?.on?.('open', () => {
-		$('#setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setZoomFactor')?.on?.('open', () => {
+		fieldEls.get('setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

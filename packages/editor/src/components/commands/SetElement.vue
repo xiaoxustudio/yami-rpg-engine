@@ -10,16 +10,20 @@
 			<div class="text">Element</div>
 			<CustomBox id="setElement-element" v-focus type="element" v-model="form.element" />
 			<div class="text">Operation</div>
-			<SelectBox id="setElement-operation" v-model="form.operation" />
+			<SelectBox id="setElement-operation"
+				:ref="registryRef(fieldEls, 'setElement-operation')" v-model="form.operation" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetElementCommandSchema } from '@app/composables/commands/useSetElementCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,7 +38,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setElement-operation')?.loadItems?.([
+	fieldEls.get('setElement-operation')?.loadItems?.([
 		{ name: t('command.setElement.hide') || 'Hide', value: 'hide' },
 		{ name: t('command.setElement.show') || 'Show', value: 'show' },
 		{

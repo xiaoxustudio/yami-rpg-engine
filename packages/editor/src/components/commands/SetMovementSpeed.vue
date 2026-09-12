@@ -15,10 +15,12 @@
 				v-model="form.actor"
 			/>
 			<div class="text">Property</div>
-			<SelectBox id="setMovementSpeed-property" v-model="form.property" />
+			<SelectBox id="setMovementSpeed-property"
+				:ref="registryRef(fieldEls, 'setMovementSpeed-property')" v-model="form.property" />
 			<div class="text">Base Speed</div>
 			<NumberVar
 				id="setMovementSpeed-base"
+				:ref="registryRef(fieldEls, 'setMovementSpeed-base')"
 				min="0"
 				max="32"
 				decimals="4"
@@ -28,6 +30,7 @@
 			<div class="text">Speed Factor</div>
 			<NumberVar
 				id="setMovementSpeed-factor"
+				:ref="registryRef(fieldEls, 'setMovementSpeed-factor')"
 				min="0"
 				max="4"
 				decimals="4"
@@ -38,10 +41,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -57,7 +63,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setMovementSpeed-property')?.loadItems?.([
+	fieldEls.get('setMovementSpeed-property')?.loadItems?.([
 		{ name: t('command.setMovementSpeed.base') || 'Base Speed', value: 'base' },
 		{ name: t('command.setMovementSpeed.factor') || 'Speed Factor', value: 'factor' },
 		{
@@ -65,13 +71,13 @@ onMounted(() => {
 			value: 'factor-temp'
 		}
 	]);
-	$('#setMovementSpeed-property')
+	fieldEls.get('setMovementSpeed-property')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'base', targets: [$('#setMovementSpeed-base')] },
+			{ case: 'base', targets: [fieldEls.get('setMovementSpeed-base')] },
 			{
 				case: ['factor', 'factor-temp'],
-				targets: [$('#setMovementSpeed-factor')]
+				targets: [fieldEls.get('setMovementSpeed-factor')]
 			}
 		]);
 });

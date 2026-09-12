@@ -1,5 +1,6 @@
 ﻿<template>
-	<WindowFrame id="choice" @confirm="onConfirm">
+	<WindowFrame id="choice"
+				:ref="registryRef(fieldEls, 'choice')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.choice.title') }}
@@ -19,9 +20,12 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { on } from '@app/utils/element-utils.ts';
 import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -39,8 +43,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	on($('#choice'), 'closed', () => Choices.windowClosed?.(new Event('closed')));
-	on($('#choice-confirm'), 'click', () => Choices.confirm?.(new Event('click')));
+	on(fieldEls.get('choice'), 'closed', () => Choices.windowClosed?.(new Event('closed')));
 });
 </script>
 

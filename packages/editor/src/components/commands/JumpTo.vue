@@ -8,17 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="jumpTo-operation" v-focus v-model="form.operation" />
+			<SelectBox id="jumpTo-operation"
+				:ref="registryRef(fieldEls, 'jumpTo-operation')" v-focus v-model="form.operation" />
 			<div class="text">Label Name</div>
-			<TextBox id="jumpTo-label" v-focus v-model="label" />
+			<TextBox id="jumpTo-label"
+				:ref="registryRef(fieldEls, 'jumpTo-label')" v-focus v-model="label" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/utils/dom';
 import { TextSuggestion, type TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { useJumpToCommandSchema } from '@app/composables/commands/useJumpToCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -42,15 +47,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	TextSuggestion.listen!($('#jumpTo-label') as unknown as TextSuggestionTarget, loadLabels);
-	$('#jumpTo-operation')?.loadItems?.([
+	TextSuggestion.listen!(fieldEls.get('jumpTo-label') as unknown as TextSuggestionTarget, loadLabels);
+	fieldEls.get('jumpTo-operation')?.loadItems?.([
 		{ name: 'Jump to Label', value: 'jump' },
 		{ name: 'Save and Jump to Label', value: 'save-jump' },
 		{ name: 'Jump to the Saved Location', value: 'return' }
 	]);
-	$('#jumpTo-operation')
+	fieldEls.get('jumpTo-operation')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
+		?.relate?.([{ case: ['jump', 'save-jump'], targets: [fieldEls.get('jumpTo-label')] }]);
 });
 </script>
 

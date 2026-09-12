@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="setObjectAnimation" @confirm="onConfirm">
+	<WindowFrame id="setObjectAnimation"
+				:ref="registryRef(fieldEls, 'setObjectAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setObjectAnimation.title') }}
@@ -8,18 +9,24 @@
 
 		<div class="grid-box" id="setObjectAnimation-grid-box">
 			<div class="text">Sort</div>
-			<SelectBox id="setObjectAnimation-sort" v-focus v-model="form.sort" />
+			<SelectBox id="setObjectAnimation-sort"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')" v-focus v-model="form.sort" />
 			<div class="text">Actor</div>
-			<CustomBox id="setObjectAnimation-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="setObjectAnimation-actor"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Trigger</div>
-			<CustomBox id="setObjectAnimation-trigger" type="trigger" v-model="form.trigger" />
+			<CustomBox id="setObjectAnimation-trigger"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')" type="trigger" v-model="form.trigger" />
 			<div class="text">Animation</div>
-			<CustomBox id="setObjectAnimation-animation" type="object" v-model="form.animation" />
+			<CustomBox id="setObjectAnimation-animation"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')" type="object" v-model="form.animation" />
 			<div class="text">Operation</div>
-			<SelectBox id="setObjectAnimation-operation" v-model="form.operation" />
+			<SelectBox id="setObjectAnimation-operation"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')" v-model="form.operation" />
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="setObjectAnimation-tint-0"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-0')"
 				min="-255"
 				max="255"
 				step="5"
@@ -28,6 +35,7 @@
 			<div class="text">Tint - Green</div>
 			<NumberBox
 				id="setObjectAnimation-tint-1"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-1')"
 				min="-255"
 				max="255"
 				step="5"
@@ -36,6 +44,7 @@
 			<div class="text">Tint - Blue</div>
 			<NumberBox
 				id="setObjectAnimation-tint-2"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-2')"
 				min="-255"
 				max="255"
 				step="5"
@@ -44,6 +53,7 @@
 			<div class="text">Tint - Grayscale</div>
 			<NumberBox
 				id="setObjectAnimation-tint-3"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-3')"
 				min="0"
 				max="255"
 				step="5"
@@ -52,6 +62,7 @@
 			<div class="text">Opacity</div>
 			<NumberVar
 				id="setObjectAnimation-opacity"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-opacity')"
 				min="0"
 				max="1"
 				step="0.1"
@@ -61,6 +72,7 @@
 			<div class="text">OffsetY</div>
 			<NumberVar
 				id="setObjectAnimation-offsetY"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-offsetY')"
 				min="-10000"
 				max="10000"
 				step="1"
@@ -70,6 +82,7 @@
 			<div class="text">Rotation</div>
 			<NumberVar
 				id="setObjectAnimation-rotation"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-rotation')"
 				min="-10000"
 				max="10000"
 				step="1"
@@ -77,7 +90,8 @@
 				v-model="form.rotation"
 			/>
 			<div class="text">Easing</div>
-			<SelectBox id="setObjectAnimation-easingId" name="easing" v-model="form.easingId" />
+			<SelectBox id="setObjectAnimation-easingId"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div>
 			<NumberBox
 				id="setObjectAnimation-duration"
@@ -88,16 +102,20 @@
 				v-model="duration"
 			/>
 			<div class="text">Wait</div>
-			<SelectBox id="setObjectAnimation-wait" name="wait" v-model="form.wait" />
+			<SelectBox id="setObjectAnimation-wait"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')" name="wait" v-model="form.wait" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectAnimationCommandSchema } from '@app/composables/commands/useSetObjectAnimationCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -150,29 +168,29 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setObjectAnimation-sort')?.loadItems?.([
+	fieldEls.get('setObjectAnimation-sort')?.loadItems?.([
 		{ name: 'Only Actor Animation', value: 'actor' },
 		{ name: 'All Animation Components', value: 'components' },
 		{ name: 'Trigger Animation', value: 'trigger' },
 		{ name: 'Scene Animation', value: 'animation' }
 	]);
-	$('#setObjectAnimation-sort')
+	fieldEls.get('setObjectAnimation-sort')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: ['actor', 'components'],
-				targets: [$('#setObjectAnimation-actor')]
+				targets: [fieldEls.get('setObjectAnimation-actor')]
 			},
 			{
 				case: 'trigger',
-				targets: [$('#setObjectAnimation-trigger')]
+				targets: [fieldEls.get('setObjectAnimation-trigger')]
 			},
 			{
 				case: 'animation',
-				targets: [$('#setObjectAnimation-animation')]
+				targets: [fieldEls.get('setObjectAnimation-animation')]
 			}
 		]);
-	$('#setObjectAnimation-operation')?.loadItems?.([
+	fieldEls.get('setObjectAnimation-operation')?.loadItems?.([
 		{ name: 'Set Tint', value: 'set-tint' },
 		{ name: 'Set RGB', value: 'set-rgb' },
 		{ name: 'Set Gray', value: 'set-gray' },
@@ -180,49 +198,49 @@ onMounted(() => {
 		{ name: 'Set OffsetY', value: 'set-offsetY' },
 		{ name: 'Set Rotation', value: 'set-rotation' }
 	]);
-	$('#setObjectAnimation-operation')
+	fieldEls.get('setObjectAnimation-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'set-tint',
 				targets: [
-					$('#setObjectAnimation-tint-0'),
-					$('#setObjectAnimation-tint-1'),
-					$('#setObjectAnimation-tint-2'),
-					$('#setObjectAnimation-tint-3')
+					fieldEls.get('setObjectAnimation-tint-0'),
+					fieldEls.get('setObjectAnimation-tint-1'),
+					fieldEls.get('setObjectAnimation-tint-2'),
+					fieldEls.get('setObjectAnimation-tint-3')
 				]
 			},
 			{
 				case: 'set-rgb',
 				targets: [
-					$('#setObjectAnimation-tint-0'),
-					$('#setObjectAnimation-tint-1'),
-					$('#setObjectAnimation-tint-2')
+					fieldEls.get('setObjectAnimation-tint-0'),
+					fieldEls.get('setObjectAnimation-tint-1'),
+					fieldEls.get('setObjectAnimation-tint-2')
 				]
 			},
 			{
 				case: 'set-gray',
-				targets: [$('#setObjectAnimation-tint-3')]
+				targets: [fieldEls.get('setObjectAnimation-tint-3')]
 			},
 			{
 				case: 'set-opacity',
-				targets: [$('#setObjectAnimation-opacity')]
+				targets: [fieldEls.get('setObjectAnimation-opacity')]
 			},
 			{
 				case: 'set-offsetY',
-				targets: [$('#setObjectAnimation-offsetY')]
+				targets: [fieldEls.get('setObjectAnimation-offsetY')]
 			},
 			{
 				case: 'set-rotation',
-				targets: [$('#setObjectAnimation-rotation')]
+				targets: [fieldEls.get('setObjectAnimation-rotation')]
 			}
 		]);
-	$('#setObjectAnimation-wait')?.loadItems?.([
+	fieldEls.get('setObjectAnimation-wait')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#setObjectAnimation')?.on?.('open', () => {
-		$('#setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
+	fieldEls.get('setObjectAnimation')?.on?.('open', () => {
+		fieldEls.get('setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
 	});
 });
 </script>

@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="playAudio-type" v-focus v-model="form.type" />
+			<SelectBox id="playAudio-type"
+				:ref="registryRef(fieldEls, 'playAudio-type')" v-focus v-model="form.type" />
 			<div class="text">Audio</div>
 			<CustomBox
 				id="playAudio-audio"
@@ -27,16 +28,20 @@
 				v-model="volume"
 			/>
 			<div class="text">Sound Location</div>
-			<CustomBox id="playAudio-location" type="position" v-model="form.location" />
+			<CustomBox id="playAudio-location"
+				:ref="registryRef(fieldEls, 'playAudio-location')" type="position" v-model="form.location" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAudioCommandSchema } from '@app/composables/commands/usePlayAudioCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -59,16 +64,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#playAudio-type')?.loadItems?.([
+	fieldEls.get('playAudio-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' },
 		{ name: 'SE - Attenuated', value: 'se-attenuated' }
 	]);
-	$('#playAudio-type')
+	fieldEls.get('playAudio-type')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: 'se-attenuated', targets: [$('#playAudio-location')] }]);
+		?.relate?.([{ case: 'se-attenuated', targets: [fieldEls.get('playAudio-location')] }]);
 });
 </script>
 

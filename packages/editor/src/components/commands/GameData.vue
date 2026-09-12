@@ -8,20 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">Operation</div>
-			<SelectBox id="gameData-operation" v-focus v-model="form.operation" />
+			<SelectBox id="gameData-operation"
+				:ref="registryRef(fieldEls, 'gameData-operation')" v-focus v-model="form.operation" />
 			<div class="text">Index</div>
-			<NumberVar id="gameData-index" min="0" max="32" v-model="form.index" />
+			<NumberVar id="gameData-index"
+				:ref="registryRef(fieldEls, 'gameData-index')" min="0" max="32" v-model="form.index" />
 			<div class="text">Variables</div>
-			<TextBox id="gameData-variables" v-model="variables" />
+			<TextBox id="gameData-variables"
+				:ref="registryRef(fieldEls, 'gameData-variables')" v-model="variables" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -44,19 +50,19 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#gameData-operation')?.loadItems?.([
+	fieldEls.get('gameData-operation')?.loadItems?.([
 		{ name: t('command.gameData.save') || 'Save', value: 'save' },
 		{ name: t('command.gameData.load') || 'Load', value: 'load' },
 		{ name: t('command.gameData.delete') || 'Delete', value: 'delete' }
 	]);
-	$('#gameData-operation')
+	fieldEls.get('gameData-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'save',
-				targets: [$('#gameData-index'), $('#gameData-variables')]
+				targets: [fieldEls.get('gameData-index'), fieldEls.get('gameData-variables')]
 			},
-			{ case: ['load', 'delete'], targets: [$('#gameData-index')] }
+			{ case: ['load', 'delete'], targets: [fieldEls.get('gameData-index')] }
 		]);
 });
 </script>

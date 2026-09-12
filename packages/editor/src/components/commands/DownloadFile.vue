@@ -10,11 +10,14 @@
 			<div class="text">URL</div>
 			<StringVar id="downloadFile-url" v-focus v-model="form.url" />
 			<div class="text">Header</div>
-			<ParamList id="downloadFile-header" v-model="form.header" />
+			<ParamList id="downloadFile-header"
+				:ref="registryRef(fieldEls, 'downloadFile-header')" v-model="form.header" />
 			<div class="text">Method</div>
-			<SelectBox id="downloadFile-method" v-model="form.method" />
+			<SelectBox id="downloadFile-method"
+				:ref="registryRef(fieldEls, 'downloadFile-method')" v-model="form.method" />
 			<div class="text">Data</div>
-			<ParamList id="downloadFile-data" v-model="form.data" />
+			<ParamList id="downloadFile-data"
+				:ref="registryRef(fieldEls, 'downloadFile-data')" v-model="form.data" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="downloadFile-callback"
@@ -33,20 +36,25 @@
 			<CheckBox
 				class="standard"
 				id="downloadFile-isBackground"
+				:ref="registryRef(fieldEls, 'downloadFile-isBackground')"
 				v-model="isBackground"
 				@input="onIsBackgroundInput"
 			/>
 			<div class="text">Path</div>
-			<StringVar id="downloadFile-isBackground-path" v-model="form.isBackgroundPath" />
+			<StringVar id="downloadFile-isBackground-path"
+				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')" v-model="form.isBackgroundPath" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
-import { $ } from '@app/utils/dom';
 import { disable, enable } from '@app/utils/element-utils';
 import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -70,9 +78,9 @@ const isBackground = computed({
 
 const onIsBackgroundInput = (value: boolean) => {
 	if (value) {
-		enable($('#downloadFile-isBackground-path'));
+		enable(fieldEls.get('downloadFile-isBackground-path'));
 	} else {
-		disable($('#downloadFile-isBackground-path'));
+		disable(fieldEls.get('downloadFile-isBackground-path'));
 	}
 };
 
@@ -81,16 +89,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#downloadFile-method')?.loadItems?.([
+	fieldEls.get('downloadFile-method')?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' }
 	]);
-	$('#downloadFile-isBackground')?.relate?.([$('#downloadFile-isBackground-path')]);
-	disable($('#downloadFile-isBackground-path'));
-	$('#downloadFile-header')?.bind?.(RequestkeyValueBind);
-	$('#downloadFile-data')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('downloadFile-isBackground')?.relate?.([fieldEls.get('downloadFile-isBackground-path')]);
+	disable(fieldEls.get('downloadFile-isBackground-path'));
+	fieldEls.get('downloadFile-header')?.bind?.(RequestkeyValueBind);
+	fieldEls.get('downloadFile-data')?.bind?.(RequestkeyValueBind);
 });
 </script>
 

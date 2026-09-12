@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="createGlobalActor" @confirm="onConfirm">
+	<WindowFrame id="createGlobalActor"
+				:ref="registryRef(fieldEls, 'createGlobalActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.createGlobalActor.title') }}
@@ -16,16 +17,20 @@
 				v-model="form.actorId"
 			/>
 			<div class="text">Team</div>
-			<SelectBox id="createGlobalActor-teamId" v-model="form.teamId" />
+			<SelectBox id="createGlobalActor-teamId"
+				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')" v-model="form.teamId" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';
-import { $ } from '@app/utils/dom';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -41,8 +46,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#createGlobalActor')?.on?.('open', () => {
-		$('#createGlobalActor-teamId')?.loadItems?.(Data.createTeamItems!());
+	fieldEls.get('createGlobalActor')?.on?.('open', () => {
+		fieldEls.get('createGlobalActor-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 });
 </script>

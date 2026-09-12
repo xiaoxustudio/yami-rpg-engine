@@ -8,16 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">Type</div>
-			<SelectBox id="restoreAudio-type" v-focus v-model="form.type" />
+			<SelectBox id="restoreAudio-type"
+				:ref="registryRef(fieldEls, 'restoreAudio-type')" v-focus v-model="form.type" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRestoreAudioCommandSchema } from '@app/composables/commands/useRestoreAudioCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -31,7 +35,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#restoreAudio-type')?.loadItems?.([
+	fieldEls.get('restoreAudio-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }

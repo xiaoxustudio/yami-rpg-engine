@@ -20,9 +20,11 @@
 			<div class="text">Motion</div>
 			<SelectBox id="addAnimationComponent-motion" v-model="form.motion" />
 			<div class="text">Rotatable</div>
-			<SelectBox id="addAnimationComponent-rotatable" v-model="form.rotatable" />
+			<SelectBox id="addAnimationComponent-rotatable"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')" v-model="form.rotatable" />
 			<div class="text">Sync Angle</div>
-			<SelectBox id="addAnimationComponent-syncAngle" v-model="form.syncAngle" />
+			<SelectBox id="addAnimationComponent-syncAngle"
+				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')" v-model="form.syncAngle" />
 			<div class="text">Priority</div>
 			<NumberBox
 				id="addAnimationComponent-priority"
@@ -43,10 +45,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAddAnimationComponentCommandSchema } from '@app/composables/commands/useAddAnimationComponentCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -79,11 +84,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#addAnimationComponent-rotatable')?.loadItems?.([
+	fieldEls.get('addAnimationComponent-rotatable')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
-	$('#addAnimationComponent-syncAngle')?.loadItems?.([
+	fieldEls.get('addAnimationComponent-syncAngle')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);

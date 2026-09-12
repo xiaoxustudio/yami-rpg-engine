@@ -10,7 +10,8 @@
 			<div class="text">Item</div>
 			<CustomBox id="setItem-item" v-focus type="item" v-model="form.item" />
 			<div class="text">Operation</div>
-			<SelectBox id="setItem-operation" v-model="form.operation" />
+			<SelectBox id="setItem-operation"
+				:ref="registryRef(fieldEls, 'setItem-operation')" v-model="form.operation" />
 			<div class="text">Quantity</div>
 			<NumberVar id="setItem-quantity" min="1" max="10000" v-model="form.quantity" />
 		</div>
@@ -18,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetItemCommandSchema } from '@app/composables/commands/useSetItemCommandSchema';
-import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -37,7 +41,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#setItem-operation')?.loadItems?.([
+	fieldEls.get('setItem-operation')?.loadItems?.([
 		{ name: 'Increase', value: 'increase' },
 		{ name: 'Decrease', value: 'decrease' }
 	]);

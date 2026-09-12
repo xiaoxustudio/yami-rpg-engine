@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="loop" @confirm="onConfirm">
+	<WindowFrame id="loop"
+				:ref="registryRef(fieldEls, 'loop')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loop.title') }}
@@ -8,18 +9,23 @@
 
 		<div class="grid-box">
 			<div class="text">Mode</div>
-			<SelectBox id="loop-mode" v-model="form.mode" />
+			<SelectBox id="loop-mode"
+				:ref="registryRef(fieldEls, 'loop-mode')" v-model="form.mode" />
 			<div class="text">Conditions</div>
-			<ParamList id="loop-conditions" v-focus v-model="form.conditions" />
+			<ParamList id="loop-conditions"
+				:ref="registryRef(fieldEls, 'loop-conditions')" v-focus v-model="form.conditions" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
+import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+
+// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+const fieldEls = createElementRegistry();
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
-import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
@@ -38,14 +44,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	$('#loop-conditions')?.bind?.(IfCondition);
-	$('#loop-mode')?.loadItems?.([
+	fieldEls.get('loop-conditions')?.bind?.(IfCondition);
+	fieldEls.get('loop-mode')?.loadItems?.([
 		{ name: 'Meet All', value: 'all' },
 		{ name: 'Meet Any', value: 'any' }
 	]);
-	$('#loop')?.on?.('closed', () => {
+	fieldEls.get('loop')?.on?.('closed', () => {
 		reset();
-		clear($('#loop-conditions'));
+		clear(fieldEls.get('loop-conditions'));
 	});
 });
 </script>
