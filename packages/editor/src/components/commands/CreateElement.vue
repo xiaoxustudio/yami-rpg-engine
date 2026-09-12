@@ -9,13 +9,16 @@
 		<div class="grid-box">
 			<div class="text">Operation</div>
 			<SelectBox id="createElement-operation"
+				v-tip="t('components.createElement-operation.tip')"
 				:ref="registryRef(fieldEls, 'createElement-operation')" v-focus v-model="form.operation" />
 			<div class="text">Parent</div>
 			<CustomBox id="createElement-parent"
+				v-tip="t('components.createElement-parent.tip')"
 				:ref="registryRef(fieldEls, 'createElement-parent')" type="element" v-model="form.parent" />
 			<div class="text">UI Elements</div>
 			<CustomBox
 				id="createElement-uiId"
+				v-tip="t('components.createElement-uiId.tip')"
 				:ref="registryRef(fieldEls, 'createElement-uiId')"
 				v-focus
 				type="file"
@@ -25,6 +28,7 @@
 			<div class="text">UI Element</div>
 			<CustomBox
 				id="createElement-presetId"
+				v-tip="t('components.createElement-presetId.tip')"
 				:ref="registryRef(fieldEls, 'createElement-presetId')"
 				v-focus
 				type="preset-element"

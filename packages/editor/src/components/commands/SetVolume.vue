@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="setVolume-type"
+				v-tip="t('components.setVolume-type.tip')"
 				:ref="registryRef(fieldEls, 'setVolume-type')" v-focus v-model="form.type" />
 			<div class="text">Volume</div>
 			<NumberVar
 				id="setVolume-volume"
+				v-tip="t('components.setVolume-volume.tip')"
 				min="0"
 				max="1"
 				step="0.1"

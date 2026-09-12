@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="stopAudio-type"
+				v-tip="t('components.stopAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'stopAudio-type')" v-focus v-model="form.type" />
 		</div>
 	</WindowFrame>

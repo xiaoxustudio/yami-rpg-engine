@@ -29,6 +29,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.variable-name.label') }}</div>
 					<TextBox id="variable-name"
+				v-tip="t('components.variable-name.tip')"
 				:ref="registryRef(variableEls, 'variable-name')" @input="onNameInput" />
 				</div>
 				<div class="flex-item">
@@ -40,7 +41,8 @@
 						value="0"
 						@input="onSortInput"
 						@write="onSortWrite"
-						><div class="text" id="variable-sort-normal-label">
+						><div class="text" id="variable-sort-normal-label"
+				v-tip="t('components.variable-sort-normal-label.tip')">
 							{{ t('components.variable-sort-normal-label.content') }}
 						</div></RadioBox
 					>
@@ -51,7 +53,8 @@
 						value="1"
 						@input="onSortInput"
 						@write="onSortWrite"
-						><div class="text" id="variable-sort-shared-label">
+						><div class="text" id="variable-sort-shared-label"
+				v-tip="t('components.variable-sort-shared-label.tip')">
 							{{ t('components.variable-sort-shared-label.content') }}
 						</div></RadioBox
 					>
@@ -62,7 +65,8 @@
 						value="2"
 						@input="onSortInput"
 						@write="onSortWrite"
-						><div class="text" id="variable-sort-temporary-label">
+						><div class="text" id="variable-sort-temporary-label"
+				v-tip="t('components.variable-sort-temporary-label.tip')">
 							{{ t('components.variable-sort-temporary-label.content') }}
 						</div></RadioBox
 					>
@@ -76,7 +80,8 @@
 						value="boolean"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="variable-type-boolean-label">
+						><div class="text" id="variable-type-boolean-label"
+				v-tip="t('components.variable-type-boolean-label.tip')">
 							{{ t('components.variable-type-boolean-label.content') }}
 						</div></RadioBox
 					>
@@ -87,7 +92,8 @@
 						value="number"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="variable-type-number-label">
+						><div class="text" id="variable-type-number-label"
+				v-tip="t('components.variable-type-number-label.tip')">
 							{{ t('components.variable-type-number-label.content') }}
 						</div></RadioBox
 					>
@@ -98,7 +104,8 @@
 						value="string"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="variable-type-string-label">
+						><div class="text" id="variable-type-string-label"
+				v-tip="t('components.variable-type-string-label.tip')">
 							{{ t('components.variable-type-string-label.content') }}
 						</div></RadioBox
 					>
@@ -110,7 +117,8 @@
 						value="object"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="variable-type-object-label">
+						><div class="text" id="variable-type-object-label"
+				v-tip="t('components.variable-type-object-label.tip')">
 							{{ t('components.variable-type-object-label.content') }}
 						</div></RadioBox
 					>
@@ -123,6 +131,7 @@
 						<div class="page-frame" value="boolean">
 							<RadioBox
 								id="variable-value-boolean-false"
+				v-tip="t('components.variable-value-boolean-false.tip')"
 								name="variable-value-boolean"
 								class="standard"
 								value="false"
@@ -130,6 +139,7 @@
 							>
 							<RadioBox
 								id="variable-value-boolean-true"
+				v-tip="t('components.variable-value-boolean-true.tip')"
 								name="variable-value-boolean"
 								class="standard"
 								value="true"
@@ -139,6 +149,7 @@
 						<div class="page-frame" value="number">
 							<NumberBox
 								id="variable-value-number"
+				v-tip="t('components.variable-value-number.tip')"
 				:ref="registryRef(variableEls, 'variable-value-number')"
 								min="-1000000000"
 								max="1000000000"
@@ -147,6 +158,7 @@
 						</div>
 						<div class="page-frame" value="string">
 							<TextArea id="variable-value-string"
+				v-tip="t('components.variable-value-string.tip')"
 				:ref="registryRef(variableEls, 'variable-value-string')" />
 						</div>
 					</PageManager>
@@ -154,6 +166,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.variable-note.label') }}</div>
 					<TextArea id="variable-note"
+				v-tip="t('components.variable-note.tip')"
 				:ref="registryRef(variableEls, 'variable-note')" />
 				</div>
 			</div>

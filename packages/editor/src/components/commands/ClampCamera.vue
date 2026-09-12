@@ -10,6 +10,7 @@
 			<div class="text">Left</div>
 			<NumberVar
 				id="clampCamera-left"
+				v-tip="t('components.clampCamera-left.tip')"
 				v-focus
 				min="-1000"
 				max="1000"
@@ -20,6 +21,7 @@
 			<div class="text">Top</div>
 			<NumberVar
 				id="clampCamera-top"
+				v-tip="t('components.clampCamera-top.tip')"
 				min="-1000"
 				max="1000"
 				step="0.1"
@@ -29,6 +31,7 @@
 			<div class="text">Right</div>
 			<NumberVar
 				id="clampCamera-right"
+				v-tip="t('components.clampCamera-right.tip')"
 				min="-1000"
 				max="1000"
 				step="0.1"
@@ -38,6 +41,7 @@
 			<div class="text">Bottom</div>
 			<NumberVar
 				id="clampCamera-bottom"
+				v-tip="t('components.clampCamera-bottom.tip')"
 				min="-1000"
 				max="1000"
 				step="0.1"

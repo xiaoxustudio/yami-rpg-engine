@@ -8,15 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="followActor-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="followActor-actor"
+				v-tip="t('components.followActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="followActor-target" type="actor" v-model="form.target" />
+			<CustomBox id="followActor-target"
+				v-tip="t('components.followActor-target.tip')" type="actor" v-model="form.target" />
 			<div class="text">Mode</div>
 			<SelectBox id="followActor-mode"
+				v-tip="t('components.followActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'followActor-mode')" v-model="form.mode" />
 			<div class="text">Min Distance</div>
 			<NumberVar
 				id="followActor-minDist"
+				v-tip="t('components.followActor-minDist.tip')"
 				min="0"
 				max="16"
 				decimals="4"
@@ -26,6 +30,7 @@
 			<div class="text">Max Distance</div>
 			<NumberVar
 				id="followActor-maxDist"
+				v-tip="t('components.followActor-maxDist.tip')"
 				min="0"
 				max="20"
 				decimals="4"
@@ -35,6 +40,7 @@
 			<div class="text">Offset Ratio</div>
 			<NumberBox
 				id="followActor-offset"
+				v-tip="t('components.followActor-offset.tip')"
 				:ref="registryRef(fieldEls, 'followActor-offset')"
 				min="-0.8"
 				max="0.8"
@@ -45,6 +51,7 @@
 			<div class="text">Vert Distance</div>
 			<NumberBox
 				id="followActor-vertDist"
+				v-tip="t('components.followActor-vertDist.tip')"
 				:ref="registryRef(fieldEls, 'followActor-vertDist')"
 				min="0"
 				max="4"
@@ -55,6 +62,7 @@
 			<div class="text">Buffer Distance</div>
 			<NumberBox
 				id="followActor-bufferDist"
+				v-tip="t('components.followActor-bufferDist.tip')"
 				min="0"
 				max="4"
 				decimals="4"
@@ -63,12 +71,15 @@
 			/>
 			<div class="text">Navigate</div>
 			<SelectBox id="followActor-navigate"
+				v-tip="t('components.followActor-navigate.tip')"
 				:ref="registryRef(fieldEls, 'followActor-navigate')" v-model="form.navigate" />
 			<div class="text">Bypass Actors</div>
 			<SelectBox id="followActor-bypass"
+				v-tip="t('components.followActor-bypass.tip')"
 				:ref="registryRef(fieldEls, 'followActor-bypass')" v-model="form.bypass" />
 			<div class="text">Once</div>
 			<SelectBox id="followActor-once"
+				v-tip="t('components.followActor-once.tip')"
 				:ref="registryRef(fieldEls, 'followActor-once')" v-model="form.once" />
 			<div class="text">Wait</div>
 			<SelectBox id="followActor-wait"

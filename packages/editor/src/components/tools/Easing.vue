@@ -27,12 +27,14 @@
 				:ref="registryRef(dataEls, 'easing-points-grid')">
 				<div class="text">{{ t('components.easing-mode.label') }}</div>
 				<SelectBox id="easing-mode"
+				v-tip="t('components.easing-mode.tip')"
 				:ref="registryRef(dataEls, 'easing-mode')" v-model="form.mode" />
 				<div class="text" id="easing-points-0">
 					{{ t('components.easing-points-0.content') }}
 				</div>
 				<NumberBox
 					id="easing-points-0-x"
+				v-tip="t('components.easing-points-0-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -42,6 +44,7 @@
 				>
 				<NumberBox
 					id="easing-points-0-y"
+				v-tip="t('components.easing-points-0-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -54,6 +57,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-1-x"
+				v-tip="t('components.easing-points-1-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -63,6 +67,7 @@
 				>
 				<NumberBox
 					id="easing-points-1-y"
+				v-tip="t('components.easing-points-1-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -75,6 +80,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-2-x"
+				v-tip="t('components.easing-points-2-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -84,6 +90,7 @@
 				>
 				<NumberBox
 					id="easing-points-2-y"
+				v-tip="t('components.easing-points-2-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -96,6 +103,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-3-x"
+				v-tip="t('components.easing-points-3-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -105,6 +113,7 @@
 				>
 				<NumberBox
 					id="easing-points-3-y"
+				v-tip="t('components.easing-points-3-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -117,6 +126,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-4-x"
+				v-tip="t('components.easing-points-4-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -126,6 +136,7 @@
 				>
 				<NumberBox
 					id="easing-points-4-y"
+				v-tip="t('components.easing-points-4-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -138,6 +149,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-5-x"
+				v-tip="t('components.easing-points-5-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -147,6 +159,7 @@
 				>
 				<NumberBox
 					id="easing-points-5-y"
+				v-tip="t('components.easing-points-5-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -159,6 +172,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-6-x"
+				v-tip="t('components.easing-points-6-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -168,6 +182,7 @@
 				>
 				<NumberBox
 					id="easing-points-6-y"
+				v-tip="t('components.easing-points-6-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -180,6 +195,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-7-x"
+				v-tip="t('components.easing-points-7-x.tip')"
 					min="0"
 					max="1"
 					step="0.01"
@@ -189,6 +205,7 @@
 				>
 				<NumberBox
 					id="easing-points-7-y"
+				v-tip="t('components.easing-points-7-y.tip')"
 					min="-5"
 					max="5"
 					step="0.01"
@@ -212,10 +229,12 @@
 			<div class="grid-box" id="easing-preview-grid">
 				<div class="text">{{ t('components.easing-preview-reverse.label') }}</div>
 				<SelectBox id="easing-preview-reverse"
+				v-tip="t('components.easing-preview-reverse.tip')"
 				:ref="registryRef(dataEls, 'easing-preview-reverse')" v-model="form.preview.reverse" />
 				<div class="text">{{ t('components.easing-preview-duration.label') }}</div>
 				<NumberBox
 					id="easing-preview-duration"
+				v-tip="t('components.easing-preview-duration.tip')"
 					min="1"
 					max="60000"
 					unit="ms"
@@ -225,6 +244,7 @@
 				<div class="text">{{ t('components.easing-preview-delay.label') }}</div>
 				<NumberBox
 					id="easing-preview-delay"
+				v-tip="t('components.easing-preview-delay.tip')"
 					min="0"
 					max="5000"
 					unit="ms"

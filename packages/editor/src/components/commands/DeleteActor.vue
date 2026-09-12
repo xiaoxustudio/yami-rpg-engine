@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="deleteActor-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="deleteActor-actor"
+				v-tip="t('components.deleteActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 		</div>
 	</WindowFrame>
 </template>

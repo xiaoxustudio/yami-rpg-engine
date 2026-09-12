@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.fileTrigger-selector.label') || 'Selector' }}</div>
 			<SelectBox
 				id="fileTrigger-selector"
+				v-tip="t('components.fileTrigger-selector.tip')"
 				ref="elSelector"
 				v-model="form.selector"
 				@input="onParamInput"
@@ -16,6 +17,7 @@
 			</div>
 			<SelectBox
 				id="fileTrigger-onHitWalls"
+				v-tip="t('components.fileTrigger-onHitWalls.tip')"
 				ref="elOnHitWalls"
 				v-model="form.onHitWalls"
 				@input="onParamInput"
@@ -25,6 +27,7 @@
 			</div>
 			<SelectBox
 				id="fileTrigger-onHitActors"
+				v-tip="t('components.fileTrigger-onHitActors.tip')"
 				ref="elOnHitActors"
 				v-model="form.onHitActors"
 				@input="onParamInput"
@@ -32,6 +35,7 @@
 			<div class="text">{{ t('components.fileTrigger-hitCount.label') || 'Hit Count' }}</div>
 			<NumberBox
 				id="fileTrigger-hitCount"
+				v-tip="t('components.fileTrigger-hitCount.tip')"
 				ref="elHitCount"
 				v-model="form.hitCount"
 				min="2"
@@ -41,6 +45,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-type.label') || 'Shape' }}</div>
 			<SelectBox
 				id="fileTrigger-shape-type"
+				v-tip="t('components.fileTrigger-shape-type.tip')"
 				ref="elShapeType"
 				v-model="form.shapeType"
 				@input="onParamInput"
@@ -48,6 +53,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-width"
+				v-tip="t('components.fileTrigger-shape-width.tip')"
 				ref="elShapeWidth"
 				v-model="form.shapeWidth"
 				min="0"
@@ -59,6 +65,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-height"
+				v-tip="t('components.fileTrigger-shape-height.tip')"
 				ref="elShapeHeight"
 				v-model="form.shapeHeight"
 				min="0"
@@ -70,6 +77,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-anchor.label') || 'Anchor' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-anchor"
+				v-tip="t('components.fileTrigger-shape-anchor.tip')"
 				ref="elShapeAnchor"
 				v-model="form.shapeAnchor"
 				min="-4"
@@ -80,6 +88,7 @@
 			<div class="text">{{ t('components.fileTrigger-shape-radius.label') || 'Radius' }}</div>
 			<NumberBox
 				id="fileTrigger-shape-radius"
+				v-tip="t('components.fileTrigger-shape-radius.tip')"
 				ref="elShapeRadius"
 				v-model="form.shapeRadius"
 				min="0"
@@ -93,6 +102,7 @@
 			</div>
 			<NumberBox
 				id="fileTrigger-shape-centralAngle"
+				v-tip="t('components.fileTrigger-shape-centralAngle.tip')"
 				ref="elShapeCentralAngle"
 				v-model="form.shapeCentralAngle"
 				min="0"
@@ -104,6 +114,7 @@
 			<div class="text">{{ t('components.fileTrigger-speed.label') || 'Speed' }}</div>
 			<NumberBox
 				id="fileTrigger-speed"
+				v-tip="t('components.fileTrigger-speed.tip')"
 				v-model="form.speed"
 				min="0"
 				max="512"
@@ -114,6 +125,7 @@
 			<div class="text">{{ t('components.fileTrigger-hitMode.label') || 'Hit Mode' }}</div>
 			<SelectBox
 				id="fileTrigger-hitMode"
+				v-tip="t('components.fileTrigger-hitMode.tip')"
 				ref="elHitMode"
 				v-model="form.hitMode"
 				@input="onParamInput"
@@ -123,6 +135,7 @@
 			</div>
 			<NumberBox
 				id="fileTrigger-hitInterval"
+				v-tip="t('components.fileTrigger-hitInterval.tip')"
 				ref="elHitInterval"
 				v-model="form.hitInterval"
 				min="0"
@@ -135,6 +148,7 @@
 			</div>
 			<NumberBox
 				id="fileTrigger-initialDelay"
+				v-tip="t('components.fileTrigger-initialDelay.tip')"
 				v-model="form.initialDelay"
 				min="0"
 				max="10000"
@@ -146,6 +160,7 @@
 			</div>
 			<NumberBox
 				id="fileTrigger-effectiveTime"
+				v-tip="t('components.fileTrigger-effectiveTime.tip')"
 				v-model="form.effectiveTime"
 				min="0"
 				max="10000"
@@ -155,6 +170,7 @@
 			<div class="text">{{ t('components.fileTrigger-duration.label') || 'Duration' }}</div>
 			<NumberBox
 				id="fileTrigger-duration"
+				v-tip="t('components.fileTrigger-duration.tip')"
 				v-model="form.duration"
 				min="0"
 				max="1000000000"
@@ -164,6 +180,7 @@
 			<div class="text">{{ t('components.fileTrigger-inherit.label') || 'Inherit' }}</div>
 			<CustomBox
 				id="fileTrigger-inherit"
+				v-tip="t('components.fileTrigger-inherit.tip')"
 				:model-value="form.inherit"
 				type="file"
 				filter="trigger"
@@ -181,6 +198,7 @@
 			</div>
 			<CustomBox
 				id="fileTrigger-animationId"
+				v-tip="t('components.fileTrigger-animationId.tip')"
 				:model-value="form.animationId"
 				type="file"
 				filter="animation"
@@ -189,10 +207,12 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-motion.label') || 'Motion' }}</div>
 			<SelectBox id="fileTrigger-motion"
+				v-tip="t('components.fileTrigger-motion.tip')"
 				:ref="registryRef(inspectorEls, 'fileTrigger-motion')" v-model="form.motion" @input="onParamInput" />
 			<div class="text">{{ t('components.fileTrigger-priority.label') || 'Priority' }}</div>
 			<NumberBox
 				id="fileTrigger-priority"
+				v-tip="t('components.fileTrigger-priority.tip')"
 				v-model="form.priority"
 				min="-100"
 				max="100"
@@ -201,6 +221,7 @@
 			<div class="text">{{ t('components.fileTrigger-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="fileTrigger-offsetY"
+				v-tip="t('components.fileTrigger-offsetY.tip')"
 				v-model="form.offsetY"
 				min="-100"
 				max="100"
@@ -210,6 +231,7 @@
 			<div class="text">{{ t('components.fileTrigger-rotatable.label') || 'Rotatable' }}</div>
 			<SelectBox
 				id="fileTrigger-rotatable"
+				v-tip="t('components.fileTrigger-rotatable.tip')"
 				ref="elRotatable"
 				v-model="form.rotatable"
 				@input="onParamInput"
@@ -220,6 +242,7 @@
 		<DetailSummary>{{ t('components.fileTrigger-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-events"
+				v-tip="t('components.fileTrigger-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="trigger"
@@ -231,6 +254,7 @@
 		<DetailSummary>{{ t('components.fileTrigger-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-scripts"
+				v-tip="t('components.fileTrigger-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setButton-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="setButton-element"
+				v-tip="t('components.setButton-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
 			<ParamList id="setButton-properties"
 				:ref="registryRef(fieldEls, 'setButton-properties')" v-focus v-model="form.properties" />

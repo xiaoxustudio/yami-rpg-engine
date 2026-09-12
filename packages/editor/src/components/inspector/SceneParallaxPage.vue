@@ -5,10 +5,12 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
 			<div class="text">{{ t('components.sceneParallax-name.label') || 'Name' }}</div>
-			<TextBox id="sceneParallax-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneParallax-name"
+				v-tip="t('components.sceneParallax-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneParallax-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="sceneParallax-image"
+				v-tip="t('components.sceneParallax-image.tip')"
 				:model-value="form.image"
 				@input="onParamInput"
 				type="file"
@@ -17,6 +19,7 @@
 			<div class="text">{{ t('components.sceneParallax-layer.label') || 'Layer' }}</div>
 			<SelectBox
 				id="sceneParallax-layer"
+				v-tip="t('components.sceneParallax-layer.tip')"
 				ref="elLayer"
 				v-model="form.layer"
 				@input="onParamInput"
@@ -24,6 +27,7 @@
 			<div class="text">{{ t('components.sceneParallax-order.label') || 'Order' }}</div>
 			<NumberBox
 				id="sceneParallax-order"
+				v-tip="t('components.sceneParallax-order.tip')"
 				v-model="form.order"
 				@input="onParamInput"
 				min="0"
@@ -34,6 +38,7 @@
 			</div>
 			<SelectBox
 				id="sceneParallax-light"
+				v-tip="t('components.sceneParallax-light.tip')"
 				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"
@@ -41,6 +46,7 @@
 			<div class="text">{{ t('components.sceneParallax-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="sceneParallax-blend"
+				v-tip="t('components.sceneParallax-blend.tip')"
 				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -48,6 +54,7 @@
 			<div class="text">{{ t('components.sceneParallax-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
 				id="sceneParallax-opacity"
+				v-tip="t('components.sceneParallax-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
 				min="0"
@@ -58,6 +65,7 @@
 			<div class="text">{{ t('components.sceneParallax-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneParallax-x"
+				v-tip="t('components.sceneParallax-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
 				min="-128"
@@ -69,6 +77,7 @@
 			<div class="text">{{ t('components.sceneParallax-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneParallax-y"
+				v-tip="t('components.sceneParallax-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
 				min="-128"
@@ -87,6 +96,7 @@
 			<div class="text">{{ t('components.sceneParallax-scaleX.label') || 'Scale X' }}</div>
 			<NumberBox
 				id="sceneParallax-scaleX"
+				v-tip="t('components.sceneParallax-scaleX.tip')"
 				v-model="form.scaleX"
 				@input="onParamInput"
 				min="0.2"
@@ -97,6 +107,7 @@
 			<div class="text">{{ t('components.sceneParallax-scaleY.label') || 'Scale Y' }}</div>
 			<NumberBox
 				id="sceneParallax-scaleY"
+				v-tip="t('components.sceneParallax-scaleY.tip')"
 				v-model="form.scaleY"
 				@input="onParamInput"
 				min="0.2"
@@ -107,6 +118,7 @@
 			<div class="text">{{ t('components.sceneParallax-repeatX.label') || 'Repeat X' }}</div>
 			<NumberBox
 				id="sceneParallax-repeatX"
+				v-tip="t('components.sceneParallax-repeatX.tip')"
 				v-model="form.repeatX"
 				@input="onParamInput"
 				min="1"
@@ -115,6 +127,7 @@
 			<div class="text">{{ t('components.sceneParallax-repeatY.label') || 'Repeat Y' }}</div>
 			<NumberBox
 				id="sceneParallax-repeatY"
+				v-tip="t('components.sceneParallax-repeatY.tip')"
 				v-model="form.repeatY"
 				@input="onParamInput"
 				min="1"
@@ -123,6 +136,7 @@
 			<div class="text">{{ t('components.sceneParallax-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
 				id="sceneParallax-anchorX"
+				v-tip="t('components.sceneParallax-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
 				min="0"
@@ -133,6 +147,7 @@
 			<div class="text">{{ t('components.sceneParallax-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
 				id="sceneParallax-anchorY"
+				v-tip="t('components.sceneParallax-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
 				min="0"
@@ -143,6 +158,7 @@
 			<div class="text">{{ t('components.sceneParallax-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
 				id="sceneParallax-offsetX"
+				v-tip="t('components.sceneParallax-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
 				min="-10000"
@@ -152,6 +168,7 @@
 			<div class="text">{{ t('components.sceneParallax-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="sceneParallax-offsetY"
+				v-tip="t('components.sceneParallax-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
 				min="-10000"
@@ -163,6 +180,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-parallaxFactorX"
+				v-tip="t('components.sceneParallax-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
 				min="-4"
@@ -175,6 +193,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-parallaxFactorY"
+				v-tip="t('components.sceneParallax-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
 				min="-4"
@@ -187,6 +206,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-shiftSpeedX"
+				v-tip="t('components.sceneParallax-shiftSpeedX.tip')"
 				v-model="form.shiftSpeedX"
 				@input="onParamInput"
 				min="-10000"
@@ -200,6 +220,7 @@
 			</div>
 			<NumberBox
 				id="sceneParallax-shiftSpeedY"
+				v-tip="t('components.sceneParallax-shiftSpeedY.tip')"
 				v-model="form.shiftSpeedY"
 				@input="onParamInput"
 				min="-10000"
@@ -211,7 +232,8 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-0-box">
+			<div class="flex-box" id="sceneParallax-tint-0-box"
+				v-tip="t('components.sceneParallax-tint-0-box.tip')">
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
 					ref="elTint0Slider"
@@ -233,7 +255,8 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-1-box">
+			<div class="flex-box" id="sceneParallax-tint-1-box"
+				v-tip="t('components.sceneParallax-tint-1-box.tip')">
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
 					ref="elTint1Slider"
@@ -255,7 +278,8 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-2-box">
+			<div class="flex-box" id="sceneParallax-tint-2-box"
+				v-tip="t('components.sceneParallax-tint-2-box.tip')">
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
 					ref="elTint2Slider"
@@ -277,7 +301,8 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-3-box">
+			<div class="flex-box" id="sceneParallax-tint-3-box"
+				v-tip="t('components.sceneParallax-tint-3-box.tip')">
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
 					ref="elTint3Slider"
@@ -304,6 +329,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParallax-conditions"
+				v-tip="t('components.sceneParallax-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -313,6 +339,7 @@
 		<DetailSummary>{{ t('components.sceneParallax-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-events"
+				v-tip="t('components.sceneParallax-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="parallax"
@@ -325,6 +352,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParallax-scripts"
+				v-tip="t('components.sceneParallax-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

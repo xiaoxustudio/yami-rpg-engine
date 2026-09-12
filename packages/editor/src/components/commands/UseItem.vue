@@ -8,16 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="useItem-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="useItem-actor"
+				v-tip="t('components.useItem-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="useItem-mode"
+				v-tip="t('components.useItem-mode.tip')"
 				:ref="registryRef(fieldEls, 'useItem-mode')" v-model="form.mode" />
 			<div class="text">Shortcut Key</div>
 			<SelectBox id="useItem-key"
+				v-tip="t('components.useItem-key.tip')"
 				:ref="registryRef(fieldEls, 'useItem-key')" v-focus v-model="form.key" />
 			<div class="text">Item</div>
 			<CustomBox
 				id="useItem-itemId"
+				v-tip="t('components.useItem-itemId.tip')"
 				:ref="registryRef(fieldEls, 'useItem-itemId')"
 				v-focus
 				type="file"
@@ -26,6 +30,7 @@
 			/>
 			<div class="text">Item</div>
 			<CustomBox id="useItem-item"
+				v-tip="t('components.useItem-item.tip')"
 				:ref="registryRef(fieldEls, 'useItem-item')" type="item" v-model="form.item" />
 			<div class="text">Wait</div>
 			<SelectBox id="useItem-wait"

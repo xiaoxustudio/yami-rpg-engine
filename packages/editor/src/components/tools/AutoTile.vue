@@ -13,6 +13,7 @@
 				<div class="text">{{ t('components.autoTile-image.label') }}</div>
 				<CustomBox
 					id="autoTile-image"
+				v-tip="t('components.autoTile-image.tip')"
 					v-focus
 					type="file"
 					filter="image"
@@ -22,6 +23,7 @@
 				<div class="text">{{ t('components.autoTile-x.label') }}</div>
 				<NumberBox
 					id="autoTile-x"
+				v-tip="t('components.autoTile-x.tip')"
 					min="0"
 					max="255"
 					v-model="autoTileStore.offsetX"
@@ -30,6 +32,7 @@
 				<div class="text">{{ t('components.autoTile-y.label') }}</div>
 				<NumberBox
 					id="autoTile-y"
+				v-tip="t('components.autoTile-y.tip')"
 					min="0"
 					max="255"
 					v-model="autoTileStore.offsetY"
@@ -41,6 +44,7 @@
 			<div class="legend">{{ t('components.autoTile-templates.label') }}</div>
 			<TreeList
 				id="autoTile-templates"
+				v-tip="t('components.autoTile-templates.tip')"
 				:ref="registryRef(paletteEls, 'autoTile-templates')"
 				padded
 				:node-extras="nodeExtras"
@@ -52,18 +56,22 @@
 		<div class="field-set input pad" id="autoTile-nodes-fieldset">
 			<div class="legend">{{ t('components.autoTile-nodes.label') }}</div>
 			<CommonList id="autoTile-nodes"
+				v-tip="t('components.autoTile-nodes.tip')"
 				:ref="registryRef(paletteEls, 'autoTile-nodes')" @write="onNodesWrite" @popup="onNodesPopup" />
 		</div>
 		<div class="field-set" id="autoTile-canvas-fieldset">
 			<div class="legend">{{ t('components.autoTile-canvas.label') }}</div>
 			<canvas id="autoTile-canvas"
+				v-tip="t('components.autoTile-canvas.tip')"
 				:ref="registryRef(paletteEls, 'autoTile-canvas')" width="128" height="128" @click="onCanvasClick" />
 		</div>
 		<div class="field-set" id="autoTile-rule-fieldset">
 			<div class="legend">{{ t('components.autoTile-rule-grid.label') }}</div>
-		<div class="grid-box" id="autoTile-rule-grid">
+		<div class="grid-box" id="autoTile-rule-grid"
+				v-tip="t('components.autoTile-rule-grid.tip')">
 			<SwitchItem
 				id="autoTile-rule-1"
+				v-tip="t('components.autoTile-rule-1.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[1]"
@@ -71,6 +79,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-2"
+				v-tip="t('components.autoTile-rule-2.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[2]"
@@ -78,6 +87,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-3"
+				v-tip="t('components.autoTile-rule-3.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[3]"
@@ -85,6 +95,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-0"
+				v-tip="t('components.autoTile-rule-0.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[0]"
@@ -93,6 +104,7 @@
 			<div class="empty" />
 			<SwitchItem
 				id="autoTile-rule-4"
+				v-tip="t('components.autoTile-rule-4.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[4]"
@@ -100,6 +112,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-7"
+				v-tip="t('components.autoTile-rule-7.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[7]"
@@ -107,6 +120,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-6"
+				v-tip="t('components.autoTile-rule-6.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[6]"
@@ -114,6 +128,7 @@
 			/>
 			<SwitchItem
 				id="autoTile-rule-5"
+				v-tip="t('components.autoTile-rule-5.tip')"
 				class="autoTile-switch autoTile-neighbor"
 				:length="3"
 				v-model="autoTileStore.ruleBits[5]"
@@ -124,6 +139,7 @@
 		<div class="field-set input pad" id="autoTile-frames-fieldset">
 			<div class="legend">{{ t('components.autoTile-frames.label') }}</div>
 			<CommonList id="autoTile-frames"
+				v-tip="t('components.autoTile-frames.tip')"
 				:ref="registryRef(paletteEls, 'autoTile-frames')" @write="onFramesWrite" @popup="onFramesPopup" />
 		</div>
 	</WindowFrame>

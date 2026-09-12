@@ -8,20 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorSprite-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorSprite-actor"
+				v-tip="t('components.changeActorSprite-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="changeActorSprite-animationId"
+				v-tip="t('components.changeActorSprite-animationId.tip')"
 				type="file"
 				filter="animation"
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Sprite Name</div>
-			<SelectBox id="changeActorSprite-spriteId" v-model="form.spriteId" />
+			<SelectBox id="changeActorSprite-spriteId"
+				v-tip="t('components.changeActorSprite-spriteId.tip')" v-model="form.spriteId" />
 			<div class="text">Sprite</div>
 			<CustomBox
 				id="changeActorSprite-image"
+				v-tip="t('components.changeActorSprite-image.tip')"
 				type="file"
 				filter="image"
 				v-model="form.image"

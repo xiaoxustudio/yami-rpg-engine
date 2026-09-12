@@ -10,12 +10,15 @@
 		<div class="grid-box">
 			<div class="text">Mode</div>
 			<SelectBox id="moveCamera-mode"
+				v-tip="t('components.moveCamera-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-mode')" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
 			<CustomBox id="moveCamera-position"
+				v-tip="t('components.moveCamera-position.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-position')" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
 			<CustomBox id="moveCamera-actor"
+				v-tip="t('components.moveCamera-actor.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Easing</div>
 			<SelectBox id="moveCamera-easingId"

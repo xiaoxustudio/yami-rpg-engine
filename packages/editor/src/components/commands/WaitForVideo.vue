@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="waitForVideo-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="waitForVideo-element"
+				v-tip="t('components.waitForVideo-element.tip')" v-focus type="element" v-model="form.element" />
 		</div>
 	</WindowFrame>
 </template>

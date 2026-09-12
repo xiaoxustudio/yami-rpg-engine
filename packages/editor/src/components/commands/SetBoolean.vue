@@ -10,6 +10,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setBoolean-variable"
+				v-tip="t('components.setBoolean-variable.tip')"
 				v-focus
 				type="variable"
 				filter="writable-boolean"
@@ -21,16 +22,19 @@
 			<div class="text">Type</div>
 			<SelectBox
 				id="setBoolean-operand-type"
+				v-tip="t('components.setBoolean-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-operand-type')"
 				v-model="form['operand-type']"
 				@write="onWrite"
 			/>
 			<div class="text">Constant</div>
 			<SelectBox id="setBoolean-constant-value"
+				v-tip="t('components.setBoolean-constant-value.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-constant-value')" v-model="form['constant-value']" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setBoolean-common-variable"
+				v-tip="t('components.setBoolean-common-variable.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-common-variable')"
 				v-focus
 				type="variable"
@@ -40,6 +44,7 @@
 			<div class="text">Index</div>
 			<NumberVar
 				id="setBoolean-list-index"
+				v-tip="t('components.setBoolean-list-index.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-list-index')"
 				min="0"
 				max="1000000000"
@@ -47,9 +52,11 @@
 			/>
 			<div class="text">Param Name</div>
 			<StringVar id="setBoolean-parameter-key"
+				v-tip="t('components.setBoolean-parameter-key.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')" v-focus v-model="form['parameter-key']" />
 			<div class="text">Script</div>
 			<TextBox id="setBoolean-script"
+				v-tip="t('components.setBoolean-script.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-script')" v-focus v-model="script" />
 		</div>
 	</WindowFrame>

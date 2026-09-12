@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorPortrait-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorPortrait-actor"
+				v-tip="t('components.changeActorPortrait-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="changeActorPortrait-mode"
+				v-tip="t('components.changeActorPortrait-mode.tip')"
 				:ref="registryRef(fieldEls, 'changeActorPortrait-mode')" v-model="form.mode" />
 			<div class="text">Portrait</div>
 			<CustomBox
 				id="changeActorPortrait-portrait"
+				v-tip="t('components.changeActorPortrait-portrait.tip')"
 				:ref="registryRef(fieldEls, 'changeActorPortrait-portrait')"
 				type="file"
 				filter="image"
@@ -23,6 +26,7 @@
 			<div class="text">Clip</div>
 			<CustomBox
 				id="changeActorPortrait-clip"
+				v-tip="t('components.changeActorPortrait-clip.tip')"
 				:ref="registryRef(fieldEls, 'changeActorPortrait-clip')"
 				type="clip"
 				image="changeActorPortrait-portrait"

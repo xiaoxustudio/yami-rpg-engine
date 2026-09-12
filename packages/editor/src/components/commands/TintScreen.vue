@@ -11,6 +11,7 @@
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="tintScreen-tint-0"
+				v-tip="t('components.tintScreen-tint-0.tip')"
 				v-focus
 				min="-255"
 				max="255"
@@ -20,6 +21,7 @@
 			<div class="text">Tint - Green</div>
 			<NumberBox
 				id="tintScreen-tint-1"
+				v-tip="t('components.tintScreen-tint-1.tip')"
 				min="-255"
 				max="255"
 				step="5"
@@ -28,13 +30,15 @@
 			<div class="text">Tint - Blue</div>
 			<NumberBox
 				id="tintScreen-tint-2"
+				v-tip="t('components.tintScreen-tint-2.tip')"
 				min="-255"
 				max="255"
 				step="5"
 				v-model="tint2"
 			/>
 			<div class="text">Tint - Grayscale</div>
-			<NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" v-model="tint3" />
+			<NumberBox id="tintScreen-tint-3"
+				v-tip="t('components.tintScreen-tint-3.tip')" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">Easing</div>
 			<SelectBox id="tintScreen-easingId"
 				:ref="registryRef(fieldEls, 'tintScreen-easingId')" name="easing" v-model="form.easingId" />

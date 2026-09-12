@@ -5,11 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneTilemap-general-grid">
 			<div class="text">{{ t('components.sceneTilemap-name.label') || 'Name' }}</div>
-			<TextBox id="sceneTilemap-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneTilemap-name"
+				v-tip="t('components.sceneTilemap-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
 				ref="elLayer"
 				id="sceneTilemap-layer"
+				v-tip="t('components.sceneTilemap-layer.tip')"
 				v-model="form.layer"
 				@input="onParamInput"
 				@write="onLayerWrite"
@@ -35,12 +37,14 @@
 			<SelectBox
 				ref="elBlend"
 				id="sceneTilemap-blend"
+				v-tip="t('components.sceneTilemap-blend.tip')"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.sceneTilemap-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneTilemap-x"
+				v-tip="t('components.sceneTilemap-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
 				min="-128"
@@ -52,6 +56,7 @@
 			<div class="text">{{ t('components.sceneTilemap-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-y"
+				v-tip="t('components.sceneTilemap-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
 				min="-128"
@@ -63,6 +68,7 @@
 			<div class="text">{{ t('components.sceneTilemap-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="sceneTilemap-width"
+				v-tip="t('components.sceneTilemap-width.tip')"
 				v-model="form.width"
 				min="0"
 				max="512"
@@ -72,6 +78,7 @@
 			<div class="text">{{ t('components.sceneTilemap-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="sceneTilemap-height"
+				v-tip="t('components.sceneTilemap-height.tip')"
 				v-model="form.height"
 				min="0"
 				max="512"
@@ -81,6 +88,7 @@
 			<div class="text">{{ t('components.sceneTilemap-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorX"
+				v-tip="t('components.sceneTilemap-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
 				min="0"
@@ -91,6 +99,7 @@
 			<div class="text">{{ t('components.sceneTilemap-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-anchorY"
+				v-tip="t('components.sceneTilemap-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
 				min="0"
@@ -101,6 +110,7 @@
 			<div class="text">{{ t('components.sceneTilemap-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetX"
+				v-tip="t('components.sceneTilemap-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
 				min="-10000"
@@ -110,6 +120,7 @@
 			<div class="text">{{ t('components.sceneTilemap-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
 				id="sceneTilemap-offsetY"
+				v-tip="t('components.sceneTilemap-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
 				min="-10000"
@@ -121,6 +132,7 @@
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorX"
+				v-tip="t('components.sceneTilemap-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
 				min="-4"
@@ -133,6 +145,7 @@
 			</div>
 			<NumberBox
 				id="sceneTilemap-parallaxFactorY"
+				v-tip="t('components.sceneTilemap-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
 				min="-4"
@@ -143,6 +156,7 @@
 			<div class="text">{{ t('components.sceneTilemap-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
 				id="sceneTilemap-opacity"
+				v-tip="t('components.sceneTilemap-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
 				min="0"
@@ -159,6 +173,7 @@
 		<ParamList
 			ref="elConditions"
 			id="sceneTilemap-conditions"
+				v-tip="t('components.sceneTilemap-conditions.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -168,6 +183,7 @@
 		<ParamList
 			ref="elEvents"
 			id="sceneTilemap-events"
+				v-tip="t('components.sceneTilemap-events.tip')"
 			class="inspector-list"
 			filter="tilemap"
 			flexible
@@ -178,6 +194,7 @@
 		<ParamList
 			ref="elScripts"
 			id="sceneTilemap-scripts"
+				v-tip="t('components.sceneTilemap-scripts.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>

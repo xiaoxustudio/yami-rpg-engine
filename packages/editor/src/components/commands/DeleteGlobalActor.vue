@@ -10,6 +10,7 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="deleteGlobalActor-actorId"
+				v-tip="t('components.deleteGlobalActor-actorId.tip')"
 				v-focus
 				type="file"
 				filter="actor"

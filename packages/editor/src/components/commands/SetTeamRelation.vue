@@ -10,12 +10,15 @@
 		<div class="grid-box">
 			<div class="text">Team A</div>
 			<SelectBox id="setTeamRelation-teamId1"
+				v-tip="t('components.setTeamRelation-teamId1.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-teamId1')" v-focus v-model="form.teamId1" />
 			<div class="text">Team B</div>
 			<SelectBox id="setTeamRelation-teamId2"
+				v-tip="t('components.setTeamRelation-teamId2.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-teamId2')" v-model="form.teamId2" />
 			<div class="text">Relation</div>
 			<SelectBox id="setTeamRelation-relation"
+				v-tip="t('components.setTeamRelation-relation.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-relation')" v-model="form.relation" />
 		</div>
 	</WindowFrame>

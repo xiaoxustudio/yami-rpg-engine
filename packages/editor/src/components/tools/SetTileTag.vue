@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTileTag-tag.label') }}</div>
 			<NumberBox id="setTileTag-tag"
+				v-tip="t('components.setTileTag-tag.tip')"
 				:ref="registryRef(moduleEls, 'setTileTag-tag')" min="0" max="99999" />
 		</div>
 	</WindowFrame>

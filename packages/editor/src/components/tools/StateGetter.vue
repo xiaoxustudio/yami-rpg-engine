@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 状态访问器窗口 -->
 	<WindowFrame ref="frame" id="stateGetter" @confirm="onConfirm">
 		<template #title
@@ -10,13 +10,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.stateGetter-type.label') }}</div>
 			<SelectBox id="stateGetter-type"
+				v-tip="t('components.stateGetter-type.tip')"
 				:ref="fieldRef('stateGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.stateGetter-actor.label') }}</div>
 			<CustomBox id="stateGetter-actor"
+				v-tip="t('components.stateGetter-actor.tip')"
 				:ref="fieldRef('stateGetter-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.stateGetter-stateId.label') }}</div>
 			<CustomBox
 				id="stateGetter-stateId"
+				v-tip="t('components.stateGetter-stateId.tip')"
 				:ref="fieldRef('stateGetter-stateId')"
 				v-focus
 				type="file"
@@ -26,6 +29,7 @@
 			<div class="text">{{ t('components.stateGetter-variable.label') }}</div>
 			<CustomBox
 				id="stateGetter-variable"
+				v-tip="t('components.stateGetter-variable.tip')"
 				:ref="fieldRef('stateGetter-variable')"
 				v-focus
 				type="variable"

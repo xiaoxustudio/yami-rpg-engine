@@ -11,6 +11,7 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="createActor-actorId"
+				v-tip="t('components.createActor-actorId.tip')"
 				v-focus
 				type="file"
 				filter="actor"
@@ -18,12 +19,15 @@
 			/>
 			<div class="text">Team</div>
 			<SelectBox id="createActor-teamId"
+				v-tip="t('components.createActor-teamId.tip')"
 				:ref="registryRef(fieldEls, 'createActor-teamId')" v-model="form.teamId" />
 			<div class="text">Position</div>
-			<CustomBox id="createActor-position" type="position" v-model="form.position" />
+			<CustomBox id="createActor-position"
+				v-tip="t('components.createActor-position.tip')" type="position" v-model="form.position" />
 			<div class="text">Angle</div>
 			<NumberVar
 				id="createActor-angle"
+				v-tip="t('components.createActor-angle.tip')"
 				min="-360"
 				max="360"
 				decimals="4"

@@ -9,13 +9,16 @@
 
 		<div class="grid-box" id="tintImage-grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="tintImage-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="tintImage-element"
+				v-tip="t('components.tintImage-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Mode</div>
 			<SelectBox id="tintImage-mode"
+				v-tip="t('components.tintImage-mode.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-mode')" v-model="form.mode" />
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="tintImage-tint-0"
+				v-tip="t('components.tintImage-tint-0.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-tint-0')"
 				min="-255"
 				max="255"
@@ -25,6 +28,7 @@
 			<div class="text">Tint - Green</div>
 			<NumberBox
 				id="tintImage-tint-1"
+				v-tip="t('components.tintImage-tint-1.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-tint-1')"
 				min="-255"
 				max="255"
@@ -34,6 +38,7 @@
 			<div class="text">Tint - Blue</div>
 			<NumberBox
 				id="tintImage-tint-2"
+				v-tip="t('components.tintImage-tint-2.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-tint-2')"
 				min="-255"
 				max="255"
@@ -42,6 +47,7 @@
 			/>
 			<div class="text">Tint - Grayscale</div>
 			<NumberBox id="tintImage-tint-3"
+				v-tip="t('components.tintImage-tint-3.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-tint-3')" min="0" max="255" step="5" v-model="tint3" />
 			<div class="text">Easing</div>
 			<SelectBox id="tintImage-easingId"

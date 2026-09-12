@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text"></div>
 			<TextBox id="event-search-string-search"
+				v-tip="t('components.event-search-string-search.tip')"
 				:ref="registryRef(storesEls, 'event-search-string-search')" />
 			<div class="text"></div>
 			<CheckBox
 				id="event-search-string-case-insensitive"
+				v-tip="t('components.event-search-string-case-insensitive.tip')"
 				class="standard"
 				v-model="caseInsensitive"
 				:disabled="ciDisabled"
@@ -21,12 +23,14 @@
 			<div class="text"></div>
 			<CheckBox
 				id="event-search-string-regex"
+				v-tip="t('components.event-search-string-regex.tip')"
 				class="standard"
 				v-model="regex"
 				:disabled="regexDisabled"
 			/>
 			<div class="text"></div>
-			<CheckBox id="event-search-string-match-line" class="standard" v-model="matchLine" />
+			<CheckBox id="event-search-string-match-line"
+				v-tip="t('components.event-search-string-match-line.tip')" class="standard" v-model="matchLine" />
 			<div class="text" id="event-search-string-log"
 				:ref="registryRef(storesEls, 'event-search-string-log')"></div>
 		</div>

@@ -8,16 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorEquipment-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorEquipment-actor"
+				v-tip="t('components.changeActorEquipment-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeActorEquipment-operation"
+				v-tip="t('components.changeActorEquipment-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')" v-model="form.operation" />
 			<div class="text">Shortcut Key</div>
 			<SelectVar id="changeActorEquipment-slot"
+				v-tip="t('components.changeActorEquipment-slot.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')" v-focus v-model="form.slot" />
 			<div class="text">Equipment</div>
 			<CustomBox
 				id="changeActorEquipment-equipmentId"
+				v-tip="t('components.changeActorEquipment-equipmentId.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-equipmentId')"
 				v-focus
 				type="file"
@@ -27,6 +31,7 @@
 			<div class="text">Equipment</div>
 			<CustomBox
 				id="changeActorEquipment-equipment"
+				v-tip="t('components.changeActorEquipment-equipment.tip')"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-equipment')"
 				type="equipment"
 				v-model="form.equipment"

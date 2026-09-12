@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { setTooltip } from '@app/utils/element-utils';
+import { templateLocalizedKeys } from './template-localized.ts';
 
 export interface LocalComponentItem {
 	save?: string;
@@ -61,9 +62,11 @@ export function parseLocalTip(tip: string, title: string): string {
 }
 
 export function localizeDomComponents(components: Record<string, LocalComponentItem>): void {
+	// R2b 迁移②：模板已承担的键（t()/v-tip）跳过 DOM 查询，扫描面 2130 → ~200
 	const entries = Object.entries(components ?? {});
 	for (let i = 0; i < entries.length; i++) {
 		const [key, item] = entries[i];
+		if (templateLocalizedKeys.has(key)) continue;
 		try {
 			if (key[0] === '[') {
 				if (key === '[comment]') continue;

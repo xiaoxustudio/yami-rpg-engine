@@ -5,12 +5,14 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
 			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div>
-			<TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneParticle-name"
+				v-tip="t('components.sceneParticle-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.sceneParticle-particleId.label') || 'Particle' }}
 			</div>
 			<CustomBox
 				id="sceneParticle-particleId"
+				v-tip="t('components.sceneParticle-particleId.tip')"
 				:model-value="form.particleId"
 				@input="onParamInput"
 				type="file"
@@ -19,6 +21,7 @@
 			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneParticle-x"
+				v-tip="t('components.sceneParticle-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
 				min="-128"
@@ -29,6 +32,7 @@
 			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneParticle-y"
+				v-tip="t('components.sceneParticle-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
 				min="-128"
@@ -37,7 +41,8 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParticle-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneParticle-angle-box">
+			<div class="flex-box" id="sceneParticle-angle-box"
+				v-tip="t('components.sceneParticle-angle-box.tip')">
 				<SliderBox
 					id="sceneParticle-angle-slider"
 					ref="elAngleSlider"
@@ -59,7 +64,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneParticle-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneParticle-scale-box">
+			<div class="flex-box" id="sceneParticle-scale-box"
+				v-tip="t('components.sceneParticle-scale-box.tip')">
 				<SliderBox
 					id="sceneParticle-scale-slider"
 					ref="elScaleSlider"
@@ -80,7 +86,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneParticle-speed-box.label') || 'Speed' }}</div>
-			<div class="flex-box" id="sceneParticle-speed-box">
+			<div class="flex-box" id="sceneParticle-speed-box"
+				v-tip="t('components.sceneParticle-speed-box.tip')">
 				<SliderBox
 					id="sceneParticle-speed-slider"
 					ref="elSpeedSlider"
@@ -103,7 +110,8 @@
 			<div class="text">
 				{{ t('components.sceneParticle-opacity-box.label') || 'Opacity' }}
 			</div>
-			<div class="flex-box" id="sceneParticle-opacity-box">
+			<div class="flex-box" id="sceneParticle-opacity-box"
+				v-tip="t('components.sceneParticle-opacity-box.tip')">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
 					ref="elOpacitySlider"
@@ -126,7 +134,8 @@
 			<div class="text">
 				{{ t('components.sceneParticle-priority-box.label') || 'Priority' }}
 			</div>
-			<div class="flex-box" id="sceneParticle-priority-box">
+			<div class="flex-box" id="sceneParticle-priority-box"
+				v-tip="t('components.sceneParticle-priority-box.tip')">
 				<SliderBox
 					id="sceneParticle-priority-slider"
 					ref="elPrioritySlider"
@@ -152,6 +161,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParticle-conditions"
+				v-tip="t('components.sceneParticle-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -161,6 +171,7 @@
 		<DetailSummary>{{ t('components.sceneParticle-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-events"
+				v-tip="t('components.sceneParticle-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="particle"
@@ -173,6 +184,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParticle-scripts"
+				v-tip="t('components.sceneParticle-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

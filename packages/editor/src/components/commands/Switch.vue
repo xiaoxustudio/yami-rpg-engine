@@ -9,13 +9,15 @@
 
 		<div class="grid-box">
 			<div class="text">Variable</div>
-			<CustomBox id="switch-variable" v-focus type="variable" filter="all" v-model="form.variable" />
+			<CustomBox id="switch-variable"
+				v-tip="t('components.switch-variable.tip')" v-focus type="variable" filter="all" v-model="form.variable" />
 			<div class="text">Branches</div>
 			<ParamList id="switch-branches"
 				:ref="registryRef(fieldEls, 'switch-branches')" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="switch-default" v-model="form.default" class="standard"
-			><div class="text" id="switch-default-label">Default</div></CheckBox
+			><div class="text" id="switch-default-label"
+				v-tip="t('components.switch-default-label.tip')">Default</div></CheckBox
 		>
 	</WindowFrame>
 </template>

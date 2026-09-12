@@ -10,16 +10,19 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="setMovementSpeed-actor"
+				v-tip="t('components.setMovementSpeed-actor.tip')"
 				v-focus
 				type="actor"
 				v-model="form.actor"
 			/>
 			<div class="text">Property</div>
 			<SelectBox id="setMovementSpeed-property"
+				v-tip="t('components.setMovementSpeed-property.tip')"
 				:ref="registryRef(fieldEls, 'setMovementSpeed-property')" v-model="form.property" />
 			<div class="text">Base Speed</div>
 			<NumberVar
 				id="setMovementSpeed-base"
+				v-tip="t('components.setMovementSpeed-base.tip')"
 				:ref="registryRef(fieldEls, 'setMovementSpeed-base')"
 				min="0"
 				max="32"
@@ -30,6 +33,7 @@
 			<div class="text">Speed Factor</div>
 			<NumberVar
 				id="setMovementSpeed-factor"
+				v-tip="t('components.setMovementSpeed-factor.tip')"
 				:ref="registryRef(fieldEls, 'setMovementSpeed-factor')"
 				min="0"
 				max="4"

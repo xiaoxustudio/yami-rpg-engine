@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="moveActor-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="moveActor-actor"
+				v-tip="t('components.moveActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="moveActor-mode"
+				v-tip="t('components.moveActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-mode')" v-model="form.mode" />
 			<div class="text">Angle</div>
 			<NumberVar
 				id="moveActor-angle"
+				v-tip="t('components.moveActor-angle.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-angle')"
 				min="-360"
 				max="360"
@@ -24,6 +27,7 @@
 			/>
 			<div class="text">Destination</div>
 			<CustomBox id="moveActor-destination"
+				v-tip="t('components.moveActor-destination.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-destination')" type="position" v-model="form.destination" />
 			<div class="text">Wait</div>
 			<SelectBox id="moveActor-wait"

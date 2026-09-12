@@ -12,6 +12,7 @@
 			<div class="text">{{ t('components.autoTile-generateFrames-strideX.label') }}</div>
 			<NumberBox
 				id="autoTile-generateFrames-strideX"
+				v-tip="t('components.autoTile-generateFrames-strideX.tip')"
 				v-focus
 				min="-128"
 				max="128"
@@ -20,12 +21,14 @@
 			<div class="text">{{ t('components.autoTile-generateFrames-strideY.label') }}</div>
 			<NumberBox
 				id="autoTile-generateFrames-strideY"
+				v-tip="t('components.autoTile-generateFrames-strideY.tip')"
 				min="-128"
 				max="128"
 				v-model="form.strideY"
 			/>
 			<div class="text">{{ t('components.autoTile-generateFrames-count.label') }}</div>
-			<NumberBox id="autoTile-generateFrames-count" min="1" max="255" v-model="form.count" />
+			<NumberBox id="autoTile-generateFrames-count"
+				v-tip="t('components.autoTile-generateFrames-count.tip')" min="1" max="255" v-model="form.count" />
 		</div>
 	</WindowFrame>
 </template>

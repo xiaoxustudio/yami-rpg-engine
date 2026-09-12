@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame ref="frame" id="tilemapGetter" @confirm="onConfirm">
 		<template #title
@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.tilemapGetter-type.label') }}</div>
 			<SelectBox id="tilemapGetter-type"
+				v-tip="t('components.tilemapGetter-type.tip')"
 				:ref="fieldRef('tilemapGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div>
 			<CustomBox
 				id="tilemapGetter-presetId"
+				v-tip="t('components.tilemapGetter-presetId.tip')"
 				:ref="fieldRef('tilemapGetter-presetId')"
 				v-focus
 				type="preset-object"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.tilemapGetter-variable.label') }}</div>
 			<CustomBox
 				id="tilemapGetter-variable"
+				v-tip="t('components.tilemapGetter-variable.tip')"
 				:ref="fieldRef('tilemapGetter-variable')"
 				v-focus
 				type="variable"

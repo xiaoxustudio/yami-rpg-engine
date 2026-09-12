@@ -10,31 +10,40 @@
 		<div class="grid-box">
 		<div class="text">Type</div>
 		<SelectBox id="callEvent-type"
+				v-tip="t('components.callEvent-type.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-type')" v-focus v-model="form.type" @write="onTypeWrite" />
 		<div class="text">Actor</div>
 		<CustomBox id="callEvent-actor"
+				v-tip="t('components.callEvent-actor.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-actor')" type="actor" v-model="form.actor" />
 		<div class="text">Skill</div>
 		<CustomBox id="callEvent-skill"
+				v-tip="t('components.callEvent-skill.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-skill')" type="skill" v-model="form.skill" />
 		<div class="text">State</div>
 		<CustomBox id="callEvent-state"
+				v-tip="t('components.callEvent-state.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-state')" type="state" v-model="form.state" />
 		<div class="text">Equipment</div>
 		<CustomBox id="callEvent-equipment"
+				v-tip="t('components.callEvent-equipment.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-equipment')" type="equipment" v-model="form.equipment" />
 		<div class="text">Item</div>
 		<CustomBox id="callEvent-item"
+				v-tip="t('components.callEvent-item.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-item')" type="item" v-model="form.item" />
 		<div class="text">Light</div>
 		<CustomBox id="callEvent-light"
+				v-tip="t('components.callEvent-light.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-light')" type="light" v-model="form.light" />
 		<div class="text">Element</div>
 		<CustomBox id="callEvent-element"
+				v-tip="t('components.callEvent-element.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-element')" type="element" v-model="form.element" />
 		<div class="text">Event</div>
 		<CustomBox
 			id="callEvent-eventId"
+				v-tip="t('components.callEvent-eventId.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-eventId')"
 			v-focus
 			type="file"
@@ -45,6 +54,7 @@
 		/>
 			<div class="text">Event</div>
 			<SelectBox id="callEvent-eventType"
+				v-tip="t('components.callEvent-eventType.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-eventType')" v-focus v-model="form.eventType" />
 		</div>
 	</WindowFrame>

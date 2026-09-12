@@ -9,9 +9,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorTeam-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorTeam-actor"
+				v-tip="t('components.changeActorTeam-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Team</div>
 			<SelectBox id="changeActorTeam-teamId"
+				v-tip="t('components.changeActorTeam-teamId.tip')"
 				:ref="registryRef(fieldEls, 'changeActorTeam-teamId')" v-model="form.teamId" />
 		</div>
 	</WindowFrame>

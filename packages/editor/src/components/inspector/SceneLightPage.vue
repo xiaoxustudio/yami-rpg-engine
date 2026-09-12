@@ -5,10 +5,12 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneLight-general-grid">
 			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div>
-			<TextBox id="sceneLight-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneLight-name"
+				v-tip="t('components.sceneLight-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div>
 			<SelectBox
 				id="sceneLight-type"
+				v-tip="t('components.sceneLight-type.tip')"
 				ref="elType"
 				v-model="form.type"
 				@input="onParamInput"
@@ -16,6 +18,7 @@
 			<div class="text">{{ t('components.sceneLight-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="sceneLight-blend"
+				v-tip="t('components.sceneLight-blend.tip')"
 				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -23,6 +26,7 @@
 			<div class="text">{{ t('components.sceneLight-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneLight-x"
+				v-tip="t('components.sceneLight-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
 				min="-128"
@@ -33,6 +37,7 @@
 			<div class="text">{{ t('components.sceneLight-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneLight-y"
+				v-tip="t('components.sceneLight-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
 				min="-128"
@@ -41,7 +46,8 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneLight-range-box.label') || 'Range' }}</div>
-			<div class="flex-box" id="sceneLight-range-box" ref="elRangeBox">
+			<div class="flex-box" id="sceneLight-range-box"
+				v-tip="t('components.sceneLight-range-box.tip')" ref="elRangeBox">
 				<SliderBox
 					id="sceneLight-range-slider"
 					ref="elRangeSlider"
@@ -63,7 +69,8 @@
 			<div class="text">
 				{{ t('components.sceneLight-intensity-box.label') || 'Intensity' }}
 			</div>
-			<div class="flex-box" id="sceneLight-intensity-box" ref="elIntensityBox">
+			<div class="flex-box" id="sceneLight-intensity-box"
+				v-tip="t('components.sceneLight-intensity-box.tip')" ref="elIntensityBox">
 				<SliderBox
 					id="sceneLight-intensity-slider"
 					ref="elIntensitySlider"
@@ -86,6 +93,7 @@
 			<div class="text">{{ t('components.sceneLight-mask.label') || 'Mask' }}</div>
 			<CustomBox
 				id="sceneLight-mask"
+				v-tip="t('components.sceneLight-mask.tip')"
 				ref="elMask"
 				:model-value="form.mask"
 				@input="onParamInput"
@@ -93,7 +101,8 @@
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ t('components.sceneLight-anchorX-box.label') || 'Anchor X' }}</div>
-			<div class="flex-box" id="sceneLight-anchorX-box" ref="elAnchorXBox">
+			<div class="flex-box" id="sceneLight-anchorX-box"
+				v-tip="t('components.sceneLight-anchorX-box.tip')" ref="elAnchorXBox">
 				<SliderBox
 					id="sceneLight-anchorX-slider"
 					ref="elAnchorXSlider"
@@ -114,7 +123,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-anchorY-box.label') || 'Anchor Y' }}</div>
-			<div class="flex-box" id="sceneLight-anchorY-box" ref="elAnchorYBox">
+			<div class="flex-box" id="sceneLight-anchorY-box"
+				v-tip="t('components.sceneLight-anchorY-box.tip')" ref="elAnchorYBox">
 				<SliderBox
 					id="sceneLight-anchorY-slider"
 					ref="elAnchorYSlider"
@@ -135,7 +145,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-width-box.label') || 'Width' }}</div>
-			<div class="flex-box" id="sceneLight-width-box" ref="elWidthBox">
+			<div class="flex-box" id="sceneLight-width-box"
+				v-tip="t('components.sceneLight-width-box.tip')" ref="elWidthBox">
 				<SliderBox
 					id="sceneLight-width-slider"
 					ref="elWidthSlider"
@@ -156,7 +167,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-height-box.label') || 'Height' }}</div>
-			<div class="flex-box" id="sceneLight-height-box" ref="elHeightBox">
+			<div class="flex-box" id="sceneLight-height-box"
+				v-tip="t('components.sceneLight-height-box.tip')" ref="elHeightBox">
 				<SliderBox
 					id="sceneLight-height-slider"
 					ref="elHeightSlider"
@@ -177,7 +189,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneLight-angle-box" ref="elAngleBox">
+			<div class="flex-box" id="sceneLight-angle-box"
+				v-tip="t('components.sceneLight-angle-box.tip')" ref="elAngleBox">
 				<SliderBox
 					id="sceneLight-angle-slider"
 					ref="elAngleSlider"
@@ -198,7 +211,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-red-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="sceneLight-red-box" ref="elRedBox">
+			<div class="flex-box" id="sceneLight-red-box"
+				v-tip="t('components.sceneLight-red-box.tip')" ref="elRedBox">
 				<SliderBox
 					id="sceneLight-red-slider"
 					ref="elRedSlider"
@@ -218,7 +232,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-green-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="sceneLight-green-box" ref="elGreenBox">
+			<div class="flex-box" id="sceneLight-green-box"
+				v-tip="t('components.sceneLight-green-box.tip')" ref="elGreenBox">
 				<SliderBox
 					id="sceneLight-green-slider"
 					ref="elGreenSlider"
@@ -238,7 +253,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-blue-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="sceneLight-blue-box" ref="elBlueBox">
+			<div class="flex-box" id="sceneLight-blue-box"
+				v-tip="t('components.sceneLight-blue-box.tip')" ref="elBlueBox">
 				<SliderBox
 					id="sceneLight-blue-slider"
 					ref="elBlueSlider"
@@ -260,7 +276,8 @@
 			<div class="text">
 				{{ t('components.sceneLight-direct-box.label') || 'Direct Light Ratio' }}
 			</div>
-			<div class="flex-box" id="sceneLight-direct-box" ref="elDirectBox">
+			<div class="flex-box" id="sceneLight-direct-box"
+				v-tip="t('components.sceneLight-direct-box.tip')" ref="elDirectBox">
 				<SliderBox
 					id="sceneLight-direct-slider"
 					ref="elDirectSlider"
@@ -288,6 +305,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneLight-conditions"
+				v-tip="t('components.sceneLight-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -297,6 +315,7 @@
 		<DetailSummary>{{ t('components.sceneLight-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-events"
+				v-tip="t('components.sceneLight-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="light"
@@ -307,6 +326,7 @@
 		<DetailSummary>{{ t('components.sceneLight-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-scripts"
+				v-tip="t('components.sceneLight-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

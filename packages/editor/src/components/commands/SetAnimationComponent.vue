@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setAnimationComponent-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="setAnimationComponent-actor"
+				v-tip="t('components.setAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="setAnimationComponent-animationId"
+				v-tip="t('components.setAnimationComponent-animationId.tip')"
 				v-focus
 				type="file"
 				filter="animation"
@@ -20,16 +22,20 @@
 			/>
 			<div class="text">Motion</div>
 			<SelectBox id="setAnimationComponent-motion"
+				v-tip="t('components.setAnimationComponent-motion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')" v-focus v-model="form.motion" />
 			<div class="text">Operation</div>
 			<SelectBox id="setAnimationComponent-operation"
+				v-tip="t('components.setAnimationComponent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')" v-model="form.operation" />
 			<div class="text">Angle</div>
 			<CustomBox id="setAnimationComponent-angle"
+				v-tip="t('components.setAnimationComponent-angle.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-angle')" type="angle" v-model="form.angle" />
 			<div class="text">Scale</div>
 			<NumberVar
 				id="setAnimationComponent-scale"
+				v-tip="t('components.setAnimationComponent-scale.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-scale')"
 				min="0"
 				max="10"
@@ -40,6 +46,7 @@
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setAnimationComponent-speed"
+				v-tip="t('components.setAnimationComponent-speed.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-speed')"
 				min="0"
 				max="10"
@@ -50,6 +57,7 @@
 			<div class="text">Opacity</div>
 			<NumberVar
 				id="setAnimationComponent-opacity"
+				v-tip="t('components.setAnimationComponent-opacity.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-opacity')"
 				min="0"
 				max="1"
@@ -60,6 +68,7 @@
 			<div class="text">Priority</div>
 			<NumberBox
 				id="setAnimationComponent-priority"
+				v-tip="t('components.setAnimationComponent-priority.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-priority')"
 				min="-100"
 				max="100"
@@ -68,6 +77,7 @@
 			<div class="text">Offset Y</div>
 			<NumberBox
 				id="setAnimationComponent-offsetY"
+				v-tip="t('components.setAnimationComponent-offsetY.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-offsetY')"
 				min="-100"
 				max="100"
@@ -76,10 +86,12 @@
 			/>
 			<div class="text">Sprite Name</div>
 			<SelectBox id="setAnimationComponent-spriteId"
+				v-tip="t('components.setAnimationComponent-spriteId.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')" v-focus v-model="form.spriteId" />
 			<div class="text">Image</div>
 			<CustomBox
 				id="setAnimationComponent-image"
+				v-tip="t('components.setAnimationComponent-image.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-image')"
 				type="file"
 				filter="image"
@@ -87,6 +99,7 @@
 			/>
 			<div class="text">Play Motion</div>
 			<SelectBox id="setAnimationComponent-playMotion"
+				v-tip="t('components.setAnimationComponent-playMotion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')" v-focus v-model="form.playMotion" />
 			<div class="text">Wait</div>
 			<SelectBox id="setAnimationComponent-wait"

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 触发器访问器窗口 -->
 	<WindowFrame ref="frame" id="triggerGetter" @confirm="onConfirm">
 		<template #title
@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.triggerGetter-type.label') }}</div>
 			<SelectBox id="triggerGetter-type"
+				v-tip="t('components.triggerGetter-type.tip')"
 				:ref="fieldRef('triggerGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.triggerGetter-variable.label') }}</div>
 			<CustomBox
 				id="triggerGetter-variable"
+				v-tip="t('components.triggerGetter-variable.tip')"
 				:ref="fieldRef('triggerGetter-variable')"
 				v-focus
 				type="variable"

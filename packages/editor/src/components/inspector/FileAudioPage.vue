@@ -1,24 +1,29 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.fileAudio-info-grid.label') || 'File Info'
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
 			<div class="text">{{ t('components.fileAudio-name.label') || 'Name' }}</div>
-			<div class="text" id="fileAudio-name">{{ form.name }}</div>
+			<div class="text" id="fileAudio-name"
+				v-tip="t('components.fileAudio-name.tip')">{{ form.name }}</div>
 			<div class="text">{{ t('components.fileAudio-size.label') || 'Size' }}</div>
-			<div class="text" id="fileAudio-size">{{ form.size }}</div>
+			<div class="text" id="fileAudio-size"
+				v-tip="t('components.fileAudio-size.tip')">{{ form.size }}</div>
 			<div class="text">{{ t('components.fileAudio-duration.label') || 'Duration' }}</div>
-			<div class="text" id="fileAudio-duration">{{ form.duration }}</div>
+			<div class="text" id="fileAudio-duration"
+				v-tip="t('components.fileAudio-duration.tip')">{{ form.duration }}</div>
 			<div class="text">{{ t('components.fileAudio-bitrate.label') || 'Bitrate' }}</div>
-			<div class="text" id="fileAudio-bitrate">{{ form.bitrate }}</div>
+			<div class="text" id="fileAudio-bitrate"
+				v-tip="t('components.fileAudio-bitrate.tip')">{{ form.bitrate }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileAudio-mixer-grid.label') || 'Mixer' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-mixer-grid">
 			<div class="text">{{ t('components.fileAudio-volume-box.label') || 'Volume' }}</div>
-			<div class="flex-box" id="fileAudio-volume-box">
+			<div class="flex-box" id="fileAudio-volume-box"
+				v-tip="t('components.fileAudio-volume-box.tip')">
 				<SliderBox
 					id="fileAudio-volume"
 					v-model="form.volume"
@@ -30,7 +35,8 @@
 				<div class="text" id="fileAudio-volume-info">{{ form.volume * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-pan-box.label') || 'Pan' }}</div>
-			<div class="flex-box" id="fileAudio-pan-box">
+			<div class="flex-box" id="fileAudio-pan-box"
+				v-tip="t('components.fileAudio-pan-box.tip')">
 				<SliderBox
 					id="fileAudio-pan"
 					v-model="form.pan"
@@ -42,7 +48,8 @@
 				<div class="text" id="fileAudio-pan-info">{{ form.pan * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-dry-box.label') || 'Reverb - Dry' }}</div>
-			<div class="flex-box" id="fileAudio-dry-box">
+			<div class="flex-box" id="fileAudio-dry-box"
+				v-tip="t('components.fileAudio-dry-box.tip')">
 				<SliderBox
 					id="fileAudio-dry"
 					v-model="form.dry"
@@ -54,7 +61,8 @@
 				<div class="text" id="fileAudio-dry-info">{{ form.dry * 100 }}%</div>
 			</div>
 			<div class="text">{{ t('components.fileAudio-wet-box.label') || 'Reverb - Wet' }}</div>
-			<div class="flex-box" id="fileAudio-wet-box">
+			<div class="flex-box" id="fileAudio-wet-box"
+				v-tip="t('components.fileAudio-wet-box.tip')">
 				<SliderBox
 					id="fileAudio-wet"
 					v-model="form.wet"

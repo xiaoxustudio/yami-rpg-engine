@@ -5,6 +5,7 @@
 			<div class="text">{{ t('components.fileScene-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileScene-width"
+				v-tip="t('components.fileScene-width.tip')"
 				v-model="form.width"
 				min="0"
 				max="512"
@@ -14,6 +15,7 @@
 			<div class="text">{{ t('components.fileScene-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileScene-height"
+				v-tip="t('components.fileScene-height.tip')"
 				v-model="form.height"
 				min="0"
 				max="512"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div>
 			<NumberBox
 				id="fileScene-tileWidth"
+				v-tip="t('components.fileScene-tileWidth.tip')"
 				v-model="form.tileWidth"
 				@input="onParamInput"
 				min="16"
@@ -34,6 +37,7 @@
 			</div>
 			<NumberBox
 				id="fileScene-tileHeight"
+				v-tip="t('components.fileScene-tileHeight.tip')"
 				v-model="form.tileHeight"
 				@input="onParamInput"
 				min="16"
@@ -48,7 +52,8 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileScene-ambient-grid">
 			<div class="text">{{ t('components.fileScene-ambient-red-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="fileScene-ambient-red-box">
+			<div class="flex-box" id="fileScene-ambient-red-box"
+				v-tip="t('components.fileScene-ambient-red-box.tip')">
 				<SliderBox
 					id="fileScene-ambient-red-slider"
 					ref="elAmbientRedSlider"
@@ -70,7 +75,8 @@
 			<div class="text">
 				{{ t('components.fileScene-ambient-green-box.label') || 'Green' }}
 			</div>
-			<div class="flex-box" id="fileScene-ambient-green-box">
+			<div class="flex-box" id="fileScene-ambient-green-box"
+				v-tip="t('components.fileScene-ambient-green-box.tip')">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
 					ref="elAmbientGreenSlider"
@@ -90,7 +96,8 @@
 				/>
 			</div>
 			<div class="text">{{ t('components.fileScene-ambient-blue-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="fileScene-ambient-blue-box">
+			<div class="flex-box" id="fileScene-ambient-blue-box"
+				v-tip="t('components.fileScene-ambient-blue-box.tip')">
 				<SliderBox
 					id="fileScene-ambient-blue-slider"
 					ref="elAmbientBlueSlider"
@@ -112,7 +119,8 @@
 			<div class="text">
 				{{ t('components.fileScene-ambient-direct-box.label') || 'Direct Light Ratio' }}
 			</div>
-			<div class="flex-box" id="fileScene-ambient-direct-box">
+			<div class="flex-box" id="fileScene-ambient-direct-box"
+				v-tip="t('components.fileScene-ambient-direct-box.tip')">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"
 					ref="elAmbientDirectSlider"
@@ -138,6 +146,7 @@
 		<DetailSummary>{{ t('components.fileScene-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileScene-events"
+				v-tip="t('components.fileScene-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="scene"
@@ -148,6 +157,7 @@
 		<DetailSummary>{{ t('components.fileScene-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileScene-scripts"
+				v-tip="t('components.fileScene-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

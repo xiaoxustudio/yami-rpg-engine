@@ -11,19 +11,23 @@
 			<div class="text">Write to List</div>
 			<CustomBox
 				id="getMultipleActors-variable"
+				v-tip="t('components.getMultipleActors-variable.tip')"
 				v-focus
 				type="variable"
 				filter="object"
 				v-model="form.variable"
 			/>
 			<div class="text">Position</div>
-			<CustomBox id="getMultipleActors-position" type="position" v-model="form.position" />
+			<CustomBox id="getMultipleActors-position"
+				v-tip="t('components.getMultipleActors-position.tip')" type="position" v-model="form.position" />
 			<div class="text">Area</div>
 			<SelectBox id="getMultipleActors-area"
+				v-tip="t('components.getMultipleActors-area.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-area')" v-model="form.area" />
 			<div class="text">Width</div>
 			<NumberVar
 				id="getMultipleActors-width"
+				v-tip="t('components.getMultipleActors-width.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-width')"
 				min="0"
 				max="512"
@@ -34,6 +38,7 @@
 			<div class="text">Height</div>
 			<NumberVar
 				id="getMultipleActors-height"
+				v-tip="t('components.getMultipleActors-height.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-height')"
 				min="0"
 				max="512"
@@ -44,6 +49,7 @@
 			<div class="text">Radius</div>
 			<NumberVar
 				id="getMultipleActors-radius"
+				v-tip="t('components.getMultipleActors-radius.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-radius')"
 				min="0"
 				max="256"
@@ -53,12 +59,15 @@
 			/>
 			<div class="text">Selector</div>
 			<SelectBox id="getMultipleActors-selector"
+				v-tip="t('components.getMultipleActors-selector.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-selector')" v-model="form.selector" />
 			<div class="text">Team</div>
 			<SelectVar id="getMultipleActors-teamId"
+				v-tip="t('components.getMultipleActors-teamId.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-teamId')" v-model="form.teamId" />
 			<div class="text">Activation</div>
 			<SelectBox id="getMultipleActors-activation"
+				v-tip="t('components.getMultipleActors-activation.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-activation')" v-model="form.activation" />
 		</div>
 	</WindowFrame>

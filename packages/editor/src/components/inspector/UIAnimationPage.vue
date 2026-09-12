@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiAnimation-animation.label') || 'Animation' }}</div>
 			<CustomBox
 				id="uiAnimation-animation"
+				v-tip="t('components.uiAnimation-animation.tip')"
 				ref="elAnimation"
 				:model-value="form.animation"
 				type="file"
@@ -16,6 +17,7 @@
 			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
 				id="uiAnimation-motion"
+				v-tip="t('components.uiAnimation-motion.tip')"
 				ref="elMotion"
 				v-model="form.motion"
 				@input="onParamInput"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.uiAnimation-autoplay.label') || 'Autoplay' }}</div>
 			<CheckBox
 				id="uiAnimation-autoplay"
+				v-tip="t('components.uiAnimation-autoplay.tip')"
 				ref="elAutoplay"
 				:model-value="form.autoplay"
 				class="standard large"
@@ -31,6 +34,7 @@
 			<div class="text">{{ t('components.uiAnimation-rotatable.label') || 'Rotatable' }}</div>
 			<CheckBox
 				id="uiAnimation-rotatable"
+				v-tip="t('components.uiAnimation-rotatable.tip')"
 				ref="elRotatable"
 				:model-value="form.rotatable"
 				class="standard large"
@@ -39,6 +43,7 @@
 			<div class="text">{{ t('components.uiAnimation-angle.label') || 'Angle' }}</div>
 			<NumberBox
 				id="uiAnimation-angle"
+				v-tip="t('components.uiAnimation-angle.tip')"
 				ref="elAngle"
 				v-model="form.angle"
 				min="0"
@@ -49,6 +54,7 @@
 			<div class="text">{{ t('components.uiAnimation-frame.label') || 'Frame' }}</div>
 			<NumberBox
 				id="uiAnimation-frame"
+				v-tip="t('components.uiAnimation-frame.tip')"
 				ref="elFrame"
 				v-model="form.frame"
 				min="0"
@@ -59,6 +65,7 @@
 			<div id="uiAnimation-offset-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiAnimation-offsetX"
+				v-tip="t('components.uiAnimation-offsetX.tip')"
 					ref="elOffsetX"
 					v-model="form.offsetX"
 					min="-10000"
@@ -68,6 +75,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiAnimation-offsetY"
+				v-tip="t('components.uiAnimation-offsetY.tip')"
 					ref="elOffsetY"
 					v-model="form.offsetY"
 					min="-10000"

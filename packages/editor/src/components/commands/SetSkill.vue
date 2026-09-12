@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Skill</div>
-			<CustomBox id="setSkill-skill" v-focus type="skill" v-model="form.skill" />
+			<CustomBox id="setSkill-skill"
+				v-tip="t('components.setSkill-skill.tip')" v-focus type="skill" v-model="form.skill" />
 			<div class="text">Operation</div>
 			<SelectBox id="setSkill-operation"
+				v-tip="t('components.setSkill-operation.tip')"
 				:ref="registryRef(fieldEls, 'setSkill-operation')" v-model="form.operation" />
 			<div class="text">Cooldown</div>
 			<NumberVar
 				id="setSkill-cooldown"
+				v-tip="t('components.setSkill-cooldown.tip')"
 				min="1"
 				max="3600000"
 				unit="ms"

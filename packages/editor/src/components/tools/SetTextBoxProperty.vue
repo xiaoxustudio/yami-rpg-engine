@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTextBox-property-key.label') }}</div>
-			<SelectBox id="setTextBox-property-key" v-model="form.key" />
+			<SelectBox id="setTextBox-property-key"
+				v-tip="t('components.setTextBox-property-key.tip')" v-model="form.key" />
 			<div class="text">{{ t('components.setTextBox-property-type.label') }}</div>
 			<SelectBox id="setTextBox-property-type"
 				:ref="fieldRef('setTextBox-property-type')" v-model="form.type" />

@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setText-property-key.label') }}</div>
-			<SelectBox id="setText-property-key" v-model="form.key" />
+			<SelectBox id="setText-property-key"
+				v-tip="t('components.setText-property-key.tip')" v-model="form.key" />
 			<div class="text">{{ t('components.setText-property-content.label') }}</div>
 			<TextAreaVar
 				id="setText-property-content"

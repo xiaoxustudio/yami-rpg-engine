@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Language</div>
-			<SelectBox id="setLanguage-language" v-model="form.language" />
+			<SelectBox id="setLanguage-language"
+				v-tip="t('components.setLanguage-language.tip')" v-model="form.language" />
 		</div>
 	</WindowFrame>
 </template>

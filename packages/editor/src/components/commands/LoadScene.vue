@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Scene</div>
-			<FileVar id="loadScene-sceneId" v-focus type="file" filter="scene" v-model="form.sceneId" />
+			<FileVar id="loadScene-sceneId"
+				v-tip="t('components.loadScene-sceneId.tip')" v-focus type="file" filter="scene" v-model="form.sceneId" />
 			<div class="text">Transfer Player</div>
 			<SelectBox id="loadScene-transfer"
+				v-tip="t('components.loadScene-transfer.tip')"
 				:ref="registryRef(fieldEls, 'loadScene-transfer')" v-model="form.transfer" />
 			<div class="text">X</div>
 			<NumberVar
 				id="loadScene-x"
+				v-tip="t('components.loadScene-x.tip')"
 				:ref="registryRef(fieldEls, 'loadScene-x')"
 				min="0"
 				max="512"
@@ -25,6 +28,7 @@
 			<div class="text">Y</div>
 			<NumberVar
 				id="loadScene-y"
+				v-tip="t('components.loadScene-y.tip')"
 				:ref="registryRef(fieldEls, 'loadScene-y')"
 				min="0"
 				max="512"

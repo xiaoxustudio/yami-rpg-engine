@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="elementGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.elementGetter-type.label') }}</div>
 			<SelectBox id="elementGetter-type"
+				v-tip="t('components.elementGetter-type.tip')"
 				:ref="fieldRef('elementGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.elementGetter-ancestor.label') }}</div>
 			<CustomBox
 				id="elementGetter-ancestor"
+				v-tip="t('components.elementGetter-ancestor.tip')"
 				:ref="fieldRef('elementGetter-ancestor')"
 				type="ancestor-element"
 				v-model="form.ancestor"
@@ -20,6 +22,7 @@
 			<div class="text">{{ t('components.elementGetter-presetId.label') }}</div>
 			<CustomBox
 				id="elementGetter-presetId"
+				v-tip="t('components.elementGetter-presetId.tip')"
 				:ref="fieldRef('elementGetter-presetId')"
 				v-focus
 				type="preset-element"
@@ -27,10 +30,12 @@
 			/>
 			<div class="text">{{ t('components.elementGetter-index.label') }}</div>
 			<NumberVar id="elementGetter-index"
+				v-tip="t('components.elementGetter-index.tip')"
 				:ref="fieldRef('elementGetter-index')" min="0" max="10000" v-model="form.index" />
 			<div class="text">{{ t('components.elementGetter-variable.label') }}</div>
 			<CustomBox
 				id="elementGetter-variable"
+				v-tip="t('components.elementGetter-variable.tip')"
 				:ref="fieldRef('elementGetter-variable')"
 				v-focus
 				type="variable"

@@ -13,10 +13,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
 			<SelectBox id="fileActor-inventory-type"
+				v-tip="t('components.fileActor-inventory-type.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-item-id"
+				v-tip="t('components.fileActor-inventory-item-id.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-id')"
 				v-focus
 				type="file"
@@ -26,6 +28,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-item-quantity.label') }}</div>
 			<NumberBox
 				id="fileActor-inventory-item-quantity"
+				v-tip="t('components.fileActor-inventory-item-quantity.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-quantity')"
 				min="1"
 				max="10000"
@@ -34,6 +37,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-equipment-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-equipment-id"
+				v-tip="t('components.fileActor-inventory-equipment-id.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-equipment-id')"
 				v-focus
 				type="file"
@@ -43,6 +47,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-money.label') }}</div>
 			<NumberBox
 				id="fileActor-inventory-money"
+				v-tip="t('components.fileActor-inventory-money.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-money')"
 				min="1"
 				max="100000000"

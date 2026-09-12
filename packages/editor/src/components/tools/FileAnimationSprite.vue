@@ -8,19 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileAnimation-sprite-name.label') }}</div>
-			<TextBox id="fileAnimation-sprite-name" v-focus v-model="form.name" />
+			<TextBox id="fileAnimation-sprite-name"
+				v-tip="t('components.fileAnimation-sprite-name.tip')" v-focus v-model="form.name" />
 			<div class="text">{{ t('components.fileAnimation-sprite-image.label') }}</div>
 			<CustomBox
 				id="fileAnimation-sprite-image"
+				v-tip="t('components.fileAnimation-sprite-image.tip')"
 				v-focus
 				type="file"
 				filter="image"
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.fileAnimation-sprite-hframes.label') }}</div>
-			<NumberBox id="fileAnimation-sprite-hframes" min="1" max="256" v-model="form.hframes" />
+			<NumberBox id="fileAnimation-sprite-hframes"
+				v-tip="t('components.fileAnimation-sprite-hframes.tip')" min="1" max="256" v-model="form.hframes" />
 			<div class="text">{{ t('components.fileAnimation-sprite-vframes.label') }}</div>
-			<NumberBox id="fileAnimation-sprite-vframes" min="1" max="256" v-model="form.vframes" />
+			<NumberBox id="fileAnimation-sprite-vframes"
+				v-tip="t('components.fileAnimation-sprite-vframes.tip')" min="1" max="256" v-model="form.vframes" />
 		</div>
 	</WindowFrame>
 </template>

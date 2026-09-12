@@ -9,9 +9,11 @@
 		<div class="grid-box">
 			<div class="text">Operation</div>
 			<SelectBox id="simulateKey-operation"
+				v-tip="t('components.simulateKey-operation.tip')"
 				:ref="registryRef(fieldEls, 'simulateKey-operation')" v-focus v-model="form.operation" />
 			<div class="text">Key Code</div>
-			<KeyboardBox id="simulateKey-keycode" @input="onKeycode" />
+			<KeyboardBox id="simulateKey-keycode"
+				v-tip="t('components.simulateKey-keycode.tip')" @input="onKeycode" />
 		</div>
 	</WindowFrame>
 </template>

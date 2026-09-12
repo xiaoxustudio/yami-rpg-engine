@@ -5,12 +5,15 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
 			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div>
-			<TextBox id="sceneRegion-name" ref="elName" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneRegion-name"
+				v-tip="t('components.sceneRegion-name.tip')" ref="elName" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div>
-			<ColorBox id="sceneRegion-color" ref="elColor" v-model="form.color" @input="onParamInput"></ColorBox>
+			<ColorBox id="sceneRegion-color"
+				v-tip="t('components.sceneRegion-color.tip')" ref="elColor" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneRegion-x"
+				v-tip="t('components.sceneRegion-x.tip')"
 				ref="elX"
 				v-model="form.x"
 				@input="onParamInput"
@@ -22,6 +25,7 @@
 			<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneRegion-y"
+				v-tip="t('components.sceneRegion-y.tip')"
 				ref="elY"
 				v-model="form.y"
 				@input="onParamInput"
@@ -33,6 +37,7 @@
 			<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="sceneRegion-width"
+				v-tip="t('components.sceneRegion-width.tip')"
 				ref="elWidth"
 				v-model="form.width"
 				@input="onParamInput"
@@ -43,6 +48,7 @@
 			<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="sceneRegion-height"
+				v-tip="t('components.sceneRegion-height.tip')"
 				ref="elHeight"
 				v-model="form.height"
 				@input="onParamInput"
@@ -56,12 +62,14 @@
 		<DetailSummary>{{
 			t('components.sceneRegion-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneRegion-conditions" ref="elConditions" class="inspector-list" flexible></ParamList>
+		<ParamList id="sceneRegion-conditions"
+				v-tip="t('components.sceneRegion-conditions.tip')" ref="elConditions" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-events"
+				v-tip="t('components.sceneRegion-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="region"
@@ -70,7 +78,8 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneRegion-scripts" ref="elScripts" class="inspector-list" flexible></ParamList>
+		<ParamList id="sceneRegion-scripts"
+				v-tip="t('components.sceneRegion-scripts.tip')" ref="elScripts" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneRegion-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>

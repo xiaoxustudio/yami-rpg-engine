@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame id="choice"
 				:ref="registryRef(fieldEls, 'choice')" @confirm="onConfirm">
 		<template #title
@@ -11,6 +11,7 @@
 			<div class="text">{{ t('components.choice-content.label') }}</div>
 			<TextBox
 				id="choice-content"
+				v-tip="t('components.choice-content.tip')"
 				v-focus
 				v-model="form.content"
 				menu="tag-local-var tag-global-var tag-localization"

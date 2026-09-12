@@ -8,22 +8,28 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setInventory-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="setInventory-actor"
+				v-tip="t('components.setInventory-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="setInventory-operation"
+				v-tip="t('components.setInventory-operation.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-operation')" v-model="form.operation" />
 			<div class="text">Money</div>
 			<NumberVar id="setInventory-money"
+				v-tip="t('components.setInventory-money.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-money')" min="1" max="100000000" v-model="form.money" />
 			<div class="text">Item</div>
 			<FileVar id="setInventory-itemId"
+				v-tip="t('components.setInventory-itemId.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-itemId')" v-focus type="file" filter="item" v-model="form.itemId" />
 			<div class="text">Quantity</div>
 			<NumberVar id="setInventory-quantity"
+				v-tip="t('components.setInventory-quantity.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-quantity')" min="1" max="10000" v-model="form.quantity" />
 			<div class="text">Equipment</div>
 			<FileVar
 				id="setInventory-equipmentId"
+				v-tip="t('components.setInventory-equipmentId.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-equipmentId')"
 				v-focus
 				type="file"
@@ -32,15 +38,19 @@
 			/>
 			<div class="text">Equipment</div>
 			<CustomBox id="setInventory-equipment"
+				v-tip="t('components.setInventory-equipment.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-equipment')" type="equipment" v-model="form.equipment" />
 			<div class="text">Order A</div>
 			<NumberVar id="setInventory-order1"
+				v-tip="t('components.setInventory-order1.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-order1')" min="0" max="10000" v-model="form.order1" />
 			<div class="text">Order B</div>
 			<NumberVar id="setInventory-order2"
+				v-tip="t('components.setInventory-order2.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-order2')" min="0" max="10000" v-model="form.order2" />
 			<div class="text">Global Actor</div>
 			<CustomBox id="setInventory-refActor"
+				v-tip="t('components.setInventory-refActor.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-refActor')" type="actor" v-model="form.refActor" />
 		</div>
 	</WindowFrame>

@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.fileActor-portrait.label') || 'Portrait' }}</div>
 			<CustomBox
 				id="fileActor-portrait"
+				v-tip="t('components.fileActor-portrait.tip')"
 				type="file"
 				filter="image"
 				:model-value="form.portrait"
@@ -15,6 +16,7 @@
 			<div class="text">{{ t('components.fileActor-clip.label') || 'Clip' }}</div>
 			<CustomBox
 				id="fileActor-clip"
+				v-tip="t('components.fileActor-clip.tip')"
 				type="clip"
 				image="fileActor-portrait"
 				:model-value="form.clip"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.fileActor-animationId.label') || 'Animation' }}</div>
 			<CustomBox
 				id="fileActor-animationId"
+				v-tip="t('components.fileActor-animationId.tip')"
 				type="file"
 				filter="animation"
 				:model-value="form.animationId"
@@ -31,13 +34,16 @@
 			/>
 			<div class="text">Idle Motion</div>
 			<SelectBox id="fileActor-idleMotion"
+				v-tip="t('components.fileActor-idleMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-idleMotion')" v-model="form.idleMotion" @input="onParamInput" />
 			<div class="text">Move Motion</div>
 			<SelectBox id="fileActor-moveMotion"
+				v-tip="t('components.fileActor-moveMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-moveMotion')" v-model="form.moveMotion" @input="onParamInput" />
 			<div class="text">Rotatable</div>
 			<SelectBox
 				id="fileActor-rotatable"
+				v-tip="t('components.fileActor-rotatable.tip')"
 				ref="elRotatable"
 				v-model="form.rotatable"
 				@input="onParamInput"
@@ -45,6 +51,7 @@
 			<div class="text">Passage Terrain</div>
 			<SelectBox
 				id="fileActor-passage"
+				v-tip="t('components.fileActor-passage.tip')"
 				ref="elPassage"
 				v-model="form.passage"
 				@input="onParamInput"
@@ -52,6 +59,7 @@
 			<div class="text">Movement Speed</div>
 			<NumberBox
 				id="fileActor-speed"
+				v-tip="t('components.fileActor-speed.tip')"
 				v-model="form.speed"
 				min="0"
 				max="32"
@@ -62,6 +70,7 @@
 			<div class="text">Collision Shape</div>
 			<SelectBox
 				id="fileActor-shape"
+				v-tip="t('components.fileActor-shape.tip')"
 				ref="elShape"
 				v-model="form.shape"
 				@input="onParamInput"
@@ -69,6 +78,7 @@
 			<div class="text">Collision Size</div>
 			<NumberBox
 				id="fileActor-size"
+				v-tip="t('components.fileActor-size.tip')"
 				v-model="form.size"
 				min="0"
 				max="16"
@@ -80,6 +90,7 @@
 			<div class="text">Collision Weight</div>
 			<NumberBox
 				id="fileActor-weight"
+				v-tip="t('components.fileActor-weight.tip')"
 				v-model="form.weight"
 				min="0"
 				max="8"
@@ -90,6 +101,7 @@
 			<div class="text">Immovable</div>
 			<SelectBox
 				id="fileActor-immovable"
+				v-tip="t('components.fileActor-immovable.tip')"
 				ref="elImmovable"
 				v-model="form.immovable"
 				@input="onParamInput"
@@ -97,6 +109,7 @@
 			<div class="text">Scale</div>
 			<NumberBox
 				id="fileActor-scale"
+				v-tip="t('components.fileActor-scale.tip')"
 				v-model="form.scale"
 				min="0"
 				max="10"
@@ -107,6 +120,7 @@
 			<div class="text">Priority</div>
 			<NumberBox
 				id="fileActor-priority"
+				v-tip="t('components.fileActor-priority.tip')"
 				v-model="form.priority"
 				min="-512"
 				max="512"
@@ -116,6 +130,7 @@
 			<div class="text">Inherit</div>
 			<CustomBox
 				id="fileActor-inherit"
+				v-tip="t('components.fileActor-inherit.tip')"
 				type="file"
 				filter="actor"
 				:model-value="form.inherit"
@@ -127,6 +142,7 @@
 		<DetailSummary>{{ t('components.fileActor-sprites.label') || 'Sprites' }}</DetailSummary>
 		<ParamList
 			id="fileActor-sprites"
+				v-tip="t('components.fileActor-sprites.tip')"
 			ref="elSprites"
 			@change="onListChange"
 			class="inspector-list"
@@ -139,6 +155,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-attributes"
+				v-tip="t('components.fileActor-attributes.tip')"
 			ref="elAttributes"
 			@change="onListChange"
 			class="inspector-list"
@@ -150,6 +167,7 @@
 		<DetailSummary>{{ t('components.fileActor-skills.label') || 'Skills' }}</DetailSummary>
 		<ParamList
 			id="fileActor-skills"
+				v-tip="t('components.fileActor-skills.tip')"
 			ref="elSkills"
 			@change="onListChange"
 			class="inspector-list"
@@ -162,6 +180,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-equipments"
+				v-tip="t('components.fileActor-equipments.tip')"
 			ref="elEquipments"
 			@change="onListChange"
 			class="inspector-list"
@@ -174,6 +193,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileActor-inventory"
+				v-tip="t('components.fileActor-inventory.tip')"
 			ref="elInventory"
 			@change="onListChange"
 			class="inspector-list"
@@ -184,6 +204,7 @@
 		<DetailSummary>{{ t('components.fileActor-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileActor-events"
+				v-tip="t('components.fileActor-events.tip')"
 			ref="elEvents"
 			@change="onListChange"
 			class="inspector-list"
@@ -195,6 +216,7 @@
 		<DetailSummary>{{ t('components.fileActor-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileActor-scripts"
+				v-tip="t('components.fileActor-scripts.tip')"
 			ref="elScripts"
 			@change="onListChange"
 			class="inspector-list"

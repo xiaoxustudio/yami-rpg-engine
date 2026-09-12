@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.deployment-platform.label') }}</div>
 			<SelectBox
 				id="deployment-platform"
+				v-tip="t('components.deployment-platform.tip')"
 				:ref="registryRef(titleEls, 'deployment-platform')"
 				v-focus
 				v-model="Deployment.form.platform"
@@ -18,6 +19,7 @@
 			<div class="text">{{ t('components.deployment-folder.label') }}</div>
 			<TextBox
 				id="deployment-folder"
+				v-tip="t('components.deployment-folder.tip')"
 				v-model="Deployment.form.folder"
 				@beforeinput="onFolderBeforeinput"
 				@input="onFolderInput"
@@ -26,13 +28,16 @@
 			<div class="flex-box" id="deployment-location-box">
 				<TextBox
 					id="deployment-location"
+				v-tip="t('components.deployment-location.tip')"
 					v-model="Deployment.form.location"
 					@input="onLocationInput"
 				/>
-				<button id="deployment-choose" @click="onChooseClick">…</button>
+				<button id="deployment-choose"
+				v-tip="t('components.deployment-choose.tip')" @click="onChooseClick">…</button>
 			</div>
 			<div class="text">{{ t('components.deployment-compress.label') }}</div>
-			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
+			<CheckBox id="deployment-compress"
+				v-tip="t('components.deployment-compress.tip')" standard @change="onCompressChange" />
 		</div>
 		<div class="text" id="deployment-warning"
 				:ref="registryRef(titleEls, 'deployment-warning')" />

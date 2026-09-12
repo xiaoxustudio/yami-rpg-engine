@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerSpeed-trigger" v-focus type="trigger" v-model="form.trigger" />
+			<CustomBox id="setTriggerSpeed-trigger"
+				v-tip="t('components.setTriggerSpeed-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setTriggerSpeed-speed"
+				v-tip="t('components.setTriggerSpeed-speed.tip')"
 				min="0"
 				max="512"
 				decimals="4"

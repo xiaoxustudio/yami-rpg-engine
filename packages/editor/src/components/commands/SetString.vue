@@ -17,9 +17,11 @@
 		/>
 		<div class="text">Operation</div>
 			<SelectBox id="setString-operation"
+				v-tip="t('components.setString-operation.tip')"
 				:ref="registryRef(fieldEls, 'setString-operation')" v-model="form.operation" />
 			<div class="text">Type</div>
 			<SelectBox id="setString-operand-type"
+				v-tip="t('components.setString-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-type')" v-model="form.operandType" @write="onWrite" />
 			<div class="text">String</div>
 			<TextArea
@@ -30,10 +32,12 @@
 			/>
 			<div class="text">String Method</div>
 			<SelectBox id="setString-operand-string-method"
+				v-tip="t('components.setString-operand-string-method.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-method')" v-model="form.stringMethod" />
 			<div class="text">Variable</div>
 		<CustomBox
 			id="setString-operand-common-variable"
+				v-tip="t('components.setString-operand-common-variable.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-variable')"
 			v-focus
 			type="variable"
@@ -43,6 +47,7 @@
 			<div class="text">Index</div>
 			<NumberVar
 				id="setString-operand-string-char-index"
+				v-tip="t('components.setString-operand-string-char-index.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-char-index')"
 				min="0"
 				max="1000000000"
@@ -51,6 +56,7 @@
 			<div class="text">Begin Index</div>
 			<NumberVar
 				id="setString-operand-string-slice-begin"
+				v-tip="t('components.setString-operand-string-slice-begin.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-slice-begin')"
 				min="-1000000000"
 				max="1000000000"
@@ -59,6 +65,7 @@
 			<div class="text">End Index</div>
 			<NumberVar
 				id="setString-operand-string-slice-end"
+				v-tip="t('components.setString-operand-string-slice-end.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-slice-end')"
 				min="-1000000000"
 				max="1000000000"
@@ -67,6 +74,7 @@
 			<div class="text">Target Length</div>
 			<NumberBox
 				id="setString-operand-string-pad-start-length"
+				v-tip="t('components.setString-operand-string-pad-start-length.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-length')"
 				min="2"
 				max="10"
@@ -74,10 +82,12 @@
 			/>
 			<div class="text">Pad String</div>
 			<TextBox id="setString-operand-string-pad-start-pad"
+				v-tip="t('components.setString-operand-string-pad-start-pad.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')" v-model="stringPadStartPad" />
 			<div class="text">Substring</div>
 			<StringVar
 				id="setString-operand-string-replace-pattern"
+				v-tip="t('components.setString-operand-string-replace-pattern.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-replace-pattern')"
 				v-focus
 				v-model="form.stringReplacePattern"
@@ -85,12 +95,14 @@
 			<div class="text">Replacement</div>
 			<StringVar
 				id="setString-operand-string-replace-replacement"
+				v-tip="t('components.setString-operand-string-replace-replacement.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-replace-replacement')"
 				v-model="form.stringReplaceReplacement"
 			/>
 			<div class="text">Attribute Key</div>
 		<CustomBox
 			id="setString-operand-attribute-attributeId"
+				v-tip="t('components.setString-operand-attribute-attributeId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-attribute-attributeId')"
 			v-focus
 			type="attribute"
@@ -99,6 +111,7 @@
 			<div class="text">Enum String</div>
 		<CustomBox
 			id="setString-operand-enum-stringId"
+				v-tip="t('components.setString-operand-enum-stringId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-enum-stringId')"
 			v-focus
 			type="enum-string"
@@ -106,46 +119,56 @@
 		/>
 			<div class="text">Property</div>
 			<SelectBox id="setString-operand-object-property"
+				v-tip="t('components.setString-operand-object-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-object-property')" v-model="form.objectProperty" />
 			<div class="text">Property</div>
 			<SelectBox id="setString-operand-element-property"
+				v-tip="t('components.setString-operand-element-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-element-property')" v-model="form.elementProperty" />
 			<div class="text">Element</div>
 		<CustomBox
 			id="setString-operand-element-element"
+				v-tip="t('components.setString-operand-element-element.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-element-element')"
 			type="element"
 			v-model="form.elementElement"
 		/>
 		<div class="text">Actor</div>
 		<CustomBox id="setString-operand-common-actor"
+				v-tip="t('components.setString-operand-common-actor.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-actor')" type="actor" v-model="form.commonActor" />
 		<div class="text">Skill</div>
 		<CustomBox id="setString-operand-common-skill"
+				v-tip="t('components.setString-operand-common-skill.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-skill')" type="skill" v-model="form.commonSkill" />
 		<div class="text">Trigger</div>
 		<CustomBox
 			id="setString-operand-common-trigger"
+				v-tip="t('components.setString-operand-common-trigger.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-trigger')"
 			type="trigger"
 			v-model="form.commonTrigger"
 		/>
 		<div class="text">State</div>
 		<CustomBox id="setString-operand-common-state"
+				v-tip="t('components.setString-operand-common-state.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-state')" type="state" v-model="form.commonState" />
 		<div class="text">Equipment</div>
 		<CustomBox
 			id="setString-operand-common-equipment"
+				v-tip="t('components.setString-operand-common-equipment.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-equipment')"
 			type="equipment"
 			v-model="form.commonEquipment"
 		/>
 		<div class="text">Item</div>
 		<CustomBox id="setString-operand-common-item"
+				v-tip="t('components.setString-operand-common-item.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-item')" type="item" v-model="form.commonItem" />
 		<div class="text">File</div>
 		<CustomBox
 			id="setString-operand-object-fileId"
+				v-tip="t('components.setString-operand-object-fileId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-object-fileId')"
 			v-focus
 			type="file"
@@ -154,6 +177,7 @@
 			<div class="text">Index</div>
 			<NumberVar
 				id="setString-operand-list-index"
+				v-tip="t('components.setString-operand-list-index.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-list-index')"
 				min="0"
 				max="1000000000"
@@ -164,13 +188,16 @@
 				:ref="registryRef(fieldEls, 'setString-operand-parameter-key')" v-focus v-model="form.parameterKey" />
 			<div class="text">Script</div>
 			<TextBox id="setString-operand-script"
+				v-tip="t('components.setString-operand-script.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-script')" v-focus v-model="script" />
 			<div class="text">Data</div>
 			<SelectBox id="setString-operand-other-data"
+				v-tip="t('components.setString-operand-other-data.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-other-data')" v-model="form.otherData" />
 			<div class="text">Choice Index</div>
 			<NumberVar
 				id="setString-operand-showChoices-content-choiceIndex"
+				v-tip="t('components.setString-operand-showChoices-content-choiceIndex.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-showChoices-content-choiceIndex')"
 				min="0"
 				max="255"
@@ -179,6 +206,7 @@
 			<div class="text">Timestamp</div>
 		<CustomBox
 			id="setString-operand-parse-timestamp-variable"
+				v-tip="t('components.setString-operand-parse-timestamp-variable.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-variable')"
 			v-focus
 			type="variable"
@@ -188,12 +216,14 @@
 			<div class="text">Date Format</div>
 			<TextBox
 				id="setString-operand-parse-timestamp-format"
+				v-tip="t('components.setString-operand-parse-timestamp-format.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-format')"
 				v-model="parseTimestampFormat"
 			/>
 			<div class="text">Image Width</div>
 			<NumberBox
 				id="setString-operand-screenshot-width"
+				v-tip="t('components.setString-operand-screenshot-width.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-screenshot-width')"
 				min="64"
 				max="7680"
@@ -203,6 +233,7 @@
 			<div class="text">Image Height</div>
 			<NumberBox
 				id="setString-operand-screenshot-height"
+				v-tip="t('components.setString-operand-screenshot-height.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-screenshot-height')"
 				min="64"
 				max="7680"

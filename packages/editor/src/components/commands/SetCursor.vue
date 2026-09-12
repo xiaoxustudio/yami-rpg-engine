@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Image</div>
-			<CustomBox id="setCursor-image" v-focus type="file" filter="image" v-model="form.image" />
+			<CustomBox id="setCursor-image"
+				v-tip="t('components.setCursor-image.tip')" v-focus type="file" filter="image" v-model="form.image" />
 		</div>
 	</WindowFrame>
 </template>

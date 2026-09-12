@@ -9,12 +9,15 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setNumber-operation.label') }}</div>
 			<SelectBox id="setNumber-operation"
+				v-tip="t('components.setNumber-operation.tip')"
 				:ref="fieldRef('setNumber-operation')" v-focus />
 			<SelectBox id="setNumber-operand-operation"
+				v-tip="t('components.setNumber-operand-operation.tip')"
 				:ref="fieldRef('setNumber-operand-operation')" v-focus :model-value="form.operation" />
 			<div class="text">{{ t('components.setNumber-operand-type.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-type"
+				v-tip="t('components.setNumber-operand-type.tip')"
 				:ref="fieldRef('setNumber-operand-type')"
 				:model-value="form.operandType"
 				@write="onWrite"
@@ -22,6 +25,7 @@
 			<div class="text">{{ t('components.setNumber-operand-constant-value.label') }}</div>
 			<NumberBox
 				id="setNumber-operand-constant-value"
+				v-tip="t('components.setNumber-operand-constant-value.tip')"
 				:ref="fieldRef('setNumber-operand-constant-value')"
 				min="-1000000000"
 				max="1000000000"
@@ -30,22 +34,27 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-method.label') }}</div>
 			<SelectBox id="setNumber-operand-math-method"
+				v-tip="t('components.setNumber-operand-math-method.tip')"
 				:ref="fieldRef('setNumber-operand-math-method')" :model-value="form.mathMethod" />
 			<div class="text">{{ t('components.setNumber-operand-string-method.label') }}</div>
 			<SelectBox id="setNumber-operand-string-method"
+				v-tip="t('components.setNumber-operand-string-method.tip')"
 				:ref="fieldRef('setNumber-operand-string-method')" :model-value="form.stringMethod" />
 			<div class="text">{{ t('components.setNumber-operand-object-property.label') }}</div>
 			<SelectBox id="setNumber-operand-object-property"
+				v-tip="t('components.setNumber-operand-object-property.tip')"
 				:ref="fieldRef('setNumber-operand-object-property')" :model-value="form.objectProperty" />
 			<div class="text">{{ t('components.setNumber-operand-element-property.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-element-property"
+				v-tip="t('components.setNumber-operand-element-property.tip')"
 				:ref="fieldRef('setNumber-operand-element-property')"
 				:model-value="form.elementProperty"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-element-element.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-element-element"
+				v-tip="t('components.setNumber-operand-element-element.tip')"
 				:ref="fieldRef('setNumber-operand-element-element')"
 				type="element"
 				:model-value="form.elementElement"
@@ -53,6 +62,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-variable.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-variable"
+				v-tip="t('components.setNumber-operand-common-variable.tip')"
 				:ref="fieldRef('setNumber-operand-common-variable')"
 				v-focus
 				type="variable"
@@ -62,6 +72,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-actor.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-actor"
+				v-tip="t('components.setNumber-operand-common-actor.tip')"
 				:ref="fieldRef('setNumber-operand-common-actor')"
 				type="actor"
 				:model-value="form.commonActor"
@@ -69,6 +80,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-skill.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-skill"
+				v-tip="t('components.setNumber-operand-common-skill.tip')"
 				:ref="fieldRef('setNumber-operand-common-skill')"
 				type="skill"
 				:model-value="form.commonSkill"
@@ -76,6 +88,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-state.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-state"
+				v-tip="t('components.setNumber-operand-common-state.tip')"
 				:ref="fieldRef('setNumber-operand-common-state')"
 				type="state"
 				:model-value="form.commonState"
@@ -83,6 +96,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-equipment.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-equipment"
+				v-tip="t('components.setNumber-operand-common-equipment.tip')"
 				:ref="fieldRef('setNumber-operand-common-equipment')"
 				type="equipment"
 				:model-value="form.commonEquipment"
@@ -90,6 +104,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-item.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-item"
+				v-tip="t('components.setNumber-operand-common-item.tip')"
 				:ref="fieldRef('setNumber-operand-common-item')"
 				type="item"
 				:model-value="form.commonItem"
@@ -97,6 +112,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-trigger.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-trigger"
+				v-tip="t('components.setNumber-operand-common-trigger.tip')"
 				:ref="fieldRef('setNumber-operand-common-trigger')"
 				type="trigger"
 				:model-value="form.commonTrigger"
@@ -104,6 +120,7 @@
 			<div class="text">{{ t('components.setNumber-operand-common-tilemap.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-common-tilemap"
+				v-tip="t('components.setNumber-operand-common-tilemap.tip')"
 				:ref="fieldRef('setNumber-operand-common-tilemap')"
 				type="tilemap"
 				:model-value="form.commonTilemap"
@@ -111,6 +128,7 @@
 			<div class="text">{{ t('components.setNumber-operand-tilemapPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-tilemapPosition"
+				v-tip="t('components.setNumber-operand-tilemapPosition.tip')"
 				:ref="fieldRef('setNumber-operand-tilemapPosition')"
 				type="position"
 				:model-value="form.tilemapPosition"
@@ -118,6 +136,7 @@
 			<div class="text">{{ t('components.setNumber-operand-object-itemId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-itemId"
+				v-tip="t('components.setNumber-operand-object-itemId.tip')"
 				:ref="fieldRef('setNumber-operand-object-itemId')"
 				v-focus
 				type="file"
@@ -127,6 +146,7 @@
 			<div class="text">{{ t('components.setNumber-operand-object-equipmentId.label') }}</div>
 			<FileVar
 				id="setNumber-operand-object-equipmentId"
+				v-tip="t('components.setNumber-operand-object-equipmentId.tip')"
 				:ref="fieldRef('setNumber-operand-object-equipmentId')"
 				v-focus
 				type="file"
@@ -136,6 +156,7 @@
 			<div class="text">{{ t('components.setNumber-operand-string-search.label') }}</div>
 			<StringVar
 				id="setNumber-operand-string-search"
+				v-tip="t('components.setNumber-operand-string-search.tip')"
 				:ref="fieldRef('setNumber-operand-string-search')"
 				v-focus
 				:model-value="form.stringSearch"
@@ -143,6 +164,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-decimals.label') }}</div>
 			<NumberBox
 				id="setNumber-operand-math-decimals"
+				v-tip="t('components.setNumber-operand-math-decimals.tip')"
 				:ref="fieldRef('setNumber-operand-math-decimals')"
 				min="0"
 				max="10"
@@ -151,6 +173,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-min.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-math-min"
+				v-tip="t('components.setNumber-operand-math-min.tip')"
 				:ref="fieldRef('setNumber-operand-math-min')"
 				min="-1000000000"
 				max="1000000000"
@@ -159,6 +182,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-max.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-math-max"
+				v-tip="t('components.setNumber-operand-math-max.tip')"
 				:ref="fieldRef('setNumber-operand-math-max')"
 				min="-1000000000"
 				max="1000000000"
@@ -167,6 +191,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-startPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-math-startPosition"
+				v-tip="t('components.setNumber-operand-math-startPosition.tip')"
 				:ref="fieldRef('setNumber-operand-math-startPosition')"
 				type="position"
 				:model-value="form.mathStartPosition"
@@ -174,6 +199,7 @@
 			<div class="text">{{ t('components.setNumber-operand-math-endPosition.label') }}</div>
 			<CustomBox
 				id="setNumber-operand-math-endPosition"
+				v-tip="t('components.setNumber-operand-math-endPosition.tip')"
 				:ref="fieldRef('setNumber-operand-math-endPosition')"
 				type="position"
 				:model-value="form.mathEndPosition"
@@ -181,6 +207,7 @@
 			<div class="text">{{ t('components.setNumber-operand-cooldown-key.label') }}</div>
 			<SelectVar
 				id="setNumber-operand-cooldown-key"
+				v-tip="t('components.setNumber-operand-cooldown-key.tip')"
 				:ref="fieldRef('setNumber-operand-cooldown-key')"
 				v-focus
 				:model-value="form.cooldownKey"
@@ -188,6 +215,7 @@
 			<div class="text">{{ t('components.setNumber-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-list-index"
+				v-tip="t('components.setNumber-operand-list-index.tip')"
 				:ref="fieldRef('setNumber-operand-list-index')"
 				min="0"
 				max="1000000000"
@@ -196,19 +224,23 @@
 			<div class="text">{{ t('components.setNumber-operand-parameter-key.label') }}</div>
 			<StringVar
 				id="setNumber-operand-parameter-key"
+				v-tip="t('components.setNumber-operand-parameter-key.tip')"
 				:ref="fieldRef('setNumber-operand-parameter-key')"
 				v-focus
 				:model-value="form.parameterKey"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-script.label') }}</div>
 			<TextBox id="setNumber-operand-script"
+				v-tip="t('components.setNumber-operand-script.tip')"
 				:ref="fieldRef('setNumber-operand-script')" v-focus :model-value="form.script" />
 			<div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div>
 			<SelectBox id="setNumber-operand-other-data"
+				v-tip="t('components.setNumber-operand-other-data.tip')"
 				:ref="fieldRef('setNumber-operand-other-data')" :model-value="form.otherData" />
 			<div class="text">{{ t('components.setNumber-operand-other-touchId.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-other-touchId"
+				v-tip="t('components.setNumber-operand-other-touchId.tip')"
 				:ref="fieldRef('setNumber-operand-other-touchId')"
 				min="0"
 				max="10"
@@ -216,6 +248,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-other-teamId.label') }}</div>
 			<SelectBox id="setNumber-operand-other-teamId"
+				v-tip="t('components.setNumber-operand-other-teamId.tip')"
 				:ref="fieldRef('setNumber-operand-other-teamId')" :model-value="form.otherTeamId" />
 		</div>
 	</WindowFrame>

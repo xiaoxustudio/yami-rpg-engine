@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox id="uiElement-general-group"
 				:ref="registryRef(inspectorEls, 'uiElement-general-group')" open>
 		<DetailSummary>{{
@@ -7,12 +7,14 @@
 		<div class="detail-grid" id="uiElement-general-grid">
 			<div class="text">{{ t('components.uiElement-name.label') || 'Name' }}</div>
 			<TextBox id="uiElement-name"
+				v-tip="t('components.uiElement-name.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-name')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.uiElement-pointerEvents.label') || 'Pointer Events' }}
 			</div>
 			<SelectBox
 				id="uiElement-pointerEvents"
+				v-tip="t('components.uiElement-pointerEvents.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-pointerEvents')"
 				v-model="form.pointerEvents"
 				@input="onParamInput"
@@ -31,6 +33,7 @@
 			<div class="flex-box" id="uiElement-transform-align-box">
 				<button
 					id="uiElement-transform-align-left"
+				v-tip="t('components.uiElement-transform-align-left.tip')"
 					class="uiElement-transform-align"
 					value="left"
 				>
@@ -38,6 +41,7 @@
 				</button>
 				<button
 					id="uiElement-transform-align-center"
+				v-tip="t('components.uiElement-transform-align-center.tip')"
 					class="uiElement-transform-align"
 					value="center"
 				>
@@ -45,6 +49,7 @@
 				</button>
 				<button
 					id="uiElement-transform-align-right"
+				v-tip="t('components.uiElement-transform-align-right.tip')"
 					class="uiElement-transform-align"
 					value="right"
 				>
@@ -52,6 +57,7 @@
 				</button>
 				<button
 					id="uiElement-transform-align-top"
+				v-tip="t('components.uiElement-transform-align-top.tip')"
 					class="uiElement-transform-align rotated"
 					value="top"
 				>
@@ -59,6 +65,7 @@
 				</button>
 				<button
 					id="uiElement-transform-align-middle"
+				v-tip="t('components.uiElement-transform-align-middle.tip')"
 					class="uiElement-transform-align rotated"
 					value="middle"
 				>
@@ -66,6 +73,7 @@
 				</button>
 				<button
 					id="uiElement-transform-align-bottom"
+				v-tip="t('components.uiElement-transform-align-bottom.tip')"
 					class="uiElement-transform-align rotated"
 					value="bottom"
 				>
@@ -78,6 +86,7 @@
 			<div id="uiElement-transform-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-anchorX"
+				v-tip="t('components.uiElement-transform-anchorX.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-anchorX')"
 					v-model="form.anchorX"
 					min="-100"
@@ -88,6 +97,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-anchorY"
+				v-tip="t('components.uiElement-transform-anchorY.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-anchorY')"
 					v-model="form.anchorY"
 					min="-100"
@@ -101,6 +111,7 @@
 			<div id="uiElement-transform-x-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-x"
+				v-tip="t('components.uiElement-transform-x.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-x')"
 					v-model="form.x"
 					min="-10000"
@@ -111,6 +122,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-x2"
+				v-tip="t('components.uiElement-transform-x2.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-x2')"
 					v-model="form.x2"
 					min="-100"
@@ -125,6 +137,7 @@
 			<div id="uiElement-transform-y-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-y"
+				v-tip="t('components.uiElement-transform-y.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-y')"
 					v-model="form.y"
 					min="-10000"
@@ -135,6 +148,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-y2"
+				v-tip="t('components.uiElement-transform-y2.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-transform-y2')"
 					v-model="form.y2"
 					min="-100"
@@ -151,6 +165,7 @@
 			<div id="uiElement-transform-width-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-width"
+				v-tip="t('components.uiElement-transform-width.tip')"
 					v-model="form.width"
 					min="-10000"
 					max="10000"
@@ -160,6 +175,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-width2"
+				v-tip="t('components.uiElement-transform-width2.tip')"
 					v-model="form.width2"
 					min="-100"
 					max="100"
@@ -175,6 +191,7 @@
 			<div id="uiElement-transform-height-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-height"
+				v-tip="t('components.uiElement-transform-height.tip')"
 					v-model="form.height"
 					min="-10000"
 					max="10000"
@@ -184,6 +201,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-height2"
+				v-tip="t('components.uiElement-transform-height2.tip')"
 					v-model="form.height2"
 					min="-100"
 					max="100"
@@ -202,6 +220,7 @@
 			>
 				<NumberBox
 					id="uiElement-transform-rotation"
+				v-tip="t('components.uiElement-transform-rotation.tip')"
 					v-model="form.rotation"
 					min="-36000"
 					max="36000"
@@ -216,6 +235,7 @@
 			<div id="uiElement-transform-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-scaleX"
+				v-tip="t('components.uiElement-transform-scaleX.tip')"
 					v-model="form.scaleX"
 					min="-100"
 					max="100"
@@ -225,6 +245,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-scaleY"
+				v-tip="t('components.uiElement-transform-scaleY.tip')"
 					v-model="form.scaleY"
 					min="-100"
 					max="100"
@@ -239,6 +260,7 @@
 			<div id="uiElement-transform-skew-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-skewX"
+				v-tip="t('components.uiElement-transform-skewX.tip')"
 					v-model="form.skewX"
 					min="-100"
 					max="100"
@@ -248,6 +270,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-skewY"
+				v-tip="t('components.uiElement-transform-skewY.tip')"
 					v-model="form.skewY"
 					min="-100"
 					max="100"
@@ -262,6 +285,7 @@
 			<div id="uiElement-transform-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-opacity"
+				v-tip="t('components.uiElement-transform-opacity.tip')"
 					v-model="form.opacity"
 					min="0"
 					max="1"
@@ -277,6 +301,7 @@
 		<DetailSummary>{{ t('components.uiElement-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="uiElement-events"
+				v-tip="t('components.uiElement-events.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-events')"
 			class="inspector-list"
 			filter="element"
@@ -287,6 +312,7 @@
 				:ref="registryRef(inspectorEls, 'uiElement-scripts-group')" open>
 		<DetailSummary>{{ t('components.uiElement-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList id="uiElement-scripts"
+				v-tip="t('components.uiElement-scripts.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-scripts')" class="inspector-list" flexible></ParamList>
 	</DetailBox>
 	<ParameterPane id="uiElement-parameter-pane"
@@ -299,6 +325,7 @@
 			<div class="text">{{ t('components.uiImage-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiImage-image"
+				v-tip="t('components.uiImage-image.tip')"
 				v-model="form.image"
 				type="file"
 				filter="image"
@@ -308,6 +335,7 @@
 			<SelectBox
 				ref="elDisplay"
 				id="uiImage-display"
+				v-tip="t('components.uiImage-display.tip')"
 				v-model="form.display"
 				@input="onParamInput"
 			></SelectBox>
@@ -315,6 +343,7 @@
 			<SelectBox
 				ref="elFlip"
 				id="uiImage-flip"
+				v-tip="t('components.uiImage-flip.tip')"
 				v-model="form.flip"
 				@input="onParamInput"
 			></SelectBox>
@@ -322,6 +351,7 @@
 			<SelectBox
 				ref="elBlend"
 				id="uiImage-blend"
+				v-tip="t('components.uiImage-blend.tip')"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>
@@ -333,6 +363,7 @@
 			>
 				<NumberBox
 					id="uiImage-shiftX"
+				v-tip="t('components.uiImage-shiftX.tip')"
 					v-model="form.shiftX"
 					min="-10000"
 					max="10000"
@@ -341,6 +372,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiImage-shiftY"
+				v-tip="t('components.uiImage-shiftY.tip')"
 					v-model="form.shiftY"
 					min="-10000"
 					max="10000"
@@ -352,6 +384,7 @@
 			<CustomBox
 				ref="elClip"
 				id="uiImage-clip"
+				v-tip="t('components.uiImage-clip.tip')"
 				v-model="form.clip"
 				type="clip"
 				image="uiImage-image"
@@ -361,6 +394,7 @@
 			<NumberBox
 				ref="elBorder"
 				id="uiImage-border"
+				v-tip="t('components.uiImage-border.tip')"
 				v-model="form.border"
 				min="1"
 				max="100"
@@ -368,7 +402,8 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiImage-tint-0-box.label') || 'Tint - Red' }}</div>
-			<div class="flex-box" id="uiImage-tint-0-box">
+			<div class="flex-box" id="uiImage-tint-0-box"
+				v-tip="t('components.uiImage-tint-0-box.tip')">
 				<SliderBox
 					ref="elTint0Slider"
 					id="uiImage-tint-0-slider"
@@ -388,7 +423,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiImage-tint-1-box.label') || 'Tint - Green' }}</div>
-			<div class="flex-box" id="uiImage-tint-1-box">
+			<div class="flex-box" id="uiImage-tint-1-box"
+				v-tip="t('components.uiImage-tint-1-box.tip')">
 				<SliderBox
 					ref="elTint1Slider"
 					id="uiImage-tint-1-slider"
@@ -408,7 +444,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiImage-tint-2-box.label') || 'Tint - Blue' }}</div>
-			<div class="flex-box" id="uiImage-tint-2-box">
+			<div class="flex-box" id="uiImage-tint-2-box"
+				v-tip="t('components.uiImage-tint-2-box.tip')">
 				<SliderBox
 					ref="elTint2Slider"
 					id="uiImage-tint-2-slider"
@@ -430,7 +467,8 @@
 			<div class="text">
 				{{ t('components.uiImage-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="uiImage-tint-3-box">
+			<div class="flex-box" id="uiImage-tint-3-box"
+				v-tip="t('components.uiImage-tint-3-box.tip')">
 				<SliderBox
 					ref="elTint3Slider"
 					id="uiImage-tint-3-slider"

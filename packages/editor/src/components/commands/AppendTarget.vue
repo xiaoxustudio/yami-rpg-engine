@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="appendTarget-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="appendTarget-actor"
+				v-tip="t('components.appendTarget-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="appendTarget-target" type="actor" v-model="form.target" />
+			<CustomBox id="appendTarget-target"
+				v-tip="t('components.appendTarget-target.tip')" type="actor" v-model="form.target" />
 		</div>
 	</WindowFrame>
 </template>

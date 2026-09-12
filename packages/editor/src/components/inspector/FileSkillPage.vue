@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.fileSkill-icon.label') || 'Icon' }}</div>
 			<CustomBox
 				id="fileSkill-icon"
+				v-tip="t('components.fileSkill-icon.tip')"
 				:model-value="form.icon"
 				@input="onParamInput"
 				type="file"
@@ -15,6 +16,7 @@
 			<div class="text">{{ t('components.fileSkill-clip.label') || 'Clip' }}</div>
 			<CustomBox
 				id="fileSkill-clip"
+				v-tip="t('components.fileSkill-clip.tip')"
 				:model-value="form.clip"
 				@input="onParamInput"
 				type="clip"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.fileSkill-inherit.label') || 'Inherit' }}</div>
 			<CustomBox
 				id="fileSkill-inherit"
+				v-tip="t('components.fileSkill-inherit.tip')"
 				:model-value="form.inherit"
 				@input="onParamInput"
 				type="file"
@@ -36,6 +39,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileSkill-attributes"
+				v-tip="t('components.fileSkill-attributes.tip')"
 			ref="elAttributes"
 			@change="onListChange"
 			class="inspector-list"
@@ -47,6 +51,7 @@
 		<DetailSummary>{{ t('components.fileSkill-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-events"
+				v-tip="t('components.fileSkill-events.tip')"
 			ref="elEvents"
 			@change="onListChange"
 			class="inspector-list"
@@ -58,6 +63,7 @@
 		<DetailSummary>{{ t('components.fileSkill-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-scripts"
+				v-tip="t('components.fileSkill-scripts.tip')"
 			ref="elScripts"
 			@change="onListChange"
 			class="inspector-list"

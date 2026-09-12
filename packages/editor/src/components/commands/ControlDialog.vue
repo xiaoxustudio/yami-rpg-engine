@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="controlDialog-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="controlDialog-element"
+				v-tip="t('components.controlDialog-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Operation</div>
 			<SelectBox id="controlDialog-operation"
+				v-tip="t('components.controlDialog-operation.tip')"
 				:ref="registryRef(fieldEls, 'controlDialog-operation')" v-model="form.operation" />
 		</div>
 	</WindowFrame>

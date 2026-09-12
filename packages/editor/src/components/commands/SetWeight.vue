@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setWeight-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="setWeight-actor"
+				v-tip="t('components.setWeight-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Weight</div>
 			<NumberVar
 				id="setWeight-weight"
+				v-tip="t('components.setWeight-weight.tip')"
 				min="0"
 				max="8"
 				step="0.1"

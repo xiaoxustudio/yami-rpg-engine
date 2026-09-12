@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setActive-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="setActive-actor"
+				v-tip="t('components.setActive-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
 			<SelectBox id="setActive-active"
+				v-tip="t('components.setActive-active.tip')"
 				:ref="registryRef(fieldEls, 'setActive-active')" v-model="form.active" />
 		</div>
 	</WindowFrame>

@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.textEffect-type.label') }}</div>
 			<SelectBox id="textEffect-type"
+				v-tip="t('components.textEffect-type.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-type')" v-model="form.type" />
 			<div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div>
 			<NumberBox
 				id="textEffect-shadowOffsetX"
+				v-tip="t('components.textEffect-shadowOffsetX.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetX')"
 				min="-9"
 				max="9"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div>
 			<NumberBox
 				id="textEffect-shadowOffsetY"
+				v-tip="t('components.textEffect-shadowOffsetY.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetY')"
 				min="-9"
 				max="9"
@@ -32,6 +35,7 @@
 			<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div>
 			<NumberBox
 				id="textEffect-strokeWidth"
+				v-tip="t('components.textEffect-strokeWidth.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-strokeWidth')"
 				min="1"
 				max="20"
@@ -40,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.textEffect-color.label') }}</div>
 			<ColorBox id="textEffect-color"
+				v-tip="t('components.textEffect-color.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-color')" v-model="form.color" />
 		</div>
 	</WindowFrame>

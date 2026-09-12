@@ -3,9 +3,11 @@
 		<DetailSummary>{{ t('components.fileFont-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-info-grid">
 			<div class="text">{{ t('components.fileFont-name.label') || 'Name' }}</div>
-			<div class="text" id="fileFont-name">{{ form.name }}</div>
+			<div class="text" id="fileFont-name"
+				v-tip="t('components.fileFont-name.tip')">{{ form.name }}</div>
 			<div class="text">{{ t('components.fileFont-size.label') || 'Size' }}</div>
-			<div class="text" id="fileFont-size">{{ form.size }}</div>
+			<div class="text" id="fileFont-size"
+				v-tip="t('components.fileFont-size.tip')">{{ form.size }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileFont-font-detail" open>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 变量访问器窗口 -->
 	<WindowFrame ref="frame" id="variableGetter" @confirm="onConfirm">
 		<template #title
@@ -9,26 +9,36 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter-type.label') }}</div>
-			<SelectBox id="variableGetter-type" v-model="form.type" />
+			<SelectBox id="variableGetter-type"
+				v-tip="t('components.variableGetter-type.tip')" v-model="form.type" />
 			<div class="text">{{ t('components.variableGetter-actor.label') }}</div>
-			<CustomBox id="variableGetter-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="variableGetter-actor"
+				v-tip="t('components.variableGetter-actor.tip')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.variableGetter-skill.label') }}</div>
-			<CustomBox id="variableGetter-skill" type="skill" v-model="form.skill" />
+			<CustomBox id="variableGetter-skill"
+				v-tip="t('components.variableGetter-skill.tip')" type="skill" v-model="form.skill" />
 			<div class="text">{{ t('components.variableGetter-state.label') }}</div>
-			<CustomBox id="variableGetter-state" type="state" v-model="form.state" />
+			<CustomBox id="variableGetter-state"
+				v-tip="t('components.variableGetter-state.tip')" type="state" v-model="form.state" />
 			<div class="text">{{ t('components.variableGetter-equipment.label') }}</div>
-			<CustomBox id="variableGetter-equipment" type="equipment" v-model="form.equipment" />
+			<CustomBox id="variableGetter-equipment"
+				v-tip="t('components.variableGetter-equipment.tip')" type="equipment" v-model="form.equipment" />
 			<div class="text">{{ t('components.variableGetter-item.label') }}</div>
-			<CustomBox id="variableGetter-item" type="item" v-model="form.item" />
+			<CustomBox id="variableGetter-item"
+				v-tip="t('components.variableGetter-item.tip')" type="item" v-model="form.item" />
 			<div class="text">{{ t('components.variableGetter-element.label') }}</div>
-			<CustomBox id="variableGetter-element" type="element" v-model="form.element" />
+			<CustomBox id="variableGetter-element"
+				v-tip="t('components.variableGetter-element.tip')" type="element" v-model="form.element" />
 			<div class="text">{{ t('components.variableGetter-common-key.label') }}</div>
-			<TextBox id="variableGetter-common-key" v-model="form.commonKey" />
+			<TextBox id="variableGetter-common-key"
+				v-tip="t('components.variableGetter-common-key.tip')" v-model="form.commonKey" />
 			<div class="text">{{ t('components.variableGetter-preset-key.label') }}</div>
-			<SelectVar id="variableGetter-preset-key" v-model="form.presetKey" />
+			<SelectVar id="variableGetter-preset-key"
+				v-tip="t('components.variableGetter-preset-key.tip')" v-model="form.presetKey" />
 			<div class="text">{{ t('components.variableGetter-global-key.label') }}</div>
 			<CustomBox
 				id="variableGetter-global-key"
+				v-tip="t('components.variableGetter-global-key.tip')"
 				type="global-variable"
 				v-model="form.globalKey"
 			/>

@@ -10,16 +10,19 @@
 			<div class="text">Trigger</div>
 			<CustomBox
 			id="setTriggerDuration-trigger"
+				v-tip="t('components.setTriggerDuration-trigger.tip')"
 			v-focus
 			type="trigger"
 			v-model="form.trigger"
 		/>
 			<div class="text">Operation</div>
 			<SelectBox id="setTriggerDuration-operation"
+				v-tip="t('components.setTriggerDuration-operation.tip')"
 				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')" v-model="form.operation" />
 			<div class="text">Duration</div>
 			<NumberVar
 				id="setTriggerDuration-duration"
+				v-tip="t('components.setTriggerDuration-duration.tip')"
 				min="0"
 				max="3600000"
 				unit="ms"

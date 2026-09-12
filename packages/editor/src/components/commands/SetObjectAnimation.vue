@@ -10,22 +10,28 @@
 		<div class="grid-box" id="setObjectAnimation-grid-box">
 			<div class="text">Sort</div>
 			<SelectBox id="setObjectAnimation-sort"
+				v-tip="t('components.setObjectAnimation-sort.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')" v-focus v-model="form.sort" />
 			<div class="text">Actor</div>
 			<CustomBox id="setObjectAnimation-actor"
+				v-tip="t('components.setObjectAnimation-actor.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Trigger</div>
 			<CustomBox id="setObjectAnimation-trigger"
+				v-tip="t('components.setObjectAnimation-trigger.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')" type="trigger" v-model="form.trigger" />
 			<div class="text">Animation</div>
 			<CustomBox id="setObjectAnimation-animation"
+				v-tip="t('components.setObjectAnimation-animation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')" type="object" v-model="form.animation" />
 			<div class="text">Operation</div>
 			<SelectBox id="setObjectAnimation-operation"
+				v-tip="t('components.setObjectAnimation-operation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')" v-model="form.operation" />
 			<div class="text">Tint - Red</div>
 			<NumberBox
 				id="setObjectAnimation-tint-0"
+				v-tip="t('components.setObjectAnimation-tint-0.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-0')"
 				min="-255"
 				max="255"
@@ -35,6 +41,7 @@
 			<div class="text">Tint - Green</div>
 			<NumberBox
 				id="setObjectAnimation-tint-1"
+				v-tip="t('components.setObjectAnimation-tint-1.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-1')"
 				min="-255"
 				max="255"
@@ -44,6 +51,7 @@
 			<div class="text">Tint - Blue</div>
 			<NumberBox
 				id="setObjectAnimation-tint-2"
+				v-tip="t('components.setObjectAnimation-tint-2.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-2')"
 				min="-255"
 				max="255"
@@ -53,6 +61,7 @@
 			<div class="text">Tint - Grayscale</div>
 			<NumberBox
 				id="setObjectAnimation-tint-3"
+				v-tip="t('components.setObjectAnimation-tint-3.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-3')"
 				min="0"
 				max="255"
@@ -62,6 +71,7 @@
 			<div class="text">Opacity</div>
 			<NumberVar
 				id="setObjectAnimation-opacity"
+				v-tip="t('components.setObjectAnimation-opacity.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-opacity')"
 				min="0"
 				max="1"
@@ -72,6 +82,7 @@
 			<div class="text">OffsetY</div>
 			<NumberVar
 				id="setObjectAnimation-offsetY"
+				v-tip="t('components.setObjectAnimation-offsetY.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-offsetY')"
 				min="-10000"
 				max="10000"
@@ -82,6 +93,7 @@
 			<div class="text">Rotation</div>
 			<NumberVar
 				id="setObjectAnimation-rotation"
+				v-tip="t('components.setObjectAnimation-rotation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-rotation')"
 				min="-10000"
 				max="10000"

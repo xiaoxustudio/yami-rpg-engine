@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.uiReference-properties-grid.label') || 'Reference Properties'
@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiReference-prefabId.label') || 'Prefab' }}</div>
 			<CustomBox
 				id="uiReference-prefabId"
+				v-tip="t('components.uiReference-prefabId.tip')"
 				ref="elPrefabId"
 				:model-value="form.prefabId"
 				type="preset-element"
@@ -17,6 +18,7 @@
 			</div>
 			<CheckBox
 				id="uiReference-synchronous"
+				v-tip="t('components.uiReference-synchronous.tip')"
 				ref="elSynchronous"
 				:model-value="form.synchronous"
 				class="standard large"

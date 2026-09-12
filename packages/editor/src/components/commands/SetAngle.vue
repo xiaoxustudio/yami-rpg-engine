@@ -9,9 +9,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="setAngle-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="setAngle-actor"
+				v-tip="t('components.setAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Angle</div>
-			<CustomBox id="setAngle-angle" type="angle" v-model="form.angle" />
+			<CustomBox id="setAngle-angle"
+				v-tip="t('components.setAngle-angle.tip')" type="angle" v-model="form.angle" />
 			<div class="text">Easing</div>
 			<SelectBox id="setAngle-easingId"
 				:ref="registryRef(fieldEls, 'setAngle-easingId')" name="easing" v-model="form.easingId" />

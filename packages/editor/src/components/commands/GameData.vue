@@ -9,12 +9,15 @@
 		<div class="grid-box">
 			<div class="text">Operation</div>
 			<SelectBox id="gameData-operation"
+				v-tip="t('components.gameData-operation.tip')"
 				:ref="registryRef(fieldEls, 'gameData-operation')" v-focus v-model="form.operation" />
 			<div class="text">Index</div>
 			<NumberVar id="gameData-index"
+				v-tip="t('components.gameData-index.tip')"
 				:ref="registryRef(fieldEls, 'gameData-index')" min="0" max="32" v-model="form.index" />
 			<div class="text">Variables</div>
 			<TextBox id="gameData-variables"
+				v-tip="t('components.gameData-variables.tip')"
 				:ref="registryRef(fieldEls, 'gameData-variables')" v-model="variables" />
 		</div>
 	</WindowFrame>

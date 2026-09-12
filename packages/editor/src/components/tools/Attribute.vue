@@ -28,11 +28,13 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-name.label') }}</div>
 					<TextBox id="attribute-name"
+				v-tip="t('components.attribute-name.tip')"
 				:ref="registryRef(attributeEls, 'attribute-name')" menu="tag-localization" @input="onNameInput" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-key.label') }}</div>
 					<TextBox id="attribute-key"
+				v-tip="t('components.attribute-key.tip')"
 				:ref="registryRef(attributeEls, 'attribute-key')" @input="onKeyInput" />
 				</div>
 				<div class="flex-item" id="attribute-type-box">
@@ -44,7 +46,8 @@
 						value="boolean"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="attribute-type-boolean-label">
+						><div class="text" id="attribute-type-boolean-label"
+				v-tip="t('components.attribute-type-boolean-label.tip')">
 							{{ t('components.attribute-type-boolean-label.content') }}
 						</div></RadioBox
 					>
@@ -55,7 +58,8 @@
 						value="number"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="attribute-type-number-label">
+						><div class="text" id="attribute-type-number-label"
+				v-tip="t('components.attribute-type-number-label.tip')">
 							{{ t('components.attribute-type-number-label.content') }}
 						</div></RadioBox
 					>
@@ -66,7 +70,8 @@
 						value="string"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="attribute-type-string-label">
+						><div class="text" id="attribute-type-string-label"
+				v-tip="t('components.attribute-type-string-label.tip')">
 							{{ t('components.attribute-type-string-label.content') }}
 						</div></RadioBox
 					>
@@ -77,7 +82,8 @@
 						value="enum"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="attribute-type-enum-label">
+						><div class="text" id="attribute-type-enum-label"
+				v-tip="t('components.attribute-type-enum-label.tip')">
 							{{ t('components.attribute-type-enum-label.content') }}
 						</div></RadioBox
 					>
@@ -88,7 +94,8 @@
 						value="object"
 						@input="onTypeInput"
 						@write="onTypeWrite"
-						><div class="text" id="attribute-type-object-label">
+						><div class="text" id="attribute-type-object-label"
+				v-tip="t('components.attribute-type-object-label.tip')">
 							{{ t('components.attribute-type-object-label.content') }}
 						</div></RadioBox
 					>
@@ -97,11 +104,13 @@
 				:ref="registryRef(attributeEls, 'attribute-enum-box')">
 					<div class="text">{{ t('components.attribute-enum.label') }}</div>
 					<CustomBox id="attribute-enum"
+				v-tip="t('components.attribute-enum.tip')"
 				:ref="registryRef(attributeEls, 'attribute-enum')" type="enum-group" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-note.label') }}</div>
 					<TextArea id="attribute-note"
+				v-tip="t('components.attribute-note.tip')"
 				:ref="registryRef(attributeEls, 'attribute-note')" />
 				</div>
 			</div>

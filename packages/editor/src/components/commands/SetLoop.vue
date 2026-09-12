@@ -9,9 +9,11 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="setLoop-type"
+				v-tip="t('components.setLoop-type.tip')"
 				:ref="registryRef(fieldEls, 'setLoop-type')" v-focus v-model="form.type" />
 			<div class="text">Loop</div>
 			<SelectBox id="setLoop-loop"
+				v-tip="t('components.setLoop-loop.tip')"
 				:ref="registryRef(fieldEls, 'setLoop-loop')" v-model="form.loop" />
 		</div>
 	</WindowFrame>

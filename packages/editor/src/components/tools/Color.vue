@@ -46,6 +46,7 @@
 			<div class="text">#</div>
 			<TextBox
 				id="color-hex"
+				v-tip="t('components.color-hex.tip')"
 				:ref="registryRef(colorEls, 'color-hex')"
 				v-focus
 				v-model="form.hex"
@@ -53,13 +54,17 @@
 				@input="onHexInput"
 			/>
 			<div class="text">R</div>
-			<NumberBox id="color-r" min="0" max="255" v-model="form.r" @input="onRgbaInput" />
+			<NumberBox id="color-r"
+				v-tip="t('components.color-r.tip')" min="0" max="255" v-model="form.r" @input="onRgbaInput" />
 			<div class="text">G</div>
-			<NumberBox id="color-g" min="0" max="255" v-model="form.g" @input="onRgbaInput" />
+			<NumberBox id="color-g"
+				v-tip="t('components.color-g.tip')" min="0" max="255" v-model="form.g" @input="onRgbaInput" />
 			<div class="text">B</div>
-			<NumberBox id="color-b" min="0" max="255" v-model="form.b" @input="onRgbaInput" />
+			<NumberBox id="color-b"
+				v-tip="t('components.color-b.tip')" min="0" max="255" v-model="form.b" @input="onRgbaInput" />
 			<div class="text">A</div>
-			<NumberBox id="color-a" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
+			<NumberBox id="color-a"
+				v-tip="t('components.color-a.tip')" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
 		</div>
 	</WindowFrame>
 </template>

@@ -11,6 +11,7 @@
 			<div class="text">Zoom Factor</div>
 			<NumberVar
 				id="setZoomFactor-zoom"
+				v-tip="t('components.setZoomFactor-zoom.tip')"
 				v-focus
 				min="1"
 				max="8"

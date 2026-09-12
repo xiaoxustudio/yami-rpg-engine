@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.uiText-properties-grid.label') || 'Text Properties'
@@ -8,6 +8,7 @@
 			<SelectBox
 				ref="elDirection"
 				id="uiText-direction"
+				v-tip="t('components.uiText-direction.tip')"
 				v-model="form.direction"
 				@input="onParamInput"
 			></SelectBox>
@@ -15,6 +16,7 @@
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
 					id="uiText-align-left"
+				v-tip="t('components.uiText-align-left.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="left"
@@ -23,6 +25,7 @@
 				>
 				<RadioBox
 					id="uiText-align-center"
+				v-tip="t('components.uiText-align-center.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="center"
@@ -31,6 +34,7 @@
 				>
 				<RadioBox
 					id="uiText-align-right"
+				v-tip="t('components.uiText-align-right.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="right"
@@ -39,6 +43,7 @@
 				>
 				<RadioBox
 					id="uiText-align-top"
+				v-tip="t('components.uiText-align-top.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="top"
@@ -47,6 +52,7 @@
 				>
 				<RadioBox
 					id="uiText-align-middle"
+				v-tip="t('components.uiText-align-middle.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="middle"
@@ -55,6 +61,7 @@
 				>
 				<RadioBox
 					id="uiText-align-bottom"
+				v-tip="t('components.uiText-align-bottom.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="bottom"
@@ -65,12 +72,14 @@
 			<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div>
 			<TextArea
 				id="uiText-content"
+				v-tip="t('components.uiText-content.tip')"
 				v-model="form.content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 				@input="onParamInput"
 			></TextArea>
 			<div class="text">{{ t('components.uiText-size-box.label') || 'Size' }}</div>
-			<div class="flex-box" id="uiText-size-box">
+			<div class="flex-box" id="uiText-size-box"
+				v-tip="t('components.uiText-size-box.tip')">
 				<SliderBox
 					ref="elSizeSlider"
 					id="uiText-size-slider"
@@ -93,7 +102,8 @@
 			<div class="text">
 				{{ t('components.uiText-lineSpacing-box.label') || 'Line Spacing' }}
 			</div>
-			<div class="flex-box" id="uiText-lineSpacing-box">
+			<div class="flex-box" id="uiText-lineSpacing-box"
+				v-tip="t('components.uiText-lineSpacing-box.tip')">
 				<SliderBox
 					ref="elLineSpacingSlider"
 					id="uiText-lineSpacing-slider"
@@ -116,7 +126,8 @@
 			<div class="text">
 				{{ t('components.uiText-letterSpacing-box.label') || 'Letter Spacing' }}
 			</div>
-			<div class="flex-box" id="uiText-letterSpacing-box">
+			<div class="flex-box" id="uiText-letterSpacing-box"
+				v-tip="t('components.uiText-letterSpacing-box.tip')">
 				<SliderBox
 					ref="elLetterSpacingSlider"
 					id="uiText-letterSpacing-slider"
@@ -137,13 +148,16 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div>
-			<ColorBox id="uiText-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<ColorBox id="uiText-color"
+				v-tip="t('components.uiText-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
-			<TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<TextBox id="uiText-font"
+				v-tip="t('components.uiText-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				ref="elTypeface"
 				id="uiText-typeface"
+				v-tip="t('components.uiText-typeface.tip')"
 				v-model="form.typeface"
 				@input="onParamInput"
 			></SelectBox>
@@ -151,6 +165,7 @@
 			<SelectBox
 				ref="elEffectType"
 				id="uiText-effect-type"
+				v-tip="t('components.uiText-effect-type.tip')"
 				v-model="form.effect.type"
 				@input="onParamInput"
 			></SelectBox>
@@ -160,6 +175,7 @@
 			<NumberBox
 				ref="elShadowOffsetX"
 				id="uiText-effect-shadowOffsetX"
+				v-tip="t('components.uiText-effect-shadowOffsetX.tip')"
 				v-model="form.effect.shadowOffsetX"
 				min="-9"
 				max="9"
@@ -172,6 +188,7 @@
 			<NumberBox
 				ref="elShadowOffsetY"
 				id="uiText-effect-shadowOffsetY"
+				v-tip="t('components.uiText-effect-shadowOffsetY.tip')"
 				v-model="form.effect.shadowOffsetY"
 				min="-9"
 				max="9"
@@ -184,6 +201,7 @@
 			<NumberBox
 				ref="elStrokeWidth"
 				id="uiText-effect-strokeWidth"
+				v-tip="t('components.uiText-effect-strokeWidth.tip')"
 				v-model="form.effect.strokeWidth"
 				min="1"
 				max="20"
@@ -196,6 +214,7 @@
 			<ColorBox
 				ref="elEffectColor"
 				id="uiText-effect-color"
+				v-tip="t('components.uiText-effect-color.tip')"
 				v-model="form.effect.color"
 				@input="onParamInput"
 			></ColorBox>
@@ -203,6 +222,7 @@
 			<SelectBox
 				ref="elOverflow"
 				id="uiText-overflow"
+				v-tip="t('components.uiText-overflow.tip')"
 				v-model="form.overflow"
 				@input="onParamInput"
 			></SelectBox>
@@ -210,6 +230,7 @@
 			<SelectBox
 				ref="elBlend"
 				id="uiText-blend"
+				v-tip="t('components.uiText-blend.tip')"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>

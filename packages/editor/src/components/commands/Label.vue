@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">Label Name</div>
-			<TextBox id="label-name" v-focus v-model="name" />
+			<TextBox id="label-name"
+				v-tip="t('components.label-name.tip')" v-focus v-model="name" />
 		</div>
 	</WindowFrame>
 </template>

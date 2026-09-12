@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="playActorAnimation-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="playActorAnimation-actor"
+				v-tip="t('components.playActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Motion</div>
-			<CustomBox id="playActorAnimation-motion" type="enum-string" v-model="form.motion" />
+			<CustomBox id="playActorAnimation-motion"
+				v-tip="t('components.playActorAnimation-motion.tip')" type="enum-string" v-model="form.motion" />
 			<div class="text">Speed</div>
 			<NumberVar
 				id="playActorAnimation-speed"
+				v-tip="t('components.playActorAnimation-speed.tip')"
 				min="0.1"
 				max="10"
 				step="0.1"

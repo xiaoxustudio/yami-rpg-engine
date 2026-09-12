@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.uiProgressBar-properties-grid.label') || 'ProgressBar Properties'
@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiProgressBar-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiProgressBar-image"
+				v-tip="t('components.uiProgressBar-image.tip')"
 				v-model="form.image"
 				type="file"
 				filter="image"
@@ -15,6 +16,7 @@
 			<div class="text">{{ t('components.uiProgressBar-display.label') || 'Display' }}</div>
 			<SelectBox
 				id="uiProgressBar-display"
+				v-tip="t('components.uiProgressBar-display.tip')"
 				ref="elDisplay"
 				v-model="form.display"
 				@input="onParamInput"
@@ -22,6 +24,7 @@
 			<div class="text">{{ t('components.uiProgressBar-clip.label') || 'Clip' }}</div>
 			<CustomBox
 				id="uiProgressBar-clip"
+				v-tip="t('components.uiProgressBar-clip.tip')"
 				ref="elClip"
 				v-model="form.clip"
 				type="clip"
@@ -31,6 +34,7 @@
 			<div class="text">{{ t('components.uiProgressBar-type.label') || 'Type' }}</div>
 			<SelectBox
 				id="uiProgressBar-type"
+				v-tip="t('components.uiProgressBar-type.tip')"
 				ref="elType"
 				v-model="form.type"
 				@input="onParamInput"
@@ -38,6 +42,7 @@
 			<div class="text">{{ t('components.uiProgressBar-centerX.label') || 'Center X' }}</div>
 			<NumberBox
 				id="uiProgressBar-centerX"
+				v-tip="t('components.uiProgressBar-centerX.tip')"
 				ref="elCenterX"
 				v-model="form.centerX"
 				min="0"
@@ -49,6 +54,7 @@
 			<div class="text">{{ t('components.uiProgressBar-centerY.label') || 'Center Y' }}</div>
 			<NumberBox
 				id="uiProgressBar-centerY"
+				v-tip="t('components.uiProgressBar-centerY.tip')"
 				ref="elCenterY"
 				v-model="form.centerY"
 				min="0"
@@ -62,6 +68,7 @@
 			</div>
 			<NumberBox
 				id="uiProgressBar-startAngle"
+				v-tip="t('components.uiProgressBar-startAngle.tip')"
 				ref="elStartAngle"
 				v-model="form.startAngle"
 				min="-360"
@@ -76,6 +83,7 @@
 			</div>
 			<NumberBox
 				id="uiProgressBar-centralAngle"
+				v-tip="t('components.uiProgressBar-centralAngle.tip')"
 				ref="elCentralAngle"
 				v-model="form.centralAngle"
 				min="-360"
@@ -88,6 +96,7 @@
 			<div class="text">{{ t('components.uiProgressBar-step.label') || 'Step' }}</div>
 			<NumberBox
 				id="uiProgressBar-step"
+				v-tip="t('components.uiProgressBar-step.tip')"
 				v-model="form.step"
 				min="0"
 				max="100"
@@ -96,6 +105,7 @@
 			<div class="text">{{ t('components.uiProgressBar-progress.label') || 'Progress' }}</div>
 			<NumberBox
 				id="uiProgressBar-progress"
+				v-tip="t('components.uiProgressBar-progress.tip')"
 				v-model="form.progress"
 				min="0"
 				max="1"
@@ -106,6 +116,7 @@
 			<div class="text">{{ t('components.uiProgressBar-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="uiProgressBar-blend"
+				v-tip="t('components.uiProgressBar-blend.tip')"
 				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -115,12 +126,14 @@
 			</div>
 			<SelectBox
 				id="uiProgressBar-colorMode"
+				v-tip="t('components.uiProgressBar-colorMode.tip')"
 				ref="elColorMode"
 				v-model="form.colorMode"
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiProgressBar-color-0-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-0-box" ref="elColor0Box">
+			<div class="flex-box" id="uiProgressBar-color-0-box"
+				v-tip="t('components.uiProgressBar-color-0-box.tip')" ref="elColor0Box">
 				<SliderBox
 					id="uiProgressBar-color-0-slider"
 					ref="elColor0Slider"
@@ -140,7 +153,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-1-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-1-box" ref="elColor1Box">
+			<div class="flex-box" id="uiProgressBar-color-1-box"
+				v-tip="t('components.uiProgressBar-color-1-box.tip')" ref="elColor1Box">
 				<SliderBox
 					id="uiProgressBar-color-1-slider"
 					ref="elColor1Slider"
@@ -160,7 +174,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-2-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-2-box" ref="elColor2Box">
+			<div class="flex-box" id="uiProgressBar-color-2-box"
+				v-tip="t('components.uiProgressBar-color-2-box.tip')" ref="elColor2Box">
 				<SliderBox
 					id="uiProgressBar-color-2-slider"
 					ref="elColor2Slider"
@@ -180,7 +195,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-3-box.label') || 'Alpha' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-3-box" ref="elColor3Box">
+			<div class="flex-box" id="uiProgressBar-color-3-box"
+				v-tip="t('components.uiProgressBar-color-3-box.tip')" ref="elColor3Box">
 				<SliderBox
 					id="uiProgressBar-color-3-slider"
 					ref="elColor3Slider"

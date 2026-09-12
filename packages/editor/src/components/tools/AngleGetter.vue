@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="angleGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,13 +9,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.angleGetter-type.label') }}</div>
 			<SelectBox id="angleGetter-type"
+				v-tip="t('components.angleGetter-type.tip')"
 				:ref="fieldRef('angleGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.angleGetter-position-position.label') }}</div>
 			<CustomBox id="angleGetter-position-position"
+				v-tip="t('components.angleGetter-position-position.tip')"
 				:ref="fieldRef('angleGetter-position-position')" type="position" v-model="form.position" />
 			<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div>
 			<NumberVar
 				id="angleGetter-common-degrees"
+				v-tip="t('components.angleGetter-common-degrees.tip')"
 				:ref="fieldRef('angleGetter-common-degrees')"
 				min="-36000"
 				max="36000"

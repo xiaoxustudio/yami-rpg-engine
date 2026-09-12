@@ -10,20 +10,25 @@
 			<div class="text">Trigger</div>
 			<FileVar
 				id="createTrigger-triggerId"
+				v-tip="t('components.createTrigger-triggerId.tip')"
 				v-focus
 				type="file"
 				filter="trigger"
 				v-model="form.triggerId"
 			/>
 			<div class="text">Caster</div>
-			<CustomBox id="createTrigger-caster" type="actor" v-model="form.caster" />
+			<CustomBox id="createTrigger-caster"
+				v-tip="t('components.createTrigger-caster.tip')" type="actor" v-model="form.caster" />
 			<div class="text">Origin</div>
-			<CustomBox id="createTrigger-origin" type="position" v-model="form.origin" />
+			<CustomBox id="createTrigger-origin"
+				v-tip="t('components.createTrigger-origin.tip')" type="position" v-model="form.origin" />
 			<div class="text">Angle</div>
-			<CustomBox id="createTrigger-angle" type="angle" v-model="form.angle" />
+			<CustomBox id="createTrigger-angle"
+				v-tip="t('components.createTrigger-angle.tip')" type="angle" v-model="form.angle" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="createTrigger-distance"
+				v-tip="t('components.createTrigger-distance.tip')"
 				min="-512"
 				max="512"
 				decimals="4"
@@ -33,6 +38,7 @@
 			<div class="text">Scale</div>
 			<NumberVar
 				id="createTrigger-scale"
+				v-tip="t('components.createTrigger-scale.tip')"
 				min="0.1"
 				max="10"
 				step="0.1"
@@ -42,6 +48,7 @@
 			<div class="text">Global Speed</div>
 			<NumberVar
 				id="createTrigger-timeScale"
+				v-tip="t('components.createTrigger-timeScale.tip')"
 				min="0.1"
 				max="10"
 				step="0.1"

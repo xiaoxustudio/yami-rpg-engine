@@ -8,11 +8,14 @@
 
 		<div class="grid-box">
 			<div class="text">Tilemap</div>
-			<CustomBox id="deleteTile-tilemap" v-focus type="tilemap" v-model="form.tilemap" />
+			<CustomBox id="deleteTile-tilemap"
+				v-tip="t('components.deleteTile-tilemap.tip')" v-focus type="tilemap" v-model="form.tilemap" />
 			<div class="text">Tilemap X</div>
-			<NumberVar id="deleteTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
+			<NumberVar id="deleteTile-tilemapX"
+				v-tip="t('components.deleteTile-tilemapX.tip')" min="0" max="511" v-model="form.tilemapX" />
 			<div class="text">Tilemap Y</div>
-			<NumberVar id="deleteTile-tilemapY" min="0" max="511" v-model="form.tilemapY" />
+			<NumberVar id="deleteTile-tilemapY"
+				v-tip="t('components.deleteTile-tilemapY.tip')" min="0" max="511" v-model="form.tilemapY" />
 		</div>
 	</WindowFrame>
 </template>

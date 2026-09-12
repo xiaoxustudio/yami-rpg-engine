@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="setPan-type"
+				v-tip="t('components.setPan-type.tip')"
 				:ref="registryRef(fieldEls, 'setPan-type')" v-focus v-model="form.type" />
 			<div class="text">Pan</div>
 			<NumberVar
 				id="setPan-pan"
+				v-tip="t('components.setPan-pan.tip')"
 				min="-1"
 				max="1"
 				step="0.1"

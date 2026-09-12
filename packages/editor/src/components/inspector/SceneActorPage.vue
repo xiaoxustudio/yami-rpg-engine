@@ -5,11 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
 			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div>
-			<TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneActor-name"
+				v-tip="t('components.sceneActor-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
 			<SelectBox
 				ref="elType"
 				id="sceneActor-type"
+				v-tip="t('components.sceneActor-type.tip')"
 				v-model="form.type"
 				@input="onParamInput"
 				@write="onTypeWrite"
@@ -17,6 +19,7 @@
 			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div>
 			<CustomBox
 				id="sceneActor-actorId"
+				v-tip="t('components.sceneActor-actorId.tip')"
 				:model-value="form.actorId"
 				type="file"
 				filter="actor"
@@ -25,6 +28,7 @@
 			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div>
 			<SelectBox
 				id="sceneActor-teamId"
+				v-tip="t('components.sceneActor-teamId.tip')"
 				:ref="registryRef(inspectorEls, 'sceneActor-teamId')"
 				v-model="form.teamId"
 				@input="onParamInput"
@@ -32,6 +36,7 @@
 			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneActor-x"
+				v-tip="t('components.sceneActor-x.tip')"
 				v-model="form.x"
 				min="-128"
 				max="640"
@@ -42,6 +47,7 @@
 			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneActor-y"
+				v-tip="t('components.sceneActor-y.tip')"
 				v-model="form.y"
 				min="-128"
 				max="640"
@@ -50,7 +56,8 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneActor-angle-box">
+			<div class="flex-box" id="sceneActor-angle-box"
+				v-tip="t('components.sceneActor-angle-box.tip')">
 				<SliderBox
 					ref="elAngleSlider"
 					id="sceneActor-angle-slider"
@@ -72,7 +79,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneActor-scale-box">
+			<div class="flex-box" id="sceneActor-scale-box"
+				v-tip="t('components.sceneActor-scale-box.tip')">
 				<SliderBox
 					ref="elScaleSlider"
 					id="sceneActor-scale-slider"
@@ -101,6 +109,7 @@
 		<ParamList
 			ref="elConditions"
 			id="sceneActor-conditions"
+				v-tip="t('components.sceneActor-conditions.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -110,6 +119,7 @@
 		<ParamList
 			ref="elEvents"
 			id="sceneActor-events"
+				v-tip="t('components.sceneActor-events.tip')"
 			class="inspector-list"
 			filter="actor"
 			flexible
@@ -121,6 +131,7 @@
 		<ParamList
 			ref="elScripts"
 			id="sceneActor-scripts"
+				v-tip="t('components.sceneActor-scripts.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>

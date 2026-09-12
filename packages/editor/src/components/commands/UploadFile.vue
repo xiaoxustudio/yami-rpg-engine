@@ -8,20 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="uploadFile-url" v-focus v-model="form.url" />
+			<StringVar id="uploadFile-url"
+				v-tip="t('components.uploadFile-url.tip')" v-focus v-model="form.url" />
 			<div class="text">LocalPath</div>
-			<StringVar id="uploadFile-path" v-focus v-model="form.path" />
+			<StringVar id="uploadFile-path"
+				v-tip="t('components.uploadFile-path.tip')" v-focus v-model="form.path" />
 			<div class="text">Method</div>
 			<SelectBox id="uploadFile-method"
+				v-tip="t('components.uploadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'uploadFile-method')" v-model="form.method" />
 			<div class="text">Field</div>
-			<StringVar id="uploadFile-field" v-model="form.field" />
+			<StringVar id="uploadFile-field"
+				v-tip="t('components.uploadFile-field.tip')" v-model="form.field" />
 			<div class="text">Header</div>
 			<ParamList id="uploadFile-header"
+				v-tip="t('components.uploadFile-header.tip')"
 				:ref="registryRef(fieldEls, 'uploadFile-header')" v-model="form.header" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="uploadFile-callback"
+				v-tip="t('components.uploadFile-callback.tip')"
 				type="file"
 				filter="event"
 				v-model="form.callback"
@@ -29,6 +35,7 @@
 			<div class="text">RateCallBack</div>
 			<CustomBox
 				id="uploadFile-rateCallback"
+				v-tip="t('components.uploadFile-rateCallback.tip')"
 				type="file"
 				filter="event"
 				v-model="form.rateCallback"

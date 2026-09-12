@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animParticleLayer-properties-grid.label') || 'Particle Layer'
@@ -9,6 +9,7 @@
 			</div>
 			<CustomBox
 				id="animParticleLayer-particleId"
+				v-tip="t('components.animParticleLayer-particleId.tip')"
 				ref="elParticleId"
 				type="file"
 				filter="particle"
@@ -20,6 +21,7 @@
 			</div>
 			<SelectBox
 				id="animParticleLayer-position"
+				v-tip="t('components.animParticleLayer-position.tip')"
 				ref="elPosition"
 				v-model="form.position"
 				@input="onParamInput"
@@ -27,6 +29,7 @@
 			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div>
 			<SelectBox
 				id="animParticleLayer-angle"
+				v-tip="t('components.animParticleLayer-angle.tip')"
 				ref="elAngle"
 				v-model="form.angle"
 				@input="onParamInput"
@@ -34,6 +37,7 @@
 			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div>
 			<SelectBox
 				id="animParticleLayer-order"
+				v-tip="t('components.animParticleLayer-order.tip')"
 				ref="elOrder"
 				v-model="form.order"
 				@input="onParamInput"

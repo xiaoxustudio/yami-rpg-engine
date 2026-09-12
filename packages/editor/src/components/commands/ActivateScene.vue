@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">Scene</div>
 			<SelectBox id="activateScene-pointer"
+				v-tip="t('components.activateScene-pointer.tip')"
 				:ref="registryRef(fieldEls, 'activateScene-pointer')" v-focus v-model="form.pointer" />
 		</div>
 	</WindowFrame>

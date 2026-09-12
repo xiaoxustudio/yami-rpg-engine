@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiVideo-video.label') || 'Video' }}</div>
 			<CustomBox
 				id="uiVideo-video"
+				v-tip="t('components.uiVideo-video.tip')"
 				ref="elVideo"
 				v-model="form.video"
 				type="file"
@@ -18,6 +19,7 @@
 			</div>
 			<NumberBox
 				id="uiVideo-playbackRate"
+				v-tip="t('components.uiVideo-playbackRate.tip')"
 				ref="elPlaybackRate"
 				v-model="form.playbackRate"
 				min="0"
@@ -26,11 +28,14 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div>
-			<SelectBox id="uiVideo-loop" ref="elLoop" v-model="form.loop" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-loop"
+				v-tip="t('components.uiVideo-loop.tip')" ref="elLoop" v-model="form.loop" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiVideo-flip" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-flip"
+				v-tip="t('components.uiVideo-flip.tip')" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div>
-			<SelectBox id="uiVideo-blend" ref="elBlend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<SelectBox id="uiVideo-blend"
+				v-tip="t('components.uiVideo-blend.tip')" ref="elBlend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>

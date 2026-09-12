@@ -13,7 +13,8 @@
 				:ref="registryRef(fieldEls, 'if-branches')" v-focus v-model="form.branches" />
 		</div>
 		<CheckBox id="if-else" v-model="form.else" class="standard"
-			><div class="text" id="if-else-label">Else</div></CheckBox
+			><div class="text" id="if-else-label"
+				v-tip="t('components.if-else-label.tip')">Else</div></CheckBox
 		>
 	</WindowFrame>
 </template>

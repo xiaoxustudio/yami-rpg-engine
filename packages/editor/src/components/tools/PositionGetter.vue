@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="positionGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.positionGetter-type.label') }}</div>
 			<SelectBox id="positionGetter-type"
+				v-tip="t('components.positionGetter-type.tip')"
 				:ref="fieldRef('positionGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.positionGetter-common-x.label') }}</div>
 			<NumberVar
 				id="positionGetter-common-x"
+				v-tip="t('components.positionGetter-common-x.tip')"
 				:ref="fieldRef('positionGetter-common-x')"
 				min="-512"
 				max="512"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.positionGetter-common-y.label') }}</div>
 			<NumberVar
 				id="positionGetter-common-y"
+				v-tip="t('components.positionGetter-common-y.tip')"
 				:ref="fieldRef('positionGetter-common-y')"
 				min="-512"
 				max="512"
@@ -32,22 +35,28 @@
 			/>
 			<div class="text">{{ t('components.positionGetter-actor.label') }}</div>
 			<CustomBox id="positionGetter-actor"
+				v-tip="t('components.positionGetter-actor.tip')"
 				:ref="fieldRef('positionGetter-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.positionGetter-trigger.label') }}</div>
 			<CustomBox id="positionGetter-trigger"
+				v-tip="t('components.positionGetter-trigger.tip')"
 				:ref="fieldRef('positionGetter-trigger')" type="trigger" v-model="form.trigger" />
 			<div class="text">{{ t('components.positionGetter-light.label') }}</div>
 			<CustomBox id="positionGetter-light"
+				v-tip="t('components.positionGetter-light.tip')"
 				:ref="fieldRef('positionGetter-light')" type="light" v-model="form.light" />
 			<div class="text">{{ t('components.positionGetter-region.label') }}</div>
 			<CustomBox id="positionGetter-region"
+				v-tip="t('components.positionGetter-region.tip')"
 				:ref="fieldRef('positionGetter-region')" type="region" v-model="form.region" />
 			<div class="text">{{ t('components.positionGetter-region-mode.label') }}</div>
 			<SelectBox id="positionGetter-region-mode"
+				v-tip="t('components.positionGetter-region-mode.tip')"
 				:ref="fieldRef('positionGetter-region-mode')" v-model="form.mode" />
 			<div class="text">{{ t('components.positionGetter-objectId.label') }}</div>
 			<CustomBox
 				id="positionGetter-objectId"
+				v-tip="t('components.positionGetter-objectId.tip')"
 				:ref="fieldRef('positionGetter-objectId')"
 				v-focus
 				type="preset-object"

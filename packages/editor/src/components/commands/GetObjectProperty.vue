@@ -11,6 +11,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="getObjectProperty-variable"
+				v-tip="t('components.getObjectProperty-variable.tip')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -18,10 +19,12 @@
 			/>
 			<div class="text">getObjectProperty</div>
 			<ParamList id="getObjectProperty-list"
+				v-tip="t('components.getObjectProperty-list.tip')"
 				:ref="registryRef(fieldEls, 'getObjectProperty-list')" v-focus v-model="form.properties" />
 			<div class="text">saveVariable</div>
 			<CustomBox
 				id="getObjectProperty-save-variable"
+				v-tip="t('components.getObjectProperty-save-variable.tip')"
 				v-focus
 				type="variable"
 				filter="object"

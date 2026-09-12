@@ -9,9 +9,11 @@
 		<div class="grid-box">
 			<div class="text">Operation</div>
 			<SelectBox id="setPartyMember-operation"
+				v-tip="t('components.setPartyMember-operation.tip')"
 				:ref="registryRef(fieldEls, 'setPartyMember-operation')" v-focus v-model="form.operation" />
 			<div class="text">Global Actor</div>
-			<CustomBox id="setPartyMember-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="setPartyMember-actor"
+				v-tip="t('components.setPartyMember-actor.tip')" type="actor" v-model="form.actor" />
 		</div>
 	</WindowFrame>
 </template>

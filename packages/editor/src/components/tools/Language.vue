@@ -8,11 +8,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.language-name.label') }}</div>
-			<SelectBox id="language-name" v-focus />
+			<SelectBox id="language-name"
+				v-tip="t('components.language-name.tip')" v-focus />
 			<div class="text">{{ t('components.language-font.label') }}</div>
-			<CustomBox id="language-font" type="file" filter="font" />
+			<CustomBox id="language-font"
+				v-tip="t('components.language-font.tip')" type="file" filter="font" />
 			<div class="text">{{ t('components.language-scale.label') }}</div>
-			<NumberBox id="language-scale" min="0.5" max="2" decimals="10" />
+			<NumberBox id="language-scale"
+				v-tip="t('components.language-scale.tip')" min="0.5" max="2" decimals="10" />
 		</div>
 	</WindowFrame>
 </template>

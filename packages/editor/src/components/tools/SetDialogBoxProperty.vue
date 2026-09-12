@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setDialogBox-property-key.label') }}</div>
-			<SelectBox id="setDialogBox-property-key" v-model="form.key" />
+			<SelectBox id="setDialogBox-property-key"
+				v-tip="t('components.setDialogBox-property-key.tip')" v-model="form.key" />
 			<div class="text">{{ t('components.setDialogBox-property-content.label') }}</div>
 			<TextAreaVar
 				id="setDialogBox-property-content"

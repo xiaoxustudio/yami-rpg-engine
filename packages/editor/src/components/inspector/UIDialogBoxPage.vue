@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.uiDialogBox-properties-grid.label') || 'DialogBox Properties'
@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.uiDialogBox-content.label') || 'Content' }}</div>
 			<TextArea
 				id="uiDialogBox-content"
+				v-tip="t('components.uiDialogBox-content.tip')"
 				:model-value="form.content"
 				menu="tag-localization"
 				@input="onParamInput"
@@ -16,6 +17,7 @@
 			</div>
 			<NumberBox
 				id="uiDialogBox-interval"
+				v-tip="t('components.uiDialogBox-interval.tip')"
 				v-model="form.interval"
 				min="0"
 				max="100"
@@ -24,7 +26,8 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiDialogBox-size-box.label') || 'Size' }}</div>
-			<div class="flex-box" id="uiDialogBox-size-box">
+			<div class="flex-box" id="uiDialogBox-size-box"
+				v-tip="t('components.uiDialogBox-size-box.tip')">
 				<SliderBox
 					ref="elSizeSlider"
 					id="uiDialogBox-size-slider"
@@ -46,7 +49,8 @@
 			<div class="text">
 				{{ t('components.uiDialogBox-lineSpacing-box.label') || 'Line Spacing' }}
 			</div>
-			<div class="flex-box" id="uiDialogBox-lineSpacing-box">
+			<div class="flex-box" id="uiDialogBox-lineSpacing-box"
+				v-tip="t('components.uiDialogBox-lineSpacing-box.tip')">
 				<SliderBox
 					ref="elLineSpacingSlider"
 					id="uiDialogBox-lineSpacing-slider"
@@ -68,7 +72,8 @@
 			<div class="text">
 				{{ t('components.uiDialogBox-letterSpacing-box.label') || 'Letter Spacing' }}
 			</div>
-			<div class="flex-box" id="uiDialogBox-letterSpacing-box">
+			<div class="flex-box" id="uiDialogBox-letterSpacing-box"
+				v-tip="t('components.uiDialogBox-letterSpacing-box.tip')">
 				<SliderBox
 					ref="elLetterSpacingSlider"
 					id="uiDialogBox-letterSpacing-slider"
@@ -88,13 +93,16 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiDialogBox-color.label') || 'Color' }}</div>
-			<ColorBox id="uiDialogBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<ColorBox id="uiDialogBox-color"
+				v-tip="t('components.uiDialogBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div>
-			<TextBox id="uiDialogBox-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<TextBox id="uiDialogBox-font"
+				v-tip="t('components.uiDialogBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				ref="elTypeface"
 				id="uiDialogBox-typeface"
+				v-tip="t('components.uiDialogBox-typeface.tip')"
 				v-model="form.typeface"
 				@input="onParamInput"
 			></SelectBox>
@@ -102,6 +110,7 @@
 			<SelectBox
 				ref="elEffectType"
 				id="uiDialogBox-effect-type"
+				v-tip="t('components.uiDialogBox-effect-type.tip')"
 				v-model="form.effect.type"
 				@input="onParamInput"
 			></SelectBox>
@@ -111,6 +120,7 @@
 			<NumberBox
 				ref="elShadowOffsetX"
 				id="uiDialogBox-effect-shadowOffsetX"
+				v-tip="t('components.uiDialogBox-effect-shadowOffsetX.tip')"
 				v-model="form.effect.shadowOffsetX"
 				min="-9"
 				max="9"
@@ -123,6 +133,7 @@
 			<NumberBox
 				ref="elShadowOffsetY"
 				id="uiDialogBox-effect-shadowOffsetY"
+				v-tip="t('components.uiDialogBox-effect-shadowOffsetY.tip')"
 				v-model="form.effect.shadowOffsetY"
 				min="-9"
 				max="9"
@@ -135,6 +146,7 @@
 			<NumberBox
 				ref="elStrokeWidth"
 				id="uiDialogBox-effect-strokeWidth"
+				v-tip="t('components.uiDialogBox-effect-strokeWidth.tip')"
 				v-model="form.effect.strokeWidth"
 				min="1"
 				max="20"
@@ -147,6 +159,7 @@
 			<ColorBox
 				ref="elEffectColor"
 				id="uiDialogBox-effect-color"
+				v-tip="t('components.uiDialogBox-effect-color.tip')"
 				v-model="form.effect.color"
 				@input="onParamInput"
 			></ColorBox>
@@ -154,6 +167,7 @@
 			<SelectBox
 				ref="elBlend"
 				id="uiDialogBox-blend"
+				v-tip="t('components.uiDialogBox-blend.tip')"
 				v-model="form.blend"
 				@input="onParamInput"
 			></SelectBox>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animJointFrame-properties-grid.label') || 'Frame'
@@ -10,6 +10,7 @@
 			<div id="animJointFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-x"
+				v-tip="t('components.animJointFrame-x.tip')"
 					ref="elX"
 					v-model="form.x"
 					min="-10000"
@@ -20,6 +21,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animJointFrame-y"
+				v-tip="t('components.animJointFrame-y.tip')"
 					ref="elY"
 					v-model="form.y"
 					min="-10000"
@@ -35,6 +37,7 @@
 			<div id="animJointFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-rotation"
+				v-tip="t('components.animJointFrame-rotation.tip')"
 					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
@@ -48,6 +51,7 @@
 			<div id="animJointFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-scaleX"
+				v-tip="t('components.animJointFrame-scaleX.tip')"
 					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
@@ -58,6 +62,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animJointFrame-scaleY"
+				v-tip="t('components.animJointFrame-scaleY.tip')"
 					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
@@ -73,6 +78,7 @@
 			<div id="animJointFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animJointFrame-opacity"
+				v-tip="t('components.animJointFrame-opacity.tip')"
 					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"

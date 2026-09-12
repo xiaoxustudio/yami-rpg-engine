@@ -10,6 +10,7 @@
 			<div class="text">Scene</div>
 			<FileVar
 				id="unloadSubscene-sceneId"
+				v-tip="t('components.unloadSubscene-sceneId.tip')"
 				v-focus
 				type="file"
 				filter="scene"

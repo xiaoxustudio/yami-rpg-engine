@@ -8,10 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="detectTargets-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="detectTargets-actor"
+				v-tip="t('components.detectTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="detectTargets-distance"
+				v-tip="t('components.detectTargets-distance.tip')"
 				v-focus
 				min="0"
 				max="512"
@@ -21,9 +23,11 @@
 			/>
 			<div class="text">Selector</div>
 			<SelectBox id="detectTargets-selector"
+				v-tip="t('components.detectTargets-selector.tip')"
 				:ref="registryRef(fieldEls, 'detectTargets-selector')" v-model="form.selector" />
 			<div class="text">In Sight</div>
 			<SelectBox id="detectTargets-inSight"
+				v-tip="t('components.detectTargets-inSight.tip')"
 				:ref="registryRef(fieldEls, 'detectTargets-inSight')" v-model="form.inSight" />
 		</div>
 	</WindowFrame>

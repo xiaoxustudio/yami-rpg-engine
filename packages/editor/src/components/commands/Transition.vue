@@ -11,6 +11,7 @@
 			<div class="text">Write to Variable</div>
 			<CustomBox
 				id="transition-variable"
+				v-tip="t('components.transition-variable.tip')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -19,6 +20,7 @@
 			<div class="text">Start Value</div>
 			<NumberVar
 				id="transition-start"
+				v-tip="t('components.transition-start.tip')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -27,6 +29,7 @@
 			<div class="text">End Value</div>
 			<NumberVar
 				id="transition-end"
+				v-tip="t('components.transition-end.tip')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"

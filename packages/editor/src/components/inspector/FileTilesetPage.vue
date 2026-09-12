@@ -4,6 +4,7 @@
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
 				id="palette-scroll"
+				v-tip="t('components.palette-scroll.tip')"
 				:ref="registryRef(paletteEls, 'palette-scroll')"
 				class="item toolbar-item"
 				value="scroll"
@@ -11,6 +12,7 @@
 			></div>
 			<div
 				id="palette-priority"
+				v-tip="t('components.palette-priority.tip')"
 				:ref="registryRef(paletteEls, 'palette-priority')"
 				class="item toolbar-item"
 				value="priority"
@@ -18,6 +20,7 @@
 			></div>
 			<div
 				id="palette-tag"
+				v-tip="t('components.palette-tag.tip')"
 				:ref="registryRef(paletteEls, 'palette-tag')"
 				class="item toolbar-item"
 				value="tag"
@@ -25,6 +28,7 @@
 			></div>
 			<div
 				id="palette-terrain"
+				v-tip="t('components.palette-terrain.tip')"
 				:ref="registryRef(paletteEls, 'palette-terrain')"
 				class="item toolbar-item"
 				value="terrain"
@@ -32,12 +36,14 @@
 			></div>
 			<div
 				id="palette-edit"
+				v-tip="t('components.palette-edit.tip')"
 				:ref="registryRef(paletteEls, 'palette-edit')"
 				class="item toolbar-item"
 				value="edit"
 				:class="{ selected: palette.mode === 'edit' }"
 			></div>
-			<div id="palette-flip" class="item toolbar-item" value="flip" hotkey="F"></div>
+			<div id="palette-flip"
+				v-tip="t('components.palette-flip.tip')" class="item toolbar-item" value="flip" hotkey="F"></div>
 		</div>
 		<SliderBox
 			id="palette-zoom"
@@ -83,6 +89,7 @@
 			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="fileTileset-image"
+				v-tip="t('components.fileTileset-image.tip')"
 				:ref="registryRef(inspectorEls, 'fileTileset-image')"
 				v-model="form.image"
 				type="file"
@@ -92,6 +99,7 @@
 			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileTileset-width"
+				v-tip="t('components.fileTileset-width.tip')"
 				v-model="form.width"
 				min="1"
 				max="256"
@@ -101,6 +109,7 @@
 			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileTileset-height"
+				v-tip="t('components.fileTileset-height.tip')"
 				v-model="form.height"
 				min="1"
 				max="256"
@@ -112,6 +121,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-tileWidth"
+				v-tip="t('components.fileTileset-tileWidth.tip')"
 				v-model="form.tileWidth"
 				min="16"
 				max="256"
@@ -123,6 +133,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-tileHeight"
+				v-tip="t('components.fileTileset-tileHeight.tip')"
 				v-model="form.tileHeight"
 				min="16"
 				max="256"
@@ -134,6 +145,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalOffsetX"
+				v-tip="t('components.fileTileset-globalOffsetX.tip')"
 				v-model="form.globalOffsetX"
 				min="-256"
 				max="256"
@@ -145,6 +157,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalOffsetY"
+				v-tip="t('components.fileTileset-globalOffsetY.tip')"
 				v-model="form.globalOffsetY"
 				min="-256"
 				max="256"
@@ -156,6 +169,7 @@
 			</div>
 			<NumberBox
 				id="fileTileset-globalPriority"
+				v-tip="t('components.fileTileset-globalPriority.tip')"
 				v-model="form.globalPriority"
 				min="-10"
 				max="10"

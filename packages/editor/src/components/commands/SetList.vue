@@ -10,6 +10,7 @@
 		<div class="text">Variable</div>
 		<CustomBox
 			id="setList-variable"
+				v-tip="t('components.setList-variable.tip')"
 			v-focus
 			type="variable"
 			filter="object"
@@ -17,10 +18,12 @@
 		/>
 		<div class="text">Operation</div>
 		<SelectBox id="setList-operation"
+				v-tip="t('components.setList-operation.tip')"
 				:ref="registryRef(fieldEls, 'setList-operation')" v-model="form.operation" />
 		<div class="text">Numbers</div>
 		<CustomBox
 			id="setList-numbers"
+				v-tip="t('components.setList-numbers.tip')"
 				:ref="registryRef(fieldEls, 'setList-numbers')"
 			v-focus
 			type="array"
@@ -30,6 +33,7 @@
 		<div class="text">Strings</div>
 		<CustomBox
 			id="setList-strings"
+				v-tip="t('components.setList-strings.tip')"
 				:ref="registryRef(fieldEls, 'setList-strings')"
 			v-focus
 			type="array"
@@ -38,13 +42,16 @@
 		/>
 			<div class="text">Index</div>
 			<NumberVar id="setList-index"
+				v-tip="t('components.setList-index.tip')"
 				:ref="registryRef(fieldEls, 'setList-index')" min="0" max="1000000000" v-model="form.index" />
 			<div class="text">Boolean</div>
 			<SelectBox id="setList-boolean"
+				v-tip="t('components.setList-boolean.tip')"
 				:ref="registryRef(fieldEls, 'setList-boolean')" v-model="form.boolean" />
 			<div class="text">Number</div>
 			<NumberBox
 				id="setList-number"
+				v-tip="t('components.setList-number.tip')"
 				:ref="registryRef(fieldEls, 'setList-number')"
 				min="-1000000000"
 				max="1000000000"
@@ -53,10 +60,12 @@
 			/>
 			<div class="text">String</div>
 			<TextArea id="setList-string"
+				v-tip="t('components.setList-string.tip')"
 				:ref="registryRef(fieldEls, 'setList-string')" v-model="string" />
 		<div class="text">Variable</div>
 		<CustomBox
 			id="setList-operand"
+				v-tip="t('components.setList-operand.tip')"
 				:ref="registryRef(fieldEls, 'setList-operand')"
 			v-focus
 			type="variable"
@@ -65,10 +74,12 @@
 		/>
 		<div class="text">Separator</div>
 		<TextAreaVar id="setList-separator"
+				v-tip="t('components.setList-separator.tip')"
 				:ref="registryRef(fieldEls, 'setList-separator')" v-model="form.separator" />
 		<div class="text">Attribute Group</div>
 		<CustomBox
 			id="setList-attribute-groupId"
+				v-tip="t('components.setList-attribute-groupId.tip')"
 				:ref="registryRef(fieldEls, 'setList-attribute-groupId')"
 			v-focus
 			type="attribute-group"
@@ -77,6 +88,7 @@
 		<div class="text">Enum Group</div>
 		<CustomBox
 			id="setList-enum-groupId"
+				v-tip="t('components.setList-enum-groupId.tip')"
 				:ref="registryRef(fieldEls, 'setList-enum-groupId')"
 			v-focus
 			type="enum-group"
@@ -84,6 +96,7 @@
 		/>
 		<div class="text">Actor</div>
 		<CustomBox id="setList-actor"
+				v-tip="t('components.setList-actor.tip')"
 				:ref="registryRef(fieldEls, 'setList-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Default</div>
 			<CheckBox

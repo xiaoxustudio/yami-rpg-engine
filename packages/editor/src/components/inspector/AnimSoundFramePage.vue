@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animSoundFrame-properties-grid.label') || 'Frame'
@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.animSoundFrame-sound.label') || 'Sound' }}</div>
 			<CustomBox
 				id="animSoundFrame-sound"
+				v-tip="t('components.animSoundFrame-sound.tip')"
 				ref="elSound"
 				:model-value="form.sound"
 				type="file"
@@ -16,6 +17,7 @@
 			<div class="text">{{ t('components.animSoundFrame-volume.label') || 'Volume' }}</div>
 			<NumberBox
 				id="animSoundFrame-volume"
+				v-tip="t('components.animSoundFrame-volume.tip')"
 				ref="elVolume"
 				v-model="form.volume"
 				min="0"

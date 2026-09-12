@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Item</div>
-			<CustomBox id="setItem-item" v-focus type="item" v-model="form.item" />
+			<CustomBox id="setItem-item"
+				v-tip="t('components.setItem-item.tip')" v-focus type="item" v-model="form.item" />
 			<div class="text">Operation</div>
 			<SelectBox id="setItem-operation"
+				v-tip="t('components.setItem-operation.tip')"
 				:ref="registryRef(fieldEls, 'setItem-operation')" v-model="form.operation" />
 			<div class="text">Quantity</div>
-			<NumberVar id="setItem-quantity" min="1" max="10000" v-model="form.quantity" />
+			<NumberVar id="setItem-quantity"
+				v-tip="t('components.setItem-quantity.tip')" min="1" max="10000" v-model="form.quantity" />
 		</div>
 	</WindowFrame>
 </template>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="lightGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -8,11 +8,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.lightGetter-type.label') }}</div>
-			<SelectBox id="lightGetter-type" />
+			<SelectBox id="lightGetter-type"
+				v-tip="t('components.lightGetter-type.tip')" />
 			<div class="text">{{ t('components.lightGetter-presetId.label') }}</div>
-			<CustomBox id="lightGetter-presetId" type="preset-object" filter="light" />
+			<CustomBox id="lightGetter-presetId"
+				v-tip="t('components.lightGetter-presetId.tip')" type="preset-object" filter="light" />
 			<div class="text">{{ t('components.lightGetter-variable.label') }}</div>
-			<CustomBox id="lightGetter-variable" type="variable" filter="object" />
+			<CustomBox id="lightGetter-variable"
+				v-tip="t('components.lightGetter-variable.tip')" type="variable" filter="object" />
 		</div>
 	</WindowFrame>
 </template>

@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">State</div>
-			<CustomBox id="setState-state" v-focus type="state" v-model="form.state" />
+			<CustomBox id="setState-state"
+				v-tip="t('components.setState-state.tip')" v-focus type="state" v-model="form.state" />
 			<div class="text">Operation</div>
 			<SelectBox id="setState-operation"
+				v-tip="t('components.setState-operation.tip')"
 				:ref="registryRef(fieldEls, 'setState-operation')" v-model="form.operation" />
 			<div class="text">Time</div>
-			<NumberVar id="setState-time" min="0" max="36000000" unit="ms" v-model="form.time" />
+			<NumberVar id="setState-time"
+				v-tip="t('components.setState-time.tip')" min="0" max="36000000" unit="ms" v-model="form.time" />
 		</div>
 	</WindowFrame>
 </template>

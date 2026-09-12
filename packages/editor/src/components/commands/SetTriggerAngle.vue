@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerAngle-trigger" v-focus type="trigger" v-model="form.trigger" />
+			<CustomBox id="setTriggerAngle-trigger"
+				v-tip="t('components.setTriggerAngle-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Angle</div>
-			<CustomBox id="setTriggerAngle-angle" type="angle" v-model="form.angle" />
+			<CustomBox id="setTriggerAngle-angle"
+				v-tip="t('components.setTriggerAngle-angle.tip')" type="angle" v-model="form.angle" />
 		</div>
 	</WindowFrame>
 </template>

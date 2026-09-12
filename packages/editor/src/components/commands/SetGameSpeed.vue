@@ -11,6 +11,7 @@
 			<div class="text">Speed</div>
 			<NumberVar
 				id="setGameSpeed-speed"
+				v-tip="t('components.setGameSpeed-speed.tip')"
 				v-focus
 				min="0"
 				max="10"

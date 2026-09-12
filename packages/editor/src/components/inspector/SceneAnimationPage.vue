@@ -5,12 +5,14 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
 			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div>
-			<TextBox id="sceneAnimation-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="sceneAnimation-name"
+				v-tip="t('components.sceneAnimation-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}
 			</div>
 			<CustomBox
 				id="sceneAnimation-animationId"
+				v-tip="t('components.sceneAnimation-animationId.tip')"
 				ref="elAnimationId"
 				:model-value="form.animationId"
 				type="file"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
 				id="sceneAnimation-motion"
+				v-tip="t('components.sceneAnimation-motion.tip')"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-motion')"
 				v-model="form.motion"
 				@input="onParamInput"
@@ -30,6 +33,7 @@
 			</div>
 			<SelectBox
 				id="sceneAnimation-rotatable"
+				v-tip="t('components.sceneAnimation-rotatable.tip')"
 				ref="elRotatable"
 				v-model="form.rotatable"
 				@input="onParamInput"
@@ -37,6 +41,7 @@
 			<div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneAnimation-x"
+				v-tip="t('components.sceneAnimation-x.tip')"
 				v-model="form.x"
 				min="-128"
 				max="640"
@@ -48,6 +53,7 @@
 			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="sceneAnimation-y"
+				v-tip="t('components.sceneAnimation-y.tip')"
 				v-model="form.y"
 				min="-128"
 				max="640"
@@ -57,7 +63,8 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneAnimation-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneAnimation-angle-box">
+			<div class="flex-box" id="sceneAnimation-angle-box"
+				v-tip="t('components.sceneAnimation-angle-box.tip')">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
 					ref="elAngleSlider"
@@ -79,7 +86,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneAnimation-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneAnimation-scale-box">
+			<div class="flex-box" id="sceneAnimation-scale-box"
+				v-tip="t('components.sceneAnimation-scale-box.tip')">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
 					ref="elScaleSlider"
@@ -100,7 +108,8 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneAnimation-speed-box.label') || 'Speed' }}</div>
-			<div class="flex-box" id="sceneAnimation-speed-box">
+			<div class="flex-box" id="sceneAnimation-speed-box"
+				v-tip="t('components.sceneAnimation-speed-box.tip')">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
 					ref="elSpeedSlider"
@@ -123,7 +132,8 @@
 			<div class="text">
 				{{ t('components.sceneAnimation-opacity-box.label') || 'Opacity' }}
 			</div>
-			<div class="flex-box" id="sceneAnimation-opacity-box">
+			<div class="flex-box" id="sceneAnimation-opacity-box"
+				v-tip="t('components.sceneAnimation-opacity-box.tip')">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
 					ref="elOpacitySlider"
@@ -146,7 +156,8 @@
 			<div class="text">
 				{{ t('components.sceneAnimation-priority-box.label') || 'Priority' }}
 			</div>
-			<div class="flex-box" id="sceneAnimation-priority-box">
+			<div class="flex-box" id="sceneAnimation-priority-box"
+				v-tip="t('components.sceneAnimation-priority-box.tip')">
 				<SliderBox
 					id="sceneAnimation-priority-slider"
 					ref="elPrioritySlider"
@@ -172,6 +183,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-conditions"
+				v-tip="t('components.sceneAnimation-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -181,6 +193,7 @@
 		<DetailSummary>{{ t('components.sceneAnimation-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-events"
+				v-tip="t('components.sceneAnimation-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="animation"
@@ -193,6 +206,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-scripts"
+				v-tip="t('components.sceneAnimation-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible

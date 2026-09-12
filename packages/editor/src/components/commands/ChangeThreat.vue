@@ -8,15 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeThreat-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeThreat-actor"
+				v-tip="t('components.changeThreat-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Target</div>
-			<CustomBox id="changeThreat-target" type="actor" v-model="form.target" />
+			<CustomBox id="changeThreat-target"
+				v-tip="t('components.changeThreat-target.tip')" type="actor" v-model="form.target" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeThreat-operation"
+				v-tip="t('components.changeThreat-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeThreat-operation')" v-model="form.operation" />
 			<div class="text">Threat</div>
 			<NumberVar
 				id="changeThreat-threat"
+				v-tip="t('components.changeThreat-threat.tip')"
 				min="0"
 				max="1000000000"
 				decimals="4"

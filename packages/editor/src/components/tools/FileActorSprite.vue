@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
 			<SelectBox id="fileActor-sprite-id"
+				v-tip="t('components.fileActor-sprite-id.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')" v-focus v-model="form.id" />
 			<div class="text">{{ t('components.fileActor-sprite-image.label') }}</div>
 			<CustomBox
 				id="fileActor-sprite-image"
+				v-tip="t('components.fileActor-sprite-image.tip')"
 				v-focus
 				type="file"
 				filter="image"

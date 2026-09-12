@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="exportLanguage" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,9 +9,11 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.exportLanguage-first.label') }}</div>
 			<SelectBox id="exportLanguage-first"
+				v-tip="t('components.exportLanguage-first.tip')"
 				:ref="registryRef(localEls, 'exportLanguage-first')" v-model="form.first" />
 			<div class="text">{{ t('components.exportLanguage-second.label') }}</div>
 			<SelectBox id="exportLanguage-second"
+				v-tip="t('components.exportLanguage-second.tip')"
 				:ref="registryRef(localEls, 'exportLanguage-second')" v-model="form.second" />
 		</div>
 	</WindowFrame>

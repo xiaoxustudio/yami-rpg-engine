@@ -8,14 +8,18 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="webSocketConnect-url" v-focus v-model="form.url" />
+			<StringVar id="webSocketConnect-url"
+				v-tip="t('components.webSocketConnect-url.tip')" v-focus v-model="form.url" />
 			<div class="text">ID</div>
-			<StringVar id="webSocketConnect-id" v-model="form.id" />
+			<StringVar id="webSocketConnect-id"
+				v-tip="t('components.webSocketConnect-id.tip')" v-model="form.id" />
 			<div class="text">Protocols</div>
-			<StringVar id="webSocketConnect-protocols" v-model="form.protocols" />
+			<StringVar id="webSocketConnect-protocols"
+				v-tip="t('components.webSocketConnect-protocols.tip')" v-model="form.protocols" />
 			<div class="text">OnOpen</div>
 			<CustomBox
 				id="webSocketConnect-onOpen"
+				v-tip="t('components.webSocketConnect-onOpen.tip')"
 				type="file"
 				filter="event"
 				v-model="form.onOpen"
@@ -23,6 +27,7 @@
 			<div class="text">OnMessage</div>
 			<CustomBox
 				id="webSocketConnect-onMessage"
+				v-tip="t('components.webSocketConnect-onMessage.tip')"
 				type="file"
 				filter="event"
 				v-model="form.onMessage"
@@ -30,6 +35,7 @@
 			<div class="text">OnError</div>
 			<CustomBox
 				id="webSocketConnect-onError"
+				v-tip="t('components.webSocketConnect-onError.tip')"
 				type="file"
 				filter="event"
 				v-model="form.onError"
@@ -37,6 +43,7 @@
 			<div class="text">OnClose</div>
 			<CustomBox
 				id="webSocketConnect-onClose"
+				v-tip="t('components.webSocketConnect-onClose.tip')"
 				type="file"
 				filter="event"
 				v-model="form.onClose"

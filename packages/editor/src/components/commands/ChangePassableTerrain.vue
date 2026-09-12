@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changePassableTerrain-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changePassableTerrain-actor"
+				v-tip="t('components.changePassableTerrain-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Passable Terrain</div>
 			<SelectBox id="changePassableTerrain-passage"
+				v-tip="t('components.changePassableTerrain-passage.tip')"
 				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')" v-model="form.passage" />
 		</div>
 	</WindowFrame>

@@ -8,19 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="requestURL-url" v-focus v-model="form.url" />
+			<StringVar id="requestURL-url"
+				v-tip="t('components.requestURL-url.tip')" v-focus v-model="form.url" />
 			<div class="text">Header</div>
 			<ParamList id="requestURL-header"
+				v-tip="t('components.requestURL-header.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-header')" v-model="form.headers" />
 			<div class="text">Method</div>
 			<SelectBox id="requestURL-method"
+				v-tip="t('components.requestURL-method.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-method')" v-model="form.method" />
 			<div class="text">Data</div>
 			<ParamList id="requestURL-data"
+				v-tip="t('components.requestURL-data.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-data')" v-model="form.data" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="requestURL-callback"
+				v-tip="t('components.requestURL-callback.tip')"
 				type="file"
 				filter="event"
 				v-model="form.callback"

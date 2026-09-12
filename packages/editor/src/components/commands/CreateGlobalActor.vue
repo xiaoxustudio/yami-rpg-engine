@@ -11,6 +11,7 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="createGlobalActor-actorId"
+				v-tip="t('components.createGlobalActor-actorId.tip')"
 				v-focus
 				type="file"
 				filter="actor"
@@ -18,6 +19,7 @@
 			/>
 			<div class="text">Team</div>
 			<SelectBox id="createGlobalActor-teamId"
+				v-tip="t('components.createGlobalActor-teamId.tip')"
 				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')" v-model="form.teamId" />
 		</div>
 	</WindowFrame>

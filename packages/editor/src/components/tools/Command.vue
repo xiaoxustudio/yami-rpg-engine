@@ -50,10 +50,12 @@
 				<DetailSummary>Settings</DetailSummary>
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
-					<TextBox id="command-alias" v-model="commandForm.alias" @input="onParamInput" />
+					<TextBox id="command-alias"
+				v-tip="t('components.command-alias.tip')" v-model="commandForm.alias" @input="onParamInput" />
 					<div class="text">{{ t('components.command-keywords.label') }}</div>
 					<TextBox
 						id="command-keywords"
+				v-tip="t('components.command-keywords.tip')"
 						v-model="commandForm.keywords"
 						@input="onParamInput"
 					/>

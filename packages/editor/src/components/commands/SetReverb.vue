@@ -10,10 +10,12 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="setReverb-type"
+				v-tip="t('components.setReverb-type.tip')"
 				:ref="registryRef(fieldEls, 'setReverb-type')" v-focus v-model="form.type" />
 			<div class="text">Dry</div>
 			<NumberVar
 				id="setReverb-dry"
+				v-tip="t('components.setReverb-dry.tip')"
 				min="0"
 				max="1"
 				step="0.1"
@@ -23,6 +25,7 @@
 			<div class="text">Wet</div>
 			<NumberVar
 				id="setReverb-wet"
+				v-tip="t('components.setReverb-wet.tip')"
 				min="0"
 				max="1"
 				step="0.1"

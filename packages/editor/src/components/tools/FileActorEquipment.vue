@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.fileActor-equipment-id.label') }}</div>
 			<CustomBox
 				id="fileActor-equipment-id"
+				v-tip="t('components.fileActor-equipment-id.tip')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -17,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div>
 			<SelectBox id="fileActor-equipment-slot"
+				v-tip="t('components.fileActor-equipment-slot.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-equipment-slot')" v-focus v-model="form.slot" />
 		</div>
 	</WindowFrame>

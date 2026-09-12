@@ -10,13 +10,16 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-condition-type.label') }}</div>
 			<SelectBox id="switch-condition-type"
+				v-tip="t('components.switch-condition-type.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div>
 			<SelectBox id="switch-condition-boolean-value"
+				v-tip="t('components.switch-condition-boolean-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-boolean-value')" v-model="form.booleanValue" />
 			<div class="text">{{ t('components.switch-condition-number-value.label') }}</div>
 			<NumberBox
 				id="switch-condition-number-value"
+				v-tip="t('components.switch-condition-number-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-number-value')"
 				min="-1000000000"
 				max="1000000000"
@@ -25,12 +28,14 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-string-value.label') }}</div>
 			<TextArea id="switch-condition-string-value"
+				v-tip="t('components.switch-condition-string-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-string-value')" v-model="form.stringValue" />
 			<div class="text">
 				{{ t('components.switch-condition-attribute-attributeId.label') }}
 			</div>
 			<CustomBox
 				id="switch-condition-attribute-attributeId"
+				v-tip="t('components.switch-condition-attribute-attributeId.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-attribute-attributeId')"
 				v-focus
 				type="attribute"
@@ -39,6 +44,7 @@
 			<div class="text">{{ t('components.switch-condition-enum-stringId.label') }}</div>
 			<CustomBox
 				id="switch-condition-enum-stringId"
+				v-tip="t('components.switch-condition-enum-stringId.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-enum-stringId')"
 				v-focus
 				type="enum-string"
@@ -46,16 +52,20 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-keyboard-keycode.label') }}</div>
 			<KeyboardBox id="switch-condition-keyboard-keycode"
+				v-tip="t('components.switch-condition-keyboard-keycode.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-keyboard-keycode')" v-focus />
 			<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div>
 			<GamepadBox id="switch-condition-gamepad-button"
+				v-tip="t('components.switch-condition-gamepad-button.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-gamepad-button')" v-focus />
 			<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div>
 			<SelectBox id="switch-condition-mouse-button"
+				v-tip="t('components.switch-condition-mouse-button.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-mouse-button')" v-model="form.mouseButton" />
 			<div class="text">{{ t('components.switch-condition-variable-variable.label') }}</div>
 			<CustomBox
 				id="switch-condition-variable-variable"
+				v-tip="t('components.switch-condition-variable-variable.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-variable-variable')"
 				v-focus
 				type="variable"

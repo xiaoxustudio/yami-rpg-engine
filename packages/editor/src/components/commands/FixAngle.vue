@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="fixAngle-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="fixAngle-actor"
+				v-tip="t('components.fixAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">State</div>
 			<SelectBox id="fixAngle-fixed"
+				v-tip="t('components.fixAngle-fixed.tip')"
 				:ref="registryRef(fieldEls, 'fixAngle-fixed')" v-model="form.fixed" />
 		</div>
 	</WindowFrame>

@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.fileItem-icon.label') || 'Icon' }}</div>
 			<CustomBox
 				id="fileItem-icon"
+				v-tip="t('components.fileItem-icon.tip')"
 				:model-value="form.icon"
 				@input="onParamInput"
 				type="file"
@@ -15,6 +16,7 @@
 			<div class="text">{{ t('components.fileItem-clip.label') || 'Clip' }}</div>
 			<CustomBox
 				id="fileItem-clip"
+				v-tip="t('components.fileItem-clip.tip')"
 				:model-value="form.clip"
 				@input="onParamInput"
 				type="clip"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.fileItem-inherit.label') || 'Inherit' }}</div>
 			<CustomBox
 				id="fileItem-inherit"
+				v-tip="t('components.fileItem-inherit.tip')"
 				:model-value="form.inherit"
 				@input="onParamInput"
 				type="file"
@@ -37,6 +40,7 @@
 		<ParamList
 			ref="elAttributes"
 			id="fileItem-attributes"
+				v-tip="t('components.fileItem-attributes.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			group="item"
@@ -48,6 +52,7 @@
 		<ParamList
 			ref="elEvents"
 			id="fileItem-events"
+				v-tip="t('components.fileItem-events.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			filter="item"
@@ -59,6 +64,7 @@
 		<ParamList
 			ref="elScripts"
 			id="fileItem-scripts"
+				v-tip="t('components.fileItem-scripts.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			flexible

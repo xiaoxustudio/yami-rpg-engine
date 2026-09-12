@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-skill-id.label') }}</div>
-			<CustomBox id="fileActor-skill-id" v-focus type="file" filter="skill" v-model="form.id" />
+			<CustomBox id="fileActor-skill-id"
+				v-tip="t('components.fileActor-skill-id.tip')" v-focus type="file" filter="skill" v-model="form.id" />
 			<div class="text">{{ t('components.fileActor-skill-key.label') }}</div>
 			<SelectBox id="fileActor-skill-key"
+				v-tip="t('components.fileActor-skill-key.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-skill-key')" v-model="form.key" />
 		</div>
 	</WindowFrame>

@@ -9,11 +9,14 @@
 
 		<div class="grid-box">
 			<div class="text">Red</div>
-			<NumberVar id="setAmbientLight-red" v-focus min="0" max="255" step="5" v-model="form.red" />
+			<NumberVar id="setAmbientLight-red"
+				v-tip="t('components.setAmbientLight-red.tip')" v-focus min="0" max="255" step="5" v-model="form.red" />
 			<div class="text">Green</div>
-			<NumberVar id="setAmbientLight-green" min="0" max="255" step="5" v-model="form.green" />
+			<NumberVar id="setAmbientLight-green"
+				v-tip="t('components.setAmbientLight-green.tip')" min="0" max="255" step="5" v-model="form.green" />
 			<div class="text">Blue</div>
-			<NumberVar id="setAmbientLight-blue" min="0" max="255" step="5" v-model="form.blue" />
+			<NumberVar id="setAmbientLight-blue"
+				v-tip="t('components.setAmbientLight-blue.tip')" min="0" max="255" step="5" v-model="form.blue" />
 			<div class="text">Easing</div>
 			<SelectBox id="setAmbientLight-easingId"
 				:ref="registryRef(fieldEls, 'setAmbientLight-easingId')" name="easing" v-model="form.easingId" />

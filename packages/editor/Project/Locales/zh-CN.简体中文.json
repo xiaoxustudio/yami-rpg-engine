@@ -2429,6 +2429,9 @@
 		"particle-speed": {
 			"tip": "$播放速度\n在舞台中播放粒子动画的速率\n1：正常播放速度\n4：4倍播放速度"
 		},
+		"fileScene-general-grid": {
+			"label": "场景"
+		},
 		"fileScene-width": {
 			"label": "宽度",
 			"tip": "场景的水平网格数量（0 ~ 512）"
@@ -2444,6 +2447,9 @@
 		"fileScene-tileHeight": {
 			"label": "图块高度",
 			"tip": "场景网格的高度（16 ~ 256）"
+		},
+		"fileScene-ambient-grid": {
+			"label": "环境光"
 		},
 		"fileScene-ambient-red-box": {
 			"label": "红",
@@ -2468,6 +2474,9 @@
 		"fileScene-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展场景"
+		},
+		"fileUI-foreground-grid": {
+			"label": "舞台前景"
 		},
 		"fileUI-width": {
 			"label": "宽度",
@@ -2498,6 +2507,9 @@
 		},
 		"palette-flip": {
 			"tip": "$翻转普通图块\n水平翻转选中的普通图块（不改变自动图块）"
+		},
+		"fileTileset-general-grid": {
+			"label": "图块组"
 		},
 		"fileTileset-image": {
 			"label": "图像",
@@ -2530,6 +2542,9 @@
 		"fileTileset-globalPriority": {
 			"label": "图块优先级",
 			"tip": "图块在瓦片地图对象层渲染时的排序优先级，\n位置在下方的图块总是会遮挡上方的图块。\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"fileActor-general-grid": {
+			"label": "基本设置"
 		},
 		"fileActor-portrait": {
 			"label": "头像",
@@ -2663,6 +2678,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展角色"
 		},
+		"fileSkill-general-grid": {
+			"label": "基本设置"
+		},
 		"fileSkill-icon": {
 			"label": "图标",
 			"tip": "技能图标\n$相关指令\n加载图像"
@@ -2686,6 +2704,9 @@
 		"fileSkill-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展技能"
+		},
+		"fileTrigger-general-grid": {
+			"label": "基本设置"
 		},
 		"fileTrigger-selector": {
 			"label": "目标对象",
@@ -2833,6 +2854,9 @@
 			"label": "继承",
 			"tip": "继承指定触发器的事件、脚本\n如果存在相同类型的事件，覆盖被继承触发器的事件\n通过'调用事件'指令可以触发被覆盖掉的事件\n继承的脚本会叠加而非覆盖"
 		},
+		"fileTrigger-animation-grid": {
+			"label": "动画"
+		},
 		"fileTrigger-animationId": {
 			"label": "动画",
 			"tip": "触发器动画"
@@ -2871,6 +2895,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展触发器"
 		},
+		"fileItem-general-grid": {
+			"label": "基本设置"
+		},
 		"fileItem-icon": {
 			"label": "图标",
 			"tip": "物品图标\n$相关指令\n加载图像"
@@ -2894,6 +2921,9 @@
 		"fileItem-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展物品"
+		},
+		"fileEquipment-general-grid": {
+			"label": "基本设置"
 		},
 		"fileEquipment-icon": {
 			"label": "图标",
@@ -2919,6 +2949,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展装备"
 		},
+		"fileState-general-grid": {
+			"label": "基本设置"
+		},
 		"fileState-icon": {
 			"label": "图标",
 			"tip": "状态图标\n$相关指令\n加载图像"
@@ -2942,6 +2975,9 @@
 		"fileState-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展状态"
+		},
+		"fileEvent-general-grid": {
+			"label": "基本设置"
 		},
 		"fileEvent-type": {
 			"label": "类型",
@@ -3025,6 +3061,9 @@
 			"label": "事件参数",
 			"tip": "通过\"调用事件\"指令调用本事件可传递参数值\n将在执行本事件时自动写入参数值到这些变量"
 		},
+		"fileImage-info-grid": {
+			"label": "文件信息"
+		},
 		"fileImage-name": {
 			"label": "名称",
 			"tip": "文件名称"
@@ -3036,6 +3075,12 @@
 		"fileImage-resolution": {
 			"label": "尺寸",
 			"tip": "图像分辨率"
+		},
+		"fileImage-image-viewer": {
+			"label": "图像"
+		},
+		"fileAudio-info-grid": {
+			"label": "文件信息"
 		},
 		"fileAudio-name": {
 			"label": "名称",
@@ -3053,6 +3098,9 @@
 			"label": "比特率",
 			"tip": "平均每秒传输的位数，一般来说越大音质越好"
 		},
+		"fileAudio-mixer-grid": {
+			"label": "调音台"
+		},
 		"fileAudio-volume-box": {
 			"label": "音量",
 			"tip": "全局音量"
@@ -3068,6 +3116,15 @@
 		"fileAudio-wet-box": {
 			"label": "混响 - 湿",
 			"tip": "混响湿声部分的音量，模拟封闭环境中的声音反射，值越大代表空间越大"
+		},
+		"fileAudio-progress-box": {
+			"label": "进度"
+		},
+		"fileAudio-frequency-canvas": {
+			"label": "频率"
+		},
+		"fileVideo-info-grid": {
+			"label": "文件信息"
 		},
 		"fileVideo-name": {
 			"label": "名称",
@@ -3089,6 +3146,12 @@
 			"label": "比特率",
 			"tip": "平均每秒传输的位数，一般来说越大画质越好"
 		},
+		"fileVideo-video": {
+			"label": "播放器"
+		},
+		"fileFont-info-grid": {
+			"label": "文件信息"
+		},
 		"fileFont-name": {
 			"label": "名称",
 			"tip": "文件名称"
@@ -3097,6 +3160,12 @@
 			"label": "大小",
 			"tip": "文件大小"
 		},
+		"fileFont-font-grid": {
+			"label": "字体预览"
+		},
+		"fileScript-info-grid": {
+			"label": "文件信息"
+		},
 		"fileScript-name": {
 			"label": "名称",
 			"tip": "文件名称"
@@ -3104,6 +3173,12 @@
 		"fileScript-size": {
 			"label": "大小",
 			"tip": "文件大小"
+		},
+		"fileScript-overview": {
+			"label": "概述"
+		},
+		"sceneActor-general-grid": {
+			"label": "基本设置"
 		},
 		"sceneActor-name": {
 			"label": "名称",
@@ -3159,6 +3234,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展角色"
 		},
+		"sceneRegion-general-grid": {
+			"label": "基本设置"
+		},
 		"sceneRegion-name": {
 			"label": "名称",
 			"tip": "区域的备注名称"
@@ -3194,6 +3272,9 @@
 		"sceneRegion-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展区域"
+		},
+		"sceneLight-general-grid": {
+			"label": "基本设置"
 		},
 		"sceneLight-name": {
 			"label": "名称",
@@ -3303,6 +3384,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展光源"
 		},
+		"sceneAnimation-general-grid": {
+			"label": "基本设置"
+		},
 		"sceneAnimation-name": {
 			"label": "名称",
 			"tip": "动画的备注名称"
@@ -3369,6 +3453,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展动画"
 		},
+		"sceneParticle-general-grid": {
+			"label": "基本设置"
+		},
 		"sceneParticle-name": {
 			"label": "名称",
 			"tip": "粒子的备注名称"
@@ -3416,6 +3503,9 @@
 		"sceneParticle-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展粒子"
+		},
+		"sceneParallax-general-grid": {
+			"label": "基本设置"
 		},
 		"sceneParallax-name": {
 			"label": "名称",
@@ -3495,6 +3585,9 @@
 			"label": "Y",
 			"tip": "视差图的初始垂直位置"
 		},
+		"sceneParallax-parallax-grid": {
+			"label": "视差图"
+		},
 		"sceneParallax-scaleX": {
 			"label": "缩放 X",
 			"tip": "视差图的水平缩放系数"
@@ -3571,6 +3664,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展视差图"
 		},
+		"sceneTilemap-general-grid": {
+			"label": "基本设置"
+		},
 		"sceneTilemap-name": {
 			"label": "名称",
 			"tip": "瓦片地图的备注名称"
@@ -3592,6 +3688,10 @@
 					"tip": "对象层的图块将按位置排列渲染顺序，并启用图块的优先级属性"
 				}
 			}
+		},
+		"sceneTilemap-order": {
+			"label": "顺序",
+			"tip": "相同图层的视差图和瓦片地图按照顺序来排序，顺序大的显示在前面"
 		},
 		"sceneTilemap-light": {
 			"label": "光线采样",
@@ -3689,6 +3789,9 @@
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展瓦片地图"
 		},
+		"uiElement-general-grid": {
+			"label": "基本设置"
+		},
 		"uiElement-name": {
 			"label": "名称",
 			"tip": "元素的备注名称"
@@ -3711,6 +3814,12 @@
 				}
 			}
 		},
+		"uiElement-transform-grid": {
+			"label": "变换"
+		},
+		"uiElement-transform-align-box": {
+			"label": "对齐"
+		},
 		"uiElement-transform-align-left": {
 			"tip": "$左对齐\n元素的左边缘对齐容器的左边缘"
 		},
@@ -3729,11 +3838,17 @@
 		"uiElement-transform-align-bottom": {
 			"tip": "$底部对齐\n元素的底部边缘对齐容器的底部边缘"
 		},
+		"uiElement-transform-anchor-box": {
+			"label": "锚点"
+		},
 		"uiElement-transform-anchorX": {
 			"tip": "$锚点 X\n元素跟容器连接点的水平位置"
 		},
 		"uiElement-transform-anchorY": {
 			"tip": "$锚点 Y\n元素跟容器连接点的垂直位置"
+		},
+		"uiElement-transform-x-box": {
+			"label": "X"
 		},
 		"uiElement-transform-x": {
 			"tip": "$X\n元素在容器中的水平位置（像素值）"
@@ -3741,11 +3856,17 @@
 		"uiElement-transform-x2": {
 			"tip": "$X2\n元素在容器中的水平位置（容器宽度的比例值）"
 		},
+		"uiElement-transform-y-box": {
+			"label": "Y"
+		},
 		"uiElement-transform-y": {
 			"tip": "$Y\n元素在容器中的垂直位置（像素值）"
 		},
 		"uiElement-transform-y2": {
 			"tip": "$Y2\n元素在容器中的垂直位置（容器高度的比例值）"
+		},
+		"uiElement-transform-width-box": {
+			"label": "宽度"
 		},
 		"uiElement-transform-width": {
 			"tip": "$宽度\n元素在容器中的宽度（像素值）"
@@ -3753,14 +3874,23 @@
 		"uiElement-transform-width2": {
 			"tip": "$宽度2\n元素在容器中的宽度（容器宽度的比例值）"
 		},
+		"uiElement-transform-height-box": {
+			"label": "高度"
+		},
 		"uiElement-transform-height": {
 			"tip": "$高度\n元素在容器中的高度（像素值）"
 		},
 		"uiElement-transform-height2": {
 			"tip": "$高度2\n元素在容器中的高度（容器高度的比例值）"
 		},
+		"uiElement-transform-rotation-box": {
+			"label": "旋转"
+		},
 		"uiElement-transform-rotation": {
 			"tip": "$旋转\n元素绕锚点的旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"uiElement-transform-scale-box": {
+			"label": "缩放"
 		},
 		"uiElement-transform-scaleX": {
 			"tip": "$缩放 X\n元素的水平缩放系数"
@@ -3768,11 +3898,17 @@
 		"uiElement-transform-scaleY": {
 			"tip": "$缩放 Y\n元素的垂直缩放系数"
 		},
+		"uiElement-transform-skew-box": {
+			"label": "倾斜"
+		},
 		"uiElement-transform-skewX": {
 			"tip": "$倾斜 X\n元素的水平倾斜系数"
 		},
 		"uiElement-transform-skewY": {
 			"tip": "$倾斜 Y\n元素的垂直倾斜系数"
+		},
+		"uiElement-transform-opacity-box": {
+			"label": "不透明度"
 		},
 		"uiElement-transform-opacity": {
 			"tip": "$不透明度\n用来调节元素的可见度"
@@ -3784,6 +3920,9 @@
 		"uiElement-scripts": {
 			"label": "脚本",
 			"tip": "添加脚本文件来扩展元素"
+		},
+		"uiImage-properties-grid": {
+			"label": "图像属性"
 		},
 		"uiImage-image": {
 			"label": "图像",
@@ -3855,6 +3994,9 @@
 				}
 			}
 		},
+		"uiImage-shift-box": {
+			"label": "偏移"
+		},
 		"uiImage-shiftX": {
 			"tip": "$偏移 X\n图像纹理的水平偏移距离（单位：像素）"
 		},
@@ -3885,6 +4027,9 @@
 			"label": "色调 - 灰",
 			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
 		},
+		"uiText-properties-grid": {
+			"label": "文本属性"
+		},
 		"uiText-direction": {
 			"label": "方向",
 			"tip": "选择文本排版方向",
@@ -3902,6 +4047,9 @@
 					"tip": "内容从上到下垂直流动，向左换行"
 				}
 			}
+		},
+		"uiText-align-box": {
+			"label": "对齐"
 		},
 		"uiText-align-left": {
 			"tip": "$左对齐\n文本的左边缘对齐元素的左边缘"
@@ -4046,6 +4194,9 @@
 				}
 			}
 		},
+		"uiTextBox-properties-grid": {
+			"label": "文本框属性"
+		},
 		"uiTextBox-type": {
 			"label": "类型",
 			"tip": "文本框内容类型",
@@ -4126,6 +4277,9 @@
 		"uiTextBox-selectionBgColor": {
 			"label": "选中背景颜色",
 			"tip": "被选中文字的背景颜色"
+		},
+		"uiDialogBox-properties-grid": {
+			"label": "对话框属性"
 		},
 		"uiDialogBox-content": {
 			"label": "内容",
@@ -4233,6 +4387,9 @@
 					"tip": "C = max(0, A - B)"
 				}
 			}
+		},
+		"uiProgressBar-properties-grid": {
+			"label": "进度条属性"
 		},
 		"uiProgressBar-image": {
 			"label": "图像",
@@ -4345,6 +4502,9 @@
 		"uiProgressBar-color-3-box": {
 			"label": "不透明度",
 			"tip": "进度条颜色的不透明度"
+		},
+		"uiButton-image-properties-grid": {
+			"label": "图像属性"
 		},
 		"uiButton-display": {
 			"label": "显示",
@@ -4460,6 +4620,9 @@
 			"label": "按下色调",
 			"tip": "按钮按下状态下显示的图像"
 		},
+		"uiButton-text-properties-grid": {
+			"label": "文本属性"
+		},
 		"uiButton-direction": {
 			"label": "方向",
 			"tip": "选择文本排版方向",
@@ -4473,6 +4636,9 @@
 					"tip": "内容从上到下垂直流动"
 				}
 			}
+		},
+		"uiButton-align-box": {
+			"label": "对齐"
 		},
 		"uiButton-align-left": {
 			"tip": "$左对齐\n文本的左边缘对齐元素的左边缘"
@@ -4585,6 +4751,9 @@
 			"label": "按下颜色",
 			"tip": "按钮按下状态下文字的颜色"
 		},
+		"uiButton-sound-effects-grid": {
+			"label": "音效"
+		},
 		"uiButton-hoverSound": {
 			"label": "选中音效",
 			"tip": "选中按钮的音效（必须是用户手动触发）"
@@ -4592,6 +4761,9 @@
 		"uiButton-clickSound": {
 			"label": "点击音效",
 			"tip": "点击按钮的音效"
+		},
+		"uiAnimation-properties-grid": {
+			"label": "动画属性"
 		},
 		"uiAnimation-animation": {
 			"label": "动画",
@@ -4617,11 +4789,17 @@
 			"label": "动画帧",
 			"tip": "动画的初始帧"
 		},
+		"uiAnimation-offset-box": {
+			"label": "偏移"
+		},
 		"uiAnimation-offsetX": {
 			"tip": "$偏移 X\n动画的水平偏移距离"
 		},
 		"uiAnimation-offsetY": {
 			"tip": "$偏移 Y\n动画的垂直偏移距离"
+		},
+		"uiVideo-properties-grid": {
+			"label": "视频属性"
 		},
 		"uiVideo-video": {
 			"label": "视频",
@@ -4684,6 +4862,9 @@
 					"tip": "C = max(0, A - B)"
 				}
 			}
+		},
+		"uiWindow-properties-grid": {
+			"label": "窗口属性"
 		},
 		"uiWindow-layout": {
 			"label": "布局",
@@ -4749,6 +4930,9 @@
 				}
 			}
 		},
+		"uiReference-properties-grid": {
+			"label": "引用属性"
+		},
 		"uiReference-prefabId": {
 			"label": "预制件",
 			"tip": "将自身替换成这个元素"
@@ -4756,6 +4940,9 @@
 		"uiReference-synchronous": {
 			"label": "同步",
 			"tip": "在编辑时自动更新到被引用元素的大小，但是可以设置不同的位置"
+		},
+		"animMotion-general-grid": {
+			"label": "动作"
 		},
 		"animMotion-mode": {
 			"label": "模式",
@@ -4807,14 +4994,26 @@
 			"label": "循环起始帧",
 			"tip": "动画循环播放的开始位置"
 		},
+		"animJointFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animJointFrame-position-box": {
+			"label": "位置"
+		},
 		"animJointFrame-x": {
 			"tip": "$X\n水平位置"
 		},
 		"animJointFrame-y": {
 			"tip": "$Y\n垂直位置"
 		},
+		"animJointFrame-rotation-box": {
+			"label": "旋转"
+		},
 		"animJointFrame-rotation": {
 			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animJointFrame-scale-box": {
+			"label": "缩放"
 		},
 		"animJointFrame-scaleX": {
 			"tip": "$缩放 X\n水平缩放系数"
@@ -4822,8 +5021,14 @@
 		"animJointFrame-scaleY": {
 			"tip": "$缩放 Y\n垂直缩放系数"
 		},
+		"animJointFrame-opacity-box": {
+			"label": "不透明度"
+		},
 		"animJointFrame-opacity": {
 			"tip": "$不透明度\n用来调节动画帧的可见度"
+		},
+		"animSpriteLayer-properties-grid": {
+			"label": "精灵层"
 		},
 		"animSpriteLayer-sprite": {
 			"label": "精灵图",
@@ -4865,11 +5070,20 @@
 				}
 			}
 		},
+		"animSpriteFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animSpriteFrame-anchor-box": {
+			"label": "锚点"
+		},
 		"animSpriteFrame-anchorX": {
 			"tip": "$锚点 X\n精灵跟动画连接点的水平位置"
 		},
 		"animSpriteFrame-anchorY": {
 			"tip": "$锚点 Y\n精灵跟动画连接点的垂直位置"
+		},
+		"animSpriteFrame-pivot-box": {
+			"label": "轴点"
 		},
 		"animSpriteFrame-pivotX": {
 			"tip": "$轴点 X\n精灵跟动画连接点的水平偏移距离"
@@ -4877,20 +5091,32 @@
 		"animSpriteFrame-pivotY": {
 			"tip": "$轴点 Y\n精灵跟动画连接点的垂直偏移距离"
 		},
+		"animSpriteFrame-position-box": {
+			"label": "位置"
+		},
 		"animSpriteFrame-x": {
 			"tip": "$X\n水平位置"
 		},
 		"animSpriteFrame-y": {
 			"tip": "$Y\n垂直位置"
 		},
+		"animSpriteFrame-rotation-box": {
+			"label": "旋转"
+		},
 		"animSpriteFrame-rotation": {
 			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animSpriteFrame-scale-box": {
+			"label": "缩放"
 		},
 		"animSpriteFrame-scaleX": {
 			"tip": "$缩放 X\n水平缩放系数"
 		},
 		"animSpriteFrame-scaleY": {
 			"tip": "$缩放 Y\n垂直缩放系数"
+		},
+		"animSpriteFrame-opacity-box": {
+			"label": "不透明度"
 		},
 		"animSpriteFrame-opacity": {
 			"tip": "$不透明度\n用来调节动画帧的可见度"
@@ -4913,6 +5139,9 @@
 		},
 		"sprite-label": {
 			"content": "精灵"
+		},
+		"animParticleLayer-properties-grid": {
+			"label": "粒子层"
 		},
 		"animParticleLayer-particleId": {
 			"label": "粒子",
@@ -4960,20 +5189,35 @@
 				}
 			}
 		},
+		"animParticleFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animParticleFrame-position-box": {
+			"label": "位置"
+		},
 		"animParticleFrame-x": {
 			"tip": "$X\n水平位置"
 		},
 		"animParticleFrame-y": {
 			"tip": "$Y\n垂直位置"
 		},
+		"animParticleFrame-rotation-box": {
+			"label": "旋转"
+		},
 		"animParticleFrame-rotation": {
 			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animParticleFrame-scale-box": {
+			"label": "缩放"
 		},
 		"animParticleFrame-scaleX": {
 			"tip": "$缩放 X\n发射区域的水平缩放系数"
 		},
 		"animParticleFrame-scaleY": {
 			"tip": "$缩放 Y\n发射区域的垂直缩放系数"
+		},
+		"animParticleFrame-opacity-box": {
+			"label": "不透明度"
 		},
 		"animParticleFrame-opacity": {
 			"tip": "$不透明度\n用来调节动画帧的可见度"
@@ -4985,6 +5229,9 @@
 		"animParticleFrame-speed": {
 			"label": "播放速度",
 			"tip": "粒子的整体播放速度"
+		},
+		"animSoundLayer-properties-grid": {
+			"label": "音效层"
 		},
 		"animSoundLayer-playbackRate": {
 			"label": "播放速度",
@@ -5000,6 +5247,9 @@
 				}
 			}
 		},
+		"animSoundFrame-properties-grid": {
+			"label": "动画帧"
+		},
 		"animSoundFrame-sound": {
 			"label": "音效",
 			"tip": "选择一个音频文件"
@@ -5007,6 +5257,9 @@
 		"animSoundFrame-volume": {
 			"label": "音量",
 			"tip": "调整这个音效的音量"
+		},
+		"particleLayer-general-grid": {
+			"label": "基本设置"
 		},
 		"particleLayer-name": {
 			"label": "名称",
@@ -5078,6 +5331,12 @@
 			"label": "渐出时间",
 			"tip": "粒子在销毁前过渡到完全透明的时间"
 		},
+		"particleLayer-anchor-grid": {
+			"label": "锚点"
+		},
+		"particleLayer-anchor-x-box": {
+			"label": "锚点 X"
+		},
 		"particleLayer-anchor-x-0": {
 			"tip": "$锚点 X\n锚点的水平偏移距离\n0：锚点在粒子水平方向的中点\n-1：向左偏移一个粒子宽度的距离\n1：向右偏移一个粒子宽度的距离"
 		},
@@ -5085,11 +5344,17 @@
 			"tip": "$偏差值\n为参数生成一个随机值\n最小值 = 标准值 - 偏差值\n最大值 = 标准值 + 偏差值",
 			"save": "deviation"
 		},
+		"particleLayer-anchor-y-box": {
+			"label": "锚点 Y"
+		},
 		"particleLayer-anchor-y-0": {
 			"tip": "$锚点 Y\n锚点的垂直偏移距离\n0：锚点在粒子垂直方向的中点\n-1：向上偏移一个粒子高度的距离\n1：向下偏移一个粒子高度的距离"
 		},
 		"particleLayer-anchor-y-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-anchor-speedX-box": {
+			"label": "锚点速度 X"
 		},
 		"particleLayer-anchor-speedX-0": {
 			"tip": "$锚点速度 X\n每秒钟\"锚点 X\"的改变量"
@@ -5097,11 +5362,20 @@
 		"particleLayer-anchor-speedX-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-anchor-speedY-box": {
+			"label": "锚点速度 Y"
+		},
 		"particleLayer-anchor-speedY-0": {
 			"tip": "$锚点速度 Y\n每秒钟\"锚点 Y\"的改变量"
 		},
 		"particleLayer-anchor-speedY-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-movement-grid": {
+			"label": "移动"
+		},
+		"particleLayer-movement-angle-box": {
+			"label": "移动角度"
 		},
 		"particleLayer-movement-angle-0": {
 			"tip": "$移动角度\n粒子初速度的角度"
@@ -5109,11 +5383,17 @@
 		"particleLayer-movement-angle-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-movement-speed-box": {
+			"label": "移动速度"
+		},
 		"particleLayer-movement-speed-0": {
 			"tip": "$移动速度\n粒子初速度的大小"
 		},
 		"particleLayer-movement-speed-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-movement-accelAngle-box": {
+			"label": "加速角度"
 		},
 		"particleLayer-movement-accelAngle-0": {
 			"tip": "$加速角度\n每秒钟\"移动角度\"的改变量"
@@ -5121,11 +5401,20 @@
 		"particleLayer-movement-accelAngle-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-movement-accel-box": {
+			"label": "加速度"
+		},
 		"particleLayer-movement-accel-0": {
 			"tip": "$加速度\n每秒钟\"移动速度\"的改变量"
 		},
 		"particleLayer-movement-accel-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-rotation-grid": {
+			"label": "旋转"
+		},
+		"particleLayer-rotation-angle-box": {
+			"label": "旋转角度"
 		},
 		"particleLayer-rotation-angle-0": {
 			"tip": "$旋转角度\n粒子初始角度"
@@ -5133,11 +5422,17 @@
 		"particleLayer-rotation-angle-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-rotation-speed-box": {
+			"label": "旋转速度"
+		},
 		"particleLayer-rotation-speed-0": {
 			"tip": "$旋转速度\n每秒钟\"旋转角度\"的改变量"
 		},
 		"particleLayer-rotation-speed-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-rotation-accel-box": {
+			"label": "旋转加速度"
 		},
 		"particleLayer-rotation-accel-0": {
 			"tip": "$旋转加速度\n每秒钟\"旋转速度\"的改变量"
@@ -5145,11 +5440,20 @@
 		"particleLayer-rotation-accel-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-hRotation-grid": {
+			"label": "水平旋转"
+		},
+		"particleLayer-hRotation-radius-box": {
+			"label": "半径"
+		},
 		"particleLayer-hRotation-radius-0": {
 			"tip": "$半径\n粒子左右来回运动的振幅，用于模拟绕Y轴旋转"
 		},
 		"particleLayer-hRotation-radius-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-expansionSpeed-box": {
+			"label": "扩张速度"
 		},
 		"particleLayer-hRotation-expansionSpeed-0": {
 			"tip": "$扩张速度\n每秒钟\"半径\"的改变量"
@@ -5157,11 +5461,17 @@
 		"particleLayer-hRotation-expansionSpeed-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-hRotation-expansionAccel-box": {
+			"label": "扩张加速度"
+		},
 		"particleLayer-hRotation-expansionAccel-0": {
 			"tip": "$扩张加速度\n每秒钟\"扩张速度\"的改变量"
 		},
 		"particleLayer-hRotation-expansionAccel-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angle-box": {
+			"label": "旋转角度"
 		},
 		"particleLayer-hRotation-angle-0": {
 			"tip": "$旋转角度\n粒子绕Y轴水平旋转的初始角度\n0度 = 正右方，顺时针旋转"
@@ -5169,11 +5479,17 @@
 		"particleLayer-hRotation-angle-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-hRotation-angularSpeed-box": {
+			"label": "旋转速度"
+		},
 		"particleLayer-hRotation-angularSpeed-0": {
 			"tip": "$旋转速度\n每秒钟\"旋转角度\"的改变量"
 		},
 		"particleLayer-hRotation-angularSpeed-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angularAccel-box": {
+			"label": "旋转加速度"
 		},
 		"particleLayer-hRotation-angularAccel-0": {
 			"tip": "$旋转加速度\n每秒钟\"旋转速度\"的改变量"
@@ -5181,11 +5497,20 @@
 		"particleLayer-hRotation-angularAccel-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-scale-grid": {
+			"label": "缩放"
+		},
+		"particleLayer-scale-factor-box": {
+			"label": "缩放系数"
+		},
 		"particleLayer-scale-factor-0": {
 			"tip": "$缩放系数\n粒子大小的缩放系数，1 = 100%"
 		},
 		"particleLayer-scale-factor-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-scale-speed-box": {
+			"label": "缩放速度"
 		},
 		"particleLayer-scale-speed-0": {
 			"tip": "$缩放速度\n每秒钟\"缩放系数\"的改变量"
@@ -5193,11 +5518,17 @@
 		"particleLayer-scale-speed-1": {
 			"tip": "#deviation"
 		},
+		"particleLayer-scale-accel-box": {
+			"label": "缩放加速度"
+		},
 		"particleLayer-scale-accel-0": {
 			"tip": "$缩放加速度\n每秒钟\"缩放速度\"的改变量"
 		},
 		"particleLayer-scale-accel-1": {
 			"tip": "#deviation"
+		},
+		"particleLayer-rendering-grid": {
+			"label": "渲染"
 		},
 		"particleLayer-image": {
 			"label": "图像",
@@ -5309,6 +5640,9 @@
 				}
 			}
 		},
+		"particleLayer-color-rgba-box": {
+			"label": "颜色"
+		},
 		"particleLayer-color-rgba-0": {
 			"tip": "$红\n0 ~ 255"
 		},
@@ -5321,6 +5655,9 @@
 		"particleLayer-color-rgba-3": {
 			"tip": "$不透明度\n0 ~ 255"
 		},
+		"particleLayer-color-min-box": {
+			"label": "颜色最小值"
+		},
 		"particleLayer-color-min-0": {
 			"tip": "$红\n0 ~ 255"
 		},
@@ -5332,6 +5669,9 @@
 		},
 		"particleLayer-color-min-3": {
 			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-max-box": {
+			"label": "颜色最大值"
 		},
 		"particleLayer-color-max-0": {
 			"tip": "$红\n0 ~ 255"
@@ -5349,6 +5689,9 @@
 			"label": "过渡方式",
 			"tip": "用来计算插值颜色"
 		},
+		"particleLayer-color-startMin-box": {
+			"label": "初始颜色最小值"
+		},
 		"particleLayer-color-startMin-0": {
 			"tip": "$红\n0 ~ 255"
 		},
@@ -5360,6 +5703,9 @@
 		},
 		"particleLayer-color-startMin-3": {
 			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-box": {
+			"label": "初始颜色最大值"
 		},
 		"particleLayer-color-startMax-0": {
 			"tip": "$红\n0 ~ 255"
@@ -5373,6 +5719,9 @@
 		"particleLayer-color-startMax-3": {
 			"tip": "$不透明度\n0 ~ 255"
 		},
+		"particleLayer-color-endMin-box": {
+			"label": "结束颜色最小值"
+		},
 		"particleLayer-color-endMin-0": {
 			"tip": "$红\n0 ~ 255"
 		},
@@ -5384,6 +5733,9 @@
 		},
 		"particleLayer-color-endMin-3": {
 			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-box": {
+			"label": "结束颜色最大值"
 		},
 		"particleLayer-color-endMax-0": {
 			"tip": "$红\n0 ~ 255"
@@ -5413,6 +5765,12 @@
 			"label": "色调 - 灰",
 			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
 		},
+		"setting": {
+			"title": "设置"
+		},
+		"setting-title-server": {
+			"content": "本地服务"
+		},
 		"setting-server-port": {
 			"label": "端口",
 			"tip": "本地服务监听的端口"
@@ -5420,6 +5778,9 @@
 		"setting-server-auto": {
 			"label": "自动开启服务",
 			"tip": "打开项目自动启动本地服务"
+		},
+		"setting-title-apkbuild": {
+			"content": "APK构建"
 		},
 		"setting-apkbuild-outputDir": {
 			"label": "反编译输出目录",
@@ -5432,6 +5793,9 @@
 		"setting-apkbuild-apktoolPath": {
 			"label": "apktool.jar路径",
 			"tip": "apktool.jar的路径"
+		},
+		"setting-title-signed": {
+			"content": "签名"
 		},
 		"setting-signed-jksPath": {
 			"label": "JKS密钥库路径",
@@ -5461,6 +5825,9 @@
 			"label": "签名后APK路径",
 			"tip": "签名后的APK文件输出路径"
 		},
+		"setting-title-other": {
+			"content": "其他"
+		},
 		"setting-other-copyAsTextKeepEmptyLine": {
 			"label": "保留空行",
 			"tip": "复制到文本 是否保留空行"
@@ -5469,9 +5836,18 @@
 			"label": "项目搜索历史上限",
 			"tip": "项目浏览器搜索框下拉列表最多显示的历史记录条数"
 		},
+		"setting-title-github": {
+			"content": "GitHub"
+		},
 		"setting-github-accelerationNode": {
 			"label": "加速节点",
 			"tip": "选择GitHub资源下载的加速节点"
+		},
+		"autoTile": {
+			"title": "自动图块"
+		},
+		"autoTile-general-grid": {
+			"label": "基本设置"
 		},
 		"autoTile-image": {
 			"label": "图像",
@@ -5529,6 +5905,9 @@
 		"autoTile-rule-7": {
 			"tip": "$左下\n附近是否存在相同的图块"
 		},
+		"autoTile-generateFrames": {
+			"title": "生成动画帧"
+		},
 		"autoTile-generateFrames-strideX": {
 			"label": "偏移 X",
 			"tip": "生成的动画帧相对前一帧的水平位置偏移量"
@@ -5541,6 +5920,15 @@
 			"label": "数量",
 			"tip": "以选中的动画帧为参照物，总共生成多少动画帧"
 		},
+		"autoTile-frameIndex": {
+			"title": "动画帧"
+		},
+		"autoTile-selectNode": {
+			"title": "图块"
+		},
+		"scene-shift": {
+			"title": "移动"
+		},
 		"scene-shift-x": {
 			"label": "偏移 X",
 			"tip": "场景对象的水平偏移距离"
@@ -5548,6 +5936,9 @@
 		"scene-shift-y": {
 			"label": "偏移 Y",
 			"tip": "场景对象的垂直偏移距离"
+		},
+		"object-folder": {
+			"title": "默认对象文件夹"
 		},
 		"object-folder-tilemap": {
 			"label": "瓦片地图",
@@ -5577,6 +5968,9 @@
 			"label": "视差图",
 			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的视差图会被自动放入此文件夹"
 		},
+		"newProject": {
+			"title": "新建项目"
+		},
 		"newProject-template": {
 			"label": "游戏模板",
 			"tip": "选择一个游戏模板作为新的项目",
@@ -5591,11 +5985,17 @@
 			"label": "文件夹",
 			"tip": "新建项目文件夹的名称"
 		},
+		"newProject-location-box": {
+			"label": "位置"
+		},
 		"newProject-location": {
 			"tip": "$位置\n在这个位置新建一个项目文件夹"
 		},
 		"newProject-choose": {
 			"tip": "$选择文件夹\n打开操作系统的会话框，选择一个文件夹作为路径"
+		},
+		"deployment": {
+			"title": "部署"
 		},
 		"deployment-platform": {
 			"label": "平台",
@@ -5604,6 +6004,9 @@
 		"deployment-folder": {
 			"label": "文件夹",
 			"tip": "输出文件夹的名称"
+		},
+		"deployment-location-box": {
+			"label": "输出位置"
 		},
 		"deployment-location": {
 			"tip": "$输出位置\n在这个位置新建一个输出文件夹"
@@ -5614,6 +6017,18 @@
 		"deployment-compress": {
 			"label": "混淆压缩",
 			"tip": "开启混淆压缩\n开启后，将使用混淆压缩代码，减小体积，但会增加编译时间"
+		},
+		"copyProgress": {
+			"title": "复制进度"
+		},
+		"copyProgress-box": {
+			"label": "正在复制文件..."
+		},
+		"project-settings": {
+			"title": "项目设置"
+		},
+		"config-window-summary": {
+			"content": "应用窗口"
 		},
 		"config-window-title": {
 			"label": "标题",
@@ -5645,6 +6060,9 @@
 				}
 			}
 		},
+		"config-resolution-summary": {
+			"content": "游戏分辨率"
+		},
 		"config-resolution-width": {
 			"label": "宽度",
 			"tip": "游戏画布的实际宽度，受到窗口大小影响会自动缩放画布（部署后自动保存）"
@@ -5661,6 +6079,9 @@
 			"label": "界面缩放系数",
 			"tip": "按比例缩放显示用户界面（部署后自动保存）"
 		},
+		"config-scene-summary": {
+			"content": "场景"
+		},
 		"config-scene-padding": {
 			"label": "边距",
 			"tip": "允许摄像机超出场景的最大距离，如果设置为0，则摄像机始终锁定在场景内部"
@@ -5668,6 +6089,9 @@
 		"config-scene-animationInterval": {
 			"label": "图块动画播放间隔",
 			"tip": "自动图块动画帧的播放间隔时间"
+		},
+		"config-tileArea-summary": {
+			"content": "图块渲染区域"
 		},
 		"config-tileArea-expansionTop": {
 			"label": "上边距",
@@ -5685,6 +6109,9 @@
 			"label": "下边距",
 			"tip": "渲染屏幕外下边缘外指定距离内的图块"
 		},
+		"config-animationArea-summary": {
+			"content": "动画渲染区域"
+		},
 		"config-animationArea-expansionTop": {
 			"label": "上边距",
 			"tip": "渲染屏幕外上边缘外指定距离内的动画"
@@ -5700,6 +6127,9 @@
 		"config-animationArea-expansionBottom": {
 			"label": "下边距",
 			"tip": "渲染屏幕外下边缘外指定距离内的动画"
+		},
+		"config-lightArea-summary": {
+			"content": "光影渲染区域"
 		},
 		"config-lightArea-expansionTop": {
 			"label": "上边距",
@@ -5717,6 +6147,9 @@
 			"label": "下边距",
 			"tip": "渲染屏幕外下边缘外指定距离内的光源"
 		},
+		"config-virtualAxis-summary": {
+			"content": "虚拟轴"
+		},
 		"config-virtualAxis-up": {
 			"label": "上",
 			"tip": "单独按下该键让轴点向上移动\nY = -1，角度 = 270"
@@ -5732,6 +6165,9 @@
 		"config-virtualAxis-right": {
 			"label": "右",
 			"tip": "单独按下该键让轴点向右移动\nX = 1，角度 = 0"
+		},
+		"config-collision-summary": {
+			"content": "碰撞系统"
 		},
 		"config-collision-actor-enabled": {
 			"label": "角色碰撞",
@@ -5779,6 +6215,9 @@
 				}
 			}
 		},
+		"config-text-summary": {
+			"content": "文本"
+		},
 		"config-text-importedFonts": {
 			"label": "导入字体",
 			"tip": "导入外部字体，字体名称就是文件名（不含扩展名）\n导入过多字体会延长初始加载时间"
@@ -5801,13 +6240,22 @@
 				}
 			}
 		},
+		"config-actor-summary": {
+			"content": "角色"
+		},
 		"config-actor-tempAttributes": {
 			"label": "角色临时属性",
 			"tip": "所有角色初始化时自动添加预设的临时属性，这些属性无法被保存，读取存档后重置"
 		},
+		"config-animation-summary": {
+			"content": "动画"
+		},
 		"config-animation-frameRate": {
 			"label": "动画帧率",
 			"tip": "每秒钟播放的动画时间轴帧数，而实际渲染的动画帧是基于FPS进行插值的"
+		},
+		"config-soundAttenuation-summary": {
+			"content": "音效衰减"
 		},
 		"config-soundAttenuation-distance": {
 			"label": "衰减距离",
@@ -5816,6 +6264,9 @@
 		"config-soundAttenuation-easingId": {
 			"label": "衰减过渡",
 			"tip": "音量从1到0的插值曲线"
+		},
+		"config-webgl-summary": {
+			"content": "WebGL"
 		},
 		"config-webgl-desynchronized": {
 			"label": "低延时模式",
@@ -5859,6 +6310,9 @@
 				}
 			}
 		},
+		"config-script-summary": {
+			"content": "脚本"
+		},
 		"config-script-autoCompile": {
 			"label": "自动编译",
 			"tip": "是否在后台自动编译脚本文件",
@@ -5872,6 +6326,9 @@
 					"tip": "关闭自动编译，使用代码编辑器提供的编译功能"
 				}
 			}
+		},
+		"config-save-summary": {
+			"content": "存档"
 		},
 		"config-save-location": {
 			"label": "存档位置",
@@ -5895,6 +6352,9 @@
 			"label": "子目录",
 			"tip": "相对于存档位置的路径，设置一个独特的目录名可以避免与其他应用的数据发生冲突\n"
 		},
+		"config-localization-summary": {
+			"content": "本地化"
+		},
 		"config-localization-languages": {
 			"label": "语言",
 			"tip": "游戏本地化语言列表，在\"本地化\"窗口中编辑详细内容"
@@ -5902,6 +6362,9 @@
 		"config-localization-default": {
 			"label": "默认游戏语言",
 			"tip": "进入游戏时选择的语言，部署后语言改变会自动保存"
+		},
+		"config-other-summary": {
+			"content": "其他选项"
 		},
 		"config-preload": {
 			"label": "预加载文件",
@@ -5925,6 +6388,15 @@
 			"label": "自定义死区",
 			"tip": "手柄自定义死区，范围(0-1)"
 		},
+		"easing": {
+			"title": "过渡"
+		},
+		"easing-list": {
+			"label": "列表"
+		},
+		"easing-points-grid": {
+			"label": "控制点"
+		},
 		"easing-mode": {
 			"label": "模式",
 			"tip": "选择曲线控制点的数量",
@@ -5942,6 +6414,30 @@
 					"tip": "生成更加复杂的曲线"
 				}
 			}
+		},
+		"easing-points-0": {
+			"content": "点 1"
+		},
+		"easing-points-1": {
+			"content": "点 2"
+		},
+		"easing-points-2": {
+			"content": "点 3"
+		},
+		"easing-points-3": {
+			"content": "点 4"
+		},
+		"easing-points-4": {
+			"content": "点 5"
+		},
+		"easing-points-5": {
+			"content": "点 6"
+		},
+		"easing-points-6": {
+			"content": "点 7"
+		},
+		"easing-points-7": {
+			"content": "点 8"
 		},
 		"easing-points-0-x": {
 			"tip": "$X1\n控制点1的水平位置"
@@ -5991,6 +6487,12 @@
 		"easing-points-7-y": {
 			"tip": "$Y8\n控制点8的垂直位置"
 		},
+		"easing-curve-canvas": {
+			"label": "曲线"
+		},
+		"easing-preview-canvas": {
+			"label": "预览"
+		},
 		"easing-preview-reverse": {
 			"label": "回放",
 			"tip": "预览时是否反向播放动画",
@@ -6013,6 +6515,12 @@
 			"label": "等待",
 			"tip": "过渡结束后的等待时间"
 		},
+		"team": {
+			"title": "队伍"
+		},
+		"object-attribute": {
+			"title": "属性"
+		},
 		"object-attribute-key": {
 			"label": "键",
 			"tip": "属性的名称"
@@ -6032,6 +6540,9 @@
 		"object-attribute-enum-value": {
 			"label": "选项",
 			"tip": "属性的值"
+		},
+		"condition": {
+			"title": "条件"
 		},
 		"condition-type": {
 			"label": "条件类型",
@@ -6137,6 +6648,9 @@
 			"label": "字符串",
 			"tip": "操作数"
 		},
+		"fileAnimation-sprite": {
+			"title": "精灵图"
+		},
 		"fileAnimation-sprite-name": {
 			"label": "名称",
 			"tip": "精灵图的名称"
@@ -6153,6 +6667,9 @@
 			"label": "垂直划分",
 			"tip": "精灵图的垂直划分数量，每一帧的高度向下取整"
 		},
+		"fileActor-sprite": {
+			"title": "精灵图"
+		},
 		"fileActor-sprite-id": {
 			"label": "名称",
 			"tip": "选择角色动画的精灵图"
@@ -6160,6 +6677,9 @@
 		"fileActor-sprite-image": {
 			"label": "图像",
 			"tip": "将精灵图替换为新的图像"
+		},
+		"fileActor-skill": {
+			"title": "技能"
 		},
 		"fileActor-skill-id": {
 			"label": "技能",
@@ -6169,6 +6689,9 @@
 			"label": "快捷键",
 			"tip": "设置此技能的快捷键"
 		},
+		"fileActor-equipment": {
+			"title": "装备"
+		},
 		"fileActor-equipment-id": {
 			"label": "装备",
 			"tip": "选择一个装备文件"
@@ -6176,6 +6699,9 @@
 		"fileActor-equipment-slot": {
 			"label": "装备槽",
 			"tip": "设置此装备的装备槽"
+		},
+		"fileActor-inventory-goods": {
+			"title": "库存"
 		},
 		"fileActor-inventory-type": {
 			"label": "类型",
@@ -6210,6 +6736,9 @@
 		"fileActor-inventory-money": {
 			"label": "金钱",
 			"tip": "设置初始金钱的数量"
+		},
+		"fileEvent-parameter": {
+			"title": "参数"
 		},
 		"fileEvent-parameter-type": {
 			"label": "类型",
@@ -6273,9 +6802,21 @@
 			"label": "备注",
 			"tip": "参数的备注说明"
 		},
+		"variable": {
+			"title": "变量"
+		},
+		"variable-list": {
+			"label": "列表"
+		},
+		"variable-properties-flex": {
+			"label": "属性"
+		},
 		"variable-name": {
 			"label": "名称",
 			"tip": "变量的名称"
+		},
+		"variable-sort-normal": {
+			"label": "分类"
 		},
 		"variable-sort-normal-label": {
 			"content": "保存到单独文件",
@@ -6288,6 +6829,9 @@
 		"variable-sort-temporary-label": {
 			"content": "临时变量",
 			"tip": "不保存变量数据，重启游戏后重置"
+		},
+		"variable-type-boolean": {
+			"label": "类型"
 		},
 		"variable-type-boolean-label": {
 			"content": "布尔值",
@@ -6305,6 +6849,9 @@
 			"content": "对象",
 			"tip": "只能写入对象（无法保存）"
 		},
+		"variable-value-manager": {
+			"label": "初始值"
+		},
 		"variable-value-boolean-false": {
 			"tip": "$初始值\nFalse"
 		},
@@ -6321,6 +6868,15 @@
 			"label": "备注",
 			"tip": "变量的备注说明"
 		},
+		"attribute": {
+			"title": "属性"
+		},
+		"attribute-list": {
+			"label": "列表"
+		},
+		"attribute-properties-flex": {
+			"label": "属性"
+		},
 		"attribute-name": {
 			"label": "名称",
 			"tip": "属性的名称"
@@ -6329,6 +6885,9 @@
 			"label": "键",
 			"placeholder": "默认",
 			"tip": "属性的键，默认使用属性ID作为键"
+		},
+		"attribute-type-boolean": {
+			"label": "类型"
 		},
 		"attribute-type-boolean-label": {
 			"content": "布尔值",
@@ -6358,6 +6917,15 @@
 			"label": "备注",
 			"tip": "属性的备注说明"
 		},
+		"enum": {
+			"title": "枚举"
+		},
+		"enum-list": {
+			"label": "列表"
+		},
+		"enum-properties-flex": {
+			"label": "属性"
+		},
 		"enum-name": {
 			"label": "名称",
 			"tip": "枚举的名称"
@@ -6371,6 +6939,24 @@
 			"label": "备注",
 			"tip": "枚举的备注说明"
 		},
+		"localization": {
+			"title": "本地化"
+		},
+		"localization-list": {
+			"label": "列表"
+		},
+		"presetObject": {
+			"title": "场景对象"
+		},
+		"presetElement": {
+			"title": "元素"
+		},
+		"plugin": {
+			"title": "插件"
+		},
+		"plugin-list": {
+			"label": "列表"
+		},
 		"plugin-overview": {
 			"label": "概述"
 		},
@@ -6382,6 +6968,12 @@
 		},
 		"arrayList-string": {
 			"title": "字符串"
+		},
+		"command": {
+			"title": "自定义指令"
+		},
+		"command-list": {
+			"label": "列表"
 		},
 		"command-overview": {
 			"label": "概述"
@@ -6399,8 +6991,23 @@
 			"placeholder": "关键字用逗号分隔",
 			"tip": "添加搜索关键字，用逗号分隔"
 		},
+		"about": {
+			"title": "Yami RPG Editor"
+		},
+		"about-credits": {
+			"content": "特别感谢"
+		},
+		"update-log": {
+			"title": "更新日志"
+		},
+		"selector": {
+			"title": "选择文件"
+		},
 		"selector-search": {
 			"tip": "$查找\n输入\".\"可显示所有符合条件的文件"
+		},
+		"color": {
+			"title": "拾色器"
 		},
 		"color-hex": {
 			"tip": "$十六进制\n6或8位颜色码"
@@ -6417,13 +7024,22 @@
 		"color-a": {
 			"tip": "$不透明度\n0 ~ 255"
 		},
+		"font": {
+			"title": "设置字体"
+		},
 		"font-font": {
 			"label": "字体",
 			"tip": "输入字体名称，如果有多个字体，用逗号隔开，按从左到右的优先顺序排列"
 		},
+		"fontSize": {
+			"title": "设置字体大小"
+		},
 		"fontSize-size": {
 			"label": "字体大小",
 			"tip": "改变文字的大小（10 ~ 400）"
+		},
+		"textPosition": {
+			"title": "设置文字位置"
 		},
 		"textPosition-axis": {
 			"label": "坐标",
@@ -6456,6 +7072,9 @@
 		"textPosition-value": {
 			"label": "数值",
 			"tip": "坐标的位置"
+		},
+		"textEffect": {
+			"title": "设置文字效果"
 		},
 		"textEffect-type": {
 			"label": "文字效果",
@@ -6490,6 +7109,9 @@
 		"textEffect-color": {
 			"label": "效果颜色",
 			"tip": "背景文字的颜色"
+		},
+		"insertImage": {
+			"title": "插入图像"
 		},
 		"insertImage-mode": {
 			"label": "模式",
@@ -6529,6 +7151,9 @@
 			"label": "高度",
 			"tip": "图像的显示高度"
 		},
+		"localVariable": {
+			"title": "设置本地变量"
+		},
 		"localVariable-key": {
 			"label": "本地变量",
 			"tip": "输入当前事件中的一个本地变量的名称"
@@ -6547,6 +7172,9 @@
 			"label": "名称",
 			"tip": "输入新的名称"
 		},
+		"language": {
+			"title": "语言"
+		},
 		"language-name": {
 			"label": "名称",
 			"tip": "选择一个语言"
@@ -6559,6 +7187,9 @@
 			"label": "字体缩放系数",
 			"tip": "缩放所有文字的大小"
 		},
+		"exportLanguage": {
+			"title": "导出语言包"
+		},
 		"exportLanguage-first": {
 			"label": "第一语言",
 			"tip": "优先导出这个语言包中的文本内容"
@@ -6567,9 +7198,15 @@
 			"label": "第二语言",
 			"tip": "第一语言内容空缺的部分使用第二语言替补"
 		},
+		"importLanguage": {
+			"title": "导入语言包"
+		},
 		"importLanguage-language": {
 			"label": "导入文本到",
 			"tip": "选择要覆盖的语言包"
+		},
+		"choice": {
+			"title": "选项"
 		},
 		"choice-content": {
 			"label": "内容",
@@ -6589,9 +7226,15 @@
 			"label": "数量",
 			"tip": "输入项目数量"
 		},
+		"setTileTag": {
+			"title": "设置图块标签"
+		},
 		"setTileTag-tag": {
 			"label": "标签",
 			"tip": "输入图块标签(0-99999)"
+		},
+		"event-search-string": {
+			"title": "搜索字符串"
 		},
 		"event-search-string-search": {
 			"label": "内容：",
@@ -6609,8 +7252,20 @@
 			"label": "匹配整行",
 			"tip": "匹配整行内容"
 		},
+		"event": {
+			"title": "事件"
+		},
+		"event-open-list": {
+			"label": "事件"
+		},
+		"event-commands-gutter-background": {
+			"label": "执行内容"
+		},
 		"event-type": {
 			"tip": "$类型\n一些特定行为会自动触发相关类型的事件"
+		},
+		"variableGetter": {
+			"title": "变量"
 		},
 		"variableGetter-type": {
 			"label": "类型",
@@ -6690,6 +7345,9 @@
 			"label": "键",
 			"tip": "全局变量"
 		},
+		"variableGetter2": {
+			"title": "变量"
+		},
 		"variableGetter2-type": {
 			"label": "类型",
 			"tip": "如何获取变量"
@@ -6709,6 +7367,9 @@
 		"variableGetter2-global-key": {
 			"label": "键",
 			"tip": "全局变量"
+		},
+		"actorGetter": {
+			"title": "角色"
 		},
 		"actorGetter-type": {
 			"label": "类型",
@@ -6768,6 +7429,9 @@
 			"label": "变量",
 			"tip": "存放角色的对象变量"
 		},
+		"skillGetter": {
+			"title": "技能"
+		},
 		"skillGetter-type": {
 			"label": "类型",
 			"tip": "如何获取技能",
@@ -6810,6 +7474,9 @@
 			"label": "变量",
 			"tip": "获取变量中的技能对象"
 		},
+		"stateGetter": {
+			"title": "状态"
+		},
 		"stateGetter-type": {
 			"label": "类型",
 			"tip": "如何获取状态",
@@ -6843,6 +7510,9 @@
 		"stateGetter-variable": {
 			"label": "变量",
 			"tip": "获取变量中的状态对象"
+		},
+		"equipmentGetter": {
+			"title": "装备"
 		},
 		"equipmentGetter-type": {
 			"label": "类型",
@@ -6890,6 +7560,9 @@
 			"label": "变量",
 			"tip": "获取变量中的装备对象"
 		},
+		"itemGetter": {
+			"title": "物品"
+		},
 		"itemGetter-type": {
 			"label": "类型",
 			"tip": "如何获取物品",
@@ -6931,6 +7604,9 @@
 		"itemGetter-variable": {
 			"label": "变量",
 			"tip": "获取变量中的物品对象"
+		},
+		"positionGetter": {
+			"title": "位置"
 		},
 		"positionGetter-type": {
 			"label": "类型",
@@ -7024,6 +7700,9 @@
 			"label": "对象",
 			"tip": "获取预设场景对象当前的位置"
 		},
+		"angleGetter": {
+			"title": "角度"
+		},
 		"angleGetter-type": {
 			"label": "类型",
 			"tip": "如何获取角度",
@@ -7058,6 +7737,9 @@
 			"label": "角度",
 			"tip": "360度 = 一圈，顺时针旋转"
 		},
+		"triggerGetter": {
+			"title": "触发器"
+		},
 		"triggerGetter-type": {
 			"label": "类型",
 			"tip": "如何获取触发器",
@@ -7079,6 +7761,9 @@
 		"triggerGetter-variable": {
 			"label": "变量",
 			"tip": "获取变量中的触发器对象"
+		},
+		"lightGetter": {
+			"title": "光源"
 		},
 		"lightGetter-type": {
 			"label": "类型",
@@ -7110,6 +7795,9 @@
 			"label": "变量",
 			"tip": "获取变量中的光源对象"
 		},
+		"regionGetter": {
+			"title": "区域"
+		},
 		"regionGetter-type": {
 			"label": "类型",
 			"tip": "如何获取区域",
@@ -7127,6 +7815,9 @@
 		"regionGetter-presetId": {
 			"label": "数据ID",
 			"tip": "获取场景中预设的区域"
+		},
+		"tilemapGetter": {
+			"title": "瓦片地图"
 		},
 		"tilemapGetter-type": {
 			"label": "类型",
@@ -7153,6 +7844,9 @@
 		"tilemapGetter-variable": {
 			"label": "变量",
 			"tip": "要获取的瓦片地图变量"
+		},
+		"objectGetter": {
+			"title": "场景对象"
 		},
 		"objectGetter-type": {
 			"label": "类型",
@@ -7183,6 +7877,9 @@
 		"objectGetter-variable": {
 			"label": "变量",
 			"tip": "获取变量中的场景对象"
+		},
+		"elementGetter": {
+			"title": "元素"
 		},
 		"elementGetter-type": {
 			"label": "类型",
@@ -7246,6 +7943,9 @@
 			"label": "变量",
 			"tip": "获取变量中的元素对象"
 		},
+		"ancestorGetter": {
+			"title": "祖先元素"
+		},
 		"ancestorGetter-type": {
 			"label": "类型",
 			"tip": "如何获取元素",
@@ -7259,12 +7959,18 @@
 			"label": "变量",
 			"tip": "获取变量中的元素对象"
 		},
+		"showText": {
+			"title": "显示文本"
+		},
 		"showText-target": {
 			"tip": "$目标角色\n该角色会被设置为目标角色"
 		},
 		"showText-parameters": {
 			"placeholder": "参数",
 			"tip": "$参数格式\nbool1, bool2: true, num: 0, str: hello world, ...\n通过\"设置布尔值\"、\"设置数值\"、\"设置字符串\"指令，读取对应类型的参数"
+		},
+		"showChoices": {
+			"title": "显示选项"
 		},
 		"showChoices-choices": {
 			"label": "选项",
@@ -7273,6 +7979,12 @@
 		"showChoices-parameters": {
 			"label": "参数",
 			"tip": "参数格式\nbool1, bool2: true, num: 0, str: hello world, ...\n通过\"设置布尔值\"、\"设置数值\"、\"设置字符串\"指令，读取对应类型的参数"
+		},
+		"comment": {
+			"title": "注释"
+		},
+		"setBoolean": {
+			"title": "设置布尔值"
 		},
 		"setBoolean-variable": {
 			"label": "变量",
@@ -7350,12 +8062,18 @@
 			"label": "脚本",
 			"tip": "执行Javascript并获取返回值"
 		},
+		"setNumber": {
+			"title": "设置数值"
+		},
 		"setNumber-variable": {
 			"label": "变量",
 			"tip": "写入的目标变量"
 		},
 		"setNumber-operands": {
 			"label": "表达式"
+		},
+		"setNumber-operand": {
+			"title": "操作数"
 		},
 		"setNumber-operation": {
 			"label": "操作",
@@ -8140,6 +8858,9 @@
 			"label": "队伍",
 			"tip": "输入队伍ID"
 		},
+		"setString": {
+			"title": "设置字符串"
+		},
 		"setString-variable": {
 			"label": "变量",
 			"tip": "写入的目标变量"
@@ -8443,6 +9164,9 @@
 			"label": "图像高度",
 			"tip": "屏幕截图的高度"
 		},
+		"setObject": {
+			"title": "设置对象"
+		},
 		"setObject-variable": {
 			"label": "变量",
 			"tip": "写入的目标变量"
@@ -8544,6 +9268,9 @@
 		"setObject-operand-list-index": {
 			"label": "索引",
 			"tip": "读取列表中第N（0, 1, 2, ...）个位置的值"
+		},
+		"setList": {
+			"title": "设置列表"
 		},
 		"setList-variable": {
 			"label": "变量",
@@ -8663,9 +9390,15 @@
 			"label": "边界限制",
 			"tip": "开启后如果[列表].length < index，则不会添加内容"
 		},
+		"deleteVariable": {
+			"title": "删除变量"
+		},
 		"deleteVariable-variable": {
 			"label": "变量",
 			"tip": "删除这个变量"
+		},
+		"getObjectProperty": {
+			"title": "获取对象属性"
 		},
 		"getObjectProperty-variable": {
 			"label": "变量",
@@ -8679,6 +9412,9 @@
 			"label": "索引列表",
 			"tip": "从上到下依次获取"
 		},
+		"setObjectProperty": {
+			"title": "设置对象属性"
+		},
 		"setObjectProperty-variable": {
 			"label": "对象变量",
 			"tip": "被设置的变量"
@@ -8691,9 +9427,15 @@
 			"label": "索引列表",
 			"tip": "从上到下依次获取"
 		},
+		"ObjectProperty-index": {
+			"title": "索引"
+		},
 		"ObjectProperty-index-name": {
 			"label": "属性名称",
 			"tip": "要获取的属性名称"
+		},
+		"if": {
+			"title": "如果"
 		},
 		"if-branches": {
 			"label": "分支"
@@ -8702,6 +9444,9 @@
 			"content": "创建其他分支",
 			"tip": "当所有分支的条件都不满足，则进入\"其他分支\""
 		},
+		"if-branch": {
+			"title": "分支"
+		},
 		"if-branch-mode": {
 			"label": "模式",
 			"tip": "条件模式",
@@ -8709,6 +9454,12 @@
 				"all": "满足全部条件",
 				"any": "满足任意条件"
 			}
+		},
+		"if-branch-conditions": {
+			"label": "条件"
+		},
+		"if-condition": {
+			"title": "条件"
 		},
 		"if-condition-type": {
 			"label": "条件类型",
@@ -8762,6 +9513,10 @@
 					"tip": "从变量中读取布尔值"
 				}
 			}
+		},
+		"if-condition-boolean-constant-value": {
+			"label": "常量",
+			"tip": "固定的值"
 		},
 		"if-condition-number-operation": {
 			"label": "操作",
@@ -9077,6 +9832,9 @@
 				"platform-mobile": "运行在移动平台"
 			}
 		},
+		"switch": {
+			"title": "条件分支"
+		},
 		"switch-variable": {
 			"label": "变量",
 			"tip": "用于比较的目标变量"
@@ -9087,6 +9845,15 @@
 		"switch-default-label": {
 			"content": "创建默认分支",
 			"tip": "当所有分支的条件都不满足，则进入\"默认分支\""
+		},
+		"switch-branch": {
+			"title": "分支"
+		},
+		"switch-branch-conditions": {
+			"label": "满足任意条件"
+		},
+		"switch-condition": {
+			"title": "条件"
 		},
 		"switch-condition-type": {
 			"label": "类型",
@@ -9150,6 +9917,9 @@
 			"label": "变量",
 			"tip": "从变量中读取数据"
 		},
+		"loop": {
+			"title": "循环"
+		},
 		"loop-mode": {
 			"label": "模式",
 			"tip": "条件模式",
@@ -9160,6 +9930,9 @@
 		},
 		"loop-conditions": {
 			"label": "条件"
+		},
+		"forEach": {
+			"title": "遍历"
 		},
 		"forEach-data": {
 			"label": "数据",
@@ -9247,6 +10020,9 @@
 			"label": "写入触摸点ID",
 			"tip": "将触摸点ID写入指定变量"
 		},
+		"callEvent": {
+			"title": "调用事件"
+		},
 		"callEvent-type": {
 			"label": "类型",
 			"tip": "想要调用哪个事件",
@@ -9328,6 +10104,9 @@
 		"callEvent-eventType": {
 			"label": "事件",
 			"tip": "选择对象的事件类型"
+		},
+		"return": {
+			"title": "返回"
 		},
 		"return-type": {
 			"label": "返回类型",
@@ -9435,6 +10214,9 @@
 			"label": "元素",
 			"tip": "返回这个元素"
 		},
+		"stopEvent": {
+			"title": "停止事件"
+		},
 		"stopEvent-type": {
 			"label": "类型",
 			"tip": "想要停止哪个事件",
@@ -9517,6 +10299,9 @@
 			"label": "事件",
 			"tip": "选择对象的事件类型"
 		},
+		"registerEvent": {
+			"title": "注册事件"
+		},
 		"registerEvent-target": {
 			"label": "目标对象",
 			"tip": "注册/卸载操作的目标对象",
@@ -9577,6 +10362,9 @@
 			"label": "标签",
 			"tip": "以后用来卸载该事件的标记"
 		},
+		"setEvent": {
+			"title": "设置事件"
+		},
 		"setEvent-operation": {
 			"label": "操作",
 			"tip": "事件操作",
@@ -9623,6 +10411,9 @@
 			"label": "选项索引",
 			"tip": "跳转到第N（0, 1, 2, ...）个选项分支"
 		},
+		"transition": {
+			"title": "过渡"
+		},
 		"transition-variable": {
 			"label": "写入变量",
 			"tip": "写入过渡插值到这个变量"
@@ -9635,6 +10426,9 @@
 			"label": "结束值",
 			"tip": "插值计算的结束值"
 		},
+		"block": {
+			"title": "指令块"
+		},
 		"block-note": {
 			"placeholder": "备注",
 			"tip": "描述这个指令块的作用"
@@ -9643,9 +10437,15 @@
 			"content": "异步执行",
 			"tip": "开启：创建新的执行分支，不堵塞后续指令的执行\n关闭：同步执行块中的指令，没有任何多余的额外操作"
 		},
+		"label": {
+			"title": "标签"
+		},
 		"label-name": {
 			"label": "标签名称",
 			"tip": "创建一个标签用于跳转"
+		},
+		"jumpTo": {
+			"title": "跳转到"
 		},
 		"jumpTo-operation": {
 			"label": "操作",
@@ -9669,9 +10469,15 @@
 			"label": "标签名称",
 			"tip": "跳转到这个标签"
 		},
+		"wait": {
+			"title": "等待"
+		},
 		"wait-duration": {
 			"label": "持续时间",
 			"tip": "等待时间将自动换算为帧数\n不足1帧的时间变为1帧"
+		},
+		"createElement": {
+			"title": "创建元素"
 		},
 		"createElement-operation": {
 			"label": "操作",
@@ -9707,12 +10513,18 @@
 			"label": "UI 元素",
 			"tip": "创建指定的元素"
 		},
+		"setImage": {
+			"title": "设置图像"
+		},
 		"setImage-element": {
 			"label": "元素",
 			"tip": "指定一个图像元素"
 		},
 		"setImage-properties": {
 			"label": "设置属性"
+		},
+		"setImage-property": {
+			"title": "图像属性"
 		},
 		"setImage-property-key": {
 			"label": "属性",
@@ -9729,6 +10541,39 @@
 				"clip-2": "裁剪 - 宽度",
 				"clip-3": "裁剪 - 高度"
 			}
+		},
+		"setImage-property-image": {
+			"label": "图像"
+		},
+		"setImage-property-display": {
+			"label": "显示"
+		},
+		"setImage-property-flip": {
+			"label": "翻转"
+		},
+		"setImage-property-blend": {
+			"label": "混合模式"
+		},
+		"setImage-property-shiftX": {
+			"label": "偏移 X"
+		},
+		"setImage-property-shiftY": {
+			"label": "偏移 Y"
+		},
+		"setImage-property-clip-0": {
+			"label": "裁剪 - X"
+		},
+		"setImage-property-clip-1": {
+			"label": "裁剪 - Y"
+		},
+		"setImage-property-clip-2": {
+			"label": "裁剪 - 宽度"
+		},
+		"setImage-property-clip-3": {
+			"label": "裁剪 - 高度"
+		},
+		"loadImage": {
+			"title": "加载图像"
 		},
 		"loadImage-element": {
 			"label": "元素",
@@ -9796,6 +10641,9 @@
 			"label": "Base64编码",
 			"tip": "解码Base64图像并加载它"
 		},
+		"tintImage": {
+			"title": "改变图像色调"
+		},
 		"tintImage-element": {
 			"label": "元素",
 			"tip": "指定一个图像元素"
@@ -9834,12 +10682,18 @@
 			"label": "色调 - 灰",
 			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
 		},
+		"setText": {
+			"title": "设置文本"
+		},
 		"setText-element": {
 			"label": "元素",
 			"tip": "指定一个文本元素"
 		},
 		"setText-properties": {
 			"label": "设置属性"
+		},
+		"setText-property": {
+			"title": "文本属性"
 		},
 		"setText-property-key": {
 			"label": "属性",
@@ -9855,12 +10709,54 @@
 				"blend": "混合模式"
 			}
 		},
+		"setText-property-content": {
+			"label": "内容"
+		},
+		"setText-property-size": {
+			"label": "字体大小"
+		},
+		"setText-property-lineSpacing": {
+			"label": "行间距"
+		},
+		"setText-property-letterSpacing": {
+			"label": "字间距"
+		},
+		"setText-property-color": {
+			"label": "颜色"
+		},
+		"setText-property-font": {
+			"label": "字体"
+		},
+		"setText-property-effect-type": {
+			"label": "文字效果"
+		},
+		"setText-property-effect-shadowOffsetX": {
+			"label": "阴影 X"
+		},
+		"setText-property-effect-shadowOffsetY": {
+			"label": "阴影 Y"
+		},
+		"setText-property-effect-strokeWidth": {
+			"label": "描边宽度"
+		},
+		"setText-property-effect-color": {
+			"label": "效果颜色"
+		},
+		"setText-property-blend": {
+			"label": "混合模式"
+		},
+		"setTextBox": {
+			"title": "设置文本框"
+		},
 		"setTextBox-element": {
 			"label": "元素",
 			"tip": "指定一个文本框元素"
 		},
 		"setTextBox-properties": {
 			"label": "设置属性"
+		},
+		"setTextBox-property": {
+			"title": "文本框属性"
 		},
 		"setTextBox-property-key": {
 			"label": "属性",
@@ -9875,12 +10771,39 @@
 				"color": "颜色"
 			}
 		},
+		"setTextBox-property-type": {
+			"label": "类型"
+		},
+		"setTextBox-property-text": {
+			"label": "文本"
+		},
+		"setTextBox-property-number": {
+			"label": "数值"
+		},
+		"setTextBox-property-min": {
+			"label": "最小值"
+		},
+		"setTextBox-property-max": {
+			"label": "最大值"
+		},
+		"setTextBox-property-decimals": {
+			"label": "小数位数"
+		},
+		"setTextBox-property-color": {
+			"label": "颜色"
+		},
+		"setDialogBox": {
+			"title": "设置对话框"
+		},
 		"setDialogBox-element": {
 			"label": "元素",
 			"tip": "指定一个对话框元素"
 		},
 		"setDialogBox-properties": {
 			"label": "设置属性"
+		},
+		"setDialogBox-property": {
+			"title": "对话框属性"
 		},
 		"setDialogBox-property-key": {
 			"label": "属性",
@@ -9896,6 +10819,48 @@
 				"effect": "文字效果",
 				"blend": "混合模式"
 			}
+		},
+		"setDialogBox-property-content": {
+			"label": "内容"
+		},
+		"setDialogBox-property-interval": {
+			"label": "打印间隔"
+		},
+		"setDialogBox-property-size": {
+			"label": "字体大小"
+		},
+		"setDialogBox-property-lineSpacing": {
+			"label": "行间距"
+		},
+		"setDialogBox-property-letterSpacing": {
+			"label": "字间距"
+		},
+		"setDialogBox-property-color": {
+			"label": "颜色"
+		},
+		"setDialogBox-property-font": {
+			"label": "字体"
+		},
+		"setDialogBox-property-effect-type": {
+			"label": "文字效果"
+		},
+		"setDialogBox-property-effect-shadowOffsetX": {
+			"label": "阴影 X"
+		},
+		"setDialogBox-property-effect-shadowOffsetY": {
+			"label": "阴影 Y"
+		},
+		"setDialogBox-property-effect-strokeWidth": {
+			"label": "描边宽度"
+		},
+		"setDialogBox-property-effect-color": {
+			"label": "效果颜色"
+		},
+		"setDialogBox-property-blend": {
+			"label": "混合模式"
+		},
+		"controlDialog": {
+			"title": "控制对话框"
 		},
 		"controlDialog-element": {
 			"label": "元素",
@@ -9923,12 +10888,18 @@
 				}
 			}
 		},
+		"setProgressBar": {
+			"title": "设置进度条"
+		},
 		"setProgressBar-element": {
 			"label": "元素",
 			"tip": "指定一个进度条元素"
 		},
 		"setProgressBar-properties": {
 			"label": "设置属性"
+		},
+		"setProgressBar-property": {
+			"title": "进度条属性"
 		},
 		"setProgressBar-property-key": {
 			"label": "属性",
@@ -9948,12 +10919,54 @@
 				"color-3": "颜色 - 不透明度"
 			}
 		},
+		"setProgressBar-property-image": {
+			"label": "图像"
+		},
+		"setProgressBar-property-display": {
+			"label": "显示"
+		},
+		"setProgressBar-property-blend": {
+			"label": "混合模式"
+		},
+		"setProgressBar-property-progress": {
+			"label": "进度"
+		},
+		"setProgressBar-property-clip-0": {
+			"label": "裁剪 - X"
+		},
+		"setProgressBar-property-clip-1": {
+			"label": "裁剪 - Y"
+		},
+		"setProgressBar-property-clip-2": {
+			"label": "裁剪 - 宽度"
+		},
+		"setProgressBar-property-clip-3": {
+			"label": "裁剪 - 高度"
+		},
+		"setProgressBar-property-color-0": {
+			"label": "颜色 - 红"
+		},
+		"setProgressBar-property-color-1": {
+			"label": "颜色 - 绿"
+		},
+		"setProgressBar-property-color-2": {
+			"label": "颜色 - 蓝"
+		},
+		"setProgressBar-property-color-3": {
+			"label": "颜色 - 不透明度"
+		},
+		"setButton": {
+			"title": "设置按钮"
+		},
 		"setButton-element": {
 			"label": "元素",
 			"tip": "指定一个按钮元素"
 		},
 		"setButton-properties": {
 			"label": "属性"
+		},
+		"setButton-property": {
+			"title": "按钮属性"
 		},
 		"setButton-property-key": {
 			"label": "属性",
@@ -9973,6 +10986,30 @@
 				"size": "大小",
 				"letterSpacing": "字间距"
 			}
+		},
+		"setButton-property-image": {
+			"label": "图像"
+		},
+		"setButton-property-clip-box": {
+			"label": "裁剪区域"
+		},
+		"setButton-property-tint-box": {
+			"label": "色调"
+		},
+		"setButton-property-imageOpacity": {
+			"label": "不透明度"
+		},
+		"setButton-property-content": {
+			"label": "内容"
+		},
+		"setButton-property-size": {
+			"label": "大小"
+		},
+		"setButton-property-letterSpacing": {
+			"label": "字间距"
+		},
+		"controlButton": {
+			"title": "控制按钮"
 		},
 		"controlButton-operation": {
 			"label": "操作",
@@ -10004,12 +11041,18 @@
 			"label": "元素",
 			"tip": "指定一个按钮元素"
 		},
+		"setAnimation": {
+			"title": "设置动画"
+		},
 		"setAnimation-element": {
 			"label": "元素",
 			"tip": "指定一个动画元素"
 		},
 		"setAnimation-properties": {
 			"label": "属性"
+		},
+		"setAnimation-property": {
+			"title": "动画属性"
 		},
 		"setAnimation-property-key": {
 			"label": "属性",
@@ -10022,12 +11065,33 @@
 				"frame": "帧"
 			}
 		},
+		"setAnimation-property-animation": {
+			"label": "动画"
+		},
+		"setAnimation-property-actor": {
+			"label": "角色"
+		},
+		"setAnimation-property-motion": {
+			"label": "动作"
+		},
+		"setAnimation-property-angle": {
+			"label": "角度"
+		},
+		"setAnimation-property-frame": {
+			"label": "帧"
+		},
+		"setVideo": {
+			"title": "设置视频"
+		},
 		"setVideo-element": {
 			"label": "元素",
 			"tip": "指定一个视频元素"
 		},
 		"setVideo-properties": {
 			"label": "设置属性"
+		},
+		"setVideo-property": {
+			"title": "视频属性"
 		},
 		"setVideo-property-key": {
 			"label": "属性",
@@ -10040,12 +11104,33 @@
 				"blend": "混合模式"
 			}
 		},
+		"setVideo-property-video": {
+			"label": "视频"
+		},
+		"setVideo-property-playbackRate": {
+			"label": "播放速度"
+		},
+		"setVideo-property-loop": {
+			"label": "循环"
+		},
+		"setVideo-property-flip": {
+			"label": "翻转"
+		},
+		"setVideo-property-blend": {
+			"label": "混合模式"
+		},
+		"setWindow": {
+			"title": "设置窗口"
+		},
 		"setWindow-element": {
 			"label": "元素",
 			"tip": "指定一个窗口元素"
 		},
 		"setWindow-properties": {
 			"label": "属性"
+		},
+		"setWindow-property": {
+			"title": "窗口属性"
 		},
 		"setWindow-property-key": {
 			"label": "属性",
@@ -10061,9 +11146,39 @@
 				"paddingY": "垂直边距"
 			}
 		},
+		"setWindow-property-scrollX": {
+			"label": "滚动 X"
+		},
+		"setWindow-property-scrollY": {
+			"label": "滚动 Y"
+		},
+		"setWindow-property-gridWidth": {
+			"label": "网格宽度"
+		},
+		"setWindow-property-gridHeight": {
+			"label": "网格高度"
+		},
+		"setWindow-property-gridGapX": {
+			"label": "水平间距"
+		},
+		"setWindow-property-gridGapY": {
+			"label": "垂直间距"
+		},
+		"setWindow-property-paddingX": {
+			"label": "水平边距"
+		},
+		"setWindow-property-paddingY": {
+			"label": "垂直边距"
+		},
+		"waitForVideo": {
+			"title": "等待视频结束"
+		},
 		"waitForVideo-element": {
 			"label": "元素",
 			"tip": "指定一个视频元素"
+		},
+		"setElement": {
+			"title": "设置元素"
 		},
 		"setElement-element": {
 			"label": "元素",
@@ -10103,6 +11218,9 @@
 				}
 			}
 		},
+		"nestElement": {
+			"title": "嵌套元素"
+		},
 		"nestElement-parent": {
 			"label": "父元素",
 			"tip": "指定一个元素作为父元素"
@@ -10111,12 +11229,18 @@
 			"label": "子元素",
 			"tip": "将这个元素添加到父元素中，作为子元素"
 		},
+		"moveElement": {
+			"title": "移动元素"
+		},
 		"moveElement-element": {
 			"label": "元素",
 			"tip": "指定一个任意类型的元素"
 		},
 		"moveElement-properties": {
 			"label": "设置属性"
+		},
+		"moveElement-property": {
+			"title": "元素属性"
 		},
 		"moveElement-property-key": {
 			"label": "属性",
@@ -10140,6 +11264,57 @@
 				"opacity": "不透明度"
 			}
 		},
+		"moveElement-property-anchorX": {
+			"label": "锚点 X"
+		},
+		"moveElement-property-anchorY": {
+			"label": "锚点 Y"
+		},
+		"moveElement-property-x": {
+			"label": "X"
+		},
+		"moveElement-property-x2": {
+			"label": "X2"
+		},
+		"moveElement-property-y": {
+			"label": "Y"
+		},
+		"moveElement-property-y2": {
+			"label": "Y2"
+		},
+		"moveElement-property-width": {
+			"label": "宽度"
+		},
+		"moveElement-property-width2": {
+			"label": "宽度2"
+		},
+		"moveElement-property-height": {
+			"label": "高度"
+		},
+		"moveElement-property-height2": {
+			"label": "高度2"
+		},
+		"moveElement-property-rotation": {
+			"label": "旋转"
+		},
+		"moveElement-property-scaleX": {
+			"label": "缩放 X"
+		},
+		"moveElement-property-scaleY": {
+			"label": "缩放 Y"
+		},
+		"moveElement-property-skewX": {
+			"label": "倾斜 X"
+		},
+		"moveElement-property-skewY": {
+			"label": "倾斜 Y"
+		},
+		"moveElement-property-opacity": {
+			"label": "不透明度"
+		},
+		"deleteElement": {
+			"title": "删除元素"
+		},
 		"deleteElement-operation": {
 			"label": "操作",
 			"tip": "执行一个删除操作",
@@ -10161,6 +11336,9 @@
 		"deleteElement-element": {
 			"label": "元素",
 			"tip": "对这个元素执行操作"
+		},
+		"setPointerEventRoot": {
+			"title": "设置指针事件根元素"
 		},
 		"setPointerEventRoot-operation": {
 			"label": "操作",
@@ -10187,6 +11365,9 @@
 		"setPointerEventRoot-element": {
 			"label": "元素",
 			"tip": "对这个元素执行操作"
+		},
+		"setFocus": {
+			"title": "设置焦点"
 		},
 		"setFocus-operation": {
 			"label": "操作",
@@ -10232,6 +11413,9 @@
 			"label": "可取消",
 			"tip": "按Esc键可移除当前焦点"
 		},
+		"setAmbientLight": {
+			"title": "设置环境光"
+		},
 		"setAmbientLight-red": {
 			"label": "红",
 			"tip": "输入颜色(红) * 环境光(红) / 255 = 输出颜色(红)"
@@ -10243,6 +11427,9 @@
 		"setAmbientLight-blue": {
 			"label": "蓝",
 			"tip": "输入颜色(蓝) * 环境光(蓝) / 255 = 输出颜色(蓝)"
+		},
+		"tintScreen": {
+			"title": "改变画面色调"
 		},
 		"tintScreen-tint-0": {
 			"label": "色调 - 红",
@@ -10260,6 +11447,9 @@
 			"label": "色调 - 灰",
 			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
 		},
+		"shakeScreen": {
+			"title": "震动屏幕"
+		},
 		"shakeScreen-mode": {
 			"label": "震动模式",
 			"tip": "摄像机摇晃的方向",
@@ -10276,6 +11466,9 @@
 		"shakeScreen-speed": {
 			"label": "速度",
 			"tip": "摄像机摇晃的速度"
+		},
+		"setTile": {
+			"title": "设置图块"
 		},
 		"setTile-tilemap": {
 			"label": "瓦片地图",
@@ -10301,6 +11494,9 @@
 			"label": "图块组 Y",
 			"tip": "新图块的垂直位置"
 		},
+		"deleteTile": {
+			"title": "删除图块"
+		},
 		"deleteTile-tilemap": {
 			"label": "瓦片地图",
 			"tip": "要删除图块的瓦片地图"
@@ -10312,6 +11508,9 @@
 		"deleteTile-tilemapY": {
 			"label": "瓦片地图 Y",
 			"tip": "被删除图块的垂直位置"
+		},
+		"setTerrain": {
+			"title": "设置地形"
 		},
 		"setTerrain-position": {
 			"label": "位置",
@@ -10335,6 +11534,9 @@
 				}
 			}
 		},
+		"requestURL": {
+			"title": "请求URL"
+		},
 		"requestURL-url": {
 			"label": "地址",
 			"tip": "请求的URL地址，支持变量"
@@ -10354,6 +11556,9 @@
 		"requestURL-callback": {
 			"label": "回调",
 			"tip": "请求完成后的回调函数，@code表示返回值(错误为-1),@response表示响应数据"
+		},
+		"downloadFile": {
+			"title": "下载文件"
 		},
 		"downloadFile-url": {
 			"label": "地址",
@@ -10387,6 +11592,9 @@
 			"label": "文件路径",
 			"tip": "后台下载存储的文件路径"
 		},
+		"uploadFile": {
+			"title": "上传文件"
+		},
 		"uploadFile-url": {
 			"label": "地址",
 			"tip": "上传目标的URL地址，支持变量"
@@ -10414,6 +11622,9 @@
 		"uploadFile-rateCallback": {
 			"label": "进度回调",
 			"tip": "上传进度回调函数，@event表示进度事件对象"
+		},
+		"httpRequest": {
+			"title": "通用请求"
 		},
 		"httpRequest-url": {
 			"label": "地址",
@@ -10455,6 +11666,9 @@
 			"label": "回调",
 			"tip": "请求完成后的回调函数，@code表示返回值(错误为-1),@response表示响应数据"
 		},
+		"webSocketConnect": {
+			"title": "WebSocket连接"
+		},
 		"webSocketConnect-url": {
 			"label": "地址",
 			"tip": "WebSocket服务器地址，默认自动加 ws:// 前缀，s+ 开头自动转为 wss://"
@@ -10483,6 +11697,9 @@
 			"label": "关闭回调",
 			"tip": "连接关闭时的回调，@event表示关闭事件"
 		},
+		"webSocketSend": {
+			"title": "WebSocket发送"
+		},
 		"webSocketSend-id": {
 			"label": "连接ID",
 			"tip": "与webSocketConnect时设置的连接ID一致"
@@ -10490,6 +11707,9 @@
 		"webSocketSend-data": {
 			"label": "数据",
 			"tip": "要发送的数据"
+		},
+		"webSocketClose": {
+			"title": "WebSocket关闭"
 		},
 		"webSocketClose-id": {
 			"label": "连接ID",
@@ -10512,11 +11732,17 @@
 		"request-keyValue-value": {
 			"label": "值(value)"
 		},
+		"createObject": {
+			"title": "创建对象"
+		},
 		"createObject-presetId": {
 			"label": "对象"
 		},
 		"createObject-position": {
 			"label": "位置"
+		},
+		"moveLight": {
+			"title": "移动光源"
 		},
 		"moveLight-light": {
 			"label": "光源",
@@ -10524,6 +11750,9 @@
 		},
 		"moveLight-properties": {
 			"label": "设置属性"
+		},
+		"moveLight-property": {
+			"title": "光源属性"
 		},
 		"moveLight-property-key": {
 			"label": "属性",
@@ -10543,9 +11772,51 @@
 				"blue": "蓝"
 			}
 		},
+		"moveLight-property-x": {
+			"label": "X"
+		},
+		"moveLight-property-y": {
+			"label": "Y"
+		},
+		"moveLight-property-range": {
+			"label": "范围"
+		},
+		"moveLight-property-intensity": {
+			"label": "强度"
+		},
+		"moveLight-property-anchorX": {
+			"label": "锚点 X"
+		},
+		"moveLight-property-anchorY": {
+			"label": "锚点 Y"
+		},
+		"moveLight-property-width": {
+			"label": "宽度"
+		},
+		"moveLight-property-height": {
+			"label": "高度"
+		},
+		"moveLight-property-angle": {
+			"label": "角度"
+		},
+		"moveLight-property-red": {
+			"label": "红"
+		},
+		"moveLight-property-green": {
+			"label": "绿"
+		},
+		"moveLight-property-blue": {
+			"label": "蓝"
+		},
+		"deleteObject": {
+			"title": "删除对象"
+		},
 		"deleteObject-object": {
 			"label": "对象",
 			"tip": "删除这个场景对象"
+		},
+		"setState": {
+			"title": "设置状态"
 		},
 		"setState-state": {
 			"label": "状态",
@@ -10572,6 +11843,9 @@
 		"setState-time": {
 			"label": "时间",
 			"tip": "状态的时间"
+		},
+		"playAnimation": {
+			"title": "播放动画"
 		},
 		"playAnimation-mode": {
 			"label": "模式",
@@ -10632,6 +11906,9 @@
 		"playAnimation-speed": {
 			"label": "播放速度",
 			"tip": "播放速度比率\n0：暂停播放\n1：100%播放速度\n10：1000%播放速度"
+		},
+		"setObjectAnimation": {
+			"title": "设置对象动画"
 		},
 		"setObjectAnimation-sort": {
 			"label": "分类",
@@ -10725,6 +12002,9 @@
 			"label": "旋转角度",
 			"tip": "动画绕锚点旋转的角度"
 		},
+		"playAudio": {
+			"title": "播放音频"
+		},
 		"playAudio-type": {
 			"label": "类型",
 			"tip": "在哪个通道上播放",
@@ -10763,9 +12043,15 @@
 			"label": "声音位置",
 			"tip": "在指定位置播放音效，向周围衰减音量"
 		},
+		"stopAudio": {
+			"title": "停止播放"
+		},
 		"stopAudio-type": {
 			"label": "类型",
 			"tip": "立即停止播放这个类型的声音"
+		},
+		"setVolume": {
+			"title": "设置音量"
 		},
 		"setVolume-type": {
 			"label": "类型",
@@ -10775,6 +12061,9 @@
 			"label": "音量",
 			"tip": "声音的大小（0 ~ 1）"
 		},
+		"setPan": {
+			"title": "设置声像"
+		},
 		"setPan-type": {
 			"label": "类型",
 			"tip": "对这个类型的声音执行操作"
@@ -10782,6 +12071,9 @@
 		"setPan-pan": {
 			"label": "声像",
 			"tip": "影响左右声道的音量（-1 ~ 1）\n0：左右声道均衡\n-1：仅左声道\n1：仅右声道"
+		},
+		"setReverb": {
+			"title": "设置混响"
 		},
 		"setReverb-type": {
 			"label": "类型",
@@ -10794,6 +12086,9 @@
 		"setReverb-wet": {
 			"label": "湿声",
 			"tip": "反射声音的音量，越大代表封闭空间越大"
+		},
+		"setLoop": {
+			"title": "设置循环"
 		},
 		"setLoop-type": {
 			"label": "类型",
@@ -10813,13 +12108,22 @@
 				}
 			}
 		},
+		"saveAudio": {
+			"title": "保存音频"
+		},
 		"saveAudio-type": {
 			"label": "类型",
 			"tip": "对这个类型的声音执行操作"
 		},
+		"restoreAudio": {
+			"title": "恢复音频"
+		},
 		"restoreAudio-type": {
 			"label": "类型",
 			"tip": "对这个类型的声音执行操作"
+		},
+		"createActor": {
+			"title": "创建角色"
 		},
 		"createActor-actorId": {
 			"label": "角色",
@@ -10836,6 +12140,9 @@
 		"createActor-angle": {
 			"label": "角度",
 			"tip": "角色的初始角度"
+		},
+		"moveActor": {
+			"title": "移动角色"
 		},
 		"moveActor-actor": {
 			"label": "角色",
@@ -10878,6 +12185,9 @@
 		"moveActor-destination": {
 			"label": "目的地",
 			"tip": "角色移动到这个位置"
+		},
+		"followActor": {
+			"title": "跟随角色"
 		},
 		"followActor-actor": {
 			"label": "角色",
@@ -10963,6 +12273,9 @@
 				}
 			}
 		},
+		"translateActor": {
+			"title": "平移角色"
+		},
 		"translateActor-actor": {
 			"label": "角色",
 			"tip": "平移这个角色"
@@ -10974,6 +12287,9 @@
 		"translateActor-distance": {
 			"label": "距离",
 			"tip": "平移的距离"
+		},
+		"changeThreat": {
+			"title": "增减仇恨值"
 		},
 		"changeThreat-actor": {
 			"label": "角色",
@@ -11000,6 +12316,9 @@
 		"changeThreat-threat": {
 			"label": "仇恨值",
 			"tip": "可通过\"获取目标\"指令获取\"最大仇恨值\"角色"
+		},
+		"setMovementSpeed": {
+			"title": "设置移动速度"
 		},
 		"setMovementSpeed-actor": {
 			"label": "角色",
@@ -11031,6 +12350,9 @@
 			"label": "速度系数",
 			"tip": "按比例设置角色移动速度"
 		},
+		"setAngle": {
+			"title": "设置角度"
+		},
 		"setAngle-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的角度"
@@ -11038,6 +12360,9 @@
 		"setAngle-angle": {
 			"label": "角度",
 			"tip": "角色的角度"
+		},
+		"fixAngle": {
+			"title": "固定角度"
 		},
 		"fixAngle-actor": {
 			"label": "角色",
@@ -11057,6 +12382,9 @@
 				}
 			}
 		},
+		"setWeight": {
+			"title": "设置体重"
+		},
 		"setWeight-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的体重"
@@ -11064,6 +12392,9 @@
 		"setWeight-weight": {
 			"label": "体重",
 			"tip": "影响角色碰撞的推力\n体重 = 0时，该角色不会与其他角色发生碰撞\n角色A的体重 : 角色B的体重 = 1 : 1时，A推B的移动速度变成50%\n角色A的体重 : 角色B的体重 = 1 : 2时，A推B的移动速度为0%，推不动\n角色A的体重 : 角色B的体重 = 2 : 1时，A推B的移动速度为100%，完全没有阻力\n$相关指令\n设置体重"
+		},
+		"setActive": {
+			"title": "设置激活状态"
 		},
 		"setActive-actor": {
 			"label": "角色",
@@ -11082,6 +12413,9 @@
 					"tip": "停止执行角色的事件\n角色不再被检测到\n重置角色的目标池\n从相关角色的目标池中移除这个角色"
 				}
 			}
+		},
+		"getActor": {
+			"title": "获取角色"
 		},
 		"getActor-variable": {
 			"label": "写入变量",
@@ -11225,6 +12559,9 @@
 			"label": "排除队伍",
 			"tip": "目标不能是这个队伍的角色"
 		},
+		"getMultipleActors": {
+			"title": "获取多个角色"
+		},
 		"getMultipleActors-variable": {
 			"label": "写入列表",
 			"tip": "把生成的角色列表写入到该变量"
@@ -11303,13 +12640,22 @@
 				}
 			}
 		},
+		"deleteActor": {
+			"title": "删除角色"
+		},
 		"deleteActor-actor": {
 			"label": "角色",
 			"tip": "删除场景中的一个角色，如果是全局角色，会被移入后台"
 		},
+		"setPlayerActor": {
+			"title": "设置玩家角色"
+		},
 		"setPlayerActor-actor": {
 			"label": "全局角色",
 			"tip": "设置一个全局角色作为玩家角色，然后可通过\"角色访问器->玩家角色\"访问该角色"
+		},
+		"setPartyMember": {
+			"title": "设置队伍成员"
 		},
 		"setPartyMember-operation": {
 			"label": "操作",
@@ -11328,6 +12674,9 @@
 		"setPartyMember-actor": {
 			"label": "全局角色",
 			"tip": "对这个角色执行操作"
+		},
+		"changePassableTerrain": {
+			"title": "改变通行区域"
 		},
 		"changePassableTerrain-actor": {
 			"label": "角色",
@@ -11351,6 +12700,9 @@
 				}
 			}
 		},
+		"changeActorTeam": {
+			"title": "改变角色队伍"
+		},
 		"changeActorTeam-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的队伍"
@@ -11358,6 +12710,9 @@
 		"changeActorTeam-teamId": {
 			"label": "队伍",
 			"tip": "指定一个新的角色队伍"
+		},
+		"changeActorState": {
+			"title": "改变角色状态"
 		},
 		"changeActorState-actor": {
 			"label": "角色",
@@ -11388,6 +12743,9 @@
 		"changeActorState-state": {
 			"label": "状态",
 			"tip": "状态访问器"
+		},
+		"changeActorEquipment": {
+			"title": "改变角色装备"
 		},
 		"changeActorEquipment-actor": {
 			"label": "角色",
@@ -11431,6 +12789,9 @@
 			"label": "装备",
 			"tip": "装备访问器"
 		},
+		"changeActorSkill": {
+			"title": "改变角色技能"
+		},
 		"changeActorSkill-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的技能"
@@ -11465,6 +12826,9 @@
 			"label": "技能",
 			"tip": "技能访问器"
 		},
+		"changeActorPortrait": {
+			"title": "改变角色头像"
+		},
 		"changeActorPortrait-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的头像"
@@ -11495,6 +12859,9 @@
 			"label": "裁剪区域",
 			"tip": "头像的裁剪区域"
 		},
+		"changeActorAnimation": {
+			"title": "改变角色动画"
+		},
 		"changeActorAnimation-actor": {
 			"label": "角色",
 			"tip": "改变这个角色的动画"
@@ -11502,6 +12869,9 @@
 		"changeActorAnimation-animationId": {
 			"label": "动画",
 			"tip": "指定动画文件ID"
+		},
+		"changeActorSprite": {
+			"title": "改变角色精灵图"
 		},
 		"changeActorSprite-actor": {
 			"label": "角色",
@@ -11518,6 +12888,9 @@
 		"changeActorSprite-image": {
 			"label": "图像",
 			"tip": "选择新的精灵图像"
+		},
+		"changeActorMotion": {
+			"title": "改变角色动作"
 		},
 		"changeActorMotion-actor": {
 			"label": "角色",
@@ -11541,6 +12914,9 @@
 			"label": "动作",
 			"tip": "替换后的新动作"
 		},
+		"playActorAnimation": {
+			"title": "播放角色动画"
+		},
 		"playActorAnimation-actor": {
 			"label": "角色",
 			"tip": "播放这个角色的动画"
@@ -11553,9 +12929,15 @@
 			"label": "播放速度",
 			"tip": "设置动画的播放速度\n1：正常速度\n0.1：10%播放速度\n10：10倍播放速度\n有效范围：[0.1, 10]"
 		},
+		"stopActorAnimation": {
+			"title": "停止角色动画"
+		},
 		"stopActorAnimation-actor": {
 			"label": "角色",
 			"tip": "停止播放这个角色正在播放的动画"
+		},
+		"addAnimationComponent": {
+			"title": "添加动画组件"
 		},
 		"addAnimationComponent-actor": {
 			"label": "角色",
@@ -11604,6 +12986,9 @@
 		"addAnimationComponent-offsetY": {
 			"label": "偏移 Y",
 			"tip": "动画渲染位置的垂直偏移距离（单位：像素）"
+		},
+		"setAnimationComponent": {
+			"title": "设置动画组件"
 		},
 		"setAnimationComponent-actor": {
 			"label": "角色",
@@ -11695,6 +13080,9 @@
 			"label": "播放动作",
 			"tip": "选择要播放的动作"
 		},
+		"removeAnimationComponent": {
+			"title": "移除动画组件"
+		},
 		"removeAnimationComponent-actor": {
 			"label": "角色",
 			"tip": "移除此角色的动画组件"
@@ -11707,6 +13095,9 @@
 			"label": "动作",
 			"tip": "选择该动画的一个动作\n动画ID加上动作ID组成这个动画组件的ID"
 		},
+		"createGlobalActor": {
+			"title": "创建全局角色"
+		},
 		"createGlobalActor-actorId": {
 			"label": "角色",
 			"tip": "选择角色文件并创建对应的全局角色（该角色的数据会被保存）"
@@ -11714,6 +13105,9 @@
 		"createGlobalActor-teamId": {
 			"label": "队伍",
 			"tip": "选择角色的初始队伍"
+		},
+		"transferGlobalActor": {
+			"title": "转移全局角色"
 		},
 		"transferGlobalActor-actor": {
 			"label": "角色",
@@ -11723,13 +13117,22 @@
 			"label": "位置",
 			"tip": "指定当前场景的一个位置，此角色将在那里出现"
 		},
+		"deleteGlobalActor": {
+			"title": "删除全局角色"
+		},
 		"deleteGlobalActor-actorId": {
 			"label": "角色",
 			"tip": "将指定的全局角色从后台中彻底删除"
 		},
+		"setTarget": {
+			"title": "设置目标"
+		},
 		"setTarget-actor": {
 			"label": "角色",
 			"tip": "将指定角色设置到角色访问器中的\"目标角色\""
+		},
+		"getTarget": {
+			"title": "获取目标"
 		},
 		"getTarget-actor": {
 			"label": "角色",
@@ -11811,6 +13214,9 @@
 			"label": "属性 2",
 			"tip": "目标角色的属性 2"
 		},
+		"appendTarget": {
+			"title": "添加目标"
+		},
 		"appendTarget-actor": {
 			"label": "角色",
 			"tip": "在这个角色的目标池中添加一个角色"
@@ -11819,6 +13225,9 @@
 			"label": "目标",
 			"tip": "指定一个目标角色，将其添加到目标池"
 		},
+		"removeTarget": {
+			"title": "移除目标"
+		},
 		"removeTarget-actor": {
 			"label": "角色",
 			"tip": "从这个角色的目标池中移除一个角色"
@@ -11826,6 +13235,9 @@
 		"removeTarget-target": {
 			"label": "目标",
 			"tip": "指定一个目标角色，从目标池中移除他"
+		},
+		"detectTargets": {
+			"title": "探测目标"
 		},
 		"detectTargets-actor": {
 			"label": "角色",
@@ -11879,6 +13291,9 @@
 				}
 			}
 		},
+		"discardTargets": {
+			"title": "放弃目标"
+		},
 		"discardTargets-actor": {
 			"label": "角色",
 			"tip": "从这个角色的目标池中移除一些目标角色"
@@ -11917,9 +13332,15 @@
 			"label": "放弃距离",
 			"tip": "从目标池中移除大于或等于指定距离的角色"
 		},
+		"resetTargets": {
+			"title": "重置目标列表"
+		},
 		"resetTargets-actor": {
 			"label": "角色",
 			"tip": "清空这个角色的目标池"
+		},
+		"renderOutline": {
+			"title": "渲染轮廓"
 		},
 		"renderOutline-operation": {
 			"label": "操作",
@@ -11946,6 +13367,9 @@
 		"renderOutline-color": {
 			"label": "颜色",
 			"tip": "描边轮廓的颜色"
+		},
+		"castSkill": {
+			"title": "施放技能"
 		},
 		"castSkill-actor": {
 			"label": "角色",
@@ -11989,6 +13413,9 @@
 			"label": "技能",
 			"tip": "从技能访问器中获取技能"
 		},
+		"setSkill": {
+			"title": "设置技能"
+		},
 		"setSkill-skill": {
 			"label": "技能",
 			"tip": "从技能访问器中获取技能，对其进行设置"
@@ -12014,6 +13441,9 @@
 		"setSkill-cooldown": {
 			"label": "时间",
 			"tip": "技能的冷却时间"
+		},
+		"createTrigger": {
+			"title": "创建触发器"
 		},
 		"createTrigger-triggerId": {
 			"label": "触发器",
@@ -12043,6 +13473,9 @@
 			"label": "总体速度",
 			"tip": "整体改变触发器的速度（可以当作攻击速度）"
 		},
+		"setTriggerSpeed": {
+			"title": "设置触发器速度"
+		},
 		"setTriggerSpeed-trigger": {
 			"label": "触发器",
 			"tip": "设置这个触发器"
@@ -12051,6 +13484,9 @@
 			"label": "速度",
 			"tip": "触发器的移动速度（单位：图块/秒）"
 		},
+		"setTriggerAngle": {
+			"title": "设置触发器角度"
+		},
 		"setTriggerAngle-trigger": {
 			"label": "触发器",
 			"tip": "设置这个触发器"
@@ -12058,6 +13494,9 @@
 		"setTriggerAngle-angle": {
 			"label": "角度",
 			"tip": "触发器的角度，0度 = 正右方，顺时针旋转"
+		},
+		"setTriggerDuration": {
+			"title": "设置触发器持续时间"
 		},
 		"setTriggerDuration-trigger": {
 			"label": "触发器",
@@ -12085,6 +13524,9 @@
 			"label": "时间",
 			"tip": "触发器的持续时间"
 		},
+		"setTriggerMotion": {
+			"title": "设置触发器动作"
+		},
 		"setTriggerMotion-trigger": {
 			"label": "触发器",
 			"tip": "设置这个触发器"
@@ -12092,6 +13534,9 @@
 		"setTriggerMotion-motion": {
 			"label": "动作",
 			"tip": "让触发器的动画切换到这个动作"
+		},
+		"setInventory": {
+			"title": "设置库存"
 		},
 		"setInventory-actor": {
 			"label": "角色",
@@ -12191,6 +13636,9 @@
 			"label": "全局角色",
 			"tip": "获取这个全局角色的库存用于共享"
 		},
+		"useItem": {
+			"title": "使用物品"
+		},
 		"useItem-actor": {
 			"label": "角色",
 			"tip": "使用这个角色的物品"
@@ -12225,6 +13673,9 @@
 			"label": "物品",
 			"tip": "从物品访问器中获取物品"
 		},
+		"setItem": {
+			"title": "设置物品"
+		},
 		"setItem-item": {
 			"label": "物品",
 			"tip": "设置这个物品"
@@ -12246,6 +13697,9 @@
 		"setItem-quantity": {
 			"label": "数量",
 			"tip": "物品的数量"
+		},
+		"setCooldown": {
+			"title": "设置冷却时间"
 		},
 		"setCooldown-actor": {
 			"label": "角色",
@@ -12276,6 +13730,9 @@
 		"setCooldown-cooldown": {
 			"label": "冷却时间",
 			"tip": "公共冷却时间"
+		},
+		"setShortcut": {
+			"title": "设置快捷键"
 		},
 		"setShortcut-actor": {
 			"label": "角色",
@@ -12319,6 +13776,9 @@
 			"label": "技能",
 			"tip": "将这个技能与快捷键绑定"
 		},
+		"activateScene": {
+			"title": "激活场景"
+		},
 		"activateScene-pointer": {
 			"label": "场景",
 			"tip": "激活哪个场景容器",
@@ -12332,6 +13792,9 @@
 					"tip": "切换到副场景容器，暂停主场景容器的活动"
 				}
 			}
+		},
+		"loadScene": {
+			"title": "加载场景"
 		},
 		"loadScene-sceneId": {
 			"label": "场景",
@@ -12359,6 +13822,9 @@
 			"label": "Y",
 			"tip": "将玩家角色转移到这个垂直位置"
 		},
+		"loadSubscene": {
+			"title": "加载子场景"
+		},
 		"loadSubscene-sceneId": {
 			"label": "场景",
 			"tip": "加载这个ID的场景中的所有对象"
@@ -12371,9 +13837,15 @@
 			"label": "偏移 Y",
 			"tip": "所有加载对象的垂直位置偏移"
 		},
+		"unloadSubscene": {
+			"title": "卸载子场景"
+		},
 		"unloadSubscene-sceneId": {
 			"label": "场景",
 			"tip": "删除与这个ID的场景相关的所有对象"
+		},
+		"clampCamera": {
+			"title": "限制摄像机边界"
 		},
 		"clampCamera-left": {
 			"label": "左",
@@ -12390,6 +13862,9 @@
 		"clampCamera-bottom": {
 			"label": "下",
 			"tip": "场景垂直位置"
+		},
+		"moveCamera": {
+			"title": "移动摄像机"
 		},
 		"moveCamera-mode": {
 			"label": "模式",
@@ -12413,17 +13888,29 @@
 			"label": "角色",
 			"tip": "锁定摄像机到这个角色的位置"
 		},
+		"setZoomFactor": {
+			"title": "设置缩放率"
+		},
 		"setZoomFactor-zoom": {
 			"label": "缩放系数",
 			"tip": "场景的缩放系数"
+		},
+		"setGameSpeed": {
+			"title": "设置游戏速度"
 		},
 		"setGameSpeed-speed": {
 			"label": "速度",
 			"tip": "游戏速度比率，影响每一帧的时间增量"
 		},
+		"setCursor": {
+			"title": "设置鼠标指针"
+		},
 		"setCursor-image": {
 			"label": "图像",
 			"tip": "将鼠标指针设置为这个图像"
+		},
+		"setTeamRelation": {
+			"title": "设置队伍关系"
 		},
 		"setTeamRelation-teamId1": {
 			"label": "队伍 A",
@@ -12447,6 +13934,9 @@
 				}
 			}
 		},
+		"switchCollisionSystem": {
+			"title": "开关碰撞系统"
+		},
 		"switchCollisionSystem-operation": {
 			"label": "操作",
 			"tip": "执行碰撞系统操作",
@@ -12468,6 +13958,9 @@
 					"tip": "禁用内置的角色与场景的碰撞系统"
 				}
 			}
+		},
+		"gameData": {
+			"title": "游戏数据"
 		},
 		"gameData-operation": {
 			"label": "操作",
@@ -12496,6 +13989,9 @@
 			"placeholder": "用逗号分隔",
 			"tip": "保存当前事件中的简单本地变量（布尔值、数值、字符串类型）\n使用\"遍历\"指令读取存档时自动读取它们到同名本地变量中"
 		},
+		"simulateKey": {
+			"title": "模拟按键"
+		},
 		"simulateKey-operation": {
 			"label": "操作",
 			"tip": "模拟一个按键行为",
@@ -12518,9 +14014,15 @@
 			"label": "按键",
 			"tip": "按下任意键可输入按键码"
 		},
+		"setLanguage": {
+			"title": "设置语言"
+		},
 		"setLanguage-language": {
 			"label": "语言",
 			"tip": "切换到这个语言，并刷新本地化内容（部署后，退出游戏时会自动保存语言设置）"
+		},
+		"setResolution": {
+			"title": "设置分辨率"
 		},
 		"setResolution-width": {
 			"label": "宽度",
@@ -12537,6 +14039,9 @@
 		"setResolution-uiScale": {
 			"label": "界面缩放系数",
 			"tip": "按比例缩放显示用户界面（部署后自动保存）"
+		},
+		"commandLine": {
+			"title": "启动参数"
 		},
 		"commandLine-type": {
 			"label": "操作",
@@ -12573,6 +14078,9 @@
 		},
 		"script": {
 			"title": "脚本"
+		},
+		"edit-data": {
+			"title": "编辑数据"
 		},
 		"resource": {
 			"title": "资源管理"

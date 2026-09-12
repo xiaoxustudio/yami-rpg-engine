@@ -9,32 +9,40 @@
 		<div class="grid-box">
 			<div class="text">Target</div>
 			<SelectBox id="registerEvent-target"
+				v-tip="t('components.registerEvent-target.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-target')" v-focus v-model="form.target" @write="onTargetWrite" />
 			<div class="text">Actor</div>
 			<CustomBox id="registerEvent-actor"
+				v-tip="t('components.registerEvent-actor.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Element</div>
 			<CustomBox id="registerEvent-element"
+				v-tip="t('components.registerEvent-element.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-element')" type="element" v-model="form.element" />
 			<div class="text">Operation</div>
 			<SelectBox
 				id="registerEvent-operation"
+				v-tip="t('components.registerEvent-operation.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-operation')"
 				v-model="form.operation"
 				@write="onOperationWrite"
 			/>
 			<div class="text">Type</div>
-			<SelectBox id="registerEvent-type" v-model="form.type" @write="onTypeWrite" />
+			<SelectBox id="registerEvent-type"
+				v-tip="t('components.registerEvent-type.tip')" v-model="form.type" @write="onTypeWrite" />
 			<div class="text">Priority</div>
-			<CheckBox id="registerEvent-priority" class="standard large" v-model="form.priority" />
+			<CheckBox id="registerEvent-priority"
+				v-tip="t('components.registerEvent-priority.tip')" class="standard large" v-model="form.priority" />
 			<div class="text">Namespace</div>
 			<CheckBox
 				id="registerEvent-namespace"
+				v-tip="t('components.registerEvent-namespace.tip')"
 				class="standard large"
 				v-model="form.namespace"
 			/>
 			<div class="text">Tag Name</div>
-			<StringVar id="registerEvent-tag" v-focus v-model="form.tag" />
+			<StringVar id="registerEvent-tag"
+				v-tip="t('components.registerEvent-tag.tip')" v-focus v-model="form.tag" />
 		</div>
 	</WindowFrame>
 </template>

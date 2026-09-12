@@ -6,8 +6,10 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<CustomBox id="showText-target" v-focus type="actor" v-model="form.target" />
-		<TextBox id="showText-parameters" v-model="parameters" />
+		<CustomBox id="showText-target"
+				v-tip="t('components.showText-target.tip')" v-focus type="actor" v-model="form.target" />
+		<TextBox id="showText-parameters"
+				v-tip="t('components.showText-parameters.tip')" v-model="parameters" />
 		<TextArea
 			id="showText-content"
 			v-focus

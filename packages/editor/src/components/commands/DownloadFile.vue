@@ -8,19 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">URL</div>
-			<StringVar id="downloadFile-url" v-focus v-model="form.url" />
+			<StringVar id="downloadFile-url"
+				v-tip="t('components.downloadFile-url.tip')" v-focus v-model="form.url" />
 			<div class="text">Header</div>
 			<ParamList id="downloadFile-header"
+				v-tip="t('components.downloadFile-header.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-header')" v-model="form.header" />
 			<div class="text">Method</div>
 			<SelectBox id="downloadFile-method"
+				v-tip="t('components.downloadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-method')" v-model="form.method" />
 			<div class="text">Data</div>
 			<ParamList id="downloadFile-data"
+				v-tip="t('components.downloadFile-data.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-data')" v-model="form.data" />
 			<div class="text">CallBack</div>
 			<CustomBox
 				id="downloadFile-callback"
+				v-tip="t('components.downloadFile-callback.tip')"
 				type="file"
 				filter="event"
 				v-model="form.callback"
@@ -28,6 +33,7 @@
 			<div class="text">RateCallBack</div>
 			<CustomBox
 				id="downloadFile-rateCallback"
+				v-tip="t('components.downloadFile-rateCallback.tip')"
 				type="file"
 				filter="event"
 				v-model="form.rateCallback"
@@ -36,12 +42,14 @@
 			<CheckBox
 				class="standard"
 				id="downloadFile-isBackground"
+				v-tip="t('components.downloadFile-isBackground.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-isBackground')"
 				v-model="isBackground"
 				@input="onIsBackgroundInput"
 			/>
 			<div class="text">Path</div>
 			<StringVar id="downloadFile-isBackground-path"
+				v-tip="t('components.downloadFile-isBackground-path.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')" v-model="form.isBackgroundPath" />
 		</div>
 	</WindowFrame>

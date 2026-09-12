@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 技能访问器窗口 -->
 	<WindowFrame ref="frame" id="skillGetter" @confirm="onConfirm">
 		<template #title
@@ -10,16 +10,20 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.skillGetter-type.label') }}</div>
 			<SelectBox id="skillGetter-type"
+				v-tip="t('components.skillGetter-type.tip')"
 				:ref="fieldRef('skillGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.skillGetter-actor.label') }}</div>
 			<CustomBox id="skillGetter-actor"
+				v-tip="t('components.skillGetter-actor.tip')"
 				:ref="fieldRef('skillGetter-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.skillGetter-key.label') }}</div>
 			<SelectVar id="skillGetter-key"
+				v-tip="t('components.skillGetter-key.tip')"
 				:ref="fieldRef('skillGetter-key')" v-focus v-model="form.key" />
 			<div class="text">{{ t('components.skillGetter-skillId.label') }}</div>
 			<CustomBox
 				id="skillGetter-skillId"
+				v-tip="t('components.skillGetter-skillId.tip')"
 				:ref="fieldRef('skillGetter-skillId')"
 				v-focus
 				type="file"
@@ -29,6 +33,7 @@
 			<div class="text">{{ t('components.skillGetter-variable.label') }}</div>
 			<CustomBox
 				id="skillGetter-variable"
+				v-tip="t('components.skillGetter-variable.tip')"
 				:ref="fieldRef('skillGetter-variable')"
 				v-focus
 				type="variable"

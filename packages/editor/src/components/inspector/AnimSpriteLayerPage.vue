@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animSpriteLayer-properties-grid.label') || 'Sprite Layer'
@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.animSpriteLayer-sprite.label') || 'Sprite' }}</div>
 			<SelectBox
 				id="animSpriteLayer-sprite"
+				v-tip="t('components.animSpriteLayer-sprite.tip')"
 				ref="elSprite"
 				v-model="form.sprite"
 				@input="onParamInput"
@@ -14,6 +15,7 @@
 			<div class="text">{{ t('components.animSpriteLayer-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="animSpriteLayer-blend"
+				v-tip="t('components.animSpriteLayer-blend.tip')"
 				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -23,6 +25,7 @@
 			</div>
 			<SelectBox
 				id="animSpriteLayer-light"
+				v-tip="t('components.animSpriteLayer-light.tip')"
 				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"

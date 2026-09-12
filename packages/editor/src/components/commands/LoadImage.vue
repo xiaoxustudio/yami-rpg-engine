@@ -8,31 +8,40 @@
 
 		<div class="grid-box">
 		<div class="text">Element</div>
-		<CustomBox id="loadImage-element" v-focus type="element" v-model="form.element" />
+		<CustomBox id="loadImage-element"
+				v-tip="t('components.loadImage-element.tip')" v-focus type="element" v-model="form.element" />
 		<div class="text">Type</div>
 		<SelectBox id="loadImage-type"
+				v-tip="t('components.loadImage-type.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-type')" v-model="form.type" />
 		<div class="text">Actor</div>
 		<CustomBox id="loadImage-actor"
+				v-tip="t('components.loadImage-actor.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-actor')" type="actor" v-model="form.actor" />
 		<div class="text">Skill</div>
 		<CustomBox id="loadImage-skill"
+				v-tip="t('components.loadImage-skill.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-skill')" type="skill" v-model="form.skill" />
 		<div class="text">State</div>
 		<CustomBox id="loadImage-state"
+				v-tip="t('components.loadImage-state.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-state')" type="state" v-model="form.state" />
 		<div class="text">Equipment</div>
 		<CustomBox id="loadImage-equipment"
+				v-tip="t('components.loadImage-equipment.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-equipment')" type="equipment" v-model="form.equipment" />
 		<div class="text">Item</div>
 		<CustomBox id="loadImage-item"
+				v-tip="t('components.loadImage-item.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-item')" type="item" v-model="form.item" />
 		<div class="text">Shortcut Key</div>
 		<SelectVar id="loadImage-key"
+				v-tip="t('components.loadImage-key.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-key')" v-model="form.key" />
 		<div class="text">Base64 Coding</div>
 		<CustomBox
 			id="loadImage-variable"
+				v-tip="t('components.loadImage-variable.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-variable')"
 			v-focus
 			type="variable"

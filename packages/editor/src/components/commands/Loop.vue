@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">Mode</div>
 			<SelectBox id="loop-mode"
+				v-tip="t('components.loop-mode.tip')"
 				:ref="registryRef(fieldEls, 'loop-mode')" v-model="form.mode" />
 			<div class="text">Conditions</div>
 			<ParamList id="loop-conditions"

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox id="animSpriteFrame-properties-detail"
 				:ref="registryRef(engineEls, 'animSpriteFrame-properties-detail')" open>
 		<DetailSummary>{{
@@ -11,6 +11,7 @@
 			<div id="animSpriteFrame-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-anchorX"
+				v-tip="t('components.animSpriteFrame-anchorX.tip')"
 					ref="elAnchorX"
 					v-model="form.anchorX"
 					min="-10"
@@ -21,6 +22,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
+				v-tip="t('components.animSpriteFrame-anchorY.tip')"
 					ref="elAnchorY"
 					v-model="form.anchorY"
 					min="-10"
@@ -34,6 +36,7 @@
 			<div id="animSpriteFrame-pivot-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-pivotX"
+				v-tip="t('components.animSpriteFrame-pivotX.tip')"
 					ref="elPivotX"
 					v-model="form.pivotX"
 					min="-10000"
@@ -44,6 +47,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
+				v-tip="t('components.animSpriteFrame-pivotY.tip')"
 					ref="elPivotY"
 					v-model="form.pivotY"
 					min="-10000"
@@ -59,6 +63,7 @@
 			<div id="animSpriteFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-x"
+				v-tip="t('components.animSpriteFrame-x.tip')"
 					ref="elX"
 					v-model="form.x"
 					min="-10000"
@@ -69,6 +74,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
+				v-tip="t('components.animSpriteFrame-y.tip')"
 					ref="elY"
 					v-model="form.y"
 					min="-10000"
@@ -84,6 +90,7 @@
 			<div id="animSpriteFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-rotation"
+				v-tip="t('components.animSpriteFrame-rotation.tip')"
 					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
@@ -97,6 +104,7 @@
 			<div id="animSpriteFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-scaleX"
+				v-tip="t('components.animSpriteFrame-scaleX.tip')"
 					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
@@ -107,6 +115,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
+				v-tip="t('components.animSpriteFrame-scaleY.tip')"
 					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
@@ -122,6 +131,7 @@
 			<div id="animSpriteFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-opacity"
+				v-tip="t('components.animSpriteFrame-opacity.tip')"
 					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
@@ -134,7 +144,8 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-0-box">
+			<div class="flex-box" id="animSpriteFrame-tint-0-box"
+				v-tip="t('components.animSpriteFrame-tint-0-box.tip')">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
 					ref="elTint0Slider"
@@ -155,7 +166,8 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-1-box">
+			<div class="flex-box" id="animSpriteFrame-tint-1-box"
+				v-tip="t('components.animSpriteFrame-tint-1-box.tip')">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
 					ref="elTint1Slider"
@@ -176,7 +188,8 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-2-box">
+			<div class="flex-box" id="animSpriteFrame-tint-2-box"
+				v-tip="t('components.animSpriteFrame-tint-2-box.tip')">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
 					ref="elTint2Slider"
@@ -197,7 +210,8 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-3-box">
+			<div class="flex-box" id="animSpriteFrame-tint-3-box"
+				v-tip="t('components.animSpriteFrame-tint-3-box.tip')">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
 					ref="elTint3Slider"

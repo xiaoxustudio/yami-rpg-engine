@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">Operation</div>
 			<SelectBox id="setEvent-operation"
+				v-tip="t('components.setEvent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-operation')" v-focus v-model="form.operation" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setEvent-variable"
+				v-tip="t('components.setEvent-variable.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-variable')"
 				v-focus
 				type="variable"
@@ -22,6 +24,7 @@
 			<div class="text">Event</div>
 			<CustomBox
 				id="setEvent-eventId"
+				v-tip="t('components.setEvent-eventId.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-eventId')"
 				v-focus
 				type="file"
@@ -30,6 +33,7 @@
 			/>
 			<div class="text">Choice Index</div>
 			<NumberVar id="setEvent-choiceIndex"
+				v-tip="t('components.setEvent-choiceIndex.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')" min="0" max="255" v-model="form.choiceIndex" />
 		</div>
 	</WindowFrame>

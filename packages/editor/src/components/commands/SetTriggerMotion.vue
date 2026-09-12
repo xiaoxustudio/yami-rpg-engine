@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Trigger</div>
-			<CustomBox id="setTriggerMotion-trigger" v-focus type="trigger" v-model="form.trigger" />
+			<CustomBox id="setTriggerMotion-trigger"
+				v-tip="t('components.setTriggerMotion-trigger.tip')" v-focus type="trigger" v-model="form.trigger" />
 			<div class="text">Motion</div>
-			<CustomBox id="setTriggerMotion-motion" type="enum-string" v-model="form.motion" />
+			<CustomBox id="setTriggerMotion-motion"
+				v-tip="t('components.setTriggerMotion-motion.tip')" type="enum-string" v-model="form.motion" />
 		</div>
 	</WindowFrame>
 </template>

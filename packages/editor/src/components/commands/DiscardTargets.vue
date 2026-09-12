@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="discardTargets-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="discardTargets-actor"
+				v-tip="t('components.discardTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
 			<SelectBox id="discardTargets-selector"
+				v-tip="t('components.discardTargets-selector.tip')"
 				:ref="registryRef(fieldEls, 'discardTargets-selector')" v-model="form.selector" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="discardTargets-distance"
+				v-tip="t('components.discardTargets-distance.tip')"
 				min="0"
 				max="512"
 				decimals="4"

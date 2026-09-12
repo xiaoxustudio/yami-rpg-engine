@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="moveElement-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="moveElement-element"
+				v-tip="t('components.moveElement-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
 			<ParamList id="moveElement-properties"
 				:ref="registryRef(fieldEls, 'moveElement-properties')" v-focus v-model="form.properties" />

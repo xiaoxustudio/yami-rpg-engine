@@ -10,6 +10,7 @@
 			<div class="text">{{ t('components.newProject-template.label') }}</div>
 			<SelectBox
 				id="newProject-template"
+				v-tip="t('components.newProject-template.tip')"
 				:ref="registryRef(titleEls, 'newProject-template')"
 				v-focus
 				v-model="form.template"
@@ -18,6 +19,7 @@
 			<div class="text">{{ t('components.newProject-folder.label') }}</div>
 			<TextBox
 				id="newProject-folder"
+				v-tip="t('components.newProject-folder.tip')"
 				v-model="form.folder"
 				@beforeinput="onFolderBeforeinput"
 				@input="onFolderInput"
@@ -26,10 +28,12 @@
 			<div class="flex-box" id="newProject-location-box">
 				<TextBox
 					id="newProject-location"
+				v-tip="t('components.newProject-location.tip')"
 					v-model="form.location"
 					@input="onLocationInput"
 				/>
-				<button id="newProject-choose" @click="onChooseClick">…</button>
+				<button id="newProject-choose"
+				v-tip="t('components.newProject-choose.tip')" @click="onChooseClick">…</button>
 			</div>
 		</div>
 		<div class="text" id="newProject-warning"

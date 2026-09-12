@@ -10,6 +10,7 @@
 			<div class="text">Actor</div>
 			<CustomBox
 				id="removeAnimationComponent-actor"
+				v-tip="t('components.removeAnimationComponent-actor.tip')"
 				v-focus
 				type="actor"
 				v-model="form.actor"
@@ -17,13 +18,15 @@
 			<div class="text">Animation</div>
 			<CustomBox
 				id="removeAnimationComponent-animationId"
+				v-tip="t('components.removeAnimationComponent-animationId.tip')"
 				type="file"
 				filter="animation"
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="removeAnimationComponent-motion" v-model="form.motion" />
+			<SelectBox id="removeAnimationComponent-motion"
+				v-tip="t('components.removeAnimationComponent-motion.tip')" v-model="form.motion" />
 		</div>
 	</WindowFrame>
 </template>

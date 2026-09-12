@@ -8,18 +8,23 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="getTarget-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="getTarget-actor"
+				v-tip="t('components.getTarget-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Selector</div>
 			<SelectBox id="getTarget-selector"
+				v-tip="t('components.getTarget-selector.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-selector')" v-model="form.selector" />
 			<div class="text">Condition</div>
 			<SelectBox id="getTarget-condition"
+				v-tip="t('components.getTarget-condition.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-condition')" v-model="form.condition" />
 			<div class="text">Attribute</div>
 			<SelectBox id="getTarget-attribute"
+				v-tip="t('components.getTarget-attribute.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-attribute')" v-focus v-model="form.attribute" />
 			<div class="text">Attribute 2</div>
 			<SelectBox id="getTarget-divisor"
+				v-tip="t('components.getTarget-divisor.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-divisor')" v-focus v-model="form.divisor" />
 		</div>
 	</WindowFrame>

@@ -8,13 +8,16 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorState-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorState-actor"
+				v-tip="t('components.changeActorState-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Operation</div>
 			<SelectBox id="changeActorState-operation"
+				v-tip="t('components.changeActorState-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeActorState-operation')" v-model="form.operation" />
 			<div class="text">State</div>
 			<CustomBox
 				id="changeActorState-stateId"
+				v-tip="t('components.changeActorState-stateId.tip')"
 				:ref="registryRef(fieldEls, 'changeActorState-stateId')"
 				v-focus
 				type="file"
@@ -23,6 +26,7 @@
 			/>
 			<div class="text">State</div>
 			<CustomBox id="changeActorState-state"
+				v-tip="t('components.changeActorState-state.tip')"
 				:ref="registryRef(fieldEls, 'changeActorState-state')" type="state" v-model="form.state" />
 		</div>
 	</WindowFrame>

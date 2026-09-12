@@ -7,6 +7,7 @@
 			<div class="text">{{ t('components.fileUI-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="fileUI-width"
+				v-tip="t('components.fileUI-width.tip')"
 				ref="elWidth"
 				v-model="form.width"
 				min="8"
@@ -17,6 +18,7 @@
 			<div class="text">{{ t('components.fileUI-height.label') || 'Height' }}</div>
 			<NumberBox
 				id="fileUI-height"
+				v-tip="t('components.fileUI-height.tip')"
 				ref="elHeight"
 				v-model="form.height"
 				min="8"

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="objectGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -8,11 +8,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.objectGetter-type.label') }}</div>
-			<SelectBox id="objectGetter-type" />
+			<SelectBox id="objectGetter-type"
+				v-tip="t('components.objectGetter-type.tip')" />
 			<div class="text">{{ t('components.objectGetter-presetId.label') }}</div>
-			<CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
+			<CustomBox id="objectGetter-presetId"
+				v-tip="t('components.objectGetter-presetId.tip')" type="preset-object" filter="any" />
 			<div class="text">{{ t('components.objectGetter-variable.label') }}</div>
-			<CustomBox id="objectGetter-variable" type="variable" filter="object" />
+			<CustomBox id="objectGetter-variable"
+				v-tip="t('components.objectGetter-variable.tip')" type="variable" filter="object" />
 		</div>
 	</WindowFrame>
 </template>

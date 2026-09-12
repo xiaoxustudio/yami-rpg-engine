@@ -12,9 +12,11 @@
 			<SelectBox id="shakeScreen-mode"
 				:ref="registryRef(fieldEls, 'shakeScreen-mode')" v-focus v-model="form.mode" />
 			<div class="text">Power</div>
-			<NumberBox id="shakeScreen-power" min="1" max="10" v-model="power" />
+			<NumberBox id="shakeScreen-power"
+				v-tip="t('components.shakeScreen-power.tip')" min="1" max="10" v-model="power" />
 			<div class="text">Speed</div>
-			<NumberBox id="shakeScreen-speed" min="1" max="10" v-model="speed" />
+			<NumberBox id="shakeScreen-speed"
+				v-tip="t('components.shakeScreen-speed.tip')" min="1" max="10" v-model="speed" />
 			<div class="text">Easing</div>
 			<SelectBox id="shakeScreen-easingId"
 				:ref="registryRef(fieldEls, 'shakeScreen-easingId')" name="easing" v-model="form.easingId" />

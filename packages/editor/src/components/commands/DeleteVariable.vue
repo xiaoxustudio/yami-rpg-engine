@@ -10,6 +10,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="deleteVariable-variable"
+				v-tip="t('components.deleteVariable-variable.tip')"
 				v-focus
 				type="variable"
 				filter="deletable"

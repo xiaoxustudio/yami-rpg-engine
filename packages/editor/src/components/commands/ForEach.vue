@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,19 +9,24 @@
 		<div class="grid-box">
 			<div class="text">Data</div>
 			<SelectBox id="forEach-data"
+				v-tip="t('components.forEach-data.tip')"
 				:ref="registryRef(fieldEls, 'forEach-data')" v-focus v-model="form.data" />
 			<div class="text">List Variable</div>
 			<CustomBox id="forEach-list"
+				v-tip="t('components.forEach-list.tip')"
 				:ref="registryRef(fieldEls, 'forEach-list')" v-focus type="variable" filter="object" v-model="form.list" />
 			<div class="text">Actor</div>
 			<CustomBox id="forEach-actor"
+				v-tip="t('components.forEach-actor.tip')"
 				:ref="registryRef(fieldEls, 'forEach-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Parent Element</div>
 			<CustomBox id="forEach-element"
+				v-tip="t('components.forEach-element.tip')"
 				:ref="registryRef(fieldEls, 'forEach-element')" type="element" v-model="form.element" />
 			<div class="text">Attribute Group</div>
 			<CustomBox
 				id="forEach-attribute-groupId"
+				v-tip="t('components.forEach-attribute-groupId.tip')"
 				:ref="registryRef(fieldEls, 'forEach-attribute-groupId')"
 				v-focus
 				type="attribute-group"
@@ -29,10 +34,12 @@
 			/>
 			<div class="text">Enum Group</div>
 			<CustomBox id="forEach-enum-groupId"
+				v-tip="t('components.forEach-enum-groupId.tip')"
 				:ref="registryRef(fieldEls, 'forEach-enum-groupId')" v-focus type="enum-group" v-model="form.enumGroupId" />
 			<div class="text">Write to Variable</div>
 			<CustomBox
 				id="forEach-variable"
+				v-tip="t('components.forEach-variable.tip')"
 				:ref="registryRef(fieldEls, 'forEach-variable')"
 				v-focus
 				type="variable"
@@ -42,6 +49,7 @@
 			<div class="text">Write Save Index</div>
 			<CustomBox
 				id="forEach-saveIndex"
+				v-tip="t('components.forEach-saveIndex.tip')"
 				:ref="registryRef(fieldEls, 'forEach-saveIndex')"
 				v-focus
 				type="variable"
@@ -51,6 +59,7 @@
 			<div class="text">Touch Id</div>
 			<CustomBox
 				id="forEach-touchId"
+				v-tip="t('components.forEach-touchId.tip')"
 				:ref="registryRef(fieldEls, 'forEach-touchId')"
 				v-focus
 				type="variable"

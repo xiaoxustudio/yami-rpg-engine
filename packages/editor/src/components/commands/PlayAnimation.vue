@@ -9,16 +9,20 @@
 		<div class="grid-box">
 			<div class="text">Mode</div>
 			<SelectBox id="playAnimation-mode"
+				v-tip="t('components.playAnimation-mode.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-mode')" v-focus v-model="form.mode" />
 			<div class="text">Position</div>
 			<CustomBox id="playAnimation-position"
+				v-tip="t('components.playAnimation-position.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-position')" type="position" v-model="form.position" />
 			<div class="text">Actor</div>
 			<CustomBox id="playAnimation-actor"
+				v-tip="t('components.playAnimation-actor.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-actor')" type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="playAnimation-animationId"
+				v-tip="t('components.playAnimation-animationId.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-animationId')"
 				v-focus
 				type="file"
@@ -27,15 +31,19 @@
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="playAnimation-motion" v-focus v-model="form.motion" />
+			<SelectBox id="playAnimation-motion"
+				v-tip="t('components.playAnimation-motion.tip')" v-focus v-model="form.motion" />
 			<div class="text">Rotatable</div>
 			<SelectBox id="playAnimation-rotatable"
+				v-tip="t('components.playAnimation-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-rotatable')" v-model="form.rotatable" />
 			<div class="text">Priority</div>
-			<NumberBox id="playAnimation-priority" min="-100" max="100" v-model="priority" />
+			<NumberBox id="playAnimation-priority"
+				v-tip="t('components.playAnimation-priority.tip')" min="-100" max="100" v-model="priority" />
 			<div class="text">Offset Y</div>
 			<NumberVar
 				id="playAnimation-offsetY"
+				v-tip="t('components.playAnimation-offsetY.tip')"
 				min="-1000000000"
 				max="1000000000"
 				unit="px"
@@ -44,6 +52,7 @@
 			<div class="text">Angle</div>
 			<NumberVar
 				id="playAnimation-angle"
+				v-tip="t('components.playAnimation-angle.tip')"
 				min="-360"
 				max="360"
 				decimals="4"
@@ -53,6 +62,7 @@
 			<div class="text">Speed</div>
 			<NumberVar
 				id="playAnimation-speed"
+				v-tip="t('components.playAnimation-speed.tip')"
 				min="0.1"
 				max="10"
 				step="0.1"

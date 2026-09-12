@@ -8,23 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">Tilemap</div>
-			<CustomBox id="setTile-tilemap" v-focus type="tilemap" v-model="form.tilemap" />
+			<CustomBox id="setTile-tilemap"
+				v-tip="t('components.setTile-tilemap.tip')" v-focus type="tilemap" v-model="form.tilemap" />
 			<div class="text">Tilemap X</div>
-			<NumberVar id="setTile-tilemapX" min="0" max="511" v-model="form.tilemapX" />
+			<NumberVar id="setTile-tilemapX"
+				v-tip="t('components.setTile-tilemapX.tip')" min="0" max="511" v-model="form.tilemapX" />
 			<div class="text">Tilemap Y</div>
-			<NumberVar id="setTile-tilemapY" min="0" max="511" v-model="form.tilemapY" />
+			<NumberVar id="setTile-tilemapY"
+				v-tip="t('components.setTile-tilemapY.tip')" min="0" max="511" v-model="form.tilemapY" />
 			<div class="text">Tileset</div>
 			<CustomBox
 				id="setTile-tilesetId"
+				v-tip="t('components.setTile-tilesetId.tip')"
 				v-focus
 				type="file"
 				filter="tileset"
 				v-model="form.tilesetId"
 			/>
 			<div class="text">Tileset X</div>
-			<NumberVar id="setTile-tilesetX" min="0" max="255" v-model="form.tilesetX" />
+			<NumberVar id="setTile-tilesetX"
+				v-tip="t('components.setTile-tilesetX.tip')" min="0" max="255" v-model="form.tilesetX" />
 			<div class="text">Tileset Y</div>
-			<NumberVar id="setTile-tilesetY" min="0" max="255" v-model="form.tilesetY" />
+			<NumberVar id="setTile-tilesetY"
+				v-tip="t('components.setTile-tilesetY.tip')" min="0" max="255" v-model="form.tilesetY" />
 		</div>
 	</WindowFrame>
 </template>

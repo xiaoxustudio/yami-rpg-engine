@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setProgressBar-property-key.label') }}</div>
-			<SelectBox id="setProgressBar-property-key" v-model="form.key" />
+			<SelectBox id="setProgressBar-property-key"
+				v-tip="t('components.setProgressBar-property-key.tip')" v-model="form.key" />
 			<div class="text">{{ t('components.setProgressBar-property-image.label') }}</div>
 			<CustomBox
 				id="setProgressBar-property-image"

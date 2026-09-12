@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.if-branch-mode.label') }}</div>
 			<SelectBox id="if-branch-mode"
+				v-tip="t('components.if-branch-mode.tip')"
 				:ref="registryRef(fieldEls, 'if-branch-mode')" />
 			<div class="text">{{ t('components.if-branch-conditions.label') }}</div>
 			<ParamList id="if-branch-conditions" v-focus />

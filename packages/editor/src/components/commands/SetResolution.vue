@@ -10,6 +10,7 @@
 			<div class="text">Width</div>
 			<NumberVar
 				id="setResolution-width"
+				v-tip="t('components.setResolution-width.tip')"
 				v-focus
 				min="240"
 				max="7680"
@@ -19,6 +20,7 @@
 			<div class="text">Height</div>
 			<NumberVar
 				id="setResolution-height"
+				v-tip="t('components.setResolution-height.tip')"
 				min="240"
 				max="7680"
 				unit="px"
@@ -27,6 +29,7 @@
 			<div class="text">Scene Scale</div>
 			<NumberVar
 				id="setResolution-sceneScale"
+				v-tip="t('components.setResolution-sceneScale.tip')"
 				min="0.5"
 				max="4"
 				decimals="10"
@@ -35,6 +38,7 @@
 			<div class="text">UI Scale</div>
 			<NumberVar
 				id="setResolution-uiScale"
+				v-tip="t('components.setResolution-uiScale.tip')"
 				min="0.5"
 				max="4"
 				decimals="10"

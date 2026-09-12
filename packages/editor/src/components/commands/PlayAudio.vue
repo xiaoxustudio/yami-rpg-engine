@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">Type</div>
 			<SelectBox id="playAudio-type"
+				v-tip="t('components.playAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'playAudio-type')" v-focus v-model="form.type" />
 			<div class="text">Audio</div>
 			<CustomBox
 				id="playAudio-audio"
+				v-tip="t('components.playAudio-audio.tip')"
 				v-focus
 				type="file"
 				filter="audio"
@@ -21,6 +23,7 @@
 			<div class="text">Volume</div>
 			<NumberBox
 				id="playAudio-volume"
+				v-tip="t('components.playAudio-volume.tip')"
 				min="0"
 				max="1"
 				step="0.1"
@@ -29,6 +32,7 @@
 			/>
 			<div class="text">Sound Location</div>
 			<CustomBox id="playAudio-location"
+				v-tip="t('components.playAudio-location.tip')"
 				:ref="registryRef(fieldEls, 'playAudio-location')" type="position" v-model="form.location" />
 		</div>
 	</WindowFrame>

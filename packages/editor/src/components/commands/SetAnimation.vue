@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setAnimation-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="setAnimation-element"
+				v-tip="t('components.setAnimation-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
 			<ParamList id="setAnimation-properties"
 				:ref="registryRef(fieldEls, 'setAnimation-properties')" v-focus v-model="form.properties" />

@@ -1,14 +1,16 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animMotion-general-grid.label') || 'Motion'
 		}}</DetailSummary>
 		<div class="detail-grid" id="animMotion-general-grid">
 			<div class="text">{{ t('components.animMotion-mode.label') || 'Direction' }}</div>
-			<SelectBox id="animMotion-mode" ref="elMode" v-model="form.mode" @input="onParamInput"></SelectBox>
+			<SelectBox id="animMotion-mode"
+				v-tip="t('components.animMotion-mode.tip')" ref="elMode" v-model="form.mode" @input="onParamInput"></SelectBox>
 			<div class="text">{{ t('components.animMotion-skip.label') || 'Skip Last Frame' }}</div>
 			<CheckBox
 				id="animMotion-skip"
+				v-tip="t('components.animMotion-skip.tip')"
 				ref="elSkip"
 				class="standard large"
 				:model-value="form.skip"
@@ -17,6 +19,7 @@
 			<div class="text">{{ t('components.animMotion-loop.label') || 'Loop' }}</div>
 			<CheckBox
 				id="animMotion-loop"
+				v-tip="t('components.animMotion-loop.tip')"
 				ref="elLoop"
 				class="standard large"
 				:model-value="form.loop"
@@ -25,6 +28,7 @@
 			<div class="text">{{ t('components.animMotion-loopStart.label') || 'Loop Start' }}</div>
 			<NumberBox
 				id="animMotion-loopStart"
+				v-tip="t('components.animMotion-loopStart.tip')"
 				ref="elLoopStart"
 				v-model="form.loopStart"
 				min="0"

@@ -8,9 +8,11 @@
 
 		<div class="grid-box">
 			<div class="text">Position</div>
-			<CustomBox id="setTerrain-position" v-focus type="position" v-model="form.position" />
+			<CustomBox id="setTerrain-position"
+				v-tip="t('components.setTerrain-position.tip')" v-focus type="position" v-model="form.position" />
 			<div class="text">Terrain</div>
 			<SelectBox id="setTerrain-terrain"
+				v-tip="t('components.setTerrain-terrain.tip')"
 				:ref="registryRef(fieldEls, 'setTerrain-terrain')" v-model="form.terrain" />
 		</div>
 	</WindowFrame>

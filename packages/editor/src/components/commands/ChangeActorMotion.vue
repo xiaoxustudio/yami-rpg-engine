@@ -8,12 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="changeActorMotion-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="changeActorMotion-actor"
+				v-tip="t('components.changeActorMotion-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Type</div>
 			<SelectBox id="changeActorMotion-type"
+				v-tip="t('components.changeActorMotion-type.tip')"
 				:ref="registryRef(fieldEls, 'changeActorMotion-type')" v-model="form.type" />
 			<div class="text">Motion</div>
-			<CustomBox id="changeActorMotion-motion" type="enum-string" v-model="form.motion" />
+			<CustomBox id="changeActorMotion-motion"
+				v-tip="t('components.changeActorMotion-motion.tip')" type="enum-string" v-model="form.motion" />
 		</div>
 	</WindowFrame>
 </template>

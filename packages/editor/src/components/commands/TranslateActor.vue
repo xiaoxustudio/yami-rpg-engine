@@ -9,12 +9,15 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="translateActor-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="translateActor-actor"
+				v-tip="t('components.translateActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Angle</div>
-			<CustomBox id="translateActor-angle" type="angle" v-model="form.angle" />
+			<CustomBox id="translateActor-angle"
+				v-tip="t('components.translateActor-angle.tip')" type="angle" v-model="form.angle" />
 			<div class="text">Distance</div>
 			<NumberVar
 				id="translateActor-distance"
+				v-tip="t('components.translateActor-distance.tip')"
 				v-focus
 				min="0"
 				max="512"

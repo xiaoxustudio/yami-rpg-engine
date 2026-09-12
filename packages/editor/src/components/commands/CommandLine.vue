@@ -12,13 +12,16 @@
 				:ref="registryRef(fieldEls, 'commandLine-type')" v-model="form.type" />
 			<div class="text">Key</div>
 			<StringVar id="commandLine-key"
+				v-tip="t('components.commandLine-key.tip')"
 				:ref="registryRef(fieldEls, 'commandLine-key')" v-focus v-model="form.key" />
 			<div class="text">Value</div>
 			<StringVar id="commandLine-value"
+				v-tip="t('components.commandLine-value.tip')"
 				:ref="registryRef(fieldEls, 'commandLine-value')" v-model="form.value" />
 			<div class="text">Variable</div>
 			<CustomBox
 				id="commandLine-variable"
+				v-tip="t('components.commandLine-variable.tip')"
 				:ref="registryRef(fieldEls, 'commandLine-variable')"
 				v-focus
 				type="variable"

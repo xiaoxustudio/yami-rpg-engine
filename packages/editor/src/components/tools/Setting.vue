@@ -14,42 +14,56 @@
 				{{ t('components.setting-title-server.content') }}
 			</div>
 			<div class="text" />
-			<NumberBox id="setting-server-port" min="0" max="65535" />
+			<NumberBox id="setting-server-port"
+				v-tip="t('components.setting-server-port.tip')" min="0" max="65535" />
 			<div class="text" />
-			<CheckBox id="setting-server-auto" class="standard" />
+			<CheckBox id="setting-server-auto"
+				v-tip="t('components.setting-server-auto.tip')" class="standard" />
 			<div class="text setting-title" id="setting-title-apkbuild">
 				{{ t('components.setting-title-apkbuild.content') }}
 			</div>
 			<div class="text" />
-			<TextBox id="setting-apkbuild-outputDir" />
+			<TextBox id="setting-apkbuild-outputDir"
+				v-tip="t('components.setting-apkbuild-outputDir.tip')" />
 			<div class="text" />
-			<TextBox id="setting-apkbuild-newApkPath" />
+			<TextBox id="setting-apkbuild-newApkPath"
+				v-tip="t('components.setting-apkbuild-newApkPath.tip')" />
 			<div class="text" />
-			<TextBox id="setting-apkbuild-apktoolPath" />
+			<TextBox id="setting-apkbuild-apktoolPath"
+				v-tip="t('components.setting-apkbuild-apktoolPath.tip')" />
 			<div class="text setting-title" id="setting-title-signed">
 				{{ t('components.setting-title-signed.content') }}
 			</div>
 			<div class="text" />
-			<TextBox id="setting-signed-jksPath" />
+			<TextBox id="setting-signed-jksPath"
+				v-tip="t('components.setting-signed-jksPath.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-keyStorePassword" />
+			<TextBox id="setting-signed-keyStorePassword"
+				v-tip="t('components.setting-signed-keyStorePassword.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-keyAlias" />
+			<TextBox id="setting-signed-keyAlias"
+				v-tip="t('components.setting-signed-keyAlias.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-keyPassword" />
+			<TextBox id="setting-signed-keyPassword"
+				v-tip="t('components.setting-signed-keyPassword.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-apksignerPath" />
+			<TextBox id="setting-signed-apksignerPath"
+				v-tip="t('components.setting-signed-apksignerPath.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-zipalignPath" />
+			<TextBox id="setting-signed-zipalignPath"
+				v-tip="t('components.setting-signed-zipalignPath.tip')" />
 			<div class="text" />
-			<TextBox id="setting-signed-signedApkPath" />
+			<TextBox id="setting-signed-signedApkPath"
+				v-tip="t('components.setting-signed-signedApkPath.tip')" />
 			<div class="text setting-title" id="setting-title-other">
 				{{ t('components.setting-title-other.content') }}
 			</div>
 			<div class="text" />
-			<CheckBox id="setting-other-copyAsTextKeepEmptyLine" class="standard" />
+			<CheckBox id="setting-other-copyAsTextKeepEmptyLine"
+				v-tip="t('components.setting-other-copyAsTextKeepEmptyLine.tip')" class="standard" />
 			<div class="text" />
-			<SelectBox id="setting-other-browserSearchHistoryLimit" />
+			<SelectBox id="setting-other-browserSearchHistoryLimit"
+				v-tip="t('components.setting-other-browserSearchHistoryLimit.tip')" />
 			<div class="text setting-title" id="setting-title-recent"></div>
 			<div class="text" id="setting-recent-statsMode-label" />
 			<SelectBox id="setting-recent-statsMode" />
@@ -57,7 +71,8 @@
 				{{ t('components.setting-title-github.content') }}
 			</div>
 			<div class="text" />
-			<SelectBox id="setting-github-accelerationNode" />
+			<SelectBox id="setting-github-accelerationNode"
+				v-tip="t('components.setting-github-accelerationNode.tip')" />
 			<div class="text setting-title" id="setting-title-update"></div>
 			<div class="text" id="setting-update-checkOnStart-label" />
 			<CheckBox id="setting-update-checkOnStart" class="standard" />

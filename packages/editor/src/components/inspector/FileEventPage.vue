@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.fileEvent-general-grid.label') || 'General'
@@ -8,6 +8,7 @@
 			<SelectBox
 				ref="elType"
 				id="fileEvent-type"
+				v-tip="t('components.fileEvent-type.tip')"
 				v-model="form.type"
 				@input="onParamInput"
 				@write="onTypeWrite"
@@ -15,6 +16,7 @@
 			<div class="text">{{ t('components.fileEvent-enabled.label') || 'Enabled' }}</div>
 			<CheckBox
 				id="fileEvent-enabled"
+				v-tip="t('components.fileEvent-enabled.tip')"
 				:ref="registryRef(inspectorEls, 'fileEvent-enabled')"
 				class="standard large"
 				v-model="form.enabled"
@@ -23,6 +25,7 @@
 			<div class="text">{{ t('components.fileEvent-priority.label') || 'Priority' }}</div>
 			<CheckBox
 				id="fileEvent-priority"
+				v-tip="t('components.fileEvent-priority.tip')"
 				:ref="registryRef(inspectorEls, 'fileEvent-priority')"
 				class="standard large"
 				v-model="form.priority"
@@ -31,6 +34,7 @@
 			<div class="text">{{ t('components.fileEvent-namespace.label') || 'Namespace' }}</div>
 			<CheckBox
 				id="fileEvent-namespace"
+				v-tip="t('components.fileEvent-namespace.tip')"
 				class="standard large"
 				v-model="form.namespace"
 				@input="onParamInput"
@@ -41,13 +45,15 @@
 			<SelectBox
 				ref="elReturnType"
 				id="fileEvent-returnType"
+				v-tip="t('components.fileEvent-returnType.tip')"
 				v-model="form.returnType"
 				@input="onParamInput"
 			/>
 			<div class="text">
 				{{ t('components.fileEvent-description.label') || 'Description' }}
 			</div>
-			<TextArea id="fileEvent-description" v-model="form.description" @input="onParamInput" />
+			<TextArea id="fileEvent-description"
+				v-tip="t('components.fileEvent-description.tip')" v-model="form.description" @input="onParamInput" />
 		</div>
 		<DetailBox open>
 			<DetailSummary>{{
@@ -56,6 +62,7 @@
 			<ParamList
 				ref="elParameters"
 				id="fileEvent-parameters"
+				v-tip="t('components.fileEvent-parameters.tip')"
 				class="inspector-list"
 				flexible
 			/>

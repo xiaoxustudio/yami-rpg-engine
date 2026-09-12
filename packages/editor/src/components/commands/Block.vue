@@ -7,9 +7,11 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<TextBox id="block-note" v-focus v-model="note" />
+		<TextBox id="block-note"
+				v-tip="t('components.block-note.tip')" v-focus v-model="note" />
 		<CheckBox id="block-asynchronous" class="standard" v-model="asynchronous"
-			><div class="text" id="block-asynchronous-label">Asynchronous</div></CheckBox
+			><div class="text" id="block-asynchronous-label"
+				v-tip="t('components.block-asynchronous-label.tip')">Asynchronous</div></CheckBox
 		>
 	</WindowFrame>
 </template>

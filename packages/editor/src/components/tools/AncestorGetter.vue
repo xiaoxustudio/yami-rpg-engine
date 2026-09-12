@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="ancestorGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.ancestorGetter-type.label') }}</div>
 			<SelectBox id="ancestorGetter-type"
+				v-tip="t('components.ancestorGetter-type.tip')"
 				:ref="fieldRef('ancestorGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div>
 			<CustomBox
 				id="ancestorGetter-presetId"
+				v-tip="t('components.ancestorGetter-presetId.tip')"
 				:ref="fieldRef('ancestorGetter-presetId')"
 				v-focus
 				type="preset-element"
@@ -21,6 +23,7 @@
 			<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div>
 			<CustomBox
 				id="ancestorGetter-variable"
+				v-tip="t('components.ancestorGetter-variable.tip')"
 				:ref="fieldRef('ancestorGetter-variable')"
 				v-focus
 				type="variable"

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame ref="frame" id="regionGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -9,10 +9,12 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.regionGetter-type.label') }}</div>
 			<SelectBox id="regionGetter-type"
+				v-tip="t('components.regionGetter-type.tip')"
 				:ref="fieldRef('regionGetter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.regionGetter-presetId.label') }}</div>
 			<CustomBox
 				id="regionGetter-presetId"
+				v-tip="t('components.regionGetter-presetId.tip')"
 				:ref="fieldRef('regionGetter-presetId')"
 				v-focus
 				v-model="form.presetId"

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.animSoundLayer-properties-grid.label') || 'Sound Layer'
@@ -9,6 +9,7 @@
 			</div>
 			<SelectBox
 				id="animSoundLayer-playbackRate"
+				v-tip="t('components.animSoundLayer-playbackRate.tip')"
 				ref="elPlaybackRate"
 				v-model="form.playbackRate"
 				@input="onParamInput"

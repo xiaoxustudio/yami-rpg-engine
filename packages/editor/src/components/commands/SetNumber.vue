@@ -11,6 +11,7 @@
 			<div class="text">Variable</div>
 			<CustomBox
 				id="setNumber-variable"
+				v-tip="t('components.setNumber-variable.tip')"
 				v-focus
 				type="variable"
 				filter="writable-number"

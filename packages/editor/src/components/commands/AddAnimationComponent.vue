@@ -8,26 +8,32 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="addAnimationComponent-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="addAnimationComponent-actor"
+				v-tip="t('components.addAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Animation</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
+				v-tip="t('components.addAnimationComponent-animationId.tip')"
 				type="file"
 				filter="animation"
 				v-model="form.animationId"
 				@write="onWrite"
 			/>
 			<div class="text">Motion</div>
-			<SelectBox id="addAnimationComponent-motion" v-model="form.motion" />
+			<SelectBox id="addAnimationComponent-motion"
+				v-tip="t('components.addAnimationComponent-motion.tip')" v-model="form.motion" />
 			<div class="text">Rotatable</div>
 			<SelectBox id="addAnimationComponent-rotatable"
+				v-tip="t('components.addAnimationComponent-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')" v-model="form.rotatable" />
 			<div class="text">Sync Angle</div>
 			<SelectBox id="addAnimationComponent-syncAngle"
+				v-tip="t('components.addAnimationComponent-syncAngle.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')" v-model="form.syncAngle" />
 			<div class="text">Priority</div>
 			<NumberBox
 				id="addAnimationComponent-priority"
+				v-tip="t('components.addAnimationComponent-priority.tip')"
 				min="-100"
 				max="100"
 				v-model="priority"
@@ -35,6 +41,7 @@
 			<div class="text">Offset Y</div>
 			<NumberBox
 				id="addAnimationComponent-offsetY"
+				v-tip="t('components.addAnimationComponent-offsetY.tip')"
 				min="-100"
 				max="100"
 				unit="px"

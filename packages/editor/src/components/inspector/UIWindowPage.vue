@@ -8,6 +8,7 @@
 			<SelectBox
 				ref="elLayout"
 				id="uiWindow-layout"
+				v-tip="t('components.uiWindow-layout.tip')"
 				v-model="form.layout"
 				@input="onParamInput"
 			></SelectBox>
@@ -15,6 +16,7 @@
 			<NumberBox
 				ref="elScrollX"
 				id="uiWindow-scrollX"
+				v-tip="t('components.uiWindow-scrollX.tip')"
 				v-model="form.scrollX"
 				min="0"
 				max="10000"
@@ -25,6 +27,7 @@
 			<NumberBox
 				ref="elScrollY"
 				id="uiWindow-scrollY"
+				v-tip="t('components.uiWindow-scrollY.tip')"
 				v-model="form.scrollY"
 				min="0"
 				max="10000"
@@ -35,6 +38,7 @@
 			<NumberBox
 				ref="elGridWidth"
 				id="uiWindow-gridWidth"
+				v-tip="t('components.uiWindow-gridWidth.tip')"
 				v-model="form.gridWidth"
 				min="0"
 				max="1000"
@@ -45,6 +49,7 @@
 			<NumberBox
 				ref="elGridHeight"
 				id="uiWindow-gridHeight"
+				v-tip="t('components.uiWindow-gridHeight.tip')"
 				v-model="form.gridHeight"
 				min="0"
 				max="1000"
@@ -55,6 +60,7 @@
 			<NumberBox
 				ref="elGridGapX"
 				id="uiWindow-gridGapX"
+				v-tip="t('components.uiWindow-gridGapX.tip')"
 				v-model="form.gridGapX"
 				min="0"
 				max="1000"
@@ -65,6 +71,7 @@
 			<NumberBox
 				ref="elGridGapY"
 				id="uiWindow-gridGapY"
+				v-tip="t('components.uiWindow-gridGapY.tip')"
 				v-model="form.gridGapY"
 				min="0"
 				max="1000"
@@ -75,6 +82,7 @@
 			<NumberBox
 				ref="elPaddingX"
 				id="uiWindow-paddingX"
+				v-tip="t('components.uiWindow-paddingX.tip')"
 				v-model="form.paddingX"
 				min="0"
 				max="1000"
@@ -85,6 +93,7 @@
 			<NumberBox
 				ref="elPaddingY"
 				id="uiWindow-paddingY"
+				v-tip="t('components.uiWindow-paddingY.tip')"
 				v-model="form.paddingY"
 				min="0"
 				max="1000"
@@ -95,6 +104,7 @@
 			<SelectBox
 				ref="elOverflow"
 				id="uiWindow-overflow"
+				v-tip="t('components.uiWindow-overflow.tip')"
 				v-model="form.overflow"
 				@input="onParamInput"
 			></SelectBox>

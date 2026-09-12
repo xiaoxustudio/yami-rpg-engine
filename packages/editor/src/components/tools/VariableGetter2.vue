@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<!-- 变量访问器窗口2 -->
 	<WindowFrame ref="frame" id="variableGetter2" @confirm="onConfirm">
 		<template #title
@@ -9,15 +9,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter2-type.label') }}</div>
-			<SelectBox id="variableGetter2-type" />
+			<SelectBox id="variableGetter2-type"
+				v-tip="t('components.variableGetter2-type.tip')" />
 			<div class="text">{{ t('components.variableGetter2-element.label') }}</div>
-			<CustomBox id="variableGetter2-element" type="element" />
+			<CustomBox id="variableGetter2-element"
+				v-tip="t('components.variableGetter2-element.tip')" type="element" />
 			<div class="text">{{ t('components.variableGetter2-common-key.label') }}</div>
-			<TextBox id="variableGetter2-common-key" />
+			<TextBox id="variableGetter2-common-key"
+				v-tip="t('components.variableGetter2-common-key.tip')" />
 			<div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div>
-			<SelectBox id="variableGetter2-preset-key" />
+			<SelectBox id="variableGetter2-preset-key"
+				v-tip="t('components.variableGetter2-preset-key.tip')" />
 			<div class="text">{{ t('components.variableGetter2-global-key.label') }}</div>
-			<CustomBox id="variableGetter2-global-key" type="global-variable" />
+			<CustomBox id="variableGetter2-global-key"
+				v-tip="t('components.variableGetter2-global-key.tip')" type="global-variable" />
 		</div>
 	</WindowFrame>
 </template>

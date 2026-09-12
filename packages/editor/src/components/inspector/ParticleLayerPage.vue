@@ -1,16 +1,18 @@
-﻿<template>
+<template>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.particleLayer-general-grid.label') || 'General'
 		}}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-general-grid">
 			<div class="text">{{ t('components.particleLayer-name.label') || 'Name' }}</div>
-			<TextBox id="particleLayer-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="particleLayer-name"
+				v-tip="t('components.particleLayer-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.particleLayer-area-type.label') || 'Emission Area' }}
 			</div>
 			<SelectBox
 				id="particleLayer-area-type"
+				v-tip="t('components.particleLayer-area-type.tip')"
 				ref="elAreaType"
 				v-model="form.area.type"
 				@input="onParamInput"
@@ -18,6 +20,7 @@
 			<div class="text">{{ t('components.particleLayer-area-x.label') || 'X' }}</div>
 			<NumberBox
 				id="particleLayer-area-x"
+				v-tip="t('components.particleLayer-area-x.tip')"
 				ref="elAreaX"
 				v-model="form.area.x"
 				@input="onParamInput"
@@ -28,6 +31,7 @@
 			<div class="text">{{ t('components.particleLayer-area-y.label') || 'Y' }}</div>
 			<NumberBox
 				id="particleLayer-area-y"
+				v-tip="t('components.particleLayer-area-y.tip')"
 				ref="elAreaY"
 				v-model="form.area.y"
 				@input="onParamInput"
@@ -38,6 +42,7 @@
 			<div class="text">{{ t('components.particleLayer-area-width.label') || 'Width' }}</div>
 			<NumberBox
 				id="particleLayer-area-width"
+				v-tip="t('components.particleLayer-area-width.tip')"
 				ref="elAreaWidth"
 				v-model="form.area.width"
 				@input="onParamInput"
@@ -50,6 +55,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-area-height"
+				v-tip="t('components.particleLayer-area-height.tip')"
 				ref="elAreaHeight"
 				v-model="form.area.height"
 				@input="onParamInput"
@@ -62,6 +68,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-area-radius"
+				v-tip="t('components.particleLayer-area-radius.tip')"
 				ref="elAreaRadius"
 				v-model="form.area.radius"
 				@input="onParamInput"
@@ -74,6 +81,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-count"
+				v-tip="t('components.particleLayer-count.tip')"
 				v-model="form.count"
 				@input="onParamInput"
 				min="0"
@@ -84,6 +92,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-delay"
+				v-tip="t('components.particleLayer-delay.tip')"
 				v-model="form.delay"
 				@input="onParamInput"
 				min="0"
@@ -93,6 +102,7 @@
 			<div class="text">{{ t('components.particleLayer-interval.label') || 'Interval' }}</div>
 			<NumberBox
 				id="particleLayer-interval"
+				v-tip="t('components.particleLayer-interval.tip')"
 				v-model="form.interval"
 				@input="onParamInput"
 				min="0"
@@ -102,6 +112,7 @@
 			<div class="text">{{ t('components.particleLayer-lifetime.label') || 'Lifetime' }}</div>
 			<NumberBox
 				id="particleLayer-lifetime"
+				v-tip="t('components.particleLayer-lifetime.tip')"
 				v-model="form.lifetime"
 				@input="onParamInput"
 				min="0"
@@ -113,6 +124,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-lifetimeDev"
+				v-tip="t('components.particleLayer-lifetimeDev.tip')"
 				v-model="form.lifetimeDev"
 				@input="onParamInput"
 				min="0"
@@ -122,6 +134,7 @@
 			<div class="text">{{ t('components.particleLayer-fadeout.label') || 'Fadeout' }}</div>
 			<NumberBox
 				id="particleLayer-fadeout"
+				v-tip="t('components.particleLayer-fadeout.tip')"
 				v-model="form.fadeout"
 				@input="onParamInput"
 				min="0"
@@ -141,6 +154,7 @@
 			<div class="flex-box" id="particleLayer-anchor-x-box">
 				<NumberBox
 					id="particleLayer-anchor-x-0"
+				v-tip="t('components.particleLayer-anchor-x-0.tip')"
 					v-model="form.anchor.x[0]"
 					@input="onParamInput"
 					min="-100"
@@ -151,6 +165,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-x-1"
+				v-tip="t('components.particleLayer-anchor-x-1.tip')"
 					v-model="form.anchor.x[1]"
 					@input="onParamInput"
 					min="0"
@@ -166,6 +181,7 @@
 			<div class="flex-box" id="particleLayer-anchor-y-box">
 				<NumberBox
 					id="particleLayer-anchor-y-0"
+				v-tip="t('components.particleLayer-anchor-y-0.tip')"
 					v-model="form.anchor.y[0]"
 					@input="onParamInput"
 					min="-100"
@@ -176,6 +192,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-y-1"
+				v-tip="t('components.particleLayer-anchor-y-1.tip')"
 					v-model="form.anchor.y[1]"
 					@input="onParamInput"
 					min="0"
@@ -191,6 +208,7 @@
 			<div class="flex-box" id="particleLayer-anchor-speedX-box">
 				<NumberBox
 					id="particleLayer-anchor-speedX-0"
+				v-tip="t('components.particleLayer-anchor-speedX-0.tip')"
 					v-model="form.anchor.speedX[0]"
 					@input="onParamInput"
 					min="-100"
@@ -201,6 +219,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-speedX-1"
+				v-tip="t('components.particleLayer-anchor-speedX-1.tip')"
 					v-model="form.anchor.speedX[1]"
 					@input="onParamInput"
 					min="0"
@@ -216,6 +235,7 @@
 			<div class="flex-box" id="particleLayer-anchor-speedY-box">
 				<NumberBox
 					id="particleLayer-anchor-speedY-0"
+				v-tip="t('components.particleLayer-anchor-speedY-0.tip')"
 					v-model="form.anchor.speedY[0]"
 					@input="onParamInput"
 					min="-100"
@@ -226,6 +246,7 @@
 				>
 				<NumberBox
 					id="particleLayer-anchor-speedY-1"
+				v-tip="t('components.particleLayer-anchor-speedY-1.tip')"
 					v-model="form.anchor.speedY[1]"
 					@input="onParamInput"
 					min="0"
@@ -248,6 +269,7 @@
 			<div class="flex-box" id="particleLayer-movement-angle-box">
 				<NumberBox
 					id="particleLayer-movement-angle-0"
+				v-tip="t('components.particleLayer-movement-angle-0.tip')"
 					v-model="form.movement.angle[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -259,6 +281,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-angle-1"
+				v-tip="t('components.particleLayer-movement-angle-1.tip')"
 					v-model="form.movement.angle[1]"
 					@input="onParamInput"
 					min="0"
@@ -275,6 +298,7 @@
 			<div class="flex-box" id="particleLayer-movement-speed-box">
 				<NumberBox
 					id="particleLayer-movement-speed-0"
+				v-tip="t('components.particleLayer-movement-speed-0.tip')"
 					v-model="form.movement.speed[0]"
 					@input="onParamInput"
 					min="-10000"
@@ -284,6 +308,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-speed-1"
+				v-tip="t('components.particleLayer-movement-speed-1.tip')"
 					v-model="form.movement.speed[1]"
 					@input="onParamInput"
 					min="0"
@@ -298,6 +323,7 @@
 			<div class="flex-box" id="particleLayer-movement-accelAngle-box">
 				<NumberBox
 					id="particleLayer-movement-accelAngle-0"
+				v-tip="t('components.particleLayer-movement-accelAngle-0.tip')"
 					v-model="form.movement.accelAngle[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -309,6 +335,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accelAngle-1"
+				v-tip="t('components.particleLayer-movement-accelAngle-1.tip')"
 					v-model="form.movement.accelAngle[1]"
 					@input="onParamInput"
 					min="0"
@@ -325,6 +352,7 @@
 			<div class="flex-box" id="particleLayer-movement-accel-box">
 				<NumberBox
 					id="particleLayer-movement-accel-0"
+				v-tip="t('components.particleLayer-movement-accel-0.tip')"
 					v-model="form.movement.accel[0]"
 					@input="onParamInput"
 					min="-10000"
@@ -334,6 +362,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accel-1"
+				v-tip="t('components.particleLayer-movement-accel-1.tip')"
 					v-model="form.movement.accel[1]"
 					@input="onParamInput"
 					min="0"
@@ -355,6 +384,7 @@
 			<div class="flex-box" id="particleLayer-rotation-angle-box">
 				<NumberBox
 					id="particleLayer-rotation-angle-0"
+				v-tip="t('components.particleLayer-rotation-angle-0.tip')"
 					v-model="form.rotation.angle[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -366,6 +396,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-angle-1"
+				v-tip="t('components.particleLayer-rotation-angle-1.tip')"
 					v-model="form.rotation.angle[1]"
 					@input="onParamInput"
 					min="0"
@@ -382,6 +413,7 @@
 			<div class="flex-box" id="particleLayer-rotation-speed-box">
 				<NumberBox
 					id="particleLayer-rotation-speed-0"
+				v-tip="t('components.particleLayer-rotation-speed-0.tip')"
 					v-model="form.rotation.speed[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -392,6 +424,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-speed-1"
+				v-tip="t('components.particleLayer-rotation-speed-1.tip')"
 					v-model="form.rotation.speed[1]"
 					@input="onParamInput"
 					min="0"
@@ -407,6 +440,7 @@
 			<div class="flex-box" id="particleLayer-rotation-accel-box">
 				<NumberBox
 					id="particleLayer-rotation-accel-0"
+				v-tip="t('components.particleLayer-rotation-accel-0.tip')"
 					v-model="form.rotation.accel[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -417,6 +451,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-accel-1"
+				v-tip="t('components.particleLayer-rotation-accel-1.tip')"
 					v-model="form.rotation.accel[1]"
 					@input="onParamInput"
 					min="0"
@@ -439,6 +474,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-radius-box">
 				<NumberBox
 					id="particleLayer-hRotation-radius-0"
+				v-tip="t('components.particleLayer-hRotation-radius-0.tip')"
 					v-model="form.hRotation.radius[0]"
 					@input="onParamInput"
 					min="-10000"
@@ -449,6 +485,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-radius-1"
+				v-tip="t('components.particleLayer-hRotation-radius-1.tip')"
 					v-model="form.hRotation.radius[1]"
 					@input="onParamInput"
 					min="0"
@@ -467,6 +504,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-expansionSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionSpeed-0"
+				v-tip="t('components.particleLayer-hRotation-expansionSpeed-0.tip')"
 					v-model="form.hRotation.expansionSpeed[0]"
 					@input="onParamInput"
 					min="-10000"
@@ -476,6 +514,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-expansionSpeed-1"
+				v-tip="t('components.particleLayer-hRotation-expansionSpeed-1.tip')"
 					v-model="form.hRotation.expansionSpeed[1]"
 					@input="onParamInput"
 					min="0"
@@ -493,6 +532,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-expansionAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionAccel-0"
+				v-tip="t('components.particleLayer-hRotation-expansionAccel-0.tip')"
 					v-model="form.hRotation.expansionAccel[0]"
 					@input="onParamInput"
 					min="-10000"
@@ -502,6 +542,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-expansionAccel-1"
+				v-tip="t('components.particleLayer-hRotation-expansionAccel-1.tip')"
 					v-model="form.hRotation.expansionAccel[1]"
 					@input="onParamInput"
 					min="0"
@@ -516,6 +557,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angle-box">
 				<NumberBox
 					id="particleLayer-hRotation-angle-0"
+				v-tip="t('components.particleLayer-hRotation-angle-0.tip')"
 					v-model="form.hRotation.angle[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -527,6 +569,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angle-1"
+				v-tip="t('components.particleLayer-hRotation-angle-1.tip')"
 					v-model="form.hRotation.angle[1]"
 					@input="onParamInput"
 					min="0"
@@ -546,6 +589,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angularSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularSpeed-0"
+				v-tip="t('components.particleLayer-hRotation-angularSpeed-0.tip')"
 					v-model="form.hRotation.angularSpeed[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -556,6 +600,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angularSpeed-1"
+				v-tip="t('components.particleLayer-hRotation-angularSpeed-1.tip')"
 					v-model="form.hRotation.angularSpeed[1]"
 					@input="onParamInput"
 					min="0"
@@ -574,6 +619,7 @@
 			<div class="flex-box" id="particleLayer-hRotation-angularAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularAccel-0"
+				v-tip="t('components.particleLayer-hRotation-angularAccel-0.tip')"
 					v-model="form.hRotation.angularAccel[0]"
 					@input="onParamInput"
 					min="-36000"
@@ -584,6 +630,7 @@
 				>
 				<NumberBox
 					id="particleLayer-hRotation-angularAccel-1"
+				v-tip="t('components.particleLayer-hRotation-angularAccel-1.tip')"
 					v-model="form.hRotation.angularAccel[1]"
 					@input="onParamInput"
 					min="0"
@@ -606,6 +653,7 @@
 			<div class="flex-box" id="particleLayer-scale-factor-box">
 				<NumberBox
 					id="particleLayer-scale-factor-0"
+				v-tip="t('components.particleLayer-scale-factor-0.tip')"
 					v-model="form.scale.factor[0]"
 					@input="onParamInput"
 					min="-100"
@@ -616,6 +664,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-factor-1"
+				v-tip="t('components.particleLayer-scale-factor-1.tip')"
 					v-model="form.scale.factor[1]"
 					@input="onParamInput"
 					min="0"
@@ -631,6 +680,7 @@
 			<div class="flex-box" id="particleLayer-scale-speed-box">
 				<NumberBox
 					id="particleLayer-scale-speed-0"
+				v-tip="t('components.particleLayer-scale-speed-0.tip')"
 					v-model="form.scale.speed[0]"
 					@input="onParamInput"
 					min="-100"
@@ -641,6 +691,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-speed-1"
+				v-tip="t('components.particleLayer-scale-speed-1.tip')"
 					v-model="form.scale.speed[1]"
 					@input="onParamInput"
 					min="0"
@@ -656,6 +707,7 @@
 			<div class="flex-box" id="particleLayer-scale-accel-box">
 				<NumberBox
 					id="particleLayer-scale-accel-0"
+				v-tip="t('components.particleLayer-scale-accel-0.tip')"
 					v-model="form.scale.accel[0]"
 					@input="onParamInput"
 					min="-100"
@@ -666,6 +718,7 @@
 				>
 				<NumberBox
 					id="particleLayer-scale-accel-1"
+				v-tip="t('components.particleLayer-scale-accel-1.tip')"
 					v-model="form.scale.accel[1]"
 					@input="onParamInput"
 					min="0"
@@ -685,6 +738,7 @@
 			<div class="text">{{ t('components.particleLayer-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="particleLayer-image"
+				v-tip="t('components.particleLayer-image.tip')"
 				type="file"
 				filter="image"
 				:model-value="form.image"
@@ -693,6 +747,7 @@
 			<div class="text">{{ t('components.particleLayer-blend.label') || 'Blend' }}</div>
 			<SelectBox
 				id="particleLayer-blend"
+				v-tip="t('components.particleLayer-blend.tip')"
 				ref="elBlend"
 				v-model="form.blend"
 				@input="onParamInput"
@@ -702,6 +757,7 @@
 			</div>
 			<SelectBox
 				id="particleLayer-light"
+				v-tip="t('components.particleLayer-light.tip')"
 				ref="elLight"
 				v-model="form.light"
 				@input="onParamInput"
@@ -709,6 +765,7 @@
 			<div class="text">{{ t('components.particleLayer-sort.label') || 'Sort' }}</div>
 			<SelectBox
 				id="particleLayer-sort"
+				v-tip="t('components.particleLayer-sort.tip')"
 				ref="elSort"
 				v-model="form.sort"
 				@input="onParamInput"
@@ -718,6 +775,7 @@
 			</div>
 			<SelectBox
 				id="particleLayer-sprite-mode"
+				v-tip="t('components.particleLayer-sprite-mode.tip')"
 				ref="elSpriteMode"
 				v-model="form.sprite.mode"
 				@input="onParamInput"
@@ -727,6 +785,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-hframes"
+				v-tip="t('components.particleLayer-sprite-hframes.tip')"
 				v-model="form.sprite.hframes"
 				@input="onParamInput"
 				min="1"
@@ -737,6 +796,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-vframes"
+				v-tip="t('components.particleLayer-sprite-vframes.tip')"
 				v-model="form.sprite.vframes"
 				@input="onParamInput"
 				min="1"
@@ -747,6 +807,7 @@
 			</div>
 			<NumberBox
 				id="particleLayer-sprite-interval"
+				v-tip="t('components.particleLayer-sprite-interval.tip')"
 				ref="elSpriteInterval"
 				v-model="form.sprite.interval"
 				@input="onParamInput"
@@ -759,6 +820,7 @@
 			</div>
 			<SelectBox
 				id="particleLayer-color-mode"
+				v-tip="t('components.particleLayer-color-mode.tip')"
 				ref="elColorMode"
 				v-model="form.color.mode"
 				@input="onParamInput"
@@ -769,6 +831,7 @@
 			<div class="flex-box" id="particleLayer-color-rgba-box" ref="elColorRgbaBox">
 				<NumberBox
 					id="particleLayer-color-rgba-0"
+				v-tip="t('components.particleLayer-color-rgba-0.tip')"
 					v-model="form.color.rgba[0]"
 					@input="onParamInput"
 					min="0"
@@ -778,6 +841,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-1"
+				v-tip="t('components.particleLayer-color-rgba-1.tip')"
 					v-model="form.color.rgba[1]"
 					@input="onParamInput"
 					min="0"
@@ -787,6 +851,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-2"
+				v-tip="t('components.particleLayer-color-rgba-2.tip')"
 					v-model="form.color.rgba[2]"
 					@input="onParamInput"
 					min="0"
@@ -796,6 +861,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-rgba-3"
+				v-tip="t('components.particleLayer-color-rgba-3.tip')"
 					v-model="form.color.rgba[3]"
 					@input="onParamInput"
 					min="0"
@@ -810,6 +876,7 @@
 			<div class="flex-box" id="particleLayer-color-min-box" ref="elColorMinBox">
 				<NumberBox
 					id="particleLayer-color-min-0"
+				v-tip="t('components.particleLayer-color-min-0.tip')"
 					v-model="form.color.min[0]"
 					@input="onParamInput"
 					min="0"
@@ -819,6 +886,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-1"
+				v-tip="t('components.particleLayer-color-min-1.tip')"
 					v-model="form.color.min[1]"
 					@input="onParamInput"
 					min="0"
@@ -828,6 +896,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-2"
+				v-tip="t('components.particleLayer-color-min-2.tip')"
 					v-model="form.color.min[2]"
 					@input="onParamInput"
 					min="0"
@@ -837,6 +906,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-min-3"
+				v-tip="t('components.particleLayer-color-min-3.tip')"
 					v-model="form.color.min[3]"
 					@input="onParamInput"
 					min="0"
@@ -851,6 +921,7 @@
 			<div class="flex-box" id="particleLayer-color-max-box" ref="elColorMaxBox">
 				<NumberBox
 					id="particleLayer-color-max-0"
+				v-tip="t('components.particleLayer-color-max-0.tip')"
 					v-model="form.color.max[0]"
 					@input="onParamInput"
 					min="0"
@@ -860,6 +931,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-1"
+				v-tip="t('components.particleLayer-color-max-1.tip')"
 					v-model="form.color.max[1]"
 					@input="onParamInput"
 					min="0"
@@ -869,6 +941,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-2"
+				v-tip="t('components.particleLayer-color-max-2.tip')"
 					v-model="form.color.max[2]"
 					@input="onParamInput"
 					min="0"
@@ -878,6 +951,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-max-3"
+				v-tip="t('components.particleLayer-color-max-3.tip')"
 					v-model="form.color.max[3]"
 					@input="onParamInput"
 					min="0"
@@ -891,6 +965,7 @@
 			</div>
 			<SelectBox
 				id="particleLayer-color-easingId"
+				v-tip="t('components.particleLayer-color-easingId.tip')"
 				ref="elColorEasingId"
 				v-model="form.color.easingId"
 				@input="onParamInput"
@@ -901,6 +976,7 @@
 			<div class="flex-box" id="particleLayer-color-startMin-box" ref="elColorStartMinBox">
 				<NumberBox
 					id="particleLayer-color-startMin-0"
+				v-tip="t('components.particleLayer-color-startMin-0.tip')"
 					v-model="form.color.startMin[0]"
 					@input="onParamInput"
 					min="0"
@@ -910,6 +986,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-1"
+				v-tip="t('components.particleLayer-color-startMin-1.tip')"
 					v-model="form.color.startMin[1]"
 					@input="onParamInput"
 					min="0"
@@ -919,6 +996,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-2"
+				v-tip="t('components.particleLayer-color-startMin-2.tip')"
 					v-model="form.color.startMin[2]"
 					@input="onParamInput"
 					min="0"
@@ -928,6 +1006,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMin-3"
+				v-tip="t('components.particleLayer-color-startMin-3.tip')"
 					v-model="form.color.startMin[3]"
 					@input="onParamInput"
 					min="0"
@@ -942,6 +1021,7 @@
 			<div class="flex-box" id="particleLayer-color-startMax-box" ref="elColorStartMaxBox">
 				<NumberBox
 					id="particleLayer-color-startMax-0"
+				v-tip="t('components.particleLayer-color-startMax-0.tip')"
 					v-model="form.color.startMax[0]"
 					@input="onParamInput"
 					min="0"
@@ -951,6 +1031,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-1"
+				v-tip="t('components.particleLayer-color-startMax-1.tip')"
 					v-model="form.color.startMax[1]"
 					@input="onParamInput"
 					min="0"
@@ -960,6 +1041,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-2"
+				v-tip="t('components.particleLayer-color-startMax-2.tip')"
 					v-model="form.color.startMax[2]"
 					@input="onParamInput"
 					min="0"
@@ -969,6 +1051,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-startMax-3"
+				v-tip="t('components.particleLayer-color-startMax-3.tip')"
 					v-model="form.color.startMax[3]"
 					@input="onParamInput"
 					min="0"
@@ -983,6 +1066,7 @@
 			<div class="flex-box" id="particleLayer-color-endMin-box" ref="elColorEndMinBox">
 				<NumberBox
 					id="particleLayer-color-endMin-0"
+				v-tip="t('components.particleLayer-color-endMin-0.tip')"
 					v-model="form.color.endMin[0]"
 					@input="onParamInput"
 					min="0"
@@ -992,6 +1076,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-1"
+				v-tip="t('components.particleLayer-color-endMin-1.tip')"
 					v-model="form.color.endMin[1]"
 					@input="onParamInput"
 					min="0"
@@ -1001,6 +1086,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-2"
+				v-tip="t('components.particleLayer-color-endMin-2.tip')"
 					v-model="form.color.endMin[2]"
 					@input="onParamInput"
 					min="0"
@@ -1010,6 +1096,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMin-3"
+				v-tip="t('components.particleLayer-color-endMin-3.tip')"
 					v-model="form.color.endMin[3]"
 					@input="onParamInput"
 					min="0"
@@ -1024,6 +1111,7 @@
 			<div class="flex-box" id="particleLayer-color-endMax-box" ref="elColorEndMaxBox">
 				<NumberBox
 					id="particleLayer-color-endMax-0"
+				v-tip="t('components.particleLayer-color-endMax-0.tip')"
 					v-model="form.color.endMax[0]"
 					@input="onParamInput"
 					min="0"
@@ -1033,6 +1121,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-1"
+				v-tip="t('components.particleLayer-color-endMax-1.tip')"
 					v-model="form.color.endMax[1]"
 					@input="onParamInput"
 					min="0"
@@ -1042,6 +1131,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-2"
+				v-tip="t('components.particleLayer-color-endMax-2.tip')"
 					v-model="form.color.endMax[2]"
 					@input="onParamInput"
 					min="0"
@@ -1051,6 +1141,7 @@
 				>
 				<NumberBox
 					id="particleLayer-color-endMax-3"
+				v-tip="t('components.particleLayer-color-endMax-3.tip')"
 					v-model="form.color.endMax[3]"
 					@input="onParamInput"
 					min="0"
@@ -1062,7 +1153,8 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-0-box" ref="elTint0Box">
+			<div class="flex-box" id="particleLayer-color-tint-0-box"
+				v-tip="t('components.particleLayer-color-tint-0-box.tip')" ref="elTint0Box">
 				<SliderBox
 				id="particleLayer-color-tint-0-slider"
 				ref="elTint0Slider"
@@ -1084,7 +1176,8 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-1-box" ref="elTint1Box">
+			<div class="flex-box" id="particleLayer-color-tint-1-box"
+				v-tip="t('components.particleLayer-color-tint-1-box.tip')" ref="elTint1Box">
 				<SliderBox
 				id="particleLayer-color-tint-1-slider"
 				ref="elTint1Slider"
@@ -1106,7 +1199,8 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-2-box" ref="elTint2Box">
+			<div class="flex-box" id="particleLayer-color-tint-2-box"
+				v-tip="t('components.particleLayer-color-tint-2-box.tip')" ref="elTint2Box">
 				<SliderBox
 				id="particleLayer-color-tint-2-slider"
 				ref="elTint2Slider"
@@ -1128,7 +1222,8 @@
 			<div class="text">
 				{{ t('components.particleLayer-color-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="particleLayer-color-tint-3-box" ref="elTint3Box">
+			<div class="flex-box" id="particleLayer-color-tint-3-box"
+				v-tip="t('components.particleLayer-color-tint-3-box.tip')" ref="elTint3Box">
 				<SliderBox
 				id="particleLayer-color-tint-3-slider"
 				ref="elTint3Slider"

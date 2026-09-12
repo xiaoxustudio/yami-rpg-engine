@@ -3,7 +3,8 @@
 		<DetailSummary>{{
 			t('components.fileAnimation-sprites.label') || 'Sprites'
 		}}</DetailSummary>
-		<ParamList id="fileAnimation-sprites" ref="elSprites" class="inspector-list" flexible />
+		<ParamList id="fileAnimation-sprites"
+				v-tip="t('components.fileAnimation-sprites.tip')" ref="elSprites" class="inspector-list" flexible />
 	</DetailBox>
 </template>
 

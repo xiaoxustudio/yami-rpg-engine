@@ -8,21 +8,27 @@
 
 		<div class="grid-box">
 			<div class="text">Actor</div>
-			<CustomBox id="castSkill-actor" v-focus type="actor" v-model="form.actor" />
+			<CustomBox id="castSkill-actor"
+				v-tip="t('components.castSkill-actor.tip')" v-focus type="actor" v-model="form.actor" />
 			<div class="text">Mode</div>
 			<SelectBox id="castSkill-mode"
+				v-tip="t('components.castSkill-mode.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-mode')" v-model="form.mode" />
 			<div class="text">Shortcut Key</div>
 			<SelectBox id="castSkill-key"
+				v-tip="t('components.castSkill-key.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-key')" v-focus v-model="form.key" />
 			<div class="text">Shortcut Key</div>
 			<StringVar id="castSkill-keyVar"
+				v-tip="t('components.castSkill-keyVar.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-keyVar')" v-model="form.keyVar" />
 			<div class="text">Skill</div>
 			<CustomBox id="castSkill-skillId"
+				v-tip="t('components.castSkill-skillId.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />
 			<div class="text">Skill</div>
 			<CustomBox id="castSkill-skill"
+				v-tip="t('components.castSkill-skill.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-skill')" type="skill" v-model="form.skill" />
 			<div class="text">Wait</div>
 			<SelectBox id="castSkill-wait"

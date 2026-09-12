@@ -9,7 +9,8 @@
 
 		<div class="grid-box">
 			<div class="text">Element</div>
-			<CustomBox id="setDialogBox-element" v-focus type="element" v-model="form.element" />
+			<CustomBox id="setDialogBox-element"
+				v-tip="t('components.setDialogBox-element.tip')" v-focus type="element" v-model="form.element" />
 			<div class="text">Properties</div>
 			<ParamList id="setDialogBox-properties"
 				:ref="registryRef(fieldEls, 'setDialogBox-properties')" v-focus v-model="form.properties" />

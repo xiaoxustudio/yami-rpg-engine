@@ -10,9 +10,11 @@
 		<div class="grid-box">
 			<div class="text">Choices</div>
 			<ParamList id="showChoices-choices"
+				v-tip="t('components.showChoices-choices.tip')"
 				:ref="registryRef(fieldEls, 'showChoices-choices')" v-focus v-model="form.choices" />
 			<div class="text">Parameters</div>
-			<TextBox id="showChoices-parameters" v-model="form.parameters" />
+			<TextBox id="showChoices-parameters"
+				v-tip="t('components.showChoices-parameters.tip')" v-model="form.parameters" />
 		</div>
 	</WindowFrame>
 </template>
