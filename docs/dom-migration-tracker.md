@@ -14,7 +14,7 @@
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 72 | 50 | 50 | 52 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 23 | 21 | 21 | 78 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 229 | 19 | 17 | 17 | 54 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,13 +48,13 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 135 | 135 | 135 | 56 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 131 | 131 | 111 | 56 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**135**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**135**
+- 待迁移命中文件：**131**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**131**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
 - 正则命中但无豁免注释：**3**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
@@ -116,7 +116,6 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
-| packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -142,7 +141,7 @@
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 249 | 7 | 是 |
-| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 625 | 7 | 是 |
+| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 7 | 是 |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 7 | 是 |
 | packages/editor/src/composables/usePresetGetterWindow.ts | 156 | 7 | 是 |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 7 | 是 |
@@ -178,8 +177,6 @@
 | packages/editor/src/components/inspector/SceneLightPage.vue | 531 | 5 | 是 |
 | packages/editor/src/components/inspector/SceneParticlePage.vue | 320 | 5 | 是 |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 346 | 5 | 是 |
-| packages/editor/src/composables/useIfBranchSchema.ts | 131 | 5 | 是 |
-| packages/editor/src/composables/useIfConditionSchema.ts | 975 | 5 | 是 |
 | packages/editor/src/composables/usePresetElementWindow.ts | 241 | 5 | 是 |
 | packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 5 | 是 |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
@@ -229,7 +226,6 @@
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
-| packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 3 | 是 |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/inspector/file-ui-page.ts | 120 | 3 | 是 |
 | packages/editor/src/localize/dom-localizer.ts | 92 | 3 | 是 |
@@ -262,7 +258,7 @@
 | packages/editor/src/components/tools/ObjectGetter.vue | 109 | 2 | 是 |
 | packages/editor/src/components/tools/Reference.vue | 86 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
-| packages/editor/src/components/tools/SetNumberOperand.vue | 852 | 2 | 是 |
+| packages/editor/src/components/tools/SetNumberOperand.vue | 872 | 2 | 是 |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 2 | 是 |
 | packages/editor/src/composables/useTextCaptureWindow.ts | 152 | 2 | 是 |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
@@ -420,7 +416,7 @@
 | packages/editor/src/components/commands/ChangeActorMotion.vue | 71 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorPortrait.vue | 100 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorSkill.vue | 96 | 0 | - |
-| packages/editor/src/components/commands/ChangeActorSprite.vue | 83 | 0 | - |
+| packages/editor/src/components/commands/ChangeActorSprite.vue | 82 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorState.vue | 98 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorTeam.vue | 70 | 0 | - |
 | packages/editor/src/components/commands/ChangePassableTerrain.vue | 72 | 0 | - |
@@ -476,7 +472,7 @@
 | packages/editor/src/components/commands/PreventSceneInput.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/RegisterEvent.vue | 126 | 0 | - |
 | packages/editor/src/components/commands/RelaunchApp.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/RemoveAnimationComponent.vue | 80 | 0 | - |
+| packages/editor/src/components/commands/RemoveAnimationComponent.vue | 79 | 0 | - |
 | packages/editor/src/components/commands/RemoveTarget.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/RenderOutline.vue | 91 | 0 | - |
 | packages/editor/src/components/commands/RequestURL.vue | 99 | 0 | - |
@@ -504,7 +500,7 @@
 | packages/editor/src/components/commands/SetImage.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/SetInventory.vue | 172 | 0 | - |
 | packages/editor/src/components/commands/SetItem.vue | 72 | 0 | - |
-| packages/editor/src/components/commands/SetLanguage.vue | 57 | 0 | - |
+| packages/editor/src/components/commands/SetLanguage.vue | 56 | 0 | - |
 | packages/editor/src/components/commands/SetList.vue | 269 | 0 | - |
 | packages/editor/src/components/commands/SetLoop.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/SetMovementSpeed.vue | 108 | 0 | - |
@@ -560,7 +556,7 @@
 | packages/editor/src/components/commands/WaitForVideo.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/WebSocketClose.vue | 66 | 0 | - |
 | packages/editor/src/components/commands/WebSocketConnect.vue | 90 | 0 | - |
-| packages/editor/src/components/commands/WebSocketSend.vue | 62 | 0 | - |
+| packages/editor/src/components/commands/WebSocketSend.vue | 61 | 0 | - |
 | packages/editor/src/components/common/CommandList.vue | 109 | 0 | - |
 | packages/editor/src/components/common/CommonList.vue | 137 | 0 | - |
 | packages/editor/src/components/common/DetailSummary.vue | 53 | 0 | - |
@@ -634,8 +630,8 @@
 | packages/editor/src/components/tools/FileEventParameter.vue | 70 | 0 | - |
 | packages/editor/src/components/tools/Font.vue | 47 | 0 | - |
 | packages/editor/src/components/tools/FontSize.vue | 45 | 0 | - |
-| packages/editor/src/components/tools/IfBranch.vue | 80 | 0 | - |
-| packages/editor/src/components/tools/IfCondition.vue | 859 | 0 | - |
+| packages/editor/src/components/tools/IfBranch.vue | 82 | 0 | - |
+| packages/editor/src/components/tools/IfCondition.vue | 879 | 0 | - |
 | packages/editor/src/components/tools/ImageClip.vue | 129 | 0 | - |
 | packages/editor/src/components/tools/ImportLanguage.vue | 56 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 77 | 0 | - |
@@ -678,7 +674,7 @@
 | packages/editor/src/components/tools/SetWindowProperty.vue | 137 | 0 | - |
 | packages/editor/src/components/tools/SkillGetter.vue | 101 | 0 | - |
 | packages/editor/src/components/tools/StateGetter.vue | 96 | 0 | - |
-| packages/editor/src/components/tools/SwitchBranch.vue | 70 | 0 | - |
+| packages/editor/src/components/tools/SwitchBranch.vue | 71 | 0 | - |
 | packages/editor/src/components/tools/SwitchCondition.vue | 190 | 0 | - |
 | packages/editor/src/components/tools/TextEffect.vue | 91 | 0 | - |
 | packages/editor/src/components/tools/TextPosition.vue | 69 | 0 | - |
@@ -860,9 +856,12 @@
 | packages/editor/src/composables/useFileTriggerPage.ts | 116 | 0 | - |
 | packages/editor/src/composables/useFileUIPage.ts | 42 | 0 | - |
 | packages/editor/src/composables/useFileVideoPage.ts | 41 | 0 | - |
+| packages/editor/src/composables/useIfBranchSchema.ts | 131 | 0 | - |
+| packages/editor/src/composables/useIfConditionSchema.ts | 973 | 0 | - |
 | packages/editor/src/composables/useImageClipWindow.ts | 40 | 0 | - |
 | packages/editor/src/composables/useItemGetterWindow.ts | 114 | 0 | - |
 | packages/editor/src/composables/useMenuService.ts | 2 | 0 | - |
+| packages/editor/src/composables/useNumberOperandSchema.ts | 884 | 0 | - |
 | packages/editor/src/composables/useParamHistory.ts | 141 | 0 | - |
 | packages/editor/src/composables/useParticleLayerPage.ts | 275 | 0 | - |
 | packages/editor/src/composables/usePositionGetterWindow.ts | 141 | 0 | - |
@@ -881,6 +880,7 @@
 | packages/editor/src/composables/useSimulateKeyCommandSchema.ts | 36 | 0 | - |
 | packages/editor/src/composables/useSkillGetterWindow.ts | 114 | 0 | - |
 | packages/editor/src/composables/useStateGetterWindow.ts | 97 | 0 | - |
+| packages/editor/src/composables/useSwitchBranchSchema.ts | 117 | 0 | - |
 | packages/editor/src/composables/useSwitchConditionSchema.ts | 301 | 0 | - |
 | packages/editor/src/composables/useTilemapGetterWindow.ts | 86 | 0 | - |
 | packages/editor/src/composables/useToastService.ts | 21 | 0 | - |
