@@ -1,6 +1,7 @@
 <template>
 	<!-- 队伍窗口 -->
-	<WindowFrame id="team">
+	<WindowFrame id="team"
+				:ref="registryRef(composableEls, 'team')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.team.title') }}
@@ -10,6 +11,7 @@
 		<div class="field-set input pad" id="team-list-fieldset">
 			<TreeList
 				id="team-list"
+				:ref="registryRef(composableEls, 'team-list')"
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
 				@select="onListSelect"
@@ -22,6 +24,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Team } from '@app/data/team-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -82,6 +86,11 @@ const onListPopup = (event: Event & { value?: unknown }) => {
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Team?.listChange?.(event);
+};
+
+// 确认按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到）→ 由 SFC 的 @confirm 驱动
+const onConfirm = () => {
+	Team?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {});

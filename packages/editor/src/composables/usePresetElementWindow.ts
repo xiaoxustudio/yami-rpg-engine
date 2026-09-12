@@ -1,5 +1,5 @@
 import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
-/* oxlint-disable eslint/no-restricted-properties */
+import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
@@ -65,16 +65,16 @@ let nodes: PresetElementNode[] | null = null;
 let initializedElement: PresetElementList | null = null;
 
 function initialize(): void {
-	const current = document.getElementById('presetElement-list') as PresetElementList | null;
+	const current = composableEls.get('presetElement-list') as PresetElementList | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	ui = document.getElementById('presetElement-uiId')!;
+	ui = composableEls.get('presetElement-uiId') as HTMLElement;
 	list = current;
-	searcher = document.getElementById('presetElement-searcher')!;
+	searcher = composableEls.get('presetElement-searcher') as HTMLElement;
 	list.bind(() => nodes);
 	on(searcher, 'keydown', searcherKeydown);
-	document.getElementById('presetElement')!.addEventListener('closed', windowClosed);
+	(composableEls.get('presetElement') as HTMLElement).addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {

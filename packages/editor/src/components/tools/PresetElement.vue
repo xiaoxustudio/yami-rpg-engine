@@ -1,19 +1,23 @@
 <template>
-	<WindowFrame id="presetElement" mode="center" @confirm="onConfirm">
+	<WindowFrame id="presetElement"
+				:ref="registryRef(composableEls, 'presetElement')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.presetElement.title') }}
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CustomBox id="presetElement-uiId" type="file" filter="ui" @write="onUiIdWrite" />
+		<CustomBox id="presetElement-uiId"
+				:ref="registryRef(composableEls, 'presetElement-uiId')" type="file" filter="ui" @write="onUiIdWrite" />
 		<TreeList
 			id="presetElement-list"
+				:ref="registryRef(composableEls, 'presetElement-list')"
 			:node-icon-renderer="nodeIconRenderer"
 			@open="onListOpen"
 		/>
 		<TextBox
 			id="presetElement-searcher"
+				:ref="registryRef(composableEls, 'presetElement-searcher')"
 			name="search"
 			@input="onSearcherInput"
 			@compositionend="onSearcherInput"
@@ -23,6 +27,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import { Data } from '@app/data/data-object.ts';

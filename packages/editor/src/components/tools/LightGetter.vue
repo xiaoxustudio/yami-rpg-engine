@@ -9,12 +9,15 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.lightGetter-type.label') }}</div>
 			<SelectBox id="lightGetter-type"
+				:ref="registryRef(composableEls, 'lightGetter-type')"
 				v-tip="t('components.lightGetter-type.tip')" />
 			<div class="text">{{ t('components.lightGetter-presetId.label') }}</div>
 			<CustomBox id="lightGetter-presetId"
+				:ref="registryRef(composableEls, 'lightGetter-presetId')"
 				v-tip="t('components.lightGetter-presetId.tip')" type="preset-object" filter="light" />
 			<div class="text">{{ t('components.lightGetter-variable.label') }}</div>
 			<CustomBox id="lightGetter-variable"
+				:ref="registryRef(composableEls, 'lightGetter-variable')"
 				v-tip="t('components.lightGetter-variable.tip')" type="variable" filter="object" />
 		</div>
 	</WindowFrame>
@@ -23,6 +26,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { LightGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 import {
@@ -80,6 +85,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	registerElement(composableEls, 'lightGetter', frame.value);
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });

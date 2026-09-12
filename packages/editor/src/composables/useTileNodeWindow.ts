@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
+import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -68,12 +68,12 @@ interface TileNodeWindow {
 }
 
 const getCanvas = (): HTMLCanvasElement =>
-	document.getElementById('autoTile-selectNode-canvas') as HTMLCanvasElement;
+	composableEls.get('autoTile-selectNode-canvas') as HTMLCanvasElement;
 
-const getScreen = (): HTMLElement => document.getElementById('autoTile-selectNode-screen')!;
+const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as HTMLElement;
 
 const getMarquee = (): TileNodeMarquee =>
-	document.getElementById('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
+	composableEls.get('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
 
 let context: CanvasRenderingContext2D | null = null;
 let dragging: TileNodeDragging | null = null;
@@ -108,7 +108,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = document.getElementById('autoTile-selectNode')!;
+	const windowFrame = composableEls.get('autoTile-selectNode') as HTMLElement;
 	const screen = getScreen();
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;

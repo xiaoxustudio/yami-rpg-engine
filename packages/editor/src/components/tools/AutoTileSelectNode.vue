@@ -6,15 +6,20 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
-		<div class="box" id="autoTile-selectNode-screen">
-			<MarqueeArea id="autoTile-selectNode-marquee" />
+		<canvas id="autoTile-selectNode-canvas"
+				:ref="registryRef(composableEls, 'autoTile-selectNode-canvas')" width="0" height="0" />
+		<div class="box" id="autoTile-selectNode-screen"
+				:ref="registryRef(composableEls, 'autoTile-selectNode-screen')">
+			<MarqueeArea id="autoTile-selectNode-marquee"
+				:ref="registryRef(composableEls, 'autoTile-selectNode-marquee')" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -29,6 +34,7 @@ const tileNode = useTileNodeWindow();
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 onMounted(() => {
+	registerElement(composableEls, 'autoTile-selectNode', frame.value);
 	const el = frame.value?.root;
 	if (el) {
 		on(el, 'closed', () => tileNode.windowClosed());

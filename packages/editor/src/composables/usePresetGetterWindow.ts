@@ -1,6 +1,6 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { getFocus } from '@app/utils/element-utils';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 
@@ -48,15 +48,15 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 	let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 	const getFrame = (): PresetGetterFrame | null =>
-		document.getElementById(domKey) as PresetGetterFrame | null;
+		composableEls.get(domKey) as PresetGetterFrame | null;
 
 	const initialize = (): void => {
-		const typeEl = document.getElementById(`${domKey}-type`);
+		const typeEl = composableEls.get(`${domKey}-type`);
 		if (!typeEl) return;
 		typeEl.loadItems(items);
 		typeEl.enableHiddenMode().relate([
-			{ case: 'by-id', targets: [document.getElementById(`${domKey}-presetId`)] },
-			{ case: 'variable', targets: [document.getElementById(`${domKey}-variable`)] }
+			{ case: 'by-id', targets: [composableEls.get(`${domKey}-presetId`)] },
+			{ case: 'variable', targets: [composableEls.get(`${domKey}-variable`)] }
 		]);
 	};
 
@@ -80,7 +80,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 		}
 		Object.assign(form, { type: data.type, presetId, variable });
 		getFrame()?.setForm?.(form);
-		getFocus(document.getElementById(`${domKey}-type`));
+		getFocus(composableEls.get(`${domKey}-type`));
 	};
 
 	const confirm = (): void => {
@@ -93,7 +93,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 				break;
 			case 'by-id': {
 				if (data.presetId === '') {
-					getFocus(document.getElementById(`${domKey}-presetId`));
+					getFocus(composableEls.get(`${domKey}-presetId`));
 					return;
 				}
 				getter = { type: data.type, presetId: data.presetId };
@@ -101,7 +101,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 			}
 			case 'variable': {
 				if ((data.variable as { key: string }).key === '') {
-					getFocus(document.getElementById(`${domKey}-variable`));
+					getFocus(composableEls.get(`${domKey}-variable`));
 					return;
 				}
 				getter = { type: data.type, variable: data.variable };

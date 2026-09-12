@@ -1,19 +1,23 @@
 <template>
-	<WindowFrame id="presetObject" mode="center" @confirm="onConfirm">
+	<WindowFrame id="presetObject"
+				:ref="registryRef(composableEls, 'presetObject')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.presetObject.title') }}
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CustomBox id="presetObject-sceneId" type="file" filter="scene" @write="onSceneIdWrite" />
+		<CustomBox id="presetObject-sceneId"
+				:ref="registryRef(composableEls, 'presetObject-sceneId')" type="file" filter="scene" @write="onSceneIdWrite" />
 		<TreeList
 			id="presetObject-list"
+				:ref="registryRef(composableEls, 'presetObject-list')"
 			:node-icon-renderer="nodeIconRenderer"
 			@open="onListOpen"
 		/>
 		<TextBox
 			id="presetObject-searcher"
+				:ref="registryRef(composableEls, 'presetObject-searcher')"
 			name="search"
 			@input="onSearcherInput"
 			@compositionend="onSearcherInput"
@@ -23,6 +27,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import { Data } from '@app/data/data-object.ts';

@@ -1,6 +1,6 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig, setTreeItemText } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/file/file-system-core.ts';
@@ -90,7 +90,7 @@ function mountListMethods(listElement: TeamListElement): void {
 }
 
 function initialize(): void {
-	const current = document.getElementById('team-list') as TeamListElement | null;
+	const current = composableEls.get('team-list') as TeamListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
@@ -107,11 +107,11 @@ function initialize(): void {
 	// oxlint-disable-next-line unbound-method
 	getListConfig(listElement).updaters.push(listElement.updateTextNode);
 
-	on(document.getElementById('team'), 'close', windowClose);
-	on(document.getElementById('team'), 'closed', windowClosed);
+	on(composableEls.get('team'), 'close', windowClose);
+	on(composableEls.get('team'), 'closed', windowClosed);
 	on(listElement, 'keydown', listKeydown);
 	on(listElement, 'pointerdown', listPointerdown);
-	on(document.getElementById('team-confirm'), 'click', confirm);
+	// `team-confirm` 由 WindowFrame → YMFormButtons 生成（模板与注册表都取不到）→ 由 Team.vue 的 @confirm 驱动
 }
 
 function open(_data?: unknown): void {
