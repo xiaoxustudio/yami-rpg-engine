@@ -1,4 +1,5 @@
 import { Animation } from './animation-window.ts';
+import { animationEls } from '@app/animation/element-registry';
 import type {
 	AnimationMotion,
 	AnimationHistoryObject,
@@ -16,7 +17,6 @@ import type {
 } from './animation-window.ts';
 import { getListConfig } from '@ui-kit';
 import { addSetScrollMethod, hide, on, write } from '@app/utils/element-utils.ts';
-import { $ } from '@app/utils/dom';
 import { Timer } from '@app/utils/timer';
 import { Curve } from './curve-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -28,39 +28,39 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
 
 Animation.initialize = function (this: typeof Animation) {
-	this.page = $('#animation');
-	this.head = $('#animation-head');
-	this.screen = $('#animation-screen');
+	this.page = animationEls.get('animation') as HTMLElement;
+	this.head = animationEls.get('animation-head') as HTMLElement;
+	this.screen = animationEls.get('animation-screen') as HTMLElement;
 	const oldMarquee = this.marquee;
-	this.marquee = $('#animation-marquee');
+	this.marquee = animationEls.get('animation-marquee') as HTMLElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.body = $('#animation-body');
-	this.dirList = $('#animation-dirList');
-	this.searcher = $('#animation-searcher');
+	this.body = animationEls.get('animation-body') as HTMLElement;
+	this.dirList = animationEls.get('animation-dirList') as HTMLElement;
+	this.searcher = animationEls.get('animation-searcher') as HTMLElement;
 	const oldList = this.list;
-	this.list = $('#animation-list');
+	this.list = animationEls.get('animation-list') as HTMLElement;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.list.page = $('#animation-motion');
-	this.list.head = $('#animation-list-head');
+	this.list.page = animationEls.get('animation-motion') as HTMLElement;
+	this.list.head = animationEls.get('animation-list-head') as HTMLElement;
 	// 模块求值先于 Vue 挂载，$() 会拿到占位对象；重查询真实元素时回迁模块级挂载的属性/方法
 	const oldLayerList = this.layerList;
-	this.layerList = $('#animation-layer-list');
+	this.layerList = animationEls.get('animation-layer-list') as HTMLElement;
 	if (oldLayerList && this.layerList && oldLayerList !== this.layerList) {
 		Object.assign(this.layerList, oldLayerList);
 	}
 	const oldTimeline = this.timeline;
-	this.timeline = $('#animation-timeline');
+	this.timeline = animationEls.get('animation-timeline') as HTMLElement;
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
-	this.timeline.head = $('#animation-timeline-head');
-	this.toolbar = $('#animation-timeline-toolbar');
+	this.timeline.head = animationEls.get('animation-timeline-head') as HTMLElement;
+	this.toolbar = animationEls.get('animation-timeline-toolbar') as HTMLElement;
 	const oldOuterTimelineList = this.outerTimelineList;
-	this.outerTimelineList = $('#animation-timeline-list-outer');
+	this.outerTimelineList = animationEls.get('animation-timeline-list-outer') as HTMLElement;
 	if (
 		oldOuterTimelineList &&
 		this.outerTimelineList &&
@@ -69,7 +69,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.outerTimelineList, oldOuterTimelineList);
 	}
 	const oldInnerTimelineList = this.innerTimelineList;
-	this.innerTimelineList = $('#animation-timeline-list-inner');
+	this.innerTimelineList = animationEls.get('animation-timeline-list-inner') as HTMLElement;
 	if (
 		oldInnerTimelineList &&
 		this.innerTimelineList &&
@@ -78,21 +78,25 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.innerTimelineList, oldInnerTimelineList);
 	}
 	const oldTimelineCursor = this.timelineCursor;
-	this.timelineCursor = $('#animation-timeline-cursor');
+	this.timelineCursor = animationEls.get('animation-timeline-cursor') as HTMLElement;
 	if (oldTimelineCursor && this.timelineCursor && oldTimelineCursor !== this.timelineCursor) {
 		Object.assign(this.timelineCursor, oldTimelineCursor);
 	}
 	const oldTimelineMarquee = this.timelineMarquee;
-	this.timelineMarquee = $('#animation-timeline-marquee');
+	this.timelineMarquee = animationEls.get('animation-timeline-marquee') as HTMLElement;
 	if (oldTimelineMarquee && this.timelineMarquee && oldTimelineMarquee !== this.timelineMarquee) {
 		Object.assign(this.timelineMarquee, oldTimelineMarquee);
 	}
-	this.timelineMarqueeShift = $('#animation-timeline-marquee-shift');
-	this.outerRuler = $('#animation-timeline-ruler-outer');
-	this.innerRuler = $('#animation-timeline-ruler-inner');
-	this.outerPointerArea = $('#animation-timeline-pointer-area-outer');
-	this.innerPointerArea = $('#animation-timeline-pointer-area-inner');
-	this.pointer = $('#animation-timeline-pointer');
+	this.timelineMarqueeShift = animationEls.get('animation-timeline-marquee-shift') as HTMLElement;
+	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as HTMLElement;
+	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as HTMLElement;
+	this.outerPointerArea = animationEls.get(
+		'animation-timeline-pointer-area-outer'
+	) as HTMLElement;
+	this.innerPointerArea = animationEls.get(
+		'animation-timeline-pointer-area-inner'
+	) as HTMLElement;
+	this.pointer = animationEls.get('animation-timeline-pointer') as HTMLElement;
 	if (this.screen) addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);

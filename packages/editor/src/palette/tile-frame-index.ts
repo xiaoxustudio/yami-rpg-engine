@@ -1,6 +1,6 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
+import { paletteEls } from '@app/palette/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { $ } from '@app/utils/dom';
 import { on, rect, css } from '@app/utils/element-utils.ts';
 
 import { AutoTile } from './auto-tile.ts';
@@ -10,25 +10,25 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 // oxlint-disable-next-line no-explicit-any
 export const TileFrame: Record<string, any> = {
 	get window() {
-		return $('#autoTile-frameIndex');
+		return paletteEls.get('autoTile-frameIndex') as HTMLElement;
 	},
 	get screen() {
-		return $('#autoTile-frameIndex-screen');
+		return paletteEls.get('autoTile-frameIndex-screen') as HTMLElement;
 	},
 	get clip() {
-		return $('#autoTile-frameIndex-image-clip');
+		return paletteEls.get('autoTile-frameIndex-image-clip') as HTMLElement;
 	},
 	get mask() {
-		return $('#autoTile-frameIndex-mask');
+		return paletteEls.get('autoTile-frameIndex-mask') as HTMLElement;
 	},
 	get image() {
-		return $('#autoTile-frameIndex-image');
+		return paletteEls.get('autoTile-frameIndex-image') as HTMLElement;
 	},
 	get marquee() {
-		return $('#autoTile-frameIndex-marquee');
+		return paletteEls.get('autoTile-frameIndex-marquee') as HTMLElement;
 	},
 	get info() {
-		return $('#autoTile-frameIndex-info');
+		return paletteEls.get('autoTile-frameIndex-info') as HTMLElement;
 	},
 	dragging: null,
 	hframes: null,

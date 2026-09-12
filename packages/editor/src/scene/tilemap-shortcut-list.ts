@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { sceneEls } from '@app/scene/element-registry';
 import { addClass, hide, removeClass, setTooltip, show } from '@app/utils/element-utils';
 import { Scene } from './scene-window.ts';
 
@@ -64,22 +64,22 @@ export class TilemapShortcuts {
 	static initialize(): void {
 		this.elements = {
 			get 1() {
-				return $('#scene-layer-tilemap-1');
+				return sceneEls.get('scene-layer-tilemap-1') as HTMLElement;
 			},
 			get 2() {
-				return $('#scene-layer-tilemap-2');
+				return sceneEls.get('scene-layer-tilemap-2') as HTMLElement;
 			},
 			get 3() {
-				return $('#scene-layer-tilemap-3');
+				return sceneEls.get('scene-layer-tilemap-3') as HTMLElement;
 			},
 			get 4() {
-				return $('#scene-layer-tilemap-4');
+				return sceneEls.get('scene-layer-tilemap-4') as HTMLElement;
 			},
 			get 5() {
-				return $('#scene-layer-tilemap-5');
+				return sceneEls.get('scene-layer-tilemap-5') as HTMLElement;
 			},
 			get 6() {
-				return $('#scene-layer-tilemap-6');
+				return sceneEls.get('scene-layer-tilemap-6') as HTMLElement;
 			}
 		};
 		const { elements } = this;

@@ -1,5 +1,7 @@
 <template>
-	<WindowFrame id="autoTile-generateFrames">
+	<WindowFrame id="autoTile-generateFrames"
+				:ref="registryRef(paletteEls, 'autoTile-generateFrames')"
+				@confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.autoTile-generateFrames.title') }}
@@ -30,7 +32,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { paletteEls } from '@app/palette/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { FrameGenerator } from '@app/palette/tile-frame-generator.ts';
+
+// P5b 批次 4：autoTile-generateFrames-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	FrameGenerator?.confirm?.(new Event('click'));
+};
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

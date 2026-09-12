@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="object-folder">
+	<WindowFrame id="object-folder" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.object-folder.title') }}
@@ -28,6 +28,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { ObjectFolder } from '@app/scene/default-object-folder.ts';
+
+// P5b 批次 4：object-folder-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	ObjectFolder?.confirm?.(new Event('click'));
+};
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';

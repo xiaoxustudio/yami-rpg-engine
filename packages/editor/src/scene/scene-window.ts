@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { sceneEls } from '@app/scene/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
@@ -148,15 +148,17 @@ export interface SceneContextShape {
 type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
 export const Scene: SceneShape = {
-	page: $('#scene'),
-	head: $('#scene-head'),
-	body: hide($('#scene-body')),
-	info: $('#scene-info'),
-	screen: $('#scene-screen') as HTMLElement & { updateScrollbars: () => void },
+	page: sceneEls.get('scene') as HTMLElement,
+	head: sceneEls.get('scene-head') as HTMLElement,
+	body: hide(sceneEls.get('scene-body') as HTMLElement),
+	info: sceneEls.get('scene-info') as HTMLElement,
+	screen: sceneEls.get('scene-screen') as HTMLElement & {
+		updateScrollbars: () => void;
+	},
 	// oxlint-disable-next-line no-explicit-any
-	marquee: $('#scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
-	searcher: $('#scene-searcher'),
-	list: ($('#scene-list') as unknown as never) || ({} as never),
+	marquee: sceneEls.get('scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
+	searcher: sceneEls.get('scene-searcher') as HTMLElement,
+	list: (sceneEls.get('scene-list') as unknown as never) || ({} as never),
 	dragging: null,
 	brush: null,
 	symbol: null,
@@ -436,8 +438,8 @@ Scene.marquee.selectInCopyMode = null;
 Scene.marquee.selectInObjectMode = null;
 Scene.marquee.getTiles = null;
 
-Scene.list.page = $('#scene-object');
-Scene.list.head = $('#scene-list-head');
+Scene.list.page = sceneEls.get('scene-object') as HTMLElement;
+Scene.list.head = sceneEls.get('scene-list-head') as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Scene.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -467,26 +469,28 @@ getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
-	this.page = $('#scene');
-	this.head = $('#scene-head');
-	this.body = hide($('#scene-body'));
-	this.info = $('#scene-info');
-	this.screen = $('#scene-screen') as HTMLElement & { updateScrollbars: () => void };
+	this.page = sceneEls.get('scene') as HTMLElement;
+	this.head = sceneEls.get('scene-head') as HTMLElement;
+	this.body = hide(sceneEls.get('scene-body') as HTMLElement);
+	this.info = sceneEls.get('scene-info') as HTMLElement;
+	this.screen = sceneEls.get('scene-screen') as HTMLElement & {
+		updateScrollbars: () => void;
+	};
 	const oldMarquee = this.marquee;
-	this.marquee = $('#scene-marquee');
+	this.marquee = sceneEls.get('scene-marquee') as HTMLElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = $('#scene-searcher');
+	this.searcher = sceneEls.get('scene-searcher') as HTMLElement;
 	const oldList = this.list;
-	this.list = $('#scene-list') as unknown as HTMLElement &
+	this.list = sceneEls.get('scene-list') as HTMLElement as unknown as HTMLElement &
 		// oxlint-disable-next-line no-explicit-any
 		SceneListExtensions & { [k: string]: any };
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.list.page = $('#scene-object');
-	this.list.head = $('#scene-list-head');
+	this.list.page = sceneEls.get('scene-object') as HTMLElement;
+	this.list.head = sceneEls.get('scene-list-head') as HTMLElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	this.translationTimer = new Timer({

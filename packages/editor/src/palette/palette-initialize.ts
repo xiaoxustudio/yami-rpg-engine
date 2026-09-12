@@ -1,6 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { Palette } from './palette.ts';
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { paletteEls } from '@app/palette/element-registry';
 import { addScrollbars, hide, on } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { h, render } from 'vue';
@@ -11,20 +12,20 @@ import { TileFrame } from './tile-frame-index.ts';
 import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
 
 Palette.initialize = function (this: typeof Palette) {
-	if (!$('#palette-frame')) return;
-	this.page = $('#fileTileset');
-	this.head = $('#palette-head');
-	this.body = $('#palette-body');
-	this.window = hide($('#palette-frame'));
-	this.canvas = $('#palette-canvas');
-	this.screen = $('#palette-screen');
-	this.marquee = $('#palette-marquee');
-	this.itemScroll = $('#palette-scroll');
-	this.itemPriority = $('#palette-priority');
-	this.itemTag = $('#palette-tag');
-	this.itemTerrain = $('#palette-terrain');
-	this.itemEdit = $('#palette-edit');
-	this.zoomSlider = $('#palette-zoom');
+	if (!paletteEls.get('palette-frame')) return;
+	this.page = inspectorEls.get('fileTileset') as HTMLElement;
+	this.head = paletteEls.get('palette-head') as HTMLElement;
+	this.body = paletteEls.get('palette-body') as HTMLElement;
+	this.window = hide(paletteEls.get('palette-frame') as HTMLElement);
+	this.canvas = paletteEls.get('palette-canvas') as HTMLElement;
+	this.screen = paletteEls.get('palette-screen') as HTMLElement;
+	this.marquee = paletteEls.get('palette-marquee') as HTMLElement;
+	this.itemScroll = paletteEls.get('palette-scroll') as HTMLElement;
+	this.itemPriority = paletteEls.get('palette-priority') as HTMLElement;
+	this.itemTag = paletteEls.get('palette-tag') as HTMLElement;
+	this.itemTerrain = paletteEls.get('palette-terrain') as HTMLElement;
+	this.itemEdit = paletteEls.get('palette-edit') as HTMLElement;
+	this.zoomSlider = paletteEls.get('palette-zoom') as HTMLElement;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true });
@@ -133,7 +134,7 @@ Palette.initialize = function (this: typeof Palette) {
 
 	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
-	on($('#fileTileset-general-detail'), 'toggle', this.windowResize);
+	on(paletteEls.get('fileTileset-general-detail') as HTMLElement, 'toggle', this.windowResize);
 	// keydown/wheel 经 Vue 模板转发（FileTilesetPage @keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);

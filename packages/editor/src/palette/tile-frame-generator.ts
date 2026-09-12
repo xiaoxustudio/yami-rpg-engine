@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { paletteEls } from '@app/palette/element-registry';
 import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
 import { on } from '@app/utils/element-utils.ts';
@@ -27,10 +27,9 @@ FrameGenerator.initialize = function (this: typeof FrameGenerator) {
 	form.strideY = 0;
 	form.count = 1;
 
-	const frameWindow = $('#autoTile-generateFrames');
+	const frameWindow = paletteEls.get('autoTile-generateFrames') as HTMLElement;
 	if (frameWindow) on(frameWindow, 'closed', this.windowClosed);
-	const confirmEl = $('#autoTile-generateFrames-confirm');
-	if (confirmEl) on(confirmEl, 'click', this.confirm);
+	// confirm 由 AutoTileGenerateFrames.vue 的 @confirm 驱动（按钮由 WindowFrame 生成）
 };
 
 FrameGenerator.open = function (

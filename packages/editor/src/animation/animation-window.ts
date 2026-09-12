@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import {
@@ -180,27 +180,42 @@ export interface AnimationShape {
 }
 
 export const Animation: AnimationShape = {
-	page: $('#animation'),
-	head: $('#animation-head'),
-	body: $('#animation-body'),
-	screen: $('#animation-screen'),
-	marquee: $('#animation-marquee') || ({} as unknown as AnimationElement),
-	dirList: $('#animation-dirList'),
-	searcher: $('#animation-searcher'),
-	list: $('#animation-list') || ({} as unknown as AnimationElement),
-	layerList: $('#animation-layer-list') || ({} as unknown as AnimationElement),
-	timeline: $('#animation-timeline') || ({} as unknown as AnimationElement),
-	toolbar: $('#animation-timeline-toolbar'),
-	outerRuler: $('#animation-timeline-ruler-outer'),
-	innerRuler: $('#animation-timeline-ruler-inner'),
-	outerTimelineList: $('#animation-timeline-list-outer') || ({} as unknown as AnimationElement),
-	innerTimelineList: $('#animation-timeline-list-inner') || ({} as unknown as AnimationElement),
-	timelineCursor: $('#animation-timeline-cursor') || ({} as unknown as AnimationElement),
-	timelineMarquee: $('#animation-timeline-marquee') || ({} as unknown as AnimationElement),
-	timelineMarqueeShift: $('#animation-timeline-marquee-shift'),
-	outerPointerArea: $('#animation-timeline-pointer-area-outer'),
-	innerPointerArea: $('#animation-timeline-pointer-area-inner'),
-	pointer: $('#animation-timeline-pointer'),
+	page: animationEls.get('animation') as HTMLElement,
+	head: animationEls.get('animation-head') as HTMLElement,
+	body: animationEls.get('animation-body') as HTMLElement,
+	screen: animationEls.get('animation-screen') as HTMLElement,
+	marquee:
+		(animationEls.get('animation-marquee') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	dirList: animationEls.get('animation-dirList') as HTMLElement,
+	searcher: animationEls.get('animation-searcher') as HTMLElement,
+	list:
+		(animationEls.get('animation-list') as HTMLElement) || ({} as unknown as AnimationElement),
+	layerList:
+		(animationEls.get('animation-layer-list') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	timeline:
+		(animationEls.get('animation-timeline') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	toolbar: animationEls.get('animation-timeline-toolbar') as HTMLElement,
+	outerRuler: animationEls.get('animation-timeline-ruler-outer') as HTMLElement,
+	innerRuler: animationEls.get('animation-timeline-ruler-inner') as HTMLElement,
+	outerTimelineList:
+		(animationEls.get('animation-timeline-list-outer') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	innerTimelineList:
+		(animationEls.get('animation-timeline-list-inner') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	timelineCursor:
+		(animationEls.get('animation-timeline-cursor') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	timelineMarquee:
+		(animationEls.get('animation-timeline-marquee') as HTMLElement) ||
+		({} as unknown as AnimationElement),
+	timelineMarqueeShift: animationEls.get('animation-timeline-marquee-shift') as HTMLElement,
+	outerPointerArea: animationEls.get('animation-timeline-pointer-area-outer') as HTMLElement,
+	innerPointerArea: animationEls.get('animation-timeline-pointer-area-inner') as HTMLElement,
+	pointer: animationEls.get('animation-timeline-pointer') as HTMLElement,
 	dirTags: null,
 	dragging: null,
 	hover: null,
@@ -422,8 +437,8 @@ export const Animation: AnimationShape = {
 // oxlint-disable-next-line no-explicit-any
 Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
-Animation.list.page = $('#animation-motion');
-Animation.list.head = $('#animation-list-head');
+Animation.list.page = animationEls.get('animation-motion') as HTMLElement;
+Animation.list.head = animationEls.get('animation-list-head') as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -450,7 +465,7 @@ Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
-Animation.timeline.head = $('#animation-timeline-head');
+Animation.timeline.head = animationEls.get('animation-timeline-head') as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 

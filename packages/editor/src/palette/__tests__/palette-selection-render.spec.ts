@@ -1,6 +1,9 @@
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
 import { Palette } from '@app/palette/palette.ts';
 import '@app/palette/register.ts';
+import { paletteEls } from '@app/palette/element-registry.ts';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 
 type SelectionShape = HTMLElement & { x: number; y: number };
 type MarqueeShape = HTMLElement & {
@@ -18,16 +21,20 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 		const el = document.createElement('div');
 		el.id = id;
 		document.body.appendChild(el);
+		// P5b 批次 4：模块改从注册表取元素（不再查 DOM），测试需按新契约登记
+		registerElement(paletteEls, id, el);
 	};
 
 	beforeAll(() => {
 		append('palette-frame');
 		append('fileTileset');
+		registerElement(inspectorEls, 'fileTileset', document.getElementById('fileTileset'));
 		append('palette-head');
 		append('palette-body');
 		const canvas = document.createElement('canvas');
 		canvas.id = 'palette-canvas';
 		document.body.appendChild(canvas);
+		registerElement(paletteEls, 'palette-canvas', canvas);
 		append('palette-screen');
 		append('palette-marquee');
 		append('palette-scroll');

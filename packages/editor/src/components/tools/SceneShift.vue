@@ -18,6 +18,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
+import { sceneEls } from '@app/scene/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -67,6 +69,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	registerElement(sceneEls, 'scene-shift', frame.value);
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });

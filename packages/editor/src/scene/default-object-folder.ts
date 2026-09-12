@@ -1,7 +1,5 @@
-﻿import { $ } from '@app/utils/dom';
 import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
-import { on } from '@app/utils/element-utils.ts';
 import { Editor } from '@app/services/project/editor.ts';
 
 export interface ObjectFolderForm {
@@ -37,8 +35,7 @@ export const ObjectFolder: {
 };
 
 ObjectFolder.initialize = function (this: typeof ObjectFolder) {
-	const el = $('#object-folder-confirm');
-	if (el) on(el, 'click', this.confirm!);
+	// confirm 由 ObjectFolder.vue 的 @confirm 驱动（该按钮由 WindowFrame 生成，注册表取不到）
 };
 
 ObjectFolder.open = function (this: typeof ObjectFolder) {

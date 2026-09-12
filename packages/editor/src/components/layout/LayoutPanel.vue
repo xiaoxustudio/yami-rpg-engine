@@ -100,8 +100,10 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="scene" source="page">
-					<div class="page-frame" id="scene" value="scene">
-						<div class="box" id="scene-head" @pointerdown="onSceneHeadPointerdown">
+					<div class="page-frame" id="scene"
+				:ref="registryRef(sceneEls, 'scene')" value="scene">
+						<div class="box" id="scene-head"
+				:ref="registryRef(sceneEls, 'scene-head')" @pointerdown="onSceneHeadPointerdown">
 							<div
 								class="box"
 								id="scene-head-start"
@@ -110,16 +112,19 @@
 								<div
 									class="item toolbar-item"
 									id="scene-switch-grid"
+				:ref="registryRef(sceneEls, 'scene-switch-grid')"
 									value="grid"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="scene-switch-light"
+				:ref="registryRef(sceneEls, 'scene-switch-light')"
 									value="light"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="scene-switch-animation"
+				:ref="registryRef(sceneEls, 'scene-switch-animation')"
 									value="animation"
 								></div>
 								<div
@@ -134,6 +139,7 @@
 								<div
 									class="box"
 									id="scene-layer"
+				:ref="registryRef(sceneEls, 'scene-layer')"
 									@pointerdown="onSceneLayerPointerdown"
 								>
 									<div
@@ -145,36 +151,42 @@
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-1"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-1')"
 										value="1"
 										hotkey="1"
 									></div>
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-2"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-2')"
 										value="2"
 										hotkey="2"
 									></div>
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-3"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-3')"
 										value="3"
 										hotkey="3"
 									></div>
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-4"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-4')"
 										value="4"
 										hotkey="4"
 									></div>
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-5"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-5')"
 										value="5"
 										hotkey="5"
 									></div>
 									<div
 										class="item toolbar-item hidden"
 										id="scene-layer-tilemap-6"
+				:ref="registryRef(sceneEls, 'scene-layer-tilemap-6')"
 										value="6"
 										hotkey="6"
 									></div>
@@ -188,6 +200,7 @@
 								<div
 									class="box"
 									id="scene-brush"
+				:ref="registryRef(sceneEls, 'scene-brush')"
 									@pointerdown="onSceneBrushPointerdown"
 								>
 									<div
@@ -225,6 +238,7 @@
 							<div class="box" id="scene-head-end">
 								<SliderBox
 									id="scene-zoom"
+				:ref="registryRef(sceneEls, 'scene-zoom')"
 									name="zoom"
 									min="0"
 									max="4"
@@ -235,31 +249,39 @@
 								></SliderBox>
 							</div>
 						</div>
-						<div class="box" id="scene-body">
+						<div class="box" id="scene-body"
+				:ref="registryRef(sceneEls, 'scene-body')">
 							<div
 								class="box"
 								id="scene-screen"
+				:ref="registryRef(sceneEls, 'scene-screen')"
 								tabindex="-1"
 								@keydown="onSceneScreenKeydown"
 								@wheel="onSceneScreenWheel"
 							>
 								<MarqueeArea
 									id="scene-marquee"
+				:ref="registryRef(sceneEls, 'scene-marquee')"
 									@pointerdown="onSceneMarqueePointerdown"
 									@doubleclick="onSceneMarqueeDoubleclick"
 								></MarqueeArea>
 							</div>
-							<div class="text" id="scene-info"></div>
+							<div class="text" id="scene-info"
+				:ref="registryRef(sceneEls, 'scene-info')"></div>
 						</div>
 					</div>
 					</PaletteNode>
 					<PaletteNode value="scene-object" source="page">
-					<div class="page-frame" id="scene-object" value="scene-object">
-						<div class="box" id="scene-list-head">
-							<TextBox id="scene-searcher" name="search"></TextBox>
+					<div class="page-frame" id="scene-object"
+				:ref="registryRef(sceneEls, 'scene-object')" value="scene-object">
+						<div class="box" id="scene-list-head"
+				:ref="registryRef(sceneEls, 'scene-list-head')">
+							<TextBox id="scene-searcher"
+				:ref="registryRef(sceneEls, 'scene-searcher')" name="search"></TextBox>
 						</div>
 						<TreeList
 							id="scene-list"
+				:ref="registryRef(sceneEls, 'scene-list')"
 							padded
 							:node-extras="sceneNodeExtras"
 							:node-icon-renderer="sceneNodeIcon"
@@ -396,10 +418,12 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="animation" source="page">
-					<div class="page-frame" id="animation" value="animation">
+					<div class="page-frame" id="animation"
+				:ref="registryRef(animationEls, 'animation')" value="animation">
 						<div
 							class="box"
 							id="animation-head"
+				:ref="registryRef(animationEls, 'animation-head')"
 							@pointerdown="onAnimationHeadPointerdown"
 						>
 							<div
@@ -458,16 +482,19 @@
 								></SliderBox>
 							</div>
 						</div>
-						<div class="box" id="animation-body">
+						<div class="box" id="animation-body"
+				:ref="registryRef(animationEls, 'animation-body')">
 							<div
 								class="box"
 								id="animation-screen"
+				:ref="registryRef(animationEls, 'animation-screen')"
 								tabindex="-1"
 								@keydown="onAnimationScreenKeydown"
 								@wheel="onAnimationScreenWheel"
 							>
 								<MarqueeArea
 									id="animation-marquee"
+				:ref="registryRef(animationEls, 'animation-marquee')"
 									@pointerdown="onAnimationMarqueePointerdown"
 									@doubleclick="onAnimationMarqueeDoubleclick"
 								></MarqueeArea>
@@ -492,12 +519,16 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="animation-motion" source="page">
-					<div class="page-frame" id="animation-motion" value="animation-motion">
-						<div class="box" id="animation-list-head">
-							<TextBox id="animation-searcher" name="search"></TextBox>
+					<div class="page-frame" id="animation-motion"
+				:ref="registryRef(animationEls, 'animation-motion')" value="animation-motion">
+						<div class="box" id="animation-list-head"
+				:ref="registryRef(animationEls, 'animation-list-head')">
+							<TextBox id="animation-searcher"
+				:ref="registryRef(animationEls, 'animation-searcher')" name="search"></TextBox>
 						</div>
 						<TreeList
 							id="animation-list"
+				:ref="registryRef(animationEls, 'animation-list')"
 							padded
 							:node-extras="animationNodeExtras"
 							:node-icon-renderer="animationNodeIcon"
@@ -510,11 +541,14 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="animation-timeline" source="page">
-					<div class="page-frame" id="animation-timeline" value="animation-timeline">
-						<div class="box" id="animation-timeline-head">
+					<div class="page-frame" id="animation-timeline"
+				:ref="registryRef(animationEls, 'animation-timeline')" value="animation-timeline">
+						<div class="box" id="animation-timeline-head"
+				:ref="registryRef(animationEls, 'animation-timeline-head')">
 							<div
 								class="box"
 								id="animation-timeline-toolbar"
+				:ref="registryRef(animationEls, 'animation-timeline-toolbar')"
 								@pointerdown="onTimelineToolbarPointerdown"
 							>
 								<div
@@ -555,12 +589,15 @@
 									:class="{ selected: animation.loop }"
 								></div>
 							</div>
-							<div class="box" id="animation-timeline-ruler-outer">
-								<div class="box" id="animation-timeline-ruler-inner"></div>
+							<div class="box" id="animation-timeline-ruler-outer"
+				:ref="registryRef(animationEls, 'animation-timeline-ruler-outer')">
+								<div class="box" id="animation-timeline-ruler-inner"
+				:ref="registryRef(animationEls, 'animation-timeline-ruler-inner')"></div>
 							</div>
 						</div>
 						<TreeList
 							id="animation-layer-list"
+				:ref="registryRef(animationEls, 'animation-layer-list')"
 							:node-extras="layerNodeExtras"
 							:node-icon-renderer="layerNodeIcon"
 							@select="onLayerListSelect"
@@ -568,15 +605,23 @@
 							@popup="onLayerListPopup"
 							@change="onLayerListChange"
 						></TreeList>
-						<div class="box" id="animation-timeline-list-outer" tabindex="0">
-							<div class="box" id="animation-timeline-list-inner"></div>
-							<div class="box" id="animation-timeline-cursor"></div>
-							<div class="box" id="animation-timeline-marquee"></div>
-							<div class="box" id="animation-timeline-marquee-shift"></div>
+						<div class="box" id="animation-timeline-list-outer"
+				:ref="registryRef(animationEls, 'animation-timeline-list-outer')" tabindex="0">
+							<div class="box" id="animation-timeline-list-inner"
+				:ref="registryRef(animationEls, 'animation-timeline-list-inner')"></div>
+							<div class="box" id="animation-timeline-cursor"
+				:ref="registryRef(animationEls, 'animation-timeline-cursor')"></div>
+							<div class="box" id="animation-timeline-marquee"
+				:ref="registryRef(animationEls, 'animation-timeline-marquee')"></div>
+							<div class="box" id="animation-timeline-marquee-shift"
+				:ref="registryRef(animationEls, 'animation-timeline-marquee-shift')"></div>
 						</div>
-						<div class="box" id="animation-timeline-pointer-area-outer">
-							<div class="box" id="animation-timeline-pointer-area-inner">
-								<div class="box" id="animation-timeline-pointer"></div>
+						<div class="box" id="animation-timeline-pointer-area-outer"
+				:ref="registryRef(animationEls, 'animation-timeline-pointer-area-outer')">
+							<div class="box" id="animation-timeline-pointer-area-inner"
+				:ref="registryRef(animationEls, 'animation-timeline-pointer-area-inner')">
+								<div class="box" id="animation-timeline-pointer"
+				:ref="registryRef(animationEls, 'animation-timeline-pointer')"></div>
 							</div>
 						</div>
 					</div>
@@ -908,8 +953,10 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { sceneEls } from '@app/scene/element-registry';
+import { animationEls } from '@app/animation/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { registerElement, registryRef } from '@app/utils/element-registry';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
@@ -1447,6 +1494,7 @@ const onDirPointerdown = (index: number): void => {
 };
 
 onMounted(() => {
+	registerElement(animationEls, 'animation-dirList', dirListEl.value);
 	const el = dirListEl.value;
 	if (!el) return;
 	attachElementApi(el, { setDirItems, setDirDirection });

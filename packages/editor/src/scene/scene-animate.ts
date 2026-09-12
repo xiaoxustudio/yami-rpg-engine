@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { sceneEls } from '@app/scene/element-registry';
 import { addClass, removeClass, hasClass } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
@@ -17,7 +17,7 @@ Scene.switchLayer = (function IIFE() {
 	let items: Record<string, HTMLElement> = { tilemap: null as unknown as HTMLElement };
 	let selection: HTMLElement | null | undefined = undefined;
 	const query = () => {
-		layerGroup = $('#scene-layer');
+		layerGroup = sceneEls.get('scene-layer') as HTMLElement;
 		items = { tilemap: null as unknown as HTMLElement };
 		if (layerGroup) {
 			for (const item of layerGroup.children) {
@@ -75,7 +75,7 @@ Scene.switchBrush = (function IIFE() {
 	let items: Record<string, HTMLElement> | null = null;
 	let selection: HTMLElement | null | undefined = null;
 	const query = () => {
-		list = $('#scene-brush');
+		list = sceneEls.get('scene-brush') as HTMLElement;
 		items = {} as Record<string, HTMLElement>;
 		if (list) {
 			for (const item of list.children) {
@@ -117,7 +117,7 @@ Scene.switchBrush = (function IIFE() {
 })();
 
 Scene.switchGrid = function (this: typeof Scene, enabled = !this.showGrid) {
-	const item = $('#scene-switch-grid');
+	const item = sceneEls.get('scene-switch-grid') as HTMLElement;
 	if (enabled) {
 		addClass(item, 'selected');
 	} else {
@@ -128,7 +128,7 @@ Scene.switchGrid = function (this: typeof Scene, enabled = !this.showGrid) {
 };
 
 Scene.switchLight = function (this: typeof Scene, enabled = !this.showLight) {
-	const item = $('#scene-switch-light');
+	const item = sceneEls.get('scene-switch-light') as HTMLElement;
 	if (enabled) {
 		addClass(item, 'selected');
 	} else {
@@ -139,7 +139,7 @@ Scene.switchLight = function (this: typeof Scene, enabled = !this.showLight) {
 };
 
 Scene.switchAnimation = function (this: typeof Scene, enabled = !this.showAnimation) {
-	const item = $('#scene-switch-animation');
+	const item = sceneEls.get('scene-switch-animation') as HTMLElement;
 	this.showAnimation = enabled;
 	if (enabled) {
 		addClass(item, 'selected');

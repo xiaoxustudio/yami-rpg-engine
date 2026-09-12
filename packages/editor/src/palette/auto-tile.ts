@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
+import { paletteEls } from '@app/palette/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { $ } from '@app/utils/dom';
 import { on, hasClass, write, read, clear } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { requestFocus } from '@app/directives/focus';
@@ -122,14 +122,14 @@ AutoTile.generateFrames = AutoTileEngine.generateFrames;
 AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
 function ensureDomBound(): boolean {
-	const canvas = $('#autoTile-canvas');
-	const templateList = $('#autoTile-templates');
+	const canvas = paletteEls.get('autoTile-canvas') as HTMLElement;
+	const templateList = paletteEls.get('autoTile-templates') as HTMLElement;
 	if (!templateList || !canvas) return false;
 	if (AutoTile.templateList === templateList && AutoTile.canvas === canvas) return false;
 	AutoTile.canvas = canvas;
 	AutoTile.templateList = templateList;
-	AutoTile.nodeList = $('#autoTile-nodes');
-	AutoTile.frameList = $('#autoTile-frames');
+	AutoTile.nodeList = paletteEls.get('autoTile-nodes') as HTMLElement;
+	AutoTile.frameList = paletteEls.get('autoTile-frames') as HTMLElement;
 	templateList.updateItemName = Team.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
@@ -152,7 +152,7 @@ function configureLists() {
 }
 
 function registerWindowEvents() {
-	const frame = $('#autoTile');
+	const frame = paletteEls.get('autoTile') as HTMLElement;
 	if (!frame || !AutoTile.templateList || !AutoTile.nodeList || !AutoTile.frameList) return;
 	window.addEventListener('dprchange', AutoTile.dprchange);
 	on(frame, 'close', AutoTile.windowClose);

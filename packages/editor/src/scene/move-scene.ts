@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { sceneEls } from '@app/scene/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { requestFocus } from '@app/directives/focus';
 
@@ -22,7 +22,7 @@ export const SceneShift: {
 };
 
 SceneShift.initialize = function () {
-	const shiftEl = $('#scene-shift');
+	const shiftEl = sceneEls.get('scene-shift') as HTMLElement;
 	if (!shiftEl) return;
 	shiftEl.addEventListener('closed', this.windowClosed!);
 };
@@ -31,7 +31,7 @@ SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	this.callback = callback;
 	Window.open!('scene-shift');
 	const setForm = (
-		$('#scene-shift') as
+		sceneEls.get('scene-shift') as
 			| (HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void })
 			| null
 	)?.setForm;
@@ -44,8 +44,9 @@ SceneShift.windowClosed = function (_event: Event) {
 };
 
 SceneShift.confirm = function (_event: Event) {
-	const getForm = ($('#scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null)
-		?.getForm;
+	const getForm = (
+		sceneEls.get('scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null
+	)?.getForm;
 	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);
 	if (x === 0 && y === 0) {
 		return requestFocus('scene-shift-x');

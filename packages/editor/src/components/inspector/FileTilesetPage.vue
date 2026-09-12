@@ -1,32 +1,38 @@
 <template>
-	<div class="box" id="palette-head" @pointerdown="onHeadPointerdown">
+	<div class="box" id="palette-head"
+				:ref="registryRef(paletteEls, 'palette-head')" @pointerdown="onHeadPointerdown">
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
 				id="palette-scroll"
+				:ref="registryRef(paletteEls, 'palette-scroll')"
 				class="item toolbar-item"
 				value="scroll"
 				:class="{ selected: palette.scrollable }"
 			></div>
 			<div
 				id="palette-priority"
+				:ref="registryRef(paletteEls, 'palette-priority')"
 				class="item toolbar-item"
 				value="priority"
 				:class="{ selected: palette.mode === 'priority' }"
 			></div>
 			<div
 				id="palette-tag"
+				:ref="registryRef(paletteEls, 'palette-tag')"
 				class="item toolbar-item"
 				value="tag"
 				:class="{ selected: palette.mode === 'tag' }"
 			></div>
 			<div
 				id="palette-terrain"
+				:ref="registryRef(paletteEls, 'palette-terrain')"
 				class="item toolbar-item"
 				value="terrain"
 				:class="{ selected: palette.mode === 'terrain' }"
 			></div>
 			<div
 				id="palette-edit"
+				:ref="registryRef(paletteEls, 'palette-edit')"
 				class="item toolbar-item"
 				value="edit"
 				:class="{ selected: palette.mode === 'edit' }"
@@ -35,6 +41,7 @@
 		</div>
 		<SliderBox
 			id="palette-zoom"
+				:ref="registryRef(paletteEls, 'palette-zoom')"
 			name="zoom"
 			min="0"
 			max="4"
@@ -43,18 +50,23 @@
 			@focus="onZoomFocus"
 		/>
 	</div>
-	<div class="box" id="palette-body">
-		<div class="box" id="palette-frame">
-			<canvas id="palette-canvas" width="0" height="0"></canvas>
+	<div class="box" id="palette-body"
+				:ref="registryRef(paletteEls, 'palette-body')">
+		<div class="box" id="palette-frame"
+				:ref="registryRef(paletteEls, 'palette-frame')">
+			<canvas id="palette-canvas"
+				:ref="registryRef(paletteEls, 'palette-canvas')" width="0" height="0"></canvas>
 			<div
 				class="box"
 				id="palette-screen"
+				:ref="registryRef(paletteEls, 'palette-screen')"
 				tabindex="-1"
 				@keydown="onScreenKeydown"
 				@wheel="onScreenWheel"
 			>
 				<MarqueeArea
 					id="palette-marquee"
+				:ref="registryRef(paletteEls, 'palette-marquee')"
 					@pointerdown="onMarqueePointerdown"
 					@doubleclick="onMarqueeDoubleclick"
 				></MarqueeArea>
@@ -62,7 +74,8 @@
 		</div>
 		<div class="text" id="palette-info">{{ paletteInfo }}</div>
 	</div>
-	<DetailBox id="fileTileset-general-detail" open>
+	<DetailBox id="fileTileset-general-detail"
+				:ref="registryRef(paletteEls, 'fileTileset-general-detail')" open>
 		<DetailSummary>{{
 			t('components.fileTileset-general-grid.label') || 'Tileset'
 		}}</DetailSummary>
@@ -156,6 +169,7 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-tileset-page.ts';
+import { paletteEls } from '@app/palette/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef } from '@app/utils/element-registry';
 import { computed, onMounted } from 'vue';

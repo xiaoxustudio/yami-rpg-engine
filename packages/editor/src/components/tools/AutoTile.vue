@@ -1,5 +1,6 @@
 <template>
-	<WindowFrame id="autoTile" @confirm="onConfirm">
+	<WindowFrame id="autoTile"
+				:ref="registryRef(paletteEls, 'autoTile')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.autoTile.title') }}
@@ -40,6 +41,7 @@
 			<div class="legend">{{ t('components.autoTile-templates.label') }}</div>
 			<TreeList
 				id="autoTile-templates"
+				:ref="registryRef(paletteEls, 'autoTile-templates')"
 				padded
 				:node-extras="nodeExtras"
 				@select="onTemplatesSelect"
@@ -49,11 +51,13 @@
 		</div>
 		<div class="field-set input pad" id="autoTile-nodes-fieldset">
 			<div class="legend">{{ t('components.autoTile-nodes.label') }}</div>
-			<CommonList id="autoTile-nodes" @write="onNodesWrite" @popup="onNodesPopup" />
+			<CommonList id="autoTile-nodes"
+				:ref="registryRef(paletteEls, 'autoTile-nodes')" @write="onNodesWrite" @popup="onNodesPopup" />
 		</div>
 		<div class="field-set" id="autoTile-canvas-fieldset">
 			<div class="legend">{{ t('components.autoTile-canvas.label') }}</div>
-			<canvas id="autoTile-canvas" width="128" height="128" @click="onCanvasClick" />
+			<canvas id="autoTile-canvas"
+				:ref="registryRef(paletteEls, 'autoTile-canvas')" width="128" height="128" @click="onCanvasClick" />
 		</div>
 		<div class="field-set" id="autoTile-rule-fieldset">
 			<div class="legend">{{ t('components.autoTile-rule-grid.label') }}</div>
@@ -119,13 +123,16 @@
 		</div>
 		<div class="field-set input pad" id="autoTile-frames-fieldset">
 			<div class="legend">{{ t('components.autoTile-frames.label') }}</div>
-			<CommonList id="autoTile-frames" @write="onFramesWrite" @popup="onFramesPopup" />
+			<CommonList id="autoTile-frames"
+				:ref="registryRef(paletteEls, 'autoTile-frames')" @write="onFramesWrite" @popup="onFramesPopup" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { paletteEls } from '@app/palette/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

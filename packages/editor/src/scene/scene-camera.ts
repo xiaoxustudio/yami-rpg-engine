@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { sceneEls } from '@app/scene/element-registry';
 import { write } from '@app/utils/element-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -16,7 +16,7 @@ Scene.updateTransform = SceneCameraEngine.updateTransform;
 
 Scene.setZoom = (function IIFE() {
 	return function (this: typeof Scene, zoom: number) {
-		const slider = $('#scene-zoom');
+		const slider = sceneEls.get('scene-zoom') as HTMLElement;
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {
