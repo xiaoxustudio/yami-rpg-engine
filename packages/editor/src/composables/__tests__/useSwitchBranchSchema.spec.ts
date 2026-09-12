@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SwitchCommandWindow from '@app/components/commands/Switch.vue';
@@ -58,6 +58,14 @@ const words: string[] = [];
 const makeCondition = (value: number) => ({ type: 'number', value });
 const makeBranch = (value: number) => ({ conditions: [makeCondition(value)], commands: [] });
 
+/**
+ * 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
+ * `document.body.innerHTML = ''` 摘掉但**组件仍处于挂载态**——它们随后任何一次重渲染都会
+ * 重新登记自己的元素，把共享注册表覆盖成已脱离文档的旧节点（P1b 起模块改读 `composableEls`，
+ * 这条泄漏会直接表现为"读到旧数据"）。故统一在 afterEach 里卸载。
+ */
+const mountedWrappers: Array<{ unmount(): void }> = [];
+
 describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap + insert/edit/save 路径）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -73,6 +81,10 @@ describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap
 		SwitchBranch.commands = null;
 	});
 
+	afterEach(() => {
+		while (mountedWrappers.length > 0) mountedWrappers.pop()!.unmount();
+	});
+
 	const mountAll = async () => {
 		const commandWrapper = mount(SwitchCommandWindow, { attachTo: document.body });
 		const branchWrapper = mount(SwitchBranchWindow, { attachTo: document.body });
@@ -82,7 +94,9 @@ describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap
 		await conditionWrapper.vm.$nextTick();
 		getList('switch-branches').bind(SwitchBranch);
 		getList('switch-branch-conditions').bind(SwitchCondition);
-		return { commandWrapper, branchWrapper, conditionWrapper };
+		const wrappers = { commandWrapper, branchWrapper, conditionWrapper };
+		mountedWrappers.push(...Object.values(wrappers));
+		return wrappers;
 	};
 
 	it('bind 后 write 渲染动态行，add/remove/swap 维护列表顺序', async () => {

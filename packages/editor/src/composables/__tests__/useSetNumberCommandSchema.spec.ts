@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetNumber from '@app/components/commands/SetNumber.vue';
@@ -30,6 +30,14 @@ const target = {
 	save: vi.fn()
 };
 
+/**
+ * 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
+ * `document.body.innerHTML = ''` 摘掉但**组件仍处于挂载态**——它们随后任何一次重渲染都会
+ * 重新登记自己的元素，把共享注册表覆盖成已脱离文档的旧节点（P1b 起模块改读 `composableEls`，
+ * 这条泄漏会直接表现为"读到旧数据"）。故统一在 afterEach 里卸载。
+ */
+const mountedWrappers: Array<{ unmount(): void }> = [];
+
 describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert/edit/save/校验路径）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -42,12 +50,18 @@ describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert
 		Data.createTeamItems = vi.fn(() => [{ name: 'Team 0', value: 'team0' }]) as never;
 	});
 
+	afterEach(() => {
+		while (mountedWrappers.length > 0) mountedWrappers.pop()!.unmount();
+	});
+
 	const mountAll = async () => {
 		const commandWrapper = mount(SetNumber, { attachTo: document.body });
 		const operandWrapper = mount(SetNumberOperand, { attachTo: document.body });
 		await commandWrapper.vm.$nextTick();
 		await operandWrapper.vm.$nextTick();
-		return { commandWrapper, operandWrapper };
+		const wrappers = { commandWrapper, operandWrapper };
+		mountedWrappers.push(...Object.values(wrappers));
+		return wrappers;
 	};
 
 	it('insert 路径：打开窗口并 load 默认 form', async () => {

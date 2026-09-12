@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
 	setOperatorColor,
@@ -161,8 +161,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter2 = 'all';
 			break;
 	}
-	document.getElementById('if-condition-common-variable')!.filter = filter1;
-	document.getElementById('if-condition-operand-variable')!.filter = filter2;
+	(composableEls.get('if-condition-common-variable') as HTMLElement).filter = filter1;
+	(composableEls.get('if-condition-operand-variable') as HTMLElement).filter = filter2;
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {
@@ -430,9 +430,9 @@ const open = (
 		operand: { type: 'constant', value: 0 }
 	} as unknown as IfConditionData
 ): void => {
-	document
-		.getElementById('if-condition-actor-shortcutKey')!
-		.loadItems(Enum.getStringItems!('shortcut-key'));
+	composableEls
+		.get('if-condition-actor-shortcutKey')
+		?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 	getWindowStore().open('if-condition');
 	const defaultVariable = { type: 'local', key: '' };
 	let commonVariable = defaultVariable;
@@ -550,7 +550,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		document.getElementById('if-condition') as
+		composableEls.get('if-condition') as
 			| (HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void })
 			| null
 	)?.setForm;
@@ -602,7 +602,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		document.getElementById('if-condition') as
+		composableEls.get('if-condition') as
 			| (HTMLElement & { getForm?: () => IfConditionForm })
 			| null
 	)?.getForm;

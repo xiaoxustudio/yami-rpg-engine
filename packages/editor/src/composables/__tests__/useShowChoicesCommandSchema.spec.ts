@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ShowChoicesCommandWindow from '@app/components/commands/ShowChoices.vue';
@@ -55,6 +55,14 @@ const getControl = (id: string): ControlEl => document.getElementById(id) as unk
 
 const makeChoice = (content: string) => ({ content, commands: [] });
 
+/**
+ * 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
+ * `document.body.innerHTML = ''` 摘掉但**组件仍处于挂载态**——它们随后任何一次重渲染都会
+ * 重新登记自己的元素，把共享注册表覆盖成已脱离文档的旧节点（P1b 起模块改读 `composableEls`，
+ * 这条泄漏会直接表现为"读到旧数据"）。故统一在 afterEach 里卸载。
+ */
+const mountedWrappers: Array<{ unmount(): void }> = [];
+
 describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/save paths)', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -70,13 +78,19 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		useShowChoicesCommandSchema().form.choices = undefined;
 	});
 
+	afterEach(() => {
+		while (mountedWrappers.length > 0) mountedWrappers.pop()!.unmount();
+	});
+
 	const mountAll = async () => {
 		const commandWrapper = mount(ShowChoicesCommandWindow, { attachTo: document.body });
 		const choiceWrapper = mount(ChoiceWindow, { attachTo: document.body });
 		await commandWrapper.vm.$nextTick();
 		await choiceWrapper.vm.$nextTick();
 		getList('showChoices-choices').bind(Choices);
-		return { commandWrapper, choiceWrapper };
+		const wrappers = { commandWrapper, choiceWrapper };
+		mountedWrappers.push(...Object.values(wrappers));
+		return wrappers;
 	};
 
 	it('customLoad writes choice rows and parameters, read/remove/swap keep order', async () => {

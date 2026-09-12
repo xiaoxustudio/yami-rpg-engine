@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { hide, read, show } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { setNumberColor, setScriptColor } from '@app/composables/useCommandColor.ts';
@@ -147,7 +147,7 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	const el = document.getElementById('setNumber-operand-common-variable');
+	const el = composableEls.get('setNumber-operand-common-variable');
 	if (el) el.filter = filter;
 };
 
@@ -368,7 +368,7 @@ const parse = (
 	let operation;
 	let operator;
 	if (index === 0) {
-		operation = read(document.getElementById('setNumber-operation')) ?? 'set';
+		operation = read(composableEls.get('setNumber-operation')) ?? 'set';
 		switch (operation) {
 			case 'set':
 				operator = '= ';
@@ -431,19 +431,19 @@ const open = (
 	getWindowStore().open('setNumber-operand');
 
 	if (target!.start === 0) {
-		document.getElementById('setNumber-operation')!.save();
-		show(document.getElementById('setNumber-operation'));
+		(composableEls.get('setNumber-operation') as HTMLElement).save();
+		show(composableEls.get('setNumber-operation'));
 		requestFocus('setNumber-operation');
-		hide(document.getElementById('setNumber-operand-operation'));
+		hide(composableEls.get('setNumber-operand-operation'));
 	} else {
-		hide(document.getElementById('setNumber-operation'));
-		show(document.getElementById('setNumber-operand-operation'));
+		hide(composableEls.get('setNumber-operation'));
+		show(composableEls.get('setNumber-operand-operation'));
 		requestFocus('setNumber-operand-operation');
 	}
 
-	document
-		.getElementById('setNumber-operand-cooldown-key')!
-		.loadItems(Enum.getStringItems!('cooldown-key'));
+	composableEls
+		.get('setNumber-operand-cooldown-key')
+		?.loadItems?.(Enum.getStringItems!('cooldown-key'));
 
 	let constantValue = 0;
 	let mathMethod: string | undefined = 'round';
@@ -542,7 +542,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		document.getElementById('setNumber-operand') as
+		composableEls.get('setNumber-operand') as
 			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
 			| null
 	)?.setForm;
@@ -584,7 +584,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		document.getElementById('setNumber-operand') as
+		composableEls.get('setNumber-operand') as
 			| (HTMLElement & { getForm?: () => NumberOperandForm })
 			| null
 	)?.getForm;
@@ -849,7 +849,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	document.getElementById('setNumber-operation')!.save();
+	(composableEls.get('setNumber-operation') as HTMLElement).save();
 	getWindowStore().close('setNumber-operand');
 	return operand;
 };

@@ -10,16 +10,18 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-branch-conditions.label') }}</div>
-			<ParamList id="switch-branch-conditions" v-focus />
+			<ParamList id="switch-branch-conditions"
+				:ref="registryRef(fieldEls, 'switch-branch-conditions')" v-focus />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
-const fieldEls = createElementRegistry();
+const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';
@@ -40,8 +42,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
-	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);
-	on(fieldEls.get('switch-branch'), 'closed', () => SwitchBranch.windowClosed?.(new Event('closed')));
+	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);	on(fieldEls.get('switch-branch'), 'closed', () => SwitchBranch.windowClosed?.(new Event('closed')));
 });
 </script>
 

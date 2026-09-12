@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
 import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
@@ -54,7 +54,7 @@ const open = (branch: SwitchBranchData): void => {
 		SwitchCondition.open!();
 	} else {
 		getWindowStore().open('switch-branch');
-		write(document.getElementById('switch-branch-conditions'), branch.conditions.slice());
+		write(composableEls.get('switch-branch-conditions'), branch.conditions.slice());
 		requestFocus('switch-branch-conditions');
 		commands = branch.commands;
 	}
@@ -69,7 +69,7 @@ const save = (): unknown => {
 			return { conditions, commands };
 		}
 	} else {
-		const element = document.getElementById('switch-branch-conditions');
+		const element = composableEls.get('switch-branch-conditions');
 		const conditions = read(element);
 		if (conditions.length === 0) {
 			return getFocus(element);
@@ -82,7 +82,7 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(document.getElementById('switch-branch-conditions'));
+	clear(composableEls.get('switch-branch-conditions'));
 };
 
 const confirm = (_event: Event): void => {

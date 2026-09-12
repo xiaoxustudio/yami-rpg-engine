@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { getWindowStore } from '@app/stores/window';
+﻿import { getWindowStore } from '@app/stores/window';
+import { composableEls } from '@app/composables/element-registry';
 import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
 import { setOperatorColor } from '@app/composables/useCommandColor.ts';
@@ -65,8 +65,8 @@ const open = (branch: IfBranchData): void => {
 		IfCondition.open!();
 	} else {
 		getWindowStore().open('if-branch');
-		write(document.getElementById('if-branch-mode'), branch.mode);
-		write(document.getElementById('if-branch-conditions'), branch.conditions.slice());
+		write(composableEls.get('if-branch-mode'), branch.mode);
+		write(composableEls.get('if-branch-conditions'), branch.conditions.slice());
 		requestFocus('if-branch-conditions');
 		commands = branch.commands!;
 	}
@@ -82,8 +82,8 @@ const save = (): unknown => {
 			return { mode, conditions, commands };
 		}
 	} else {
-		const mode = read(document.getElementById('if-branch-mode'));
-		const element = document.getElementById('if-branch-conditions');
+		const mode = read(composableEls.get('if-branch-mode'));
+		const element = composableEls.get('if-branch-conditions');
 		const conditions = read(element);
 		if (conditions.length === 0) {
 			return getFocus(element);
@@ -96,7 +96,7 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(document.getElementById('if-branch-conditions'));
+	clear(composableEls.get('if-branch-conditions'));
 };
 
 const confirm = (_event: Event): void => {
