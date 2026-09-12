@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { imageClipEls } from '@app/tools/image-crop-window';
-import { registryRef } from '@app/utils/element-registry';
+import { registerElement, registryRef } from '@app/utils/element-registry';
 import { ImageClip } from '@app/tools/image-crop-window.ts';
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -66,6 +66,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	// WindowFrame 的 :ref 槽位被 ref="frame" 占用：在挂载后命令式登记窗口元素
+	registerElement(imageClipEls, 'imageClip', frame.value?.root ?? null);
 	const el = frame.value?.root;
 	if (el) {
 		on(el, 'closed', () => imageClip.onWindowClosed());

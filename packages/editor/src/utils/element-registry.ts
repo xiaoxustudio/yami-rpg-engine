@@ -22,3 +22,12 @@ export const registryRef =
 			el instanceof HTMLElement ? el : ((el as { $el?: HTMLElement }).$el ?? null);
 		registry.set(id, element);
 	};
+
+/**
+ * 命令式登记：用于 `:ref` 槽位已被占用的组件——例如 `<WindowFrame ref="frame">`
+ * 无法再加 `:ref`，于是在组件的 `onMounted` 里调用
+ * `registerElement(reg, 'windowId', frame.value?.root ?? null)`。
+ */
+export const registerElement = (registry: ElementRegistry, id: string, el: unknown): void => {
+	registryRef(registry, id)(el);
+};

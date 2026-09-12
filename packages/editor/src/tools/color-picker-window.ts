@@ -1,5 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
+import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -11,6 +13,9 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Rename } from '@app/composables/useRenameWindow';
+
+/** P5b 批次 3：元素注册表——由 Color.vue 在模板里登记 */
+export const colorEls = createElementRegistry();
 
 type ColorTarget = {
 	input?: (value: number | string) => void;
@@ -57,15 +62,16 @@ export const Color = {
 };
 
 Color.initialize = function (this: typeof Color) {
-	if (!$('#color-hex')) return;
-	$('#color-hex').setMaxLength(8);
+	if (!colorEls.get('color-hex')) return;
+	colorEls.get('color-hex')?.setMaxLength?.(8);
 
-	const colorIndex = $('#color-index') as HTMLElement & Record<'cancelable', boolean>;
+	// P5b 批次 3：radio 组用 ui-kit 的 radioProxyMap（RadioProxyElement 类型化接口），不再查 DOM
+	const colorIndex = radioProxyMap['color-index'] as RadioProxyElement | undefined;
 	if (colorIndex) colorIndex.cancelable = true;
 
-	$('#color')?.addEventListener('closed', this.windowClosed);
-	on($('#color-palette-frame'), 'pointerdown', this.palettePointerdown);
-	on($('#color-pillar-frame'), 'pointerdown', this.pillarPointerdown);
+	(colorEls.get('color') as HTMLElement)?.addEventListener('closed', this.windowClosed);
+	on(colorEls.get('color-palette-frame') as HTMLElement, 'pointerdown', this.palettePointerdown);
+	on(colorEls.get('color-pillar-frame') as HTMLElement, 'pointerdown', this.pillarPointerdown);
 	$('[name="color-index"]').forEach((el) =>
 		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
 	);
@@ -99,11 +105,11 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 };
 
 Color.drawPalette = function (this: typeof Color) {
-	const canvas = $('#color-palette-canvas');
+	const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
 	if (!canvas.initialized) {
 		canvas.initialized = true;
 
-		const context = canvas.getContext('2d', { willReadFrequently: true });
+		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const gradient = context.createLinearGradient(0.5, 0, 255.5, 0);
 		gradient.addColorStop(0, '#ff0000');
 		gradient.addColorStop(1 / 6, '#ffff00');
@@ -147,8 +153,8 @@ Color.drawPalette = function (this: typeof Color) {
 
 Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b] = args[0] as [number, number, number];
-	const canvas = $('#color-pillar-canvas');
-	const context = canvas.getContext('2d', { willReadFrequently: true });
+	const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
+	const context = canvas.getContext('2d', { willReadFrequently: true })!;
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
 	gradient.addColorStop(0, `rgba(${r}, ${g}, ${b})`);
 	gradient.addColorStop(1, `rgba(255, 255, 255)`);
@@ -158,13 +164,14 @@ Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawViewer = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b, a] = args[0] as [number, number, number, number];
-	$('#color-viewer').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+	(colorEls.get('color-viewer') as HTMLElement).style.backgroundColor =
+		`rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
 Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 	const x = args[0] as number;
 	const y = args[1] as number;
-	const cursor = $('#color-palette-cursor');
+	const cursor = colorEls.get('color-palette-cursor') as HTMLElement;
 	this.paletteX = x;
 	this.paletteY = y;
 	cursor.style.left = `${x - 5}px`;
@@ -173,7 +180,7 @@ Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 
 Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 	const y = args[0] as number;
-	const cursor = $('#color-pillar-cursor');
+	const cursor = colorEls.get('color-pillar-cursor') as HTMLElement;
 	this.pillarY = y;
 	cursor.style.top = `${y}px`;
 };
@@ -181,16 +188,16 @@ Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 Color.getRGBFromPalette = function (this: typeof Color) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
-	const canvas = $('#color-palette-canvas');
-	const context = canvas.getContext('2d');
+	const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
+	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(x, y, 1, 1).data;
 	return [r, g, b];
 };
 
 Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
-	const canvas = $('#color-pillar-canvas');
-	const context = canvas.getContext('2d');
+	const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
+	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(0, y, 1, 1).data;
 	return [r, g, b];
 };
@@ -259,7 +266,7 @@ Color.simplifyHexColor = (function IIFE() {
 })();
 
 Color.windowClosed = function (this: typeof Color, _event: Event) {
-	$('#color-index').reset();
+	radioProxyMap['color-index']?.reset();
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
@@ -276,7 +283,7 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = $('#color-palette-canvas');
+			const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
 			const x = Math.clamp(coords.x, 0, 255);
 			const y = Math.clamp(coords.y, 0, 193);
@@ -289,7 +296,7 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 			this.setPillarCursor(0);
 			this.writeRGBAToInputs(rgba);
 			this.drawViewer(rgba);
-			$('#color-index').reset();
+			radioProxyMap['color-index']?.reset();
 			break;
 		}
 	}
@@ -305,7 +312,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = $('#color-pillar-canvas');
+			const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
 			const y = Math.clamp(coords.y, 0, 255);
 			this.setPillarCursor(y);
@@ -315,7 +322,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 			const rgba = [...rgb, a];
 			this.writeRGBAToInputs(rgba);
 			this.drawViewer(rgba);
-			$('#color-index').reset();
+			radioProxyMap['color-index']?.reset();
 			break;
 		}
 	}
@@ -330,7 +337,7 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 	this.writeRGBAToInputs(rgba);
 	this.drawViewer(rgba);
 	if (!this.indexEnabled) {
-		$('#color-index').reset();
+		radioProxyMap['color-index']?.reset();
 	}
 }.bind(Color);
 
@@ -424,7 +431,7 @@ Color.hexInput = function (this: typeof Color, _event: Event) {
 	this.drawPillar([r, g, b]);
 	this.setPillarCursor(0);
 	this.drawViewer([r, g, b, a]);
-	$('#color-index').reset();
+	radioProxyMap['color-index']?.reset();
 }.bind(Color);
 
 Color.rgbaInput = function (this: typeof Color, _event: Event) {
@@ -434,7 +441,7 @@ Color.rgbaInput = function (this: typeof Color, _event: Event) {
 	this.drawPillar([r, g, b]);
 	this.setPillarCursor(0);
 	this.drawViewer([r, g, b, a]);
-	$('#color-index').reset();
+	radioProxyMap['color-index']?.reset();
 }.bind(Color);
 
 Color.confirm = function (this: typeof Color, _event: Event) {

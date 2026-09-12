@@ -6,9 +6,12 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas id="color-palette-canvas" width="256" height="194" />
-		<div class="box" id="color-palette-frame">
-			<div class="box" id="color-palette-cursor" />
+		<canvas id="color-palette-canvas"
+				:ref="registryRef(colorEls, 'color-palette-canvas')" width="256" height="194" />
+		<div class="box" id="color-palette-frame"
+				:ref="registryRef(colorEls, 'color-palette-frame')">
+			<div class="box" id="color-palette-cursor"
+				:ref="registryRef(colorEls, 'color-palette-cursor')" />
 		</div>
 		<div class="grid-box" id="color-index-grid">
 			<RadioBox name="color-index" value="0" @input="onIndexedInput" />
@@ -28,17 +31,22 @@
 			<RadioBox name="color-index" value="14" @input="onIndexedInput" />
 			<RadioBox name="color-index" value="15" @input="onIndexedInput" />
 		</div>
-		<canvas id="color-pillar-canvas" width="20" height="256" />
-		<div class="box" id="color-pillar-frame">
-			<div class="box" id="color-pillar-cursor" />
+		<canvas id="color-pillar-canvas"
+				:ref="registryRef(colorEls, 'color-pillar-canvas')" width="20" height="256" />
+		<div class="box" id="color-pillar-frame"
+				:ref="registryRef(colorEls, 'color-pillar-frame')">
+			<div class="box" id="color-pillar-cursor"
+				:ref="registryRef(colorEls, 'color-pillar-cursor')" />
 		</div>
 		<div class="box" id="color-viewer-frame">
-			<div class="box" id="color-viewer" />
+			<div class="box" id="color-viewer"
+				:ref="registryRef(colorEls, 'color-viewer')" />
 		</div>
 		<div class="grid-box" id="color-rgba-grid">
 			<div class="text">#</div>
 			<TextBox
 				id="color-hex"
+				:ref="registryRef(colorEls, 'color-hex')"
 				v-focus
 				v-model="form.hex"
 				@beforeinput="onHexBeforeinput"
@@ -58,8 +66,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
-import { Color } from '@app/tools/color-picker-window.ts';
+import { Color, colorEls } from '@app/tools/color-picker-window.ts';
 import { useColorWindow } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -94,6 +103,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	// WindowFrame 的 :ref 槽位被 ref="frame" 占用：在挂载后命令式登记窗口元素
+	registerElement(colorEls, 'color', frame.value?.root ?? null);
 	const el = frame.value?.root;
 	if (el) {
 		on(el, 'closed', () => color.onWindowClosed());

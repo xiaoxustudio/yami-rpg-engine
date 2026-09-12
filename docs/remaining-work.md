@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1148 处 / 211 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 3 局部完成后为 1127 处 / 210 文件，批 1/批 2/批 3 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -232,7 +232,7 @@
 | `editor/components` | 722（批 1 已消 134：IfCondition 78 + SetNumberOperand 58） | 111 | 批次 1–2 | 🚧 批 1 完成 |
 | `editor/inspector` | 168（**实测口径：`src/inspector/**` 的 37 个 `.ts` 页面模块**；`components/inspector/*.vue` 侧为 0 处） | 38 | 批次 3 | 🚧 未开始（本轮先做 attribute/enum） |
 | `editor/commands` | **0**（批 2 全部完成：accessor 12 个 + 属性窗口族 + tips 2 个 + 自定义命令窗口 + 事件编辑器族） | 27 | 批次 2 | ✅ **已完成** |
-| `editor/tools` | 78 → **46**（批 3 已消 32：`condition-list` 21→0、`property-list` 8→0、`image-crop-window` 4→1 动态白名单；**余 `text-capture` 22 / `color-picker-window` 21 / `window-object` 2 / `image-crop` 1**） | 6 | 批次 3 | 🚧 部分完成 |
+| `editor/tools` | 78 → **25**（批 3 已消 53：`condition-list` 21→0、`color-picker-window` 21→0、`property-list` 8→0、`image-crop-window` 4→1 动态白名单；**余 `text-capture` 22 / `window-object` 2 / `image-crop` 1**） | 6 | 批次 3 | 🚧 部分完成 |
 | `editor/animation` | 48 | 2 | 批次 4 | 未开始 |
 | `editor/title` | 40 | 5 | 批次 4 | 未开始 |
 | `editor/scene` | 36 | 6 | 批次 4 | 未开始 |
@@ -402,6 +402,20 @@
 - **保留 1 处（动态 id 白名单）**：`tools/image-crop-window.ts:106` 的 `read($('#' + id))`——`id` 来自 **target 元素的 `image` 属性**（运行时才知道目标控件 id），不是静态控件查找，属计划中预留的"动态 id 类残余"，已在代码处加注释说明。
 - **一条通用判据（差点重犯批 2 的错）**：**不要用 `grep '<X>.initialize'` 判定 `initialize` 是死代码**——`main/initialize.ts` 的 `initSingleton(name)` 会从 `window-cluster` 动态取单例再 `shape.initialize.call(singleton)`（`ConditionListInterface` 就在 cluster 里）；`Schema.initAll` 的 `subMap[name].initialize!()` 同理。批 2 的 accessor 与本次的 condition-list 都属此类。
 
+**批 3 的第三刀（`tools/color-picker-window.ts`，21 处 → 0）**
+
+- **radio 组不建新注册表**：`$('#color-index')` 命中的其实是 **RadioProxy 生成的代理 div**（16 个 `<RadioBox name="color-index">` 的元素 API 载体）。ui-kit 早已有 `radioProxyMap`（键 = 组名，值 = `RadioProxyElement` 类型化接口，带 `reset()`/`cancelable`/`relate()`）→ 8 处 `.reset()` 与 1 处 `cancelable = true` 直接改读 `radioProxyMap['color-index']`，**比元素注册表更贴切**（这正是 P2b"把元素 API 换成类型化契约"的方向）。
+- 其余 12 处（`color-hex`/`color`/palette 与 pillar 的 frame、canvas、cursor、viewer）走新的 `colorEls` 元素注册表，`Color.vue` 登记这些元素；canvas 处按 `HTMLCanvasElement` 取值，`getContext()` 结果补非空断言（沿用原先 `$()` 的非空类型语义）。
+
+**🔴 本轮抓到一个会静默失效的坑（值得全项目警戒）**
+
+`<WindowFrame ref="frame" id="color">` **已经占用了 `:ref` 槽位**，因此脚本无法再挂 `registryRef(...)` → `color` 没被登记 → 模块里 `colorEls.get('color')?.addEventListener('closed', …)` 变成**静默 no-op**（窗口关闭回调不再执行）。
+
+- 用一条审计脚本扫出**同类共 2 处**：`Color.vue`（`color`）与 `ImageClip.vue`（`imageClip`）——后者更严重：`ensureDomBound()` 里 `const win = imageClipEls.get('imageClip'); if (!win) return;` 会**直接早退**，整套绑定静默失效。
+- 修法：`element-registry.ts` 新增 **`registerElement(registry, id, el)`**（命令式登记），两个 SFC 在 `onMounted` 里 `registerElement(reg, '<windowId>', frame.value?.root ?? null)`。
+- **警戒线**：`:ref` 被占用时脚本会"跳过已有 ref 的标签"，**跳过是静默的**——凡做此类迁移，必须用审计脚本（对比"模块用到的 id"与"模板已登记的 id"）复核，而不是只看脚本输出的 refs 计数。
+- 两个新回归 spec 正好锁住这条链路：`color-picker-registry.spec.ts`（4 例，含"initialize 把 radioProxy 设为 cancelable"）与 `image-crop-registry.spec.ts`（3 例，含"initialize 从注册表绑定 window/screen/image/marquee"）——**没有它们，这两个静默失效不会被任何测试发现**。
+
 ## B1 — 巨石渲染层重写
 
 - **现状证据**：`packages/ui-kit/src/components/business/YMCommandList/command-api.ts` 2609 行（纯数据层已抽 `command-core.ts` 269 行）、`packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue` 2327 行（已抽 `file-body-core.ts` 154 行）；DOM 渲染层仍命令式。**契约面远大于测试面**：命令列表经 `packages/editor/src/components/common/CommandList.vue` 暴露 **67 个方法**、editor 侧约 **259 处**列表方法调用，而组件级只有 **12 个用例**；文件body 组件级 **5 个用例**（另有 editor 侧 2 个 / 3 个）。
@@ -502,4 +516,4 @@
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **216 文件 1907/1907**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 `accessor-fields.spec.ts`、`event-editor-registry.spec.ts`、`attribute-enum-registry.spec.ts`）。
+- 测试基线（2026-09-11 实跑）：ui-kit **97 文件 667/667**；editor **218 文件 1914/1914**（B0–B4 批 3 改动后的最新实跑值；B4 批 2/3 新增 `accessor-fields`、`event-editor-registry`、`attribute-enum-registry`、`color-picker-registry`、`image-crop-registry` 五个 registry 回归 spec）。
