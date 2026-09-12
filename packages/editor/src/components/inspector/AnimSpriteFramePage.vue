@@ -1,5 +1,6 @@
 ﻿<template>
-	<DetailBox id="animSpriteFrame-properties-detail" open>
+	<DetailBox id="animSpriteFrame-properties-detail"
+				:ref="registryRef(engineEls, 'animSpriteFrame-properties-detail')" open>
 		<DetailSummary>{{
 			t('components.animSpriteFrame-properties-grid.label') || 'Frame'
 		}}</DetailSummary>
@@ -216,12 +217,15 @@
 			</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="animSpriteFrame-sprite-detail" open>
+	<DetailBox id="animSpriteFrame-sprite-detail"
+				:ref="registryRef(engineEls, 'animSpriteFrame-sprite-detail')" open>
 		<DetailSummary id="animSpriteFrame-sprite-summary">
 			<div class="text" id="sprite-label">Sprite</div>
-			<div class="box" id="sprite-info"></div>
+			<div class="box" id="sprite-info"
+				:ref="registryRef(engineEls, 'sprite-info')"></div>
 			<SliderBox
 				id="sprite-zoom"
+				:ref="registryRef(engineEls, 'sprite-zoom')"
 				name="zoom"
 				min="0"
 				max="4"
@@ -230,18 +234,23 @@
 				@focus="onZoomFocus"
 			></SliderBox>
 		</DetailSummary>
-		<div class="box" id="sprite-body">
-			<div class="box" id="sprite-frame">
-				<canvas id="sprite-canvas" width="0" height="0"></canvas>
+		<div class="box" id="sprite-body"
+				:ref="registryRef(engineEls, 'sprite-body')">
+			<div class="box" id="sprite-frame"
+				:ref="registryRef(engineEls, 'sprite-frame')">
+				<canvas id="sprite-canvas"
+				:ref="registryRef(engineEls, 'sprite-canvas')" width="0" height="0"></canvas>
 				<div
 					class="box"
 					id="sprite-screen"
+				:ref="registryRef(engineEls, 'sprite-screen')"
 					tabindex="-1"
 					@keydown="onScreenKeydown"
 					@wheel="onScreenWheel"
 				>
 					<MarqueeArea
 						id="sprite-marquee"
+				:ref="registryRef(engineEls, 'sprite-marquee')"
 						@pointerdown="onMarqueePointerdown"
 					></MarqueeArea>
 				</div>
@@ -253,6 +262,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { computed, onMounted, ref } from 'vue';
+import { engineEls } from '@app/engine/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';

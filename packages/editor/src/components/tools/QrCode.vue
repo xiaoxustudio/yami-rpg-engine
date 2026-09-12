@@ -16,14 +16,19 @@
 				<div style="color: red">如果内容没刷新，请Ctrl+S保存场景</div>
 			</div>
 		</div>
-		<button id="qr-start-button" name="start-qr-code" />
-		<button id="qr-close-button" name="close-qr-code" />
-		<button id="qr-update-button" name="update-qr-code" />
+		<button id="qr-start-button"
+				:ref="registryRef(serviceEls, 'qr-start-button')" name="start-qr-code" />
+		<button id="qr-close-button"
+				:ref="registryRef(serviceEls, 'qr-close-button')" name="close-qr-code" />
+		<button id="qr-update-button"
+				:ref="registryRef(serviceEls, 'qr-update-button')" name="update-qr-code" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { serviceEls } from '@app/services/element-registry';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -39,6 +44,7 @@ const update = (value: { url: string; img: string }): void => {
 };
 
 onMounted(() => {
+	registerElement(serviceEls, 'qr-code-content', elContent.value);
 	const el = elContent.value;
 	if (!el) return;
 	attachElementApi(el, { update });

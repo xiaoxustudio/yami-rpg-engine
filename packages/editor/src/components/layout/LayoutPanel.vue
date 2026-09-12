@@ -1,5 +1,6 @@
 <template>
-	<PageManager id="workspace-page-manager">
+	<PageManager id="workspace-page-manager"
+				:ref="registryRef(engineEls, 'workspace-page-manager')">
 		<div class="page-frame" id="home" value="home">
 			<div class="box" id="home-content">
 				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
@@ -375,6 +376,7 @@
 							<div class="box" id="ui-head-end">
 								<SliderBox
 									id="ui-zoom"
+				:ref="registryRef(engineEls, 'ui-zoom')"
 									name="zoom"
 									min="0"
 									max="4"
@@ -965,6 +967,7 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { engineEls } from '@app/engine/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 import { uiEls } from '@app/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
@@ -1509,6 +1512,8 @@ const onDirPointerdown = (index: number): void => {
 };
 
 onMounted(() => {
+	registerElement(engineEls, 'layout-nav', paletteNavEl.value);
+	registerElement(engineEls, 'layout-page-manager', paletteManagerEl.value);
 	registerElement(animationEls, 'animation-dirList', dirListEl.value);
 	const el = dirListEl.value;
 	if (!el) return;

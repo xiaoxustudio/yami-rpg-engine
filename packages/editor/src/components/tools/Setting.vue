@@ -1,6 +1,7 @@
 <template>
 	<!-- Open设置窗口 -->
-	<WindowFrame id="setting">
+	<WindowFrame id="setting"
+				:ref="registryRef(serviceEls, 'setting')" @confirm="onConfirm">
 		<template #title
 			><TitleBar id="setting-title"
 				>{{ t('components.setting.title') }}
@@ -65,7 +66,10 @@
 </template>
 
 <script setup lang="ts">
+import { Window } from '@app/tools/window-object.ts';
 import { onMounted } from 'vue';
+import { serviceEls } from '@app/services/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -73,6 +77,11 @@ import CheckBox from '@app/components/common/CheckBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// P5b 批次 4：setting-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Window.close?.('setting');
+};
 
 const { t } = useI18n();
 

@@ -1,6 +1,7 @@
 <template>
 	<!-- 鍙橀噺绐楀彛 -->
-	<WindowFrame id="variable" show-apply mode="center" @apply="onApply">
+	<WindowFrame id="variable"
+				:ref="registryRef(variableEls, 'variable')" show-apply mode="center" @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.variable.title') }}
@@ -11,6 +12,7 @@
 			<div class="legend">{{ t('components.variable-list.label') }}</div>
 			<TreeList
 				id="variable-list"
+				:ref="registryRef(variableEls, 'variable-list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -22,10 +24,12 @@
 		</div>
 		<div class="field-set" id="variable-properties-fieldset">
 			<div class="legend">{{ t('components.variable-properties-flex.label') }}</div>
-			<div class="flex-box" id="variable-properties-flex">
+			<div class="flex-box" id="variable-properties-flex"
+				:ref="registryRef(variableEls, 'variable-properties-flex')">
 				<div class="flex-item">
 					<div class="text">{{ t('components.variable-name.label') }}</div>
-					<TextBox id="variable-name" @input="onNameInput" />
+					<TextBox id="variable-name"
+				:ref="registryRef(variableEls, 'variable-name')" @input="onNameInput" />
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.variable-sort-normal.label') }}</div>
@@ -100,6 +104,7 @@
 					>
 					<RadioBox
 						id="variable-type-object"
+				:ref="registryRef(variableEls, 'variable-type-object')"
 						name="variable-type"
 						class="standard"
 						value="object"
@@ -110,9 +115,11 @@
 						</div></RadioBox
 					>
 				</div>
-				<div class="flex-item" id="variable-value-box">
+				<div class="flex-item" id="variable-value-box"
+				:ref="registryRef(variableEls, 'variable-value-box')">
 					<div class="text">{{ t('components.variable-value-manager.label') }}</div>
-					<PageManager id="variable-value-manager">
+					<PageManager id="variable-value-manager"
+				:ref="registryRef(variableEls, 'variable-value-manager')">
 						<div class="page-frame" value="boolean">
 							<RadioBox
 								id="variable-value-boolean-false"
@@ -132,28 +139,34 @@
 						<div class="page-frame" value="number">
 							<NumberBox
 								id="variable-value-number"
+				:ref="registryRef(variableEls, 'variable-value-number')"
 								min="-1000000000"
 								max="1000000000"
 								decimals="10"
 							/>
 						</div>
 						<div class="page-frame" value="string">
-							<TextArea id="variable-value-string" />
+							<TextArea id="variable-value-string"
+				:ref="registryRef(variableEls, 'variable-value-string')" />
 						</div>
 					</PageManager>
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.variable-note.label') }}</div>
-					<TextArea id="variable-note" />
+					<TextArea id="variable-note"
+				:ref="registryRef(variableEls, 'variable-note')" />
 				</div>
 			</div>
 		</div>
-		<TextBox id="variable-searcher" name="search" />
+		<TextBox id="variable-searcher"
+				:ref="registryRef(variableEls, 'variable-searcher')" name="search" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { variableEls } from '@app/variable/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Variable } from '@app/variable/variable.ts';
 import { parseMultiLineString } from '@app/composables/useCommandParse.ts';
@@ -166,6 +179,11 @@ import RadioBox from '@app/components/common/RadioBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+// P5b 批次 4：variable-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+const onConfirm = () => {
+	Variable?.confirm?.(new Event('click'));
+};
 
 const { t } = useI18n();
 

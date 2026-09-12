@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
+import { engineEls } from '@app/engine/element-registry';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { $ } from '@app/utils/dom';
 import {
 	on,
 	off,
@@ -422,9 +422,9 @@ export const Layout: DynamicShape = {
 };
 
 Layout.initialize = function () {
-	this.manager = $('#workspace-page-manager');
-	const nav = $('#layout-nav');
-	const manager = $('#layout-page-manager');
+	this.manager = engineEls.get('workspace-page-manager') as HTMLElement;
+	const nav = engineEls.get('layout-nav') as HTMLElement;
+	const manager = engineEls.get('layout-page-manager') as HTMLElement;
 	const items = (this.items = {} as LayoutItems);
 	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）；
 	// DOM 发现（palette 容器子节点 → 全文档回退）仅作登记缺失项的兜底，

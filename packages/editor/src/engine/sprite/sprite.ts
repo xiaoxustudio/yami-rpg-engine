@@ -1,5 +1,6 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { engineEls } from '@app/engine/element-registry';
 import { addScrollbars, on, show, hide, clear, read, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -177,14 +178,16 @@ export const Sprite: SpriteModule = {
 };
 
 Sprite.initialize = function (this: typeof Sprite) {
-	this.body = $('#sprite-body');
-	this.window = $('#sprite-frame');
+	this.body = engineEls.get('sprite-body') as HTMLElement;
+	this.window = engineEls.get('sprite-frame') as HTMLElement;
 	hide(this.window);
-	this.canvas = $('#sprite-canvas') as HTMLCanvasElement & { dpr?: number };
-	this.info = $('#sprite-info');
-	this.slider = $('#sprite-zoom');
-	this.screen = $('#sprite-screen') as SpriteScreen;
-	this.marquee = $('#sprite-marquee') as SpriteMarquee;
+	this.canvas = engineEls.get('sprite-canvas') as HTMLElement as HTMLCanvasElement & {
+		dpr?: number;
+	};
+	this.info = engineEls.get('sprite-info') as HTMLElement;
+	this.slider = engineEls.get('sprite-zoom') as HTMLElement;
+	this.screen = engineEls.get('sprite-screen') as HTMLElement as SpriteScreen;
+	this.marquee = engineEls.get('sprite-marquee') as HTMLElement as SpriteMarquee;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
@@ -206,9 +209,13 @@ Sprite.initialize = function (this: typeof Sprite) {
 	});
 
 	window.addEventListener('themechange', this.themechange);
-	on($('#animSpriteFrame-vue-mount'), 'resize', this.windowResize);
-	on($('#animSpriteFrame-properties-detail'), 'toggle', this.windowResize);
-	on($('#animSpriteFrame-sprite-detail'), 'toggle', this.windowResize);
+	on(inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement, 'resize', this.windowResize);
+	on(
+		engineEls.get('animSpriteFrame-properties-detail') as HTMLElement,
+		'toggle',
+		this.windowResize
+	);
+	on(engineEls.get('animSpriteFrame-sprite-detail') as HTMLElement, 'toggle', this.windowResize);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 };
 

@@ -18,8 +18,8 @@
 
 ## 当前快照（2026-09-11 实测）
 
-- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1124**；待迁移命中 **158**（初始 299；B1/R2a 后 −1，B4 批 2 后 −1）；豁免注释 **158**；陈旧豁免 **0**；`getElementById` 242；`createElement` 138；`appendChild` 122；`addEventListener` 571。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（158 + 0 = 158）。（扫描文件数较 B0 的 1111 增 3：B1/R1 的 store 与列表组件、B2 的 `utils/folder-group.ts`。）
-- **第二条债轴（P5，不在 lint 规则内）**：`$('#id')` 反查 **159 处 / 41 文件**（element-utils 的 jQuery 风格寻址；B4 批 1 前 1481，最初 1489）；`new DOMParser()` **0 处**（B1/R1 前 1 处——字符串模板建 DOM 的最后一处已随资源列表数据化下线）。它不进入「待迁移命中」，故单列——见 [remaining-work.md](./remaining-work.md) P5b。
+- **扫描口径**（`pnpm dom:guard:tracker`，命中判定来源 oxlint `--report-unused-disable-directives`）：文件 **1127**；待迁移命中 **158**（初始 299；B1/R2a 后 −1，B4 批 2 后 −1）；豁免注释 **158**；陈旧豁免 **0**；`getElementById` 242；`createElement` 138；`appendChild` 122；`addEventListener` 571。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（158 + 0 = 158）。（扫描文件数较 B0 的 1111 增 3：B1/R1 的 store 与列表组件、B2 的 `utils/folder-group.ts`。）
+- **第二条债轴（P5，不在 lint 规则内）**：`$('#id')` 反查 **120 处 / 34 文件**（element-utils 的 jQuery 风格寻址；B4 批 1 前 1481，最初 1489）；`new DOMParser()` **0 处**（B1/R1 前 1 处——字符串模板建 DOM 的最后一处已随资源列表数据化下线）。它不进入「待迁移命中」，故单列——见 [remaining-work.md](./remaining-work.md) P5b。
 - **度量覆盖范围（重要）**：lint 门禁只覆盖 `document.*` 的 7 个成员（= 待迁移命中 160）；tracker 另有**每模块列**（`appendChild`/`insertBefore`/`parentNode`/`innerHTML`/`addEventListener`…）、**P5 轴**（`$('#id')`/`DOMParser`）与 **`## 辅助口径`** 一节（`style.*` 336、`.children` 229、`hasClass()` 215、`textContent=` 145、`classList` 134、`get/set/removeAttribute` 87、`scrollTop=` 84 …）。**24 个轴的完整判定表**（哪些已登记为待办、哪些属合法用法、哪些为 0）见 [remaining-work.md](./remaining-work.md) 的「覆盖面审计结论」。引用任何"还剩多少"之前先确认它属于哪一档——2026-09-11 多次度量审计都因"漏档"修正过结论。
 - **按"源码处数"会低估的第三种情形（运行期放大 / 写法变体）**：`localize/dom-localizer.ts` 源码里只有 3 处字面查询，但它按语言文件的 **2130** 个键在启动时逐键查 DOM（2112 按 id + 18 按 name）；`utils/element-data.ts` 只写了一次 `Object.defineProperty(HTMLElement.prototype, field, …)`，实际在原型上定义了 **72** 个字段的 get/set（144 访问器；B3 前 83/166）——而 tracker 原 `protoExt` 列要求 `prototype.` 跟点，**逗号形式**看不见，现已单列在「辅助口径」。同类还有 `$('#id')`（1489 处）与 `DOMParser` 字符串模板。详见 [remaining-work.md](./remaining-work.md) R2b / P4b。
 - **测试基线**（实跑）：ui-kit **97 文件 667/667**；editor **221 文件 1927/1927**。
@@ -44,6 +44,7 @@
 | `scripts/event-surface.mjs` | `pnpm events:surface` | **只读报表**：窗口事件面清单（事件名 / add-remove 计数 / 自定义事件 / 死事件 / 内联匿名监听 / `.vue` 未配对监听 / `mitt`·`useEventListener` 使用情况），E1 的度量来源 |
 | `scripts/smoke-layout.mjs` | `node scripts/smoke-layout.mjs <phase>` | **真机冒烟**（CDP over WebSocket）：phase = `debug` / `open-project` / `mode2-directory` / `roundtrip-scene` / `mode0-control` / `drag-mode0` / `drag-mode2` / `drag-here` / `drag-scene` / `drag-region`；前置：`pnpm -F @yami/editor build:all` + Electron 带 `--remote-debugging-port=9223` |
 | `packages/editor/scripts/check-vue-types.mjs` | `pnpm -F @yami/editor typecheck:vue` | **vue-tsc 增量门禁**：baseline 模式只拦新增错误，baseline 存同目录 `vue-types-baseline.json` |
+| `scripts/element-registry-migrate.mjs` | `node scripts/element-registry-migrate.mjs audit <src 子目录…>` / `… migrate --registry=… --registry-file=… --sfcs=… --modules=… [--apply]` | **P5b 分组迁移工具**：`audit` 列出某目录各模块用到的 `$('#id')` 及其渲染 SFC；`migrate` 生成分组注册表、改写模块侧读取、给渲染 SFC 补 `:ref`/命令式登记（默认干跑，`--apply` 才写）。文件头写明判据约定（只看 import 语句 / 不做 import 合并 / 清理前剥离注释与正则字面量） |
 
 分工原则：**生成器只写自己的产物、门禁只读代码与文档、执行器默认干跑**——任何会改源码的操作都必须显式加 `--apply`。
 

@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { variableEls } from '@app/variable/element-registry';
 import { disable, enable, hide, read, show, write } from '@app/utils/element-utils.ts';
 import { getVariableStore } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
@@ -49,10 +49,10 @@ Variable.sortWrite = function (event: Event & { value?: number }) {
 	switch (event.value) {
 		case 0:
 		case 1:
-			disable($('#variable-type-object'));
+			disable(variableEls.get('variable-type-object') as HTMLElement);
 			break;
 		case 2:
-			enable($('#variable-type-object'));
+			enable(variableEls.get('variable-type-object') as HTMLElement);
 			break;
 	}
 };

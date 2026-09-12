@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { variableEls } from '@app/variable/element-registry';
 import { on, hide, read, write } from '@app/utils/element-utils.ts';
 import { RadioProxy } from '@ui-kit';
 import { History } from '@app/tools/history.ts';
@@ -131,18 +131,18 @@ export const Variable: VariableModule = {
 
 function ensureDomBound() {
 	if (Variable.list) return;
-	const list = $('#variable-list');
+	const list = variableEls.get('variable-list') as HTMLElement;
 	if (!list) return;
 	Variable.list = list;
-	Variable.panel = $('#variable-properties-flex') as HTMLElement;
+	Variable.panel = variableEls.get('variable-properties-flex') as HTMLElement as HTMLElement;
 	hide(Variable.panel);
-	Variable.manager = $('#variable-value-manager') as PageManagerApi;
-	Variable.searcher = $('#variable-searcher');
-	Variable.inputs.name = $('#variable-name');
-	Variable.inputs.value = $('#variable-value-box');
-	Variable.inputs.number = $('#variable-value-number');
-	Variable.inputs.string = $('#variable-value-string');
-	Variable.inputs.note = $('#variable-note');
+	Variable.manager = variableEls.get('variable-value-manager') as HTMLElement as PageManagerApi;
+	Variable.searcher = variableEls.get('variable-searcher') as HTMLElement;
+	Variable.inputs.name = variableEls.get('variable-name') as HTMLElement;
+	Variable.inputs.value = variableEls.get('variable-value-box') as HTMLElement;
+	Variable.inputs.number = variableEls.get('variable-value-number') as HTMLElement;
+	Variable.inputs.string = variableEls.get('variable-value-string') as HTMLElement;
+	Variable.inputs.note = variableEls.get('variable-note') as HTMLElement;
 	Variable.list.copy = null as unknown as (...args: unknown[]) => void;
 	Variable.list.paste = null as unknown as (...args: unknown[]) => void;
 	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
@@ -328,8 +328,8 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 
-	on($('#variable'), 'close', this.windowClose!);
-	on($('#variable'), 'closed', this.windowClosed!);
+	on(variableEls.get('variable') as HTMLElement, 'close', this.windowClose!);
+	on(variableEls.get('variable') as HTMLElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	on(list, 'pointerdown', this.listPointerdown!);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
@@ -347,7 +347,7 @@ Variable.initialize = function () {
 	on(this.panel, 'keydown', this.panelKeydown!);
 	on(this.searcher, 'input', this.searcherInput!);
 	on(this.searcher, 'compositionend', this.searcherInput!);
-	on($('#variable-confirm'), 'click', this.confirm!);
+	// confirm 由 Variable.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 };
 
 for (const key of variableStateKeys) {

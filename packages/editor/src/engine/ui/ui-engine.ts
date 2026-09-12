@@ -1,5 +1,5 @@
 ﻿import { getUIStore } from '@app/stores/ui';
-import { $ } from '@app/utils/dom';
+import { engineEls } from '@app/engine/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -63,7 +63,7 @@ interface UIShape {
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
-		const slider = $('#ui-zoom');
+		const slider = engineEls.get('ui-zoom') as HTMLElement;
 		if (getUIStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {

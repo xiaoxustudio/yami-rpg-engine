@@ -1,5 +1,4 @@
-import { $ } from '@app/utils/dom';
-import { Window } from '@app/tools/window-object.ts';
+import { serviceEls } from '@app/services/element-registry';
 import { on } from '@app/utils/element-utils.ts';
 import { GlobalPathForDir, GlobalPath } from '@app/utils/config';
 
@@ -45,18 +44,18 @@ export const SettingConfig = new (class {
 	private bindButtons() {
 		if (this._buttonsBound) return;
 		if (typeof document === 'undefined') return;
-		const settingEl = $('#setting');
+		const settingEl = serviceEls.get('setting') as HTMLElement;
 		if (!settingEl) return;
 		this._buttonsBound = true;
 		on(settingEl, 'open', this.open.bind(this));
-		on($('#setting-confirm'), 'click', () => Window.close!('setting'));
+		// confirm 由 Setting.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 	}
 
 	open() {
 		this.bindButtons();
 		this.load();
 		this.render();
-		on($('#setting'), 'closed', () => this.close(), { once: true });
+		on(serviceEls.get('setting') as HTMLElement, 'closed', () => this.close(), { once: true });
 	}
 	close() {
 		this.save();

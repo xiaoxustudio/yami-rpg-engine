@@ -1,6 +1,6 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { serviceEls } from '@app/services/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { $ } from '@app/utils/dom';
 import { disable, enable, on } from '@app/utils/element-utils.ts';
 import { Path } from '@app/utils/config';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
@@ -12,12 +12,12 @@ export const WebServer = new (class {
 	port = 5959;
 	constructor() {}
 	bindButtons() {
-		const startBtn = $('#qr-start-button');
+		const startBtn = serviceEls.get('qr-start-button') as HTMLElement;
 		if (!startBtn) return;
 		on(startBtn, 'click', () => {
 			this.start!(Path.slash(Editor.config!.project!));
 		});
-		on($('#qr-close-button'), 'click', () => this.stop!());
+		on(serviceEls.get('qr-close-button') as HTMLElement, 'click', () => this.stop!());
 	}
 	get enable() {
 		return YamiIpc.sync.getServerState();
@@ -46,11 +46,11 @@ export const WebServer = new (class {
 	}
 	load() {
 		if (this.enable) {
-			disable($('#qr-start-button'));
-			enable($('#qr-close-button'));
+			disable(serviceEls.get('qr-start-button') as HTMLElement);
+			enable(serviceEls.get('qr-close-button') as HTMLElement);
 		} else {
-			disable($('#qr-close-button'));
-			enable($('#qr-start-button'));
+			disable(serviceEls.get('qr-close-button') as HTMLElement);
+			enable(serviceEls.get('qr-start-button') as HTMLElement);
 		}
 	}
 	async open() {
@@ -60,7 +60,7 @@ export const WebServer = new (class {
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
 		this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
-		on($('#qr-update-button'), 'click', async () => {
+		on(serviceEls.get('qr-update-button') as HTMLElement, 'click', async () => {
 			index = index >= ips.length - 1 ? 0 : ++index;
 			url = `http://${ips[index]}:${WebServer.port}`;
 			this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
@@ -68,7 +68,7 @@ export const WebServer = new (class {
 		this.load!();
 	}
 	setContent(url: string, img: string) {
-		const content = $('#qr-code-content') as HTMLElement & {
+		const content = serviceEls.get('qr-code-content') as HTMLElement as HTMLElement & {
 			update?: (value: { url: string; img: string }) => void;
 		};
 		content?.update?.({ url, img });
