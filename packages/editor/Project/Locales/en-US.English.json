@@ -2430,9 +2430,6 @@
 		"particle-speed": {
 			"tip": "$Playback Speed\nSpeed of particle animation on stage\n1: Normal playback speed\n4: 4x playback speed"
 		},
-		"fileScene-general-grid": {
-			"label": "Scene"
-		},
 		"fileScene-width": {
 			"label": "Width",
 			"tip": "Number of horizontal grids in the scene (0 ~ 512)"
@@ -2448,9 +2445,6 @@
 		"fileScene-tileHeight": {
 			"label": "Tile Height",
 			"tip": "Height of scene grid (16 ~ 256)"
-		},
-		"fileScene-ambient-grid": {
-			"label": "Ambient Light"
 		},
 		"fileScene-ambient-red-box": {
 			"label": "Red",
@@ -2475,9 +2469,6 @@
 		"fileScene-scripts": {
 			"label": "Scripts",
 			"tip": "Add script files to extend this scene"
-		},
-		"fileUI-foreground-grid": {
-			"label": "Stage Foreground"
 		},
 		"fileUI-width": {
 			"label": "Width",
@@ -2508,9 +2499,6 @@
 		},
 		"palette-flip": {
 			"tip": "$Flip normal tiles\nFlip selected normal tiles horizontally (does not change auto tiles)"
-		},
-		"fileTileset-general-grid": {
-			"label": "Tileset"
 		},
 		"fileTileset-image": {
 			"label": "Image",
@@ -2543,9 +2531,6 @@
 		"fileTileset-globalPriority": {
 			"label": "Tile Priority",
 			"tip": "Sorting priority of tiles when rendering on the object layer.\nTiles below always overlay those above.\nPriority = -1: shift sort up by one tile.\nPriority = 1: shift sort down by one tile."
-		},
-		"fileActor-general-grid": {
-			"label": "General"
 		},
 		"fileActor-portrait": {
 			"label": "Portrait",
@@ -2679,9 +2664,6 @@
 			"label": "Scripts",
 			"tip": "Add script files to extend this actor"
 		},
-		"fileSkill-general-grid": {
-			"label": "General"
-		},
 		"fileSkill-icon": {
 			"label": "Icon",
 			"tip": "Skill Icon\n$Related command\nLoad Image"
@@ -2705,9 +2687,6 @@
 		"fileSkill-scripts": {
 			"label": "Scripts",
 			"tip": "Add script files to extend this skill"
-		},
-		"fileTrigger-general-grid": {
-			"label": "General"
 		},
 		"fileTrigger-selector": {
 			"label": "Target",
@@ -2855,9 +2834,6 @@
 			"label": "Inherit",
 			"tip": "Inherits specified trigger's events and scripts\nIf the same type of event exists, it overrides the inherited trigger's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
 		},
-		"fileTrigger-animation-grid": {
-			"label": "Animation"
-		},
 		"fileTrigger-animationId": {
 			"label": "Animation",
 			"tip": "Trigger animation"
@@ -2896,9 +2872,6 @@
 			"label": "Scripts",
 			"tip": "Add script files to extend this trigger"
 		},
-		"fileItem-general-grid": {
-			"label": "General"
-		},
 		"fileItem-icon": {
 			"label": "Icon",
 			"tip": "Item Icon\n$Related command\nLoad Image"
@@ -2922,9 +2895,6 @@
 		"fileItem-scripts": {
 			"label": "Scripts",
 			"tip": "Add script files to extend this item"
-		},
-		"fileEquipment-general-grid": {
-			"label": "General"
 		},
 		"fileEquipment-icon": {
 			"label": "Icon",
@@ -2950,9 +2920,6 @@
 			"label": "Scripts",
 			"tip": "Add script files to extend this equipment"
 		},
-		"fileState-general-grid": {
-			"label": "General"
-		},
 		"fileState-icon": {
 			"label": "Icon",
 			"tip": "State Icon\n$Related command\nLoad Image"
@@ -2976,9 +2943,6 @@
 		"fileState-scripts": {
 			"label": "Scripts",
 			"tip": "Add script files to extend this state"
-		},
-		"fileEvent-general-grid": {
-			"label": "General"
 		},
 		"fileEvent-type": {
 			"label": "Type",
@@ -3062,9 +3026,6 @@
 			"label": "Parameters",
 			"tip": "Parameter values can be passed when calling this event via \"Call Event\"\nParameters are automatically written to these variables during execution"
 		},
-		"fileImage-info-grid": {
-			"label": "File Info"
-		},
 		"fileImage-name": {
 			"label": "Name",
 			"tip": "File Name"
@@ -3076,12 +3037,6 @@
 		"fileImage-resolution": {
 			"label": "Resolution",
 			"tip": "Image resolution"
-		},
-		"fileImage-image-viewer": {
-			"label": "Image"
-		},
-		"fileAudio-info-grid": {
-			"label": "File Info"
 		},
 		"fileAudio-name": {
 			"label": "Name",
@@ -3099,9 +3054,6 @@
 			"label": "Bitrate",
 			"tip": "Audio bitrate - generally, higher = higher audio quality/file size"
 		},
-		"fileAudio-mixer-grid": {
-			"label": "Mixer"
-		},
 		"fileAudio-volume-box": {
 			"label": "Volume",
 			"tip": "Global volume"
@@ -3117,15 +3069,6 @@
 		"fileAudio-wet-box": {
 			"label": "Reverb - Wet",
 			"tip": "Wet reverb volume simulating closed space; higher indicates larger space"
-		},
-		"fileAudio-progress-box": {
-			"label": "Progress"
-		},
-		"fileAudio-frequency-canvas": {
-			"label": "Frequency"
-		},
-		"fileVideo-info-grid": {
-			"label": "File Info"
 		},
 		"fileVideo-name": {
 			"label": "Name",
@@ -3147,12 +3090,6 @@
 			"label": "Bitrate",
 			"tip": "Video bitrate - generally, higher = higher video quality/file size"
 		},
-		"fileVideo-video": {
-			"label": "Player"
-		},
-		"fileFont-info-grid": {
-			"label": "File Info"
-		},
 		"fileFont-name": {
 			"label": "Name",
 			"tip": "File Name"
@@ -3161,12 +3098,6 @@
 			"label": "Size",
 			"tip": "File Size"
 		},
-		"fileFont-font-grid": {
-			"label": "Font Preview"
-		},
-		"fileScript-info-grid": {
-			"label": "File Info"
-		},
 		"fileScript-name": {
 			"label": "Name",
 			"tip": "File Name"
@@ -3174,12 +3105,6 @@
 		"fileScript-size": {
 			"label": "Size",
 			"tip": "File Size"
-		},
-		"fileScript-overview": {
-			"label": "Overview"
-		},
-		"sceneActor-general-grid": {
-			"label": "General"
 		},
 		"sceneActor-name": {
 			"label": "Name",
@@ -3235,9 +3160,6 @@
 			"label": "Scripts",
 			"tip": "Add Script files to extend Actor functions"
 		},
-		"sceneRegion-general-grid": {
-			"label": "General"
-		},
 		"sceneRegion-name": {
 			"label": "Name",
 			"tip": "Region Name (note: this is a label for user reference only)"
@@ -3273,9 +3195,6 @@
 		"sceneRegion-scripts": {
 			"label": "Scripts",
 			"tip": "Add Script files to extend Region functions"
-		},
-		"sceneLight-general-grid": {
-			"label": "General"
 		},
 		"sceneLight-name": {
 			"label": "Name",
@@ -3385,9 +3304,6 @@
 			"label": "Scripts",
 			"tip": "Add Script files to extend Light functions"
 		},
-		"sceneAnimation-general-grid": {
-			"label": "General"
-		},
 		"sceneAnimation-name": {
 			"label": "Name",
 			"tip": "Animation Name (note: this is a label for user reference only)"
@@ -3454,9 +3370,6 @@
 			"label": "Scripts",
 			"tip": "Add Script files to extend Animation functions"
 		},
-		"sceneParticle-general-grid": {
-			"label": "General"
-		},
 		"sceneParticle-name": {
 			"label": "Name",
 			"tip": "Particle Name (note: this is a label for user reference only)"
@@ -3504,9 +3417,6 @@
 		"sceneParticle-scripts": {
 			"label": "Scripts",
 			"tip": "Add Script files to extend Particle functions"
-		},
-		"sceneParallax-general-grid": {
-			"label": "General"
 		},
 		"sceneParallax-name": {
 			"label": "Name",
@@ -3586,9 +3496,6 @@
 			"label": "Y",
 			"tip": "Parallax's initial vertical coordinates"
 		},
-		"sceneParallax-parallax-grid": {
-			"label": "Parallax"
-		},
 		"sceneParallax-scaleX": {
 			"label": "Scale X",
 			"tip": "Parallax's horizontal scaling factor"
@@ -3665,9 +3572,6 @@
 			"label": "Scripts",
 			"tip": "Add Script files to extend Parallax functions"
 		},
-		"sceneTilemap-general-grid": {
-			"label": "General"
-		},
 		"sceneTilemap-name": {
 			"label": "Name",
 			"tip": "Tilemap Name (note: this is a label for user reference only)"
@@ -3689,9 +3593,6 @@
 					"tip": "Object layer is rendered in order by position and Prioritys set for tiles"
 				}
 			}
-		},
-		"sceneTilemap-order": {
-			"label": "Order"
 		},
 		"sceneTilemap-light": {
 			"label": "Light",
@@ -3788,9 +3689,6 @@
 			"label": "Scripts",
 			"tip": "Add Script files to extend Tilemap functions"
 		},
-		"uiElement-general-grid": {
-			"label": "General"
-		},
 		"uiElement-name": {
 			"label": "Name",
 			"tip": "Element remark name"
@@ -3813,12 +3711,6 @@
 				}
 			}
 		},
-		"uiElement-transform-grid": {
-			"label": "Transform"
-		},
-		"uiElement-transform-align-box": {
-			"label": "Align"
-		},
 		"uiElement-transform-align-left": {
 			"tip": "$Left\nAlign the left edge of the element with the left edge of the container"
 		},
@@ -3837,17 +3729,11 @@
 		"uiElement-transform-align-bottom": {
 			"tip": "$Bottom\nAlign the bottom edge of the element with the bottom edge of the container"
 		},
-		"uiElement-transform-anchor-box": {
-			"label": "Anchor"
-		},
 		"uiElement-transform-anchorX": {
 			"tip": "$Anchor X\nThe horizontal position of the element relative to the container's anchor point"
 		},
 		"uiElement-transform-anchorY": {
 			"tip": "$Anchor Y\nThe vertical position of the element relative to the container's anchor point"
-		},
-		"uiElement-transform-x-box": {
-			"label": "X"
 		},
 		"uiElement-transform-x": {
 			"tip": "$X\nThe horizontal position of the element within the container (in pixels)"
@@ -3855,17 +3741,11 @@
 		"uiElement-transform-x2": {
 			"tip": "$X2\nThe horizontal position of the element within the container (as a percentage of container width)"
 		},
-		"uiElement-transform-y-box": {
-			"label": "Y"
-		},
 		"uiElement-transform-y": {
 			"tip": "$Y\nThe vertical position of the element within the container (in pixels)"
 		},
 		"uiElement-transform-y2": {
 			"tip": "$Y2\nThe vertical position of the element within the container (as a percentage of container height)"
-		},
-		"uiElement-transform-width-box": {
-			"label": "Width"
 		},
 		"uiElement-transform-width": {
 			"tip": "$Width\nThe width of the element within the container (in pixels)"
@@ -3873,23 +3753,14 @@
 		"uiElement-transform-width2": {
 			"tip": "$Width2\nThe width of the element within the container (as a percentage of container width)"
 		},
-		"uiElement-transform-height-box": {
-			"label": "Height"
-		},
 		"uiElement-transform-height": {
 			"tip": "$Height\nThe height of the element within the container (in pixels)"
 		},
 		"uiElement-transform-height2": {
 			"tip": "$Height2\nThe height of the element within the container (as a percentage of container height)"
 		},
-		"uiElement-transform-rotation-box": {
-			"label": "Rotation"
-		},
 		"uiElement-transform-rotation": {
 			"tip": "$Rotation\nThe rotation angle of the element around the anchor point, 0 degrees = right, clockwise rotation"
-		},
-		"uiElement-transform-scale-box": {
-			"label": "Scale"
 		},
 		"uiElement-transform-scaleX": {
 			"tip": "$Scale X\nThe horizontal scaling factor of the element"
@@ -3897,17 +3768,11 @@
 		"uiElement-transform-scaleY": {
 			"tip": "$Scale Y\nThe vertical scaling factor of the element"
 		},
-		"uiElement-transform-skew-box": {
-			"label": "Skew"
-		},
 		"uiElement-transform-skewX": {
 			"tip": "$Skew X\nThe horizontal skew factor of the element"
 		},
 		"uiElement-transform-skewY": {
 			"tip": "$Skew Y\nThe vertical skew factor of the element"
-		},
-		"uiElement-transform-opacity-box": {
-			"label": "Opacity"
 		},
 		"uiElement-transform-opacity": {
 			"tip": "$Opacity\nAdjusts the visibility of the element"
@@ -3919,9 +3784,6 @@
 		"uiElement-scripts": {
 			"label": "Scripts",
 			"tip": "Add Script files to extend Element functions"
-		},
-		"uiImage-properties-grid": {
-			"label": "Image Properties"
 		},
 		"uiImage-image": {
 			"label": "Image",
@@ -3993,9 +3855,6 @@
 				}
 			}
 		},
-		"uiImage-shift-box": {
-			"label": "Shift"
-		},
 		"uiImage-shiftX": {
 			"tip": "$Offset X\nHorizontal offset of the image texture (unit: pixels)"
 		},
@@ -4026,9 +3885,6 @@
 			"label": "Tint - Grayscale",
 			"tip": "Reduces color saturation (to black & white if high enough)"
 		},
-		"uiText-properties-grid": {
-			"label": "Text Properties"
-		},
 		"uiText-direction": {
 			"label": "Direction",
 			"tip": "Choose the text layout direction.",
@@ -4046,9 +3902,6 @@
 					"tip": "Content flows vertically from top to bottom, wrapping to the left."
 				}
 			}
-		},
-		"uiText-align-box": {
-			"label": "Align"
 		},
 		"uiText-align-left": {
 			"tip": "$Left\nAlign the left edge of the text with the left edge of the element."
@@ -4193,9 +4046,6 @@
 				}
 			}
 		},
-		"uiTextBox-properties-grid": {
-			"label": "TextBox Properties"
-		},
 		"uiTextBox-type": {
 			"label": "Type",
 			"tip": "Type of content in textbox.",
@@ -4276,9 +4126,6 @@
 		"uiTextBox-selectionBgColor": {
 			"label": "Selection Bg Color",
 			"tip": "Background color of selected text."
-		},
-		"uiDialogBox-properties-grid": {
-			"label": "DialogBox Properties"
 		},
 		"uiDialogBox-content": {
 			"label": "Content",
@@ -4386,9 +4233,6 @@
 					"tip": "C = max(0, A - B)"
 				}
 			}
-		},
-		"uiProgressBar-properties-grid": {
-			"label": "ProgressBar Properties"
 		},
 		"uiProgressBar-image": {
 			"label": "Image",
@@ -4501,9 +4345,6 @@
 		"uiProgressBar-color-3-box": {
 			"label": "Alpha",
 			"tip": "Opacity of the progress bar color"
-		},
-		"uiButton-image-properties-grid": {
-			"label": "Image Properties"
 		},
 		"uiButton-display": {
 			"label": "Display",
@@ -4619,9 +4460,6 @@
 			"label": "Active Tint",
 			"tip": "Tint for button in active state"
 		},
-		"uiButton-text-properties-grid": {
-			"label": "Text Properties"
-		},
 		"uiButton-direction": {
 			"label": "Direction",
 			"tip": "Choose the text layout direction",
@@ -4635,9 +4473,6 @@
 					"tip": "Content flows vertically from top to bottom"
 				}
 			}
-		},
-		"uiButton-align-box": {
-			"label": "Align"
 		},
 		"uiButton-align-left": {
 			"tip": "$Left\nAlign the left edge of the text with the left edge of the element"
@@ -4750,9 +4585,6 @@
 			"label": "Active Color",
 			"tip": "Text color in the button's active state"
 		},
-		"uiButton-sound-effects-grid": {
-			"label": "Sound Effects"
-		},
 		"uiButton-hoverSound": {
 			"label": "Hover SE",
 			"tip": "Sound effect when the button is hovered (must be manually triggered by the user)"
@@ -4760,9 +4592,6 @@
 		"uiButton-clickSound": {
 			"label": "Click SE",
 			"tip": "Sound effect when the button is clicked"
-		},
-		"uiAnimation-properties-grid": {
-			"label": "Animation Properties"
 		},
 		"uiAnimation-animation": {
 			"label": "Animation",
@@ -4788,17 +4617,11 @@
 			"label": "Frame",
 			"tip": "Initial frame of the animation"
 		},
-		"uiAnimation-offset-box": {
-			"label": "Offset"
-		},
 		"uiAnimation-offsetX": {
 			"tip": "$Offset X\nHorizontal offset distance of the animation"
 		},
 		"uiAnimation-offsetY": {
 			"tip": "$Offset Y\nVertical offset distance of the animation"
-		},
-		"uiVideo-properties-grid": {
-			"label": "Video Properties"
 		},
 		"uiVideo-video": {
 			"label": "Video",
@@ -4861,9 +4684,6 @@
 					"tip": "C = max(0, A - B)"
 				}
 			}
-		},
-		"uiWindow-properties-grid": {
-			"label": "Window Properties"
 		},
 		"uiWindow-layout": {
 			"label": "Layout",
@@ -4929,9 +4749,6 @@
 				}
 			}
 		},
-		"uiReference-properties-grid": {
-			"label": "Reference Properties"
-		},
 		"uiReference-prefabId": {
 			"label": "Prefab",
 			"tip": "Replace itself with this element"
@@ -4939,9 +4756,6 @@
 		"uiReference-synchronous": {
 			"label": "Synchronous",
 			"tip": "Automatically updates to match the referenced element's size in edit mode, but allows a different position setting"
-		},
-		"animMotion-general-grid": {
-			"label": "Motion"
 		},
 		"animMotion-mode": {
 			"label": "Mode",
@@ -4993,26 +4807,14 @@
 			"label": "Loop Start",
 			"tip": "Animation loop starting position"
 		},
-		"animJointFrame-properties-grid": {
-			"label": "Frame"
-		},
-		"animJointFrame-position-box": {
-			"label": "Position"
-		},
 		"animJointFrame-x": {
 			"tip": "$X\nHorizontal position"
 		},
 		"animJointFrame-y": {
 			"tip": "$Y\nVertical position"
 		},
-		"animJointFrame-rotation-box": {
-			"label": "Rotation"
-		},
 		"animJointFrame-rotation": {
 			"tip": "$Rotation\nRotation angle, 0 degrees = Right, clockwise rotation"
-		},
-		"animJointFrame-scale-box": {
-			"label": "Scale"
 		},
 		"animJointFrame-scaleX": {
 			"tip": "$Scale X\nHorizontal scale factor"
@@ -5020,14 +4822,8 @@
 		"animJointFrame-scaleY": {
 			"tip": "$Scale Y\nVertical scale factor"
 		},
-		"animJointFrame-opacity-box": {
-			"label": "Opacity"
-		},
 		"animJointFrame-opacity": {
 			"tip": "$Opacity\nAdjusts the visibility of the animation frame"
-		},
-		"animSpriteLayer-properties-grid": {
-			"label": "Sprite Layer"
 		},
 		"animSpriteLayer-sprite": {
 			"label": "Sprite",
@@ -5069,20 +4865,11 @@
 				}
 			}
 		},
-		"animSpriteFrame-properties-grid": {
-			"label": "Frame"
-		},
-		"animSpriteFrame-anchor-box": {
-			"label": "Anchor"
-		},
 		"animSpriteFrame-anchorX": {
 			"tip": "$Anchor X\nThe horizontal position of the sprite relative to the animation connection point"
 		},
 		"animSpriteFrame-anchorY": {
 			"tip": "$Anchor Y\nThe vertical position of the sprite relative to the animation connection point"
-		},
-		"animSpriteFrame-pivot-box": {
-			"label": "Pivot"
 		},
 		"animSpriteFrame-pivotX": {
 			"tip": "$Pivot X\nThe horizontal offset of the sprite relative to the animation connection point"
@@ -5090,32 +4877,20 @@
 		"animSpriteFrame-pivotY": {
 			"tip": "$Pivot Y\nThe vertical offset of the sprite relative to the animation connection point"
 		},
-		"animSpriteFrame-position-box": {
-			"label": "Position"
-		},
 		"animSpriteFrame-x": {
 			"tip": "$X\nHorizontal position"
 		},
 		"animSpriteFrame-y": {
 			"tip": "$Y\nVertical position"
 		},
-		"animSpriteFrame-rotation-box": {
-			"label": "Rotation"
-		},
 		"animSpriteFrame-rotation": {
 			"tip": "$Rotation\nRotation angle, 0° = right, clockwise rotation"
-		},
-		"animSpriteFrame-scale-box": {
-			"label": "Scale"
 		},
 		"animSpriteFrame-scaleX": {
 			"tip": "$Scale X\nHorizontal scaling factor"
 		},
 		"animSpriteFrame-scaleY": {
 			"tip": "$Scale Y\nVertical scaling factor"
-		},
-		"animSpriteFrame-opacity-box": {
-			"label": "Opacity"
 		},
 		"animSpriteFrame-opacity": {
 			"tip": "$Opacity\nUsed to adjust the visibility of the animation frame"
@@ -5138,9 +4913,6 @@
 		},
 		"sprite-label": {
 			"content": "Sprite"
-		},
-		"animParticleLayer-properties-grid": {
-			"label": "Particle Layer"
 		},
 		"animParticleLayer-particleId": {
 			"label": "Particle",
@@ -5188,35 +4960,20 @@
 				}
 			}
 		},
-		"animParticleFrame-properties-grid": {
-			"label": "Frame"
-		},
-		"animParticleFrame-position-box": {
-			"label": "Position"
-		},
 		"animParticleFrame-x": {
 			"tip": "$X\nHorizontal position"
 		},
 		"animParticleFrame-y": {
 			"tip": "$Y\nVertical position"
 		},
-		"animParticleFrame-rotation-box": {
-			"label": "Rotation"
-		},
 		"animParticleFrame-rotation": {
 			"tip": "$Rotation\nRotation angle, 0 degrees = right, clockwise rotation"
-		},
-		"animParticleFrame-scale-box": {
-			"label": "Scale"
 		},
 		"animParticleFrame-scaleX": {
 			"tip": "$Scale X\nHorizontal scaling factor of the emission area"
 		},
 		"animParticleFrame-scaleY": {
 			"tip": "$Scale Y\nVertical scaling factor of the emission area"
-		},
-		"animParticleFrame-opacity-box": {
-			"label": "Opacity"
 		},
 		"animParticleFrame-opacity": {
 			"tip": "$Opacity\nUsed to adjust the visibility of the animation frame"
@@ -5228,9 +4985,6 @@
 		"animParticleFrame-speed": {
 			"label": "Speed",
 			"tip": "Overall playback speed of the particles"
-		},
-		"animSoundLayer-properties-grid": {
-			"label": "Sound Layer"
 		},
 		"animSoundLayer-playbackRate": {
 			"label": "Playback Rate",
@@ -5246,9 +5000,6 @@
 				}
 			}
 		},
-		"animSoundFrame-properties-grid": {
-			"label": "Frame"
-		},
 		"animSoundFrame-sound": {
 			"label": "Sound",
 			"tip": "Select an audio file"
@@ -5256,9 +5007,6 @@
 		"animSoundFrame-volume": {
 			"label": "Volume",
 			"tip": "Adjust the volume of this sound effect"
-		},
-		"particleLayer-general-grid": {
-			"label": "General"
 		},
 		"particleLayer-name": {
 			"label": "Name",
@@ -5330,12 +5078,6 @@
 			"label": "Fadeout",
 			"tip": "Time for the particle to transition to complete transparency before destruction"
 		},
-		"particleLayer-anchor-grid": {
-			"label": "Anchor"
-		},
-		"particleLayer-anchor-x-box": {
-			"label": "Anchor X"
-		},
 		"particleLayer-anchor-x-0": {
 			"tip": "$Anchor X\nHorizontal offset distance of the anchor\n0: Anchor is at the midpoint of the particle's horizontal direction\n-1: Shifted left by one particle width\n1: Shifted right by one particle width"
 		},
@@ -5343,17 +5085,11 @@
 			"tip": "$Deviation\nGenerates a random value for the parameter\nMin = Standard value - Deviation\nMax = Standard value + Deviation",
 			"save": "deviation"
 		},
-		"particleLayer-anchor-y-box": {
-			"label": "Anchor Y"
-		},
 		"particleLayer-anchor-y-0": {
 			"tip": "$Anchor Y\nVertical offset distance of the anchor\n0: Anchor is at the midpoint of the particle's vertical direction\n-1: Shifted up by one particle height\n1: Shifted down by one particle height"
 		},
 		"particleLayer-anchor-y-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-anchor-speedX-box": {
-			"label": "Anchor Speed X"
 		},
 		"particleLayer-anchor-speedX-0": {
 			"tip": "$Anchor Speed X\nThe rate of change of 'Anchor X' per second"
@@ -5361,20 +5097,11 @@
 		"particleLayer-anchor-speedX-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-anchor-speedY-box": {
-			"label": "Anchor Speed Y"
-		},
 		"particleLayer-anchor-speedY-0": {
 			"tip": "$Anchor Speed Y\nThe rate of change of 'Anchor Y' per second"
 		},
 		"particleLayer-anchor-speedY-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-movement-grid": {
-			"label": "Movement"
-		},
-		"particleLayer-movement-angle-box": {
-			"label": "Movement Angle"
 		},
 		"particleLayer-movement-angle-0": {
 			"tip": "$Movement Angle\nThe angle of the particle's initial velocity"
@@ -5382,17 +5109,11 @@
 		"particleLayer-movement-angle-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-movement-speed-box": {
-			"label": "Movement Speed"
-		},
 		"particleLayer-movement-speed-0": {
 			"tip": "$Movement Speed\nThe magnitude of the particle's initial velocity"
 		},
 		"particleLayer-movement-speed-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-movement-accelAngle-box": {
-			"label": "Accel Angle"
 		},
 		"particleLayer-movement-accelAngle-0": {
 			"tip": "$Acceleration Angle\nThe rate of change of 'Movement Angle' per second"
@@ -5400,20 +5121,11 @@
 		"particleLayer-movement-accelAngle-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-movement-accel-box": {
-			"label": "Accel"
-		},
 		"particleLayer-movement-accel-0": {
 			"tip": "$Acceleration\nThe rate of change of 'Movement Speed' per second"
 		},
 		"particleLayer-movement-accel-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-rotation-grid": {
-			"label": "Rotation"
-		},
-		"particleLayer-rotation-angle-box": {
-			"label": "Rotation Angle"
 		},
 		"particleLayer-rotation-angle-0": {
 			"tip": "$Rotation Angle\nThe particle's initial angle"
@@ -5421,17 +5133,11 @@
 		"particleLayer-rotation-angle-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-rotation-speed-box": {
-			"label": "Angular Velocity"
-		},
 		"particleLayer-rotation-speed-0": {
 			"tip": "$Rotation Speed\nThe rate of change of 'Rotation Angle' per second"
 		},
 		"particleLayer-rotation-speed-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-rotation-accel-box": {
-			"label": "Angular Accel"
 		},
 		"particleLayer-rotation-accel-0": {
 			"tip": "$Angular Acceleration\nThe rate of change of 'Rotation Speed' per second"
@@ -5439,20 +5145,11 @@
 		"particleLayer-rotation-accel-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-hRotation-grid": {
-			"label": "Horizontal Rotation"
-		},
-		"particleLayer-hRotation-radius-box": {
-			"label": "Radius"
-		},
 		"particleLayer-hRotation-radius-0": {
 			"tip": "$Radius\nThe amplitude of the particle's back-and-forth horizontal movement, used to simulate rotation around the Y-axis"
 		},
 		"particleLayer-hRotation-radius-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-hRotation-expansionSpeed-box": {
-			"label": "Expansion Speed"
 		},
 		"particleLayer-hRotation-expansionSpeed-0": {
 			"tip": "$Expansion Speed\nThe rate of change of 'Radius' per second"
@@ -5460,17 +5157,11 @@
 		"particleLayer-hRotation-expansionSpeed-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-hRotation-expansionAccel-box": {
-			"label": "Expansion Accel"
-		},
 		"particleLayer-hRotation-expansionAccel-0": {
 			"tip": "$Expansion Acceleration\nThe rate of change of 'Expansion Speed' per second"
 		},
 		"particleLayer-hRotation-expansionAccel-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-hRotation-angle-box": {
-			"label": "Rotation Angle"
 		},
 		"particleLayer-hRotation-angle-0": {
 			"tip": "$Rotation Angle\nThe particle's initial angle of rotation around the Y-axis\n0 degrees = right, clockwise rotation"
@@ -5478,17 +5169,11 @@
 		"particleLayer-hRotation-angle-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-hRotation-angularSpeed-box": {
-			"label": "Angular Velocity"
-		},
 		"particleLayer-hRotation-angularSpeed-0": {
 			"tip": "$Rotation Speed\nThe rate of change of 'Rotation Angle' per second"
 		},
 		"particleLayer-hRotation-angularSpeed-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-hRotation-angularAccel-box": {
-			"label": "Angular Accel"
 		},
 		"particleLayer-hRotation-angularAccel-0": {
 			"tip": "$Angular Acceleration\nThe rate of change of 'Rotation Speed' per second"
@@ -5496,20 +5181,11 @@
 		"particleLayer-hRotation-angularAccel-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-scale-grid": {
-			"label": "Scale"
-		},
-		"particleLayer-scale-factor-box": {
-			"label": "Scale Factor"
-		},
 		"particleLayer-scale-factor-0": {
 			"tip": "$Scale Factor\nThe scaling factor for particle size, 1 = 100%"
 		},
 		"particleLayer-scale-factor-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-scale-speed-box": {
-			"label": "Expansion Speed"
 		},
 		"particleLayer-scale-speed-0": {
 			"tip": "$Scaling Speed\nThe rate of change of 'Scale Factor' per second"
@@ -5517,17 +5193,11 @@
 		"particleLayer-scale-speed-1": {
 			"tip": "#deviation"
 		},
-		"particleLayer-scale-accel-box": {
-			"label": "Expansion Accel"
-		},
 		"particleLayer-scale-accel-0": {
 			"tip": "$Scaling Acceleration\nThe rate of change of 'Scaling Speed' per second"
 		},
 		"particleLayer-scale-accel-1": {
 			"tip": "#deviation"
-		},
-		"particleLayer-rendering-grid": {
-			"label": "Rendering"
 		},
 		"particleLayer-image": {
 			"label": "Image",
@@ -5639,9 +5309,6 @@
 				}
 			}
 		},
-		"particleLayer-color-rgba-box": {
-			"label": "Color"
-		},
 		"particleLayer-color-rgba-0": {
 			"tip": "$Red\n0 ~ 255"
 		},
@@ -5654,9 +5321,6 @@
 		"particleLayer-color-rgba-3": {
 			"tip": "$Opacity\n0 ~ 255"
 		},
-		"particleLayer-color-min-box": {
-			"label": "Color Min"
-		},
 		"particleLayer-color-min-0": {
 			"tip": "$Red\n0 ~ 255"
 		},
@@ -5668,9 +5332,6 @@
 		},
 		"particleLayer-color-min-3": {
 			"tip": "$Opacity\n0 ~ 255"
-		},
-		"particleLayer-color-max-box": {
-			"label": "Color Max"
 		},
 		"particleLayer-color-max-0": {
 			"tip": "$Red\n0 ~ 255"
@@ -5688,9 +5349,6 @@
 			"label": "Color Easing",
 			"tip": "Used to calculate the interpolation color"
 		},
-		"particleLayer-color-startMin-box": {
-			"label": "Color Start Min"
-		},
 		"particleLayer-color-startMin-0": {
 			"tip": "$Red\n0 ~ 255"
 		},
@@ -5702,9 +5360,6 @@
 		},
 		"particleLayer-color-startMin-3": {
 			"tip": "$Opacity\n0 ~ 255"
-		},
-		"particleLayer-color-startMax-box": {
-			"label": "Color Start Max"
 		},
 		"particleLayer-color-startMax-0": {
 			"tip": "$Red\n0 ~ 255"
@@ -5718,9 +5373,6 @@
 		"particleLayer-color-startMax-3": {
 			"tip": "$Opacity\n0 ~ 255"
 		},
-		"particleLayer-color-endMin-box": {
-			"label": "Color End Min"
-		},
 		"particleLayer-color-endMin-0": {
 			"tip": "$Red\n0 ~ 255"
 		},
@@ -5732,9 +5384,6 @@
 		},
 		"particleLayer-color-endMin-3": {
 			"tip": "$Opacity\n0 ~ 255"
-		},
-		"particleLayer-color-endMax-box": {
-			"label": "Color End Max"
 		},
 		"particleLayer-color-endMax-0": {
 			"tip": "$Red\n0 ~ 255"
@@ -5764,12 +5413,6 @@
 			"label": "Tint - Grayscale",
 			"tip": "Grayscale is the opposite of saturation; higher grayscale means lower saturation"
 		},
-		"setting": {
-			"title": "Settings"
-		},
-		"setting-title-server": {
-			"content": "Local Service"
-		},
 		"setting-server-port": {
 			"label": "Port",
 			"tip": "The port that the local service listens on"
@@ -5777,9 +5420,6 @@
 		"setting-server-auto": {
 			"label": "Automatic service activation",
 			"tip": "Enable the project to automatically start the local service"
-		},
-		"setting-title-apkbuild": {
-			"content": "APK Build"
 		},
 		"setting-apkbuild-outputDir": {
 			"label": "Decompilation Output Directory",
@@ -5792,9 +5432,6 @@
 		"setting-apkbuild-apktoolPath": {
 			"label": "apktool.jar Path",
 			"tip": "The path of apktool.jar"
-		},
-		"setting-title-signed": {
-			"content": "Signing"
 		},
 		"setting-signed-jksPath": {
 			"label": "JKS Key Store Path",
@@ -5824,9 +5461,6 @@
 			"label": "Signed APK Path",
 			"tip": "The output path for the signed APK file"
 		},
-		"setting-title-other": {
-			"content": "Other"
-		},
 		"setting-other-copyAsTextKeepEmptyLine": {
 			"label": "Keep Empty Lines",
 			"tip": "Copy to text - Whether to keep empty lines"
@@ -5835,18 +5469,9 @@
 			"label": "Project Search History Limit",
 			"tip": "Maximum number of search history entries shown in the project browser search dropdown"
 		},
-		"setting-title-github": {
-			"content": "GitHub"
-		},
 		"setting-github-accelerationNode": {
 			"label": "Acceleration Node",
 			"tip": "Select the acceleration node for GitHub resource downloads"
-		},
-		"autoTile": {
-			"title": "Auto Tile"
-		},
-		"autoTile-general-grid": {
-			"label": "General"
 		},
 		"autoTile-image": {
 			"label": "Image",
@@ -5904,9 +5529,6 @@
 		"autoTile-rule-7": {
 			"tip": "$Bottom Left\nCheck if there is a neighboring tile with the same type"
 		},
-		"autoTile-generateFrames": {
-			"title": "Generate Frames"
-		},
 		"autoTile-generateFrames-strideX": {
 			"label": "Stride X",
 			"tip": "Horizontal offset of generated frame relative to previous"
@@ -5919,15 +5541,6 @@
 			"label": "Count",
 			"tip": "Total number of animation frames to generate (selected frame as reference)"
 		},
-		"autoTile-frameIndex": {
-			"title": "Frame"
-		},
-		"autoTile-selectNode": {
-			"title": "Tile Node"
-		},
-		"scene-shift": {
-			"title": "Shift"
-		},
 		"scene-shift-x": {
 			"label": "Shift X",
 			"tip": "Horizontal offset of the scene object"
@@ -5935,9 +5548,6 @@
 		"scene-shift-y": {
 			"label": "Shift Y",
 			"tip": "Vertical offset of the scene object"
-		},
-		"object-folder": {
-			"title": "Default Object Folders"
 		},
 		"object-folder-tilemap": {
 			"label": "Tilemap",
@@ -5967,9 +5577,6 @@
 			"label": "Parallax",
 			"tip": "This folder is automatically created when a new scene is created\nParallax backgrounds created via the stage context menu will be automatically placed in this folder"
 		},
-		"newProject": {
-			"title": "New Project"
-		},
 		"newProject-template": {
 			"label": "Template",
 			"tip": "Select a game template for the new project",
@@ -5984,17 +5591,11 @@
 			"label": "Folder",
 			"tip": "Name of the new project folder"
 		},
-		"newProject-location-box": {
-			"label": "Location"
-		},
 		"newProject-location": {
 			"tip": "$Location\nCreate a new project folder at this location"
 		},
 		"newProject-choose": {
 			"tip": "$Choose Folder\nOpen the operating system dialog to select a folder as the path"
-		},
-		"deployment": {
-			"title": "Deployment"
 		},
 		"deployment-platform": {
 			"label": "Platform",
@@ -6003,9 +5604,6 @@
 		"deployment-folder": {
 			"label": "Folder",
 			"tip": "Name of the output folder"
-		},
-		"deployment-location-box": {
-			"label": "Output Location"
 		},
 		"deployment-location": {
 			"tip": "$Output Location\nCreate an output folder at this location"
@@ -6016,18 +5614,6 @@
 		"deployment-compress": {
 			"label": "Obfuscation Compression",
 			"tip": "Enable Obfuscation Compression\nAfter enabling, the obfuscated compressed code will be used to reduce the file size, but it will increase the compilation time"
-		},
-		"copyProgress": {
-			"title": "Copy Progress"
-		},
-		"copyProgress-box": {
-			"label": "Copying Files..."
-		},
-		"project-settings": {
-			"title": "Project Settings"
-		},
-		"config-window-summary": {
-			"content": "Window"
 		},
 		"config-window-title": {
 			"label": "Title",
@@ -6059,9 +5645,6 @@
 				}
 			}
 		},
-		"config-resolution-summary": {
-			"content": "Resolution"
-		},
 		"config-resolution-width": {
 			"label": "Width",
 			"tip": "Actual game canvas width, auto-scaled when window changes (saved after deployment)"
@@ -6078,9 +5661,6 @@
 			"label": "UI Scale",
 			"tip": "Scale the user interface proportionally (saved after deployment)"
 		},
-		"config-scene-summary": {
-			"content": "Scene"
-		},
 		"config-scene-padding": {
 			"label": "Padding",
 			"tip": "Maximum camera distance outside scene. Set 0 to lock camera inside scene"
@@ -6088,9 +5668,6 @@
 		"config-scene-animationInterval": {
 			"label": "Tile Animation Interval",
 			"tip": "Interval for automatic tile animation frames"
-		},
-		"config-tileArea-summary": {
-			"content": "Tile Rendering Area"
 		},
 		"config-tileArea-expansionTop": {
 			"label": "Expansion Top",
@@ -6108,9 +5685,6 @@
 			"label": "Expansion Bottom",
 			"tip": "Render tiles a specified distance outside the bottom edge of the screen"
 		},
-		"config-animationArea-summary": {
-			"content": "Animation Rendering Area"
-		},
 		"config-animationArea-expansionTop": {
 			"label": "Expansion Top",
 			"tip": "Render animations a specified distance outside the top edge of the screen"
@@ -6126,9 +5700,6 @@
 		"config-animationArea-expansionBottom": {
 			"label": "Expansion Bottom",
 			"tip": "Render animations a specified distance outside the bottom edge of the screen"
-		},
-		"config-lightArea-summary": {
-			"content": "Light Rendering Area"
 		},
 		"config-lightArea-expansionTop": {
 			"label": "Expansion Top",
@@ -6146,9 +5717,6 @@
 			"label": "Expansion Bottom",
 			"tip": "Render light sources a specified distance outside the bottom edge of the screen"
 		},
-		"config-virtualAxis-summary": {
-			"content": "Virtual Axis"
-		},
 		"config-virtualAxis-up": {
 			"label": "Axis Up",
 			"tip": "Pressing this key alone moves the axis point upward\nY = -1, Angle = 270"
@@ -6164,9 +5732,6 @@
 		"config-virtualAxis-right": {
 			"label": "Axis Right",
 			"tip": "Pressing this key alone moves the axis point right\nX = 1, Angle = 0"
-		},
-		"config-collision-summary": {
-			"content": "Collision System"
 		},
 		"config-collision-actor-enabled": {
 			"label": "Actor Collision",
@@ -6214,9 +5779,6 @@
 				}
 			}
 		},
-		"config-text-summary": {
-			"content": "Text"
-		},
 		"config-text-importedFonts": {
 			"label": "Imported Fonts",
 			"tip": "Import external fonts. The font name is the filename (without the extension).\nImporting too many fonts will extend initial loading time"
@@ -6239,22 +5801,13 @@
 				}
 			}
 		},
-		"config-actor-summary": {
-			"content": "Actor"
-		},
 		"config-actor-tempAttributes": {
 			"label": "Actor Temporary Attributes",
 			"tip": "All actors automatically add preset temporary attributes when initialized. These attributes cannot be saved and will be reset after loading a saved game"
 		},
-		"config-animation-summary": {
-			"content": "Animation"
-		},
 		"config-animation-frameRate": {
 			"label": "Frame Rate",
 			"tip": "Number of animation timeline frames per second. Rendered frames are interpolated based on FPS"
-		},
-		"config-soundAttenuation-summary": {
-			"content": "Sound Attenuation"
 		},
 		"config-soundAttenuation-distance": {
 			"label": "Attenuation Distance",
@@ -6263,9 +5816,6 @@
 		"config-soundAttenuation-easingId": {
 			"label": "Attenuation Easing",
 			"tip": "Interpolation curve from volume 1 to 0"
-		},
-		"config-webgl-summary": {
-			"content": "WebGL"
 		},
 		"config-webgl-desynchronized": {
 			"label": "Low Latency Mode",
@@ -6309,9 +5859,6 @@
 				}
 			}
 		},
-		"config-script-summary": {
-			"content": "Script"
-		},
 		"config-script-autoCompile": {
 			"label": "Auto Compile",
 			"tip": "Enable or disable automatic compilation of script files in the background.",
@@ -6325,9 +5872,6 @@
 					"tip": "Disable automatic compilation and use the code editor's compilation feature instead."
 				}
 			}
-		},
-		"config-save-summary": {
-			"content": "Save"
 		},
 		"config-save-location": {
 			"label": "Save Location",
@@ -6351,9 +5895,6 @@
 			"label": "Subdirectory",
 			"tip": "Relative to the save location, setting a unique directory name can prevent conflicts with other applications' data.\n"
 		},
-		"config-localization-summary": {
-			"content": "Localization"
-		},
 		"config-localization-languages": {
 			"label": "Languages",
 			"tip": "List of game localization languages, detailed content can be edited in the 'Localization' window"
@@ -6361,9 +5902,6 @@
 		"config-localization-default": {
 			"label": "Default Game Language",
 			"tip": "Language selected on game start. When deployed, selected language is saved automatically"
-		},
-		"config-other-summary": {
-			"content": "Other Options"
 		},
 		"config-preload": {
 			"label": "Preload Files",
@@ -6387,15 +5925,6 @@
 			"label": "Custom dead zone",
 			"tip": "Custom dead zone for the handle, range (0-1)"
 		},
-		"easing": {
-			"title": "Easing"
-		},
-		"easing-list": {
-			"label": "List"
-		},
-		"easing-points-grid": {
-			"label": "Points"
-		},
 		"easing-mode": {
 			"label": "Mode",
 			"tip": "Select the number of curve control points",
@@ -6413,30 +5942,6 @@
 					"tip": "Generate a more complex curve"
 				}
 			}
-		},
-		"easing-points-0": {
-			"content": "Point 1"
-		},
-		"easing-points-1": {
-			"content": "Point 2"
-		},
-		"easing-points-2": {
-			"content": "Point 3"
-		},
-		"easing-points-3": {
-			"content": "Point 4"
-		},
-		"easing-points-4": {
-			"content": "Point 5"
-		},
-		"easing-points-5": {
-			"content": "Point 6"
-		},
-		"easing-points-6": {
-			"content": "Point 7"
-		},
-		"easing-points-7": {
-			"content": "Point 8"
 		},
 		"easing-points-0-x": {
 			"tip": "$X1\nHorizontal position of Control Point 1"
@@ -6486,12 +5991,6 @@
 		"easing-points-7-y": {
 			"tip": "$Y8\nVertical position of Control Point 8"
 		},
-		"easing-curve-canvas": {
-			"label": "Curve"
-		},
-		"easing-preview-canvas": {
-			"label": "Preview"
-		},
 		"easing-preview-reverse": {
 			"label": "Reverse",
 			"tip": "Whether to reverse the animation during preview",
@@ -6514,12 +6013,6 @@
 			"label": "Wait",
 			"tip": "Wait time after transition ends"
 		},
-		"team": {
-			"title": "Team"
-		},
-		"object-attribute": {
-			"title": "Attribute"
-		},
 		"object-attribute-key": {
 			"label": "Key",
 			"tip": "Name of the attribute"
@@ -6539,9 +6032,6 @@
 		"object-attribute-enum-value": {
 			"label": "Option",
 			"tip": "Attribute value (Option)"
-		},
-		"condition": {
-			"title": "Condition"
 		},
 		"condition-type": {
 			"label": "Condition Type",
@@ -6647,9 +6137,6 @@
 			"label": "String",
 			"tip": "Operand"
 		},
-		"fileAnimation-sprite": {
-			"title": "Sprite"
-		},
 		"fileAnimation-sprite-name": {
 			"label": "Name",
 			"tip": "Sprite image name"
@@ -6666,9 +6153,6 @@
 			"label": "Vert Frames",
 			"tip": "Number of vertical divisions in the sprite sheet; frame height rounded down"
 		},
-		"fileActor-sprite": {
-			"title": "Sprite"
-		},
 		"fileActor-sprite-id": {
 			"label": "Name",
 			"tip": "Select the sprite image for the actor animation"
@@ -6676,9 +6160,6 @@
 		"fileActor-sprite-image": {
 			"label": "Image",
 			"tip": "Replace the sprite image with a new one"
-		},
-		"fileActor-skill": {
-			"title": "Skill"
 		},
 		"fileActor-skill-id": {
 			"label": "Skill",
@@ -6688,9 +6169,6 @@
 			"label": "Shortcut Key",
 			"tip": "Set the shortcut key for this skill"
 		},
-		"fileActor-equipment": {
-			"title": "Equipment"
-		},
 		"fileActor-equipment-id": {
 			"label": "Equipment",
 			"tip": "Select an equipment file"
@@ -6698,9 +6176,6 @@
 		"fileActor-equipment-slot": {
 			"label": "Equipment Slot",
 			"tip": "Set the equipment slot for this equipment"
-		},
-		"fileActor-inventory-goods": {
-			"title": "Inventory"
 		},
 		"fileActor-inventory-type": {
 			"label": "Type",
@@ -6735,9 +6210,6 @@
 		"fileActor-inventory-money": {
 			"label": "Money",
 			"tip": "Set the initial amount of money"
-		},
-		"fileEvent-parameter": {
-			"title": "Parameter"
 		},
 		"fileEvent-parameter-type": {
 			"label": "Type",
@@ -6801,21 +6273,9 @@
 			"label": "Note",
 			"tip": "Remarks or description of the parameter"
 		},
-		"variable": {
-			"title": "Variable"
-		},
-		"variable-list": {
-			"label": "List"
-		},
-		"variable-properties-flex": {
-			"label": "Properties"
-		},
 		"variable-name": {
 			"label": "Name",
 			"tip": "Variable name"
-		},
-		"variable-sort-normal": {
-			"label": "Sort"
 		},
 		"variable-sort-normal-label": {
 			"content": "Save to Separate File",
@@ -6828,9 +6288,6 @@
 		"variable-sort-temporary-label": {
 			"content": "Temporary",
 			"tip": "Do not save the variable data; it resets after restarting the game"
-		},
-		"variable-type-boolean": {
-			"label": "Type"
 		},
 		"variable-type-boolean-label": {
 			"content": "Boolean",
@@ -6848,9 +6305,6 @@
 			"content": "Object",
 			"tip": "Can only write objects (cannot be saved)"
 		},
-		"variable-value-manager": {
-			"label": "Value"
-		},
 		"variable-value-boolean-false": {
 			"tip": "$Initial Value\nFalse"
 		},
@@ -6867,15 +6321,6 @@
 			"label": "Note",
 			"tip": "Notes about the variable"
 		},
-		"attribute": {
-			"title": "Attribute"
-		},
-		"attribute-list": {
-			"label": "List"
-		},
-		"attribute-properties-flex": {
-			"label": "Properties"
-		},
 		"attribute-name": {
 			"label": "Name",
 			"tip": "Attribute name"
@@ -6884,9 +6329,6 @@
 			"label": "Key",
 			"placeholder": "Default",
 			"tip": "Attribute key; defaults to attribute ID"
-		},
-		"attribute-type-boolean": {
-			"label": "Type"
 		},
 		"attribute-type-boolean-label": {
 			"content": "Boolean",
@@ -6916,15 +6358,6 @@
 			"label": "Note",
 			"tip": "Notes about the attribute"
 		},
-		"enum": {
-			"title": "Enumeration"
-		},
-		"enum-list": {
-			"label": "List"
-		},
-		"enum-properties-flex": {
-			"label": "Properties"
-		},
 		"enum-name": {
 			"label": "Name",
 			"tip": "Enumeration name"
@@ -6938,24 +6371,6 @@
 			"label": "Note",
 			"tip": "Notes about the enum"
 		},
-		"localization": {
-			"title": "Localization"
-		},
-		"localization-list": {
-			"label": "List"
-		},
-		"presetObject": {
-			"title": "Scene Object"
-		},
-		"presetElement": {
-			"title": "Element"
-		},
-		"plugin": {
-			"title": "Plugin"
-		},
-		"plugin-list": {
-			"label": "List"
-		},
 		"plugin-overview": {
 			"label": "Overview"
 		},
@@ -6967,12 +6382,6 @@
 		},
 		"arrayList-string": {
 			"title": "String"
-		},
-		"command": {
-			"title": "Custom Command"
-		},
-		"command-list": {
-			"label": "List"
 		},
 		"command-overview": {
 			"label": "Overview"
@@ -6990,23 +6399,8 @@
 			"placeholder": "Keywords are separated by commas",
 			"tip": "Add search keywords, separated by commas"
 		},
-		"about": {
-			"title": "Yami RPG Editor"
-		},
-		"about-credits": {
-			"content": "Credits"
-		},
-		"update-log": {
-			"title": "Update Log"
-		},
-		"selector": {
-			"title": "Select File"
-		},
 		"selector-search": {
 			"tip": "$Search\nEnter '.' to display all matching files"
-		},
-		"color": {
-			"title": "Color Picker"
 		},
 		"color-hex": {
 			"tip": "$Hexadecimal\n6 or 8-digit color code"
@@ -7023,22 +6417,13 @@
 		"color-a": {
 			"tip": "$Opacity\n0 ~ 255"
 		},
-		"font": {
-			"title": "Set Font"
-		},
 		"font-font": {
 			"label": "Font Family",
 			"tip": "Enter the font name. If multiple fonts are specified, separate them with commas and list them in order of priority from left to right"
 		},
-		"fontSize": {
-			"title": "Set Font Size"
-		},
 		"fontSize-size": {
 			"label": "Size",
 			"tip": "Change the text size (10 ~ 400)"
-		},
-		"textPosition": {
-			"title": "Set Text Position"
 		},
 		"textPosition-axis": {
 			"label": "Axis",
@@ -7071,9 +6456,6 @@
 		"textPosition-value": {
 			"label": "Value",
 			"tip": "Coordinate position"
-		},
-		"textEffect": {
-			"title": "Set Text Effect"
 		},
 		"textEffect-type": {
 			"label": "Effect",
@@ -7108,9 +6490,6 @@
 		"textEffect-color": {
 			"label": "Effect Color",
 			"tip": "Text effect color"
-		},
-		"insertImage": {
-			"title": "Insert Image"
 		},
 		"insertImage-mode": {
 			"label": "Mode",
@@ -7150,9 +6529,6 @@
 			"label": "Height",
 			"tip": "Display height of the image"
 		},
-		"localVariable": {
-			"title": "Set Local Variable"
-		},
 		"localVariable-key": {
 			"label": "Local Variable",
 			"tip": "Enter the name of a local variable in the current event"
@@ -7171,9 +6547,6 @@
 			"label": "Name",
 			"tip": "Enter a new name"
 		},
-		"language": {
-			"title": "Language"
-		},
 		"language-name": {
 			"label": "Name",
 			"tip": "Choose a language"
@@ -7186,9 +6559,6 @@
 			"label": "Font Scaling Factor",
 			"tip": "Scale the size of all text"
 		},
-		"exportLanguage": {
-			"title": "Export Language Pack"
-		},
 		"exportLanguage-first": {
 			"label": "First Lang",
 			"tip": "Prioritize exporting text from this language pack"
@@ -7197,15 +6567,9 @@
 			"label": "Second Lang",
 			"tip": "Use the second language to fill in missing content from the first language"
 		},
-		"importLanguage": {
-			"title": "Import Language Pack"
-		},
 		"importLanguage-language": {
 			"label": "Import to",
 			"tip": "Choose the language pack to overwrite"
-		},
-		"choice": {
-			"title": "Choice"
 		},
 		"choice-content": {
 			"label": "Content",
@@ -7225,15 +6589,9 @@
 			"label": "Quantity",
 			"tip": "Enter the item quantity"
 		},
-		"setTileTag": {
-			"title": "Set Tile Tag"
-		},
 		"setTileTag-tag": {
 			"label": "Tag",
 			"tip": "Enter the tile tag (0-99999)"
-		},
-		"event-search-string": {
-			"title": "Search String"
 		},
 		"event-search-string-search": {
 			"label": "Content：",
@@ -7251,20 +6609,8 @@
 			"label": "Match by row",
 			"tip": "Search for the entire row"
 		},
-		"event": {
-			"title": "Event"
-		},
-		"event-open-list": {
-			"label": "Event"
-		},
-		"event-commands-gutter-background": {
-			"label": "Content"
-		},
 		"event-type": {
 			"tip": "$Type\nCertain specific actions will automatically trigger related types of events"
-		},
-		"variableGetter": {
-			"title": "Variable"
 		},
 		"variableGetter-type": {
 			"label": "Type",
@@ -7344,9 +6690,6 @@
 			"label": "Key",
 			"tip": "Global variable"
 		},
-		"variableGetter2": {
-			"title": "Variable"
-		},
 		"variableGetter2-type": {
 			"label": "Type",
 			"tip": "How to access the variable"
@@ -7366,9 +6709,6 @@
 		"variableGetter2-global-key": {
 			"label": "Key",
 			"tip": "Global variable"
-		},
-		"actorGetter": {
-			"title": "Actor"
 		},
 		"actorGetter-type": {
 			"label": "Type",
@@ -7428,9 +6768,6 @@
 			"label": "Variable",
 			"tip": "Object variable that stores the actor"
 		},
-		"skillGetter": {
-			"title": "Skill"
-		},
 		"skillGetter-type": {
 			"label": "Type",
 			"tip": "How to obtain the skill",
@@ -7473,9 +6810,6 @@
 			"label": "Variable",
 			"tip": "Get the skill object from the variable"
 		},
-		"stateGetter": {
-			"title": "State"
-		},
 		"stateGetter-type": {
 			"label": "Type",
 			"tip": "How to obtain the state",
@@ -7509,9 +6843,6 @@
 		"stateGetter-variable": {
 			"label": "Variable",
 			"tip": "Get the state object from the variable"
-		},
-		"equipmentGetter": {
-			"title": "Equipment"
 		},
 		"equipmentGetter-type": {
 			"label": "Type",
@@ -7559,9 +6890,6 @@
 			"label": "Variable",
 			"tip": "Get the equipment object from the variable"
 		},
-		"itemGetter": {
-			"title": "Item"
-		},
 		"itemGetter-type": {
 			"label": "Type",
 			"tip": "How to obtain the item",
@@ -7603,9 +6931,6 @@
 		"itemGetter-variable": {
 			"label": "Variable",
 			"tip": "Get the item object from the variable"
-		},
-		"positionGetter": {
-			"title": "Position"
 		},
 		"positionGetter-type": {
 			"label": "Type",
@@ -7699,9 +7024,6 @@
 			"label": "Object",
 			"tip": "Get the current position of a preset scene object"
 		},
-		"angleGetter": {
-			"title": "Angle"
-		},
 		"angleGetter-type": {
 			"label": "Type",
 			"tip": "How to get the angle",
@@ -7736,9 +7058,6 @@
 			"label": "Degrees",
 			"tip": "360 degrees = a full circle, clockwise rotation"
 		},
-		"triggerGetter": {
-			"title": "Trigger"
-		},
 		"triggerGetter-type": {
 			"label": "Type",
 			"tip": "How to get a trigger",
@@ -7760,9 +7079,6 @@
 		"triggerGetter-variable": {
 			"label": "Variable",
 			"tip": "Get the trigger object from the variable"
-		},
-		"lightGetter": {
-			"title": "Light"
 		},
 		"lightGetter-type": {
 			"label": "Type",
@@ -7794,9 +7110,6 @@
 			"label": "Variable",
 			"tip": "Get the light object from the variable"
 		},
-		"regionGetter": {
-			"title": "Region"
-		},
 		"regionGetter-type": {
 			"label": "Type",
 			"tip": "How to get a region",
@@ -7814,9 +7127,6 @@
 		"regionGetter-presetId": {
 			"label": "Data ID",
 			"tip": "Get the preset region in the scene"
-		},
-		"tilemapGetter": {
-			"title": "Tilemap"
 		},
 		"tilemapGetter-type": {
 			"label": "Type",
@@ -7843,9 +7153,6 @@
 		"tilemapGetter-variable": {
 			"label": "Variable",
 			"tip": "Get the tilemap object from the variable"
-		},
-		"objectGetter": {
-			"title": "Scene Object"
 		},
 		"objectGetter-type": {
 			"label": "Type",
@@ -7876,9 +7183,6 @@
 		"objectGetter-variable": {
 			"label": "Variable",
 			"tip": "Gets a scene object stored in a variable"
-		},
-		"elementGetter": {
-			"title": "Element"
 		},
 		"elementGetter-type": {
 			"label": "Type",
@@ -7942,9 +7246,6 @@
 			"label": "Variable",
 			"tip": "Get the element object from the variable"
 		},
-		"ancestorGetter": {
-			"title": "Ancestor Element"
-		},
 		"ancestorGetter-type": {
 			"label": "Type",
 			"tip": "How to get an element",
@@ -7958,18 +7259,12 @@
 			"label": "Variable",
 			"tip": "Get the element object from the variable"
 		},
-		"showText": {
-			"title": "Show Text"
-		},
 		"showText-target": {
 			"tip": "Target Actor\nThis actor will be set as the target actor"
 		},
 		"showText-parameters": {
 			"placeholder": "Parameters",
 			"tip": "Parameter Format\nbool1, bool2: true, num: 0, str: hello world, ...\nRead parameters by 'Set Boolean', 'Set Number' and 'Set String' commands"
-		},
-		"showChoices": {
-			"title": "Show Choices"
 		},
 		"showChoices-choices": {
 			"label": "Choices",
@@ -7978,12 +7273,6 @@
 		"showChoices-parameters": {
 			"label": "Parameters",
 			"tip": "Parameter Format\nbool1, bool2: true, num: 0, str: hello world, ...\nRead parameters by 'Set Boolean', 'Set Number' and 'Set String' commands"
-		},
-		"comment": {
-			"title": "Comment"
-		},
-		"setBoolean": {
-			"title": "Set Boolean"
 		},
 		"setBoolean-variable": {
 			"label": "Variable",
@@ -8060,18 +7349,12 @@
 			"label": "Script",
 			"tip": "Execute JavaScript and get the return value"
 		},
-		"setNumber": {
-			"title": "Set Number"
-		},
 		"setNumber-variable": {
 			"label": "Variable",
 			"tip": "Target variable to be written"
 		},
 		"setNumber-operands": {
 			"label": "Expression"
-		},
-		"setNumber-operand": {
-			"title": "Number Operand"
 		},
 		"setNumber-operation": {
 			"label": "Operation",
@@ -8856,9 +8139,6 @@
 			"label": "Team",
 			"tip": "Input Team Id"
 		},
-		"setString": {
-			"title": "Set String"
-		},
 		"setString-variable": {
 			"label": "Variable"
 		},
@@ -9160,9 +8440,6 @@
 			"label": "Image Height",
 			"tip": "Height of the screenshot"
 		},
-		"setObject": {
-			"title": "Set Object"
-		},
 		"setObject-variable": {
 			"label": "Variable",
 			"tip": "Target variable to write to"
@@ -9264,9 +8541,6 @@
 		"setObject-operand-list-index": {
 			"label": "Index",
 			"tip": "Read the Nth (0, 1, 2, ...) object in the list"
-		},
-		"setList": {
-			"title": "Set List"
 		},
 		"setList-variable": {
 			"label": "Variable",
@@ -9386,15 +8660,9 @@
 			"label": "Boundary Limit",
 			"tip": "When enabled, if [list].length is less than index, no content will be added"
 		},
-		"deleteVariable": {
-			"title": "Delete Variable"
-		},
 		"deleteVariable-variable": {
 			"label": "Variable",
 			"tip": "Delete this variable"
-		},
-		"getObjectProperty": {
-			"title": "Get Object Property"
 		},
 		"getObjectProperty-variable": {
 			"label": "Variable",
@@ -9408,9 +8676,6 @@
 			"label": "Index List",
 			"tip": "Get from top to bottom in sequence"
 		},
-		"setObjectProperty": {
-			"title": "Set Object Property"
-		},
 		"setObjectProperty-variable": {
 			"label": "Object Variable",
 			"tip": "The variable to be set"
@@ -9423,15 +8688,9 @@
 			"label": "Index List",
 			"tip": "Obtain from top to bottom in sequence"
 		},
-		"ObjectProperty-index": {
-			"title": "Index"
-		},
 		"ObjectProperty-index-name": {
 			"label": "Property Name",
 			"tip": "The name of the property to be retrieved"
-		},
-		"if": {
-			"title": "If"
 		},
 		"if-branches": {
 			"label": "Branches"
@@ -9440,9 +8699,6 @@
 			"content": "Else",
 			"tip": "If none of the branch conditions are satisfied, enter the 'Else Branch'"
 		},
-		"if-branch": {
-			"title": "Branch"
-		},
 		"if-branch-mode": {
 			"label": "Mode",
 			"tip": "Condition Mode",
@@ -9450,12 +8706,6 @@
 				"all": "Meet All",
 				"any": "Meet Any"
 			}
-		},
-		"if-branch-conditions": {
-			"label": "Conditions"
-		},
-		"if-condition": {
-			"title": "Condition"
 		},
 		"if-condition-type": {
 			"label": "Condition Type",
@@ -9509,9 +8759,6 @@
 					"tip": "Read boolean value from variable"
 				}
 			}
-		},
-		"if-condition-boolean-constant-value": {
-			"label": "Constant"
 		},
 		"if-condition-number-operation": {
 			"label": "Operation",
@@ -9827,9 +9074,6 @@
 				"platform-mobile": "Running on a mobile platform"
 			}
 		},
-		"switch": {
-			"title": "Switch"
-		},
 		"switch-variable": {
 			"label": "Variable",
 			"tip": "Target variable for comparison"
@@ -9840,15 +9084,6 @@
 		"switch-default-label": {
 			"content": "Default",
 			"tip": "If no conditions are met, it enters the 'default branch'"
-		},
-		"switch-branch": {
-			"title": "Branch"
-		},
-		"switch-branch-conditions": {
-			"label": "Cases"
-		},
-		"switch-condition": {
-			"title": "Condition"
 		},
 		"switch-condition-type": {
 			"label": "Condition Type",
@@ -9912,9 +9147,6 @@
 			"label": "Variable",
 			"tip": "Read data from a variable"
 		},
-		"loop": {
-			"title": "Loop"
-		},
 		"loop-mode": {
 			"label": "Mode",
 			"tip": "Condition mode",
@@ -9925,9 +9157,6 @@
 		},
 		"loop-conditions": {
 			"label": "Conditions"
-		},
-		"forEach": {
-			"title": "For Each"
 		},
 		"forEach-data": {
 			"label": "Data",
@@ -10015,9 +9244,6 @@
 			"label": "Write Touch Id",
 			"tip": "Write the touch id to the specified variable"
 		},
-		"callEvent": {
-			"title": "Call Event"
-		},
 		"callEvent-type": {
 			"label": "Type",
 			"tip": "Which event do you want to call",
@@ -10099,9 +9325,6 @@
 		"callEvent-eventType": {
 			"label": "Event",
 			"tip": "Choose the event type for the object"
-		},
-		"return": {
-			"title": "Return"
 		},
 		"return-type": {
 			"label": "Return Type",
@@ -10209,9 +9432,6 @@
 			"label": "Element",
 			"tip": "Return this element"
 		},
-		"stopEvent": {
-			"title": "Stop Event"
-		},
 		"stopEvent-type": {
 			"label": "Type",
 			"tip": "Which event to stop",
@@ -10294,9 +9514,6 @@
 			"label": "Event",
 			"tip": "Choose the event type for the object"
 		},
-		"registerEvent": {
-			"title": "Register Event"
-		},
 		"registerEvent-target": {
 			"label": "Target",
 			"tip": "Target object for register/unload operations",
@@ -10357,9 +9574,6 @@
 			"label": "Tag",
 			"tip": "A label for unloading this event later"
 		},
-		"setEvent": {
-			"title": "Set Event"
-		},
 		"setEvent-operation": {
 			"label": "Operation",
 			"tip": "Event Operation",
@@ -10406,9 +9620,6 @@
 			"label": "Choice Index",
 			"tip": "Jump to the Nth (0, 1, 2, ...) choice branch"
 		},
-		"transition": {
-			"title": "Transition"
-		},
 		"transition-variable": {
 			"label": "Write to Variable",
 			"tip": "Write the transition interpolation to this variable"
@@ -10421,9 +9632,6 @@
 			"label": "End Value",
 			"tip": "Ending value for interpolation calculation"
 		},
-		"block": {
-			"title": "Block"
-		},
 		"block-note": {
 			"placeholder": "Note",
 			"tip": "Describe the purpose of this command block"
@@ -10432,15 +9640,9 @@
 			"content": "Asynchronous",
 			"tip": "Enabled: Creates a new execution branch without blocking subsequent commands.\nDisabled: Executes the commands in the block synchronously without any additional operations."
 		},
-		"label": {
-			"title": "Label"
-		},
 		"label-name": {
 			"label": "Label Name",
 			"tip": "Create a label for jumping"
-		},
-		"jumpTo": {
-			"title": "Jump to"
 		},
 		"jumpTo-operation": {
 			"label": "Operation",
@@ -10464,15 +9666,9 @@
 			"label": "Label Name",
 			"tip": "Jump to this label"
 		},
-		"wait": {
-			"title": "Wait"
-		},
 		"wait-duration": {
 			"label": "Duration",
 			"tip": "Waiting time is converted to number of frames.\nDurations less than 1 frame become 1 frame."
-		},
-		"createElement": {
-			"title": "Create Element"
 		},
 		"createElement-operation": {
 			"label": "Operation",
@@ -10508,17 +9704,11 @@
 			"label": "UI Element",
 			"tip": "Create the specified element"
 		},
-		"setImage": {
-			"title": "Set Image"
-		},
 		"setImage-element": {
 			"label": "Element"
 		},
 		"setImage-properties": {
 			"label": "Properties"
-		},
-		"setImage-property": {
-			"title": "Image Property"
 		},
 		"setImage-property-key": {
 			"label": "Property",
@@ -10534,39 +9724,6 @@
 				"clip-2": "Clip - Width",
 				"clip-3": "Clip - Height"
 			}
-		},
-		"setImage-property-image": {
-			"label": "Image"
-		},
-		"setImage-property-display": {
-			"label": "Display"
-		},
-		"setImage-property-flip": {
-			"label": "Flip"
-		},
-		"setImage-property-blend": {
-			"label": "Blend"
-		},
-		"setImage-property-shiftX": {
-			"label": "Shift X"
-		},
-		"setImage-property-shiftY": {
-			"label": "Shift Y"
-		},
-		"setImage-property-clip-0": {
-			"label": "Clip - X"
-		},
-		"setImage-property-clip-1": {
-			"label": "Clip - Y"
-		},
-		"setImage-property-clip-2": {
-			"label": "Clip - Width"
-		},
-		"setImage-property-clip-3": {
-			"label": "Clip - Height"
-		},
-		"loadImage": {
-			"title": "Load Image"
 		},
 		"loadImage-element": {
 			"label": "Element",
@@ -10634,9 +9791,6 @@
 			"label": "Base64 Coding",
 			"tip": "Decode Base64 image and load it"
 		},
-		"tintImage": {
-			"title": "Tint Image"
-		},
 		"tintImage-element": {
 			"label": "Element",
 			"tip": "Specify an image element"
@@ -10675,18 +9829,12 @@
 			"label": "Tint - Grayscale",
 			"tip": "Grayscale is opposite to saturation; the higher the grayscale, the lower the saturation"
 		},
-		"setText": {
-			"title": "Set Text"
-		},
 		"setText-element": {
 			"label": "Element",
 			"tip": "Specify a text element"
 		},
 		"setText-properties": {
 			"label": "Properties"
-		},
-		"setText-property": {
-			"title": "Text Property"
 		},
 		"setText-property-key": {
 			"label": "Property",
@@ -10702,54 +9850,12 @@
 				"blend": "Blend"
 			}
 		},
-		"setText-property-content": {
-			"label": "Content"
-		},
-		"setText-property-size": {
-			"label": "Size"
-		},
-		"setText-property-lineSpacing": {
-			"label": "Line Spacing"
-		},
-		"setText-property-letterSpacing": {
-			"label": "Letter Spacing"
-		},
-		"setText-property-color": {
-			"label": "Color"
-		},
-		"setText-property-font": {
-			"label": "Font"
-		},
-		"setText-property-effect-type": {
-			"label": "Effect"
-		},
-		"setText-property-effect-shadowOffsetX": {
-			"label": "Shadow X"
-		},
-		"setText-property-effect-shadowOffsetY": {
-			"label": "Shadow Y"
-		},
-		"setText-property-effect-strokeWidth": {
-			"label": "Stroke Width"
-		},
-		"setText-property-effect-color": {
-			"label": "Effect Color"
-		},
-		"setText-property-blend": {
-			"label": "Blend"
-		},
-		"setTextBox": {
-			"title": "Set Text Box"
-		},
 		"setTextBox-element": {
 			"label": "Element",
 			"tip": "Specify a text box element"
 		},
 		"setTextBox-properties": {
 			"label": "Properties"
-		},
-		"setTextBox-property": {
-			"title": "Text Box Property"
 		},
 		"setTextBox-property-key": {
 			"label": "Property",
@@ -10764,39 +9870,12 @@
 				"color": "Color"
 			}
 		},
-		"setTextBox-property-type": {
-			"label": "Type"
-		},
-		"setTextBox-property-text": {
-			"label": "Text"
-		},
-		"setTextBox-property-number": {
-			"label": "Number"
-		},
-		"setTextBox-property-min": {
-			"label": "Min"
-		},
-		"setTextBox-property-max": {
-			"label": "Max"
-		},
-		"setTextBox-property-decimals": {
-			"label": "Decimal Places"
-		},
-		"setTextBox-property-color": {
-			"label": "Color"
-		},
-		"setDialogBox": {
-			"title": "Set Dialog Box"
-		},
 		"setDialogBox-element": {
 			"label": "Element",
 			"tip": "Specify a dialog box element"
 		},
 		"setDialogBox-properties": {
 			"label": "Properties"
-		},
-		"setDialogBox-property": {
-			"title": "Dialog Box Property"
 		},
 		"setDialogBox-property-key": {
 			"label": "Property",
@@ -10812,48 +9891,6 @@
 				"effect": "Effect",
 				"blend": "Blend"
 			}
-		},
-		"setDialogBox-property-content": {
-			"label": "Content"
-		},
-		"setDialogBox-property-interval": {
-			"label": "Print Interval"
-		},
-		"setDialogBox-property-size": {
-			"label": "Size"
-		},
-		"setDialogBox-property-lineSpacing": {
-			"label": "Line Spacing"
-		},
-		"setDialogBox-property-letterSpacing": {
-			"label": "Letter Spacing"
-		},
-		"setDialogBox-property-color": {
-			"label": "Color"
-		},
-		"setDialogBox-property-font": {
-			"label": "Font"
-		},
-		"setDialogBox-property-effect-type": {
-			"label": "Effect"
-		},
-		"setDialogBox-property-effect-shadowOffsetX": {
-			"label": "Shadow X"
-		},
-		"setDialogBox-property-effect-shadowOffsetY": {
-			"label": "Shadow Y"
-		},
-		"setDialogBox-property-effect-strokeWidth": {
-			"label": "Stroke Width"
-		},
-		"setDialogBox-property-effect-color": {
-			"label": "Effect Color"
-		},
-		"setDialogBox-property-blend": {
-			"label": "Blend"
-		},
-		"controlDialog": {
-			"title": "Control Dialog"
 		},
 		"controlDialog-element": {
 			"label": "Element",
@@ -10881,18 +9918,12 @@
 				}
 			}
 		},
-		"setProgressBar": {
-			"title": "Set Progress Bar"
-		},
 		"setProgressBar-element": {
 			"label": "Element",
 			"tip": "Specify a progress bar element"
 		},
 		"setProgressBar-properties": {
 			"label": "Properties"
-		},
-		"setProgressBar-property": {
-			"title": "Progress Bar Property"
 		},
 		"setProgressBar-property-key": {
 			"label": "Property",
@@ -10912,54 +9943,12 @@
 				"color-3": "Color - Alpha"
 			}
 		},
-		"setProgressBar-property-image": {
-			"label": "Image"
-		},
-		"setProgressBar-property-display": {
-			"label": "Display"
-		},
-		"setProgressBar-property-blend": {
-			"label": "Blend"
-		},
-		"setProgressBar-property-progress": {
-			"label": "Progress"
-		},
-		"setProgressBar-property-clip-0": {
-			"label": "Clip - X"
-		},
-		"setProgressBar-property-clip-1": {
-			"label": "Clip - Y"
-		},
-		"setProgressBar-property-clip-2": {
-			"label": "Clip - Width"
-		},
-		"setProgressBar-property-clip-3": {
-			"label": "Clip - Height"
-		},
-		"setProgressBar-property-color-0": {
-			"label": "Color - Red"
-		},
-		"setProgressBar-property-color-1": {
-			"label": "Color - Green"
-		},
-		"setProgressBar-property-color-2": {
-			"label": "Color - Blue"
-		},
-		"setProgressBar-property-color-3": {
-			"label": "Color - Alpha"
-		},
-		"setButton": {
-			"title": "Set Button"
-		},
 		"setButton-element": {
 			"label": "Element",
 			"tip": "Specify a button element"
 		},
 		"setButton-properties": {
 			"label": "Properties"
-		},
-		"setButton-property": {
-			"title": "Button Property"
 		},
 		"setButton-property-key": {
 			"label": "Property",
@@ -10979,30 +9968,6 @@
 				"size": "Size",
 				"letterSpacing": "Letter Spacing"
 			}
-		},
-		"setButton-property-image": {
-			"label": "Image"
-		},
-		"setButton-property-clip-box": {
-			"label": "Clip"
-		},
-		"setButton-property-tint-box": {
-			"label": "Tint"
-		},
-		"setButton-property-imageOpacity": {
-			"label": "Opacity"
-		},
-		"setButton-property-content": {
-			"label": "Content"
-		},
-		"setButton-property-size": {
-			"label": "Size"
-		},
-		"setButton-property-letterSpacing": {
-			"label": "Letter Spacing"
-		},
-		"controlButton": {
-			"title": "Control Button"
 		},
 		"controlButton-operation": {
 			"label": "Operation",
@@ -11034,18 +9999,12 @@
 			"label": "Element",
 			"tip": "Specify a button element"
 		},
-		"setAnimation": {
-			"title": "Set Animation"
-		},
 		"setAnimation-element": {
 			"label": "Element",
 			"tip": "Specify an animation element"
 		},
 		"setAnimation-properties": {
 			"label": "Properties"
-		},
-		"setAnimation-property": {
-			"title": "Animation Property"
 		},
 		"setAnimation-property-key": {
 			"label": "Property",
@@ -11058,33 +10017,12 @@
 				"frame": "Frame"
 			}
 		},
-		"setAnimation-property-animation": {
-			"label": "Animation"
-		},
-		"setAnimation-property-actor": {
-			"label": "Actor"
-		},
-		"setAnimation-property-motion": {
-			"label": "Motion"
-		},
-		"setAnimation-property-angle": {
-			"label": "Angle"
-		},
-		"setAnimation-property-frame": {
-			"label": "Frame"
-		},
-		"setVideo": {
-			"title": "Set Video"
-		},
 		"setVideo-element": {
 			"label": "Element",
 			"tip": "Specify a video element"
 		},
 		"setVideo-properties": {
 			"label": "Properties"
-		},
-		"setVideo-property": {
-			"title": "Video Property"
 		},
 		"setVideo-property-key": {
 			"label": "Property",
@@ -11097,33 +10035,12 @@
 				"blend": "Blend"
 			}
 		},
-		"setVideo-property-video": {
-			"label": "Video"
-		},
-		"setVideo-property-playbackRate": {
-			"label": "Playback Rate"
-		},
-		"setVideo-property-loop": {
-			"label": "Loop"
-		},
-		"setVideo-property-flip": {
-			"label": "Flip"
-		},
-		"setVideo-property-blend": {
-			"label": "Blend"
-		},
-		"setWindow": {
-			"title": "Set Window"
-		},
 		"setWindow-element": {
 			"label": "Element",
 			"tip": "Specify a window element"
 		},
 		"setWindow-properties": {
 			"label": "Properties"
-		},
-		"setWindow-property": {
-			"title": "Window Property"
 		},
 		"setWindow-property-key": {
 			"label": "Property",
@@ -11139,39 +10056,9 @@
 				"paddingY": "Padding Y"
 			}
 		},
-		"setWindow-property-scrollX": {
-			"label": "Scroll X"
-		},
-		"setWindow-property-scrollY": {
-			"label": "Scroll Y"
-		},
-		"setWindow-property-gridWidth": {
-			"label": "Grid Width"
-		},
-		"setWindow-property-gridHeight": {
-			"label": "Grid Height"
-		},
-		"setWindow-property-gridGapX": {
-			"label": "Grid Gap X"
-		},
-		"setWindow-property-gridGapY": {
-			"label": "Grid Gap Y"
-		},
-		"setWindow-property-paddingX": {
-			"label": "Padding X"
-		},
-		"setWindow-property-paddingY": {
-			"label": "Padding Y"
-		},
-		"waitForVideo": {
-			"title": "Wait For Video"
-		},
 		"waitForVideo-element": {
 			"label": "Element",
 			"tip": "Specify a video element"
-		},
-		"setElement": {
-			"title": "Set Element"
 		},
 		"setElement-element": {
 			"label": "Element",
@@ -11211,9 +10098,6 @@
 				}
 			}
 		},
-		"nestElement": {
-			"title": "Nest Element"
-		},
 		"nestElement-parent": {
 			"label": "Parent Element",
 			"tip": "Specify an element as the parent element"
@@ -11222,18 +10106,12 @@
 			"label": "Child Element",
 			"tip": "Add this element to the parent element as a child element"
 		},
-		"moveElement": {
-			"title": "Move Element"
-		},
 		"moveElement-element": {
 			"label": "Element",
 			"tip": "Specify any type of element"
 		},
 		"moveElement-properties": {
 			"label": "Properties"
-		},
-		"moveElement-property": {
-			"title": "Transform Property"
 		},
 		"moveElement-property-key": {
 			"label": "Property",
@@ -11256,57 +10134,6 @@
 				"opacity": "Opacity"
 			}
 		},
-		"moveElement-property-anchorX": {
-			"label": "Anchor X"
-		},
-		"moveElement-property-anchorY": {
-			"label": "Anchor Y"
-		},
-		"moveElement-property-x": {
-			"label": "X"
-		},
-		"moveElement-property-x2": {
-			"label": "X2"
-		},
-		"moveElement-property-y": {
-			"label": "Y"
-		},
-		"moveElement-property-y2": {
-			"label": "Y2"
-		},
-		"moveElement-property-width": {
-			"label": "Width"
-		},
-		"moveElement-property-width2": {
-			"label": "Width2"
-		},
-		"moveElement-property-height": {
-			"label": "Height"
-		},
-		"moveElement-property-height2": {
-			"label": "Height2"
-		},
-		"moveElement-property-rotation": {
-			"label": "Rotation"
-		},
-		"moveElement-property-scaleX": {
-			"label": "Scale X"
-		},
-		"moveElement-property-scaleY": {
-			"label": "Scale Y"
-		},
-		"moveElement-property-skewX": {
-			"label": "Skew X"
-		},
-		"moveElement-property-skewY": {
-			"label": "Skew Y"
-		},
-		"moveElement-property-opacity": {
-			"label": "Opacity"
-		},
-		"deleteElement": {
-			"title": "Delete Element"
-		},
 		"deleteElement-operation": {
 			"label": "Operation",
 			"tip": "Perform a delete operation",
@@ -11328,9 +10155,6 @@
 		"deleteElement-element": {
 			"label": "Element",
 			"tip": "Perform operation on this element"
-		},
-		"setPointerEventRoot": {
-			"title": "Set Pointer Event Root"
 		},
 		"setPointerEventRoot-operation": {
 			"label": "Operation",
@@ -11357,9 +10181,6 @@
 		"setPointerEventRoot-element": {
 			"label": "Element",
 			"tip": "Perform operation on this element"
-		},
-		"setFocus": {
-			"title": "Set Focus"
 		},
 		"setFocus-operation": {
 			"label": "Operation",
@@ -11405,9 +10226,6 @@
 			"label": "Cancelable",
 			"tip": "Press the Esc key to remove the current focus"
 		},
-		"setAmbientLight": {
-			"title": "Set Ambient Light"
-		},
 		"setAmbientLight-red": {
 			"label": "Red",
 			"tip": "Input color (Red) * Ambient Light (Red) / 255 = Output color (Red)"
@@ -11419,9 +10237,6 @@
 		"setAmbientLight-blue": {
 			"label": "Blue",
 			"tip": "Input color (Blue) * Ambient Light (Blue) / 255 = Output color (Blue)"
-		},
-		"tintScreen": {
-			"title": "Tint Screen"
 		},
 		"tintScreen-tint-0": {
 			"label": "Tint - Red",
@@ -11439,9 +10254,6 @@
 			"label": "Tint - Grayscale",
 			"tip": "Grayscale is opposite to saturation, the higher the grayscale, the lower the saturation"
 		},
-		"shakeScreen": {
-			"title": "Shake Screen"
-		},
 		"shakeScreen-mode": {
 			"label": "Shake Mode",
 			"options": {
@@ -11457,9 +10269,6 @@
 		"shakeScreen-speed": {
 			"label": "Speed",
 			"tip": "Speed of the shake"
-		},
-		"setTile": {
-			"title": "Set Tile"
 		},
 		"setTile-tilemap": {
 			"label": "Tilemap",
@@ -11485,9 +10294,6 @@
 			"label": "Tileset Y",
 			"tip": "Vertical position of new tile"
 		},
-		"deleteTile": {
-			"title": "Delete Tile"
-		},
 		"deleteTile-tilemap": {
 			"label": "Tilemap",
 			"tip": "Tilemap to delete tile from"
@@ -11499,9 +10305,6 @@
 		"deleteTile-tilemapY": {
 			"label": "Tilemap Y",
 			"tip": "Vertical position of tile to be deleted"
-		},
-		"setTerrain": {
-			"title": "Set Terrain"
 		},
 		"setTerrain-position": {
 			"label": "Position",
@@ -11525,9 +10328,6 @@
 				}
 			}
 		},
-		"requestURL": {
-			"title": "Request URL"
-		},
 		"requestURL-url": {
 			"label": "Address",
 			"tip": "URL of the request, supports variables"
@@ -11547,9 +10347,6 @@
 		"requestURL-callback": {
 			"label": "Callback",
 			"tip": "callback function after request completion, @code represents the return value (error is -1), @response represents the response data"
-		},
-		"downloadFile": {
-			"title": "Download File"
 		},
 		"downloadFile-url": {
 			"label": "Address",
@@ -11583,9 +10380,6 @@
 			"label": "File Path",
 			"tip": "file path for background download and storage"
 		},
-		"uploadFile": {
-			"title": "Upload File"
-		},
 		"uploadFile-url": {
 			"label": "Address",
 			"tip": "URL of the upload target, supports variables"
@@ -11613,9 +10407,6 @@
 		"uploadFile-rateCallback": {
 			"label": "Progress Callback",
 			"tip": "upload progress callback function, @event represents the progress event object"
-		},
-		"httpRequest": {
-			"title": "HTTP Request"
 		},
 		"httpRequest-url": {
 			"label": "Address",
@@ -11657,9 +10448,6 @@
 			"label": "Callback",
 			"tip": "callback function after request completion, @code represents the return value (error is -1), @response represents the response data"
 		},
-		"webSocketConnect": {
-			"title": "WebSocket Connect"
-		},
 		"webSocketConnect-url": {
 			"label": "Address",
 			"tip": "WebSocket server URL, auto-prefixes ws:// (or wss:// if starts with s+)"
@@ -11688,9 +10476,6 @@
 			"label": "OnClose",
 			"tip": "callback when connection closes, @event represents the close event"
 		},
-		"webSocketSend": {
-			"title": "WebSocket Send"
-		},
 		"webSocketSend-id": {
 			"label": "Connection ID",
 			"tip": "must match the ID set in webSocketConnect"
@@ -11698,9 +10483,6 @@
 		"webSocketSend-data": {
 			"label": "Data",
 			"tip": "data to send"
-		},
-		"webSocketClose": {
-			"title": "WebSocket Close"
 		},
 		"webSocketClose-id": {
 			"label": "Connection ID",
@@ -11723,26 +10505,17 @@
 		"request-keyValue-value": {
 			"label": "Value"
 		},
-		"createObject": {
-			"title": "Create Object"
-		},
 		"createObject-presetId": {
 			"label": "Object"
 		},
 		"createObject-position": {
 			"label": "Position"
 		},
-		"moveLight": {
-			"title": "Move Light"
-		},
 		"moveLight-light": {
 			"label": "Light"
 		},
 		"moveLight-properties": {
 			"label": "Properties"
-		},
-		"moveLight-property": {
-			"title": "Light Property"
 		},
 		"moveLight-property-key": {
 			"label": "Property",
@@ -11761,50 +10534,8 @@
 				"blue": "Blue"
 			}
 		},
-		"moveLight-property-x": {
-			"label": "X"
-		},
-		"moveLight-property-y": {
-			"label": "Y"
-		},
-		"moveLight-property-range": {
-			"label": "Range"
-		},
-		"moveLight-property-intensity": {
-			"label": "Intensity"
-		},
-		"moveLight-property-anchorX": {
-			"label": "Anchor X"
-		},
-		"moveLight-property-anchorY": {
-			"label": "Anchor Y"
-		},
-		"moveLight-property-width": {
-			"label": "Width"
-		},
-		"moveLight-property-height": {
-			"label": "Height"
-		},
-		"moveLight-property-angle": {
-			"label": "Angle"
-		},
-		"moveLight-property-red": {
-			"label": "Red"
-		},
-		"moveLight-property-green": {
-			"label": "Green"
-		},
-		"moveLight-property-blue": {
-			"label": "Blue"
-		},
-		"deleteObject": {
-			"title": "Delete Object"
-		},
 		"deleteObject-object": {
 			"label": "Object"
-		},
-		"setState": {
-			"title": "Set State"
 		},
 		"setState-state": {
 			"label": "State",
@@ -11831,9 +10562,6 @@
 		"setState-time": {
 			"label": "Time",
 			"tip": "State time"
-		},
-		"playAnimation": {
-			"title": "Play Animation"
 		},
 		"playAnimation-mode": {
 			"label": "Mode",
@@ -11894,9 +10622,6 @@
 		"playAnimation-speed": {
 			"label": "Speed",
 			"tip": "Playback speed ratio\n0: Pause\n1: 100% playback speed\n10: 1000% playback speed"
-		},
-		"setObjectAnimation": {
-			"title": "Set Object Animation"
 		},
 		"setObjectAnimation-sort": {
 			"label": "Sort",
@@ -11990,9 +10715,6 @@
 			"label": "Rotation",
 			"tip": "Rotation angle of the animation around the anchor point"
 		},
-		"playAudio": {
-			"title": "Play Audio"
-		},
 		"playAudio-type": {
 			"label": "Type",
 			"tip": "Which channel to play on",
@@ -12031,15 +10753,9 @@
 			"label": "Sound Position",
 			"tip": "Play the sound effect at a specified position, attenuating the volume as it moves away from the center"
 		},
-		"stopAudio": {
-			"title": "Stop Audio"
-		},
 		"stopAudio-type": {
 			"label": "Type",
 			"tip": "Immediately stop playing this type of sound"
-		},
-		"setVolume": {
-			"title": "Set Volume"
 		},
 		"setVolume-type": {
 			"label": "Type",
@@ -12049,9 +10765,6 @@
 			"label": "Volume",
 			"tip": "Volume level (0 ~ 1)"
 		},
-		"setPan": {
-			"title": "Set Pan"
-		},
 		"setPan-type": {
 			"label": "Type",
 			"tip": "Perform operation on this type of sound"
@@ -12059,9 +10772,6 @@
 		"setPan-pan": {
 			"label": "Pan",
 			"tip": "Affects volume placement from Left/Right channels (-1 ~ 1)\n0: Balance\n-1: Only left channel\n1: Only right channel"
-		},
-		"setReverb": {
-			"title": "Set Reverb"
 		},
 		"setReverb-type": {
 			"label": "Type",
@@ -12074,9 +10784,6 @@
 		"setReverb-wet": {
 			"label": "Wet",
 			"tip": "Volume of reflected sound; larger means larger enclosed space."
-		},
-		"setLoop": {
-			"title": "Set Loop"
 		},
 		"setLoop-type": {
 			"label": "Type",
@@ -12096,22 +10803,13 @@
 				}
 			}
 		},
-		"saveAudio": {
-			"title": "Save Audio"
-		},
 		"saveAudio-type": {
 			"label": "Type",
 			"tip": "Perform operation on this type of sound"
 		},
-		"restoreAudio": {
-			"title": "Restore Audio"
-		},
 		"restoreAudio-type": {
 			"label": "Type",
 			"tip": "Perform operation on this type of sound"
-		},
-		"createActor": {
-			"title": "Create Actor"
 		},
 		"createActor-actorId": {
 			"label": "Actor",
@@ -12128,9 +10826,6 @@
 		"createActor-angle": {
 			"label": "Angle",
 			"tip": "Initial angle of the actor"
-		},
-		"moveActor": {
-			"title": "Move Actor"
 		},
 		"moveActor-actor": {
 			"label": "Actor",
@@ -12173,9 +10868,6 @@
 		"moveActor-destination": {
 			"label": "Destination",
 			"tip": "Move the actor to this position"
-		},
-		"followActor": {
-			"title": "Follow Actor"
 		},
 		"followActor-actor": {
 			"label": "Actor",
@@ -12261,9 +10953,6 @@
 				}
 			}
 		},
-		"translateActor": {
-			"title": "Translate Actor"
-		},
 		"translateActor-actor": {
 			"label": "Actor",
 			"tip": "Translate this actor"
@@ -12275,9 +10964,6 @@
 		"translateActor-distance": {
 			"label": "Distance",
 			"tip": "Distance to translate"
-		},
-		"changeThreat": {
-			"title": "Change Threat"
 		},
 		"changeThreat-actor": {
 			"label": "Actor",
@@ -12304,9 +10990,6 @@
 		"changeThreat-threat": {
 			"label": "Threat",
 			"tip": "You can get the \"Max Threat\" actor with the \"Get Target\" command"
-		},
-		"setMovementSpeed": {
-			"title": "Set Movement Speed"
 		},
 		"setMovementSpeed-actor": {
 			"label": "Actor",
@@ -12338,9 +11021,6 @@
 			"label": "Speed Factor",
 			"tip": "Set the actor's movement speed proportionally"
 		},
-		"setAngle": {
-			"title": "Set Angle"
-		},
 		"setAngle-actor": {
 			"label": "Actor",
 			"tip": "Change the angle of this actor"
@@ -12348,9 +11028,6 @@
 		"setAngle-angle": {
 			"label": "Angle",
 			"tip": "Actor angle"
-		},
-		"fixAngle": {
-			"title": "Fix Angle"
 		},
 		"fixAngle-actor": {
 			"label": "Actor",
@@ -12370,9 +11047,6 @@
 				}
 			}
 		},
-		"setWeight": {
-			"title": "Set Weight"
-		},
 		"setWeight-actor": {
 			"label": "Actor",
 			"tip": "Change the weight of this actor"
@@ -12380,9 +11054,6 @@
 		"setWeight-weight": {
 			"label": "Weight",
 			"tip": "It affects the push force during collision\nWhen weight = 0, the actor will not collide with other actors\nWhen the weight of actor A : the weight of actor B = 1 : 1, the movement speed of A pushing B is 50%\nWhen the weight of actor A : the weight of actor B = 1 : 2, the movement speed of A pushing B is 0%, unable to push\nWhen the weight of actor A : the weight of actor B = 2 : 1, the movement speed of A pushing B is 100%, there is no resistance at all\n$Related command\nSet Weight"
-		},
-		"setActive": {
-			"title": "Set Active"
 		},
 		"setActive-actor": {
 			"label": "Actor",
@@ -12401,9 +11072,6 @@
 					"tip": "Stop executing the actor's events\nThe actor can no longer be detected\nReset the actor's target pool\nRemove this actor from the target pools of related actors"
 				}
 			}
-		},
-		"getActor": {
-			"title": "Get Actor"
 		},
 		"getActor-variable": {
 			"label": "Write to Variable",
@@ -12547,9 +11215,6 @@
 			"label": "Exclusion Team",
 			"tip": "Target cannot be from this team"
 		},
-		"getMultipleActors": {
-			"title": "Get Multiple Actors"
-		},
 		"getMultipleActors-variable": {
 			"label": "Write to List",
 			"tip": "Write the generated actor list to this variable"
@@ -12628,22 +11293,13 @@
 				}
 			}
 		},
-		"deleteActor": {
-			"title": "Delete Actor"
-		},
 		"deleteActor-actor": {
 			"label": "Actor",
 			"tip": "Delete an actor from the scene, if it is a global actor, it will be removed and put into the background"
 		},
-		"setPlayerActor": {
-			"title": "Set Player Actor"
-		},
 		"setPlayerActor-actor": {
 			"label": "Global Actor",
 			"tip": "Set a global actor as the player actor, then you can access the actor through \"Actor Getter -> Player Actor\""
-		},
-		"setPartyMember": {
-			"title": "Set Party Member"
 		},
 		"setPartyMember-operation": {
 			"label": "Operation",
@@ -12662,9 +11318,6 @@
 		"setPartyMember-actor": {
 			"label": "Global Actor",
 			"tip": "Perform operation on this actor"
-		},
-		"changePassableTerrain": {
-			"title": "Change Passable Terrain"
 		},
 		"changePassableTerrain-actor": {
 			"label": "Actor",
@@ -12688,9 +11341,6 @@
 				}
 			}
 		},
-		"changeActorTeam": {
-			"title": "Change Actor Team"
-		},
 		"changeActorTeam-actor": {
 			"label": "Actor",
 			"tip": "Change the team of this actor"
@@ -12698,9 +11348,6 @@
 		"changeActorTeam-teamId": {
 			"label": "Team",
 			"tip": "Specify a new team for the actor"
-		},
-		"changeActorState": {
-			"title": "Change Actor State"
 		},
 		"changeActorState-actor": {
 			"label": "Actor",
@@ -12731,9 +11378,6 @@
 		"changeActorState-state": {
 			"label": "State",
 			"tip": "State accessor"
-		},
-		"changeActorEquipment": {
-			"title": "Change Actor Equipment"
 		},
 		"changeActorEquipment-actor": {
 			"label": "Actor",
@@ -12777,9 +11421,6 @@
 			"label": "Equipment",
 			"tip": "Equipment accessor"
 		},
-		"changeActorSkill": {
-			"title": "Change Actor Skill"
-		},
 		"changeActorSkill-actor": {
 			"label": "Actor"
 		},
@@ -12809,9 +11450,6 @@
 		},
 		"changeActorSkill-skill": {
 			"label": "Skill"
-		},
-		"changeActorPortrait": {
-			"title": "Change Actor Portrait"
 		},
 		"changeActorPortrait-actor": {
 			"label": "Actor",
@@ -12843,9 +11481,6 @@
 			"label": "Clip",
 			"tip": "Clip area of the portrait"
 		},
-		"changeActorAnimation": {
-			"title": "Change Actor Animation"
-		},
 		"changeActorAnimation-actor": {
 			"label": "Actor",
 			"tip": "Change this actor's animation"
@@ -12853,9 +11488,6 @@
 		"changeActorAnimation-animationId": {
 			"label": "Animation",
 			"tip": "Specify the animation file ID"
-		},
-		"changeActorSprite": {
-			"title": "Change Actor Sprite"
 		},
 		"changeActorSprite-actor": {
 			"label": "Actor",
@@ -12872,9 +11504,6 @@
 		"changeActorSprite-image": {
 			"label": "Image",
 			"tip": "Select a new sprite image"
-		},
-		"changeActorMotion": {
-			"title": "Change Actor Motion"
 		},
 		"changeActorMotion-actor": {
 			"label": "Actor",
@@ -12898,9 +11527,6 @@
 			"label": "Motion",
 			"tip": "New motion to replace"
 		},
-		"playActorAnimation": {
-			"title": "Play Actor Animation"
-		},
 		"playActorAnimation-actor": {
 			"label": "Actor",
 			"tip": "Play this actor's animation"
@@ -12913,15 +11539,9 @@
 			"label": "Speed",
 			"tip": "Set the animation playback speed\n1: Normal speed\n0.1: 10% playback speed\n10: 10 times playback speed\nValid range: [0.1, 10]"
 		},
-		"stopActorAnimation": {
-			"title": "Stop Actor Animation"
-		},
 		"stopActorAnimation-actor": {
 			"label": "Actor",
 			"tip": "Stop playing the current animation of this actor"
-		},
-		"addAnimationComponent": {
-			"title": "Add Animation Component"
 		},
 		"addAnimationComponent-actor": {
 			"label": "Actor",
@@ -12970,9 +11590,6 @@
 		"addAnimationComponent-offsetY": {
 			"label": "Offset Y",
 			"tip": "Vertical offset distance of the animation rendering position (unit: pixel)"
-		},
-		"setAnimationComponent": {
-			"title": "Set Animation Component"
 		},
 		"setAnimationComponent-actor": {
 			"label": "Actor",
@@ -13064,9 +11681,6 @@
 			"label": "Play Motion",
 			"tip": "Select a motion to play"
 		},
-		"removeAnimationComponent": {
-			"title": "Remove Animation Component"
-		},
 		"removeAnimationComponent-actor": {
 			"label": "Actor",
 			"tip": "Remove the animation component from this actor"
@@ -13079,9 +11693,6 @@
 			"label": "Motion",
 			"tip": "Select a motion of the animation.\nThe animation ID plus the motion ID form the ID of the animation component.\nTherefore, components with the same animation and motion cannot be added repeatedly."
 		},
-		"createGlobalActor": {
-			"title": "Create Global Actor"
-		},
 		"createGlobalActor-actorId": {
 			"label": "Actor",
 			"tip": "Select an actor file and create the corresponding global actor (the data of this actor will be saved)"
@@ -13089,9 +11700,6 @@
 		"createGlobalActor-teamId": {
 			"label": "Team",
 			"tip": "Select an initial team for this actor"
-		},
-		"transferGlobalActor": {
-			"title": "Transfer Global Actor"
 		},
 		"transferGlobalActor-actor": {
 			"label": "Actor",
@@ -13101,22 +11709,13 @@
 			"label": "Position",
 			"tip": "Set a location in the current scene where this actor will appear"
 		},
-		"deleteGlobalActor": {
-			"title": "Delete Global Actor"
-		},
 		"deleteGlobalActor-actorId": {
 			"label": "Actor",
 			"tip": "Completely delete the specified global actor from the background"
 		},
-		"setTarget": {
-			"title": "Set Target"
-		},
 		"setTarget-actor": {
 			"label": "Actor",
 			"tip": "Set the specified actor as the 'Target Actor' in the actor accessor"
-		},
-		"getTarget": {
-			"title": "Get Target"
 		},
 		"getTarget-actor": {
 			"label": "Actor",
@@ -13198,9 +11797,6 @@
 			"label": "Attribute 2",
 			"tip": "Second attribute of target actor"
 		},
-		"appendTarget": {
-			"title": "Append Target"
-		},
 		"appendTarget-actor": {
 			"label": "Actor",
 			"tip": "Add an actor to this actor's target pool"
@@ -13209,9 +11805,6 @@
 			"label": "Target",
 			"tip": "Specify a target actor and add him to the target pool"
 		},
-		"removeTarget": {
-			"title": "Remove Target"
-		},
 		"removeTarget-actor": {
 			"label": "Actor",
 			"tip": "Remove an actor from this actor's target pool"
@@ -13219,9 +11812,6 @@
 		"removeTarget-target": {
 			"label": "Target",
 			"tip": "Specify a target actor and remove him from the target pool"
-		},
-		"detectTargets": {
-			"title": "Detect Targets"
 		},
 		"detectTargets-actor": {
 			"label": "Actor",
@@ -13275,9 +11865,6 @@
 				}
 			}
 		},
-		"discardTargets": {
-			"title": "Discard Targets"
-		},
 		"discardTargets-actor": {
 			"label": "Actor",
 			"tip": "Remove some target actors from this actor's target pool"
@@ -13316,15 +11903,9 @@
 			"label": "Distance",
 			"tip": "Remove actors from the target pool that are greater than or equal to the specified distance"
 		},
-		"resetTargets": {
-			"title": "Reset Targets"
-		},
 		"resetTargets-actor": {
 			"label": "Actor",
 			"tip": "Clear this actor's target pool"
-		},
-		"renderOutline": {
-			"title": "Render Outline"
 		},
 		"renderOutline-operation": {
 			"label": "Operation",
@@ -13351,9 +11932,6 @@
 		"renderOutline-color": {
 			"label": "Color",
 			"tip": "Color of the outline stroke"
-		},
-		"castSkill": {
-			"title": "Cast Skill"
 		},
 		"castSkill-actor": {
 			"label": "Actor",
@@ -13397,9 +11975,6 @@
 			"label": "Skill",
 			"tip": "Get the skill from the skill accessor"
 		},
-		"setSkill": {
-			"title": "Set Skill"
-		},
 		"setSkill-skill": {
 			"label": "Skill",
 			"tip": "Get a skill from the skill accessor and set it"
@@ -13425,9 +12000,6 @@
 		"setSkill-cooldown": {
 			"label": "Cooldown Time",
 			"tip": "Skill cooldown time"
-		},
-		"createTrigger": {
-			"title": "Create Trigger"
 		},
 		"createTrigger-triggerId": {
 			"label": "Trigger",
@@ -13457,9 +12029,6 @@
 			"label": "Global Speed",
 			"tip": "Playback speed for this trigger and animation (can be used as attack speed)"
 		},
-		"setTriggerSpeed": {
-			"title": "Set Trigger Speed"
-		},
 		"setTriggerSpeed-trigger": {
 			"label": "Trigger",
 			"tip": "Set this trigger"
@@ -13468,9 +12037,6 @@
 			"label": "Speed",
 			"tip": "Trigger movement speed (unit: tiles/second)"
 		},
-		"setTriggerAngle": {
-			"title": "Set Trigger Angle"
-		},
 		"setTriggerAngle-trigger": {
 			"label": "Trigger",
 			"tip": "Set this trigger"
@@ -13478,9 +12044,6 @@
 		"setTriggerAngle-angle": {
 			"label": "Angle",
 			"tip": "Trigger angle, 0 degrees = right, clockwise rotation"
-		},
-		"setTriggerDuration": {
-			"title": "Set Trigger Duration"
 		},
 		"setTriggerDuration-trigger": {
 			"label": "Trigger",
@@ -13508,9 +12071,6 @@
 			"label": "Duration",
 			"tip": "Trigger duration"
 		},
-		"setTriggerMotion": {
-			"title": "Set Trigger Motion"
-		},
 		"setTriggerMotion-trigger": {
 			"label": "Trigger",
 			"tip": "Set this trigger"
@@ -13518,9 +12078,6 @@
 		"setTriggerMotion-motion": {
 			"label": "Motion",
 			"tip": "Let the trigger's animation switch to this motion"
-		},
-		"setInventory": {
-			"title": "Set Inventory"
 		},
 		"setInventory-actor": {
 			"label": "Actor",
@@ -13620,9 +12177,6 @@
 			"label": "Global Actor",
 			"tip": "Get the inventory of this global actor for sharing"
 		},
-		"useItem": {
-			"title": "Use Item"
-		},
 		"useItem-actor": {
 			"label": "Actor",
 			"tip": "Use the item of this actor"
@@ -13657,9 +12211,6 @@
 			"label": "Item",
 			"tip": "Get the item from the item accessor"
 		},
-		"setItem": {
-			"title": "Set Item"
-		},
 		"setItem-item": {
 			"label": "Item",
 			"tip": "Set this item"
@@ -13681,9 +12232,6 @@
 		"setItem-quantity": {
 			"label": "Quantity",
 			"tip": "Quantity of this item"
-		},
-		"setCooldown": {
-			"title": "Set Cooldown"
 		},
 		"setCooldown-actor": {
 			"label": "Actor",
@@ -13714,9 +12262,6 @@
 		"setCooldown-cooldown": {
 			"label": "Cooldown Time",
 			"tip": "Global cooldown time"
-		},
-		"setShortcut": {
-			"title": "Set Shortcut"
 		},
 		"setShortcut-actor": {
 			"label": "Actor",
@@ -13760,9 +12305,6 @@
 			"label": "Skill",
 			"tip": "Bind this skill to the shortcut key"
 		},
-		"activateScene": {
-			"title": "Activate Scene"
-		},
 		"activateScene-pointer": {
 			"label": "Scene",
 			"tip": "Activate which scene container",
@@ -13776,9 +12318,6 @@
 					"tip": "Switch to the secondary scene container and pause the activities of the main scene container"
 				}
 			}
-		},
-		"loadScene": {
-			"title": "Load Scene"
 		},
 		"loadScene-sceneId": {
 			"label": "Scene",
@@ -13806,9 +12345,6 @@
 			"label": "Y",
 			"tip": "Move the player actor to this vertical position"
 		},
-		"loadSubscene": {
-			"title": "Load Subscene"
-		},
 		"loadSubscene-sceneId": {
 			"label": "Scene",
 			"tip": "Load all objects in the scene with this ID"
@@ -13821,15 +12357,9 @@
 			"label": "Shift Y",
 			"tip": "Vertical position offset of all loaded objects"
 		},
-		"unloadSubscene": {
-			"title": "Unload Subscene"
-		},
 		"unloadSubscene-sceneId": {
 			"label": "Scene",
 			"tip": "Delete all objects related to the scene with this ID"
-		},
-		"clampCamera": {
-			"title": "Clamp Camera"
 		},
 		"clampCamera-left": {
 			"label": "Left",
@@ -13846,9 +12376,6 @@
 		"clampCamera-bottom": {
 			"label": "Bottom",
 			"tip": "Scene's vertical position"
-		},
-		"moveCamera": {
-			"title": "Move Camera"
 		},
 		"moveCamera-mode": {
 			"label": "Mode",
@@ -13872,29 +12399,17 @@
 			"label": "Actor",
 			"tip": "Lock the camera to this actor's position"
 		},
-		"setZoomFactor": {
-			"title": "Set Zoom Factor"
-		},
 		"setZoomFactor-zoom": {
 			"label": "Zoom Factor",
 			"tip": "Scene zoom factor"
-		},
-		"setGameSpeed": {
-			"title": "Set Game Speed"
 		},
 		"setGameSpeed-speed": {
 			"label": "Speed",
 			"tip": "Game speed ratio affecting frame delta time"
 		},
-		"setCursor": {
-			"title": "Set Cursor"
-		},
 		"setCursor-image": {
 			"label": "Image",
 			"tip": "Set mouse pointer to this image"
-		},
-		"setTeamRelation": {
-			"title": "Set Team Relation"
 		},
 		"setTeamRelation-teamId1": {
 			"label": "Team A",
@@ -13918,9 +12433,6 @@
 				}
 			}
 		},
-		"switchCollisionSystem": {
-			"title": "Switch Collision System"
-		},
 		"switchCollisionSystem-operation": {
 			"label": "Operation",
 			"tip": "Perform collision system operation",
@@ -13942,9 +12454,6 @@
 					"tip": "Disable the built-in actor-to-scene collision system"
 				}
 			}
-		},
-		"gameData": {
-			"title": "Game Data"
 		},
 		"gameData-operation": {
 			"label": "Operation",
@@ -13973,9 +12482,6 @@
 			"placeholder": "Separated by Commas",
 			"tip": "Save some simple local variables (boolean, number, string) in the current event\nAutomatically read them when reading each save data by the \"For Each\" command into local variables of the same name"
 		},
-		"simulateKey": {
-			"title": "Simulate Key"
-		},
 		"simulateKey-operation": {
 			"label": "Operation",
 			"tip": "Simulate a keyboard action",
@@ -13998,15 +12504,9 @@
 			"label": "Key Code",
 			"tip": "Press any key to enter the key code"
 		},
-		"setLanguage": {
-			"title": "Set Language"
-		},
 		"setLanguage-language": {
 			"label": "Language",
 			"tip": "Switch to this language and refresh localized content (after deployment, the language settings will be automatically saved when exiting the game)"
-		},
-		"setResolution": {
-			"title": "Set Resolution"
 		},
 		"setResolution-width": {
 			"label": "Width",
@@ -14023,9 +12523,6 @@
 		"setResolution-uiScale": {
 			"label": "UI Scale",
 			"tip": "Display UI elements proportionally (automatically saved after deployment)"
-		},
-		"commandLine": {
-			"title": "Startup Parameters"
 		},
 		"commandLine-type": {
 			"label": "Operation",
@@ -14062,9 +12559,6 @@
 		},
 		"script": {
 			"title": "Script"
-		},
-		"edit-data": {
-			"title": "Edit Data"
 		},
 		"moveCamera-easingId": {
 			"label": "Easing"
