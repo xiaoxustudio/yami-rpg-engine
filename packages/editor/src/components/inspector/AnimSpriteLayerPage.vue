@@ -34,6 +34,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -64,6 +66,7 @@ const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'animSpriteLayer-sprite', elSprite.value);
 	const animSpriteLayer = Inspector.animSpriteLayer;
 	if (!animSpriteLayer) return;
 

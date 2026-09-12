@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
 
@@ -54,7 +54,9 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 			Inspector.uiElement.open(node);
-			($('#uiReference-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiReference-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 

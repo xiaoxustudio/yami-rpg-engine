@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
@@ -103,7 +103,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileVideo.update = function (this: typeof FileVideo) {
-		const el = $('#fileVideo');
+		const el = inspectorEls.get('fileVideo') as HTMLElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

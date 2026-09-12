@@ -1,4 +1,6 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 vi.setConfig({ testTimeout: 30000 });
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
@@ -88,6 +90,8 @@ const mountPage = async () => {
 	const host = document.createElement('div');
 	host.id = 'particleLayer-vue-mount';
 	document.body.appendChild(host);
+	// P5b 批次 3：页面模块改从 inspectorEls 取 vue-mount（不再查 DOM），故测试需登记
+	registerElement(inspectorEls, 'particleLayer-vue-mount', host);
 	const wrapper = mount(ParticleLayerPage, {
 		attachTo: document.body,
 		global: { plugins: [initYamiI18n()] }

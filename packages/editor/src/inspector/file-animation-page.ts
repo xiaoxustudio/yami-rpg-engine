@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
-import { $, getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
+import { getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { addClass, on, removeClass } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -33,7 +34,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileAnimation.initialize = function () {};
-	FileAnimation.button = $('#animation-switch-settings');
+	FileAnimation.button = inspectorEls.get('animation-switch-settings') as HTMLElement;
 	FileAnimation.owner = {
 		setTarget: (target: unknown) => {
 			if (FileAnimation.target !== target) {

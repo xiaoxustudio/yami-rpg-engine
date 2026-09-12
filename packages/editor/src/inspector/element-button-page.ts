@@ -1,4 +1,5 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
+import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -88,11 +89,19 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 		if (this.target !== node) {
 			this.target = node;
 
-			write($('#uiButton-horizontalAlign'), node.horizontalAlign);
-			write($('#uiButton-verticalAlign'), node.verticalAlign);
+			write(
+				radioProxyMap['uiButton-horizontalAlign'] as RadioProxyElement | undefined,
+				node.horizontalAlign
+			);
+			write(
+				radioProxyMap['uiButton-verticalAlign'] as RadioProxyElement | undefined,
+				node.verticalAlign
+			);
 			Inspector.uiElement.open(node);
 
-			($('#uiButton-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiButton-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -125,7 +134,9 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 							changes: [
 								{
 									get input() {
-										return $('#uiButton-horizontalAlign');
+										return radioProxyMap['uiButton-horizontalAlign'] as
+											| RadioProxyElement
+											| undefined;
 									},
 									oldValue: node.horizontalAlign,
 									newValue: value
@@ -149,7 +160,9 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 							changes: [
 								{
 									get input() {
-										return $('#uiButton-verticalAlign');
+										return radioProxyMap['uiButton-verticalAlign'] as
+											| RadioProxyElement
+											| undefined;
 									},
 									oldValue: node.verticalAlign,
 									newValue: value
@@ -229,7 +242,9 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
 					const form = (
-						$('#uiButton-vue-mount') as (HTMLElement & { form?: ButtonForm }) | null
+						inspectorEls.get('uiButton-vue-mount') as
+							| (HTMLElement & { form?: ButtonForm })
+							| null
 					)?.form;
 					const textEffect: Record<string, unknown> = { type: value };
 					switch (value) {

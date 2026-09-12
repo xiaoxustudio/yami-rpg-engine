@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
 import { AudioManager } from '@app/audio/audio-manager.ts';
@@ -164,7 +164,7 @@ import { Timer } from '@app/utils/timer';
 	};
 
 	FileAudio.update = function (this: typeof FileAudio) {
-		const el = $('#fileAudio');
+		const el = inspectorEls.get('fileAudio') as HTMLElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

@@ -188,6 +188,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -230,6 +232,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'sceneTilemap-conditions', elConditions.value);
+	registerElement(inspectorEls, 'sceneTilemap-events', elEvents.value);
+	registerElement(inspectorEls, 'sceneTilemap-scripts', elScripts.value);
+	registerElement(inspectorEls, 'sceneTilemap-parameter-pane', elParameterPane.value);
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
 

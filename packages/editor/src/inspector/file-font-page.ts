@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -81,7 +81,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileFont.update = function (this: FileFontShape) {
-		const el = $('#fileFont');
+		const el = inspectorEls.get('fileFont') as HTMLElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};
@@ -91,7 +91,8 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;
-			$('#fileFont-font-grid').style.fontSize = `${12 / dpr}px`;
+			(inspectorEls.get('fileFont-font-grid') as HTMLElement).style.fontSize =
+				`${12 / dpr}px`;
 		}
 	};
 

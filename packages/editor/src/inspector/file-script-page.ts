@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -66,7 +66,7 @@ export default class Plugin {
 	};
 
 	FileScript.update = function (this: typeof FileScript) {
-		const el = $('#fileScript');
+		const el = inspectorEls.get('fileScript') as HTMLElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

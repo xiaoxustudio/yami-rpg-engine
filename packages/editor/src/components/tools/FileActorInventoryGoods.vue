@@ -12,10 +12,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
-			<SelectBox id="fileActor-inventory-type" v-focus v-model="form.type" />
+			<SelectBox id="fileActor-inventory-type"
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-item-id"
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-id')"
 				v-focus
 				type="file"
 				filter="item"
@@ -24,6 +26,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-item-quantity.label') }}</div>
 			<NumberBox
 				id="fileActor-inventory-item-quantity"
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-quantity')"
 				min="1"
 				max="10000"
 				v-model="form.itemQuantity"
@@ -31,6 +34,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-equipment-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-equipment-id"
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-equipment-id')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -39,6 +43,7 @@
 			<div class="text">{{ t('components.fileActor-inventory-money.label') }}</div>
 			<NumberBox
 				id="fileActor-inventory-money"
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-money')"
 				min="1"
 				max="100000000"
 				v-model="form.money"
@@ -49,6 +54,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorInventoryForm } from '@app/inspector/file-actor-page.ts';

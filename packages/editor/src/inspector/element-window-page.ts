@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { read } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -63,7 +63,9 @@ import { UI } from '@app/ui/ui-window.ts';
 			this.target = node;
 
 			Inspector.uiElement.open(node);
-			($('#uiWindow-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiWindow-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 

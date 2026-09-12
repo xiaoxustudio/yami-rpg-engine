@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -62,7 +63,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneParticle-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -71,15 +74,17 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneParticle-conditions'));
-			clear($('#sceneParticle-events'));
-			clear($('#sceneParticle-scripts'));
-			clear($('#sceneParticle-parameter-pane'));
+			clear(inspectorEls.get('sceneParticle-conditions'));
+			clear(inspectorEls.get('sceneParticle-events'));
+			clear(inspectorEls.get('sceneParticle-scripts'));
+			clear(inspectorEls.get('sceneParticle-parameter-pane'));
 		}
 	};
 
 	SceneParticle.write = function (this: typeof SceneParticle, _options: Record<string, unknown>) {
-		($('#sceneParticle-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	SceneParticle.update = function (

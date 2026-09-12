@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -76,7 +77,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneParallax-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -85,15 +88,17 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneParallax-conditions'));
-			clear($('#sceneParallax-events'));
-			clear($('#sceneParallax-scripts'));
-			clear($('#sceneParallax-parameter-pane'));
+			clear(inspectorEls.get('sceneParallax-conditions'));
+			clear(inspectorEls.get('sceneParallax-events'));
+			clear(inspectorEls.get('sceneParallax-scripts'));
+			clear(inspectorEls.get('sceneParallax-parameter-pane'));
 		}
 	};
 
 	SceneParallax.write = function (this: typeof SceneParallax, _options: Record<string, unknown>) {
-		($('#sceneParallax-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	SceneParallax.update = function (

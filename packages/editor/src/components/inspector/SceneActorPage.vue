@@ -25,6 +25,7 @@
 			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div>
 			<SelectBox
 				id="sceneActor-teamId"
+				:ref="registryRef(inspectorEls, 'sceneActor-teamId')"
 				v-model="form.teamId"
 				@input="onParamInput"
 			></SelectBox>
@@ -114,7 +115,8 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<DetailBox id="sceneActor-scripts-detail" open>
+	<DetailBox id="sceneActor-scripts-detail"
+				:ref="registryRef(inspectorEls, 'sceneActor-scripts-detail')" open>
 		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			ref="elScripts"
@@ -129,6 +131,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -187,6 +191,10 @@ const synchronize = (
 };
 
 onMounted(() => {
+	registerElement(inspectorEls, 'sceneActor-conditions', elConditions.value);
+	registerElement(inspectorEls, 'sceneActor-events', elEvents.value);
+	registerElement(inspectorEls, 'sceneActor-scripts', elScripts.value);
+	registerElement(inspectorEls, 'sceneActor-parameter-pane', elParameterPane.value);
 	const editor = Inspector.sceneActor;
 	if (!editor) return;
 

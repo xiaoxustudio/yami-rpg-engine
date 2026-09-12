@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 
@@ -42,7 +42,11 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.target = layer;
 			this.motion = Animation.motion;
 
-			($('#animParticleLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('animParticleLayer-vue-mount') as HTMLElement & {
+					sync?: () => void;
+				}
+			)?.sync?.();
 		}
 	};
 

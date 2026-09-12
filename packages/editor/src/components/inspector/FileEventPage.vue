@@ -15,6 +15,7 @@
 			<div class="text">{{ t('components.fileEvent-enabled.label') || 'Enabled' }}</div>
 			<CheckBox
 				id="fileEvent-enabled"
+				:ref="registryRef(inspectorEls, 'fileEvent-enabled')"
 				class="standard large"
 				v-model="form.enabled"
 				@input="onParamInput"
@@ -22,6 +23,7 @@
 			<div class="text">{{ t('components.fileEvent-priority.label') || 'Priority' }}</div>
 			<CheckBox
 				id="fileEvent-priority"
+				:ref="registryRef(inspectorEls, 'fileEvent-priority')"
 				class="standard large"
 				v-model="form.priority"
 				@input="onParamInput"
@@ -64,6 +66,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -100,6 +104,8 @@ const elReturnType = ref<InstanceType<typeof SelectBox> | null>(null);
 const elParameters = ref<InstanceType<typeof ParamList> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'fileEvent-type', elType.value);
+	registerElement(inspectorEls, 'fileEvent-parameters', elParameters.value);
 	const editor = Inspector.fileEvent;
 	if (!editor) return;
 

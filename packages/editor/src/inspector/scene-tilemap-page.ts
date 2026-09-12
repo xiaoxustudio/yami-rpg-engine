@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -96,7 +97,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -105,15 +108,17 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneTilemap-conditions'));
-			clear($('#sceneTilemap-events'));
-			clear($('#sceneTilemap-scripts'));
-			clear($('#sceneTilemap-parameter-pane'));
+			clear(inspectorEls.get('sceneTilemap-conditions'));
+			clear(inspectorEls.get('sceneTilemap-events'));
+			clear(inspectorEls.get('sceneTilemap-scripts'));
+			clear(inspectorEls.get('sceneTilemap-parameter-pane'));
 		}
 	};
 
 	SceneTilemap.write = function (this: typeof SceneTilemap, _options: Record<string, unknown>) {
-		($('#sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	SceneTilemap.update = function (

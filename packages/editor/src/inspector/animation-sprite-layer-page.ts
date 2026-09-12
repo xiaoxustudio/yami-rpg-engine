@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 
@@ -40,9 +40,11 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 			const id = Animation.meta.guid;
 			const items = Animation.getSpriteListItems!(id);
-			$('#animSpriteLayer-sprite').loadItems(items);
+			inspectorEls.get('animSpriteLayer-sprite')?.loadItems?.(items);
 
-			($('#animSpriteLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('animSpriteLayer-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 

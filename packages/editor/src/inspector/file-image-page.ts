@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -65,7 +65,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 				if (this.symbol === symbol) {
 					this.symbol = null;
 					(
-						$('#fileImage') as HTMLElement & { updateImage?: () => void }
+						inspectorEls.get('fileImage') as HTMLElement & { updateImage?: () => void }
 					)?.updateImage?.();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
@@ -87,7 +87,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileImage.update = function (this: typeof FileImage) {
-		const el = $('#fileImage');
+		const el = inspectorEls.get('fileImage') as HTMLElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

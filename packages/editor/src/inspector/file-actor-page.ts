@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
-import { $, getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
+import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, on, read } from '@app/utils/element-utils';
@@ -103,7 +104,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			write('events');
 			write('scripts');
 
-			($('#fileActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('fileActor-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -112,14 +115,14 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
-			clear($('#fileActor-sprites'));
-			clear($('#fileActor-attributes'));
-			clear($('#fileActor-skills'));
-			clear($('#fileActor-equipments'));
-			clear($('#fileActor-inventory'));
-			clear($('#fileActor-events'));
-			clear($('#fileActor-scripts'));
-			clear($('#fileActor-parameter-pane'));
+			clear(inspectorEls.get('fileActor-sprites'));
+			clear(inspectorEls.get('fileActor-attributes'));
+			clear(inspectorEls.get('fileActor-skills'));
+			clear(inspectorEls.get('fileActor-equipments'));
+			clear(inspectorEls.get('fileActor-inventory'));
+			clear(inspectorEls.get('fileActor-events'));
+			clear(inspectorEls.get('fileActor-scripts'));
+			clear(inspectorEls.get('fileActor-parameter-pane'));
 		}
 	};
 
@@ -227,8 +230,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elIdleMotion = $('#fileActor-idleMotion');
-		const elMoveMotion = $('#fileActor-moveMotion');
+		const elIdleMotion = inspectorEls.get('fileActor-idleMotion') as HTMLElement;
+		const elMoveMotion = inspectorEls.get('fileActor-moveMotion') as HTMLElement;
 		const items = Animation.getMotionListItems!(event.value);
 		elIdleMotion.loadItems(items);
 		elMoveMotion.loadItems(items);
@@ -271,7 +274,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			Window.open!('fileActor-sprite');
 			const animationId = FileActor.target.animationId;
 			const items = Animation.getSpriteListItems!(animationId);
-			$('#fileActor-sprite-id').loadItems(items);
+			inspectorEls.get('fileActor-sprite-id')?.loadItems?.(items);
 			Object.assign(fileActorSpriteForm, { id, image });
 			if (!id) {
 				requestFocus('fileActor-sprite-id');
@@ -312,7 +315,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', key = '' } = {}) {
 			Window.open!('fileActor-skill');
-			const elSkillKey = $('#fileActor-skill-key');
+			const elSkillKey = inspectorEls.get('fileActor-skill-key') as HTMLElement;
 			const items = Enum.getStringItems!('shortcut-key', true);
 			elSkillKey.loadItems(items);
 			Object.assign(fileActorSkillForm, { id, key });
@@ -351,7 +354,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
 			Window.open!('fileActor-equipment');
-			const elEquipmentKey = $('#fileActor-equipment-slot');
+			const elEquipmentKey = inspectorEls.get('fileActor-equipment-slot') as HTMLElement;
 			const items = Enum.getStringItems!('equipment-slot');
 			elEquipmentKey.loadItems(items);
 			Object.assign(fileActorEquipmentForm, { id, slot });
@@ -376,7 +379,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileActor.inventory.loadTypeItems();
 		},
 		loadTypeItems: function () {
-			const invTypeEl = $('#fileActor-inventory-type');
+			const invTypeEl = inspectorEls.get('fileActor-inventory-type') as HTMLElement;
 			if (!invTypeEl) return;
 			invTypeEl.loadItems([
 				{ name: 'Item', value: 'item' },
@@ -388,17 +391,17 @@ const t = (key: string, named?: Record<string, unknown>) =>
 				{
 					case: 'item',
 					targets: [
-						$('#fileActor-inventory-item-id'),
-						$('#fileActor-inventory-item-quantity')
+						inspectorEls.get('fileActor-inventory-item-id'),
+						inspectorEls.get('fileActor-inventory-item-quantity')
 					]
 				},
 				{
 					case: 'equipment',
-					targets: [$('#fileActor-inventory-equipment-id')]
+					targets: [inspectorEls.get('fileActor-inventory-equipment-id')]
 				},
 				{
 					case: 'money',
-					targets: [$('#fileActor-inventory-money')]
+					targets: [inspectorEls.get('fileActor-inventory-money')]
 				}
 			]);
 		},

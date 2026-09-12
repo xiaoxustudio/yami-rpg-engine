@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -50,7 +51,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneRegion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -59,15 +62,17 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneRegion-conditions'));
-			clear($('#sceneRegion-events'));
-			clear($('#sceneRegion-scripts'));
-			clear($('#sceneRegion-parameter-pane'));
+			clear(inspectorEls.get('sceneRegion-conditions'));
+			clear(inspectorEls.get('sceneRegion-events'));
+			clear(inspectorEls.get('sceneRegion-scripts'));
+			clear(inspectorEls.get('sceneRegion-parameter-pane'));
 		}
 	};
 
 	SceneRegion.write = function (this: typeof SceneRegion, _options: Record<string, unknown>) {
-		($('#sceneRegion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	SceneRegion.update = function (

@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -73,7 +74,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -83,10 +86,10 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.updateTarget!();
 			this.target = null;
 			this.motions = null;
-			clear($('#sceneAnimation-conditions'));
-			clear($('#sceneAnimation-events'));
-			clear($('#sceneAnimation-scripts'));
-			clear($('#sceneAnimation-parameter-pane'));
+			clear(inspectorEls.get('sceneAnimation-conditions'));
+			clear(inspectorEls.get('sceneAnimation-events'));
+			clear(inspectorEls.get('sceneAnimation-scripts'));
+			clear(inspectorEls.get('sceneAnimation-parameter-pane'));
 		}
 	};
 
@@ -94,7 +97,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 		this: typeof SceneAnimation,
 		_options: Record<string, unknown>
 	) {
-		($('#sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	SceneAnimation.update = function (
@@ -175,7 +180,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = $('#sceneAnimation-motion') as
+		const elMotion = inspectorEls.get('sceneAnimation-motion') as
 			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
 			| null;
 		const items = Animation.getMotionListItems!(event.value);

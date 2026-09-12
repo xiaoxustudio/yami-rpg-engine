@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear, hide, show } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -62,14 +63,16 @@ import { Scene } from '@app/scene/scene-window.ts';
 		if (this.target !== actor) {
 			this.target = actor;
 
-			const elTeamId = $('#sceneActor-teamId');
+			const elTeamId = inspectorEls.get('sceneActor-teamId') as HTMLElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 
 			const write = getElementWriter('sceneActor', actor);
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneActor-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -78,15 +81,15 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneActor-conditions'));
-			clear($('#sceneActor-events'));
-			clear($('#sceneActor-scripts'));
-			clear($('#sceneActor-parameter-pane'));
+			clear(inspectorEls.get('sceneActor-conditions'));
+			clear(inspectorEls.get('sceneActor-events'));
+			clear(inspectorEls.get('sceneActor-scripts'));
+			clear(inspectorEls.get('sceneActor-parameter-pane'));
 		}
 	};
 
 	SceneActor.write = function (this: typeof SceneActor, _options: Record<string, unknown>) {
-		($('#sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(inspectorEls.get('sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneActor.update = function (
@@ -146,7 +149,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneActor.datachange = function (this: typeof SceneActor, event: Event & { key: string }) {
 		if (this.target && event.key === 'teams') {
-			const elTeamId = $('#sceneActor-teamId');
+			const elTeamId = inspectorEls.get('sceneActor-teamId') as HTMLElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 			this.target.teamId = '';
 			elTeamId.update();
@@ -157,12 +160,12 @@ import { Scene } from '@app/scene/scene-window.ts';
 	SceneActor.typeWrite = function (this: typeof SceneActor, event: Event & { value: unknown }) {
 		switch (event.value) {
 			case 'local':
-				show($('#sceneActor-scripts-detail'));
-				show($('#sceneActor-parameter-pane'));
+				show(inspectorEls.get('sceneActor-scripts-detail'));
+				show(inspectorEls.get('sceneActor-parameter-pane'));
 				break;
 			case 'global':
-				hide($('#sceneActor-scripts-detail'));
-				hide($('#sceneActor-parameter-pane'));
+				hide(inspectorEls.get('sceneActor-scripts-detail'));
+				hide(inspectorEls.get('sceneActor-parameter-pane'));
 				break;
 		}
 	};

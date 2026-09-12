@@ -12,7 +12,8 @@
 		<DetailSummary>{{
 			t('components.fileFont-font-grid.label') || 'Font Preview'
 		}}</DetailSummary>
-		<div class="detail-grid" id="fileFont-font-grid">
+		<div class="detail-grid" id="fileFont-font-grid"
+				:ref="registryRef(inspectorEls, 'fileFont-font-grid')">
 			<TextBox id="fileFont-content" v-model="form.text" />
 			<div class="text fileFont-preview" id="fileFont-12px">{{ form.text }}</div>
 			<div class="text fileFont-preview" id="fileFont-18px">{{ form.text }}</div>
@@ -28,6 +29,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
 import { Inspector } from '@app/inspector/inspector.ts';

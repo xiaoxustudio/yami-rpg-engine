@@ -1154,6 +1154,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -1222,6 +1224,7 @@ const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'particleLayer-color-easingId', elColorEasingId.value);
 	const editor = Inspector.particleLayer;
 	if (!editor) return;
 

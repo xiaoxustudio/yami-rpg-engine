@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -65,7 +66,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			($('#sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('sceneLight-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -74,15 +77,15 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear($('#sceneLight-conditions'));
-			clear($('#sceneLight-events'));
-			clear($('#sceneLight-scripts'));
-			clear($('#sceneLight-parameter-pane'));
+			clear(inspectorEls.get('sceneLight-conditions'));
+			clear(inspectorEls.get('sceneLight-events'));
+			clear(inspectorEls.get('sceneLight-scripts'));
+			clear(inspectorEls.get('sceneLight-parameter-pane'));
 		}
 	};
 
 	SceneLight.write = function (this: typeof SceneLight, _options: Record<string, unknown>) {
-		($('#sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(inspectorEls.get('sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	SceneLight.update = function (

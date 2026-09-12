@@ -159,6 +159,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -202,6 +204,9 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'fileScene-events', elEvents.value);
+	registerElement(inspectorEls, 'fileScene-scripts', elScripts.value);
+	registerElement(inspectorEls, 'fileScene-parameter-pane', elParameterPane.value);
 	const editor = Inspector.fileScene;
 	if (!editor) return;
 

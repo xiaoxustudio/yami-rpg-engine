@@ -10,13 +10,16 @@
 			<div class="text">{{ t('components.fileActor-skill-id.label') }}</div>
 			<CustomBox id="fileActor-skill-id" v-focus type="file" filter="skill" v-model="form.id" />
 			<div class="text">{{ t('components.fileActor-skill-key.label') }}</div>
-			<SelectBox id="fileActor-skill-key" v-model="form.key" />
+			<SelectBox id="fileActor-skill-key"
+				:ref="registryRef(inspectorEls, 'fileActor-skill-key')" v-model="form.key" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorSkillForm } from '@app/inspector/file-actor-page.ts';

@@ -1,4 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 vi.setConfig({ testTimeout: 30000 });
 import { reactive } from 'vue';
 
@@ -75,6 +77,9 @@ describe('inspector-change History 处理器（form 桥优先 + write/dispatch �
 		const inspector = document.createElement('div');
 		inspector.id = 'inspector';
 		document.body.appendChild(inspector);
+		// P5b 批次 3：Inspector.initialize 改从 inspectorEls 取 manager（不再查 DOM），故测试需登记
+		registerElement(inspectorEls, 'inspector-page-manager', manager);
+		registerElement(inspectorEls, 'inspector', inspector);
 		Inspector.initialize();
 		processor = History.processors['inspector-change'] as (
 			operation: string,

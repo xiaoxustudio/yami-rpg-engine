@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { addClass, clear, removeClass } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -31,7 +32,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 	};
 
 	FileScene.initialize = function () {};
-	FileScene.button = $('#scene-switch-settings');
+	FileScene.button = inspectorEls.get('scene-switch-settings') as HTMLElement;
 	FileScene.owner = {
 		setTarget: (target: unknown) => {
 			if (FileScene.target !== target) {
@@ -109,7 +110,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 			const write = getElementWriter('fileScene', Scene);
 			write('events');
 			write('scripts');
-			($('#fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('fileScene-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -118,9 +121,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 			this.target = null;
 
 			removeClass(this.button, 'selected');
-			clear($('#fileScene-events'));
-			clear($('#fileScene-scripts'));
-			clear($('#fileScene-parameter-pane'));
+			clear(inspectorEls.get('fileScene-events'));
+			clear(inspectorEls.get('fileScene-scripts'));
+			clear(inspectorEls.get('fileScene-parameter-pane'));
 		}
 	};
 
@@ -128,7 +131,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 		this: typeof FileScene,
 		_options: { width?: number; height?: number }
 	) {
-		($('#fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(inspectorEls.get('fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	FileScene.update = function (

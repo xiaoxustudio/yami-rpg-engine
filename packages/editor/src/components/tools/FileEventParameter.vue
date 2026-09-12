@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div>
-			<SelectBox id="fileEvent-parameter-type" v-focus v-model="form.type" />
+			<SelectBox id="fileEvent-parameter-type"
+				:ref="registryRef(inspectorEls, 'fileEvent-parameter-type')" v-focus v-model="form.type" />
 			<div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div>
 			<TextBox id="fileEvent-parameter-key" v-focus v-model="form.key" />
 			<div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div>
@@ -19,6 +20,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileEventParameterForm } from '@app/inspector/file-event-page.ts';

@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -33,8 +33,8 @@ import { UI } from '@app/ui/ui-window.ts';
 	};
 
 	FileUI.initialize = function (this: typeof FileUI) {
-		if (!$('#ui-switch-settings')) return;
-		this.button = $('#ui-switch-settings');
+		if (!inspectorEls.get('ui-switch-settings')) return;
+		this.button = inspectorEls.get('ui-switch-settings') as HTMLElement;
 		this.owner = {
 			setTarget: (target: Record<string, unknown>) => {
 				if (this.target !== target) {
@@ -73,7 +73,7 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			addClass(this.button, 'selected');
 
-			($('#fileUI-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(inspectorEls.get('fileUI-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

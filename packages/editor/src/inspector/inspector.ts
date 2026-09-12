@@ -1,5 +1,5 @@
-﻿import { $ } from '@app/utils/dom';
-import { Window } from '@app/tools/window-object.ts';
+﻿import { Window } from '@app/tools/window-object.ts';
+import { inspectorEls } from './element-registry.ts';
 import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@app/utils/element-utils';
 import { ParamHistory, registerParamHistoryProcessors } from '@app/composables/useParamHistory';
 
@@ -144,7 +144,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 	if (this._initialized) {
 		return;
 	}
-	this.manager = $('#inspector-page-manager');
+	this.manager = inspectorEls.get('inspector-page-manager') as HTMLElement;
 	if (!this.manager) return;
 	this.manager.focusing = null;
 	this.manager.oldValue = null;
@@ -204,7 +204,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 		editor.owner.setTarget(target, meta);
 	};
 
-	$('#inspector').addEventListener('resize', this.inspectorResize);
+	inspectorEls.get('inspector')?.addEventListener?.('resize', this.inspectorResize);
 	this.manager.addEventListener('keydown', this.managerKeydown);
 
 	const initSub = (name: string) => {

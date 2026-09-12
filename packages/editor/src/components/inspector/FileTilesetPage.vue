@@ -70,6 +70,7 @@
 			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="fileTileset-image"
+				:ref="registryRef(inspectorEls, 'fileTileset-image')"
 				v-model="form.image"
 				type="file"
 				filter="image"
@@ -155,6 +156,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/file-tileset-page.ts';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { focus } from '@app/utils/element-utils';

@@ -1,4 +1,5 @@
-import { $, getElementWriter } from '@app/utils/dom';
+import { getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -85,7 +86,9 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			const write = getElementWriter('fileTrigger', trigger);
 			write('events');
 			write('scripts');
-			($('#fileTrigger-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('fileTrigger-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -95,9 +98,9 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			this.target = null;
 			this.meta = null;
 			this.motions = null;
-			clear($('#fileTrigger-events'));
-			clear($('#fileTrigger-scripts'));
-			clear($('#fileTrigger-parameter-pane'));
+			clear(inspectorEls.get('fileTrigger-events'));
+			clear(inspectorEls.get('fileTrigger-scripts'));
+			clear(inspectorEls.get('fileTrigger-parameter-pane'));
 		}
 	};
 
@@ -127,7 +130,9 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			case 'shape-type':
 				if (trigger.shape.type !== value) {
 					const form = (
-						$('#fileTrigger-vue-mount') as (HTMLElement & { form?: TriggerForm }) | null
+						inspectorEls.get('fileTrigger-vue-mount') as
+							| (HTMLElement & { form?: TriggerForm })
+							| null
 					)?.form;
 					switch (value) {
 						case 'rectangle':
@@ -193,7 +198,7 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elMotion = $('#fileTrigger-motion');
+		const elMotion = inspectorEls.get('fileTrigger-motion') as HTMLElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};

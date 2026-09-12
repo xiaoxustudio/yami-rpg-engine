@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
-import { $, getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
+import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, hide, show } from '@app/utils/element-utils';
@@ -87,14 +88,16 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			this.target = event;
 			this.meta = meta;
 
-			$('#fileEvent-type').loadItems(
-				Enum.getMergedItems!(EventEditor.types?.global, 'global-event')
-			);
+			inspectorEls
+				.get('fileEvent-type')
+				?.loadItems?.(Enum.getMergedItems!(EventEditor.types?.global, 'global-event'));
 
 			const write = getElementWriter('fileEvent', event);
 			write('parameters');
 
-			($('#fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('fileEvent-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -103,12 +106,12 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
-			clear($('#fileEvent-parameters'));
+			clear(inspectorEls.get('fileEvent-parameters'));
 		}
 	};
 
 	FileEvent.write = function (this: FileEventPage, _options: { type?: string }) {
-		($('#fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(inspectorEls.get('fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	FileEvent.update = function (
@@ -138,9 +141,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	};
 
 	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {
-		const enabledInput = $('#fileEvent-enabled');
+		const enabledInput = inspectorEls.get('fileEvent-enabled') as HTMLElement;
 		const enabledLabel = enabledInput.previousElementSibling;
-		const priorityInput = $('#fileEvent-priority');
+		const priorityInput = inspectorEls.get('fileEvent-priority') as HTMLElement;
 		const priorityLabel = priorityInput.previousElementSibling;
 		switch (event.value) {
 			case 'common':
@@ -187,7 +190,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileEvent.parameters.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
-			const el = $('#fileEvent-parameter-type');
+			const el = inspectorEls.get('fileEvent-parameter-type') as HTMLElement;
 			if (!el) return;
 			el.loadItems([
 				{ name: 'Boolean', value: 'boolean' },

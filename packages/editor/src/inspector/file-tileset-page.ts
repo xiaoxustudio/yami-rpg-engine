@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -76,14 +76,14 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 			switch (tileset.type) {
 				case 'normal':
-					enable($('#fileTileset-image'));
+					enable(inspectorEls.get('fileTileset-image'));
 					break;
 				case 'auto':
-					disable($('#fileTileset-image'));
+					disable(inspectorEls.get('fileTileset-image'));
 					break;
 			}
 
-			($('#fileTileset') as HTMLElement & { sync?: () => void })?.sync?.();
+			(inspectorEls.get('fileTileset') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

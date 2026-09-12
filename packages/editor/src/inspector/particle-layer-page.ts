@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -123,10 +123,14 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 		if (this.target !== layer) {
 			this.target = layer;
 
-			$('#particleLayer-color-easingId').loadItems(Data.createEasingItems!());
+			inspectorEls
+				.get('particleLayer-color-easingId')
+				?.loadItems?.(Data.createEasingItems!());
 			this.easingDefaultId = Data.easings[0].id;
 
-			($('#particleLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('particleLayer-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -164,7 +168,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete area.height;
 					delete area.radius;
 					const form = (
-						$('#particleLayer-vue-mount') as
+						inspectorEls.get('particleLayer-vue-mount') as
 							| (HTMLElement & { form?: ParticleForm })
 							| null
 					)?.form;
@@ -282,7 +286,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete color.endMax;
 					delete color.tint;
 					const form = (
-						$('#particleLayer-vue-mount') as
+						inspectorEls.get('particleLayer-vue-mount') as
 							| (HTMLElement & { form?: ParticleForm })
 							| null
 					)?.form;

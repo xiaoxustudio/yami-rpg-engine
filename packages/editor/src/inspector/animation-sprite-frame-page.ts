@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Curve } from '@app/animation/curve-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -56,7 +56,9 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 			this.motion = Animation.motion;
 			Sprite.open(frame);
 			Curve.load!(frame);
-			($('#animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -74,7 +76,9 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 		this: typeof AnimSpriteFrame,
 		_options: Record<string, unknown>
 	) {
-		($('#animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	};
 
 	AnimSpriteFrame.update = function (

@@ -1,4 +1,5 @@
-import { $, getElementReader } from '@app/utils/dom';
+import { getElementReader } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
 
@@ -59,7 +60,9 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 			Inspector.uiElement.open(node);
-			($('#uiDialogBox-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiDialogBox-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 

@@ -16,13 +16,16 @@
 				v-model="form.id"
 			/>
 			<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div>
-			<SelectBox id="fileActor-equipment-slot" v-focus v-model="form.slot" />
+			<SelectBox id="fileActor-equipment-slot"
+				:ref="registryRef(inspectorEls, 'fileActor-equipment-slot')" v-focus v-model="form.slot" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorEquipmentForm } from '@app/inspector/file-actor-page.ts';

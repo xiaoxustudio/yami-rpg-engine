@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
-			<SelectBox id="fileActor-sprite-id" v-focus v-model="form.id" />
+			<SelectBox id="fileActor-sprite-id"
+				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')" v-focus v-model="form.id" />
 			<div class="text">{{ t('components.fileActor-sprite-image.label') }}</div>
 			<CustomBox
 				id="fileActor-sprite-image"
@@ -23,6 +24,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorSpriteForm } from '@app/inspector/file-actor-page.ts';

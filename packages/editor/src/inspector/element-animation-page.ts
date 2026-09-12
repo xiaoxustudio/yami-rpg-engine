@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -63,7 +63,9 @@ import { UI } from '@app/ui/ui-window.ts';
 			this.target = node;
 
 			Inspector.uiElement.open(node);
-			($('#uiAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -118,7 +120,7 @@ import { UI } from '@app/ui/ui-window.ts';
 	};
 
 	UIAnimation.animationIdWrite = function (this: typeof UIAnimation, event: Event) {
-		const elMotion = $('#uiAnimation-motion');
+		const elMotion = inspectorEls.get('uiAnimation-motion') as HTMLElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};

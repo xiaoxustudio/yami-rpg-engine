@@ -187,6 +187,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -236,6 +238,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'sceneParticle-conditions', elConditions.value);
+	registerElement(inspectorEls, 'sceneParticle-events', elEvents.value);
+	registerElement(inspectorEls, 'sceneParticle-scripts', elScripts.value);
+	registerElement(inspectorEls, 'sceneParticle-parameter-pane', elParameterPane.value);
 	const editor = Inspector.sceneParticle;
 	if (!editor) return;
 

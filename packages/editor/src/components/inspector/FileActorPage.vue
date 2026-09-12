@@ -30,9 +30,11 @@
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">Idle Motion</div>
-			<SelectBox id="fileActor-idleMotion" v-model="form.idleMotion" @input="onParamInput" />
+			<SelectBox id="fileActor-idleMotion"
+				:ref="registryRef(inspectorEls, 'fileActor-idleMotion')" v-model="form.idleMotion" @input="onParamInput" />
 			<div class="text">Move Motion</div>
-			<SelectBox id="fileActor-moveMotion" v-model="form.moveMotion" @input="onParamInput" />
+			<SelectBox id="fileActor-moveMotion"
+				:ref="registryRef(inspectorEls, 'fileActor-moveMotion')" v-model="form.moveMotion" @input="onParamInput" />
 			<div class="text">Rotatable</div>
 			<SelectBox
 				id="fileActor-rotatable"
@@ -205,6 +207,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -249,6 +253,14 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'fileActor-sprites', elSprites.value);
+	registerElement(inspectorEls, 'fileActor-attributes', elAttributes.value);
+	registerElement(inspectorEls, 'fileActor-skills', elSkills.value);
+	registerElement(inspectorEls, 'fileActor-equipments', elEquipments.value);
+	registerElement(inspectorEls, 'fileActor-inventory', elInventory.value);
+	registerElement(inspectorEls, 'fileActor-events', elEvents.value);
+	registerElement(inspectorEls, 'fileActor-scripts', elScripts.value);
+	registerElement(inspectorEls, 'fileActor-parameter-pane', elParameterPane.value);
 	const editor = Inspector.fileActor;
 	if (!editor) return;
 

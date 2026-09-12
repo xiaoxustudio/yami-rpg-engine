@@ -318,6 +318,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -390,6 +392,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'sceneLight-conditions', elConditions.value);
+	registerElement(inspectorEls, 'sceneLight-events', elEvents.value);
+	registerElement(inspectorEls, 'sceneLight-scripts', elScripts.value);
+	registerElement(inspectorEls, 'sceneLight-parameter-pane', elParameterPane.value);
 	const editor = Inspector.sceneLight;
 	if (!editor) return;
 

@@ -21,6 +21,7 @@
 			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
 				id="sceneAnimation-motion"
+				:ref="registryRef(inspectorEls, 'sceneAnimation-motion')"
 				v-model="form.motion"
 				@input="onParamInput"
 			></SelectBox>
@@ -206,6 +207,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -262,6 +265,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'sceneAnimation-conditions', elConditions.value);
+	registerElement(inspectorEls, 'sceneAnimation-events', elEvents.value);
+	registerElement(inspectorEls, 'sceneAnimation-scripts', elScripts.value);
+	registerElement(inspectorEls, 'sceneAnimation-parameter-pane', elParameterPane.value);
 	const editor = Inspector.sceneAnimation;
 	if (!editor) return;
 

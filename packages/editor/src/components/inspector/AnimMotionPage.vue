@@ -38,6 +38,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimMotionPage } from '@app/composables/useAnimMotionPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -66,6 +68,7 @@ const elLoop = ref<InstanceType<typeof CheckBox> | null>(null);
 const elLoopStart = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'animMotion-mode', elMode.value);
 	const animMotion = Inspector.animMotion;
 	if (!animMotion) return;
 

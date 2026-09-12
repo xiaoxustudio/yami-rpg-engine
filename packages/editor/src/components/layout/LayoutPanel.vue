@@ -125,6 +125,7 @@
 								<div
 									class="item toolbar-item"
 									id="scene-switch-settings"
+				:ref="registryRef(inspectorEls, 'scene-switch-settings')"
 									value="settings"
 									hotkey="Alt+S"
 								></div>
@@ -281,6 +282,7 @@
 								<div
 									class="item toolbar-item"
 									id="ui-switch-settings"
+				:ref="registryRef(inspectorEls, 'ui-switch-settings')"
 									value="settings"
 								></div>
 							</div>
@@ -428,6 +430,7 @@
 								<div
 									class="item toolbar-item"
 									id="animation-switch-settings"
+				:ref="registryRef(inspectorEls, 'animation-switch-settings')"
 									value="settings"
 								></div>
 							</div>
@@ -687,24 +690,30 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="inspector" source="page">
-					<div class="page-frame" id="inspector" value="inspector">
-						<PageManager id="inspector-page-manager" tabindex="-1">
+					<div class="page-frame" id="inspector"
+				:ref="registryRef(inspectorEls, 'inspector')" value="inspector">
+						<PageManager id="inspector-page-manager"
+				:ref="registryRef(inspectorEls, 'inspector-page-manager')" tabindex="-1">
 							<div
 								class="page-frame"
 								value="fileScene"
 								id="fileScene-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileScene-vue-mount')"
 							></div>
-							<div class="page-frame" value="fileUI" id="fileUI-vue-mount"></div>
+							<div class="page-frame" value="fileUI" id="fileUI-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileUI-vue-mount')"></div>
 							<div
 								class="page-frame"
 								value="fileAnimation"
 								id="fileAnimation-vue-mount"
 							></div>
-							<div class="page-frame" id="fileTileset" value="fileTileset"></div>
+							<div class="page-frame" id="fileTileset"
+				:ref="registryRef(inspectorEls, 'fileTileset')" value="fileTileset"></div>
 							<div
 								class="page-frame"
 								value="fileActor"
 								id="fileActor-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileActor-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
@@ -715,6 +724,7 @@
 								class="page-frame"
 								value="fileTrigger"
 								id="fileTrigger-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileTrigger-vue-mount')"
 							></div>
 							<div class="page-frame" value="fileItem" id="fileItem-vue-mount"></div>
 							<div
@@ -731,72 +741,94 @@
 								class="page-frame"
 								value="fileEvent"
 								id="fileEvent-vue-mount"
+				:ref="registryRef(inspectorEls, 'fileEvent-vue-mount')"
 							></div>
-							<div class="page-frame" id="fileImage" value="fileImage"></div>
-							<div class="page-frame" id="fileAudio" value="fileAudio"></div>
-							<div class="page-frame" id="fileVideo" value="fileVideo"></div>
-							<div class="page-frame" id="fileFont" value="fileFont"></div>
-							<div class="page-frame" id="fileScript" value="fileScript"></div>
+							<div class="page-frame" id="fileImage"
+				:ref="registryRef(inspectorEls, 'fileImage')" value="fileImage"></div>
+							<div class="page-frame" id="fileAudio"
+				:ref="registryRef(inspectorEls, 'fileAudio')" value="fileAudio"></div>
+							<div class="page-frame" id="fileVideo"
+				:ref="registryRef(inspectorEls, 'fileVideo')" value="fileVideo"></div>
+							<div class="page-frame" id="fileFont"
+				:ref="registryRef(inspectorEls, 'fileFont')" value="fileFont"></div>
+							<div class="page-frame" id="fileScript"
+				:ref="registryRef(inspectorEls, 'fileScript')" value="fileScript"></div>
 							<div
 								class="page-frame"
 								value="sceneActor"
 								id="sceneActor-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneActor-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneRegion"
 								id="sceneRegion-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneRegion-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneLight"
 								id="sceneLight-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneLight-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneAnimation"
 								id="sceneAnimation-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneAnimation-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneParticle"
 								id="sceneParticle-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneParticle-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneParallax"
 								id="sceneParallax-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneParallax-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="sceneTilemap"
 								id="sceneTilemap-vue-mount"
+				:ref="registryRef(inspectorEls, 'sceneTilemap-vue-mount')"
 							></div>
-							<div class="page-frame" value="uiImage" id="uiImage-vue-mount"></div>
-							<div class="page-frame" value="uiText" id="uiText-vue-mount"></div>
+							<div class="page-frame" value="uiImage" id="uiImage-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiImage-vue-mount')"></div>
+							<div class="page-frame" value="uiText" id="uiText-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiText-vue-mount')"></div>
 							<div
 								class="page-frame"
 								value="uiTextBox"
 								id="uiTextBox-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiTextBox-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="uiDialogBox"
 								id="uiDialogBox-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiDialogBox-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="uiProgressBar"
 								id="uiProgressBar-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiProgressBar-vue-mount')"
 							></div>
-							<div class="page-frame" value="uiButton" id="uiButton-vue-mount"></div>
+							<div class="page-frame" value="uiButton" id="uiButton-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiButton-vue-mount')"></div>
 							<div
 								class="page-frame"
 								value="uiAnimation"
 								id="uiAnimation-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiAnimation-vue-mount')"
 							></div>
-							<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"></div>
-							<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"></div>
+							<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiVideo-vue-mount')"></div>
+							<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiWindow-vue-mount')"></div>
 							<div
 								class="page-frame"
 								value="uiContainer"
@@ -806,36 +838,43 @@
 								class="page-frame"
 								value="uiReference"
 								id="uiReference-vue-mount"
+				:ref="registryRef(inspectorEls, 'uiReference-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animMotion"
 								id="animMotion-vue-mount"
+				:ref="registryRef(inspectorEls, 'animMotion-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animJointFrame"
 								id="animJointFrame-vue-mount"
+				:ref="registryRef(inspectorEls, 'animJointFrame-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animSpriteLayer"
 								id="animSpriteLayer-vue-mount"
+				:ref="registryRef(inspectorEls, 'animSpriteLayer-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animSpriteFrame"
 								id="animSpriteFrame-vue-mount"
+				:ref="registryRef(inspectorEls, 'animSpriteFrame-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animParticleLayer"
 								id="animParticleLayer-vue-mount"
+				:ref="registryRef(inspectorEls, 'animParticleLayer-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animParticleFrame"
 								id="animParticleFrame-vue-mount"
+				:ref="registryRef(inspectorEls, 'animParticleFrame-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
@@ -851,6 +890,7 @@
 								class="page-frame"
 								value="particleLayer"
 								id="particleLayer-vue-mount"
+				:ref="registryRef(inspectorEls, 'particleLayer-vue-mount')"
 							></div>
 						</PageManager>
 					</div>
@@ -868,6 +908,8 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';

@@ -1,4 +1,4 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { write } from '@app/utils/element-utils.ts';
@@ -47,7 +47,9 @@ import { write } from '@app/utils/element-utils.ts';
 	AnimMotion.open = function (this: typeof AnimMotion, motion: Record<string, unknown>) {
 		if (this.target !== motion) {
 			this.target = motion;
-			($('#animMotion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('animMotion-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
@@ -60,7 +62,7 @@ import { write } from '@app/utils/element-utils.ts';
 
 	AnimMotion.write = function (this: typeof AnimMotion, options: Record<string, unknown>) {
 		if (options.mode !== undefined) {
-			write($('#animMotion-mode'), options.mode);
+			write(inspectorEls.get('animMotion-mode'), options.mode);
 		}
 	};
 

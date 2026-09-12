@@ -1,4 +1,5 @@
-import { $ } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
+import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
@@ -64,11 +65,17 @@ import type { TextForm } from '@app/composables/useUITextPage';
 		if (this.target !== node) {
 			this.target = node;
 
-			write($('#uiText-horizontalAlign'), node.horizontalAlign);
-			write($('#uiText-verticalAlign'), node.verticalAlign);
+			write(
+				radioProxyMap['uiText-horizontalAlign'] as RadioProxyElement | undefined,
+				node.horizontalAlign
+			);
+			write(
+				radioProxyMap['uiText-verticalAlign'] as RadioProxyElement | undefined,
+				node.verticalAlign
+			);
 			Inspector.uiElement.open(node);
 
-			($('#uiText-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(inspectorEls.get('uiText-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -96,7 +103,9 @@ import type { TextForm } from '@app/composables/useUITextPage';
 							changes: [
 								{
 									get input() {
-										return $('#uiText-horizontalAlign');
+										return radioProxyMap['uiText-horizontalAlign'] as
+											| RadioProxyElement
+											| undefined;
 									},
 									oldValue: node.horizontalAlign,
 									newValue: value
@@ -120,7 +129,9 @@ import type { TextForm } from '@app/composables/useUITextPage';
 							changes: [
 								{
 									get input() {
-										return $('#uiText-verticalAlign');
+										return radioProxyMap['uiText-verticalAlign'] as
+											| RadioProxyElement
+											| undefined;
 									},
 									oldValue: node.verticalAlign,
 									newValue: value
@@ -165,7 +176,9 @@ import type { TextForm } from '@app/composables/useUITextPage';
 			case 'effect-type':
 				if (node.effect.type !== value) {
 					const form = (
-						$('#uiText-vue-mount') as (HTMLElement & { form?: TextForm }) | null
+						inspectorEls.get('uiText-vue-mount') as
+							| (HTMLElement & { form?: TextForm })
+							| null
 					)?.form;
 					const effect: Record<string, unknown> = { type: value };
 					switch (value) {

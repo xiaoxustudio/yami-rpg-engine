@@ -1,22 +1,26 @@
 ﻿<template>
-	<DetailBox id="uiElement-general-group" open>
+	<DetailBox id="uiElement-general-group"
+				:ref="registryRef(inspectorEls, 'uiElement-general-group')" open>
 		<DetailSummary>{{
 			t('components.uiElement-general-grid.label') || 'General'
 		}}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
 			<div class="text">{{ t('components.uiElement-name.label') || 'Name' }}</div>
-			<TextBox id="uiElement-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox id="uiElement-name"
+				:ref="registryRef(inspectorEls, 'uiElement-name')" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">
 				{{ t('components.uiElement-pointerEvents.label') || 'Pointer Events' }}
 			</div>
 			<SelectBox
 				id="uiElement-pointerEvents"
+				:ref="registryRef(inspectorEls, 'uiElement-pointerEvents')"
 				v-model="form.pointerEvents"
 				@input="onParamInput"
 			></SelectBox>
 		</div>
 	</DetailBox>
-	<DetailBox id="uiElement-transform-group" open>
+	<DetailBox id="uiElement-transform-group"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-group')" open>
 		<DetailSummary>{{
 			t('components.uiElement-transform-grid.label') || 'Transform'
 		}}</DetailSummary>
@@ -74,6 +78,7 @@
 			<div id="uiElement-transform-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-anchorX"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-anchorX')"
 					v-model="form.anchorX"
 					min="-100"
 					max="100"
@@ -83,6 +88,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-anchorY"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-anchorY')"
 					v-model="form.anchorY"
 					min="-100"
 					max="100"
@@ -95,6 +101,7 @@
 			<div id="uiElement-transform-x-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-x"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-x')"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
@@ -104,6 +111,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-x2"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-x2')"
 					v-model="form.x2"
 					min="-100"
 					max="100"
@@ -117,6 +125,7 @@
 			<div id="uiElement-transform-y-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-y"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-y')"
 					v-model="form.y"
 					min="-10000"
 					max="10000"
@@ -126,6 +135,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-y2"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-y2')"
 					v-model="form.y2"
 					min="-100"
 					max="100"
@@ -262,20 +272,25 @@
 			</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="uiElement-events-group" open>
+	<DetailBox id="uiElement-events-group"
+				:ref="registryRef(inspectorEls, 'uiElement-events-group')" open>
 		<DetailSummary>{{ t('components.uiElement-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="uiElement-events"
+				:ref="registryRef(inspectorEls, 'uiElement-events')"
 			class="inspector-list"
 			filter="element"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<DetailBox id="uiElement-scripts-group" open>
+	<DetailBox id="uiElement-scripts-group"
+				:ref="registryRef(inspectorEls, 'uiElement-scripts-group')" open>
 		<DetailSummary>{{ t('components.uiElement-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="uiElement-scripts" class="inspector-list" flexible></ParamList>
+		<ParamList id="uiElement-scripts"
+				:ref="registryRef(inspectorEls, 'uiElement-scripts')" class="inspector-list" flexible></ParamList>
 	</DetailBox>
-	<ParameterPane id="uiElement-parameter-pane"></ParameterPane>
+	<ParameterPane id="uiElement-parameter-pane"
+				:ref="registryRef(inspectorEls, 'uiElement-parameter-pane')"></ParameterPane>
 	<DetailBox open>
 		<DetailSummary>{{
 			t('components.uiImage-properties-grid.label') || 'Image Properties'
@@ -441,6 +456,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';

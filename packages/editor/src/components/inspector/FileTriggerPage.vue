@@ -188,7 +188,8 @@
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">{{ t('components.fileTrigger-motion.label') || 'Motion' }}</div>
-			<SelectBox id="fileTrigger-motion" v-model="form.motion" @input="onParamInput" />
+			<SelectBox id="fileTrigger-motion"
+				:ref="registryRef(inspectorEls, 'fileTrigger-motion')" v-model="form.motion" @input="onParamInput" />
 			<div class="text">{{ t('components.fileTrigger-priority.label') || 'Priority' }}</div>
 			<NumberBox
 				id="fileTrigger-priority"
@@ -242,6 +243,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -289,6 +292,9 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'fileTrigger-events', elEvents.value);
+	registerElement(inspectorEls, 'fileTrigger-scripts', elScripts.value);
+	registerElement(inspectorEls, 'fileTrigger-parameter-pane', elParameterPane.value);
 	const editor = Inspector.fileTrigger;
 	if (!editor) return;
 

@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
+import { inspectorEls } from './element-registry.ts';
 import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -62,25 +63,25 @@ import { UI } from '@app/ui/ui-window.ts';
 	};
 
 	UIElement.initialize = function (this: typeof UIElement) {
-		if (!$('#uiElement-name')) return;
-		this.nameBox = $('#uiElement-name');
-		this.pointerEvents = $('#uiElement-pointerEvents');
-		this.generalGroup = $('#uiElement-general-group');
-		this.transformGroup = $('#uiElement-transform-group');
-		this.eventsGroup = $('#uiElement-events-group');
-		this.scriptsGroup = $('#uiElement-scripts-group');
-		this.parameterPane = $('#uiElement-parameter-pane');
+		if (!inspectorEls.get('uiElement-name')) return;
+		this.nameBox = inspectorEls.get('uiElement-name') as HTMLElement;
+		this.pointerEvents = inspectorEls.get('uiElement-pointerEvents') as HTMLElement;
+		this.generalGroup = inspectorEls.get('uiElement-general-group') as HTMLElement;
+		this.transformGroup = inspectorEls.get('uiElement-transform-group') as HTMLElement;
+		this.eventsGroup = inspectorEls.get('uiElement-events-group') as HTMLElement;
+		this.scriptsGroup = inspectorEls.get('uiElement-scripts-group') as HTMLElement;
+		this.parameterPane = inspectorEls.get('uiElement-parameter-pane') as HTMLElement;
 		this.pointerEvents.loadItems([
 			{ name: 'Enabled', value: 'enabled' },
 			{ name: 'Disabled', value: 'disabled' },
 			{ name: 'Skipped', value: 'skipped' }
 		]);
 
-		$('#uiElement-events')?.bind?.(new EventListInterface(this, UI));
+		inspectorEls.get('uiElement-events')?.bind?.(new EventListInterface(this, UI));
 
-		$('#uiElement-scripts')?.bind?.(new ScriptListInterface(this, UI));
+		inspectorEls.get('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UI));
 
-		this.parameterPane.bind($('#uiElement-scripts'));
+		this.parameterPane.bind(inspectorEls.get('uiElement-scripts'));
 
 		// this.generalGroup.remove() this.transformGroup.remove() this.eventsGroup.remove() this.scriptsGroup.remove()
 
@@ -171,16 +172,18 @@ import { UI } from '@app/ui/ui-window.ts';
 			}
 			write('events');
 			write('scripts');
-			($('#uiImage-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiImage-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 
 	UIElement.close = function (this: typeof UIElement) {
 		if (this.target) {
 			this.target = null;
-			clear($('#uiElement-events'));
-			clear($('#uiElement-scripts'));
-			clear($('#uiElement-parameter-pane'));
+			clear(inspectorEls.get('uiElement-events'));
+			clear(inspectorEls.get('uiElement-scripts'));
+			clear(inspectorEls.get('uiElement-parameter-pane'));
 		}
 	};
 
@@ -286,7 +289,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		const changes: { input: HTMLElement; oldValue: number; newValue: number }[] = [];
 		if (x !== undefined) {
 			if (transform.anchorX !== x) {
-				const input = $('#uiElement-transform-anchorX');
+				const input = inspectorEls.get('uiElement-transform-anchorX') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.anchorX,
@@ -296,7 +299,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				elements.setProperty('transform-anchorX', x);
 			}
 			if (transform.x !== 0) {
-				const input = $('#uiElement-transform-x');
+				const input = inspectorEls.get('uiElement-transform-x') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.x,
@@ -306,7 +309,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				elements.setProperty('transform-x', 0);
 			}
 			if (transform.x2 !== x) {
-				const input = $('#uiElement-transform-x2');
+				const input = inspectorEls.get('uiElement-transform-x2') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.x2,
@@ -318,7 +321,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		}
 		if (y !== undefined) {
 			if (transform.anchorY !== y) {
-				const input = $('#uiElement-transform-anchorY');
+				const input = inspectorEls.get('uiElement-transform-anchorY') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.anchorY,
@@ -328,7 +331,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				elements.setProperty('transform-anchorY', y);
 			}
 			if (transform.y !== 0) {
-				const input = $('#uiElement-transform-y');
+				const input = inspectorEls.get('uiElement-transform-y') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.y,
@@ -338,7 +341,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				elements.setProperty('transform-y', 0);
 			}
 			if (transform.y2 !== y) {
-				const input = $('#uiElement-transform-y2');
+				const input = inspectorEls.get('uiElement-transform-y2') as HTMLElement;
 				changes.push({
 					input: input,
 					oldValue: transform.y2,
@@ -358,7 +361,9 @@ import { UI } from '@app/ui/ui-window.ts';
 				target: UIElement.target,
 				changes: changes
 			});
-			($('#uiImage-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('uiImage-vue-mount') as HTMLElement & { sync?: () => void }
+			)?.sync?.();
 		}
 	};
 

@@ -83,6 +83,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import '@app/inspector/element-animation-page.ts';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIAnimationPage } from '@app/composables/useUIAnimationPage';
@@ -117,6 +119,7 @@ const elOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
 const elOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'uiAnimation-motion', elMotion.value);
 	const uiAnimation = Inspector.uiAnimation;
 	if (!uiAnimation) return;
 	elAnimation.value?.on('write', (event: Event) => {

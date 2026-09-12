@@ -117,6 +117,8 @@
 <script setup lang="ts">
 /* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -150,6 +152,7 @@ const elMax = ref<InstanceType<typeof NumberBox> | null>(null);
 const elDecimals = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
+	registerElement(inspectorEls, 'uiTextBox-number', elNumber.value);
 	const uiTextBox = Inspector.uiTextBox;
 	if (!uiTextBox) return;
 
