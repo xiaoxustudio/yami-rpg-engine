@@ -1,5 +1,5 @@
 ﻿<template>
-	<WindowFrame ref="frame" id="arrayList" mode="center">
+	<WindowFrame ref="frame" id="arrayList" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>Array
@@ -12,6 +12,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -19,6 +21,11 @@ import { on } from '@app/utils/element-utils';
 import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();
+
+// P5b 批次 4：arrayList-confirm 由 WindowFrame 生成 → 改由 @confirm 调 composable 的 confirm
+const onConfirm = () => {
+	arrayWindow.confirm?.();
+};
 const form = arrayWindow.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
@@ -40,6 +47,8 @@ watch(
 );
 
 onMounted(() => {
+	registerElement(composableEls, 'arrayList-list', elList.value);
+	registerElement(composableEls, 'arrayList', frame.value);
 	const el = frame.value?.root;
 	if (el) {
 		on(el, 'closed', () => arrayWindow.onWindowClosed());

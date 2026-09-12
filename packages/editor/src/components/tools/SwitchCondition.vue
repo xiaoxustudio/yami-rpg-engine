@@ -67,7 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
+import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry();
@@ -93,6 +94,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	// 模块（useSwitchConditionSchema）从 composableEls 读这两个控件 → 由本组件镜像登记
+	for (const id of ['switch-condition-keyboard-keycode', 'switch-condition-gamepad-button']) {
+		registerElement(composableEls, id, fieldEls.get(id));
+	}
 	const typeEl = fieldEls.get('switch-condition-type') as HTMLElement;
 	if (!typeEl) return;
 	typeEl.loadItems([

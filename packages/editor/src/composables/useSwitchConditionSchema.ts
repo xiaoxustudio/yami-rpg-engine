@@ -1,5 +1,5 @@
 import { getWindowStore } from '@app/stores/window';
-import { $ } from '@app/utils/dom';
+import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { reactive } from 'vue';
@@ -185,8 +185,8 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 		mouseButton,
 		variable: variableVariable
 	});
-	write($('#switch-condition-keyboard-keycode'), keyboardKeycode);
-	write($('#switch-condition-gamepad-button'), gamepadButton);
+	write(composableEls.get('switch-condition-keyboard-keycode') as HTMLElement, keyboardKeycode);
+	write(composableEls.get('switch-condition-gamepad-button') as HTMLElement, gamepadButton);
 	requestFocus('switch-condition-type');
 };
 
@@ -233,7 +233,9 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'keyboard': {
-			const keycode = read($('#switch-condition-keyboard-keycode')) as string;
+			const keycode = read(
+				composableEls.get('switch-condition-keyboard-keycode') as HTMLElement
+			) as string;
 			if (keycode === '') {
 				return requestFocus(
 					'switch-condition-keyboard-keycode'
@@ -243,7 +245,9 @@ const save = (): SwitchConditionData => {
 			break;
 		}
 		case 'gamepad': {
-			const button = read($('#switch-condition-gamepad-button')) as number;
+			const button = read(
+				composableEls.get('switch-condition-gamepad-button') as HTMLElement
+			) as number;
 			if (button === -1) {
 				return requestFocus(
 					'switch-condition-gamepad-button'

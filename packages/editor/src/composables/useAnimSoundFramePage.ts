@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { $ } from '@app/utils/dom';
 
 interface AnimSoundFrameShape {
 	target: Record<string, unknown> | null;
@@ -35,7 +35,9 @@ AnimSoundFrame.open = function (this: typeof AnimSoundFrame, frame: Record<strin
 	if (this.target !== frame) {
 		this.target = frame;
 		this.motion = Animation.motion;
-		($('#animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			composableEls.get('animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void }
+		)?.sync?.();
 	}
 };
 
@@ -48,7 +50,9 @@ AnimSoundFrame.close = function (this: typeof AnimSoundFrame) {
 };
 
 AnimSoundFrame.write = function (this: typeof AnimSoundFrame, _options: Record<string, unknown>) {
-	($('#animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+	(
+		composableEls.get('animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void }
+	)?.sync?.();
 };
 
 AnimSoundFrame.update = function (

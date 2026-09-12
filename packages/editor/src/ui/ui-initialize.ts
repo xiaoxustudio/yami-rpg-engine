@@ -1,8 +1,8 @@
 import { getListConfig } from '@ui-kit';
+import { uiEls } from '@app/ui/element-registry';
 import { UI } from './ui-window.ts';
 import type { UIShape, UINodeShape } from './ui-window.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
-import { $ } from '@app/utils/dom';
 import { addScrollbars, hide, on, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { File } from '@app/file/file-system-core.ts';
@@ -14,23 +14,26 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { getUIStore } from '@app/stores/ui';
 
 UI.initialize = function (this: UIShape) {
-	this.page = $('#ui');
-	this.head = $('#ui-head');
-	this.body = hide($('#ui-body'));
-	this.screen = $('#ui-screen') as HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+	this.page = uiEls.get('ui') as HTMLElement;
+	this.head = uiEls.get('ui-head') as HTMLElement;
+	this.body = hide(uiEls.get('ui-body') as HTMLElement);
+	this.screen = uiEls.get('ui-screen') as HTMLElement as HTMLElement & {
+		rawScrollLeft: number;
+		rawScrollTop: number;
+	};
 	const oldMarquee = this.marquee;
-	this.marquee = $('#ui-marquee');
+	this.marquee = uiEls.get('ui-marquee') as HTMLElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = $('#ui-searcher');
+	this.searcher = uiEls.get('ui-searcher') as HTMLElement;
 	const oldList = this.list;
-	this.list = $('#ui-list');
+	this.list = uiEls.get('ui-list') as HTMLElement;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.list.page = $('#ui-element');
-	this.list.head = $('#ui-list-head');
+	this.list.page = uiEls.get('ui-element') as HTMLElement;
+	this.list.head = uiEls.get('ui-list-head') as HTMLElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	const points = {

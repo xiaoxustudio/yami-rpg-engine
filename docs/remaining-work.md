@@ -217,7 +217,7 @@
 
 ## P5b — `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址）
 
-- **现状证据（2026-09-11 实测；B4 批 4 完成 data/stores/local 三组后为 196 处 / 50 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
+- **现状证据（2026-09-11 实测；B4 批 4 完成 ui/composables 后为 159 处 / 41 文件，批 1–批 4 见下方执行清单）**：`packages/editor/src/utils/dom.ts` L147-157 的 `$` 仍有 **1489 处调用**、分布在 **239 个文件**（形如 `$('#if-condition-type')`、`targets: [$('#…')]`；判定正则 `\$\(\s*['"\x60]#`，其中 `\x60` 是反引号）。模块分布：`components` 722、`inspector` 168、`commands` 153、`tools` 79、`animation` 48、`title` 40、`scene` 36、`palette` 29。热点文件：`components/tools/IfCondition.vue` 78、`SetNumberOperand.vue` 58、`commands/SetString.vue` 44、`animation/animation-window.ts` 24。
 - **为什么单列**：`$` 走的是 `document.querySelector/getElementById` 包装，但**不在 lint 规则内**（规则只限 `document.*` 的 7 个成员），所以既不计入「待迁移命中 160」，也不会被 C1 的"白名单外为 0"覆盖——**这是与 160 并行的第二条债轴（P5）**，此前在任何报表里都看不到。`vue3-migration-plan.md` 阶段 4 的改造清单里明确写了「`$()` 选择器删除」，但阶段 4 记为完成时并未清零此项。
 - **同轴的其他未门禁耦合（2026-09-11 全类审计，见 tracker `## 辅助口径`）**：`style.*` 赋值 336 处 / 78 文件、`.children` 遍历 229/73、`textContent=` 145/45、`clientWidth/Height` 读取 139/40、`classList.add/remove/toggle` 134/43、`scrollTop=` 84/39、`parentElement` 47/46、`closest()` 28/13、`next/prevElementSibling` 22/7、`append/prepend` 20/15、`nodeValue=` 6/3；而 `replaceChildren`、`insertAdjacentHTML`、`matches()`、`customElements.define`、`attachShadow`、原型扩展均为 **0**（阶段 4/7 的结论得到复核）。
 - **推进策略（先度量后动手，按模块分批）**：① 以 tracker 新增的 `dollarLookup` 列逐模块销账（components → inspector → commands → tools → animation/title/scene/palette）；② 每处替换为四类之一——模板 `ref`、组件 `expose` API、store 数据查询、树/列表行 API（阶段 3/4 已有成套先例）；③ 终态删除 `dom.ts` 的 `$`（并评估同文件 `show/hide/css/addClass` 等 jQuery 风格工具）。**注**：其中"组件 `expose` API"那一类（约 247 行）需要 **P2b**（元素 API 退役）先给出类型化组件 API，否则只是把 `$('#x')` 换成 `ref.value`，鸭子调用不变——两线应同批评审。
@@ -498,6 +498,15 @@
 4. **重复导入**：`Easing.vue` 里我插入的 `import { Easing }` 与既有重复（TS2300）→ 按 import 语句判据去重（这次只做"缺则加"，不做合并）。
 
 **批 4 剩余**：196 处 / 50 文件 —— `title` 40、`particle` 22、`ui` 18、`module` 17、`composables` 16、`engine` 15、`variable` 15、`services` 14，以及 `animation/scene/palette/data/stores/local` 之外的若干小组（`plugin` 7、`log` 5、`utils` 4、`types` 1 等）。
+
+**批 4 第四刀（`src/ui` 18 + `src/composables` 16 = 34 处 / 6 文件 → 0）**
+
+- `ui`：`ui-initialize.ts` + `ui-window.ts` → `uiEls` + `LayoutPanel.vue`（9 个 `:ref`）——与 animation/scene/palette 完全同形。
+- `composables`：`useAnimSoundFramePage.ts` / `useAnimSoundLayerPage.ts`（→ LayoutPanel）、`useArrayWindow.ts`（→ `ArrayList.vue`）、`useSwitchConditionSchema.ts`（→ `SwitchCondition.vue`）。
+- **跨注册表镜像（本轮新遇到的形态）**：`SwitchCondition.vue` 早已有自己的**局部** `fieldEls`（批 4 第一刀在 `components/tools` 建的），因此我的工具把它的两个控件报成"`:ref` 已占用"、无法登记进 `composableEls` → 改由该 SFC 在 `onMounted` 里**把自己的两个控件镜像登记**进 `composableEls`（`registerElement(composableEls, id, fieldEls.get(id))`）。教训：**目标 SFC 可能已有自己的注册表**——此时不要硬塞第二个 `:ref`，而是在 SFC 里做一次镜像。
+- **`arrayList-confirm`**：模块的 `on(…, 'click', confirm)` 删掉，改由 `ArrayList.vue` 的 `@confirm` 调 composable 的 `confirm`（`arrayWindow.confirm?.()`）。
+- **顺带记录一处"历史遗留死引用"**：`useArrayWindow.ts` 里 `arrayList-number-value` / `arrayList-string-value` / `arrayList-number-confirm` / `arrayList-string-confirm` 四个 id **在 DOM 里并不存在**（`ArrayList.vue` 只剩对应的 CSS 规则），模块里本就用 `if (el)` 守卫 → 迁移前后都是**安全 no-op**；已保留原守卫形态，不再改动。
+- **注释污染（第三次复发）**：新工具的注册表模板注释里写了字面 `$('#id')` → 4 个 `element-registry.ts` 各贡献 1 处假命中；已改模板 + 改写既有注释（175 → 159 中有 4 处是这次修正）。
 
 ## B1 — 巨石渲染层重写
 

@@ -295,8 +295,10 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="ui" source="page">
-					<div class="page-frame" id="ui" value="ui">
-						<div class="box" id="ui-head" @pointerdown="onUiHeadPointerdown">
+					<div class="page-frame" id="ui"
+				:ref="registryRef(uiEls, 'ui')" value="ui">
+						<div class="box" id="ui-head"
+				:ref="registryRef(uiEls, 'ui-head')" @pointerdown="onUiHeadPointerdown">
 							<div
 								class="box"
 								id="ui-head-start"
@@ -383,16 +385,19 @@
 								></SliderBox>
 							</div>
 						</div>
-						<div class="box" id="ui-body">
+						<div class="box" id="ui-body"
+				:ref="registryRef(uiEls, 'ui-body')">
 							<div
 								class="box"
 								id="ui-screen"
+				:ref="registryRef(uiEls, 'ui-screen')"
 								tabindex="-1"
 								@keydown="onUiScreenKeydown"
 								@wheel="onUiScreenWheel"
 							>
 								<MarqueeArea
 									id="ui-marquee"
+				:ref="registryRef(uiEls, 'ui-marquee')"
 									@pointerdown="onUiMarqueePointerdown"
 									@doubleclick="onUiMarqueeDoubleclick"
 								></MarqueeArea>
@@ -401,12 +406,16 @@
 					</div>
 					</PaletteNode>
 					<PaletteNode value="ui-element" source="page">
-					<div class="page-frame" id="ui-element" value="ui-element">
-						<div class="box" id="ui-list-head">
-							<TextBox id="ui-searcher" name="search"></TextBox>
+					<div class="page-frame" id="ui-element"
+				:ref="registryRef(uiEls, 'ui-element')" value="ui-element">
+						<div class="box" id="ui-list-head"
+				:ref="registryRef(uiEls, 'ui-list-head')">
+							<TextBox id="ui-searcher"
+				:ref="registryRef(uiEls, 'ui-searcher')" name="search"></TextBox>
 						</div>
 						<TreeList
 							id="ui-list"
+				:ref="registryRef(uiEls, 'ui-list')"
 							padded
 							:node-extras="uiNodeExtras"
 							:node-icon-renderer="uiNodeIcon"
@@ -926,11 +935,13 @@
 								class="page-frame"
 								value="animSoundLayer"
 								id="animSoundLayer-vue-mount"
+				:ref="registryRef(composableEls, 'animSoundLayer-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
 								value="animSoundFrame"
 								id="animSoundFrame-vue-mount"
+				:ref="registryRef(composableEls, 'animSoundFrame-vue-mount')"
 							></div>
 							<div
 								class="page-frame"
@@ -954,6 +965,8 @@
 
 <script setup lang="ts">
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
+import { uiEls } from '@app/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
 import { animationEls } from '@app/animation/element-registry';

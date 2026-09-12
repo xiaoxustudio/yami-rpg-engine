@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { reactive, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { h, render } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { on, read } from '@app/utils/element-utils';
@@ -8,7 +9,6 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { $ } from '@app/utils/dom';
 import { Command } from '@app/commands/command-object.ts';
 
 export interface ArrayForm {
@@ -171,10 +171,10 @@ const windows: Record<string, string> = {
 
 const inputs: Record<string, HTMLElement> = {
 	get number() {
-		return $('#arrayList-number-value');
+		return composableEls.get('arrayList-number-value') as HTMLElement;
 	},
 	get string() {
-		return $('#arrayList-string-value');
+		return composableEls.get('arrayList-string-value') as HTMLElement;
 	}
 };
 
@@ -184,9 +184,9 @@ const listInterface: ArrayListInterface = {
 	windows,
 	inputs,
 	initialize: function (this: unknown, list: HTMLElement) {
-		const numberConfirm = $('#arrayList-number-confirm');
+		const numberConfirm = composableEls.get('arrayList-number-confirm') as HTMLElement;
 		if (numberConfirm) on(numberConfirm, 'click', () => list.save());
-		const stringConfirm = $('#arrayList-string-confirm');
+		const stringConfirm = composableEls.get('arrayList-string-confirm') as HTMLElement;
 		if (stringConfirm) on(stringConfirm, 'click', () => list.save());
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
@@ -228,23 +228,23 @@ const listInterface: ArrayListInterface = {
 	}
 };
 
-const getList = (): HTMLElement => $('#arrayList-list');
+const getList = (): HTMLElement => composableEls.get('arrayList-list') as HTMLElement;
 
 const initialize = (): void => {
 	const list = getList();
 	if (!list) return;
 	list.bind(listInterface);
 
-	$('#arrayList').addEventListener('close', windowClose);
-	$('#arrayList').addEventListener('closed', windowClosed);
-	on($('#arrayList-confirm'), 'click', confirm);
+	composableEls.get('arrayList')?.addEventListener?.('close', windowClose);
+	composableEls.get('arrayList')?.addEventListener?.('closed', windowClosed);
+	// confirm 由 ArrayList.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 };
 
 const open = (target: ArrayListTarget): void => {
 	targetState = target;
 	const label = target.previousSibling;
 	const alias = label.textContent;
-	$('#arrayList').setTitle(alias);
+	composableEls.get('arrayList')?.setTitle?.(alias);
 	openForm(read(target).slice(), (value) => {
 		targetState?.input?.(value);
 	});

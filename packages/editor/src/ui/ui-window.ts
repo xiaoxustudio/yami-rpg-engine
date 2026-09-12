@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/utils/dom';
+import { uiEls } from '@app/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -95,13 +95,16 @@ export type UIPointerEvent = PointerEvent & {
 };
 
 export const UI: UIShape = {
-	page: $('#ui'),
-	head: $('#ui-head'),
-	body: hide($('#ui-body')),
-	screen: $('#ui-screen') as HTMLElement & { rawScrollLeft: number; rawScrollTop: number },
-	marquee: $('#ui-marquee') || {},
-	searcher: $('#ui-searcher'),
-	list: $('#ui-list') || {},
+	page: uiEls.get('ui') as HTMLElement,
+	head: uiEls.get('ui-head') as HTMLElement,
+	body: hide(uiEls.get('ui-body') as HTMLElement),
+	screen: uiEls.get('ui-screen') as HTMLElement as HTMLElement & {
+		rawScrollLeft: number;
+		rawScrollTop: number;
+	},
+	marquee: (uiEls.get('ui-marquee') as HTMLElement) || {},
+	searcher: uiEls.get('ui-searcher') as HTMLElement,
+	list: (uiEls.get('ui-list') as HTMLElement) || {},
 	dragging: null,
 	hover: null,
 	history: null as unknown as History,
@@ -255,8 +258,8 @@ export const UI: UIShape = {
 
 UI.marquee.resize = null;
 
-UI.list.page = $('#ui-element');
-UI.list.head = $('#ui-list-head');
+UI.list.page = uiEls.get('ui-element') as HTMLElement;
+UI.list.head = uiEls.get('ui-list-head') as HTMLElement;
 UI.list.copy = null;
 UI.list.paste = null;
 UI.list.delete = null;
