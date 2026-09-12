@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置文本框 - 属性 -->
-	<WindowFrame id="setTextBox-property">
+	<WindowFrame id="setTextBox-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTextBox-property.title') }}
@@ -11,7 +11,8 @@
 			<div class="text">{{ t('components.setTextBox-property-key.label') }}</div>
 			<SelectBox id="setTextBox-property-key" v-model="form.key" />
 			<div class="text">{{ t('components.setTextBox-property-type.label') }}</div>
-			<SelectBox id="setTextBox-property-type" v-model="form.type" />
+			<SelectBox id="setTextBox-property-type"
+				:ref="fieldRef('setTextBox-property-type')" v-model="form.type" />
 			<div class="text">{{ t('components.setTextBox-property-text.label') }}</div>
 			<StringVar id="setTextBox-property-text" v-model="form.text" />
 			<div class="text">{{ t('components.setTextBox-property-number.label') }}</div>
@@ -57,10 +58,19 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { TextBoxProperty } from '@app/commands/property-window/set-textbox-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = TextBoxProperty.form;
+
+const onConfirm = () => {
+	TextBoxProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+TextBoxProperty.fields = fields;
 
 const decimals = computed({
 	get: () => form.decimals as number | string,

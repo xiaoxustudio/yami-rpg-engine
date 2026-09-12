@@ -1,8 +1,7 @@
-/* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus, on } from '@app/utils/element-utils.ts';
+import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
+import type { AccessorFieldControl, AccessorFields } from '@app/types/shapes.ts';
 import { Token } from '@app/commands/token.ts';
 import { getYamiI18n } from '@app/i18n';
 
@@ -40,6 +39,8 @@ interface PropertyWindowConfig {
 interface PropertyWindow {
 	target: (Record<string, unknown> & { save?: (() => unknown) | null }) | null;
 	form: Record<string, unknown>;
+	/** 控件注册表，由对应 SFC 在 setup 期登记（P5b 批次 2） */
+	fields?: AccessorFields | null;
 	initialize: (() => void) | null;
 	// 幂等初始化：属性窗口为懒挂载，ParamList.bind 时的 initialize 可能因元素未挂载而早退，
 	// 由窗口组件在 onMounted 后调用 ensureSetup 兜底补做 key 选项/字段显隐联动
@@ -68,46 +69,53 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 	};
 
 	let setupDone = false;
-	// confirm 与窗口对象解耦，避免 ensureSetup 重复绑定或引用错位
-	const thisConfirmClick = () => PropertyWindow.confirm!(new Event('click'));
-	// 幂等初始化；key 下拉元素未挂载时返回 false（供挂载后重试）
+	// 控件注册表由对应 SFC 在 setup 期登记（P5b 批次 2）；动态 id 仍按 prefix 约定拼接，但取值不再查 DOM
+	const fieldOf = (id: string): AccessorFieldControl | undefined =>
+		PropertyWindow.fields?.get(`${prefix}-property-${id}`) ?? undefined;
+	// 注册结果两种形态：控件是组件实例（元素在 .root），普通 div 直接就是元素本身
+	const fieldRootOf = (id: string): HTMLElement | null | undefined => {
+		const control = fieldOf(id);
+		if (control === undefined) return undefined;
+		return control instanceof HTMLElement ? control : control.root;
+	};
+	// 幂等初始化；key 下拉未登记（窗口未挂载）时返回 false（供挂载后重试）
 	const ensureSetup = (): boolean => {
-		const keyEl = $(`#${prefix}-property-key`);
+		const keyEl = fieldOf('key');
 		if (!keyEl) return false;
 
 		if (!setupDone) {
 			const items = keys.map((k: PropertyKeyConfig) => ({ name: k.name, value: k.value }));
-			keyEl.loadItems(items);
+			keyEl.loadItems?.(items);
 
 			const relates = keys.map((k: PropertyKeyConfig) => {
 				const caseValue = k.cases ?? k.value;
 				const uiName = k.uiName ?? k.value;
 				const targets = k.targets
-					? k.targets.map((id: string) => $(`#${prefix}-property-${id}`))
-					: [$(`#${prefix}-property-${uiName}`)];
+					? k.targets.map((id: string) => fieldRootOf(id))
+					: [fieldRootOf(uiName)];
 				return { case: caseValue, targets };
 			});
-			keyEl.enableHiddenMode().relate(relates);
+			keyEl.enableHiddenMode?.()?.relate?.(relates);
 
 			if (subRelates) {
 				for (const sr of subRelates) {
 					const subRelates2 = sr.cases.map((c: { case: string; targets: string[] }) => ({
 						case: c.case,
-						targets: c.targets.map((id: string) => $(`#${prefix}-property-${id}`))
+						targets: c.targets.map((id: string) => fieldRootOf(id))
 					}));
-					$(`#${prefix}-property-${sr.selector}`).enableHiddenMode().relate(subRelates2);
+					fieldOf(sr.selector)?.enableHiddenMode?.()?.relate?.(subRelates2);
 				}
 			}
 
 			init?.call(PropertyWindow);
 			if (init) {
 				const onLocalize = () => {
-					if (!document.getElementById(`${prefix}-property-key`)) return;
+					if (!PropertyWindow.fields?.get(`${prefix}-property-key`)) return;
 					init.call(PropertyWindow);
 				};
 				window.addEventListener('localize', onLocalize);
 			}
-			on($(`#${prefix}-property-confirm`), 'click', thisConfirmClick);
+			// confirm 由 SFC 的 @confirm 事件驱动（`${prefix}-property-confirm` 按钮由 WindowFrame 生成，注册表取不到）
 			setupDone = true;
 		}
 
@@ -171,7 +179,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		Object.assign(form, defaults, { key });
 		// 若懒挂载窗口此刻已就绪则顺势补初始化（key 下拉选项与字段显隐联动）
 		ensureSetup();
-		getFocus($(`#${prefix}-property-key`));
+		getFocus(fieldRootOf('key'));
 	};
 
 	PropertyWindow.save = function (this: PropertyWindow) {

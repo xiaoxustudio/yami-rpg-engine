@@ -1,4 +1,3 @@
-﻿import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -25,11 +24,11 @@ export const ProgressBarProperty = createPropertyWindow({
 	],
 	init() {
 		const get = (key: string) => t('command.setProgressBar.' + key);
-		$('#setProgressBar-property-display').loadItems([
+		this.fields?.get('setProgressBar-property-display')?.loadItems?.([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.clip') || 'Clip', value: 'clip' }
 		]);
-		$('#setProgressBar-property-blend').loadItems([
+		this.fields?.get('setProgressBar-property-blend')?.loadItems?.([
 			{ name: t('blend.normal') || 'Normal', value: 'normal' },
 			{ name: t('blend.additive') || 'Additive', value: 'additive' },
 			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' }

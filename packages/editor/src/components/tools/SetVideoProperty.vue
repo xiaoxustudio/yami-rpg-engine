@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置视频 - 属性 -->
-	<WindowFrame id="setVideo-property">
+	<WindowFrame id="setVideo-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setVideo-property.title') }}
@@ -26,11 +26,14 @@
 				v-model="form.playbackRate"
 			/>
 			<div class="text">{{ t('components.setVideo-property-loop.label') }}</div>
-			<SelectBox id="setVideo-property-loop" v-model="form.loop" />
+			<SelectBox id="setVideo-property-loop"
+				:ref="fieldRef('setVideo-property-loop')" v-model="form.loop" />
 			<div class="text">{{ t('components.setVideo-property-flip.label') }}</div>
-			<SelectBox id="setVideo-property-flip" v-model="form.flip" />
+			<SelectBox id="setVideo-property-flip"
+				:ref="fieldRef('setVideo-property-flip')" v-model="form.flip" />
 			<div class="text">{{ t('components.setVideo-property-blend.label') }}</div>
-			<SelectBox id="setVideo-property-blend" v-model="form.blend" />
+			<SelectBox id="setVideo-property-blend"
+				:ref="fieldRef('setVideo-property-blend')" v-model="form.blend" />
 		</div>
 	</WindowFrame>
 </template>
@@ -44,10 +47,19 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { VideoProperty } from '@app/commands/property-window/set-video-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = VideoProperty.form;
+
+const onConfirm = () => {
+	VideoProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+VideoProperty.fields = fields;
 
 onMounted(() => {
 	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动

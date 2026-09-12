@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setAnimation-property">
+	<WindowFrame id="setAnimation-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAnimation-property.title') }}
@@ -8,28 +8,34 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAnimation-property-key.label') }}</div>
-			<SelectBox id="setAnimation-property-key" v-model="form.key" />
+			<SelectBox id="setAnimation-property-key"
+				:ref="fieldRef('setAnimation-property-key')" v-model="form.key" />
 			<div class="text">{{ t('components.setAnimation-property-animation.label') }}</div>
 			<CustomBox
 				id="setAnimation-property-animation"
+				:ref="fieldRef('setAnimation-property-animation')"
 				type="file"
 				filter="animation"
 				v-model="form.animation"
 			/>
 			<div class="text">{{ t('components.setAnimation-property-actor.label') }}</div>
-			<CustomBox id="setAnimation-property-actor" type="actor" v-model="form.actor" />
+			<CustomBox id="setAnimation-property-actor"
+				:ref="fieldRef('setAnimation-property-actor')" type="actor" v-model="form.actor" />
 			<div class="text">{{ t('components.setAnimation-property-motion.label') }}</div>
-			<CustomBox id="setAnimation-property-motion" type="enum-string" v-model="form.motion" />
+			<CustomBox id="setAnimation-property-motion"
+				:ref="fieldRef('setAnimation-property-motion')" type="enum-string" v-model="form.motion" />
 			<div class="text">{{ t('components.setAnimation-property-angle.label') }}</div>
 			<NumberVar
 				id="setAnimation-property-angle"
+				:ref="fieldRef('setAnimation-property-angle')"
 				min="0"
 				max="360"
 				unit="deg"
 				v-model="form.angle"
 			/>
 			<div class="text">{{ t('components.setAnimation-property-frame.label') }}</div>
-			<NumberVar id="setAnimation-property-frame" min="0" max="10000" v-model="form.frame" />
+			<NumberVar id="setAnimation-property-frame"
+				:ref="fieldRef('setAnimation-property-frame')" min="0" max="10000" v-model="form.frame" />
 		</div>
 	</WindowFrame>
 </template>
@@ -43,10 +49,19 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { AnimationProperty } from '@app/commands/property-window/set-animation-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = AnimationProperty.form;
+
+const onConfirm = () => {
+	AnimationProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+AnimationProperty.fields = fields;
 
 onMounted(() => {
 	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动

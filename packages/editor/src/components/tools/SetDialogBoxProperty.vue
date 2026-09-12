@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setDialogBox-property">
+	<WindowFrame id="setDialogBox-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setDialogBox-property.title') }}
@@ -52,7 +52,8 @@
 			<div class="text">{{ t('components.setDialogBox-property-font.label') }}</div>
 			<TextBox id="setDialogBox-property-font" v-model="font" />
 			<div class="text">{{ t('components.setDialogBox-property-effect-type.label') }}</div>
-			<SelectBox id="setDialogBox-property-effect-type" v-model="form['effect-type']" />
+			<SelectBox id="setDialogBox-property-effect-type"
+				:ref="fieldRef('setDialogBox-property-effect-type')" v-model="form['effect-type']" />
 			<div class="text">
 				{{ t('components.setDialogBox-property-effect-shadowOffsetX.label') }}
 			</div>
@@ -86,7 +87,8 @@
 			<div class="text">{{ t('components.setDialogBox-property-effect-color.label') }}</div>
 			<ColorBox id="setDialogBox-property-effect-color" v-model="effectColor" />
 			<div class="text">{{ t('components.setDialogBox-property-blend.label') }}</div>
-			<SelectBox id="setDialogBox-property-blend" v-model="form.blend" />
+			<SelectBox id="setDialogBox-property-blend"
+				:ref="fieldRef('setDialogBox-property-blend')" v-model="form.blend" />
 		</div>
 	</WindowFrame>
 </template>
@@ -102,10 +104,19 @@ import TextAreaVar from '@app/components/common/TextAreaVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { DialogBoxProperty } from '@app/commands/property-window/set-dialog-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = DialogBoxProperty.form;
+
+const onConfirm = () => {
+	DialogBoxProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+DialogBoxProperty.fields = fields;
 
 const numberField = (key: string) =>
 	computed({

@@ -1,4 +1,3 @@
-﻿import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -23,19 +22,19 @@ export const ImageProperty = createPropertyWindow({
 	],
 	init() {
 		const get = (key: string) => t('command.setImage.' + key);
-		$('#setImage-property-display').loadItems([
+		this.fields?.get('setImage-property-display')?.loadItems?.([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.tile') || 'Tile', value: 'tile' },
 			{ name: get('display.clip') || 'Clip', value: 'clip' },
 			{ name: get('display.slice') || 'Slice', value: 'slice' }
 		]);
-		$('#setImage-property-flip').loadItems([
+		this.fields?.get('setImage-property-flip')?.loadItems?.([
 			{ name: get('flip.none') || 'None', value: 'none' },
 			{ name: get('flip.horizontal') || 'Horizontal', value: 'horizontal' },
 			{ name: get('flip.vertical') || 'Vertical', value: 'vertical' },
 			{ name: get('flip.both') || 'Both', value: 'both' }
 		]);
-		$('#setImage-property-blend').loadItems([
+		this.fields?.get('setImage-property-blend')?.loadItems?.([
 			{ name: t('blend.normal') || 'Normal', value: 'normal' },
 			{ name: t('blend.additive') || 'Additive', value: 'additive' },
 			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' },

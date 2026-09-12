@@ -12,7 +12,7 @@
 | editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 11 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/commands     | 41 | 17 | 3 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 60 | 0 | 0 |
+| editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 40 | 0 | 0 |
 | editor/components   | 360 | 182 | 51 | 51 | 54 | 38 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 588 | 0 | 0 |
 | editor/composables  | 228 | 47 | 43 | 43 | 183 | 2 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 18 | 2 | 16 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,20 +48,20 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1114 |  | 159 | 159 | 243 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1255 | 0 | 0 |
+| 合计                  | 1114 |  | 158 | 158 | 242 | 57 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 575 | 171 | 1235 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1114**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**159**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**159**
+- 待迁移命中文件：**158**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**158**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
 - 正则命中但无豁免注释：**2**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
   - `packages/editor/src/components/layout/palette-items.ts`
   - `packages/editor/src/engine/webgl/texture.ts`
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1255** 处 / **227** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **1235** 处 / **220** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -178,7 +178,6 @@
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
 | packages/editor/src/commands/command-custom.ts | 371 | 9 | - |
-| packages/editor/src/commands/property-window/property-window-factory.ts | 198 | 9 | 是 |
 | packages/editor/src/components/commands/ChangeActorEquipment.vue | 112 | 9 | - |
 | packages/editor/src/components/layout/LayoutPanel.vue | 1870 | 9 | - |
 | packages/editor/src/services/ipc/webserver.ts | 110 | 9 | - |
@@ -315,8 +314,6 @@
 | packages/ui-kit/src/components/business/YMFileHeadPane/YMFileHeadPane.vue | 495 | 4 | - |
 | packages/ui-kit/src/utils/common-list.ts | 92 | 4 | - |
 | packages/editor/src/commands/event-editor-events.ts | 304 | 3 | - |
-| packages/editor/src/commands/property-window/set-image-property-window.ts | 60 | 3 | - |
-| packages/editor/src/commands/property-window/set-video-property-window.ts | 47 | 3 | - |
 | packages/editor/src/components/commands/ControlButton.vue | 81 | 3 | - |
 | packages/editor/src/components/commands/DeleteElement.vue | 74 | 3 | - |
 | packages/editor/src/components/commands/GetObjectProperty.vue | 82 | 3 | - |
@@ -371,9 +368,6 @@
 | packages/editor/src/animation/animation-motion.ts | 1129 | 2 | 是 |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
 | packages/editor/src/commands/event-editor-open.ts | 300 | 2 | - |
-| packages/editor/src/commands/property-window/set-dialog-property-window.ts | 163 | 2 | - |
-| packages/editor/src/commands/property-window/set-progress-property-window.ts | 54 | 2 | - |
-| packages/editor/src/commands/property-window/set-text-property-window.ts | 161 | 2 | - |
 | packages/editor/src/components/commands/AddAnimationComponent.vue | 111 | 2 | - |
 | packages/editor/src/components/commands/ChangeActorTeam.vue | 62 | 2 | - |
 | packages/editor/src/components/commands/CreateActor.vue | 80 | 2 | - |
@@ -437,7 +431,7 @@
 | packages/ui-kit/src/components/business/YMDragAndDropHint/drag-and-drop-hint-api.ts | 97 | 2 | 是 |
 | packages/editor/src/audio/audio-manager.ts | 145 | 1 | 是 |
 | packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 1 | - |
-| packages/editor/src/commands/property-window/set-textbox-property-window.ts | 46 | 1 | - |
+| packages/editor/src/commands/property-window/property-window-factory.ts | 206 | 1 | - |
 | packages/editor/src/components/commands/ActivateScene.vue | 59 | 1 | - |
 | packages/editor/src/components/commands/Block.vue | 88 | 1 | - |
 | packages/editor/src/components/commands/ChangeActorMotion.vue | 64 | 1 | - |
@@ -585,6 +579,12 @@
 | packages/editor/src/commands/property-window/move-light-property-window.ts | 23 | 0 | - |
 | packages/editor/src/commands/property-window/set-animation-property-window.ts | 27 | 0 | - |
 | packages/editor/src/commands/property-window/set-button-property-window.ts | 194 | 0 | - |
+| packages/editor/src/commands/property-window/set-dialog-property-window.ts | 162 | 0 | - |
+| packages/editor/src/commands/property-window/set-image-property-window.ts | 59 | 0 | - |
+| packages/editor/src/commands/property-window/set-progress-property-window.ts | 53 | 0 | - |
+| packages/editor/src/commands/property-window/set-text-property-window.ts | 160 | 0 | - |
+| packages/editor/src/commands/property-window/set-textbox-property-window.ts | 45 | 0 | - |
+| packages/editor/src/commands/property-window/set-video-property-window.ts | 46 | 0 | - |
 | packages/editor/src/commands/property-window/set-window-property-window.ts | 19 | 0 | - |
 | packages/editor/src/commands/token.ts | 51 | 0 | - |
 | packages/editor/src/components/check-box.ts | 6 | 0 | - |
@@ -738,19 +738,19 @@
 | packages/editor/src/components/tools/Resource.vue | 99 | 0 | - |
 | packages/editor/src/components/tools/ScriptCommand.vue | 55 | 0 | - |
 | packages/editor/src/components/tools/Selector.vue | 55 | 0 | - |
-| packages/editor/src/components/tools/SetAnimationProperty.vue | 78 | 0 | - |
-| packages/editor/src/components/tools/SetButtonProperty.vue | 173 | 0 | - |
-| packages/editor/src/components/tools/SetDialogBoxProperty.vue | 162 | 0 | - |
-| packages/editor/src/components/tools/SetImageProperty.vue | 114 | 0 | - |
+| packages/editor/src/components/tools/SetAnimationProperty.vue | 93 | 0 | - |
+| packages/editor/src/components/tools/SetButtonProperty.vue | 198 | 0 | - |
+| packages/editor/src/components/tools/SetDialogBoxProperty.vue | 173 | 0 | - |
+| packages/editor/src/components/tools/SetImageProperty.vue | 126 | 0 | - |
 | packages/editor/src/components/tools/SetKey.vue | 21 | 0 | - |
-| packages/editor/src/components/tools/SetProgressBarProperty.vue | 133 | 0 | - |
+| packages/editor/src/components/tools/SetProgressBarProperty.vue | 144 | 0 | - |
 | packages/editor/src/components/tools/SetQuantity.vue | 26 | 0 | - |
-| packages/editor/src/components/tools/SetTextBoxProperty.vue | 101 | 0 | - |
-| packages/editor/src/components/tools/SetTextProperty.vue | 152 | 0 | - |
+| packages/editor/src/components/tools/SetTextBoxProperty.vue | 111 | 0 | - |
+| packages/editor/src/components/tools/SetTextProperty.vue | 163 | 0 | - |
 | packages/editor/src/components/tools/SetTileTag.vue | 45 | 0 | - |
 | packages/editor/src/components/tools/Setting.vue | 100 | 0 | - |
-| packages/editor/src/components/tools/SetVideoProperty.vue | 75 | 0 | - |
-| packages/editor/src/components/tools/SetWindowProperty.vue | 118 | 0 | - |
+| packages/editor/src/components/tools/SetVideoProperty.vue | 87 | 0 | - |
+| packages/editor/src/components/tools/SetWindowProperty.vue | 136 | 0 | - |
 | packages/editor/src/components/tools/SkillGetter.vue | 96 | 0 | - |
 | packages/editor/src/components/tools/StateGetter.vue | 92 | 0 | - |
 | packages/editor/src/components/tools/TextEffect.vue | 80 | 0 | - |

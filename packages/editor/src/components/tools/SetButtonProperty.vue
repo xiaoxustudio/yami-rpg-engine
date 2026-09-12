@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setButton-property">
+	<WindowFrame id="setButton-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setButton-property.title') }}
@@ -8,45 +8,54 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setButton-property-key.label') }}</div>
-			<SelectBox id="setButton-property-key" v-model="form.key" />
+			<SelectBox id="setButton-property-key"
+				:ref="fieldRef('setButton-property-key')" v-model="form.key" />
 			<div class="text">{{ t('components.setButton-property-image.label') }}</div>
 			<CustomBox
 				id="setButton-property-image"
+				:ref="fieldRef('setButton-property-image')"
 				type="file"
 				filter="image"
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setButton-property-clip-box.label') }}</div>
-			<div id="setButton-property-clip-box" class="box uiElement-grid-box with-4-columns">
+			<div id="setButton-property-clip-box"
+				:ref="fieldRef('setButton-property-clip-box')" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="setButton-property-clip-0"
+				:ref="fieldRef('setButton-property-clip-0')"
 					min="0"
 					max="10000"
 					v-model="clip0"
 				/>
 				<NumberBox
 					id="setButton-property-clip-1"
+				:ref="fieldRef('setButton-property-clip-1')"
 					min="0"
 					max="10000"
 					v-model="clip1"
 				/>
 				<NumberBox
 					id="setButton-property-clip-2"
+				:ref="fieldRef('setButton-property-clip-2')"
 					min="0"
 					max="4000"
 					v-model="clip2"
 				/>
 				<NumberBox
 					id="setButton-property-clip-3"
+				:ref="fieldRef('setButton-property-clip-3')"
 					min="0"
 					max="4000"
 					v-model="clip3"
 				/>
 			</div>
 			<div class="text">{{ t('components.setButton-property-tint-box.label') }}</div>
-			<div id="setButton-property-tint-box" class="box uiElement-grid-box with-4-columns">
+			<div id="setButton-property-tint-box"
+				:ref="fieldRef('setButton-property-tint-box')" class="box uiElement-grid-box with-4-columns">
 				<NumberBox
 					id="setButton-property-tint-0"
+				:ref="fieldRef('setButton-property-tint-0')"
 					min="-255"
 					max="255"
 					step="5"
@@ -54,6 +63,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-1"
+				:ref="fieldRef('setButton-property-tint-1')"
 					min="-255"
 					max="255"
 					step="5"
@@ -61,6 +71,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-2"
+				:ref="fieldRef('setButton-property-tint-2')"
 					min="-255"
 					max="255"
 					step="5"
@@ -68,6 +79,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-3"
+				:ref="fieldRef('setButton-property-tint-3')"
 					min="0"
 					max="255"
 					step="5"
@@ -77,6 +89,7 @@
 			<div class="text">{{ t('components.setButton-property-imageOpacity.label') }}</div>
 			<NumberBox
 				id="setButton-property-imageOpacity"
+				:ref="fieldRef('setButton-property-imageOpacity')"
 				min="0"
 				max="1"
 				step="0.05"
@@ -86,12 +99,14 @@
 			<div class="text">{{ t('components.setButton-property-content.label') }}</div>
 			<TextAreaVar
 				id="setButton-property-content"
+				:ref="fieldRef('setButton-property-content')"
 				menu="tag-local-var tag-global-var tag-dynamic-global-var tag-localization"
 				v-model="form.content"
 			/>
 			<div class="text">{{ t('components.setButton-property-size.label') }}</div>
 			<NumberBox
 				id="setButton-property-size"
+				:ref="fieldRef('setButton-property-size')"
 				min="10"
 				max="400"
 				unit="px"
@@ -100,6 +115,7 @@
 			<div class="text">{{ t('components.setButton-property-letterSpacing.label') }}</div>
 			<NumberBox
 				id="setButton-property-letterSpacing"
+				:ref="fieldRef('setButton-property-letterSpacing')"
 				min="-10"
 				max="100"
 				unit="px"
@@ -119,10 +135,19 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextAreaVar from '@app/components/common/TextAreaVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { ButtonProperty } from '@app/commands/property-window/set-button-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = ButtonProperty.form;
+
+const onConfirm = () => {
+	ButtonProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+ButtonProperty.fields = fields;
 
 const numberField = (key: string) =>
 	computed({

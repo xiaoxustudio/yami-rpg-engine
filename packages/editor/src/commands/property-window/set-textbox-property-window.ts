@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Color } from '@app/tools/color-picker-window.ts';
@@ -21,7 +20,7 @@ export const TextBoxProperty = createPropertyWindow({
 	],
 	init() {
 		const get = (key: string) => t('command.setTextBox.' + key);
-		$('#setTextBox-property-type').loadItems([
+		this.fields?.get('setTextBox-property-type')?.loadItems?.([
 			{ name: get('type.text') || 'Text', value: 'text' },
 			{ name: get('type.number') || 'Number', value: 'number' }
 		]);

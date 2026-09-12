@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
@@ -44,13 +43,13 @@ export const TextProperty = createPropertyWindow({
 	subRelates: [{ selector: 'effect-type', cases: effectRelate }],
 	init() {
 		const get = (key: string) => t('command.setText.' + key);
-		$('#setText-property-effect-type').loadItems([
+		this.fields?.get('setText-property-effect-type')?.loadItems?.([
 			{ name: get('effect.none') || 'None', value: 'none' },
 			{ name: get('effect.shadow') || 'Shadow', value: 'shadow' },
 			{ name: get('effect.stroke') || 'Stroke', value: 'stroke' },
 			{ name: get('effect.outline') || 'Outline', value: 'outline' }
 		]);
-		$('#setText-property-blend').loadItems([
+		this.fields?.get('setText-property-blend')?.loadItems?.([
 			{ name: t('blend.normal') || 'Normal', value: 'normal' },
 			{ name: t('blend.additive') || 'Additive', value: 'additive' },
 			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' }

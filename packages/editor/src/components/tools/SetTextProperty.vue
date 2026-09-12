@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置文本 - 属性 -->
-	<WindowFrame id="setText-property">
+	<WindowFrame id="setText-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setText-property.title') }}
@@ -45,7 +45,8 @@
 			<div class="text">{{ t('components.setText-property-font.label') }}</div>
 			<TextBox id="setText-property-font" v-model="font" />
 			<div class="text">{{ t('components.setText-property-effect-type.label') }}</div>
-			<SelectBox id="setText-property-effect-type" v-model="form['effect-type']" />
+			<SelectBox id="setText-property-effect-type"
+				:ref="fieldRef('setText-property-effect-type')" v-model="form['effect-type']" />
 			<div class="text">
 				{{ t('components.setText-property-effect-shadowOffsetX.label') }}
 			</div>
@@ -77,7 +78,8 @@
 			<div class="text">{{ t('components.setText-property-effect-color.label') }}</div>
 			<ColorBox id="setText-property-effect-color" v-model="effectColor" />
 			<div class="text">{{ t('components.setText-property-blend.label') }}</div>
-			<SelectBox id="setText-property-blend" v-model="form.blend" />
+			<SelectBox id="setText-property-blend"
+				:ref="fieldRef('setText-property-blend')" v-model="form.blend" />
 		</div>
 	</WindowFrame>
 </template>
@@ -93,10 +95,19 @@ import TextAreaVar from '@app/components/common/TextAreaVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { TextProperty } from '@app/commands/property-window/set-text-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = TextProperty.form;
+
+const onConfirm = () => {
+	TextProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+TextProperty.fields = fields;
 
 const numberField = (key: string) =>
 	computed({

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setProgressBar-property">
+	<WindowFrame id="setProgressBar-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setProgressBar-property.title') }}
@@ -17,9 +17,11 @@
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setProgressBar-property-display.label') }}</div>
-			<SelectBox id="setProgressBar-property-display" v-model="form.display" />
+			<SelectBox id="setProgressBar-property-display"
+				:ref="fieldRef('setProgressBar-property-display')" v-model="form.display" />
 			<div class="text">{{ t('components.setProgressBar-property-blend.label') }}</div>
-			<SelectBox id="setProgressBar-property-blend" v-model="form.blend" />
+			<SelectBox id="setProgressBar-property-blend"
+				:ref="fieldRef('setProgressBar-property-blend')" v-model="form.blend" />
 			<div class="text">{{ t('components.setProgressBar-property-progress.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-progress"
@@ -102,10 +104,19 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { ProgressBarProperty } from '@app/commands/property-window/set-progress-property-window';
+import { createAccessorFields } from '@app/commands/accessors/accessor-factory.ts';
 
 const { t } = useI18n();
 
 const form = ProgressBarProperty.form;
+
+const onConfirm = () => {
+	ProgressBarProperty.confirm?.(new Event('click'));
+};
+
+// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+const { fields, fieldRef } = createAccessorFields();
+ProgressBarProperty.fields = fields;
 
 onMounted(() => {
 	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动

@@ -1,4 +1,3 @@
-import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
@@ -45,13 +44,13 @@ export const DialogBoxProperty = createPropertyWindow({
 	subRelates: [{ selector: 'effect-type', cases: dialogEffectRelate }],
 	init() {
 		const get = (key: string) => t('command.setDialogBox.' + key);
-		$('#setDialogBox-property-effect-type').loadItems([
+		this.fields?.get('setDialogBox-property-effect-type')?.loadItems?.([
 			{ name: get('effect.none') || 'None', value: 'none' },
 			{ name: get('effect.shadow') || 'Shadow', value: 'shadow' },
 			{ name: get('effect.stroke') || 'Stroke', value: 'stroke' },
 			{ name: get('effect.outline') || 'Outline', value: 'outline' }
 		]);
-		$('#setDialogBox-property-blend').loadItems([
+		this.fields?.get('setDialogBox-property-blend')?.loadItems?.([
 			{ name: t('blend.normal') || 'Normal', value: 'normal' },
 			{ name: t('blend.additive') || 'Additive', value: 'additive' },
 			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' }
