@@ -21,7 +21,7 @@
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
 | P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **72** 个字段的 get/set（共 144 访问器；B3 已先删 11 个零访问字段），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
-| C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | 未开始 |
+| C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
 | E1 | **窗口事件面收口**：34 个事件名 / **265** 处 `window.addEventListener`；16 个自定义事件靠"往 Event 挂字段"传载荷；1 个死事件；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
 | O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | 可选 |
@@ -88,7 +88,7 @@
 | ✅ **B4 `$()` 退役（批 1–4 全部完成 2026-09-11）** | **P5b 四批**：~~批次 1 `components/tools`（136 处 / 2 文件）~~**已完成**（实测 78 + 58 = 136 处全清）→ 批次 2 `editor/commands` 模块（153 / 27；**批 2 全部完成**）→ 批次 3 `inspector`+`tools`+`attribute`+`enum`（267 / 46）→ 批次 4 非 SFC 模块（~900） | 批次 1 无需依赖；批次 3 的 `attribute`/`enum` **与 B2 合并**；批次 4 依赖 B3 的 store 化手法 | 合计 **1489 处 / 239 文件** | tracker `dollarLookup`：**1489 → 批次 1 后 1347（实测，含 2 处注释）→ … → 白名单内**；每批后 `git diff` 的模块分布应与本表一致 | 每批独立提交 revert |
 | 🚧 **B5 i18n 工程线** | **R2b**：按承载者给键分类（✅）→ 把 Vue 承担的部分改为模板 `t()`/`v-tip`/标签 `t()`（🚧 迁移②③④：1436 处 `v-tip` + 612 处标签 `t()` + 43 处 `loadItems` 选项 ⇒ 1782 键跳过，扫描面 2130 → 347）→ 其余键的目标元素自注册 | 依赖 B4 批次 1–2 的模板 ref 化经验 | `Localize` 3 处源码 + 2 个语言文件（2130 / 2131 键）+ 承载组件 | 门禁：本地化 `components` 键数**下降曲线**（每批更新文档数字）；`editor/localize` 豁免删除 | 语言文件与代码同批提交，可 revert |
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
-| **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役） | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
+| **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役）——**C1 本体已于本轮完成，B7 只剩 L1/S1** | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
 | 🚧 **P1b 受限 API 直查** | 把 `document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族改读分组注册表（沿用 P5b 手法 + `@confirm` 覆盖框架按钮 + `createElementRegistry(mirror)` 创建时镜像），逐模块成刀 | 无；与 B6 在 `ui-kit/components` 上汇合 | **131 个文件 / `getElementById` 111 处**（components 50、ui-kit/components 34、composables 17…） | 第 1 刀：待迁移命中 **158 → 155**、`getElementById` **242 → 168**；第 2 刀：**155 → 135**、**168 → 135**；第 3 刀：**135 → 131**、**135 → 111**；终点 = 白名单外为 0（与 C1 同一终点） | 每刀独立提交 revert |
 | **并行/旁路** | E1 余项（自定义事件改强类型通道、`.vue` 监听配对、`mitt` 去留）、O1（layout M6 评估） | 不阻塞主线 | E1：16 个自定义事件 + 5 个 `.vue` + 13 处内联匿名 | `pnpm events:surface` 的"单侧事件""未配对 .vue"归零 | 按事件逐个提交 |
 
@@ -750,17 +750,26 @@
 
 ## C1 — 收尾：拆除脚手架（白名单外为 0）
 
-- **现状证据（2026-09-11 实测，判定来源 oxlint）**：三个口径先分清——**待迁移命中 160** 个文件（豁免指令仍在使用 = 真用了受限 API）、**豁免注释 295** 个文件、**陈旧豁免 135** 个（见 C2）；`.oxlintrc.json` **尚无**画布白名单 overrides（P8 目前只是文字约定）。
-- **画布区实况（决定白名单范围的关键事实）**：`engine`/`scene`/`palette`/`particle`/`ui`/`animation` 共 **29 个文件**有 DOM 操作，但只有 **10 个**带豁免注释（其中 9 个仍命中、1 个已陈旧）；另外 **19 个**（如 `palette/palette-pointer.ts`、`scene/scene-events-pointer.ts`、`ui/ui-pointer.ts`、`animation/animation-pointer.ts`）只用 `appendChild`/`addEventListener`/`parentNode` 等**不在 lint 规则内**的 API，无需豁免，也不影响"白名单外为 0"。
-- **白名单候选（10 个带注释文件逐个人工分级）**：
-  - ✅ **A 类·真画布上下文（建议白名单，4 个）**：`engine/webgl/webgl-init.ts`、`engine/webgl/webgl-methods.ts`、`engine/palette/palette-engine.ts`、`engine/scene/draw-start-position.ts`（文本测量 canvas）——都是 `document.createElement('canvas')` 取上下文/像素读回，模板无法替代。
-  - 🧹 **已陈旧（1 个，走 C2）**：`engine/webgl/texture.ts`——它的 `document.createElement('canvas')` 位于**被注释掉的**调试 `view()` 实现里，oxlint 判定豁免指令未被使用；删注释即可，若恢复该调试能力再评估白名单。
-  - ❓ **B 类·画布式交互区的命令式 DOM（需二次确认，4 个）**：`animation/animation-timeline.ts`（时间轴刻度）、`animation/animation-motion.ts`（运动曲线节点）、`palette/palette-initialize.ts`（画布选区标记，`renderElement` 模式）、`palette/auto-tile.ts`（自动图块列表行，`renderElement` 模式）。它们的 DOM 是可数据化的，但改造成本与收益需单独评估。
-  - ❌ **C 类·不纳入白名单（属迁移债，1 个）**：`engine/layout/layout.ts`——`renderElement` 宿主、`document.querySelectorAll('.nav-item[value]')` / `('.page-frame[value]')`（palette 发现兜底）、`document.getElementById('project-browser')` 共 4 处，应继续按布局迁移推进。
-- **落地步骤**：① `.oxlintrc.json` 的 `overrides` 增加白名单文件（`eslint/no-restricted-properties: "off"`）；② 删除这些文件的 `/* oxlint-disable eslint/no-restricted-properties */`；③ `scripts/dom-guard.mjs` 增 `WHITELIST` 常量，tracker 把「设计豁免」与「待迁移」分列；④ `scripts/docs-check.mjs` 增断言「白名单外待迁移命中 = 0」；⑤ 同步 README/计划口径。
-- **验收标准**：① 白名单外待迁移命中归零；② `pnpm dom:guard:exempt` 退役（`tracker` 保留为报表）；③ `pnpm lint` 在无豁免注释下 0 警告 0 错误；④ 文档口径三方一致（tracker / README / 计划）。
-- **预期目标数字**：A 类 4 个进白名单 → 待迁移命中 160 → 156；A + B（8 个）→ 152；`engine/layout/layout.ts` 保持为债。
-- **验证命令**：`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`。
+> ✅ **已完成（2026-09-12）**：口径从「待迁移命中 160 / 豁免注释 295 / 陈旧豁免 135」走到 **`待迁移命中 0` / `豁免注释 0` / `陈旧豁免 0` / `设计豁免 45` / `临时豁免 1`**。落地方式与原文计划的差异：① 白名单从"A 类 4 个"扩到 **45 个设计豁免 + 1 个临时豁免**——因为 P1b 十七刀已把编辑器侧的真实债清零，剩下的**全是设计使然**（画布上下文 / 应用挂载点 / 唯一 DOM 缝隙 / index.html 外壳元素）或**归属别的任务线**（ui-kit 元素优先组件层 → P2b；`localize/dom-localizer.ts` → R2b）；② 因此验收口径改为**硬断言 `待迁移命中 === 0`**（白名单文件不带豁免注释，故"白名单外"就等于 `待迁移命中` 本身），由 `docs-check.mjs` 的 `checkC1Whitelist()` 守住；③ 该函数还校验白名单**三处同源**（`dom-guard.mjs` 常量 ↔ `.oxlintrc.json` overrides ↔ 文件存在），防漂移。
+> - **证据**：`pnpm lint` 0 警告 0 错误（**已无任何 `/* oxlint-disable eslint/no-restricted-properties */`**）；`pnpm stale-exemptions --check` OK；`pnpm dom:guard:tracker` 口径区见 `docs/dom-migration-tracker.md`；`pnpm docs:check` OK（含 C1 断言）。
+
+### C1 白名单（`scripts/dom-guard.mjs` 的 `WHITELIST` / `TEMP_WHITELIST`）
+
+| 类别 | 文件 | 为什么按设计需要受限 API |
+| --- | --- | --- |
+| 设计豁免（45） | `engine/webgl/webgl-init.ts`、`engine/webgl/webgl-methods.ts`、`engine/palette/palette-engine.ts`、`engine/scene/draw-start-position.ts`、`printer/printer.ts`、`audio/audio-manager.ts`、`data/transition-window.ts` | `createElement('canvas')` 取 2D/WebGL 上下文、像素读回、文本测量——模板无法替代 |
+| 设计豁免 | `main.ts` | Vue 挂载容器 `#app` 来自 `index.html`，只能按 id 取一次 |
+| 设计豁免 | `utils/dom.ts` | **唯一 DOM 创建/查询缝隙**（`$()` 与 `renderDetached`/`createDetachedElement` 的实现处，P1b 第 12/13 刀的收敛点） |
+| 设计豁免 | `composables/usePointerObjectWindow.ts` | `#cursor-region` 是 `index.html` 里的外壳元素，非 SFC 渲染 |
+| 设计豁免 | `ui-kit/src/components/**`、`ui-kit/src/utils/radio-proxy.ts` | **元素优先的组件 API 层**（P2b 2026-09-12 重定义：不以文件数归零为准）；`radio-proxy` 是单选组按 name 查询的唯一落点 |
+| 临时豁免（1） | `localize/dom-localizer.ts` | R2b 遗留的本地化扫描器，其存在意义就是按语言表 key 全文档发现元素；**退出条件 = R2b 剩余键全部改走模板 `t()`/`v-tip`**，届时从 `TEMP_WHITELIST` 删除 |
+
+- **原始分级（2026-09-11 的 A/B/C 类判定）保留如下，用于对照分类依据**：
+  - ✅ **A 类·真画布上下文**：`engine/webgl/webgl-init.ts`、`engine/webgl/webgl-methods.ts`、`engine/palette/palette-engine.ts`、`engine/scene/draw-start-position.ts`——最终进白名单（并入 `printer` / `audio-manager` / `transition-window` 三处同类 canvas）。
+  - ❓ **B 类·画布式交互区的命令式 DOM（4 个）**：`animation/animation-timeline.ts`、`animation/animation-motion.ts`、`palette/palette-initialize.ts`、`palette/auto-tile.ts`——**复核结论：不进白名单**，它们的"可数据化"判断成立，P1b 第 14 刀已把四处离屏节点收口到唯一创建缝隙并归零。
+  - ❌ **C 类·属迁移债（1 个）**：`engine/layout/layout.ts`——P1b 第 16/17 刀已归零（帧内查询 + palette 容器子树兜底）。
+- **验收标准（逐条对照）**：① 白名单外待迁移命中归零 ✅ `待迁移命中 0`；② `dom:guard:exempt` 退役 ✅（子命令与 npm script 均已删除）；③ `pnpm lint` 在无豁免注释下 0 警告 0 错误 ✅；④ 文档口径三方一致 ✅（tracker / README / 计划，且 `设计豁免`/`临时豁免` 由 tracker 生成）。
+- **验证命令**：`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm stale-exemptions --check`、`pnpm docs:check`。
 - **来源**：[vue3-migration-plan.md](./vue3-migration-plan.md)「收尾：拆除脚手架」。
 
 ## C2 — 删除 135 个陈旧豁免注释
