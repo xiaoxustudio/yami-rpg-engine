@@ -166,13 +166,15 @@
 
 - 2026-09-12 **P1b 第 16 刀：设置项查询收进窗口帧 + 布局侧三处收口（−1 文件），待迁移命中 48 → 47**。① **`services/project/setting-config/renderer.ts`**：`bindOption`/`writeValue`/`loadSelectOptions` 的 `document.querySelectorAll('#<optionId>')[0]` 与 `applyL10n` 里的 `$('#<id>')` 全部改为新的私有 `byId(id)` ——**在 `#setting` 帧的子树内**用 `CSS.escape` 查询（`serviceEls.get('setting')`）。顺带把 **P5 轴 `$('#…')` 反查 22 → 20**（该文件是 P5b 残余里的"动态 id"一类）。② **`engine/layout/layout.ts`**：发现「离屏创建」在本仓有**第三份**实现（`utils/dom.renderDetached`、`element-utils.renderElement`、layout 的 `renderElement`）→ 统一委托；`document.getElementById('project-browser')` → `storesEls.get('project-browser')`（`LayoutPanel.vue` 的 `.file-browser` 补 `:ref`）。③ **未完成（下一刀）**：同文件仍有 `.nav-item[value]` / `.page-frame[value]` 两条**全文档回退**（注释写明是给 fixture/手工 DOM 兜底，真机走 `registeredLayoutItems` 与 palette 容器），要删它需先把 10 个 layout spec 的 fixture 改走注册表——故本刀不动，继续留在债里。**指标**：待迁移命中 **48 → 47**、豁免注释 **48 → 47**、陈旧豁免 **0**、`querySelector*` 18 → 16、`$('#…')` 22 → 20、`createElement` 133 → 132。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 668/668**、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **P1b 第 17 刀：`engine/layout/layout.ts` 归零（−1 文件），待迁移命中 47 → 46**。① 上一刀留下的两条**全文档**回退（`.nav-item[value]` / `.page-frame[value]`）**收敛到 palette 容器子树内**：条目本来就在 `#layout-nav` / `#layout-page-manager` 里，而这两个容器由 `LayoutPanel.vue`（L1544-1545）按生产路径登记进 `engineEls` → 改为 `nav?.querySelectorAll(...)` / `manager?.querySelectorAll(...)`，**既去掉全文档扫描，又保住"登记不完整也不丢项"的韧性**。② **过程中被既有用例打回一次**：先按"让 fixture 也走注册表 → 兜底就没人用 → 直接删掉"来做，`layout-item-registry.spec.ts` 的「兜底合并：登记缺失的 DOM 页签仍被发现」立刻失败——说明这条兜底是**有意的韧性设计**，于是改为"容器子树内兜底 + fixture 走生产登记"两件事一起做。③ fixture 同步：`layout-spec-utils.ts` 的 `buildLayoutFixture` 补 `registerLayoutItems([{value, nav, page}])`；上述 spec 的本地 fixture 补登记两个 palette 容器。④ `stale-exemptions --apply` 清掉该文件的陈旧豁免。**指标**：待迁移命中 **47 → 46**、豁免注释 **47 → 46**、陈旧豁免 **0**、`querySelector*` 16 → 14。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 668/668**、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
-| 待迁移命中文件（oxlint 判定仍在用）  | 47（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–16 刀共 −111） |
-| 带豁免注释文件（`oxlint-disable`）   | 47（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
+| 待迁移命中文件（oxlint 判定仍在用）  | 46（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–17 刀共 −112） |
+| 带豁免注释文件（`oxlint-disable`）   | 46（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
 | `getElementById` 属性访问处数        | 10（composables 5 / 其余 5；**components 已归零**；真实代码处数 9，另 1 处为本刀注释提及） |
 | `document.querySelector*` 处数       | 18（P1b 第 5/9/10/11 刀 56 → 18） |
@@ -186,9 +188,9 @@
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（25 个组件 api + `attach-api.ts` 自身；**B3 复核：全部是元素优先实现、零死文件** → 目标由「0」改为「不增长」，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 47**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3、第 11 刀 −1、第 12 刀 −5、第 13 刀 −6、第 14 刀 −4、第 15 刀 −2、第 16 刀 −1；
-> ② **豁免注释 47**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（47 + 0 = 47）。
+> ① **待迁移命中 46**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3、第 11 刀 −1、第 12 刀 −5、第 13 刀 −6、第 14 刀 −4、第 15 刀 −2、第 16 刀 −1、第 17 刀 −1；
+> ② **豁免注释 46**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（46 + 0 = 46）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
 > **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 86、`getElementById` 1164 → 60、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 568；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
 > **口径自检（2026-09-12，正反双向 + 权威来源）**：① **正向**——86 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **86** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中。
