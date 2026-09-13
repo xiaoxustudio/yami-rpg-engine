@@ -849,19 +849,29 @@
 
 ## E1 — 窗口事件面收口（34 事件名 / 265 监听点 / 16 自定义事件）
 
-> 🚧 **部分完成（2026-09-12，两刀）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。② `.vue` 的 window 监听配对已完成 4/5（见下方「E1 第二刀」）。余项 ③（自定义事件改强类型通道）、④（`mitt` 去留）、⑤（`YMFileHeadPane.vue` 的内联匿名 handler 提取）待做。
+> 🚧 **部分完成（2026-09-12，三刀）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。② `.vue` 的 window 监听配对**已归零**（验收 ③ 达成，见下方「E1 第二/三刀」）。余项：③（15 个自定义事件改强类型通道）、④（`mitt` 去留）待做。
 
-**E1 第二刀（2026-09-12）：`.vue` 的 window 监听配对——`remove` 122 → 126，「add 有 remove 无」5 → 1**
+**E1 第三刀（2026-09-12）：修正度量器两处误报，`add 有 remove 无` 5 → 0、内联匿名 13/11 → 11/10**
 
-① 修 `FileAudioPage.vue`（`themechange`）、`FileScriptPage.vue`（`localize`）、`FileVideoPage.vue`（`error`）、`SceneActorPage.vue`（`datachange`）四处：**把监听器先存成变量**再 `addEventListener`，并在 `onBeforeUnmount` 里按**同一引用** `removeEventListener`——若直接写 `removeEventListener(type, obj.method)`，当方法来自访问器或每次返回新绑定函数时会摘不掉，存变量是唯一稳妥写法。② 剩 `ui-kit/.../YMFileHeadPane.vue` 一处未修：它的 handler 是**跨约 60 行的内联匿名函数**，要能 remove 得先提取具名函数（已登记，下一刀处理）。③ `pnpm events:surface` 复测：`remove` **122 → 126**（+4）、`.vue` 内 add-without-remove **5 → 1**；两个套件、`pnpm lint`、`tsc` strict 全绿。
+`.vue` 内最后一处（`ui-kit/.../YMFileHeadPane.vue`）**不是缺陷**：它的 `window.addEventListener('pointerup', …, { once: true })` 由**浏览器在首次触发后自动摘除**，本来就无需 `remove`。问题出在**度量器**：
+
+- **误报 ①**：报表按原文正则找 `window.addEventListener(...)`，而**注释/字符串里**也会出现这个片段 → 把无关代码当成一次调用，内联匿名计数被高估（13 vs 实际 11）。
+- **误报 ②**：`{ once: true }` 未参与判定，于是"自带摘除"的监听被记成"add 无 remove"风险。
+- **修法**：新增 `scanAddListenerCalls()`——**先剥注释**，再按括号配对取出每条调用的完整实参，据此判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。
+- **修完的实测**：`.vue` 内 add-without-remove **5 → 0**（验收 ③ 达成）、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例，见上）。
+
+**E1 第二刀（2026-09-12）：`.vue` 的 window 监听配对——`remove` 122 → 126**
+
+① 修 `FileAudioPage.vue`（`themechange`）、`FileScriptPage.vue`（`localize`）、`FileVideoPage.vue`（`error`）、`SceneActorPage.vue`（`datachange`）四处：**把监听器先存成变量**再 `addEventListener`，并在 `onBeforeUnmount` 里按**同一引用** `removeEventListener`——若直接写 `removeEventListener(type, obj.method)`，当方法来自访问器或每次返回新绑定函数时会摘不掉，存变量是唯一稳妥写法。② `pnpm events:surface` 复测：`remove` **122 → 126**（+4）；两个套件、`pnpm lint`、`tsc` strict 全绿。
+
 
 - **复现命令**：`pnpm events:surface`（`scripts/event-surface.mjs`；只统计落在 `window` 上的监听与派发，且**含"变量形式"派发**——`const e = new Event('x'); window.dispatchEvent(e)`，这是纯按名字做正则最容易漏的一类）。
 - **现状证据（2026-09-11 实测）**：`window.addEventListener` **265 处 / 92 文件**、`window.removeEventListener` **122 处**；事件名 **34 个**，其中**自定义 16 个**——`attributechange`、`datachange`、`dirchange`、`dprchange`、`enumchange`、`home-recent-update`、`localizationchange`、`localize`、`os-dragend`、`os-dragstart`、`script-change`、`themechange`、`update-log-update`、`variablechange`、`vue-app-mounted`、`yami:error`。载荷普遍靠**往 Event 对象上挂字段**传递（`datachange.key = 'teams'`、`themechange.value = theme`；见 `composables/useTeamWindow.ts:422`、`data/transition-window.ts:1201`、`title/title-bar.ts:387`）——无类型、无契约，监听方只能自己断言形状。
 - **死事件 1 个**：`attributechange`——`attribute/attribute-window.ts:967` 有派发、全仓**无监听**，可直接删（`script-change` 一度被误判为死事件，实为 `plugin/plugin-parse-meta.ts:20` 以变量形式派发，仍在用）。
-- **监听生命周期风险点**：**13 处**用内联匿名函数（无法 `remove`；11 文件，多数是 app 生命周期的单例，但 `components/toast.ts`、`ui-kit/.../YMFileHeadPane.vue` 属 UI 侧）；**1 个 `.vue`**（原 4 个已修，见下方「E1 第二刀」）添加 window 监听却无 `remove`（`FileAudioPage`/`FileScriptPage`/`FileVideoPage`/`SceneActorPage`/`YMFileHeadPane`）——页面重挂时可能叠加监听。
+- **监听生命周期风险点**：**11 处**用内联匿名函数且未带 `{ once: true }`（10 文件，多为 app 生命周期单例：`utils/keyboard.ts`、`module/constants.ts`、`components/toast.ts`、`engine/webgl/webgl-init.ts`、`main.ts` 等）；**1 个 `.vue`**（原 4 个已修，见下方「E1 第二刀」）添加 window 监听却无 `remove`（`FileAudioPage`/`FileScriptPage`/`FileVideoPage`/`SceneActorPage`/`YMFileHeadPane`）——页面重挂时可能叠加监听。
 - **替代品均未启用**：`mitt`（依赖里存在）**0 使用**、`@vueuse` 的 `useEventListener` **0 使用**、`window.on(` **0 处**——即计划 5.4「事件总线 → 响应式 + provide/inject + mitt」的映射**尚未开工**。
 - **推进策略**：① 删 `attributechange`；② 16 个自定义事件改强类型通道（store action / mitt 事件表），去掉"往 Event 挂字段"；③ 5 个 `.vue` 的监听按 `onMounted`/`onBeforeUnmount` 配对（或统一 `useEventListener`）；④ 决定 `mitt` 去留（启用或从 `package.json` 移除）。
-- **验收标准**：① `attributechange` 归零；② 自定义事件不再往 Event 挂字段；③ `.vue` 中"add 有、remove 无"归零；④ `pnpm lint` + `pnpm -F @yami/editor test` + `pnpm -F @yami/ui-kit test` 全绿；⑤ 真机冒烟：切主题、切语言、目录切换、文件 inspector 页面进出。
+- **验收标准**：① `attributechange` 归零；② 自定义事件不再往 Event 挂字段；③ `.vue` 中"add 有、remove 无"归零 ✅ **0**；④ `pnpm lint` + `pnpm -F @yami/editor test` + `pnpm -F @yami/ui-kit test` 全绿；⑤ 真机冒烟：切主题、切语言、目录切换、文件 inspector 页面进出。
 - **规模**：中（架构卫生，不属 DOM 迁移主线）；**优先级**：低-中。
 - **来源**：2026-09-11 第二十五轮事件面审计（新脚本 + 新登记）。
 

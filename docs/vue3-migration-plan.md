@@ -188,6 +188,8 @@
 
 - 2026-09-12 **E1 第二刀：`.vue` 的 window 监听配对（`remove` 122 → 126，「add 有 remove 无」5 → 1）**。① `FileAudioPage.vue`（`themechange`）、`FileScriptPage.vue`（`localize`）、`FileVideoPage.vue`（`error`）、`SceneActorPage.vue`（`datachange`）四处此前**只 add 不 remove**：改为**先把监听器存成变量**再 add，并在 `onBeforeUnmount` 里按**同一引用** remove。这条写法的必要性：`removeEventListener(type, obj.method)` 在方法来自访问器或每次返回新绑定时**摘不掉**，存变量才可靠。② 剩 `ui-kit/.../YMFileHeadPane.vue` 一处——handler 是跨约 60 行的内联匿名函数，需先提取具名函数（已登记下一刀）。③ `pnpm events:surface` 成为这类改动的验收器：`remove` 计数上升、`.vue` 内 add-without-remove 下降。**门禁**：`pnpm lint` 0/0、editor `tsc` strict 0 新增、两个套件全绿、`docs:check` OK。
 
+- 2026-09-12 **E1 第三刀：修正事件面报表的两处误报，`.vue` 内「add 有 remove 无」5 → 0（验收 ③ 达成）**。① 上一刀把 `ui-kit/.../YMFileHeadPane.vue` 记成"未配对"，复核发现它的 `window.addEventListener('pointerup', …, { once: true })` 由**浏览器首次触发后自动摘除**，本就不需要 `remove`——是**度量器**的问题而非代码问题。② **两处误报**：ⓐ 报表按原文正则匹配 `window.addEventListener(...)`，**注释/字符串里**的同一片段被当成调用（内联匿名计数因此虚高：13 → 实际 11）；ⓑ `{ once: true }` 未参与判定，自带摘除的监听被记成风险。③ **修法**：新增 `scanAddListenerCalls()`——先剥注释，再按**括号配对**取出每条调用的完整实参，据此同时判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。④ **实测**：`.vue` 内 add-without-remove **5 → 0**、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例）。**教训（与 R2b/P4b 同源）：度量器本身也要被验证——先怀疑数字，再怀疑代码。**
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
