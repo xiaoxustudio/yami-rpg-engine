@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { moduleEls } from '@app/module/element-registry';
 import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -9,7 +8,8 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { h, render } from 'vue';
+import { h } from 'vue';
+import { renderDetached } from '@app/utils/dom';
 
 import { getMonaco } from '@app/utils/monaco';
 import type * as monacoNs from 'monaco-editor';
@@ -212,10 +212,8 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const holder = document.createElement('div');
-		holder.style.display = 'none';
-		render(h('div', { class: 'text' }, code), holder);
-		const text = holder.firstElementChild as HTMLElement;
+		// P1b：离屏文本节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		const text = renderDetached(h('div', { class: 'text' }, code));
 		const options = this.colorOptions;
 		options.theme = Title.theme;
 		(this.createTheme as (theme: string) => void)(Title.theme);

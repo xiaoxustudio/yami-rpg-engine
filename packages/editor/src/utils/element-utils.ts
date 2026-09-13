@@ -1,5 +1,4 @@
-/* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
+import { $, renderDetached } from '@app/utils/dom';
 import { Timer } from '@app/utils/timer';
 import { Cursor } from '../composables/usePointerObjectWindow';
 import { createScrollBarElement as createScrollBar } from '@ui-kit';
@@ -407,10 +406,9 @@ export function isInContent(el: unknown, event: MouseEvent): boolean {
 	return x >= 0 && x < target.clientWidth && y >= 0 && y < target.clientHeight;
 }
 
+// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙（原先这里自带一份 createElement + render）
 function renderElement(vnode: VNode): HTMLElement {
-	const holder = document.createElement('div');
-	render(vnode, holder);
-	return holder.firstElementChild as HTMLElement;
+	return renderDetached(vnode);
 }
 
 export function addScrollbars(el: HTMLElement): void {

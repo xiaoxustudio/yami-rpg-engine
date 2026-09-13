@@ -1,5 +1,6 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { hasClass, on } from '@app/utils/element-utils';
+import { registryElements } from '@app/utils/element-registry';
+import { windowShellEls } from '@app/tools/window-object.ts';
 
 export class Timer {
 	static state: string | null = null;
@@ -147,11 +148,12 @@ Timer.initialize = function (this: typeof Timer) {
 	const windowUnmaximize = () => {
 		this.animationWaiting--;
 	};
-	const windows = document.querySelectorAll('#event, #selector, #imageClip');
-	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'open', windowOpen));
-	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'closed', windowClosed));
-	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'maximize', windowMaximize));
-	(windows as unknown as HTMLElement[]).forEach((el) => on(el, 'unmaximize', windowUnmaximize));
+	// P1b：窗口帧从 windowShellEls 取（原先 document.querySelectorAll('#event, #selector, #imageClip')）
+	const windows = registryElements(windowShellEls, ['event', 'selector', 'imageClip']);
+	windows.forEach((el) => on(el, 'open', windowOpen));
+	windows.forEach((el) => on(el, 'closed', windowClosed));
+	windows.forEach((el) => on(el, 'maximize', windowMaximize));
+	windows.forEach((el) => on(el, 'unmaximize', windowUnmaximize));
 };
 
 Timer.start = function (timestamp: number) {

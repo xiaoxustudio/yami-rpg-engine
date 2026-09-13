@@ -19,8 +19,8 @@ import { logEls } from '@app/log/element-registry';
 
 // P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
-/* oxlint-disable eslint/no-restricted-properties */
-import { h, onMounted, render, type VNode } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
+import { renderDetached } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CommonList from '@app/components/common/CommonList.vue';
@@ -39,8 +39,8 @@ const updateItems = (items: ReferenceItem[]): void => {
 		if ('count' in item && item.count !== undefined && item.count > 1) {
 			nodes.push(h('div', { class: 'reference-count text' }, String(item.count)));
 		}
-		const host = document.createElement('div');
-		render(
+		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		const element = renderDetached(
 			h(
 				'div',
 				{
@@ -48,11 +48,8 @@ const updateItems = (items: ReferenceItem[]): void => {
 					class: { 'common-item': true, 'reference-comment': item.type === 'comment' }
 				},
 				nodes
-			),
-			host
+			)
 		);
-		const element = host.firstElementChild as HTMLElement;
-		host.removeChild(element);
 		list.appendElement(element);
 	}
 	list.update();

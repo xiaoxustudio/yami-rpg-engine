@@ -13,14 +13,16 @@ import { render, type VNode } from 'vue';
 export function renderDetached(vnode: VNode): HTMLElement {
 	const host = createDetachedElement();
 	render(vnode, host);
-	return host.firstElementChild as HTMLElement;
+	const el = host.firstElementChild as HTMLElement;
+	// 返回**已脱离宿主**的节点：调用方普遍会把它插到别处，而"仍挂在宿主上"会让
+	// 依赖 parentNode 的列表实现（Reference 的 appendElement）行为不一致。
+	el?.remove();
+	return el;
 }
 
-/** P1b：创建一个**不在文档里**的元素（与 `renderDetached` 同属唯一创建缝隙）。 */
-export function createDetachedElement<K extends keyof HTMLElementTagNameMap>(
-	tag: K = 'div' as K
-): HTMLElementTagNameMap[K] {
-	return document.createElement(tag);
+/** P1b：创建一个**不在文档里**的 `div`（与 `renderDetached` 同属唯一创建缝隙）。 */
+export function createDetachedElement(): HTMLDivElement {
+	return document.createElement('div');
 }
 
 export function addClass(el: HTMLElement, className: string): boolean {

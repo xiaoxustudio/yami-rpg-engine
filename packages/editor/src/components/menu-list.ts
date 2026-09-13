@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { createMenuApi, type MenuApi, type MenuItem, type MenuOptions } from '@ui-kit';
+import { createDetachedElement } from '@app/utils/dom';
 
 interface MenuListElement extends HTMLElement {
 	state: string;
@@ -58,7 +58,8 @@ export function attachMenuListApi(el: HTMLElement): void {
 }
 
 export function createMenuList(): MenuListElement {
-	const el = document.createElement('div');
+	// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙（原先 document.createElement）
+	const el = createDetachedElement();
 	el.classList.add('menu-list');
 	attachMenuListApi(el);
 	return el as unknown as MenuListElement;
