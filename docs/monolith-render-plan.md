@@ -100,7 +100,19 @@
 
 验证：`pnpm -F @yami/ui-kit test` 全绿且用例数达标；这些用例**在改造后不允许改语义，只允许改断言方式**（同 tree 步骤 1 的约定）。
 
-### M2：派生层（不动渲染）
+### M2：派生层（不动渲染）——**🚧 起步（2026-09-12）**
+
+**已落地（切片 1，2026-09-12）**：`YMCommandList/command-render.ts` + `__tests__/command-render.spec.ts`（9 例），**渲染一行没动**（调用方仍是老实现，M3 才接线）：
+
+| 计划名 | 实现名 | 说明 |
+| --- | --- | --- |
+| 行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`） | `rowKeyOf(command)` | `command.id` 可能重复（脚本/事件列表），故用 WeakMap 发号；同一 command 跨多次派生 key 不变 |
+| 扁平化可见行 | `deriveCommandRows(commands, { selection, hits })` | 深度优先；返回 `{ key, command, list, index, indent, folded, selected, disabled, hit }` |
+| 缩进层级 | `CommandRowDescriptor.indent`（+ `rowIndents(rows)`） | 顶层 0、子行 = 父 + 1；缩进**宽度**仍由 `computeTextIndent` 给（与语言相关） |
+| 折叠态 | `CommandRowDescriptor.folded` | `有子命令 && folded === true`；折叠时子行**不进可见集**（只出父行） |
+| 选区 / 搜索命中 / 禁用 | `selected` / `hit` / `disabled` | 选区按**可见行下标**区间（含首尾）；命中集接受 `Set` 或数组 |
+
+**刻意保持纯函数**：不碰 DOM、不读组件状态，同一输入多次调用结果一致（含 key 稳定性）——这样 M3 换渲染时，"行数据"本身有独立的对照物。**下一步（切片 2）**：把 `computeStartAndEnd` 的窗口计算抽成 `computeVisibleRows(rows, { scroll, viewport })`，再由 `command-api.ts` 改调它（此时才第一次改调用方，仍不改渲染输出）。
 
 新增 `YMCommandList/command-render.ts`：把 `createCommandBuffer`/`computeTextIndent` 里的**纯数据部分**抽出来——扁平化可见行（含折叠态、缩进层级、选区态、搜索命中、disabled）、行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`）、窗口计算；`YMFileBodyPane/file-body-render.ts`：复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key。
 

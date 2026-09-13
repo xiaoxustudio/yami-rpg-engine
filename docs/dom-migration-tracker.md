@@ -43,16 +43,16 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 32 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
-| ui-kit/components   | 96 | 70 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 97 | 70 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1135 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
+| 合计                  | 1136 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1135**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1136**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -164,7 +164,7 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 109 | 6 | - |
 | packages/editor/src/components/common/WindowFrame.vue | 180 | 5 | - |
-| packages/editor/src/components/inspector/FileAudioPage.vue | 249 | 5 | - |
+| packages/editor/src/components/inspector/FileAudioPage.vue | 256 | 5 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 5 | - |
@@ -222,8 +222,8 @@
 | packages/editor/src/components/common/ColorBox.vue | 132 | 2 | - |
 | packages/editor/src/components/common/DetailBox.vue | 91 | 2 | - |
 | packages/editor/src/components/common/SwitchItem.vue | 113 | 2 | - |
-| packages/editor/src/components/inspector/FileScriptPage.vue | 84 | 2 | - |
-| packages/editor/src/components/inspector/SceneActorPage.vue | 275 | 2 | - |
+| packages/editor/src/components/inspector/FileScriptPage.vue | 90 | 2 | - |
+| packages/editor/src/components/inspector/SceneActorPage.vue | 282 | 2 | - |
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 568 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
@@ -263,7 +263,7 @@
 | packages/editor/src/components/inspector/FileFontPage.vue | 108 | 1 | - |
 | packages/editor/src/components/inspector/FileImagePage.vue | 84 | 1 | - |
 | packages/editor/src/components/inspector/FileScenePage.vue | 288 | 1 | - |
-| packages/editor/src/components/inspector/FileVideoPage.vue | 74 | 1 | - |
+| packages/editor/src/components/inspector/FileVideoPage.vue | 81 | 1 | - |
 | packages/editor/src/components/inspector/ParticleLayerPage.vue | 1657 | 1 | - |
 | packages/editor/src/components/inspector/SceneAnimationPage.vue | 377 | 1 | - |
 | packages/editor/src/components/inspector/SceneLightPage.vue | 584 | 1 | - |
@@ -1208,6 +1208,7 @@
 | packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 108 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 373 | 0 | - |
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/YMDragAndDropHint.vue | 53 | 0 | - |
