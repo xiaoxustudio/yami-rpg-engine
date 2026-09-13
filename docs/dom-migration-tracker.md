@@ -18,7 +18,7 @@
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/engine       | 53 | 8 | 5 | 5 | 1 | 2 | 0 | 0 | 0 | 6 | 17 | 1 | 9 | 22 | 0 | 14 | 0 | 1 | 0 | 0 |
+| editor/engine       | 53 | 8 | 5 | 5 | 1 | 2 | 0 | 0 | 0 | 5 | 17 | 0 | 9 | 22 | 0 | 14 | 0 | 1 | 0 | 0 |
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 |
 | editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
@@ -34,7 +34,7 @@
 | editor/plugin       | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 0 | 0 | 0 |
 | editor/printer      | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/scene        | 28 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
-| editor/services     | 46 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 3 | 0 | 0 |
+| editor/services     | 46 | 6 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 1 | 0 | 0 |
 | editor/stores       | 39 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/title        | 6 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 7 | 2 | 0 | 0 | 0 |
 | editor/tools        | 17 | 7 | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
@@ -48,18 +48,18 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 7 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 48 | 48 | 10 | 18 | 1 | 18 | 0 | 133 | 122 | 14 | 29 | 127 | 2 | 567 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 47 | 47 | 10 | 16 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**48**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**48**
+- 待迁移命中文件：**47**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**47**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**26**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**27**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
-- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
+- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **20** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
 ## 辅助口径（未门禁，仅计数）
 
@@ -92,8 +92,8 @@
 
 | 文件 | 行数 | 命中 | 豁免注释 |
 | --- | --- | --- | --- |
-| packages/editor/src/engine/layout/layout.ts | 2081 | 56 | 是 |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | 是 |
+| packages/editor/src/engine/layout/layout.ts | 2082 | 54 | 是 |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1643 | 51 | 是 |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2328 | 42 | 是 |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2610 | 37 | 是 |
@@ -121,7 +121,7 @@
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
-| packages/editor/src/components/layout/LayoutPanel.vue | 2008 | 9 | - |
+| packages/editor/src/components/layout/LayoutPanel.vue | 2009 | 9 | - |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | 是 |
@@ -146,7 +146,6 @@
 | packages/editor/src/animation/animation-initialize.ts | 504 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 630 | 6 | - |
-| packages/editor/src/services/project/setting-config/renderer.ts | 172 | 6 | 是 |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 306 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/file-var-api.ts | 192 | 6 | 是 |
@@ -240,6 +239,7 @@
 | packages/editor/src/palette/auto-tile.ts | 976 | 2 | - |
 | packages/editor/src/particle/particle-events.ts | 216 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1403 | 2 | 是 |
+| packages/editor/src/services/project/setting-config/renderer.ts | 176 | 2 | - |
 | packages/editor/src/tools/event-list.ts | 185 | 2 | - |
 | packages/editor/src/utils/dpr.ts | 13 | 2 | - |
 | packages/editor/src/utils/keyboard.ts | 43 | 2 | - |
