@@ -13,55 +13,55 @@
 			<div class="text setting-title" id="setting-title-server">
 				{{ t('components.setting-title-server.content') }}
 			</div>
-			<div class="text" />
+			<div class="text">{{ t('components.setting-server-port.label') }}</div>
 			<NumberBox id="setting-server-port"
 				v-tip="t('components.setting-server-port.tip')" min="0" max="65535" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-server-auto.label') }}</div>
 			<CheckBox id="setting-server-auto"
 				v-tip="t('components.setting-server-auto.tip')" class="standard" />
 			<div class="text setting-title" id="setting-title-apkbuild">
 				{{ t('components.setting-title-apkbuild.content') }}
 			</div>
-			<div class="text" />
+			<div class="text">{{ t('components.setting-apkbuild-outputDir.label') }}</div>
 			<TextBox id="setting-apkbuild-outputDir"
 				v-tip="t('components.setting-apkbuild-outputDir.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-apkbuild-newApkPath.label') }}</div>
 			<TextBox id="setting-apkbuild-newApkPath"
 				v-tip="t('components.setting-apkbuild-newApkPath.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-apkbuild-apktoolPath.label') }}</div>
 			<TextBox id="setting-apkbuild-apktoolPath"
 				v-tip="t('components.setting-apkbuild-apktoolPath.tip')" />
 			<div class="text setting-title" id="setting-title-signed">
 				{{ t('components.setting-title-signed.content') }}
 			</div>
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-jksPath.label') }}</div>
 			<TextBox id="setting-signed-jksPath"
 				v-tip="t('components.setting-signed-jksPath.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-keyStorePassword.label') }}</div>
 			<TextBox id="setting-signed-keyStorePassword"
 				v-tip="t('components.setting-signed-keyStorePassword.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-keyAlias.label') }}</div>
 			<TextBox id="setting-signed-keyAlias"
 				v-tip="t('components.setting-signed-keyAlias.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-keyPassword.label') }}</div>
 			<TextBox id="setting-signed-keyPassword"
 				v-tip="t('components.setting-signed-keyPassword.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-apksignerPath.label') }}</div>
 			<TextBox id="setting-signed-apksignerPath"
 				v-tip="t('components.setting-signed-apksignerPath.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-zipalignPath.label') }}</div>
 			<TextBox id="setting-signed-zipalignPath"
 				v-tip="t('components.setting-signed-zipalignPath.tip')" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-signed-signedApkPath.label') }}</div>
 			<TextBox id="setting-signed-signedApkPath"
 				v-tip="t('components.setting-signed-signedApkPath.tip')" />
 			<div class="text setting-title" id="setting-title-other">
 				{{ t('components.setting-title-other.content') }}
 			</div>
-			<div class="text" />
+			<div class="text">{{ t('components.setting-other-copyAsTextKeepEmptyLine.label') }}</div>
 			<CheckBox id="setting-other-copyAsTextKeepEmptyLine"
 				v-tip="t('components.setting-other-copyAsTextKeepEmptyLine.tip')" class="standard" />
-			<div class="text" />
+			<div class="text">{{ t('components.setting-other-browserSearchHistoryLimit.label') }}</div>
 			<SelectBox id="setting-other-browserSearchHistoryLimit"
 				v-tip="t('components.setting-other-browserSearchHistoryLimit.tip')" />
 			<div class="text setting-title" id="setting-title-recent"></div>
@@ -70,7 +70,7 @@
 			<div class="text setting-title" id="setting-title-github">
 				{{ t('components.setting-title-github.content') }}
 			</div>
-			<div class="text" />
+			<div class="text">{{ t('components.setting-github-accelerationNode.label') }}</div>
 			<SelectBox id="setting-github-accelerationNode"
 				v-tip="t('components.setting-github-accelerationNode.tip')" />
 			<div class="text setting-title" id="setting-title-update"></div>
