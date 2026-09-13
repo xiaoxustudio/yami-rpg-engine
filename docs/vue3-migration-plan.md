@@ -153,16 +153,18 @@
 - 2026-09-12 **P1b 第 8 刀：5 个工具窗口的 setForm/getForm 动态 id 循环归零（10 处 / 5 文件），待迁移命中 79 → 74、getElementById 26 → 16（ditor/components 归零）**。① SetNumberOperand / SceneShift / ObjectGetter / LightGetter / ExportLanguage 里都是同一形态 `for (const [id, field] of Object.entries(FIELD_BY_ID)) { const control = document.getElementById(id) }`——id 是**运行时变量**，字面量脚本替换抓不到，改读 `composableEls.get(id)`；SceneShift 的 `scene-shift-x/y` 此前未登记，补 2 个 `:ref`。② **🔴 既有 spec 当场抓到一处漏改**：`ExportLanguage.vue` 的控件登记在**模块注册表 `localEls`**（不是 `composableEls`）→ 改读后 `getForm` 取不到值，`window-form-bridge.spec.ts` 的 "exportLanguage 控件值变更在 getForm 时读回" 立刻失败；已给 `localEls` 加 `createElementRegistry(composableEls)` 镜像（与 `textCaptureEls` 同法）。**教训已并入配方**：迁移前先确认目标 SFC 用的是哪个注册表。**指标**：待迁移命中 **79 → 74**、豁免注释 **79 → 74**、陈旧豁免 **0**、`getElementById` **26 → 16**。**门禁**：editor **235 文件 1983/1983**（口径同第 7 刀）、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
 - 2026-09-12 **P1b 第 9 刀：跨行链式直查与两处批量选择器归零（−5 文件），待迁移命中 74 → 69、`getElementById` 16 → 10、`querySelector*` 22 → 20**。① **跨行链式漏网的一族**：`document\n\t\t\t.getElementById('x')`（`document` 与 `.getElementById` 之间是换行）——第 2 刀的字面量脚本按**单行**匹配，把这四个命令 schema 漏掉了：`useChangeActorEquipmentCommandSchema`（1）、`useLoadImageCommandSchema`（1）、`useUseItemCommandSchema`（1）、`useSetAnimationComponentCommandSchema`（3）→ 改读 `composableEls`（目标控件早已由第 4 刀的镜像登记覆盖）。② **`inspector/element-page.ts`（4 处 `querySelectorAll`）**：18 个 `uiElement-*` 控件的焦点/失焦批量绑定、以及 `uiElement-events`/`uiElement-scripts` 的 change 绑定、`lockSizeInputs`/`unlockSizeInputs` 的 enable/disable —— 全部改 `registryElements(inspectorEls, …)`；其中 10 个 `uiElement-transform-*` 控件此前**没有任何 `:ref`**，本轮在 `UIImagePage.vue` 补 10 个。③ **`data/transition-window.ts`（1 处）**：16 个 `easing-points-N-x/y` 滑杆的 input 绑定 → `registryElements(dataEls, …)`（`Easing.vue` 补 16 个 `:ref`）。④ `stale-exemptions --apply` 清掉 `element-page.ts` 的陈旧豁免（该文件已无受限 API）。**指标**：待迁移命中 **74 → 69**（`editor/composables` 6 → 2、`editor/data` 与 `editor/components` 各 −1）、豁免注释 **74 → 69**、陈旧豁免 **0**、`getElementById` **16 → 10**、`querySelector*` **22 → 20**。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` **0 新增**、`oxlint` **0/0**、`docs:check` **OK**。
 
+- 2026-09-12 **P1b 第 10 刀：inspector 两页直查 + 文件浏览下拉的自身反查归零（−3 文件），待迁移命中 69 → 66、`getElementById` 10 → 9、`querySelector*` 20 → 19**。① `inspector/scene-tilemap-page.ts`：跨行 `document.getElementById('sceneTilemap-light')` → `inspectorEls.get(...)`（该控件本就由 `SceneTilemapPage.vue` 的 `registerElement` 登记）。② `inspector/file-ui-page.ts`：`document.querySelectorAll('#fileUI-width, #fileUI-height')` 的焦点/失焦批量绑定 → `registryElements(inspectorEls, […])`；`FileUIPage.vue` 里这两个 `NumberBox` 用的是具名 ref（`elWidth`/`elHeight`），补两行 `registerElement`。③ `components/file-browser/SearchHistoryDropdown.vue`：外点关闭原先用 `document.querySelector('.browser-search-history-dropdown')` **反查自身**（`.vue` 里唯一一处按类名自寻）→ 改模板 `ref="root"`。④ `stale-exemptions --apply` 清掉 3 个随迁移失效的注释。**指标**：待迁移命中 **69 → 66**、豁免注释 **69 → 66**、陈旧豁免 **0**、`getElementById` **10 → 9**、`querySelector*` **20 → 19**。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` **0 新增**、`oxlint` **0/0**、`docs:check` **OK**。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
-| 待迁移命中文件（oxlint 判定仍在用）  | 69（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–9 刀共 −89） |
-| 带豁免注释文件（`oxlint-disable`）   | 69（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
+| 待迁移命中文件（oxlint 判定仍在用）  | 66（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–10 刀共 −92） |
+| 带豁免注释文件（`oxlint-disable`）   | 66（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
-| `getElementById` 属性访问处数        | 10（composables 5 / 其余 5；**components 已归零**；P1b 九刀 242 → 10，−96%） |
-| `document.querySelector*` 处数       | 20（P1b 第 5/9 刀 56 → 20） |
+| `getElementById` 属性访问处数        | 9（composables 5 / 其余 4；**components 已归零**；P1b 十刀 242 → 9，−96%） |
+| `document.querySelector*` 处数       | 19（P1b 第 5/9/10 刀 56 → 19） |
 | `document.querySelector*` 处数       | 56                                  |
 | `document.createElement` 处数        | 139（ui-kit/components 106；含 P1b 第 7 刀的 4 处注释提及） |
 | `appendChild` 调用                   | 122                                 |
@@ -173,9 +175,9 @@
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（25 个组件 api + `attach-api.ts` 自身；**B3 复核：全部是元素优先实现、零死文件** → 目标由「0」改为「不增长」，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 69**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5；
-> ② **豁免注释 69**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（69 + 0 = 69）。
+> ① **待迁移命中 66**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3；
+> ② **豁免注释 66**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（66 + 0 = 66）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
 > **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 86、`getElementById` 1164 → 60、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 568；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
 > **口径自检（2026-09-12，正反双向 + 权威来源）**：① **正向**——86 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **86** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中。

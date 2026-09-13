@@ -13,7 +13,7 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
-| editor/components   | 360 | 43 | 4 | 4 | 0 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
+| editor/components   | 360 | 43 | 3 | 3 | 0 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
 | editor/composables  | 229 | 11 | 2 | 2 | 5 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
@@ -22,7 +22,7 @@
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 |
 | editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
-| editor/inspector    | 41 | 9 | 2 | 2 | 1 | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 7 | 7 | 5 | 0 | 0 |
+| editor/inspector    | 41 | 8 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 7 | 7 | 5 | 0 | 0 |
 | editor/local        | 5 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 0 | 3 | 2 | 0 | 0 | 0 |
 | editor/localize     | 2 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/log          | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
@@ -48,16 +48,16 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 69 | 69 | 10 | 20 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 66 | 66 | 9 | 19 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**69**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**69**
+- 待迁移命中文件：**66**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**66**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**9**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**10**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -198,12 +198,11 @@
 | packages/ui-kit/src/utils/common-list.ts | 92 | 4 | - |
 | packages/editor/src/commands/event-editor-events.ts | 304 | 3 | - |
 | packages/editor/src/components/common/CheckBox.vue | 216 | 3 | - |
-| packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 167 | 3 | 是 |
+| packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 169 | 3 | - |
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
-| packages/editor/src/inspector/file-ui-page.ts | 120 | 3 | 是 |
 | packages/editor/src/localize/dom-localizer.ts | 92 | 3 | 是 |
 | packages/editor/src/main.ts | 29 | 3 | 是 |
 | packages/editor/src/module/editdata.ts | 382 | 3 | 是 |
@@ -235,6 +234,7 @@
 | packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
 | packages/editor/src/engine/webgl/texture.ts | 132 | 2 | - |
 | packages/editor/src/inspector/file-script-page.ts | 84 | 2 | - |
+| packages/editor/src/inspector/file-ui-page.ts | 117 | 2 | - |
 | packages/editor/src/local/local-object.ts | 169 | 2 | - |
 | packages/editor/src/log/log-window.ts | 184 | 2 | - |
 | packages/editor/src/log/related-references.ts | 927 | 2 | - |
@@ -290,7 +290,6 @@
 | packages/editor/src/inspector/file-audio-page.ts | 411 | 1 | - |
 | packages/editor/src/inspector/file-video-page.ts | 113 | 1 | - |
 | packages/editor/src/inspector/scene-actor-page.ts | 175 | 1 | - |
-| packages/editor/src/inspector/scene-tilemap-page.ts | 215 | 1 | 是 |
 | packages/editor/src/log/update-log-window.ts | 62 | 1 | - |
 | packages/editor/src/plugin/plugin-overview.ts | 75 | 1 | - |
 | packages/editor/src/plugin/plugin-parse-meta.ts | 834 | 1 | - |
@@ -561,7 +560,7 @@
 | packages/editor/src/components/inspector/FileStatePage.vue | 126 | 0 | - |
 | packages/editor/src/components/inspector/FileTilesetPage.vue | 354 | 0 | - |
 | packages/editor/src/components/inspector/FileTriggerPage.vue | 409 | 0 | - |
-| packages/editor/src/components/inspector/FileUIPage.vue | 72 | 0 | - |
+| packages/editor/src/components/inspector/FileUIPage.vue | 76 | 0 | - |
 | packages/editor/src/components/inspector/UIAnimationPage.vue | 154 | 0 | - |
 | packages/editor/src/components/inspector/UIButtonPage.vue | 817 | 0 | - |
 | packages/editor/src/components/inspector/UIDialogBoxPage.vue | 342 | 0 | - |
@@ -987,6 +986,7 @@
 | packages/editor/src/inspector/scene-parallax-page.ts | 186 | 0 | - |
 | packages/editor/src/inspector/scene-particle-page.ts | 157 | 0 | - |
 | packages/editor/src/inspector/scene-region-page.ts | 113 | 0 | - |
+| packages/editor/src/inspector/scene-tilemap-page.ts | 212 | 0 | - |
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
