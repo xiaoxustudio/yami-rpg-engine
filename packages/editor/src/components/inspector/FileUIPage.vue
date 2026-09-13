@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { registerElement } from '@app/utils/element-registry';
 import '@app/inspector/file-ui-page.ts';
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -64,6 +65,9 @@ onMounted(() => {
 	const elements = [elWidth.value?.root, elHeight.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
+	// P1b：file-ui-page.ts 的焦点/失焦批量绑定按 id 列表读注册表 → 这里登记
+	if (elWidth.value?.root) registerElement(inspectorEls, 'fileUI-width', elWidth.value.root);
+	if (elHeight.value?.root) registerElement(inspectorEls, 'fileUI-height', elHeight.value.root);
 	bindInput(elements, editor, editor.owner as { history: unknown });
 
 	sync();

@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
@@ -178,9 +177,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 	) {
 		const lightBox =
 			SceneTilemap.lightBox ??
-			(document.getElementById(
-				'sceneTilemap-light'
-			) as unknown as typeof SceneTilemap.lightBox);
+			(inspectorEls.get('sceneTilemap-light') as unknown as typeof SceneTilemap.lightBox);
 		if (!lightBox?.lightItems) return;
 		SceneTilemap.lightBox = lightBox;
 		const type = event.value === 'object' ? 'sprite' : 'tile';

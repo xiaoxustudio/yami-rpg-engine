@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { inspectorEls } from './element-registry.ts';
+import { registryElements } from '@app/utils/element-registry';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -49,13 +49,10 @@ import { UI } from '@app/ui/ui-window.ts';
 			}
 		};
 
-		const elements = document.querySelectorAll('#fileUI-width, #fileUI-height');
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
-		);
+		// P1b：宽高输入框的焦点/失焦批量绑定——改按 id 列表读 inspectorEls
+		const elements = registryElements(inspectorEls, ['fileUI-width', 'fileUI-height']);
+		elements.forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(this, this.owner)));
 	};
 
 	FileUI.create = function (this: typeof FileUI) {

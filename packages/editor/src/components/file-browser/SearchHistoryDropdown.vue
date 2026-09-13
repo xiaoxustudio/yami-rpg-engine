@@ -2,6 +2,7 @@
 	<Teleport to="body">
 		<div
 			v-show="visible"
+			ref="root"
 			class="browser-search-history-dropdown"
 			:style="dropdownStyle"
 			@mousedown.prevent
@@ -29,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { computed, onBeforeUnmount, onMounted, reactive, ref, type CSSProperties } from 'vue';
 import {
 	registerSearchHistoryDropdown,
@@ -37,6 +37,7 @@ import {
 } from '@app/module/browser-search-history.ts';
 
 const visible = ref(false);
+const root = ref<HTMLElement | null>(null);
 const keywords = ref<string[]>([]);
 const hover = ref('');
 const dark = ref(document.documentElement.classList.contains('dark'));
@@ -105,7 +106,8 @@ const show = (target: HTMLInputElement): void => {
 	}
 	setTimeout(() => {
 		outsideHandler = (event: Event) => {
-			const el = document.querySelector('.browser-search-history-dropdown');
+			// P1b：原先 `document.querySelector('.browser-search-history-dropdown')` 反查自身 → 改用模板 ref
+			const el = root.value;
 			if (el && !el.contains(event.target as Node) && event.target !== input) {
 				hide();
 			}
