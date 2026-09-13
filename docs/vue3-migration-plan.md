@@ -155,16 +155,18 @@
 
 - 2026-09-12 **P1b 第 10 刀：inspector 两页直查 + 文件浏览下拉的自身反查归零（−3 文件），待迁移命中 69 → 66、`getElementById` 10 → 9、`querySelector*` 20 → 19**。① `inspector/scene-tilemap-page.ts`：跨行 `document.getElementById('sceneTilemap-light')` → `inspectorEls.get(...)`（该控件本就由 `SceneTilemapPage.vue` 的 `registerElement` 登记）。② `inspector/file-ui-page.ts`：`document.querySelectorAll('#fileUI-width, #fileUI-height')` 的焦点/失焦批量绑定 → `registryElements(inspectorEls, […])`；`FileUIPage.vue` 里这两个 `NumberBox` 用的是具名 ref（`elWidth`/`elHeight`），补两行 `registerElement`。③ `components/file-browser/SearchHistoryDropdown.vue`：外点关闭原先用 `document.querySelector('.browser-search-history-dropdown')` **反查自身**（`.vue` 里唯一一处按类名自寻）→ 改模板 `ref="root"`。④ `stale-exemptions --apply` 清掉 3 个随迁移失效的注释。**指标**：待迁移命中 **69 → 66**、豁免注释 **69 → 66**、陈旧豁免 **0**、`getElementById` **10 → 9**、`querySelector*` **20 → 19**。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` **0 新增**、`oxlint` **0/0**、`docs:check` **OK**。
 
+- 2026-09-12 **P1b 第 11 刀：窗口壳层归零（`tools/window-object.ts` 4 处），待迁移命中 66 → 65**。① `Window.open(id)` 原先 `document.getElementById(id)` → 改为 **`windowShellEls.get(id)`**，由 `WindowFrame.vue` 挂载时 `registerElement(windowShellEls, el.id, el)` 登记（`windowShellEls` 是既有窗口壳注册表，`Title.target` 等已在用）。② 「取消」按钮接线从模块的 `document.getElementsByName('cancel')` **下沉到 `WindowFrame.vue`**——只在自己子树里找 `[name="cancel"]`，点击时 `Window.close(本帧id)`；`Window.initialize()` 随之成为兼容用空实现。③ 回车确认 / Ctrl+S 应用的快捷键原先 `document.querySelector('#id > content-frame > button[name=…]')` 全文档查 → 改为**帧内查找** `frame.querySelector('content-frame > button[name=…]')`。④ **🔴 踩坑与修复（重要）**：`Window.open` 换注册表后 `#confirmation` 打不开——确认框**直接用 ui-kit 的 `YMConfirmation`**（内部渲染 `<YMWindowFrame id="confirmation">`）而**不经过 `WindowFrame.vue`**，没人登记它；已在 `Confirmation.vue` 的 `onMounted` 用组件 `$el` 自行登记（全仓仅此一处绕过 `WindowFrame.vue`，已确认）。⑤ **spec 契约更新（4 个文件）**：`window-object.spec.ts`／`window-state.spec.ts` 的夹具补 `registerElement(windowShellEls, …)`；`window-command-modal.spec.ts` 从 ui-kit `YMWindowFrame` 改为挂**编辑器 `WindowFrame.vue`**（这样才真的覆盖取消接线）。**指标**：待迁移命中 **66 → 65**、豁免注释 **66 → 65**、陈旧豁免 **0**；`getElementById` 计数 9 → **10**（−1 真实处、+1 本刀注释提及）、`querySelector*` 19 → **18**。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
-| 待迁移命中文件（oxlint 判定仍在用）  | 66（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–10 刀共 −92） |
-| 带豁免注释文件（`oxlint-disable`）   | 66（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
+| 待迁移命中文件（oxlint 判定仍在用）  | 65（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–11 刀共 −93） |
+| 带豁免注释文件（`oxlint-disable`）   | 65（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
-| `getElementById` 属性访问处数        | 9（composables 5 / 其余 4；**components 已归零**；P1b 十刀 242 → 9，−96%） |
-| `document.querySelector*` 处数       | 19（P1b 第 5/9/10 刀 56 → 19） |
+| `getElementById` 属性访问处数        | 10（composables 5 / 其余 5；**components 已归零**；真实代码处数 9，另 1 处为本刀注释提及） |
+| `document.querySelector*` 处数       | 18（P1b 第 5/9/10/11 刀 56 → 18） |
 | `document.querySelector*` 处数       | 56                                  |
 | `document.createElement` 处数        | 139（ui-kit/components 106；含 P1b 第 7 刀的 4 处注释提及） |
 | `appendChild` 调用                   | 122                                 |
@@ -175,9 +177,9 @@
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（25 个组件 api + `attach-api.ts` 自身；**B3 复核：全部是元素优先实现、零死文件** → 目标由「0」改为「不增长」，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 66**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3；
-> ② **豁免注释 66**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（66 + 0 = 66）。
+> ① **待迁移命中 65**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3、第 11 刀 −1；
+> ② **豁免注释 65**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（65 + 0 = 65）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
 > **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 86、`getElementById` 1164 → 60、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 568；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
 > **口径自检（2026-09-12，正反双向 + 权威来源）**：① **正向**——86 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **86** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中。
