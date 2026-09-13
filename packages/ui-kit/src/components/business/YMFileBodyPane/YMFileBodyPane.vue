@@ -22,6 +22,7 @@ import { attachApi } from '../../../utils/attach-api';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
 	computeViewMetrics,
+	deriveFileRows,
 	VIEW_MODE_BY_INDEX,
 	type FileBodyViewMode
 } from './file-body-render';
@@ -117,6 +118,8 @@ type FileBodyIconApi = HTMLElement & {
 };
 
 interface FileBodyItemApi extends HTMLElement {
+	/** M3 切片 1：派生层给的稳定行 key（M3 换 `v-for` 后直接当 `:key`） */
+	rowKey?: string;
 	file: FileBodyFile;
 	context?: FileBodyContext;
 	changed?: boolean;
@@ -640,20 +643,22 @@ function createFlatItems(dir: FileBodyFile[]): void {
 	Directory?.sortFiles(dir);
 	const els = elements;
 	const length = dir.length;
+	// M3 切片 1：行 key 由派生层给（同一对象跨多次渲染 key 稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
+	const rows = deriveFileRows(dir);
 	for (let i = 0; i < length; i++) {
 		const file = dir[i];
 		if (file instanceof FileItem) {
-			els[els.count++] = createFileElement(file);
+			els[els.count++] = createFileElement(file, rows[i].key);
 			continue;
 		}
 		if (file instanceof FolderItem) {
-			els[els.count++] = createFolderElement(file);
+			els[els.count++] = createFolderElement(file, rows[i].key);
 			continue;
 		}
 	}
 }
 
-function createFolderElement(file: FileBodyFile): FileBodyItemApi {
+function createFolderElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi {
 	const node = el.value as FileBodyPaneApi;
 	const context = file.getContext(node);
 	let element = context.element;
@@ -668,6 +673,7 @@ function createFolderElement(file: FileBodyFile): FileBodyItemApi {
 			addClass(element, 'selected');
 		}
 	}
+	if (rowKey !== undefined) element.rowKey = rowKey;
 	element.changed = true;
 	return element;
 }
@@ -687,7 +693,7 @@ function updateFolderElement(element: FileBodyItemApi): void {
 	}
 }
 
-function createFileElement(file: FileBodyFile): FileBodyItemApi {
+function createFileElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi {
 	const node = el.value as FileBodyPaneApi;
 	const context = file.getContext(node);
 	let element = context.element;
@@ -699,6 +705,7 @@ function createFileElement(file: FileBodyFile): FileBodyItemApi {
 		element.context = context;
 		context.element = element;
 	}
+	if (rowKey !== undefined) element.rowKey = rowKey;
 	element.changed = true;
 	return element;
 }

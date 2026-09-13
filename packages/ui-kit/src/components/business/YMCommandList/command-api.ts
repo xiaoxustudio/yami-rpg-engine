@@ -101,6 +101,8 @@ type CommandContent = {
 };
 
 type CommandItemElement = HTMLElement & {
+	/** M3 切片 1：派生层发的稳定行 key（M3 换 `v-for` 后直接当 `:key`） */
+	rowKey?: string;
 	contents: CommandContent[] | null;
 	dataKey: boolean;
 	dataParent: CommandData | null;
@@ -374,6 +376,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			let mainColor = 'normal';
 			li = document.createElement('div') as unknown as CommandItemElement;
 			addClass(li, 'command-item');
+			// M3 切片 1：行 key 由派生层发号（同一 command 跨多次渲染稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
+			li.rowKey = commandRender.rowKeyOf(command);
 			let liContents: CommandContent[] | null = [];
 			Object.defineProperty(li, 'contents', {
 				configurable: true,
