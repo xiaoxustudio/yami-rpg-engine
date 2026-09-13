@@ -1,0 +1,101 @@
+import { describe, expect, it } from 'vitest';
+import { createFileBodyCore } from '../file-body-core';
+import {
+	computeViewMetrics,
+	deriveFileRows,
+	fileRowKeyOf,
+	TILE_SIZE_BY_VIEW_MODE,
+	viewModeOfIndex,
+	VIEW_MODE_BY_INDEX
+} from '../file-body-render';
+
+/**
+ * P6/M2 派生层用例（文件 body）：只验证「视图模式 → 度量」映射与「文件列表 → 行数据」的纯推导。
+ * 这些断言是 M3 把渲染换成 `v-for` 时的对照物（渲染怎么变都行，派生结果不许变）。
+ */
+const core = createFileBodyCore();
+
+class FolderItem {
+	path: string;
+	basename: string;
+	constructor(path: string) {
+		this.path = path;
+		this.basename = path.split('/').pop() ?? path;
+	}
+}
+
+const file = (path: string) => ({ path, basename: path.split('/').pop() ?? path });
+
+describe('file-body-render（M2 派生层：视图模式与度量）', () => {
+	it('viewModeOfIndex：0..4 依次映射为 list/small/medium/large/huge（越界夹取）', () => {
+		expect(VIEW_MODE_BY_INDEX).toEqual(['list', 'small', 'medium', 'large', 'huge']);
+		expect(viewModeOfIndex(0)).toBe('list');
+		expect(viewModeOfIndex(2)).toBe('medium');
+		expect(viewModeOfIndex(4)).toBe('huge');
+		expect(viewModeOfIndex(-3)).toBe('list');
+		expect(viewModeOfIndex(99)).toBe('huge');
+		expect(viewModeOfIndex(1.7)).toBe('small');
+	});
+
+	it('computeViewMetrics：list 走 computeListGridMetrics，平铺模式按模式尺寸走 computeTileGridMetrics', () => {
+		const viewport = { width: 600, height: 400 };
+		expect(computeViewMetrics('list', core, viewport)).toEqual(
+			core.computeListGridMetrics(600, 400)
+		);
+		expect(computeViewMetrics('medium', core, viewport)).toEqual(
+			core.computeTileGridMetrics(600, 400, ...TILE_SIZE_BY_VIEW_MODE.medium)
+		);
+		expect(computeViewMetrics('huge', core, viewport)).toEqual(
+			core.computeTileGridMetrics(600, 400, ...TILE_SIZE_BY_VIEW_MODE.huge)
+		);
+	});
+
+	it('computeViewMetrics：度量结果随视图模式变化（列表与平铺的单元尺寸不同）', () => {
+		const viewport = { width: 600, height: 400 };
+		const list = computeViewMetrics('list', core, viewport);
+		const small = computeViewMetrics('small', core, viewport);
+		expect(list.itemSize).toBeGreaterThan(0);
+		expect(list.itemSize).not.toBe(small.itemSize);
+	});
+
+	it('平铺尺寸表：small < medium < large < huge（单调递增）', () => {
+		const sizes = ['small', 'medium', 'large', 'huge'] as const;
+		const widths = sizes.map((mode) => TILE_SIZE_BY_VIEW_MODE[mode][0]);
+		expect(widths).toEqual([...widths].sort((a, b) => a - b));
+		expect(new Set(widths).size).toBe(widths.length);
+	});
+});
+
+describe('file-body-render（M2 派生层：行数据）', () => {
+	it('deriveFileRows：顺序与传入一致，字段取 basename/path', () => {
+		const rows = deriveFileRows([file('/a/one'), file('/a/two')]);
+		expect(rows.map((row) => row.name)).toEqual(['one', 'two']);
+		expect(rows.map((row) => row.path)).toEqual(['/a/one', '/a/two']);
+		expect(rows.map((row) => row.index)).toEqual([0, 1]);
+	});
+
+	it('deriveFileRows：默认按类名判文件夹', () => {
+		const rows = deriveFileRows([file('/a/ev'), new FolderItem('/a/sub')]);
+		expect(rows.map((row) => row.isFolder)).toEqual([false, true]);
+	});
+
+	it('deriveFileRows：可注入 isFolderOf（消费方用自己的类判定）', () => {
+		const rows = deriveFileRows([{ path: '/a/x', kind: 'folder' }], (item) => item.kind === 'folder');
+		expect(rows[0].isFolder).toBe(true);
+	});
+
+	it('行 key 稳定：同一对象多次派生同一个 key，且不同对象不冲突', () => {
+		const a = file('/a/same');
+		const b = file('/a/same');
+		const first = deriveFileRows([a, b]);
+		const second = deriveFileRows([a, b]);
+		expect(first.map((row) => row.key)).toEqual(second.map((row) => row.key));
+		expect(first[0].key).not.toBe(first[1].key);
+		expect(fileRowKeyOf(a)).toBe(first[0].key);
+	});
+
+	it('空输入：返回空数组', () => {
+		expect(deriveFileRows()).toEqual([]);
+		expect(deriveFileRows([])).toEqual([]);
+	});
+});
