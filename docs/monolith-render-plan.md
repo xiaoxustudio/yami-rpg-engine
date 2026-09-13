@@ -153,6 +153,22 @@
 
 **下一步（切片 5）**：把 `command-api.ts`/`YMFileBodyPane.vue` 的调用方接到派生层（前者接 `deriveCommandRows`，后者接 `computeViewMetrics`/`deriveFileRows`），此时仍**不改渲染输出**，M3 才换成模板 `v-for`。
 
+**已落地（切片 5，2026-09-12）：文件 body 的度量调用方接到派生层**。`YMFileBodyPane.vue` 里原本有**三个**度量函数（`computeGridProperties` 的模式 `switch` + `computeListGridProperties` + `computeTileGridProperties`，后两者各自把 6 个字段抄一遍），现在合并成：
+
+```ts
+function applyGridMetrics(metrics: GridMetrics): void { /* 统一写 6 个度量字段 */ }
+function computeGridProperties(): void {
+	if (rect(node).width <= 0) return;
+	content.count = -1; elements.start = -1; elements.end = -1;
+	if (!VIEW_MODE_BY_INDEX.includes(viewMode)) return;   // 与原 switch 一样：未知模式什么都不设
+	applyGridMetrics(computeViewMetrics(viewMode, core, { width, height }));
+}
+```
+
+行为等价性由 M1 用例盯住（列表/网格两种视图的 `countPerLine`/`visibleLines`/`itemSize`、以及"两种视图每行数量不同"），且**渲染输出一字未改**。附带收益：原先"新增一种视图模式要在两处 `switch` 同步"的耦合消失了——模式表只有 `VIEW_MODE_BY_INDEX` + `TILE_SIZE_BY_VIEW_MODE` 一份。
+
+**切片 5 未做的部分（留给 M3）**：`deriveFileRows` 与 `deriveCommandRows` 还没有被渲染循环消费——行数据接进 `createFlatItems`/`createItems` 就等于改渲染结构，属 M3 的 `v-for` 换源。
+
 新增 `YMCommandList/command-render.ts`：把 `createCommandBuffer`/`computeTextIndent` 里的**纯数据部分**抽出来——扁平化可见行（含折叠态、缩进层级、选区态、搜索命中、disabled）、行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`）、窗口计算；`YMFileBodyPane/file-body-render.ts`：复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key。
 
 **接口草案（2026-09-11，照 tree `tree-render.ts` 的形状；落地时以实现为准，并补一份 1.5 式「计划名→实现名」对照表）**

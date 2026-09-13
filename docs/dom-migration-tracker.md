@@ -98,7 +98,7 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1113 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
-| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2327 | 42 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2314 | 42 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2580 | 37 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 889 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
