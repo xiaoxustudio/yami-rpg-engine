@@ -14,7 +14,7 @@
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 43 | 4 | 4 | 0 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 15 | 6 | 6 | 11 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 229 | 11 | 2 | 2 | 5 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -22,7 +22,7 @@
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 |
 | editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
-| editor/inspector    | 41 | 9 | 3 | 3 | 1 | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 7 | 7 | 5 | 0 | 0 |
+| editor/inspector    | 41 | 9 | 2 | 2 | 1 | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 7 | 7 | 5 | 0 | 0 |
 | editor/local        | 5 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 0 | 3 | 2 | 0 | 0 | 0 |
 | editor/localize     | 2 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/log          | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
@@ -48,16 +48,16 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 74 | 74 | 16 | 22 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 69 | 69 | 10 | 20 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**74**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**74**
+- 待迁移命中文件：**69**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**69**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**8**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**9**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -115,14 +115,13 @@
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
-| packages/editor/src/data/transition-window.ts | 1390 | 10 | 是 |
+| packages/editor/src/data/transition-window.ts | 1404 | 10 | 是 |
 | packages/editor/src/tools/window-object.ts | 512 | 10 | 是 |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
 | packages/editor/src/components/layout/LayoutPanel.vue | 2008 | 9 | - |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
-| packages/editor/src/inspector/element-page.ts | 372 | 9 | 是 |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/editor/src/utils/dom.ts | 192 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | 是 |
@@ -136,6 +135,7 @@
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
+| packages/editor/src/inspector/element-page.ts | 389 | 7 | - |
 | packages/editor/src/local/local-window.ts | 910 | 7 | - |
 | packages/editor/src/tools/color-picker-window.ts | 450 | 7 | 是 |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
@@ -200,7 +200,6 @@
 | packages/editor/src/components/common/CheckBox.vue | 216 | 3 | - |
 | packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 167 | 3 | 是 |
 | packages/editor/src/components/toast.ts | 42 | 3 | 是 |
-| packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 194 | 3 | 是 |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
@@ -275,16 +274,13 @@
 | packages/editor/src/components/menu-list.ts | 68 | 1 | 是 |
 | packages/editor/src/components/tools/AutoTile.vue | 313 | 1 | - |
 | packages/editor/src/components/tools/Command.vue | 252 | 1 | - |
-| packages/editor/src/components/tools/Easing.vue | 432 | 1 | - |
+| packages/editor/src/components/tools/Easing.vue | 448 | 1 | - |
 | packages/editor/src/components/tools/Event.vue | 182 | 1 | - |
 | packages/editor/src/components/tools/Localization.vue | 169 | 1 | - |
 | packages/editor/src/components/tools/Plugin.vue | 183 | 1 | - |
 | packages/editor/src/components/tools/Team.vue | 128 | 1 | - |
 | packages/editor/src/components/tools/UpdateLog.vue | 179 | 1 | - |
 | packages/editor/src/components/tools/Variable.vue | 374 | 1 | - |
-| packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 150 | 1 | 是 |
-| packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 132 | 1 | 是 |
-| packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 100 | 1 | 是 |
 | packages/editor/src/composables/usePresetElementWindow.ts | 241 | 1 | - |
 | packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 1 | - |
 | packages/editor/src/engine/scene/draw-start-position.ts | 81 | 1 | 是 |
@@ -569,7 +565,7 @@
 | packages/editor/src/components/inspector/UIAnimationPage.vue | 154 | 0 | - |
 | packages/editor/src/components/inspector/UIButtonPage.vue | 817 | 0 | - |
 | packages/editor/src/components/inspector/UIDialogBoxPage.vue | 342 | 0 | - |
-| packages/editor/src/components/inspector/UIImagePage.vue | 660 | 0 | - |
+| packages/editor/src/components/inspector/UIImagePage.vue | 670 | 0 | - |
 | packages/editor/src/components/inspector/UIProgressBarPage.vue | 416 | 0 | - |
 | packages/editor/src/components/inspector/UIReferencePage.vue | 73 | 0 | - |
 | packages/editor/src/components/inspector/UITextBoxPage.vue | 237 | 0 | - |
@@ -689,6 +685,7 @@
 | packages/editor/src/composables/commands/useBlockCommandSchema.ts | 63 | 0 | - |
 | packages/editor/src/composables/commands/useCastSkillCommandSchema.ts | 125 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorAnimationCommandSchema.ts | 37 | 0 | - |
+| packages/editor/src/composables/commands/useChangeActorEquipmentCommandSchema.ts | 149 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorMotionCommandSchema.ts | 43 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorPortraitCommandSchema.ts | 96 | 0 | - |
 | packages/editor/src/composables/commands/useChangeActorSkillCommandSchema.ts | 89 | 0 | - |
@@ -728,6 +725,7 @@
 | packages/editor/src/composables/commands/useIfCommandSchema.ts | 109 | 0 | - |
 | packages/editor/src/composables/commands/useJumpToCommandSchema.ts | 93 | 0 | - |
 | packages/editor/src/composables/commands/useLabelCommandSchema.ts | 32 | 0 | - |
+| packages/editor/src/composables/commands/useLoadImageCommandSchema.ts | 131 | 0 | - |
 | packages/editor/src/composables/commands/useLoadSceneCommandSchema.ts | 73 | 0 | - |
 | packages/editor/src/composables/commands/useLoadSubsceneCommandSchema.ts | 47 | 0 | - |
 | packages/editor/src/composables/commands/useLoopCommandSchema.ts | 73 | 0 | - |
@@ -752,6 +750,7 @@
 | packages/editor/src/composables/commands/useSetAmbientLightCommandSchema.ts | 57 | 0 | - |
 | packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 54 | 0 | - |
 | packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 55 | 0 | - |
+| packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 191 | 0 | - |
 | packages/editor/src/composables/commands/useSetBooleanCommandSchema.ts | 202 | 0 | - |
 | packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 55 | 0 | - |
 | packages/editor/src/composables/commands/useSetCooldownCommandSchema.ts | 59 | 0 | - |
@@ -811,6 +810,7 @@
 | packages/editor/src/composables/commands/useTranslateActorCommandSchema.ts | 75 | 0 | - |
 | packages/editor/src/composables/commands/useUnloadSubsceneCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useUploadFileCommandSchema.ts | 115 | 0 | - |
+| packages/editor/src/composables/commands/useUseItemCommandSchema.ts | 99 | 0 | - |
 | packages/editor/src/composables/commands/useWaitCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useWaitForVideoCommandSchema.ts | 31 | 0 | - |
 | packages/editor/src/composables/commands/useWebSocketCloseCommandSchema.ts | 60 | 0 | - |
@@ -987,7 +987,7 @@
 | packages/editor/src/inspector/scene-parallax-page.ts | 186 | 0 | - |
 | packages/editor/src/inspector/scene-particle-page.ts | 157 | 0 | - |
 | packages/editor/src/inspector/scene-region-page.ts | 113 | 0 | - |
-| packages/editor/src/local/element-registry.ts | 7 | 0 | - |
+| packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
 | packages/editor/src/localize/template-localized.ts | 1798 | 0 | - |
