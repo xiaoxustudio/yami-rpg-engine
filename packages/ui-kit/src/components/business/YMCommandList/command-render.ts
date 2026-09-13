@@ -160,3 +160,94 @@ export const computePageDownTargetIndex = (context: PageContext): number => {
 	return Math.max(anchor, topIndex) + pageScrollLines(viewportHeight);
 };
 
+export type ScrollToSelectionMode = 'active' | 'alter' | 'restore';
+
+export interface ScrollToSelectionContext extends PageContext {
+	/** 当前活动行 */
+	active: number;
+	/** 选区原点行 */
+	origin: number;
+	/** 选中区间首行 */
+	start: number;
+	/** 选中区间末行 */
+	end: number;
+	/** `active` 行所属命令的可见区间（折叠命令可能占多行） */
+	activeRange: readonly [number, number];
+}
+
+/**
+ * 把选区滚进视野后的 `scrollTop`；未知模式返回 `null`（调用方原样返回、不滚动）。
+ * 三个分支逐字对照原实现：
+ *   - `active`：按 **active 所在命令的区间** 夹取；`active <= origin`（向上选）时先取 `min` 侧，否则先取 `max` 侧；
+ *   - `alter`：按 active 单行夹取；
+ *   - `restore`：按整个选中区间夹取（从头对齐）。
+ */
+export const computeScrollToSelection = (
+	// 实参来自组件元素 API（运行期字符串）；`'active' | 'alter' | 'restore'` 是已知取值，
+	// 未知取值按原实现"直接返回、不滚动"处理，故形参不窄化。
+	mode: string,
+	context: ScrollToSelectionContext
+): number | null => {
+	const { scrollTop, viewportHeight } = context;
+	switch (mode) {
+		case 'active': {
+			const max = context.activeRange[0] * ROW_HEIGHT;
+			const min = context.activeRange[1] * ROW_HEIGHT + ROW_HEIGHT - viewportHeight;
+			return context.active <= context.origin
+				? Math.min(Math.max(scrollTop, min), max)
+				: Math.max(Math.min(scrollTop, max), min);
+		}
+		case 'alter': {
+			const max = context.active * ROW_HEIGHT;
+			const min = context.active * ROW_HEIGHT + ROW_HEIGHT - viewportHeight;
+			return Math.max(Math.min(scrollTop, max), min);
+		}
+		case 'restore': {
+			const max = context.start * ROW_HEIGHT;
+			const min = context.end * ROW_HEIGHT + ROW_HEIGHT - viewportHeight;
+			return Math.min(Math.max(scrollTop, min), max);
+		}
+		default:
+			return null;
+	}
+};
+
+/** `scrollToRow` 的行下标夹取：越界时贴到首/末行（行数为 0 时返回 -1） */
+export const clampRowIndex = (targetIndex: number, rowCount: number): number => {
+	if (rowCount <= 0) return -1;
+	if (targetIndex < 0) return 0;
+	if (targetIndex >= rowCount) return rowCount - 1;
+	return targetIndex;
+};
+
+export type ScrollToRowPosition = 'top' | 'bottom' | 'center';
+
+/**
+ * `scrollToRow` 的目标 `scrollTop`。
+ * 原实现：`top` → 行顶；`bottom` → 行底 − 视口；否则居中；最后统一夹到 `[0, rowCount*20 - viewport]`。
+ */
+export const computeScrollToRowScrollTop = (
+	targetIndex: number,
+	rowCount: number,
+	viewportHeight: number,
+	// 实参来自组件元素 API（运行期字符串）；`'top' | 'bottom' | 'center'` 是已知取值，未知取值按居中处理
+	position: string = 'center'
+): number => {
+	const index = clampRowIndex(targetIndex, rowCount);
+	if (index < 0) return 0;
+	const targetRowTop = index * ROW_HEIGHT;
+	let targetScrollTop: number;
+	switch (position) {
+		case 'top':
+			targetScrollTop = targetRowTop;
+			break;
+		case 'bottom':
+			targetScrollTop = targetRowTop + ROW_HEIGHT - viewportHeight;
+			break;
+		default:
+			targetScrollTop = targetRowTop - viewportHeight / 2 + ROW_HEIGHT / 2;
+	}
+	const maxScrollTop = rowCount * ROW_HEIGHT - viewportHeight;
+	return Math.max(0, Math.min(targetScrollTop, maxScrollTop));
+};
+

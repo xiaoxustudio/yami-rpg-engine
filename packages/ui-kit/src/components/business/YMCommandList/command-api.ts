@@ -1109,36 +1109,20 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	scrollToSelection: function (this: any, mode = 'active'): void {
 		if (this.start !== null) {
-			let scrollTop;
-			switch (mode) {
-				case 'active': {
-					const range = this.getRangeByIndex(this.active);
-					const top = this.scrollTop;
-					const max = range[0] * 20;
-					const min = range[1] * 20 + 20 - this.innerHeight;
-					scrollTop =
-						this.active <= this.origin
-							? Math.min(Math.max(top, min), max)
-							: Math.max(Math.min(top, max), min);
-					break;
-				}
-				case 'alter': {
-					const top = this.scrollTop;
-					const max = this.active * 20;
-					const min = this.active * 20 + 20 - this.innerHeight;
-					scrollTop = Math.max(Math.min(top, max), min);
-					break;
-				}
-				case 'restore': {
-					const top = this.scrollTop;
-					const max = this.start * 20;
-					const min = this.end * 20 + 20 - this.innerHeight;
-					scrollTop = Math.min(Math.max(top, min), max);
-					break;
-				}
-				default:
-					return;
-			}
+			// M2 切片 3：三个分支的夹取数学抽到 command-render.ts（行为与原先逐字一致）
+			const range = this.getRangeByIndex(this.active) as [number, number];
+			const scrollTop = commandRender.computeScrollToSelection(mode, {
+				scrollTop: this.scrollTop,
+				viewportHeight: this.innerHeight,
+				rowCount: this.elements.count,
+				anchor: this.anchor,
+				active: this.active,
+				origin: this.origin,
+				start: this.start,
+				end: this.end,
+				activeRange: range
+			});
+			if (scrollTop === null) return;
 			if (this.scrollTop !== scrollTop) {
 				this.scrollTop = scrollTop;
 			}
@@ -2049,31 +2033,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	scrollToRow: function (this: any, targetIndex: number, position: string = 'center'): void {
-		const count = this.elements.count;
-		const rowHeight = 20;
-
-		if (targetIndex < 0) targetIndex = 0;
-		if (targetIndex >= count) targetIndex = count - 1;
-
-		const ch = this.innerHeight;
-		const targetRowTop = targetIndex * rowHeight;
-
-		let targetScrollTop;
-		switch (position) {
-			case 'top':
-				targetScrollTop = targetRowTop;
-				break;
-			case 'bottom':
-				targetScrollTop = targetRowTop + rowHeight - ch;
-				break;
-			default:
-				targetScrollTop = targetRowTop - ch / 2 + rowHeight / 2;
-		}
-
-		const maxScrollTop = count * rowHeight - ch;
-		targetScrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
-
-		this.scrollTop = targetScrollTop;
+		// M2 切片 3：下标夹取与居中/贴边数学抽到 command-render.ts（行为与原先逐字一致）
+		this.scrollTop = commandRender.computeScrollToRowScrollTop(
+			targetIndex,
+			this.elements.count,
+			this.innerHeight,
+			position
+		);
 		this.resize(this);
 	},
 

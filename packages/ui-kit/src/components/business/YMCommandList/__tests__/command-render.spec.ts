@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
+	clampRowIndex,
 	computePageDownScrollTop,
 	computePageDownTargetIndex,
 	computePageUpScrollTop,
 	computePageUpTargetIndex,
+	computeScrollToRowScrollTop,
+	computeScrollToSelection,
 	deriveCommandRows,
 	pageScrollLines,
 	ROW_HEIGHT,
 	rowIndents,
 	rowKeyOf,
-	type CommandRenderCommand
+	type CommandRenderCommand,
+	type ScrollToSelectionContext
 } from '../command-render';
 
 /**
@@ -144,5 +148,83 @@ describe('command-render（M2 切片 2：翻页数学）', () => {
 		expect(
 			computePageDownTargetIndex(context({ scrollTop: 0, anchor: 30, viewportHeight: 400 }))
 		).toBe(30 + 19);
+	});
+});
+
+/** M2 切片 3：`scrollToSelection` / `scrollToRow` 的定位数学 */
+describe('command-render（M2 切片 3：定位数学）', () => {
+	const selectionContext = (
+		over: Partial<ScrollToSelectionContext> = {}
+	): ScrollToSelectionContext => ({
+		scrollTop: 0,
+		viewportHeight: 400,
+		rowCount: 100,
+		anchor: 0,
+		active: 10,
+		origin: 10,
+		start: 10,
+		end: 12,
+		activeRange: [10, 10],
+		...over
+	});
+
+	it('scrollToSelection：未知模式返回 null（调用方不滚动）', () => {
+		expect(computeScrollToSelection('nope', selectionContext())).toBeNull();
+	});
+
+	it('scrollToSelection active（向上选）：先取 min 侧夹取', () => {
+		// active <= origin ⇒ min(max(top, min), max)；min = 10*20 + 20 - 400 = -180，max = 200
+		expect(
+			computeScrollToSelection('active', selectionContext({ scrollTop: 0, active: 10, origin: 12 }))
+		).toBe(Math.min(Math.max(0, -180), 200));
+	});
+
+	it('scrollToSelection active（向下选）：先取 max 侧夹取', () => {
+		expect(
+			computeScrollToSelection(
+				'active',
+				selectionContext({
+					scrollTop: 500,
+					active: 20,
+					origin: 3,
+					// active 行所属命令的区间随 active 一起给（折叠命令可能占多行）
+					activeRange: [20, 20]
+				})
+			)
+		).toBe(Math.max(Math.min(500, 400), 20 * 20 + 20 - 400));
+	});
+
+	it('scrollToSelection alter：按 active 单行夹取', () => {
+		expect(computeScrollToSelection('alter', selectionContext({ scrollTop: 1000, active: 5 }))).toBe(
+			Math.max(Math.min(1000, 100), 100 + 20 - 400)
+		);
+	});
+
+	it('scrollToSelection restore：按选中区间夹取（从头对齐）', () => {
+		expect(
+			computeScrollToSelection('restore', selectionContext({ scrollTop: 1000, start: 3, end: 30 }))
+		).toBe(Math.min(Math.max(1000, 30 * 20 + 20 - 400), 3 * 20));
+	});
+
+	it('clampRowIndex：越界贴首/末行，行数为 0 时给 -1', () => {
+		expect(clampRowIndex(-5, 10)).toBe(0);
+		expect(clampRowIndex(99, 10)).toBe(9);
+		expect(clampRowIndex(4, 10)).toBe(4);
+		expect(clampRowIndex(0, 0)).toBe(-1);
+	});
+
+	it('scrollToRow：top/bottom/center 三种定位，并夹到 [0, count*20 - viewport]', () => {
+		// top：行顶
+		expect(computeScrollToRowScrollTop(10, 100, 400, 'top')).toBe(200);
+		// bottom：行底 − 视口 ⇒ 200 + 20 - 400 < 0 ⇒ 夹到 0
+		expect(computeScrollToRowScrollTop(10, 100, 400, 'bottom')).toBe(0);
+		// center：行顶 − 视口/2 + 行高/2 ⇒ 200 - 200 + 10 = 10
+		expect(computeScrollToRowScrollTop(10, 100, 400, 'center')).toBe(10);
+		// 越界：贴末行后再夹到最大滚动位置（100*20 - 400 = 1600）
+		expect(computeScrollToRowScrollTop(999, 100, 400, 'top')).toBe(1600);
+	});
+
+	it('scrollToRow：空列表返回 0（不产生负滚动位置）', () => {
+		expect(computeScrollToRowScrollTop(3, 0, 400, 'center')).toBe(0);
 	});
 });
