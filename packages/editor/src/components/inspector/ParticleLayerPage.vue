@@ -1325,6 +1325,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
@@ -1460,23 +1461,15 @@ onMounted(() => {
 	}
 
 	if (elBlend.value) {
-		const blendName = (key: string, fallback: string) =>
-			getOptions('particleLayer-blend')?.[key]?.name || fallback;
-		elBlend.value.loadItems([
-			{ name: blendName('normal', 'Normal'), value: 'normal' },
-			{ name: blendName('additive', 'Additive'), value: 'additive' },
-			{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
-		]);
+		useLocalizedOptions('particleLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
+		elBlend.value?.loadItems?.(items)
+	);
 	}
 
 	if (elLight.value) {
-		const lightName = (key: string, fallback: string) =>
-			getOptions('particleLayer-light')?.[key]?.name || fallback;
-		elLight.value.loadItems([
-			{ name: lightName('raw', 'Raw'), value: 'raw' },
-			{ name: lightName('global', 'Global Sampling'), value: 'global' },
-			{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
-		]);
+		useLocalizedOptions('particleLayer-light', ['raw', 'global', 'ambient'], (items) =>
+		elLight.value?.loadItems?.(items)
+	);
 	}
 
 	elSort.value?.loadItems([

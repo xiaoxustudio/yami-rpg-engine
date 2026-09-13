@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
@@ -72,34 +73,12 @@ onMounted(() => {
 	const animSpriteLayer = Inspector.animSpriteLayer;
 	if (!animSpriteLayer) return;
 
-	elBlend.value?.loadItems([
-		{
-			name: getOptions('animSpriteLayer-blend')?.normal?.name || 'Normal',
-			value: 'normal'
-		},
-		{
-			name: getOptions('animSpriteLayer-blend')?.additive?.name || 'Additive',
-			value: 'additive'
-		},
-		{
-			name: getOptions('animSpriteLayer-blend')?.subtract?.name || 'Subtract',
-			value: 'subtract'
-		}
-	]);
-	elLight.value?.loadItems([
-		{
-			name: getOptions('animSpriteLayer-light')?.raw?.name || 'Raw',
-			value: 'raw'
-		},
-		{
-			name: getOptions('animSpriteLayer-light')?.global?.name || 'Global Sampling',
-			value: 'global'
-		},
-		{
-			name: getOptions('animSpriteLayer-light')?.anchor?.name || 'Anchor Sampling',
-			value: 'anchor'
-		}
-	]);
+	useLocalizedOptions('animSpriteLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
+		elBlend.value?.loadItems?.(items)
+	);
+	useLocalizedOptions('animSpriteLayer-light', ['raw', 'global', 'anchor'], (items) =>
+		elLight.value?.loadItems?.(items)
+	);
 
 	const elements = [elSprite.value?.root, elBlend.value?.root, elLight.value?.root].filter(
 		(el): el is HTMLElement => el != null

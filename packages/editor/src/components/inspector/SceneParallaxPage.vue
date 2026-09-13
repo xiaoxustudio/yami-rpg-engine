@@ -383,6 +383,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
@@ -417,8 +418,8 @@ const onParamInput = (value: unknown): void => {
 
 const tint = computed(() => form.tint as number[]);
 
-const getOptions = (id: string) =>
-	local.components?.[id]?.options as Record<string, { name?: string }> | undefined;
+// R2b 迁移⑪：原先这里有个 `getOptions(id)`（直接读语言表取选项名），已改由
+// `useLocalizedOptions(...)` 在模板侧用响应式 t() 承担 → 该助手已删除。
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -475,23 +476,14 @@ onMounted(() => {
 
 	const refreshLocalizedItems = () => {
 		if (elLight.value) {
-			const lightName = (key: string, fallback: string) =>
-				getOptions('sceneParallax-light')?.[key]?.name || fallback;
-			elLight.value.loadItems([
-				{ name: lightName('raw', 'Raw'), value: 'raw' },
-				{ name: lightName('global', 'Global Sampling'), value: 'global' },
-				{ name: lightName('anchor', 'Anchor Sampling'), value: 'anchor' },
-				{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
-			]);
+			useLocalizedOptions('sceneParallax-light', ['raw', 'global', 'anchor', 'ambient'], (items) =>
+		elLight.value?.loadItems?.(items)
+	);
 		}
 		if (elBlend.value) {
-			const blendName = (key: string, fallback: string) =>
-				getOptions('sceneParallax-blend')?.[key]?.name || fallback;
-			elBlend.value.loadItems([
-				{ name: blendName('normal', 'Normal'), value: 'normal' },
-				{ name: blendName('additive', 'Additive'), value: 'additive' },
-				{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
-			]);
+			useLocalizedOptions('sceneParallax-blend', ['normal', 'additive', 'subtract'], (items) =>
+		elBlend.value?.loadItems?.(items)
+	);
 		}
 	};
 	refreshLocalizedItems();
