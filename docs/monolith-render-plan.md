@@ -43,16 +43,17 @@
 - **命令列表**：行创建/缩进（`computeTextIndent`）/折叠（`fold`/`unfoldCommand`/`toggle`）/空白行（`createBlankElement`）/选区与多选（`select`/`selectMultipleTo`/`selectAll`）/翻页（`pageUp`/`pageDown`）/滚动到选中与到行（`scrollToSelection`/`scrollToRow`）/命中搜索与高亮（`findString` + `highlightTexts`）/`clear` 与 `deleteCommandBuffers` 后的元素回收；另加**缩进线扩展点**（`eslints` 覆写被调用、行 class/子节点结构）的锁定用例。
 - **文件body**：normal/tile 两种视图（`setViewIndex`/`updateViewMode`）/网格度量与窗口迁移（`computeListGridMetrics`/`computeTileGridMetrics` + `computeStartAndEnd`）/内容尺寸与偏移（`updateContentSize`/`updateContentOffset`）/行元素契约（`createFileElement`/`updateFileElement` 的 icon+name 结构）/滚动与空目录。
 
-**M1 第二批补测（2026-09-12，文件 body 组）：3 例落地 + 7 条 `it.todo` 记录待补**
+**M1 第二批补测（2026-09-12，文件 body 组）：10 例全部落地**
 
-`YMFileBodyPane/__tests__/YMFileBodyPane.m1.spec.ts` 先锁住能稳定驱动的契约：**空目录不产生行**、**`updateFiles`（display=normal、无目录文件）不建行**、**`unselect` 在无选中时安全清空**。行渲染/选区/度量/尺寸七类用例写成 `it.todo`（不会假绿，也不丢目标）。
+`YMFileBodyPane/__tests__/YMFileBodyPane.m1.spec.ts` 现在锁住：**行渲染**（列表视图按文件成行、文本含文件名；文件夹与文件都能成行；空目录不产生行）、**选区**（`selectAll` 出 `selected` 类且 `selections` 非空、`selectByPath` 只选中匹配行、`unselect` 清空）、**网格度量**（列表视图的 `countPerLine`/`visibleLines`/`itemSize` 均 > 0；网格视图 `viewIndex=2` 的 `countPerLine` 与列表视图不同）、**内容尺寸**（`updateContentSize` 给内容元素写上尺寸）、**`updateFiles`** 在 normal 且无目录文件时不建行。
 
-**为什么后七类暂时写不出（实测结论，供下批直接用）**：
+**编辑器形态 fixture 配方（五条，缺一条都会静默失败）**：
 
-- 这套 SFC 的元素 API 通过 `attachApi(el.value, …)` 挂在**面板元素**上（不是 `.file-body-content`），而内部度量字段写在 `contentEl.value` 上——两者要分别取，用例里很容易读错对象（我第一版就踩了）。
-- `computeGridProperties()` 开头有 `if (rect(node).width <= 0) return;` ⇒ jsdom 下**必须**给 `getBoundingClientRect`（`rect()` 就是读它）打尺寸桩，否则度量恒为 0、`countPerLine` 不写、`resize()` 因 `ch === 0` 或可见区为 0 而不渲染任何行。
-- 行渲染链路是 `createFlatItems`（建元素）→ `computeGridProperties`（度量）→ `updateContentSize` → `resize`（按 `range` 把可见行挂进 content）；**少任何一步都只有 0 行**。
-- 结论：下批要先补一个"编辑器形态 fixture"（尺寸桩 + `Directory`/`browser` 最小实现），再写这七例；否则用例会变成对空实现的断言。
+1. 元素 API 挂在**面板元素**上（`attachApi(el.value, …)`），而度量字段写在 `.file-body-content` 上——两者要分别取。
+2. jsdom 必须给 `getBoundingClientRect` 打尺寸桩，否则 `computeGridProperties()` 开头 `if (rect(node).width <= 0) return;` 直接返回（`rect()` 就是读它）。
+3. `viewMode` 由 **`setViewIndex(0..4)`** 决定（0=list、1=small、2=medium…）；不设序号，`switch (viewMode)` 落空、度量字段一个都不写。
+4. **`setViewIndex` 会写 `props.links.head.view`**——fixture 里少这个桩会直接抛错（本文件曾因此 9 例全红，是本轮定位时间最久的一处）。
+5. 渲染链固定为 `setViewIndex → updateViewMode → createFlatItems → computeGridProperties → updateContentSize → resize`，少一步就没有行。
 
 **M1 第一批补测（2026-09-12，命令列表组）：`YMCommandList/__tests__/YMCommandList.m1.spec.ts` 新增 9 例**
 
