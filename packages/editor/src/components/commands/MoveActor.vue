@@ -63,17 +63,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('moveActor-mode')?.loadItems?.([
-		{ name: t('command.moveActor.mode.stop') || 'Stop', value: 'stop' },
-		{ name: t('command.moveActor.mode.keep') || 'Keep', value: 'keep' },
-		{ name: t('command.moveActor.mode.straight') || 'Straight', value: 'straight' },
-		{ name: t('command.moveActor.mode.navigate') || 'Navigate', value: 'navigate' },
-		{
-			name: t('command.moveActor.mode.navigate-bypass') || 'Navigate - Bypass Actors',
-			value: 'navigate-bypass'
-		},
-		{ name: t('command.moveActor.mode.teleport') || 'Teleport', value: 'teleport' }
-	]);
+	useLocalizedOptions('moveActor-mode', ['stop', 'keep', 'straight', 'navigate', 'navigate-bypass', 'teleport'], (items) =>
+		fieldEls.get('moveActor-mode')?.loadItems?.(items),
+		{ 'stop': 'command.moveActor.mode.stop', 'keep': 'command.moveActor.mode.keep', 'straight': 'command.moveActor.mode.straight', 'navigate': 'command.moveActor.mode.navigate', 'navigate-bypass': 'command.moveActor.mode.navigate-bypass', 'teleport': 'command.moveActor.mode.teleport' }
+	);
 	fieldEls.get('moveActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([

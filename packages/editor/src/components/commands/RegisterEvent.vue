@@ -97,11 +97,10 @@ onMounted(() => {
 			{ case: 'actor', targets: [fieldEls.get('registerEvent-actor')] },
 			{ case: 'element', targets: [fieldEls.get('registerEvent-element')] }
 		]);
-	fieldEls.get('registerEvent-operation')?.loadItems?.([
-		{ name: t('command.registerEvent.alias.register') || 'Register', value: 'register' },
-		{ name: t('command.registerEvent.alias.unregister') || 'Unregister', value: 'unregister' },
-		{ name: t('command.registerEvent.alias.reset') || 'Reset', value: 'reset' }
-	]);
+	useLocalizedOptions('registerEvent-operation', ['register', 'unregister', 'reset'], (items) =>
+		fieldEls.get('registerEvent-operation')?.loadItems?.(items),
+		{ 'register': 'command.registerEvent.alias.register', 'unregister': 'command.registerEvent.alias.unregister', 'reset': 'command.registerEvent.alias.reset' }
+	);
 });
 </script>
 

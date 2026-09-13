@@ -115,10 +115,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('getActor-area')?.loadItems?.([
-		{ name: t('command.getActor.square') || 'Square', value: 'square' },
-		{ name: t('command.getActor.circle') || 'Circle', value: 'circle' }
-	]);
+	useLocalizedOptions('getActor-area', ['square', 'circle'], (items) =>
+		fieldEls.get('getActor-area')?.loadItems?.(items),
+		{ 'square': 'command.getActor.square', 'circle': 'command.getActor.circle' }
+	);
 	fieldEls.get('getActor-area')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -136,27 +136,10 @@ onMounted(() => {
 				targets: [fieldEls.get('getActor-teamId')]
 			}
 		]);
-	fieldEls.get('getActor-condition')?.loadItems?.([
-		{ name: t('command.getActor.condition.nearest') || 'Nearest', value: 'nearest' },
-		{ name: t('command.getActor.condition.farthest') || 'Farthest', value: 'farthest' },
-		{
-			name: t('command.getActor.condition.min-attribute-value') || 'Min Attribute Value',
-			value: 'min-attribute-value'
-		},
-		{
-			name: t('command.getActor.condition.max-attribute-value') || 'Max Attribute Value',
-			value: 'max-attribute-value'
-		},
-		{
-			name: t('command.getActor.condition.min-attribute-ratio') || 'Min Attribute Ratio',
-			value: 'min-attribute-ratio'
-		},
-		{
-			name: t('command.getActor.condition.max-attribute-ratio') || 'Max Attribute Ratio',
-			value: 'max-attribute-ratio'
-		},
-		{ name: t('command.getActor.condition.random') || 'Random', value: 'random' }
-	]);
+	useLocalizedOptions('getActor-condition', ['nearest', 'farthest', 'min-attribute-value', 'max-attribute-value', 'min-attribute-ratio', 'max-attribute-ratio', 'random'], (items) =>
+		fieldEls.get('getActor-condition')?.loadItems?.(items),
+		{ 'nearest': 'command.getActor.condition.nearest', 'farthest': 'command.getActor.condition.farthest', 'min-attribute-value': 'command.getActor.condition.min-attribute-value', 'max-attribute-value': 'command.getActor.condition.max-attribute-value', 'min-attribute-ratio': 'command.getActor.condition.min-attribute-ratio', 'max-attribute-ratio': 'command.getActor.condition.max-attribute-ratio', 'random': 'command.getActor.condition.random' }
+	);
 	fieldEls.get('getActor-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -169,11 +152,10 @@ onMounted(() => {
 				targets: [fieldEls.get('getActor-attribute'), fieldEls.get('getActor-divisor')]
 			}
 		]);
-	fieldEls.get('getActor-activation')?.loadItems?.([
-		{ name: t('command.getActor.active') || 'Active', value: 'active' },
-		{ name: t('command.getActor.inactive') || 'Inactive', value: 'inactive' },
-		{ name: t('command.getActor.either') || 'Either', value: 'either' }
-	]);
+	useLocalizedOptions('getActor-activation', ['active', 'inactive', 'either'], (items) =>
+		fieldEls.get('getActor-activation')?.loadItems?.(items),
+		{ 'active': 'command.getActor.active', 'inactive': 'command.getActor.inactive', 'either': 'command.getActor.either' }
+	);
 	useLocalizedOptions('getActor-exclusion', ['none', 'actor', 'team'], (items) =>
 		fieldEls.get('getActor-exclusion')?.loadItems?.(items)
 	);

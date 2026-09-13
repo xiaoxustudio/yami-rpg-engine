@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -83,49 +84,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setInventory-operation')?.loadItems?.([
-		{
-			name: t('command.setInventory.increase-money') || 'Increase Money',
-			value: 'increase-money'
-		},
-		{
-			name: t('command.setInventory.decrease-money') || 'Decrease Money',
-			value: 'decrease-money'
-		},
-		{
-			name: t('command.setInventory.increase-items') || 'Increase Items',
-			value: 'increase-items'
-		},
-		{
-			name: t('command.setInventory.decrease-items') || 'Decrease Items',
-			value: 'decrease-items'
-		},
-		{
-			name: t('command.setInventory.gain-equipment') || 'Gain Equipment',
-			value: 'gain-equipment'
-		},
-		{
-			name: t('command.setInventory.lose-equipment') || 'Lose Equipment',
-			value: 'lose-equipment'
-		},
-		{
-			name: t('command.setInventory.gain-equipment-instance') || 'Gain Equipment',
-			value: 'gain-equipment-instance'
-		},
-		{
-			name: t('command.setInventory.lose-equipment-instance') || 'Lose Equipment',
-			value: 'lose-equipment-instance'
-		},
-		{ name: t('command.setInventory.swap') || 'Swap Order of Items', value: 'swap' },
-		{ name: t('command.setInventory.sort') || 'Sort Simply', value: 'sort' },
-		{ name: t('command.setInventory.sort-by-order') || 'Sort by Filename', value: 'sort-by-order' },
-		{
-			name: t('command.setInventory.reference') || "Use Global Actor's Inventory",
-			value: 'reference'
-		},
-		{ name: t('command.setInventory.dereference') || 'Restore Inventory', value: 'dereference' },
-		{ name: t('command.setInventory.reset') || 'Reset', value: 'reset' }
-	]);
+	useLocalizedOptions('setInventory-operation', ['increase-money', 'decrease-money', 'increase-items', 'decrease-items', 'gain-equipment', 'lose-equipment', 'gain-equipment-instance', 'lose-equipment-instance', 'swap', 'sort', 'sort-by-order', 'reference', 'dereference', 'reset'], (items) =>
+		fieldEls.get('setInventory-operation')?.loadItems?.(items),
+		{ 'increase-money': 'command.setInventory.increase-money', 'decrease-money': 'command.setInventory.decrease-money', 'increase-items': 'command.setInventory.increase-items', 'decrease-items': 'command.setInventory.decrease-items', 'gain-equipment': 'command.setInventory.gain-equipment', 'lose-equipment': 'command.setInventory.lose-equipment', 'gain-equipment-instance': 'command.setInventory.gain-equipment-instance', 'lose-equipment-instance': 'command.setInventory.lose-equipment-instance', 'swap': 'command.setInventory.swap', 'sort': 'command.setInventory.sort', 'sort-by-order': 'command.setInventory.sort-by-order', 'reference': 'command.setInventory.reference', 'dereference': 'command.setInventory.dereference', 'reset': 'command.setInventory.reset' }
+	);
 	fieldEls.get('setInventory-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

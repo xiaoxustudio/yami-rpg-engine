@@ -173,32 +173,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setAnimationComponent-operation')?.loadItems?.([
-		{ name: t('command.setAnimationComponent.set-angle') || 'Set Angle', value: 'set-angle' },
-		{ name: t('command.setAnimationComponent.set-scale') || 'Set Scale', value: 'set-scale' },
-		{ name: t('command.setAnimationComponent.set-speed') || 'Set Speed', value: 'set-speed' },
-		{
-			name: t('command.setAnimationComponent.set-opacity') || 'Set Opacity',
-			value: 'set-opacity'
-		},
-		{
-			name: t('command.setAnimationComponent.set-priority') || 'Set Priority',
-			value: 'set-priority'
-		},
-		{
-			name: t('command.setAnimationComponent.set-offsetY') || 'Set Offset Y',
-			value: 'set-offsetY'
-		},
-		{ name: t('command.setAnimationComponent.set-sprite') || 'Set Sprite', value: 'set-sprite' },
-		{
-			name: t('command.setAnimationComponent.play-motion') || 'Play Motion',
-			value: 'play-motion'
-		},
-		{
-			name: t('command.setAnimationComponent.stop-motion') || 'Stop Motion',
-			value: 'stop-motion'
-		}
-	]);
+	useLocalizedOptions('setAnimationComponent-operation', ['set-angle', 'set-scale', 'set-speed', 'set-opacity', 'set-priority', 'set-offsetY', 'set-sprite', 'play-motion', 'stop-motion'], (items) =>
+		fieldEls.get('setAnimationComponent-operation')?.loadItems?.(items),
+		{ 'set-angle': 'command.setAnimationComponent.set-angle', 'set-scale': 'command.setAnimationComponent.set-scale', 'set-speed': 'command.setAnimationComponent.set-speed', 'set-opacity': 'command.setAnimationComponent.set-opacity', 'set-priority': 'command.setAnimationComponent.set-priority', 'set-offsetY': 'command.setAnimationComponent.set-offsetY', 'set-sprite': 'command.setAnimationComponent.set-sprite', 'play-motion': 'command.setAnimationComponent.play-motion', 'stop-motion': 'command.setAnimationComponent.stop-motion' }
+	);
 	fieldEls.get('setAnimationComponent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

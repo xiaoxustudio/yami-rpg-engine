@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -54,15 +55,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changeActorSkill-operation')?.loadItems?.([
-		{ name: t('command.changeActorSkill.add') || 'Add', value: 'add' },
-		{ name: t('command.changeActorSkill.remove') || 'Remove', value: 'remove' },
-		{
-			name: t('command.changeActorSkill.remove-instance') || 'Remove Instance',
-			value: 'remove-instance'
-		},
-		{ name: t('command.changeActorSkill.sort-by-order') || 'Sort by Filename', value: 'sort-by-order' }
-	]);
+	useLocalizedOptions('changeActorSkill-operation', ['add', 'remove', 'remove-instance', 'sort-by-order'], (items) =>
+		fieldEls.get('changeActorSkill-operation')?.loadItems?.(items),
+		{ 'add': 'command.changeActorSkill.add', 'remove': 'command.changeActorSkill.remove', 'remove-instance': 'command.changeActorSkill.remove-instance', 'sort-by-order': 'command.changeActorSkill.sort-by-order' }
+	);
 	fieldEls.get('changeActorSkill-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

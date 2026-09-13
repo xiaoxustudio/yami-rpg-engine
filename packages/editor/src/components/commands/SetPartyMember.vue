@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,10 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setPartyMember-operation')?.loadItems?.([
-		{ name: t('command.setPartyMember.add') || 'Add', value: 'add' },
-		{ name: t('command.setPartyMember.remove') || 'Remove', value: 'remove' }
-	]);
+	useLocalizedOptions('setPartyMember-operation', ['add', 'remove'], (items) =>
+		fieldEls.get('setPartyMember-operation')?.loadItems?.(items),
+		{ 'add': 'command.setPartyMember.add', 'remove': 'command.setPartyMember.remove' }
+	);
 });
 </script>
 

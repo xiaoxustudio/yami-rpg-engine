@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -59,11 +60,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setCooldown-operation')?.loadItems?.([
-		{ name: t('command.setCooldown.set') || 'Set', value: 'set' },
-		{ name: t('command.setCooldown.increase') || 'Increase', value: 'increase' },
-		{ name: t('command.setCooldown.decrease') || 'Decrease', value: 'decrease' }
-	]);
+	useLocalizedOptions('setCooldown-operation', ['set', 'increase', 'decrease'], (items) =>
+		fieldEls.get('setCooldown-operation')?.loadItems?.(items),
+		{ 'set': 'command.setCooldown.set', 'increase': 'command.setCooldown.increase', 'decrease': 'command.setCooldown.decrease' }
+	);
 });
 </script>
 

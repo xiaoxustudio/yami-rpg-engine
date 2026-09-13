@@ -389,16 +389,10 @@ onMounted(() => {
 			{ case: 'script', targets: [fieldEls.get('setString-operand-script')] },
 			{ case: 'other', targets: [fieldEls.get('setString-operand-other-data')] }
 		]);
-	fieldEls.get('setString-operand-string-method')?.loadItems?.([
-		{ name: t('command.setString.string.char') || 'Char', value: 'char' },
-		{ name: t('command.setString.string.slice') || 'Slice', value: 'slice' },
-		{ name: t('command.setString.string.pad-start') || 'Pad Start', value: 'pad-start' },
-		{ name: t('command.setString.string.replace') || 'Replace', value: 'replace' },
-		{
-			name: t('command.setString.string.replace-all') || 'Replace All',
-			value: 'replace-all'
-		}
-	]);
+	useLocalizedOptions('setString-operand-string-method', ['char', 'slice', 'pad-start', 'replace', 'replace-all'], (items) =>
+		fieldEls.get('setString-operand-string-method')?.loadItems?.(items),
+		{ 'char': 'command.setString.string.char', 'slice': 'command.setString.string.slice', 'pad-start': 'command.setString.string.pad-start', 'replace': 'command.setString.string.replace', 'replace-all': 'command.setString.string.replace-all' }
+	);
 	fieldEls.get('setString-operand-string-method')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -428,42 +422,10 @@ onMounted(() => {
 				]
 			}
 		]);
-	fieldEls.get('setString-operand-object-property')?.loadItems?.([
-		{
-			name: t('command.setString.object.actor-team-id') || 'Actor - Team ID',
-			value: 'actor-team-id'
-		},
-		{
-			name: t('command.setString.object.actor-file-id') || 'Actor - File ID',
-			value: 'actor-file-id'
-		},
-		{
-			name: t('command.setString.object.actor-animation-motion-name') || 'Actor - Anim Motion Name',
-			value: 'actor-animation-motion-name'
-		},
-		{
-			name: t('command.setString.object.skill-file-id') || 'Skill - File ID',
-			value: 'skill-file-id'
-		},
-		{
-			name: t('command.setString.object.trigger-file-id') || 'Trigger - File ID',
-			value: 'trigger-file-id'
-		},
-		{
-			name: t('command.setString.object.state-file-id') || 'State - File ID',
-			value: 'state-file-id'
-		},
-		{
-			name: t('command.setString.object.equipment-file-id') || 'Equipment - File ID',
-			value: 'equipment-file-id'
-		},
-		{
-			name: t('command.setString.object.equipment-slot') || 'Equipment - Slot',
-			value: 'equipment-slot'
-		},
-		{ name: t('command.setString.object.item-file-id') || 'Item - File ID', value: 'item-file-id' },
-		{ name: t('command.setString.object.file-id') || 'File - ID', value: 'file-id' }
-	]);
+	useLocalizedOptions('setString-operand-object-property', ['actor-team-id', 'actor-file-id', 'actor-animation-motion-name', 'skill-file-id', 'trigger-file-id', 'state-file-id', 'equipment-file-id', 'equipment-slot', 'item-file-id', 'file-id'], (items) =>
+		fieldEls.get('setString-operand-object-property')?.loadItems?.(items),
+		{ 'actor-team-id': 'command.setString.object.actor-team-id', 'actor-file-id': 'command.setString.object.actor-file-id', 'actor-animation-motion-name': 'command.setString.object.actor-animation-motion-name', 'skill-file-id': 'command.setString.object.skill-file-id', 'trigger-file-id': 'command.setString.object.trigger-file-id', 'state-file-id': 'command.setString.object.state-file-id', 'equipment-file-id': 'command.setString.object.equipment-file-id', 'equipment-slot': 'command.setString.object.equipment-slot', 'item-file-id': 'command.setString.object.item-file-id', 'file-id': 'command.setString.object.file-id' }
+	);
 	fieldEls.get('setString-operand-object-property')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -496,50 +458,14 @@ onMounted(() => {
 				targets: [fieldEls.get('setString-operand-object-fileId')]
 			}
 		]);
-	fieldEls.get('setString-operand-element-property')?.loadItems?.([
-		{
-			name: t('command.setString.element.text-content') || 'Text - Content',
-			value: 'text-content'
-		},
-		{
-			name: t('command.setString.element.textBox-text') || 'Text Box - Text',
-			value: 'textBox-text'
-		},
-		{
-			name: t('command.setString.element.dialogBox-content') || 'Dialog Box - Content',
-			value: 'dialogBox-content'
-		}
-	]);
-	fieldEls.get('setString-operand-other-data')?.loadItems?.([
-		{
-			name: t('command.setString.other.trigger-key') || 'Event Trigger Key',
-			value: 'trigger-key'
-		},
-		{
-			name: t('command.setString.other.start-position-scene-id') || 'Start Position - Scene ID',
-			value: 'start-position-scene-id'
-		},
-		{
-			name: t('command.setString.other.showText-content') || 'Show Text - Content',
-			value: 'showText-content'
-		},
-		{
-			name: t('command.setString.other.showChoices-content') || 'Show Choices - Content',
-			value: 'showChoices-content'
-		},
-		{
-			name: t('command.setString.other.parse-timestamp') || 'Parse Timestamp',
-			value: 'parse-timestamp'
-		},
-		{
-			name: t('command.setString.other.screenshot') || 'Screenshot(Base64)',
-			value: 'screenshot'
-		},
-		{
-			name: t('command.setString.other.game-language') || 'Game Language',
-			value: 'game-language'
-		}
-	]);
+	useLocalizedOptions('setString-operand-element-property', ['text-content', 'textBox-text', 'dialogBox-content'], (items) =>
+		fieldEls.get('setString-operand-element-property')?.loadItems?.(items),
+		{ 'text-content': 'command.setString.element.text-content', 'textBox-text': 'command.setString.element.textBox-text', 'dialogBox-content': 'command.setString.element.dialogBox-content' }
+	);
+	useLocalizedOptions('setString-operand-other-data', ['trigger-key', 'start-position-scene-id', 'showText-content', 'showChoices-content', 'parse-timestamp', 'screenshot', 'game-language'], (items) =>
+		fieldEls.get('setString-operand-other-data')?.loadItems?.(items),
+		{ 'trigger-key': 'command.setString.other.trigger-key', 'start-position-scene-id': 'command.setString.other.start-position-scene-id', 'showText-content': 'command.setString.other.showText-content', 'showChoices-content': 'command.setString.other.showChoices-content', 'parse-timestamp': 'command.setString.other.parse-timestamp', 'screenshot': 'command.setString.other.screenshot', 'game-language': 'command.setString.other.game-language' }
+	);
 	fieldEls.get('setString-operand-other-data')
 		?.enableHiddenMode?.()
 		?.relate?.([

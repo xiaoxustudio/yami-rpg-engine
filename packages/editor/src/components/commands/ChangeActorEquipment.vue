@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -66,19 +67,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changeActorEquipment-operation')?.loadItems?.([
-		{ name: t('command.changeActorEquipment.add') || 'Add', value: 'add' },
-		{ name: t('command.changeActorEquipment.remove') || 'Remove', value: 'remove' },
-		{
-			name: t('command.changeActorEquipment.add-instance') || 'Add Instance',
-			value: 'add-instance'
-		},
-		{
-			name: t('command.changeActorEquipment.remove-instance') || 'Remove Instance',
-			value: 'remove-instance'
-		},
-		{ name: t('command.changeActorEquipment.remove-slot') || 'Remove Slot', value: 'remove-slot' }
-	]);
+	useLocalizedOptions('changeActorEquipment-operation', ['add', 'remove', 'add-instance', 'remove-instance', 'remove-slot'], (items) =>
+		fieldEls.get('changeActorEquipment-operation')?.loadItems?.(items),
+		{ 'add': 'command.changeActorEquipment.add', 'remove': 'command.changeActorEquipment.remove', 'add-instance': 'command.changeActorEquipment.add-instance', 'remove-instance': 'command.changeActorEquipment.remove-instance', 'remove-slot': 'command.changeActorEquipment.remove-slot' }
+	);
 	fieldEls.get('changeActorEquipment-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

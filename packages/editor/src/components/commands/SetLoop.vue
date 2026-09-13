@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,10 +48,10 @@ onMounted(() => {
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }
 	]);
-	fieldEls.get('setLoop-loop')?.loadItems?.([
-		{ name: t('command.setLoop.once') || 'Once', value: false },
-		{ name: t('command.setLoop.loop') || 'Loop', value: true }
-	]);
+	useLocalizedOptions('setLoop-loop', [false, true], (items) =>
+		fieldEls.get('setLoop-loop')?.loadItems?.(items),
+		{ 'false': 'command.setLoop.once', 'true': 'command.setLoop.loop' }
+	);
 });
 </script>
 

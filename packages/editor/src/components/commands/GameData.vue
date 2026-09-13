@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -55,11 +56,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('gameData-operation')?.loadItems?.([
-		{ name: t('command.gameData.save') || 'Save', value: 'save' },
-		{ name: t('command.gameData.load') || 'Load', value: 'load' },
-		{ name: t('command.gameData.delete') || 'Delete', value: 'delete' }
-	]);
+	useLocalizedOptions('gameData-operation', ['save', 'load', 'delete'], (items) =>
+		fieldEls.get('gameData-operation')?.loadItems?.(items),
+		{ 'save': 'command.gameData.save', 'load': 'command.gameData.load', 'delete': 'command.gameData.delete' }
+	);
 	fieldEls.get('gameData-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

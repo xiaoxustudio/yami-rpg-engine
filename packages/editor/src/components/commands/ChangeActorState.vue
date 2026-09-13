@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -57,14 +58,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changeActorState-operation')?.loadItems?.([
-		{ name: t('command.changeActorState.add') || 'Add', value: 'add' },
-		{ name: t('command.changeActorState.remove') || 'Remove', value: 'remove' },
-		{
-			name: t('command.changeActorState.remove-instance') || 'Remove Instance',
-			value: 'remove-instance'
-		}
-	]);
+	useLocalizedOptions('changeActorState-operation', ['add', 'remove', 'remove-instance'], (items) =>
+		fieldEls.get('changeActorState-operation')?.loadItems?.(items),
+		{ 'add': 'command.changeActorState.add', 'remove': 'command.changeActorState.remove', 'remove-instance': 'command.changeActorState.remove-instance' }
+	);
 	fieldEls.get('changeActorState-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

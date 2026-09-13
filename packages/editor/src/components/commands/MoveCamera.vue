@@ -73,10 +73,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('moveCamera-mode')?.loadItems?.([
-		{ name: t('command.moveCamera.position') || 'Move to Position', value: 'position' },
-		{ name: t('command.moveCamera.actor') || 'Follow Actor', value: 'actor' }
-	]);
+	useLocalizedOptions('moveCamera-mode', ['position', 'actor'], (items) =>
+		fieldEls.get('moveCamera-mode')?.loadItems?.(items),
+		{ 'position': 'command.moveCamera.position', 'actor': 'command.moveCamera.actor' }
+	);
 	fieldEls.get('moveCamera-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([

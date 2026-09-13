@@ -27,16 +27,23 @@ export interface LocalizedOption<T> {
 export function useLocalizedOptions<T>(
 	key: string,
 	values: readonly T[],
-	apply: (items: Array<LocalizedOption<T>>) => void
+	apply: (items: Array<LocalizedOption<T>>) => void,
+	/**
+	 * 选项名所在的消息键（`值 → 完整键路径`）。
+	 * 省略时按约定取 `components.<键>.options.<值>.name` / `.tip`；
+	 * 给出时按 `t(nameKeys[值])` 取名（用于选项名沿用 `command.*` 等既有命名空间的组件）。
+	 */
+	nameKeys?: Record<string, string>
 ): void {
 	const { t } = useI18n();
 	watchEffect(() => {
 		apply(
-			values.map((value) => ({
-				name: t(`components.${key}.options.${String(value)}.name`),
-				tip: t(`components.${key}.options.${String(value)}.tip`),
-				value
-			}))
+			values.map((value) => {
+				const explicit = nameKeys?.[String(value)];
+				const name = explicit ?? `components.${key}.options.${String(value)}.name`;
+				const tip = explicit !== undefined ? undefined : `components.${key}.options.${String(value)}.tip`;
+				return { name: t(name), tip: tip === undefined ? undefined : t(tip), value };
+			})
 		);
 	});
 }

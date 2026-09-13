@@ -47,6 +47,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -70,14 +71,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setMovementSpeed-property')?.loadItems?.([
-		{ name: t('command.setMovementSpeed.base') || 'Base Speed', value: 'base' },
-		{ name: t('command.setMovementSpeed.factor') || 'Speed Factor', value: 'factor' },
-		{
-			name: t('command.setMovementSpeed.factor-temp') || 'Speed Factor (Temp)',
-			value: 'factor-temp'
-		}
-	]);
+	useLocalizedOptions('setMovementSpeed-property', ['base', 'factor', 'factor-temp'], (items) =>
+		fieldEls.get('setMovementSpeed-property')?.loadItems?.(items),
+		{ 'base': 'command.setMovementSpeed.base', 'factor': 'command.setMovementSpeed.factor', 'factor-temp': 'command.setMovementSpeed.factor-temp' }
+	);
 	fieldEls.get('setMovementSpeed-property')
 		?.enableHiddenMode?.()
 		?.relate?.([

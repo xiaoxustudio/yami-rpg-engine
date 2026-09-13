@@ -102,10 +102,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('getMultipleActors-area')?.loadItems?.([
-		{ name: t('command.getMultipleActors.rectangle') || 'Rectangle', value: 'rectangle' },
-		{ name: t('command.getMultipleActors.circle') || 'Circle', value: 'circle' }
-	]);
+	useLocalizedOptions('getMultipleActors-area', ['rectangle', 'circle'], (items) =>
+		fieldEls.get('getMultipleActors-area')?.loadItems?.(items),
+		{ 'rectangle': 'command.getMultipleActors.rectangle', 'circle': 'command.getMultipleActors.circle' }
+	);
 	fieldEls.get('getMultipleActors-area')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -126,11 +126,10 @@ onMounted(() => {
 				targets: [fieldEls.get('getMultipleActors-teamId')]
 			}
 		]);
-	fieldEls.get('getMultipleActors-activation')?.loadItems?.([
-		{ name: t('command.getMultipleActors.active') || 'Active', value: 'active' },
-		{ name: t('command.getMultipleActors.inactive') || 'Inactive', value: 'inactive' },
-		{ name: t('command.getMultipleActors.either') || 'Either', value: 'either' }
-	]);
+	useLocalizedOptions('getMultipleActors-activation', ['active', 'inactive', 'either'], (items) =>
+		fieldEls.get('getMultipleActors-activation')?.loadItems?.(items),
+		{ 'active': 'command.getMultipleActors.active', 'inactive': 'command.getMultipleActors.inactive', 'either': 'command.getMultipleActors.either' }
+	);
 	fieldEls.get('getMultipleActors')?.on?.('open', function (_event: Event) {
 		const items = Data.createTeamItems!();
 		fieldEls.get('getMultipleActors-teamId')?.loadItems?.(items);

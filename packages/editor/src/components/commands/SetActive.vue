@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,10 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setActive-active')?.loadItems?.([
-		{ name: t('command.setActive.active.true') || 'Active', value: true },
-		{ name: t('command.setActive.active.false') || 'Inactive', value: false }
-	]);
+	useLocalizedOptions('setActive-active', [true, false], (items) =>
+		fieldEls.get('setActive-active')?.loadItems?.(items),
+		{ 'true': 'command.setActive.active.true', 'false': 'command.setActive.active.false' }
+	);
 });
 </script>
 

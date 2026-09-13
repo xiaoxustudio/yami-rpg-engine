@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,14 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changePassableTerrain-passage')?.loadItems?.([
-		{ name: t('command.changePassableTerrain.land') || 'Land', value: 'land' },
-		{ name: t('command.changePassableTerrain.water') || 'Water', value: 'water' },
-		{
-			name: t('command.changePassableTerrain.unrestricted') || 'Unrestricted',
-			value: 'unrestricted'
-		}
-	]);
+	useLocalizedOptions('changePassableTerrain-passage', ['land', 'water', 'unrestricted'], (items) =>
+		fieldEls.get('changePassableTerrain-passage')?.loadItems?.(items),
+		{ 'land': 'command.changePassableTerrain.land', 'water': 'command.changePassableTerrain.water', 'unrestricted': 'command.changePassableTerrain.unrestricted' }
+	);
 });
 </script>
 

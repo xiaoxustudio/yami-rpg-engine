@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -57,12 +58,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('commandLine-type')?.loadItems?.([
-		{ name: t('command.commandLine.get') || 'get', value: 'get' },
-		{ name: t('command.commandLine.rm') || 'rm', value: 'rm' },
-		{ name: t('command.commandLine.set') || 'set', value: 'set' },
-		{ name: t('command.commandLine.has') || 'has', value: 'has' }
-	]);
+	useLocalizedOptions('commandLine-type', ['get', 'rm', 'set', 'has'], (items) =>
+		fieldEls.get('commandLine-type')?.loadItems?.(items),
+		{ 'get': 'command.commandLine.get', 'rm': 'command.commandLine.rm', 'set': 'command.commandLine.set', 'has': 'command.commandLine.has' }
+	);
 	fieldEls.get('commandLine-type')
 		?.enableHiddenMode?.()
 		?.relate?.([

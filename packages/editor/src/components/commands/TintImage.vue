@@ -161,11 +161,10 @@ watch(
 );
 
 onMounted(() => {
-	fieldEls.get('tintImage-mode')?.loadItems?.([
-		{ name: t('command.tintImage.full') || 'Full', value: 'full' },
-		{ name: t('command.tintImage.rgb') || 'RGB', value: 'rgb' },
-		{ name: t('command.tintImage.gray') || 'Gray', value: 'gray' }
-	]);
+	useLocalizedOptions('tintImage-mode', ['full', 'rgb', 'gray'], (items) =>
+		fieldEls.get('tintImage-mode')?.loadItems?.(items),
+		{ 'full': 'command.tintImage.full', 'rgb': 'command.tintImage.rgb', 'gray': 'command.tintImage.gray' }
+	);
 	fieldEls.get('tintImage-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([

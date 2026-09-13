@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,14 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('deleteElement-operation')?.loadItems?.([
-		{ name: 'Delete Element', value: 'delete-element' },
-		{
-			name: t('command.deleteElement.children') || 'Delete Children',
-			value: 'delete-children'
-		},
-		{ name: t('command.deleteElement.all-elements') || 'Delete All', value: 'delete-all' }
-	]);
+	useLocalizedOptions('deleteElement-operation', ['delete-element', 'delete-children', 'delete-all'], (items) =>
+		fieldEls.get('deleteElement-operation')?.loadItems?.(items),
+		{ 'delete-element': 'command.deleteElement.children', 'delete-children': 'command.deleteElement.children', 'delete-all': 'command.deleteElement.all-elements' }
+	);
 	fieldEls.get('deleteElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

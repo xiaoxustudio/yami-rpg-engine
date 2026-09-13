@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,22 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('controlButton-operation')?.loadItems?.([
-		{
-			name: t('command.controlButton.select-default') || 'Select Default Button',
-			value: 'select-default'
-		},
-		{ name: t('command.controlButton.select') || 'Select Button', value: 'select' },
-		{ name: t('command.controlButton.hover-mode') || 'Display Hover Mode', value: 'hover-mode' },
-		{
-			name: t('command.controlButton.active-mode') || 'Display Active Mode',
-			value: 'active-mode'
-		},
-		{
-			name: t('command.controlButton.normal-mode') || 'Restore Display Mode',
-			value: 'normal-mode'
-		}
-	]);
+	useLocalizedOptions('controlButton-operation', ['select-default', 'select', 'hover-mode', 'active-mode', 'normal-mode'], (items) =>
+		fieldEls.get('controlButton-operation')?.loadItems?.(items),
+		{ 'select-default': 'command.controlButton.select-default', 'select': 'command.controlButton.select', 'hover-mode': 'command.controlButton.hover-mode', 'active-mode': 'command.controlButton.active-mode', 'normal-mode': 'command.controlButton.normal-mode' }
+	);
 	fieldEls.get('controlButton-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

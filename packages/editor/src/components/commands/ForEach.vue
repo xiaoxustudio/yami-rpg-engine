@@ -71,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -98,24 +99,13 @@ const onConfirm = () => {
 
 onMounted(() => {
 	registerElement(fieldEls, 'forEach', frame.value);
-	fieldEls.get('forEach-data')
-		?.loadItems?.([
-			{ name: t('command.forEach.list') || 'List', value: 'list' },
-			{ name: t('command.forEach.skill') || 'Skill', value: 'skill' },
-			{ name: t('command.forEach.state') || 'State', value: 'state' },
-			{ name: t('command.forEach.equipment') || 'Equipment', value: 'equipment' },
-			{ name: t('command.forEach.inventory') || 'Inventory', value: 'inventory' },
-			{ name: t('command.forEach.element') || 'Element', value: 'element' },
-			{ name: t('command.forEach.member') || 'Party Member', value: 'member' },
-			{ name: t('command.forEach.attribute') || 'Attribute Key', value: 'attribute' },
-			{ name: t('command.forEach.enum') || 'Enumeration Value', value: 'enum' },
-			{ name: t('command.forEach.save') || 'Save Data', value: 'save' },
-			{ name: t('command.forEach.touch') || 'Touch Point', value: 'touch' },
-			{
-				name: t('command.forEach.changed-touch') || 'Changed Touch Point',
-				value: 'changed-touch'
-			}
-		])
+	useLocalizedOptions('forEach-data', ['list', 'skill', 'state', 'equipment', 'inventory', 'element', 'member', 'attribute', 'enum', 'save', 'touch', 'changed-touch'], (items) =>
+		fieldEls.get('forEach-data')?.loadItems?.(items),
+		{ 'list': 'command.forEach.list', 'skill': 'command.forEach.skill', 'state': 'command.forEach.state', 'equipment': 'command.forEach.equipment', 'inventory': 'command.forEach.inventory', 'element': 'command.forEach.element', 'member': 'command.forEach.member', 'attribute': 'command.forEach.attribute', 'enum': 'command.forEach.enum', 'save': 'command.forEach.save', 'touch': 'command.forEach.touch', 'changed-touch': 'command.forEach.changed-touch' }
+	);
+	// R2b：`enableHiddenMode`/`relate` 原先挂在 `loadItems` 的**调用链**上，拆成独立语句（语义不变）
+	fieldEls
+		.get('forEach-data')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{

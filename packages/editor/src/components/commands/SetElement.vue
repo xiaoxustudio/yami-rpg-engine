@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,27 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setElement-operation')?.loadItems?.([
-		{ name: t('command.setElement.hide') || 'Hide', value: 'hide' },
-		{ name: t('command.setElement.show') || 'Show', value: 'show' },
-		{
-			name: t('command.setElement.disable-pointer-events') || 'Disable Pointer Events',
-			value: 'disable-pointer-events'
-		},
-		{
-			name: t('command.setElement.enable-pointer-events') || 'Enable Pointer Events',
-			value: 'enable-pointer-events'
-		},
-		{
-			name: t('command.setElement.skip-pointer-events') || 'Skip Pointer Events',
-			value: 'skip-pointer-events'
-		},
-		{
-			name: t('command.setElement.move-to-first') || 'Move to First',
-			value: 'move-to-first'
-		},
-		{ name: t('command.setElement.move-to-last') || 'Move to Last', value: 'move-to-last' }
-	]);
+	useLocalizedOptions('setElement-operation', ['hide', 'show', 'disable-pointer-events', 'enable-pointer-events', 'skip-pointer-events', 'move-to-first', 'move-to-last'], (items) =>
+		fieldEls.get('setElement-operation')?.loadItems?.(items),
+		{ 'hide': 'command.setElement.hide', 'show': 'command.setElement.show', 'disable-pointer-events': 'command.setElement.disable-pointer-events', 'enable-pointer-events': 'command.setElement.enable-pointer-events', 'skip-pointer-events': 'command.setElement.skip-pointer-events', 'move-to-first': 'command.setElement.move-to-first', 'move-to-last': 'command.setElement.move-to-last' }
+	);
 });
 </script>
 

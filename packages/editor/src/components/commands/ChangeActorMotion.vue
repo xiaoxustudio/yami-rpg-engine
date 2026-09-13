@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,10 +48,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changeActorMotion-type')?.loadItems?.([
-		{ name: t('command.changeActorMotion.type.idle') || 'Idle', value: 'idle' },
-		{ name: t('command.changeActorMotion.type.move') || 'Move', value: 'move' }
-	]);
+	useLocalizedOptions('changeActorMotion-type', ['idle', 'move'], (items) =>
+		fieldEls.get('changeActorMotion-type')?.loadItems?.(items),
+		{ 'idle': 'command.changeActorMotion.type.idle', 'move': 'command.changeActorMotion.type.move' }
+	);
 });
 </script>
 

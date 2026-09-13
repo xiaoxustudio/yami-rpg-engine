@@ -139,10 +139,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('followActor-mode')?.loadItems?.([
-		{ name: t('command.followActor.mode.circle') || 'Circle', value: 'circle' },
-		{ name: t('command.followActor.mode.rectangle') || 'Rectangle', value: 'rectangle' }
-	]);
+	useLocalizedOptions('followActor-mode', ['circle', 'rectangle'], (items) =>
+		fieldEls.get('followActor-mode')?.loadItems?.(items),
+		{ 'circle': 'command.followActor.mode.circle', 'rectangle': 'command.followActor.mode.rectangle' }
+	);
 	fieldEls.get('followActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([

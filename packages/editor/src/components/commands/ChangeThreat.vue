@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -58,10 +59,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('changeThreat-operation')?.loadItems?.([
-		{ name: t('command.changeThreat.increase') || 'Increase', value: 'increase' },
-		{ name: t('command.changeThreat.decrease') || 'Decrease', value: 'decrease' }
-	]);
+	useLocalizedOptions('changeThreat-operation', ['increase', 'decrease'], (items) =>
+		fieldEls.get('changeThreat-operation')?.loadItems?.(items),
+		{ 'increase': 'command.changeThreat.increase', 'decrease': 'command.changeThreat.decrease' }
+	);
 });
 </script>
 

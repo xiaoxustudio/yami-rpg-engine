@@ -59,28 +59,10 @@ onMounted(() => {
 	useLocalizedOptions('getTarget-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
 		fieldEls.get('getTarget-selector')?.loadItems?.(items)
 	);
-	fieldEls.get('getTarget-condition')?.loadItems?.([
-		{ name: t('command.getTarget.condition.max-threat') || 'Max Threat', value: 'max-threat' },
-		{ name: t('command.getTarget.condition.nearest') || 'Nearest', value: 'nearest' },
-		{ name: t('command.getTarget.condition.farthest') || 'Farthest', value: 'farthest' },
-		{
-			name: t('command.getTarget.condition.min-attribute-value') || 'Min Attribute Value',
-			value: 'min-attribute-value'
-		},
-		{
-			name: t('command.getTarget.condition.max-attribute-value') || 'Max Attribute Value',
-			value: 'max-attribute-value'
-		},
-		{
-			name: t('command.getTarget.condition.min-attribute-ratio') || 'Min Attribute Ratio',
-			value: 'min-attribute-ratio'
-		},
-		{
-			name: t('command.getTarget.condition.max-attribute-ratio') || 'Max Attribute Ratio',
-			value: 'max-attribute-ratio'
-		},
-		{ name: t('command.getTarget.condition.random') || 'Random', value: 'random' }
-	]);
+	useLocalizedOptions('getTarget-condition', ['max-threat', 'nearest', 'farthest', 'min-attribute-value', 'max-attribute-value', 'min-attribute-ratio', 'max-attribute-ratio', 'random'], (items) =>
+		fieldEls.get('getTarget-condition')?.loadItems?.(items),
+		{ 'max-threat': 'command.getTarget.condition.max-threat', 'nearest': 'command.getTarget.condition.nearest', 'farthest': 'command.getTarget.condition.farthest', 'min-attribute-value': 'command.getTarget.condition.min-attribute-value', 'max-attribute-value': 'command.getTarget.condition.max-attribute-value', 'min-attribute-ratio': 'command.getTarget.condition.min-attribute-ratio', 'max-attribute-ratio': 'command.getTarget.condition.max-attribute-ratio', 'random': 'command.getTarget.condition.random' }
+	);
 	fieldEls.get('getTarget-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([

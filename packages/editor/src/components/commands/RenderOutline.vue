@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -55,11 +56,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('renderOutline-operation')?.loadItems?.([
-		{ name: t('command.renderOutline.add') || 'Add', value: 'add' },
-		{ name: t('command.renderOutline.remove') || 'Remove', value: 'remove' },
-		{ name: t('command.renderOutline.reset') || 'Reset', value: 'reset' }
-	]);
+	useLocalizedOptions('renderOutline-operation', ['add', 'remove', 'reset'], (items) =>
+		fieldEls.get('renderOutline-operation')?.loadItems?.(items),
+		{ 'add': 'command.renderOutline.add', 'remove': 'command.renderOutline.remove', 'reset': 'command.renderOutline.reset' }
+	);
 	fieldEls.get('renderOutline-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

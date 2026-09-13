@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -64,24 +65,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setEvent-operation')?.loadItems?.([
-		{
-			name: t('command.setEvent.stop-propagation') || 'Stop Propagation',
-			value: 'stop-propagation'
-		},
-		{ name: t('command.setEvent.pause') || 'Pause and Save to Variable', value: 'pause' },
-		{ name: t('command.setEvent.continue') || 'Continue and Reset Variable', value: 'continue' },
-		{ name: t('command.setEvent.enable') || 'Enable Global Event', value: 'enable' },
-		{ name: t('command.setEvent.disable') || 'Disable Global Event', value: 'disable' },
-		{
-			name: t('command.setEvent.highest-priority') || 'Set to Highest Priority',
-			value: 'highest-priority'
-		},
-		{
-			name: t('command.setEvent.goto-choice-branch') || 'Go to Choice Branch',
-			value: 'goto-choice-branch'
-		}
-	]);
+	useLocalizedOptions('setEvent-operation', ['stop-propagation', 'pause', 'continue', 'enable', 'disable', 'highest-priority', 'goto-choice-branch'], (items) =>
+		fieldEls.get('setEvent-operation')?.loadItems?.(items),
+		{ 'stop-propagation': 'command.setEvent.stop-propagation', 'pause': 'command.setEvent.pause', 'continue': 'command.setEvent.continue', 'enable': 'command.setEvent.enable', 'disable': 'command.setEvent.disable', 'highest-priority': 'command.setEvent.highest-priority', 'goto-choice-branch': 'command.setEvent.goto-choice-branch' }
+	);
 	fieldEls.get('setEvent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

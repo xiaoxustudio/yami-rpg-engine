@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,18 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('controlDialog-operation')?.loadItems?.([
-		{ name: t('command.controlDialog.pause') || 'Pause Printing', value: 'pause' },
-		{ name: t('command.controlDialog.continue') || 'Continue Printing', value: 'continue' },
-		{
-			name: t('command.controlDialog.print-immediately') || 'Print Immediately',
-			value: 'print-immediately'
-		},
-		{
-			name: t('command.controlDialog.print-next-page') || 'Print Next Page',
-			value: 'print-next-page'
-		}
-	]);
+	useLocalizedOptions('controlDialog-operation', ['pause', 'continue', 'print-immediately', 'print-next-page'], (items) =>
+		fieldEls.get('controlDialog-operation')?.loadItems?.(items),
+		{ 'pause': 'command.controlDialog.pause', 'continue': 'command.controlDialog.continue', 'print-immediately': 'command.controlDialog.print-immediately', 'print-next-page': 'command.controlDialog.print-next-page' }
+	);
 });
 </script>
 

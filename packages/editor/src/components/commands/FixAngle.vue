@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,10 +44,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('fixAngle-fixed')?.loadItems?.([
-		{ name: t('command.fixAngle.fixed.true') || 'Fixed', value: true },
-		{ name: t('command.fixAngle.fixed.false') || 'Unfixed', value: false }
-	]);
+	useLocalizedOptions('fixAngle-fixed', [true, false], (items) =>
+		fieldEls.get('fixAngle-fixed')?.loadItems?.(items),
+		{ 'true': 'command.fixAngle.fixed.true', 'false': 'command.fixAngle.fixed.false' }
+	);
 });
 </script>
 

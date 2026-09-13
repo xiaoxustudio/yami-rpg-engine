@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -78,18 +79,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('loadImage-type')?.loadItems?.([
-		{ name: t('command.loadImage.actor-portrait') || 'Actor Portrait', value: 'actor-portrait' },
-		{ name: t('command.loadImage.skill-icon') || 'Skill Icon', value: 'skill-icon' },
-		{ name: t('command.loadImage.state-icon') || 'State Icon', value: 'state-icon' },
-		{
-			name: t('command.loadImage.equipment-icon') || 'Equipment Icon',
-			value: 'equipment-icon'
-		},
-		{ name: t('command.loadImage.item-icon') || 'Item Icon', value: 'item-icon' },
-		{ name: t('command.loadImage.shortcut-icon') || 'Shortcut Icon', value: 'shortcut-icon' },
-		{ name: t('command.loadImage.base64') || 'Base64 Image', value: 'base64' }
-	]);
+	useLocalizedOptions('loadImage-type', ['actor-portrait', 'skill-icon', 'state-icon', 'equipment-icon', 'item-icon', 'shortcut-icon', 'base64'], (items) =>
+		fieldEls.get('loadImage-type')?.loadItems?.(items),
+		{ 'actor-portrait': 'command.loadImage.actor-portrait', 'skill-icon': 'command.loadImage.skill-icon', 'state-icon': 'command.loadImage.state-icon', 'equipment-icon': 'command.loadImage.equipment-icon', 'item-icon': 'command.loadImage.item-icon', 'shortcut-icon': 'command.loadImage.shortcut-icon', 'base64': 'command.loadImage.base64' }
+	);
 	fieldEls.get('loadImage-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
