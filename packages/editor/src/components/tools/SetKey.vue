@@ -3,6 +3,7 @@
 		v-model="form.key"
 		:title="t('components.setKey.title')"
 		:label="t('components.setKey-key.label')"
+		v-tip="t('components.setKey-key.tip')"
 		@confirm="setKey.confirm"
 		@closed="setKey.onWindowClosed"
 	/>

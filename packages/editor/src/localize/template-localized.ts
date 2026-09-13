@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2129 键降到
- * 131 键。
+ * 125 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -605,7 +605,9 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'followActor-vertDist',
 	'followActor-wait',
 	'font',
+	'font-font',
 	'fontSize',
+	'fontSize-size',
 	'forEach',
 	'forEach-actor',
 	'forEach-attribute-groupId',
@@ -1054,6 +1056,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'removeTarget-actor',
 	'removeTarget-target',
 	'rename',
+	'rename-name',
 	'renderOutline',
 	'renderOutline-actor',
 	'renderOutline-color',
@@ -1352,6 +1355,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'setItem-operation',
 	'setItem-quantity',
 	'setKey',
+	'setKey-key',
 	'setLanguage',
 	'setLanguage-language',
 	'setList',
@@ -1476,6 +1480,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'setProgressBar-property-image',
 	'setProgressBar-property-progress',
 	'setQuantity',
+	'setQuantity-quantity',
 	'setResolution',
 	'setResolution-height',
 	'setResolution-sceneScale',
@@ -2009,5 +2014,6 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'webSocketSend',
 	'webSocketSend-data',
 	'webSocketSend-id',
-	'zoom'
+	'zoom',
+	'zoom-factor'
 ]);

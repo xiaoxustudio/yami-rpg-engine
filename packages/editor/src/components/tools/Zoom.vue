@@ -3,6 +3,7 @@
 		v-model="form.factor"
 		:title="t('components.zoom.title')"
 		:label="t('components.zoom-factor.label')"
+		v-tip="t('components.zoom-factor.tip')"
 		@confirm="onConfirm"
 	/>
 </template>

@@ -4,6 +4,7 @@
 		:max="form.max"
 		:title="t('components.setQuantity.title')"
 		:label="t('components.setQuantity-quantity.label')"
+		v-tip="t('components.setQuantity-quantity.tip')"
 		@confirm="onConfirm"
 		@closed="setQuantity.onWindowClosed"
 	/>

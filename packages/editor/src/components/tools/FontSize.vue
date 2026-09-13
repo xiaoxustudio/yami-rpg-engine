@@ -3,6 +3,7 @@
 		id="fontSize"
 		:model-value="form.size"
 		:label="t('components.fontSize-size.label')"
+		v-tip="t('components.fontSize-size.tip')"
 		:title="t('components.fontSize.title')"
 		@update:model-value="form.size = $event"
 		@confirm="onConfirm"

@@ -4,6 +4,7 @@
 				:ref="registryRef(textCaptureEls, 'font')"
 		:model-value="form.font"
 		:label="t('components.font-font.label')"
+		v-tip="t('components.font-font.tip')"
 		:title="t('components.font.title')"
 		@update:model-value="form.font = $event"
 		@confirm="onConfirm"

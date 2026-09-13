@@ -3,6 +3,7 @@
 		v-model="form.name"
 		:title="t('components.rename.title')"
 		:label="t('components.rename-name.label')"
+		v-tip="t('components.rename-name.tip')"
 		@confirm="onConfirm"
 		@closed="rename.onWindowClosed"
 	/>
