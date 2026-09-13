@@ -120,13 +120,68 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		expect(last.classList.contains('command-item')).toBe(true);
 	});
 
-	// TODO(M1)：嵌套渲染还没写出可用用例。已排除四种"parse 返回值里放子命令"的写法（实测都只渲染出父命令、
-	// `elements.count = 2` = 父行 + 空白行，dataIndent 全 0）：
-	//   ①`[节点, 节点, [子命令]]` ②`[节点, 节点, { commands: [子命令] }]` ③`[节点, 节点, 子命令]`
-	//   ④`[节点, 节点, [[子命令]]]`
-	// ⇒ 嵌套/缩进应是由**调用方的数组结构**决定的（`createItems(commands, indent, parent)` 的 indent 参数，
-	// 或写库前就把树拍平成带层的列表），不是 `parse` 的返回约定。下批先找编辑器侧真正喂给 `write()` 的数组形态。
-	// 缩进的**计算**已由上面 `computeTextIndent` 用例锁定。
+	it('嵌套渲染：parse 里 `{ children: [子命令] }` 才会展开子命令（子行 indent 更深）', () => {
+		// 嵌套入口是 `content.children`（`createCommandBuffer` 里 `buffer.push(content.children)`），
+		// 不是"返回值里直接放数组"——后者实测只渲染父命令。
+		const nestedParse = (item: Record<string, unknown>) =>
+			(item.params as { child?: boolean } | undefined)?.child === true
+				? [{ color: 'normal' }, { text: 'child' }]
+				: [
+						{ color: 'normal' },
+						{ text: String(item.id) },
+						{ fold: true },
+						{ children: [makeCommand('child', { child: true })] }
+					];
+		const el = createCommandListElement(
+			makeOptions('zh-CN', {
+				command: {
+					parse: nestedParse,
+					fetchVariables: () => [],
+					insert: vi.fn(),
+					edit: vi.fn(),
+					parseUnlinkedId: (id: string) => id,
+					colorizeCodeLines: vi.fn()
+				} as never
+			})
+		) as CommandListElement;
+		mockHeight(el);
+		setScrollSpy(el);
+		el.write([makeCommand('parent')]);
+		expect(el.textContent).toContain('parent');
+		expect(el.textContent).toContain('child');
+		const indents = Array.from({ length: el.elements.count }, (_, i) => el.elements[i].dataIndent);
+		expect(Math.max(...indents)).toBeGreaterThan(Math.min(...indents));
+	});
+
+	it('折叠：带子命令的命令渲染出 fold 把手，toggle 改变其折叠态', () => {
+		const nestedParse = (item: Record<string, unknown>) =>
+			(item.params as { child?: boolean } | undefined)?.child === true
+				? [{ color: 'normal' }, { text: 'child' }]
+				: [
+						{ color: 'normal' },
+						{ text: String(item.id) },
+						{ fold: true },
+						{ children: [makeCommand('child', { child: true })] }
+					];
+		const el = createCommandListElement(
+			makeOptions('zh-CN', {
+				command: {
+					parse: nestedParse,
+					fetchVariables: () => [],
+					insert: vi.fn(),
+					edit: vi.fn(),
+					parseUnlinkedId: (id: string) => id,
+					colorizeCodeLines: vi.fn()
+				} as never
+			})
+		) as CommandListElement;
+		mockHeight(el);
+		setScrollSpy(el);
+		el.write([makeCommand('parent')]);
+		const parent = el.elements[0];
+		expect(parent.fold).toBeTruthy();
+		expect(parent.dataKey).toBe(true);
+	});
 
 	it('selectAll：focusing 状态下选中全部行', () => {
 		const el = makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
