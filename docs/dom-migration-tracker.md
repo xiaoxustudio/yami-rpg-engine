@@ -12,9 +12,9 @@
 | editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
+| editor/commands     | 41 | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 43 | 3 | 3 | 1 | 3 | 0 | 1 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 42 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 11 | 2 | 2 | 5 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 229 | 11 | 1 | 1 | 5 | 1 | 0 | 0 | 0 | 3 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -28,7 +28,7 @@
 | editor/log          | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/main.ts      | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
-| editor/module       | 15 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 2 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
+| editor/module       | 15 | 4 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/palette      | 13 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
 | editor/particle     | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |
 | editor/plugin       | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 0 | 0 | 0 |
@@ -37,27 +37,27 @@
 | editor/services     | 46 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 3 | 0 | 0 |
 | editor/stores       | 39 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/title        | 6 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 8 | 2 | 0 | 0 | 0 |
-| editor/tools        | 17 | 7 | 2 | 2 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
+| editor/tools        | 17 | 7 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 32 | 10 | 3 | 3 | 0 | 4 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/utils        | 32 | 10 | 3 | 3 | 0 | 4 | 0 | 0 | 0 | 4 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
 | ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 65 | 65 | 10 | 18 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 60 | 60 | 10 | 18 | 1 | 15 | 0 | 139 | 122 | 18 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**65**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**65**
+- 待迁移命中文件：**60**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**60**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**12**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**17**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -111,6 +111,7 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
+| packages/editor/src/utils/dom.ts | 216 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -122,13 +123,12 @@
 | packages/editor/src/components/layout/LayoutPanel.vue | 2008 | 9 | - |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
-| packages/editor/src/utils/dom.ts | 192 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 155 | 9 | 是 |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 63 | 9 | 是 |
 | packages/editor/src/animation/animation-list.ts | 1115 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
-| packages/editor/src/commands/text-tip.ts | 388 | 8 | 是 |
+| packages/editor/src/commands/text-tip.ts | 389 | 8 | - |
 | packages/editor/src/inspector/inspector.ts | 507 | 8 | - |
 | packages/editor/src/ui/ui-pointer.ts | 583 | 8 | - |
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
@@ -146,7 +146,6 @@
 | packages/editor/src/animation/animation-initialize.ts | 504 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 630 | 6 | - |
-| packages/editor/src/module/eslints.ts | 275 | 6 | 是 |
 | packages/editor/src/services/project/setting-config/renderer.ts | 172 | 6 | 是 |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 306 | 6 | - |
@@ -187,7 +186,7 @@
 | packages/editor/src/engine/webgl/webgl-init.ts | 113 | 4 | 是 |
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
 | packages/editor/src/title/home-page.ts | 510 | 4 | - |
-| packages/editor/src/tools/script-list.ts | 204 | 4 | 是 |
+| packages/editor/src/tools/script-list.ts | 201 | 4 | - |
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
 | packages/editor/src/variable/open.ts | 85 | 4 | - |
@@ -207,6 +206,7 @@
 | packages/editor/src/localize/dom-localizer.ts | 92 | 3 | 是 |
 | packages/editor/src/main.ts | 29 | 3 | 是 |
 | packages/editor/src/module/editdata.ts | 382 | 3 | 是 |
+| packages/editor/src/module/eslints.ts | 269 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
@@ -217,7 +217,7 @@
 | packages/editor/src/attribute/attribute-window.ts | 1057 | 2 | - |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
 | packages/editor/src/commands/command-custom.ts | 377 | 2 | - |
-| packages/editor/src/commands/event-editor-commands.ts | 252 | 2 | 是 |
+| packages/editor/src/commands/event-editor-commands.ts | 251 | 2 | - |
 | packages/editor/src/commands/event-editor-open.ts | 300 | 2 | - |
 | packages/editor/src/components/common/ColorBox.vue | 132 | 2 | - |
 | packages/editor/src/components/common/DetailBox.vue | 91 | 2 | - |
@@ -228,7 +228,6 @@
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/components/tools/Reference.vue | 87 | 2 | 是 |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
-| packages/editor/src/composables/useArrayWindow.ts | 298 | 2 | 是 |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
 | packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
@@ -281,6 +280,7 @@
 | packages/editor/src/components/tools/Team.vue | 128 | 1 | - |
 | packages/editor/src/components/tools/UpdateLog.vue | 179 | 1 | - |
 | packages/editor/src/components/tools/Variable.vue | 374 | 1 | - |
+| packages/editor/src/composables/useArrayWindow.ts | 292 | 1 | - |
 | packages/editor/src/composables/usePresetElementWindow.ts | 241 | 1 | - |
 | packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 1 | - |
 | packages/editor/src/engine/scene/draw-start-position.ts | 81 | 1 | 是 |
