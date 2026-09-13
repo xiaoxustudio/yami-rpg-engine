@@ -143,7 +143,7 @@
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/editor/src/tools/text-capture.ts | 991 | 7 | - |
 | packages/editor/src/tools/window-object.ts | 510 | 7 | - |
-| packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 131 | 7 | - |
+| packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 130 | 7 | - |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
 | packages/editor/src/animation/animation-initialize.ts | 504 | 6 | - |
@@ -176,7 +176,7 @@
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-core.ts | 171 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 99 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 140 | 5 | - |
-| packages/editor/src/animation/animation-events.ts | 407 | 4 | - |
+| packages/editor/src/animation/animation-events.ts | 410 | 4 | - |
 | packages/editor/src/commands/command-tip.ts | 456 | 4 | - |
 | packages/editor/src/commands/schema.ts | 434 | 4 | - |
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
@@ -224,7 +224,7 @@
 | packages/editor/src/components/common/SwitchItem.vue | 113 | 2 | - |
 | packages/editor/src/components/inspector/FileScriptPage.vue | 84 | 2 | - |
 | packages/editor/src/components/inspector/SceneActorPage.vue | 275 | 2 | - |
-| packages/editor/src/components/inspector/SceneParallaxPage.vue | 576 | 2 | - |
+| packages/editor/src/components/inspector/SceneParallaxPage.vue | 568 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
@@ -259,12 +259,12 @@
 | packages/editor/src/components/common/CustomBox.vue | 122 | 1 | - |
 | packages/editor/src/components/common/PageManager.vue | 63 | 1 | - |
 | packages/editor/src/components/common/RadioBox.vue | 182 | 1 | - |
-| packages/editor/src/components/inspector/AnimSpriteLayerPage.vue | 136 | 1 | - |
+| packages/editor/src/components/inspector/AnimSpriteLayerPage.vue | 115 | 1 | - |
 | packages/editor/src/components/inspector/FileFontPage.vue | 108 | 1 | - |
 | packages/editor/src/components/inspector/FileImagePage.vue | 84 | 1 | - |
 | packages/editor/src/components/inspector/FileScenePage.vue | 288 | 1 | - |
 | packages/editor/src/components/inspector/FileVideoPage.vue | 74 | 1 | - |
-| packages/editor/src/components/inspector/ParticleLayerPage.vue | 1664 | 1 | - |
+| packages/editor/src/components/inspector/ParticleLayerPage.vue | 1657 | 1 | - |
 | packages/editor/src/components/inspector/SceneAnimationPage.vue | 377 | 1 | - |
 | packages/editor/src/components/inspector/SceneLightPage.vue | 584 | 1 | - |
 | packages/editor/src/components/inspector/SceneParticlePage.vue | 343 | 1 | - |
@@ -274,7 +274,7 @@
 | packages/editor/src/components/layout/palette-items.ts | 35 | 1 | - |
 | packages/editor/src/components/menu-list.ts | 69 | 1 | - |
 | packages/editor/src/components/tools/AutoTile.vue | 313 | 1 | - |
-| packages/editor/src/components/tools/Command.vue | 252 | 1 | - |
+| packages/editor/src/components/tools/Command.vue | 254 | 1 | - |
 | packages/editor/src/components/tools/Easing.vue | 448 | 1 | - |
 | packages/editor/src/components/tools/Event.vue | 182 | 1 | - |
 | packages/editor/src/components/tools/Localization.vue | 169 | 1 | - |
@@ -370,7 +370,7 @@
 | packages/editor/src/components/commands/ActivateScene.vue | 66 | 0 | - |
 | packages/editor/src/components/commands/AddAnimationComponent.vue | 129 | 0 | - |
 | packages/editor/src/components/commands/AppendTarget.vue | 54 | 0 | - |
-| packages/editor/src/components/commands/Block.vue | 98 | 0 | - |
+| packages/editor/src/components/commands/Block.vue | 99 | 0 | - |
 | packages/editor/src/components/commands/Break.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/CastSkill.vue | 102 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorAnimation.vue | 59 | 0 | - |
@@ -408,7 +408,7 @@
 | packages/editor/src/components/commands/FixAngle.vue | 72 | 0 | - |
 | packages/editor/src/components/commands/FollowActor.vue | 191 | 0 | - |
 | packages/editor/src/components/commands/ForEach.vue | 160 | 0 | - |
-| packages/editor/src/components/commands/GameData.vue | 93 | 0 | - |
+| packages/editor/src/components/commands/GameData.vue | 94 | 0 | - |
 | packages/editor/src/components/commands/GetActor.vue | 194 | 0 | - |
 | packages/editor/src/components/commands/GetMultipleActors.vue | 158 | 0 | - |
 | packages/editor/src/components/commands/GetObjectProperty.vue | 93 | 0 | - |
@@ -497,7 +497,7 @@
 | packages/editor/src/components/commands/SetZoomFactor.vue | 95 | 0 | - |
 | packages/editor/src/components/commands/ShakeScreen.vue | 118 | 0 | - |
 | packages/editor/src/components/commands/ShowChoices.vue | 77 | 0 | - |
-| packages/editor/src/components/commands/ShowText.vue | 97 | 0 | - |
+| packages/editor/src/components/commands/ShowText.vue | 98 | 0 | - |
 | packages/editor/src/components/commands/SimulateKey.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/StopActorAnimation.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/StopAudio.vue | 69 | 0 | - |
@@ -538,7 +538,7 @@
 | packages/editor/src/components/common/TabBar.vue | 147 | 0 | - |
 | packages/editor/src/components/common/TextArea.vue | 112 | 0 | - |
 | packages/editor/src/components/common/TextAreaVar.vue | 158 | 0 | - |
-| packages/editor/src/components/common/TextBox.vue | 168 | 0 | - |
+| packages/editor/src/components/common/TextBox.vue | 180 | 0 | - |
 | packages/editor/src/components/common/TitleBar.vue | 43 | 0 | - |
 | packages/editor/src/components/common/TreeList.vue | 75 | 0 | - |
 | packages/editor/src/components/custom-box-opts.ts | 270 | 0 | - |
@@ -565,13 +565,13 @@
 | packages/editor/src/components/inspector/FileTriggerPage.vue | 409 | 0 | - |
 | packages/editor/src/components/inspector/FileUIPage.vue | 76 | 0 | - |
 | packages/editor/src/components/inspector/UIAnimationPage.vue | 154 | 0 | - |
-| packages/editor/src/components/inspector/UIButtonPage.vue | 817 | 0 | - |
-| packages/editor/src/components/inspector/UIDialogBoxPage.vue | 342 | 0 | - |
+| packages/editor/src/components/inspector/UIButtonPage.vue | 818 | 0 | - |
+| packages/editor/src/components/inspector/UIDialogBoxPage.vue | 343 | 0 | - |
 | packages/editor/src/components/inspector/UIImagePage.vue | 670 | 0 | - |
 | packages/editor/src/components/inspector/UIProgressBarPage.vue | 416 | 0 | - |
 | packages/editor/src/components/inspector/UIReferencePage.vue | 73 | 0 | - |
-| packages/editor/src/components/inspector/UITextBoxPage.vue | 237 | 0 | - |
-| packages/editor/src/components/inspector/UITextPage.vue | 423 | 0 | - |
+| packages/editor/src/components/inspector/UITextBoxPage.vue | 238 | 0 | - |
+| packages/editor/src/components/inspector/UITextPage.vue | 424 | 0 | - |
 | packages/editor/src/components/inspector/UIVideoPage.vue | 113 | 0 | - |
 | packages/editor/src/components/inspector/UIWindowPage.vue | 218 | 0 | - |
 | packages/editor/src/components/keyboard-box.ts | 6 | 0 | - |
@@ -591,7 +591,7 @@
 | packages/editor/src/components/tools/ArrayList.vue | 130 | 0 | - |
 | packages/editor/src/components/tools/ArrayListNumber.vue | 19 | 0 | - |
 | packages/editor/src/components/tools/ArrayListString.vue | 19 | 0 | - |
-| packages/editor/src/components/tools/Attribute.vue | 286 | 0 | - |
+| packages/editor/src/components/tools/Attribute.vue | 287 | 0 | - |
 | packages/editor/src/components/tools/AutoTileFrameIndex.vue | 87 | 0 | - |
 | packages/editor/src/components/tools/AutoTileGenerateFrames.vue | 73 | 0 | - |
 | packages/editor/src/components/tools/AutoTileSelectNode.vue | 65 | 0 | - |
@@ -605,7 +605,7 @@
 | packages/editor/src/components/tools/Deployment.vue | 134 | 0 | - |
 | packages/editor/src/components/tools/EditData.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/ElementGetter.vue | 103 | 0 | - |
-| packages/editor/src/components/tools/Enum.vue | 197 | 0 | - |
+| packages/editor/src/components/tools/Enum.vue | 198 | 0 | - |
 | packages/editor/src/components/tools/EquipmentGetter.vue | 100 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 96 | 0 | - |
 | packages/editor/src/components/tools/ExportApk.vue | 154 | 0 | - |
@@ -994,7 +994,7 @@
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
-| packages/editor/src/localize/template-localized.ts | 1988 | 0 | - |
+| packages/editor/src/localize/template-localized.ts | 2014 | 0 | - |
 | packages/editor/src/log/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
@@ -1166,7 +1166,7 @@
 | packages/editor/src/utils/color-utils.ts | 2 | 0 | - |
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
-| packages/editor/src/utils/element-data.ts | 109 | 0 | - |
+| packages/editor/src/utils/element-data.ts | 106 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |

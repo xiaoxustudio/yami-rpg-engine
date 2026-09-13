@@ -184,6 +184,8 @@
 
 - 2026-09-12 **R2b 迁移⑪：inspector 三页的「直读语言表」改为 useLocalizedOptions，扫描面 137 → 131**。① **第三种承载形态**：`AnimSpriteLayerPage` / `ParticleLayerPage` / `SceneParallaxPage` 用 `const getOptions = (id) => local.components?.[id]?.options` + `getOptions('sceneParallax-light')?.[key]?.name || 'Raw'` 逐项拼选项名——**绕过了 `t()`**，所以既不被判据视为已承担，也无法让本地化器跳过；其实它们**已经在用语言表**，只是没走 `t()`。② **改法**：这类 `loadItems([...])` 块换成 `useLocalizedOptions('<控件 id>', [值…], (items) => el?.loadItems?.(items))`（名字按约定取 `components.<id>.options.<值>.name`，且响应式），共 6 个块。③ **顺带清理**：`SceneParallaxPage` 的 `getOptions` 失去使用者 → 删除（`vue-tsc` 的 `TS6133` 当场报出）；`ParticleLayerPage` 的那份仍在别处使用，保留。④ **过程记录**：首个脚本因假设 `?.loadItems`（实际有 `el.value.loadItems(` 直呼）而 0 命中，放宽后才匹配——**脚本化的第一要务是先把真实形态枚举清楚**。**指标**：扫描面 **137 → 131**（−94% 起点 2130）、模板承担键 **1992 → 1998**。**门禁**：`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`docs:check` OK。
 
+- 2026-09-12 **P4b 第二刀：只写/纯内部字段再删 2 个，`DATA_FIELDS` 72 → 70**。① **先量化**：写了一次性脚本把每个字段的引用分成**写**（`.field =` / `++` / `+=`）与**读**（其余 `.field`），据此找"只写不读 = 等价死状态"——全仓只有 **1 个** `_unit`（`YMNumberBox/number-box-api.ts` 写完即无人读），连同接口声明删除。② **另删 1 个纯内部状态字段** `refreshing`（`animation/animation-events.ts` 的防重入标记）→ 改用 `getElementData(list).refreshing`：**这是本仓第一处「原型访问器读法 → 显式 `getElementData`」的真实迁移**，可作为后续逐组件的样板。③ **剩余 70 个字段都有真实读取**，且多数是跨组件约定（`lastText`/`hiddenNodes` 在 `YMTextBox` 与 `YMTreeList` 之间传递、`togglable` 属 `getListConfig` 公开面）——**这类必须与 P2b 的类型化元素 API 契约同批改**，否则只是把隐式约定换个地方藏。**指标**：`DATA_FIELDS` **72 → 70**（访问器 140）。**门禁**：`pnpm lint` 0/0、editor `tsc` strict 与 `vue-tsc` 0 新增、两个套件全绿、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
