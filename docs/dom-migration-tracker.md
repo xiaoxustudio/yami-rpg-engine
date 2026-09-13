@@ -8,7 +8,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | editor/App.vue      | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/AppShell.vue | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/animation    | 11 | 6 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 |
+| editor/animation    | 11 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 |
 | editor/attribute    | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -29,14 +29,14 @@
 | editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/main.ts      | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
 | editor/module       | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
-| editor/palette      | 13 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
+| editor/palette      | 13 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
 | editor/particle     | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |
 | editor/plugin       | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 0 | 0 | 0 |
 | editor/printer      | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/scene        | 28 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
 | editor/services     | 46 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 3 | 0 | 0 |
 | editor/stores       | 39 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
-| editor/title        | 6 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 3 | 0 | 8 | 2 | 0 | 0 | 0 |
+| editor/title        | 6 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 8 | 2 | 0 | 0 | 0 |
 | editor/tools        | 17 | 7 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
@@ -48,16 +48,16 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 54 | 54 | 10 | 18 | 1 | 15 | 0 | 138 | 122 | 17 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 50 | 50 | 10 | 18 | 1 | 15 | 0 | 133 | 122 | 14 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**54**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**54**
+- 待迁移命中文件：**50**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**50**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**22**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**24**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -111,7 +111,7 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
-| packages/editor/src/utils/dom.ts | 214 | 11 | 是 |
+| packages/editor/src/utils/dom.ts | 218 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -165,12 +165,9 @@
 | packages/editor/src/components/inspector/FileAudioPage.vue | 249 | 5 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
-| packages/editor/src/palette/auto-tile.ts | 979 | 5 | 是 |
-| packages/editor/src/palette/palette-initialize.ts | 148 | 5 | 是 |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 5 | - |
 | packages/editor/src/scene/scene-events-window.ts | 367 | 5 | - |
 | packages/editor/src/scene/scene-window.ts | 1531 | 5 | - |
-| packages/editor/src/title/menu-bar.ts | 1193 | 5 | 是 |
 | packages/ui-kit/src/components/basic/YMGamepadBox/YMGamepadBox.vue | 216 | 5 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 185 | 5 | - |
@@ -178,14 +175,15 @@
 | packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 100 | 5 | 是 |
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 140 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 407 | 4 | - |
-| packages/editor/src/animation/animation-timeline.ts | 1183 | 4 | 是 |
 | packages/editor/src/commands/command-tip.ts | 456 | 4 | - |
 | packages/editor/src/commands/schema.ts | 434 | 4 | - |
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
 | packages/editor/src/composables/usePointerObjectWindow.ts | 39 | 4 | 是 |
 | packages/editor/src/engine/webgl/webgl-init.ts | 113 | 4 | 是 |
+| packages/editor/src/palette/palette-initialize.ts | 149 | 4 | - |
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
 | packages/editor/src/title/home-page.ts | 510 | 4 | - |
+| packages/editor/src/title/menu-bar.ts | 1195 | 4 | 是 |
 | packages/editor/src/tools/script-list.ts | 201 | 4 | - |
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
@@ -213,7 +211,7 @@
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 134 | 3 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-core.ts | 134 | 3 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 356 | 3 | - |
-| packages/editor/src/animation/animation-motion.ts | 1129 | 2 | 是 |
+| packages/editor/src/animation/animation-timeline.ts | 1185 | 2 | - |
 | packages/editor/src/attribute/attribute-window.ts | 1057 | 2 | - |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
 | packages/editor/src/commands/command-custom.ts | 377 | 2 | - |
@@ -239,6 +237,7 @@
 | packages/editor/src/main/startup.ts | 43 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
 | packages/editor/src/module/constants.ts | 106 | 2 | - |
+| packages/editor/src/palette/auto-tile.ts | 976 | 2 | - |
 | packages/editor/src/particle/particle-events.ts | 216 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1403 | 2 | 是 |
 | packages/editor/src/tools/event-list.ts | 185 | 2 | - |
@@ -247,6 +246,7 @@
 | packages/ui-kit/src/components/basic/YMEmptyState/YMEmptyState.vue | 64 | 2 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/YMSelectBox.vue | 377 | 2 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/drag-and-drop-hint-api.ts | 97 | 2 | 是 |
+| packages/editor/src/animation/animation-motion.ts | 1130 | 1 | - |
 | packages/editor/src/audio/audio-manager.ts | 145 | 1 | 是 |
 | packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 1 | - |
 | packages/editor/src/commands/event-editor-initialize.ts | 509 | 1 | - |
