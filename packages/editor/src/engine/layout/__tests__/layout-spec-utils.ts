@@ -4,7 +4,8 @@ import {
 	setItemPage,
 	awaitVueLayoutLoad,
 	refreshLayoutTargets,
-	getNavLastValue
+	getNavLastValue,
+	registerLayoutItems
 } from '@app/engine/layout/layout.ts';
 import * as elementUtils from '@app/utils/element-utils';
 
@@ -112,6 +113,15 @@ export function buildLayoutFixture(values: readonly string[] = [...TAB_VALUES]):
 		list.push(navItem);
 	}
 	items.list = list;
+	// P1b：fixture 改走生产路径的 **palette 显式登记**（`registerLayoutItems`）——
+	// 这样 layout.ts 里那条「全文档 `.nav-item[value]`/`.page-frame[value]` 兜底」才能删除。
+	registerLayoutItems(
+		list.map((navItem) => ({
+			value: navItem.getAttribute('value') ?? '',
+			nav: navItem,
+			page: navItem.page
+		}))
+	);
 
 	return { workspace, directory, scene, items, paletteNav, paletteManager };
 }

@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { engineEls } from '@app/engine/element-registry';
 import { storesEls } from '@app/stores/element-registry';
@@ -426,20 +425,24 @@ Layout.initialize = function () {
 	const nav = engineEls.get('layout-nav') as HTMLElement;
 	const manager = engineEls.get('layout-page-manager') as HTMLElement;
 	const items = (this.items = {} as LayoutItems);
-	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）；
-	// DOM 发现（palette 容器子节点 → 全文档回退）仅作登记缺失项的兜底，
-	// 保证 fixture/手工 DOM 与真机两种形态都能成全 items/配对。
+	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）。
+	// P1b：登记缺失时的兜底改为**在 palette 容器子树内**查找——原先用
+	// `document.querySelectorAll('.nav-item[value]')` / `('.page-frame[value]')` 全文档扫，
+	// 而条目本来就在这两个容器里；子树查询保留了「不因登记不完整而丢项」的韧性
+	// （用例 `layout-item-registry.spec.ts` 的「兜底合并」守着它），又不越出组件自身范围。
 	const isElement = (node: Node): boolean => node.nodeType === 1;
 	const paletteNavs = Array.from(nav?.childNodes ?? []).filter(isElement) as HTMLElement[];
 	const palettePages = Array.from(manager?.childNodes ?? []).filter(isElement) as HTMLElement[];
 	const domNavs =
 		paletteNavs.length !== 0
 			? paletteNavs
-			: (Array.from(document.querySelectorAll('.nav-item[value]')) as HTMLElement[]);
+			: (Array.from(nav?.querySelectorAll('.nav-item[value]') ?? []) as HTMLElement[]);
 	const domPages =
 		palettePages.length !== 0
 			? palettePages
-			: (Array.from(document.querySelectorAll('.page-frame[value]')) as HTMLElement[]).filter(
+			: (
+					Array.from(manager?.querySelectorAll('.page-frame[value]') ?? []) as HTMLElement[]
+				).filter(
 					(frame) => frame.id !== '' || frame.closest('#layout-page-manager') !== null
 				);
 	const navItems: HTMLElement[] = [];

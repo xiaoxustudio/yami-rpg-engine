@@ -5,6 +5,8 @@ import {
 	registerLayoutItems,
 	resetRegisteredLayoutItems
 } from '@app/engine/layout/layout.ts';
+import { engineEls } from '@app/engine/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { registerLayout } from './layout-spec-utils';
 
 // M5-c：palette 显式登记（LayoutPanel 拥有 palette 节点）后，
@@ -39,6 +41,10 @@ const makeFixture = () => {
 	paletteManager.id = 'layout-page-manager';
 	paletteManager.className = 'page-manager';
 	directory.append(paletteNav, paletteManager);
+	// P1b：palette 容器按生产路径登记（LayoutPanel 就是这么做的）——「登记缺失项」的兜底
+	// 现在只在**容器子树内**查找，故容器本身必须在注册表里。
+	registerElement(engineEls, 'layout-nav', paletteNav);
+	registerElement(engineEls, 'layout-page-manager', paletteManager);
 
 	const items = {} as Record<string, HTMLElement> & {
 		list: HTMLElement[];
