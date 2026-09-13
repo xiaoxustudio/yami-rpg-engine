@@ -172,6 +172,8 @@
 
 - 2026-09-12 **R2b 迁移⑤：补齐「只缺 tip」的键，本地化器扫描面 347 → 307（−40 键）**。① 先从语言文件反查「字段集合 == {`tip`}」且承载 SFC 里还没有 `v-tip` 的键——**40 个**，且只落在 **2 个 SFC**（`AppShell.vue`、`LayoutPanel.vue`）；② 在承载 SFC 的 `id="<键>"` 属性行后插入 `v-tip="t('components.<键>.tip')"`（沿用迁移②已跑过 1436 处的同一形态，故模板/类型风险低）；③ 其中 2 个键的承载文件此前**从未用过 `t`**（`title-play`、`scene-switch-grid`），脚本顺带补了 `useI18n()`——这正是此前"content 类键降不下来"的原因之一；④ 重跑 `scripts/i18n-skip-list.mjs` 生成 `localize/template-localized.ts`（跳过键 1782 → **1822**），防漂移用例 `template-localized.spec.ts` 通过。**指标**：扫描面 **347 → 307**（−86%，起点 2130）。**剩余构成**：`options` 209（`loadItems` 的选项名，需按组件逐类设计映射）、`content` 26、`label` 25、`placeholder` 11、选择器键 18（`[name]`，需 `YMFormButtons` 自注册）、`title` 8、无模板承载 17。**门禁**：`pnpm lint` 0/0、`vue-tsc` 0 新增、`pnpm docs:check` OK。
 
+- 2026-09-12 **R2b 迁移⑥：`content` 类键改由模板承担，扫描面 307 → 284（−23 键）**。① 反查「字段集合 == {`content`}」且未被模板承担的键（**23 个**），把承载元素自身文本换成 `{{ t('components.<键>.content') }}`（行内/分行两种形态都处理），落在 **4 个 SFC**（`LayoutPanel.vue` 最多，另 `HomeRecentList.vue`、`AnimSpriteFramePage.vue`、`AppShell.vue`）。② **踩坑**：`HomeRecentList.vue` 此前没有 `useI18n()`，插入 `t()` 后 `vue-tsc` 立刻 `TS2339`（模板里没有 `t`）→ 补 `import { useI18n }` + `const { t } = useI18n();`。**教训：凡往模板写 `t()` 的脚本，必须同时保证 `t` 在作用域内**（迁移⑤的脚本已经这么做，本轮漏了，靠 `typecheck:vue` 兜住——再次说明这一项必须每刀跑）。③ 生成物 `template-localized.ts` 重跑（**1845** 键），防漂移用例通过。**指标**：扫描面 **307 → 284**（−87%，起点 2130）。**剩余构成**：`options` **209**（最大头，选项名由本地化器在语言切换时写入 `loadItems`/`setItemNames`，改模板需逐类设计映射与重挂钩子）、`label` 25（多为 `{label, tip}` 组合键）、`placeholder` 11、`[name]` 选择器键 18（需 `YMFormButtons` 自注册）、`title` 8、无模板承载 17。**门禁**：`pnpm lint` 0/0、`vue-tsc` 0 新增、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
