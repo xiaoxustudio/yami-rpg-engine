@@ -114,6 +114,19 @@
 
 **刻意保持纯函数**：不碰 DOM、不读组件状态，同一输入多次调用结果一致（含 key 稳定性）——这样 M3 换渲染时，"行数据"本身有独立的对照物。**下一步（切片 2）**：把 `computeStartAndEnd` 的窗口计算抽成 `computeVisibleRows(rows, { scroll, viewport })`，再由 `command-api.ts` 改调它（此时才第一次改调用方，仍不改渲染输出）。
 
+**已落地（切片 2，2026-09-12）：翻页数学抽出并接线**。`pageUp`/`pageDown` 里内联的滚动数学搬进 `command-render.ts` 的纯函数，`command-api.ts` 改调它们——**这是 M2 第一次改调用方**，行为逐字保持不变（由 M1 的 `pageUp/pageDown` 用例 + M2 新增 6 例双向盯住）：
+
+| 计划名 | 实现名 | 原实现（逐字对照） |
+| --- | --- | --- |
+| 行高常量 | `ROW_HEIGHT = 20` | 原实现里反复出现的字面量 `20` |
+| 一页行数 | `pageScrollLines(viewportHeight)` | `Math.floor(innerHeight / 20) - 1`（加了 0 下限） |
+| 上翻滚动位置 | `computePageUpScrollTop(ctx)` | `Math.max(scrollTop - scrollLines * 20, 0)` |
+| 上翻目标行 | `computePageUpTargetIndex(ctx)` | `Math.min(anchor, floor((scrollTop + innerHeight)/20) - 1) - scrollLines` |
+| 下翻滚动位置 | `computePageDownScrollTop(ctx, clamped)` | `top + scrollLines * 20`，夹取时再 `Math.min(next, rowCount*20 - innerHeight)` 并 `Math.max(top, …)` |
+| 下翻目标行 | `computePageDownTargetIndex(ctx)` | `Math.max(anchor, floor(top/20)) + scrollLines` |
+
+**下一步（切片 3）**：同样的办法处理 `scrollToRow`/`scrollToSelection` 的定位数学，然后才是 `file-body-render.ts`（复用 `file-body-core` 的 `compute*Metrics`）。
+
 新增 `YMCommandList/command-render.ts`：把 `createCommandBuffer`/`computeTextIndent` 里的**纯数据部分**抽出来——扁平化可见行（含折叠态、缩进层级、选区态、搜索命中、disabled）、行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`）、窗口计算；`YMFileBodyPane/file-body-render.ts`：复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key。
 
 **接口草案（2026-09-11，照 tree `tree-render.ts` 的形状；落地时以实现为准，并补一份 1.5 式「计划名→实现名」对照表）**

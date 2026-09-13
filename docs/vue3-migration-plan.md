@@ -204,6 +204,8 @@
 
 - 2026-09-12 **B1/M2 起步：派生层切片 1（`command-render.ts` + 9 例，渲染未动）**。① 新增 `YMCommandList/command-render.ts`：`rowKeyOf(command)`（WeakMap 发号，同 tree——`command.id` 允许重复）+ `deriveCommandRows(commands, { selection, hits })`（深度优先扁平化**可见行**：`{ key, command, list, index, indent, folded, selected, disabled, hit }`）+ `rowIndents()`。② **刻意是纯函数**：不碰 DOM、不读组件状态，同一输入多次调用结果一致（**含 key 稳定性**），这样 M3 换渲染时"行数据"有独立对照物。③ 语义与 tree 改造对齐：折叠的行**只出自己**（子行不进可见集）、`folded` 只在**真有子命令**时成立、缩进层级与语言无关（缩进**宽度**仍由 `computeTextIndent` 给）。④ 9 例覆盖：扁平顺序/嵌套 indent/折叠排除子行/无子命令的 folded/选区区间/命中集 Set 与数组/disabled 透传/**key 稳定且重复 id 不冲突**/空输入。⑤ **渲染一行没改**（M2 明令"不动渲染"）——切片 2 才把 `computeStartAndEnd` 的窗口计算抽成 `computeVisibleRows` 并由 `command-api.ts` 改调（第一次改调用方，仍不改渲染输出）。⑥ 顺带修掉一个**度量误报**：新模块注释里写了 `document.createElement` 字样，被 tracker 计入 `createElement` 口径（132 → 133、设计豁免 45 → 46）——改写注释后回到 132/45，**文档注释不该污染度量口径**这条又验证了一次。**门禁**：ui-kit **100 文件 704/704**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M2 切片 2：翻页数学抽出并接线（M2 第一次改调用方）**。① `pageUp`/`pageDown` 里内联的滚动数学搬进 `command-render.ts`：`ROW_HEIGHT`、`pageScrollLines(viewportHeight)`、`computePageUpScrollTop/TargetIndex(ctx)`、`computePageDownScrollTop(ctx, clamped)/TargetIndex(ctx)`；`command-api.ts` 改为 `commandRender.*` 调用，**表达式与原实现逐字等价**（夹取分支保留 `Math.min(next, rowCount*20 - innerHeight)` 与 `Math.max(top, …)`，`pageScrollLines` 补了 0 下限以免极小视口出负数）。② **行为由两侧共同盯住**：M1 的 `pageDown/pageUp`（含 `select=true` 带走选区）用例 + M2 新增 6 例（行高/翻页行数/上翻边界/下翻夹取/目标行公式）。③ 6 例都按"原实现公式"直写期望值，等于把内联数学的语义**第一次写成可读断言**。④ **下一步（切片 3）**：`scrollToRow`/`scrollToSelection` 的定位数学同样抽出，之后再做 `file-body-render.ts`。**门禁**：命令列表 4 文件 66 例全绿、ui-kit **100 文件 710/710**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
