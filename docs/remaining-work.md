@@ -14,7 +14,7 @@
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
 | R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
-| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫：1782 → **2004** 键由模板承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
+| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬：1782 → **2019** 键由模板承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
@@ -186,7 +186,7 @@
 
 ## R2b — 选择器式本地化器（`localizeDomComponents`）
 
-- **现状证据（2026-09-11 实测；**R2b 迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫后本地化器扫描面 2130 → 125 键（−94%）**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
+- **现状证据（2026-09-11 实测；**R2b 迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬后本地化器扫描面 2130 → 110 键（−95%）**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
 - **现状证据（2026-09-11 实测；**R2b 迁移②后本地化器扫描面 2130 → 889 键**，见下方「R2b 迁移②及其重要更正」）**：`packages/editor/src/localize/dom-localizer.ts`（L63-86）按语言文件的 `components` 映射**在启动时逐键查 DOM**——`[.class]` → `getElementsByClassName`、`[name]` → `getElementsByName`、其余 → `getElementById`，命中后由 `setLocalElement` 写 `textContent` / `title` / `label` / `tip` / `content` / `placeholder` / `options` 并收集 `saveItems`。语言文件 `Project/Locales/en-US.English.json` 的 `components` 有 **2130** 个键（zh-CN 2131）：**18 个方括号键**（`[confirm]`/`[cancel]`/`[apply]`…，对应 `YMFormButtons.vue` 等处的 `name="…"`）与 **2112 个 id 键**。**关键事实（本轮实测更正）**：`components` **同时是 vue-i18n 的消息树**——源码里 `t('components.<键>.<字段>')` 引用了 **1957 个键**，删键会让模板解析失败，因此**键不随承载方式变化而删除**；R2b 的可量化目标是**扫描面**（已由模板承担的键在本地化器里跳过）。
 - **推进策略（先分级后动手）**：① 按"承载者"给键分类（**已完成**：Vue 模板已全字段承担 1241 / 部分承担 712 / 零承担 881 / 非 Vue 17 / 孤儿 1）；② 把 Vue 承担的部分改为模板 `t()` 或 `v-tip`（**迁移②已完成 1436 处 `v-tip`**，覆盖 tip 字段；label 早已是 `t()`）；③ 本地化器**跳过**已由模板承担的键（**已实现**：`localize/template-localized.ts` 生成物 + 防漂移 spec，扫描面 2130 → 889）；④ 剩余键（`content`/`options`/`placeholder` 字段与 `[name]` 选择器键）继续按"目标元素自行注册/模板承载"迁移，直到扫描面收敛到白名单。
 - **验收标准**：① `localizeDomComponents` 的**扫描面**收敛（当前 2130 → **889**，目标=白名单）；② 中英切换在真机上行为不变（逐类抽查）；③ 文档给出**扫描面**下降曲线（**更正**：不再用"键数下降曲线"——键是翻译数据，不随承载方式减少）；④ `editor/localize` 的 `oxlint-disable` 豁免删除。
@@ -283,7 +283,21 @@
 - 剩 2 个（`selector-search`、`setListIndexSkipCheck`）**在任何 SFC 里都搜不到**（`id="<键>"` 与 `components.<键>.` 均无命中）⇒ 由运行期拼 id 的元素工厂创建，随 B1/B6 一并处理。
 - **指标**：扫描面 **131 → 125**；模板承担键 **1998 → 2004**；`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **235 文件 1983/1983**、`docs:check` OK。
 
-**剩余 125 键的构成**（权威数字见 `scripts/i18n-skip-list.mjs`）：`options` ≈79（值集合不完整、名字来自变量，或走 `setItemNames`）、`content` 3、`title` 1、`selector-search` 与 `setListIndexSkipCheck` 2、其余为 `save` 依赖键（按设计不跳过）。
+**R2b 迁移⑬（2026-09-12）：填「空 label 占位」，扫描面 125 → 110**
+
+分类剩余键时发现一种**从没被单独列过**的承载形态：设置窗口的每个控件写成
+
+```html
+<div class="text" />                                  <!-- 空占位：label 过去由本地化器写进来 -->
+<NumberBox id="setting-server-port" v-tip="…tip" />
+```
+
+tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这些键一直留在扫描面里。做法：把紧邻控件行的空占位填成 `<div class="text">{{ t('components.<键>.label') }}</div>`，共 **15 个键 / 1 个 SFC**（`tools/Setting.vue`；`EventSearchString.vue` 的 2 个键形态不同，留待下批）。
+
+- **可复用判据**：`label` 的承载者是"**控件前一个兄弟元素**"（与 `v-tip` 取 title 的约定同源）⇒ 找 label 缺口要看**控件前一行是否为空 `.text` 占位**，而不是只看控件自己。
+- **指标**：扫描面 **125 → 110**；模板承担键 **2004 → 2019**；`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **235 文件 1983/1983**、`docs:check` OK。
+
+**剩余 110 键的构成**（权威数字见 `scripts/i18n-skip-list.mjs`）：`options` ≈79（值集合不完整、名字来自变量，或走 `setItemNames`）、`EventSearchString.vue` 的 2 个 label、`content` 3、`title` 1、`selector-search` 与 `setListIndexSkipCheck` 2、其余为 `save` 依赖键（按设计不跳过）。
 
 - **验证命令**：`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机切换语言后抽查窗口标题/菜单/按钮/tooltip。
 - **来源**：2026-09-11 第二十二轮度量审计（`components` 键数实测；此前 R2 只按源码处数记为"小"）。
