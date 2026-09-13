@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -64,11 +65,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('useItem-mode')?.loadItems?.([
-		{ name: 'By Shortcut Key', value: 'by-key' },
-		{ name: 'By Item ID', value: 'by-id' },
-		{ name: 'By Item Instance', value: 'by-item' }
-	]);
+	useLocalizedOptions('useItem-mode', ['by-key', 'by-id', 'by-item'], (items) =>
+		fieldEls.get('useItem-mode')?.loadItems?.(items)
+	);
 	fieldEls.get('useItem-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -76,10 +75,9 @@ onMounted(() => {
 			{ case: 'by-id', targets: [fieldEls.get('useItem-itemId')] },
 			{ case: 'by-item', targets: [fieldEls.get('useItem-item')] }
 		]);
-	fieldEls.get('useItem-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('useItem-wait', [true, false], (items) =>
+		fieldEls.get('useItem-wait')?.loadItems?.(items)
+	);
 });
 </script>
 

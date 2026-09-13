@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -183,10 +184,9 @@ onMounted(() => {
 			},
 			{ case: 'gray', targets: [fieldEls.get('tintImage-tint-3')] }
 		]);
-	fieldEls.get('tintImage-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('tintImage-wait', [true, false], (items) =>
+		fieldEls.get('tintImage-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('tintImage')?.on?.('open', () => {
 		fieldEls.get('tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -61,12 +62,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setShortcut-operation')?.loadItems?.([
-		{ name: 'Set Item Shortcut', value: 'set-item-shortcut' },
-		{ name: 'Set Skill Shortcut', value: 'set-skill-shortcut' },
-		{ name: 'Delete Shortcut', value: 'delete-shortcut' },
-		{ name: 'Swap Shortcuts', value: 'swap-shortcuts' }
-	]);
+	useLocalizedOptions('setShortcut-operation', ['set-item-shortcut', 'set-skill-shortcut', 'delete-shortcut', 'swap-shortcuts'], (items) =>
+		fieldEls.get('setShortcut-operation')?.loadItems?.(items)
+	);
 	fieldEls.get('setShortcut-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

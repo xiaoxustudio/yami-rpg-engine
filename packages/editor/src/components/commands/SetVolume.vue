@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -81,10 +82,9 @@ onMounted(() => {
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
-	fieldEls.get('setVolume-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setVolume-wait', [true, false], (items) =>
+		fieldEls.get('setVolume-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setVolume')?.on?.('open', () => {
 		fieldEls.get('setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

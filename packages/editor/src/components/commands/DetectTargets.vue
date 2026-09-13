@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -60,18 +61,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('detectTargets-selector')?.loadItems?.([
-		{ name: 'Enemy', value: 'enemy' },
-		{ name: 'Friend', value: 'friend' },
-		{ name: 'Team Member', value: 'team' },
-		{ name: 'Team Member Except Self', value: 'team-except-self' },
-		{ name: 'Any Except Self', value: 'any-except-self' },
-		{ name: 'Any', value: 'any' }
-	]);
-	fieldEls.get('detectTargets-inSight')?.loadItems?.([
-		{ name: 'Enabled', value: true },
-		{ name: 'Disabled', value: false }
-	]);
+	useLocalizedOptions('detectTargets-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
+		fieldEls.get('detectTargets-selector')?.loadItems?.(items)
+	);
+	useLocalizedOptions('detectTargets-inSight', [true, false], (items) =>
+		fieldEls.get('detectTargets-inSight')?.loadItems?.(items)
+	);
 });
 </script>
 

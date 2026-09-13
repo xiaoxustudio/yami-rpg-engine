@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -43,11 +44,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setTerrain-terrain')?.loadItems?.([
-		{ name: 'Land', value: 'land' },
-		{ name: 'Water', value: 'water' },
-		{ name: 'Wall', value: 'wall' }
-	]);
+	useLocalizedOptions('setTerrain-terrain', ['land', 'water', 'wall'], (items) =>
+		fieldEls.get('setTerrain-terrain')?.loadItems?.(items)
+	);
 });
 </script>
 

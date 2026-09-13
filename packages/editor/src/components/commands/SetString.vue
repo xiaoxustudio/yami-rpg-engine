@@ -247,6 +247,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -327,24 +328,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setString-operation')?.loadItems?.([
-		{ name: 'Set', value: 'set' },
-		{ name: 'Add', value: 'add' }
-	]);
-	fieldEls.get('setString-operand-type')?.loadItems?.([
-		{ name: 'Constant', value: 'constant' },
-		{ name: 'Variable', value: 'variable' },
-		{ name: 'Template String', value: 'template' },
-		{ name: 'String Method', value: 'string' },
-		{ name: 'Attribute Key', value: 'attribute' },
-		{ name: 'Enumeration', value: 'enum' },
-		{ name: 'Object', value: 'object' },
-		{ name: 'Element', value: 'element' },
-		{ name: 'List', value: 'list' },
-		{ name: 'Parameter', value: 'parameter' },
-		{ name: 'Script', value: 'script' },
-		{ name: 'Other', value: 'other' }
-	]);
+	useLocalizedOptions('setString-operation', ['set', 'add'], (items) =>
+		fieldEls.get('setString-operation')?.loadItems?.(items)
+	);
+	useLocalizedOptions('setString-operand-type', ['constant', 'variable', 'template', 'string', 'attribute', 'enum', 'object', 'element', 'list', 'parameter', 'script', 'other'], (items) =>
+		fieldEls.get('setString-operand-type')?.loadItems?.(items)
+	);
 	fieldEls.get('setString-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([

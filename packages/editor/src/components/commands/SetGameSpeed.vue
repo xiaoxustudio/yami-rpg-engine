@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -64,10 +65,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setGameSpeed-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setGameSpeed-wait', [true, false], (items) =>
+		fieldEls.get('setGameSpeed-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setGameSpeed')?.on?.('open', () => {
 		fieldEls.get('setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

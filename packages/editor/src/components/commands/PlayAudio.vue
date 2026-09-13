@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -72,13 +73,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('playAudio-type')?.loadItems?.([
-		{ name: 'BGM', value: 'bgm' },
-		{ name: 'BGS', value: 'bgs' },
-		{ name: 'CV', value: 'cv' },
-		{ name: 'SE', value: 'se' },
-		{ name: 'SE - Attenuated', value: 'se-attenuated' }
-	]);
+	useLocalizedOptions('playAudio-type', ['bgm', 'bgs', 'cv', 'se', 'se-attenuated'], (items) =>
+		fieldEls.get('playAudio-type')?.loadItems?.(items)
+	);
 	fieldEls.get('playAudio-type')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: 'se-attenuated', targets: [fieldEls.get('playAudio-location')] }]);

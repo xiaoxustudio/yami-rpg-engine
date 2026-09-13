@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -124,12 +125,9 @@ onMounted(() => {
 			{ case: 'square', targets: [fieldEls.get('getActor-size')] },
 			{ case: 'circle', targets: [fieldEls.get('getActor-radius')] }
 		]);
-	fieldEls.get('getActor-selector')?.loadItems?.([
-		{ name: 'Team Enemy', value: 'enemy' },
-		{ name: 'Team Friend', value: 'friend' },
-		{ name: 'Team Member', value: 'team' },
-		{ name: 'Any', value: 'any' }
-	]);
+	useLocalizedOptions('getActor-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
+		fieldEls.get('getActor-selector')?.loadItems?.(items)
+	);
 	fieldEls.get('getActor-selector')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -176,11 +174,9 @@ onMounted(() => {
 		{ name: t('command.getActor.inactive') || 'Inactive', value: 'inactive' },
 		{ name: t('command.getActor.either') || 'Either', value: 'either' }
 	]);
-	fieldEls.get('getActor-exclusion')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Exclude an Actor', value: 'actor' },
-		{ name: 'Exclude a Team', value: 'team' }
-	]);
+	useLocalizedOptions('getActor-exclusion', ['none', 'actor', 'team'], (items) =>
+		fieldEls.get('getActor-exclusion')?.loadItems?.(items)
+	);
 	fieldEls.get('getActor-exclusion')
 		?.enableHiddenMode?.()
 		?.relate?.([

@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -84,15 +85,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('shakeScreen-mode')?.loadItems?.([
-		{ name: 'Random', value: 'random' },
-		{ name: 'Horizontal', value: 'horizontal' },
-		{ name: 'Vertical', value: 'vertical' }
-	]);
-	fieldEls.get('shakeScreen-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('shakeScreen-mode', ['random', 'horizontal', 'vertical'], (items) =>
+		fieldEls.get('shakeScreen-mode')?.loadItems?.(items)
+	);
+	useLocalizedOptions('shakeScreen-wait', [true, false], (items) =>
+		fieldEls.get('shakeScreen-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('shakeScreen')?.on?.('open', () => {
 		fieldEls.get('shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

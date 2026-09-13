@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -64,10 +65,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setZoomFactor-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setZoomFactor-wait', [true, false], (items) =>
+		fieldEls.get('setZoomFactor-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setZoomFactor')?.on?.('open', () => {
 		fieldEls.get('setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

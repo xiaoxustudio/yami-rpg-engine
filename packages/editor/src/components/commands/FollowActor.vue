@@ -95,6 +95,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -148,28 +149,24 @@ onMounted(() => {
 			{ case: 'circle', targets: [fieldEls.get('followActor-offset')] },
 			{ case: 'rectangle', targets: [fieldEls.get('followActor-vertDist')] }
 		]);
-	fieldEls.get('followActor-navigate')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('followActor-navigate', [true, false], (items) =>
+		fieldEls.get('followActor-navigate')?.loadItems?.(items)
+	);
 	fieldEls.get('followActor-navigate')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-bypass')] }]);
-	fieldEls.get('followActor-bypass')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
-	fieldEls.get('followActor-once')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('followActor-bypass', [true, false], (items) =>
+		fieldEls.get('followActor-bypass')?.loadItems?.(items)
+	);
+	useLocalizedOptions('followActor-once', [true, false], (items) =>
+		fieldEls.get('followActor-once')?.loadItems?.(items)
+	);
 	fieldEls.get('followActor-once')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-wait')] }]);
-	fieldEls.get('followActor-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('followActor-wait', [true, false], (items) =>
+		fieldEls.get('followActor-wait')?.loadItems?.(items)
+	);
 });
 </script>
 

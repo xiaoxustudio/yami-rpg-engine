@@ -45,7 +45,9 @@ const deriveKeys = (): string[] => {
 					? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
 						new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
 					: field === 'options'
-						? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src)
+						? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
+							// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
+							v.src.includes(`useLocalizedOptions('${key}'`)
 						: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(
 								v.src
 							)

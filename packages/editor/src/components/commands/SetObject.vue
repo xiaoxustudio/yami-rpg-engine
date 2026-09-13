@@ -86,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -109,20 +110,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setObject-operand-type')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Actor', value: 'actor' },
-		{ name: 'Skill', value: 'skill' },
-		{ name: 'State', value: 'state' },
-		{ name: 'Equipment', value: 'equipment' },
-		{ name: 'Item', value: 'item' },
-		{ name: 'Trigger', value: 'trigger' },
-		{ name: 'Light', value: 'light' },
-		{ name: 'Object', value: 'object' },
-		{ name: 'Element', value: 'element' },
-		{ name: 'Variable', value: 'variable' },
-		{ name: 'List', value: 'list' }
-	]);
+	useLocalizedOptions('setObject-operand-type', ['none', 'actor', 'skill', 'state', 'equipment', 'item', 'trigger', 'light', 'object', 'element', 'variable', 'list'], (items) =>
+		fieldEls.get('setObject-operand-type')?.loadItems?.(items)
+	);
 	fieldEls.get('setObject-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([

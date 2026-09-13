@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -58,10 +59,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('playActorAnimation-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('playActorAnimation-wait', [true, false], (items) =>
+		fieldEls.get('playActorAnimation-wait')?.loadItems?.(items)
+	);
 });
 </script>
 

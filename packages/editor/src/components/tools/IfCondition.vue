@@ -335,6 +335,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
@@ -596,16 +597,13 @@ onMounted(() => {
 		{ case: 'other', targets: [fieldEls.get('if-condition-other-key')?.root] }
 	]);
 
-	fieldEls.get('if-condition-boolean-operation')?.loadItems?.([
-		{ name: '==', value: 'equal' },
-		{ name: '!=', value: 'unequal' }
-	]);
+	useLocalizedOptions('if-condition-boolean-operation', ['equal', 'unequal'], (items) =>
+		fieldEls.get('if-condition-boolean-operation')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-boolean-operand-type')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Constant', value: 'constant' },
-		{ name: 'Variable', value: 'variable' }
-	]);
+	useLocalizedOptions('if-condition-boolean-operand-type', ['none', 'constant', 'variable'], (items) =>
+		fieldEls.get('if-condition-boolean-operand-type')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition-boolean-operand-type')
 		?.enableHiddenMode?.()
@@ -622,20 +620,13 @@ onMounted(() => {
 		{ name: 'True', value: true }
 	]);
 
-	fieldEls.get('if-condition-number-operation')?.loadItems?.([
-		{ name: '==', value: 'equal' },
-		{ name: '!=', value: 'unequal' },
-		{ name: '>=', value: 'greater-or-equal' },
-		{ name: '<=', value: 'less-or-equal' },
-		{ name: '>', value: 'greater' },
-		{ name: '<', value: 'less' }
-	]);
+	useLocalizedOptions('if-condition-number-operation', ['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'], (items) =>
+		fieldEls.get('if-condition-number-operation')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-number-operand-type')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Constant', value: 'constant' },
-		{ name: 'Variable', value: 'variable' }
-	]);
+	useLocalizedOptions('if-condition-number-operand-type', ['none', 'constant', 'variable'], (items) =>
+		fieldEls.get('if-condition-number-operand-type')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition-number-operand-type')
 		?.enableHiddenMode?.()
@@ -647,19 +638,13 @@ onMounted(() => {
 			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
 		]);
 
-	fieldEls.get('if-condition-string-operation')?.loadItems?.([
-		{ name: '==', value: 'equal' },
-		{ name: '!=', value: 'unequal' },
-		{ name: 'Include', value: 'include' },
-		{ name: 'Exclude', value: 'exclude' }
-	]);
+	useLocalizedOptions('if-condition-string-operation', ['equal', 'unequal', 'include', 'exclude'], (items) =>
+		fieldEls.get('if-condition-string-operation')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-string-operand-type')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Constant', value: 'constant' },
-		{ name: 'Variable', value: 'variable' },
-		{ name: 'Enumeration', value: 'enum' }
-	]);
+	useLocalizedOptions('if-condition-string-operand-type', ['none', 'constant', 'variable', 'enum'], (items) =>
+		fieldEls.get('if-condition-string-operand-type')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition-string-operand-type')
 		?.enableHiddenMode?.()
@@ -697,18 +682,9 @@ onMounted(() => {
 			}
 		]);
 
-	fieldEls.get('if-condition-object-operand-type')?.loadItems?.([
-		{ name: 'None', value: 'none' },
-		{ name: 'Actor', value: 'actor' },
-		{ name: 'Skill', value: 'skill' },
-		{ name: 'State', value: 'state' },
-		{ name: 'Equipment', value: 'equipment' },
-		{ name: 'Item', value: 'item' },
-		{ name: 'Trigger', value: 'trigger' },
-		{ name: 'Light', value: 'light' },
-		{ name: 'Element', value: 'element' },
-		{ name: 'Variable', value: 'variable' }
-	]);
+	useLocalizedOptions('if-condition-object-operand-type', ['none', 'actor', 'skill', 'state', 'equipment', 'item', 'trigger', 'light', 'element', 'variable'], (items) =>
+		fieldEls.get('if-condition-object-operand-type')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition-object-operand-type')
 		?.enableHiddenMode?.()
@@ -727,31 +703,9 @@ onMounted(() => {
 			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
 		]);
 
-	fieldEls.get('if-condition-actor-operation')?.loadItems?.([
-		{ name: 'Present and Active', value: 'present-active' },
-		{ name: 'Present', value: 'present' },
-		{ name: 'Absent', value: 'absent' },
-		{ name: 'active', value: 'active' },
-		{ name: 'inactive', value: 'inactive' },
-		{ name: 'Has Targets', value: 'has-targets' },
-		{ name: 'Has No Targets', value: 'has-no-targets' },
-		{ name: 'In Screen', value: 'in-screen' },
-		{ name: 'Is Player Actor', value: 'is-player' },
-		{ name: 'Is Party Member', value: 'is-member' },
-		{ name: 'Has Skill', value: 'has-skill' },
-		{ name: 'Has State', value: 'has-state' },
-		{ name: 'Has Items', value: 'has-items' },
-		{ name: 'Has Equipments', value: 'has-equipments' },
-		{ name: 'Has Skill Shortcut', value: 'has-skill-shortcut' },
-		{ name: 'Has Item Shortcut', value: 'has-item-shortcut' },
-		{ name: 'Equipped', value: 'equipped' },
-		{ name: 'Is a Teammate of Actor ...', value: 'is-teammate' },
-		{ name: 'Is a Friend of Actor ...', value: 'is-friend' },
-		{ name: 'Is an Enemy of Actor ...', value: 'is-enemy' },
-		{ name: 'Is a Member of Team ...', value: 'is-team-member' },
-		{ name: 'Is a Friend of Team ...', value: 'is-team-friend' },
-		{ name: 'Is an Enemy of Team ...', value: 'is-team-enemy' }
-	]);
+	useLocalizedOptions('if-condition-actor-operation', ['present-active', 'present', 'absent', 'active', 'inactive', 'has-targets', 'has-no-targets', 'in-screen', 'is-player', 'is-member', 'has-skill', 'has-state', 'has-items', 'has-equipments', 'has-skill-shortcut', 'has-item-shortcut', 'equipped', 'is-teammate', 'is-friend', 'is-enemy', 'is-team-member', 'is-team-friend', 'is-team-enemy'], (items) =>
+		fieldEls.get('if-condition-actor-operation')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition-actor-operation')
 		?.enableHiddenMode?.()
@@ -784,68 +738,33 @@ onMounted(() => {
 			}
 		]);
 
-	fieldEls.get('if-condition-element-operation')?.loadItems?.([
-		{ name: 'Present', value: 'present' },
-		{ name: 'Absent', value: 'absent' },
-		{ name: 'Visible', value: 'visible' },
-		{ name: 'Invisible', value: 'invisible' },
-		{ name: 'Is Focus Element', value: 'is-focus' },
-		{ name: 'Dialog Box - is Paused', value: 'dialogbox-is-paused' },
-		{ name: 'Dialog Box - is Updating', value: 'dialogbox-is-updating' },
-		{ name: 'Dialog Box - is Waiting', value: 'dialogbox-is-waiting' },
-		{ name: 'Dialog Box - is Complete', value: 'dialogbox-is-complete' }
-	]);
+	useLocalizedOptions('if-condition-element-operation', ['present', 'absent', 'visible', 'invisible', 'is-focus', 'dialogbox-is-paused', 'dialogbox-is-updating', 'dialogbox-is-waiting', 'dialogbox-is-complete'], (items) =>
+		fieldEls.get('if-condition-element-operation')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-keyboard-state')?.loadItems?.([
-		{ name: 'Just Pressed', value: 'just-pressed' },
-		{ name: 'Just Released', value: 'just-released' },
-		{ name: 'Pressed', value: 'pressed' },
-		{ name: 'Released', value: 'released' }
-	]);
+	useLocalizedOptions('if-condition-keyboard-state', ['just-pressed', 'just-released', 'pressed', 'released'], (items) =>
+		fieldEls.get('if-condition-keyboard-state')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-gamepad-state')?.loadItems?.([
-		{ name: 'Just Pressed', value: 'just-pressed' },
-		{ name: 'Just Released', value: 'just-released' },
-		{ name: 'Pressed', value: 'pressed' },
-		{ name: 'Released', value: 'released' }
-	]);
+	useLocalizedOptions('if-condition-gamepad-state', ['just-pressed', 'just-released', 'pressed', 'released'], (items) =>
+		fieldEls.get('if-condition-gamepad-state')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-mouse-button')?.loadItems?.([
-		{ name: 'Left Button', value: 0 },
-		{ name: 'Middle Button', value: 1 },
-		{ name: 'Right Button', value: 2 },
-		{ name: 'Back Button', value: 3 },
-		{ name: 'Forward Button', value: 4 }
-	]);
+	useLocalizedOptions('if-condition-mouse-button', [0, 1, 2, 3, 4], (items) =>
+		fieldEls.get('if-condition-mouse-button')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-mouse-state')?.loadItems?.([
-		{ name: 'Just Pressed', value: 'just-pressed' },
-		{ name: 'Just Released', value: 'just-released' },
-		{ name: 'Pressed', value: 'pressed' },
-		{ name: 'Released', value: 'released' }
-	]);
+	useLocalizedOptions('if-condition-mouse-state', ['just-pressed', 'just-released', 'pressed', 'released'], (items) =>
+		fieldEls.get('if-condition-mouse-state')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-list-operation')?.loadItems?.([
-		{ name: 'Include', value: 'include' },
-		{ name: 'Exclude', value: 'exclude' }
-	]);
+	useLocalizedOptions('if-condition-list-operation', ['include', 'exclude'], (items) =>
+		fieldEls.get('if-condition-list-operation')?.loadItems?.(items)
+	);
 
-	fieldEls.get('if-condition-other-key')?.loadItems?.([
-		{ name: 'Mouse has entered the window', value: 'mouse-entered' },
-		{ name: 'Mouse has left the window', value: 'mouse-left' },
-		{ name: 'Game is paused', value: 'game-is-paused' },
-		{ name: 'Game is not paused', value: 'game-is-not-paused' },
-		{ name: 'Scene input is prevented', value: 'scene-input-is-prevented' },
-		{
-			name: 'Scene input is not prevented',
-			value: 'scene-input-is-not-prevented'
-		},
-		{ name: 'In debugging mode', value: 'status-debugging' },
-		{ name: 'In deployed mode', value: 'status-deployed' },
-		{ name: 'Running on Windows platform', value: 'platform-windows' },
-		{ name: 'Running on MacOS platform', value: 'platform-macos' },
-		{ name: 'Running on a mobile platform', value: 'platform-mobile' }
-	]);
+	useLocalizedOptions('if-condition-other-key', ['mouse-entered', 'mouse-left', 'game-is-paused', 'game-is-not-paused', 'scene-input-is-prevented', 'scene-input-is-not-prevented', 'status-debugging', 'status-deployed', 'platform-windows', 'platform-macos', 'platform-mobile'], (items) =>
+		fieldEls.get('if-condition-other-key')?.loadItems?.(items)
+	);
 
 	fieldEls.get('if-condition')?.root?.on?.('open', () => {
 		fieldEls.get('if-condition-actor-teamId')?.loadItems?.(Data.createTeamItems!());

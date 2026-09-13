@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -119,24 +120,21 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('playAnimation-mode')?.loadItems?.([
-		{ name: 'Position', value: 'position' },
-		{ name: 'Actor', value: 'actor' }
-	]);
+	useLocalizedOptions('playAnimation-mode', ['position', 'actor'], (items) =>
+		fieldEls.get('playAnimation-mode')?.loadItems?.(items)
+	);
 	fieldEls.get('playAnimation-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'position', targets: [fieldEls.get('playAnimation-position')] },
 			{ case: 'actor', targets: [fieldEls.get('playAnimation-actor')] }
 		]);
-	fieldEls.get('playAnimation-rotatable')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
-	fieldEls.get('playAnimation-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('playAnimation-rotatable', [true, false], (items) =>
+		fieldEls.get('playAnimation-rotatable')?.loadItems?.(items)
+	);
+	useLocalizedOptions('playAnimation-wait', [true, false], (items) =>
+		fieldEls.get('playAnimation-wait')?.loadItems?.(items)
+	);
 	const animationId = read(fieldEls.get('playAnimation-animationId'));
 	if (animationId) writeHandler({ value: animationId });
 });

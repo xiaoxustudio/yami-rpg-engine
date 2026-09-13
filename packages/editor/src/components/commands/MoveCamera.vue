@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -82,10 +83,9 @@ onMounted(() => {
 			{ case: 'position', targets: [fieldEls.get('moveCamera-position')] },
 			{ case: 'actor', targets: [fieldEls.get('moveCamera-actor')] }
 		]);
-	fieldEls.get('moveCamera-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('moveCamera-wait', [true, false], (items) =>
+		fieldEls.get('moveCamera-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('moveCamera')?.on?.('open', () => {
 		fieldEls.get('moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

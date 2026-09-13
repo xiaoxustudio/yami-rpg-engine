@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -48,11 +49,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setState-operation')?.loadItems?.([
-		{ name: 'Set Time', value: 'set-time' },
-		{ name: 'Increase Time', value: 'increase-time' },
-		{ name: 'Decrease Time', value: 'decrease-time' }
-	]);
+	useLocalizedOptions('setState-operation', ['set-time', 'increase-time', 'decrease-time'], (items) =>
+		fieldEls.get('setState-operation')?.loadItems?.(items)
+	);
 });
 </script>
 

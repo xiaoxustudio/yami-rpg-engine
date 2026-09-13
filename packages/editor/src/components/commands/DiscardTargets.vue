@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -55,14 +56,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('discardTargets-selector')?.loadItems?.([
-		{ name: 'Enemy', value: 'enemy' },
-		{ name: 'Friend', value: 'friend' },
-		{ name: 'Team Member', value: 'team' },
-		{ name: 'Team Member Except Self', value: 'team-except-self' },
-		{ name: 'Any Except Self', value: 'any-except-self' },
-		{ name: 'Any', value: 'any' }
-	]);
+	useLocalizedOptions('discardTargets-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
+		fieldEls.get('discardTargets-selector')?.loadItems?.(items)
+	);
 });
 </script>
 

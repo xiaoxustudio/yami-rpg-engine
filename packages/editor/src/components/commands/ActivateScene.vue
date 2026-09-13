@@ -17,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -38,10 +39,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('activateScene-pointer')?.loadItems?.([
-		{ name: 'Scene A', value: 0 },
-		{ name: 'Scene B', value: 1 }
-	]);
+	useLocalizedOptions('activateScene-pointer', [0, 1], (items) =>
+		fieldEls.get('activateScene-pointer')?.loadItems?.(items)
+	);
 });
 </script>
 

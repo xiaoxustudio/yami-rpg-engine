@@ -51,7 +51,8 @@ for (const [key, item] of Object.entries(components)) {
 				? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
 					new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
 				: field === 'options'
-					? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src)
+					? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
+						v.src.includes(`useLocalizedOptions('${key}'`)
 					: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(v.src)
 		)
 	);

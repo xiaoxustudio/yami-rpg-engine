@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,10 +48,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setTeamRelation-relation')?.loadItems?.([
-		{ name: 'Enemy', value: 0 },
-		{ name: 'Friend', value: 1 }
-	]);
+	useLocalizedOptions('setTeamRelation-relation', [0, 1], (items) =>
+		fieldEls.get('setTeamRelation-relation')?.loadItems?.(items)
+	);
 	fieldEls.get('setTeamRelation')?.on?.('open', () => {
 		const items = Data.createTeamItems!();
 		fieldEls.get('setTeamRelation-teamId1')?.loadItems?.(items);

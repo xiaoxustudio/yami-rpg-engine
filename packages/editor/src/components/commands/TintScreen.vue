@@ -67,6 +67,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -134,10 +135,9 @@ watch(
 );
 
 onMounted(() => {
-	fieldEls.get('tintScreen-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('tintScreen-wait', [true, false], (items) =>
+		fieldEls.get('tintScreen-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('tintScreen')?.on?.('open', () => {
 		fieldEls.get('tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

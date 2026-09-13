@@ -53,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -87,11 +88,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('registerEvent-target')?.loadItems?.([
-		{ name: 'Global', value: 'global' },
-		{ name: 'Actor', value: 'actor' },
-		{ name: 'Element', value: 'element' }
-	]);
+	useLocalizedOptions('registerEvent-target', ['global', 'actor', 'element'], (items) =>
+		fieldEls.get('registerEvent-target')?.loadItems?.(items)
+	);
 	fieldEls.get('registerEvent-target')
 		?.enableHiddenMode?.()
 		?.relate?.([

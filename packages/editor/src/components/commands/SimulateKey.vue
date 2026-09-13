@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,11 +48,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('simulateKey-operation')?.loadItems?.([
-		{ name: 'Click', value: 'click' },
-		{ name: 'Press', value: 'press' },
-		{ name: 'Release', value: 'release' }
-	]);
+	useLocalizedOptions('simulateKey-operation', ['click', 'press', 'release'], (items) =>
+		fieldEls.get('simulateKey-operation')?.loadItems?.(items)
+	);
 });
 </script>
 

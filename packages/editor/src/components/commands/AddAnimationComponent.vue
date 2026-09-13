@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -98,14 +99,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('addAnimationComponent-rotatable')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
-	fieldEls.get('addAnimationComponent-syncAngle')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('addAnimationComponent-rotatable', [true, false], (items) =>
+		fieldEls.get('addAnimationComponent-rotatable')?.loadItems?.(items)
+	);
+	useLocalizedOptions('addAnimationComponent-syncAngle', [true, false], (items) =>
+		fieldEls.get('addAnimationComponent-syncAngle')?.loadItems?.(items)
+	);
 });
 </script>
 

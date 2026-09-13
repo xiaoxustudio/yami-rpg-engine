@@ -78,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -156,13 +157,9 @@ onMounted(() => {
 		{ name: 'True', value: true }
 	]);
 
-	fieldEls.get('switch-condition-mouse-button')?.loadItems?.([
-		{ name: 'Left Button', value: 0 },
-		{ name: 'Middle Button', value: 1 },
-		{ name: 'Right Button', value: 2 },
-		{ name: 'Back Button', value: 3 },
-		{ name: 'Forward Button', value: 4 }
-	]);
+	useLocalizedOptions('switch-condition-mouse-button', [0, 1, 2, 3, 4], (items) =>
+		fieldEls.get('switch-condition-mouse-button')?.loadItems?.(items)
+	);
 });
 </script>
 

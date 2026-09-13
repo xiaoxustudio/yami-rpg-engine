@@ -112,6 +112,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -234,10 +235,9 @@ onMounted(() => {
 				targets: [fieldEls.get('setAnimationComponent-playMotion'), fieldEls.get('setAnimationComponent-wait')]
 			}
 		]);
-	fieldEls.get('setAnimationComponent-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setAnimationComponent-wait', [true, false], (items) =>
+		fieldEls.get('setAnimationComponent-wait')?.loadItems?.(items)
+	);
 });
 </script>
 

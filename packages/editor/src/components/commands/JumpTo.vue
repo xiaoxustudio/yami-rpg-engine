@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -52,11 +53,9 @@ const onConfirm = () => {
 
 onMounted(() => {
 	TextSuggestion.listen!(fieldEls.get('jumpTo-label') as unknown as TextSuggestionTarget, loadLabels);
-	fieldEls.get('jumpTo-operation')?.loadItems?.([
-		{ name: 'Jump to Label', value: 'jump' },
-		{ name: 'Save and Jump to Label', value: 'save-jump' },
-		{ name: 'Jump to the Saved Location', value: 'return' }
-	]);
+	useLocalizedOptions('jumpTo-operation', ['jump', 'save-jump', 'return'], (items) =>
+		fieldEls.get('jumpTo-operation')?.loadItems?.(items)
+	);
 	fieldEls.get('jumpTo-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: ['jump', 'save-jump'], targets: [fieldEls.get('jumpTo-label')] }]);

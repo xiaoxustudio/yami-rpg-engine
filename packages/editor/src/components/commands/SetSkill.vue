@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -54,11 +55,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setSkill-operation')?.loadItems?.([
-		{ name: 'Set Cooldown Time', value: 'set-cooldown' },
-		{ name: 'Increase Cooldown Time', value: 'increase-cooldown' },
-		{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }
-	]);
+	useLocalizedOptions('setSkill-operation', ['set-cooldown', 'increase-cooldown', 'decrease-cooldown'], (items) =>
+		fieldEls.get('setSkill-operation')?.loadItems?.(items)
+	);
 });
 </script>
 

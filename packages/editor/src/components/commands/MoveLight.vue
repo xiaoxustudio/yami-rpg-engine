@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -70,10 +71,9 @@ const onConfirm = () => {
 
 onMounted(() => {
 	fieldEls.get('moveLight-properties')?.bind?.(LightProperty);
-	fieldEls.get('moveLight-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('moveLight-wait', [true, false], (items) =>
+		fieldEls.get('moveLight-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('moveLight')?.on?.('open', () => {
 		fieldEls.get('moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

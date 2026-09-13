@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -64,10 +65,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setAmbientLight-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setAmbientLight-wait', [true, false], (items) =>
+		fieldEls.get('setAmbientLight-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setAmbientLight')?.on?.('open', () => {
 		fieldEls.get('setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

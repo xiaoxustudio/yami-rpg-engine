@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -63,12 +64,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('castSkill-mode')?.loadItems?.([
-		{ name: 'By Shortcut Key', value: 'by-key' },
-		{ name: 'By Skill ID', value: 'by-id' },
-		{ name: 'By Skill Instance', value: 'by-skill' },
-		{ name: 'By Variable', value: 'by-variable' }
-	]);
+	useLocalizedOptions('castSkill-mode', ['by-key', 'by-id', 'by-skill', 'by-variable'], (items) =>
+		fieldEls.get('castSkill-mode')?.loadItems?.(items)
+	);
 	fieldEls.get('castSkill-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -77,10 +75,9 @@ onMounted(() => {
 			{ case: 'by-skill', targets: [fieldEls.get('castSkill-skill')] },
 			{ case: 'by-variable', targets: [fieldEls.get('castSkill-keyVar')] }
 		]);
-	fieldEls.get('castSkill-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('castSkill-wait', [true, false], (items) =>
+		fieldEls.get('castSkill-wait')?.loadItems?.(items)
+	);
 });
 </script>
 

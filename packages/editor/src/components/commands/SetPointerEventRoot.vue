@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,12 +48,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setPointerEventRoot-operation')?.loadItems?.([
-		{ name: 'Add Root Element', value: 'add' },
-		{ name: 'Remove Root Element', value: 'remove' },
-		{ name: 'Remove The Latest Root Element', value: 'remove-latest' },
-		{ name: 'Reset', value: 'reset' }
-	]);
+	useLocalizedOptions('setPointerEventRoot-operation', ['add', 'remove', 'remove-latest', 'reset'], (items) =>
+		fieldEls.get('setPointerEventRoot-operation')?.loadItems?.(items)
+	);
 	fieldEls.get('setPointerEventRoot-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

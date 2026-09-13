@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -59,19 +60,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setFocus-operation')?.loadItems?.([
-		{ name: 'Add Focus', value: 'add' },
-		{ name: 'Remove Focus', value: 'remove' },
-		{ name: 'Remove The Latest Focus', value: 'remove-latest' },
-		{ name: 'Reset', value: 'reset' }
-	]);
-	fieldEls.get('setFocus-mode')?.loadItems?.([
-		{ name: 'Control Child Buttons', value: 'control-child-buttons' },
-		{
-			name: 'Control Descendant Buttons',
-			value: 'control-descendant-buttons'
-		}
-	]);
+	useLocalizedOptions('setFocus-operation', ['add', 'remove', 'remove-latest', 'reset'], (items) =>
+		fieldEls.get('setFocus-operation')?.loadItems?.(items)
+	);
+	useLocalizedOptions('setFocus-mode', ['control-child-buttons', 'control-descendant-buttons'], (items) =>
+		fieldEls.get('setFocus-mode')?.loadItems?.(items)
+	);
 	fieldEls.get('setFocus-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

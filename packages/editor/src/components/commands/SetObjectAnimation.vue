@@ -123,6 +123,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -183,12 +184,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setObjectAnimation-sort')?.loadItems?.([
-		{ name: 'Only Actor Animation', value: 'actor' },
-		{ name: 'All Animation Components', value: 'components' },
-		{ name: 'Trigger Animation', value: 'trigger' },
-		{ name: 'Scene Animation', value: 'animation' }
-	]);
+	useLocalizedOptions('setObjectAnimation-sort', ['actor', 'components', 'trigger', 'animation'], (items) =>
+		fieldEls.get('setObjectAnimation-sort')?.loadItems?.(items)
+	);
 	fieldEls.get('setObjectAnimation-sort')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -205,14 +203,9 @@ onMounted(() => {
 				targets: [fieldEls.get('setObjectAnimation-animation')]
 			}
 		]);
-	fieldEls.get('setObjectAnimation-operation')?.loadItems?.([
-		{ name: 'Set Tint', value: 'set-tint' },
-		{ name: 'Set RGB', value: 'set-rgb' },
-		{ name: 'Set Gray', value: 'set-gray' },
-		{ name: 'Set Opacity', value: 'set-opacity' },
-		{ name: 'Set OffsetY', value: 'set-offsetY' },
-		{ name: 'Set Rotation', value: 'set-rotation' }
-	]);
+	useLocalizedOptions('setObjectAnimation-operation', ['set-tint', 'set-rgb', 'set-gray', 'set-opacity', 'set-offsetY', 'set-rotation'], (items) =>
+		fieldEls.get('setObjectAnimation-operation')?.loadItems?.(items)
+	);
 	fieldEls.get('setObjectAnimation-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
@@ -250,10 +243,9 @@ onMounted(() => {
 				targets: [fieldEls.get('setObjectAnimation-rotation')]
 			}
 		]);
-	fieldEls.get('setObjectAnimation-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setObjectAnimation-wait', [true, false], (items) =>
+		fieldEls.get('setObjectAnimation-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setObjectAnimation')?.on?.('open', () => {
 		fieldEls.get('setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

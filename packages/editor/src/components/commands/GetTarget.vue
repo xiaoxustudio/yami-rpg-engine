@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -55,14 +56,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('getTarget-selector')?.loadItems?.([
-		{ name: 'Enemy', value: 'enemy' },
-		{ name: 'Friend', value: 'friend' },
-		{ name: 'Team Member', value: 'team' },
-		{ name: 'Team Member Except Self', value: 'team-except-self' },
-		{ name: 'Any Except Self', value: 'any-except-self' },
-		{ name: 'Any', value: 'any' }
-	]);
+	useLocalizedOptions('getTarget-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
+		fieldEls.get('getTarget-selector')?.loadItems?.(items)
+	);
 	fieldEls.get('getTarget-condition')?.loadItems?.([
 		{ name: t('command.getTarget.condition.max-threat') || 'Max Threat', value: 'max-threat' },
 		{ name: t('command.getTarget.condition.nearest') || 'Nearest', value: 'nearest' },

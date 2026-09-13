@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -92,10 +93,9 @@ onMounted(() => {
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
-	fieldEls.get('setReverb-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setReverb-wait', [true, false], (items) =>
+		fieldEls.get('setReverb-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setReverb')?.on?.('open', () => {
 		fieldEls.get('setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

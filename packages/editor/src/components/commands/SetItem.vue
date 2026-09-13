@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -48,10 +49,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setItem-operation')?.loadItems?.([
-		{ name: 'Increase', value: 'increase' },
-		{ name: 'Decrease', value: 'decrease' }
-	]);
+	useLocalizedOptions('setItem-operation', ['increase', 'decrease'], (items) =>
+		fieldEls.get('setItem-operation')?.loadItems?.(items)
+	);
 });
 </script>
 

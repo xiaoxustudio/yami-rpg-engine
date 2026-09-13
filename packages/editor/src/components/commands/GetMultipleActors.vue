@@ -76,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -114,12 +115,9 @@ onMounted(() => {
 			},
 			{ case: 'circle', targets: [fieldEls.get('getMultipleActors-radius')] }
 		]);
-	fieldEls.get('getMultipleActors-selector')?.loadItems?.([
-		{ name: 'Team Enemy', value: 'enemy' },
-		{ name: 'Team Friend', value: 'friend' },
-		{ name: 'Team Member', value: 'team' },
-		{ name: 'Any', value: 'any' }
-	]);
+	useLocalizedOptions('getMultipleActors-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
+		fieldEls.get('getMultipleActors-selector')?.loadItems?.(items)
+	);
 	fieldEls.get('getMultipleActors-selector')
 		?.enableHiddenMode?.()
 		?.relate?.([

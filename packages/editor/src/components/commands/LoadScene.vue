@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -66,10 +67,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('loadScene-transfer')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('loadScene-transfer', [true, false], (items) =>
+		fieldEls.get('loadScene-transfer')?.loadItems?.(items)
+	);
 	fieldEls.get('loadScene-transfer')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: true, targets: [fieldEls.get('loadScene-x'), fieldEls.get('loadScene-y')] }]);

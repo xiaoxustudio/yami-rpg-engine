@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -61,10 +62,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setAngle-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('setAngle-wait', [true, false], (items) =>
+		fieldEls.get('setAngle-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('setAngle')?.on?.('open', () => {
 		fieldEls.get('setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

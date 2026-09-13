@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -62,12 +63,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('createElement-operation')?.loadItems?.([
-		{ name: 'Append All to Root', value: 'append-all-to-root' },
-		{ name: 'Append One to Root', value: 'append-one-to-root' },
-		{ name: 'Append All to Element', value: 'append-all-to-element' },
-		{ name: 'Append One to Element', value: 'append-one-to-element' }
-	]);
+	useLocalizedOptions('createElement-operation', ['append-all-to-root', 'append-one-to-root', 'append-all-to-element', 'append-one-to-element'], (items) =>
+		fieldEls.get('createElement-operation')?.loadItems?.(items)
+	);
 	fieldEls.get('createElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([

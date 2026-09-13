@@ -65,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -101,20 +102,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('setBoolean-operation')?.loadItems?.([
-		{ name: 'Set', value: 'set' },
-		{ name: 'Not', value: 'not' },
-		{ name: 'And', value: 'and' },
-		{ name: 'Or', value: 'or' },
-		{ name: 'Xor', value: 'xor' }
-	]);
-	fieldEls.get('setBoolean-operand-type')?.loadItems?.([
-		{ name: 'Constant', value: 'constant' },
-		{ name: 'Variable', value: 'variable' },
-		{ name: 'List', value: 'list' },
-		{ name: 'Parameter', value: 'parameter' },
-		{ name: 'Script', value: 'script' }
-	]);
+	useLocalizedOptions('setBoolean-operation', ['set', 'not', 'and', 'or', 'xor'], (items) =>
+		fieldEls.get('setBoolean-operation')?.loadItems?.(items)
+	);
+	useLocalizedOptions('setBoolean-operand-type', ['constant', 'variable', 'list', 'parameter', 'script'], (items) =>
+		fieldEls.get('setBoolean-operand-type')?.loadItems?.(items)
+	);
 	fieldEls.get('setBoolean-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([

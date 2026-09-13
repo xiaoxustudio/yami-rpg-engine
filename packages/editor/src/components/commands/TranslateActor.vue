@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -73,10 +74,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('translateActor-wait')?.loadItems?.([
-		{ name: 'Yes', value: true },
-		{ name: 'No', value: false }
-	]);
+	useLocalizedOptions('translateActor-wait', [true, false], (items) =>
+		fieldEls.get('translateActor-wait')?.loadItems?.(items)
+	);
 	fieldEls.get('translateActor')?.on?.('open', () => {
 		fieldEls.get('translateActor-easingId')?.loadItems?.(Data.createEasingItems!());
 	});

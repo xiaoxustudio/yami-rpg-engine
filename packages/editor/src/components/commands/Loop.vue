@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -47,10 +48,9 @@ const onConfirm = () => {
 
 onMounted(() => {
 	fieldEls.get('loop-conditions')?.bind?.(IfCondition);
-	fieldEls.get('loop-mode')?.loadItems?.([
-		{ name: 'Meet All', value: 'all' },
-		{ name: 'Meet Any', value: 'any' }
-	]);
+	useLocalizedOptions('loop-mode', ['all', 'any'], (items) =>
+		fieldEls.get('loop-mode')?.loadItems?.(items)
+	);
 	fieldEls.get('loop')?.on?.('closed', () => {
 		reset();
 		clear(fieldEls.get('loop-conditions'));

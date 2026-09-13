@@ -17,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
@@ -38,12 +39,9 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('switchCollisionSystem-operation')?.loadItems?.([
-		{ name: 'Enable Actor Collision', value: 'enable-actor-collision' },
-		{ name: 'Disable Actor Collision', value: 'disable-actor-collision' },
-		{ name: 'Enable Scene Collision', value: 'enable-scene-collision' },
-		{ name: 'Disable Scene Collision', value: 'disable-scene-collision' }
-	]);
+	useLocalizedOptions('switchCollisionSystem-operation', ['enable-actor-collision', 'disable-actor-collision', 'enable-scene-collision', 'disable-scene-collision'], (items) =>
+		fieldEls.get('switchCollisionSystem-operation')?.loadItems?.(items)
+	);
 });
 </script>
 
