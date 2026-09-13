@@ -259,9 +259,14 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（2026-09-12，切片 1：行 key 接线；切片 2：受限 API 收口）**
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口）**
 
-**已落地（切片 2，收口 `YMFileBodyPane.vue` 的受限调用）**：新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost` / `renderDetached` / `renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），该文件按 **C1 设计豁免**加入 `WHITELIST` 与 `.oxlintrc.json` overrides（设计豁免 45 项内的同类"唯一缝隙"）。`YMFileBodyPane.vue` 自己的 `renderElement` 改为转调 `renderDetached`，两处行元素（`createFileElement`/`createFolderElement`）改用 `renderDetachedDiv([...])` ⇒ **该文件的 `document.createElement` 命中 3 → 0**（这正是 B1 验收里"两文件的受限 API 命中归零"的第一半）。全仓 `createElement` 口径 **132 → 131**（减去本文件的 3 处、加回接缝自身的 1 处）。
+**已落地（切片 3，收口 `command-api.ts` 的建元素调用）**：该文件原本自己有一份 `renderElement`（内含 `document.createElement`）与 **9 处**直接建节点（`li` 行 ×4、`text` ×2、`ellipsis`、`blank`、`createCommandListElement` 的根节点）——全部改走 `utils/detached.ts` 的 `renderDetached`/`renderDetachedDiv`，并把随之冗余的 `addClass(el, …)` 去重（class 直接由 `renderDetachedDiv([...])` 给）、删掉变成死导入的 `render`。⇒ **`command-api.ts` 的 `document.createElement` 10 → 0**（含注释提及也清掉，避免污染口径）。全仓 `createElement` **131 → 121**（ui-kit/components 105 → 95）。
+
+- **仍未动的**：该文件里 7 处 `document.getElementsByName`（变量查找类**查询**，与"建节点"是两回事），随 P2b 的元素 API 契约化一并处理。
+- **行为不变**：命令列表 5 个 spec 76 例全绿。
+
+**已落地（切片 2，收口 `YMFileBodyPane.vue` 的受限调用）**：新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost` / `renderDetached` / `renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），该文件按 **C1 设计豁免**加入 `WHITELIST` 与 `.oxlintrc.json` overrides。`YMFileBodyPane.vue` 自己的 `renderElement` 改为转调 `renderDetached`，两处行元素（`createFileElement`/`createFolderElement`）改用 `renderDetachedDiv([...])` ⇒ **该文件的 `document.createElement` 命中 3 → 0**（B1 验收里"两文件的受限 API 命中归零"的第一半）。
 
 - **顺带**：删除 `render` 的 vue 导入（改由接缝内部使用），避免留死导入。
 - **行为不变**：M1 的 14 例文件 body 用例 + 3 例 key 用例全绿，`vue-tsc` 0 新增。

@@ -43,12 +43,12 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 32 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
-| ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 103 | 80 | 12 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 80 | 11 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 12 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1138 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 131 | 122 | 12 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
+| 合计                  | 1138 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
@@ -74,7 +74,7 @@
 | .children 遍历 | 230 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 139 | 40 |
-| classList.add/remove/toggle | 133 | 42 |
+| classList.add/remove/toggle | 132 | 41 |
 | textContent 赋值 | 129 | 44 |
 | get/set/removeAttribute | 85 | 35 |
 | scrollTop 写 | 84 | 39 |
@@ -99,11 +99,11 @@
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2314 | 38 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2584 | 37 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 889 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 663 | 27 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2570 | 26 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |

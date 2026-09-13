@@ -220,6 +220,8 @@
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
 
+- 2026-09-12 **B1/M3 切片 3：`command-api.ts` 建元素收口（`document.createElement` 10 → 0；全仓口径 131 → 121）**。① 该文件原本自带一份 `renderElement`（内含 `document.createElement`）与 **9 处**直接建节点（`li` 行 ×4、`text` ×2、`ellipsis`、`blank`、`createCommandListElement` 的根节点）——全部改走 `utils/detached.ts` 的 `renderDetached`/`renderDetachedDiv`。② 顺手去重：class 直接由 `renderDetachedDiv([...])` 给，删掉随之冗余的 `addClass(el, …)` 与变成死导入的 `render`。③ **注释也会污染口径**：我最初把 `document.createElement` 写进新注释，被 tracker 计入——改写为"直接建 DOM 节点"后口径才干净（与 M2 切片 1 的同类教训一致）。④ **仍未动**：该文件 7 处 `document.getElementsByName`（变量查找类**查询**，不是建节点），随 P2b 契约化处理。⑤ 行为不变：命令列表 5 个 spec **76 例**全绿。**门禁**：ui-kit **103 文件 732/732**、`pnpm lint` 0/0、`docs:check` OK。**下一步**：M3 主体 `v-for` 换源（key 与建节点接缝都已就位）。
+
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1138（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
@@ -229,7 +231,7 @@
 | `getElementById` 属性访问处数        | 10（composables 5 / 其余 5；**components 已归零**；真实代码处数 9，另 1 处为本刀注释提及） |
 | `document.querySelector*` 处数       | 18（P1b 第 5/9/10/11 刀 56 → 18） |
 | `document.querySelector*` 处数       | 56                                  |
-| `document.createElement` 处数        | 131（其中 ui-kit/components 105；含 P1b 各刀留下的注释提及） |
+| `document.createElement` 处数        | 121（其中 ui-kit/components 95；含 P1b 各刀留下的注释提及） |
 | `appendChild` 调用                   | 122                                 |
 | `addEventListener` 调用              | 567                                 |
 | `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 20（11 个文件；残余 = 动态 id / 外壳元素 / 基础设施 / 白名单，见 P5b 结项；B4 起点 1481，最初 1489） |
