@@ -234,7 +234,7 @@
 	<DetailBox id="animSpriteFrame-sprite-detail"
 				:ref="registryRef(engineEls, 'animSpriteFrame-sprite-detail')" open>
 		<DetailSummary id="animSpriteFrame-sprite-summary">
-			<div class="text" id="sprite-label">Sprite</div>
+			<div class="text" id="sprite-label">{{ t('components.sprite-label.content') }}</div>
 			<div class="box" id="sprite-info"
 				:ref="registryRef(engineEls, 'sprite-info')"></div>
 			<SliderBox

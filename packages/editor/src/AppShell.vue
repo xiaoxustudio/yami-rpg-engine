@@ -8,12 +8,12 @@
 			@pointerup="onMenuPointerup"
 			@pointerover="onMenuPointerover"
 		>
-			<div class="item menu-item" id="menu-file" value="file">File</div>
-			<div class="item menu-item" id="menu-edit" value="edit">Edit</div>
-			<div class="item menu-item" id="menu-view" value="view">View</div>
-			<div class="item menu-item" id="menu-window" value="window">Window</div>
-			<div class="item menu-item" id="menu-help" value="help">Help</div>
-			<div class="item menu-item" id="menu-open-yami" value="openYami">Open Yami</div>
+			<div class="item menu-item" id="menu-file" value="file">{{ t('components.menu-file.content') }}</div>
+			<div class="item menu-item" id="menu-edit" value="edit">{{ t('components.menu-edit.content') }}</div>
+			<div class="item menu-item" id="menu-view" value="view">{{ t('components.menu-view.content') }}</div>
+			<div class="item menu-item" id="menu-window" value="window">{{ t('components.menu-window.content') }}</div>
+			<div class="item menu-item" id="menu-help" value="help">{{ t('components.menu-help.content') }}</div>
+			<div class="item menu-item" id="menu-open-yami" value="openYami">{{ t('components.menu-open-yami.content') }}</div>
 		</div>
 		<TabBar
 			id="title-tabBar"

@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2129 键降到
- * 307 键。
+ * 284 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -608,6 +608,10 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'getTarget-actor',
 	'getTarget-attribute',
 	'getTarget-divisor',
+	'home-recent-label',
+	'home-start-label',
+	'home-start-new',
+	'home-start-open',
 	'httpRequest',
 	'httpRequest-authPass',
 	'httpRequest-authUser',
@@ -693,6 +697,12 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'localization-list',
 	'loop',
 	'loop-conditions',
+	'menu-edit',
+	'menu-file',
+	'menu-help',
+	'menu-open-yami',
+	'menu-view',
+	'menu-window',
 	'moveActor',
 	'moveActor-actor',
 	'moveActor-angle',
@@ -742,6 +752,18 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'moveLight-property-width',
 	'moveLight-property-x',
 	'moveLight-property-y',
+	'nav-animation',
+	'nav-animation-easing',
+	'nav-animation-motion',
+	'nav-animation-timeline',
+	'nav-inspector',
+	'nav-particle',
+	'nav-particle-layer',
+	'nav-project',
+	'nav-scene',
+	'nav-scene-object',
+	'nav-ui',
+	'nav-ui-element',
 	'nestElement',
 	'nestElement-child',
 	'nestElement-parent',
@@ -1496,6 +1518,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'skillGetter-key',
 	'skillGetter-skillId',
 	'skillGetter-variable',
+	'sprite-label',
 	'stateGetter',
 	'stateGetter-actor',
 	'stateGetter-stateId',

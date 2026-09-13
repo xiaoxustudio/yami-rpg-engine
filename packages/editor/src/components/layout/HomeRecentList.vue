@@ -6,7 +6,7 @@
 		@click="onRecentClick"
 		@pointerup="onRecentPointerup"
 	>
-		<div class="item home-list-label" id="home-recent-label">Recent</div>
+		<div class="item home-list-label" id="home-recent-label">{{ t('components.home-recent-label.content') }}</div>
 		<div
 			v-for="(card, index) in cards"
 			:key="index"
@@ -31,7 +31,11 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Home, type HomeRecentCard } from '@app/title/home-page.ts';
+
+// R2b 迁移⑥：标签文案改由模板 t() 承担（原先靠本地化器写 textContent）
+const { t } = useI18n();
 
 const cards = ref<HomeRecentCard[]>([]);
 
