@@ -214,6 +214,8 @@
 
 - 2026-09-12 **B1/M3 起步：行 key 接线（+5 例），渲染结构未改**。① `command-api.ts` 建 `li` 时写 `li.rowKey = rowKeyOf(command)`；`YMFileBodyPane.vue` 的 `createFlatItems` 先 `deriveFileRows(dir)` 再把 key 传给 `createFileElement`/`createFolderElement`；两个元素接口各加 `rowKey?` 字段。② **为什么先做 key**：`v-for` 换源时 `:key` 是"复用行 vs 重建行"的唯一依据；命令列表/文件列表都会插入删除，退回下标 key 会让 Vue 复用错行（tree 改造踩过同类问题，故那边也用 WeakMap 发号）。③ 5 例：行 `rowKey` 等于派生层给该对象的 key、重复渲染 key 不变、**路径相同的不同对象 key 必须不同**（证明不能拿路径当 `:key`）。④ 下一步仍是 M3 主体：模板 `v-for windowRows` + `:ref` 回写桥（同 tree `bindRowElement`），渲染函数退化为"bump 版本 + 保持 API 语义"。**门禁**：ui-kit **103 文件 732/732**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **P4b 第三刀：`lastScrollTop` 迁移（`DATA_FIELDS` 70 → 69），并修掉一处潜伏一整轮的 `typecheck:vue` 回归**。① `lastScrollTop`（滚动同步的"上次位置"记忆，8 处 / 2 文件：`animation/animation-list.ts` 的 `layerListScroll` 与时间线滚动、`commands/event-editor-initialize.ts` 的 `saveScroll`/`restoreScroll`）全部改为 `getElementData(el).lastScrollTop`；`restoreScroll` 用 `Number(... ?? 0)` 回写 `scrollTop`，避免把 `unknown` 赋给数值属性。② **发现并修复 E1 第二刀留下的回归**：`typecheck:vue` 报 `FileAudioPage.vue:158`/`FileScriptPage.vue:56` 的 **TS2769**——监听器存进 `let xxxHandler: ((event: Event) => void) | null` 后 `null` 分支未被窄化；改为先用 `const` 接住、再赋给变量并传入 `addEventListener`（同一引用、语义不变）。③ **教训（已写入 remaining-work）**：我在 E1 那一刀**漏跑了 `typecheck:vue`**——这条规矩是 P1b 第 11 刀立的（当时正是 `WindowFrame.vue` 的 `TS2721` 教的），结果两个错误潜伏了一整轮。**门禁清单必须按刀执行**。**指标**：`DATA_FIELDS` **70 → 69**（访问器 138）；editor **235 文件 1983/1983**、`pnpm lint` 0/0、`tsc`/`vue-tsc` 0 新增、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |

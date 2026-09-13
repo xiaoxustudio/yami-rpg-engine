@@ -19,7 +19,7 @@
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义，见下方复核块） |
-| P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **70** 个字段的 get/set（共 140 访问器；B3 首刀删 11 个零访问字段、P4b 第二刀删 2 个只写/纯内部状态字段），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
+| P4b | **原型访问器退役**：`utils/element-data.ts` 在 `HTMLElement.prototype` 上定义 **69** 个字段的 get/set（共 138 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`），由 `main.ts` 副作用导入 | 中 | 与 P2b 同批（同属 ui-kit 元素 API） | 🚧 **进行中**（B3 首刀：11 个死字段已删，83 → 72） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 🚧 **M1 ✅ 完成、M2 🚧 起步**（2026-09-12：组件级用例 **17 → 43**；M2 切片 1–4 = `command-render.ts` 派生层（9 例）+ 翻页/定位数学抽出接线（+14 例）+ `file-body-render.ts` 派生层（9 例）+ 文件 body 度量调用方接线（三函数合一）+ **M3 切片 1：行 key 接线（+5 例）**，渲染结构未改） |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
@@ -35,7 +35,7 @@
 | 主计划 阶段 1 窗口系统数据化（P3） | ✅ 已交付：`stores/window.ts` 的 `stack`/`syncStack`/`isWindowOpen`/`getTopWindowId`，`frames.append/remove` 为唯一同步点 | — | 进展记录 2026-08-31；设计块里的 `WindowHost.vue` 从未实现（原文已标注） |
 | 主计划 阶段 2 ui-kit 组件契约化（P2） | ⚠️ **部分**：core 去重已完成，但「api 文件 27 → 0」未达成 | **P2b** | `pnpm docs:check` 的 `*-api.ts` 计数门禁（现 26，目标 0）+ 鸭子调用 682 处 |
 | 主计划 阶段 3 表单读写去 getElementById（P1） | ✅ 已交付：`read(getElementById)` = 0、125 个 schema 开 `skipWrite`、`v-focus` 183 文件 / 323 处、`requestFocus` 396 处 | — | tracker `getElementById` 列（244）；动态 id 残留 78 处仍在 `composables` |
-| 主计划 阶段 4 原型扩展与工具层回收（P4 + P5） | ⚠️ **部分**：五处 monkey-patch 已删；`$()` **1347** 处未删（B4 批 1 已消 134）、`element-data` 原型访问器仍在（B3 首刀 83 → 72、P4b 第二刀 72 → 70）、localize 选择器本地化器未收（i18n 启动副作用已由 B1/R2a 收口） | **P4b** / **P5b** / **R2b** | tracker `dollarLookup` 列 + 辅助口径「prototype 访问器定义」+ 本地化键数门禁 |
+| 主计划 阶段 4 原型扩展与工具层回收（P4 + P5） | ⚠️ **部分**：五处 monkey-patch 已删；`$()` **1347** 处未删（B4 批 1 已消 134）、`element-data` 原型访问器仍在（B3 首刀 83 → 72、P4b 第二刀 72 → 70、第三刀 70 → 69）、localize 选择器本地化器未收（i18n 启动副作用已由 B1/R2a 收口） | **P4b** / **P5b** / **R2b** | tracker `dollarLookup` 列 + 辅助口径「prototype 访问器定义」+ 本地化键数门禁 |
 | 主计划 阶段 5 大型命令式渲染重写（P6 + P7） | ⚠️ **部分**：tree 已成默认 v-for（剩 5b）；`command-api` / `FileBodyPane` 只抽了 core | **T5b** / **B1** / **R1** | tracker 每模块列 + 三份计划文档 |
 | 主计划 收尾：拆除脚手架 | ⬜ 未开始（机制与执行器已就绪） | **C1** / **C2** | `pnpm stale-exemptions --check`（现退出码 1）+ tracker 口径区 |
 | layout M1 金标准 / M2 数据层 / M3 系列 | ✅ 已交付（M5-b 后 Teleport 为唯一装载路径） | — | layout **tests** 17 个 spec + 共享 fixture |
@@ -400,6 +400,12 @@
 ## P4b — 原型访问器退役（`utils/element-data.ts`）
 
 > 🚧 **进行中（2026-09-11，B3 首刀）**：**11 个零访问字段已删除**（`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`）——删前逐一复核「全仓无任何引用」（`initText` 的 4 处命中经查是 `Variable.vue` 的局部变量与 `stores/localization.ts` 的一处类型残留，已一并清掉）。`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck / vue-tsc / oxlint 全绿。剩余：按组件把 `this.x` / `el.x` 改成显式 `getElementData(el)`（与 P2b 同批）。
+
+> 🚧 **P4b 第三刀（2026-09-12）：再迁 1 个内部字段，`DATA_FIELDS` 70 → 69（访问器 138）**。
+>
+> - `lastScrollTop`（滚动同步的"上次位置"记忆，共 8 处引用 / 2 文件：`animation/animation-list.ts` 的 `layerListScroll` 与时间线滚动、`commands/event-editor-initialize.ts` 的 `saveScroll`/`restoreScroll`）→ 全部改为 `getElementData(el).lastScrollTop`，从 `DATA_FIELDS` 摘除。`restoreScroll` 里回写 `scrollTop` 时用 `Number(... ?? 0)`，避免把 `unknown` 直接赋给数值属性。
+> - **同批发现并修掉一处"上一轮漏检"的回归（重要）**：`typecheck:vue` 报出 `FileAudioPage.vue:158` / `FileScriptPage.vue:56` 的 **TS2769**——那是 2026-09-12 **E1 第二刀**（`.vue` 监听配对）留下的：把监听器先存进 `let xxxHandler: ((event: Event) => void) | null` 再 `addEventListener`，`null` 分支没有被窄化。修法：先用 `const` 接住处理器、再赋给变量并传入 `addEventListener`（同一引用，语义不变）。**教训**：本轮之前我漏跑了 `typecheck:vue`（这本是 P1b 第 11 刀就立下的规矩），两个错误潜伏了一整轮；门禁清单要按刀执行，不能凭印象。
+> - **指标**：`DATA_FIELDS` **70 → 69**；editor **235 文件 1983/1983**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`docs:check` OK。
 
 > 🚧 **P4b 第二刀（2026-09-12）：只写与纯内部字段再删 2 个，`DATA_FIELDS` 72 → 70（访问器 140）**。
 >

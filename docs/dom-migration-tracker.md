@@ -130,7 +130,7 @@
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 203 | 9 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 154 | 9 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 62 | 9 | - |
-| packages/editor/src/animation/animation-list.ts | 1115 | 8 | - |
+| packages/editor/src/animation/animation-list.ts | 1119 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
 | packages/editor/src/commands/text-tip.ts | 389 | 8 | - |
 | packages/editor/src/inspector/inspector.ts | 507 | 8 | - |
@@ -164,7 +164,7 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 109 | 6 | - |
 | packages/editor/src/components/common/WindowFrame.vue | 180 | 5 | - |
-| packages/editor/src/components/inspector/FileAudioPage.vue | 256 | 5 | - |
+| packages/editor/src/components/inspector/FileAudioPage.vue | 257 | 5 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 5 | - |
@@ -222,7 +222,7 @@
 | packages/editor/src/components/common/ColorBox.vue | 132 | 2 | - |
 | packages/editor/src/components/common/DetailBox.vue | 91 | 2 | - |
 | packages/editor/src/components/common/SwitchItem.vue | 113 | 2 | - |
-| packages/editor/src/components/inspector/FileScriptPage.vue | 90 | 2 | - |
+| packages/editor/src/components/inspector/FileScriptPage.vue | 91 | 2 | - |
 | packages/editor/src/components/inspector/SceneActorPage.vue | 282 | 2 | - |
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 568 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
@@ -252,7 +252,7 @@
 | packages/editor/src/animation/animation-motion.ts | 1130 | 1 | - |
 | packages/editor/src/audio/audio-manager.ts | 144 | 1 | - |
 | packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 1 | - |
-| packages/editor/src/commands/event-editor-initialize.ts | 509 | 1 | - |
+| packages/editor/src/commands/event-editor-initialize.ts | 512 | 1 | - |
 | packages/editor/src/commands/property-window/property-window-factory.ts | 206 | 1 | - |
 | packages/editor/src/components/commands/CallEvent.vue | 176 | 1 | - |
 | packages/editor/src/components/commands/Script.vue | 80 | 1 | - |
@@ -1166,7 +1166,7 @@
 | packages/editor/src/utils/color-utils.ts | 2 | 0 | - |
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
-| packages/editor/src/utils/element-data.ts | 106 | 0 | - |
+| packages/editor/src/utils/element-data.ts | 105 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |
