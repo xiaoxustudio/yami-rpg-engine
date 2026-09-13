@@ -192,6 +192,8 @@
 
 - 2026-09-12 **B1/M1 第一批补测：`YMCommandList` 组件级用例 12 → 21（新增 9 例行为金标准）**。① 新增 `YMCommandList/__tests__/YMCommandList.m1.spec.ts`：在**现命令式实现**上锁死 `computeTextIndent` 的**精确值**（中文 `indent*2+'em'`、英文 `indent*4+'ch'`）、`selectAll`/`selectMultipleTo` 的选中结果、`pageDown/pageUp`（含 `select=true` 把选区带走）、`scrollToRow`/`scrollToSelection` 的 `scrollTop` 变化、`update` 幂等、空白行契约（`elements.count = 命令数 + 1`）。② **五条"实现细节决定断言"的事实**写进 `monolith-render-plan.md`：选中类 API 需 `focusing = true` 才落 DOM 类；`computeTextIndent` 是**等长**字符串（"长度递增"的直觉断言是错的，必须断言取值）；每层列表末尾都有 `createBlankElement` 的空白行；`pageUp/pageDown` 依赖 SFC 注入的 `this.scroll`（纯元素态用例需自备 stub）；嵌套渲染（parse 的嵌套数组 → `createItems(indent+1)`）留 TODO(M1)，需先弄清 `createCommandBuffer` 的 buffer 协议。③ **ui-kit 用例 668 → 677**（新文件 9 例），基线同步。**门禁**：ui-kit **98 文件 677/677** 全绿、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M1 第二批：文件 body 组 3 例落地 + 7 条 `it.todo`（并查清为何暂时写不出）**。① `YMFileBodyPane/__tests__/YMFileBodyPane.m1.spec.ts` 先锁能稳定驱动的三条契约：空目录不建行、`updateFiles`（normal 且无目录文件）不建行、`unselect` 无选中时安全清空；其余七类（行渲染/`selectAll`/`selectByPath`/两种 display 的度量/`updateContentSize`）写成 `it.todo`——**不用假绿掩盖，也不丢目标**。② **三条实测结论**（下批可直接照做）：ⓐ 该 SFC 的 API 挂在**面板元素**（`attachApi(el.value, …)`），而度量字段写在 `.file-body-content` 上，用例极易读错对象（第一版就踩了）；ⓑ `computeGridProperties()` 开头 `if (rect(node).width <= 0) return;` ⇒ jsdom 必须给 `getBoundingClientRect` 打尺寸桩（`rect()` 就是读它），否则度量恒 0、`countPerLine` 不写、`resize()` 渲染不出行；ⓒ 行渲染链路是 `createFlatItems → computeGridProperties → updateContentSize → resize`，少一步都只有 0 行。③ 下批先补"编辑器形态 fixture"（尺寸桩 + `Directory`/`browser` 最小实现）再写那七例。**指标**：ui-kit **99 文件 680/680（+7 todo）**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
