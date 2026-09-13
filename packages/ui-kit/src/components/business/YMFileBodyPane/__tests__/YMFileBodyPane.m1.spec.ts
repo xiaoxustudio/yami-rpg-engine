@@ -3,13 +3,18 @@ import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
 /**
- * P6/M1 行为金标准（文件 body 组，**第一批**）：锁住当前实现的"无输入不建行"契约与选区清理。
+ * P6/M1 行为金标准（文件 body 组）：锁住当前实现的**行渲染 / 选区 / 网格度量 / 内容尺寸**行为，
+ * 供 M2–M5 重写期间对照——改造后只允许改断言方式，不允许改语义。
  *
- * ⚠️ 行渲染 / 网格度量 / 尺寸三类用例**尚未写出**（见文件末尾 `it.todo`）——原因是这套 SFC 的
- * 元素 API 挂在**面板元素**上（`attachApi(el.value, …)`），而行渲染要走
- * `createFlatItems → computeGridProperties → updateContentSize → resize` 且 `computeGridProperties`
- * 在 `rect(node).width <= 0` 时直接 return；jsdom 下还需要补 `getBoundingClientRect` 等一整套
- * 尺寸桩，并让 `.file-body-content` 上的度量字段可读。已记入 `docs/monolith-render-plan.md` 的 M1 段。
+ * 编辑器形态 fixture 的五个要点（逐条踩出来的）：
+ *   ①元素 API 挂在**面板元素**上（`attachApi(el.value, …)`），度量字段写在 `.file-body-content` 上；
+ *   ②jsdom 必须给 `getBoundingClientRect` 打尺寸桩，否则 `computeGridProperties()` 开头的
+ *     `if (rect(node).width <= 0) return;` 直接返回；
+ *   ③`viewMode` 由 **`setViewIndex(0..4)`** 决定（0=list、1=small、2=medium…）：不设序号，
+ *     后面 `switch (viewMode)` 落空，度量字段一个都不会写；
+ *   ④`setViewIndex` 会写 **`props.links.head.view`**——缺这个桩会直接抛错（本文件曾因此 9 例全红）；
+ *   ⑤渲染链：`setViewIndex → updateViewMode → createFlatItems → computeGridProperties →
+ *     updateContentSize → resize`。
  */
 class FileItem {
 	path: string;
@@ -47,60 +52,147 @@ class FolderItem {
 	}
 }
 
+interface BodyContent extends HTMLElement {
+	countPerLine?: number;
+	itemSize?: number;
+	itemWidth?: number;
+	visibleLines?: number;
+}
+
 interface BodyElement extends HTMLElement {
 	[k: string]: unknown;
 	createFlatItems: (dir: unknown[]) => void;
 	selectAll: () => void;
+	selectByPath: (path: string) => void;
 	unselect: () => void;
 	updateFiles: () => void;
+	setViewIndex: (idx: number) => void;
+	updateViewMode: () => void;
+	computeGridProperties: () => void;
+	updateContentSize: () => void;
+	resize: () => void;
 	selections?: unknown[];
 }
 
 const makeLinks = (display = 'normal') => ({
 	browser: { display, filters: null, searchResults: null, backToParentFolder: vi.fn() },
 	nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
+	// `setViewIndex` 会写 `head.view`：少了这个桩会抛错
+	head: { view: { write: vi.fn() } },
 	body: null
 });
 
-const mountBody = (display = 'normal') => {
+const mountBody = () => {
+	vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
+		width: 600,
+		height: 400,
+		top: 0,
+		left: 0,
+		right: 600,
+		bottom: 400,
+		x: 0,
+		y: 0,
+		toJSON: () => ({})
+	} as DOMRect);
 	const wrapper = mount(YMFileBodyPane, {
-		props: { links: makeLinks(display), fileClasses: { FileItem, FolderItem } }
+		props: { links: makeLinks('normal'), fileClasses: { FileItem, FolderItem } }
 	});
-	return { wrapper, el: wrapper.element as BodyElement };
+	const el = wrapper.element as BodyElement;
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'clientWidth', { value: 600, configurable: true });
+	return {
+		wrapper,
+		el,
+		content: el.querySelector<BodyContent>('.file-body-content') as BodyContent
+	};
 };
+
+/** 编辑器形态渲染链（`viewIndex`：0=列表、2=网格） */
+const renderItems = (el: BodyElement, list: unknown[], viewIndex = 0): void => {
+	el.setViewIndex(viewIndex);
+	el.updateViewMode();
+	el.createFlatItems(list);
+	el.computeGridProperties();
+	el.updateContentSize();
+	el.resize();
+};
+
+const items = (n = 6) => Array.from({ length: n }, (_, i) => new FileItem(`/a/ev${i}`, `ev${i}`));
 
 const rows = (el: BodyElement): HTMLElement[] =>
 	Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 
-describe('YMFileBodyPane（M1 行为金标准 第一批：无输入不建行 / 选区清理）', () => {
-	it('createFlatItems：空目录不产生行', () => {
+describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸）', () => {
+	it('列表视图：按文件建立可见行，文本含文件名', () => {
 		const { el } = mountBody();
-		el.createFlatItems([]);
-		expect(rows(el).length).toBe(0);
+		renderItems(el, items(3), 0);
+		expect(rows(el).length).toBeGreaterThanOrEqual(3);
+		expect(el.textContent).toContain('ev0');
 	});
 
-	it('updateFiles：display=normal 且没有目录文件时不建行', () => {
-		const { el } = mountBody('normal');
-		el.updateFiles();
-		expect(rows(el).length).toBe(0);
+	it('文件夹与文件都能成行', () => {
+		const { el } = mountBody();
+		renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')], 0);
+		expect(rows(el).length).toBeGreaterThanOrEqual(2);
+		expect(el.textContent).toContain('sub');
 	});
 
-	it('unselect：没有选中项时安全清空（selections 归零、DOM 无 selected）', () => {
+	it('selectAll：行上出现 selected 类、selections 非空', () => {
 		const { el } = mountBody();
-		el.createFlatItems([]);
+		renderItems(el, items(4), 0);
+		el.selectAll();
+		expect(rows(el).some((row) => row.classList.contains('selected'))).toBe(true);
+		expect((el.selections ?? []).length).toBeGreaterThan(0);
+	});
+
+	it('selectByPath：只选中路径匹配的那一行', () => {
+		const { el } = mountBody();
+		renderItems(el, items(3), 0);
+		el.selectByPath('/a/ev1');
+		expect(rows(el).filter((row) => row.classList.contains('selected')).length).toBe(1);
+	});
+
+	it('unselect：清空选区并移除 selected 类', () => {
+		const { el } = mountBody();
+		renderItems(el, items(3), 0);
 		el.selectAll();
 		el.unselect();
 		expect(el.selections ?? []).toEqual([]);
 		expect(rows(el).filter((row) => row.classList.contains('selected')).length).toBe(0);
 	});
-});
 
-describe.todo('YMFileBodyPane（M1 行为金标准 待补：行渲染/选区/度量/尺寸）', () => {
-	it.todo('createFlatItems + resize：按文件建立可见行（文本含文件名）');
-	it.todo('createFlatItems：文件夹与文件都能成行');
-	it.todo('selectAll：行上出现 selected 类、selections 非空');
-	it.todo('selectByPath：只选中路径匹配的那一行');
-	it.todo('computeGridProperties：normal 下算出每行数量/可见行数/行高');
-	it.todo('computeGridProperties：scroll 与 normal 的每行数量不同');
-	it.todo('updateContentSize：内容元素拿到滚动区尺寸');
+	it('网格度量：列表视图（viewIndex=0）算出每行数量/可见行数/行高', () => {
+		const { el, content } = mountBody();
+		renderItems(el, items(3), 0);
+		expect(content.countPerLine).toBeGreaterThan(0);
+		expect(content.visibleLines).toBeGreaterThan(0);
+		expect(content.itemSize).toBeGreaterThan(0);
+	});
+
+	it('网格度量：网格视图（viewIndex=2）与列表视图的每行数量不同', () => {
+		const { el: listEl, content: listContent } = mountBody();
+		renderItems(listEl, items(3), 0);
+		const { el: gridEl, content: gridContent } = mountBody();
+		renderItems(gridEl, items(3), 2);
+		expect(listContent.countPerLine).toBeGreaterThan(0);
+		expect(gridContent.countPerLine).not.toBe(listContent.countPerLine);
+	});
+
+	it('updateContentSize：内容元素拿到滚动区尺寸（宽或高被写上）', () => {
+		const { el, content } = mountBody();
+		renderItems(el, items(30), 0);
+		expect(content.style.width !== '' || content.style.height !== '').toBe(true);
+	});
+
+	it('空目录不产生行', () => {
+		const { el } = mountBody();
+		renderItems(el, [], 0);
+		expect(rows(el).length).toBe(0);
+	});
+
+	it('updateFiles：display=normal 且无目录文件时不建行', () => {
+		const { el } = mountBody();
+		el.updateFiles();
+		expect(rows(el).length).toBe(0);
+	});
 });
