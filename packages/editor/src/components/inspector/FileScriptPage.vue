@@ -52,8 +52,9 @@ onMounted(() => {
 	overviewEl.value?.addEventListener('update', syncOverview);
 	if (fileScript) {
 		// E1：监听器存变量再 add/remove，保证卸载时能摘掉（原先只 add）
-		localizeHandler = fileScript.windowLocalize;
-		window.addEventListener('localize', localizeHandler);
+		const onLocalize = fileScript.windowLocalize;
+		localizeHandler = onLocalize;
+		window.addEventListener('localize', onLocalize);
 	}
 	const el = inspectorEls.get('fileScript');
 	if (el) {

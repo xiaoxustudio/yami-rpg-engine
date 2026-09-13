@@ -10,6 +10,7 @@ import { getListConfig } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
+import { getElementData } from '@app/utils/element-data';
 import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -32,7 +33,8 @@ function ensureDomBound() {
 	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as HTMLElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as HTMLElement;
-	EventEditor.list.lastScrollTop = 0;
+	// P4b：滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
+	getElementData(EventEditor.list as unknown as HTMLElement).lastScrollTop = 0;
 	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
@@ -144,11 +146,12 @@ function bindListMethods() {
 	};
 
 	list.saveScroll = function (this: HTMLElement & EventEditorList) {
-		this.lastScrollTop = this.scrollTop;
+		// P4b：改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
+		getElementData(this).lastScrollTop = this.scrollTop;
 	};
 
 	list.restoreScroll = function (this: HTMLElement & EventEditorList) {
-		this.scrollTop = this.lastScrollTop;
+		this.scrollTop = Number(getElementData(this).lastScrollTop ?? 0);
 	};
 
 	list.defineProperties = function (

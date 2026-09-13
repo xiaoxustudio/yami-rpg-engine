@@ -154,8 +154,9 @@ onMounted(() => {
 		}
 
 		// E1：监听器存变量再 add/remove，保证卸载时能摘掉（原先只 add）
-		themechangeHandler = fileAudio.themechange;
-		window.addEventListener('themechange', themechangeHandler);
+		const onThemeChange = fileAudio.themechange;
+		themechangeHandler = onThemeChange;
+		window.addEventListener('themechange', onThemeChange);
 		const el = inspectorEls.get('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
 		elFrequencyDetail.value?.on('toggle', fileAudio.windowResize);

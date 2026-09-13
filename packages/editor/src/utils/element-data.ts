@@ -18,7 +18,6 @@ const DATA_FIELDS = [
 	'start',
 	'number',
 	'selection',
-	'lastScrollTop',
 	'decimals',
 	'initialized',
 	'filter',
