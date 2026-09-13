@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<div class="file-body-pane" ref="el" :data-v-ref="''">
 		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''"></div>
 	</div>
@@ -19,7 +19,12 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
-import { createFileBodyCore } from './file-body-core';
+import { createFileBodyCore, type GridMetrics } from './file-body-core';
+import {
+	computeViewMetrics,
+	VIEW_MODE_BY_INDEX,
+	type FileBodyViewMode
+} from './file-body-render';
 
 const core = createFileBodyCore();
 
@@ -523,51 +528,33 @@ function resize(): void {
 	}
 }
 
+function applyGridMetrics(metrics: GridMetrics): void {
+	const content = contentEl.value as FileBodyContentApi;
+	content.itemSize = metrics.itemSize;
+	content.itemWidth = metrics.itemWidth;
+	content.visibleLines = metrics.visibleLines;
+	content.normalCountPerLine = metrics.normalCountPerLine;
+	content.scrollCountPerLine = metrics.scrollCountPerLine;
+	content.scrollCount = metrics.scrollCount;
+}
+
 function computeGridProperties(): void {
 	const node = el.value as FileBodyPaneApi;
-	if (rect(node).width <= 0) return;
+	const nodeRect = rect(node);
+	if (nodeRect.width <= 0) return;
 	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
 	elements.start = -1;
 	elements.end = -1;
-	switch (viewMode) {
-		case 'list':
-			return computeListGridProperties();
-		case 'small':
-			return computeTileGridProperties(40, 72);
-		case 'medium':
-			return computeTileGridProperties(72, 104);
-		case 'large':
-			return computeTileGridProperties(136, 168);
-		case 'huge':
-			return computeTileGridProperties(264, 296);
-	}
-}
-
-function computeListGridProperties(): void {
-	const node = el.value as FileBodyPaneApi;
-	const content = contentEl.value as FileBodyContentApi;
-	const nodeRect = rect(node);
-	const metrics = core.computeListGridMetrics(nodeRect.width, nodeRect.height);
-	content.itemSize = metrics.itemSize;
-	content.itemWidth = metrics.itemWidth;
-	content.visibleLines = metrics.visibleLines;
-	content.normalCountPerLine = metrics.normalCountPerLine;
-	content.scrollCountPerLine = metrics.scrollCountPerLine;
-	content.scrollCount = metrics.scrollCount;
-}
-
-function computeTileGridProperties(width: number, height: number): void {
-	const node = el.value as FileBodyPaneApi;
-	const content = contentEl.value as FileBodyContentApi;
-	const nodeRect = rect(node);
-	const metrics = core.computeTileGridMetrics(nodeRect.width, nodeRect.height, width, height);
-	content.itemSize = metrics.itemSize;
-	content.itemWidth = metrics.itemWidth;
-	content.visibleLines = metrics.visibleLines;
-	content.normalCountPerLine = metrics.normalCountPerLine;
-	content.scrollCountPerLine = metrics.scrollCountPerLine;
-	content.scrollCount = metrics.scrollCount;
+	// M2 切片 5：模式 → 度量 的映射改由派生层给（`list`/`small`/`medium`/`large`/`huge` 与原先同一张表；
+	// 未知/未定的 viewMode 与原 `switch` 一样"什么都不设"）
+	if (!VIEW_MODE_BY_INDEX.includes(viewMode as FileBodyViewMode)) return;
+	applyGridMetrics(
+		computeViewMetrics(viewMode as FileBodyViewMode, core, {
+			width: nodeRect.width,
+			height: nodeRect.height
+		})
+	);
 }
 
 function computeStartAndEnd(): Uint32Array {
