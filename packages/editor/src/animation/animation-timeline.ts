@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Animation } from './animation-window.ts';
+import { createDetachedElement } from '@app/utils/dom';
 import type {
 	AnimationFrame,
 	AnimationLayer,
@@ -410,7 +410,8 @@ Animation.createTimelines = (function IIFE() {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
-				timeline = document.createElement('div');
+				// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙
+				timeline = createDetachedElement();
 				addClass(timeline, 'box');
 				addClass(timeline, 'timeline-frames');
 				timeline.layer = layer;
@@ -430,7 +431,8 @@ Animation.createTimelines = (function IIFE() {
 				const easing = !!frame.easingId;
 				let { key } = frame;
 				if (key === undefined) {
-					key = document.createElement('div');
+					// P1b：同上
+					key = createDetachedElement();
 					addClass(key, 'box');
 					addClass(key, 'timeline-key');
 					Object.defineProperty(frame, 'key', {

@@ -1,5 +1,6 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { macRedoKey } from '@app/utils/event-accessors';
+import { createDetachedElement } from '@app/utils/dom';
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
@@ -980,7 +981,8 @@ Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
 	const g = parseInt(color.slice(2, 4), 16);
 	const b = parseInt(color.slice(4, 6), 16);
 	const a = parseInt(color.slice(6, 8), 16) / 255;
-	const holder = document.createElement('div');
+	// P1b：离屏节点统一走 utils/dom 的 renderDetached
+	const holder = createDetachedElement();
 	render(
 		h('menu-icon', {
 			class: a === 0 ? 'color-icon transparent' : 'color-icon',

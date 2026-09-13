@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Animation } from './animation-window.ts';
+import { createDetachedElement } from '@app/utils/dom';
 import type {
 	AnimationFrame,
 	AnimationLayer,
@@ -1053,7 +1053,8 @@ Animation.updateRuler = function (this: typeof Animation) {
 				const start = innerRuler.start ?? 0;
 				let number = (start + i) * 5;
 				while (i < length) {
-					const node = document.createElement('div');
+					// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙
+					const node = createDetachedElement();
 					addClass(node, 'box');
 					addClass(node, 'timeline-number');
 					node.textContent = number.toString();

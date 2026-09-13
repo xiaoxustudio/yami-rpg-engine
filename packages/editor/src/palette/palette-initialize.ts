@@ -1,10 +1,10 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Palette } from './palette.ts';
+import { renderDetached } from '@app/utils/dom';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { paletteEls } from '@app/palette/element-registry';
 import { addScrollbars, hide, on } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
-import { h, render } from 'vue';
+import { h } from 'vue';
 import { getPaletteStore } from '@app/stores/palette';
 import { AutoTile } from './auto-tile.ts';
 import { FrameGenerator } from './tile-frame-generator.ts';
@@ -50,10 +50,11 @@ Palette.initialize = function (this: typeof Palette) {
 
 	const marquee = this.marquee;
 	const createSelection = (id: string) => {
-		const host = document.createElement('div');
-		render(h('selection', { id }), host);
-		const element = host.firstElementChild as HTMLElement & { x: number; y: number };
-		host.removeChild(element);
+		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		const element = renderDetached(h('selection', { id })) as HTMLElement & {
+			x: number;
+			y: number;
+		};
 		return element;
 	};
 	const source = createSelection('source-selection');

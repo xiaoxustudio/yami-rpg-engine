@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig } from '@ui-kit';
+import { renderDetached } from '@app/utils/dom';
 import { paletteEls } from '@app/palette/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, hasClass, write, read, clear } from '@app/utils/element-utils.ts';
@@ -24,7 +24,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { SetQuantity } from '@app/tools/set-number-window.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { h, render } from 'vue';
+import { h } from 'vue';
 
 type AutoTileClipboardData = AutoTileTemplateData | { frame: unknown };
 
@@ -357,17 +357,14 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 	const digits = Number.computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
 		const index = i.toString().padStart(digits, '0');
-		const host = document.createElement('div');
-		render(
+		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		const element = renderDetached(
 			h(
 				'div',
 				{ class: 'common-item', '.dataValue': i },
 				`#${index}${i === cover ? ' !' : ''}`
-			),
-			host
+			)
 		);
-		const element = host.firstElementChild as HTMLElement;
-		host.removeChild(element);
 		list.appendElement(element);
 	}
 	list.update();
@@ -445,10 +442,10 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileSto
 		const x = frame & 0xff;
 		const y = frame >> 8;
 		const index = i.toString().padStart(digits, '0');
-		const host = document.createElement('div');
-		render(h('div', { class: 'common-item', '.dataValue': i }, `#${index}: ${x},${y}`), host);
-		const element = host.firstElementChild as HTMLElement;
-		host.removeChild(element);
+		// P1b：同上
+		const element = renderDetached(
+			h('div', { class: 'common-item', '.dataValue': i }, `#${index}: ${x},${y}`)
+		);
 		list.appendElement(element);
 	}
 	list.update();
