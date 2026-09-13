@@ -80,4 +80,25 @@ describe('radio-proxy', () => {
 		expect(a.classList.contains('selected')).toBe(false);
 		a.remove();
 	});
+
+	// P1b：编辑器侧原先各自 `document.getElementsByName('组名')` 反查组内成员，
+	// 现在统一读 `proxy.group`——这里锁住它的顺序与内容。
+	it('group 返回同 name 的组内成员（按文档顺序）', () => {
+		const proxy = makeProxy('group5', null);
+		const a = makeProxy('group5', 'a');
+		const b = makeProxy('group5', 'b');
+		const other = makeProxy('group6', 'x');
+
+		expect(proxy.group).toEqual([proxy, a, b]);
+		expect(proxy.group.map((el) => el.dataValue)).toEqual([null, 'a', 'b']);
+		expect(proxy.group).not.toContain(other);
+
+		// 成员变更后访问器要跟着变（每次读都重查，不做缓存）
+		b.remove();
+		expect(proxy.group).toEqual([proxy, a]);
+
+		proxy.remove();
+		a.remove();
+		other.remove();
+	});
 });

@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
@@ -244,7 +243,8 @@ Color.readRGBAFromInputs = function (this: typeof Color) {
 };
 
 Color.loadIndexedColors = function (this: typeof Color) {
-	const radios = document.getElementsByName('color-index');
+	// P1b：组内成员改读 proxy.group（原先 document.getElementsByName('color-index')）
+	const radios = (radioProxyMap['color-index'] as RadioProxyElement | undefined)?.group ?? [];
 	const colors = Data.config.indexedColors;
 	const length = colors.length;
 	for (let i = 0; i < length; i++) {

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<WindowFrame id="export-apk"
 				:ref="registryRef(titleEls, 'export-apk')" no-buttons>
 		<template #title
@@ -22,7 +22,8 @@
 				<div class="text">应用版本号</div>
 				<TextBox id="export-apk-apkVersionCode" v-model="exportApkForm.apkVersionCode" />
 			</div>
-			<div class="box" id="export-apk-PS">
+			<!-- P1b：超链接点击改由本组件转发（原先 Menubar.initialize 全文档查 `.href`） -->
+			<div class="box" id="export-apk-PS" @click="onHrefClick">
 				<div class="text project-summary export-apk-major">PS（温馨提示）</div>
 				<div class="text export-apk-major">
 					构建前请确保您安装了Java，apktool（内置）、apksigner（内置）、zipalign（内置）工具
@@ -66,9 +67,14 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
-import { exportApkForm } from '@app/title/menu-bar';
+import { exportApkForm, Menubar } from '@app/title/menu-bar';
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
+
+// P1b：超链接点击转交 Menubar（模块侧不再按类名全文档反查 `.href`）
+const onHrefClick = (event: MouseEvent): void => {
+	Menubar.hrefClick!(event);
+};
 
 const elContainer = ref<HTMLElement | null>(null);
 const elContent = ref<HTMLElement | null>(null);

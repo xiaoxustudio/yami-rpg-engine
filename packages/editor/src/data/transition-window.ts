@@ -1120,7 +1120,9 @@ Easing.curvePointerdown = function (this: typeof Easing, event: PointerEvent & E
 
 Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 	if (!this.dragging && event.deltaY !== 0) {
-		const radios = document.getElementsByName('easing-scale');
+		// P1b：组内成员改读 proxy.group（原先 document.getElementsByName('easing-scale')）
+		const radios =
+			(radioProxyMap['easing-scale'] as RadioProxyElement | undefined)?.group ?? [];
 		const length = radios.length;
 		for (let i = 0; i < length; i++) {
 			if (radios[i].dataValue === this.scale) {

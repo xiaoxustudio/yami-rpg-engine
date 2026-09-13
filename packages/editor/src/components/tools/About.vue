@@ -8,7 +8,8 @@
 
 		<div class="grid-box">
 			<div class="text" id="about-credits">{{ t('components.about-credits.content') }}</div>
-			<div class="text">
+			<!-- P1b：超链接点击改由本组件转发（原先 Menubar.initialize 全文档查 `.href`） -->
+			<div class="text" @click="onHrefClick">
 				<div class="text href">刀里个刀</div>
 				<br />
 				<div
@@ -59,6 +60,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Menubar } from '@app/title/menu-bar.ts';
 import { titleEls } from '@app/title/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -66,6 +68,11 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 
 const { t } = useI18n();
+
+// P1b：链接点击转交 Menubar（模块侧不再按类名全文档反查）
+const onHrefClick = (event: MouseEvent): void => {
+	Menubar.hrefClick!(event);
+};
 
 onMounted(() => {});
 </script>

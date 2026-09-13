@@ -26,6 +26,11 @@ export type RadioProxyElement = HTMLElement & {
 	relate(...args: unknown[]): void;
 	toggleRelatedElements(): void;
 	on(...args: unknown[]): void;
+	/**
+	 * P1b：组内成员（按 `name` 查询）。原先调用方各自 `document.getElementsByName('组名')`
+	 * 反查 DOM，现在把这条查询收进 proxy 自身，编辑器侧改读 `proxy.group`。
+	 */
+	readonly group: RadioProxyElement[];
 };
 
 export const radioProxyMap: Record<string, HTMLElement> = {};
@@ -61,6 +66,14 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 	proxy.read = function (): unknown {
 		return proxy.dataValue;
 	};
+
+	// P1b：组内成员访问器——组名即 proxy.id（`write` 原本就是这么查的），
+	// 把 `document.getElementsByName` 这条查询收敛到 ui-kit 一处。
+	Object.defineProperty(proxy, 'group', {
+		configurable: true,
+		get: (): RadioProxyElement[] =>
+			Array.from(document.getElementsByName(proxy.id)) as unknown as RadioProxyElement[]
+	});
 
 	proxy.write = function (value: unknown): void {
 		const elements = document.getElementsByName(

@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { macRedoKey } from '@app/utils/event-accessors';
 import { createDetachedElement } from '@app/utils/dom';
 import { titleEls } from '@app/title/element-registry';
@@ -144,9 +143,8 @@ Menubar.initialize = function (this: typeof Menubar) {
 	// 侦听事件
 	window.addEventListener('keydown', this.keydown!);
 	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
-	document
-		.querySelectorAll('.href')
-		.forEach((el) => el.addEventListener('click', this.hrefClick!));
+	// P1b：`.href` 链接的点击改由拥有它们的组件转发（About.vue / ExportApk.vue 的 @click → Menubar.hrefClick）——
+	// 原先这里的 `document.querySelectorAll('.href')` 在启动时执行，而这些链接在懒加载窗口里，本来就绑不上。
 };
 
 // 开关全屏模式
