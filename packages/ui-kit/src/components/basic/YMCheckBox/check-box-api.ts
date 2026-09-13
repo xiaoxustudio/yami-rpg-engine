@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
 

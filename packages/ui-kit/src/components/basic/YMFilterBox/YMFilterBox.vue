@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { ref } from 'vue';
 
 interface Props {

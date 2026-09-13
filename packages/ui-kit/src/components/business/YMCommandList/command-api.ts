@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { h, render } from 'vue';
 import {
 	relate,

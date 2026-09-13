@@ -643,6 +643,8 @@ function main() {
 			}
 		}
 		// 交叉验证：正则命中文件 − 正则误报 − 命中落在注释/字符串 = tracker 的待迁移命中数
+	// （C1 之后，白名单文件由 .oxlintrc.json 的 overrides 关掉规则且不带豁免注释，
+	//   因此它们正好落在「正则命中但无豁免注释」= 正则误报这一项里，恒等式不变。）
 		const regexPending = metrics.regexHitFiles - metrics.regexFalsePositive - (tracker.commentOnlyHits ?? 0);
 		if (tracker.exempt !== undefined && tracker.exempt !== regexPending) {
 			fail(
@@ -654,6 +656,9 @@ function main() {
 	}
 	compareMetrics('docs/vue3-migration-plan.md「现状总览」表', planTotals(), tracker ?? metrics);
 	compareMetrics('docs/README.md「当前快照」', readmeTotals(), tracker ?? metrics);
+
+	// ── C1 验收：白名单外待迁移命中 = 0，且白名单三处同源（dom-guard 常量 ↔ oxlint overrides ↔ 文件存在）
+	checkC1Whitelist(tracker);
 
 	if (VERBOSE) {
 		console.log(
@@ -676,6 +681,56 @@ function main() {
 		process.exit(1);
 	}
 	console.log('docs-check: OK');
+}
+
+/**
+ * C1 验收（白名单外的迁移项必须为 0）：
+ * ① `待迁移命中 === 0`——没有文件仍需要 `/* oxlint-disable *​/` 才能过 lint；
+ * ② `dom-guard.mjs` 的 WHITELIST / TEMP_WHITELIST 每一项都在 `.oxlintrc.json` 的
+ *    `overrides`（关掉 `eslint/no-restricted-properties`）里，且非 glob 项的文件真实存在。
+ * 这两条把"白名单"从一个说法变成可核对的事实，防止三处漂移。
+ */
+function checkC1Whitelist(tracker) {
+	if (tracker !== null && Number.isFinite(tracker.exempt) && tracker.exempt !== 0) {
+		fail(`C1 白名单外仍有迁移债：待迁移命中 ${tracker.exempt}（应为 0，检查是否新增了需要豁免注释的文件）`);
+	}
+	const guardPath = join(ROOT, 'scripts', 'dom-guard.mjs');
+	const oxlintPath = join(ROOT, '.oxlintrc.json');
+	if (!existsSync(guardPath) || !existsSync(oxlintPath)) return;
+	const guard = readFileSync(guardPath, 'utf8');
+	const entries = [];
+	for (const name of ['WHITELIST', 'TEMP_WHITELIST']) {
+		const block = new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`).exec(guard);
+		if (block === null) {
+			fail(`scripts/dom-guard.mjs: 未找到 ${name} 常量`);
+			continue;
+		}
+		// 只取「独占一行的字符串字面量」——注释/说明里的 'canvas' 之类不应被当成白名单项
+		for (const line of block[1].split('\n')) {
+			const m = /^\s*'([^']+)',?\s*$/.exec(line);
+			if (m !== null) entries.push({ name, glob: m[1] });
+		}
+	}
+	let overrideFiles = [];
+	try {
+		const config = JSON.parse(readFileSync(oxlintPath, 'utf8'));
+		for (const override of config.overrides ?? []) {
+			if (override.rules?.['eslint/no-restricted-properties'] !== 'off') continue;
+			overrideFiles.push(...(override.files ?? []));
+		}
+	} catch (error) {
+		fail(`.oxlintrc.json 解析失败：${String(error)}`);
+		return;
+	}
+	for (const entry of entries) {
+		if (!overrideFiles.includes(entry.glob)) {
+			fail(`C1 白名单漂移：${entry.name} 的 \`${entry.glob}\` 未出现在 .oxlintrc.json 的 overrides 中`);
+		}
+		if (!entry.glob.includes('*') && !existsSync(join(ROOT, entry.glob))) {
+			fail(`C1 白名单指向不存在的文件：\`${entry.glob}\``);
+		}
+	}
+	notes.push(`docs-check: C1 白名单 ${entries.length} 项（设计豁免 + 临时豁免）与 .oxlintrc.json overrides 同源`);
 }
 
 main();

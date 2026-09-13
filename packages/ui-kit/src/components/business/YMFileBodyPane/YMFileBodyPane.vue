@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
 import {
 	addClass,

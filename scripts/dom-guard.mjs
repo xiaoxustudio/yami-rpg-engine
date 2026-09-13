@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // DOM 迁移守卫：扫描命令式 DOM 用法，为存量代码打豁免标记，输出迁���矩阵。
 // 用法：
-//   node scripts/dom-guard.mjs exempt   为存量违规文件添加 oxlint-disable 豁免（幂等，基于 oxlint 输出）
-//   node scripts/dom-guard.mjs tracker  生成 docs/dom-migration-tracker.md
+//   node scripts/dom-guard.mjs tracker  生成 docs/dom-migration-tracker.md（白名单口径见 WHITELIST）
+//   node scripts/dom-guard.mjs fix      修 BOM 错位的豁免注释（历史遗留）
+//
+// C1 后不再提供 exempt 子命令：受限 API 的用法只剩「迁移」或「进白名单」两条路，
+// 后者由 WHITELIST / TEMP_WHITELIST + .oxlintrc.json 的 overrides 承担。
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +16,51 @@ const SCAN_DIRS = [join('packages', 'editor', 'src'), join('packages', 'ui-kit',
 const EXTENSIONS = new Set(['.ts', '.tsx', '.vue']);
 const EXCLUDE_RE = /(?:\.spec\.ts$|\.d\.ts$|\/__tests__\/|\.demo\.vue$)/;
 const DISABLE_COMMENT = '/* oxlint-disable eslint/no-restricted-properties */';
+
+/**
+ * C1 白名单（设计豁免）：这些文件**按设计**必须使用受限 API，已由 `.oxlintrc.json` 的
+ * `overrides` 关掉 `eslint/no-restricted-properties`，因此不再需要豁免注释。
+ *
+ * 口径：`待迁移命中` 只看「带豁免注释且指令仍在用」的文件；白名单文件在 C1 之后都不带注释，
+ * 因此「白名单外待迁移命中 = 待迁移命中」——**C1 的验收就是 `待迁移命中 === 0`**。
+ * `设计豁免` 列是另一个信息量：白名单里**正则仍命中受限 API**的文件数（说明豁免是被用到的）。
+ */
+const WHITELIST = [
+	// A 类·真画布上下文：createElement('canvas') 取 2D/WebGL 上下文与像素读回，模板无法替代
+	'packages/editor/src/engine/webgl/webgl-init.ts',
+	'packages/editor/src/engine/webgl/webgl-methods.ts',
+	'packages/editor/src/engine/palette/palette-engine.ts',
+	'packages/editor/src/engine/scene/draw-start-position.ts',
+	'packages/editor/src/printer/printer.ts',
+	'packages/editor/src/audio/audio-manager.ts',
+	'packages/editor/src/data/transition-window.ts',
+	// 应用挂载点：Vue 的挂载容器来自 index.html，只能按 id 取一次
+	'packages/editor/src/main.ts',
+	// 唯一 DOM 创建/查询缝隙：$() 与 renderDetached / createDetachedElement 的实现处
+	'packages/editor/src/utils/dom.ts',
+	// index.html 外壳元素（#cursor-region），非 SFC 渲染
+	'packages/editor/src/composables/usePointerObjectWindow.ts',
+	// 元素优先的组件 API 层（P2b 重定义：架构性设计豁免，不以文件数归零为准）
+	'packages/ui-kit/src/components/**',
+	'packages/ui-kit/src/utils/radio-proxy.ts'
+];
+
+/** C1 临时豁免（有退出条件）：不是设计使然，而是归属别的任务线，收尾时须逐条销账。 */
+const TEMP_WHITELIST = [
+	// R2b 遗留的本地化扫描器：它的存在意义就是按语言表 key 全文档发现元素；
+	// 退出条件 = R2b 剩余键全部改走模板 t() / v-tip（见 remaining-work.md R2b）。
+	'packages/editor/src/localize/dom-localizer.ts'
+];
+
+const globToRegExp = (pattern) => {
+	const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+	const body = escaped.replace(/\*\*/g, '\u0000').replace(/\*/g, '[^/]*').replace(/\u0000/g, '.*');
+	return new RegExp(`^${body}$`);
+};
+const WHITELIST_RES = WHITELIST.map(globToRegExp);
+const TEMP_WHITELIST_RES = TEMP_WHITELIST.map(globToRegExp);
+const isWhitelisted = (rel) => WHITELIST_RES.some((re) => re.test(rel));
+const isTempWhitelisted = (rel) => TEMP_WHITELIST_RES.some((re) => re.test(rel));
 
 const PATTERNS = [
 	// 受限 API 按「属性访问」计数：与 .oxlintrc.json 的 no-restricted-properties 对齐，
@@ -172,47 +220,6 @@ function fix() {
 	console.log(`fix: repaired ${fixed} file(s) with misplaced BOM.`);
 }
 
-function lintAffectedFiles() {
-	const bin = join(ROOT, 'node_modules', 'oxlint', 'bin', 'oxlint');
-	const res = spawnSync(
-		process.execPath,
-		[bin, '-c', '.oxlintrc.json', '--format=json', 'packages/editor', 'packages/ui-kit'],
-		{ cwd: ROOT, encoding: 'utf8' }
-	);
-	const m = (res.stdout ?? '').match(/\{[\s\S]*\}/);
-	if (!m) {
-		console.error('exempt: failed to parse oxlint json output.');
-		process.exit(1);
-	}
-	const data = JSON.parse(m[0]);
-	const files = new Set();
-	for (const d of data.diagnostics ?? []) {
-		if (String(d.code).includes('no-restricted-properties') && d.filename) files.add(d.filename);
-	}
-	return files;
-}
-
-function exempt() {
-	const files = lintAffectedFiles();
-	let added = 0;
-	let skipped = 0;
-	for (const rel of files) {
-		const file = join(ROOT, rel);
-		if (!existsSync(file)) continue;
-		const source = readFileSync(file, 'utf8');
-		if (hasRuleDisabled(source)) {
-			skipped++;
-			continue;
-		}
-		const next = insertDisable(rel, source);
-		if (next !== null) {
-			writeFileSync(file, next);
-			added++;
-		}
-	}
-	console.log(`exempt: ${files.size} affected file(s), marked ${added}, already exempt ${skipped}.`);
-}
-
 /**
  * 权威口径：用 oxlint 的 `--report-unused-disable-directives` 判定哪些
  * `no-restricted-properties` 豁免注释**已无命中**（陈旧豁免）。
@@ -261,10 +268,21 @@ function tracker() {
 	const modules = new Map();
 	let totalAnnotated = 0;
 	let totalStale = 0;
+	let totalDesign = 0;
+	let totalTemp = 0;
 	for (const row of rows) {
 		const key = moduleOf(row.rel);
 		if (!modules.has(key)) {
-			modules.set(key, { total: 0, affected: 0, pending: 0, annotated: 0, stale: 0, counts: {} });
+			modules.set(key, {
+				total: 0,
+				affected: 0,
+				pending: 0,
+				design: 0,
+				temp: 0,
+				annotated: 0,
+				stale: 0,
+				counts: {}
+			});
 		}
 		const m = modules.get(key);
 		m.total++;
@@ -282,6 +300,15 @@ function tracker() {
 		// 待迁移命中 = 带豁免注释且仍被 oxlint 判定「指令在用」的文件
 		// （无注释却正则命中的属正则误报，见口径区，不计入）
 		if (annotated && !stale) m.pending++;
+		// C1：白名单分类（独立于注释，用于说明"豁免是被设计需要的"）
+		if (row.lintCount > 0 && isWhitelisted(row.rel)) {
+			m.design++;
+			totalDesign++;
+		}
+		if (row.lintCount > 0 && isTempWhitelisted(row.rel)) {
+			m.temp++;
+			totalTemp++;
+		}
 		for (const [k, v] of Object.entries(row.counts)) m.counts[k] = (m.counts[k] ?? 0) + v;
 	}
 	const totalPending = [...modules.values()].reduce((sum, m) => sum + m.pending, 0);
@@ -289,7 +316,7 @@ function tracker() {
 	// oxlint 判为陈旧、但正则仍命中 → 命中出现在注释/字符串里
 	const commentOnlyHits = rows.filter((row) => row.exempt && staleSet.has(row.rel) && row.lintCount > 0).length;
 	const keyWidth = Math.max(...[...modules.keys()].map((k) => k.length));
-	const header = ['模块', '文件', '命中', '待迁移命中', '豁免注释', ...PATTERNS.map((p) => p.key)];
+	const header = ['模块', '文件', '命中', '待迁移命中', '设计豁免', '临时豁免', '豁免注释', ...PATTERNS.map((p) => p.key)];
 	const lines = [];
 	lines.push('# DOM 迁移矩阵');
 	lines.push('');
@@ -303,13 +330,13 @@ function tracker() {
 	let totalFiles = 0;
 	for (const [key, m] of [...modules.entries()].sort()) {
 		lines.push(
-			`| ${key.padEnd(keyWidth)} | ${m.total} | ${m.affected} | ${m.pending} | ${m.annotated} | ${PATTERNS.map((p) => m.counts[p.key] ?? 0).join(' | ')} |`
+			`| ${key.padEnd(keyWidth)} | ${m.total} | ${m.affected} | ${m.pending} | ${m.design} | ${m.temp} | ${m.annotated} | ${PATTERNS.map((p) => m.counts[p.key] ?? 0).join(' | ')} |`
 		);
 		totalFiles += m.total;
 		for (const [k, v] of Object.entries(m.counts)) globalCounts[k] = (globalCounts[k] ?? 0) + v;
 	}
 	lines.push(
-		`| ${'合计'.padEnd(keyWidth)} | ${totalFiles} |  | ${totalPending} | ${totalAnnotated} | ${PATTERNS.map((p) => globalCounts[p.key] ?? 0).join(' | ')} |`
+		`| ${'合计'.padEnd(keyWidth)} | ${totalFiles} |  | ${totalPending} | ${totalDesign} | ${totalTemp} | ${totalAnnotated} | ${PATTERNS.map((p) => globalCounts[p.key] ?? 0).join(' | ')} |`
 	);
 	lines.push('');
 	lines.push('## 口径');
@@ -318,6 +345,15 @@ function tracker() {
 	lines.push(`- 待迁移命中文件：**${totalPending}**（判定来源：oxlint \`--report-unused-disable-directives\`${staleSource === 'oxlint' ? '' : '（⚠️ oxlint 不可用，当前为**正则估算**）'}）`);
 	lines.push(`- 豁免注释文件：**${totalAnnotated}**`);
 	lines.push(`- 陈旧豁免文件：**${totalStale}**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）`);
+	lines.push(
+		`- **设计豁免文件（C1 白名单）：${totalDesign}**——按设计必须使用受限 API，已由 \`.oxlintrc.json\` 的 \`overrides\` 关掉规则、**不再需要豁免注释**（画布上下文 / 应用挂载点 / 唯一 DOM 缝隙 / index.html 外壳元素 / ui-kit 元素优先组件层）`
+	);
+	lines.push(
+		`- **临时豁免文件（有退出条件）：${totalTemp}**——归属别的任务线，见 [remaining-work.md](./remaining-work.md) C1 白名单表`
+	);
+	lines.push(
+		`- **C1 验收口径：白名单外待迁移命中 = 待迁移命中 ${totalPending} − 0（白名单文件不带注释）⇒ 要求 \`待迁移命中 === 0\`**`
+	);
 	lines.push(`- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**${commentOnlyHits}**`);
 	lines.push(`- 正则命中但无豁免注释：**${missingAnnotation.length}**（\`pnpm lint\` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）`);
 	if (missingAnnotation.length > 0 && missingAnnotation.length <= 5) {
@@ -355,15 +391,14 @@ function tracker() {
 	if (!existsSync(out)) mkdirSync(out, { recursive: true });
 	writeFileSync(join(out, 'dom-migration-tracker.md'), lines.join('\n') + '\n');
 	console.log(
-		`tracker: wrote docs/dom-migration-tracker.md (${rows.length} files; 待迁移命中 ${totalPending}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`
+		`tracker: wrote docs/dom-migration-tracker.md (${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`
 	);
 }
 
 const command = process.argv[2];
-if (command === 'exempt') exempt();
-else if (command === 'tracker') tracker();
+if (command === 'tracker') tracker();
 else if (command === 'fix') fix();
 else {
-	console.log('usage: node scripts/dom-guard.mjs [exempt|tracker|fix]');
+	console.log('usage: node scripts/dom-guard.mjs [tracker|fix]');
 	process.exit(1);
 }

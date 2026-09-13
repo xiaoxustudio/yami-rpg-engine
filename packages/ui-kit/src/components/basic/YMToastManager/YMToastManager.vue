@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { ref } from 'vue';
 
 const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();

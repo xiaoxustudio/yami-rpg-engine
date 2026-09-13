@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { addClass, hasClass, removeClass } from '../../../utils/dom';
 
 export interface PageManagerApi extends HTMLElement {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import {
 	addClass,

@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { CSSRGBA } from '@app/utils/color-utils';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';

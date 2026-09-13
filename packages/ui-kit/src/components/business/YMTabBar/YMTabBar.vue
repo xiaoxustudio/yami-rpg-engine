@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';

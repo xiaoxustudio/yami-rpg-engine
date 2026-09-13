@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { BaseTexture } from './base-texture.ts';

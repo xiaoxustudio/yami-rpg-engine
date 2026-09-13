@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { attachApi } from '../../../utils/attach-api';
+﻿import { attachApi } from '../../../utils/attach-api';
 import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
 export interface MenuItem {

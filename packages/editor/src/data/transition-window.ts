@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { dataEls } from '@app/data/element-registry';
 import { registryElements } from '@app/utils/element-registry';

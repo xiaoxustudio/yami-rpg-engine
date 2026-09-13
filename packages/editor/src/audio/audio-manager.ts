@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { File } from '@app/file/file-system-core.ts';
 import { AudioPlayer } from './audio-player.ts';
 import { MultipleAudioPlayer } from './multiple-audio-player.ts';

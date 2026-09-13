@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from './dom';
 
 export type RadioRelationTarget = HTMLElement & {

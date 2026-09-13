@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { attachApi } from '../../../utils/attach-api';
+﻿import { attachApi } from '../../../utils/attach-api';
 import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
 import { createNumberBoxCore } from './number-box-core';

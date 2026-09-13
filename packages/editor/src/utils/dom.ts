@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { render, type VNode } from 'vue';
 
 /**

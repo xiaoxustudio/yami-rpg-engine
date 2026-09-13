@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { setTooltip } from '@app/utils/element-utils';
 import { templateLocalizedKeys } from './template-localized.ts';
 

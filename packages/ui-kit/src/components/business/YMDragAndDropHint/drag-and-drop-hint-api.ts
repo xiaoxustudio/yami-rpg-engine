@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { css, rect } from '../../../utils/dom';
 export interface DragAndDropHintCoords {
 	left: number;

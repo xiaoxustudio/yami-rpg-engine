@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';

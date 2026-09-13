@@ -184,6 +184,26 @@
 			"rules": {
 				"eslint/no-restricted-properties": "off"
 			}
+		},
+		{
+			"files": [
+				"packages/editor/src/engine/webgl/webgl-init.ts",
+				"packages/editor/src/engine/webgl/webgl-methods.ts",
+				"packages/editor/src/engine/palette/palette-engine.ts",
+				"packages/editor/src/engine/scene/draw-start-position.ts",
+				"packages/editor/src/printer/printer.ts",
+				"packages/editor/src/audio/audio-manager.ts",
+				"packages/editor/src/data/transition-window.ts",
+				"packages/editor/src/main.ts",
+				"packages/editor/src/utils/dom.ts",
+				"packages/editor/src/composables/usePointerObjectWindow.ts",
+				"packages/ui-kit/src/components/**",
+				"packages/ui-kit/src/utils/radio-proxy.ts",
+				"packages/editor/src/localize/dom-localizer.ts"
+			],
+			"rules": {
+				"eslint/no-restricted-properties": "off"
+			}
 		}
 	]
 }

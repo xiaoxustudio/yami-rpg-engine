@@ -1,5 +1,4 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { attachApi } from '../../../utils/attach-api';
+﻿import { attachApi } from '../../../utils/attach-api';
 import { addClass, hasClass } from '../../../utils/dom';
 import {
 	radioProxyMap,

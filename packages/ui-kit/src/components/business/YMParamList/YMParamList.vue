@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import {

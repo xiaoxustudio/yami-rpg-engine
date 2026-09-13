@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { createApp } from 'vue';
 import App from './App.vue';
 import { pinia } from '@app/stores/pinia';

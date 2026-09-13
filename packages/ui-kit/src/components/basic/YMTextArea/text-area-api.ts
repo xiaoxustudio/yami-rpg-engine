@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass } from '../../../utils/dom';
 import { TextHistory } from '../../../utils/history';
