@@ -212,6 +212,8 @@
 
 - 2026-09-12 **B1/M2 切片 5：文件 body 度量调用方接到派生层（三函数合一）**。① `YMFileBodyPane.vue` 里原本**三个**度量函数（`computeGridProperties` 的模式 `switch` + `computeListGridProperties` + `computeTileGridProperties`，后两者各自把 6 个字段抄一遍）合并为 `applyGridMetrics(metrics)` + 一次 `computeViewMetrics(viewMode, core, {width, height})` 调用；未知/未定的 `viewMode` 与原 `switch` 一样"什么都不设"（`VIEW_MODE_BY_INDEX.includes` 守卫）。② **行为等价由 M1 用例盯住**（两种视图的 `countPerLine`/`visibleLines`/`itemSize`、"两种视图每行数量不同"），**渲染输出一字未改**。③ 附带收益：原先"新增视图模式要在两处 `switch` 同步"的耦合消失，模式表只剩 `VIEW_MODE_BY_INDEX` + `TILE_SIZE_BY_VIEW_MODE` 一份。④ **未做（属 M3）**：`deriveFileRows`/`deriveCommandRows` 尚未被渲染循环消费——接进去就等于改渲染结构，那是 M3 `v-for` 换源的事。**门禁**：文件 body 4 文件 **44 例**全绿、ui-kit **101 文件 727/727**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M3 起步：行 key 接线（+5 例），渲染结构未改**。① `command-api.ts` 建 `li` 时写 `li.rowKey = rowKeyOf(command)`；`YMFileBodyPane.vue` 的 `createFlatItems` 先 `deriveFileRows(dir)` 再把 key 传给 `createFileElement`/`createFolderElement`；两个元素接口各加 `rowKey?` 字段。② **为什么先做 key**：`v-for` 换源时 `:key` 是"复用行 vs 重建行"的唯一依据；命令列表/文件列表都会插入删除，退回下标 key 会让 Vue 复用错行（tree 改造踩过同类问题，故那边也用 WeakMap 发号）。③ 5 例：行 `rowKey` 等于派生层给该对象的 key、重复渲染 key 不变、**路径相同的不同对象 key 必须不同**（证明不能拿路径当 `:key`）。④ 下一步仍是 M3 主体：模板 `v-for windowRows` + `:ref` 回写桥（同 tree `bindRowElement`），渲染函数退化为"bump 版本 + 保持 API 语义"。**门禁**：ui-kit **103 文件 732/732**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |

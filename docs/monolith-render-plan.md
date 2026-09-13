@@ -259,7 +259,11 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（2026-09-12，切片 1：行 key 接线）**
+
+**已落地（切片 1）**：两个组件的渲染行都带上**派生层发的稳定行 key**——`command-api.ts` 在创建 `li` 时写 `li.rowKey = rowKeyOf(command)`（`CommandItemElement` 接口同步加字段）；`YMFileBodyPane.vue` 的 `createFlatItems` 先 `deriveFileRows(dir)` 再把 `key` 传给 `createFileElement`/`createFolderElement`（`FileBodyItemApi` 接口同步加字段）。共 **5 例**新用例（命令列表 2、文件 body 3）盯住：行的 `rowKey` 等于派生层给该对象的 key、重复渲染 key 不变、**路径相同的不同对象 key 必须不同**（说明不能拿路径当 `:key`）。
+
+为什么先做这一步：`v-for` 换源时 `:key` 是"复用行 vs 重建行"的唯一依据；没有稳定 key 就只能退回下标，而命令列表/文件列表都会**插入与删除**，下标 key 会导致 Vue 复用错行（tree 改造里踩过同类问题，故那边也用 WeakMap 发号）。**渲染结构本身仍未改**。
 
 - `YMCommandList.vue` 模板改为 `v-for` 渲染 `windowRows`，`:ref` 回写桥把「行元素 ↔ 数据行」登记进派生层（同 tree `bindRowElement`），`commandListPrototype` 的渲染函数（`create*`/`update*`/`deleteCommandBuffers`）退化为「bump 版本 + 保证 API 语义」；
 - `YMFileBodyPane.vue` 同理（含 tile/normal 两态）；
