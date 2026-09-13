@@ -139,6 +139,20 @@
 
 **下一步（切片 4）**：`file-body-render.ts`——复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key（对接 M1 已锁定的两种视图度量与窗口迁移）。
 
+**已落地（切片 4，2026-09-12）：文件 body 派生层 `file-body-render.ts`（+9 例）**。度量数学**本来就在** `file-body-core.ts`，缺的是「视图模式 → 度量」的映射与行数据推导（原先分别长在 SFC 的 `computeGridProperties`/`updateViewMode` 的 `switch` 与 `createFlatItems`/`createFileElement` 里）：
+
+| 计划名 | 实现名 | 原实现（逐字对照） |
+| --- | --- | --- |
+| 视图序号 → 模式 | `viewModeOfIndex(idx)` / `VIEW_MODE_BY_INDEX` | `updateViewMode` 的 `switch`：0=list、1=small、2=medium、3=large、4=huge（越界按边界夹取） |
+| 平铺单元尺寸 | `TILE_SIZE_BY_VIEW_MODE` | `computeGridProperties` 里的字面量：small `40×72`、medium `72×104`、large `136×168`、huge `264×296` |
+| 模式 → 网格度量 | `computeViewMetrics(mode, core, viewport)` | `computeGridProperties` 的分派（list 走 `computeListGridMetrics`，其余走 `computeTileGridMetrics`） |
+| 行 key | `fileRowKeyOf(item)` | 新抽（同 `command-render`/tree 的 WeakMap 发号） |
+| 文件列表 → 行数据 | `deriveFileRows(files, isFolderOf?)` | `createFlatItems` 的遍历 + `updateFileElement` 的 `file.basename` 取名；`isFolder` 默认按类名 `FolderItem` 判定，可注入 |
+
+**两处刻意的设计选择**（都被门禁逼出来的）：①`FileRowDescriptor`/`deriveFileRows` 对元素类型**泛型化**、`FileRenderItem` **不加索引签名**——否则消费方传自己的 `FileItem`/`FolderItem` 类实例会被 TS 拒（`TS2322`/`TS2353` 各踩一次）；②取名/取路径只接受字符串或数字（`asText`），不用裸 `String(...)`——否则 lint 的 `no-base-to-string` 会警告对象被串成 `[object Object]`。
+
+**下一步（切片 5）**：把 `command-api.ts`/`YMFileBodyPane.vue` 的调用方接到派生层（前者接 `deriveCommandRows`，后者接 `computeViewMetrics`/`deriveFileRows`），此时仍**不改渲染输出**，M3 才换成模板 `v-for`。
+
 新增 `YMCommandList/command-render.ts`：把 `createCommandBuffer`/`computeTextIndent` 里的**纯数据部分**抽出来——扁平化可见行（含折叠态、缩进层级、选区态、搜索命中、disabled）、行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`）、窗口计算；`YMFileBodyPane/file-body-render.ts`：复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key。
 
 **接口草案（2026-09-11，照 tree `tree-render.ts` 的形状；落地时以实现为准，并补一份 1.5 式「计划名→实现名」对照表）**

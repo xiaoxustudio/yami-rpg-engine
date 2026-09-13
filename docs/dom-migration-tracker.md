@@ -43,16 +43,16 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 32 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
-| ui-kit/components   | 97 | 70 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 98 | 70 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1136 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
+| 合计                  | 1137 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1136**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1137**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -1213,6 +1213,7 @@
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/YMDragAndDropHint.vue | 53 | 0 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/file-body-core.ts | 155 | 0 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/file-body-render.ts | 116 | 0 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/file-nav-pane-core.ts | 177 | 0 | - |
 | packages/ui-kit/src/components/business/YMMarqueeArea/YMMarqueeArea.vue | 142 | 0 | - |
 | packages/ui-kit/src/components/business/YMParameterPane/param-pane-core.ts | 104 | 0 | - |
