@@ -178,6 +178,8 @@
 
 - 2026-09-12 **R2b 迁移⑧：选项名沿用既有命名空间但改为响应式，扫描面 196 → 157（−39 键，−93% 起点 2130）**。① 迁移⑦只覆盖"名字是字面量"的站点；剩余 61 处里一大批**名字已是 `t('command.<命令>.<选项>')`**（另一套命名空间 + `|| 'Fallback'`）——**本来就已本地化**，只是不响应语言切换（本地化器会在切换时覆盖成 `components.<键>.options.<值>.name`）。② 解法：给 `useLocalizedOptions` 加第 4 参 **`nameKeys`（`值 → 消息键`）**，把这 39 个站点改成 `useLocalizedOptions('<键>', [值…], apply, { 值: 'command.x.y' })`——名字仍来自原命名空间，但**语言切换自动重建**，该键即可安全离开扫描面；判据仍是 `useLocalizedOptions('<键>'`，生成器与防漂移用例不必再改。③ **两个踩坑（都被门禁当场抓住）**：映射表的键含连字符没加引号 → `oxlint` 报 `Expected ',' or '}'`（40 表 / 33 文件，统一加引号修复）；`ForEach.vue` 的 `loadItems(...)` 后面还挂着调用链（`?.enableHiddenMode?.()` / `?.relate?.([…])`），直接替换会让链条悬空（`vue-tsc` `TS2339`，且运行期 `relate` 永不执行）→ 拆成独立语句。**指标**：扫描面 **196 → 157**、模板承担键 **1933 → 1972**。**门禁**：`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、editor 全量测试、`docs:check` OK。
 
+- 2026-09-12 **R2b 迁移⑨：`placeholder` 类键改由模板承担，扫描面 157 → 146（−93% 起点 2130）**。① `components/common/TextBox.vue` 新增 `placeholder` prop 并在 `watch(() => props.placeholder)` 里调 ui-kit 的 `setPlaceholder`——`t()` 响应式 ⇒ **语言切换自动重跑**（此前 placeholder 只有本地化器会写）。② **11 个键 / 10 个 SFC** 在 `<TextBox id="…"` 后插入 `:placeholder="t('components.<键>.placeholder')"`；脚本按 id 所在行缩进插入（兼容"id 与标签名同行"与"分行"两种写法），并**逐个核对 11 处都是 `<TextBox>`**——否则属性会变成无害但不生效的 fallthrough，而判据只看 `t()` 字面量，容易自欺。**指标**：扫描面 **157 → 146**、模板承担键 **1972 → 1983**。**剩余 146 键**：`options` ≈82、`label` 25（卡在 options）、**无 `.vue` 承载 17**（id 运行期拼接，需定位工厂/`.ts` 模块）、`content` 3、`title` 1 + `save` 依赖键。**门禁**：`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
