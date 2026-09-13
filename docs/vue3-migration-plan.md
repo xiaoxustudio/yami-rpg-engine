@@ -190,6 +190,8 @@
 
 - 2026-09-12 **E1 第三刀：修正事件面报表的两处误报，`.vue` 内「add 有 remove 无」5 → 0（验收 ③ 达成）**。① 上一刀把 `ui-kit/.../YMFileHeadPane.vue` 记成"未配对"，复核发现它的 `window.addEventListener('pointerup', …, { once: true })` 由**浏览器首次触发后自动摘除**，本就不需要 `remove`——是**度量器**的问题而非代码问题。② **两处误报**：ⓐ 报表按原文正则匹配 `window.addEventListener(...)`，**注释/字符串里**的同一片段被当成调用（内联匿名计数因此虚高：13 → 实际 11）；ⓑ `{ once: true }` 未参与判定，自带摘除的监听被记成风险。③ **修法**：新增 `scanAddListenerCalls()`——先剥注释，再按**括号配对**取出每条调用的完整实参，据此同时判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。④ **实测**：`.vue` 内 add-without-remove **5 → 0**、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例）。**教训（与 R2b/P4b 同源）：度量器本身也要被验证——先怀疑数字，再怀疑代码。**
 
+- 2026-09-12 **B1/M1 第一批补测：`YMCommandList` 组件级用例 12 → 21（新增 9 例行为金标准）**。① 新增 `YMCommandList/__tests__/YMCommandList.m1.spec.ts`：在**现命令式实现**上锁死 `computeTextIndent` 的**精确值**（中文 `indent*2+'em'`、英文 `indent*4+'ch'`）、`selectAll`/`selectMultipleTo` 的选中结果、`pageDown/pageUp`（含 `select=true` 把选区带走）、`scrollToRow`/`scrollToSelection` 的 `scrollTop` 变化、`update` 幂等、空白行契约（`elements.count = 命令数 + 1`）。② **五条"实现细节决定断言"的事实**写进 `monolith-render-plan.md`：选中类 API 需 `focusing = true` 才落 DOM 类；`computeTextIndent` 是**等长**字符串（"长度递增"的直觉断言是错的，必须断言取值）；每层列表末尾都有 `createBlankElement` 的空白行；`pageUp/pageDown` 依赖 SFC 注入的 `this.scroll`（纯元素态用例需自备 stub）；嵌套渲染（parse 的嵌套数组 → `createItems(indent+1)`）留 TODO(M1)，需先弄清 `createCommandBuffer` 的 buffer 协议。③ **ui-kit 用例 668 → 677**（新文件 9 例），基线同步。**门禁**：ui-kit **98 文件 677/677** 全绿、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
