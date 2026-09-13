@@ -36,7 +36,29 @@
 
 ## 3. 分步计划（每步独立可验证、可回滚）
 
-### M1：行为金标准补齐（在现命令式实现上写）
+### M1：行为金标准补齐（在现命令式实现上写）——**✅ 已完成（2026-09-12）**
+
+**结果**：组件级用例 **17 → 43**（`YMCommandList.spec.ts` 12 + `YMCommandList.m1.spec.ts` 12 + `YMFileBodyPane.spec.ts` 4 + `YMFileBodyPane.m1.spec.ts` 15），另有既有 core 用例 27 + 16 作底 ⇒ 达到本步「~40+」的目标。逐项落点：
+
+| 覆盖项 | 落点 |
+| --- | --- |
+| 缩进公式与层级 | `computeTextIndent` 精确值（zh `indent*2+'em'`、en `indent*4+'ch'`）、嵌套子行 `dataIndent` 更深 |
+| 嵌套渲染协议 | `parse` 描述符里的 `{ children: [子命令] }`（四种「返回值里直接放数组」的写法实测无效） |
+| 折叠 | `{ fold: true }` → `li.fold` 把手；父行 `dataKey === true` |
+| 空白行 | 每层末尾 `createBlankElement` ⇒ `elements.count = 命令数 + 1` |
+| 选区与多选 | `selectAll`（需 `focusing`）、`selectMultipleTo`、`selectByPath`、`unselect` |
+| 翻页与滚动 | `pageUp`/`pageDown`（含 `select=true` 带走选区，需 stub `el.scroll`）、`scrollToRow`、`scrollToSelection` |
+| 命中搜索 | `findString(str, elements, searchMode)` 返回带 `index` 的命中 |
+| 文件 body 度量 | 列表/网格两种视图的 `countPerLine`/`visibleLines`/`itemSize` |
+| 文件 body 窗口迁移 | 列表按 `scrollLeft`、网格按 `scrollTop`；`content.range` 与渲染行随之变化；`updateContentOffset` 写 transform |
+| 文件 body 行契约 | 行 = `file-body-item` + `file-item`，内含 `.file-body-name`（文本为 basename） |
+| 空输入 | 空目录、`updateFiles`（normal 无文件）都不建行 |
+
+**未覆盖（明确留给 M2–M5，不算 M1 缺口）**：`highlightTexts` 的静态高亮集、`clear`/`deleteCommandBuffers` 后的元素回收、`eslints` 缩进线扩展点的锁定（属编辑器侧，另有 `event-editor` 系列用例覆盖）。
+
+**这些用例在改造后不允许改语义，只允许改断言方式**（同 tree 步骤 1 的约定）。实现细节事实（选中需 `focusing`、indent 是等长字符串、空白行、`el.scroll` 由 SFC 注入、`parse` 第二参是 `varMap` 且业务字段在 `item.params`、编辑器形态 fixture 五要点）已分别记在各批补测段落中。
+
+### M1 原始目标（存档）
 
 目标：把组件级用例从「12 + 5」提到与 tree 改造前同量级（~40+），至少覆盖：
 

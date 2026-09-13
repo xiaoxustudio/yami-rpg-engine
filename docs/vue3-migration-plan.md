@@ -200,6 +200,8 @@
 
 - 2026-09-12 **B1/M1 第四批：命令列表 9 → 11 例，嵌套渲染与 fold 把手落地，M1 组件级用例 37**。① **找到嵌套入口**：`createCommandBuffer` 里 `buffer.push(content.children)` ⇒ `parse` 描述符里写 **`{ children: [子命令] }`** 才会展开子命令（`createItems(target, indent + 1, …)`）——上一轮排除的四种"返回值里直接放数组"确实都不行。用例断言子行文本出现且 `dataIndent` 更深。② **fold 把手同样由描述符决定**：写 `{ fold: true }` 才挂 `.command-fold`（`li.fold`），与"有没有子命令"无关。③ **另一个静默陷阱**：`parse(command, varMap)` 的命令业务字段在 **`item.params`** 里（判 `item.child` 会静默不生效，用例因此先红了一次）。④ **M1 组件级用例**：命令列表 **23**（12+11）+ 文件 body **14** = **37**，距 ~40+ 只剩"文件 body 的空目录/滚动边界"之类小项。**指标**：ui-kit **99 文件 693/693**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M1 ✅ 完成：组件级用例 17 → 43，行为金标准补齐**。① 最后两例：命令列表的**命中搜索**（`findString(str, elements, searchMode)` 返回带 `index` 的命中）、文件 body 的**行元素契约**（行 = `file-body-item` + `file-item`，内含 `.file-body-name` 且文本为 basename）。② 逐项落点整理成表写进 `monolith-render-plan.md`（缩进公式/嵌套协议/折叠把手/空白行/选区多选/翻页滚动/命中搜索/两种视图度量/窗口迁移/行契约/空输入），并明确**留给 M2–M5** 的三项：`highlightTexts` 静态高亮集、`clear`/`deleteCommandBuffers` 的元素回收、`eslints` 缩进线扩展点锁定（属编辑器侧，已有 `event-editor` 系列用例）。③ 用例明细：`YMCommandList.spec` 12 + `YMCommandList.m1.spec` 12 + `YMFileBodyPane.spec` 4 + `YMFileBodyPane.m1.spec` 15 = **43**（另 core 27 + 16）。**门禁**：ui-kit **99 文件 695/695**、`pnpm lint` 0/0、`docs:check` OK。**下一步 M2**：抽 `command-render.ts` / `file-body-render.ts` 派生层（不动渲染）。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
