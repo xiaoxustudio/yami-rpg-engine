@@ -127,6 +127,18 @@
 
 **下一步（切片 3）**：同样的办法处理 `scrollToRow`/`scrollToSelection` 的定位数学，然后才是 `file-body-render.ts`（复用 `file-body-core` 的 `compute*Metrics`）。
 
+**已落地（切片 3，2026-09-12）：定位数学抽出并接线**。`scrollToSelection`（三种模式）与 `scrollToRow` 的夹取/定位数学同样搬进 `command-render.ts`，`command-api.ts` 改调：
+
+| 计划名 | 实现名 | 原实现（逐字对照） |
+| --- | --- | --- |
+| 选区定位（三模式） | `computeScrollToSelection(mode, ctx)` | `active`：`active <= origin ? min(max(top, min), max) : max(min(top, max), min)`（`min/max` 由 active 行所属区间算）；`alter`：按 active 单行；`restore`：按 `start`/`end` 区间；**未知模式返回 `null`**（调用方原样返回、不滚动） |
+| 行下标夹取 | `clampRowIndex(index, rowCount)` | `< 0 → 0`、`>= count → count - 1`；行数为 0 时返回 `-1`（新增的保护） |
+| 行定位 | `computeScrollToRowScrollTop(index, rowCount, viewport, position)` | `top` → 行顶；`bottom` → 行底 − 视口；否则居中；最后夹到 `[0, count*20 - viewport]` |
+
+**一处形参不窄化的理由**（写进代码注释）：`mode`/`position` 是组件元素 API 的运行期字符串，原实现用 `switch` 的 `default` 兜底；把它们写成 `'active' | string` 会被 lint 判为"字面量联合被 string 覆盖"，故形参保持 `string` 并在注释里列明已知取值。
+
+**下一步（切片 4）**：`file-body-render.ts`——复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key（对接 M1 已锁定的两种视图度量与窗口迁移）。
+
 新增 `YMCommandList/command-render.ts`：把 `createCommandBuffer`/`computeTextIndent` 里的**纯数据部分**抽出来——扁平化可见行（含折叠态、缩进层级、选区态、搜索命中、disabled）、行 key（`WeakMap` 稳定键，同 tree `rowKeyOf`）、窗口计算；`YMFileBodyPane/file-body-render.ts`：复用 `file-body-core` 的 `compute*Metrics`，输出行数据 + 行 key。
 
 **接口草案（2026-09-11，照 tree `tree-render.ts` 的形状；落地时以实现为准，并补一份 1.5 式「计划名→实现名」对照表）**

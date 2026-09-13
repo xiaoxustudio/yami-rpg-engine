@@ -99,7 +99,7 @@
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2327 | 42 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2614 | 37 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2580 | 37 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 889 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
@@ -1208,7 +1208,7 @@
 | packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 163 | 0 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 254 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 373 | 0 | - |
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/YMDragAndDropHint.vue | 53 | 0 | - |

@@ -206,6 +206,8 @@
 
 - 2026-09-12 **B1/M2 切片 2：翻页数学抽出并接线（M2 第一次改调用方）**。① `pageUp`/`pageDown` 里内联的滚动数学搬进 `command-render.ts`：`ROW_HEIGHT`、`pageScrollLines(viewportHeight)`、`computePageUpScrollTop/TargetIndex(ctx)`、`computePageDownScrollTop(ctx, clamped)/TargetIndex(ctx)`；`command-api.ts` 改为 `commandRender.*` 调用，**表达式与原实现逐字等价**（夹取分支保留 `Math.min(next, rowCount*20 - innerHeight)` 与 `Math.max(top, …)`，`pageScrollLines` 补了 0 下限以免极小视口出负数）。② **行为由两侧共同盯住**：M1 的 `pageDown/pageUp`（含 `select=true` 带走选区）用例 + M2 新增 6 例（行高/翻页行数/上翻边界/下翻夹取/目标行公式）。③ 6 例都按"原实现公式"直写期望值，等于把内联数学的语义**第一次写成可读断言**。④ **下一步（切片 3）**：`scrollToRow`/`scrollToSelection` 的定位数学同样抽出，之后再做 `file-body-render.ts`。**门禁**：命令列表 4 文件 66 例全绿、ui-kit **100 文件 710/710**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M2 切片 3：定位数学抽出并接线（+8 例）**。① `scrollToSelection`（`active`/`alter`/`restore` 三模式）与 `scrollToRow`（`top`/`bottom`/居中 + 夹取）的数学搬进 `command-render.ts`：`computeScrollToSelection(mode, ctx)`（未知模式返回 `null` → 调用方不滚动）、`clampRowIndex(index, rowCount)`（越界贴首末、空列表返回 `-1`）、`computeScrollToRowScrollTop(index, rowCount, viewport, position)`；`command-api.ts` 改调，表达式与原实现逐字等价。② **形参不窄化**：`mode`/`position` 是元素 API 的运行期字符串，原实现靠 `switch default` 兜底；写成 `'active' | string` 会被 lint 判为"字面量联合被 string 覆盖"（本轮真的被门禁拦下），故保持 `string` 并注释列明已知取值。③ 8 例按原公式直写期望值；**写测试时自己也踩了一次**：改了 `active` 却忘了同步 `activeRange`，导致期望值算错——用例失败暴露的是**手算**错误而非实现错误（正好说明"期望值要写清楚"比"跑绿"重要）。④ **下一步（切片 4）**：`file-body-render.ts`（复用 `file-body-core` 的 `compute*Metrics`）。**门禁**：命令列表 4 文件 **74 例**全绿、ui-kit **100 文件 718/718**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
