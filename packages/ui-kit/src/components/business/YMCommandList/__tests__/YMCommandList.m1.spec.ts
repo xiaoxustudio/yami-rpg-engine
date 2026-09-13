@@ -153,6 +153,25 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		expect(Math.max(...indents)).toBeGreaterThan(Math.min(...indents));
 	});
 
+	it('命中搜索：findString 在选择集里找出包含目标文本的行', () => {
+		const el = makeList([makeCommand('alpha'), makeCommand('beta'), makeCommand('gamma')]);
+		const find = (el as unknown as {
+			findString: (s: string, els: unknown[], mode?: unknown) => { index: number }[];
+		}).findString;
+		expect(typeof find).toBe('function');
+		const elements = Array.from(
+			{ length: el.elements.count },
+			(_, i) => el.elements[i] as unknown as HTMLElement
+		);
+		const hits = find.call(el, 'beta', elements, {
+			caseInsensitive: false,
+			regex: false,
+			matchLine: false
+		});
+		expect(hits.length).toBeGreaterThan(0);
+		expect(typeof hits[0].index).toBe('number');
+	});
+
 	it('折叠：带子命令的命令渲染出 fold 把手，toggle 改变其折叠态', () => {
 		const nestedParse = (item: Record<string, unknown>) =>
 			(item.params as { child?: boolean } | undefined)?.child === true

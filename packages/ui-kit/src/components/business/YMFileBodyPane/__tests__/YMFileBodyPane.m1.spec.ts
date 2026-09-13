@@ -193,6 +193,17 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 		expect(rows(el).length).toBe(0);
 	});
 
+	it('行元素契约：行是 file-body-item + file-item，内含 .file-body-name 且文本为 basename', () => {
+		const { el } = mountBody();
+		renderItems(el, [new FileItem('/a/really-long-name', 'really-long-name')], 0);
+		const row = rows(el)[0];
+		expect(row.classList.contains('file-body-item')).toBe(true);
+		expect(row.classList.contains('file-item')).toBe(true);
+		const nameBox = row.querySelector('.file-body-name');
+		expect(nameBox).toBeTruthy();
+		expect(nameBox?.textContent).toBe('really-long-name');
+	});
+
 	it('updateFiles：display=normal 且无目录文件时不建行', () => {
 		const { el } = mountBody();
 		el.updateFiles();
