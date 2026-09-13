@@ -186,6 +186,8 @@
 
 - 2026-09-12 **P4b 第二刀：只写/纯内部字段再删 2 个，`DATA_FIELDS` 72 → 70**。① **先量化**：写了一次性脚本把每个字段的引用分成**写**（`.field =` / `++` / `+=`）与**读**（其余 `.field`），据此找"只写不读 = 等价死状态"——全仓只有 **1 个** `_unit`（`YMNumberBox/number-box-api.ts` 写完即无人读），连同接口声明删除。② **另删 1 个纯内部状态字段** `refreshing`（`animation/animation-events.ts` 的防重入标记）→ 改用 `getElementData(list).refreshing`：**这是本仓第一处「原型访问器读法 → 显式 `getElementData`」的真实迁移**，可作为后续逐组件的样板。③ **剩余 70 个字段都有真实读取**，且多数是跨组件约定（`lastText`/`hiddenNodes` 在 `YMTextBox` 与 `YMTreeList` 之间传递、`togglable` 属 `getListConfig` 公开面）——**这类必须与 P2b 的类型化元素 API 契约同批改**，否则只是把隐式约定换个地方藏。**指标**：`DATA_FIELDS` **72 → 70**（访问器 140）。**门禁**：`pnpm lint` 0/0、editor `tsc` strict 与 `vue-tsc` 0 新增、两个套件全绿、`docs:check` OK。
 
+- 2026-09-12 **E1 第二刀：`.vue` 的 window 监听配对（`remove` 122 → 126，「add 有 remove 无」5 → 1）**。① `FileAudioPage.vue`（`themechange`）、`FileScriptPage.vue`（`localize`）、`FileVideoPage.vue`（`error`）、`SceneActorPage.vue`（`datachange`）四处此前**只 add 不 remove**：改为**先把监听器存成变量**再 add，并在 `onBeforeUnmount` 里按**同一引用** remove。这条写法的必要性：`removeEventListener(type, obj.method)` 在方法来自访问器或每次返回新绑定时**摘不掉**，存变量才可靠。② 剩 `ui-kit/.../YMFileHeadPane.vue` 一处——handler 是跨约 60 行的内联匿名函数，需先提取具名函数（已登记下一刀）。③ `pnpm events:surface` 成为这类改动的验收器：`remove` 计数上升、`.vue` 内 add-without-remove 下降。**门禁**：`pnpm lint` 0/0、editor `tsc` strict 0 新增、两个套件全绿、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |

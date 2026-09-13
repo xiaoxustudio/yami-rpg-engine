@@ -23,7 +23,7 @@
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | 未开始 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
-| E1 | **窗口事件面收口**：34 个事件名 / **265** 处 `window.addEventListener`；16 个自定义事件靠"往 Event 挂字段"传载荷；1 个死事件；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
+| E1 | **窗口事件面收口**：33 个事件名 / **265** 处 `window.addEventListener` / **126** 处 `remove`；15 个自定义事件靠"往 Event 挂字段"传载荷；1 个死事件；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
 | O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | 可选 |
 
 ## 计划条目对照（阶段 / 里程碑 → 状态与出处）
@@ -849,12 +849,16 @@
 
 ## E1 — 窗口事件面收口（34 事件名 / 265 监听点 / 16 自定义事件）
 
-> 🚧 **部分完成（2026-09-11，B0）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。余项 ②（自定义事件改强类型通道）③（`.vue` 监听配对）④（`mitt` 去留）待做。
+> 🚧 **部分完成（2026-09-12，两刀）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。② `.vue` 的 window 监听配对已完成 4/5（见下方「E1 第二刀」）。余项 ③（自定义事件改强类型通道）、④（`mitt` 去留）、⑤（`YMFileHeadPane.vue` 的内联匿名 handler 提取）待做。
+
+**E1 第二刀（2026-09-12）：`.vue` 的 window 监听配对——`remove` 122 → 126，「add 有 remove 无」5 → 1**
+
+① 修 `FileAudioPage.vue`（`themechange`）、`FileScriptPage.vue`（`localize`）、`FileVideoPage.vue`（`error`）、`SceneActorPage.vue`（`datachange`）四处：**把监听器先存成变量**再 `addEventListener`，并在 `onBeforeUnmount` 里按**同一引用** `removeEventListener`——若直接写 `removeEventListener(type, obj.method)`，当方法来自访问器或每次返回新绑定函数时会摘不掉，存变量是唯一稳妥写法。② 剩 `ui-kit/.../YMFileHeadPane.vue` 一处未修：它的 handler 是**跨约 60 行的内联匿名函数**，要能 remove 得先提取具名函数（已登记，下一刀处理）。③ `pnpm events:surface` 复测：`remove` **122 → 126**（+4）、`.vue` 内 add-without-remove **5 → 1**；两个套件、`pnpm lint`、`tsc` strict 全绿。
 
 - **复现命令**：`pnpm events:surface`（`scripts/event-surface.mjs`；只统计落在 `window` 上的监听与派发，且**含"变量形式"派发**——`const e = new Event('x'); window.dispatchEvent(e)`，这是纯按名字做正则最容易漏的一类）。
 - **现状证据（2026-09-11 实测）**：`window.addEventListener` **265 处 / 92 文件**、`window.removeEventListener` **122 处**；事件名 **34 个**，其中**自定义 16 个**——`attributechange`、`datachange`、`dirchange`、`dprchange`、`enumchange`、`home-recent-update`、`localizationchange`、`localize`、`os-dragend`、`os-dragstart`、`script-change`、`themechange`、`update-log-update`、`variablechange`、`vue-app-mounted`、`yami:error`。载荷普遍靠**往 Event 对象上挂字段**传递（`datachange.key = 'teams'`、`themechange.value = theme`；见 `composables/useTeamWindow.ts:422`、`data/transition-window.ts:1201`、`title/title-bar.ts:387`）——无类型、无契约，监听方只能自己断言形状。
 - **死事件 1 个**：`attributechange`——`attribute/attribute-window.ts:967` 有派发、全仓**无监听**，可直接删（`script-change` 一度被误判为死事件，实为 `plugin/plugin-parse-meta.ts:20` 以变量形式派发，仍在用）。
-- **监听生命周期风险点**：**13 处**用内联匿名函数（无法 `remove`；11 文件，多数是 app 生命周期的单例，但 `components/toast.ts`、`ui-kit/.../YMFileHeadPane.vue` 属 UI 侧）；**5 个 `.vue`** 添加 window 监听却无 `remove`（`FileAudioPage`/`FileScriptPage`/`FileVideoPage`/`SceneActorPage`/`YMFileHeadPane`）——页面重挂时可能叠加监听。
+- **监听生命周期风险点**：**13 处**用内联匿名函数（无法 `remove`；11 文件，多数是 app 生命周期的单例，但 `components/toast.ts`、`ui-kit/.../YMFileHeadPane.vue` 属 UI 侧）；**1 个 `.vue`**（原 4 个已修，见下方「E1 第二刀」）添加 window 监听却无 `remove`（`FileAudioPage`/`FileScriptPage`/`FileVideoPage`/`SceneActorPage`/`YMFileHeadPane`）——页面重挂时可能叠加监听。
 - **替代品均未启用**：`mitt`（依赖里存在）**0 使用**、`@vueuse` 的 `useEventListener` **0 使用**、`window.on(` **0 处**——即计划 5.4「事件总线 → 响应式 + provide/inject + mitt」的映射**尚未开工**。
 - **推进策略**：① 删 `attributechange`；② 16 个自定义事件改强类型通道（store action / mitt 事件表），去掉"往 Event 挂字段"；③ 5 个 `.vue` 的监听按 `onMounted`/`onBeforeUnmount` 配对（或统一 `useEventListener`）；④ 决定 `mitt` 去留（启用或从 `package.json` 移除）。
 - **验收标准**：① `attributechange` 归零；② 自定义事件不再往 Event 挂字段；③ `.vue` 中"add 有、remove 无"归零；④ `pnpm lint` + `pnpm -F @yami/editor test` + `pnpm -F @yami/ui-kit test` 全绿；⑤ 真机冒烟：切主题、切语言、目录切换、文件 inspector 页面进出。
