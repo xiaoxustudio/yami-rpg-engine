@@ -5,14 +5,17 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { StageColor } from '@app/utils/stage-color';
 import { getAnimationStore } from '@app/stores/animation';
+import { getElementData } from '@app/utils/element-data';
 
 Animation.requestRefreshingList = function (this: typeof Animation) {
 	if (getAnimationStore().state === 'open') {
 		const list = this.list;
-		if (!list.refreshing) {
-			list.refreshing = true;
+		// P4b：改用显式元素数据（`getElementData`）而不是原型访问器 `list.refreshing`
+		const data = getElementData(list as unknown as HTMLElement);
+		if (!data.refreshing) {
+			data.refreshing = true;
 			void Promise.resolve().then(() => {
-				list.refreshing = false;
+				data.refreshing = false;
 				list.refresh();
 			});
 		}

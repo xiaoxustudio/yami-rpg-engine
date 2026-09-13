@@ -55,7 +55,6 @@ const DATA_FIELDS = [
 	'keyword',
 	'rawScrollLeft',
 	'rawScrollTop',
-	'refreshing',
 	'expanded',
 	'changed',
 	'nodeIcon',
@@ -82,7 +81,6 @@ const DATA_FIELDS = [
 	'bar',
 	'filler',
 	'synchronizer',
-	'_unit',
 	'activeWheel',
 	'foldable'
 ] as const;

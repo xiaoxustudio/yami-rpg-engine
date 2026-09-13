@@ -1,4 +1,4 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
 import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
 import { createNumberBoxCore } from './number-box-core';
@@ -20,7 +20,6 @@ export interface NumberBoxApi extends HTMLElement {
 	decimals: number;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	_unit: string | null;
 	_initialized: boolean;
 	read(...args: unknown[]): number;
 	write(...args: unknown[]): void;
@@ -80,7 +79,7 @@ export function attachNumberBoxApi(
 
 	box.input = input;
 	box.decimals = decimals;
-	box._unit = unit;
+	// P4b：`box._unit = unit` 已删除——该字段只写不读（等价死状态），随 DATA_FIELDS 一并退役
 
 	el.appendChild(input);
 
