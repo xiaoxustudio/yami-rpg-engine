@@ -44,6 +44,41 @@ function collectFiles() {
 	return files;
 }
 
+/**
+ * 逐条取出 `window.addEventListener(...)` 的整段调用文本（按括号配对），
+ * 判断该监听是否是**内联匿名**、以及是否带 `{ once: true }`（浏览器会在首次触发后自动摘除，
+ * 因此不算"没有 remove"的生命周期风险——E1 早期度量把它们误记为风险点）。
+ */
+function scanAddListenerCalls(rawSrc) {
+	// 先去掉注释：注释与字符串里也会出现 `window.addEventListener(`，按原文扫描会把整段
+	// 无关代码当成一次调用（E1 早期版本就因此把"内联匿名监听"数高估了）。
+	const src = rawSrc.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
+	const calls = [];
+	const marker = 'window.addEventListener(';
+	let index = src.indexOf(marker);
+	while (index !== -1) {
+		let depth = 0;
+		let i = index + marker.length - 1;
+		let text = '';
+		for (; i < src.length; i++) {
+			const ch = src[i];
+			text += ch;
+			if (ch === '(') depth++;
+			else if (ch === ')') {
+				depth--;
+				if (depth === 0) break;
+			}
+		}
+		calls.push({
+			once: /\bonce\s*:\s*true\b/.test(text),
+			// text 从调用自身的 `(` 开始 ⇒ 实参要从下标 1 起算
+			inline: /^\s*['"][\w:-]+['"]\s*,\s*(?:\(|function\s*\()/.test(text.slice(1))
+		});
+		index = src.indexOf(marker, i);
+	}
+	return calls;
+}
+
 function main() {
 	const files = collectFiles();
 	const listeners = new Map(); // name -> Set<rel>
@@ -83,11 +118,15 @@ function main() {
 			const name = constructed.get(m[1]);
 			if (name !== undefined) add(dispatchers, name, rel);
 		}
-		const inline = src.match(/window\.addEventListener\(\s*['"][\w:-]+['"]\s*,\s*(?:\(|function\s*\()/g) ?? [];
-		inlineAnonymous += inline.length;
-		if (inline.length > 0) inlineFiles.push([rel, inline.length]);
-		if (rel.endsWith('.vue') && addMatches.length > 0 && remMatches.length === 0) {
-			vueUnpaired.push([rel, addMatches.length]);
+		const calls = scanAddListenerCalls(src);
+		// 内联匿名 + 非 once 才是真正的"无法 remove"风险（once 由浏览器自动摘除）
+		const inlineRisk = calls.filter((c) => c.inline && !c.once).length;
+		inlineAnonymous += inlineRisk;
+		if (inlineRisk > 0) inlineFiles.push([rel, inlineRisk]);
+		const onceCount = scanAddListenerCalls(src).filter((c) => c.once).length;
+		// `{ once: true }` 的监听由浏览器在首次触发后自动摘除 ⇒ 不计入"add 有 remove 无"风险
+		if (rel.endsWith('.vue') && addMatches.length - onceCount > 0 && remMatches.length === 0) {
+			vueUnpaired.push([rel, addMatches.length - onceCount]);
 		}
 		mittUse += (src.match(/\bmitt\(/g) ?? []).length;
 		useEventListener += (src.match(/useEventListener\(/g) ?? []).length;
