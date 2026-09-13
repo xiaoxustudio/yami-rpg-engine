@@ -118,24 +118,32 @@
 								<div
 									class="item toolbar-item"
 									id="scene-switch-grid"
+
+									v-tip="t('components.scene-switch-grid.tip')"
 				:ref="registryRef(sceneEls, 'scene-switch-grid')"
 									value="grid"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="scene-switch-light"
+
+									v-tip="t('components.scene-switch-light.tip')"
 				:ref="registryRef(sceneEls, 'scene-switch-light')"
 									value="light"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="scene-switch-animation"
+
+									v-tip="t('components.scene-switch-animation.tip')"
 				:ref="registryRef(sceneEls, 'scene-switch-animation')"
 									value="animation"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="scene-switch-settings"
+
+									v-tip="t('components.scene-switch-settings.tip')"
 				:ref="registryRef(inspectorEls, 'scene-switch-settings')"
 									value="settings"
 									hotkey="Alt+S"
@@ -151,6 +159,8 @@
 									<div
 										class="item toolbar-item"
 										id="scene-layer-object"
+
+										v-tip="t('components.scene-layer-object.tip')"
 										value="object"
 										hotkey="`"
 									></div>
@@ -199,6 +209,8 @@
 									<div
 										class="item toolbar-item"
 										id="scene-layer-terrain"
+
+										v-tip="t('components.scene-layer-terrain.tip')"
 										value="terrain"
 										hotkey="`"
 									></div>
@@ -212,30 +224,40 @@
 									<div
 										class="item toolbar-item"
 										id="scene-brush-eraser"
+
+										v-tip="t('components.scene-brush-eraser.tip')"
 										value="eraser"
 										hotkey="Q"
 									></div>
 									<div
 										class="item toolbar-item"
 										id="scene-brush-pencil"
+
+										v-tip="t('components.scene-brush-pencil.tip')"
 										value="pencil"
 										hotkey="E"
 									></div>
 									<div
 										class="item toolbar-item"
 										id="scene-brush-rect"
+
+										v-tip="t('components.scene-brush-rect.tip')"
 										value="rect"
 										hotkey="R"
 									></div>
 									<div
 										class="item toolbar-item"
 										id="scene-brush-oval"
+
+										v-tip="t('components.scene-brush-oval.tip')"
 										value="oval"
 										hotkey="T"
 									></div>
 									<div
 										class="item toolbar-item"
 										id="scene-brush-fill"
+
+										v-tip="t('components.scene-brush-fill.tip')"
 										value="fill"
 										hotkey="Y"
 									></div>
@@ -312,6 +334,8 @@
 								<div
 									class="item toolbar-item"
 									id="ui-switch-settings"
+
+									v-tip="t('components.ui-switch-settings.tip')"
 				:ref="registryRef(inspectorEls, 'ui-switch-settings')"
 									value="settings"
 								></div>
@@ -324,56 +348,78 @@
 								<div
 									class="item toolbar-item"
 									id="ui-element-image"
+
+									v-tip="t('components.ui-element-image.tip')"
 									value="image"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-text"
+
+									v-tip="t('components.ui-element-text.tip')"
 									value="text"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-textbox"
+
+									v-tip="t('components.ui-element-textbox.tip')"
 									value="textbox"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-dialogbox"
+
+									v-tip="t('components.ui-element-dialogbox.tip')"
 									value="dialogbox"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-progressbar"
+
+									v-tip="t('components.ui-element-progressbar.tip')"
 									value="progressbar"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-button"
+
+									v-tip="t('components.ui-element-button.tip')"
 									value="button"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-animation"
+
+									v-tip="t('components.ui-element-animation.tip')"
 									value="animation"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-video"
+
+									v-tip="t('components.ui-element-video.tip')"
 									value="video"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-window"
+
+									v-tip="t('components.ui-element-window.tip')"
 									value="window"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-container"
+
+									v-tip="t('components.ui-element-container.tip')"
 									value="container"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="ui-element-reference"
+
+									v-tip="t('components.ui-element-reference.tip')"
 									value="reference"
 								></div>
 							</div>
@@ -450,12 +496,16 @@
 								<div
 									class="item toolbar-item"
 									id="animation-switch-mark"
+
+									v-tip="t('components.animation-switch-mark.tip')"
 									value="mark"
 									:class="{ selected: animation.showMark }"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="animation-switch-onionskin"
+
+									v-tip="t('components.animation-switch-onionskin.tip')"
 									value="onionskin"
 									hotkey="O"
 									:class="{ selected: animation.showOnionskin }"
@@ -463,6 +513,8 @@
 								<div
 									class="item toolbar-item"
 									id="animation-switch-mirror"
+
+									v-tip="t('components.animation-switch-mirror.tip')"
 									value="mirror"
 									hotkey="M"
 									:class="{ selected: animation.mirror }"
@@ -470,6 +522,8 @@
 								<div
 									class="item toolbar-item"
 									id="animation-switch-settings"
+
+									v-tip="t('components.animation-switch-settings.tip')"
 				:ref="registryRef(inspectorEls, 'animation-switch-settings')"
 									value="settings"
 								></div>
@@ -477,6 +531,8 @@
 							<div class="box" id="animation-head-center">
 								<NumberBox
 									id="animation-speed"
+
+									v-tip="t('components.animation-speed.tip')"
 									min="0"
 									max="4"
 									step="0.05"
@@ -570,18 +626,24 @@
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-previousKey"
+
+									v-tip="t('components.animation-timeline-previousKey.tip')"
 									value="previousKey"
 									hotkey="Z"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-previous"
+
+									v-tip="t('components.animation-timeline-previous.tip')"
 									value="previous"
 									hotkey="Q"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-play"
+
+									v-tip="t('components.animation-timeline-play.tip')"
 									value="play"
 									hotkey="R"
 									:class="{ playing: animation.playing }"
@@ -589,18 +651,24 @@
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-next"
+
+									v-tip="t('components.animation-timeline-next.tip')"
 									value="next"
 									hotkey="E"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-nextKey"
+
+									v-tip="t('components.animation-timeline-nextKey.tip')"
 									value="nextKey"
 									hotkey="X"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="animation-timeline-loop"
+
+									v-tip="t('components.animation-timeline-loop.tip')"
 									value="loop"
 									:class="{ selected: animation.loop }"
 								></div>
@@ -681,12 +749,16 @@
 								<div
 									class="item toolbar-item"
 									id="particle-view-wireframe"
+
+									v-tip="t('components.particle-view-wireframe.tip')"
 				:ref="registryRef(particleEls, 'particle-view-wireframe')"
 									value="wireframe"
 								></div>
 								<div
 									class="item toolbar-item"
 									id="particle-view-anchor"
+
+									v-tip="t('components.particle-view-anchor.tip')"
 				:ref="registryRef(particleEls, 'particle-view-anchor')"
 									value="anchor"
 								></div>
@@ -700,6 +772,8 @@
 									<div
 										class="item toolbar-item"
 										id="particle-control-restart"
+
+										v-tip="t('components.particle-control-restart.tip')"
 				:ref="registryRef(particleEls, 'particle-control-restart')"
 										value="restart"
 										hotkey="R"
@@ -707,6 +781,8 @@
 									<div
 										class="item toolbar-item"
 										id="particle-control-pause"
+
+										v-tip="t('components.particle-control-pause.tip')"
 				:ref="registryRef(particleEls, 'particle-control-pause')"
 										value="pause"
 										hotkey="P"
@@ -714,6 +790,8 @@
 								</div>
 								<NumberBox
 									id="particle-speed"
+
+									v-tip="t('components.particle-speed.tip')"
 				:ref="registryRef(particleEls, 'particle-speed')"
 									min="0"
 									max="4"
@@ -992,6 +1070,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { moduleEls } from '@app/module/element-registry';
@@ -1026,6 +1105,8 @@ import { getLazyWindow } from '@app/tools/window-registry';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { setIconClip } from '@app/utils/icon-clip';
+
+const { t } = useI18n();
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));

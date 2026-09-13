@@ -26,6 +26,8 @@
 			<div
 				class="box"
 				id="title-play"
+
+				v-tip="t('components.title-play.tip')"
 				:ref="registryRef(titleEls, 'title-play')"
 				hotkey="F4"
 				:class="{ selected: title.playing }"
@@ -80,6 +82,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import TabBar from './components/common/TabBar.vue';
 import { titleEls } from '@app/title/element-registry';
 import { windowShellEls } from '@app/tools/window-object.ts';
@@ -98,6 +101,8 @@ import { useLocalStore } from '@app/stores/local';
 import { resolveLazyComponentsReady } from '@app/bootstrap';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
+
+const { t } = useI18n();
 
 provideMenuService({ getState: () => Menu.state });
 
