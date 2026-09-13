@@ -255,7 +255,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
@@ -319,7 +318,7 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
@@ -331,7 +330,7 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 const getForm = (): NumberOperandForm => {
 	const data = { ...form } as NumberOperandForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {

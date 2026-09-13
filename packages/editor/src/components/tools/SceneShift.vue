@@ -9,19 +9,21 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.scene-shift-x.label') }}</div>
 			<NumberBox id="scene-shift-x"
+				:ref="registryRef(composableEls, 'scene-shift-x')"
 				v-tip="t('components.scene-shift-x.tip')" v-focus min="-512" max="512" :model-value="form.x" />
 			<div class="text">{{ t('components.scene-shift-y.label') }}</div>
 			<NumberBox id="scene-shift-y"
+				:ref="registryRef(composableEls, 'scene-shift-y')"
 				v-tip="t('components.scene-shift-y.tip')" min="-512" max="512" :model-value="form.y" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
+import { composableEls } from '@app/composables/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
-import { registerElement } from '@app/utils/element-registry';
+import { registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -37,7 +39,7 @@ const setForm = (data: Partial<SceneShiftForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
@@ -49,7 +51,7 @@ const setForm = (data: Partial<SceneShiftForm>): void => {
 const getForm = (): SceneShiftForm => {
 	const data = { ...form } as SceneShiftForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {

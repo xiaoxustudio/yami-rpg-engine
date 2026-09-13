@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
 import { registryRef, registerElement } from '@app/utils/element-registry';
@@ -50,7 +49,7 @@ const setForm = (data: Partial<PresetGetterForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
@@ -62,7 +61,7 @@ const setForm = (data: Partial<PresetGetterForm>): void => {
 const getForm = (): PresetGetterForm => {
 	const data = { ...form } as PresetGetterForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {

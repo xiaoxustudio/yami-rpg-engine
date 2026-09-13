@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
 import { ExportLanguage } from '@app/local/export-language-window.ts';
+import { composableEls } from '@app/composables/element-registry';
 
 // P5b 批次 4：exportLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ExportLanguage?.confirm?.(new Event('click'));
 };
-/* oxlint-disable eslint/no-restricted-properties */
 import { onMounted, reactive, ref } from 'vue';
 import { localEls } from '@app/local/element-registry';
 import { registryRef, registerElement } from '@app/utils/element-registry';
@@ -50,7 +50,7 @@ const setForm = (data: Partial<ExportLanguageForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
@@ -62,7 +62,7 @@ const setForm = (data: Partial<ExportLanguageForm>): void => {
 const getForm = (): ExportLanguageForm => {
 	const data = { ...form } as ExportLanguageForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
+		const control = composableEls.get(id) as
 			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {
