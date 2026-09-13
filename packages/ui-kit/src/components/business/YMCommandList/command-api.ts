@@ -1,4 +1,4 @@
-import { h, render } from 'vue';
+import { h } from 'vue';
 import {
 	relate,
 	addClass,
@@ -21,18 +21,14 @@ import {
 	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
 import { attachScrollListener } from '../YMParamList/scroll-listener';
+import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createCommandCore } from './command-core';
 import * as commandRender from './command-render';
 
 const commandCore = createCommandCore();
 
-const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	const host = document.createElement('div');
-	render(vnode, host);
-	const element = host.firstElementChild as HTMLElement;
-	host.removeChild(element);
-	return element;
-};
+// M3 切片 3：离屏建元素统一走 ui-kit 的 detached 接缝（本文件内不再直接建 DOM 节点）
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
@@ -374,8 +370,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			let className = '';
 			let color = '';
 			let mainColor = 'normal';
-			li = document.createElement('div') as unknown as CommandItemElement;
-			addClass(li, 'command-item');
+			li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 			// M3 切片 1：行 key 由派生层发号（同一 command 跨多次渲染稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
 			li.rowKey = commandRender.rowKeyOf(command);
 			let liContents: CommandContent[] | null = [];
@@ -457,8 +452,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				if (content.break !== undefined) {
-					li = document.createElement('div') as unknown as CommandItemElement;
-					addClass(li, 'command-item');
+					li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 					let breakContents: CommandContent[] | null = [];
 					Object.defineProperty(li, 'contents', {
 						configurable: true,
@@ -503,8 +497,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					buffer.push(content.children);
 
 					if (i < length) {
-						li = document.createElement('div') as unknown as CommandItemElement;
-						addClass(li, 'command-item');
+						li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 						let childContents: CommandContent[] | null = [];
 						Object.defineProperty(li, 'contents', {
 							configurable: true,
@@ -548,8 +541,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					const items = Array.from<CommandItemElement>({ length: slength });
 					items[0] = li;
 					for (let i = 1; i < slength; i++) {
-						li = document.createElement('div') as unknown as CommandItemElement;
-						addClass(li, 'command-item');
+						li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 						let scriptContents: CommandContent[] | null = [];
 						Object.defineProperty(li, 'contents', {
 							configurable: true,
@@ -582,10 +574,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						items[i] = li;
 					}
 					if (lines > MAX_LINES) {
-						const text = document.createElement('div');
-						addClass(text, 'text');
+						const text = renderDetachedDiv(['text', 'gray']);
 						text.textContent = `... ${lines} lines`;
-						addClass(text, 'gray');
 						li.appendChild(text);
 					}
 					options.command?.colorizeCodeLines(items, code);
@@ -644,10 +634,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		for (const content of element.contents!) {
 			if (content.text !== undefined) {
-				const text = document.createElement('div') as HTMLDivElement & {
+				const text = renderDetachedDiv('command-text') as HTMLDivElement & {
 					[k: string]: unknown;
 				};
-				addClass(text, 'command-text');
 				text.textContent = content.text;
 				addClass(text, content.color!);
 				if (content.textId) {
@@ -754,8 +743,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				if (folded) {
 					element.fold.textContent = '+';
 					if (!element.ellipsis) {
-						element.ellipsis = document.createElement('div');
-						addClass(element.ellipsis, 'command-text');
+						element.ellipsis = renderDetachedDiv('command-text');
 						element.ellipsis.textContent = ' ......';
 						element.appendChild(element.ellipsis!);
 					}
@@ -793,8 +781,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	): CommandItemElement {
 		let blank = commands.blank;
 		if (blank === undefined) {
-			blank = document.createElement('div') as unknown as CommandItemElement;
-			addClass(blank, 'command-item');
+			blank = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 
 			let blankContents: CommandContent[] | null = [];
 			Object.defineProperty(blank, 'contents', {
@@ -2576,8 +2563,7 @@ export function createCommandListApi(
 }
 
 export function createCommandListElement(options: CommandListApiOptions = {}): HTMLElement {
-	const el = document.createElement('div');
-	el.classList.add('command-list');
+	const el = renderDetachedDiv('command-list');
 	createCommandListApi(el, options);
 	return el;
 }
