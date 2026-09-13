@@ -38,9 +38,13 @@ const deriveKeys = (): string[] => {
 		if (key === '[comment]' || key[0] === '[') continue;
 		if (item.save !== undefined) continue;
 		const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
-		if (carriers.length === 0) continue;
+		// R2b 迁移⑩：元素由 ui-kit 组件内部持有 id 的键（`<YMRename>` 之类）没有 `id="<键>"`
+		// 承载者；判据放宽为「唯一引用该键消息的 SFC」，多文件引用时仍要求含 id（与生成器同源）。
+		const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
+		const effective = carriers.length > 0 ? carriers : byMessage.length === 1 ? byMessage : [];
+		if (effective.length === 0) continue;
 		const ok = Object.keys(item).every((field) =>
-			carriers.some((v) =>
+			effective.some((v) =>
 				field === 'tip'
 					? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
 						new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)

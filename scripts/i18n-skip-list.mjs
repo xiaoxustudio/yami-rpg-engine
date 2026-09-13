@@ -43,10 +43,15 @@ for (const [key, item] of Object.entries(components)) {
 	if (key === '[comment]' || key[0] === '[') continue;
 	if (item.save !== undefined) continue; // saveItems 依赖，跳过后仍会被本地化器处理
 	const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
-	if (carriers.length === 0) continue;
+	// R2b 迁移⑩：有些键的元素由 ui-kit 组件内部持有 id（`<YMRename>` 之类），承载 SFC 里
+	// 根本没有 `id="<键>"`；这些键的字段仍在模板里用 `t('components.<键>.<字段>')` 承担。
+	// 判据放宽为：**唯一**引用该键消息的 SFC 也算承载者（多文件引用时仍要求含 id，避免误判）。
+	const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
+	const effective = carriers.length > 0 ? carriers : byMessage.length === 1 ? byMessage : [];
+	if (effective.length === 0) continue;
 	const fields = Object.keys(item);
 	const ok = fields.every((field) =>
-		carriers.some((v) =>
+		effective.some((v) =>
 			field === 'tip'
 				? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
 					new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
