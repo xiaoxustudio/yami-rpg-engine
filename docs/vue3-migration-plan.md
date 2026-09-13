@@ -180,6 +180,8 @@
 
 - 2026-09-12 **R2b 迁移⑨：`placeholder` 类键改由模板承担，扫描面 157 → 146（−93% 起点 2130）**。① `components/common/TextBox.vue` 新增 `placeholder` prop 并在 `watch(() => props.placeholder)` 里调 ui-kit 的 `setPlaceholder`——`t()` 响应式 ⇒ **语言切换自动重跑**（此前 placeholder 只有本地化器会写）。② **11 个键 / 10 个 SFC** 在 `<TextBox id="…"` 后插入 `:placeholder="t('components.<键>.placeholder')"`；脚本按 id 所在行缩进插入（兼容"id 与标签名同行"与"分行"两种写法），并**逐个核对 11 处都是 `<TextBox>`**——否则属性会变成无害但不生效的 fallthrough，而判据只看 `t()` 字面量，容易自欺。**指标**：扫描面 **157 → 146**、模板承担键 **1972 → 1983**。**剩余 146 键**：`options` ≈82、`label` 25（卡在 options）、**无 `.vue` 承载 17**（id 运行期拼接，需定位工厂/`.ts` 模块）、`content` 3、`title` 1 + `save` 依赖键。**门禁**：`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`docs:check` OK。
 
+- 2026-09-12 **R2b 迁移⑩：修正「承载者」判据，扫描面 146 → 137**。① **判据盲区**：生成器与防漂移用例都用「SFC 里含 `id="<键>"`」找承载者，但一批键的元素**由 ui-kit 组件在内部持有 id**——`Rename.vue` 只写 `<YMRename :title="t('components.rename.title')" :label="t('components.rename-name.label')" />`，没有 `id="rename"`；这些键**早已由模板 `t()` 承担**，却被记成"无 `.vue` 承载"长期留在扫描面里。② **修正（两处同改）**：`carriers` 为空时，退化为「**唯一**引用该键消息的 SFC」；多文件引用仍要求含 id，避免误判。③ **效果**：9 个键正确归入已承担（`arrayList-number/string`、`rename`、`request-keyValue(-key/-value)`、`setKey`、`setQuantity`、`zoom`）；另 8 个（`rename-name`、`setKey-key`、`setQuantity-quantity`、`zoom-factor`、`font-font`、`fontSize-size`、`selector-search`、`setListIndexSkipCheck`）仍缺 `tip` 等字段，逐键待补。**指标**：扫描面 **146 → 137**（−94% 起点 2130）、模板承担键 **1983 → 1992**。**门禁**：`pnpm lint` 0/0、防漂移用例 4/4、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
