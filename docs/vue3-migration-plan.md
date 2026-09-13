@@ -198,6 +198,8 @@
 
 - 2026-09-12 **B1/M1 第三批：文件 body 窗口迁移 4 例落地（10 → 14），并排除嵌套渲染的四种猜测**。① 新增用例：列表视图按 **`scrollLeft`** 右移后 `content.range[0]` 变大、渲染行从 `ev0` 切到后面的文件；网格视图按 **`scrollTop`** 计算窗口；`updateContentOffset` 把偏移写进内容元素样式。② 命令列表的**嵌套渲染**仍写不出：实测四种"把子命令放进 `parse` 返回值"的写法（`[节点,节点,[子命令]]`、`{commands:[子命令]}`、裸子命令、`[[子命令]]`）都只渲染父命令（`elements.count = 2` = 父行 + 空白行、`dataIndent` 全 0）⇒ **嵌套/缩进由调用方的数组结构决定**（`createItems(commands, indent, parent)` 的 indent，或写库前已拍平成带层列表），不是 `parse` 的返回约定；结论写进 `YMCommandList.m1.spec.ts` 的 `TODO(M1)` 注释，下批先找编辑器侧真正喂给 `write()` 的数组形态。③ **M1 组件级用例 21 + 14 = 35**（目标 ~40+）。**指标**：ui-kit **99 文件 691/691**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M1 第四批：命令列表 9 → 11 例，嵌套渲染与 fold 把手落地，M1 组件级用例 37**。① **找到嵌套入口**：`createCommandBuffer` 里 `buffer.push(content.children)` ⇒ `parse` 描述符里写 **`{ children: [子命令] }`** 才会展开子命令（`createItems(target, indent + 1, …)`）——上一轮排除的四种"返回值里直接放数组"确实都不行。用例断言子行文本出现且 `dataIndent` 更深。② **fold 把手同样由描述符决定**：写 `{ fold: true }` 才挂 `.command-fold`（`li.fold`），与"有没有子命令"无关。③ **另一个静默陷阱**：`parse(command, varMap)` 的命令业务字段在 **`item.params`** 里（判 `item.child` 会静默不生效，用例因此先红了一次）。④ **M1 组件级用例**：命令列表 **23**（12+11）+ 文件 body **14** = **37**，距 ~40+ 只剩"文件 body 的空目录/滚动边界"之类小项。**指标**：ui-kit **99 文件 693/693**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |

@@ -65,7 +65,9 @@
 - **`computeTextIndent` 的返回值是等长字符串**（`'0em'` / `'4em'`），先前"长度递增"的直觉断言是错的——必须断言取值。
 - **空白行是渲染协议的一部分**：每层命令列表末尾都会追加一个 `createBlankElement`，因此 `elements.count` 不是命令数。
 - **`pageUp/pageDown` 依赖 `this.scroll`**（由 `YMCommandList.vue` 注入的滚动实现），纯元素态用例必须自备 stub。
-- **import 尚未打通**：嵌套渲染（`parse` 返回值里的嵌套数组 = 子命令列表 → `createItems(target, indent + 1, …)`）需要一个专门的用例，但得先弄清 `createCommandBuffer` 的 buffer 协议；已在文件里留 TODO(M1)，缩进的**计算**已由上面的用例锁定。
+- **嵌套渲染：入口是 `parse` 描述符里的 `{ children: [子命令] }`**（`createCommandBuffer` 里 `buffer.push(content.children)` → `createItems(target, indent + 1, commands[i])`）。**"返回值里直接放数组"不行**——实测四种写法（`[节点,节点,[子命令]]`、`{commands:[子命令]}`、裸子命令、`[[子命令]]`）都只渲染父命令（`elements.count = 2` = 父行 + 空白行、`dataIndent` 全 0）。用例已补，子行 `dataIndent` 更深。
+- **fold 把手也由描述符决定**：`{ fold: true }` 才会给该行挂 `.command-fold` 元素（`li.fold`）；不写就没有把手，与"有没有子命令"无关。
+- 另需注意：`parse` 的第二个参数是 `varMap`，命令自身的业务字段在 `item.params` 里（用例里判 `item.params.child`，写成 `item.child` 会静默不生效）。
 
 **现有覆盖盘点与补测清单（2026-09-11 实测，逐条对过用例标题）**
 
