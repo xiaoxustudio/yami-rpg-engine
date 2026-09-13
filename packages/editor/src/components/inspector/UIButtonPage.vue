@@ -423,6 +423,7 @@
 			</div>
 			<div class="text">{{ t('components.uiButton-font.label') || 'Font' }}</div>
 			<TextBox id="uiButton-font"
+			:placeholder="t('components.uiButton-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiButton-font')"
 				v-tip="t('components.uiButton-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div>

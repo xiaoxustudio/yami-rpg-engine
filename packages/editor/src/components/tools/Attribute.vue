@@ -34,6 +34,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-key.label') }}</div>
 					<TextBox id="attribute-key"
+					:placeholder="t('components.attribute-key.placeholder')"
 				v-tip="t('components.attribute-key.tip')"
 				:ref="registryRef(attributeEls, 'attribute-key')" @input="onKeyInput" />
 				</div>

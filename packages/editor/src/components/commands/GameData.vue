@@ -18,6 +18,7 @@
 				:ref="registryRef(fieldEls, 'gameData-index')" min="0" max="32" v-model="form.index" />
 			<div class="text">{{ t('components.gameData-variables.label') }}</div>
 			<TextBox id="gameData-variables"
+			:placeholder="t('components.gameData-variables.placeholder')"
 				v-tip="t('components.gameData-variables.tip')"
 				:ref="registryRef(fieldEls, 'gameData-variables')" v-model="variables" />
 		</div>

@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2129 键降到
- * 157 键。
+ * 146 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -114,6 +114,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'appendTarget-target',
 	'attribute',
 	'attribute-enum',
+	'attribute-key',
 	'attribute-list',
 	'attribute-name',
 	'attribute-note',
@@ -149,6 +150,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'autoTile-x',
 	'autoTile-y',
 	'block',
+	'block-note',
 	'callEvent',
 	'callEvent-actor',
 	'callEvent-element',
@@ -224,6 +226,8 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'color-hex',
 	'color-r',
 	'command',
+	'command-alias',
+	'command-keywords',
 	'command-list',
 	'commandLine',
 	'commandLine-key',
@@ -402,6 +406,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'enum-name',
 	'enum-note',
 	'enum-properties-flex',
+	'enum-value',
 	'equipmentGetter',
 	'equipmentGetter-actor',
 	'equipmentGetter-equipmentId',
@@ -610,6 +615,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'gameData',
 	'gameData-index',
 	'gameData-operation',
+	'gameData-variables',
 	'getActor',
 	'getActor-activation',
 	'getActor-area',
@@ -1628,6 +1634,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'showChoices-choices',
 	'showChoices-parameters',
 	'showText',
+	'showText-parameters',
 	'showText-target',
 	'simulateKey',
 	'simulateKey-keycode',
@@ -1757,6 +1764,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'uiButton-border',
 	'uiButton-clickSound',
 	'uiButton-content',
+	'uiButton-font',
 	'uiButton-hoverClip',
 	'uiButton-hoverColor',
 	'uiButton-hoverImage',
@@ -1786,6 +1794,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'uiDialogBox-effect-shadowOffsetY',
 	'uiDialogBox-effect-strokeWidth',
 	'uiDialogBox-effect-type',
+	'uiDialogBox-font',
 	'uiDialogBox-interval',
 	'uiDialogBox-letterSpacing-box',
 	'uiDialogBox-lineSpacing-box',
@@ -1875,6 +1884,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'uiText-effect-shadowOffsetY',
 	'uiText-effect-strokeWidth',
 	'uiText-effect-type',
+	'uiText-font',
 	'uiText-letterSpacing-box',
 	'uiText-lineSpacing-box',
 	'uiText-overflow',
@@ -1884,6 +1894,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'uiTextBox-align',
 	'uiTextBox-color',
 	'uiTextBox-decimals',
+	'uiTextBox-font',
 	'uiTextBox-max',
 	'uiTextBox-maxLength',
 	'uiTextBox-min',

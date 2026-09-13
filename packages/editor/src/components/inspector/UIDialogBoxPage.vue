@@ -100,6 +100,7 @@
 				v-tip="t('components.uiDialogBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div>
 			<TextBox id="uiDialogBox-font"
+			:placeholder="t('components.uiDialogBox-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiDialogBox-font')"
 				v-tip="t('components.uiDialogBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>

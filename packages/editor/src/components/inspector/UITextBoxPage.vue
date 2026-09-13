@@ -104,6 +104,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-font.label') || 'Font' }}</div>
 			<TextBox id="uiTextBox-font"
+			:placeholder="t('components.uiTextBox-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiTextBox-font')"
 				v-tip="t('components.uiTextBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiTextBox-color.label') || 'Text Color' }}</div>

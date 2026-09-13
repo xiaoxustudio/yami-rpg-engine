@@ -154,6 +154,7 @@
 				v-tip="t('components.uiText-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
 			<TextBox id="uiText-font"
+			:placeholder="t('components.uiText-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiText-font')"
 				v-tip="t('components.uiText-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
 			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>

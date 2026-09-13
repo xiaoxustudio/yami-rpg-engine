@@ -34,6 +34,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-value.label') }}</div>
 					<TextBox id="enum-value"
+					:placeholder="t('components.enum-value.placeholder')"
 				v-tip="t('components.enum-value.tip')"
 				:ref="registryRef(enumEls, 'enum-value')" menu="tag-localization" @input="onValueInput" />
 				</div>

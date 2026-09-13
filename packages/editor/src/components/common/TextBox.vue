@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMTextBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -43,11 +43,14 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
+	/** R2b：占位文案也可由模板 `t()` 承担（原先只有本地化器写 setPlaceholder） */
+	placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: '',
-	disabled: false
+	disabled: false,
+	placeholder: ''
 });
 
 const emit = defineEmits<{
@@ -106,6 +109,15 @@ const on = (
 	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
+
+// R2b：`placeholder` 属性随语言切换重挂（`t()` 响应式 ⇒ 切换语言后这里自动重跑）
+watch(
+	() => props.placeholder,
+	(value) => {
+		ym.value?.setPlaceholder(value ?? '');
+	},
+	{ immediate: true }
+);
 
 const onInput = (value: string): void => {
 	emit('update:modelValue', value);

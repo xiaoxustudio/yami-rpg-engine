@@ -8,6 +8,7 @@
 		></template>
 
 		<TextBox id="block-note"
+		:placeholder="t('components.block-note.placeholder')"
 				:ref="registryRef(fieldEls, 'block-note')"
 				v-tip="t('components.block-note.tip')" v-focus v-model="note" />
 		<CheckBox id="block-asynchronous"

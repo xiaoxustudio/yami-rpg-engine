@@ -9,6 +9,7 @@
 		<CustomBox id="showText-target"
 				v-tip="t('components.showText-target.tip')" v-focus type="actor" v-model="form.target" />
 		<TextBox id="showText-parameters"
+		:placeholder="t('components.showText-parameters.placeholder')"
 				v-tip="t('components.showText-parameters.tip')" v-model="parameters" />
 		<TextArea
 			id="showText-content"
