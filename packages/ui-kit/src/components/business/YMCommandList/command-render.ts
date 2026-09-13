@@ -105,3 +105,58 @@ export function deriveCommandRows(
 
 /** 可见行的缩进层级序列（给缩进线扩展点/调试用） */
 export const rowIndents = (rows: CommandRowDescriptor[]): number[] => rows.map((row) => row.indent);
+
+/** 命令列表行高（px）：与 CSS 一致；翻页/滚动/命中定位都用它 */
+export const ROW_HEIGHT = 20;
+
+/** 一次翻页滚动的行数（`innerHeight / 20 - 1`，下限 0） */
+export const pageScrollLines = (viewportHeight: number): number =>
+	Math.max(Math.floor(viewportHeight / ROW_HEIGHT) - 1, 0);
+
+export interface PageContext {
+	/** 当前滚动位置 */
+	scrollTop: number;
+	/** 视口高度（= `innerHeight`） */
+	viewportHeight: number;
+	/** 可见行总数（= `elements.count`） */
+	rowCount: number;
+	/** 翻页锚点行 */
+	anchor: number;
+}
+
+/** 上翻一页后的 `scrollTop`（不越过顶部） */
+export const computePageUpScrollTop = (context: PageContext): number =>
+	Math.max(context.scrollTop - pageScrollLines(context.viewportHeight) * ROW_HEIGHT, 0);
+
+/**
+ * 上翻一页后要选中的行下标。
+ * 原实现：`min(anchor, floor((scrollTop + innerHeight) / 20) - 1) - scrollLines`
+ */
+export const computePageUpTargetIndex = (context: PageContext): number => {
+	const { scrollTop, viewportHeight, anchor } = context;
+	const bottomIndex = Math.floor((scrollTop + viewportHeight) / ROW_HEIGHT) - 1;
+	return Math.min(anchor, bottomIndex) - pageScrollLines(viewportHeight);
+};
+
+/**
+ * 下翻一页后的 `scrollTop`。
+ * 原实现：无选中时 `top + scrollLines * 20`；选中时再夹到 `rowCount * 20 - innerHeight`。
+ */
+export const computePageDownScrollTop = (context: PageContext, clamped: boolean): number => {
+	const { scrollTop, viewportHeight, rowCount } = context;
+	const next = scrollTop + pageScrollLines(viewportHeight) * ROW_HEIGHT;
+	if (!clamped) return Math.max(scrollTop, next);
+	const scrollTopMax = rowCount * ROW_HEIGHT - viewportHeight;
+	return Math.max(scrollTop, Math.min(next, scrollTopMax));
+};
+
+/**
+ * 下翻一页后要选中的行下标。
+ * 原实现：`max(anchor, floor(top / 20)) + scrollLines`
+ */
+export const computePageDownTargetIndex = (context: PageContext): number => {
+	const { scrollTop, anchor, viewportHeight } = context;
+	const topIndex = Math.floor(scrollTop / ROW_HEIGHT);
+	return Math.max(anchor, topIndex) + pageScrollLines(viewportHeight);
+};
+

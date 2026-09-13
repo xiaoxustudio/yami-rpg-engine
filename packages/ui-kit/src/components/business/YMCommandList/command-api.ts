@@ -22,6 +22,7 @@ import {
 } from '../../../utils/common-list';
 import { attachScrollListener } from '../YMParamList/scroll-listener';
 import { createCommandCore } from './command-core';
+import * as commandRender from './command-render';
 
 const commandCore = createCommandCore();
 
@@ -948,16 +949,20 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			anchor = this.active;
 		}
 		if (anchor !== null) {
-			const scrollLines = Math.floor(this.innerHeight / 20) - 1;
-			const scrollTop = Math.max(this.scrollTop - scrollLines * 20, 0);
+			// M2 切片 2：翻页数学抽到 command-render.ts 的纯函数（行为与原先逐字一致）
+			const context = {
+				scrollTop: this.scrollTop,
+				viewportHeight: this.innerHeight,
+				rowCount: this.elements.count,
+				anchor
+			};
+			const nextScrollTop = commandRender.computePageUpScrollTop(context);
 			if (select) {
-				const bottom = this.scrollTop + this.innerHeight;
-				const bottomIndex = Math.floor(bottom / 20) - 1;
-				const targetIndex = Math.min(anchor, bottomIndex) - scrollLines;
+				const targetIndex = commandRender.computePageUpTargetIndex(context);
 				this.select(targetIndex);
 				this.anchor = Math.max(targetIndex, this.start);
 			}
-			this.scroll(0, scrollTop);
+			this.scroll(0, nextScrollTop);
 		}
 	},
 
@@ -968,19 +973,19 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			anchor = this.active;
 		}
 		if (anchor !== null) {
-			const top = this.scrollTop;
-			const scrollLines = Math.floor(this.innerHeight / 20) - 1;
-			let scrollTop = top + scrollLines * 20;
+			const context = {
+				scrollTop: this.scrollTop,
+				viewportHeight: this.innerHeight,
+				rowCount: this.elements.count,
+				anchor
+			};
+			const nextScrollTop = commandRender.computePageDownScrollTop(context, select);
 			if (select) {
-				const topIndex = Math.floor(top / 20);
-				const targetIndex = Math.max(anchor, topIndex) + scrollLines;
-				const scrollBottom = this.elements.count * 20;
-				const scrollTopMax = scrollBottom - this.innerHeight;
+				const targetIndex = commandRender.computePageDownTargetIndex(context);
 				this.select(targetIndex);
 				this.anchor = Math.min(targetIndex, this.end);
-				scrollTop = Math.min(scrollTop, scrollTopMax);
 			}
-			this.scroll(0, Math.max(top, scrollTop));
+			this.scroll(0, Math.max(context.scrollTop, nextScrollTop));
 		}
 	},
 

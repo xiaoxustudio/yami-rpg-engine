@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+	computePageDownScrollTop,
+	computePageDownTargetIndex,
+	computePageUpScrollTop,
+	computePageUpTargetIndex,
 	deriveCommandRows,
+	pageScrollLines,
+	ROW_HEIGHT,
 	rowIndents,
 	rowKeyOf,
 	type CommandRenderCommand
@@ -85,5 +91,58 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 	it('空输入与默认参数：不抛错、返回空数组', () => {
 		expect(deriveCommandRows()).toEqual([]);
 		expect(deriveCommandRows([])).toEqual([]);
+	});
+});
+
+/**
+ * M2 切片 2：翻页数学从 `pageUp`/`pageDown` 抽出来的纯函数。
+ * 这几条是**逐字对照原实现**写的（原实现散在 api 里，`content-api.ts` 改调这些函数后行为不许变）。
+ */
+describe('command-render（M2 切片 2：翻页数学）', () => {
+	const context = (over: Partial<Parameters<typeof computePageUpScrollTop>[0]> = {}) => ({
+		scrollTop: 0,
+		viewportHeight: 400,
+		rowCount: 100,
+		anchor: 10,
+		...over
+	});
+
+	it('行高与翻页行数：20px，scrollLines = floor(viewport/20) - 1（下限 0）', () => {
+		expect(ROW_HEIGHT).toBe(20);
+		expect(pageScrollLines(400)).toBe(19);
+		expect(pageScrollLines(39)).toBe(0);
+		expect(pageScrollLines(0)).toBe(0);
+	});
+
+	it('pageUp：scrollTop 减一页且不越过顶部', () => {
+		expect(computePageUpScrollTop(context({ scrollTop: 400 }))).toBe(400 - 19 * 20);
+		expect(computePageUpScrollTop(context({ scrollTop: 100 }))).toBe(0);
+	});
+
+	it('pageUp：目标行 = min(anchor, 底行) - 一页行数', () => {
+		// scrollTop 400 / innerHeight 400 ⇒ bottomIndex = floor(800/20) - 1 = 39；anchor 100 ⇒ min = 39
+		expect(computePageUpTargetIndex(context({ scrollTop: 400, anchor: 100 }))).toBe(39 - 19);
+		// anchor 更小则取 anchor
+		expect(computePageUpTargetIndex(context({ scrollTop: 400, anchor: 5 }))).toBe(5 - 19);
+	});
+
+	it('pageDown：不夹取时只加一页，但仍取 max(scrollTop, next)', () => {
+		expect(computePageDownScrollTop(context({ scrollTop: 200 }), false)).toBe(200 + 19 * 20);
+	});
+
+	it('pageDown：夹取时不超过 rowCount*20 - viewportHeight', () => {
+		const ctx = context({ scrollTop: 0, rowCount: 5, viewportHeight: 400 }); // 内容 100px < 视口
+		expect(computePageDownScrollTop(ctx, true)).toBe(0);
+		const ctx2 = context({ scrollTop: 0, rowCount: 100, viewportHeight: 400 });
+		expect(computePageDownScrollTop(ctx2, true)).toBe(19 * 20);
+	});
+
+	it('pageDown：目标行 = max(anchor, 顶行) + 一页行数', () => {
+		expect(
+			computePageDownTargetIndex(context({ scrollTop: 40, anchor: 1, viewportHeight: 400 }))
+		).toBe(Math.max(1, 2) + 19);
+		expect(
+			computePageDownTargetIndex(context({ scrollTop: 0, anchor: 30, viewportHeight: 400 }))
+		).toBe(30 + 19);
 	});
 });
