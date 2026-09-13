@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { $ } from '@app/utils/dom';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
@@ -71,18 +70,17 @@ export const Window: WindowShape = {
 	cancel: null
 };
 
+// P1b：取消按钮的 click 绑定已下沉到 `WindowFrame.vue`（它只在自己子树里找 `[name="cancel"]`，
+// 点击时关掉本帧）。这里保留空实现仅为兼容既有调用点。
 Window.initialize = function (this: typeof Window) {
-	const buttons = document.getElementsByName('cancel');
-	const length = buttons.length;
-	for (let i = 0; i < length; i++) {
-		buttons[i].addEventListener('click', this.cancel!);
-	}
+	void this;
 };
 
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	const element = document.getElementById(id);
+	// P1b：窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
+	const element = windowShellEls.get(id) as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
 		if (modalActive() && frames.length === 0) {
@@ -289,8 +287,8 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				}
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				const selector = `#${frame.id} > content-frame > button[name=confirm]`;
-				const button = document.querySelector(selector);
+				// P1b：改为在**帧元素内**查找（原先 `document.querySelector('#id > …')` 全文档查）
+				const button = frame?.querySelector('content-frame > button[name=confirm]');
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();
 					if (active !== document.body) {
@@ -304,8 +302,8 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				if (!(event.ctrlKey || event.metaKey)) return;
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				const selector = `#${frame.id} > content-frame > button[name=apply]`;
-				const button = document.querySelector(selector);
+				// P1b：同上，改为帧内查找
+				const button = frame?.querySelector('content-frame > button[name=apply]');
 				if (button instanceof HTMLButtonElement) {
 					const active = document.activeElement;
 					if (active !== document.body) {

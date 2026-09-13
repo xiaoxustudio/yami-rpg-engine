@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
-import { YMWindowFrame } from '@ui-kit';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
 import { Window } from '@app/tools/window-object';
 import { primeWindows } from '@app/tools/window-registry';
 
@@ -46,7 +46,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 	});
 
 	it('单窗口：打开指令窗口 → 点击取消按钮 → 帧栈清空且模态恢复', async () => {
-		const wrapper = mount(YMWindowFrame, {
+		const wrapper = mount(WindowFrame, {
 			props: { id: 'showText' },
 			slots: { default: '<div class="content">X</div>' },
 			attachTo: document.body
@@ -67,7 +67,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 	});
 
 	it('单窗口：打开指令窗口 → 确认（模拟指令 onConfirm → Window.close）→ 模态恢复', async () => {
-		const wrapper = mount(YMWindowFrame, {
+		const wrapper = mount(WindowFrame, {
 			props: { id: 'showText2' },
 			slots: { default: '<div class="content">X</div>' },
 			attachTo: document.body
@@ -87,12 +87,12 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 	});
 
 	it('双窗口：事件窗口 + 指令窗口，关闭指令后事件窗口恢复可点击（focus/blur）', async () => {
-		const eventWrapper = mount(YMWindowFrame, {
+		const eventWrapper = mount(WindowFrame, {
 			props: { id: 'event' },
 			slots: { default: '<div class="content">EVENT</div>' },
 			attachTo: document.body
 		});
-		const cmdWrapper = mount(YMWindowFrame, {
+		const cmdWrapper = mount(WindowFrame, {
 			props: { id: 'showText3' },
 			slots: { default: '<div class="content">CMD</div>' },
 			attachTo: document.body
@@ -126,7 +126,7 @@ describe('指令窗口关闭后模态恢复（事件编辑器回归保护）', (
 	});
 
 	it('重复循环：指令窗口打开/取消 2 次后模态状态保持正确', async () => {
-		const wrapper = mount(YMWindowFrame, {
+		const wrapper = mount(WindowFrame, {
 			props: { id: 'loopCmd' },
 			slots: { default: '<div class="content">X</div>' },
 			attachTo: document.body

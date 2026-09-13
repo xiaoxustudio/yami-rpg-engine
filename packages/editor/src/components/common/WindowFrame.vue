@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMWindowFrame
 		ref="ym"
 		:id="props.id"
@@ -22,6 +22,9 @@ import { Layout } from '@app/engine/layout/layout';
 import { useLocalStore } from '@app/stores/local';
 import { pinia } from '@app/stores/pinia';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
+import { registerElement } from '@app/utils/element-registry';
+import { Window } from '@app/tools/window-object.ts';
+import { windowShellEls } from '@app/tools/window-object.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
@@ -131,6 +134,14 @@ onMounted(() => {
 		el.addEventListener(type, () =>
 			(emit as (evt: 'confirm' | 'apply' | 'cancel') => void)(type)
 		);
+	}
+	// P1b：窗口壳元素登记进 windowShellEls（`Window.open(id)` 据此取帧，原先 document.getElementById）。
+	// 取消按钮的接线也从模块的 `document.getElementsByName('cancel')` 下沉到这里——只查自己的子树。
+	if (el.id !== '') registerElement(windowShellEls, el.id, el);
+	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {
+		button.addEventListener('click', () => {
+			if (el.id !== '') Window.close(el.id);
+		});
 	}
 	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）
 	const onLocalize = (): void => {

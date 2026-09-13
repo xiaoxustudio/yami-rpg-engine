@@ -1,4 +1,4 @@
-﻿import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
@@ -6,7 +6,8 @@ import { getWindowStore, windowStateKeys } from '@app/stores/window';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Variable } from '@app/variable/variable.ts';
-import { Window } from '@app/tools/window-object';
+import { Window, windowShellEls } from '@app/tools/window-object';
+import { registerElement } from '@app/utils/element-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
 const { stackLayoutMock, stackTitleMock } = vi.hoisted(() => ({
@@ -262,6 +263,8 @@ function makeStackFrame(id: string): StackTestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
+	// P1b：`Window.open(id)` 现在从 windowShellEls 取帧（原先 document.getElementById）
+	registerElement(windowShellEls, id, frame);
 	stackFrames.push(frame);
 	return frame;
 }

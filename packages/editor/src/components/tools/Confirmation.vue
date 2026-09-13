@@ -9,14 +9,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { YMConfirmation } from '@ui-kit';
 import { useConfirmationStore } from '@app/stores/confirmation';
 import { measureText } from '@app/utils/dom';
+import { registerElement } from '@app/utils/element-registry';
+import { windowShellEls } from '@app/tools/window-object.ts';
 
 const store = useConfirmationStore();
 
-const ym = ref<{ focusFirstButton(): void } | null>(null);
+const ym = ref<{ focusFirstButton(): void; $el?: HTMLElement } | null>(null);
+
+// P1b：本窗口直接用 ui-kit 的 YMWindowFrame（id="confirmation"），不经过 WindowFrame.vue，
+// 因此要自己登记——`Window.open('confirmation')` 现在从 windowShellEls 取帧。
+onMounted(() => {
+	const root = ym.value?.$el;
+	if (root) registerElement(windowShellEls, 'confirmation', root);
+});
 
 const contentStyle = computed(() => {
 	const measure = measureText(store.message);
