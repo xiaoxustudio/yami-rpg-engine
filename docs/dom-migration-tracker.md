@@ -13,8 +13,8 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
-| editor/components   | 360 | 46 | 9 | 9 | 10 | 3 | 0 | 0 | 0 | 2 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 15 | 8 | 8 | 22 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/components   | 360 | 48 | 9 | 9 | 10 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
+| editor/composables  | 229 | 15 | 6 | 6 | 11 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,20 +48,16 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 81 | 81 | 37 | 22 | 1 | 15 | 0 | 138 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 79 | 79 | 26 | 22 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**81**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**81**
+- 待迁移命中文件：**79**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**79**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**4**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
-  - `packages/editor/src/components/layout/palette-items.ts`
-  - `packages/editor/src/composables/useProjectSettingsWindow.ts`
-  - `packages/editor/src/engine/webgl/texture.ts`
-  - `packages/editor/src/utils/element-registry.ts`
+- 正则命中但无豁免注释：**8**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -71,12 +67,12 @@
 
 | 类别 | 处数 | 文件数 |
 | --- | --- | --- |
-| style.* 赋值 | 312 | 77 |
+| style.* 赋值 | 311 | 77 |
 | .children 遍历 | 229 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 139 | 40 |
 | classList.add/remove/toggle | 133 | 42 |
-| textContent 赋值 | 126 | 43 |
+| textContent 赋值 | 129 | 44 |
 | get/set/removeAttribute | 85 | 35 |
 | scrollTop 写 | 84 | 39 |
 | parentElement | 47 | 46 |
@@ -111,7 +107,6 @@
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 159 | 14 | 是 |
-| packages/editor/src/composables/commands/useScriptCommandSchema.ts | 506 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 405 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
@@ -141,7 +136,6 @@
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
-| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 624 | 7 | 是 |
 | packages/editor/src/local/local-window.ts | 910 | 7 | - |
 | packages/editor/src/tools/color-picker-window.ts | 450 | 7 | 是 |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
@@ -151,6 +145,7 @@
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
 | packages/editor/src/animation/animation-initialize.ts | 504 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
+| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 630 | 6 | - |
 | packages/editor/src/module/eslints.ts | 275 | 6 | 是 |
 | packages/editor/src/services/project/setting-config/renderer.ts | 172 | 6 | 是 |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
@@ -239,6 +234,7 @@
 | packages/editor/src/components/tools/Reference.vue | 87 | 2 | 是 |
 | packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 872 | 2 | 是 |
+| packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 2 | 是 |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
@@ -263,6 +259,8 @@
 | packages/editor/src/commands/accessors/preset-accessor-factory.ts | 52 | 1 | - |
 | packages/editor/src/commands/event-editor-initialize.ts | 509 | 1 | - |
 | packages/editor/src/commands/property-window/property-window-factory.ts | 206 | 1 | - |
+| packages/editor/src/components/commands/CallEvent.vue | 176 | 1 | - |
+| packages/editor/src/components/commands/Script.vue | 80 | 1 | - |
 | packages/editor/src/components/common/CustomBox.vue | 122 | 1 | - |
 | packages/editor/src/components/common/PageManager.vue | 63 | 1 | - |
 | packages/editor/src/components/common/RadioBox.vue | 182 | 1 | - |
@@ -381,7 +379,6 @@
 | packages/editor/src/components/commands/AppendTarget.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/Block.vue | 98 | 0 | - |
 | packages/editor/src/components/commands/Break.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/CallEvent.vue | 171 | 0 | - |
 | packages/editor/src/components/commands/CastSkill.vue | 105 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorAnimation.vue | 59 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorEquipment.vue | 127 | 0 | - |
@@ -454,7 +451,6 @@
 | packages/editor/src/components/commands/RestoreSceneInput.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/Return.vue | 145 | 0 | - |
 | packages/editor/src/components/commands/SaveAudio.vue | 67 | 0 | - |
-| packages/editor/src/components/commands/Script.vue | 69 | 0 | - |
 | packages/editor/src/components/commands/SetActive.vue | 71 | 0 | - |
 | packages/editor/src/components/commands/SetAmbientLight.vue | 103 | 0 | - |
 | packages/editor/src/components/commands/SetAngle.vue | 92 | 0 | - |
@@ -957,7 +953,7 @@
 | packages/editor/src/engine/webgl/vector2.ts | 65 | 0 | - |
 | packages/editor/src/enum/enum-context.ts | 95 | 0 | - |
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
-| packages/editor/src/i18n/convert.ts | 94 | 0 | - |
+| packages/editor/src/i18n/convert.ts | 103 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 100 | 0 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 93 | 0 | - |

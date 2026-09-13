@@ -148,18 +148,20 @@
 - 2026-09-12 **P1b 第 6 刀：5 个窗口 composable 归零（23 处 / 5 文件），待迁移命中 86 → 81、`getElementById` 60 → 37**。① **Team**（4 处：`team-list`/`team`/`team-confirm`）——`Team.vue` 原本连注册表都没有：补 `registryRef` 登记窗口与列表，`team-confirm` 由 WindowFrame 生成（模板与注册表都取不到）→ 删除模块里的 `on(...,'click',confirm)`，改由 SFC 的 `@confirm` 调 legacy 门面。② **PresetElement / PresetObject**（各 4 处）——同样补注册表（框架、`*-uiId`/`*-sceneId`、`*-list`、`*-searcher`），模块读 `composableEls`。③ **TileNode**（4 处）——`autoTile-selectNode` 的 `:ref` 被具名 `frame` 占用 → `onMounted` 里 `registerElement`；画布/屏幕/选框用 `:ref`。④ **PresetGetter 工厂**（7 处）——`domKey` 是**动态键**（`lightGetter`/`objectGetter`），`composableEls.get(domKey)` 与 `get(\`${domKey}-type\`)` 天然支持；两个 getter SFC 各登记 4 个 id。⑤ **断言括号坑（第二次踩到）**：脚本把 `document.getElementById('x')!` 一类改成 `composableEls.get('x') as HTMLElement` 时，若后面直接跟成员访问会产出 `… as HTMLElement.addEventListener(...)`（非法语法）；本轮 2 处（`usePreset{Element,Object}Window` 的 `closed` 监听）被 lint/typecheck 抓到并加括号。⑥ **回归**：新增 `composables/__tests__/window-composables-registry.spec.ts`（5 例：Team 窗口+列表登记且点 `#team-confirm` 真的走到门面、PresetElement/PresetObject 各 4 个 id、TileNode 的框架+画布/屏幕/选框、Getter 工厂两个 domKey 的 4 个动态键、注册表为空时安全）。⑦ `stale-exemptions --apply` 清掉 2 个（豁免注释在第 2 行的形态：脚本只删了行首那种）。**指标**：待迁移命中 **86 → 81**（`editor/composables` 13 → 8）、豁免注释 **86 → 81**、陈旧豁免 **0**、`getElementById` **60 → 37**（composables 45 → 22）。**门禁**：editor **232 文件 1973/1973**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` **0 新增错误**、`oxlint` **0/0**、`docs:check` **OK**、tracker 重跑一致（扫描文件 1134 不变）。
 
 
+- 2026-09-12 **P1b 第 7 刀：两个「特殊」命令 schema 归零（Script 12 处 + CallEvent 3 处），待迁移命中 81 → 79、`getElementById` 37 → 26**。① **Script**——窗口（`script`）、变更标记（`script-mark`）、monaco 宿主（`script-script`）、TS/JS 切换按钮（`script-change`）全部改读 `composableEls`（SFC 补 4 个 `:ref`）。② **CallEvent**——显隐原先按类名 `document.querySelectorAll('.call-event-component')` 反查，改为**从数据面取**（`parameters` / `eventResult` 里的 label+input 就是本模块创建的全部元素）；两条 `document.createElement('div')` + `render()` 造标签的写法换成**模板节点 clone**（`callEvent-label-template`）。③ **离屏容器必须用「模板节点 + cloneNode」**：先试过"模板里放隐藏容器、模块 `render()` 进去"，结果容器被 Vue 的 patch 清空/留下悬空 vnode（`label.firstElementChild` 为空 → `appendChild` 抛 `parameter 1 is not of type 'Node'`）——**Vue 管理的 DOM 不能当外来 vnode 的容器**；改为模板提供节点、模块 `cloneNode(true)` + `textContent`（Script 侧同法）。④ **🔴 顺带修掉一个真实缺陷**：Script 的 TS/JS 切换按钮写的是 `document.getElementById('script-change')?.on?.('click', …)`——`#script-change` 是**裸 `<button>`**，没有元素 API 的 `on` 方法，`?.` 让整条接线**一直是 no-op**（按了没反应）。改走全局 `on(el, 'click', …)`（回退 `addEventListener`）后真的接上；`script-change-wiring.spec.ts` 锁这条链路，并**做过负向验证**（换回旧写法用例立刻失败）。⑤ **回归**：`call-event-labels.spec.ts` 2 例（标签由模板 clone 出来并进入 grid-box；grid-box 里 `call-event-component` 元素数与模块创建数一致 = 旧选择器口径）。**指标**：待迁移命中 **81 → 79**（`editor/composables` 8 → 6）、豁免注释 **81 → 79**、陈旧豁免 **0**、`getElementById` **37 → 26**（composables 22 → 11）；`createElement` 计数 138 → 139（+4 处是本刀留下的**注释**提及、−3 处真实删除——tracker 口径含注释/字符串）。**门禁**：editor **235 文件 1983/1983**（口径：排除同时段并发进行的 i18n 实验 spec）、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` **0 新增错误**、`oxlint` **0/0**、`docs:check` **OK**、tracker 重跑一致。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
-| 待迁移命中文件（oxlint 判定仍在用）  | 81（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–6 刀共 −77） |
-| 带豁免注释文件（`oxlint-disable`）   | 81（C2 执行前 295；第 4–6 刀后由 `stale-exemptions --apply` 清掉 42 个随迁移失效的注释） |
+| 待迁移命中文件（oxlint 判定仍在用）  | 79（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–7 刀共 −79） |
+| 带豁免注释文件（`oxlint-disable`）   | 79（C2 执行前 295；第 4–7 刀后由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
-| `getElementById` 属性访问处数        | 37（composables 22 / components 10 / 其余 5；P1b 六刀 242 → 37，−85%） |
+| `getElementById` 属性访问处数        | 26（composables 11 / components 10 / 其余 5；P1b 七刀 242 → 26，−89%） |
 | `document.querySelector*` 处数       | 22（P1b 第 5 刀 56 → 22；16 个 inspector 页的批量选择器已退役） |
 | `document.querySelector*` 处数       | 56                                  |
-| `document.createElement` 处数        | 138（ui-kit/components 106）        |
+| `document.createElement` 处数        | 139（ui-kit/components 106；含 P1b 第 7 刀的 4 处注释提及） |
 | `appendChild` 调用                   | 122                                 |
 | `addEventListener` 调用              | 568                                 |
 | `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 22（11 个文件；残余 = 动态 id / 外壳元素 / 基础设施 / 白名单，见 P5b 结项；B4 起点 1481，最初 1489） |
@@ -168,9 +170,9 @@
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（25 个组件 api + `attach-api.ts` 自身；**B3 复核：全部是元素优先实现、零死文件** → 目标由「0」改为「不增长」，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 86**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16（inspector 页批量选择器）；
-> ② **豁免注释 86**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除——第 4、5 刀合计清掉 **40** 个）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（86 + 0 = 86）。
+> ① **待迁移命中 79**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2；
+> ② **豁免注释 79**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（79 + 0 = 79）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
 > **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 86、`getElementById` 1164 → 60、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 568；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
 > **口径自检（2026-09-12，正反双向 + 权威来源）**：① **正向**——86 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **86** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中。
