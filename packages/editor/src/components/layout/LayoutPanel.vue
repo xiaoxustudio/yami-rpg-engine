@@ -101,7 +101,8 @@
 					<PaletteNode value="project" source="page">
 					<div class="page-frame" id="project"
 				:ref="registryRef(storesEls, 'project')" value="project">
-						<div class="file-browser" id="project-browser"></div>
+						<div class="file-browser" id="project-browser"
+					:ref="registryRef(storesEls, 'project-browser')"></div>
 					</div>
 					</PaletteNode>
 					<PaletteNode value="scene" source="page">

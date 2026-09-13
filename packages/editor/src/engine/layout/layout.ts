@@ -1,6 +1,8 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { engineEls } from '@app/engine/element-registry';
+import { storesEls } from '@app/stores/element-registry';
+import { renderDetached } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import {
 	on,
@@ -40,7 +42,7 @@ import { Home } from '@app/title/home-page.ts';
 import { Title } from '@app/title/title-bar.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { DynamicShape } from '@app/types/shapes.ts';
-import { h, nextTick, render, type VNode } from 'vue';
+import { h, nextTick, type VNode } from 'vue';
 
 // M5-b（docs/layout-vue-plan.md M5）：双路开关与命令式装载路径已退场——
 // 组树一律由 LayoutTreeView(.vue) 渲染并水合，页/页签一律经整壳 Teleport 落位。
@@ -102,12 +104,10 @@ type LayoutResizeEvent = {
 	infos?: HTMLElement[];
 };
 
+// P1b：这条「离屏创建」此前在本仓有**三份**实现（utils/dom 的 renderDetached、element-utils 的 renderElement、
+// 这里）——统一委托给 utils/dom 的唯一缝隙（它的语义正是"返回已脱离宿主的节点"）。
 function renderElement(vnode: VNode): HTMLElement {
-	const host = document.createElement('div');
-	render(vnode, host);
-	const element = host.firstElementChild as HTMLElement;
-	host.removeChild(element);
-	return element;
+	return renderDetached(vnode);
 }
 
 // M4-2：组根发现。宿主页内可能残留 palette 空壳（#layout-content 盒子，teleport 模式下
@@ -711,7 +711,8 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 			walk(root, 0);
 		}
 	}
-	const browser = document.getElementById('project-browser');
+	// P1b：布局诊断里改读注册表（原先 document.getElementById）
+	const browser = storesEls.get('project-browser') as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();
 		lines.push(`#project-browser: ${describe(browser)}`);

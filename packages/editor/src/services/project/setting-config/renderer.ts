@@ -1,5 +1,4 @@
-/* oxlint-disable eslint/no-restricted-properties */
-import { $ } from '@app/utils/dom';
+import { serviceEls } from '@app/services/element-registry';
 import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element-utils.ts';
 import { setLocalElement } from '@app/localize/dom-localizer';
 import { getYamiI18n } from '@app/i18n';
@@ -77,7 +76,7 @@ export class SettingRenderer {
 		const localize = (sections: SettingSection[], basePath: string[]) => {
 			for (const section of sections) {
 				const path = [...basePath, section.id];
-				const titleEl = $(`#${this.titleId(path)}`);
+				const titleEl = this.byId(this.titleId(path));
 				if (titleEl) {
 					if (section.titleKey) {
 						titleEl.textContent = get(section.titleKey) || section.titleFallback || '';
@@ -88,10 +87,10 @@ export class SettingRenderer {
 				for (const opt of section.options) {
 					if (opt.hidden) continue;
 					const id = this.optionId(path, opt);
-					const el = $(`#${id}`);
+					const el = this.byId(id);
 					if (!el) continue;
 					if (opt.labelKey) {
-						const labelEl = $(`#${opt.labelId ?? id + '-label'}`);
+						const labelEl = this.byId(opt.labelId ?? id + '-label');
 						if (labelEl)
 							labelEl.textContent = get(opt.labelKey) || opt.labelFallback || '';
 					} else if (components[id]) {
@@ -104,10 +103,19 @@ export class SettingRenderer {
 		localize(this.schema, []);
 	}
 
+	/**
+	 * P1b：设置项一律在**设置窗口帧内**查找。
+	 * 原先用 `document.querySelectorAll('#id')`（bindOption/writeValue/loadSelectOptions）
+	 * 与 `$('#id')`（applyL10n）在**全文档**范围反查，现在把查询收敛到 `#setting` 帧的子树里。
+	 */
+	private byId(id: string): HTMLElement | null {
+		if (id === '') return null;
+		const frame = serviceEls.get('setting') as HTMLElement | undefined;
+		return (frame?.querySelector(`#${CSS.escape(id)}`) as HTMLElement | null) ?? null;
+	}
+
 	private bindOption(sectionPath: string[], opt: SettingOption) {
-		const el = document.querySelectorAll(
-			`#${this.optionId(sectionPath, opt)}`
-		)[0] as HTMLElement;
+		const el = this.byId(this.optionId(sectionPath, opt));
 		if (!el) return;
 		on(el, 'input', (e: Event & { value?: unknown }) => {
 			const value = this.readValue(e);
@@ -132,18 +140,14 @@ export class SettingRenderer {
 	}
 
 	private writeValue(sectionPath: string[], opt: SettingOption) {
-		const el = document.querySelectorAll(
-			`#${this.optionId(sectionPath, opt)}`
-		)[0] as HTMLElement;
+		const el = this.byId(this.optionId(sectionPath, opt));
 		if (!el) return;
 		write(el, this.readConfig(sectionPath, opt.key));
 	}
 
 	private async loadSelectOptions(sectionPath: string[], opt: SettingOption) {
 		if (!opt.optionsFn) return;
-		const el = document.querySelectorAll(
-			`#${this.optionId(sectionPath, opt)}`
-		)[0] as HTMLElement;
+		const el = this.byId(this.optionId(sectionPath, opt));
 		if (!el) return;
 		const get = (key: string) => t('confirmation.' + key);
 		const items = await opt.optionsFn({ get, config: this.host.config });
