@@ -1,11 +1,27 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { $, getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
+import { registryElements } from '@app/utils/element-registry';
 import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { UI } from '@app/ui/ui-window.ts';
+
+/** P1b：尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
+const SIZE_INPUT_IDS = [
+	'uiElement-transform-anchorX',
+	'uiElement-transform-anchorY',
+	'uiElement-transform-width',
+	'uiElement-transform-width2',
+	'uiElement-transform-height',
+	'uiElement-transform-height2',
+	'uiElement-transform-rotation',
+	'uiElement-transform-scaleX',
+	'uiElement-transform-scaleY',
+	'uiElement-transform-skewX',
+	'uiElement-transform-skewY',
+	'uiElement-transform-opacity'
+];
 
 {
 	interface UIElementShape {
@@ -91,21 +107,32 @@ import { UI } from '@app/ui/ui-window.ts';
 			on(el, 'click', this.alignmentClick)
 		);
 		// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妲呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楀极瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
-		const otherElements = document.querySelectorAll(`#uiElement-name,
-    #uiElement-pointerEvents, #uiElement-transform-anchorX, #uiElement-transform-anchorY,
-    #uiElement-transform-x, #uiElement-transform-x2, #uiElement-transform-y, #uiElement-transform-y2,
-    #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
-    #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
-    #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`);
-		(otherElements as unknown as HTMLElement[]).forEach((el) =>
-			on(el, 'focus', Inspector.inputFocus)
+		// P1b：控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls（原先 document.querySelectorAll）
+		const otherElements = registryElements(inspectorEls, [
+			'uiElement-name',
+			'uiElement-pointerEvents',
+			'uiElement-transform-anchorX',
+			'uiElement-transform-anchorY',
+			'uiElement-transform-x',
+			'uiElement-transform-x2',
+			'uiElement-transform-y',
+			'uiElement-transform-y2',
+			'uiElement-transform-width',
+			'uiElement-transform-width2',
+			'uiElement-transform-height',
+			'uiElement-transform-height2',
+			'uiElement-transform-rotation',
+			'uiElement-transform-scaleX',
+			'uiElement-transform-scaleY',
+			'uiElement-transform-skewX',
+			'uiElement-transform-skewY',
+			'uiElement-transform-opacity'
+		]);
+		otherElements.forEach((el) => on(el, 'focus', Inspector.inputFocus));
+		otherElements.forEach((el: HTMLElement) => on(el, 'blur', Inspector.inputBlur!(this, UI)));
+		registryElements(inspectorEls, ['uiElement-events', 'uiElement-scripts']).forEach((el) =>
+			on(el, 'change', UI.listChange)
 		);
-		(otherElements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			on(el, 'blur', Inspector.inputBlur!(this, UI))
-		);
-		document
-			.querySelectorAll('#uiElement-events, #uiElement-scripts')
-			.forEach((el) => on(el, 'change', UI.listChange));
 	};
 
 	UIElement.createTransform = function (this: typeof UIElement) {
@@ -132,24 +159,14 @@ import { UI } from '@app/ui/ui-window.ts';
 	UIElement.lockSizeInputs = function (this: typeof UIElement) {
 		if (!this.synchronous) {
 			this.synchronous = true;
-			disable(
-				document.querySelectorAll(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
-      #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
-      #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
-      #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`)
-			);
+			disable(registryElements(inspectorEls, SIZE_INPUT_IDS));
 		}
 	};
 
 	UIElement.unlockSizeInputs = function (this: typeof UIElement) {
 		if (this.synchronous) {
 			this.synchronous = false;
-			enable(
-				document.querySelectorAll(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
-      #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
-      #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
-      #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`)
-			);
+			enable(registryElements(inspectorEls, SIZE_INPUT_IDS));
 		}
 	};
 

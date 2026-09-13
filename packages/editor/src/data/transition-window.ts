@@ -1,6 +1,7 @@
 /* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { dataEls } from '@app/data/element-registry';
+import { registryElements } from '@app/utils/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -278,12 +279,25 @@ Easing.initialize = () => {
 	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
 	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
 	on(dataEls.get('easing-mode') as HTMLElement, 'input', Easing.modeSelect);
-	document
-		.querySelectorAll(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
-    #easing-points-2-x, #easing-points-2-y, #easing-points-3-x, #easing-points-3-y,
-    #easing-points-4-x, #easing-points-4-y, #easing-points-5-x, #easing-points-5-y,
-    #easing-points-6-x, #easing-points-6-y, #easing-points-7-x, #easing-points-7-y`)
-		.forEach((el) => on(el, 'input', Easing.pointInput));
+	// P1b：缓动点控件批量绑 input——改按 id 列表读 dataEls（原先 document.querySelectorAll）
+	registryElements(dataEls, [
+		'easing-points-0-x',
+		'easing-points-0-y',
+		'easing-points-1-x',
+		'easing-points-1-y',
+		'easing-points-2-x',
+		'easing-points-2-y',
+		'easing-points-3-x',
+		'easing-points-3-y',
+		'easing-points-4-x',
+		'easing-points-4-y',
+		'easing-points-5-x',
+		'easing-points-5-y',
+		'easing-points-6-x',
+		'easing-points-6-y',
+		'easing-points-7-x',
+		'easing-points-7-y'
+	]).forEach((el) => on(el, 'input', Easing.pointInput));
 	const easingScale = radioProxyMap['easing-scale'] as RadioProxyElement | undefined;
 	if (easingScale) on(easingScale, 'input', Easing.scaleInput);
 	if (Easing.curve) {

@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -87,8 +87,7 @@ export function useLoadImageCommandSchema() {
 	const { form, load, commit } = useCommandSchema('loadImage', {
 		skipWrite: true,
 		onLoad() {
-			document
-				.getElementById('loadImage-key')
+			composableEls.get('loadImage-key')
 				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 			requestFocus('loadImage-element');
 		}

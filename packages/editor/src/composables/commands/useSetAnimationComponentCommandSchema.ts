@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -120,14 +120,11 @@ export function useSetAnimationComponentCommandSchema() {
 	const onLoad = (params: Record<string, unknown>): void => {
 		const animationId = (params.animationId ?? '') as string;
 		if (animationId !== '') {
-			document
-				.getElementById('setAnimationComponent-motion')
+			composableEls.get('setAnimationComponent-motion')
 				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			document
-				.getElementById('setAnimationComponent-playMotion')
+			composableEls.get('setAnimationComponent-playMotion')
 				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			document
-				.getElementById('setAnimationComponent-spriteId')
+			composableEls.get('setAnimationComponent-spriteId')
 				?.loadItems?.(Animation.getSpriteListItems!(animationId));
 		}
 		load(params);

@@ -34,6 +34,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-0-x"
+				:ref="registryRef(dataEls, 'easing-points-0-x')"
 				v-tip="t('components.easing-points-0-x.tip')"
 					min="0"
 					max="1"
@@ -44,6 +45,7 @@
 				>
 				<NumberBox
 					id="easing-points-0-y"
+				:ref="registryRef(dataEls, 'easing-points-0-y')"
 				v-tip="t('components.easing-points-0-y.tip')"
 					min="-5"
 					max="5"
@@ -57,6 +59,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-1-x"
+				:ref="registryRef(dataEls, 'easing-points-1-x')"
 				v-tip="t('components.easing-points-1-x.tip')"
 					min="0"
 					max="1"
@@ -67,6 +70,7 @@
 				>
 				<NumberBox
 					id="easing-points-1-y"
+				:ref="registryRef(dataEls, 'easing-points-1-y')"
 				v-tip="t('components.easing-points-1-y.tip')"
 					min="-5"
 					max="5"
@@ -80,6 +84,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-2-x"
+				:ref="registryRef(dataEls, 'easing-points-2-x')"
 				v-tip="t('components.easing-points-2-x.tip')"
 					min="0"
 					max="1"
@@ -90,6 +95,7 @@
 				>
 				<NumberBox
 					id="easing-points-2-y"
+				:ref="registryRef(dataEls, 'easing-points-2-y')"
 				v-tip="t('components.easing-points-2-y.tip')"
 					min="-5"
 					max="5"
@@ -103,6 +109,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-3-x"
+				:ref="registryRef(dataEls, 'easing-points-3-x')"
 				v-tip="t('components.easing-points-3-x.tip')"
 					min="0"
 					max="1"
@@ -113,6 +120,7 @@
 				>
 				<NumberBox
 					id="easing-points-3-y"
+				:ref="registryRef(dataEls, 'easing-points-3-y')"
 				v-tip="t('components.easing-points-3-y.tip')"
 					min="-5"
 					max="5"
@@ -126,6 +134,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-4-x"
+				:ref="registryRef(dataEls, 'easing-points-4-x')"
 				v-tip="t('components.easing-points-4-x.tip')"
 					min="0"
 					max="1"
@@ -136,6 +145,7 @@
 				>
 				<NumberBox
 					id="easing-points-4-y"
+				:ref="registryRef(dataEls, 'easing-points-4-y')"
 				v-tip="t('components.easing-points-4-y.tip')"
 					min="-5"
 					max="5"
@@ -149,6 +159,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-5-x"
+				:ref="registryRef(dataEls, 'easing-points-5-x')"
 				v-tip="t('components.easing-points-5-x.tip')"
 					min="0"
 					max="1"
@@ -159,6 +170,7 @@
 				>
 				<NumberBox
 					id="easing-points-5-y"
+				:ref="registryRef(dataEls, 'easing-points-5-y')"
 				v-tip="t('components.easing-points-5-y.tip')"
 					min="-5"
 					max="5"
@@ -172,6 +184,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-6-x"
+				:ref="registryRef(dataEls, 'easing-points-6-x')"
 				v-tip="t('components.easing-points-6-x.tip')"
 					min="0"
 					max="1"
@@ -182,6 +195,7 @@
 				>
 				<NumberBox
 					id="easing-points-6-y"
+				:ref="registryRef(dataEls, 'easing-points-6-y')"
 				v-tip="t('components.easing-points-6-y.tip')"
 					min="-5"
 					max="5"
@@ -195,6 +209,7 @@
 				</div>
 				<NumberBox
 					id="easing-points-7-x"
+				:ref="registryRef(dataEls, 'easing-points-7-x')"
 				v-tip="t('components.easing-points-7-x.tip')"
 					min="0"
 					max="1"
@@ -205,6 +220,7 @@
 				>
 				<NumberBox
 					id="easing-points-7-y"
+				:ref="registryRef(dataEls, 'easing-points-7-y')"
 				v-tip="t('components.easing-points-7-y.tip')"
 					min="-5"
 					max="5"

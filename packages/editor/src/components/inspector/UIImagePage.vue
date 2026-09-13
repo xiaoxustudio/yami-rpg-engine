@@ -165,6 +165,7 @@
 			<div id="uiElement-transform-width-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-width"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-width')"
 				v-tip="t('components.uiElement-transform-width.tip')"
 					v-model="form.width"
 					min="-10000"
@@ -175,6 +176,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-width2"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-width2')"
 				v-tip="t('components.uiElement-transform-width2.tip')"
 					v-model="form.width2"
 					min="-100"
@@ -191,6 +193,7 @@
 			<div id="uiElement-transform-height-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-height"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-height')"
 				v-tip="t('components.uiElement-transform-height.tip')"
 					v-model="form.height"
 					min="-10000"
@@ -201,6 +204,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-height2"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-height2')"
 				v-tip="t('components.uiElement-transform-height2.tip')"
 					v-model="form.height2"
 					min="-100"
@@ -220,6 +224,7 @@
 			>
 				<NumberBox
 					id="uiElement-transform-rotation"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-rotation')"
 				v-tip="t('components.uiElement-transform-rotation.tip')"
 					v-model="form.rotation"
 					min="-36000"
@@ -235,6 +240,7 @@
 			<div id="uiElement-transform-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-scaleX"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-scaleX')"
 				v-tip="t('components.uiElement-transform-scaleX.tip')"
 					v-model="form.scaleX"
 					min="-100"
@@ -245,6 +251,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-scaleY"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-scaleY')"
 				v-tip="t('components.uiElement-transform-scaleY.tip')"
 					v-model="form.scaleY"
 					min="-100"
@@ -260,6 +267,7 @@
 			<div id="uiElement-transform-skew-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-skewX"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-skewX')"
 				v-tip="t('components.uiElement-transform-skewX.tip')"
 					v-model="form.skewX"
 					min="-100"
@@ -270,6 +278,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-skewY"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-skewY')"
 				v-tip="t('components.uiElement-transform-skewY.tip')"
 					v-model="form.skewY"
 					min="-100"
@@ -285,6 +294,7 @@
 			<div id="uiElement-transform-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-opacity"
+				:ref="registryRef(inspectorEls, 'uiElement-transform-opacity')"
 				v-tip="t('components.uiElement-transform-opacity.tip')"
 					v-model="form.opacity"
 					min="0"

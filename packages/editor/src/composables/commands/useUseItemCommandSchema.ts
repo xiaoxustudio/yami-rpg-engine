@@ -1,5 +1,5 @@
-﻿/* oxlint-disable eslint/no-restricted-properties */
-import { Command } from '@app/commands/command-object.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -60,8 +60,7 @@ export function useUseItemCommandSchema() {
 	const { form, load, commit } = useCommandSchema('useItem', {
 		skipWrite: true,
 		onLoad() {
-			document
-				.getElementById('useItem-key')
+			composableEls.get('useItem-key')
 				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 			requestFocus('useItem-actor');
 		}
