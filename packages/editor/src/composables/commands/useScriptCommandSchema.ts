@@ -1,5 +1,5 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
@@ -9,7 +9,7 @@ import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/utils/monaco';
-import { h, reactive, render } from 'vue';
+import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
 
@@ -33,10 +33,11 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const holder = document.createElement('div');
-		holder.style.display = 'none';
-		render(h('div', { class: 'text' }, code), holder);
-		const text = holder.firstElementChild as HTMLElement;
+		// P1b：文本节点由 Script.vue 的模板节点 clone 而来（原先 document.createElement('div') + render）
+		const text = (
+			composableEls.get('script-text-template') as HTMLElement
+		).cloneNode(true) as HTMLElement;
+		text.textContent = code;
 		const options = this.colorOptions;
 		options.theme = Title.theme;
 		await this.createTheme!(Title.theme);
@@ -256,18 +257,18 @@ const setChangeState = (value: boolean): void => {
 	if (changed !== value) {
 		changed = value;
 		if (value) {
-			show(document.getElementById('script-mark'));
+			show(composableEls.get('script-mark'));
 		} else {
-			hide(document.getElementById('script-mark'));
+			hide(composableEls.get('script-mark'));
 		}
 	}
 };
 
-const isMaximized = (): boolean => hasClass(document.getElementById('script'), 'maximized');
+const isMaximized = (): boolean => hasClass(composableEls.get('script'), 'maximized');
 
 const resize = (): void => {
 	if (!editor) return;
-	const content = document.getElementById('script-script')!;
+	const content = composableEls.get('script-script') as HTMLElement;
 	const parent = content.parentElement!;
 	if (!isMaximized()) {
 		content.style.width = '';
@@ -292,7 +293,7 @@ const createEditor = async (): Promise<void> => {
 	const monaco = await getMonaco();
 	const { theme } = Title;
 	await Command.cases.script.createTheme(theme);
-	editor = monaco.editor.create(document.getElementById('script-script')!, {
+	editor = monaco.editor.create(composableEls.get('script-script') as HTMLElement, {
 		language: 'javascript',
 		theme: theme ?? '',
 		tabSize: 2,
@@ -327,11 +328,11 @@ const createEditor = async (): Promise<void> => {
 	} as unknown as Parameters<typeof monaco.editor.create>[1]);
 	model = editor!.getModel() as unknown as ScriptModel;
 
-	document.getElementById('script-change')?.on?.('click', async () => {
+	on(composableEls.get('script-change'), 'click', async () => {
 		const currentLanguage = editor!.getModel()!.getLanguageId();
 		let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
 		const get = (key: string) => t('confirmation.' + key);
-		const scriptChange = document.getElementById('script-change');
+		const scriptChange = composableEls.get('script-change');
 		if (scriptChange) {
 			scriptChange.name =
 				currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
@@ -450,7 +451,7 @@ const save = async (): Promise<void> => {
 const initialize = (): void => {
 	if (bound) return;
 	bound = true;
-	on(document.getElementById('script'), 'close', (event: Event) => {
+	on(composableEls.get('script'), 'close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
 			const get = (key: string) => t('confirmation.' + key);
@@ -477,15 +478,15 @@ const initialize = (): void => {
 		}
 	});
 
-	on(document.getElementById('script'), 'resize', () => {
+	on(composableEls.get('script'), 'resize', () => {
 		resize();
 	});
 
-	on(document.getElementById('script'), 'closed', () => {
+	on(composableEls.get('script'), 'closed', () => {
 		model?.setValue('');
 	});
 
-	on(document.getElementById('script'), 'keydown', (event: KeyboardEvent) => {
+	on(composableEls.get('script'), 'keydown', (event: KeyboardEvent) => {
 		if (hasClass(event.target, 'inputarea')) {
 			switch (event.code) {
 				case 'Enter':

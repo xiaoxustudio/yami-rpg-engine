@@ -57,6 +57,11 @@
 				v-tip="t('components.callEvent-eventType.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-eventType')" v-focus v-model="form.eventType" />
 		</div>
+		<!-- P1b：参数标签的「模板节点」（原先是 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
+		<div class="hidden">
+			<div class="text call-event-component" id="callEvent-label-template"
+				:ref="registryRef(fieldEls, 'callEvent-label-template')"></div>
+		</div>
 	</WindowFrame>
 </template>
 

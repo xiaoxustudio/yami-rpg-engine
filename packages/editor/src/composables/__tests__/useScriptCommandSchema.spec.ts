@@ -6,6 +6,7 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
+import { composableEls } from '@app/composables/element-registry';
 import { loadDtsFolder } from '@app/module/global';
 
 const { modelMock, monacoMock } = vi.hoisted(() => {
@@ -176,6 +177,26 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 		await flush();
 		expect(Window.confirm).toHaveBeenCalled();
 		expect(saved).not.toHaveBeenCalled();
+		wrapper.unmount();
+	});
+
+	it('P1b：窗口事件与 monaco 宿主都从注册表取（`script` / `script-script` 已登记）', async () => {
+		const wrapper = mount(ScriptWindow, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+
+		expect(composableEls.get('script')?.id).toBe('script');
+		expect(composableEls.get('script-script')?.id).toBe('script-script');
+		expect(composableEls.get('script-mark')?.id).toBe('script-mark');
+		expect(composableEls.get('script-text-template')?.id).toBe('script-text-template');
+
+		CommandSchema.insert(target, 'script');
+		await flush();
+		// monaco 宿主取自注册表（传进去的就是模板里的 #script-script）
+		const createCalls = vi.mocked(monacoMock.editor.create).mock.calls as unknown as Array<
+			[unknown, unknown]
+		>;
+		expect(createCalls[0][0]).toBe(composableEls.get('script-script'));
+
 		wrapper.unmount();
 	});
 });

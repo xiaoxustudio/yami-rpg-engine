@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { composableEls } from '@app/composables/element-registry';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
@@ -20,7 +19,6 @@ import { Selection } from '@app/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { h, render } from 'vue';
 
 interface CallEventArg {
 	type: string;
@@ -316,9 +314,11 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		const label = document.createElement('div');
-		render(h('div', { class: 'text call-event-component' }, name), label);
-		const labelEl = label.firstElementChild as HTMLElement;
+		// P1b：标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
+		const labelEl = (
+			composableEls.get('callEvent-label-template') as HTMLElement
+		).cloneNode(true) as HTMLElement;
+		labelEl.textContent = name;
 		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
 			CallEventInputApi;
 		switch (type) {
@@ -433,11 +433,12 @@ export function useCallEventCommandSchema() {
 				break;
 		}
 		write(input, { type: 'local', key: '' });
-		const label = document.createElement('div');
 		const text = t('command.callEvent.return');
 		const tip = t('command.callEvent.return.tip');
-		render(h('div', { class: 'text call-event-component' }, text), label);
-		const labelEl = label.firstElementChild as HTMLElement;
+		const labelEl = (
+			composableEls.get('callEvent-label-template') as HTMLElement
+		).cloneNode(true) as HTMLElement;
+		labelEl.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
 		addClass(input, 'call-event-component');
 		const gridBox = getGridBox();
@@ -503,7 +504,12 @@ export function useCallEventCommandSchema() {
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
 		}
-		for (const element of document.querySelectorAll('.call-event-component')) {
+		// P1b：原先按类名 `document.querySelectorAll('.call-event-component')` 反查——这些元素
+		// 全部由本模块创建并登记在 `parameters` / `eventResult` 里，直接从数据面取即可
+		for (const element of [
+			...parameters.flatMap(({ label, input }) => [label, input]),
+			...(eventResult ? [eventResult.label, eventResult.input] : [])
+		]) {
 			if (type === 'global') show(element);
 			else hide(element);
 		}
