@@ -38,6 +38,8 @@ const WHITELIST = [
 	'packages/editor/src/main.ts',
 	// 唯一 DOM 创建/查询缝隙：$() 与 renderDetached / createDetachedElement 的实现处
 	'packages/editor/src/utils/dom.ts',
+	// ui-kit 侧的同类缝隙：离屏建元素收在一处（B1 收口用，组件内不再直接 document.createElement）
+	'packages/ui-kit/src/utils/detached.ts',
 	// index.html 外壳元素（#cursor-region），非 SFC 渲染
 	'packages/editor/src/composables/usePointerObjectWindow.ts',
 	// 元素优先的组件 API 层（P2b 重定义：架构性设计豁免，不以文件数归零为准）

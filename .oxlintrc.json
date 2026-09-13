@@ -196,6 +196,7 @@
 				"packages/editor/src/data/transition-window.ts",
 				"packages/editor/src/main.ts",
 				"packages/editor/src/utils/dom.ts",
+				"packages/ui-kit/src/utils/detached.ts",
 				"packages/editor/src/composables/usePointerObjectWindow.ts",
 				"packages/ui-kit/src/components/**",
 				"packages/ui-kit/src/utils/radio-proxy.ts",

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
+import { h, ref, onMounted, onBeforeUnmount } from 'vue';
 import {
 	addClass,
 	hasClass,
@@ -19,6 +19,7 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
 	computeViewMetrics,
@@ -29,13 +30,8 @@ import {
 
 const core = createFileBodyCore();
 
-const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	const host = document.createElement('div');
-	render(vnode, host);
-	const element = host.firstElementChild as HTMLElement;
-	host.removeChild(element);
-	return element;
-};
+// B1 收口：离屏建元素统一走 ui-kit 的 detached 接缝（本文件不再直接调用受限的 document.*）
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
 
 interface FileBodyContext {
 	element?: FileBodyItemApi;
@@ -663,8 +659,7 @@ function createFolderElement(file: FileBodyFile, rowKey?: string): FileBodyItemA
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('div') as unknown as FileBodyItemApi;
-		addClass(element, 'file-body-item');
+		element = renderDetachedDiv('file-body-item') as unknown as FileBodyItemApi;
 		element.file = file;
 		element.context = context;
 		context.element = element;
@@ -698,9 +693,7 @@ function createFileElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('div') as unknown as FileBodyItemApi;
-		addClass(element, 'file-body-item');
-		addClass(element, 'file-item');
+		element = renderDetachedDiv(['file-body-item', 'file-item']) as unknown as FileBodyItemApi;
 		element.file = file;
 		element.context = context;
 		context.element = element;
