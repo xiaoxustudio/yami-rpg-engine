@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref , onBeforeUnmount } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef, registerElement, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -204,6 +204,8 @@ const synchronize = (
 	);
 };
 
+let datachangeHandler: EventListener | null = null;
+
 onMounted(() => {
 	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'sceneActor-type', elType.value);
@@ -238,7 +240,9 @@ onMounted(() => {
 	synchronize(elAngleSlider.value, elAngle.value);
 	synchronize(elScaleSlider.value, elScale.value);
 
-	window.addEventListener('datachange', editor.datachange as unknown as EventListener);
+	// E1：存变量再 add/remove（原先只 add）
+	datachangeHandler = editor.datachange as unknown as EventListener;
+	window.addEventListener('datachange', datachangeHandler);
 	const elements = registryElements(inspectorEls, [
 		'sceneActor-name',
 		'sceneActor-type',
@@ -256,6 +260,9 @@ onMounted(() => {
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
+});
+onBeforeUnmount(() => {
+	if (datachangeHandler) window.removeEventListener('datachange', datachangeHandler);
 });
 </script>
 

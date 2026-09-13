@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref , onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
@@ -123,6 +123,8 @@ const elCurrentTime = ref<HTMLElement | null>(null);
 const elPointerTime = ref<HTMLElement | null>(null);
 const elFrequencyDetail = ref<InstanceType<typeof DetailBox> | null>(null);
 const elCanvas = ref<HTMLCanvasElement | null>(null);
+
+let themechangeHandler: ((event: Event) => void) | null = null;
 
 onMounted(() => {
 	const fileAudio = Inspector.fileAudio;
@@ -151,7 +153,9 @@ onMounted(() => {
 			fileAudio.intensities.index = 0;
 		}
 
-		window.addEventListener('themechange', fileAudio.themechange);
+		// E1：监听器存变量再 add/remove，保证卸载时能摘掉（原先只 add）
+		themechangeHandler = fileAudio.themechange;
+		window.addEventListener('themechange', themechangeHandler);
 		const el = inspectorEls.get('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
 		elFrequencyDetail.value?.on('toggle', fileAudio.windowResize);
@@ -165,6 +169,9 @@ onMounted(() => {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
+});
+onBeforeUnmount(() => {
+	if (themechangeHandler) window.removeEventListener('themechange', themechangeHandler);
 });
 </script>
 

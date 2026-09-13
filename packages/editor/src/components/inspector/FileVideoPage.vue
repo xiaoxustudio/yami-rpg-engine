@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref , onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
@@ -43,17 +43,24 @@ const { form, sync, windowError } = useFileVideoPage();
 
 const elVideo = ref<HTMLVideoElement | null>(null);
 
+let windowErrorHandler: ((event: Event) => void) | null = null;
+
 onMounted(() => {
 	const fileVideo = Inspector.fileVideo;
 	if (fileVideo) {
 		fileVideo.video = elVideo.value;
 	}
-	window.addEventListener('error', windowError);
+	// E1：存变量再 add/remove（原先只 add）
+	windowErrorHandler = windowError;
+	window.addEventListener('error', windowErrorHandler);
 	const el = inspectorEls.get('fileVideo');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
+});
+onBeforeUnmount(() => {
+	if (windowErrorHandler) window.removeEventListener('error', windowErrorHandler);
 });
 </script>
 

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileScriptPage } from '@app/composables/useFileScriptPage';
@@ -38,6 +38,7 @@ const { form, sync } = useFileScriptPage();
 
 const overviewEl = ref<HTMLElement | null>(null);
 const overviewMeta = ref<PluginMetaShape | null>(null);
+let localizeHandler: ((event: Event) => void) | null = null;
 
 const syncOverview = (): void => {
 	overviewMeta.value = Inspector.fileScript?.meta ?? null;
@@ -50,13 +51,18 @@ onMounted(() => {
 	}
 	overviewEl.value?.addEventListener('update', syncOverview);
 	if (fileScript) {
-		window.addEventListener('localize', fileScript.windowLocalize);
+		// E1：监听器存变量再 add/remove，保证卸载时能摘掉（原先只 add）
+		localizeHandler = fileScript.windowLocalize;
+		window.addEventListener('localize', localizeHandler);
 	}
 	const el = inspectorEls.get('fileScript');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
+});
+onBeforeUnmount(() => {
+	if (localizeHandler) window.removeEventListener('localize', localizeHandler);
 });
 </script>
 
