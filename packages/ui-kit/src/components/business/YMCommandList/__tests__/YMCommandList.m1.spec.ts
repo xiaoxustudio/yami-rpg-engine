@@ -120,8 +120,12 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		expect(last.classList.contains('command-item')).toBe(true);
 	});
 
-	// TODO(M1)：嵌套渲染（parse 返回值里的**嵌套数组** = 子命令列表）还没写出可用用例——
-	// 需要先弄清 `createCommandBuffer` 的 buffer 协议（哪些位置放节点、哪些位置放子命令数组）。
+	// TODO(M1)：嵌套渲染还没写出可用用例。已排除四种"parse 返回值里放子命令"的写法（实测都只渲染出父命令、
+	// `elements.count = 2` = 父行 + 空白行，dataIndent 全 0）：
+	//   ①`[节点, 节点, [子命令]]` ②`[节点, 节点, { commands: [子命令] }]` ③`[节点, 节点, 子命令]`
+	//   ④`[节点, 节点, [[子命令]]]`
+	// ⇒ 嵌套/缩进应是由**调用方的数组结构**决定的（`createItems(commands, indent, parent)` 的 indent 参数，
+	// 或写库前就把树拍平成带层的列表），不是 `parse` 的返回约定。下批先找编辑器侧真正喂给 `write()` 的数组形态。
 	// 缩进的**计算**已由上面 `computeTextIndent` 用例锁定。
 
 	it('selectAll：focusing 状态下选中全部行', () => {

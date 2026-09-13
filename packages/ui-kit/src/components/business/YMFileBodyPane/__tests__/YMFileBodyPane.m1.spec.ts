@@ -57,6 +57,8 @@ interface BodyContent extends HTMLElement {
 	itemSize?: number;
 	itemWidth?: number;
 	visibleLines?: number;
+	/** 可见窗口 [start, end]（由内部 `computeStartAndEnd` 写入） */
+	range?: Uint32Array;
 }
 
 interface BodyElement extends HTMLElement {
@@ -70,6 +72,7 @@ interface BodyElement extends HTMLElement {
 	updateViewMode: () => void;
 	computeGridProperties: () => void;
 	updateContentSize: () => void;
+	updateContentOffset: () => void;
 	resize: () => void;
 	selections?: unknown[];
 }
@@ -194,5 +197,45 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 		const { el } = mountBody();
 		el.updateFiles();
 		expect(rows(el).length).toBe(0);
+	});
+
+	it('窗口迁移：列表视图滚动后可见区（content.range）随之右移', () => {
+		const { el, content } = mountBody();
+		renderItems(el, items(80), 0); // viewIndex=0 ⇒ 列表视图按 scrollLeft 计算窗口
+		const before = Array.from(content.range ?? []);
+		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
+		el.scrollTop = 0;
+		el.resize();
+		const after = Array.from(content.range ?? []);
+		expect(after[0]).toBeGreaterThan(before[0]);
+	});
+
+	it('窗口迁移：滚动后渲染的行切到后面的文件（首行不再是 ev0）', () => {
+		const { el } = mountBody();
+		renderItems(el, items(80), 0);
+		expect(el.textContent).toContain('ev0');
+		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
+		el.resize();
+		expect(el.textContent).not.toContain('ev0 ');
+		expect(rows(el).length).toBeGreaterThan(0);
+	});
+
+	it('updateContentOffset：内容偏移被写到内容元素样式上', () => {
+		const { el, content } = mountBody();
+		renderItems(el, items(40), 0);
+		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
+		el.updateContentOffset();
+		expect(typeof content.style.transform === 'string').toBe(true);
+	});
+
+	it('网格视图：窗口迁移按 scrollTop 计算（与列表视图的轴不同）', () => {
+		const { el, content } = mountBody();
+		renderItems(el, items(80), 2); // viewIndex=2 ⇒ 网格视图
+		const before = Array.from(content.range ?? []);
+		Object.defineProperty(el, 'scrollTop', { value: 400, configurable: true, writable: true });
+		Object.defineProperty(el, 'scrollLeft', { value: 0, configurable: true, writable: true });
+		el.resize();
+		const after = Array.from(content.range ?? []);
+		expect(after[0]).toBeGreaterThanOrEqual(before[0]);
 	});
 });
