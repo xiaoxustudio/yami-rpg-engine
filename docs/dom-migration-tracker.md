@@ -13,7 +13,7 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
-| editor/components   | 360 | 43 | 3 | 3 | 1 | 3 | 0 | 1 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 42 | 17 | 0 | 0 | 0 |
+| editor/components   | 360 | 43 | 0 | 0 | 1 | 3 | 0 | 1 | 0 | 4 | 2 | 0 | 0 | 11 | 0 | 42 | 17 | 0 | 0 | 0 |
 | editor/composables  | 229 | 11 | 1 | 1 | 5 | 1 | 0 | 0 | 0 | 3 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
@@ -28,7 +28,7 @@
 | editor/log          | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/main.ts      | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
-| editor/module       | 15 | 4 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
+| editor/module       | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/palette      | 13 | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
 | editor/particle     | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |
 | editor/plugin       | 10 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 0 | 0 | 0 |
@@ -41,23 +41,23 @@
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 32 | 10 | 3 | 3 | 0 | 4 | 0 | 0 | 0 | 4 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/utils        | 32 | 10 | 1 | 1 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
 | ui-kit/components   | 96 | 70 | 34 | 34 | 0 | 0 | 0 | 7 | 0 | 106 | 80 | 13 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 60 | 60 | 10 | 18 | 1 | 15 | 0 | 139 | 122 | 18 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 54 | 54 | 10 | 18 | 1 | 15 | 0 | 138 | 122 | 17 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**60**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**60**
+- 待迁移命中文件：**54**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**54**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**17**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**22**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -67,7 +67,7 @@
 
 | 类别 | 处数 | 文件数 |
 | --- | --- | --- |
-| style.* 赋值 | 311 | 77 |
+| style.* 赋值 | 310 | 77 |
 | .children 遍历 | 229 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 139 | 40 |
@@ -99,7 +99,7 @@
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2610 | 37 | 是 |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | 是 |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1436 | 29 | 是 |
-| packages/editor/src/utils/element-utils.ts | 620 | 28 | 是 |
+| packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | 是 |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 525 | 19 | 是 |
@@ -111,7 +111,7 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | 是 |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 383 | 12 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 211 | 12 | 是 |
-| packages/editor/src/utils/dom.ts | 216 | 11 | 是 |
+| packages/editor/src/utils/dom.ts | 214 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -199,13 +199,13 @@
 | packages/editor/src/commands/event-editor-events.ts | 304 | 3 | - |
 | packages/editor/src/components/common/CheckBox.vue | 216 | 3 | - |
 | packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 169 | 3 | - |
-| packages/editor/src/components/toast.ts | 42 | 3 | 是 |
+| packages/editor/src/components/toast.ts | 44 | 3 | - |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 92 | 3 | 是 |
 | packages/editor/src/main.ts | 29 | 3 | 是 |
-| packages/editor/src/module/editdata.ts | 382 | 3 | 是 |
+| packages/editor/src/module/editdata.ts | 380 | 3 | - |
 | packages/editor/src/module/eslints.ts | 269 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
@@ -226,7 +226,6 @@
 | packages/editor/src/components/inspector/SceneActorPage.vue | 275 | 2 | - |
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 576 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
-| packages/editor/src/components/tools/Reference.vue | 87 | 2 | 是 |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
 | packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | 是 |
@@ -270,13 +269,14 @@
 | packages/editor/src/components/layout/HomeRecentList.vue | 76 | 1 | - |
 | packages/editor/src/components/layout/LayoutPalettePage.vue | 47 | 1 | - |
 | packages/editor/src/components/layout/palette-items.ts | 35 | 1 | - |
-| packages/editor/src/components/menu-list.ts | 68 | 1 | 是 |
+| packages/editor/src/components/menu-list.ts | 69 | 1 | - |
 | packages/editor/src/components/tools/AutoTile.vue | 313 | 1 | - |
 | packages/editor/src/components/tools/Command.vue | 252 | 1 | - |
 | packages/editor/src/components/tools/Easing.vue | 448 | 1 | - |
 | packages/editor/src/components/tools/Event.vue | 182 | 1 | - |
 | packages/editor/src/components/tools/Localization.vue | 169 | 1 | - |
 | packages/editor/src/components/tools/Plugin.vue | 183 | 1 | - |
+| packages/editor/src/components/tools/Reference.vue | 84 | 1 | - |
 | packages/editor/src/components/tools/Team.vue | 128 | 1 | - |
 | packages/editor/src/components/tools/UpdateLog.vue | 179 | 1 | - |
 | packages/editor/src/components/tools/Variable.vue | 374 | 1 | - |
@@ -305,7 +305,7 @@
 | packages/editor/src/utils/element-registry.ts | 60 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
-| packages/editor/src/utils/timer.ts | 244 | 1 | 是 |
+| packages/editor/src/utils/timer.ts | 246 | 1 | - |
 | packages/ui-kit/src/components/basic/YMFormButtons/YMFormButtons.vue | 71 | 1 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/YMNumberBox.vue | 233 | 1 | 是 |
 | packages/ui-kit/src/components/basic/YMSliderBox/YMSliderBox.vue | 196 | 1 | - |
