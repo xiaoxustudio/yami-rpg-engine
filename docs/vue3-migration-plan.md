@@ -174,11 +174,13 @@
 
 - 2026-09-12 **R2b 迁移⑥：`content` 类键改由模板承担，扫描面 307 → 284（−23 键）**。① 反查「字段集合 == {`content`}」且未被模板承担的键（**23 个**），把承载元素自身文本换成 `{{ t('components.<键>.content') }}`（行内/分行两种形态都处理），落在 **4 个 SFC**（`LayoutPanel.vue` 最多，另 `HomeRecentList.vue`、`AnimSpriteFramePage.vue`、`AppShell.vue`）。② **踩坑**：`HomeRecentList.vue` 此前没有 `useI18n()`，插入 `t()` 后 `vue-tsc` 立刻 `TS2339`（模板里没有 `t`）→ 补 `import { useI18n }` + `const { t } = useI18n();`。**教训：凡往模板写 `t()` 的脚本，必须同时保证 `t` 在作用域内**（迁移⑤的脚本已经这么做，本轮漏了，靠 `typecheck:vue` 兜住——再次说明这一项必须每刀跑）。③ 生成物 `template-localized.ts` 重跑（**1845** 键），防漂移用例通过。**指标**：扫描面 **307 → 284**（−87%，起点 2130）。**剩余构成**：`options` **209**（最大头，选项名由本地化器在语言切换时写入 `loadItems`/`setItemNames`，改模板需逐类设计映射与重挂钩子）、`label` 25（多为 `{label, tip}` 组合键）、`placeholder` 11、`[name]` 选择器键 18（需 `YMFormButtons` 自注册）、`title` 8、无模板承载 17。**门禁**：`pnpm lint` 0/0、`vue-tsc` 0 新增、`docs:check` OK。
 
+- 2026-09-12 **R2b 迁移⑦：`options` 类键改为响应式 `t()`，扫描面 284 → 196（−88 键，−91% 起点 2130）**。① **问题定性**：`options` 一直是最大的残留（209+ 键），因为选项名不在模板里，而是**本地化器**在语言切换时按语言文件写进控件（`setItemNames`）——"搬进模板"不成立，模板不持有那份数据。② **解法（新承载路径）**：新增组合式函数 `composables/useLocalizedOptions.ts`——在 `watchEffect` 里用 `t('components.<键>.options.<值>.name'/'.tip')` 生成 `{name, tip, value}` 并回调 `apply`，**语言切换自动重建**（`t` 响应式），彻底不依赖本地化器。③ **批量落地**：88 个站点 / 88 个键 / 52 个 SFC 的 `loadItems?.([{ name: 'Yes', value: true }, …])` 换成一行 `useLocalizedOptions('<键>', [true, false], (items) => <取控件>?.loadItems?.(items))`；脚本只动**能完整覆盖语言文件 option 键**的站点（值集合与 options 键一一对应、name/value 数量一致），61 处（名字来自变量/表达式等）跳过交人工。④ **判据两处同步**：`scripts/i18n-skip-list.mjs` 与防漂移用例 `template-localized.spec.ts` 各自维护一份判定——**本轮先漏改 spec，被全量测试抓出**（`expected [ …1932 ] to deeply equal [ …1844 ]`），已补；这也说明"生成器改了、spec 没改"是本仓的固定风险点。⑤ **扫描文件数 1134 → 1135**（新增 `useLocalizedOptions.ts`），tracker 与文档口径同步。**指标**：扫描面 **284 → 196**、模板承担键 **1845 → 1933**。**门禁**：editor **235 文件 1983/1983**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
+| 扫描文件总数                         | 1135（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
 | 待迁移命中文件（oxlint 判定仍在用）  | **0**（初始 299；P1b 十七刀 −112 → 余 46 → C1 白名单归零：设计豁免 45 + 临时豁免 1） |
 | 带豁免注释文件（`oxlint-disable`）   | **0**（C2 执行前 295；C1 后白名单由 `overrides` 承担，**豁免机制退役**） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |

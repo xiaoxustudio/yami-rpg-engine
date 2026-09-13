@@ -14,7 +14,7 @@
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
 | editor/components   | 360 | 43 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 1 | 0 | 4 | 2 | 0 | 0 | 11 | 0 | 42 | 17 | 0 | 0 | 0 |
-| editor/composables  | 229 | 11 | 0 | 1 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 3 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
+| editor/composables  | 230 | 11 | 0 | 1 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 3 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -48,11 +48,11 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
+| 合计                  | 1135 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 132 | 122 | 13 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1135**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -124,7 +124,7 @@
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 187 | 10 | - |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
-| packages/editor/src/components/layout/LayoutPanel.vue | 2009 | 9 | - |
+| packages/editor/src/components/layout/LayoutPanel.vue | 2090 | 9 | - |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 203 | 9 | - |
@@ -269,7 +269,7 @@
 | packages/editor/src/components/inspector/SceneLightPage.vue | 584 | 1 | - |
 | packages/editor/src/components/inspector/SceneParticlePage.vue | 343 | 1 | - |
 | packages/editor/src/components/inspector/SceneRegionPage.vue | 176 | 1 | - |
-| packages/editor/src/components/layout/HomeRecentList.vue | 76 | 1 | - |
+| packages/editor/src/components/layout/HomeRecentList.vue | 80 | 1 | - |
 | packages/editor/src/components/layout/LayoutPalettePage.vue | 47 | 1 | - |
 | packages/editor/src/components/layout/palette-items.ts | 35 | 1 | - |
 | packages/editor/src/components/menu-list.ts | 69 | 1 | - |
@@ -329,7 +329,7 @@
 | packages/editor/src/animation/element-registry.ts | 9 | 0 | - |
 | packages/editor/src/animation/register.ts | 8 | 0 | - |
 | packages/editor/src/App.vue | 15 | 0 | - |
-| packages/editor/src/AppShell.vue | 302 | 0 | - |
+| packages/editor/src/AppShell.vue | 307 | 0 | - |
 | packages/editor/src/attribute/attribute-context.ts | 71 | 0 | - |
 | packages/editor/src/audio/audio-player.ts | 72 | 0 | - |
 | packages/editor/src/audio/reverb.ts | 105 | 0 | - |
@@ -368,11 +368,11 @@
 | packages/editor/src/components/color-box.ts | 7 | 0 | - |
 | packages/editor/src/components/command-list.ts | 115 | 0 | - |
 | packages/editor/src/components/commands/ActivateScene.vue | 66 | 0 | - |
-| packages/editor/src/components/commands/AddAnimationComponent.vue | 130 | 0 | - |
+| packages/editor/src/components/commands/AddAnimationComponent.vue | 129 | 0 | - |
 | packages/editor/src/components/commands/AppendTarget.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/Block.vue | 98 | 0 | - |
 | packages/editor/src/components/commands/Break.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/CastSkill.vue | 105 | 0 | - |
+| packages/editor/src/components/commands/CastSkill.vue | 102 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorAnimation.vue | 59 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorEquipment.vue | 127 | 0 | - |
 | packages/editor/src/components/commands/ChangeActorMotion.vue | 75 | 0 | - |
@@ -391,7 +391,7 @@
 | packages/editor/src/components/commands/ControlButton.vue | 90 | 0 | - |
 | packages/editor/src/components/commands/ControlDialog.vue | 79 | 0 | - |
 | packages/editor/src/components/commands/CreateActor.vue | 93 | 0 | - |
-| packages/editor/src/components/commands/CreateElement.vue | 112 | 0 | - |
+| packages/editor/src/components/commands/CreateElement.vue | 110 | 0 | - |
 | packages/editor/src/components/commands/CreateGlobalActor.vue | 77 | 0 | - |
 | packages/editor/src/components/commands/CreateObject.vue | 58 | 0 | - |
 | packages/editor/src/components/commands/CreateTrigger.vue | 98 | 0 | - |
@@ -402,21 +402,21 @@
 | packages/editor/src/components/commands/DeleteScene.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/DeleteTile.vue | 58 | 0 | - |
 | packages/editor/src/components/commands/DeleteVariable.vue | 57 | 0 | - |
-| packages/editor/src/components/commands/DetectTargets.vue | 96 | 0 | - |
-| packages/editor/src/components/commands/DiscardTargets.vue | 87 | 0 | - |
+| packages/editor/src/components/commands/DetectTargets.vue | 91 | 0 | - |
+| packages/editor/src/components/commands/DiscardTargets.vue | 83 | 0 | - |
 | packages/editor/src/components/commands/DownloadFile.vue | 144 | 0 | - |
 | packages/editor/src/components/commands/FixAngle.vue | 71 | 0 | - |
-| packages/editor/src/components/commands/FollowActor.vue | 194 | 0 | - |
+| packages/editor/src/components/commands/FollowActor.vue | 191 | 0 | - |
 | packages/editor/src/components/commands/ForEach.vue | 170 | 0 | - |
 | packages/editor/src/components/commands/GameData.vue | 93 | 0 | - |
-| packages/editor/src/components/commands/GetActor.vue | 216 | 0 | - |
-| packages/editor/src/components/commands/GetMultipleActors.vue | 161 | 0 | - |
+| packages/editor/src/components/commands/GetActor.vue | 212 | 0 | - |
+| packages/editor/src/components/commands/GetMultipleActors.vue | 159 | 0 | - |
 | packages/editor/src/components/commands/GetObjectProperty.vue | 93 | 0 | - |
-| packages/editor/src/components/commands/GetTarget.vue | 121 | 0 | - |
+| packages/editor/src/components/commands/GetTarget.vue | 117 | 0 | - |
 | packages/editor/src/components/commands/HttpRequest.vue | 151 | 0 | - |
 | packages/editor/src/components/commands/If.vue | 84 | 0 | - |
 | packages/editor/src/components/commands/Independent.vue | 42 | 0 | - |
-| packages/editor/src/components/commands/JumpTo.vue | 84 | 0 | - |
+| packages/editor/src/components/commands/JumpTo.vue | 83 | 0 | - |
 | packages/editor/src/components/commands/Label.vue | 59 | 0 | - |
 | packages/editor/src/components/commands/LoadImage.vue | 131 | 0 | - |
 | packages/editor/src/components/commands/LoadScene.vue | 97 | 0 | - |
@@ -429,10 +429,10 @@
 | packages/editor/src/components/commands/NestElement.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/PauseGame.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/PlayActorAnimation.vue | 86 | 0 | - |
-| packages/editor/src/components/commands/PlayAnimation.vue | 163 | 0 | - |
-| packages/editor/src/components/commands/PlayAudio.vue | 106 | 0 | - |
+| packages/editor/src/components/commands/PlayAnimation.vue | 161 | 0 | - |
+| packages/editor/src/components/commands/PlayAudio.vue | 103 | 0 | - |
 | packages/editor/src/components/commands/PreventSceneInput.vue | 36 | 0 | - |
-| packages/editor/src/components/commands/RegisterEvent.vue | 127 | 0 | - |
+| packages/editor/src/components/commands/RegisterEvent.vue | 126 | 0 | - |
 | packages/editor/src/components/commands/RelaunchApp.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/RemoveAnimationComponent.vue | 82 | 0 | - |
 | packages/editor/src/components/commands/RemoveTarget.vue | 54 | 0 | - |
@@ -449,14 +449,14 @@
 | packages/editor/src/components/commands/SetAngle.vue | 92 | 0 | - |
 | packages/editor/src/components/commands/SetAnimation.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetAnimationComponent.vue | 262 | 0 | - |
-| packages/editor/src/components/commands/SetBoolean.vue | 164 | 0 | - |
+| packages/editor/src/components/commands/SetBoolean.vue | 157 | 0 | - |
 | packages/editor/src/components/commands/SetButton.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/SetCooldown.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/SetCursor.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/SetDialogBox.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetElement.vue | 88 | 0 | - |
 | packages/editor/src/components/commands/SetEvent.vue | 122 | 0 | - |
-| packages/editor/src/components/commands/SetFocus.vue | 105 | 0 | - |
+| packages/editor/src/components/commands/SetFocus.vue | 99 | 0 | - |
 | packages/editor/src/components/commands/SetGameSpeed.vue | 95 | 0 | - |
 | packages/editor/src/components/commands/SetImage.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/SetInventory.vue | 175 | 0 | - |
@@ -466,28 +466,28 @@
 | packages/editor/src/components/commands/SetLoop.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/SetMovementSpeed.vue | 111 | 0 | - |
 | packages/editor/src/components/commands/SetNumber.vue | 84 | 0 | - |
-| packages/editor/src/components/commands/SetObject.vue | 171 | 0 | - |
-| packages/editor/src/components/commands/SetObjectAnimation.vue | 285 | 0 | - |
+| packages/editor/src/components/commands/SetObject.vue | 161 | 0 | - |
+| packages/editor/src/components/commands/SetObjectAnimation.vue | 277 | 0 | - |
 | packages/editor/src/components/commands/SetObjectProperty.vue | 95 | 0 | - |
 | packages/editor/src/components/commands/SetPan.vue | 112 | 0 | - |
 | packages/editor/src/components/commands/SetPartyMember.vue | 71 | 0 | - |
 | packages/editor/src/components/commands/SetPlayerActor.vue | 51 | 0 | - |
-| packages/editor/src/components/commands/SetPointerEventRoot.vue | 85 | 0 | - |
+| packages/editor/src/components/commands/SetPointerEventRoot.vue | 83 | 0 | - |
 | packages/editor/src/components/commands/SetProgressBar.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetResolution.vue | 85 | 0 | - |
 | packages/editor/src/components/commands/SetReverb.vue | 123 | 0 | - |
-| packages/editor/src/components/commands/SetShortcut.vue | 104 | 0 | - |
-| packages/editor/src/components/commands/SetSkill.vue | 83 | 0 | - |
-| packages/editor/src/components/commands/SetState.vue | 77 | 0 | - |
-| packages/editor/src/components/commands/SetString.vue | 601 | 0 | - |
+| packages/editor/src/components/commands/SetShortcut.vue | 102 | 0 | - |
+| packages/editor/src/components/commands/SetSkill.vue | 82 | 0 | - |
+| packages/editor/src/components/commands/SetState.vue | 76 | 0 | - |
+| packages/editor/src/components/commands/SetString.vue | 590 | 0 | - |
 | packages/editor/src/components/commands/SetTarget.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/SetTeamRelation.vue | 80 | 0 | - |
-| packages/editor/src/components/commands/SetTerrain.vue | 72 | 0 | - |
+| packages/editor/src/components/commands/SetTerrain.vue | 71 | 0 | - |
 | packages/editor/src/components/commands/SetText.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetTextBox.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/SetTile.vue | 73 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerAngle.vue | 54 | 0 | - |
-| packages/editor/src/components/commands/SetTriggerDuration.vue | 88 | 0 | - |
+| packages/editor/src/components/commands/SetTriggerDuration.vue | 87 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerMotion.vue | 54 | 0 | - |
 | packages/editor/src/components/commands/SetTriggerSpeed.vue | 62 | 0 | - |
 | packages/editor/src/components/commands/SetVideo.vue | 76 | 0 | - |
@@ -495,15 +495,15 @@
 | packages/editor/src/components/commands/SetWeight.vue | 62 | 0 | - |
 | packages/editor/src/components/commands/SetWindow.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetZoomFactor.vue | 95 | 0 | - |
-| packages/editor/src/components/commands/ShakeScreen.vue | 120 | 0 | - |
+| packages/editor/src/components/commands/ShakeScreen.vue | 118 | 0 | - |
 | packages/editor/src/components/commands/ShowChoices.vue | 77 | 0 | - |
 | packages/editor/src/components/commands/ShowText.vue | 97 | 0 | - |
-| packages/editor/src/components/commands/SimulateKey.vue | 76 | 0 | - |
+| packages/editor/src/components/commands/SimulateKey.vue | 75 | 0 | - |
 | packages/editor/src/components/commands/StopActorAnimation.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/StopAudio.vue | 69 | 0 | - |
 | packages/editor/src/components/commands/StopEvent.vue | 171 | 0 | - |
 | packages/editor/src/components/commands/Switch.vue | 89 | 0 | - |
-| packages/editor/src/components/commands/SwitchCollisionSystem.vue | 68 | 0 | - |
+| packages/editor/src/components/commands/SwitchCollisionSystem.vue | 66 | 0 | - |
 | packages/editor/src/components/commands/TintImage.vue | 229 | 0 | - |
 | packages/editor/src/components/commands/TintScreen.vue | 180 | 0 | - |
 | packages/editor/src/components/commands/TransferGlobalActor.vue | 54 | 0 | - |
@@ -512,7 +512,7 @@
 | packages/editor/src/components/commands/UnclampCamera.vue | 36 | 0 | - |
 | packages/editor/src/components/commands/UnloadSubscene.vue | 57 | 0 | - |
 | packages/editor/src/components/commands/UploadFile.vue | 109 | 0 | - |
-| packages/editor/src/components/commands/UseItem.vue | 104 | 0 | - |
+| packages/editor/src/components/commands/UseItem.vue | 102 | 0 | - |
 | packages/editor/src/components/commands/Wait.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/WaitForVideo.vue | 51 | 0 | - |
 | packages/editor/src/components/commands/WebSocketClose.vue | 66 | 0 | - |
@@ -619,7 +619,7 @@
 | packages/editor/src/components/tools/Font.vue | 47 | 0 | - |
 | packages/editor/src/components/tools/FontSize.vue | 45 | 0 | - |
 | packages/editor/src/components/tools/IfBranch.vue | 82 | 0 | - |
-| packages/editor/src/components/tools/IfCondition.vue | 879 | 0 | - |
+| packages/editor/src/components/tools/IfCondition.vue | 798 | 0 | - |
 | packages/editor/src/components/tools/ImageClip.vue | 129 | 0 | - |
 | packages/editor/src/components/tools/ImportLanguage.vue | 56 | 0 | - |
 | packages/editor/src/components/tools/InsertImage.vue | 77 | 0 | - |
@@ -655,7 +655,7 @@
 | packages/editor/src/components/tools/SetDialogBoxProperty.vue | 174 | 0 | - |
 | packages/editor/src/components/tools/SetImageProperty.vue | 126 | 0 | - |
 | packages/editor/src/components/tools/SetKey.vue | 21 | 0 | - |
-| packages/editor/src/components/tools/SetNumberOperand.vue | 871 | 0 | - |
+| packages/editor/src/components/tools/SetNumberOperand.vue | 696 | 0 | - |
 | packages/editor/src/components/tools/SetProgressBarProperty.vue | 145 | 0 | - |
 | packages/editor/src/components/tools/SetQuantity.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/SetTextBoxProperty.vue | 112 | 0 | - |
@@ -667,7 +667,7 @@
 | packages/editor/src/components/tools/SkillGetter.vue | 101 | 0 | - |
 | packages/editor/src/components/tools/StateGetter.vue | 96 | 0 | - |
 | packages/editor/src/components/tools/SwitchBranch.vue | 71 | 0 | - |
-| packages/editor/src/components/tools/SwitchCondition.vue | 191 | 0 | - |
+| packages/editor/src/components/tools/SwitchCondition.vue | 188 | 0 | - |
 | packages/editor/src/components/tools/TextEffect.vue | 91 | 0 | - |
 | packages/editor/src/components/tools/TextPosition.vue | 69 | 0 | - |
 | packages/editor/src/components/tools/TextSuggestions.vue | 25 | 0 | - |
@@ -858,6 +858,7 @@
 | packages/editor/src/composables/useIfConditionSchema.ts | 975 | 0 | - |
 | packages/editor/src/composables/useImageClipWindow.ts | 40 | 0 | - |
 | packages/editor/src/composables/useItemGetterWindow.ts | 114 | 0 | - |
+| packages/editor/src/composables/useLocalizedOptions.ts | 43 | 0 | - |
 | packages/editor/src/composables/useMenuService.ts | 2 | 0 | - |
 | packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 0 | - |
 | packages/editor/src/composables/useParamHistory.ts | 141 | 0 | - |
@@ -993,7 +994,7 @@
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
-| packages/editor/src/localize/template-localized.ts | 1798 | 0 | - |
+| packages/editor/src/localize/template-localized.ts | 1949 | 0 | - |
 | packages/editor/src/log/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
