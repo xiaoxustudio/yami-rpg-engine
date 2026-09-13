@@ -162,29 +162,31 @@
 
 - 2026-09-12 **P1b 第 14 刀：时间轴/运动曲线/自动图块/调色板选区的离屏节点收口（−4 文件），待迁移命中 54 → 50**。① `animation/animation-timeline.ts`（2 处：`timeline` 层容器与 `key` 关键帧方块，只有 `addClass` 无 vnode）→ `createDetachedElement()`；② `animation/animation-motion.ts`（1 处：运动曲线刻度数字）→ 同上；③ `palette/auto-tile.ts`（2 处：自动图块列表的 `common-item`，带 `'.dataValue'`）→ `renderDetached`；④ `palette/palette-initialize.ts`（1 处：`<selection>` 选区标记）→ `renderDetached`（顺带发现该文件原名 `host.removeChild(element)` 的语义正是第 13 刀修好的「返回即脱离宿主」）。⑤ `title/menu-bar.ts` 的 `menu-icon` 节点也改成创建缝隙，但**该文件仍留在债里**——`Menubar.initialize` 还在用 `document.querySelectorAll('.href')` 全文档找菜单窗口里的超链接（属"按类名发现"的一类，需单独设计，见下方剩余清单）。**指标**：待迁移命中 **54 → 50**、豁免注释 **54 → 50**、陈旧豁免 **0**、`createElement` 138 → 133。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 667/667**、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **P1b 第 15 刀：单选组与 `.href` 链接两类"反查"归零（−2 文件），待迁移命中 50 → 48**。① **单选组（`getElementsByName`）**：`tools/color-picker-window.ts`（`color-index`）与 `data/transition-window.ts`（`easing-scale`）原先各自 `document.getElementsByName('组名')` 反查组内成员 → 给 ui-kit 的 `RadioProxyElement` 加 **`group` 访问器**（`Object.defineProperty` + `document.getElementsByName(proxy.id)`，组名即 `proxy.id`，与既有 `write()` 同源），把这条查询**收敛到 ui-kit 一处**，编辑器侧改读 `proxy.group`；新增 ui-kit 用例 `radio-proxy.spec.ts`「group 返回同 name 的组内成员（按文档顺序）」锁顺序/内容/不缓存。② **`.href` 链接（类名发现）**：`Menubar.initialize` 的 `document.querySelectorAll('.href')` 全文档绑定 → 改为**由拥有这些链接的组件转发**（`About.vue` / `ExportApk.vue` 的 `@click` → `Menubar.hrefClick`）；顺带发现原先的绑定**本来就绑不上**——它在启动时执行，而 `.href` 全在懒加载窗口里（与第 7 刀 Script 切换按钮同类的"死接线"）。**指标**：待迁移命中 **50 → 48**、豁免注释 **50 → 48**、陈旧豁免 **0**、`addEventListener` 568 → 567。**门禁**：editor **235 文件 1983/1983**、ui-kit **97 文件 668/668**（+1 为本轮新增用例）、`tsc` strict 与 `vue-tsc` 0 新增、`oxlint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
 | 扫描文件总数                         | 1134（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts`） |
-| 待迁移命中文件（oxlint 判定仍在用）  | 50（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–14 刀共 −108） |
-| 带豁免注释文件（`oxlint-disable`）   | 50（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
+| 待迁移命中文件（oxlint 判定仍在用）  | 48（初始 299；B1/R2a 后 −1、B4 批 2 后 −1、P1b 第 1–15 刀共 −110） |
+| 带豁免注释文件（`oxlint-disable`）   | 48（C2 执行前 295；逐刀由 `stale-exemptions --apply` 清掉随迁移失效的注释） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
 | `getElementById` 属性访问处数        | 10（composables 5 / 其余 5；**components 已归零**；真实代码处数 9，另 1 处为本刀注释提及） |
 | `document.querySelector*` 处数       | 18（P1b 第 5/9/10/11 刀 56 → 18） |
 | `document.querySelector*` 处数       | 56                                  |
 | `document.createElement` 处数        | 133（其中 ui-kit/components 106；含 P1b 各刀留下的注释提及） |
 | `appendChild` 调用                   | 122                                 |
-| `addEventListener` 调用              | 568                                 |
+| `addEventListener` 调用              | 567                                 |
 | `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 22（11 个文件；残余 = 动态 id / 外壳元素 / 基础设施 / 白名单，见 P5b 结项；B4 起点 1481，最初 1489） |
 | `new DOMParser()` 处数（字符串模板建 DOM） | 0（B1/R1 前 1 处，见 P7）      |
 | 使用 `useCommandSchema` 的命令表单   | 142 个                              |
 | ui-kit 命令式 API 文件（`*-api.ts`） | **26** 个（25 个组件 api + `attach-api.ts` 自身；**B3 复核：全部是元素优先实现、零死文件** → 目标由「0」改为「不增长」，见 P2b） |
 
 > **口径（2026-09-11 修订）**：取自 `node scripts/dom-guard.mjs tracker`（生成物 `docs/dom-migration-tracker.md`），范围 `packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`。**三个口径别混淆**——
-> ① **待迁移命中 50**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3、第 11 刀 −1、第 12 刀 −5、第 13 刀 −6、第 14 刀 −4；
-> ② **豁免注释 50**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
-> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（50 + 0 = 50）。
+> ① **待迁移命中 48**：由 oxlint `--report-unused-disable-directives` 判定「豁免指令仍在使用」的文件数，即真正还在用受限 API 的迁移债（画布交互区的设计豁免也在其中，故目标不是 0 而是"白名单外为 0"）；B1/R2a 让 `editor/i18n` 归零（160 → 159），P1b 第 1 刀 −3、第 2 刀 −20、第 3 刀 −4、第 4 刀 −29、第 5 刀 −16、第 6 刀 −5、第 7 刀 −2、第 8 刀 −5、第 9 刀 −5、第 10 刀 −3、第 11 刀 −1、第 12 刀 −5、第 13 刀 −6、第 14 刀 −4、第 15 刀 −2；
+> ② **豁免注释 48**：仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数（C2 执行前为 295；每次有文件命中归零后由 `pnpm stale-exemptions --apply` 同步删除）；
+> ③ **陈旧豁免 0**：注释在、命中已为 0 的文件数——**由 C2 清零，并由 `pnpm stale-exemptions --apply` 在每次改动后维持 0**（C2 执行前 135）。恒等式：**待迁移命中 + 陈旧豁免 = 豁免注释**（48 + 0 = 48）。
 > API 处数为**属性访问的正则计数**（`document.getElementById` 这类，含注释/字符串中的出现），只作趋势参考；正则已修正为「属性访问」而非「调用」（`document.querySelector<HTMLElement>(...)` 曾漏计）。
 > **相对初始扫描（2026-08-28 基线，2026-09-01 落档）**：待迁移文件 299 → 86、`getElementById` 1164 → 60、`createElement` 149 → 138、`appendChild` 134 → 122、`addEventListener` 597 → 568；文件总数 1083 → 1111（迁移期新增 core/渲染层模块）。
 > **口径自检（2026-09-12，正反双向 + 权威来源）**：① **正向**——86 个「待迁移命中」文件全部带豁免注释（`pnpm lint` 干净即证）；② **反向已对齐**——带注释的文件同样是 **86** 个，此前多出的 **135** 个陈旧豁免已由 **C2** 清零、后续由 `stale-exemptions --apply` 保持（`--check` 退出码 0）；③ **判定来源换成 oxlint**：用 `oxlint --report-unused-disable-directives` 直接问「这条豁免指令到底有没有拦到东西」，不再靠正则猜命中。

@@ -36,8 +36,8 @@
 | editor/scene        | 28 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 |
 | editor/services     | 46 | 6 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 3 | 0 | 0 |
 | editor/stores       | 39 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
-| editor/title        | 6 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 8 | 2 | 0 | 0 | 0 |
-| editor/tools        | 17 | 7 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
+| editor/title        | 6 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 7 | 2 | 0 | 0 | 0 |
+| editor/tools        | 17 | 7 | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 10 | 0 | 16 | 3 | 2 | 0 | 0 |
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -47,17 +47,17 @@
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 50 | 50 | 10 | 18 | 1 | 15 | 0 | 133 | 122 | 14 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 7 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
+| 合计                  | 1134 |  | 48 | 48 | 10 | 18 | 1 | 18 | 0 | 133 | 122 | 14 | 29 | 127 | 2 | 567 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**50**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**50**
+- 待迁移命中文件：**48**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**48**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
-- 正则命中但无豁免注释：**24**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
+- 正则命中但无豁免注释：**26**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
 - 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）
 - **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：`$('#…')` 反查 **22** 处 / **11** 文件、`new DOMParser()` **0** 处——前者是 element-utils 的 jQuery 风格寻址（`packages/editor/src/utils/dom.ts` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b
 
@@ -115,8 +115,9 @@
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 419 | 11 | 是 |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
+| packages/ui-kit/src/utils/radio-proxy.ts | 224 | 11 | 是 |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
-| packages/editor/src/data/transition-window.ts | 1404 | 10 | 是 |
+| packages/editor/src/data/transition-window.ts | 1406 | 10 | 是 |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 188 | 10 | 是 |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
@@ -133,10 +134,9 @@
 | packages/editor/src/ui/ui-pointer.ts | 583 | 8 | - |
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 195 | 8 | 是 |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
-| packages/ui-kit/src/utils/radio-proxy.ts | 211 | 8 | 是 |
 | packages/editor/src/inspector/element-page.ts | 389 | 7 | - |
 | packages/editor/src/local/local-window.ts | 910 | 7 | - |
-| packages/editor/src/tools/color-picker-window.ts | 450 | 7 | 是 |
+| packages/editor/src/tools/color-picker-window.ts | 450 | 7 | - |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/editor/src/tools/text-capture.ts | 991 | 7 | - |
 | packages/editor/src/tools/window-object.ts | 510 | 7 | - |
@@ -183,7 +183,6 @@
 | packages/editor/src/palette/palette-initialize.ts | 149 | 4 | - |
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
 | packages/editor/src/title/home-page.ts | 510 | 4 | - |
-| packages/editor/src/title/menu-bar.ts | 1195 | 4 | 是 |
 | packages/editor/src/tools/script-list.ts | 201 | 4 | - |
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
@@ -206,6 +205,7 @@
 | packages/editor/src/module/editdata.ts | 380 | 3 | - |
 | packages/editor/src/module/eslints.ts | 269 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
+| packages/editor/src/title/menu-bar.ts | 1193 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 134 | 3 | 是 |
@@ -581,7 +581,7 @@
 | packages/editor/src/components/select-var.ts | 8 | 0 | - |
 | packages/editor/src/components/string-var.ts | 8 | 0 | - |
 | packages/editor/src/components/textarea-var.ts | 8 | 0 | - |
-| packages/editor/src/components/tools/About.vue | 84 | 0 | - |
+| packages/editor/src/components/tools/About.vue | 91 | 0 | - |
 | packages/editor/src/components/tools/ActorGetter.vue | 106 | 0 | - |
 | packages/editor/src/components/tools/AncestorGetter.vue | 90 | 0 | - |
 | packages/editor/src/components/tools/AngleGetter.vue | 87 | 0 | - |
@@ -605,7 +605,7 @@
 | packages/editor/src/components/tools/Enum.vue | 197 | 0 | - |
 | packages/editor/src/components/tools/EquipmentGetter.vue | 100 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 96 | 0 | - |
-| packages/editor/src/components/tools/ExportApk.vue | 148 | 0 | - |
+| packages/editor/src/components/tools/ExportApk.vue | 154 | 0 | - |
 | packages/editor/src/components/tools/ExportLanguage.vue | 104 | 0 | - |
 | packages/editor/src/components/tools/FileActorEquipment.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/FileActorInventoryGoods.vue | 92 | 0 | - |
