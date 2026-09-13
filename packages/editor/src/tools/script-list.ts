@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { getListConfig, setTreeItemClass, treeOwnerListOf } from '@ui-kit';
 import { File } from '@app/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
@@ -9,7 +8,8 @@ import { Command } from '@app/commands/command-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { PluginManager } from '@app/plugin/plugin.ts';
-import { h, render } from 'vue';
+import { h } from 'vue';
+import { renderDetached } from '@app/utils/dom';
 
 import { IEditableHistory } from '@app/types/history.ts';
 import { IScriptListInterface } from '@app/types/list-interface.ts';
@@ -93,12 +93,9 @@ export class ScriptListInterface implements IScriptListInterface {
 		Command.invalid = false;
 		const scriptName = Command.parseFileName(script.id);
 		const scriptClass = Command.invalid ? 'invalid' : script.enabled ? '' : 'weak';
-		const box = document.createElement('div');
-		render(h('div', { class: 'box script-edit-button' }, '\uf044'), box);
-		return [
-			{ content: Command.removeTextTags(scriptName), class: scriptClass },
-			box.firstElementChild as HTMLElement
-		];
+		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		const box = renderDetached(h('div', { class: 'box script-edit-button' }, '\uf044'));
+		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
 	}
 
 	update(list: ScriptListElement) {

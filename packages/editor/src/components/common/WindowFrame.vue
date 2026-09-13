@@ -140,7 +140,7 @@ onMounted(() => {
 	if (el.id !== '') registerElement(windowShellEls, el.id, el);
 	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {
 		button.addEventListener('click', () => {
-			if (el.id !== '') Window.close(el.id);
+			if (el.id !== '') Window.close!(el.id);
 		});
 	}
 	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）

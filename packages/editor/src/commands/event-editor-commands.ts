@@ -1,4 +1,3 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { EventEditor } from './event-editor.ts';
 import type {
 	EventCommands,
@@ -6,9 +5,10 @@ import type {
 	EventEditorShape,
 	EventListItem
 } from './event-editor.ts';
-import { addClass, clear, hide, show } from '@app/utils/element-utils.ts';
+import { clear, hide, show } from '@app/utils/element-utils.ts';
 import { setTreeItemClass } from '@ui-kit';
-import { getElementWriter } from '@app/utils/dom';
+import { getElementWriter, renderDetached } from '@app/utils/dom';
+import { h } from 'vue';
 import { eventEditorEls } from './event-editor-initialize.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -157,9 +157,8 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					const node = document.createElement('div') as unknown as HTMLElement;
-					addClass(node, 'box');
-					addClass(node, 'event-commands-line-number');
+					// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + addClass）
+					const node = renderDetached(h('div', { class: 'box event-commands-line-number' }));
 					innerGutter.appendChild(node);
 					i++;
 				}

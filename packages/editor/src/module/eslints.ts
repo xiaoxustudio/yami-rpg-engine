@@ -1,8 +1,8 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { EventBus } from '@app/utils/event-bus.ts';
 import { on } from '@app/utils/element-utils.ts';
 import { CommandList } from '@app/components/command-list.ts';
-import { h, render } from 'vue';
+import { h } from 'vue';
+import { renderDetached } from '@app/utils/dom';
 
 let _origUpdateCommandElement:
 	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
@@ -37,25 +37,19 @@ export function updateCommandElement(
 		e.remove();
 	});
 
-	const host = document.createElement('div');
-	render(h('span', { class: 'command-mark-major' }), host);
-	const pre = host.firstElementChild as HTMLElement;
-	host.removeChild(pre);
+	// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+	const pre = renderDetached(h('span', { class: 'command-mark-major' }));
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
 	element.lines = [];
 	for (let i = element.dataIndent; i >= 0; i--) {
-		const lineHost = document.createElement('div');
-		render(
+		const line = renderDetached(
 			h('span', {
 				class: 'command-line',
 				style: { marginLeft: this.computeTextIndent!(i) }
-			}),
-			lineHost
+			})
 		);
-		const line = lineHost.firstElementChild as HTMLElement;
-		lineHost.removeChild(line);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
 	}

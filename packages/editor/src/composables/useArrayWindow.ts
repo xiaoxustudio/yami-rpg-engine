@@ -1,9 +1,9 @@
-/* oxlint-disable eslint/no-restricted-properties */
 import { reactive, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
-import { h, render } from 'vue';
+import { h } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { on, read } from '@app/utils/element-utils';
+import { renderDetached } from '@app/utils/dom';
 import { requestFocus } from '@app/directives/focus';
 import { getYamiI18n } from '@app/i18n';
 
@@ -191,24 +191,18 @@ const listInterface: ArrayListInterface = {
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;
-		const indexText = document.createElement('div');
-		render(
+		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先各自 document.createElement + render）
+		const indexText = renderDetached(
 			h(
 				'div',
 				{ class: 'array-index text' },
 				Number.padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':'
-			),
-			indexText
+			)
 		);
-		const valueText = document.createElement('div');
-		render(
-			h('div', { class: 'array-value text' }, listInterface.parsers[filter](value)),
-			valueText
+		const valueText = renderDetached(
+			h('div', { class: 'array-value text' }, listInterface.parsers[filter](value))
 		);
-		return [
-			indexText.firstElementChild as HTMLElement,
-			valueText.firstElementChild as HTMLElement
-		];
+		return [indexText, valueText];
 	},
 	open: function (value: unknown) {
 		const { filter } = targetState!;

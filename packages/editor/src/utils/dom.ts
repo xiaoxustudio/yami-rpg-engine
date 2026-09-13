@@ -1,4 +1,28 @@
 /* oxlint-disable eslint/no-restricted-properties */
+import { render, type VNode } from 'vue';
+
+/**
+ * P1b：**唯一的「离屏节点」创建缝隙**。
+ *
+ * 模块在没有模板宿主的地方需要一次性节点时（列表行里的文本片段、命令行的行号方块……），
+ * 统一走这里，避免 `document.createElement` + `render()` 的样板散落各处。
+ *
+ * 注意：**有模板宿主时仍应优先用模板节点 `cloneNode`**——不要把 Vue 管理的 DOM 当容器
+ * 渲染外来 vnode（见 remaining-work 的替换配方第 ③ 条）。
+ */
+export function renderDetached(vnode: VNode): HTMLElement {
+	const host = createDetachedElement();
+	render(vnode, host);
+	return host.firstElementChild as HTMLElement;
+}
+
+/** P1b：创建一个**不在文档里**的元素（与 `renderDetached` 同属唯一创建缝隙）。 */
+export function createDetachedElement<K extends keyof HTMLElementTagNameMap>(
+	tag: K = 'div' as K
+): HTMLElementTagNameMap[K] {
+	return document.createElement(tag);
+}
+
 export function addClass(el: HTMLElement, className: string): boolean {
 	if (!el.classList.contains(className)) {
 		el.classList.add(className);
