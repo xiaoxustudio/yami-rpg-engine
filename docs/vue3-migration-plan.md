@@ -196,6 +196,8 @@
 
 - 2026-09-12 **B1/M1 第二批补测完成：文件 body 组 3 → 10 例（`it.todo` 全部转正）**。① `YMFileBodyPane/__tests__/YMFileBodyPane.m1.spec.ts` 现在锁住行渲染（列表视图成行+文件名、文件夹与文件成行、空目录无行）、选区（`selectAll`/`selectByPath`/`unselect`）、网格度量（列表视图三项 > 0；**网格视图 `viewIndex=2` 与列表视图每行数量不同**）、内容尺寸、`updateFiles`（normal 无文件不建行）。② **编辑器形态 fixture 五条要点**（写进 `monolith-render-plan.md`，缺一条都静默失败）：API 在**面板元素**而度量字段在 `.file-body-content`；jsdom 必须打 `getBoundingClientRect` 尺寸桩（`computeGridProperties` 开头判 `rect(node).width <= 0`）；`viewMode` 由 **`setViewIndex(0..4)`** 决定（不设序号则 `switch` 落空、度量不写）；**`setViewIndex` 会写 `props.links.head.view`**——少这个桩会直接抛错（本文件曾因此 9 例全红，是定位最久的一处）；渲染链固定为 `setViewIndex → updateViewMode → createFlatItems → computeGridProperties → updateContentSize → resize`。③ **指标**：ui-kit **99 文件 687/687**（+7 例）、`pnpm lint` 0/0、`docs:check` OK。**M1 组件级用例目前 21（命令列表）+ 10（文件 body）= 31**，距目标 ~40+ 还差命令列表的嵌套渲染与文件 body 的滚动/窗口迁移。
 
+- 2026-09-12 **B1/M1 第三批：文件 body 窗口迁移 4 例落地（10 → 14），并排除嵌套渲染的四种猜测**。① 新增用例：列表视图按 **`scrollLeft`** 右移后 `content.range[0]` 变大、渲染行从 `ev0` 切到后面的文件；网格视图按 **`scrollTop`** 计算窗口；`updateContentOffset` 把偏移写进内容元素样式。② 命令列表的**嵌套渲染**仍写不出：实测四种"把子命令放进 `parse` 返回值"的写法（`[节点,节点,[子命令]]`、`{commands:[子命令]}`、裸子命令、`[[子命令]]`）都只渲染父命令（`elements.count = 2` = 父行 + 空白行、`dataIndent` 全 0）⇒ **嵌套/缩进由调用方的数组结构决定**（`createItems(commands, indent, parent)` 的 indent，或写库前已拍平成带层列表），不是 `parse` 的返回约定；结论写进 `YMCommandList.m1.spec.ts` 的 `TODO(M1)` 注释，下批先找编辑器侧真正喂给 `write()` 的数组形态。③ **M1 组件级用例 21 + 14 = 35**（目标 ~40+）。**指标**：ui-kit **99 文件 691/691**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 | 指标                                 | 数值（2026-09-12 实测）              |
