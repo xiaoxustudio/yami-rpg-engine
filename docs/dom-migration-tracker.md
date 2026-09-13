@@ -13,7 +13,7 @@
 | editor/audio        | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/bootstrap.ts | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/commands     | 41 | 11 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 21 | 2 | 5 | 0 | 0 |
-| editor/components   | 360 | 48 | 9 | 9 | 10 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
+| editor/components   | 360 | 43 | 4 | 4 | 0 | 3 | 0 | 0 | 0 | 4 | 2 | 1 | 0 | 11 | 0 | 41 | 17 | 0 | 0 | 0 |
 | editor/composables  | 229 | 15 | 6 | 6 | 11 | 1 | 0 | 0 | 0 | 4 | 5 | 0 | 0 | 4 | 0 | 16 | 2 | 0 | 0 | 0 |
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
@@ -48,13 +48,13 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 11 | 5 | 1 | 1 | 0 | 0 | 0 | 4 | 0 | 1 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1134 |  | 79 | 79 | 26 | 22 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
+| 合计                  | 1134 |  | 74 | 74 | 16 | 22 | 1 | 15 | 0 | 139 | 122 | 20 | 29 | 127 | 2 | 568 | 171 | 22 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1134**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**79**（判定来源：oxlint `--report-unused-disable-directives`）
-- 豁免注释文件：**79**
+- 待迁移命中文件：**74**（判定来源：oxlint `--report-unused-disable-directives`）
+- 豁免注释文件：**74**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**0**
 - 正则命中但无豁免注释：**8**（`pnpm lint` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）
@@ -228,12 +228,7 @@
 | packages/editor/src/components/inspector/SceneActorPage.vue | 275 | 2 | - |
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 576 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
-| packages/editor/src/components/tools/ExportLanguage.vue | 104 | 2 | 是 |
-| packages/editor/src/components/tools/LightGetter.vue | 115 | 2 | 是 |
-| packages/editor/src/components/tools/ObjectGetter.vue | 115 | 2 | 是 |
 | packages/editor/src/components/tools/Reference.vue | 87 | 2 | 是 |
-| packages/editor/src/components/tools/SceneShift.vue | 100 | 2 | 是 |
-| packages/editor/src/components/tools/SetNumberOperand.vue | 872 | 2 | 是 |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
 | packages/editor/src/composables/useArrayWindow.ts | 298 | 2 | 是 |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
@@ -616,6 +611,7 @@
 | packages/editor/src/components/tools/EquipmentGetter.vue | 100 | 0 | - |
 | packages/editor/src/components/tools/EventSearchString.vue | 96 | 0 | - |
 | packages/editor/src/components/tools/ExportApk.vue | 148 | 0 | - |
+| packages/editor/src/components/tools/ExportLanguage.vue | 104 | 0 | - |
 | packages/editor/src/components/tools/FileActorEquipment.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/FileActorInventoryGoods.vue | 92 | 0 | - |
 | packages/editor/src/components/tools/FileActorSkill.vue | 62 | 0 | - |
@@ -631,6 +627,7 @@
 | packages/editor/src/components/tools/InsertImage.vue | 77 | 0 | - |
 | packages/editor/src/components/tools/ItemGetter.vue | 100 | 0 | - |
 | packages/editor/src/components/tools/Language.vue | 68 | 0 | - |
+| packages/editor/src/components/tools/LightGetter.vue | 114 | 0 | - |
 | packages/editor/src/components/tools/LocalVariable.vue | 54 | 0 | - |
 | packages/editor/src/components/tools/Log.vue | 38 | 0 | - |
 | packages/editor/src/components/tools/LogMessage.vue | 94 | 0 | - |
@@ -639,6 +636,7 @@
 | packages/editor/src/components/tools/NewProject.vue | 121 | 0 | - |
 | packages/editor/src/components/tools/ObjectAttribute.vue | 92 | 0 | - |
 | packages/editor/src/components/tools/ObjectFolder.vue | 68 | 0 | - |
+| packages/editor/src/components/tools/ObjectGetter.vue | 114 | 0 | - |
 | packages/editor/src/components/tools/ObjectPropertyIndex.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/PluginOverview.vue | 164 | 0 | - |
 | packages/editor/src/components/tools/PositionGetter.vue | 131 | 0 | - |
@@ -651,6 +649,7 @@
 | packages/editor/src/components/tools/RequestKeyValue.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/resource/ResourceList.vue | 133 | 0 | - |
 | packages/editor/src/components/tools/Resource.vue | 99 | 0 | - |
+| packages/editor/src/components/tools/SceneShift.vue | 102 | 0 | - |
 | packages/editor/src/components/tools/ScriptCommand.vue | 72 | 0 | - |
 | packages/editor/src/components/tools/Selector.vue | 64 | 0 | - |
 | packages/editor/src/components/tools/SetAnimationProperty.vue | 94 | 0 | - |
@@ -658,6 +657,7 @@
 | packages/editor/src/components/tools/SetDialogBoxProperty.vue | 174 | 0 | - |
 | packages/editor/src/components/tools/SetImageProperty.vue | 126 | 0 | - |
 | packages/editor/src/components/tools/SetKey.vue | 21 | 0 | - |
+| packages/editor/src/components/tools/SetNumberOperand.vue | 871 | 0 | - |
 | packages/editor/src/components/tools/SetProgressBarProperty.vue | 145 | 0 | - |
 | packages/editor/src/components/tools/SetQuantity.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/SetTextBoxProperty.vue | 112 | 0 | - |
@@ -953,7 +953,7 @@
 | packages/editor/src/engine/webgl/vector2.ts | 65 | 0 | - |
 | packages/editor/src/enum/enum-context.ts | 95 | 0 | - |
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
-| packages/editor/src/i18n/convert.ts | 103 | 0 | - |
+| packages/editor/src/i18n/convert.ts | 133 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 100 | 0 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 93 | 0 | - |
