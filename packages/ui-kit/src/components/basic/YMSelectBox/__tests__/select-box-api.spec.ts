@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSelectBoxElement } from '../select-box-api';
 import type { SelectBoxApi } from '../select-box-api';
+import { readPayload } from '../../../../utils/payload-event';
 
 describe('createSelectBoxElement', () => {
 	it('creates a select-box element with api attached', () => {
@@ -141,7 +142,7 @@ describe('createSelectBoxElement', () => {
 		const inputEvents: Array<{ last: unknown; value: unknown }> = [];
 		let changeCount = 0;
 		el.on('input', (event: Event) => {
-			const e = event as Event & { last?: unknown; value?: unknown };
+			const e = readPayload<{ last?: unknown; value?: unknown }>(event);
 			inputEvents.push({ last: e.last, value: e.value });
 		});
 		container.addEventListener('change', () => {
@@ -161,7 +162,7 @@ describe('createSelectBoxElement', () => {
 		el.loadItems([{ name: 'A', value: 'a' }]);
 		const values: unknown[] = [];
 		el.on('write', (event: Event) => {
-			values.push((event as Event & { value?: unknown }).value);
+			values.push(readPayload<{ value?: unknown }>(event).value);
 		});
 		el.write('a');
 		expect(values).toEqual(['a']);

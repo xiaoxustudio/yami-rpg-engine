@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeRowCount, treeRowElement } from '../tree-api';
+import { readPayload } from '../../../../utils/payload-event';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -385,7 +386,7 @@ describe('YMTreeList 右键 popup', () => {
 		el.focus();
 		let popup: (Event & { value: unknown; clientX: number; clientY: number }) | null = null;
 		el.on('popup', (e) => {
-			popup = e as Event & { value: unknown; clientX: number; clientY: number };
+			popup = readPayload<{ value: unknown; clientX: number; clientY: number }>(e);
 		});
 		el.select(data[1]);
 		await nextTick();
@@ -409,7 +410,7 @@ describe('YMTreeList 右键 popup', () => {
 		const { wrapper, el } = await mountList();
 		el.focus();
 		let popup: (Event & { value: unknown }) | null = null;
-		el.on('popup', (e) => (popup = e as Event & { value: unknown }));
+		el.on('popup', (e) => (popup = readPayload<{ value: unknown }>(e)));
 		fireMouse(el, 'pointerup', { button: 2, clientX: 10, clientY: 300 });
 		expect(popup!.value).toBe(null);
 		wrapper.unmount();
@@ -419,7 +420,7 @@ describe('YMTreeList 右键 popup', () => {
 		const { wrapper, el, data } = await mountList();
 		el.focus();
 		let popup: (Event & { value: unknown }) | null = null;
-		el.on('popup', (e) => (popup = e as Event & { value: unknown }));
+		el.on('popup', (e) => (popup = readPayload<{ value: unknown }>(e)));
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerdown', {
 			button: 2,
 			clientX: 100,
@@ -438,7 +439,7 @@ describe('YMTreeList 右键 popup', () => {
 	it('列表未聚焦时不派发 popup', async () => {
 		const { wrapper, el, data } = await mountList();
 		let popup: (Event & { value: unknown }) | null = null;
-		el.on('popup', (e) => (popup = e as Event & { value: unknown }));
+		el.on('popup', (e) => (popup = readPayload<{ value: unknown }>(e)));
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'pointerup', {

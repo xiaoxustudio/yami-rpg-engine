@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
+import { readPayload } from '../../../../utils/payload-event';
 
 class FileItem {
 	path: string;
@@ -107,7 +108,7 @@ describe('YMFileBodyPane', () => {
 		});
 		const el = wrapper.element as BodyElement;
 		let value: unknown;
-		el.on!('select', (e: Event) => (value = (e as Event & { value?: unknown }).value));
+		el.on!('select', (e: Event) => (value = readPayload<{ value?: unknown }>(e).value));
 		const file = new FileItem('/a/ev', 'ev');
 		const item = document.createElement('div');
 		item.classList.add('file-body-item');

@@ -24,7 +24,11 @@ export function createPayloadEvent<T extends object>(
 	return event;
 }
 
-/** 读取载荷（监听侧用；等价于 `(event as Event & T).field`，但只有一个转换点） */
-export function readPayload<T extends object>(event: Event): Partial<T> {
-	return event as unknown as Partial<T>;
+/**
+ * 读取载荷（监听侧用；等价于 `(event as Event & T).field`，但只有一个转换点）。
+ * 返回 `PayloadEvent<T>`（= `Event & T`）而不是 `Partial<T>`：与旧的断言**类型完全一致**，
+ * 因此赋值给 `Event & { … }` 的既有变量不会因为"变窄/变宽"报错。
+ */
+export function readPayload<T extends object>(event: Event): PayloadEvent<T> {
+	return event as unknown as PayloadEvent<T>;
 }

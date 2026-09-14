@@ -12,6 +12,7 @@ import {
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
+import { readPayload } from '../../../utils/payload-event';
 
 const core = createParamPaneCore();
 
@@ -910,7 +911,7 @@ const windowLocalize = (_event: Event): void => {
 const scriptChange = (event: Event): void => {
 	const self = el!;
 	for (const meta of self.metas) {
-		if (meta === (event as Event & { changedMeta?: unknown }).changedMeta) {
+		if (meta === readPayload<{ changedMeta?: unknown }>(event).changedMeta) {
 			const selectList = props.selectList;
 			if (selectList && self.contains(selectList.target as HTMLElement)) {
 				selectList.close();

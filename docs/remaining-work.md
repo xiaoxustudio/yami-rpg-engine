@@ -917,6 +917,14 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **修法**：新增 `scanAddListenerCalls()`——**先剥注释**，再按括号配对取出每条调用的完整实参，据此判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。
 - **修完的实测**：`.vue` 内 add-without-remove **5 → 0**（验收 ③ 达成）、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例，见上）。
 
+**E1 第四刀（2026-09-12）：读取侧断言迁移（ui-kit 8 处），`as Event & {` 39 → 37**
+
+- 与第三刀配对：脚本把**读取侧**的 `(x as Event & { … })` / `x as Event & { … }` 换成 `readPayload<{ … }>(x)`。本刀限定 **ui-kit**（4 文件 / 8 处：`select-box-api.spec`、`tree-list-interactions.spec`、`YMFileBodyPane.spec`、`YMParameterPane.vue`）。
+- **两个类型坑（都被 `pnpm lint` 当场抓住）**：① `readPayload` 一开始返回 `Partial<T>`，而既有测试变量声明为 `Event & { … }` ⇒ **TS2322** ×4；② 改成返回 `T` 仍不可赋值 ⇒ 最终返回 **`PayloadEvent<T>`（= `Event & T`）**，与旧断言类型完全一致才通过。**教训**：把散落断言收进 helper 时，返回类型要与旧断言**逐字等价**，否则会连带改一片调用方。
+- **editor 侧剩余 30 处**（占剩余 37 中的 30）留待下批：那里的 import 要走 `@ui-kit` 门面导出（脚本按相对路径算会指错文件）。
+- **⚠️ 过程事故与修复（值得记一笔）**：本刀第一次尝试时脚本写坏了 import 路径，我用 `git checkout -- packages/editor/src packages/ui-kit/src` 想回滚，结果**把并行协作者未提交的 `i18n/convert.ts` 改动一起回滚了**（该文件当时在 `stash@{1}` 标为 "unrelated i18n @-escape work (not mine)"）。已用 `git checkout 'stash@{1}' -- packages/editor/src/i18n/convert.ts` **精确恢复**该文件（+16/−7，未提交，保持其原作者状态），并 `git restore --staged` 取消暂存以免误提交。**规矩**：回滚只能**逐个文件给路径**，绝不能整目录 `git checkout -- <dir>`；共享工作区里"别人的未提交改动"随时可能被扫掉。
+- **指标**：`as Event & {` **39 → 37**（ui-kit 7 / editor 30）；helper 使用量：`createPayloadEvent` 34 处、`readPayload` 11 处；ui-kit **104 文件 736/736**、editor **236 文件 1988/1988**、`pnpm lint` 0/0。
+
 **E1 第三刀（2026-09-12）：事件载荷的散落断言收成一处（`as Event & {` 72 → 39）**
 
 - 现状：自定义事件（`write`/`input`/`select`/`popup`/`change` …）长期靠 `const e = new Event('write') as Event & { value: boolean }; e.value = v;` 传载荷，派发侧与监听侧各自写一遍断言。
