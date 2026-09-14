@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, onMounted, onBeforeUnmount } from 'vue';
+import { h, ref, shallowRef, onMounted, onBeforeUnmount } from 'vue';
 import {
 	addClass,
 	hasClass,
@@ -473,6 +473,28 @@ function updateFiles(): void {
 	resize();
 }
 
+/** M3 切片 3：可见行的**数据模型**（供 `v-for` 换源前的等价性验证与后续模板化使用） */
+export interface FileBodyRowModel {
+	/** 可见窗口起点（含） */
+	start: number;
+	/** 可见窗口终点（不含） */
+	end: number;
+	/** 每行（列表视图）或每行单元（平铺视图）数量 */
+	countPerLine: number;
+	/** 当前视图模式 */
+	viewMode: string;
+	/** 可见行的稳定 key，顺序与 DOM 中的行一致 */
+	keys: string[];
+}
+
+const rowModel = shallowRef<FileBodyRowModel>({
+	start: 0,
+	end: 0,
+	countPerLine: 0,
+	viewMode: 'list',
+	keys: []
+});
+
 function resize(): void {
 	const node = el.value as FileBodyPaneApi;
 	const ch = node.clientHeight;
@@ -524,7 +546,19 @@ function resize(): void {
 				content.insertBefore(element, next);
 			}
 		}
+		// M3 切片 3：把"当前可见行"写成数据模型（与刚渲染出的 DOM 同序），供等价性用例与后续 `v-for` 使用
+		const keys: string[] = [];
+		for (let i = start; i < end; i++) {
+			const element = els[i];
+			if (element?.rowKey !== undefined) keys.push(element.rowKey);
+		}
+		rowModel.value = { start, end, countPerLine: cpl, viewMode: viewMode ?? 'list', keys };
 	}
+}
+
+/** M3 切片 3：读取可见行模型（只读副本，避免调用方改到内部状态） */
+function getRowModel(): FileBodyRowModel {
+	return { ...rowModel.value, keys: [...rowModel.value.keys] };
 }
 
 function applyGridMetrics(metrics: GridMetrics): void {
@@ -1874,6 +1908,8 @@ onMounted(() => {
 		updateViewMode,
 		updateFiles,
 		resize,
+		// M3 切片 3：可见行模型（数据化渲染的前置）
+		getRowModel,
 		computeGridProperties,
 		updateContentSize,
 		updateContentOffset,

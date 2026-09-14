@@ -259,7 +259,11 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口）**
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口；切片 4：可见行模型 ↔ DOM 等价）**
+
+**已落地（切片 4，文件 body 的可见行模型）**：`YMFileBodyPane.vue` 新增 `FileBodyRowModel`（`{ start, end, countPerLine, viewMode, keys }`）与只读访问 `getRowModel()`——`resize()` 在渲染完可见窗口后，用**同一批元素**的 `rowKey` 填出模型（顺序即 DOM 顺序）。
+
+**为什么这是换源的前置**：M3 要把"行的产生"从 `createFileElement` 搬到模板 `v-for`，搬之前必须先证明**派生层算出的行序列**与**当前真正渲染出的行序列**逐项一致（顺序、key、窗口边界）。新增 `YMFileBodyPane.row-model.spec.ts`（5 例）就做这件事：① 模型的 key 序列与 DOM 行元素**逐项相等**；② 模型窗口切片 == `deriveFileRows(list).slice(start, end)`；③ 模型带出 `start/end/countPerLine/viewMode`；④ 空目录两边都为空；⑤ `getRowModel()` 返回**副本**（改它不影响内部状态）。**5 例全绿 ⇒ 换源有了可对照的"行序列真值"。**
 
 **已落地（切片 3，收口 `command-api.ts` 的建元素调用）**：该文件原本自己有一份 `renderElement`（内含 `document.createElement`）与 **9 处**直接建节点（`li` 行 ×4、`text` ×2、`ellipsis`、`blank`、`createCommandListElement` 的根节点）——全部改走 `utils/detached.ts` 的 `renderDetached`/`renderDetachedDiv`，并把随之冗余的 `addClass(el, …)` 去重（class 直接由 `renderDetachedDiv([...])` 给）、删掉变成死导入的 `render`。⇒ **`command-api.ts` 的 `document.createElement` 10 → 0**（含注释提及也清掉，避免污染口径）。全仓 `createElement` **131 → 121**（ui-kit/components 105 → 95）。
 
