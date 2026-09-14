@@ -193,6 +193,8 @@ export {
 export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
+// P4b：元素数据的存储层（WeakMap + 原型访问器）放在 ui-kit，editor 侧同路径再导出
+export { getElementData } from './utils/element-data';
 export * from './utils/payload-event';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
 export { EventBus } from './utils/event-bus';

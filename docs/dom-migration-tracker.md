@@ -47,12 +47,12 @@
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/utils        | 13 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1140 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 171 | 20 | 0 | 0 |
+| ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
+| 合计                  | 1141 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1140**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1141**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -95,7 +95,7 @@
 
 | 文件 | 行数 | 命中 | 豁免注释 |
 | --- | --- | --- | --- |
-| packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1113 | 56 | - |
+| packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2314 | 38 | - |
@@ -103,7 +103,7 @@
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2570 | 26 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2618 | 26 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
@@ -118,7 +118,7 @@
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 272 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 418 | 11 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
-| packages/ui-kit/src/utils/radio-proxy.ts | 224 | 11 | - |
+| packages/ui-kit/src/utils/radio-proxy.ts | 223 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
 | packages/editor/src/data/transition-window.ts | 1403 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
@@ -353,7 +353,7 @@
 | packages/editor/src/commands/command-object.ts | 508 | 0 | - |
 | packages/editor/src/commands/command-registry.ts | 4 | 0 | - |
 | packages/editor/src/commands/event-editor-register.ts | 5 | 0 | - |
-| packages/editor/src/commands/event-editor.ts | 252 | 0 | - |
+| packages/editor/src/commands/event-editor.ts | 260 | 0 | - |
 | packages/editor/src/commands/property-window/move-element-property-window.ts | 27 | 0 | - |
 | packages/editor/src/commands/property-window/move-light-property-window.ts | 23 | 0 | - |
 | packages/editor/src/commands/property-window/set-animation-property-window.ts | 27 | 0 | - |
@@ -958,7 +958,7 @@
 | packages/editor/src/engine/webgl/vector2.ts | 65 | 0 | - |
 | packages/editor/src/enum/enum-context.ts | 95 | 0 | - |
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
-| packages/editor/src/i18n/convert.ts | 133 | 0 | - |
+| packages/editor/src/i18n/convert.ts | 103 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 100 | 0 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 93 | 0 | - |
@@ -1168,7 +1168,7 @@
 | packages/editor/src/utils/color-utils.ts | 2 | 0 | - |
 | packages/editor/src/utils/config.ts | 54 | 0 | - |
 | packages/editor/src/utils/css.ts | 24 | 0 | - |
-| packages/editor/src/utils/element-data.ts | 105 | 0 | - |
+| packages/editor/src/utils/element-data.ts | 11 | 0 | - |
 | packages/editor/src/utils/event-accessors.ts | 21 | 0 | - |
 | packages/editor/src/utils/event-bus.ts | 2 | 0 | - |
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |
@@ -1225,13 +1225,14 @@
 | packages/ui-kit/src/composables/useMenuService.ts | 16 | 0 | - |
 | packages/ui-kit/src/composables/useTheme.ts | 8 | 0 | - |
 | packages/ui-kit/src/composables/useWordList.ts | 45 | 0 | - |
-| packages/ui-kit/src/index.ts | 241 | 0 | - |
+| packages/ui-kit/src/index.ts | 244 | 0 | - |
 | packages/ui-kit/src/theme/theme.ts | 52 | 0 | - |
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 113 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 115 | 0 | - |
-| packages/ui-kit/src/utils/payload-event.ts | 31 | 0 | - |
+| packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |
 | packages/ui-kit/src/utils/timer.ts | 41 | 0 | - |
 | packages/ui-kit/src/utils/tree-data-context.ts | 110 | 0 | - |

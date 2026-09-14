@@ -459,6 +459,13 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 > 🚧 **进行中（2026-09-11，B3 首刀）**：**11 个零访问字段已删除**（`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`）——删前逐一复核「全仓无任何引用」（`initText` 的 4 处命中经查是 `Variable.vue` 的局部变量与 `stores/localization.ts` 的一处类型残留，已一并清掉）。`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck / vue-tsc / oxlint 全绿。剩余：按组件把 `this.x` / `el.x` 改成显式 `getElementData(el)`（与 P2b 同批）。
 
+> 🚧 **P4b 第四刀（2026-09-12）：把元素数据存储层迁到 ui-kit，解除包边界阻塞**。
+>
+> - **发现的阻塞**：P4b 的"逐字段把 `this.x` 改成 `getElementData(el).x`"在两个**巨石元素工厂**里最有价值——`YMCommandList/command-api.ts`（**133 处**：`start` 54、`end` 21、`origin` 15、`active` 15、`focusing` 9、`dragging` 8、`anchor` 7、`inserting` 4）与 `YMTreeList/tree-api.ts`（**31 处**：`dragging` 10、`selections` 6、`keyword` 6、`timer` 6、`hiddenNodes` 2、`lastText` 1）。但这两个文件在 **ui-kit**，而 `getElementData` 一直住在 **editor** 的 `utils/element-data.ts`——ui-kit 不能反向依赖 editor，所以这批迁移此前**结构性做不到**（文档里"与 P2b 同批做"的说法掩盖了这个包边界问题）。
+> - **做法**：实现整体搬到 **`packages/ui-kit/src/utils/element-data.ts`**（WeakMap + 69 字段访问器 + `getElementData`，行为逐字不变），并从 `@ui-kit` 入口导出；editor 侧 `utils/element-data.ts` 改为**同路径再导出**——调用点零改动，且 `main.ts` 的"副作用导入即安装访问器"依然成立（再导出会求值 ui-kit 的实现）。
+> - **验证**：`pnpm lint` 0/0、ui-kit **104 文件 736/736**、editor **236 文件 1988/1988**、`docs:check` OK；tracker 扫描文件 1140 → 1141（多一份实现）。
+> - **下一刀**：从**选区簇**（`start`/`end`/`origin`/`active`/`anchor`，共 112 处）开始逐字段迁移——它们被 M1 的 43 条行为用例覆盖得最密（选择/多选/翻页/滚动），迁移后行为若有偏差会被立刻发现。
+
 > 🚧 **P4b 第三刀（2026-09-12）：再迁 1 个内部字段，`DATA_FIELDS` 70 → 69（访问器 138）**。
 >
 > - `lastScrollTop`（滚动同步的"上次位置"记忆，共 8 处引用 / 2 文件：`animation/animation-list.ts` 的 `layerListScroll` 与时间线滚动、`commands/event-editor-initialize.ts` 的 `saveScroll`/`restoreScroll`）→ 全部改为 `getElementData(el).lastScrollTop`，从 `DATA_FIELDS` 摘除。`restoreScroll` 里回写 `scrollTop` 时用 `Number(... ?? 0)`，避免把 `unknown` 直接赋给数值属性。

@@ -236,6 +236,8 @@
 
 - 2026-09-12 **P2b-1 第一刀：命令列表的元素 API 契约**。① 第 34 轮审计指出：26 个 `*-api.ts` 里 25 个已有 `XxxApi`，唯独巨石 `YMCommandList/command-api.ts` 只有 `Record<string, (...args) => any>`，消费方各自造形状。② 新增 `export interface CommandListElementApi`（消费方实际使用的 27 个方法精确签名 + 索引签名兜底），并在 `@ui-kit` 入口导出。③ **接线证明**：editor 的 `EventCommandListShape` 改为派生自该契约 ⇒ "元素上有哪些方法"只此一份定义，方法名拼错现在会在编译期暴露。④ **刻意取舍**：`createCommandListElement` 的返回类型**未**收紧——试改后 `pnpm lint` 立刻报 **14 处 TS2352**（既有用例把返回值断言成更丰富的本地形状），归到 M5 与用例一起改。**教训**：收紧返回值类型前先数一遍谁在拿它做 `as` 断言。**门禁**：`pnpm lint` 0/0、ui-kit **104 文件 736/736**、editor **236 文件 1988/1988**、`docs:check` OK。
 
+- 2026-09-12 **P4b 第四刀：元素数据存储层迁到 ui-kit（解除包边界阻塞）**。① **发现**：P4b 逐字段迁移的主战场是两个**ui-kit** 里的巨石元素工厂（`command-api.ts` 133 处、`tree-api.ts` 31 处，共 164），而 `getElementData` 一直住在 **editor** ⇒ ui-kit 不能反向依赖 editor，这批迁移此前**结构性做不到**（原文档"与 P2b 同批"的说法掩盖了包边界问题）。② **做法**：实现搬到 `packages/ui-kit/src/utils/element-data.ts`（WeakMap + 69 字段访问器 + `getElementData`，行为逐字不变），`@ui-kit` 入口导出；editor 侧同路径**再导出**（调用点零改动，`main.ts` 的副作用导入仍会求值实现 ⇒ 访问器照旧安装）。③ **字段用量图**已记入 `remaining-work.md`，下一刀从**选区簇**（`start`/`end`/`origin`/`active`/`anchor` = 112 处）开始，它们被 M1 的 43 条用例覆盖最密。**门禁**：`pnpm lint` 0/0、ui-kit **104 文件 736/736**、editor **236 文件 1988/1988**、`docs:check` OK（扫描文件 1140 → 1141）。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
@@ -244,7 +246,7 @@
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1140（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
+| 扫描文件总数                         | 1141（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
 | 待迁移命中文件（oxlint 判定仍在用）  | **0**（初始 299；P1b 十七刀 −112 → 余 46 → C1 白名单归零：设计豁免 45 + 临时豁免 1） |
 | 带豁免注释文件（`oxlint-disable`）   | **0**（C2 执行前 295；C1 后白名单由 `overrides` 承担，**豁免机制退役**） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
