@@ -220,6 +220,8 @@
 
 - 2026-09-12 **R2b 迁移⑬：填「空 label 占位」，扫描面 125 → 110（−95% 起点 2130）**。① 分类剩余键时发现一种**从未单列过的承载形态**：设置窗口的控件写成 `<div class="text" />` + `<NumberBox id="setting-server-port" v-tip="…tip" />`——tip 早已由迁移⑤承担，**label 却还是空占位**（过去由本地化器写进去），因此这些键一直赖在扫描面里。② 做法：把紧邻控件行的空占位填成 `<div class="text">{{ t('components.<键>.label') }}</div>`，共 **15 个键 / 1 个 SFC**（`tools/Setting.vue`；`EventSearchString.vue` 的 2 个键形态不同，留待下批）。③ **可复用判据**：`label` 的承载者是"**控件前一个兄弟元素**"——与 `v-tip` 取 title 的约定同源（`parseLocalTip` 也是读前一个兄弟的文本），所以找 label 缺口要看**控件前一行是否为空 `.text` 占位**。④ **方法沉淀**：本轮的"按承载形态分类"脚本（`无 options / loadItems 字面量名 / 变量名 / 无 loadItems 站点` 等桶）比逐键看更快定位可批量处理的一组，值得作为 R2b 后续每轮的起手式。**指标**：扫描面 **125 → 110**、模板承担键 **2004 → 2019**。**门禁**：`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **235 文件 1983/1983**、防漂移用例 4/4、`docs:check` OK。
 
+- 2026-09-12 **R2b 迁移⑭：模块侧选项名的非 Vue 路径，扫描面 110 → 105**。① 分类发现一批键的调用方是 **`.ts` 元素工厂/数据模块**（`data/transition-window.ts`、`components/condition-list.ts` 等），它们用不了 `useLocalizedOptions`（组合式函数，依赖 `useI18n()`/`watchEffect`，只能进 setup）。② 新增 **`utils/localized-items.ts`**：`localizedItems(key, values)` 用 `getYamiI18n().global.t` 生成 `{name, tip, value}`；`applyLocalizedItems(key, values, apply)` 立即应用并**订阅 `localizationchange`**（语言切换重挂）并返回取消订阅函数——等价于本地化器原先替模块做的事，但**责任移到调用点**。③ 转换 5 处 / 5 键 / 2 个 `.ts`（配 5 例 spec：立即应用、事件重挂、切换语言取到新文案、取消订阅）。④ **判据改两处**：生成器与防漂移用例都接受 `applyLocalizedItems('<键>'`，**扫描面从"仅 `.vue`"扩到"`.vue` + `.ts`"**；口径措辞由「模板已承担」改为「**代码已承担**」。⑤ **同样的坑第二次**：只改生成器忘改 spec，防漂移用例当场报 `expected [ …2023 ] to deeply equal [ …2018 ]`（与迁移⑦一致）——两份实现必须同改。**指标**：扫描面 **110 → 105**（−95% 起点 2130）、代码承担键 **2019 → 2024**、editor **236 文件 1988/1988**、`pnpm lint` 0/0、`vue-tsc` 0 新增、`docs:check` OK。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
@@ -228,7 +230,7 @@
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1138（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
+| 扫描文件总数                         | 1139（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
 | 待迁移命中文件（oxlint 判定仍在用）  | **0**（初始 299；P1b 十七刀 −112 → 余 46 → C1 白名单归零：设计豁免 45 + 临时豁免 1） |
 | 带豁免注释文件（`oxlint-disable`）   | **0**（C2 执行前 295；C1 后白名单由 `overrides` 承担，**豁免机制退役**） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |
@@ -237,7 +239,7 @@
 | `document.querySelector*` 处数       | 56                                  |
 | `document.createElement` 处数        | 121（其中 ui-kit/components 95；含 P1b 各刀留下的注释提及） |
 | `appendChild` 调用                   | 122                                 |
-| `addEventListener` 调用              | 567                                 |
+| `addEventListener` 调用              | 568                                 |
 | `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 20（11 个文件；残余 = 动态 id / 外壳元素 / 基础设施 / 白名单，见 P5b 结项；B4 起点 1481，最初 1489） |
 | `new DOMParser()` 处数（字符串模板建 DOM） | 0（B1/R1 前 1 处，见 P7）      |
 | 使用 `useCommandSchema` 的命令表单   | 142 个                              |

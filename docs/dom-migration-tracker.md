@@ -41,18 +41,18 @@
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 32 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/utils        | 33 | 11 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 23 | 17 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 0 |
 | ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 80 | 11 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 12 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1138 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 567 | 171 | 20 | 0 | 0 |
+| 合计                  | 1139 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1138**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1139**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -120,7 +120,7 @@
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 223 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
-| packages/editor/src/data/transition-window.ts | 1405 | 10 | - |
+| packages/editor/src/data/transition-window.ts | 1403 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 187 | 10 | - |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
@@ -304,10 +304,11 @@
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
 | packages/editor/src/services/project/setting-config/index.ts | 142 | 1 | - |
 | packages/editor/src/stores/browser.ts | 582 | 1 | - |
-| packages/editor/src/tools/condition-list.ts | 320 | 1 | - |
+| packages/editor/src/tools/condition-list.ts | 314 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/element-registry.ts | 60 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
+| packages/editor/src/utils/localized-items.ts | 42 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
 | packages/editor/src/utils/timer.ts | 246 | 1 | - |
 | packages/ui-kit/src/components/basic/YMFormButtons/YMFormButtons.vue | 71 | 1 | - |
@@ -617,8 +618,8 @@
 | packages/editor/src/components/tools/FileActorSprite.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/FileAnimationSprite.vue | 72 | 0 | - |
 | packages/editor/src/components/tools/FileEventParameter.vue | 70 | 0 | - |
-| packages/editor/src/components/tools/Font.vue | 47 | 0 | - |
-| packages/editor/src/components/tools/FontSize.vue | 45 | 0 | - |
+| packages/editor/src/components/tools/Font.vue | 48 | 0 | - |
+| packages/editor/src/components/tools/FontSize.vue | 46 | 0 | - |
 | packages/editor/src/components/tools/IfBranch.vue | 82 | 0 | - |
 | packages/editor/src/components/tools/IfCondition.vue | 798 | 0 | - |
 | packages/editor/src/components/tools/ImageClip.vue | 129 | 0 | - |
@@ -644,7 +645,7 @@
 | packages/editor/src/components/tools/ProjectSettings.vue | 578 | 0 | - |
 | packages/editor/src/components/tools/QrCode.vue | 94 | 0 | - |
 | packages/editor/src/components/tools/RegionGetter.vue | 81 | 0 | - |
-| packages/editor/src/components/tools/Rename.vue | 25 | 0 | - |
+| packages/editor/src/components/tools/Rename.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/RequestKeyValue.vue | 26 | 0 | - |
 | packages/editor/src/components/tools/resource/ResourceList.vue | 133 | 0 | - |
 | packages/editor/src/components/tools/Resource.vue | 99 | 0 | - |
@@ -655,10 +656,10 @@
 | packages/editor/src/components/tools/SetButtonProperty.vue | 199 | 0 | - |
 | packages/editor/src/components/tools/SetDialogBoxProperty.vue | 174 | 0 | - |
 | packages/editor/src/components/tools/SetImageProperty.vue | 126 | 0 | - |
-| packages/editor/src/components/tools/SetKey.vue | 21 | 0 | - |
+| packages/editor/src/components/tools/SetKey.vue | 22 | 0 | - |
 | packages/editor/src/components/tools/SetNumberOperand.vue | 696 | 0 | - |
 | packages/editor/src/components/tools/SetProgressBarProperty.vue | 145 | 0 | - |
-| packages/editor/src/components/tools/SetQuantity.vue | 26 | 0 | - |
+| packages/editor/src/components/tools/SetQuantity.vue | 27 | 0 | - |
 | packages/editor/src/components/tools/SetTextBoxProperty.vue | 112 | 0 | - |
 | packages/editor/src/components/tools/SetTextProperty.vue | 164 | 0 | - |
 | packages/editor/src/components/tools/SetTileTag.vue | 56 | 0 | - |
@@ -677,7 +678,7 @@
 | packages/editor/src/components/tools/VariableGetter.vue | 111 | 0 | - |
 | packages/editor/src/components/tools/VariableGetter2.vue | 125 | 0 | - |
 | packages/editor/src/components/tools/WindowProgress.vue | 52 | 0 | - |
-| packages/editor/src/components/tools/Zoom.vue | 24 | 0 | - |
+| packages/editor/src/components/tools/Zoom.vue | 25 | 0 | - |
 | packages/editor/src/components/tree-data-context.ts | 17 | 0 | - |
 | packages/editor/src/components/tree-list.ts | 39 | 0 | - |
 | packages/editor/src/components/type-registry.ts | 13 | 0 | - |
@@ -995,7 +996,7 @@
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
-| packages/editor/src/localize/template-localized.ts | 2014 | 0 | - |
+| packages/editor/src/localize/template-localized.ts | 2040 | 0 | - |
 | packages/editor/src/log/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
