@@ -459,6 +459,14 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 > 🚧 **进行中（2026-09-11，B3 首刀）**：**11 个零访问字段已删除**（`conditionIcon`、`eventEnabled`、`hiddenState`、`lockState`、`groupText`、`attrKey`、`annotated`、`initText`、`attrValue`、`relationMark`、`collisionMark`）——删前逐一复核「全仓无任何引用」（`initText` 的 4 处命中经查是 `Variable.vue` 的局部变量与 `stores/localization.ts` 的一处类型残留，已一并清掉）。`DATA_FIELDS` **83 → 72**（访问器 166 → 144）；typecheck / vue-tsc / oxlint 全绿。剩余：按组件把 `this.x` / `el.x` 改成显式 `getElementData(el)`（与 P2b 同批）。
 
+> ⛔ **P4b 第五刀（2026-09-12）：试做「选区簇」迁移后**判定为"不该单独做"**（负结果，已回滚）**。
+>
+> - **试了什么**：脚本把 `commandListPrototype` 内的 `this.start/end/origin/active/anchor` **112 处**换成 `getElementData(this).<字段>`（限定在原型对象范围内、确认无内层 `function` 重绑定 `this`）。**行为是对的**：命令列表 5 个 spec **76 例全绿**。
+> - **为什么仍然回滚**：`pnpm lint` 的 TS 规则立刻报错——① 直接换成 `getElementData(this).x` ⇒ `unknown` 参与运算（**TS18046/TS2345**）；② 加一个类型化局部视图 `listData(this)`（`CommandListData` 接口）后变成**可空性**问题：**TS18047/TS2345/TS2538**。
+> - **根因（关键认识）**：原型访问器是**天然无类型**的（`this: any`），既有代码正是靠这一点做**隐式收窄**——`if (this.start !== null) { … this.start … }` 这种写法通过访问器没问题，换成"每次重新读一份数据"的表达式后，**收窄不会跨表达式保留**。忠实迁移要求把每个函数开头的 `const { start, end } = listData(this)` 取成**局部变量**（约 30 个函数），那是**真正的重构**，不是脚本能替的。
+> - **结论与排期**：**不要**在 `command-api.ts` / `tree-api.ts` 上单独做逐字段 P4b 迁移；这批工作应当**并入 M3/M5**——那些函数本来就要重写，重写时自然带类型。第四刀的"存储层迁 ui-kit"仍然是有效前置（已提交）。
+> - **保留的量化**：字段用量表（`start` 54 / `end` 21 / `origin` 15 / `active` 15 / `focusing` 9 / `dragging` 8 / `anchor` 7 / `inserting` 4；tree-api 侧 31 处）仍作为 M3/M5 的验收输入。
+
 > 🚧 **P4b 第四刀（2026-09-12）：把元素数据存储层迁到 ui-kit，解除包边界阻塞**。
 >
 > - **发现的阻塞**：P4b 的"逐字段把 `this.x` 改成 `getElementData(el).x`"在两个**巨石元素工厂**里最有价值——`YMCommandList/command-api.ts`（**133 处**：`start` 54、`end` 21、`origin` 15、`active` 15、`focusing` 9、`dragging` 8、`anchor` 7、`inserting` 4）与 `YMTreeList/tree-api.ts`（**31 处**：`dragging` 10、`selections` 6、`keyword` 6、`timer` 6、`hiddenNodes` 2、`lastText` 1）。但这两个文件在 **ui-kit**，而 `getElementData` 一直住在 **editor** 的 `utils/element-data.ts`——ui-kit 不能反向依赖 editor，所以这批迁移此前**结构性做不到**（文档里"与 P2b 同批做"的说法掩盖了这个包边界问题）。
