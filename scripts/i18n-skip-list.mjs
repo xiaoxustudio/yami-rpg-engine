@@ -83,7 +83,11 @@ for (const [key, item] of Object.entries(components)) {
 }
 covered.sort();
 
-const total = Object.keys(components).filter((k) => k !== '[comment]').length;
+/**
+ * 分母口径：**排除 `[` 前缀的分节键**（`[comment]` 之类）。它们既不是控件、也没有 `t()` 承载，
+ * 生成器从来不会把它们判为"已承担"——若仍计入分母，扫描面就会被恒久高估 17 个键。
+ */
+const total = Object.keys(components).filter((k) => k !== '[comment]' && k[0] !== '[').length;
 const content = `/**
  * 模板已承担的本地化键（R2b 迁移②③，**本文件由 scripts/i18n-skip-list.mjs 生成，勿手改**）。
  *
