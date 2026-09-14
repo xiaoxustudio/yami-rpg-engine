@@ -6,6 +6,7 @@ import { vFocus } from '@app/directives/focus';
 import { vTip } from '@app/directives/tip';
 import '@app/utils/element-data.ts';
 import '@app/main/startup.ts';
+import { emitCustom } from '@app/events/custom-events';
 
 window.addEventListener('error', (e: ErrorEvent) => {
 	if (e.message === 'ResizeObserver loop limit exceeded') {
@@ -23,5 +24,5 @@ app.directive('tip', vTip);
 const el = document.getElementById('app');
 if (el) {
 	app.mount(el);
-	window.dispatchEvent(new Event('vue-app-mounted'));
+	emitCustom('vue-app-mounted');
 }

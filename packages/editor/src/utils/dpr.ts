@@ -1,3 +1,4 @@
+import { emitCustom } from '@app/events/custom-events';
 window.addEventListener(
 	'resize',
 	(function IIFE() {
@@ -5,7 +6,7 @@ window.addEventListener(
 		return (_event: Event): void => {
 			if (dpr !== window.devicePixelRatio) {
 				dpr = window.devicePixelRatio;
-				window.dispatchEvent(new Event('dprchange'));
+				emitCustom('dprchange');
 			}
 		};
 	})()

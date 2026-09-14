@@ -7,6 +7,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { File } from './file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { DirectoryTree, registerDirectoryTree } from '@app/services/file-system/directory-tree.ts';
+import { emitCustom } from '@app/events/custom-events';
 
 // oxlint-disable-next-line no-explicit-any
 type DirectoryMethod = (...args: any[]) => any;
@@ -59,7 +60,7 @@ export const Directory: {
 			Data.manifest.update();
 		},
 		onChanged: () => {
-			window.dispatchEvent(new Event('dirchange'));
+			emitCustom('dirchange');
 		},
 		getChanges: () => Data.manifest.changes,
 		onSaved: (metas: Array<unknown>) => {

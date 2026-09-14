@@ -947,6 +947,12 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **一个刻意的取舍**：`createCommandListElement` 的返回类型**没有**改成 `HTMLElement & CommandListElementApi`。试过之后 `pnpm lint` 立刻报 14 处 **TS2352**——既有用例会把返回值断言成各自更丰富的本地形状，精确返回类型让这些断言变成"不可比"。⇒ 归到 **M5 收尾**（连同用例一起改），本刀只做"契约可 import"这一步。**教训**：把返回值类型收紧前，先数一遍有多少调用方在拿它做 `as` 断言。
 - **指标**：`pnpm lint` 0/0、ui-kit **105 文件 744/744**、editor **237 文件 1992/1992**、`docs:check` OK。
 
+**E1 第七刀（2026-09-12）：再迁 3 处派发；并把"监听侧为什么不机械迁移"写清楚**
+
+- 迁移：`file/directory-object.ts`（`dirchange`）、`utils/dpr.ts`（`dprchange`）、`main.ts`（`vue-app-mounted`）三处 `window.dispatchEvent(new Event('<名>'))` → `emitCustom('<名>')`。加上第六刀的 4 处，**类型化通道已覆盖 7 个派发点**。
+- **监听侧不机械迁移（有理由）**：既有的监听处理器签名是 `(event: Event) => void`，而 `onCustom` 的回调是 `(payload, event) => void` ⇒ 直接替换要改处理器签名；而多数处理器的第一件事就是读一两个字段，**在处理器开头用 `readPayload<T>(event)` 收口**更小的影响面。⇒ 约定：**派发走 `emitCustom`，监听按需在开头 `readPayload`**；两者都在同一个 `events/custom-events.ts` 里，名册只有一份。
+- **指标**：editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK；`pnpm events:surface` 仍报 15 个自定义事件（通道没有改变事件名册）。
+
 **E1 第六刀（2026-09-12）：自定义事件的类型化通道（`emitCustom` / `onCustom`）**
 
 - **决定**：E1 的最后一项是"16 个自定义事件改强类型通道"，原计划里有两条路（store action / `mitt` 事件表）。`mitt` 已在第五刀**删除**（0 import），本刀落地另一条：**不换机制，只把类型收口**——`packages/editor/src/events/custom-events.ts` 定义 `CustomEventPayloads`（15 个事件名 → 载荷形状，与 `pnpm events:surface` 的名册一致），提供：
