@@ -752,24 +752,11 @@ function createFlatItems(dir: FileBodyFile[]): void {
 	elements.count = dir.length;
 }
 
-function createFolderElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi {
-	const node = el.value as FileBodyPaneApi;
-	const context = file.getContext(node);
-	let element = context.element;
-	if (element === undefined) {
-		element = renderDetachedDiv('file-body-item') as unknown as FileBodyItemApi;
-		element.file = file;
-		element.context = context;
-		context.element = element;
-		const { selections: sels } = { selections };
-		if (sels.length !== 0 && sels.includes(file)) {
-			addClass(element, 'selected');
-		}
-	}
-	if (rowKey !== undefined) element.rowKey = rowKey;
-	element.changed = true;
-	return element;
-}
+/**
+ * M5（换源后清理）：`createFolderElement` / `createFileElement` 已随切片 5b 删除——
+ * 行元素现在由模板渲染，登记工作由 `bindRowElement` 承担（做的是同一件事：
+ * 挂 `file`/`context`/`rowKey` 并标记 `changed`），这两个函数因此成了死代码。
+ */
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
@@ -784,21 +771,6 @@ function updateFolderElement(element: FileBodyItemApi): void {
 		element.fileIcon = fileIcon;
 		element.nameBox = nameBox;
 	}
-}
-
-function createFileElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi {
-	const node = el.value as FileBodyPaneApi;
-	const context = file.getContext(node);
-	let element = context.element;
-	if (element === undefined) {
-		element = renderDetachedDiv(['file-body-item', 'file-item']) as unknown as FileBodyItemApi;
-		element.file = file;
-		element.context = context;
-		context.element = element;
-	}
-	if (rowKey !== undefined) element.rowKey = rowKey;
-	element.changed = true;
-	return element;
 }
 
 function updateFileElement(element: FileBodyItemApi): void {
