@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2129 键降到
- * 34 键。
+ * 25 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -159,6 +159,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'autoTile-x',
 	'autoTile-y',
 	'block',
+	'block-asynchronous-label',
 	'block-note',
 	'callEvent',
 	'callEvent-actor',
@@ -386,6 +387,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'downloadFile-callback',
 	'downloadFile-data',
 	'downloadFile-header',
+	'downloadFile-isBackground',
 	'downloadFile-isBackground-path',
 	'downloadFile-method',
 	'downloadFile-rateCallback',
@@ -446,6 +448,10 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'event-commands-gutter-background',
 	'event-open-list',
 	'event-search-string',
+	'event-search-string-case-insensitive',
+	'event-search-string-match-line',
+	'event-search-string-regex',
+	'event-search-string-search',
 	'event-type',
 	'exportLanguage',
 	'exportLanguage-first',
@@ -699,6 +705,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'httpRequest-responseType',
 	'httpRequest-timeout',
 	'httpRequest-url',
+	'httpRequest-withCredentials',
 	'if',
 	'if-branch',
 	'if-branch-conditions',
@@ -746,6 +753,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'if-condition-string-operand-type',
 	'if-condition-string-operation',
 	'if-condition-type',
+	'if-else-label',
 	'importLanguage',
 	'importLanguage-language',
 	'insertImage',
@@ -1770,6 +1778,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'switch-condition-string-value',
 	'switch-condition-type',
 	'switch-condition-variable-variable',
+	'switch-default-label',
 	'switch-variable',
 	'switchCollisionSystem',
 	'switchCollisionSystem-operation',

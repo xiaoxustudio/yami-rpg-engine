@@ -32,7 +32,7 @@
 			<SelectBox id="httpRequest-responseType"
 				v-tip="t('components.httpRequest-responseType.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-responseType')" v-model="form.responseType" />
-			<div class="text">WithCredentials</div>
+			<div class="text">{{ t('components.httpRequest-withCredentials.label') }}</div>
 			<CheckBox
 				class="standard"
 				id="httpRequest-withCredentials"

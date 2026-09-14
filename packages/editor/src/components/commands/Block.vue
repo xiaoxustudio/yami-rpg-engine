@@ -15,7 +15,7 @@
 				:ref="registryRef(fieldEls, 'block-asynchronous')" class="standard" v-model="asynchronous"
 			><div class="text" id="block-asynchronous-label"
 				:ref="registryRef(fieldEls, 'block-asynchronous-label')"
-				v-tip="t('components.block-asynchronous-label.tip')">Asynchronous</div></CheckBox
+				v-tip="t('components.block-asynchronous-label.tip')">{{ t('components.block-asynchronous-label.content') }}</div></CheckBox
 		>
 	</WindowFrame>
 </template>

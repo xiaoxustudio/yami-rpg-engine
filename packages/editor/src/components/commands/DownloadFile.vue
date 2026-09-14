@@ -42,7 +42,7 @@
 				filter="event"
 				v-model="form.rateCallback"
 			/>
-			<div class="text">IsBackground</div>
+			<div class="text">{{ t('components.downloadFile-isBackground.label') }}</div>
 			<CheckBox
 				class="standard"
 				id="downloadFile-isBackground"

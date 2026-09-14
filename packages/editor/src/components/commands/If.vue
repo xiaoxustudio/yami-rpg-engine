@@ -16,7 +16,7 @@
 				:ref="registryRef(fieldEls, 'if-else')" v-model="form.else" class="standard"
 			><div class="text" id="if-else-label"
 				:ref="registryRef(fieldEls, 'if-else-label')"
-				v-tip="t('components.if-else-label.tip')">Else</div></CheckBox
+				v-tip="t('components.if-else-label.tip')">{{ t('components.if-else-label.content') }}</div></CheckBox
 		>
 	</WindowFrame>
 </template>

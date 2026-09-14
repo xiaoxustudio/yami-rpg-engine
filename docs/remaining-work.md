@@ -14,7 +14,7 @@
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
 | R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
-| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭：1782 → **2095** 键由代码承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
+| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭：1782 → **2104** 键由代码承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
@@ -224,7 +224,7 @@
 - **结果**：**43 个控件块 / 18 个 SFC** 改写成功；209 项跳过（`loadItems` 位于 composable（如 `useUIButtonPage.ts`）、控件无具名 ref、或项来自动态数据源）。**同名冲突的用例（`fileActor-rotatable` / `fileActor-immovable` 都用 `Yes/No`）各自命中自己的块**，验证了 ref 定位的必要性。
 - **判据同步修正**：跳过集合的 `options` 字段判据原为"路径到 `options` 为止"（`t('…options')`），而迁移后是 `t('…options.<值键>.name')` → 判据改为**前缀匹配** `t('…options.`（`scripts/i18n-skip-list.mjs` 与 spec 同步修改，二者必须一致，spec 会从源码反推比对）。
 
-**指标**：跳过键 **1739 → 1782**；本地化器**扫描面 2129 → 347（−84%）**（起点 2130）。
+**指标**：跳过键 **1739 → 1782**；本地化器**扫描面 2129 → 257（−84%）**（起点 2130）。
 
 **R2b 迁移⑤（2026-09-12）：补齐「只缺 tip」的键，扫描面 347 → 307**
 
@@ -307,7 +307,19 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **又踩了同一个坑**：只改生成器、忘改 spec，防漂移用例立刻报 `expected [ …2023 ] to deeply equal [ …2018 ]`——与迁移⑦的教训一字不差，说明"生成器与 spec 是两份实现"这条要写在文件头。
 - **指标**：扫描面 **110 → 105**；代码承担键 **2019 → 2024**；editor **236 文件 1988/1988**、`pnpm lint` 0/0、`vue-tsc` 0 新增、`docs:check` OK。
 
-**剩余 105 键的构成**（权威数字见 `scripts/i18n-skip-list.mjs`）：`options` ≈74（名字来自变量、值集合不完整，或走 `setItemNames`）、`EventSearchString.vue` 的 2 个 label、`content` 3、`title` 1、`selector-search` 与 `setListIndexSkipCheck` 2、其余为 `save` 依赖键（按设计不跳过）。
+**R2b 迁移⑯（2026-09-12）：三类硬编码/空占位标签换 `t()`，扫描面 34 → 25**
+
+剩余键里有一批"标签本来就是写死的英文或空占位"的：
+
+- (a) **空标签 div**：`<div class="text"></div>`（**无斜杠写法**，所以迁移⑬的规则没匹配到）→ 填 `{{ t('components.<键>.label') }}`，4 个键（`event-search-string-*`）。
+- (b) **字面量标签 div**：`<div class="text">IsBackground</div>` → 换成 `t()`，2 个键（`downloadFile-isBackground`、`httpRequest-withCredentials`）。
+- (c) **自身带 id 的标签 div**（字段为 `content+tip`）：`<div class="text" id="if-else-label" v-tip="…">Else</div>` → 文本换成 `{{ t('components.<键>.content') }}`，3 个键（`if-else-label`、`switch-default-label`、`block-asynchronous-label`）。
+
+**脚本化的第二个坑**（第一个是换行/缩进）：占位 div 与控件的 `id` **不一定相邻**——控件标签可能跨多行（`<CheckBox` / 换行 / `id=…`），直接从 `id` 的上一行找占位会漏。改为**先回退到控件标签起始行**（`^\s*<[A-Za-z]`）再看其上一行，命中数从 **5 涨到 9**。**判据**：脚本匹配的是"相邻文本行"，而模板里相邻的是"标签"，两者必须按**标签边界**对齐。
+
+- **指标**：扫描面 **34 → 25**；代码承担键 **2095 → 2104**；`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **236 文件 1988/1988**、防漂移用例 4/4、`docs:check` OK。
+
+**剩余 25 键**：`save` 依赖键 1、`selector-search` 与 `setListIndexSkipCheck` 2（运行期拼 id，随 B1/B6 处理）、`script`（title，非 SFC 承载）、`plugin-overview`/`plugin-parameter-grid`/`command-overview`/`command-settings-grid` 4 个（label 落在 `<DetailSummary>` 上，需按容器形态单独处理）、其余为少量 `content`/`title`。
 
 - **验证命令**：`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机切换语言后抽查窗口标题/菜单/按钮/tooltip。
 - **来源**：2026-09-11 第二十二轮度量审计（`components` 键数实测；此前 R2 只按源码处数记为"小"）。

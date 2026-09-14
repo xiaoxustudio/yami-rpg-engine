@@ -20,7 +20,7 @@
 				:ref="registryRef(fieldEls, 'switch-default')" v-model="form.default" class="standard"
 			><div class="text" id="switch-default-label"
 				:ref="registryRef(fieldEls, 'switch-default-label')"
-				v-tip="t('components.switch-default-label.tip')">Default</div></CheckBox
+				v-tip="t('components.switch-default-label.tip')">{{ t('components.switch-default-label.content') }}</div></CheckBox
 		>
 	</WindowFrame>
 </template>
