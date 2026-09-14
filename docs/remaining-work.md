@@ -917,6 +917,13 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **修法**：新增 `scanAddListenerCalls()`——**先剥注释**，再按括号配对取出每条调用的完整实参，据此判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。
 - **修完的实测**：`.vue` 内 add-without-remove **5 → 0**（验收 ③ 达成）、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例，见上）。
 
+**E1 第五刀（2026-09-12）：editor 侧剩余断言的定性 + 去掉两个死依赖**
+
+- **editor 侧 30 处 `as Event & { … }` 不是同一类**：抽样后发现绝大多数是**伪造事件对象**的写法（`{ value } as Event & { value: string }`、`{ target: { value } } as Event & { target: HTMLInputElement }`）——它们把"最小事件"传给元素 API 的处理器，**不是在读事件**。对这类用 `readPayload` 反而语义错位（读的语义、写的用途）。⇒ 结论：editor 侧这 30 处**保持原样**，只在真正的读取点（如 `Enum.vue` 的 `clientX/clientY`）用 `readPayload`。这条定性比"把 30 处全换掉"更有价值——**先分类，再决定要不要动**。
+- **`mitt` / `@vueuse/core` 去留已决（删）**：两者在 editor 的 `dependencies` 里，但全仓 **0 处 import**（`pnpm events:surface` 长期显示 `mitt( 0 处、useEventListener( 0 处`）⇒ 从 `packages/editor/package.json` 删除。计划 5.4 原设想"事件总线 → mitt"**不再采纳**：本项目的自定义事件已经收口成 `payload-event` 契约 + 元素注册表，再引入总线只会增加一条并行通道。
+- **注**：`pnpm-lock.yaml` 在本仓是**被 gitignore 的**（未跟踪），故删除依赖只需改 `package.json`（`pnpm install --lockfile-only` 已本地更新，不产生提交物）。
+- **指标**：`as Event & {` 剩余 **37**（ui-kit 7 / editor 30，均已定性）；editor `tsc` strict 通过、`pnpm lint` 0/0。
+
 **E1 第四刀（2026-09-12）：读取侧断言迁移（ui-kit 8 处），`as Event & {` 39 → 37**
 
 - 与第三刀配对：脚本把**读取侧**的 `(x as Event & { … })` / `x as Event & { … }` 换成 `readPayload<{ … }>(x)`。本刀限定 **ui-kit**（4 文件 / 8 处：`select-box-api.spec`、`tree-list-interactions.spec`、`YMFileBodyPane.spec`、`YMParameterPane.vue`）。

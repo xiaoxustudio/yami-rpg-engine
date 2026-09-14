@@ -30,14 +30,12 @@
 		"typecheck:vue": "node scripts/check-vue-types.mjs"
 	},
 	"dependencies": {
-		"@vueuse/core": "^14.3.0",
 		"axios": "^1.19.0",
 		"exceljs": "^4.4.0",
 		"fs-extra": "^11.3.5",
 		"koa": "^3.2.1",
 		"markdown-it": "^14.2.0",
 		"mime-types": "^3.0.2",
-		"mitt": "^3.0.1",
 		"monaco-editor": "^0.55.1",
 		"pinia": "^4.0.2",
 		"qrcode": "^1.5.4",
