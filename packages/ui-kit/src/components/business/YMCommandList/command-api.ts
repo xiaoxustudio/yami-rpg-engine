@@ -295,6 +295,11 @@ export interface CommandRowDescriptor {
 	dataKey: boolean;
 	selected: boolean;
 	disabled: boolean;
+	/**
+	 * 行的**内容片段**（`parse` 出来的文本/着色/tooltip 声明，即元素上的 `contents`）。
+	 * 换源后模板要照它渲染行内文本，故一并带进模型（与文件 body 的 `name`/`isFolder` 同理）。
+	 */
+	contents: CommandContent[];
 }
 
 export interface CommandRowModel {
@@ -385,7 +390,8 @@ function rebuildCommandRowModel(elements: {
 			folded: element.folded === true,
 			dataKey: element.dataKey === true,
 			selected: element.classList.contains('selected'),
-			disabled: element.classList.contains('disabled')
+			disabled: element.classList.contains('disabled'),
+			contents: element.contents ?? []
 		});
 	}
 	commandRowModel.start = elements.start ?? 0;

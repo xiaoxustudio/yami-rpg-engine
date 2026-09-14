@@ -115,6 +115,22 @@ describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
 		expect(model.rows.filter((row) => row.dataKey).length).toBeGreaterThan(0);
 	});
 
+	it('模型带出行内容片段（contents）：拼起来与行内文本一致', () => {
+		const el = makeList([makeCommand('showText'), makeCommand('moveActor')]);
+		const model = el.getRowModel();
+		const rows = Array.from(el.querySelectorAll<HTMLElement>('.command-item'));
+		for (let i = 0; i < model.rows.length; i++) {
+			const contents = model.rows[i].contents;
+			const text = contents
+				.map((c) => c.text ?? '')
+				.join('')
+				.replace(/\s+/g, '');
+			if (text === '') continue; // 空白行没有内容片段
+			const domText = (rows[i]?.textContent ?? '').replace(/\s+/g, '');
+			expect(domText).toContain(text);
+		}
+	});
+
 	it('重复 update 后模型与 DOM 仍然一致（key 稳定）', () => {
 		const el = makeList([makeCommand('a'), makeCommand('b')]);
 		const before = el.getRowModel().keys;
