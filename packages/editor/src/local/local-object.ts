@@ -2,6 +2,7 @@ import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Printer } from '@app/printer/printer.ts';
+import { emitCustom } from '@app/events/custom-events';
 
 export const GameLocal: {
 	active: string;
@@ -61,7 +62,7 @@ GameLocal.setLanguage = async function (language: string) {
 		try {
 			this.active = settings.name;
 			this.language = language;
-			window.dispatchEvent(new Event('localizationchange'));
+			emitCustom('localizationchange');
 			Printer.setLanguageFont(settings.font);
 			Printer.setSizeScale(settings.scale);
 			Printer.setWordWrap(['zh-CN', 'zh-TW', 'ja', 'ko'].includes(active) ? 'break' : 'keep');

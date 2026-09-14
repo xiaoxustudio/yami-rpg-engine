@@ -244,6 +244,8 @@
 
 - 2026-09-12 **B1/M3 切片 5 前置：行描述双写（+3 例，文件 body 共 8 例模型用例）**。① `FileBodyRowModel` 增加 `rows: FileBodyRowDescriptor[]`（`{ key, index, name, isFolder, selected, style }`）——**模板渲染一行所需的全部数据**；`resize()` 在写元素样式的同时把它们写进模型（双写，不换源）。② **试出一个真实缺口并补上**：`selected` 起初只在 `resize()` 写，而**选中/取消选中并不触发 `resize`** ⇒ 描述会停旧值；新增 `refreshRowSelection()`（只刷该字段）并在 `select()`/`unselect()` 后调用。**这就是"先双写后换源"的价值**：把"谁该刷新什么"在换源前暴露出来。③ 3 例：行描述与 DOM 逐项一致（key/名称/文件夹标记/定位样式）、`index` 为全局下标且窗口迁移后跟随新窗口、选中态进描述。④ **下一刀（真换源）**：模板 `v-for="row in model.rows"` + `:key`、`:style`/`:class` 吃描述，api 侧停掉元素创建、改由 `:ref` 回写桥登记回 `elements[]` 与 `file.context.element`——**需真机冒烟（拖拽/重命名/右键菜单 jsdom 测不到）**。**门禁**：ui-kit **105 文件 744/744**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **E1 第六刀：自定义事件的类型化通道（`emitCustom`/`onCustom`，+4 例）**。① **决定**：E1 最后一项"自定义事件改强类型通道"原有两路（store action / `mitt`）；`mitt` 已在第五刀删除，本刀落另一路——**不换机制、只收类型**：`events/custom-events.ts` 定义 `CustomEventPayloads`（15 个事件名 → 载荷形状，与 `pnpm events:surface` 名册一致）+ `emitCustom(type, payload?)`（无载荷走 `new Event`，有载荷走 `createPayloadEvent`）+ `onCustom(type, cb)`（载荷作为首参，返回取消订阅）。② 迁移 4 处派发（`enumchange`、`localizationchange`×2、`variablechange`）与 1 处监听（`localized-items` 的语言切换重挂）。③ **行为不变**：仍是 `window` 上的同名事件 ⇒ 既有监听者、`events:surface` 口径、真机行为都不受影响。④ 收益：事件名拼错/载荷形状不符在**编译期**暴露，调用点不再写 `as Event & { … }`。**门禁**：editor **237 文件 1992/1992**、ui-kit **105 文件 744/744**、`pnpm lint` 0/0、`docs:check` OK。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
@@ -252,7 +254,7 @@
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1141（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
+| 扫描文件总数                         | 1142（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
 | 待迁移命中文件（oxlint 判定仍在用）  | **0**（初始 299；P1b 十七刀 −112 → 余 46 → C1 白名单归零：设计豁免 45 + 临时豁免 1） |
 | 带豁免注释文件（`oxlint-disable`）   | **0**（C2 执行前 295；C1 后白名单由 `overrides` 承担，**豁免机制退役**） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |

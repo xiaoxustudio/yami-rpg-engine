@@ -797,7 +797,7 @@ Localization.apply = function (this: LocalizationShape, _event?: Event) {
 		this.packLocalization();
 		File.planToSave!(Data.manifest.project.localization);
 
-		window.dispatchEvent(new Event('localizationchange'));
+		emitCustom('localizationchange');
 	}
 }.bind(Localization);
 
@@ -895,6 +895,7 @@ Localization.list_onResume = function (item: LocalizationItem) {
 };
 
 import { getLocalizationStore } from '@app/stores/localization';
+import { emitCustom } from '@app/events/custom-events';
 
 const localizationBridgeKeys = ['state', 'strings'] as const;
 

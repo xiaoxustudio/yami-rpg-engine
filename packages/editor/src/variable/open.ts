@@ -7,6 +7,7 @@ import { Reference } from '@app/log/related-references.ts';
 import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from '@app/variable/variable.ts';
+import { emitCustom } from '@app/events/custom-events';
 
 Variable.open = function (this: typeof Variable, target: unknown = null) {
 	getVariableStore().open(target as { [k: string]: unknown } | null);
@@ -79,6 +80,6 @@ Variable.apply = function (this: typeof Variable, _event: Event) {
 		this.packVariables!();
 		File.planToSave!(Data.manifest.project.variables);
 
-		window.dispatchEvent(new Event('variablechange'));
+		emitCustom('variablechange');
 	}
 }.bind(Variable);

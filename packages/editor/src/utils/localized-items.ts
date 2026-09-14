@@ -8,6 +8,7 @@
  * 留在扫描面里。这里用 `getYamiI18n()`（非响应式）+ 订阅 `localizationchange` 事件达到同样效果。
  */
 import { getYamiI18n } from '@app/i18n';
+import { onCustom } from '@app/events/custom-events';
 
 export interface LocalizedItem<T> {
 	name: string;
@@ -36,6 +37,6 @@ export function applyLocalizedItems<T>(
 ): () => void {
 	const run = (): void => apply(localizedItems(key, values));
 	run();
-	window.addEventListener('localizationchange', run);
-	return () => window.removeEventListener('localizationchange', run);
+	// E1 切片 3：改走类型化通道（事件名与载荷形状集中在 events/custom-events）
+	return onCustom('localizationchange', run);
 }

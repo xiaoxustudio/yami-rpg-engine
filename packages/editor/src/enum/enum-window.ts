@@ -22,6 +22,7 @@ import { type TreeListElement } from '@app/components/tree-list.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import type { EnumItemShape } from '@app/stores/enum';
+import { emitCustom } from '@app/events/custom-events';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const enumEls = createElementRegistry();
@@ -882,7 +883,7 @@ Enum.apply = function (this: typeof Enum, _event?: Event) {
 		this.packEnumeration();
 		File.planToSave!(Data.manifest.project.enumeration);
 
-		window.dispatchEvent(new Event('enumchange'));
+		emitCustom('enumchange');
 	}
 }.bind(Enum);
 
