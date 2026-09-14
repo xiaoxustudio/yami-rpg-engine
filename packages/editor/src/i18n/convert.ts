@@ -12,6 +12,16 @@ export type LocaleData = {
 
 export type FlatMessages = Record<string, string>;
 
+// vue-i18n 把消息体当模板编译：`@` 是 linked message 语法（`@:key` / `@.modifier`）、
+// `|` 是复数分支分隔符。文案里的普通 `@`（如 `@code` / `@event`）会让编译直接抛
+// `Message compilation error: Invalid linked format`；而 `t()` 是在 render 里同步调用的，
+// 抛错会连带炸掉整个窗口渲染（Vue: Unhandled error during execution of render function）。
+// 本项目的消息表只用字面文案、不使用 linked message / 复数，故在转换边界统一转义成
+// vue-i18n 的字面量写法（`{'@'}`），只影响 i18n 消息表：legacy DOM 本地化器读原始 JSON，
+// tooltip 文案仍是原样的 `@code`。
+const escapeMessage = (value: string): string =>
+	value.replace(/@/g, "{'@'}").replace(/\|/g, "{'|'}");
+
 // 递归展开嵌套对象为点路径键；叶子 `name` 提升为父级完整键（值限定为字符串/数字/布尔）
 function flatten(obj: unknown, prefix: string, out: Record<string, string>): void {
 	if (obj === null || typeof obj !== 'object') return;
@@ -26,7 +36,7 @@ function flatten(obj: unknown, prefix: string, out: Record<string, string>): voi
 			typeof value === 'boolean'
 		) {
 			const flatKey = key === 'name' && prefix ? prefix : path;
-			out[flatKey] = String(value);
+			out[flatKey] = escapeMessage(String(value));
 		}
 	}
 }
@@ -39,7 +49,7 @@ function flattenComponents(
 	for (const id of Object.keys(components)) {
 		const comp = components[id] ?? {};
 		const put = (suffix: string, value: unknown): void => {
-			if (typeof value === 'string') out[`components.${id}.${suffix}`] = value;
+			if (typeof value === 'string') out[`components.${id}.${suffix}`] = escapeMessage(value);
 		};
 		put('title', comp.title);
 		put('label', comp.label);
@@ -51,16 +61,16 @@ function flattenComponents(
 				const opt = (options as Record<string, unknown>)[optKey];
 				if (typeof opt === 'string') {
 					// 字符串直值：同作 name 与 label（兼容旧 getLabel / 新 t 双习惯）
-					out[`components.${id}.options.${optKey}.name`] = opt;
-					out[`components.${id}.options.${optKey}.label`] = opt;
+					out[`components.${id}.options.${optKey}.name`] = escapeMessage(opt);
+					out[`components.${id}.options.${optKey}.label`] = escapeMessage(opt);
 				} else if (opt !== null && typeof opt === 'object') {
 					const o = opt as { name?: string; tip?: string };
 					if (typeof o.name === 'string') {
-						out[`components.${id}.options.${optKey}.name`] = o.name;
-						out[`components.${id}.options.${optKey}.label`] = o.name;
+						out[`components.${id}.options.${optKey}.name`] = escapeMessage(o.name);
+						out[`components.${id}.options.${optKey}.label`] = escapeMessage(o.name);
 					}
 					if (typeof o.tip === 'string') {
-						out[`components.${id}.options.${optKey}.tip`] = o.tip;
+						out[`components.${id}.options.${optKey}.tip`] = escapeMessage(o.tip);
 					}
 				}
 			}
