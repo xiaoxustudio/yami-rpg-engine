@@ -899,6 +899,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if (blank === undefined) {
 			blank = renderDetachedDiv('command-item') as unknown as CommandItemElement;
 
+			// M3 换源前置：空白行同样需要**稳定行 key**（`v-for` 的每一行都要 `:key`）。
+			// 它没有 `command` 对象可用，故按"父命令 + 层级 + 所属列表下标"派生：
+			// 同一层列表的空白行唯一，且跨多次 `update` 不变（父命令对象与下标都稳定）。
+			blank.rowKey = parent === null ? `blank-root-${indent}` : `blank-${commandRender.rowKeyOf(parent)}-${indent}-${index}`;
+
 			let blankContents: CommandContent[] | null = [];
 			Object.defineProperty(blank, 'contents', {
 				configurable: true,

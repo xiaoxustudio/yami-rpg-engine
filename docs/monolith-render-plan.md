@@ -280,7 +280,7 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **📐 命令列表的行模型（M3 第三步，2026-09-12）**：与文件 body 的切片 4 同形——`command-api.ts` 新增 `CommandRowModel`（`{ start, end, keys, rows: { key, index, indent, folded, dataKey, selected, disabled }[] }`）与只读 `getRowModel()`，在 `update()` 末尾从 `elements[]` **反读快照**（不是另一份真相，而是"当前真相"，供换源前后逐项比对）。新增 5 例：模型 key 序列 == DOM 行元素的 `rowKey` 序列、模型 key == `rowKeyOf(command)`、缩进与 `dataKey` 带入、重复 `update` 后一致、`getRowModel()` 返回副本。
 
-- **⚠️ 换源前必须补的一项（已登记）**：每层列表末尾那个 `createBlankElement` 生成的**空白行目前没有 `rowKey`**（`createBlankElement` 不写 key），而 `v-for` 的**每一行都需要稳定 key**。当前模型与用例把空白行排除在外（`commandKeys` 过滤掉 `''`/`undefined`），换源前要先给空白行一个稳定 key（如按"父级 + 层级"派生）。
+- **✅ 换源前必补项已补（2026-09-12）**：空白行此前**没有 `rowKey`**，而 `v-for` 的每一行都要 `:key`。现在 `createBlankElement` 按"**父命令 + 层级 + 所属列表下标**"派生 key（根层为 `blank-root-<层级>`，其余为 `blank-<父命令 key>-<层级>-<下标>`）——同一层列表内唯一、跨多次 `update` 稳定。用例随之**不再排除空白行**：模型 key 序列与 DOM **逐项相等**，且新增两条更硬的断言——**每一行都有 key**、**列表内 key 唯一**（`v-for` 的硬要求）。
 
 **真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
 

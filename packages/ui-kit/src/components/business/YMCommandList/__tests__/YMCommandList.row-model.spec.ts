@@ -77,19 +77,27 @@ const domKeys = (el: ListElement): (string | undefined)[] =>
 	);
 
 /**
- * 只比较**命令行**的 key：每层列表末尾还有一个由 `createBlankElement` 生成的空白行，
- * 它目前**没有 `rowKey`**（`createBlankElement` 不写 key）——这正是换源前必须补上的一项，
- * 已记入 `docs/monolith-render-plan.md` 的 TODO（`v-for` 的每一行都需要稳定 key）。
+ * 换源前置：**每一行都要有稳定 key**（`v-for` 的 `:key`）。空白行由 `createBlankElement` 生成，
+ * 现在按"父命令 + 层级 + 所属列表下标"派生 key（见 `command-api.ts`），因此本 spec 不再排除它——
+ * 下面对比的是**包括空白行在内**的完整 key 序列。
  */
 const commandKeys = (keys: (string | undefined)[]): string[] =>
-	keys.filter((k): k is string => k !== undefined && k !== '');
+	keys.filter((k): k is string => k !== undefined);
 
 describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
-	it('模型 key 序列与 DOM 行元素顺序逐项一致（空白行除外，见上方 TODO）', () => {
+	it('模型 key 序列与 DOM 行元素顺序逐项一致（含空白行）', () => {
 		const el = makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
 		const model = el.getRowModel();
 		expect(model.keys.length).toBeGreaterThan(0);
 		expect(commandKeys(domKeys(el))).toEqual(commandKeys(model.keys));
+		// 每一行都有 key（换源后 `:key` 不会出现 undefined）
+		expect(domKeys(el).every((k) => typeof k === 'string' && k.length > 0)).toBe(true);
+	});
+
+	it('所有行 key 在列表内唯一（`v-for` 的硬要求）', () => {
+		const el = makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
+		const keys = el.getRowModel().keys;
+		expect(new Set(keys).size).toBe(keys.length);
 	});
 
 	it('模型 key 等于派生层给该命令发的 key', () => {
