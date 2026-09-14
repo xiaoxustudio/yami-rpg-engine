@@ -26,10 +26,27 @@ const readVues = (): { f: string; src: string }[] => {
 	return out;
 };
 
+/** 模块侧（元素工厂/数据模块）：与生成器同源——`applyLocalizedItems` 也算"代码已承担" */
+const readModules = (): { f: string; src: string }[] => {
+	const out: { f: string; src: string }[] = [];
+	const walk = (p: string): void => {
+		for (const e of readdirSync(p)) {
+			const full = join(p, e);
+			if (statSync(full).isDirectory()) {
+				if (e !== 'node_modules' && e !== '__tests__') walk(full);
+			} else if (e.endsWith('.ts') && !e.endsWith('.d.ts'))
+				out.push({ f: full, src: readFileSync(full, 'utf8').replace(/\uFEFF/g, '') });
+		}
+	};
+	walk(SRC);
+	return out;
+};
+
 const esc = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const deriveKeys = (): string[] => {
 	const vues = readVues();
+	const modules = readModules();
 	const components = JSON.parse(
 		readFileSync(join(ROOT, 'Project/Locales/en-US.English.json'), 'utf8')
 	).components as Record<string, Record<string, unknown>>;
@@ -51,7 +68,9 @@ const deriveKeys = (): string[] => {
 					: field === 'options'
 						? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
 							// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
-							v.src.includes(`useLocalizedOptions('${key}'`)
+							v.src.includes(`useLocalizedOptions('${key}'`) ||
+							// R2b 迁移⑭：模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
+							modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`))
 						: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(
 								v.src
 							)

@@ -199,16 +199,13 @@ Easing.initialize = () => {
 	// oxlint-disable-next-line unbound-method
 	getListConfig(list).updaters.push(list.updateTextNode);
 
-	dataEls.get('easing-mode')?.loadItems?.([
-		{ name: 'Use 2 Points', value: 2 },
-		{ name: 'Use 5 Points', value: 5 },
-		{ name: 'Use 8 Points', value: 8 }
-	]);
+	applyLocalizedItems('easing-mode', [2, 5, 8], (items) =>
+		dataEls.get('easing-mode')?.loadItems?.(items)
+	);
 
-	dataEls.get('easing-preview-reverse')?.loadItems?.([
-		{ name: 'ON', value: true },
-		{ name: 'OFF', value: false }
-	]);
+	applyLocalizedItems('easing-preview-reverse', [true, false], (items) =>
+		dataEls.get('easing-preview-reverse')?.loadItems?.(items)
+	);
 
 	const inputs = [];
 	for (let i = 0; i < 8; i++) {
@@ -1355,6 +1352,7 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) 
 };
 
 import { getEasingStore } from '@app/stores/easing';
+import { applyLocalizedItems } from '@app/utils/localized-items';
 
 const easingStateKeys = ['state', 'target', 'data'] as const;
 

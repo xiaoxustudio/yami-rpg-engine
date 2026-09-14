@@ -12,6 +12,7 @@ import { IListInterface } from '@app/types/list-interface.ts';
 import { IEditableHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
+import { applyLocalizedItems } from '@app/utils/localized-items';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const conditionEls = createElementRegistry();
@@ -290,29 +291,22 @@ export class ConditionListInterface implements IListInterface {
 			}
 		]);
 
-		conditionEls.get('condition-boolean-operation')?.loadItems?.([
-			{ name: '==', value: 'equal' },
-			{ name: '!=', value: 'unequal' }
-		]);
+		applyLocalizedItems('condition-boolean-operation', ['equal', 'unequal'], (items) =>
+		conditionEls.get('condition-boolean-operation')?.loadItems?.(items)
+	);
 
 		conditionEls.get('condition-boolean-value')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
 
-		conditionEls.get('condition-number-operation')?.loadItems?.([
-			{ name: '==', value: 'equal' },
-			{ name: '!=', value: 'unequal' },
-			{ name: '>=', value: 'greater-or-equal' },
-			{ name: '<=', value: 'less-or-equal' },
-			{ name: '>', value: 'greater' },
-			{ name: '<', value: 'less' }
-		]);
+		applyLocalizedItems('condition-number-operation', ['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'], (items) =>
+		conditionEls.get('condition-number-operation')?.loadItems?.(items)
+	);
 
-		conditionEls.get('condition-string-operation')?.loadItems?.([
-			{ name: '==', value: 'equal' },
-			{ name: '!=', value: 'unequal' }
-		]);
+		applyLocalizedItems('condition-string-operation', ['equal', 'unequal'], (items) =>
+		conditionEls.get('condition-string-operation')?.loadItems?.(items)
+	);
 
 		// 确定按钮 - 鼠标点击事件
 	}

@@ -20,6 +20,7 @@ const CHECK = process.argv.includes('--check');
 const OUT = 'packages/editor/src/localize/template-localized.ts';
 
 const vues = [];
+const modules = [];
 const walk = (p) => {
 	for (const e of readdirSync(p)) {
 		const full = join(p, e);
@@ -28,6 +29,9 @@ const walk = (p) => {
 			if (e !== 'node_modules' && e !== '__tests__') walk(full);
 		} else if (e.endsWith('.vue')) {
 			vues.push({ f: full, src: readFileSync(full, 'utf8').replace(/\uFEFF/g, '') });
+		} else if (e.endsWith('.ts') && !e.endsWith('.d.ts')) {
+			// 模块侧（元素工厂/数据模块）也用同一条"代码已承担"判据：见 applyLocalizedItems
+			modules.push({ f: full, src: readFileSync(full, 'utf8').replace(/\uFEFF/g, '') });
 		}
 	}
 };
@@ -57,7 +61,9 @@ for (const [key, item] of Object.entries(components)) {
 					new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
 				: field === 'options'
 					? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
-						v.src.includes(`useLocalizedOptions('${key}'`)
+						v.src.includes(`useLocalizedOptions('${key}'`) ||
+						// 模块侧（非 Vue）等价路径：utils/localized-items 的 applyLocalizedItems
+						modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`))
 					: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(v.src)
 		)
 	);
