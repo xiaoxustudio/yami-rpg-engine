@@ -14,7 +14,7 @@
 | S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
 | R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
-| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭：1782 → **2104** 键由代码承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
+| R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②③④⑤后扫描面 **307**，−86%） | 大 | 无 | 🚧 **进行中**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭：1782 → **2109** 键由代码承担；**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
 | P1b | **受限 API 直查收尾**：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
@@ -224,7 +224,7 @@
 - **结果**：**43 个控件块 / 18 个 SFC** 改写成功；209 项跳过（`loadItems` 位于 composable（如 `useUIButtonPage.ts`）、控件无具名 ref、或项来自动态数据源）。**同名冲突的用例（`fileActor-rotatable` / `fileActor-immovable` 都用 `Yes/No`）各自命中自己的块**，验证了 ref 定位的必要性。
 - **判据同步修正**：跳过集合的 `options` 字段判据原为"路径到 `options` 为止"（`t('…options')`），而迁移后是 `t('…options.<值键>.name')` → 判据改为**前缀匹配** `t('…options.`（`scripts/i18n-skip-list.mjs` 与 spec 同步修改，二者必须一致，spec 会从源码反推比对）。
 
-**指标**：跳过键 **1739 → 1782**；本地化器**扫描面 2129 → 257（−84%）**（起点 2130）。
+**指标**：跳过键 **1739 → 1782**；本地化器**扫描面 2129 → 207（−84%）**（起点 2130）。
 
 **R2b 迁移⑤（2026-09-12）：补齐「只缺 tip」的键，扫描面 347 → 307**
 
@@ -318,6 +318,14 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 **脚本化的第二个坑**（第一个是换行/缩进）：占位 div 与控件的 `id` **不一定相邻**——控件标签可能跨多行（`<CheckBox` / 换行 / `id=…`），直接从 `id` 的上一行找占位会漏。改为**先回退到控件标签起始行**（`^\s*<[A-Za-z]`）再看其上一行，命中数从 **5 涨到 9**。**判据**：脚本匹配的是"相邻文本行"，而模板里相邻的是"标签"，两者必须按**标签边界**对齐。
 
 - **指标**：扫描面 **34 → 25**；代码承担键 **2095 → 2104**；`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **236 文件 1988/1988**、防漂移用例 4/4、`docs:check` OK。
+
+**R2b 迁移⑰（2026-09-12）：4 个 `<DetailSummary>` 标题 + `Script.vue` 窗口标题换 `t()`，扫描面 25 → 20**
+
+- 4 个键（`plugin-overview`/`plugin-parameter-grid`/`command-overview`/`command-settings-grid`）的 label 落在 **`<DetailSummary>` 容器**上（`Overview`/`Parameters`/`Settings` 写死英文）→ 换成 `<DetailSummary>{{ t('components.<键>.label') }}</DetailSummary>`；`script` 的 title 是 `<TitleBar>Script` 字面量 → 换 `t('components.script.title')` 并补 `useI18n`。
+- **本轮的真实教训（差点把界面改坏）**：脚本替换时我把**整个 `<DetailSummary>…</DetailSummary>` 元素**换成了裸 `{{ t(...) }}`，丢掉了组件标签——`vue-tsc` 立刻以 `TS6133`（`DetailSummary` 导入未使用）报出来，才顺着发现这一处**渲染回归**。修法是把插值放回标签内部。**规矩**：文案替换脚本必须"**只换文本、不换标签**"；`TS6133` 这类"看起来只是清理提示"的错误，往往是结构被改动的第一信号。
+- **指标**：扫描面 **25 → 20**；代码承担键 **2104 → 2109**；`pnpm lint` 0/0、`vue-tsc` 0 新增、editor **236 文件 1988/1988**、防漂移 4/4、`docs:check` OK。
+
+**剩余 20 键**：`save` 依赖键（按设计不跳过）、`selector-search` 与 `setListIndexSkipCheck`（运行期拼 id，随 B1/B6）、以及少量 `content`/`title` 与需按容器处理项。
 
 **剩余 25 键**：`save` 依赖键 1、`selector-search` 与 `setListIndexSkipCheck` 2（运行期拼 id，随 B1/B6 处理）、`script`（title，非 SFC 承载）、`plugin-overview`/`plugin-parameter-grid`/`command-overview`/`command-settings-grid` 4 个（label 落在 `<DetailSummary>` 上，需按容器形态单独处理）、其余为少量 `content`/`title`。
 

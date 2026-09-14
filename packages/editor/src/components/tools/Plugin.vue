@@ -24,7 +24,7 @@
 		<div class="box" id="plugin-inspector">
 			<DetailBox id="plugin-overview-detail"
 				:ref="registryRef(pluginEls, 'plugin-overview-detail')" open>
-				<DetailSummary>Overview</DetailSummary>
+				<DetailSummary>{{ t('components.plugin-overview.label') }}</DetailSummary>
 				<div class="box" id="plugin-overview"
 				:ref="registryRef(pluginEls, 'plugin-overview')" @update="syncOverview">
 					<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
@@ -33,7 +33,7 @@
 			<ParameterPane id="plugin-parameter-pane"
 				:ref="registryRef(pluginEls, 'plugin-parameter-pane')">
 				<DetailBox id="plugin-parameter-detail" open>
-					<DetailSummary>Parameters</DetailSummary>
+					<DetailSummary>{{ t('components.plugin-parameter-grid.label') }}</DetailSummary>
 					<div class="detail-grid" id="plugin-parameter-grid" />
 				</DetailBox>
 			</ParameterPane>

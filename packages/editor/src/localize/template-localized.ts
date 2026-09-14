@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2129 键降到
- * 25 键。
+ * 20 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -241,6 +241,8 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'command-alias',
 	'command-keywords',
 	'command-list',
+	'command-overview',
+	'command-settings-grid',
 	'commandLine',
 	'commandLine-key',
 	'commandLine-type',
@@ -1072,6 +1074,8 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'playAudio-volume',
 	'plugin',
 	'plugin-list',
+	'plugin-overview',
+	'plugin-parameter-grid',
 	'positionGetter',
 	'positionGetter-actor',
 	'positionGetter-common-x',
@@ -1274,6 +1278,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'sceneTilemap-width',
 	'sceneTilemap-x',
 	'sceneTilemap-y',
+	'script',
 	'selector',
 	'setActive',
 	'setActive-active',

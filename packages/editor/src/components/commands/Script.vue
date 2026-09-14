@@ -3,7 +3,7 @@
 				:ref="registryRef(composableEls, 'script')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
-				>Script
+				>{{ t('components.script.title') }}
 				<div class="text hidden" id="script-mark"
 				:ref="registryRef(composableEls, 'script-mark')">✱</div>
 				<button id="script-change"
@@ -24,12 +24,14 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useScriptCommandSchema } from '@app/composables/commands/useScriptCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 
+const { t } = useI18n();
 const { save, initialize } = useScriptCommandSchema();
 
 const onConfirm = () => {

@@ -32,7 +32,7 @@
 				:ref="registryRef(customCommandEls, 'command-overview-detail')"
 				open
 			>
-				<DetailSummary>Overview</DetailSummary>
+				<DetailSummary>{{ t('components.command-overview.label') }}</DetailSummary>
 				<div
 					class="box"
 					id="command-overview"
@@ -47,7 +47,7 @@
 				:ref="registryRef(customCommandEls, 'command-settings-detail')"
 				open
 			>
-				<DetailSummary>Settings</DetailSummary>
+				<DetailSummary>{{ t('components.command-settings-grid.label') }}</DetailSummary>
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
 					<TextBox id="command-alias"
