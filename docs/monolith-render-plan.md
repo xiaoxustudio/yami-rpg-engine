@@ -276,6 +276,8 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **🧹 换源后清理（M5 先做的一小块，2026-09-12）**：`createFolderElement` / `createFileElement` 随切片 5b 变成死代码（行元素改由模板渲染、登记交给 `bindRowElement`），已删除；组件从 2249 行降到 **2221 行**（净 −28，`5 insertions / 33 deletions`）。`elements.versionId` 的三处簿记也失去了用途（版本回收被 Vue 生命周期取代），留待 M5 与其它收尾一起处理。
 
+**🔒 换源前置加固（命令列表，2026-09-12）**：命令列表的换源比文件 body **大一个量级**——它的行元素同时就是数据载体（`element.dataItem`/`dataIndent`/`fold`），选区、折叠、导航全部直接读元素，所以"数据化"这一刀要动的是核心逻辑本身。因此先加 **4 例**跨行行为金标准（`YMCommandList.lifecycle.spec.ts`）：`clear` 让行数归零且 `start/end/active/origin` **复位为 `null`**；`write` 为每条命令建立 `command.buffer`；**`deleteCommandBuffers` 回收的是命令对象上的渲染缓冲，不是行元素**（按直觉写会写错，本轮实测纠正并写进注释）；`clear → write` 往返能重建行数与缓冲。这 4 例的作用是：换源若把行生命周期弄错，用例会直接指出是哪一类。
+
 **真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
 
 **⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」（已回滚）。**
