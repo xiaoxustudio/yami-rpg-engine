@@ -278,6 +278,10 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **🔒 换源前置加固（命令列表，2026-09-12）**：命令列表的换源比文件 body **大一个量级**——它的行元素同时就是数据载体（`element.dataItem`/`dataIndent`/`fold`），选区、折叠、导航全部直接读元素，所以"数据化"这一刀要动的是核心逻辑本身。因此先加 **4 例**跨行行为金标准（`YMCommandList.lifecycle.spec.ts`）：`clear` 让行数归零且 `start/end/active/origin` **复位为 `null`**；`write` 为每条命令建立 `command.buffer`；**`deleteCommandBuffers` 回收的是命令对象上的渲染缓冲，不是行元素**（按直觉写会写错，本轮实测纠正并写进注释）；`clear → write` 往返能重建行数与缓冲。这 4 例的作用是：换源若把行生命周期弄错，用例会直接指出是哪一类。
 
+**📐 命令列表的行模型（M3 第三步，2026-09-12）**：与文件 body 的切片 4 同形——`command-api.ts` 新增 `CommandRowModel`（`{ start, end, keys, rows: { key, index, indent, folded, dataKey, selected, disabled }[] }`）与只读 `getRowModel()`，在 `update()` 末尾从 `elements[]` **反读快照**（不是另一份真相，而是"当前真相"，供换源前后逐项比对）。新增 5 例：模型 key 序列 == DOM 行元素的 `rowKey` 序列、模型 key == `rowKeyOf(command)`、缩进与 `dataKey` 带入、重复 `update` 后一致、`getRowModel()` 返回副本。
+
+- **⚠️ 换源前必须补的一项（已登记）**：每层列表末尾那个 `createBlankElement` 生成的**空白行目前没有 `rowKey`**（`createBlankElement` 不写 key），而 `v-for` 的**每一行都需要稳定 key**。当前模型与用例把空白行排除在外（`commandKeys` 过滤掉 `''`/`undefined`），换源前要先给空白行一个稳定 key（如按"父级 + 层级"派生）。
+
 **真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
 
 **⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」（已回滚）。**

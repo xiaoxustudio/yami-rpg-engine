@@ -268,6 +268,65 @@ export interface CommandListElementApi {
 	[k: string]: unknown;
 }
 
+/**
+ * P6/M3（命令列表侧）：行的**数据模型**——与文件 body 的 `FileBodyRowModel` 同形，
+ * 供换源前的等价性验证与后续模板化使用。
+ *
+ * 说明：这里**从 `elements[]` 反读**（`key` 用切片 1 写进元素的 `rowKey`、缩进用 `dataIndent`、
+ * 折叠/禁用/选中从类名与字段取），因此它不是"另一份真相"，而是"当前真相的快照"——
+ * 用途是让换源前后**同一段行序列**逐项可比对（文件 body 的切片 4 就是这么做的）。
+ */
+export interface CommandRowDescriptor {
+	key: string;
+	index: number;
+	indent: number;
+	folded: boolean;
+	/** 是否为"有数据键"的行（`dataKey`：能承载折叠/选区锚点的行） */
+	dataKey: boolean;
+	selected: boolean;
+	disabled: boolean;
+}
+
+export interface CommandRowModel {
+	start: number;
+	end: number;
+	keys: string[];
+	rows: CommandRowDescriptor[];
+}
+
+const commandRowModel: CommandRowModel = { start: 0, end: 0, keys: [], rows: [] };
+
+/** 从 `elements[]` 重建行模型（在 `update` 之后调用） */
+function rebuildCommandRowModel(elements: {
+	count: number;
+	start?: number;
+	end?: number;
+	[i: number]: CommandItemElement | undefined;
+}): void {
+	const rows: CommandRowDescriptor[] = [];
+	const keys: string[] = [];
+	const count = elements.count;
+	for (let i = 0; i < count; i++) {
+		const element = elements[i];
+		if (element === undefined) continue;
+		const key = element.rowKey ?? '';
+		keys.push(key);
+		rows.push({
+			key,
+			index: i,
+			indent: element.dataIndent,
+			folded: element.folded === true,
+			dataKey: element.dataKey === true,
+			selected: element.classList.contains('selected'),
+			disabled: element.classList.contains('disabled')
+		});
+	}
+	commandRowModel.start = elements.start ?? 0;
+	commandRowModel.end = elements.end ?? count;
+	commandRowModel.keys = keys;
+	commandRowModel.rows = rows;
+}
+
 // oxlint-disable-next-line no-explicit-any
 export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
@@ -311,6 +370,21 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		dispatchUpdateEvent(this);
 
 		this.resize();
+
+		// M3（命令列表）：重建行模型快照——换源前后用它逐项比对"行序列"是否一致
+		rebuildCommandRowModel(elements);
+	},
+
+	/** M3：读取行模型（只读副本） */
+	getRowModel: function (): CommandRowModel {
+		const rows: CommandRowDescriptor[] = [];
+		for (const row of commandRowModel.rows) rows.push({ ...row });
+		return {
+			start: commandRowModel.start,
+			end: commandRowModel.end,
+			keys: [...commandRowModel.keys],
+			rows
+		};
 	},
 
 	// oxlint-disable-next-line no-explicit-any
