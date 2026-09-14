@@ -50,6 +50,13 @@ const deriveKeys = (): string[] => {
 	const components = JSON.parse(
 		readFileSync(join(ROOT, 'Project/Locales/en-US.English.json'), 'utf8')
 	).components as Record<string, Record<string, unknown>>;
+	// R2b 迁移⑮：editor 的 SelectBox 包装器自己按 `components.<id>.options` 生成选项名；
+	// 该通用逻辑存在时，`<SelectBox id="<键>">` 的 options 由宿主组件承担（与生成器同源）。
+	const selectBoxSrc = readFileSync(
+		join(SRC, 'components/common/SelectBox.vue'),
+		'utf8'
+	);
+	const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options');
 	const out: string[] = [];
 	for (const [key, item] of Object.entries(components)) {
 		if (key === '[comment]' || key[0] === '[') continue;
@@ -70,7 +77,10 @@ const deriveKeys = (): string[] => {
 							// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
 							v.src.includes(`useLocalizedOptions('${key}'`) ||
 							// R2b 迁移⑭：模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
-							modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`))
+							modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`)) ||
+							// R2b 迁移⑮：宿主组件按约定承担
+							(selectBoxGeneric &&
+								new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(v.src))
 						: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(
 								v.src
 							)

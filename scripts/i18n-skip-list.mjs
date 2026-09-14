@@ -42,6 +42,15 @@ const components = JSON.parse(
 	readFileSync(join(ROOT, 'packages/editor/Project/Locales/en-US.English.json'), 'utf8')
 ).components;
 
+/**
+ * R2b 迁移⑮：editor 的 `common/SelectBox.vue` 现在**自己**按 `components.<id>.options` 生成选项名
+ * （响应式 `t()`），因此凡是 `<SelectBox id="<键>">` 的控件，其 options 已由宿主组件承担。
+ * 这里要求包装器里确实存在那段通用逻辑（避免判据比实现跑得快）。
+ */
+const selectBoxPath = join(ROOT, 'packages/editor/src/components/common/SelectBox.vue');
+const selectBoxSrc = readFileSync(selectBoxPath, 'utf8');
+const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options') ? selectBoxPath : null;
+
 const covered = [];
 for (const [key, item] of Object.entries(components)) {
 	if (key === '[comment]' || key[0] === '[') continue;
@@ -63,7 +72,10 @@ for (const [key, item] of Object.entries(components)) {
 					? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
 						v.src.includes(`useLocalizedOptions('${key}'`) ||
 						// 模块侧（非 Vue）等价路径：utils/localized-items 的 applyLocalizedItems
-						modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`))
+						modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`)) ||
+						// 宿主组件按约定承担（迁移⑮）
+						(selectBoxGeneric !== null &&
+							new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(v.src))
 					: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(v.src)
 		)
 	);
