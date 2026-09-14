@@ -924,6 +924,14 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **修法**：新增 `scanAddListenerCalls()`——**先剥注释**，再按括号配对取出每条调用的完整实参，据此判定「内联匿名」与「`once: true`」；风险项与 `.vue` 配对检查都扣除 `once`。
 - **修完的实测**：`.vue` 内 add-without-remove **5 → 0**（验收 ③ 达成）、内联匿名（非 once）**11 处 / 10 文件**（皆为 app 生命周期单例，见上）。
 
+**P2b-1 第一刀（2026-09-12）：命令列表的元素 API 契约（最后一个没有 `XxxApi` 的 `*-api.ts`）**
+
+- 现状（第 34 轮审计结论）：26 个 `*-api.ts` 里 25 个已有 `XxxApi` 接口，唯独巨石组件 `YMCommandList/command-api.ts` 只有 `commandListPrototype: Record<string, (...args) => any>`——消费方只能自己写形状（editor 侧就有一份 `EventCommandListShape`）。
+- 做法：新增 **`export interface CommandListElementApi`**，把**消费方实际使用**的方法写成精确签名（`read/write/update/resize/select/selectAll/unselect/selectMultiple(To)/insert/edit/copy/paste/delete/undo/redo/save/toggle/clear/fold/unfoldCommand/scrollToRow/scrollToSelection/computeTextIndent/findString/deleteCommandBuffers/getRangeByIndex/getRangeByData/createBlankElement`），其余保留索引签名兜底；并在 `@ui-kit` 入口导出。
+- **接线的证明**：editor 的 `EventCommandListShape` 改为 `HTMLElement & CommandListElementApi & { … }`——"元素上有哪些方法"从此**只有一份定义**，拼错方法名会在编译期报错（此前不会）。
+- **一个刻意的取舍**：`createCommandListElement` 的返回类型**没有**改成 `HTMLElement & CommandListElementApi`。试过之后 `pnpm lint` 立刻报 14 处 **TS2352**——既有用例会把返回值断言成各自更丰富的本地形状，精确返回类型让这些断言变成"不可比"。⇒ 归到 **M5 收尾**（连同用例一起改），本刀只做"契约可 import"这一步。**教训**：把返回值类型收紧前，先数一遍有多少调用方在拿它做 `as` 断言。
+- **指标**：`pnpm lint` 0/0、ui-kit **104 文件 736/736**、editor **236 文件 1988/1988**、`docs:check` OK。
+
 **E1 第五刀（2026-09-12）：editor 侧剩余断言的定性 + 去掉两个死依赖**
 
 - **editor 侧 30 处 `as Event & { … }` 不是同一类**：抽样后发现绝大多数是**伪造事件对象**的写法（`{ value } as Event & { value: string }`、`{ target: { value } } as Event & { target: HTMLInputElement }`）——它们把"最小事件"传给元素 API 的处理器，**不是在读事件**。对这类用 `readPayload` 反而语义错位（读的语义、写的用途）。⇒ 结论：editor 侧这 30 处**保持原样**，只在真正的读取点（如 `Enum.vue` 的 `clientX/clientY`）用 `readPayload`。这条定性比"把 30 处全换掉"更有价值——**先分类，再决定要不要动**。

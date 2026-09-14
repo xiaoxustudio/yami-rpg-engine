@@ -115,12 +115,18 @@ export interface EventEditorList {
 	commandList?: unknown;
 }
 
-export type EventCommandListShape = HTMLElement & {
-	innerHeight?: number;
-	resize(): void;
-	elements: unknown[] & { count: number };
-	deleteCommandBuffers(commands: EventCommands): void;
-};
+/**
+ * P2b-1：命令列表的形状现在**派生自 ui-kit 的元素 API 契约**（`CommandListElementApi`），
+ * 只额外补上 editor 侧才关心的字段（如 `elements.count` 这种渲染簿记）。
+ * 这样"元素上有哪些方法"只有一份定义，拼写错误会在编译期暴露。
+ */
+export type EventCommandListShape = HTMLElement &
+	CommandListElementApi & {
+		innerHeight?: number;
+		resize(): void;
+		elements: unknown[] & { count: number };
+		deleteCommandBuffers(commands: EventCommands): void;
+	};
 
 // oxlint-disable-next-line no-explicit-any
 export type EventEditorMethod = ((...args: any[]) => any) | null;
@@ -239,6 +245,8 @@ export const EventEditor: EventEditorShape = {
 
 const eventEditorBridgeKeys = ['closing'] as const;
 import { getEventEditorStore } from '@app/stores/event-editor';
+// P2b-1：类型化元素 API 契约（与文件末尾的 import 同批，避免循环依赖）
+import type { CommandListElementApi } from '@ui-kit';
 
 for (const key of eventEditorBridgeKeys) {
 	Object.defineProperty(EventEditor, key, {

@@ -81,7 +81,8 @@ export {
 	createCommandListElement,
 	commandListPrototype,
 	commandListStatics,
-	type CommandListApiOptions
+	type CommandListApiOptions,
+	type CommandListElementApi
 } from './components/business/YMCommandList/command-api';
 export { default as YMCustomBox } from './components/business/YMCustomBox/YMCustomBox.vue';
 export {

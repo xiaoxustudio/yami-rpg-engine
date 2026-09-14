@@ -226,6 +226,48 @@ export const commandListStatics = {
 	}
 };
 
+/**
+ * P2b-1：命令列表的**元素 API 契约**。此前消费方只能拿 `HTMLElement` 再自己写 `as HTMLElement & { … }`
+ * （editor 侧就有一份 `EventCommandListShape`）；这里把「元素上有哪些方法」定成可 import 的类型。
+ *
+ * 说明：`commandListPrototype` 本体仍是 `Record<string, (...args) => any>`（运行时不变），
+ * 本接口是对**同一个对象**的静态描述——消费方用 `HTMLElement & CommandListElementApi` 即可获得补全与拼写检查。
+ */
+export interface CommandListElementApi {
+	// —— 消费方实际使用的方法（精确签名）——
+	read(): CommandData | null;
+	write(data: CommandData): void;
+	update(): void;
+	resize(): void;
+	select(start: number, end?: number): void;
+	selectAll(): void;
+	unselect(): void;
+	selectMultiple(index: number): void;
+	selectMultipleTo(index: number): void;
+	insert(id?: string): void;
+	edit(data?: CommandData): void;
+	copy(): void;
+	paste(): void;
+	delete(): void;
+	undo(): void;
+	redo(): void;
+	save(command: CommandData): void;
+	toggle(): void;
+	clear(): HTMLElement;
+	fold(element?: CommandItemElement): void;
+	unfoldCommand(command: CommandData | null): void;
+	scrollToRow(targetIndex: number, position?: string): void;
+	scrollToSelection(mode?: string): void;
+	computeTextIndent(indent: number): string;
+	findString(str: string | RegExp, elements: CommandItemElement[], searchMode?: FindSearchMode): FindResult[];
+	deleteCommandBuffers(commands: CommandData[]): void;
+	getRangeByIndex(index: number): number[];
+	getRangeByData(data: CommandData): number[];
+	createBlankElement(commands: CommandList, length: number, indent: number, parent: CommandData | null): CommandItemElement;
+	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
+	[k: string]: unknown;
+}
+
 // oxlint-disable-next-line no-explicit-any
 export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
@@ -2562,6 +2604,12 @@ export function createCommandListApi(
 	return el;
 }
 
+/**
+ * 说明：返回类型仍写 `HTMLElement`（运行时对象上确实挂着 `CommandListElementApi` 的方法）。
+ * 暂不改成 `HTMLElement & CommandListElementApi`：若干既有用例会把返回值断言成**自己的、更丰富的本地形状**，
+ * 精确返回类型会让那些断言变成"不可比"（TS2352）——那属于 M5 收尾时连同用例一起改的事。
+ * 消费方若想要类型，直接 `HTMLElement & CommandListElementApi` 即可（见 editor 的 `EventCommandListShape`）。
+ */
 export function createCommandListElement(options: CommandListApiOptions = {}): HTMLElement {
 	const el = renderDetachedDiv('command-list');
 	createCommandListApi(el, options);
