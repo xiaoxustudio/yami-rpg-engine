@@ -84,6 +84,14 @@ type CommandData = {
 
 type CommandList = CommandData[] & { blank?: CommandItemElement };
 
+/** 行元素数组（`elements`）的最小形状：够 `rebuildCommandRowData` / `rebuildCommandRowModel` 用 */
+interface CommandListShape {
+	count: number;
+	start?: number;
+	end?: number;
+	[i: number]: CommandItemElement | undefined;
+}
+
 type CommandContent = {
 	text?: string;
 	color?: string;
@@ -99,6 +107,8 @@ type CommandContent = {
 type CommandItemElement = HTMLElement & {
 	/** M3 切片 1：派生层发的稳定行 key（M3 换 `v-for` 后直接当 `:key`） */
 	rowKey?: string;
+	/** 行下标（`update()` 里统一写过；`rowOf()` 用它取行数据） */
+	dataValue?: number;
 	contents: CommandContent[] | null;
 	dataKey: boolean;
 	dataParent: CommandData | null;
@@ -296,6 +306,63 @@ export interface CommandRowModel {
 
 const commandRowModel: CommandRowModel = { start: 0, end: 0, keys: [], rows: [] };
 
+/**
+ * P6/M3（数据化）：与 `elements[]` **同序同长**的行数据。
+ *
+ * 为什么要有它：命令列表的逻辑层（选区/折叠/导航/插入）目前通过**元素上的 getter** 读数据
+ * （`element.dataItem`/`dataIndent`/`dataKey`/`dataList`/`dataParent`，全文件 50+ 处）。
+ * 换源之后（行元素改由模板渲染、异步挂载），"元素"不再是可靠的数据来源，因此先把数据抽出来，
+ * 由 `rowOf(element)` 按 `element.dataValue`（= 行下标，`update()` 里统一写过）取。
+ *
+ * 本步**不改行为**：`rowData[i]` 就是同一批元素的同一批字段；取不到时回退到元素本身。
+ */
+export interface CommandRowData {
+	/**
+	 * 行对应的命令。类型与元素 getter `dataItem` 保持一致（非空断言）——空白行运行时确实是 `null`，
+	 * 但既有读取方本来就依赖这条断言，本次数据化**不改语义**（否则要连带改 6 处判空，属另一件事）。
+	 */
+	command: CommandData;
+	list: CommandList;
+	indent: number;
+	dataKey: boolean;
+	parent: CommandData | null;
+	index: number;
+}
+
+const rowData: CommandRowData[] = [];
+
+function rowOf(element: CommandItemElement): CommandRowData {
+	const index = typeof element.dataValue === 'number' ? element.dataValue : -1;
+	return (
+		rowData[index] ?? {
+			command: element.dataItem as CommandData,
+			list: element.dataList,
+			indent: element.dataIndent,
+			dataKey: element.dataKey === true,
+			parent: element.dataParent,
+			index: element.dataIndex
+		}
+	);
+}
+
+/** 从 `elements[]` 重建行数据（在 `update()` 写完 `dataValue` 之后调用） */
+function rebuildCommandRowData(elements: CommandListShape): void {
+	rowData.length = 0;
+	const count = elements.count;
+	for (let i = 0; i < count; i++) {
+		const element = elements[i];
+		if (element === undefined) continue;
+		rowData[i] = {
+			command: element.dataItem as CommandData,
+			list: element.dataList,
+			indent: element.dataIndent,
+			dataKey: element.dataKey === true,
+			parent: element.dataParent,
+			index: element.dataIndex
+		};
+	}
+}
+
 /** 从 `elements[]` 重建行模型（在 `update` 之后调用） */
 function rebuildCommandRowModel(elements: {
 	count: number;
@@ -371,7 +438,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		this.resize();
 
-		// M3（命令列表）：重建行模型快照——换源前后用它逐项比对"行序列"是否一致
+		// M3（命令列表）：重建行模型快照与行数据——换源前后用它逐项比对"行序列"是否一致
+		rebuildCommandRowData(elements);
 		rebuildCommandRowModel(elements);
 	},
 
@@ -734,9 +802,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	updateCommandElement: function (this: any, element: CommandItemElement): void {
 		const options = this.__options;
-		element.style.textIndent = this.computeTextIndent(element.dataIndent);
+		element.style.textIndent = this.computeTextIndent(rowOf(element).indent);
 
-		if (element.dataKey) {
+		if (rowOf(element).dataKey) {
 			const mark = renderElement(h('span', { class: 'command-mark-major' }));
 			addClass(mark, 'command-mark-major');
 			mark.textContent = '>';
@@ -852,7 +920,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		element: CommandItemElement
 	): void {
 		if (element?.fold) {
-			const command = element.dataItem;
+			const command = rowOf(element).command;
 			const folded = !!command!.folded;
 			if (element.folded !== folded) {
 				element.folded = folded;
@@ -1108,13 +1176,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			const elements = this.elements;
 			const sElement = elements[this.start];
 			const aElement = elements[this.active];
-			const sIndent = sElement.dataIndent;
-			const aIndent = aElement.dataIndent;
+			const sIndent = rowOf(sElement).indent;
+			const aIndent = rowOf(aElement).indent;
 			let n = this.active;
 			if (sIndent < aIndent) {
 				for (let i = n - 1; i >= 0; i--) {
 					const element = elements[i];
-					if (element.dataIndent === sIndent && element.dataKey === true) {
+					if (rowOf(element).indent === sIndent && rowOf(element).dataKey === true) {
 						n = i;
 						break;
 					}
@@ -1135,30 +1203,30 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			const elements = this.elements;
 			if (this.active <= this.origin) {
 				const sElement = elements[this.start];
-				const indent = sElement.dataIndent;
+				const indent = rowOf(sElement).indent;
 				let i = this.start;
 				while (--i >= 0) {
 					const element = elements[i];
-					if (element.dataIndent <= indent && element.dataKey === true) {
+					if (rowOf(element).indent <= indent && rowOf(element).dataKey === true) {
 						this.selectMultiple(i);
 						break;
 					}
 				}
 			} else {
 				const eElement = elements[this.end];
-				const data = eElement.dataItem;
+				const data = rowOf(eElement).command;
 				const end = this.end;
 				let indent = Infinity;
 				let n = this.origin;
 				for (let i = n; i < end; i++) {
 					const element = elements[i];
-					if (element.dataIndent < indent) {
-						indent = element.dataIndent;
+					if (rowOf(element).indent < indent) {
+						indent = rowOf(element).indent;
 					}
 					if (
-						element.dataIndent === indent &&
-						element.dataItem !== data &&
-						element.dataItem !== null
+						rowOf(element).indent === indent &&
+						rowOf(element).command !== data &&
+						rowOf(element).command !== null
 					) {
 						n = i;
 					}
@@ -1181,19 +1249,19 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			const elements = this.elements;
 			if (this.active >= this.origin) {
 				const eElement = elements[this.end];
-				const indent = eElement.dataIndent;
+				const indent = rowOf(eElement).indent;
 				const count = elements.count;
 				let i = this.end;
 				while (++i < count) {
 					const element = elements[i];
-					if (element.dataIndent < indent) {
+					if (rowOf(element).indent < indent) {
 						i = this.getRangeByIndex(i)[1];
 						break;
 					}
 					if (
-						element.dataIndent === indent &&
-						element.dataKey === true &&
-						element.dataItem !== null
+						rowOf(element).indent === indent &&
+						rowOf(element).dataKey === true &&
+						rowOf(element).command !== null
 					) {
 						break;
 					}
@@ -1205,10 +1273,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				let n = this.origin;
 				for (let i = n; i > start; i--) {
 					const element = elements[i];
-					if (element.dataIndent < indent) {
-						indent = element.dataIndent;
+					if (rowOf(element).indent < indent) {
+						indent = rowOf(element).indent;
 					}
-					if (element.dataIndent === indent && element.dataKey === true) {
+					if (rowOf(element).indent === indent && rowOf(element).dataKey === true) {
 						n = i;
 					}
 				}
@@ -1270,7 +1338,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this: HTMLElement & { [k: string]: unknown },
 		element: CommandItemElement
 	): boolean {
-		return element.dataParent?.buffer?.enabled ?? true;
+		return rowOf(element).parent?.buffer?.enabled ?? true;
 	},
 
 	// oxlint-disable-next-line no-explicit-any
@@ -1296,13 +1364,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			if (!this.isParentEnabled(element)) {
 				return;
 			}
-			this.inserting = element.dataItem === null;
+			this.inserting = rowOf(element).command === null;
 			switch (this.inserting) {
 				case true:
 					options.command?.insert(this, '');
 					break;
 				case false: {
-					const command = element.dataItem;
+					const command = rowOf(element).command;
 					if (command!.buffer!.enabled) {
 						options.command?.edit(this, command);
 					}
@@ -1323,8 +1391,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 		}
 		if (element && element.fold) {
-			const command = element.dataItem;
-			if (element.dataKey && command) {
+			const command = rowOf(element).command;
+			if (rowOf(element).dataKey && command) {
 				if (command.folded) {
 					delete command.folded;
 				} else {
@@ -1351,7 +1419,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				changed = true;
 			}
 			if (element) {
-				command = element.dataParent;
+				command = rowOf(element).parent;
 			}
 		}
 		if (changed) {
@@ -1396,8 +1464,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			let method = 'disable';
 			const commands: CommandData[] = [];
 			const append = (element: CommandItemElement) => {
-				if (element.dataKey && element.dataItem) {
-					const command = element.dataItem;
+				if (rowOf(element).dataKey && rowOf(element).command) {
+					const command = rowOf(element).command;
 					const enabled = command.id[0] !== '!';
 					switch (method) {
 						case 'disable':
@@ -1434,7 +1502,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			if (commands.length !== 0) {
 				this.history.save({
 					type: 'toggle',
-					parent: element.dataParent,
+					parent: rowOf(element).parent,
 					method: method,
 					commands: commands
 				});
@@ -1479,7 +1547,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			const elements = this.elements;
 			const sElement = elements[this.start];
 			const eElement = elements[this.end];
-			const list = sElement.dataList;
+			const list = rowOf(sElement).list;
 			const start = sElement.dataIndex;
 			const end = eElement.dataIndex + 1;
 			const copies = list.slice(start, end);
@@ -1501,8 +1569,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				if (element.contents !== null) {
 					this.updateCommandElement(element);
 				}
-				let indent = element.dataIndent;
-				if (element.dataItem === null && lastIndent === indent) {
+				let indent = rowOf(element).indent;
+				if (rowOf(element).command === null && lastIndent === indent) {
 					if (options.settingConfig?.config.other.copyAsTextKeepEmptyLine) string += '\n';
 					continue;
 				}
@@ -1541,7 +1609,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					this.updateCommandElement(element);
 				}
 
-				const dataItem = element.dataItem;
+				const dataItem = rowOf(element).command;
 				if (dataItem === null) continue;
 
 				const command = {
@@ -1580,8 +1648,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 			const copies = clipboard.read('yami.commands');
 			if (copies) {
-				const parent = element.dataParent;
-				const list = element.dataList;
+				const parent = rowOf(element).parent;
+				const list = rowOf(element).list;
 				const start = element.dataIndex;
 				const count = elements.count;
 				this.history.save({
@@ -1606,8 +1674,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			const elements = this.elements;
 			const sElement = elements[this.start];
 			const eElement = elements[this.end];
-			const parent = sElement.dataParent;
-			const list = sElement.dataList;
+			const parent = rowOf(sElement).parent;
+			const list = rowOf(sElement).list;
 			const start = sElement.dataIndex;
 			const end = eElement.dataIndex + 1;
 			const commands = list.slice(start, end);
@@ -1650,8 +1718,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if (this.start !== null) {
 			const elements = this.elements;
 			const element = elements[this.start];
-			const parent = element.dataParent;
-			const list = element.dataList;
+			const parent = rowOf(element).parent;
+			const list = rowOf(element).list;
 			const index = element.dataIndex;
 			switch (this.inserting) {
 				case true:
@@ -2082,8 +2150,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					});
 				continue;
 			}
-			if (element?.dataItem && element.dataItem.folded) {
-				const { buffer } = element.dataItem;
+			if (element?.dataItem && rowOf(element).command.folded) {
+				const { buffer } = rowOf(element).command;
 				if (!buffer) continue;
 				for (const item of buffer) {
 					if (item instanceof Array) {
@@ -2390,11 +2458,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					const elements = this.elements;
 					const sElement = elements[this.start];
 					const dElement = elements[this.end];
-					const sData = sElement.dataItem;
-					const eData = dElement.dataItem;
+					const sData = rowOf(sElement).command;
+					const eData = rowOf(dElement).command;
 					const valid = !!sData;
 					const pEnabled = this.isParentEnabled(sElement);
-					const sEnabled = valid ? sData.buffer.enabled : pEnabled;
+					// `valid` 已保证 `sData` 非空；`buffer` 在类型上是可选的（运行期读缓冲区前必已建好）
+					const sEnabled = valid ? sData.buffer!.enabled : pEnabled;
 					const editable = sEnabled && sData === eData;
 					const pastable = pEnabled && !!options.clipboard?.has('yami.commands');
 					const allSelectable = this.data.length > 0;

@@ -282,6 +282,12 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 - **✅ 换源前必补项已补（2026-09-12）**：空白行此前**没有 `rowKey`**，而 `v-for` 的每一行都要 `:key`。现在 `createBlankElement` 按"**父命令 + 层级 + 所属列表下标**"派生 key（根层为 `blank-root-<层级>`，其余为 `blank-<父命令 key>-<层级>-<下标>`）——同一层列表内唯一、跨多次 `update` 稳定。用例随之**不再排除空白行**：模型 key 序列与 DOM **逐项相等**，且新增两条更硬的断言——**每一行都有 key**、**列表内 key 唯一**（`v-for` 的硬要求）。
 
+**✅ 数据化第一步（M3 第四步，2026-09-12，+49 处）**：命令列表的逻辑层此前通过**元素上的 getter** 读数据（`element.dataItem`/`dataIndent`/`dataKey`/`dataList`/`dataParent`）。现在新增 `CommandRowData`（`{ command, list, indent, dataKey, parent, index }`）与 `rowData[]`（与 `elements[]` 同序同长），由 `rowOf(element)` 按 `element.dataValue`（= 行下标，`update()` 里统一写过）取；取不到时**回退到元素本身**，因此构建期（`createCommandBuffer`/`createItems`）与逻辑期都能用。
+
+- **迁移范围**：`commandListPrototype` 内 **49 处**读取换成 `rowOf(x).<字段>`（`dataItem` 16、`dataIndent` 16、`dataKey` 7、`dataParent` 6、`dataList` 4）；**行为不变**——86 例命令列表用例全绿即为证据（渲染仍是命令式）。
+- **一处类型取舍（写明以免疑惑）**：`CommandRowData.command` 保持与元素 getter **同类型**（非空断言）。空白行运行时确实是 `null`，但既有读取方本来就依赖这条断言；改成可空会连带 6 处判空，属另一件事。
+- **意义**：换源后"元素"不再是可靠的数据来源（模板渲染、异步挂载），这一步把逻辑层的取数入口从元素搬到数据，**是 5b 式换源的前置**（文件 body 那边等价的一步是切片 5a）。
+
 **真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
 
 **⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」（已回滚）。**
