@@ -261,6 +261,15 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 ### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口；切片 4/5：行模型与行描述 ↔ DOM 等价）**
 
+**⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」这一步（已回滚）。**
+
+- **试了什么**：模板 `v-for="row in visibleRows"` + `:ref` 回写桥（`bindRowElement` 把 Vue 建的行登记进 `elements[]` 与 `file.context.element`，并沿用既有 `updateOnResize` 生成图标/名称/拖拽属性）；`createFlatItems` 改为只记录数据；`resize()` 只算描述。`pnpm lint` 通过。
+- **为什么失败**：**渲染变异步**。Vue 在下一个微任务才挂行，而 api 的公开方法（`selectAll`/`select`/`selectByPath`/键盘导航/`clear`/`delete` 流）**同步读 `elements[i]`**，假设 `createFlatItems()`/`resize()` 之后行立刻存在 ⇒ 出现空洞。测试立刻反映出来：`YMFileBodyPane.m1.spec` 7 例、`keys.spec` 3 例、`row-model.spec` 3 例同时红（它们都不 `await`，正是"同步可用"这条隐含契约的守卫）。
+- **正确顺序（新计划）**：
+  1. **切片 5a（前置，可独立验证）**：把 api **数据化**——`elements[i]` 的读取改成 `flatFiles[i]`（数据），只在真正需要 DOM 的地方用 `context.element`。**行为不变、渲染仍是命令式**，因此现有用例（不 `await`）继续全绿，正好证明"同步可用"没被破坏。
+  2. **切片 5b（换源）**：模板 `v-for` + 回写桥；此时只有用例需要补 `await nextTick()`（渲染本就该异步），api 侧的同步契约已由数据层承担。
+- **教训（写进 remaining-work）**：**"渲染换源"的第一个动作不是改模板，而是把 api 从"元素数组"迁到"数据数组"**；否则会用"渲染时机"这个隐藏依赖换掉"渲染方式"。
+
 **已落地（切片 5 前置，行描述双写）**：`FileBodyRowModel` 增加 `rows: FileBodyRowDescriptor[]`——每行带 **`{ key, index, name, isFolder, selected, style }`**，即"模板渲染一行所需的全部数据"；`resize()` 在写元素样式的同时把这些字段写进模型（**双写**，不换源）。
 
 - **试出并补上的一个真实缺口**：`selected` 一开始只在 `resize()` 里写，而**选中/取消选中并不触发 `resize`** ⇒ 描述里的选中态会停旧值。补 `refreshRowSelection()`（只刷 `selected` 一个字段），在 `select()`/`unselect()` 后调用。**这正是"先双写、后换源"的价值**：换源前就把"谁该刷新什么"暴露出来，而不是换完再 debug。
