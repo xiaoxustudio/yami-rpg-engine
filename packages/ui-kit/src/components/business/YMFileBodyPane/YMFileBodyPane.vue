@@ -1,11 +1,22 @@
 <template>
 	<div class="file-body-pane" ref="el" :data-v-ref="''">
-		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''"></div>
+		<!-- M3 切片 5b：行元素改由模板渲染——`:key`/`:style`/`:class` 全部吃"行描述"数据，
+		     api 只负责算可见窗口，并把模板建出的元素经 `bindRowElement` 登记回 `elements[]` -->
+		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''">
+			<div
+				v-for="row in visibleRows"
+				:key="row.key"
+				:ref="(el) => bindRowElement(row, el)"
+				class="file-body-item"
+				:class="{ 'file-item': !row.isFolder, selected: row.selected }"
+				:style="row.style"
+			/>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { h, ref, shallowRef, onMounted, onBeforeUnmount } from 'vue';
+import { h, ref, shallowRef, computed, onMounted, onBeforeUnmount, type ComponentPublicInstance } from 'vue';
 import {
 	addClass,
 	hasClass,
@@ -24,6 +35,7 @@ import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
 	computeViewMetrics,
 	deriveFileRows,
+	fileRowKeyOf,
 	VIEW_MODE_BY_INDEX,
 	type FileBodyViewMode
 } from './file-body-render';
@@ -518,6 +530,32 @@ const rowModel = shallowRef<FileBodyRowModel>({
 	rows: []
 });
 
+/** M3 切片 5b：模板渲染的可见行（= 行描述，由 `resize()` 更新） */
+const visibleRows = computed<FileBodyRowDescriptor[]>(() => rowModel.value.rows);
+
+/**
+ * M3 切片 5b：`:ref` 回写桥。模板渲染出行元素后，把它登记进 api 的簿记
+ * （`elements[]` 与 `file.context.element`），并沿用既有 `updateOnResize`
+ * 生成图标、名称与拖拽属性——这三块的实现没有改动。
+ */
+function bindRowElement(row: FileBodyRowDescriptor, target: Element | ComponentPublicInstance | null): void {
+	// 注意：`ComponentPublicInstance` 是**类型**，运行时不存在，不能 `instanceof`；
+	// 行元素一定是 `HTMLElement`，据此判别即可。
+	if (!(target instanceof HTMLElement)) return;
+	const node = target as unknown as FileBodyItemApi;
+	const file = flatFiles[row.index];
+	if (file === undefined) return;
+	const pane = el.value as FileBodyPaneApi;
+	const context = file.getContext(pane);
+	node.rowKey = row.key;
+	node.file = file;
+	node.context = context;
+	context.element = node;
+	node.changed = true;
+	elements[row.index] = node;
+	updateOnResize(node);
+}
+
 function resize(): void {
 	const node = el.value as FileBodyPaneApi;
 	const ch = node.clientHeight;
@@ -531,14 +569,15 @@ function resize(): void {
 		els.end = end;
 		els.cpl = cpl;
 		updateContentOffset();
-		const versionId = els.versionId++;
 		const content = contentEl.value as FileBodyContentApi;
 		const { countPerLine, itemSize, itemWidth } = content;
-		// M3 切片 5 前置：与 DOM 双写的行描述（模板换源后直接吃这份数据）
+		// M3 切片 5b：行描述**只从数据算**（不再从 DOM 反读）——模板照它渲染行，
+		// api 不再建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）
 		const descriptors: FileBodyRowDescriptor[] = [];
+		const keys: string[] = [];
 		for (let i = start; i < end; i++) {
-			const element = els[i]!;
-			element.versionId = versionId;
+			const file = flatFiles[i];
+			if (file === undefined) continue;
 			let left: string;
 			let top: string;
 			if (viewMode === 'list') {
@@ -552,45 +591,17 @@ function resize(): void {
 				left = `${col * itemWidth! + 4}px`;
 				top = `${row * itemSize! + 4}px`;
 			}
-			element.style.left = left;
-			element.style.top = top;
-			updateOnResize(element);
-			if (element.rowKey !== undefined) {
-				descriptors.push({
-					key: element.rowKey,
-					index: i,
-					name: element.nameBox?.textContent ?? '',
-					isFolder: !hasClass(element, 'file-item'),
-					selected: hasClass(element, 'selected'),
-					style: { left, top }
-				});
-			}
-		}
-		const nodes = content.childNodes;
-		const last = nodes.length - 1;
-		for (let i = last; i >= 0; i--) {
-			const element = nodes[i] as FileBodyItemApi;
-			if (element.versionId !== versionId) {
-				element.remove();
-			}
-		}
-		const foot = els[end - 1];
-		if (foot && !foot.parentNode) {
-			content.appendChild(foot);
-		}
-		for (let i = end - 2; i >= start; i--) {
-			const element = els[i]!;
-			if (element.parentNode === null) {
-				const next = els[i + 1]!;
-				content.insertBefore(element, next);
-			}
-		}
-		// M3 切片 3：把"当前可见行"写成数据模型（与刚渲染出的 DOM 同序），供等价性用例与后续 `v-for` 使用
-		// M3 切片 5 前置：同时写入 `rows`——模板渲染一行所需的 key/名称/文件夹标记/选中态/定位样式
-		const keys: string[] = [];
-		for (let i = start; i < end; i++) {
-			const element = els[i];
-			if (element?.rowKey !== undefined) keys.push(element.rowKey);
+			const key = fileRowKeyOf(file);
+			keys.push(key);
+			descriptors.push({
+				key,
+				index: i,
+				// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
+				name: file instanceof FileItem ? ((file as unknown as { basename?: string }).basename ?? '') : file.name,
+				isFolder: !(file instanceof FileItem),
+				selected: selections.includes(file),
+				style: { left, top }
+			});
 		}
 		rowModel.value = {
 			start,
@@ -731,25 +742,14 @@ function updateOnResize(element: FileBodyItemApi): void {
 	}
 }
 
+/**
+ * M3 切片 5b：`createFlatItems` 只记录数据（排序后的文件列表 + 行数）；
+ * 行元素由模板 `v-for` 渲染，经 `bindRowElement` 回写进 `elements[]`。
+ */
 function createFlatItems(dir: FileBodyFile[]): void {
 	Directory?.sortFiles(dir);
-	const els = elements;
-	const length = dir.length;
-	// M3 切片 5a：数据层与元素数组同序地记下这份列表（选区/导航读它，不读空槽）
 	flatFiles = dir;
-	// M3 切片 1：行 key 由派生层给（同一对象跨多次渲染 key 稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
-	const rows = deriveFileRows(dir);
-	for (let i = 0; i < length; i++) {
-		const file = dir[i];
-		if (file instanceof FileItem) {
-			els[els.count++] = createFileElement(file, rows[i].key);
-			continue;
-		}
-		if (file instanceof FolderItem) {
-			els[els.count++] = createFolderElement(file, rows[i].key);
-			continue;
-		}
-	}
+	elements.count = dir.length;
 }
 
 function createFolderElement(file: FileBodyFile, rowKey?: string): FileBodyItemApi {

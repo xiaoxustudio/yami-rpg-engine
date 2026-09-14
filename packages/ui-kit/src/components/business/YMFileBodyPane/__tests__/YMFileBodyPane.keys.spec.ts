@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
@@ -81,40 +82,42 @@ const mountBody = () => {
 	return { wrapper, el };
 };
 
-const renderItems = (el: BodyElement, list: unknown[]): void => {
+const renderItems = async (el: BodyElement, list: unknown[]): Promise<void> => {
 	el.setViewIndex(0);
 	el.updateViewMode();
 	el.createFlatItems(list);
 	el.computeGridProperties();
 	el.updateContentSize();
 	el.resize();
+	await nextTick();
+	await nextTick();
 };
 
 const rows = (el: BodyElement): (HTMLElement & { rowKey?: string })[] =>
 	Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 
 describe('YMFileBodyPane（M3 切片 1：行 key 接线）', () => {
-	it('文件行与文件夹行都带上派生层发的 rowKey', () => {
+	it('文件行与文件夹行都带上派生层发的 rowKey', async () => {
 		const { el } = mountBody();
 		const list = [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')];
-		renderItems(el, list);
+		await renderItems(el, list);
 		const expected = deriveFileRows(list).map((row) => row.key);
 		expect(rows(el).map((row) => row.rowKey)).toEqual(expected);
 	});
 
-	it('重复渲染后 key 不变（同一对象复用同一 key）', () => {
+	it('重复渲染后 key 不变（同一对象复用同一 key）', async () => {
 		const { el } = mountBody();
 		const list = [new FileItem('/a/ev', 'ev')];
-		renderItems(el, list);
+		await renderItems(el, list);
 		const before = rows(el)[0].rowKey;
-		renderItems(el, list);
+		await renderItems(el, list);
 		expect(rows(el)[0].rowKey).toBe(before);
 	});
 
-	it('不同对象即使路径相同也拿到不同 key（不能拿路径当 key）', () => {
+	it('不同对象即使路径相同也拿到不同 key（不能拿路径当 key）', async () => {
 		const { el } = mountBody();
 		const list = [new FileItem('/a/same', 'same'), new FileItem('/a/same', 'same')];
-		renderItems(el, list);
+		await renderItems(el, list);
 		const keys = rows(el).map((row) => row.rowKey);
 		expect(keys[0]).not.toBe(keys[1]);
 	});

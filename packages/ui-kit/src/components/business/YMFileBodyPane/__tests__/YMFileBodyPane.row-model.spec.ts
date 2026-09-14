@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
@@ -103,13 +104,15 @@ const mountBody = () => {
 	return { wrapper, el };
 };
 
-const renderItems = (el: BodyElement, list: unknown[], viewIndex = 0): void => {
+const renderItems = async (el: BodyElement, list: unknown[], viewIndex = 0): Promise<void> => {
 	el.setViewIndex(viewIndex);
 	el.updateViewMode();
 	el.createFlatItems(list);
 	el.computeGridProperties();
 	el.updateContentSize();
 	el.resize();
+	await nextTick();
+	await nextTick();
 };
 
 const items = (n = 6) => Array.from({ length: n }, (_, i) => new FileItem(`/a/ev${i}`, `ev${i}`));
@@ -120,26 +123,26 @@ const domRowKeys = (el: BodyElement): (string | undefined)[] =>
 	);
 
 describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () => {
-	it('模型里的 key 序列与 DOM 中行元素顺序逐项一致', () => {
+	it('模型里的 key 序列与 DOM 中行元素顺序逐项一致', async () => {
 		const { el } = mountBody();
-		renderItems(el, items(5));
+		await renderItems(el, items(5));
 		const model = el.getRowModel();
 		expect(model.keys.length).toBeGreaterThan(0);
 		expect(domRowKeys(el)).toEqual(model.keys);
 	});
 
-	it('模型窗口切片等于派生层给出的同一段 key（顺序一致）', () => {
+	it('模型窗口切片等于派生层给出的同一段 key（顺序一致）', async () => {
 		const { el } = mountBody();
 		const list = items(5);
-		renderItems(el, list);
+		await renderItems(el, list);
 		const model = el.getRowModel();
 		const derived = deriveFileRows(list).map((row) => row.key);
 		expect(model.keys).toEqual(derived.slice(model.start, model.end));
 	});
 
-	it('模型带出窗口边界与度量（start/end/countPerLine/viewMode）', () => {
+	it('模型带出窗口边界与度量（start/end/countPerLine/viewMode）', async () => {
 		const { el } = mountBody();
-		renderItems(el, items(5));
+		await renderItems(el, items(5));
 		const model = el.getRowModel();
 		expect(model.start).toBeGreaterThanOrEqual(0);
 		expect(model.end).toBeGreaterThan(model.start);
@@ -147,17 +150,17 @@ describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () 
 		expect(model.viewMode).toBe('list');
 	});
 
-	it('空目录：模型为空且与 DOM 一致（零行）', () => {
+	it('空目录：模型为空且与 DOM 一致（零行）', async () => {
 		const { el } = mountBody();
-		renderItems(el, []);
+		await renderItems(el, []);
 		const model = el.getRowModel();
 		expect(model.keys).toEqual([]);
 		expect(domRowKeys(el)).toEqual([]);
 	});
 
-	it('getRowModel 返回副本：改它不影响内部状态', () => {
+	it('getRowModel 返回副本：改它不影响内部状态', async () => {
 		const { el } = mountBody();
-		renderItems(el, items(3));
+		await renderItems(el, items(3));
 		const first = el.getRowModel();
 		first.keys.push('injected');
 		first.start = 999;
@@ -172,9 +175,9 @@ describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () 
  * （名称、文件夹标记、选中态、定位样式）——换源时模板只吃这份数据，不再读 DOM。
  */
 describe('YMFileBodyPane（M3 切片 5 前置：行描述 ↔ DOM 双写一致）', () => {
-	it('行描述与 DOM 逐项一致：名称、文件夹标记、定位样式', () => {
+	it('行描述与 DOM 逐项一致：名称、文件夹标记、定位样式', async () => {
 		const { el } = mountBody();
-		renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')]);
+		await renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')]);
 		const model = el.getRowModel();
 		const domRows = Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 		expect(model.rows.length).toBe(domRows.length);
@@ -188,25 +191,28 @@ describe('YMFileBodyPane（M3 切片 5 前置：行描述 ↔ DOM 双写一致�
 		});
 	});
 
-	it('行描述带出全局下标（index），且随窗口迁移更新为新窗口的行', () => {
+	it('行描述带出全局下标（index），且随窗口迁移更新为新窗口的行', async () => {
 		const { el } = mountBody();
-		renderItems(el, items(60), 0);
+		await renderItems(el, items(60), 0);
 		const before = el.getRowModel().rows.map((row) => row.index);
 		expect(before[0]).toBe(el.getRowModel().start);
 		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
 		el.resize();
+		await nextTick();
 		const after = el.getRowModel();
 		expect(after.start).toBeGreaterThan(0);
 		expect(after.rows[0].index).toBe(after.start);
 	});
 
-	it('选中态进入行描述（选中后 selected=true，取消后回到 false）', () => {
+	it('选中态进入行描述（选中后 selected=true，取消后回到 false）', async () => {
 		const { el } = mountBody();
-		renderItems(el, items(3), 0);
+		await renderItems(el, items(3), 0);
 		expect(el.getRowModel().rows.every((row) => !row.selected)).toBe(true);
 		el.selectAll();
+		await nextTick();
 		expect(el.getRowModel().rows.some((row) => row.selected)).toBe(true);
 		el.unselect();
+		await nextTick();
 		expect(el.getRowModel().rows.every((row) => !row.selected)).toBe(true);
 	});
 });

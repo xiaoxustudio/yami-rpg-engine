@@ -92,7 +92,9 @@ const deriveKeys = (): string[] => {
 };
 
 describe('R2b 模板已承担键集合（template-localized.ts）', () => {
-	it('与源码反推的集合一致（防漂移：改动模板请重新生成本文件）', () => {
+	// 这条会**遍历整个 editor 源码树**（2000+ 文件）反推键集合，单跑已约 6s，
+	// 全量并发下会超过 vitest 默认 5s 超时而变成偶发红 ⇒ 显式放宽超时。
+	it('与源码反推的集合一致（防漂移：改动模板请重新生成本文件）', { timeout: 60_000 }, () => {
 		const derived = deriveKeys();
 		const declared = [...templateLocalizedKeys].sort();
 		expect(declared.length).toBeGreaterThan(0);

@@ -259,9 +259,24 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；2/3：受限 API 收口；4：行模型 ↔ DOM 等价；5a：api 数据化 ✅）**
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**✅ 文件 body 换源完成（切片 1：行 key；2/3：受限 API 收口；4：行模型 ↔ DOM 等价；5a：api 数据化；5b：模板换源）**
 
-**✅ 已落地（切片 5a，api 数据化）**：`YMFileBodyPane.vue` 引入 `flatFiles`（排序后、与 `elements` 同序的**文件数据**），并把选区/导航类方法从"读元素槽位"改成"读数据"：
+**✅ 已落地（切片 5b，模板换源）**：`YMFileBodyPane.vue` 的行不再由 api 建：
+
+- **模板**：`.file-body-content` 内 `v-for="row in visibleRows"` + `:key="row.key"` + `:class="{ 'file-item': !row.isFolder, selected: row.selected }"` + `:style="row.style"` + `:ref="(el) => bindRowElement(row, el)"`。
+- **api**：`createFlatItems` 只记数据（`flatFiles` + `elements.count`）；`resize()` 只算窗口与**行描述**（`start/end/countPerLine/viewMode/keys/rows`），不再建/挂/摘元素；`bindRowElement` 把模板建出的元素登记回 `elements[]` 与 `file.context.element`，并沿用既有 `updateOnResize` ⇒ **图标、名称、拖拽属性的实现一行没改**。
+- **用例**：行元素在下一个微任务才挂上，故 4 个 spec 的渲染助手改 `async` 并 `await nextTick()`；动作类断言（`selectAll`/`unselect`/`selectByPath`/`resize`）后同样补一拍。**56 例全绿**。
+
+**换源过程中踩到并修好的两处**（都属于"换源特有"的错误）：
+
+| 现象 | 原因 | 修法 |
+| --- | --- | --- |
+| `Unhandled error during execution of ref function`（每次挂行都抛） | `bindRowElement` 里写 `target instanceof ComponentPublicInstance`——而 `ComponentPublicInstance` 是**类型**，运行时不存在，`instanceof undefined` 直接抛 | 改成 `if (!(target instanceof HTMLElement)) return;`（行元素一定是 HTMLElement） |
+| 文件夹行的名称在描述里是空串（DOM 里却是 `sub`） | 描述统一取 `basename`，而命令式实现里**文件用 `basename`、文件夹用 `name`** | 描述按类型分别取，与 `updateFileElement`/`updateFolderElement` 对齐 |
+
+**真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
+
+**⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」（已回滚）。**
 
 | 方法 | 改动 | 收益 |
 | --- | --- | --- |
