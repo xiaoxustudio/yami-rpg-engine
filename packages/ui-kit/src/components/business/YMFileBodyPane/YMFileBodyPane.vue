@@ -131,7 +131,6 @@ interface FileBodyItemApi extends HTMLElement {
 	file: FileBodyFile;
 	context?: FileBodyContext;
 	changed?: boolean;
-	versionId?: number;
 	nameBox?: HTMLElement;
 	fileIcon?: FileBodyIconApi;
 }
@@ -375,7 +374,6 @@ const timer: {
 	}
 };
 let elements: (FileBodyItemApi | undefined)[] & {
-	versionId: number;
 	count: number;
 	start: number;
 	end: number;
@@ -1872,7 +1870,6 @@ onMounted(() => {
 	};
 
 	elements = [] as unknown as typeof elements;
-	elements.versionId = 0;
 	elements.count = 0;
 	elements.start = -1;
 	elements.end = -1;
