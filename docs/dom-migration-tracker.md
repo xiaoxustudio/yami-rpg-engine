@@ -21,14 +21,14 @@
 | editor/engine       | 53 | 8 | 0 | 4 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 5 | 17 | 0 | 9 | 22 | 0 | 14 | 0 | 1 | 0 | 0 |
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/events       | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
-| editor/file         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
+| editor/file         | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/i18n         | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |
 | editor/inspector    | 41 | 8 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 1 | 0 | 7 | 7 | 5 | 0 | 0 |
 | editor/local        | 5 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 |
 | editor/localize     | 2 | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/log          | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/main         | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
-| editor/main.ts      | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
+| editor/main.ts      | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
 | editor/module       | 15 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 4 | 1 | 0 | 0 | 0 |
 | editor/palette      | 13 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 3 | 0 | 33 | 0 | 0 | 0 | 0 |
 | editor/particle     | 9 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |
@@ -42,14 +42,14 @@
 | editor/types        | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/ui           | 10 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 |
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/utils        | 33 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 17 | 3 | 0 | 0 |
+| editor/utils        | 33 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 16 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 |
-| ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 80 | 11 | 12 | 62 | 2 | 263 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 79 | 11 | 11 | 60 | 2 | 263 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 168 | 20 | 0 | 0 |
+| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 121 | 11 | 28 | 125 | 2 | 568 | 165 | 20 | 0 | 0 |
 
 ## 口径
 
@@ -71,9 +71,9 @@
 
 | 类别 | 处数 | 文件数 |
 | --- | --- | --- |
-| style.* 赋值 | 308 | 77 |
+| style.* 赋值 | 306 | 77 |
 | .children 遍历 | 230 | 73 |
-| hasClass() 读 class 当状态 | 215 | 51 |
+| hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 139 | 40 |
 | classList.add/remove/toggle | 132 | 41 |
 | textContent 赋值 | 129 | 44 |
@@ -99,7 +99,7 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
-| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2410 | 38 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2383 | 34 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
@@ -202,7 +202,6 @@
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 585 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 91 | 3 | - |
-| packages/editor/src/main.ts | 28 | 3 | - |
 | packages/editor/src/module/editdata.ts | 380 | 3 | - |
 | packages/editor/src/module/eslints.ts | 269 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
@@ -238,6 +237,7 @@
 | packages/editor/src/log/log-window.ts | 184 | 2 | - |
 | packages/editor/src/log/related-references.ts | 927 | 2 | - |
 | packages/editor/src/main/startup.ts | 43 | 2 | - |
+| packages/editor/src/main.ts | 29 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
 | packages/editor/src/module/constants.ts | 106 | 2 | - |
 | packages/editor/src/palette/auto-tile.ts | 976 | 2 | - |
@@ -245,7 +245,6 @@
 | packages/editor/src/printer/printer.ts | 1402 | 2 | - |
 | packages/editor/src/services/project/setting-config/renderer.ts | 176 | 2 | - |
 | packages/editor/src/tools/event-list.ts | 185 | 2 | - |
-| packages/editor/src/utils/dpr.ts | 13 | 2 | - |
 | packages/editor/src/utils/keyboard.ts | 43 | 2 | - |
 | packages/ui-kit/src/components/basic/YMEmptyState/YMEmptyState.vue | 63 | 2 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/YMSelectBox.vue | 377 | 2 | - |
@@ -290,7 +289,6 @@
 | packages/editor/src/composables/usePresetObjectWindow.ts | 264 | 1 | - |
 | packages/editor/src/engine/scene/draw-start-position.ts | 80 | 1 | - |
 | packages/editor/src/engine/webgl/webgl-methods.ts | 1756 | 1 | - |
-| packages/editor/src/file/directory-object.ts | 96 | 1 | - |
 | packages/editor/src/i18n/index.ts | 148 | 1 | - |
 | packages/editor/src/inspector/file-audio-page.ts | 411 | 1 | - |
 | packages/editor/src/inspector/file-video-page.ts | 113 | 1 | - |
@@ -308,6 +306,7 @@
 | packages/editor/src/stores/browser.ts | 582 | 1 | - |
 | packages/editor/src/tools/condition-list.ts | 314 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
+| packages/editor/src/utils/dpr.ts | 14 | 1 | - |
 | packages/editor/src/utils/element-registry.ts | 60 | 1 | - |
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
@@ -958,8 +957,9 @@
 | packages/editor/src/engine/webgl/texture-manager.ts | 129 | 0 | - |
 | packages/editor/src/engine/webgl/vector2.ts | 65 | 0 | - |
 | packages/editor/src/enum/enum-context.ts | 95 | 0 | - |
+| packages/editor/src/file/directory-object.ts | 97 | 0 | - |
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
-| packages/editor/src/i18n/convert.ts | 103 | 0 | - |
+| packages/editor/src/i18n/convert.ts | 104 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 100 | 0 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 93 | 0 | - |

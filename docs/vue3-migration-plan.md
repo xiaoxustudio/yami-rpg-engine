@@ -270,7 +270,7 @@
 | `document.querySelector*` 处数       | 18（P1b 第 5/9/10/11 刀 56 → 18） |
 | `document.querySelector*` 处数       | 56                                  |
 | `document.createElement` 处数        | 121（其中 ui-kit/components 95；含 P1b 各刀留下的注释提及） |
-| `appendChild` 调用                   | 122                                 |
+| `appendChild` 调用                   | 121                                 |
 | `addEventListener` 调用              | 568                                 |
 | `$('#…')` 反查处数（P5，**不在 lint 规则内**） | 20（11 个文件；残余 = 动态 id / 外壳元素 / 基础设施 / 白名单，见 P5b 结项；B4 起点 1481，最初 1489） |
 | `new DOMParser()` 处数（字符串模板建 DOM） | 0（B1/R1 前 1 处，见 P7）      |
