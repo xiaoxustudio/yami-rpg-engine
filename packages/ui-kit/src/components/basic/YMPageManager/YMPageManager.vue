@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
 	id?: string;
@@ -53,7 +54,7 @@ const switchover = (value: unknown): void => {
 			active?.classList.remove('visible');
 			target?.classList.add('visible');
 			if (state.switchEventEnabled) {
-				const event = new Event('switch') as Event & { last: unknown; value: unknown };
+				const event = createPayloadEvent('switch', {} as { last: unknown; value: unknown });
 				event.last = last;
 				event.value = value;
 				element.dispatchEvent(event);

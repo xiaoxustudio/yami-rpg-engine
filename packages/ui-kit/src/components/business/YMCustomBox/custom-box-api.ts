@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { createPayloadEvent } from '../../../utils/payload-event';
+import { attachApi } from '../../../utils/attach-api';
 
 export interface CustomBoxParseResult {
 	text: string;
@@ -134,7 +135,7 @@ export function attachCustomBoxApi(
 			update();
 		}
 		if (state.writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: unknown };
+			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
 			writeEvent.value = state.dataValue;
 			box.dispatchEvent(writeEvent);
 		}
@@ -144,7 +145,7 @@ export function attachCustomBoxApi(
 		if (state.dataValue !== value) {
 			write(value);
 			if (state.inputEventEnabled) {
-				const inputEvent = new Event('input') as Event & { value: unknown };
+				const inputEvent = createPayloadEvent('input', {} as { value: unknown });
 				inputEvent.value = state.dataValue;
 				box.dispatchEvent(inputEvent);
 			}

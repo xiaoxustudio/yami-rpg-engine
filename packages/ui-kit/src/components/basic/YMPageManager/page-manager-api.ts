@@ -1,4 +1,5 @@
 import { addClass, hasClass, removeClass } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface PageManagerApi extends HTMLElement {
 	index: string | null;
@@ -49,10 +50,10 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 				if (active) removeClass(active, 'visible');
 				if (target) addClass(target, 'visible');
 				if (manager.switchEventEnabled) {
-					const event = new Event('switch') as Event & {
+					const event = createPayloadEvent('switch', {} as {
 						last: string | null;
 						value: string | null;
-					};
+					});
 					event.last = last;
 					event.value = value;
 					el.dispatchEvent(event);

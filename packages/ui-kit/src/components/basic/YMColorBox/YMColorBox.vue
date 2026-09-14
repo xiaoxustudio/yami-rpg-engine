@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
 	id?: string;
@@ -67,7 +68,7 @@ const input = (color: string): void => {
 		const el = root.value;
 		if (el) {
 			if (inputEventEnabled) {
-				const inputEvent = new Event('input') as Event & { value: string };
+				const inputEvent = createPayloadEvent('input', {} as { value: string });
 				inputEvent.value = dataValue;
 				el.dispatchEvent(inputEvent);
 			}

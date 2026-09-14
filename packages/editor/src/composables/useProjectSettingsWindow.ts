@@ -25,6 +25,7 @@ import { on, read, write } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
 import '@app/utils/object';
 import { getProjectStore } from '@app/stores/project';
+import { createPayloadEvent } from '@ui-kit';
 
 type ImportedFonts = {
 	fontId: string | null;
@@ -449,7 +450,7 @@ function confirm(_event?: Event): void {
 		if (title1 !== title2) {
 			Title.updateTitleName!();
 		}
-		const datachange = new Event('datachange') as Event & { key: string; last: unknown };
+		const datachange = createPayloadEvent('datachange', {} as { key: string; last: unknown });
 		datachange.key = 'config';
 		datachange.last = last;
 		window.dispatchEvent(datachange);

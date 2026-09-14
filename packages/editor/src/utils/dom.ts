@@ -1,4 +1,5 @@
 import { render, type VNode } from 'vue';
+import { createPayloadEvent } from '@ui-kit';
 
 /**
  * P1b：**唯一的「离屏节点」创建缝隙**。
@@ -103,7 +104,7 @@ export function dispatchResizeEvent(el: HTMLElement): void {
 }
 
 export function dispatchChangeEvent(el: HTMLElement, index?: number): void {
-	const event = new Event('change', { bubbles: true }) as Event & { index: number };
+	const event = createPayloadEvent('change', {} as { index: number }, { bubbles: true });
 	if (index !== undefined) {
 		event.index = index;
 	}

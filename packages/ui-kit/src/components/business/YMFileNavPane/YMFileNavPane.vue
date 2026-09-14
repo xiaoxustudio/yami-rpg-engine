@@ -19,6 +19,7 @@ import {
 } from '../../../utils/common-list';
 import { attachApi } from '../../../utils/attach-api';
 import { createFileNavCore } from './file-nav-pane-core';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 const core = createFileNavCore();
 
@@ -339,7 +340,7 @@ function select(...files: FileItem[]): void {
 		}
 	}
 	if (selectEventEnabled) {
-		const select = new Event('select') as Event & { value: FileItem[] };
+		const select = createPayloadEvent('select', {} as { value: FileItem[] });
 		select.value = files;
 		el.value!.dispatchEvent(select);
 	}

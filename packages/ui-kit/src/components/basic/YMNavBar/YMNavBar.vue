@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
 	id?: string;
@@ -51,7 +52,7 @@ const write = (value: unknown): void => {
 			target.classList.add('selected');
 		}
 		if (writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: unknown };
+			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
 			writeEvent.value = target ? value : undefined;
 			element.dispatchEvent(writeEvent);
 		}
@@ -92,7 +93,7 @@ const pointerdown = (event: PointerEvent): void => {
 		const value = parseValue(target);
 		write(value);
 		if (selectEventEnabled) {
-			const select = new Event('select') as Event & { value: unknown };
+			const select = createPayloadEvent('select', {} as { value: unknown });
 			select.value = value;
 			element.dispatchEvent(select);
 		}

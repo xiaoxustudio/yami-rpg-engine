@@ -1,3 +1,4 @@
+import { createPayloadEvent } from '../../../utils/payload-event';
 export interface SelectItem {
 	value: unknown;
 	name?: string;
@@ -175,7 +176,7 @@ export function createSelectBoxCore(
 			toggleRelatedElements();
 		}
 		if (state.writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value?: unknown };
+			const writeEvent = createPayloadEvent('write', {} as { value?: unknown });
 			writeEvent.value = state.dataValue;
 			root?.dispatchEvent(writeEvent);
 		}
@@ -201,10 +202,10 @@ export function createSelectBoxCore(
 		if (last !== value) {
 			write(value);
 			if (state.inputEventEnabled) {
-				const inputEvent = new Event('input', { bubbles: true }) as Event & {
+				const inputEvent = createPayloadEvent('input', {} as {
 					last?: unknown;
 					value?: unknown;
-				};
+				}, { bubbles: true });
 				inputEvent.last = last;
 				inputEvent.value = state.dataValue;
 				root?.dispatchEvent(inputEvent);

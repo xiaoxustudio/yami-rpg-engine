@@ -1,5 +1,6 @@
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface CheckBoxApiOptions {
 	standard?: boolean;
@@ -75,7 +76,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 			toggleRelatedElements();
 		}
 		if (writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: boolean };
+			const writeEvent = createPayloadEvent('write', {} as { value: boolean });
 			writeEvent.value = dataValue;
 			box.dispatchEvent(writeEvent);
 		}
@@ -89,9 +90,9 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		if (dataValue !== value) {
 			box.write(value);
 			if (inputEventEnabled) {
-				const inputEvent = new Event('input', {
+				const inputEvent = createPayloadEvent('input', {} as { value: boolean }, {
 					bubbles: true
-				}) as Event & { value: boolean };
+				});
 				inputEvent.value = dataValue;
 				box.dispatchEvent(inputEvent);
 			}

@@ -1,5 +1,6 @@
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface ColorBoxApiOptions {
 	modelValue?: string;
@@ -78,9 +79,9 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		if (box.dataValue !== color) {
 			box.write(color);
 			if (box.inputEventEnabled) {
-				const input = new Event('input') as Event & {
+				const input = createPayloadEvent('input', {} as {
 					value: string;
-				};
+				});
 				input.value = box.dataValue ?? '';
 				box.dispatchEvent(input);
 			}

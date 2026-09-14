@@ -1,4 +1,5 @@
 import { addClass, removeClass, hasClass } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface NavBarApi extends HTMLElement {
 	writeEventEnabled: boolean;
@@ -73,7 +74,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 				addClass(target, 'selected');
 			}
 			if (nav.writeEventEnabled) {
-				const write = new Event('write') as Event & { value: unknown };
+				const write = createPayloadEvent('write', {} as { value: unknown });
 				write.value = target ? value : undefined;
 				el.dispatchEvent(write);
 			}
@@ -94,7 +95,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 				if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
 					nav.write(parseValue(element));
 					if (nav.selectEventEnabled) {
-						const select = new Event('select') as Event & { value: unknown };
+						const select = createPayloadEvent('select', {} as { value: unknown });
 						select.value = element.dataValue;
 						el.dispatchEvent(select);
 					}

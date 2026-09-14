@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface ParseResult {
 	text: string;
@@ -97,7 +98,7 @@ const write = (value: unknown): void => {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	if (el) {
 		if (state.writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: unknown };
+			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
 			writeEvent.value = state.dataValue;
 			el.dispatchEvent(writeEvent);
 		}
@@ -111,7 +112,7 @@ const input = (value: unknown): void => {
 		const el = root.value;
 		if (el) {
 			if (state.inputEventEnabled) {
-				const inputEvent = new Event('input') as Event & { value: unknown };
+				const inputEvent = createPayloadEvent('input', {} as { value: unknown });
 				inputEvent.value = state.dataValue;
 				el.dispatchEvent(inputEvent);
 			}

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { hasClass, seek } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 import { createCommonListCore, type RelativeDirection } from './common-list-core';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 const core = createCommonListCore();
 
@@ -58,7 +59,7 @@ const write = (value: unknown): void => {
 	selection = target;
 	scrollToItem(index);
 	if (writeEventEnabled) {
-		const writeEvent = new Event('write') as Event & { value: unknown };
+		const writeEvent = createPayloadEvent('write', {} as { value: unknown });
 		writeEvent.value = target.dataValue;
 		el.dispatchEvent(writeEvent);
 	}
@@ -151,7 +152,7 @@ const select = (element: HTMLElement): void => {
 	if (element instanceof HTMLElement && selection !== element) {
 		write((element as HTMLElement & { dataValue: unknown }).dataValue);
 		if (selectEventEnabled) {
-			const selectEvent = new Event('select') as Event & { value: unknown };
+			const selectEvent = createPayloadEvent('select', {} as { value: unknown });
 			selectEvent.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 			root.value!.dispatchEvent(selectEvent);
 		}
@@ -280,22 +281,22 @@ const pointerup = (event: PointerEvent): void => {
 			if (popupEventEnabled && document.activeElement === el) {
 const element = seek(event.target as HTMLElement, '.common-item');
 			if (element && hasClass(element, 'common-item') && hasClass(element, 'selected')) {
-					const popup = new Event('popup') as Event & {
+					const popup = createPayloadEvent('popup', {} as {
 						value: unknown;
 						clientX: number;
 						clientY: number;
-					};
+					});
 					popup.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;
 					el.dispatchEvent(popup);
 					emit('popup', popup.value, popup.clientX, popup.clientY);
 				} else {
-					const popup = new Event('popup') as Event & {
+					const popup = createPayloadEvent('popup', {} as {
 						value: unknown;
 						clientX: number;
 						clientY: number;
-					};
+					});
 					popup.value = null;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;

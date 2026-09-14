@@ -47,12 +47,12 @@
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/utils        | 12 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1139 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 171 | 20 | 0 | 0 |
+| ui-kit/utils        | 13 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
+| 合计                  | 1140 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 29 | 127 | 2 | 568 | 171 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1139**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1140**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -99,10 +99,10 @@
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2314 | 38 | - |
-| packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 889 | 31 | - |
+| packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
-| packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 663 | 27 | - |
+| packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2570 | 26 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
@@ -110,15 +110,15 @@
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 158 | 14 | - |
-| packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 405 | 13 | - |
-| packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 298 | 13 | - |
+| packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 406 | 13 | - |
+| packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 382 | 12 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 210 | 12 | - |
-| packages/editor/src/utils/dom.ts | 217 | 11 | - |
+| packages/editor/src/utils/dom.ts | 218 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 272 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 418 | 11 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
-| packages/ui-kit/src/utils/radio-proxy.ts | 223 | 11 | - |
+| packages/ui-kit/src/utils/radio-proxy.ts | 224 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 250 | 10 | - |
 | packages/editor/src/data/transition-window.ts | 1403 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
@@ -127,8 +127,8 @@
 | packages/editor/src/components/layout/LayoutPanel.vue | 2090 | 9 | - |
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
-| packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 203 | 9 | - |
-| packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 154 | 9 | - |
+| packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 204 | 9 | - |
+| packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 155 | 9 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 62 | 9 | - |
 | packages/editor/src/animation/animation-list.ts | 1119 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
@@ -150,10 +150,10 @@
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 630 | 6 | - |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
-| packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 306 | 6 | - |
+| packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 307 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/file-var-api.ts | 191 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/YMFileVar.vue | 245 | 6 | - |
-| packages/ui-kit/src/components/basic/YMNavBar/nav-bar-api.ts | 132 | 6 | - |
+| packages/ui-kit/src/components/basic/YMNavBar/nav-bar-api.ts | 133 | 6 | - |
 | packages/ui-kit/src/components/basic/YMNumberVar/number-var-api.ts | 218 | 6 | - |
 | packages/ui-kit/src/components/basic/YMNumberVar/YMNumberVar.vue | 289 | 6 | - |
 | packages/ui-kit/src/components/basic/YMSelectVar/select-var-api.ts | 204 | 6 | - |
@@ -172,10 +172,10 @@
 | packages/editor/src/scene/scene-window.ts | 1531 | 5 | - |
 | packages/ui-kit/src/components/basic/YMGamepadBox/YMGamepadBox.vue | 216 | 5 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
-| packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 185 | 5 | - |
+| packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 186 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-core.ts | 171 | 5 | - |
-| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 99 | 5 | - |
-| packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 140 | 5 | - |
+| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 100 | 5 | - |
+| packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 141 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 410 | 4 | - |
 | packages/editor/src/commands/command-tip.ts | 456 | 4 | - |
 | packages/editor/src/commands/schema.ts | 434 | 4 | - |
@@ -189,17 +189,17 @@
 | packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
 | packages/editor/src/variable/open.ts | 85 | 4 | - |
-| packages/ui-kit/src/components/basic/YMDetailBox/detail-box-api.ts | 95 | 4 | - |
+| packages/ui-kit/src/components/basic/YMDetailBox/detail-box-api.ts | 96 | 4 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/detail-summary-api.ts | 77 | 4 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/YMScrollBar.vue | 421 | 4 | - |
-| packages/ui-kit/src/components/basic/YMSelectBox/select-box-core.ts | 378 | 4 | - |
+| packages/ui-kit/src/components/basic/YMSelectBox/select-box-core.ts | 379 | 4 | - |
 | packages/ui-kit/src/components/business/YMFileHeadPane/YMFileHeadPane.vue | 495 | 4 | - |
 | packages/ui-kit/src/utils/common-list.ts | 92 | 4 | - |
 | packages/editor/src/commands/event-editor-events.ts | 304 | 3 | - |
 | packages/editor/src/components/common/CheckBox.vue | 216 | 3 | - |
 | packages/editor/src/components/file-browser/SearchHistoryDropdown.vue | 169 | 3 | - |
 | packages/editor/src/components/toast.ts | 44 | 3 | - |
-| packages/editor/src/composables/useProjectSettingsWindow.ts | 584 | 3 | - |
+| packages/editor/src/composables/useProjectSettingsWindow.ts | 585 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/enum/enum-window.ts | 898 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 91 | 3 | - |
@@ -212,7 +212,7 @@
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 133 | 3 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-core.ts | 134 | 3 | - |
-| packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 356 | 3 | - |
+| packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 357 | 3 | - |
 | packages/editor/src/animation/animation-timeline.ts | 1185 | 2 | - |
 | packages/editor/src/attribute/attribute-window.ts | 1057 | 2 | - |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
@@ -256,7 +256,7 @@
 | packages/editor/src/commands/event-editor-initialize.ts | 512 | 1 | - |
 | packages/editor/src/commands/property-window/property-window-factory.ts | 206 | 1 | - |
 | packages/editor/src/components/commands/CallEvent.vue | 176 | 1 | - |
-| packages/editor/src/components/commands/Script.vue | 80 | 1 | - |
+| packages/editor/src/components/commands/Script.vue | 82 | 1 | - |
 | packages/editor/src/components/common/CustomBox.vue | 122 | 1 | - |
 | packages/editor/src/components/common/PageManager.vue | 63 | 1 | - |
 | packages/editor/src/components/common/RadioBox.vue | 182 | 1 | - |
@@ -534,7 +534,7 @@
 | packages/editor/src/components/common/NumberVar.vue | 176 | 0 | - |
 | packages/editor/src/components/common/ParameterPane.vue | 120 | 0 | - |
 | packages/editor/src/components/common/ParamList.vue | 107 | 0 | - |
-| packages/editor/src/components/common/SelectBox.vue | 274 | 0 | - |
+| packages/editor/src/components/common/SelectBox.vue | 302 | 0 | - |
 | packages/editor/src/components/common/SelectVar.vue | 192 | 0 | - |
 | packages/editor/src/components/common/StringVar.vue | 158 | 0 | - |
 | packages/editor/src/components/common/TabBar.vue | 147 | 0 | - |
@@ -996,7 +996,7 @@
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
-| packages/editor/src/localize/template-localized.ts | 2040 | 0 | - |
+| packages/editor/src/localize/template-localized.ts | 2125 | 0 | - |
 | packages/editor/src/log/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
@@ -1225,12 +1225,13 @@
 | packages/ui-kit/src/composables/useMenuService.ts | 16 | 0 | - |
 | packages/ui-kit/src/composables/useTheme.ts | 8 | 0 | - |
 | packages/ui-kit/src/composables/useWordList.ts | 45 | 0 | - |
-| packages/ui-kit/src/index.ts | 240 | 0 | - |
+| packages/ui-kit/src/index.ts | 241 | 0 | - |
 | packages/ui-kit/src/theme/theme.ts | 52 | 0 | - |
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 115 | 0 | - |
+| packages/ui-kit/src/utils/payload-event.ts | 31 | 0 | - |
 | packages/ui-kit/src/utils/timer.ts | 41 | 0 | - |
 | packages/ui-kit/src/utils/tree-data-context.ts | 110 | 0 | - |

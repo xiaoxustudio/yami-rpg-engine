@@ -192,6 +192,7 @@ export {
 export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
+export * from './utils/payload-event';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
 export { EventBus } from './utils/event-bus';
 export { INTRGBA, CSSRGBA } from './utils/color';

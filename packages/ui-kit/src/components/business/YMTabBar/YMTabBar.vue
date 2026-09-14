@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
 import { createTabBarCore, type TabItem, type TabItemMeta } from './tab-bar-core';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 const core = createTabBarCore();
 
@@ -106,7 +107,7 @@ const write = (value: TabItem | undefined): void => {
 			addClass(target, 'selected');
 		}
 		if (el.writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value?: TabItem | undefined };
+			const writeEvent = createPayloadEvent('write', {} as { value?: TabItem | undefined });
 			writeEvent.value = target ? value : undefined;
 			el.dispatchEvent(writeEvent);
 			emit('write', writeEvent.value);
@@ -149,7 +150,7 @@ const select = (item: TabItem): void => {
 	if (read() !== item) {
 		write(item);
 		if (el.selectEventEnabled) {
-			const selectEvent = new Event('select') as Event & { value?: TabItem };
+			const selectEvent = createPayloadEvent('select', {} as { value?: TabItem });
 			selectEvent.value = item;
 			el.dispatchEvent(selectEvent);
 			emit('select', selectEvent.value);
@@ -192,10 +193,10 @@ const close = (item: TabItem): void => {
 			}
 		}
 		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
+			const closedEvent = createPayloadEvent('closed', {} as {
 				closedItems: TabItem[];
 				lastValue: TabItem | undefined;
-			};
+			});
 			closedEvent.closedItems = [item];
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -223,10 +224,10 @@ const closeOtherTabs = (item: TabItem): void => {
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
+			const closedEvent = createPayloadEvent('closed', {} as {
 				closedItems: TabItem[];
 				lastValue: TabItem | undefined;
-			};
+			});
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -244,10 +245,10 @@ const closeTabsToTheRight = (item: TabItem): void => {
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
+			const closedEvent = createPayloadEvent('closed', {} as {
 				closedItems: TabItem[];
 				lastValue: TabItem | undefined;
-			};
+			});
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -501,11 +502,11 @@ const windowPointerup = (event: PointerEvent): void => {
 			}
 			case 'popup':
 				if (el.dragging.target === event.target) {
-					const popupEvent = new Event('popup') as Event & {
+					const popupEvent = createPayloadEvent('popup', {} as {
 						value?: TabItem | null;
 						clientX: number;
 						clientY: number;
-					};
+					});
 					const item = (event.target as TabElement).item;
 					popupEvent.value = item ?? null;
 					popupEvent.clientX = event.clientX;

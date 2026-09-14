@@ -1,5 +1,6 @@
 import { attachApi } from '../../../utils/attach-api';
 import { show, hide } from '../../../utils/dom';
+import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface DetailBoxApi extends HTMLElement {
 	_initialized: boolean;
@@ -35,7 +36,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 			box.setAttribute('open', '');
 			apply(true);
 			if (toggleEventEnabled) {
-				const toggle = new Event('toggle') as Event & { value: string };
+				const toggle = createPayloadEvent('toggle', {} as { value: string });
 				toggle.value = 'open';
 				box.dispatchEvent(toggle);
 			}
@@ -47,7 +48,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 			box.removeAttribute('open');
 			apply(false);
 			if (toggleEventEnabled) {
-				const toggle = new Event('toggle') as Event & { value: string };
+				const toggle = createPayloadEvent('toggle', {} as { value: string });
 				toggle.value = 'closed';
 				box.dispatchEvent(toggle);
 			}
