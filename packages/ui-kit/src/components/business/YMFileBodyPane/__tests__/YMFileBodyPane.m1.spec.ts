@@ -210,6 +210,16 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 		expect(rows(el).length).toBe(0);
 	});
 
+	it('selectAll 覆盖**全部**行（含窗口外未渲染的那些）——数据化的直接收益', () => {
+		const { el } = mountBody();
+		const list = items(400); // 足够多，窗口只渲染其中一段
+		renderItems(el, list, 0);
+		expect(rows(el).length).toBeLessThan(list.length); // 只渲染了窗口内的一段
+		el.selectAll();
+		// 选区按数据算：400 个文件全部进入 selections（原先按元素槽位取，只能选到渲染出的那段）
+		expect((el.selections ?? []).length).toBe(list.length);
+	});
+
 	it('窗口迁移：列表视图滚动后可见区（content.range）随之右移', () => {
 		const { el, content } = mountBody();
 		renderItems(el, items(80), 0); // viewIndex=0 ⇒ 列表视图按 scrollLeft 计算窗口

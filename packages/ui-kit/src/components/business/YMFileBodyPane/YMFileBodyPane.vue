@@ -370,6 +370,12 @@ let elements: (FileBodyItemApi | undefined)[] & {
 	cpl: number;
 };
 let activeFile: FileBodyFile | null = null;
+/**
+ * M3 切片 5a（api 数据化）：扁平化后的**文件数据**（排序后，与 `elements` 同序）。
+ * 选区/导航/默认选中一律读它——窗口外的行在 `elements[]` 里是空槽，读元素会让这些方法
+ * 只对"当前渲染出的一段"生效；数据层没有这个问题，也正好是后续模板换源的前提。
+ */
+let flatFiles: FileBodyFile[] = [];
 let selections: FileBodyFile[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
 let openEventEnabled = false;
@@ -729,6 +735,8 @@ function createFlatItems(dir: FileBodyFile[]): void {
 	Directory?.sortFiles(dir);
 	const els = elements;
 	const length = dir.length;
+	// M3 切片 5a：数据层与元素数组同序地记下这份列表（选区/导航读它，不读空槽）
+	flatFiles = dir;
 	// M3 切片 1：行 key 由派生层给（同一对象跨多次渲染 key 稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
 	const rows = deriveFileRows(dir);
 	for (let i = 0; i < length; i++) {
@@ -987,13 +995,13 @@ function select(...files: FileBodyFile[]): void {
 	}
 }
 
+/**
+ * M3 切片 5a（api 数据化）：全选读**数据**（`flatFiles`）而不是元素槽位。
+ * 顺带修掉一个潜在缺陷：原先按 `elements[i].file` 取，而窗口外的行槽位是 `undefined`，
+ * 于是"全选"只会选到当前渲染出的那一段。
+ */
 function selectAll(): void {
-	const els = elements;
-	const count = els.count;
-	const files = Array.from<FileBodyFile>({ length: count });
-	for (let i = 0; i < count; i++) {
-		files[i] = els[i]!.file;
-	}
+	const files = flatFiles.slice();
 	select(...files);
 }
 
@@ -1021,10 +1029,8 @@ function unselect(): void {
 }
 
 function selectByPath(path: string): void {
-	const els = elements;
-	const count = els.count;
-	for (let i = 0; i < count; i++) {
-		const { file } = els[i]!;
+	// M3 切片 5a：按路径查找走数据层（窗口外的行同样能被选中）
+	for (const file of flatFiles) {
 		if (file.path === path) {
 			return select(file);
 		}
@@ -1033,27 +1039,22 @@ function selectByPath(path: string): void {
 }
 
 function selectDefault(): void {
-	const els = elements;
-	const count = els.count;
-	for (let i = 0; i < count; i++) {
-		if (hasClass(els[i]!, 'selected')) return;
-	}
-	if (count !== 0) {
-		select(els[0]!.file);
+	// M3 切片 5a：默认选中第一行，同样取数据（`els[i]` 在窗口外是空槽）
+	if (flatFiles.length !== 0) {
+		select(flatFiles[0]);
 	}
 }
 
 function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'next-line'): void {
 	const node = el.value as FileBodyPaneApi;
-	const els = elements;
-	const count = els.count;
+	// M3 切片 5a：网格导航全部走数据层（下标即数据下标，不再依赖"元素是否已渲染"）
+	const count = flatFiles.length;
 	if (count > 0) {
 		let start = Infinity;
 		let end = -Infinity;
 		const { selections: sels } = { selections };
 		for (const file of sels) {
-			const { element } = file.getContext(node);
-			const idx = els.indexOf(element!);
+			const idx = flatFiles.indexOf(file);
 			if (idx !== -1) {
 				start = Math.min(start, idx);
 				end = Math.max(end, idx);
@@ -1068,7 +1069,7 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 			start,
 			end
 		);
-		const file = els[index]?.file;
+		const file = flatFiles[index];
 		if (file === undefined) return;
 		if (!(sels.length === 1 && sels[0] === file)) {
 			select(file);

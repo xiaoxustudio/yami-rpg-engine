@@ -259,9 +259,22 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口；切片 4/5：行模型与行描述 ↔ DOM 等价）**
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；2/3：受限 API 收口；4：行模型 ↔ DOM 等价；5a：api 数据化 ✅）**
 
-**⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」这一步（已回滚）。**
+**✅ 已落地（切片 5a，api 数据化）**：`YMFileBodyPane.vue` 引入 `flatFiles`（排序后、与 `elements` 同序的**文件数据**），并把选区/导航类方法从"读元素槽位"改成"读数据"：
+
+| 方法 | 改动 | 收益 |
+| --- | --- | --- |
+| `selectAll` | `els[i].file` → `flatFiles.slice()` | **顺带修掉一个潜在缺陷**：窗口外的行在 `elements[]` 里是 `undefined`，原先"全选"只能选到**当前渲染出的一段** |
+| `selectByPath` | 遍历 `flatFiles` | 窗口外的文件也能被按路径选中 |
+| `selectDefault` | `els[0].file` → `flatFiles[0]` | 同上 |
+| `selectRelativeInGridMode` | `els.indexOf(element)` / `els[index]?.file` → `flatFiles.indexOf(file)` / `flatFiles[index]` | 下标即**数据下标**，不再依赖"元素是否已渲染" |
+
+- **验收证据**：新增用例「`selectAll` 覆盖**全部**行（含窗口外未渲染的那些）」——400 个文件、列表视图下窗口只渲染一段（断言 `rows < 400`），全选后 `selections.length === 400`。**这正是数据化修掉的缺陷**，也让这条路径有了回归保护。
+- **同步契约未破**：渲染仍是命令式，因此**现有 55 例（都不 `await`）继续全绿**——这正是切片 5a 的验收方式（用例不 await 即是"同步可用"的守卫）。
+- **仍待做（5b）**：模板 `v-for` + `:ref` 回写桥；届时用例补 `await nextTick()`，同步契约由数据层承担。**5b 是值得真机冒烟的那一刀。**
+
+**⛔ 切片 5 第一次尝试（2026-09-12）：直接换源**不可行**，需要先做「api 数据化」（已回滚）。**
 
 - **试了什么**：模板 `v-for="row in visibleRows"` + `:ref` 回写桥（`bindRowElement` 把 Vue 建的行登记进 `elements[]` 与 `file.context.element`，并沿用既有 `updateOnResize` 生成图标/名称/拖拽属性）；`createFlatItems` 改为只记录数据；`resize()` 只算描述。`pnpm lint` 通过。
 - **为什么失败**：**渲染变异步**。Vue 在下一个微任务才挂行，而 api 的公开方法（`selectAll`/`select`/`selectByPath`/键盘导航/`clear`/`delete` 流）**同步读 `elements[i]`**，假设 `createFlatItems()`/`resize()` 之后行立刻存在 ⇒ 出现空洞。测试立刻反映出来：`YMFileBodyPane.m1.spec` 7 例、`keys.spec` 3 例、`row-model.spec` 3 例同时红（它们都不 `await`，正是"同步可用"这条隐含契约的守卫）。
