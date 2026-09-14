@@ -259,7 +259,13 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：新增派生层单测（对拍现行 DOM 结果：行数/顺序/缩进/类名集合逐点相等），组件行为零变化。
 
-### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口；切片 4：可见行模型 ↔ DOM 等价）**
+### M3：模板 v-for 化（渲染换源，API 门面不动）——**🚧 起步（切片 1：行 key；切片 2/3：受限 API 收口；切片 4/5：行模型与行描述 ↔ DOM 等价）**
+
+**已落地（切片 5 前置，行描述双写）**：`FileBodyRowModel` 增加 `rows: FileBodyRowDescriptor[]`——每行带 **`{ key, index, name, isFolder, selected, style }`**，即"模板渲染一行所需的全部数据"；`resize()` 在写元素样式的同时把这些字段写进模型（**双写**，不换源）。
+
+- **试出并补上的一个真实缺口**：`selected` 一开始只在 `resize()` 里写，而**选中/取消选中并不触发 `resize`** ⇒ 描述里的选中态会停旧值。补 `refreshRowSelection()`（只刷 `selected` 一个字段），在 `select()`/`unselect()` 后调用。**这正是"先双写、后换源"的价值**：换源前就把"谁该刷新什么"暴露出来，而不是换完再 debug。
+- **新增 3 例**（`YMFileBodyPane.row-model.spec.ts` 共 8 例）：① 行描述与 DOM **逐项一致**（key / 名称 / `isFolder` / `style.left|top`）；② `index` 是全局下标且**窗口迁移后更新为新窗口的首行**；③ 选中态进入描述（选中 → true、取消 → false）。
+- **下一刀（真正的换源）**：模板用 `v-for="row in model.rows"` + `:key="row.key"` 渲染行，`:style`/`:class` 直接吃描述；api 侧停掉 `createFileElement`/`createFolderElement` 的元素创建，改由 `:ref` 回写桥把它们登记回 `elements[]` 与 `file.context.element`。**该刀需要真机冒烟**（拖拽/重命名/右键菜单在 jsdom 里测不到）。
 
 **已落地（切片 4，文件 body 的可见行模型）**：`YMFileBodyPane.vue` 新增 `FileBodyRowModel`（`{ start, end, countPerLine, viewMode, keys }`）与只读访问 `getRowModel()`——`resize()` 在渲染完可见窗口后，用**同一批元素**的 `rowKey` 填出模型（顺序即 DOM 顺序）。
 

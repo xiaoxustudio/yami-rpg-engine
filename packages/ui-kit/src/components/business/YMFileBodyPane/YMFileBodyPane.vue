@@ -473,6 +473,20 @@ function updateFiles(): void {
 	resize();
 }
 
+/** M3 切片 5 前置：单个可见行的**模板所需数据**（与 DOM 双写，便于逐项核对） */
+export interface FileBodyRowDescriptor {
+	key: string;
+	/** 全局行下标（在全部行中的位置） */
+	index: number;
+	/** 显示名（原 `updateFileElement` 取 `file.basename`） */
+	name: string;
+	isFolder: boolean;
+	/** 该行当前是否被选中（原实现通过 `selected` 类表达） */
+	selected: boolean;
+	/** 定位样式（原实现直接写 `element.style`） */
+	style: { left: string; top: string };
+}
+
 /** M3 切片 3：可见行的**数据模型**（供 `v-for` 换源前的等价性验证与后续模板化使用） */
 export interface FileBodyRowModel {
 	/** 可见窗口起点（含） */
@@ -485,6 +499,8 @@ export interface FileBodyRowModel {
 	viewMode: string;
 	/** 可见行的稳定 key，顺序与 DOM 中的行一致 */
 	keys: string[];
+	/** M3 切片 5 前置：模板渲染一行所需的全部数据（与 DOM 双写） */
+	rows: FileBodyRowDescriptor[];
 }
 
 const rowModel = shallowRef<FileBodyRowModel>({
@@ -492,7 +508,8 @@ const rowModel = shallowRef<FileBodyRowModel>({
 	end: 0,
 	countPerLine: 0,
 	viewMode: 'list',
-	keys: []
+	keys: [],
+	rows: []
 });
 
 function resize(): void {
@@ -511,21 +528,37 @@ function resize(): void {
 		const versionId = els.versionId++;
 		const content = contentEl.value as FileBodyContentApi;
 		const { countPerLine, itemSize, itemWidth } = content;
+		// M3 切片 5 前置：与 DOM 双写的行描述（模板换源后直接吃这份数据）
+		const descriptors: FileBodyRowDescriptor[] = [];
 		for (let i = start; i < end; i++) {
 			const element = els[i]!;
 			element.versionId = versionId;
+			let left: string;
+			let top: string;
 			if (viewMode === 'list') {
 				const col = Math.floor(i / countPerLine!);
 				const row = i % countPerLine!;
-				element.style.left = `${col * itemWidth! + 4}px`;
-				element.style.top = `${row * 20}px`;
+				left = `${col * itemWidth! + 4}px`;
+				top = `${row * 20}px`;
 			} else {
 				const col = i % countPerLine!;
 				const row = Math.floor(i / countPerLine!);
-				element.style.left = `${col * itemWidth! + 4}px`;
-				element.style.top = `${row * itemSize! + 4}px`;
+				left = `${col * itemWidth! + 4}px`;
+				top = `${row * itemSize! + 4}px`;
 			}
+			element.style.left = left;
+			element.style.top = top;
 			updateOnResize(element);
+			if (element.rowKey !== undefined) {
+				descriptors.push({
+					key: element.rowKey,
+					index: i,
+					name: element.nameBox?.textContent ?? '',
+					isFolder: !hasClass(element, 'file-item'),
+					selected: hasClass(element, 'selected'),
+					style: { left, top }
+				});
+			}
 		}
 		const nodes = content.childNodes;
 		const last = nodes.length - 1;
@@ -547,18 +580,41 @@ function resize(): void {
 			}
 		}
 		// M3 切片 3：把"当前可见行"写成数据模型（与刚渲染出的 DOM 同序），供等价性用例与后续 `v-for` 使用
+		// M3 切片 5 前置：同时写入 `rows`——模板渲染一行所需的 key/名称/文件夹标记/选中态/定位样式
 		const keys: string[] = [];
 		for (let i = start; i < end; i++) {
 			const element = els[i];
 			if (element?.rowKey !== undefined) keys.push(element.rowKey);
 		}
-		rowModel.value = { start, end, countPerLine: cpl, viewMode: viewMode ?? 'list', keys };
+		rowModel.value = {
+			start,
+			end,
+			countPerLine: cpl,
+			viewMode: viewMode ?? 'list',
+			keys,
+			rows: descriptors
+		};
 	}
 }
 
 /** M3 切片 3：读取可见行模型（只读副本，避免调用方改到内部状态） */
 function getRowModel(): FileBodyRowModel {
-	return { ...rowModel.value, keys: [...rowModel.value.keys] };
+	return { ...rowModel.value, keys: [...rowModel.value.keys], rows: rowModel.value.rows.map((row) => ({ ...row, style: { ...row.style } })) };
+}
+
+/**
+ * M3 切片 5 前置：只刷新行描述里的**选中态**（选中/取消选中不触发 `resize`，
+ * 但模板换源后 `selected` 需要即时反映；只改这一个字段，避免整份模型重建）。
+ */
+function refreshRowSelection(): void {
+	const rows = rowModel.value.rows;
+	if (rows.length === 0) return;
+	const next: FileBodyRowDescriptor[] = [];
+	for (const row of rows) {
+		const element = elements[row.index] as FileBodyItemApi | undefined;
+		next.push(element === undefined ? row : { ...row, selected: hasClass(element, 'selected') });
+	}
+	rowModel.value = { ...rowModel.value, rows: next };
 }
 
 function applyGridMetrics(metrics: GridMetrics): void {
@@ -922,6 +978,8 @@ function select(...files: FileBodyFile[]): void {
 		const context = file.getContext(node);
 		if (context.element) addClass(context.element, 'selected');
 	}
+	// M3 切片 5 前置：选中态也要进入行描述（选中不触发 resize，模板换源后需要这里补一次）
+	refreshRowSelection();
 	if (selectEventEnabled) {
 		const select = new Event('select') as FileBodyEvent;
 		select.value = files;
@@ -952,6 +1010,8 @@ function unselect(): void {
 			}
 		}
 		selections = [];
+		// M3 切片 5 前置：取消选中同样要回写行描述
+		refreshRowSelection();
 		if (unselectEventEnabled) {
 			const unselect = new Event('unselect') as FileBodyEvent;
 			unselect.value = files;

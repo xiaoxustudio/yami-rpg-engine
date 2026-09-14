@@ -44,12 +44,22 @@ class FolderItem {
 	}
 }
 
+interface RowDescriptor {
+	key: string;
+	index: number;
+	name: string;
+	isFolder: boolean;
+	selected: boolean;
+	style: { left: string; top: string };
+}
+
 interface RowModel {
 	start: number;
 	end: number;
 	countPerLine: number;
 	viewMode: string;
 	keys: string[];
+	rows: RowDescriptor[];
 }
 
 interface BodyElement extends HTMLElement {
@@ -60,6 +70,8 @@ interface BodyElement extends HTMLElement {
 	computeGridProperties: () => void;
 	updateContentSize: () => void;
 	resize: () => void;
+	selectAll: () => void;
+	unselect: () => void;
 	getRowModel: () => RowModel;
 }
 
@@ -152,5 +164,49 @@ describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () 
 		const second = el.getRowModel();
 		expect(second.keys).not.toContain('injected');
 		expect(second.start).not.toBe(999);
+	});
+});
+
+/**
+ * M3 切片 5 前置：模板渲染一行需要的**全部数据**必须与命令式渲染结果一致
+ * （名称、文件夹标记、选中态、定位样式）——换源时模板只吃这份数据，不再读 DOM。
+ */
+describe('YMFileBodyPane（M3 切片 5 前置：行描述 ↔ DOM 双写一致）', () => {
+	it('行描述与 DOM 逐项一致：名称、文件夹标记、定位样式', () => {
+		const { el } = mountBody();
+		renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')]);
+		const model = el.getRowModel();
+		const domRows = Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
+		expect(model.rows.length).toBe(domRows.length);
+		model.rows.forEach((row, i) => {
+			const dom = domRows[i] as HTMLElement & { rowKey?: string };
+			expect(row.key).toBe(dom.rowKey);
+			expect(row.name).toBe(dom.querySelector('.file-body-name')?.textContent);
+			expect(row.isFolder).toBe(!dom.classList.contains('file-item'));
+			expect(row.style.left).toBe(dom.style.left);
+			expect(row.style.top).toBe(dom.style.top);
+		});
+	});
+
+	it('行描述带出全局下标（index），且随窗口迁移更新为新窗口的行', () => {
+		const { el } = mountBody();
+		renderItems(el, items(60), 0);
+		const before = el.getRowModel().rows.map((row) => row.index);
+		expect(before[0]).toBe(el.getRowModel().start);
+		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
+		el.resize();
+		const after = el.getRowModel();
+		expect(after.start).toBeGreaterThan(0);
+		expect(after.rows[0].index).toBe(after.start);
+	});
+
+	it('选中态进入行描述（选中后 selected=true，取消后回到 false）', () => {
+		const { el } = mountBody();
+		renderItems(el, items(3), 0);
+		expect(el.getRowModel().rows.every((row) => !row.selected)).toBe(true);
+		el.selectAll();
+		expect(el.getRowModel().rows.some((row) => row.selected)).toBe(true);
+		el.unselect();
+		expect(el.getRowModel().rows.every((row) => !row.selected)).toBe(true);
 	});
 });
