@@ -22,6 +22,7 @@ interface CommandListElement extends HTMLElement {
 	save: (command: unknown) => void;
 	toggle: () => void;
 	clear: () => HTMLElement;
+	resize: () => void;
 	data: unknown;
 	start: number | null;
 	end: number | null;
@@ -303,11 +304,25 @@ describe('YMCommandList', () => {
 	});
 
 	/**
-	 * 变量高亮：**本轮只修到"查找方式"这一层**。
-	 * 原先用 `document.getElementsByName(...)` 查找变量文本，而 `text.name = id` 对 div/span
-	 * 只是 expando、**不反射成属性** ⇒ 该查找永远命中不了（高亮一直是坏的）。
-	 * 现改为按**已渲染的 `.command-text`** 扫描同名元素（同一份 `name` 数据）。
-	 * 端到端"悬停即高亮"仍留在真机冒烟清单：夹具里没有走到给 `name` 赋值的解析分支
-	 * （实测文本元素上 `name` 为空），要构造那条路径得先摸清赋值来源。
+	 * 回归：`updateCommandElement` 是"追加"语义，而回写桥会在挂载/刷新/`:ref` 多处被调用——
+	 * 曾经因此把行内文本叠成**两份**（实测）。桥现在会先清空行内（保留 fold 把手）再重建。
 	 */
+	it('行内文本不重复：每个内容片段只出现一次', async () => {
+		const options = makeOptions();
+		options.command!.parse = (() => [
+			{ color: 'normal' },
+			{ text: 'a' },
+			{ color: 'normal' },
+			{ text: 'b' }
+		]) as never;
+		const el = await mountCommandList<CommandListElement>(options);
+		mockHeight(el);
+		el.write([makeCommand('one')]);
+		await nextTick();
+		el.resize();
+		await nextTick();
+
+		const texts = Array.from(el.querySelectorAll('.command-text')).map((t) => t.textContent);
+		expect(texts).toEqual(['a', 'b']);
+	});
 });

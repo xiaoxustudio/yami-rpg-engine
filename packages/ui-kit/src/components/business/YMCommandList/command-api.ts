@@ -578,6 +578,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		const source = this.elements[index] as CommandItemElement | undefined;
 		const row = rowData[index];
 		if (source === undefined || row === undefined) return;
+		// **先清干净再重建**：`updateCommandElement` 是"追加"语义（往元素里 append 标记与文本），
+		// 而回写桥会在挂载、刷新、`:ref` 多处被调用 ⇒ 不清就会把行内文本叠成多份（实测 2 份）。
+		// 旧实现只在 `element.changed` 时调用一次，所以没有这个问题。`fold` 把手保留（下面按需补）。
+		for (const child of Array.from(node.children)) {
+			if (!child.classList.contains('command-fold')) child.remove();
+		}
 		node.dataValue = index;
 		attachRowData(node, {
 			rowKey: source.rowKey ?? '',
