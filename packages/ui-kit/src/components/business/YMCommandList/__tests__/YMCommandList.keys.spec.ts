@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { createCommandListElement, type CommandListApiOptions } from '../command-api';
+import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
 /**
@@ -46,25 +49,41 @@ const makeOptions = (): CommandListApiOptions =>
 
 const makeCommand = (id: string) => ({ id, params: {}, commands: [] });
 
+
+/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
+const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
+	el.scroll = (): void => {};
+	await nextTick();
+	return el;
+};
+
 describe('YMCommandList（M3 切片 1：行 key 接线）', () => {
-	it('每行的 rowKey 等于派生层给该命令发的 key', () => {
-		const el = createCommandListElement(makeOptions()) as ListElement;
+	it('每行的 rowKey 等于派生层给该命令发的 key', async () => {
+		const el = await mountCommandList<ListElement>(makeOptions());
 		mockHeight(el);
 		el.scroll = vi.fn();
 		const commands = [makeCommand('a'), makeCommand('b')];
 		el.write(commands);
+		await nextTick();
 		expect(el.elements[0].rowKey).toBe(rowKeyOf(commands[0]));
 		expect(el.elements[1].rowKey).toBe(rowKeyOf(commands[1]));
 	});
 
-	it('重复渲染后 key 不变（同一命令对象复用同一 key）', () => {
-		const el = createCommandListElement(makeOptions()) as ListElement;
+	it('重复渲染后 key 不变（同一命令对象复用同一 key）', async () => {
+		const el = await mountCommandList<ListElement>(makeOptions());
 		mockHeight(el);
 		el.scroll = vi.fn();
 		const commands = [makeCommand('a')];
 		el.write(commands);
+		await nextTick();
 		const before = el.elements[0].rowKey;
 		el.update();
+		await nextTick();
 		expect(el.elements[0].rowKey).toBe(before);
 		expect(before).toBe(rowKeyOf(commands[0]));
 	});

@@ -499,7 +499,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	write: function (this: any, data: CommandData): void {
 		const options = this.__options;
 		this.data = data;
-		this.textContent = '';
+		// M3-5b′：**不再 `this.textContent = ''`**——行元素归模板（Vue）管，api 清空会破坏 Vue 的节点表
 		this.update();
 		if (!data.history) {
 			Object.defineProperty(data, 'history', {
@@ -529,13 +529,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		commonListClearElements(this, elements.count);
 
-		dispatchUpdateEvent(this);
-
 		this.resize();
 
-		// M3（命令列表）：重建行模型快照与行数据——换源前后用它逐项比对"行序列"是否一致
+		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
-		rebuildCommandRowModel(elements);
+		rebuildCommandRowModel(elements, { padded: this.padded === true });
+
+		// M3-5b′：**事件改到模型重建之后派发**——模板刷新行列表要读到的就是最新模型
+		// （此前先派发后重建，订阅方拿到的永远是上一份，模板会渲染出空列表）
+		dispatchUpdateEvent(this);
 	},
 
 	/** M3：读取行模型（只读副本） */
@@ -1936,7 +1938,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	clear: function (this: any): HTMLElement {
 		this.unselect();
-		this.textContent = '';
+		// M3-5b′：同样不再清空 DOM 文本（行归模板管）；行数由 `elements.count` 归零后经模型反映
 		this.data = null;
 		this.varList = null;
 		this.varMap = null;

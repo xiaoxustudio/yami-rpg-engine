@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMCommandList from '../YMCommandList.vue';
 import { createCommandListElement, type CommandListApiOptions } from '../command-api';
 
@@ -90,15 +91,28 @@ const makeOptions = (overrides: Partial<CommandListApiOptions> = {}): CommandLis
 	...overrides
 });
 
+
+/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
+const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
+	el.scroll = (): void => {};
+	await nextTick();
+	return el;
+};
+
 describe('YMCommandList', () => {
-	it('mounts with command-list class and id', () => {
+	it('mounts with command-list class and id', async () => {
 		const wrapper = mount(YMCommandList, { props: { id: 'cmd-list' } });
 		expect(wrapper.element.classList.contains('command-list')).toBe(true);
 		expect(wrapper.element.id).toBe('cmd-list');
 	});
 
-	it('createCommandListElement creates list with api', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('createCommandListElement creates list with api', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		expect(el.classList.contains('command-list')).toBe(true);
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
@@ -117,11 +131,12 @@ describe('YMCommandList', () => {
 		expect(typeof el.clear).toBe('function');
 	});
 
-	it('write renders command items and read returns data', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('write renders command items and read returns data', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		const data = [makeCommand('showText'), makeCommand('showChoices')];
 		el.write(data);
+		await nextTick();
 		expect(el.read()).toBe(data);
 		expect(el.elements.count).toBeGreaterThan(0);
 		const items = Array.from(el.querySelectorAll('.command-item'));
@@ -129,96 +144,111 @@ describe('YMCommandList', () => {
 		expect(el.textContent).toContain('showText');
 	});
 
-	it('select highlights items', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('select highlights items', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		el.write([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
+		await nextTick();
 		el.focusing = true;
 		el.select(1);
+		await nextTick();
 		expect(el.start).toBe(1);
 		const items = Array.from(el.querySelectorAll('.command-item'));
 		expect(items[1].classList.contains('selected')).toBe(true);
 	});
 
-	it('delete removes commands and saves history', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('delete removes commands and saves history', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		const data = [makeCommand('a'), makeCommand('b'), makeCommand('c')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(1);
+		await nextTick();
 		el.delete();
 		expect(data.map((d) => d.id)).toEqual(['a', 'c']);
 		expect(el.history.canUndo()).toBe(true);
 	});
 
-	it('undo restores deleted commands', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('undo restores deleted commands', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		const data = [makeCommand('a'), makeCommand('b')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(1);
+		await nextTick();
 		el.delete();
 		el.undo();
 		expect(data.map((d) => d.id)).toEqual(['a', 'b']);
 	});
 
-	it('copy writes to clipboard', () => {
+	it('copy writes to clipboard', async () => {
 		const clipboard = { write: vi.fn(), read: () => [], has: () => false };
-		const el = createCommandListElement(makeOptions({ clipboard })) as CommandListElement;
+		const el = await mountCommandList<CommandListElement>(makeOptions({ clipboard }));
 		const data = [makeCommand('a'), makeCommand('b')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(0, 1);
+		await nextTick();
 		el.copy();
 		expect(clipboard.write).toHaveBeenCalledWith('yami.commands', data);
 	});
 
-	it('paste inserts clipboard commands', () => {
+	it('paste inserts clipboard commands', async () => {
 		const pasted = [makeCommand('pasted')];
 		const clipboard = { write: vi.fn(), read: () => pasted, has: () => true };
-		const el = createCommandListElement(makeOptions({ clipboard })) as CommandListElement;
+		const el = await mountCommandList<CommandListElement>(makeOptions({ clipboard }));
 		mockHeight(el);
 		const data = [makeCommand('a')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(0);
+		await nextTick();
 		el.paste();
 		expect(data.map((d) => d.id)).toEqual(['pasted', 'a']);
 	});
 
-	it('toggle disables commands', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('toggle disables commands', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		const data = [makeCommand('a'), makeCommand('b')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(0, 1);
+		await nextTick();
 		el.toggle();
 		expect(data.map((d) => d.id)).toEqual(['!a', '!b']);
 	});
 
-	it('save replaces command at selection', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('save replaces command at selection', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		mockHeight(el);
 		const data = [makeCommand('a'), makeCommand('b')];
 		el.write(data);
+		await nextTick();
 		el.focus();
 		el.select(1);
+		await nextTick();
 		el.save(makeCommand('replaced'));
 		expect(data.map((d) => d.id)).toEqual(['a', 'replaced']);
 	});
 
-	it('clear resets data and elements', () => {
-		const el = createCommandListElement(makeOptions()) as CommandListElement;
+	it('clear resets data and elements', async () => {
+		const el = await mountCommandList<CommandListElement>(makeOptions());
 		el.write([makeCommand('a')]);
+		await nextTick();
 		el.clear();
 		expect(el.read()).toBe(null);
 		expect(el.elements.count).toBe(0);
 	});
 
-	it('fold 元素渲染为 span.command-fold 且 pointerdown 命中折叠切换', () => {
+	it('fold 元素渲染为 span.command-fold 且 pointerdown 命中折叠切换', async () => {
 		const options = makeOptions();
 		options.command!.parse = ((item: Record<string, unknown>) => {
 			const cmds = item.commands as unknown[] | undefined;
@@ -227,9 +257,10 @@ describe('YMCommandList', () => {
 			}
 			return [{ color: 'normal' }, { text: String(item.id) }];
 		}) as NonNullable<CommandListApiOptions['command']>['parse'];
-		const el = createCommandListElement(options) as CommandListElement;
+		const el = await mountCommandList<CommandListElement>(options);
 		mockHeight(el);
 		el.write([{ id: 'block', params: {}, commands: [{ id: 'a', params: {} }] }]);
+		await nextTick();
 
 		const fold = el.querySelector('.command-fold') as HTMLElement | null;
 		expect(fold).toBeTruthy();

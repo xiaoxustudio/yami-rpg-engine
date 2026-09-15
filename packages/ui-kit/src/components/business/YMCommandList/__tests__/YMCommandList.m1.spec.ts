@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { createCommandListElement, type CommandListApiOptions } from '../command-api';
+import YMCommandList from '../YMCommandList.vue';
 
 /**
  * P6/M1 行为金标准（第二组）：在**现命令式实现**上锁住缩进/嵌套/选区/翻页/滚动等行为，
@@ -95,8 +98,8 @@ const makeOptions = (language = 'zh-CN', overrides: Partial<CommandListApiOption
 	...overrides
 });
 
-const makeList = (data: unknown[] = [], language = 'zh-CN'): CommandListElement => {
-	const el = createCommandListElement(makeOptions(language)) as CommandListElement;
+const makeList = async (data: unknown[] = [], language = 'zh-CN'): Promise<unknown> => {
+	const el = await mountCommandList<CommandListElement>(makeOptions(language));
 	mockHeight(el);
 	setScrollSpy(el);
 	if (data.length > 0) el.write(data);
@@ -106,21 +109,34 @@ const makeList = (data: unknown[] = [], language = 'zh-CN'): CommandListElement 
 /** 40 行足够翻页（innerHeight 400 / 每行 20px） */
 const manyCommands = (n = 40) => Array.from({ length: n }, (_, i) => makeCommand(`c${i}`));
 
+
+/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
+const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
+	el.scroll = (): void => {};
+	await nextTick();
+	return el;
+};
+
 describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/翻页/滚动）', () => {
-	it('computeTextIndent：中文按 em、英文按 ch（值精确锁定）', () => {
-		expect(makeList().computeTextIndent(0)).toBe('0em');
-		expect(makeList().computeTextIndent(2)).toBe('4em');
-		expect(makeList([], 'en-US').computeTextIndent(2)).toBe('8ch');
+	it('computeTextIndent：中文按 em、英文按 ch（值精确锁定）', async () => {
+		expect(await makeList().computeTextIndent(0)).toBe('0em');
+		expect(await makeList().computeTextIndent(2)).toBe('4em');
+		expect(await makeList([], 'en-US').computeTextIndent(2)).toBe('8ch');
 	});
 
-	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', () => {
-		const el = makeList([makeCommand('a'), makeCommand('b')]);
+	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', async () => {
+		const el = await makeList([makeCommand('a'), makeCommand('b')]);
 		expect(el.elements.count).toBe(3); // 2 行命令 + 1 个空白行（点击追加位置）
 		const last = el.elements[el.elements.count - 1] as unknown as HTMLElement;
 		expect(last.classList.contains('command-item')).toBe(true);
 	});
 
-	it('嵌套渲染：parse 里 `{ children: [子命令] }` 才会展开子命令（子行 indent 更深）', () => {
+	it('嵌套渲染：parse 里 `{ children: [子命令] }` 才会展开子命令（子行 indent 更深）', async () => {
 		// 嵌套入口是 `content.children`（`createCommandBuffer` 里 `buffer.push(content.children)`），
 		// 不是"返回值里直接放数组"——后者实测只渲染父命令。
 		const nestedParse = (item: Record<string, unknown>) =>
@@ -147,14 +163,15 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
+		await nextTick();
 		expect(el.textContent).toContain('parent');
 		expect(el.textContent).toContain('child');
 		const indents = Array.from({ length: el.elements.count }, (_, i) => el.elements[i].dataIndent);
 		expect(Math.max(...indents)).toBeGreaterThan(Math.min(...indents));
 	});
 
-	it('命中搜索：findString 在选择集里找出包含目标文本的行', () => {
-		const el = makeList([makeCommand('alpha'), makeCommand('beta'), makeCommand('gamma')]);
+	it('命中搜索：findString 在选择集里找出包含目标文本的行', async () => {
+		const el = await makeList([makeCommand('alpha'), makeCommand('beta'), makeCommand('gamma')]);
 		const find = (el as unknown as {
 			findString: (s: string, els: unknown[], mode?: unknown) => { index: number }[];
 		}).findString;
@@ -172,7 +189,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		expect(typeof hits[0].index).toBe('number');
 	});
 
-	it('折叠：带子命令的命令渲染出 fold 把手，toggle 改变其折叠态', () => {
+	it('折叠：带子命令的命令渲染出 fold 把手，toggle 改变其折叠态', async () => {
 		const nestedParse = (item: Record<string, unknown>) =>
 			(item.params as { child?: boolean } | undefined)?.child === true
 				? [{ color: 'normal' }, { text: 'child' }]
@@ -197,34 +214,38 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
+		await nextTick();
 		const parent = el.elements[0];
 		expect(parent.fold).toBeTruthy();
 		expect(parent.dataKey).toBe(true);
 	});
 
-	it('selectAll：focusing 状态下选中全部行', () => {
-		const el = makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
+	it('selectAll：focusing 状态下选中全部行', async () => {
+		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
 		el.focusing = true;
 		el.selectAll();
+		await nextTick();
 		expect(el.start).toBe(0);
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(0);
 	});
 
-	it('selectMultipleTo：从 start 扩选，end 推进且选中多行', () => {
-		const el = makeList([makeCommand('a'), makeCommand('b'), makeCommand('c'), makeCommand('d')]);
+	it('selectMultipleTo：从 start 扩选，end 推进且选中多行', async () => {
+		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c'), makeCommand('d')]);
 		el.focusing = true;
 		el.select(0);
+		await nextTick();
 		const endBefore = el.end;
 		el.selectMultipleTo(2);
 		expect(el.end).not.toBe(endBefore);
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(1);
 	});
 
-	it('pageDown/pageUp：请求滚动，并在 select=true 时把选区带过头/带回来', () => {
-		const el = makeList(manyCommands());
+	it('pageDown/pageUp：请求滚动，并在 select=true 时把选区带过头/带回来', async () => {
+		const el = await makeList(manyCommands());
 		el.focusing = true;
 		const scrollSpy = setScrollSpy(el);
 		el.select(0);
+		await nextTick();
 		el.pageDown(true);
 		expect(scrollSpy).toHaveBeenCalled();
 		const movedStart = el.start;
@@ -233,34 +254,37 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 		expect(el.start).not.toBe(movedStart);
 	});
 
-	it('scrollToRow：把指定行滚进视野（scrollTop 变化）', () => {
-		const el = makeList(manyCommands());
+	it('scrollToRow：把指定行滚进视野（scrollTop 变化）', async () => {
+		const el = await makeList(manyCommands());
 		el.scrollTop = 0;
 		el.scrollToRow(30);
 		expect(el.scrollTop).toBeGreaterThan(0);
 	});
 
-	it('scrollToSelection：选中靠后的行会把视口带过去', () => {
-		const el = makeList(manyCommands());
+	it('scrollToSelection：选中靠后的行会把视口带过去', async () => {
+		const el = await makeList(manyCommands());
 		el.focusing = true;
 		el.scrollTop = 0;
 		el.select(35);
+		await nextTick();
 		el.scrollToSelection();
 		expect(el.scrollTop).toBeGreaterThan(0);
 	});
 
-	it('update 幂等：重复 update 不改变行数与数据引用', () => {
+	it('update 幂等：重复 update 不改变行数与数据引用', async () => {
 		const data = [makeCommand('a'), makeCommand('b')];
-		const el = makeList(data);
+		const el = await makeList(data);
 		const count = el.elements.count;
 		el.update();
+		await nextTick();
 		el.update();
+		await nextTick();
 		expect(el.elements.count).toBe(count);
 		expect(el.read()).toBe(data);
 	});
 
-	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', () => {
-		const el = makeList([makeCommand('a'), makeCommand('b')]);
+	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', async () => {
+		const el = await makeList([makeCommand('a'), makeCommand('b')]);
 		expect(el.elements.count).toBe(3); // 2 行命令 + 1 个空白行（点击追加位置）
 		const last = el.elements[el.elements.count - 1] as unknown as HTMLElement;
 		expect(last.classList.contains('command-item')).toBe(true);

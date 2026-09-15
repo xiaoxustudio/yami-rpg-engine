@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { createCommandListElement, type CommandListApiOptions } from '../command-api';
+import YMCommandList from '../YMCommandList.vue';
 
 /**
  * P6/M1 补测（第五批）：**为命令列表的换源做前置加固**。
@@ -64,8 +67,8 @@ const makeOptions = (): CommandListApiOptions =>
 		localize: { language: 'zh-CN', get: (k: string) => k, createGetter: () => (k: string) => k }
 	}) as unknown as CommandListApiOptions;
 
-const makeList = (data: unknown[] = []): ListElement => {
-	const el = createCommandListElement(makeOptions()) as ListElement;
+const makeList = async (data: unknown[] = []): Promise<unknown> => {
+	const el = await mountCommandList<ListElement>(makeOptions());
 	mockHeight(el);
 	el.scroll = vi.fn();
 	if (data.length > 0) el.write(data);
@@ -74,11 +77,25 @@ const makeList = (data: unknown[] = []): ListElement => {
 
 const items = (n: number) => Array.from({ length: n }, (_, i) => makeCommand(`c${i}`));
 
+
+/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
+const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
+	el.scroll = (): void => {};
+	await nextTick();
+	return el;
+};
+
 describe('YMCommandList（M1 补测：行生命周期与选区重置——换源前置加固）', () => {
-	it('clear：清空后行数归零、选区状态复位，且可重新写入', () => {
-		const el = makeList(items(5));
+	it('clear：清空后行数归零、选区状态复位，且可重新写入', async () => {
+		const el = await makeList(items(5));
 		el.focusing = true;
 		el.select(1);
+		await nextTick();
 		expect(el.elements.count).toBeGreaterThan(1);
 
 		el.clear();
@@ -89,20 +106,21 @@ describe('YMCommandList（M1 补测：行生命周期与选区重置——换源
 		expect(el.origin).toBeNull();
 
 		el.write(items(2));
+		await nextTick();
 		expect(el.elements.count).toBeGreaterThanOrEqual(2);
 	});
 
-	it('write 会为每条命令建立渲染缓冲（command.buffer）', () => {
+	it('write 会为每条命令建立渲染缓冲（command.buffer）', async () => {
 		const data = items(3);
-		makeList(data);
+		await makeList(data);
 		for (const command of data) {
 			expect(Array.isArray(command.buffer)).toBe(true);
 		}
 	});
 
-	it('deleteCommandBuffers：回收命令对象上的渲染缓冲（而不是行元素）', () => {
+	it('deleteCommandBuffers：回收命令对象上的渲染缓冲（而不是行元素）', async () => {
 		const data = items(3);
-		const el = makeList(data);
+		const el = await makeList(data);
 		const rowsBefore = el.elements.count;
 
 		el.deleteCommandBuffers([data[1]]);
@@ -112,11 +130,12 @@ describe('YMCommandList（M1 补测：行生命周期与选区重置——换源
 		expect(el.elements.count).toBe(rowsBefore); // 行数不变：这是缓冲回收，不是行删除
 	});
 
-	it('重新 write 后行数与缓冲都会重建（清空→写入的往返）', () => {
+	it('重新 write 后行数与缓冲都会重建（清空→写入的往返）', async () => {
 		const data = items(4);
-		const el = makeList(data);
+		const el = await makeList(data);
 		el.clear();
 		el.write(data);
+		await nextTick();
 		expect(el.elements.count).toBeGreaterThanOrEqual(4);
 		expect(Array.isArray(data[0].buffer)).toBe(true);
 	});
