@@ -72,6 +72,10 @@ for (const id of ['tooltip', 'window-ambient']) {
 const { initYamiI18n } = await import('@app/i18n');
 
 config.global.plugins = [initYamiI18n()];
+// 这里只注册 v-focus。**不要**在此注册 v-tip：setup 期的 `import` 会先于各 spec 的
+// `vi.mock('@app/utils/element-utils')` 实例化 tip.ts（连带的 element-utils 也就定成真身），
+// 使 `directives/__tests__/tip.spec.ts` 的模块 mock 失效（实测 3 例转红 2 例）。
+// 需要 v-tip 的用例在 mount 时自带 `global.directives`。
 config.global.directives = { focus: vFocus };
 
 // legacy inspector 页面由 composable/组件顶层侧效应 import 注册挂载点，

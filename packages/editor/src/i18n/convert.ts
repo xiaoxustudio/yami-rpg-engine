@@ -13,14 +13,39 @@ export type LocaleData = {
 export type FlatMessages = Record<string, string>;
 
 // vue-i18n 把消息体当模板编译：`@` 是 linked message 语法（`@:key` / `@.modifier`）、
-// `|` 是复数分支分隔符。文案里的普通 `@`（如 `@code` / `@event`）会让编译直接抛
-// `Message compilation error: Invalid linked format`；而 `t()` 是在 render 里同步调用的，
-// 抛错会连带炸掉整个窗口渲染（Vue: Unhandled error during execution of render function）。
-// 本项目的消息表只用字面文案、不使用 linked message / 复数，故在转换边界统一转义成
-// vue-i18n 的字面量写法（`{'@'}`），只影响 i18n 消息表：legacy DOM 本地化器读原始 JSON，
-// tooltip 文案仍是原样的 `@code`。
+// `|` 是复数分支分隔符、`{…}` 是插值/复数语法。文案里的普通 `@`（如 `@code` / `@event`）
+// 会让编译直接抛 `Message compilation error: Invalid linked format`；而 `t()` 是在 render
+// 里同步调用的，抛错会连带炸掉整个窗口渲染（Vue: Unhandled error during execution of
+// render function）。本项目的消息表只用字面文案、不使用 linked message / 复数，故在转换
+// 边界统一转义成 vue-i18n 的字面量写法（`{'@'}`），只影响 i18n 消息表：legacy DOM 本地化器
+// 读原始 JSON，tooltip 文案仍是原样的 `@code`。
+//
+// `{…}` 同理但**必须分两类**：只有下面这份白名单里的名字才是插值（由 `t(key, { name })`
+// 传入），其余都是给用户看的字面示例——`{Y}: Year` 这类时间格式说明、`{0, 1, 2, 3, ...}`
+// 这类取值列举。字面量的 `{`/`}` 各转义一次（中间的文字留在插值之外，逗号等字符就不会
+// 被当语法），否则轻则内容被吃掉（无参插值渲染成空串），重则直接编译报错
+// （`{0, 1, 2, 3, ...}` → Unterminated closing brace）。
+export const INTERPOLATION_NAMES: ReadonlySet<string> = new Set([
+	'dirName',
+	'actor',
+	'team',
+	'filename',
+	'number',
+	'size',
+	'langname'
+]);
+
+/** `{` / `}` 的字面量写法（vue-i18n 的 literal interpolation） */
+const literalBraces = (inner: string): string => `{'{'}${inner}{'}'}`;
+
+const escapeBraces = (value: string): string =>
+	value.replace(/\{([^{}]*)\}|\{|\}/g, (match: string, name?: string): string => {
+		if (name !== undefined && INTERPOLATION_NAMES.has(name)) return match;
+		return literalBraces(match.length >= 2 ? match.slice(1, -1) : '');
+	});
+
 const escapeMessage = (value: string): string =>
-	value.replace(/@/g, "{'@'}").replace(/\|/g, "{'|'}");
+	escapeBraces(value).replace(/@/g, "{'@'}").replace(/\|/g, "{'|'}");
 
 // 递归展开嵌套对象为点路径键；叶子 `name` 提升为父级完整键（值限定为字符串/数字/布尔）
 function flatten(obj: unknown, prefix: string, out: Record<string, string>): void {

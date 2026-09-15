@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { read } from '@app/utils/element-utils';
@@ -31,6 +31,11 @@ export interface NewProjectForm {
 }
 
 const form = reactive<NewProjectForm>({ template: '', folder: '', location: '' });
+
+// P5b 尾项：确认按钮的启用态。原先由 `check()` 对 `#newProject-confirm` 调 disable/enable，
+// 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
+// `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
+export const newProjectConfirmDisabled = ref(false);
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type NewProjectMethod = ((...args: unknown[]) => unknown) | null;
@@ -120,6 +125,7 @@ NewProject.check = function (this: typeof NewProject) {
 				'confirmation.enterFolderName'
 			);
 		}
+		newProjectConfirmDisabled.value = true;
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
@@ -127,14 +133,17 @@ NewProject.check = function (this: typeof NewProject) {
 				'confirmation.folderAlreadyExists'
 			);
 		}
+		newProjectConfirmDisabled.value = true;
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
 			(titleEls.get('newProject-warning') as HTMLElement).textContent = '';
 		}
-		// P5b 尾项（已登记）：原先在此 disable/enable 确认按钮——仅当 template === 'minimized-project'
-		// 且编辑器已关闭时才允许确认。按钮由 WindowFrame → YMFormButtons 生成、注册表取不到，
-		// 改为「确认按钮启用态属性化」（WindowFrame 增 confirmDisabled）单独收口。
+		// 「最小化当前项目」模板要有可最小化的项目：编辑器已关闭（无项目可复制）时禁止确认。
+		// 原实现的 `if (template === 'minimized-project' && Editor.state === 'closed') disable`，
+		// 读法与上面两条同构：不满足则启用。
+		newProjectConfirmDisabled.value =
+			form.template === 'minimized-project' && Editor.state === 'closed';
 	}
 };
 

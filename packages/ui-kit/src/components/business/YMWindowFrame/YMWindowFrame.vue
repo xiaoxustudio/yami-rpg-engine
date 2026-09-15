@@ -31,6 +31,8 @@ interface Props {
 	showApply?: boolean;
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
+	/** 表单无效时禁用确认按钮（透传到 YMFormButtons 的 `button[name=confirm]`） */
+	confirmDisabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -38,7 +40,8 @@ const props = withDefaults(defineProps<Props>(), {
 	localize: null,
 	showApply: false,
 	buttonsIdPrefix: '',
-	noButtons: false
+	noButtons: false,
+	confirmDisabled: false
 });
 
 const emit = defineEmits<{
@@ -436,6 +439,7 @@ onUnmounted(() => {
 			v-if="!props.noButtons"
 			:id-prefix="props.buttonsIdPrefix || props.id || ''"
 			:show-apply="props.showApply"
+			:confirm-disabled="props.confirmDisabled"
 		/>
 	</div>
 </template>

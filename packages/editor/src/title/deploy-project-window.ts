@@ -15,7 +15,7 @@ import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -47,6 +47,11 @@ export const DeploymentForm = reactive<DeploymentForm>({
 	folder: '',
 	location: ''
 });
+
+// P5b 尾项：确认按钮的启用态。原先由 `check()` 对 `#deployment-confirm` 调 disable/enable，
+// 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
+// `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
+export const deploymentConfirmDisabled = ref(false);
 
 type DeploymentFileItem = {
 	folder?: boolean;
@@ -169,6 +174,9 @@ Deployment.check = function (this: typeof Deployment) {
 				'confirmation.enterFolderName'
 			);
 		}
+		// 原先这三处是 disable/enable 的成对调用，且只在状态**变化**时执行；
+		// 改成「赋一次标志」后无条件写更安全（状态机只在本函数里流转，结果等价）。
+		deploymentConfirmDisabled.value = true;
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
@@ -176,11 +184,13 @@ Deployment.check = function (this: typeof Deployment) {
 				'confirmation.folderAlreadyExists'
 			);
 		}
+		deploymentConfirmDisabled.value = true;
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
 			(titleEls.get('deployment-warning') as HTMLElement).textContent = '';
 		}
+		deploymentConfirmDisabled.value = false;
 	}
 };
 

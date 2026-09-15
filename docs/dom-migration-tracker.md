@@ -99,16 +99,16 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
-| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2398 | 35 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2400 | 35 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2952 | 21 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2957 | 21 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
-| packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
+| packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 482 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 158 | 14 | - |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 406 | 13 | - |
@@ -164,7 +164,7 @@
 | packages/ui-kit/src/components/basic/YMTextAreaVar/textarea-var-api.ts | 199 | 6 | - |
 | packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 109 | 6 | - |
-| packages/editor/src/components/common/WindowFrame.vue | 180 | 5 | - |
+| packages/editor/src/components/common/WindowFrame.vue | 184 | 5 | - |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 257 | 5 | - |
 | packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
@@ -312,7 +312,7 @@
 | packages/editor/src/utils/event-scope.ts | 27 | 1 | - |
 | packages/editor/src/utils/safe.ts | 59 | 1 | - |
 | packages/editor/src/utils/timer.ts | 246 | 1 | - |
-| packages/ui-kit/src/components/basic/YMFormButtons/YMFormButtons.vue | 71 | 1 | - |
+| packages/ui-kit/src/components/basic/YMFormButtons/YMFormButtons.vue | 75 | 1 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/YMNumberBox.vue | 232 | 1 | - |
 | packages/ui-kit/src/components/basic/YMSliderBox/YMSliderBox.vue | 196 | 1 | - |
 | packages/ui-kit/src/components/business/YMArrayListNumber/YMArrayListNumber.vue | 69 | 1 | - |
@@ -605,7 +605,7 @@
 | packages/editor/src/components/tools/Condition.vue | 105 | 0 | - |
 | packages/editor/src/components/tools/Confirmation.vue | 52 | 0 | - |
 | packages/editor/src/components/tools/CopyProgress.vue | 61 | 0 | - |
-| packages/editor/src/components/tools/Deployment.vue | 134 | 0 | - |
+| packages/editor/src/components/tools/Deployment.vue | 137 | 0 | - |
 | packages/editor/src/components/tools/EditData.vue | 68 | 0 | - |
 | packages/editor/src/components/tools/ElementGetter.vue | 103 | 0 | - |
 | packages/editor/src/components/tools/Enum.vue | 198 | 0 | - |
@@ -960,7 +960,7 @@
 | packages/editor/src/enum/enum-context.ts | 95 | 0 | - |
 | packages/editor/src/file/directory-object.ts | 97 | 0 | - |
 | packages/editor/src/file/file-system-core.ts | 356 | 0 | - |
-| packages/editor/src/i18n/convert.ts | 104 | 0 | - |
+| packages/editor/src/i18n/convert.ts | 129 | 0 | - |
 | packages/editor/src/i18n/loader.ts | 86 | 0 | - |
 | packages/editor/src/inspector/animation-action-page.ts | 100 | 0 | - |
 | packages/editor/src/inspector/animation-bone-frame-page.ts | 93 | 0 | - |
@@ -1138,9 +1138,9 @@
 | packages/editor/src/stores/ui.ts | 327 | 0 | - |
 | packages/editor/src/stores/variable.ts | 207 | 0 | - |
 | packages/editor/src/stores/window.ts | 112 | 0 | - |
-| packages/editor/src/title/deploy-project-window.ts | 700 | 0 | - |
+| packages/editor/src/title/deploy-project-window.ts | 710 | 0 | - |
 | packages/editor/src/title/element-registry.ts | 7 | 0 | - |
-| packages/editor/src/title/new-project-window.ts | 362 | 0 | - |
+| packages/editor/src/title/new-project-window.ts | 371 | 0 | - |
 | packages/editor/src/tools/history.ts | 84 | 0 | - |
 | packages/editor/src/tools/list-clipboard-methods.ts | 105 | 0 | - |
 | packages/editor/src/tools/property-list.ts | 260 | 0 | - |

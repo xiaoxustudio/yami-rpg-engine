@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="newProject" @confirm="onConfirm">
+	<WindowFrame id="newProject" :confirm-disabled="confirmDisabled" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.newProject.title') }}
@@ -46,7 +46,7 @@ import { onMounted } from 'vue';
 import { titleEls } from '@app/title/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
-import { NewProject } from '@app/title/new-project-window.ts';
+import { NewProject, newProjectConfirmDisabled as confirmDisabled } from '@app/title/new-project-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';

@@ -5,6 +5,8 @@ interface Props {
 	cancelLabel?: string;
 	applyLabel?: string;
 	showApply?: boolean;
+	/** 表单无效时禁用确认按钮（P5b 尾项：原先是窗口模块对 `#<id>-confirm` 调 disable/enable） */
+	confirmDisabled?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -12,7 +14,8 @@ withDefaults(defineProps<Props>(), {
 	confirmLabel: 'Confirm',
 	cancelLabel: 'Cancel',
 	applyLabel: 'Apply',
-	showApply: false
+	showApply: false,
+	confirmDisabled: false
 });
 
 const dispatch = (type: string, event: MouseEvent): void => {
@@ -25,6 +28,7 @@ const dispatch = (type: string, event: MouseEvent): void => {
 		:id="idPrefix + '-confirm'"
 		name="confirm"
 		hotkey="Ctrl+Enter"
+		:disabled="confirmDisabled"
 		@click="dispatch('confirm', $event)"
 		>{{ confirmLabel }}</button
 	>

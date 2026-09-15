@@ -7,6 +7,7 @@
 		:show-apply="showApply"
 		:buttons-id-prefix="buttonsIdPrefix"
 		:no-buttons="noButtons"
+		:confirm-disabled="confirmDisabled"
 	>
 		<template #title>
 			<slot name="title" />
@@ -32,12 +33,15 @@ interface Props {
 	showApply?: boolean;
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
+	/** 表单无效时禁用确认按钮（P5b 尾项：取代原先对 `#<id>-confirm` 的 disable/enable） */
+	confirmDisabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	showApply: false,
 	buttonsIdPrefix: '',
-	noButtons: false
+	noButtons: false,
+	confirmDisabled: false
 });
 
 const focusableSelector = computed<string>(() => Layout.focusableSelector as string);

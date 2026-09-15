@@ -113,6 +113,23 @@ describe('YMWindowFrame', () => {
 		expect(wrapper.element.querySelectorAll('button').length).toBe(0);
 	});
 
+	it('passes confirmDisabled through to button[name=confirm]（P5b 尾项）', async () => {
+		const wrapper = mount(YMWindowFrame, {
+			props: { id: 'w' }
+		});
+		const confirm = wrapper.element.querySelector(
+			'button[name="confirm"]'
+		) as HTMLButtonElement;
+		expect(confirm.disabled).toBe(false);
+		await wrapper.setProps({ confirmDisabled: true });
+		expect(confirm.disabled).toBe(true);
+		// 只作用于确认按钮：应用/取消保持可点
+		expect(
+			(wrapper.element.querySelector('button[name="cancel"]') as HTMLButtonElement).disabled
+		).toBe(false);
+		wrapper.unmount();
+	});
+
 	it('open adds open class and dispatches open event', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });

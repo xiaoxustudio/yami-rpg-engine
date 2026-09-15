@@ -521,16 +521,25 @@ function checkApiFileCount(files) {
 /**
  * 原型数据字段数：`utils/element-data.ts` 的 `DATA_FIELDS` 长度
  * 与文档里「`DATA_FIELDS` … **N**」的声明必须一致（P4b 的规模基线）。
+ *
+ * 实现于 2026-09-12 的 P4b 第四刀从 editor 迁到 **ui-kit**（editor 侧变成同路径再导出），
+ * 于是这里必须按候选路径找——只认 editor 那份会让本项**静默跳过**（曾经如此）。
  */
 function checkPrototypeFields(files) {
-	const target = join(ROOT, 'packages', 'editor', 'src', 'utils', 'element-data.ts');
-	if (!existsSync(target)) {
+	const candidates = [
+		join(ROOT, 'packages', 'ui-kit', 'src', 'utils', 'element-data.ts'),
+		join(ROOT, 'packages', 'editor', 'src', 'utils', 'element-data.ts')
+	];
+	const target = candidates.find((p) => existsSync(p));
+	if (target === undefined) {
 		notes.push('element-data.ts 不存在（跳过 DATA_FIELDS 计数核对）');
 		return;
 	}
 	const block = /const DATA_FIELDS = \[([\s\S]*?)\]\s*as const;/.exec(readFileSync(target, 'utf8'));
 	if (block === null) {
-		notes.push('未解析到 DATA_FIELDS（跳过计数核对）');
+		fail(
+			`${relative(ROOT, target).replace(/\\/g, '/')} 里未解析到 DATA_FIELDS（P4b 的规模基线失去门禁）`
+		);
 		return;
 	}
 	const count = block[1]
@@ -553,7 +562,15 @@ function checkPrototypeFields(files) {
 			}
 		});
 	}
-	if (declared > 0) notes.push(`DATA_FIELDS 字段数一致（${count}，目标 0）`);
+	if (declared > 0) {
+		notes.push(`DATA_FIELDS 字段数一致（${count}，目标 0）`);
+	} else {
+		// 曾经如此：文档改用「**83 → 72**」的箭头写法后，正则一条都匹配不到，
+		// 本项静默失效（"未解析到 DATA_FIELDS（跳过计数核对）"被当成正常路径）。
+		fail(
+			'文档里没有「`DATA_FIELDS` … **N**」形式的**当前**口径声明（箭头写法 `**A → B**` 不算）——本项门禁形同虚设'
+		);
+	}
 }
 
 /**

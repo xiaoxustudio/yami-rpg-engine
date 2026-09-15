@@ -16,7 +16,8 @@
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②–⑱后扫描面 **3**，−99.9%） | 大 | 无 | ✅ **基本完成**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱：1782 → **2109** 键由代码承担；余 **3** 键 = 1 个 `save` 依赖 + 2 个运行期拼 id。**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**——退出需把这 3 键也定性清楚） |
 | R3 | ~~死代码清理：`stores/layout.ts` 的 `switchLayout` 死转发 + `Layout`/`Window` 的 `afterChange` 未赋值钩子~~ | 小 | 无 | ✅ **已完成**（B0，2026-09-11：8 点全删） |
-| P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」） |
+| R2c | **vue-i18n 消息表的字面量语法转义**：`@` / `\|` / `{…}` 会被当成消息语法（linked message / 复数分支 / 插值），文案里的普通字符轻则丢内容、重则编译报错炸掉窗口渲染 | 小 | 无 | ✅ **已完成**（2026-09-15：`{…}` 按「白名单插值 vs 字面量」分类转义，2 处真实缺陷修复、全量消息逐字渲染用例护航） |
+| P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」；**尾项「确认按钮启用态属性化」也已收口**，见该小节） |
 | P1b | ✅ **已完成**（十七刀 + C1 收尾）：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义；**契约侧已收口**：第 34 轮审计发现 26 个 `*-api.ts` 里 25 个已有 `XxxApi`，唯一缺的巨石 `YMCommandList` 已补 `CommandListElementApi` 并由 editor 的 `EventCommandListShape` 派生自它；余下是 ref/expose 迁移与 M5 的返回值收紧） |
 | P4b | **原型访问器退役**：元素数据 WeakMap 与 **69** 个字段的 get/set（共 138 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`）；实现已迁至 **ui-kit**（editor 侧同路径再导出），`main.ts` 仍以副作用导入安装访问器 | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | 🚧 **进行中**（83 → 69；余下字段的用量表已记入本文件，作为 M3/M5 的验收输入） |
@@ -339,6 +340,28 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **验证命令**：`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机切换语言后抽查窗口标题/菜单/按钮/tooltip。
 - **来源**：2026-09-11 第二十二轮度量审计（`components` 键数实测；此前 R2 只按源码处数记为"小"）。
 
+## R2c — vue-i18n 消息表的字面量语法转义（`@` / `|` / `{…}`）
+
+> ✅ **已完成（2026-09-15）**：`i18n/convert.ts` 的 `escapeMessage` 原本只转义 `@` 与 `|`；
+> 本轮补上 `{…}`——**并按「白名单插值 vs 字面量」分类**（`INTERPOLATION_NAMES`：`dirName` / `actor` /
+> `team` / `filename` / `number` / `size` / `langname`，每一个都由用例绑定一条真实文案），
+> 白名单外的 `{` / `}` 各转义一次（中间文字留在插值之外）。
+>
+> **修掉的两处真实缺陷（编辑器套件原本 5 例红）**：
+> | 键 | 原文 | 修前 | 修后 |
+> | --- | --- | --- | --- |
+> | `components.setString-operand-parse-timestamp-format.tip` | `{Y}: Year\n{M}: Month…` | 占位符被当插值 → 渲染成 `: Year\n: Month…`（内容被吃掉） | 逐字渲染 `{Y}: Year…` |
+> | `components.setNumber-operand-other-data.options.trigger-gamepad-button.tip`（zh） | `有效值：{0, 1, 2, 3, ...}` | **Message compilation error: Unterminated closing brace**（`t()` 在 render 里同步调用 ⇒ 会连带炸掉整个窗口渲染） | 逐字渲染 |
+> - **语言文件保持原样**：转义只发生在「JSON → vue-i18n 消息表」这个边界，legacy DOM 本地化器读的仍是原始 JSON
+>   （既有用例 `legacy 本地化器仍读原始 JSON` 就是这条不变量）。
+> - **用例（+2）**：`i18n/__tests__/locale-messages.spec.ts` 新增「白名单的每个参数名都有可插值的真实文案」
+>   （名字多一个/少一个都红）与「全部消息：白名单外的 `{…}` 逐字渲染、白名单内按插值处理」
+>   （把原来只覆盖 `.tip` 的逐字渲染扩到**全部消息**）。
+> - **规模**：两份语言文件里含 `{…}` 的消息共 **27 条**（en 14 / zh 15，其中 2 条是字面量示例），
+>   其余是真实插值——这个数是本轮实测出来的，也是"白名单"能成立的前提。
+> - **指标**：editor **239 文件 2004/2004**（原 5 例红全部转绿）、`pnpm lint` 0/0、`tsc` strict 通过。
+> - **来源**：2026-09-15 全量套件复核（`locale-messages.spec.ts` 从"半应用的实验 spec、排除在基线外"转为常驻门禁）。
+
 ## R3 — 死代码清理（layout 死转发 + 未赋值钩子）
 
 > ✅ **已完成（2026-09-11，B0）**：8 个删除点全部执行——`stores/layout.ts` 的 `switchLayout` 函数与其导出项；`engine/layout/layout.ts` 的 `afterChange` 成员与 `pageSwitch` 末尾调用；`tools/window-object.ts` 的接口成员、初始化与两处调用；两个 spec 里的 `Window.afterChange = null;`。**tracker 三类口径未变**（符合"误删探测器"预期）；editor 全量 **1884/1884**、`tsc` strict 与 `vue-tsc` 门禁全过。
@@ -447,10 +470,34 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **P2b-3（豁免收窄）**：25 个 api 文件都带 `oxlint-disable eslint/no-restricted-properties`；类型化后逐步把其中的 `document.createElement` 等收敛到 `create*Element` 少数几处，缩小豁免面。
 >
 > **门禁相应调整**：`pnpm docs:check` 的 `*-api.ts` 计数仍与磁盘核对，但**目标由「0」改为「不增长」**（数字本身只作趋势）；P2b 的验收改为上述三条，不再以文件数归零为准。
-### P5b 尾项 — 确认按钮启用态属性化（2026-09-11 登记，未开始）
+### P5b 尾项 — 确认按钮启用态属性化（2026-09-11 登记，**2026-09-15 完成**）
 
-- **现状**：`title/deploy-project-window.ts`、`title/new-project-window.ts` 原先用 `disable(...)` / `enable(titleEls.get('…-confirm'))`（共 **7 处**调用）在表单无效时禁用确认按钮；而 `<id>-confirm` 由 `WindowFrame` → `YMFormButtons` 生成、模板里没有、元素注册表取不到 → 改造后这些调用恒为 no-op（已删除死调用，原意图以注释留在 `new-project-window.ts`）。
-- **影响**：两个模块的 `confirm()` 自带校验（无 early-return）→ 按钮保持可点意味着**无效输入也能提交**（边界行为，非崩溃）。
+> ✅ **已完成（2026-09-15）**：确认按钮的禁用态从「模块对元素调 `disable()`」改为**属性链**——
+> 模块的响应式标志 → `WindowFrame` 的 `confirm-disabled` → `YMWindowFrame` 透传 → `YMFormButtons`
+> 的 `button[name="confirm"]` 绑 `:disabled`。
+> - **代码**：`ui-kit/YMFormButtons.vue`（新 prop `confirmDisabled`，绑到确认按钮）、
+>   `ui-kit/YMWindowFrame.vue`（新 prop `confirmDisabled`，透传）、`editor/components/common/WindowFrame.vue`
+>   （新 prop `confirmDisabled`，透传）；`title/new-project-window.ts` 与 `title/deploy-project-window.ts`
+>   各导出一个 `ref` 标志（`newProjectConfirmDisabled` / `deploymentConfirmDisabled`），在 `check()` 里赋值；
+>   `NewProject.vue` / `Deployment.vue` 绑 `:confirm-disabled`。
+> - **行为**：`NewProject.check` 的三条分支 + 「`minimized-project` 且 `Editor.state === 'closed'`」这条
+>   与旧实现逐字对应（后者是"没有可最小化的项目"）；`Deployment.check` 的「未命名 / 已存在 → 禁用、
+>   通过 → 启用」同理。顺带修正了原注释把这条读反的表述（旧写法是**编辑器关闭时禁用**）。
+> - **顺带**：`button.click()` 对 disabled 按钮不触发事件，因此 `Window.keydown` 里 Enter 触发的
+>   `button[name=confirm].click()`（P1b 第 11 刀改成帧内查找的那处）也随之被挡住——无效表单**不能**再经快捷键提交。
+> - **用例（5 例）**：`ui-kit/YMFormButtons.spec.ts`（禁用时点击不派发 confirm、`hotkey` 提示保留、
+>   取消按钮不受影响；默认值与 props 切换）、`ui-kit/YMWindowFrame.spec.ts`（透传到 `button[name=confirm]`）、
+>   `editor/components/__tests__/window-confirm-disabled.spec.ts`（挂载两个真实窗口 SFC，跑
+>   `check()` 的三条分支与「最小化项目」分支，断言 DOM 上的 `disabled`）。
+> - **指标**：ui-kit **111 文件 779/779**（+3 例）、editor **239 文件 2004/2004**（+3 例）；
+>   `pnpm lint` 0/0、`tsc` strict 通过、`typecheck:vue` 0 new。
+> - **一处测试基建的坑（写进依赖）**：一开始把 `v-tip` 注册进 `vitest.setup.ts` 的 `config.global.directives`，
+>   结果 `directives/__tests__/tip.spec.ts` 3 例转红 2 例——**setup 期的 `import` 会先于各 spec 的
+>   `vi.mock('@app/utils/element-utils')` 实例化 `tip.ts`**，模块 mock 随即失效。改为「setup 只注册
+>   `v-focus`；需要 `v-tip` 的用例在 `mount` 时自带 `global.directives`」，并把这条理由留在 setup 注释里。
+
+- **原现状**：`title/deploy-project-window.ts`、`title/new-project-window.ts` 原先用 `disable(...)` / `enable(titleEls.get('…-confirm'))`（共 **7 处**调用）在表单无效时禁用确认按钮；而 `<id>-confirm` 由 `WindowFrame` → `YMFormButtons` 生成、模板里没有、元素注册表取不到 → 改造后这些调用恒为 no-op（已删除死调用，原意图以注释留在 `new-project-window.ts`）。
+- **原影响**：两个模块的 `confirm()` 自带校验（无 early-return）→ 按钮保持可点意味着**无效输入也能提交**（边界行为，非崩溃）。
 - **正解**：给 `WindowFrame` 增 `confirm-disabled` 属性 → 透传到 ui-kit `YMFormButtons` 的 `button[name="confirm"]` 绑 `:disabled`；两个 SFC 绑定模块导出的响应式标志（`ref<boolean>`）。
 - **涉及共享组件**（`WindowFrame` 被所有窗口使用、`YMFormButtons` 在 ui-kit）→ 单独一刀，带回归用例（`confirmDisabled` 为真时确认按钮带 disabled、为假时可点）。
 - **验证**：`pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` 全绿；`WindowFrame` 现有用例（`@confirm`/`@apply` 事件）不回归。
@@ -487,9 +534,9 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **剩余 70 个字段都有真实读取**，且多数是**跨组件约定**（如 `lastText`/`hiddenNodes` 在 `YMTextBox` 与 `YMTreeList` 之间传递、`togglable` 属于 `getListConfig` 的公开面）——这类要连同 **P2b 的类型化元素 API 契约**一起改，否则只是把隐式约定换个地方藏。
 > - **指标**：`DATA_FIELDS` **72 → 70**（tracker 的「prototype 访问器定义（逗号形式）」列同步）；`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、两个测试套件全绿。
 
-- **现状证据（2026-09-11 实测）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 **83** 个字段 / **166** 个访问器；现 **72 / 144**），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
+- **现状证据（2026-09-11 实测；字段数口径见下）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 83 个字段 / 166 个访问器；现 `DATA_FIELDS` 为 **69** 个字段 / 138 个访问器——实现已于 2026-09-12 迁到 `packages/ui-kit/src/utils/element-data.ts`，editor 侧同路径再导出），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
 - **为什么此前没被记到**：tracker 的 `protoExt` 模式要求 `prototype` 后跟**点**（`…\.prototype\.`），而这里是 `Object.defineProperty(HTMLElement.prototype, field, …)` 的**逗号形式**，因此长期显示为 0。本轮已在 tracker 的「辅助口径」新增列「prototype 访问器定义（逗号形式）」把它暴露出来（当前 **1 处 / 1 文件**）。
-- **调用面（近似，2026-09-11 实测）**：`this.<字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**注意**：字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
+- **调用面（近似，2026-09-11 实测）**：`this.<字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**2026-09-15 复测**：**768 处 / 124 文件**（B3/B2/M3 后小幅下降；前 5 仍是 `command-api.ts` 133、`tree-api.ts` 31、`scene-events-pointer.ts` 23、`text-capture.ts` 23、`transition-window.ts` 21，另有 `engine/sprite/sprite.ts` 15、`engine/scene/draw-wireframes.ts` 14、`palette/palette-pointer.ts` 14、`tools/property-list.ts` 14）。**注意**：字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
 - **推进策略**：① ~~先删 11 个死字段~~（已完成）；② 按组件把 `this.x` / `el.x` 改为显式 API（模块已导出 `getElementData(el)`；与 **P2b** 的元素 API 收尾同批做最省事）；③ 每组件一个提交 + 真机冒烟；④ 终态删除 `defineDataAccessors()` 与 `main.ts` 的副作用导入——届时 P4 的验收「全仓无 `HTMLElement.prototype` 扩展」才真正成立。
 - **验收标准**：① `DATA_FIELDS` 与 `defineDataAccessors` 消失，tracker 新列「prototype 访问器定义（逗号形式）」= **0**；② `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；③ 真机冒烟覆盖依赖"元素上存状态"的交互：树列表拖拽/多选、命令行折叠与选区、场景指针、文本捕获。
 - **验证命令**：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`。
@@ -1046,4 +1093,4 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-12 实跑）：ui-kit **110 文件 775/775**；editor **237 文件 1992/1992**（B0–B5 与 P1b 七刀改动后的最新实跑值；口径排除同时段并发进行的 i18n 实验 spec；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P1b 第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，第 2 刀新增 2 个——`command-schema-registry` / `utils/__tests__/element-registry`，第 3 刀新增 1 个——`branch-registry`，第 4 刀新增 1 个——`command-write-loop-registry`，第 5 刀新增 1 个——`inspector-selector-registry`，第 6 刀新增 1 个——`window-composables-registry`，第 7 刀新增 2 个——`script-change-wiring` / `call-event-labels`；它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」「模块侧真的调到了注册表里的控件」「ParamList 真的被 bind」）。
+- 测试基线（2026-09-15 实跑）：ui-kit **111 文件 779/779**；editor **239 文件 2004/2004**（B0–B5 与 P1b 七刀改动后的最新实跑值；口径改为**全量、不再排除** i18n 实验 spec——`locale-messages` 已随 R2c 转正常驻门禁；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P1b 第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，第 2 刀新增 2 个——`command-schema-registry` / `utils/__tests__/element-registry`，第 3 刀新增 1 个——`branch-registry`，第 4 刀新增 1 个——`command-write-loop-registry`，第 5 刀新增 1 个——`inspector-selector-registry`，第 6 刀新增 1 个——`window-composables-registry`，第 7 刀新增 2 个——`script-change-wiring` / `call-event-labels`；它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」「模块侧真的调到了注册表里的控件」「ParamList 真的被 bind」）。

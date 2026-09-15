@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="deployment" @confirm="onConfirm">
+	<WindowFrame id="deployment" :confirm-disabled="confirmDisabled" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.deployment.title') }}
@@ -54,7 +54,10 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
-import { Deployment } from '@app/title/deploy-project-window';
+import {
+	Deployment,
+	deploymentConfirmDisabled as confirmDisabled
+} from '@app/title/deploy-project-window';
 import { useToastService } from '@app/composables/useToastService';
 
 const { t } = useI18n();
