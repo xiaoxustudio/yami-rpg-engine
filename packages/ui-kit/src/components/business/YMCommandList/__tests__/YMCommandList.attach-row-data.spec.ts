@@ -1,14 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
-import { attachRowData, createCommandListElement, type CommandListApiOptions } from '../command-api';
+import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import { attachRowData, type CommandListApiOptions } from '../command-api';
+import YMCommandList from '../YMCommandList.vue';
 
 /**
  * M3-5b′（为命令列表换源准备）：`attachRowData` 是**回写桥**在挂行时用的数据挂载入口。
  * 它必须与 `createCommandBuffer` 里那套闭包**语义一致**——本用例逐项核对：
  * 挂上去之后，元素上的 `dataItem`/`dataList`/`dataIndex`/`dataIndent`/`dataKey`/`dataParent`/`contents`
  * 与"api 自己建出来的行元素"读出来的一样。
+ *
+ * 换源后行元素归模板渲染，因此"api 自己建出来的行"必须通过**挂载组件**取得（api 侧行元素已不进 DOM）。
  */
-const makeApi = (): HTMLElement & { [k: string]: unknown } => {
-	const el = createCommandListElement({
+const makeApi = async (): Promise<HTMLElement & { [k: string]: unknown }> => {
+	const options = {
 		command: {
 			parse: () => [{ color: 'normal' }, { text: 'x' }],
 			fetchVariables: () => [],
@@ -29,7 +34,13 @@ const makeApi = (): HTMLElement & { [k: string]: unknown } => {
 			}
 		},
 		localize: { language: 'zh-CN', get: (k: string) => k, createGetter: () => (k: string) => k }
-	} as unknown as CommandListApiOptions) as unknown as HTMLElement & { [k: string]: unknown };
+	} as unknown as CommandListApiOptions;
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as HTMLElement & { [k: string]: unknown };
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	(el as unknown as { scroll: unknown }).scroll = (): void => {};
+	await nextTick();
 	return el;
 };
 
@@ -113,16 +124,14 @@ describe('command-api（M3-5b′：attachRowData 与建行闭包语义一致）'
 		expect('dataParent' in withoutParent).toBe(false);
 	});
 
-	it('与 api 自己建出来的行一致：同一份数据两边读出来的值相同', () => {
-		const api = makeApi();
-		Object.defineProperty(api, 'clientHeight', { value: 400, configurable: true });
-		Object.defineProperty(api, 'innerHeight', { value: 400, configurable: true });
-		(api as unknown as { scroll: unknown }).scroll = vi.fn();
+	it('与 api 自己建出来的行一致：同一份数据两边读出来的值相同', async () => {
+		const api = await makeApi();
 		const data = [
 			{ id: 'a', params: {}, commands: [] },
 			{ id: 'b', params: {}, commands: [] }
 		];
 		(api as unknown as { write: (d: unknown[]) => void }).write(data);
+		await nextTick();
 		const built = api.querySelectorAll<RowElement>('.command-item');
 		expect(built.length).toBeGreaterThan(0);
 

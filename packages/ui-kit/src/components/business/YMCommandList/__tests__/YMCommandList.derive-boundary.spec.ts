@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import { createCommandListElement, type CommandListApiOptions } from '../command-api';
-import YMCommandList from '../YMCommandList.vue';
 import { deriveCommandRows } from '../command-render';
 
 /**
@@ -56,17 +53,6 @@ const build = (
 };
 
 
-/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
-const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
-	const wrapper = mount(YMCommandList, { props: { options } });
-	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
-	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
-	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
-	Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
-	el.scroll = (): void => {};
-	await nextTick();
-	return el;
-};
 
 describe('command-render ↔ command-api（行序列的已知边界）', () => {
 	it('普通列表：派生层与 api 的行序列逐项一致（含末尾空白行）', () => {

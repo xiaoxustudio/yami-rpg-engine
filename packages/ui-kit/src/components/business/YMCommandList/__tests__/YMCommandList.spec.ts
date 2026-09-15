@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import YMCommandList from '../YMCommandList.vue';
-import { createCommandListElement, type CommandListApiOptions } from '../command-api';
+import { type CommandListApiOptions, type CommandListElementApi } from '../command-api';
 
 interface CommandListElement extends HTMLElement {
 	[k: string]: unknown;
@@ -93,7 +93,9 @@ const makeOptions = (overrides: Partial<CommandListApiOptions> = {}): CommandLis
 
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
-const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
+	options: CommandListApiOptions
+): Promise<T> => {
 	const wrapper = mount(YMCommandList, { props: { options } });
 	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });

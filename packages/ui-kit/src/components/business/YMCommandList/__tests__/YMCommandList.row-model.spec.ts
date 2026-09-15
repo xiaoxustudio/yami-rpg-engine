@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { createCommandListElement, type CommandListApiOptions, type CommandRowModel } from '../command-api';
+import { type CommandListApiOptions, type CommandRowModel, type CommandListElementApi } from '../command-api';
 import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
@@ -66,7 +66,7 @@ const makeOptions = (): CommandListApiOptions =>
 		localize: { language: 'zh-CN', get: (k: string) => k, createGetter: () => (k: string) => k }
 	}) as unknown as CommandListApiOptions;
 
-const makeList = async (data: unknown[] = []): Promise<unknown> => {
+const makeList = async (data: unknown[] = []): Promise<ListElement> => {
 	const el = await mountCommandList<ListElement>(makeOptions());
 	mockHeight(el);
 	el.scroll = vi.fn();
@@ -75,7 +75,7 @@ const makeList = async (data: unknown[] = []): Promise<unknown> => {
 };
 
 /** `parse` 可以用 `break` 把**一条命令拆成多行**——换源时最容易被忽略的一类行 */
-const makeListWithBreaks = async (data: unknown[]): Promise<unknown> => {
+const makeListWithBreaks = async (data: unknown[]): Promise<ListElement> => {
 	const options = makeOptions() as unknown as { command: Record<string, unknown> };
 	options.command.parse = () => [
 		{ color: 'normal' },
@@ -93,7 +93,7 @@ const makeListWithBreaks = async (data: unknown[]): Promise<unknown> => {
 };
 
 /** `parse` 可以返回 `script`：多行脚本会占**多行**（每行一个行元素），同样要有 key */
-const makeListWithScript = async (data: unknown[]): Promise<unknown> => {
+const makeListWithScript = async (data: unknown[]): Promise<ListElement> => {
 	const options = makeOptions() as unknown as { command: Record<string, unknown> };
 	options.command.parse = () => [{ color: 'normal' }, { script: 'line1 \n line2 \n line3' }];
 	const el = await mountCommandList<ListElement>(options as unknown as CommandListApiOptions);
@@ -119,7 +119,9 @@ const commandKeys = (keys: (string | undefined)[]): string[] =>
 
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
-const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
+	options: CommandListApiOptions
+): Promise<T> => {
 	const wrapper = mount(YMCommandList, { props: { options } });
 	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });

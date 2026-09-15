@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { createCommandListElement, type CommandListApiOptions } from '../command-api';
+import { type CommandListApiOptions, type CommandListElementApi } from '../command-api';
 import YMCommandList from '../YMCommandList.vue';
 
 /**
@@ -98,7 +98,7 @@ const makeOptions = (language = 'zh-CN', overrides: Partial<CommandListApiOption
 	...overrides
 });
 
-const makeList = async (data: unknown[] = [], language = 'zh-CN'): Promise<unknown> => {
+const makeList = async (data: unknown[] = [], language = 'zh-CN'): Promise<CommandListElement> => {
 	const el = await mountCommandList<CommandListElement>(makeOptions(language));
 	mockHeight(el);
 	setScrollSpy(el);
@@ -111,7 +111,9 @@ const manyCommands = (n = 40) => Array.from({ length: n }, (_, i) => makeCommand
 
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
-const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOptions): Promise<T> => {
+const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
+	options: CommandListApiOptions
+): Promise<T> => {
 	const wrapper = mount(YMCommandList, { props: { options } });
 	const el = wrapper.element as unknown as T & { scroll: unknown; clientHeight: number };
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -124,9 +126,9 @@ const mountCommandList = async <T extends HTMLElement>(options: CommandListApiOp
 
 describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/翻页/滚动）', () => {
 	it('computeTextIndent：中文按 em、英文按 ch（值精确锁定）', async () => {
-		expect(await makeList().computeTextIndent(0)).toBe('0em');
-		expect(await makeList().computeTextIndent(2)).toBe('4em');
-		expect(await makeList([], 'en-US').computeTextIndent(2)).toBe('8ch');
+		expect((await makeList()).computeTextIndent(0)).toBe('0em');
+		expect((await makeList()).computeTextIndent(2)).toBe('4em');
+		expect((await makeList([], 'en-US')).computeTextIndent(2)).toBe('8ch');
 	});
 
 	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', async () => {
@@ -148,7 +150,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 						{ fold: true },
 						{ children: [makeCommand('child', { child: true })] }
 					];
-		const el = createCommandListElement(
+		const el = await mountCommandList<CommandListElement>(
 			makeOptions('zh-CN', {
 				command: {
 					parse: nestedParse,
@@ -159,7 +161,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 					colorizeCodeLines: vi.fn()
 				} as never
 			})
-		) as CommandListElement;
+		)
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
@@ -199,7 +201,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 						{ fold: true },
 						{ children: [makeCommand('child', { child: true })] }
 					];
-		const el = createCommandListElement(
+		const el = await mountCommandList<CommandListElement>(
 			makeOptions('zh-CN', {
 				command: {
 					parse: nestedParse,
@@ -210,7 +212,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 					colorizeCodeLines: vi.fn()
 				} as never
 			})
-		) as CommandListElement;
+		)
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
