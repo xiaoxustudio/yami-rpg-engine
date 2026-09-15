@@ -29,8 +29,6 @@ const DATA_FIELDS = [
 	'initialized',
 	'filter',
 	'page',
-	'creators',
-	'updaters',
 	'dataItems',
 	'head',
 	'strBox',
@@ -41,13 +39,6 @@ const DATA_FIELDS = [
 	'links',
 	'count',
 	'direction',
-	'removable',
-	'renamable',
-	'togglable',
-	'onCreate',
-	'onDelete',
-	'onRemove',
-	'onResume',
 	'end',
 	'foot',
 	'selections',
@@ -85,10 +76,8 @@ const DATA_FIELDS = [
 	'fileBox',
 	'numBox',
 	'bar',
-	'filler',
 	'synchronizer',
-	'activeWheel',
-	'foldable'
+	'activeWheel'
 ] as const;
 
 function defineDataAccessors(): void {

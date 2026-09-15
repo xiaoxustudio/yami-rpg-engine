@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
+import { getListConfig } from '../../../../utils/list-config';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
@@ -241,7 +242,7 @@ describe('YMTreeList', () => {
 		await nextTick();
 		el.update();
 		await nextTick();
-		el.renamable = true;
+		getListConfig(el).renamable = true;
 		el.focus();
 		const item = data[1];
 		el.select(item);

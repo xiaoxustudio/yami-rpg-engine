@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMParamList from '../YMParamList.vue';
+import { getListConfig } from '../../../../utils/list-config';
 import { ParamListHistory } from '../param-history';
 
 const mockHeight = (el: HTMLElement): void => {
@@ -140,7 +141,7 @@ describe('YMParamList', () => {
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
-		el.togglable = true;
+		getListConfig(el).togglable = true;
 		const data = [
 			{ name: 'One', enabled: true },
 			{ name: 'Two', enabled: true }

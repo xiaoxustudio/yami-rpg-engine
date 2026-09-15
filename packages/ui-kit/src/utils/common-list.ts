@@ -1,5 +1,6 @@
+import { getListConfig } from './list-config';
+
 export interface CommonListLike {
-	padded?: boolean;
 	scrollTop: number;
 	clientHeight: number;
 	textContent: string;
@@ -25,7 +26,6 @@ export const commonListClearElements = (list: CommonListLike, start: number): vo
 };
 
 export const commonListUpdateHeadAndFoot = (list: CommonListLike): void => {
-	const el = list;
 	if (list.elements.head) {
 		list.elements.head.style.marginTop = '';
 		list.elements.head = null;
@@ -36,7 +36,8 @@ export const commonListUpdateHeadAndFoot = (list: CommonListLike): void => {
 	}
 	const { count, start, end } = list.elements;
 	if (count !== 0) {
-		const pad = el.padded ? 1 : 0;
+		// P4b：`padded` 不再是元素上的 expando，统一从列表配置读
+		const pad = getListConfig(list).padded ? 1 : 0;
 		const mt = start * 20;
 		const mb = (count - end + pad) * 20;
 		list.elements.head = list.elements[start];

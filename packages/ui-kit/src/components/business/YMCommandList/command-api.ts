@@ -23,6 +23,7 @@ import { attachScrollListener } from '../YMParamList/scroll-listener';
 import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createCommandCore } from './command-core';
 import * as commandRender from './command-render';
+import { getListConfig } from '../../../utils/list-config';
 
 const commandCore = createCommandCore();
 
@@ -276,7 +277,10 @@ export const commandListStatics = {
 			case 'string':
 			case 'object':
 				commandListStatics.highlightedTexts = [
-					...findVariableTexts(`${varSpace}-${varType}-${varKey}`, `${varSpace}-any-${varKey}`)
+					...findVariableTexts(
+						`${varSpace}-${varType}-${varKey}`,
+						`${varSpace}-any-${varKey}`
+					)
 				];
 				break;
 			case 'any':
@@ -338,18 +342,31 @@ export interface CommandListElementApi {
 	scrollToRow(targetIndex: number, position?: string): void;
 	scrollToSelection(mode?: string): void;
 	computeTextIndent(indent: number): string;
-	findString(str: string | RegExp, elements: CommandItemElement[], searchMode?: FindSearchMode): FindResult[];
+	findString(
+		str: string | RegExp,
+		elements: CommandItemElement[],
+		searchMode?: FindSearchMode
+	): FindResult[];
 	deleteCommandBuffers(commands: CommandData[]): void;
 	getRangeByIndex(index: number): number[];
 	getRangeByData(data: CommandData): number[];
-	createBlankElement(commands: CommandList, length: number, indent: number, parent: CommandData | null): CommandItemElement;
+	createBlankElement(
+		commands: CommandList,
+		length: number,
+		indent: number,
+		parent: CommandData | null
+	): CommandItemElement;
 	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
 	[k: string]: unknown;
 }
 
 /** M3-5b′：选区变化后刷新行模型并通知模板（行元素归模板，`selected` 由模型驱动） */
-function refreshRowsAfterSelection(list: { elements: { count: number } & Record<number, unknown>; padded?: boolean; dispatchEvent?: (event: Event) => unknown }): void {
-	rebuildCommandRowModel(list.elements as never, { padded: list.padded === true });
+function refreshRowsAfterSelection(list: {
+	elements: { count: number } & Record<number, unknown>;
+	padded?: boolean;
+	dispatchEvent?: (event: Event) => unknown;
+}): void {
+	rebuildCommandRowModel(list.elements as never, { padded: getListConfig(list).padded === true });
 	dispatchUpdateEvent(list as never);
 }
 
@@ -544,7 +561,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
-		rebuildCommandRowModel(elements, { padded: this.padded === true });
+		rebuildCommandRowModel(elements, { padded: getListConfig(this).padded === true });
 
 		// M3-5b′：事件在**模型重建之后**派发（模板要读到最新模型）。
 		// 顺序很要紧：上层（editor 的 eslints）在 `update` 监听里计算 `mark`，
@@ -623,7 +640,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if (count === 0) {
 			els.start = 0;
 			els.end = 0;
-			rebuildCommandRowModel(els, { padded: this.padded === true });
+			rebuildCommandRowModel(els, { padded: getListConfig(this).padded === true });
 			this.scheduleCheckVariables();
 			return;
 		}
@@ -633,7 +650,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if (els.start !== start || els.end !== end) {
 			els.start = start;
 			els.end = end;
-			rebuildCommandRowModel(els, { padded: this.padded === true });
+			rebuildCommandRowModel(els, { padded: getListConfig(this).padded === true });
 		}
 
 		this.scheduleCheckVariables();
@@ -1572,8 +1589,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	fold: function (this: any, element?: CommandItemElement): void {
 		if (element === undefined && this.start !== null) {
 			const elements = this.elements;
-			const startItem = (rowAt(this.start)?.command ?? null);
-			const endItem = (rowAt(this.end)?.command ?? null);
+			const startItem = rowAt(this.start)?.command ?? null;
+			const endItem = rowAt(this.end)?.command ?? null;
 			if (startItem === endItem) {
 				element = elements[this.start];
 			}
@@ -1986,7 +2003,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		// M3-5b′：行归模板渲染 ⇒ 清空后必须**重建行模型并通知模板**，
 		// 否则书里归零了、屏幕上还是旧的那几行（探针实测：clear 后模型与 DOM 都仍是 6 行）。
 		rebuildCommandRowData(this.elements);
-		rebuildCommandRowModel(this.elements, { padded: this.padded === true });
+		rebuildCommandRowModel(this.elements, { padded: getListConfig(this).padded === true });
 		dispatchUpdateEvent(this);
 		return this;
 	},
@@ -2495,8 +2512,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				case 'NumpadEnter':
 					if (this.start !== null) {
 						event.stopPropagation();
-						const sData = (rowAt(this.start)?.command ?? null);
-						const eData = (rowAt(this.end)?.command ?? null);
+						const sData = rowAt(this.start)?.command ?? null;
+						const eData = rowAt(this.end)?.command ?? null;
 						if (sData === eData) {
 							this.edit();
 						}
@@ -2808,8 +2825,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
 		if (this.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
-			const sData = (rowAt(this.start)?.command ?? null);
-			const eData = (rowAt(this.end)?.command ?? null);
+			const sData = rowAt(this.start)?.command ?? null;
+			const eData = rowAt(this.end)?.command ?? null;
 			if (sData === eData) {
 				this.edit(sData);
 			}

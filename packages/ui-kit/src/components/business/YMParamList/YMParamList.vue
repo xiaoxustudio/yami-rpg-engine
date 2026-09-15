@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { getListConfig } from '../../../utils/list-config';
 import {
 	addClass,
 	attachDoubleclick,
@@ -507,7 +508,7 @@ const updateHeadAndFoot = (): void => {
 	}
 	const { count, start, end } = self.elements;
 	if (count !== 0) {
-		const margins = core.computeHeadAndFootMargins(count, start, end, !!self.padded);
+		const margins = core.computeHeadAndFootMargins(count, start, end, !!getListConfig(self).padded);
 		self.elements.head = self.elements[start];
 		self.elements.head!.style.marginTop = `${margins.marginTop}px`;
 		self.elements.foot = self.elements[end - 1];
@@ -674,7 +675,7 @@ const edit = (): void => {
 
 const toggle = (): void => {
 	const self = el!;
-	if (self.togglable && self.start !== null) {
+	if (getListConfig(self).togglable && self.start !== null) {
 		const { data, start, end } = self;
 		const { method, items } = core.collectToggleItems(data!, start, end!);
 		if (items.length !== 0) {
@@ -1107,7 +1108,7 @@ const pointerup = (event: PointerEvent): void => {
 						}
 					}
 				];
-				if (self.togglable) {
+				if (getListConfig(self).togglable) {
 					menuItems.splice(2, 0, {
 						label: get('toggle'),
 						accelerator: '/',
@@ -1241,7 +1242,7 @@ onMounted(() => {
 	self.focusing = false;
 	self.dragging = null;
 	self.history = null;
-	self.togglable = false;
+	getListConfig(self).togglable = false;
 	self.height = undefined;
 	self._paddingTop = undefined as unknown as number;
 	Object.defineProperty(self, 'innerHeight', {

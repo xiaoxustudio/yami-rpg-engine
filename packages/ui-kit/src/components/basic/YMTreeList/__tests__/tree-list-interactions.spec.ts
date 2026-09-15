@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeRowCount, treeRowElement } from '../tree-api';
+import { getListConfig } from '../../../../utils/list-config';
 import { readPayload } from '../../../../utils/payload-event';
 
 const mockHeight = (el: HTMLElement): void => {
@@ -98,7 +99,7 @@ const mountList = async (): Promise<{
 describe('YMTreeList 拖拽交互', () => {
 	it('dragstart 建立 dragging、hint 与 dragging class', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -119,8 +120,8 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('dragstart 尊重 lockDirectory：folder 被拦截、file 放行', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
-		el.lockDirectory = true;
+		getListConfig(el).removable = true;
+		getListConfig(el).lockDirectory = true;
 		el.select(data[0]);
 		await nextTick();
 		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragstart', {
@@ -138,7 +139,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('search 模式拒绝 dragstart', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		// 步骤 2：display 切换会重派生行（search 结果为空 → 行卸载），先取行元素再切模式
 		const row = treeRowElement(data[0]) as HTMLElement;
 		el.display = 'search';
@@ -151,7 +152,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('dragover 按 offsetY 计算 before/into/after 并命中 node-item', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -174,7 +175,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('dragover 无子节点目标按 10px 阈值切分 before/after', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -191,7 +192,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('dragover 空白区域产生 append 指示器', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -207,7 +208,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('drop into folder 追加子节点并派发 remove record', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		const source = data[1];
 		const records: { value: unknown }[] = [];
 		el.on('record', (e: Event & { value: unknown }) => records.push({ value: e.value }));
@@ -239,7 +240,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('drop before 插入到目标节点前', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -257,7 +258,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('drop after 将 folder 内节点移出到 root 末尾', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[0].children![1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[0].children![1]) as HTMLElement, 'dragstart', {
@@ -275,7 +276,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('drop 空白区域 append 到 root 末尾', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[0].children![0]);
 		await nextTick();
 		fireMouse(treeRowElement(data[0].children![0]) as HTMLElement, 'dragstart', {
@@ -290,7 +291,7 @@ describe('YMTreeList 拖拽交互', () => {
 
 	it('禁止 folder 拖入自身子孙：hint 隐藏、drop 为空操作', async () => {
 		const { wrapper, el, data } = await mountList();
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[0]);
 		await nextTick();
 		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragstart', {

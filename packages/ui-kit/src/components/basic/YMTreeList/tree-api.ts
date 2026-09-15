@@ -1453,8 +1453,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.keyword = null;
 	list.searchResults = [];
 	const listConfig = getListConfig(list);
-	list.creators = listConfig.creators = [];
-	list.updaters = listConfig.updaters = [];
+	listConfig.creators = [];
+	listConfig.updaters = [];
 	list.syncRenderRows = function (
 		this: HTMLElement & { [k: string]: unknown },
 		overrideRows?: unknown
@@ -1607,12 +1607,13 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	});
 	list.selections = [];
 	list.dragging = null;
-	list.padded = el.hasAttribute('padded');
-	list.removable = false;
-	list.renamable = false;
-	list.foldable = true;
-	list.lockDirectory = false;
-	list.multipleSelect = false;
+	// P4b：列表配置不再是元素上的属性，统一经 getListConfig 落到元素数据（WeakMap）
+	listConfig.padded = el.hasAttribute('padded');
+	listConfig.removable = false;
+	listConfig.renamable = false;
+	listConfig.foldable = true;
+	listConfig.lockDirectory = false;
+	listConfig.multipleSelect = false;
 	list.selectEventEnabled = false;
 	list.unselectEventEnabled = false;
 	list.recordEventEnabled = false;

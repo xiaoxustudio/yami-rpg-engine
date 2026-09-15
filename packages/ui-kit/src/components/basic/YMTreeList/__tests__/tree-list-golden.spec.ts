@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
+import { getListConfig } from '../../../../utils/list-config';
 
 /**
  * docs/tree-list-vfor-plan.md 步骤 1 的金标准测试补充（2026-09-09）。
@@ -124,7 +125,7 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 	it('dragstart 后直接 dragend：dragging/hint/监听全部复位', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -144,7 +145,7 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 	it('dragover 进入目标后 dragend：目标 hint class 与拖拽残留清除', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
@@ -168,7 +169,7 @@ describe('YMTreeList 键盘 F2 重命名全链路（金标准）', () => {
 	it('F2 进入重命名、提交改名并派发 rename record', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		el.renamable = true;
+		getListConfig(el).renamable = true;
 		el.focus();
 		const records: unknown[] = [];
 		el.on('record', (e: Event & { value: unknown }) => records.push(e.value));
@@ -196,7 +197,7 @@ describe('YMTreeList 键盘 F2 重命名全链路（金标准）', () => {
 	it('F2 需列表聚焦且 renamable：未聚焦不进入重命名', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		el.renamable = true;
+		getListConfig(el).renamable = true;
 		el.select(data[1]);
 		await nextTick();
 		fireKey(el, { code: 'F2' });
@@ -322,7 +323,7 @@ describe('YMTreeList restore undo/redo 全类型（金标准）', () => {
 		const source = data[0].children![1];
 		const captured: unknown[] = [];
 		el.on('record', (e: Event & { value: unknown }) => captured.push(e.value));
-		el.removable = true;
+		getListConfig(el).removable = true;
 		el.select(source);
 		await nextTick();
 		fireMouse(treeRowElement(source) as HTMLElement, 'dragstart', {
@@ -664,7 +665,7 @@ describe('YMTreeList 快/慢双击语义（金标准）', () => {
 	it('慢双击（500ms Timer）进入重命名并提交改名', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		el.renamable = true;
+		getListConfig(el).renamable = true;
 		el.focus();
 		el.select(data[1]);
 		await nextTick();

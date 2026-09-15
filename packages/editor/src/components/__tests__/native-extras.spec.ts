@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
-import { treeRowElement } from '@ui-kit';
+import { getListConfig, treeRowElement } from '@ui-kit';
 
 interface ExtrasListEl extends HTMLElement {
 	bind: (fn: () => unknown[]) => void;
@@ -36,7 +36,7 @@ describe('tree-api 原生 updateNodeElement（默认路径）', () => {
 		await wrapper.vm.$nextTick();
 		const el = wrapper.element as unknown as ExtrasListEl;
 		mockHeight(el);
-		(el as unknown as { foldable: boolean }).foldable = false;
+		getListConfig(el).foldable = false;
 		const data: ItemLike[] = [{ id: 'p1', name: 'Plugin A', children: [] }];
 		el.bind(() => data);
 		el.update();
