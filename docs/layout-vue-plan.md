@@ -220,9 +220,11 @@ jsdom 结构级（`engine/layout/__tests__/`，共享 fixture 在 `layout-spec-u
 - **M4 后修（`a893f4c4`）region 落位 `end` 语义 + 兄弟遍历组元素化**：真机事实链定位到「region 落位时新叶初始比例正确，但随后 `setGroupSize` 取到的 `prev` 是 **Vue 注释锚点**」（`prev.end` undefined → `end` NaN → `computeSizesBefore/After` 把锚点也当组 → 兄弟比例被写坏、序列化 `endOf` 兜底成 1、边界线跑到窗口右缘打不到）。修复：① region 落位的 `end` 按拖拽 hint「目标盒子一半」对分（left/top：新组取 `spanMid`、目标不变；right/bottom：目标收缩到 `spanMid`、新组承接原边界）；② 新增 `groupChildrenOf/prevGroupOf/nextGroupOf`，`setGroupSize` 与 `computeSizesBefore/After` 只对**组元素**收敛比例，锚点/border 不再进入运算。验证：真机 left-region 落位 `[0.180339, 1]`（新叶 277px、边界线在 x=276 可命中）且**紧随其后的边界拖拽生效**（`[0.180339,1] → [0.232422,1]`）；新增 `layout-group-sizing.spec` 2 用例 + `layout-nav-drop.spec` region 左右缘 `end` 断言（`[0.25, 0.5, 1]`）。
 - 剩余：① navDrop 分割分支仍用 `renderElement(h('group'))` 临时建组（配合 rebuild，属运行时结构操作而非方案渲染路径）；② tree v-for 步骤 5b 收口（`elements` shim/`item.element`/NodeElement；真实阻塞项为 `attribute-window`/`enum-window` 的 `item.element?.group`、`text-tip` 的 `elements` shim、`title-bar`/`menu-bar` 的 `childNodes[i].item`——`eslints` 与 `useVariableGetterWindow` 已在步骤 4 迁移完毕，见 `docs/remaining-work.md` T5b）；③ ~~真机未走查项：region 左/上/下方向、数据绑定型窗口逐窗人工冒烟~~ → **已完成（2026-09-15）**：`drag-region-edge` 把 region 四方向（每方向两个 pick）跑成可复跑命令，`tree-windows`/`menu-windows` 用真实加速键与菜单条目复现了 8 个数据绑定窗口的行数与交互链路（详见 [remaining-work.md](./remaining-work.md) L1 / S1）；④ M6（B 路线）评估仍为可选项。逐条验收标准与验证命令见 `docs/remaining-work.md`（L1 / S1 / O1）。
 
-### M6：B 路线评估（可选）
+### M6：B 路线评估（可选）——**✅ 已评估（2026-09-15）：结论"不做"**
 
 若 M4 后仍觉 Teleport 拖拽竞争脆弱，再评估叶子组件的「active-only 渲染 + 页面 state 外置」，逐页灰度（先非引擎页，scene/ui/animation/particle 最后）。
+
+**评估结论（2026-09-15）**：触发条件不成立。`drag-region-edge` 把 region **四方向 × 两个 pick** 跑在真实构建上，结构性变更全部按预期发生（左右缘换位、上/下缘把根 `split` 由 horizontal 改成 vertical），既没有出现"命令式改序 vs Vue diff 打架"的迹象，也没有留下孤儿节点（`staleRegions` 恒 0）。B 路线的收益因此无从论证，而代价明确（页面常驻挂载语义、12 个页面 owner 迁移、引擎页最后灰度）。**保留为可复活的决定**，复活条件写在 [remaining-work.md](./remaining-work.md) O1。
 
 ---
 

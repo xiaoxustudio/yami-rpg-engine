@@ -25,7 +25,7 @@
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
 | E1 | **窗口事件面收口**：33 个事件名 / **266** 处 `window.addEventListener` / **127** 处 `remove`；15 个自定义事件已迁到类型化通道（`emitCustom`/`onCustom`，载荷走 `createPayloadEvent`/`readPayload`）；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
-| O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | 可选 |
+| O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | ✅ **评估完成，结论"不做"**（2026-09-15：四方向真机走查通过、无时序现象 ⇒ 触发条件不成立；复活条件已写明） |
 
 ## 计划条目对照（阶段 / 里程碑 → 状态与出处）
 
@@ -1121,7 +1121,20 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 ## O1 — layout M6（可选）
 
-- 若 Teleport 路径的拖拽竞争在更多真机场景下显脆弱，再评估「active-only 渲染 + 页面 state 外置」，逐页灰度（先非引擎页，scene/ui/animation/particle 最后）。见 [layout-vue-plan.md](./layout-vue-plan.md) M6。
+> ✅ **评估已完成（2026-09-15）：结论是"不做"**。M6 的触发条件是**条件式**的——"若 M4 后仍觉 Teleport
+> 拖拽竞争脆弱"。2026-09-15 用 `drag-region-edge` 把 region **四方向 × 两个 pick** 都跑在真实构建上
+> （见本文件 L1）：结构性变更都按预期发生（左右缘换位、上/下缘把根 split 由 horizontal 改成
+> vertical），**没有出现**当年使 M4 回滚的那类"命令式改序 vs Vue diff 打架"的现象；`staleRegions`
+> 恒为 0，说明重建也没有留下孤儿节点。于是"继续投入 B 路线（active-only 渲染 + 页面 state 外置）"
+> 的收益无从论证，而它的代价是明确的（页面常驻挂载语义、12 个页面的 owner 迁移、引擎页最后灰度）。
+>
+> **保留为"可复活的决定"**：以下任一情况出现时重新评估——
+> ① 真机上出现"拖拽后叶子/页签错位或丢失"且能在 `loadLayoutSchemeVueTeleport` 的时序里复现；
+> ② 页面常驻挂载被证明确有可测量的成本（启动时间/内存），且外置 state 能显著回收；
+> ③ 需要"同一页面同时出现在两个叶子"（Teleport 单归属模型表达不了）。
+> 记录义务：届时按 M6 的原文逐页灰度（先非引擎页，scene/ui/animation/particle 最后）。
+
+- **原始条目**：若 Teleport 路径的拖拽竞争在更多真机场景下显脆弱，再评估「active-only 渲染 + 页面 state 外置」，逐页灰度（先非引擎页，scene/ui/animation/particle 最后）。见 [layout-vue-plan.md](./layout-vue-plan.md) M6。
 
 ---
 
