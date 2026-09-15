@@ -30,11 +30,10 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
-import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
+import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
 	computeViewMetrics,
-	deriveFileRows,
 	fileRowKeyOf,
 	VIEW_MODE_BY_INDEX,
 	type FileBodyViewMode
@@ -1016,7 +1015,6 @@ function selectDefault(): void {
 }
 
 function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'next-line'): void {
-	const node = el.value as FileBodyPaneApi;
 	// M3 切片 5a：网格导航全部走数据层（下标即数据下标，不再依赖"元素是否已渲染"）
 	const count = flatFiles.length;
 	if (count > 0) {
