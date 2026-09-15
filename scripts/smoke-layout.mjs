@@ -8,11 +8,13 @@
 //        | drag-region-all [<方向>] [pick=…]                        （drag-region-edge 的别名）
 //        | tree-windows keys=F3,F6,… | ids=<窗口 id,…> [interact=1]  ← S1：数据绑定型窗口
 //        | menu-windows index=5,6                                    ← S1：走「窗口」菜单的条目
+//        | file-body | command-list                                  ← 两个巨石的换源后冒烟
+//        | eval-file file=<js>                                       （探索用：跑一段页内表达式）
 // L1 的稳妥做法：**每个方向重启一次 app**（layout 是会话态），顺序为
 //   open-project → drag-region-edge <方向> pick=a → drag-region-edge <方向> pick=b
 // （pick=a：源取最后一个叶子、目标取第一个；pick=b 反之——两个都跑，才能区分"设计内的相邻 no-op"
 //   与"方向没实现"。S1 的 `interact=1` 会在核对行数后追加交互链路：选中 → 折叠 → 展开 → F2。）
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const port = Number(process.argv.slice(3).find((a) => /^\d+$/.test(a)) || 9223);
 const phase = process.argv[2];
@@ -246,6 +248,18 @@ async function switchTo(send, value) {
 	await waitActive(send, value, 20000);
 	await sleep(1200);
 }
+
+const waitForExpr = async (send, expression, ms = 15000) => {
+	const deadline = Date.now() + ms;
+	for (;;) {
+		// oxlint-disable-next-line no-await-in-loop
+		const value = await evaluate(send, expression).catch(() => undefined);
+		if (value === true) return true;
+		if (Date.now() >= deadline) return value ?? false;
+		// oxlint-disable-next-line no-await-in-loop
+		await sleep(250);
+	}
+};
 
 async function runPhase(phaseFn) {
 	try {
@@ -952,6 +966,249 @@ async function menuWindows() {
 	ws.close();
 }
 
+// 探索用：把一段页内表达式放进文件里跑（命令行引号太脆），返回它的值。
+// 用法：node scripts/smoke-layout.mjs eval-file file=scripts/probe.js
+async function evalFile() {
+	const arg = process.argv.slice(3).find((a) => a.startsWith('file='));
+	if (!arg) throw new Error('usage: node scripts/smoke-layout.mjs eval-file file=<path>');
+	const expression = readFileSync(arg.slice(5), 'utf8');
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	const value = await evaluate(send, expression);
+	out('eval-file', { value });
+	ws.close();
+}
+
+// ── 巨石换源后的真机冒烟（M3 的清单）─────────────────────────────────────────
+// 文件 body：切视图（Ctrl+Wheel 改 slider）、右键菜单、双击打开；
+// 命令列表：行渲染 + 缩进线扩展点（`.command-line`/`.command-mark-major`）、选区复制粘贴、
+// 空白行点击插入。**只做"能自动断言的部分"**：`:hover` 这类纯浏览器状态与拖拽排序的
+// 视觉结果仍需人工看一眼（见文档的真机清单）。
+const clickNavFolder = (label) => `(() => {
+	const nav = [...document.querySelectorAll('.file-nav-item')].find((i) => (i.textContent || '').includes(${JSON.stringify(label)}));
+	if (!nav) return 'no-nav';
+	// 坐标不能省：文件导航项的处理里要用 clientX/clientY（不带坐标的合成事件实测不触发切换）
+	const box = nav.getBoundingClientRect();
+	const init = { button: 0, cancelable: true, bubbles: true, clientX: box.left + 6, clientY: box.top + 6 };
+	nav.dispatchEvent(new PointerEvent('pointerdown', init));
+	nav.dispatchEvent(new PointerEvent('pointerup', init));
+	nav.dispatchEvent(new MouseEvent('click', init));
+	return (nav.textContent || '').trim();
+})()`;
+
+const dblClickRow = (label) => `(() => {
+	const pane = document.querySelector('.file-body-pane');
+	const row = [...pane.querySelectorAll('.file-body-item')].find((r) => (r.textContent || '').includes(${JSON.stringify(label)}));
+	if (!row) return 'no-row';
+	const box = row.getBoundingClientRect();
+	const init = { button: 0, clientX: box.left + 8, clientY: box.top + 8 };
+	for (const type of ['pointerdown', 'pointerup', 'pointerdown', 'pointerup']) {
+		row.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, ...init }));
+	}
+	row.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true, ...init }));
+	return (row.textContent || '').trim();
+})()`;
+
+const FILE_BODY_STATE = `(() => {
+	const pane = document.querySelector('.file-body-pane');
+	const rows = pane ? [...pane.querySelectorAll('.file-body-item')] : [];
+	const box = rows[0]?.getBoundingClientRect();
+	const filler = document.querySelector('.file-head-view .slider-filler');
+	const address = document.querySelector('.file-head-address');
+	return {
+		address: address ? address.textContent : null,
+		rows: rows.length,
+		texts: rows.slice(0, 3).map((r) => (r.textContent || '').trim().slice(0, 18)),
+		firstSize: box ? { w: Math.round(box.width), h: Math.round(box.height) } : null,
+		viewFiller: filler ? filler.style.width : null
+	};
+})()`;
+
+const COMMAND_LIST_STATE = `(() => {
+	const list = document.getElementById('event-commands');
+	if (!list) return { found: false };
+	const rows = [...list.querySelectorAll('.command-item')];
+	return {
+		found: true,
+		rows: rows.length,
+		texts: rows.map((r) => (r.textContent || '').trim().slice(0, 26)),
+		selected: rows.filter((r) => r.classList.contains('selected')).length,
+		indentLines: list.querySelectorAll('.command-line').length,
+		lineHide: list.querySelectorAll('.command-line.line-hide').length,
+		majorMarks: list.querySelectorAll('.command-mark-major').length,
+		blankRows: rows.filter((r) => (r.textContent || '').trim() === '').length
+	};
+})()`;
+
+async function openEventEditor(send) {
+	// 文件列表是异步重载的：**反复**点目录项 + Node 侧轮询目标行，直到列表真的切过去
+	// （实测：app 刚启动那一下的首次点击可能落在文件浏览器初始化之前，点一次不够）
+	const trace = [];
+	let ready = false;
+	for (let attempt = 0; attempt < 6 && !ready; attempt++) {
+		// oxlint-disable-next-line no-await-in-loop
+		const clicked = await evaluate(send, clickNavFolder('事件'));
+		// oxlint-disable-next-line no-await-in-loop
+		ready = await waitForExpr(
+			send,
+			`[...document.querySelectorAll('.file-body-item')].some((r) => (r.textContent || '').includes('启动游戏事件'))`,
+			4000
+		);
+		// oxlint-disable-next-line no-await-in-loop
+		const address = await evaluate(send, `(document.querySelector('.file-head-address') || {}).textContent`);
+		trace.push(`${attempt}:${clicked}/${address}`);
+	}
+	if (ready !== true) return `file-list-not-ready [${trace.join(' | ')}]`;
+	const clicked = await evaluate(send, dblClickRow('启动游戏事件'));
+	const rendered = await waitForExpr(
+		send,
+		`document.querySelectorAll('#event-commands .command-item').length > 0`,
+		15000
+	);
+	return `${clicked} (rows-visible=${rendered})`;
+}
+
+async function fileBodySmoke() {
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	const steps = [];
+	await clickNavFolder('事件');
+	await sleep(1200);
+	steps.push({ step: 'open-folder', state: await evaluate(send, FILE_BODY_STATE) });
+	// 切视图：`file-head-view` 是 `<input type="range">`（拖动/滚轮最终都落到它的 input 事件）
+	for (const value of [0, 1, 2, 3, 4]) {
+		const wrote = await evaluate(
+			send,
+			`(() => {
+				const inputs = [...document.querySelectorAll('.file-head-view input[type="range"]')].filter((el) => el.offsetParent !== null);
+				const input = inputs[0];
+				if (!input) return 'no-slider';
+				input.value = String(${value});
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+				return input.value;
+			})()`
+		);
+		await sleep(900);
+		steps.push({ step: `view=${value}`, wrote, state: await evaluate(send, FILE_BODY_STATE) });
+	}
+	// 右键菜单：行上 button=2
+	const menu = await evaluate(
+		send,
+		`(() => {
+			const pane = document.querySelector('.file-body-pane');
+			const row = pane.querySelector('.file-body-item');
+			if (!row) return 'no-row';
+			const box = row.getBoundingClientRect();
+			const init = { button: 2, clientX: box.left + 8, clientY: box.top + 8 };
+			row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, ...init }));
+			row.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, ...init }));
+			row.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, ...init }));
+			return 'fired';
+		})()`
+	);
+	await sleep(1200);
+	const menuState = await evaluate(
+		send,
+		`(() => {
+			const popup = document.querySelector('.menu-list, .menu');
+			return popup ? { open: true, items: [...popup.children].map((li) => (li.textContent || '').trim()).slice(0, 8) } : { open: false };
+		})()`
+	);
+	await evaluate(send, `window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`);
+	await sleep(600);
+	const opened = await evaluate(send, dblClickRow('启动游戏事件'));
+	await sleep(2500);
+	const pages = await evaluate(
+		send,
+		`[...document.querySelectorAll('.page-frame.visible')].map((p) => p.getAttribute('value'))`
+	);
+	out('file-body', { steps, menu, menuState, opened, pages });
+	ws.close();
+}
+
+async function commandListSmoke() {
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	let state = await evaluate(send, COMMAND_LIST_STATE);
+	const steps = [{ step: 'initial', state }];
+	if (state.found !== true || state.rows === 0) {
+		const opened = await openEventEditor(send);
+		state = await evaluate(send, COMMAND_LIST_STATE);
+		steps.push({ step: `open-event (${opened})`, state });
+	}
+	// 选区 → 复制 → 粘贴（在列表内按键；列表需拿到焦点）
+	const key = (code, ctrl) => `(() => {
+		const list = document.getElementById('event-commands');
+		if (!list) return 'no-list';
+		list.focus();
+		for (const type of ['keydown', 'keyup']) {
+			list.dispatchEvent(new KeyboardEvent(type, { code: ${JSON.stringify(code)}, key: ${JSON.stringify(code.replace('Key', ''))}, ctrlKey: ${ctrl === true}, bubbles: true, cancelable: true }));
+		}
+		return document.activeElement === list;
+	})()`;
+	const beforeCount = state.rows;
+	const picked = await evaluate(
+		send,
+		`(() => {
+			const list = document.getElementById('event-commands');
+			const row = list ? list.querySelector('.command-item') : null;
+			if (!row) return 'no-row';
+			const box = row.getBoundingClientRect();
+			for (const type of ['pointerdown', 'pointerup']) row.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, cancelable: true, clientX: box.left + 4, clientY: box.top + 4 }));
+			return list.querySelectorAll('.command-item.selected').length;
+		})()`
+	);
+	await sleep(600);
+	const focused = await evaluate(send, key('KeyC', true));
+	await sleep(400);
+	await evaluate(send, key('KeyV', true));
+	await sleep(900);
+	const afterPaste = await evaluate(send, COMMAND_LIST_STATE);
+	// 撤销回原状（不落盘，随后 relaunch 丢弃）
+	await evaluate(send, key('KeyZ', true));
+	await sleep(900);
+	const afterUndo = await evaluate(send, COMMAND_LIST_STATE);
+	steps.push({ step: 'copy/paste', beforeCount, picked, focused, afterPaste, afterUndo });
+	// 空白行点击 → 命令选择窗口（先记下点击前已开的窗口，才能看出"新开了什么"）
+	const openBefore = await evaluate(
+		send,
+		`[...document.querySelectorAll('.window-frame.open')].map((f) => f.id)`
+	);
+	const blank = await evaluate(
+		send,
+		`(() => {
+			const list = document.getElementById('event-commands');
+			if (!list) return 'no-list';
+			const row = [...list.querySelectorAll('.command-item')].find((r) => (r.textContent || '').trim() === '');
+			if (!row) return 'no-blank';
+			const box = row.getBoundingClientRect();
+			const init = { button: 0, cancelable: true, clientX: box.left + 4, clientY: box.top + 4 };
+			// 空白行的插入走 edit()：双击（或 Enter）→ options.command.insert
+			for (const type of ['pointerdown', 'pointerup', 'pointerdown', 'pointerup']) {
+				row.dispatchEvent(new PointerEvent(type, { bubbles: true, ...init }));
+			}
+			row.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, ...init }));
+			return 'dblclicked';
+		})()`
+	);
+	await sleep(1500);
+	const blankResult = await evaluate(
+		send,
+		`(() => {
+			const menu = document.querySelector('.menu-list, .menu');
+			const popupFrames = [...document.querySelectorAll('.window-frame.open')].map((f) => f.id);
+			return { menuItems: menu ? [...menu.children].map((li) => (li.textContent || '').trim()).slice(0, 6) : null, popupFrames };
+		})()`
+	);
+	blankResult.openBefore = openBefore;
+	blankResult.openAfter = blankResult.popupFrames.filter((id) => !openBefore.includes(id));
+	await evaluate(send, `window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`);
+	await sleep(500);
+	steps.push({ step: 'blank-row click', blank, blankResult });
+	out('command-list', { steps });
+	ws.close();
+}
+
 const phases = {
 	debug,
 	'open-project': openProject,
@@ -966,6 +1223,9 @@ const phases = {
 	'drag-region-edge': dragRegionEdge,
 	'drag-region-all': dragRegionAll,
 	'tree-windows': treeWindows,
-	'menu-windows': menuWindows
+	'menu-windows': menuWindows,
+	'eval-file': evalFile,
+	'file-body': fileBodySmoke,
+	'command-list': commandListSmoke
 };
 await runPhase(phases[phase]);
