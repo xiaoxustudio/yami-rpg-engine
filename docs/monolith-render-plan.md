@@ -488,6 +488,20 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 | M5（部分） | 文件 body 的名字入模板、改名有用例覆盖；删掉换源死代码与 `versionId` 簿记 |
 | 卫生项 | `getElementsByName` 查找缺陷已修（7 → 0）；插入路径补测；`vue-tsc` 0 new |
 
+### 复核戳（2026-09-12，逐条跑过）
+
+| 命令 | 实测输出 |
+| --- | --- |
+| `pnpm dom:guard:tracker` | `1142 files; 待迁移命中 0, 设计豁免 45, 临时豁免 1, 豁免注释 0, 陈旧豁免 0` |
+| `node scripts/i18n-skip-list.mjs` | `写入 2109 键（扫描面 2112 → 3）` |
+| `pnpm events:surface` | `扫描文件：1142；add 266 处 / remove 127 处` |
+| `pnpm docs:check` | OK（三方口径一致） |
+| `pnpm lint` / `tsc` / `typecheck:vue` | 0/0 · 通过 · 0 new |
+| `pnpm -F @yami/ui-kit test` | 109 文件 772/772 |
+| `pnpm -F @yami/editor test` | 237 文件 1992/1992 |
+
+⇒ 上表"已完成"一栏的每条主张都能由这些命令复核到；**未能复核的只有"需真机确认"那四行**。
+
 ### ⏳ 需真机确认（本人无法自证）
 
 | 事项 | 为什么必须真机 | 清单位置 |

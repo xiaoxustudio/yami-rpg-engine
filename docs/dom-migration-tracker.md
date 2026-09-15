@@ -44,12 +44,12 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 33 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 16 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 |
-| ui-kit/components   | 98 | 71 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 80 | 11 | 11 | 60 | 2 | 265 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 98 | 71 | 0 | 33 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 93 | 80 | 11 | 12 | 60 | 2 | 265 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 28 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
+| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 16 | 1 | 11 | 0 | 121 | 122 | 11 | 29 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
 
 ## 口径
 
@@ -72,15 +72,15 @@
 | 类别 | 处数 | 文件数 |
 | --- | --- | --- |
 | style.* 赋值 | 306 | 77 |
-| .children 遍历 | 230 | 73 |
+| .children 遍历 | 231 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
 | clientWidth/Height 读 | 140 | 40 |
 | classList.add/remove/toggle | 134 | 41 |
 | textContent 赋值 | 128 | 44 |
 | get/set/removeAttribute | 85 | 35 |
 | scrollTop 写 | 84 | 39 |
-| parentElement | 47 | 46 |
-| closest() | 28 | 13 |
+| parentElement | 48 | 47 |
+| closest() | 26 | 13 |
 | next/prevElementSibling | 23 | 8 |
 | element.append/prepend | 19 | 14 |
 | nodeValue 赋值 | 6 | 3 |
@@ -99,15 +99,15 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
-| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2380 | 34 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2398 | 35 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2939 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2952 | 21 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
-| packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
+| packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 478 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 158 | 14 | - |
@@ -115,7 +115,7 @@
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 382 | 12 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 210 | 12 | - |
-| packages/editor/src/utils/dom.ts | 218 | 11 | - |
+| packages/editor/src/utils/dom.ts | 236 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 272 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 418 | 11 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
@@ -304,7 +304,7 @@
 | packages/editor/src/services/ipc/webserver.ts | 110 | 1 | - |
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
 | packages/editor/src/services/project/setting-config/index.ts | 142 | 1 | - |
-| packages/editor/src/stores/browser.ts | 582 | 1 | - |
+| packages/editor/src/stores/browser.ts | 583 | 1 | - |
 | packages/editor/src/tools/condition-list.ts | 314 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/dpr.ts | 14 | 1 | - |
@@ -1130,7 +1130,7 @@
 | packages/editor/src/stores/resource.ts | 82 | 0 | - |
 | packages/editor/src/stores/scene.ts | 160 | 0 | - |
 | packages/editor/src/stores/search-string.ts | 211 | 0 | - |
-| packages/editor/src/stores/selector.ts | 422 | 0 | - |
+| packages/editor/src/stores/selector.ts | 423 | 0 | - |
 | packages/editor/src/stores/team.ts | 89 | 0 | - |
 | packages/editor/src/stores/timer.ts | 59 | 0 | - |
 | packages/editor/src/stores/title.ts | 105 | 0 | - |
