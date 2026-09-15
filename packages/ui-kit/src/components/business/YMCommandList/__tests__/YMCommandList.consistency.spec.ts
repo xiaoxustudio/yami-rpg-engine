@@ -96,4 +96,71 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 		expect(el.getRowModel().keys).toEqual([]);
 		expect(domKeys()).toEqual([]);
 	});
+
+	/**
+	 * 长序列：把**跨行操作**都串一遍（选择导航、滚动定位、折叠、全选、删除、撤销、resize），
+	 * 每一步都要求模型与 DOM 的 key 序列一致。探针实测这 15 步全部一致（折叠 7→4、删除 4→1），
+	 * 这条把它固定下来——它是"模型驱动渲染"最直接的守门用例。
+	 */
+	it('长序列（导航/滚动/折叠/全选/删除/撤销）每一步都保持模型与 DOM 一致', async () => {
+		const wrapper = mount(YMCommandList, { props: { options: makeOptions() } });
+		const el = wrapper.element as unknown as ConsistencyApi & {
+			toggle: () => void;
+			fold: (a?: unknown) => void;
+			delete: () => void;
+			undo: () => void;
+			scrollToSelection: (m?: string) => void;
+			scrollToRow: (i: number, p?: string) => void;
+			selectDown: (a: boolean, b: boolean) => void;
+			selectUp: (a: boolean, b: boolean) => void;
+			selectMultipleDown: () => void;
+			selectMultipleUp: () => void;
+			focusing: boolean;
+		};
+		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+		Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+		Object.defineProperty(el, 'scrollTop', { value: 0, configurable: true, writable: true });
+		el.scroll = (): void => {};
+		await nextTick();
+
+		const nonEmpty = (keys: string[]): string[] => keys.filter((k) => k.length > 0);
+		const domKeys = (): string[] =>
+			nonEmpty(
+				Array.from(el.querySelectorAll<HTMLElement>('.command-item')).map(
+					(r) => (r as unknown as { rowKey?: string }).rowKey ?? ''
+				)
+			);
+		const step = async (fn: () => void): Promise<void> => {
+			fn();
+			await nextTick();
+			expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
+		};
+
+		el.write([
+			{ id: 'a', params: {}, commands: [] },
+			{ id: 'b', params: {}, commands: [{ id: 'c', params: {} }] },
+			{ id: 'd', params: {}, commands: [] }
+		]);
+		await nextTick();
+		el.focusing = true;
+		expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
+
+		await step(() => el.select(1));
+		await step(() => el.toggle());
+		await step(() => el.selectDown(true, false));
+		await step(() => el.selectUp(true, false));
+		await step(() => el.selectMultipleDown());
+		await step(() => el.selectMultipleUp());
+		await step(() => el.scrollToSelection('active'));
+		await step(() => el.scrollToRow(0, 'top'));
+		// 折叠会把子行移出可见集
+		const beforeFold = el.getRowModel().keys.length;
+		await step(() => el.fold());
+		expect(el.getRowModel().keys.length).toBeLessThan(beforeFold);
+		await step(() => el.selectAll());
+		await step(() => el.delete());
+		await step(() => el.undo());
+		await step(() => el.resize());
+		await step(() => el.unselect());
+	});
 });
