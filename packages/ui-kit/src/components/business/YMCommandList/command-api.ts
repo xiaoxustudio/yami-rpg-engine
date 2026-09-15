@@ -364,8 +364,10 @@ export interface CommandRowDescriptor {
 	contents: CommandContent[];
 	/** 该行是否需要 `fold` 把手（原由建行代码插入 `<span class="command-fold">`） */
 	fold: boolean;
-	/** 该行承担的外边距（px）：首行 marginTop、末行 marginBottom，用于撑出滚动高度 */
-	margin: number;
+	/** 首行承担的 marginTop（px），用于撑出滚动高度（末行为 0） */
+	marginTop: number;
+	/** 末行承担的 marginBottom（px）（首行为 0） */
+	marginBottom: number;
 }
 
 export interface CommandRowModel {
@@ -477,7 +479,8 @@ function rebuildCommandRowModel(
 			disabled: element.classList.contains('disabled'),
 			contents: element.contents ?? [],
 			fold: element.fold !== undefined,
-			margin: i === start ? marginTop : i === end - 1 ? marginBottom : 0
+			marginTop: i === start ? marginTop : 0,
+			marginBottom: i === end - 1 ? marginBottom : 0
 		});
 	}
 	commandRowModel.start = start;
@@ -545,6 +548,38 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			keys: [...commandRowModel.keys],
 			rows
 		};
+	},
+
+	// oxlint-disable-next-line no-explicit-any
+	/**
+	 * M3-5b′（换源）：模板挂出一行后的**回写桥**——把该行的数据挂到元素上（`attachRowData`）、
+	 * 补上 `fold` 把手，再交给既有的 `updateCommandElement` 生成行内内容。
+	 * 编辑器侧对 `updateCommandElement` 的覆写（`eslints` 的缩进线与标记）因此照旧生效。
+	 */
+	// oxlint-disable-next-line no-explicit-any
+	bindRowElement: function (this: any, element: HTMLElement, index: number): void {
+		const node = element as CommandItemElement;
+		const source = this.elements[index] as CommandItemElement | undefined;
+		const row = rowData[index];
+		if (source === undefined || row === undefined) return;
+		node.dataValue = index;
+		attachRowData(node, {
+			rowKey: source.rowKey ?? '',
+			command: row.command,
+			list: row.list,
+			index: row.index,
+			indent: row.indent,
+			dataKey: row.dataKey,
+			parent: row.parent,
+			contents: source.contents ?? []
+		});
+		if (source.fold !== undefined && node.fold === undefined) {
+			const fold = renderElement(h('span', { class: 'command-fold' }));
+			addClass(fold, 'command-fold');
+			node.fold = fold;
+			node.appendChild(fold);
+		}
+		this.updateCommandElement(node);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
