@@ -88,6 +88,17 @@ const makeListWithBreaks = (data: unknown[]): ListElement => {
 	return el;
 };
 
+/** `parse` 可以返回 `script`：多行脚本会占**多行**（每行一个行元素），同样要有 key */
+const makeListWithScript = (data: unknown[]): ListElement => {
+	const options = makeOptions() as unknown as { command: Record<string, unknown> };
+	options.command.parse = () => [{ color: 'normal' }, { script: 'line1 \n line2 \n line3' }];
+	const el = createCommandListElement(options as unknown as CommandListApiOptions) as ListElement;
+	mockHeight(el);
+	el.scroll = vi.fn();
+	el.write(data);
+	return el;
+};
+
 const domKeys = (el: ListElement): (string | undefined)[] =>
 	Array.from(el.querySelectorAll<HTMLElement & { rowKey?: string }>('.command-item')).map(
 		(row) => row.rowKey
@@ -176,5 +187,32 @@ describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
 		expect(new Set(model.keys).size).toBe(model.keys.length);
 		// break 行与主行同属一条命令，key 以主行 key 为前缀
 		expect(model.keys.some((k) => k.includes('-b'))).toBe(true);
+	});
+
+	/**
+	 * 换源的**硬要求**：`v-for` 的每一行都要有稳定且唯一的 key。
+	 * 这条刻意把**多种行种类**放在一起（普通行 / 子列表续行 / 空白行 / 嵌套），因为按种类分散写用例时，
+	 * 未被覆盖的那一种就会悄悄漏掉 key —— break 行与子列表续行都曾如此（本轮两处修复）。
+	 */
+	it('多种行种类混在一起时：每一行都有非空且唯一的 key', () => {
+		const child = makeCommand('child');
+		(child as unknown as { commands: unknown[] }).commands = [makeCommand('grandchild')];
+		const parent = makeCommand('nested');
+		(parent as unknown as { commands: unknown[] }).commands = [child];
+		const el = makeList([makeCommand('plain'), parent, makeCommand('last')]);
+		const model = el.getRowModel();
+		expect(model.rows.length).toBeGreaterThan(3);
+		expect(model.keys.filter((k) => k.length === 0)).toEqual([]);
+		expect(new Set(model.keys).size).toBe(model.keys.length);
+		expect(domKeys(el).every((k) => typeof k === 'string' && k.length > 0)).toBe(true);
+	});
+
+	it('多行脚本（parse 返回 script）：脚本占的每一行也都有 key', () => {
+		const el = makeListWithScript([makeCommand('withScript')]);
+		const model = el.getRowModel();
+		// 脚本 3 行 + 该命令的主行 + 空白行 ⇒ 行数明显多于命令数
+		expect(model.rows.length).toBeGreaterThanOrEqual(4);
+		expect(model.keys.filter((k) => k.length === 0)).toEqual([]);
+		expect(new Set(model.keys).size).toBe(model.keys.length);
 	});
 });

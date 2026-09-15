@@ -727,6 +727,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							configurable: true,
 							get: () => indent
 						});
+						// M3 换源前置：**子列表前的续行**也要稳定 key（它和主行同属一条命令）
+						li.rowKey = `${commandRender.rowKeyOf(command)}-c${buffer.length}`;
 						buffer.push(li);
 						continue;
 					}
@@ -771,6 +773,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							configurable: true,
 							get: () => indent
 						});
+						// M3 换源前置：脚本占多行时的第 2..n 行同样要有稳定 key
+						li.rowKey = `${commandRender.rowKeyOf(command)}-s${i}`;
 						buffer.push(li);
 						items[i] = li;
 					}

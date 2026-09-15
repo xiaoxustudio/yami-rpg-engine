@@ -403,3 +403,5 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 | 步骤 5b 兼容层收口（`elements` shim） | M5 的同类收口 |
 
 > 素材来源：本文件所有行号与计数均为 2026-09-11 实测（`wc`/正则扫描 + `oxlint`），可用 `pnpm dom:guard:tracker` 与 `pnpm docs:check` 复核。
+
+**🐛 续修：子列表续行与脚本多行同样漏了 key（2026-09-12）**。顺着上一条把 `rowKey` 的全部赋值点列出来核对（而不是继续按种类猜）：全文件原本只有**三处**赋值——命令主行、break 行、空白行；而 `createCommandBuffer` 还有**两处**建行点没有 key：**子列表前的续行**（`content.children` 分支）与**多行脚本的第 2..n 行**（`content.script` 分支）。两处一并补上：续行 `<命令 key>-c<行序号>`、脚本行 `<命令 key>-s<行号>`。用例也随之改了写法——新增两条**"把所有行种类放在一起"**的用例（普通/续行/嵌套/空白、以及脚本多行），断言"每一行都有非空且唯一的 key"，因为**按种类分散写用例时，没被覆盖的那一种就会悄悄漏掉**（这正是前两条连续翻车的原因）。
