@@ -215,3 +215,22 @@ export const getElementWriter = function (prefix: string, bindingObject?: Record
 		}
 	};
 };
+
+/**
+ * M4 步骤 2：按 DOM 目标反查**文件行元素**。
+ *
+ * 换源后行元素由模板渲染、`file` 由回写桥挂上行（见 `YMFileBodyPane.bindRowElement`），
+ * 因此这里沿祖先找"**带 `file` 数据**的节点"，而不再依赖 `.file-body-item` 这个类名结构——
+ * 类名是渲染细节，`file` 才是数据契约。
+ */
+export const fileItemElementOf = function (
+	target: Element | null
+): (HTMLElement & { file?: unknown }) | null {
+	let node: Element | null = target;
+	while (node !== null) {
+		const candidate = node as HTMLElement & { file?: unknown };
+		if (candidate.file !== undefined) return candidate;
+		node = node.parentElement;
+	}
+	return null;
+};

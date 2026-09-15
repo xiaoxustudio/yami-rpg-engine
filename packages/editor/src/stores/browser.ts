@@ -27,6 +27,7 @@ import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import child_process from 'node:child_process';
+import { fileItemElementOf } from '@app/utils/dom';
 
 export interface FileBrowserBody {
 	activeFile?: unknown;
@@ -233,7 +234,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const items: MenuItem[] = [];
 		const { target } = event.raw;
 		const targetElement = target instanceof Element ? target : null;
-		const itemElement = targetElement?.closest('.file-body-item') ?? null;
+		const itemElement = fileItemElementOf(targetElement);
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
 		const get = (key: string) => t('menuFileBrowser.' + key);
 		const Clipboard = GlobalClipboard;

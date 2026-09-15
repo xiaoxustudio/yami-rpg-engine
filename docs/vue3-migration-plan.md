@@ -292,6 +292,8 @@
 
 - 2026-09-12 **M4 步骤 3 审计：命令列表 API 的 69 个方法没有可退役项**。做法：解析 `commandListPrototype` 的 69 个方法名，在 `packages/editor/src` + `packages/ui-kit/src` 全量统计**任意属性访问**形态的引用（`.name`，含 `el.keydown`、`?.updateLineClasses?.(` 这类非调用用法）。结论：**外部零引用 16 个**，逐一核对都是 **api 内部 `this.x()` 调用**的自身方法（不是死代码）⇒ **API 门面无需为换源做退役清理**，M4 剩余只是"按用途分类迁移消费方"。**计量工具的教训**：第一版只统计 `\.name(` **且跳过了 api 自身**，得出"26 个零引用"的假结论——`keydown`/`listFocus`/`windowVariableChange` 其实是 `addEventListener('focus', el.listFocus)` 这种**不带括号**的引用。**先验证度量工具，再相信它的数字。**
 
+- 2026-09-12 **M4 步骤 2 完成：类名反查 → 数据反查**。`stores/browser.ts` 与 `stores/selector.ts` 里的 `targetElement.closest('.file-body-item')` 换成新增的 `utils/dom.ts#fileItemElementOf(target)`——沿祖先找**带 `file` 数据的节点**（行上的 `file` 由回写桥挂上）。理由：类名是渲染细节，`file` 才是数据契约；换源后模板渲染行，类名结构不再是稳定的查询面。**验证**：`file-body-popup` 2 例通过、`tsc` 通过、`vue-tsc` 0 new、`pnpm lint` 0/0。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。

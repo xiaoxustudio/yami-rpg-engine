@@ -370,7 +370,7 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 ### M4：消费方迁移（逐步、按用途分类，每类独立 PR）
 
 1. `eslints.ts` 的缩进线：从「覆写 `updateCommandElement`」迁移到正式扩展点（行 extras 回调/注册表），锁定用例不变；
-2. `stores/browser.ts` / `stores/selector.ts` 的 `closest('.file-body-item')` → 数据查询（新增 `fileBodyItemOf(target)` 一类 helper），class 仅保留样式职责；
+2. ✅ **已完成（2026-09-12）**：`stores/browser.ts` / `stores/selector.ts` 的 `closest('.file-body-item')` 已改为**数据反查** —— 新增 `utils/dom.ts` 的 `fileItemElementOf(target)`：沿祖先找到"**带 `file` 数据的节点**"（行元素上的 `file` 由回写桥挂上），不再依赖类名结构（类名是渲染细节，`file` 才是数据契约）。
 3. `CommandList.vue` 的 65 方法桥：逐个确认是否仍需要（可先用「渲染模式无关 API + 兼容回退」过渡，同 tree `setTreeItemClass` 的做法）。
 
 验证：editor 全量测试 + 真机事件编辑器/文件浏览器冒烟。

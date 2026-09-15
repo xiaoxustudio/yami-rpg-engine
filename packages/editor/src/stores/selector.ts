@@ -18,6 +18,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
+import { fileItemElementOf } from '@app/utils/dom';
 
 export interface SelectorInstance {
 	state?: string;
@@ -303,7 +304,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		const items: MenuItem[] = [];
 		const { target: rawTarget } = event.raw;
 		const targetElement = rawTarget instanceof Element ? rawTarget : null;
-		const itemElement = targetElement?.closest('.file-body-item') ?? null;
+		const itemElement = fileItemElementOf(targetElement);
 		const { browser, nav } = Selector.links ?? {};
 		const get = (key: string) => t('menuFileBrowser.' + key);
 		if (itemElement === null && targetElement?.closest('.file-body-pane') != null) {
