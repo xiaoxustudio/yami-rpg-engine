@@ -266,6 +266,8 @@
 
 - 2026-09-12 **B1/M3（命令列表）第五步：行内容进模型（+1 例）**。`CommandRowDescriptor` 增加 **`contents`**（元素上的 `CommandContent[]`：文本/着色/`textId`/tooltip 声明）——模板渲染行内文本要靠它（与文件 body 的 `name`/`isFolder` 同理）。新增 1 例：把 `contents` 里的 `text` 拼起来**与行内文本一致**（空白行无片段则跳过）。**门禁**：命令列表 **87 例**、ui-kit **107 文件 756/756**、`pnpm lint` 0/0、`docs:check` OK。
 
+- 2026-09-12 **B1/M3（命令列表）数据化读取侧收口：49 → 55 处，读取路径已全部脱离元素 getter**。① 把最后 **6 处下标形式**（`elements[this.start].dataItem` 一类）换成 **`rowAt(i)?.command ?? null`**（新增 `rowAt(index)` 按行下标取行数据、取不到返回 `undefined`）。② 收尾删掉两处因迁移而不再使用的 `const elements = this.elements;`（`oxlint` 的 `no-unused-vars` 直接点名）。③ **行为不变**：命令列表 **87 例**、ui-kit **107 文件 756/756**、editor **237 文件 1992/1992**、`pnpm lint` 0/0。④ **剩余**：写入侧（`elements[i] = …` 建行点）与渲染自有簿记——那部分属 5b 换源本体。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。

@@ -350,6 +350,14 @@ function rowOf(element: CommandItemElement): CommandRowData {
 	);
 }
 
+/**
+ * 按行下标取行数据（与 `elements[]` 同序）。取不到时返回 `undefined`，调用方按可空处理。
+ */
+function rowAt(index: number | null | undefined): CommandRowData | undefined {
+	if (index === null || index === undefined) return undefined;
+	return rowData[index];
+}
+
 /** 从 `elements[]` 重建行数据（在 `update()` 写完 `dataValue` 之后调用） */
 function rebuildCommandRowData(elements: CommandListShape): void {
 	rowData.length = 0;
@@ -1390,8 +1398,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	fold: function (this: any, element?: CommandItemElement): void {
 		if (element === undefined && this.start !== null) {
 			const elements = this.elements;
-			const startItem = elements[this.start].dataItem;
-			const endItem = elements[this.end].dataItem;
+			const startItem = (rowAt(this.start)?.command ?? null);
+			const endItem = (rowAt(this.end)?.command ?? null);
 			if (startItem === endItem) {
 				element = elements[this.start];
 			}
@@ -2308,9 +2316,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				case 'NumpadEnter':
 					if (this.start !== null) {
 						event.stopPropagation();
-						const elements = this.elements;
-						const sData = elements[this.start].dataItem;
-						const eData = elements[this.end].dataItem;
+						const sData = (rowAt(this.start)?.command ?? null);
+						const eData = (rowAt(this.end)?.command ?? null);
 						if (sData === eData) {
 							this.edit();
 						}
@@ -2622,9 +2629,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
 		if (this.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
-			const elements = this.elements;
-			const sData = elements[this.start].dataItem;
-			const eData = elements[this.end].dataItem;
+			const sData = (rowAt(this.start)?.command ?? null);
+			const eData = (rowAt(this.end)?.command ?? null);
 			if (sData === eData) {
 				this.edit(sData);
 			}

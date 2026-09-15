@@ -284,9 +284,10 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **✅ 数据化第一步（M3 第四步，2026-09-12，+49 处）**：命令列表的逻辑层此前通过**元素上的 getter** 读数据（`element.dataItem`/`dataIndent`/`dataKey`/`dataList`/`dataParent`）。现在新增 `CommandRowData`（`{ command, list, indent, dataKey, parent, index }`）与 `rowData[]`（与 `elements[]` 同序同长），由 `rowOf(element)` 按 `element.dataValue`（= 行下标，`update()` 里统一写过）取；取不到时**回退到元素本身**，因此构建期（`createCommandBuffer`/`createItems`）与逻辑期都能用。
 
-- **迁移范围**：`commandListPrototype` 内 **49 处**读取换成 `rowOf(x).<字段>`（`dataItem` 16、`dataIndent` 16、`dataKey` 7、`dataParent` 6、`dataList` 4）；**行为不变**——86 例命令列表用例全绿即为证据（渲染仍是命令式）。
+- **迁移范围**：`commandListPrototype` 内 **49 处**读取换成 `rowOf(x).<字段>`（`dataItem` 16、`dataIndent` 16、`dataKey` 7、`dataParent` 6、`dataList` 4），另加 **6 处下标形式**（`elements[this.start].dataItem` 一类）换成 `rowAt(i)?.command ?? null` ⇒ **读取侧共 55 处，已全部脱离元素 getter**；**行为不变**——87 例命令列表用例全绿即为证据（渲染仍是命令式）。
 - **一处类型取舍（写明以免疑惑）**：`CommandRowData.command` 保持与元素 getter **同类型**（非空断言）。空白行运行时确实是 `null`，但既有读取方本来就依赖这条断言；改成可空会连带 6 处判空，属另一件事。
-- **意义**：换源后"元素"不再是可靠的数据来源（模板渲染、异步挂载），这一步把逻辑层的取数入口从元素搬到数据，**是 5b 式换源的前置**（文件 body 那边等价的一步是切片 5a）。
+- **收尾时顺手删掉两处**因迁移而不再使用的 `const elements = this.elements;`（`oxlint` 的 `no-unused-vars` 直接点名）。
+- **意义**：换源后"元素"不再是可靠的数据来源（模板渲染、异步挂载），这一步把逻辑层的取数入口从元素搬到数据，**是 5b 式换源的前置**（文件 body 那边等价的一步是切片 5a）。**剩余**：写入侧（`elements[i] = …` 的建行点）与渲染自有簿记，属 5b 换源本体。
 - **行内容也进了模型（2026-09-12）**：`CommandRowDescriptor` 增加 `contents`（元素上的 `CommandContent[]`：文本/着色/textId/tooltip 声明）——模板渲染行内文本要靠它（与文件 body 的 `name`/`isFolder` 同理）。新增 1 例：把 `contents` 里的 `text` 拼起来**与行内文本一致**（空白行无内容片段则跳过）。
 
 **真机冒烟清单（5b 落地后请过一遍）**：① 打开项目 → 文件浏览器列出文件/文件夹；② 单击选中、Ctrl 多选、框选；③ 拖拽文件到画布/目录（`draggable` 由 `updateFileElement` 设置）；④ 右键菜单（重命名/删除）与双击打开；⑤ 切换视图（列表/小/中/大/图标）与滚动；⑥ 空目录、搜索态。
