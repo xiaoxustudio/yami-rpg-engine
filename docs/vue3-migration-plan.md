@@ -298,6 +298,8 @@
 
 - 2026-09-12 **M5 续：改名走模型 + 补改名用例**。文件名移入模板后，改名必须经模型反映，而原实现只在**窗口变化**时重建行描述 ⇒ 改名可能不刷新。改为**每次 `resize()` 都重建**（抽成 `rebuildRowDescriptors()`，只算可见行）。新增用例：改 `basename` → `resize()` → 模板显示新名字。**验证**：文件 body m1 **17 例**、ui-kit **109 文件 769/769**、`pnpm lint` 0/0、`typecheck:vue` 0 new。**意义**：把"改名"从真机冒烟的未知项变成已覆盖项。
 
+- 2026-09-12 **收尾复核：速览表两行跟上现实**。① **B1 行**此前写"M1 ✅、M2 ✅、M3 切片 1–4 ✅"，现已更新为 **M1–M4 完成、M5 进行中**，并把各阶段的可核对证据写进同一格（M1 金标准 17 → 43+、M2 派生层、M3 两个巨石换源的要点、M4 三步、M5 的名字入模板 + 改名用例）。② **E1 行**的数字按 `pnpm events:surface` 复核为 **266 处 add / 127 处 remove**（此前写 265/126）；此处**不能**混用 tracker 的 `addEventListener` 口径（570）——两个度量不是一回事，混写会读成矛盾。**门禁**：`docs:check` OK。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
