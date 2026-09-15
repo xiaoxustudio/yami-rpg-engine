@@ -284,6 +284,25 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **✅ 数据化第一步（M3 第四步，2026-09-12，+49 处）**：命令列表的逻辑层此前通过**元素上的 getter** 读数据（`element.dataItem`/`dataIndent`/`dataKey`/`dataList`/`dataParent`）。现在新增 `CommandRowData`（`{ command, list, indent, dataKey, parent, index }`）与 `rowData[]`（与 `elements[]` 同序同长），由 `rowOf(element)` 按 `element.dataValue`（= 行下标，`update()` 里统一写过）取；取不到时**回退到元素本身**，因此构建期（`createCommandBuffer`/`createItems`）与逻辑期都能用。
 
+### M3-5b′：命令列表换源的施工设计（2026-09-12 定稿，**尚未开工**）
+
+> 为什么单独写：命令列表的 SFC（`YMCommandList.vue`）**没有任何模板**——它在 `onMounted` 里 `createCommandListApi(el, options)`，此后**所有**行、行内文本、缩进线、折叠把手、空白行都由 api 往那个根元素里建。换源因此不是"改几行模板"，而是**把行渲染抽成一个私有组件**。施工顺序与风险都列在下面，供开工时逐条对照。
+
+**目标结构**：
+1. 新增私有组件 `CommandRow.vue`：入参 `row: CommandRowDescriptor`（含 `key`/`indent`/`folded`/`contents`/`selected`/`disabled`），渲染 `<div class="command-item" :style="{ textIndent }">` + 行内文本片段（按 `contents` 的 `color`/`class`/`tooltip` 映射）。
+2. SFC 模板：`<CommandRow v-for="row in rows" :key="row.key" :ref="bindRowElement" :row="row" />`；桥函数把元素登记进 `elements[]`、`file`→`context` 等价物（命令侧是 `rowData[i]` + 元素的 `file`/`context` 类比字段）并调用**既有的** `updateCommandElement`。
+3. api：`createCommandBuffer`/`createItems` 从"建元素"改为"产出行描述"；`resize()` 只算窗口；`commonListClearElements` 与版本回收退场（与文件 body 的 5a/5b 同形）。
+
+**必须原样保留的三件事（换源最容易踩）**：
+- **`updateCommandElement` 的覆写点**：editor 侧 `module/eslints.ts` **覆写**了这个方法（画 `.command-mark-major` + 每层一条 `.command-line` 缩进线）。新组件必须**继续调用同名函数**（由桥在做完基础渲染后回调），否则缩进线与侧栏标记会整片消失——这是本仓"缩进线扩展点"的契约。
+- **一行 ≠ 一条命令**：`parse` 可用 `break` 把一条命令拆成多行，`elements[]` 里是**行**而不是命令；模型/键/桥都必须以**元素**为单位（现在的 `CommandRowModel` 正是如此）。
+- **搜索高亮**：`commandListStatics.highlightedTexts` 记录的是**元素**，换源后要改为"按行 key 记录"或在高亮时经桥查元素。
+
+**开工条件与验证**：
+- 前置已就绪：① 每行稳定 key（含空白行）② 行模型与 DOM 等价 ③ 读取侧数据化 55 处 ④ 87 例命令列表行为金标准。
+- 验证方式：沿用文件 body 的做法——**用例补 `await nextTick()`**（渲染变异步），行为断言不变；`pnpm lint` / 两个套件 / `docs:check` 全绿。
+- 真机冒烟（与文件 body 的清单同级）：折叠/展开、缩进线、多选框选、复制粘贴、搜索高亮、命令的插入(空白行点击)与删除、拖动排序。
+
 - **迁移范围**：`commandListPrototype` 内 **49 处**读取换成 `rowOf(x).<字段>`（`dataItem` 16、`dataIndent` 16、`dataKey` 7、`dataParent` 6、`dataList` 4），另加 **6 处下标形式**（`elements[this.start].dataItem` 一类）换成 `rowAt(i)?.command ?? null` ⇒ **读取侧共 55 处，已全部脱离元素 getter**；**行为不变**——87 例命令列表用例全绿即为证据（渲染仍是命令式）。
 - **一处类型取舍（写明以免疑惑）**：`CommandRowData.command` 保持与元素 getter **同类型**（非空断言）。空白行运行时确实是 `null`，但既有读取方本来就依赖这条断言；改成可空会连带 6 处判空，属另一件事。
 - **收尾时顺手删掉两处**因迁移而不再使用的 `const elements = this.elements;`（`oxlint` 的 `no-unused-vars` 直接点名）。
