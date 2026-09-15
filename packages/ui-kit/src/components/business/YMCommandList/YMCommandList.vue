@@ -41,14 +41,22 @@ function refreshRows(): void {
 	if (!el?.getRowModel) return;
 	rows.value = el.getRowModel().rows;
 	// **重要**：行元素在 key 不变时被 Vue 复用（`:ref` 不会再触发），而内容可能已经变了
-	// （重写数据、安装/更换 `updateCommandElement` 覆写等）。旧实现靠 `resize()` 里的
-	// `updateOnResize(element)` 兜这件事；换源后由这里显式补一次：等 DOM 稳定后按序重绑。
+	// （重写数据、更换 `updateCommandElement` 覆写等）。旧实现靠 `resize()` 里的
+	// `updateOnResize(element)` 兜这件事；换源后在这里**同步**补一次：
+	// 按序重绑当前已渲染的行（同步执行 ⇒ 不会与 Vue 的渲染调度互相触发）。
+	const rendered = el.querySelectorAll('.command-item');
+	rows.value.forEach((row, i) => {
+		const element = rendered[i];
+		if (element instanceof HTMLElement) el.bindRowElement(element, row.index);
+	});
+	// 再补一拍：首帧时行还没渲染出来（`rendered` 为空），等 Vue 挂完再按序重绑一次，
+	// 让"跨行"的判定（缩进线的 line-start/line-end）拿到完整的邻居行。
 	void nextTick().then(() => {
 		const node = root.value as CommandListRootElement | null;
 		if (!node?.bindRowElement) return;
-		const rendered = node.querySelectorAll('.command-item');
+		const list = node.querySelectorAll('.command-item');
 		rows.value.forEach((row, i) => {
-			const element = rendered[i];
+			const element = list[i];
 			if (element instanceof HTMLElement) node.bindRowElement(element, row.index);
 		});
 	});

@@ -153,9 +153,23 @@ function applyLineClasses(list: CommandListShape): void {
 	}
 }
 
-function resize(this: { elements: CommandListShape }, ...args: unknown[]): unknown {
+function resize(
+	this: { elements: CommandListShape } & HTMLElement,
+	...args: unknown[]
+): unknown {
 	const ret = _origResize?.apply(this, args);
-	applyLineClasses(this.elements);
+	// M3-5b′（命令列表换源）：行元素已由模板渲染，api 侧的 `elements` 是**离屏元素**，
+	// 折叠线必须作用在**渲染出来的行**上；取不到渲染行时回退到 `elements`（兼容未换源的用法）。
+	const rendered = this.querySelectorAll?.('.command-item');
+	const target =
+		rendered && rendered.length > 0
+			? (Object.assign(Array.from(rendered), {
+					count: rendered.length,
+					// 契约：`applyLineClasses` 只在这面旗打开时才画线（与 `elements` 上的同名标记一致）
+					lineClassEnabled: (this as { lineClassEnabled?: boolean }).lineClassEnabled
+				}) as unknown as CommandListShape)
+			: this.elements;
+	applyLineClasses(target);
 	return ret;
 }
 

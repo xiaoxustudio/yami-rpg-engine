@@ -280,6 +280,8 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		el.update();
 		el.dispatchEvent(new Event('update'));
 
+		await nextTick();
+		await nextTick();
 		const realRows: Array<{ dataIndent: number; lines: HTMLElement[] }> = [];
 		for (let i = 0; i < el.elements.count; i++) {
 			const row = renderedRows(el)[i];
