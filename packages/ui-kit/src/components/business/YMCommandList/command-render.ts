@@ -26,7 +26,8 @@ export interface CommandRenderCommand {
 export interface CommandRowDescriptor {
 	/** 稳定行 key（同 tree 的 `rowKeyOf`：WeakMap 发号，跨多次派生不变） */
 	key: string;
-	command: CommandRenderCommand;
+	/** 该行对应的命令；**列表末尾的空白行为 `null`** */
+	command: CommandRenderCommand | null;
 	/** 所属列表（子命令所属的是父命令的 `commands`） */
 	list: CommandRenderCommand[];
 	/** 在其所属列表中的下标 */
@@ -38,6 +39,8 @@ export interface CommandRowDescriptor {
 	selected: boolean;
 	disabled: boolean;
 	hit: boolean;
+	/** M3 换源：是否为列表末尾的**空白行**（无命令、点击即在该层级插入） */
+	blank: boolean;
 }
 
 export interface DeriveCommandRowsOptions {
@@ -64,6 +67,13 @@ const hasChildren = (command: CommandRenderCommand): boolean =>
 	Array.isArray(command.commands) && command.commands.length > 0;
 
 /**
+ * 空白行的稳定 key。**与 `command-api.ts` 的 `createBlankElement` 共用这一个函数**，
+ * 保证"派生层算出的行"与"api 建出的行"key 一致（换源前后要靠它逐项比对）。
+ */
+export const blankRowKeyOf = (parent: object | null, indent: number, index: number): string =>
+	parent === null ? `blank-root-${indent}` : `blank-${rowKeyOf(parent)}-${indent}-${index}`;
+
+/**
  * 命令树 → 可见行（深度优先；折叠的命令**只出自己那一行**，子行不进可见集）。
  * 纯函数：不读写 DOM、不依赖组件状态，同一输入多次调用结果一致（key 亦稳定）。
  */
@@ -76,7 +86,11 @@ export function deriveCommandRows(
 		options.hits instanceof Set ? (options.hits as ReadonlySet<number>) : new Set(options.hits ?? []);
 	const selection = options.selection ?? null;
 
-	const walk = (list: CommandRenderCommand[], indent: number): void => {
+	/**
+	 * 深度优先遍历一个列表；遍历完该层后补上它的**空白行**（与 `createItems` 的产出顺序一致：
+	 * 子层空白行先于本层空白行 —— 因为子层是在父命令那一轮递归进去的）。
+	 */
+	const walk = (list: CommandRenderCommand[], indent: number, parent: CommandRenderCommand | null): void => {
 		for (let index = 0; index < list.length; index++) {
 			const command = list[index];
 			const folded = hasChildren(command) && command.folded === true;
@@ -91,15 +105,30 @@ export function deriveCommandRows(
 				selected:
 					selection !== null && rowIndex >= selection[0] && rowIndex <= selection[1],
 				disabled: command.disabled === true,
-				hit: hitSet.has(rowIndex)
+				hit: hitSet.has(rowIndex),
+				blank: false
 			});
 			if (!folded && hasChildren(command)) {
-				walk(command.commands as CommandRenderCommand[], indent + 1);
+				walk(command.commands as CommandRenderCommand[], indent + 1, command);
 			}
 		}
+		// 列表末尾的空白行（无命令、点击即插入）
+		const blankIndex = rows.length;
+		rows.push({
+			key: blankRowKeyOf(parent, indent, list.length),
+			command: null,
+			list,
+			index: list.length,
+			indent,
+			folded: false,
+			selected: selection !== null && blankIndex >= selection[0] && blankIndex <= selection[1],
+			disabled: false,
+			hit: hitSet.has(blankIndex),
+			blank: true
+		});
 	};
 
-	walk(commands, 0);
+	walk(commands, 0, null);
 	return rows;
 }
 

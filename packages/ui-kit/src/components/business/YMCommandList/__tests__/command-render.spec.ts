@@ -7,6 +7,7 @@ import {
 	computePageUpTargetIndex,
 	computeScrollToRowScrollTop,
 	computeScrollToSelection,
+	blankRowKeyOf,
 	deriveCommandRows,
 	pageScrollLines,
 	ROW_HEIGHT,
@@ -25,11 +26,17 @@ const command = (
 	extra: Partial<CommandRenderCommand> = {}
 ): CommandRenderCommand => ({ id, params: {}, commands: [], ...extra });
 
+/**
+ * M3 起派生结果**包含每个列表末尾的空白行**（api 的 `createItems` 一直如此），
+ * 因此"命令序列"类断言统一先过滤掉空白行；空白行本身单独有用例。
+ */
+const commandsOf = (rows: ReturnType<typeof deriveCommandRows>) => rows.filter((row) => !row.blank);
+
 describe('command-render（M2 派生层：可见行推导）', () => {
 	it('扁平列表：按顺序出全部行，indent 全 0', () => {
 		const list = [command('a'), command('b'), command('c')];
-		const rows = deriveCommandRows(list);
-		expect(rows.map((row) => row.command.id)).toEqual(['a', 'b', 'c']);
+		const rows = commandsOf(deriveCommandRows(list));
+		expect(rows.map((row) => row.command?.id)).toEqual(['a', 'b', 'c']);
 		expect(rowIndents(rows)).toEqual([0, 0, 0]);
 		expect(rows.every((row) => row.list === list && row.index === rows.indexOf(row))).toBe(true);
 	});
@@ -39,8 +46,8 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 		const grandChild = command('grand');
 		const parent = command('parent', { commands: [child, command('sibling')] });
 		child.commands = [grandChild];
-		const rows = deriveCommandRows([command('first'), parent]);
-		expect(rows.map((row) => row.command.id)).toEqual(['first', 'parent', 'child', 'grand', 'sibling']);
+		const rows = commandsOf(deriveCommandRows([command('first'), parent]));
+		expect(rows.map((row) => row.command?.id)).toEqual(['first', 'parent', 'child', 'grand', 'sibling']);
 		expect(rowIndents(rows)).toEqual([0, 0, 1, 2, 1]);
 	});
 
@@ -49,36 +56,61 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 			commands: [command('child')],
 			folded: true
 		});
-		const rows = deriveCommandRows([parent, command('after')]);
-		expect(rows.map((row) => row.command.id)).toEqual(['parent', 'after']);
+		const rows = commandsOf(deriveCommandRows([parent, command('after')]));
+		expect(rows.map((row) => row.command?.id)).toEqual(['parent', 'after']);
 		expect(rows[0].folded).toBe(true);
 		expect(rows[1].folded).toBe(false);
 	});
 
 	it('没有子命令的命令：即使 folded=true 也不算折叠（folded 只对真有子命令的行成立）', () => {
-		const rows = deriveCommandRows([command('leaf', { folded: true })]);
+		const rows = commandsOf(deriveCommandRows([command('leaf', { folded: true })]));
 		expect(rows[0].folded).toBe(false);
 	});
 
 	it('选区：按可见行下标区间标 selected（含首尾）', () => {
-		const rows = deriveCommandRows([command('a'), command('b'), command('c')], {
-			selection: [1, 2]
-		});
+		const rows = commandsOf(
+			deriveCommandRows([command('a'), command('b'), command('c')], {
+				selection: [1, 2]
+			})
+		);
 		expect(rows.map((row) => row.selected)).toEqual([false, true, true]);
 	});
 
 	it('搜索命中：命中集可以是 Set 或数组', () => {
 		const list = [command('a'), command('b')];
-		expect(deriveCommandRows(list, { hits: new Set([1]) }).map((row) => row.hit)).toEqual([
+		expect(commandsOf(deriveCommandRows(list, { hits: new Set([1]) })).map((row) => row.hit)).toEqual([
 			false,
 			true
 		]);
-		expect(deriveCommandRows(list, { hits: [0] }).map((row) => row.hit)).toEqual([true, false]);
+		expect(commandsOf(deriveCommandRows(list, { hits: [0] })).map((row) => row.hit)).toEqual([
+			true,
+			false
+		]);
 	});
 
 	it('禁用态：disabled 透传到行', () => {
-		const rows = deriveCommandRows([command('a', { disabled: true }), command('b')]);
+		const rows = commandsOf(deriveCommandRows([command('a', { disabled: true }), command('b')]));
 		expect(rows.map((row) => row.disabled)).toEqual([true, false]);
+	});
+
+	it('列表末尾有空白行：每层一条，command 为 null，key 由 blankRowKeyOf 给', () => {
+		const child = command('child');
+		const parent = command('parent', { commands: [child] });
+		const rows = deriveCommandRows([parent]);
+		const blanks = rows.filter((row) => row.blank);
+		// 两层列表 ⇒ 两条空白行；子层那条在前（深度优先，父层空白行最后补）
+		expect(blanks.length).toBe(2);
+		expect(blanks.map((row) => row.indent)).toEqual([1, 0]);
+		expect(blanks.every((row) => row.command === null)).toBe(true);
+		expect(blanks[0].key).toBe(blankRowKeyOf(parent, 1, 1));
+		expect(blanks[1].key).toBe(blankRowKeyOf(null, 0, 1));
+	});
+
+	it('空列表也有且只有一条空白行（空命令列表仍可点击插入）', () => {
+		const rows = deriveCommandRows([]);
+		expect(rows.length).toBe(1);
+		expect(rows[0].blank).toBe(true);
+		expect(rows[0].command).toBeNull();
 	});
 
 	it('行 key 稳定：同一 command 多次派生拿到同一个 key，且重复 id 也不冲突', () => {
@@ -92,9 +124,16 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 		expect(rowKeyOf(a1)).toBe(first[0].key);
 	});
 
-	it('空输入与默认参数：不抛错、返回空数组', () => {
-		expect(deriveCommandRows()).toEqual([]);
-		expect(deriveCommandRows([])).toEqual([]);
+	it('全部行的 key 互不相同（含空白行）', () => {
+		const parent = command('parent', { commands: [command('child'), command('child2')] });
+		const rows = deriveCommandRows([command('a'), parent, command('b')]);
+		expect(new Set(rows.map((row) => row.key)).size).toBe(rows.length);
+	});
+
+	it('默认参数：不抛错（空树 ⇒ 只有一条可点击插入的空白行）', () => {
+		const rows = deriveCommandRows();
+		expect(rows.length).toBe(1);
+		expect(rows[0].blank).toBe(true);
 	});
 });
 
