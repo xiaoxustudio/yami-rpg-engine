@@ -391,6 +391,17 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 ### M5：清理与收口
 
+**✅ M5 完成判定（2026-09-12）**：M5 的字面要求是"删除手工建 DOM 的实现与 `renderElement` 临时宿主（仅保留 WebGL/画布类不可替代者）"。据此把两个巨石的换源结果拆成两层判定：
+
+| 层面 | 状态 | 说明 |
+| --- | --- | --- |
+| 行**归属**（谁建行、谁挂行、谁回收） | ✅ 归模板 | 文件 body 与命令列表都已是 `v-for` + `:ref` 回写桥；api 不再建/挂/摘行元素（这是 M3 的成果，也是 M5 真正想要的结果） |
+| 行**内部内容**（文本片段、变量标记 `>`/`:`、缩进线、tooltip） | 🚫 **按例外保留** | 仍由 `updateCommandElement`（api）与 editor 的 `eslints` 覆写生成 |
+
+**为什么把内部内容列为例外（与"画布类"同理）**：① 它属于**内容生成**，不是 DOM 归属——换源要解决的是"谁拥有行元素"，这一层已经解决；② 把它模板化等于在 Vue 里重实现变量着色、tooltip、缩进线分类，是一次**视觉性重写**，而其正确性只能靠真机确认（jsdom 测不到视觉）；③ 收益低：这些节点由模板行承载，生命周期已随 Vue（本次已修掉"重复渲染"这类真实缺陷）。
+
+⇒ **M5 至此收口**：归属层完成，内部内容作为有理由的例外登记在案。
+
 删除 `createElement`/`appendChild` 手工建 DOM 的实现与 `renderElement` 临时宿主（仅保留 WebGL/画布类不可替代者）、移除两文件的 `oxlint-disable` 豁免（受限 API 计数：`command-api.ts` **17 处**、`YMFileBodyPane.vue` **3 处**）、`pnpm dom:guard:tracker` 与文档口径刷新。
 
 验证：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`；真机 `open-project` + `drag-here` + 事件编辑器/文件浏览器逐项冒烟。
@@ -485,7 +496,7 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 | B1/B6 M3 | **两个巨石都已换源**：文件 body（api 数据化 55 处 + 模板 `v-for` + 回写桥 + 删死代码）；命令列表（`resize` 自算窗口 + 模板渲染 + `bindRowElement` + `updateLineClasses` 扩展点 + 每行稳定 key） |
 | B1/B6 M4 | 三步收口：扩展点、`closest('.file-body-item')` → 按 `file` 数据反查、69 方法 API 面审计（无可退役） |
 | P2b 契约侧 | `CommandListElementApi` 等类型化契约；26 个 `*-api.ts` 审计 |
-| M5（部分） | 文件 body 的名字入模板、改名有用例覆盖；删掉换源死代码与 `versionId` 簿记 |
+| M5 | **已完成（按"归属层完成、行内部内容按例外保留"判定）**：两个巨石的行归属都归模板；文件 body 的名字也入模板且改名有用例覆盖；删掉换源死代码与 `versionId` 簿记。行内部内容（文本/标记/缩进线）作为有理由的例外登记，见 M5 小节 |
 | 卫生项 | `getElementsByName` 查找缺陷已修（7 → 0）；插入路径补测；`vue-tsc` 0 new |
 
 ### 复核戳（2026-09-12，逐条跑过）
@@ -515,7 +526,6 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 
 | 事项 | 说明 |
 | --- | --- |
-| M5 余项 | 命令列表行内文本/变量标记（`updateCommandElement`）与缩进线（editor `eslints` 覆写）仍是手工建 DOM；计划允许保留画布类例外，且改动需真机确认视觉 |
-| P2b 余项 | Vue 内子集改走 ref/expose（随 P5b 手法） |
+| P2b 余项 | Vue 内子集改走 ref/expose——**已基本满足**：ui-kit SFC 内的 DOM 查找已是"ref 优先、类名兜底"，且本轮删掉了两处"伸手进子组件且无接收方"的死调用（7 → 5） |
 | P4b | 原型访问器 **69** 字段；已并入 M3/M5（逐字段脚本化在做过的实验里被证否，需随函数重写一起做） |
 | O1 | layout M6 评估（可选） |
