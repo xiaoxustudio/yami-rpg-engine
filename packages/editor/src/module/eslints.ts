@@ -8,6 +8,7 @@ let _origUpdateCommandElement:
 	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
 	| undefined;
 let _origResize: ((...args: unknown[]) => unknown) | undefined;
+let _origUpdateLineClasses: (() => void) | undefined;
 // 缩进线生成后（updateCommandElement 内）批量重算显示状态，避免滚动新渲染行没有样式
 const lineClassesScheduled = new WeakSet<object>();
 // command-list 内 command-item 元素运行时挂载的扩展字段
@@ -153,24 +154,58 @@ function applyLineClasses(list: CommandListShape): void {
 	}
 }
 
+/**
+ * M3-5b′（命令列表换源）：行元素已由模板渲染，而 api 侧的 `elements` 是**离屏元素**
+ * （跨行判定如 `buffer[buffer.length-1] == e` 仍以 `elements` 为准，语义不变）。
+ * 因此折叠线相关处理分两步：**照旧在 `elements` 上计算**，再把结果**同步到渲染出来的行**上。
+ * 取不到渲染行时返回 `null`（未换源用法不受影响）。
+ */
+function renderedRowsOf(list: {
+	querySelectorAll?: (selector: string) => NodeListOf<Element>;
+}): (CommandListShape & { lineClassEnabled?: boolean }) | null {
+	const rendered = list.querySelectorAll?.('.command-item');
+	if (!rendered || rendered.length === 0) return null;
+	return Object.assign(Array.from(rendered), {
+		count: rendered.length,
+		lineClassEnabled: true
+	}) as unknown as CommandListShape & { lineClassEnabled?: boolean };
+}
+
 function resize(
 	this: { elements: CommandListShape } & HTMLElement,
 	...args: unknown[]
 ): unknown {
 	const ret = _origResize?.apply(this, args);
-	// M3-5b′（命令列表换源）：行元素已由模板渲染，api 侧的 `elements` 是**离屏元素**，
-	// 折叠线必须作用在**渲染出来的行**上；取不到渲染行时回退到 `elements`（兼容未换源的用法）。
-	const rendered = this.querySelectorAll?.('.command-item');
-	const target =
-		rendered && rendered.length > 0
-			? (Object.assign(Array.from(rendered), {
-					count: rendered.length,
-					// 契约：`applyLineClasses` 只在这面旗打开时才画线（与 `elements` 上的同名标记一致）
-					lineClassEnabled: (this as { lineClassEnabled?: boolean }).lineClassEnabled
-				}) as unknown as CommandListShape)
-			: this.elements;
-	applyLineClasses(target);
+	// 折叠线要同时作用在**渲染出来的行**上（用户看到的是它们）
+	const rendered = renderedRowsOf(this);
+	if (rendered) applyLineClasses(rendered);
+	else applyLineClasses(this.elements);
 	return ret;
+}
+
+/**
+ * M3-5b′：模板挂完一批行后由组件调用的钩子（见 ui-kit 的 `updateLineClasses`）。
+ * 在这里做"渲染出来后才能做"的跨行处理：把 `elements` 上算好的 `mark` 同步到渲染行，
+ * 再对渲染行跑折叠线分类（line-start/line-end）。
+ */
+function updateLineClasses(this: HTMLElement & { elements: CommandListShape }): void {
+	const rendered = renderedRowsOf(this);
+	if (!rendered) return;
+	const list = this.elements;
+	for (let i = 0; i < rendered.count; i++) {
+		const row = rendered[i] as unknown as { classList: DOMTokenList; lines?: HTMLElement[] };
+		const source = list[i] as unknown as { mark?: string; lines?: HTMLElement[] } | undefined;
+		if (!source) continue;
+		if (source.mark) row.classList.add(source.mark);
+		// **镜像**分类结果（而不是在渲染行上重算）：`elements` 上的计算与换源前完全一致，
+		// 因此渲染行拿到的是同一套 line-start/line-end/line-hide。
+		const from = source.lines ?? [];
+		const to = row.lines ?? [];
+		for (let j = 0; j < from.length && j < to.length; j++) {
+			const classNames = Array.from(from[j].classList).filter((c) => c.startsWith('line-'));
+			for (const name of classNames) to[j].classList.add(name);
+		}
+	}
 }
 
 export function ensureResizeOverride(): void {
@@ -179,12 +214,19 @@ export function ensureResizeOverride(): void {
 	CommandList.prototype.resize = resize;
 }
 
+export function ensureLineClassesOverride(): void {
+	if (_origUpdateLineClasses) return;
+	_origUpdateLineClasses = CommandList.prototype.updateLineClasses;
+	CommandList.prototype.updateLineClasses = updateLineClasses;
+}
+
 export function ensureUpdateCommandElementOverride(): void {
 	if (!_origUpdateCommandElement) {
 		_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
 		CommandList.prototype.updateCommandElement = updateCommandElement;
 	}
 	ensureResizeOverride();
+	ensureLineClassesOverride();
 }
 
 export function initEslints(): void {
@@ -229,6 +271,16 @@ export function applyCommandListInstanceOverride(
 			e.classList.add(e.mark as unknown as string);
 		}
 		applyLineClasses(list);
+		// M3-5b′：把同一套结果同步到**渲染出来的行**（模板行才是用户看到的那些）
+		const rendered = renderedRowsOf(this as unknown as HTMLElement);
+		if (rendered) {
+			for (let i = 0; i < rendered.count; i++) {
+				const row = rendered[i] as unknown as { classList: DOMTokenList };
+				const source = list[i] as unknown as { mark?: string };
+				if (source?.mark) row.classList.add(source.mark);
+			}
+			applyLineClasses(rendered);
+		}
 	});
 }
 

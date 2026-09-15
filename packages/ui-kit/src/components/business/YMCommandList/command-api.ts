@@ -584,6 +584,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.updateCommandElement(node);
 	},
 
+	/**
+	 * M3-5b′：**扩展点**——模板挂完一批行之后调用，供上层（如 editor 的 eslints）对
+	 * "渲染出来的行"做跨行处理（折叠线的 line-start/line-end 分类）。
+	 * 基础实现为空；editor 侧覆盖它（与 `updateCommandElement` 同一套手法）。
+	 */
+	updateLineClasses: function (): void {},
+
 	// oxlint-disable-next-line no-explicit-any
 	resize: function (this: any, ..._args: unknown[]): void {
 		// M3-5b′（命令列表换源）：**不再调用 `commonListResize`**——它负责的"把行挂进根元素"

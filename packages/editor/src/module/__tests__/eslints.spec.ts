@@ -344,6 +344,9 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 			{ id: 'wait', params: {} }
 		]);
 
+		// 换源后行由模板渲染：收集前先等两拍（渲染 + 跨行分类钩子）
+		await nextTick();
+		await nextTick();
 		const rows: Array<{ dataIndent: number; lines: HTMLElement[] }> = [];
 		for (let i = 0; i < el.elements.count; i++) {
 			const row = renderedRows(el)[i];
