@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { createCommandListApi, type CommandListApiOptions } from './command-api';
+import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import {
+	createCommandListApi,
+	type CommandListApiOptions,
+	type CommandRowDescriptor
+} from './command-api';
 
 interface Props {
 	id?: string;
@@ -15,6 +19,8 @@ interface CommandListRootElement extends HTMLElement {
 	pointerdown: EventListener;
 	pointerup: EventListener;
 	windowVariableChange: EventListener;
+	getRowModel: () => { rows: CommandRowDescriptor[] };
+	bindRowElement: (element: HTMLElement, index: number) => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,6 +28,26 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const root = ref<HTMLElement | null>(null);
+
+/**
+ * M3-5b′（命令列表换源）：模板渲染可见行。
+ * 行来源是 **api 自己的行模型**（`getRowModel`）——不是派生层：`parse` 的 `break`/`script`/`children`
+ * 会决定实际行集合，只有 api 知道（见 `YMCommandList.derive-boundary.spec.ts`）。
+ */
+const rows = shallowRef<CommandRowDescriptor[]>([]);
+
+function refreshRows(): void {
+	const el = root.value as CommandListRootElement | null;
+	if (!el?.getRowModel) return;
+	rows.value = el.getRowModel().rows;
+}
+
+/** `:ref` 回写桥：把模板挂出的行交给 api（挂数据 + fold 把手 + 既有的 updateCommandElement） */
+function bindRow(row: CommandRowDescriptor, target: unknown): void {
+	const el = root.value as CommandListRootElement | null;
+	if (!(target instanceof HTMLElement) || !el?.bindRowElement) return;
+	el.bindRowElement(target, row.index);
+}
 
 defineExpose({
 	root
@@ -31,11 +57,17 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	createCommandListApi(el, props.options ?? {});
+	// api 初始化时就挂好了自己的 scroll→resize 监听；这里在其后再补一拍刷新行模型
+	el.addEventListener('update', refreshRows);
+	el.addEventListener('scroll', refreshRows);
+	refreshRows();
 });
 
 onBeforeUnmount(() => {
 	const el = root.value as CommandListRootElement | null;
 	if (!el) return;
+	el.removeEventListener('update', refreshRows);
+	el.removeEventListener('scroll', refreshRows);
 	el.removeEventListener('scroll', el.resize);
 	el.removeEventListener('focus', el.listFocus);
 	el.removeEventListener('blur', el.listBlur);
@@ -47,7 +79,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div ref="root" class="command-list" :id="props.id" />
+	<div ref="root" class="command-list" :id="props.id">
+		<!-- M3-5b′：可见行由模板渲染；`:key` 用行模型的稳定 key，行内内容仍由 api 的
+		     `updateCommandElement`（经 `:ref` 回写桥）生成 ⇒ 编辑器侧 eslints 的缩进线与标记照旧 -->
+		<div
+			v-for="row in rows"
+			:key="row.key"
+			:ref="(el) => bindRow(row, el)"
+			class="command-item"
+			:class="{ selected: row.selected, disabled: row.disabled }"
+			:style="{ marginTop: `${row.marginTop}px`, marginBottom: `${row.marginBottom}px` }"
+		/>
+	</div>
 </template>
 
 <style module>
