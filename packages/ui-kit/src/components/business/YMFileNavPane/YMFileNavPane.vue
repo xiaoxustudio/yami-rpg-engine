@@ -59,10 +59,11 @@ type FolderElement = HTMLElement & {
 	expanded?: boolean;
 }
 
-/** P4b：`folderMark`/`markVisible` 走元素数据（WeakMap），不再是元素上的隐式属性 */
+/** P4b：这些字段走元素数据（WeakMap），不再是元素上的隐式属性 */
 interface FolderElementData {
 	folderMark?: HTMLElement;
 	markVisible?: boolean;
+	textNode?: Text;
 }
 
 interface FolderItemList extends Array<FileItem> {
@@ -292,7 +293,7 @@ function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
 	// P4b：`folderMark`/`markVisible` 不再是元素上的隐式属性，改成显式元素数据
 	const data = elementDataOf<FolderElementData>(element);
-	if (!element.textNode) {
+	if (!data.textNode) {
 		const folderMark = renderElement(h('span', { class: 'folder-mark' }));
 		element.appendChild(folderMark);
 
@@ -308,7 +309,7 @@ function updateFolderElement(element: FolderElement): void {
 		element.textIndent = 0;
 		data.folderMark = folderMark;
 		element.fileIcon = fileIcon;
-		element.textNode = textNode;
+		data.textNode = textNode;
 	}
 
 	const { markVisible, expanded } = core.computeFolderExpansionState(file, context.expanded);
@@ -425,7 +426,7 @@ function rename(file: FileItem): void {
 		const context = file.getContext(node);
 		const element = context.element;
 		if (element && element.parentNode) {
-			element.textNode!.nodeValue = '';
+			elementDataOf<FolderElementData>(element).textNode!.nodeValue = '';
 			element.appendChild(textBox!);
 			textBox!.write(file.name);
 			textBox!.getFocus('all');
@@ -719,11 +720,11 @@ function createTextBox(): TextBoxElement {
 						}
 					})
 				.catch((_error: unknown) => {
-					item.textNode.nodeValue = file.name;
+					elementDataOf<{ textNode: Text }>(item).textNode.nodeValue = file.name;
 				});
 			}
 		}
-		item.textNode.nodeValue = file.name;
+		elementDataOf<{ textNode: Text }>(item).textNode.nodeValue = file.name;
 	});
 
 	return tb;

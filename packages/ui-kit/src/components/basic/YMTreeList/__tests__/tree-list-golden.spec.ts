@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
+import { elementDataOf } from '../../../../utils/element-data';
 import { getListConfig } from '../../../../utils/list-config';
 
 /**
@@ -119,7 +120,7 @@ const makeFlatData = (count: number): TreeData[] =>
 
 /** 行 element 上的 textNode 为 tree-api 内部契约字段（NodeElement），经 HTMLElement 读需收窄 */
 const textOf = (el: HTMLElement | undefined): string | null =>
-	(el as unknown as { textNode?: Text | null }).textNode?.nodeValue ?? null;
+	elementDataOf<{ textNode?: Text | null }>(el).textNode?.nodeValue ?? null;
 
 describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 	it('dragstart 后直接 dragend：dragging/hint/监听全部复位', async () => {

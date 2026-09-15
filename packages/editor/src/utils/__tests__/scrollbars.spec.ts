@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { addScrollbars } from '@app/utils/element-utils';
+import { elementDataOf } from '@ui-kit';
 
 describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 	it('creates horizontal/vertical scroll bars bound to target', () => {
@@ -29,7 +30,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		// 拖拽 vertical thumb → scrollTop 更新 + userscroll 派发（marquee 同步链）
 		let userscrollCount = 0;
 		target?.addEventListener?.('userscroll', () => userscrollCount++);
-		const thumb = (vBar as HTMLElement & { thumb?: HTMLElement }).thumb;
+		const thumb = elementDataOf<{ thumb?: HTMLElement }>(vBar).thumb;
 		const fire = (el: EventTarget, type: string, props: PointerEventInit) => {
 			const ev = new PointerEvent(type, {
 				bubbles: true,

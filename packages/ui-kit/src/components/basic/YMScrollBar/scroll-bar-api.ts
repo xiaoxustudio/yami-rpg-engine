@@ -1,5 +1,6 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, rect } from '../../../utils/dom';
+import { elementDataOf } from '../../../utils/element-data';
 
 export interface ScrollBarApiOptions {
 	target?: HTMLElement | null;
@@ -63,16 +64,18 @@ export function attachScrollBarApi(
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
 	if (bar._initialized) return bar;
+	// P4b：	humb 走显式元素数据（该字段已从 DATA_FIELDS 摘除）
+	const data = elementDataOf<ScrollBarApi>(bar);
 
 	bar.target = options.target ?? null;
 	bar.type = options.type ?? null;
-	bar.thumb = null;
+	data.thumb = null;
 	bar.timer = null;
 	bar.dragging = null;
 	bar.visible = false;
 
 	const updateHorizontalThumb = (left: number, width: number): void => {
-		const thumb = bar.thumb!;
+		const thumb = data.thumb!;
 		if (thumb.left !== left) {
 			thumb.left = left;
 			thumb.style.left = `${left}%`;
@@ -84,7 +87,7 @@ export function attachScrollBarApi(
 	};
 
 	const updateVerticalThumb = (top: number, height: number): void => {
-		const thumb = bar.thumb!;
+		const thumb = data.thumb!;
 		if (thumb.top !== top) {
 			thumb.top = top;
 			thumb.style.top = `${top}%`;
@@ -145,16 +148,16 @@ export function attachScrollBarApi(
 		const inner = document.createElement('div');
 		addClass(inner, 'scroll-thumb-inner');
 		thumb.appendChild(inner);
-		el.appendChild((bar.thumb = thumb as unknown as ScrollThumb));
+		el.appendChild((data.thumb = thumb as unknown as ScrollThumb));
 		bar.target = target;
 		bar.type = type;
 		addClass(el, type);
 		switch (type) {
 			case 'horizontal':
-				bar.thumb.style.height = '100%';
+				data.thumb.style.height = '100%';
 				break;
 			case 'vertical':
-				bar.thumb.style.width = '100%';
+				data.thumb.style.width = '100%';
 				break;
 		}
 	};
@@ -185,7 +188,7 @@ export function attachScrollBarApi(
 							return;
 						}
 						const type = bar.type;
-						const r = rect(bar.thumb!);
+						const r = rect(data.thumb!);
 						const offset = state.offset;
 						if (type === 'horizontal') {
 							const { clientX } = dragging;
@@ -338,7 +341,7 @@ export function attachScrollBarApi(
 				bar.target!.focus();
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				if (event.target === bar.thumb) {
+				if (event.target === data.thumb) {
 					bar.dragging = event as unknown as ScrollDragging;
 					(event as unknown as ScrollDragging).mode = 'scroll';
 					(event as unknown as ScrollDragging).scrollLeft = bar.target!.scrollLeft;
@@ -348,7 +351,7 @@ export function attachScrollBarApi(
 					window.addEventListener('pointerup', windowPointerup, true);
 					window.addEventListener('pointermove', windowPointermove, true);
 				} else {
-					const r = rect(bar.thumb!);
+					const r = rect(data.thumb!);
 					switch (bar.type) {
 						case 'horizontal':
 							scrollRelative(event.clientX < r.left ? -1 : 1);

@@ -238,9 +238,9 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 		// P4b：行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
 		const data = elementDataOf<NodeElement>(element);
 		data.folderMark = folderMark;
-		element.nodeIcon = nodeIcon as HTMLElement;
+		data.nodeIcon = nodeIcon as HTMLElement;
 		element.extras = extras;
-		element.textNode = (textHost?.firstChild ?? null) as Text | null;
+		data.textNode = (textHost?.firstChild ?? null) as Text | null;
 		// expando 字段与派生行对齐（旧实现里这些字段是渲染期的值缓存，消费方/测试会读）
 		const row = state.rowData.get(key);
 		if (row !== undefined) {

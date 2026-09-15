@@ -1,6 +1,7 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createScrollBarElement } from '../scroll-bar-api';
 import type { ScrollBarApi } from '../scroll-bar-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 describe('createScrollBarElement', () => {
 	it('creates scroll-bar and binds', () => {
@@ -10,7 +11,7 @@ describe('createScrollBarElement', () => {
 		el.bind(target, 'vertical');
 		expect(el.target).toBe(target);
 		expect(el.type).toBe('vertical');
-		expect(el.thumb).toBeTruthy();
+		expect(elementDataOf<{ thumb: HTMLElement | null }>(el).thumb).toBeTruthy();
 		expect(typeof el.updateVerticalBar).toBe('function');
 		expect(typeof el.updateHorizontalBar).toBe('function');
 	});
@@ -42,7 +43,10 @@ describe('createScrollBarElement', () => {
 			el2.dispatchEvent(ev);
 			return ev;
 		};
-		fire(el.thumb!, 'pointerdown', { clientX: 5, clientY: 10 });
+		fire(elementDataOf<{ thumb: HTMLElement }>(el).thumb, 'pointerdown', {
+			clientX: 5,
+			clientY: 10
+		});
 		fire(window, 'pointermove', { clientX: 5, clientY: 50, pointerId: 3 });
 		expect(target.scrollTop).toBeGreaterThan(0);
 		expect(userscrollCount).toBeGreaterThan(0);
@@ -77,7 +81,10 @@ describe('createScrollBarElement', () => {
 			el2.dispatchEvent(ev);
 			return ev;
 		};
-		fire(el.thumb!, 'pointerdown', { clientX: 5, clientY: 10 });
+		fire(elementDataOf<{ thumb: HTMLElement }>(el).thumb, 'pointerdown', {
+			clientX: 5,
+			clientY: 10
+		});
 		fire(window, 'pointermove', { clientX: 5, clientY: 50, pointerId: 4 });
 		expect(target.scrollTop).toBeGreaterThan(0);
 		fire(window, 'pointerup', { clientX: 5, clientY: 50, pointerId: 4 });
@@ -107,7 +114,9 @@ describe('createScrollBarElement', () => {
 		el.bind(target, 'vertical');
 		el.updateVerticalBar();
 		expect(el.classList.contains('visible')).toBe(true);
-		expect(parseFloat(el.thumb!.style.height)).toBeGreaterThan(0);
+		expect(
+			parseFloat(elementDataOf<{ thumb: HTMLElement }>(el).thumb.style.height)
+		).toBeGreaterThan(0);
 		el.remove();
 		target.remove();
 	});

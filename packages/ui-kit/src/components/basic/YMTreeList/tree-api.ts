@@ -53,6 +53,9 @@ interface TreeListElementData {
 const treeData = (el: unknown): TreeListElementData =>
 	getElementData(el as HTMLElement) as unknown as TreeListElementData;
 
+/** 行元素（`NodeElement`）上的字段同样走元素数据（P4b：`nodeIcon`/`textNode` 已从 DATA_FIELDS 摘除） */
+const rowData = (el: unknown): NodeElement => elementDataOf<NodeElement>(el);
+
 // 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
 // oxlint-disable-next-line no-explicit-any
 const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderState;
@@ -263,7 +266,7 @@ export const treeListStatics = {
 				}
 				dispatchChangeEvent(list);
 			} else {
-				element.textNode.nodeValue = this.lastText;
+				rowData(element).textNode!.nodeValue = this.lastText;
 			}
 		});
 
@@ -1032,8 +1035,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						nodes.push(node);
 					}
 				}
-				textBox.lastText = element.textNode!.nodeValue as string;
-				element.textNode!.nodeValue = '';
+				textBox.lastText = rowData(element).textNode!.nodeValue as string;
+				rowData(element).textNode!.nodeValue = '';
 				element.appendChild(textBox);
 				textBox.hiddenNodes = nodes;
 				textBox.write(item.name);
@@ -1189,7 +1192,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 							getListConfig(this).renamable &&
 							this.getMenuState() === 'closed' &&
 							document.activeElement === this &&
-							event.clientX > (rect(element.nodeIcon)?.right ?? 0)
+							event.clientX > (rect(rowData(element).nodeIcon)?.right ?? 0)
 						) {
 							this.timer.target = event.target;
 						}
@@ -1554,7 +1557,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		el: HTMLElement
 	): void {
 		const row = rowElementOf(item);
-		if (row !== undefined) row.nodeIcon = el;
+		if (row !== undefined) rowData(row).nodeIcon = el;
 	};
 	list.bindNodeExtras = function (
 		this: HTMLElement & { [k: string]: unknown },
@@ -1573,21 +1576,23 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		for (const el of state.rowElements.values()) {
 			const item = el.item;
 			if (item === undefined) continue;
+			// P4b：行元素的 nodeIcon 走显式元素数据
+			const elData = rowData(el);
 			// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
 			if (typeof self.renderNodeIcon === 'function') {
-				if (el.nodeIcon) self.renderNodeIcon(item, el.nodeIcon);
+				if (elData.nodeIcon) self.renderNodeIcon(item, elData.nodeIcon);
 			} else if (
-				el.nodeIcon === undefined ||
-				el.nodeIcon === null ||
-				el.nodeIcon.classList?.contains('tree-node-icon-placeholder')
+				elData.nodeIcon === undefined ||
+				elData.nodeIcon === null ||
+				elData.nodeIcon.classList?.contains('tree-node-icon-placeholder')
 			) {
 				const created = self.createIcon(item) as HTMLElement;
-				if (el.nodeIcon != null && el.nodeIcon.parentNode === el) {
-					el.nodeIcon.replaceWith(created);
+				if (elData.nodeIcon != null && elData.nodeIcon.parentNode === el) {
+					elData.nodeIcon.replaceWith(created);
 				} else {
 					el.appendChild(created);
 				}
-				el.nodeIcon = created;
+				elData.nodeIcon = created;
 			}
 			for (const updater of updaters) updater(item);
 			if (typeof self.renderNodeExtras === 'function' && el.extras) {
