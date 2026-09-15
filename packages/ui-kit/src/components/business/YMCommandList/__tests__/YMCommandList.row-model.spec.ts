@@ -71,6 +71,23 @@ const makeList = (data: unknown[] = []): ListElement => {
 	return el;
 };
 
+/** `parse` 可以用 `break` 把**一条命令拆成多行**——换源时最容易被忽略的一类行 */
+const makeListWithBreaks = (data: unknown[]): ListElement => {
+	const options = makeOptions() as unknown as { command: Record<string, unknown> };
+	options.command.parse = () => [
+		{ color: 'normal' },
+		{ text: 'first' },
+		{ break: true },
+		{ color: 'normal' },
+		{ text: 'second' }
+	];
+	const el = createCommandListElement(options as unknown as CommandListApiOptions) as ListElement;
+	mockHeight(el);
+	el.scroll = vi.fn();
+	el.write(data);
+	return el;
+};
+
 const domKeys = (el: ListElement): (string | undefined)[] =>
 	Array.from(el.querySelectorAll<HTMLElement & { rowKey?: string }>('.command-item')).map(
 		(row) => row.rowKey
@@ -147,5 +164,17 @@ describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
 		const second = el.getRowModel();
 		expect(second.keys).not.toContain('injected');
 		expect(second.rows[0].indent).not.toBe(99);
+	});
+
+	it('parse 用 break 把一条命令拆成多行时：行数多于命令数，且**每行都有 key**（含 break 行）', () => {
+		const el = makeListWithBreaks([makeCommand('split')]);
+		const model = el.getRowModel();
+		// 1 条命令被拆成 2 行 + 1 条空白行 = 3 行（一行 ≠ 一条命令）
+		expect(model.rows.length).toBeGreaterThanOrEqual(3);
+		// 换源硬要求：每一行都要有非空 key，且互不相同（break 行此前漏了 key）
+		expect(model.keys.every((k) => k.length > 0)).toBe(true);
+		expect(new Set(model.keys).size).toBe(model.keys.length);
+		// break 行与主行同属一条命令，key 以主行 key 为前缀
+		expect(model.keys.some((k) => k.includes('-b'))).toBe(true);
 	});
 });

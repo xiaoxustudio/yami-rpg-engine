@@ -679,6 +679,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						configurable: true,
 						get: () => indent
 					});
+					// M3 换源前置：**break 行也要稳定 key**（`parse` 用 `break` 把一条命令拆成多行）。
+					// 它和主行同属一条命令，故 key = "命令 key + 在本命令内的行序号"，跨多次 update 稳定。
+					li.rowKey = `${commandRender.rowKeyOf(command)}-b${buffer.length}`;
 					buffer.push(li);
 					continue;
 				}

@@ -295,6 +295,8 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 4. **壳需要补的两点**（原先由建行代码顺手做掉，模板管不到）：`fold` 把手 `<span class="command-fold">`（建行时创建）与 `.command-item` 上的数据闭包（`contents`/`dataKey`/`dataList`/`dataItem`/`dataIndex`/`dataIndent`/`dataParent`，建行时用 `Object.defineProperty` 定义）——桥要在挂行时把两者补齐。
 5. **闭包不要"顺手重构"**：这些 getter 捕获的是**构建期的局部变量**（`command`/`index`/`indent`），换个写法（例如抽成"传值快照"的工厂）就可能改变"变量随后被修改时 getter 读到什么"的语义——换源时**照抄它们的定义方式**，别合并。
 
+**🐛 试出并修好：break 行漏了 key（2026-09-12）**。上面第 2 条提醒过"**一行 ≠ 一条命令**"（`parse` 可用 `break` 把一条命令拆成多行），于是写了一条 break 场景的用例去**实测**行序列——发现拆出来的那一行**没有 `rowKey`**（`createCommandBuffer` 的 break 分支只建元素、不写 key）。上一轮"每一行都有 key"的断言之所以全绿，是因为既有夹具都用普通 `parse`、从不产生 break 行——**断言覆盖不到的分支等于没断言**。修法：break 行的 key = `<命令 key>-b<在本命令内的行序号>`（与主行同属一条命令、跨多次 `update` 稳定）；用例改为断言 break 场景下**每行都有非空 key 且互不相同**，并检查 break 行 key 以主行 key 为前缀。
+
 **必须原样保留的三件事（换源最容易踩）**：
 - **`updateCommandElement` 的覆写点**：editor 侧 `module/eslints.ts` **覆写**了这个方法（画 `.command-mark-major` + 每层一条 `.command-line` 缩进线）。新组件必须**继续调用同名函数**（由桥在做完基础渲染后回调），否则缩进线与侧栏标记会整片消失——这是本仓"缩进线扩展点"的契约。
 - **一行 ≠ 一条命令**：`parse` 可用 `break` 把一条命令拆成多行，`elements[]` 里是**行**而不是命令；模型/键/桥都必须以**元素**为单位（现在的 `CommandRowModel` 正是如此）。
