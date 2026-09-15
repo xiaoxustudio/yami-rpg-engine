@@ -409,7 +409,17 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 **⇒ 结论：换源时模板的行来源必须是 api 自己的行列表（`getRowModel`），派生层继续承担"结构推导 + 数学"，不能当作渲染来源。** 这条修正了切片 4/5 期间的隐含假设（当时以为派生层可直接充当模板数据源）。
 
-**📍 实测：行元素的父节点就是 api 根元素（2026-09-12）**。用探针跑一次 `write()` 后查行元素的父节点：`parentElement === root`（`childCount = 2`：1 条命令行 + 1 条空白行）。也就是说**命令行确实被挂进 api 自己的根元素**，而不只是躺在 `elements[]` 里。
+**📍 挂载点已定位（2026-09-12，调用栈实测）**：给 `appendChild`/`insertBefore`/`append` 打桩后跑一次 `write()`，调用栈直接指出挂载点：
 
-- **对换源的意义**：模板换成 `v-for` 之后，这些行要由 Vue 挂到同一个根元素下，api 侧那段"把行放进去"的行为必须**让位**——但本轮按 `appendChild`/`insertBefore`/`append` 逐个 grep **没有找到挂载点**（`command-api.ts` 里的 `appendChild` 都是行**内部**的片段：fold 把手、文本、脚本行、省略号）。
-- **⇒ 待办（换源第一步要先做）**：定位"行 → 根元素"的实际挂载点（候选：`resize()` 里对 `elements` 的批量摆放、`update()` 的收尾、或 `common-list` 共享工具；本轮 grep 未覆盖到 `node_modules` 镜像之外的共享层）。**做法**：换源时先把 api 的挂载行为掐掉、只留 `elements[]` 填报，用现有 99 例跑一遍——用例会直接指出哪一步依赖了真实挂载。
+```
+appendChild  ← commonListResize (utils/common-list.ts:81)  ← command-api.resize (command-api.ts:537)
+insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.resize (command-api.ts:537)
+```
+
+**⇒ 命令行的挂载由共享工具 `commonListResize`（`packages/ui-kit/src/utils/common-list.ts`）完成**，命令列表只是在 `resize()` 里调它一次。读该函数后确认：它就是**文件 body 那个 `resize()` 的共享版**——算可见窗口（`start`/`end`）、发 `versionId`、回收越界的行、把 foot 与窗口内的行按序挂上。文件 body 用的是**自己的内联副本**（切片 5b 已换源），命令列表用的是这份共享的。
+
+上一轮的探针先确认了"行元素的父节点就是 api 根元素"（`childCount = 2`：1 条命令行 + 1 条空白行），所以命令行确实被**挂进**根元素，而不是只躺在 `elements[]` 里；本轮才用调用栈把**挂载点**钉死。换源三步（与文件 body 已验证的路径同形）：
+
+1. `resize()`（`command-api.ts:537`）**不再调用 `commonListResize`**；api 自己按 `scrollTop`/`innerHeight`/`ROW_HEIGHT` 算可见窗口（`command-render.ts` 已有行高与翻页数学），只更新行模型。
+2. SFC 模板用 `v-for="row in rows"`（行来源 = `getRowModel().rows`）+ `:key="row.key"` + `:style="{ top }"` + `:ref` 回写桥；桥调用已就绪的 **`attachRowData`** 挂数据、补 `fold` 把手，再调既有的 `updateCommandElement`（行内文本/标记/高亮仍由它生成 ⇒ 编辑器侧 `eslints` 的覆写继续生效）。
+3. 收尾删掉 `elements.versionId` 与越界回收（行生命周期归 Vue）。
