@@ -290,4 +290,25 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 
 		expect(names()[0]).toBe('renamed');
 	});
+
+	/**
+	 * 行内**不重复**：回写桥会在挂载与多次 `resize` 时重复绑定，而内容构建是"追加"语义
+	 * （命令列表那边就曾因此把行内文本叠成两份）。文件 body 这里是"有则跳过"的写法，
+	 * 这条用例把该不变量钉住：反复 resize 后每行仍只有 1 个图标 + 1 个名字。
+	 */
+	it('行内不重复：反复 resize 后每行仍只有 1 个图标 + 1 个名字', async () => {
+		const { el } = mountBody();
+		await renderItems(el, items(3));
+		el.resize();
+		await nextTick();
+		el.resize();
+		await nextTick();
+
+		const rows = Array.from(el.querySelectorAll('.file-body-item'));
+		expect(rows.length).toBeGreaterThan(0);
+		for (const row of rows) {
+			expect(row.querySelectorAll('.file-body-name').length).toBe(1);
+			expect(row.children.length).toBe(2); // 图标 + 名字
+		}
+	});
 });
