@@ -44,12 +44,12 @@
 | editor/update       | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/utils        | 33 | 10 | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 3 | 4 | 0 | 3 | 3 | 0 | 22 | 16 | 3 | 0 | 0 |
 | editor/variable     | 11 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 |
-| ui-kit/components   | 98 | 70 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 79 | 11 | 11 | 60 | 2 | 263 | 102 | 0 | 0 | 0 |
+| ui-kit/components   | 98 | 71 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 93 | 80 | 11 | 11 | 60 | 2 | 265 | 102 | 0 | 0 | 0 |
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 121 | 11 | 28 | 125 | 2 | 568 | 165 | 20 | 0 | 0 |
+| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 15 | 1 | 18 | 0 | 121 | 122 | 11 | 28 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
 
 ## 口径
 
@@ -74,9 +74,9 @@
 | style.* 赋值 | 306 | 77 |
 | .children 遍历 | 230 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
-| clientWidth/Height 读 | 139 | 40 |
-| classList.add/remove/toggle | 132 | 41 |
-| textContent 赋值 | 129 | 44 |
+| clientWidth/Height 读 | 140 | 40 |
+| classList.add/remove/toggle | 134 | 41 |
+| textContent 赋值 | 128 | 44 |
 | get/set/removeAttribute | 85 | 35 |
 | scrollTop 写 | 84 | 39 |
 | parentElement | 47 | 46 |
@@ -103,8 +103,8 @@
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2939 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2848 | 26 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
@@ -203,7 +203,7 @@
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
 | packages/editor/src/localize/dom-localizer.ts | 91 | 3 | - |
 | packages/editor/src/module/editdata.ts | 380 | 3 | - |
-| packages/editor/src/module/eslints.ts | 269 | 3 | - |
+| packages/editor/src/module/eslints.ts | 332 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
 | packages/editor/src/title/menu-bar.ts | 1193 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
@@ -248,6 +248,7 @@
 | packages/editor/src/utils/keyboard.ts | 43 | 2 | - |
 | packages/ui-kit/src/components/basic/YMEmptyState/YMEmptyState.vue | 63 | 2 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/YMSelectBox.vue | 377 | 2 | - |
+| packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 438 | 2 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/drag-and-drop-hint-api.ts | 96 | 2 | - |
 | packages/ui-kit/src/utils/detached.ts | 29 | 2 | - |
 | packages/editor/src/animation/animation-motion.ts | 1130 | 1 | - |
@@ -1213,7 +1214,6 @@
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 283 | 0 | - |
-| packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 373 | 0 | - |
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/YMDragAndDropHint.vue | 53 | 0 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/file-body-core.ts | 155 | 0 | - |

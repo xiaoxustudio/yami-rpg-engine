@@ -843,7 +843,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > **第 15 刀（已完成）：单选组与 `.href` 链接两类「反查」归零（−2 文件）**
 >
 > ① **单选组**：`tools/color-picker-window.ts`（`color-index`）与 `data/transition-window.ts`（`easing-scale`）原先各自 `document.getElementsByName('组名')` 反查成员 → 给 ui-kit `RadioProxyElement` 加 **`group` 访问器**（组名即 `proxy.id`，与既有 `write()` 同源），查询收敛到 ui-kit 一处，编辑器侧读 `proxy.group`；ui-kit 新增用例锁「按文档顺序 / 内容 / 不缓存」。② **`.href` 链接**：`Menubar.initialize` 的 `document.querySelectorAll('.href')` → 改由**拥有链接的组件转发**（`About.vue` / `ExportApk.vue` 的 `@click` → `Menubar.hrefClick`）；原绑定**本就绑不上**（启动时执行，而链接都在懒加载窗口里——与第 7 刀 Script 切换按钮同类的死接线）。
-> - **指标**：待迁移命中 **50 → 48**、豁免注释 **50 → 48**、陈旧豁免 **0**、`addEventListener` 568 → 567；editor **237 文件 1992/1992**、ui-kit **109 文件 768/768** 全绿。
+> - **指标**：待迁移命中 **50 → 48**、豁免注释 **50 → 48**、陈旧豁免 **0**、`addEventListener` 570 → 567；editor **237 文件 1992/1992**、ui-kit **109 文件 768/768** 全绿。
 
 > **第 16 刀（已完成）：设置项查询收进窗口帧 + 布局侧三处收口（−1 文件）**
 >

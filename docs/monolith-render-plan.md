@@ -423,3 +423,29 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 1. `resize()`（`command-api.ts:537`）**不再调用 `commonListResize`**；api 自己按 `scrollTop`/`innerHeight`/`ROW_HEIGHT` 算可见窗口（`command-render.ts` 已有行高与翻页数学），只更新行模型。
 2. SFC 模板用 `v-for="row in rows"`（行来源 = `getRowModel().rows`）+ `:key="row.key"` + `:style="{ top }"` + `:ref` 回写桥；桥调用已就绪的 **`attachRowData`** 挂数据、补 `fold` 把手，再调既有的 `updateCommandElement`（行内文本/标记/高亮仍由它生成 ⇒ 编辑器侧 `eslints` 的覆写继续生效）。
 3. 收尾删掉 `elements.versionId` 与越界回收（行生命周期归 Vue）。
+
+---
+
+## ✅ M3 完成（2026-09-12）：两个巨石的渲染换源都已落地
+
+**文件 body**：切片 5a（api 数据化，55 处读取脱离元素）+ 5b（模板 `v-for` + `:ref` 回写桥）+ 清理（删掉 `createFileElement`/`createFolderElement` 与 `versionId` 簿记）。
+
+**命令列表**（本轮合并回 `main`）：同样是"api 只算窗口 + 模板渲染 + 回写桥"三步：
+
+1. `resize()` 不再调用共享的 `commonListResize`（它负责挂行），改为自算可见窗口并只更新行模型；
+2. SFC 用 `v-for="row in rows"` 渲染（行来源 = `getRowModel().rows`），`:key`/`:class`/`:style(边界 margin)` 全部来自行描述；
+3. `:ref` 回写桥 `bindRowElement` 负责挂数据（`attachRowData`）、补 `fold` 把手、再交给**既有的** `updateCommandElement` 生成行内内容。
+
+**换源过程中修掉的真问题（都留在用例/注释里）**：
+
+| 现象 | 根因 | 处理 |
+| --- | --- | --- |
+| 模板渲染出空列表 | `update` 事件在**行模型重建之前**派发 ⇒ 订阅方永远读到上一份 | 改为重建后派发（且仍在 `resize` 之前——上层要靠它算 `mark`） |
+| `Cannot read properties of null (reading 'insertBefore')` | `write()`/`clear()` 仍清空根元素 `textContent`，把 Vue 的节点表打乱 | 删掉两处清空，行数只经书/模型反映 |
+| 选中后行不高亮 | 行元素归模板 ⇒ 选中态须由模型的 `selected` 驱动 | `select` 后重建模型并通知模板 |
+| 折叠线整片消失 | editor 的 `resize` 覆写把分类作用在 api 的**离屏元素**上（换源后它们不再有 `lines`） | 新增 `updateLineClasses` 扩展点：模板挂完行后回调，分类作用在**渲染行**上；`mark` 同时作为类名与属性同步 |
+| break / 续行 / 脚本行漏 key | 三处建行点没写 `rowKey`（既有夹具从不产生这些行） | 统一补 `<命令 key>-b/-c/-s<序号>`，并加"多种行种类混在一起"的用例 |
+
+**验证**：ui-kit **109 文件 768/768**（其中命令列表 **99 例**）、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK；口径 `appendChild` **121 → 122**、`addEventListener` **568 → 570**（模板监听 `update`/`scroll`）。
+
+**真机冒烟清单（命令列表，与文件 body 那份同级）**：① 折叠/展开与缩进竖线（含块 `line-start`/`line-end` 与 `line-hide`）；② 单击/Shift 扩选/Ctrl 多选；③ 复制粘贴与撤销重做；④ 搜索高亮（变量名高亮整行）；⑤ 点击末尾空白行插入、删除命令；⑥ 拖动排序；⑦ 多行脚本行与 `break` 行的显示与选中；⑧ 滚动到底部时的窗口切换（行不应重复或错位）。
