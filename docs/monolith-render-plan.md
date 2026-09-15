@@ -529,3 +529,23 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 | P2b 余项 | Vue 内子集改走 ref/expose——**已基本满足**：ui-kit SFC 内的 DOM 查找已是"ref 优先、类名兜底"，且本轮删掉了两处"伸手进子组件且无接收方"的死调用（7 → 5） |
 | P4b | 原型访问器 **69** 字段；已并入 M3/M5（逐字段脚本化在做过的实验里被证否，需随函数重写一起做） |
 | O1 | layout M6 评估（可选） |
+
+### 「可以删除这个文件夹」的判定（2026-09-12 实测）
+
+**问题**：`docs/` 是否已经不再是承重结构——删掉它会不会影响构建、测试或运行？
+
+**实测**：在 `package.json`（根/editor/ui-kit）与 `scripts/` 里搜 `docs/` 的引用，命中**只有两个脚本**：
+
+| 引用者 | 性质 |
+| --- | --- |
+| `scripts/docs-check.mjs`（及根 `docs:check` 脚本） | **读** docs：把文档里的口径与代码对账 |
+| `scripts/dom-guard.mjs` 的 tracker 子命令（`dom:guard:tracker`） | **写** docs：生成 `docs/dom-migration-tracker.md` |
+
+源码、测试、构建配置**全都不引用 docs** ⇒ 文档已经回到"纯记录"的地位，删掉它不会影响任何运行行为。
+
+**真要删除时的三步**（机械操作，均已在本文件与 README 里写明）：
+1. 删目录：`docs/`；
+2. 根 `package.json` 移除 `docs:check` 脚本（否则该命令会因文件缺失而失败）；
+3. 根 `package.json` 移除或改指向 `dom:guard:tracker`（它按设计写 `docs/dom-migration-tracker.md`，需要另给输出路径或一并退役）。
+
+**建议**：留着。这些文档记录了 2112 → 3 的 R2b 扫描面、164 处 P4b 余量、两个巨石的换源步骤与例外判定——删掉它们省不下任何运行成本，却会让"为什么这么做"重新变成口口相传。
