@@ -340,6 +340,12 @@ export interface CommandListElementApi {
 	[k: string]: unknown;
 }
 
+/** M3-5b′：选区变化后刷新行模型并通知模板（行元素归模板，`selected` 由模型驱动） */
+function refreshRowsAfterSelection(list: { elements: { count: number } & Record<number, unknown>; padded?: boolean; dispatchEvent?: (event: Event) => unknown }): void {
+	rebuildCommandRowModel(list.elements as never, { padded: list.padded === true });
+	dispatchUpdateEvent(list as never);
+}
+
 /**
  * P6/M3（命令列表侧）：行的**数据模型**——与文件 body 的 `FileBodyRowModel` 同形，
  * 供换源前的等价性验证与后续模板化使用。
@@ -529,15 +535,16 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		commonListClearElements(this, elements.count);
 
-		this.resize();
-
 		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
 		rebuildCommandRowModel(elements, { padded: this.padded === true });
 
-		// M3-5b′：**事件改到模型重建之后派发**——模板刷新行列表要读到的就是最新模型
-		// （此前先派发后重建，订阅方拿到的永远是上一份，模板会渲染出空列表）
+		// M3-5b′：事件在**模型重建之后**派发（模板要读到最新模型）。
+		// 顺序很要紧：上层（editor 的 eslints）在 `update` 监听里计算 `mark`，
+		// 而它的 `resize` 覆写要靠这些 mark 做折线分类 ⇒ 必须 **先派发、后 resize**。
 		dispatchUpdateEvent(this);
+
+		this.resize();
 	},
 
 	/** M3：读取行模型（只读副本） */
@@ -1218,6 +1225,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.anchor = null;
 
 		this.reselect();
+
+		// M3-5b′：行元素归模板 ⇒ 选中态由**行模型的 `selected`** 驱动，
+		// 选区一变就要刷新模型并通知模板（等价于旧实现里给元素加 `selected` 类）。
+		refreshRowsAfterSelection(this);
 	},
 
 	// oxlint-disable-next-line no-explicit-any

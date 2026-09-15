@@ -193,19 +193,16 @@ function updateLineClasses(this: HTMLElement & { elements: CommandListShape }): 
 	if (!rendered) return;
 	const list = this.elements;
 	for (let i = 0; i < rendered.count; i++) {
-		const row = rendered[i] as unknown as { classList: DOMTokenList; lines?: HTMLElement[] };
-		const source = list[i] as unknown as { mark?: string; lines?: HTMLElement[] } | undefined;
-		if (!source) continue;
-		if (source.mark) row.classList.add(source.mark);
-		// **镜像**分类结果（而不是在渲染行上重算）：`elements` 上的计算与换源前完全一致，
-		// 因此渲染行拿到的是同一套 line-start/line-end/line-hide。
-		const from = source.lines ?? [];
-		const to = row.lines ?? [];
-		for (let j = 0; j < from.length && j < to.length; j++) {
-			const classNames = Array.from(from[j].classList).filter((c) => c.startsWith('line-'));
-			for (const name of classNames) to[j].classList.add(name);
-		}
+		const row = rendered[i] as unknown as { classList: DOMTokenList; mark?: string };
+		const source = list[i] as unknown as { mark?: string } | undefined;
+		if (!source?.mark) continue;
+		// `mark` 既是类名也是**属性**：`applyLineClasses` 里按 footer/header 分支时读的是属性
+		row.mark = source.mark;
+		row.classList.add(source.mark);
 	}
+	// 真正要分类的是**渲染出来的行**（只有它们有 `updateCommandElement` 生成的 `lines`）：
+	// api 侧的 `elements` 是离屏元素，换源后不再走行内渲染，`lines` 为空。
+	applyLineClasses(rendered);
 }
 
 export function ensureResizeOverride(): void {
