@@ -122,6 +122,69 @@ type CommandItemElement = HTMLElement & {
 	ellipsis?: HTMLElement | null;
 };
 
+/** M3-5b′：一行数据（换源后由回写桥在挂行时挂到元素上） */
+export interface CommandRowAttachData {
+	rowKey: string;
+	command: CommandData | null;
+	list: CommandList;
+	index: number;
+	indent: number;
+	dataKey: boolean;
+	parent?: CommandData | null;
+	/** 行内容片段；**显式传 `null` 与"不传"不同**（`null` 表示"已清空"，不传表示"暂无内容"） */
+	contents?: CommandContent[] | null;
+}
+
+/**
+ * M3-5b′（换源用）：把一行数据按**与建行代码相同的方式**挂成元素上的闭包。
+ *
+ * 为什么单独有这个函数：换源后行元素由模板渲染，`createCommandBuffer` 里那套
+ * `Object.defineProperty(element, 'dataItem', …)` 不会再跑，而行内渲染
+ * （`updateCommandElement`）与整条逻辑链都依赖这些 getter ⇒ 回写桥需要一个等价的挂载入口。
+ *
+ * **刻意不改动** `createCommandBuffer` 里原有的定义（那些捕获构建期局部变量，合并会改语义）；
+ * 这里只是"同一套定义"的第二个入口，并有自己的用例逐项核对语义一致。
+ */
+export function attachRowData(element: HTMLElement, row: CommandRowAttachData): void {
+	const node = element as CommandItemElement;
+	// 不传 ⇒ 空数组（"暂无内容"）；显式传 null ⇒ 保持 null（"已清空"，与建行代码的清空语义一致）
+	let contents: CommandContent[] | null = row.contents === undefined ? [] : row.contents;
+	node.rowKey = row.rowKey;
+	Object.defineProperty(node, 'contents', {
+		configurable: true,
+		get: () => contents,
+		set: (value) => {
+			contents = value;
+		}
+	});
+	Object.defineProperty(node, 'dataKey', {
+		configurable: true,
+		get: () => row.dataKey
+	});
+	Object.defineProperty(node, 'dataList', {
+		configurable: true,
+		get: () => row.list
+	});
+	Object.defineProperty(node, 'dataItem', {
+		configurable: true,
+		get: () => row.command
+	});
+	Object.defineProperty(node, 'dataIndex', {
+		configurable: true,
+		get: () => row.index
+	});
+	Object.defineProperty(node, 'dataIndent', {
+		configurable: true,
+		get: () => row.indent
+	});
+	if (row.parent !== undefined) {
+		Object.defineProperty(node, 'dataParent', {
+			configurable: true,
+			get: () => row.parent
+		});
+	}
+}
+
 type VariableItem = {
 	name: string;
 	type: string;
