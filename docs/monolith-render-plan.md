@@ -549,3 +549,13 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 3. 根 `package.json` 移除或改指向 `dom:guard:tracker`（它按设计写 `docs/dom-migration-tracker.md`，需要另给输出路径或一并退役）。
 
 **建议**：留着。这些文档记录了 2112 → 3 的 R2b 扫描面、164 处 P4b 余量、两个巨石的换源步骤与例外判定——删掉它们省不下任何运行成本，却会让"为什么这么做"重新变成口口相传。
+
+**🔎 系统性核查（2026-09-12）：同类问题已收口**。命令列表与文件 body 的 `clear()` 曾犯**同一个错**——换源后仍然清空 DOM（`this.textContent = ''` / `content.textContent = ''`），而那句代码在"api 自己拥有行"的年代是正确的。两个都修掉之后，把两个文件里所有"会动 DOM 子树"的写法列出来逐一看过：
+
+| 剩余写法 | 判定 |
+| --- | --- |
+| `element.ellipsis.remove()`（命令列表） | ✅ 行**内部**节点（省略号），由回写桥/内容构建生成，非 Vue 所有 |
+| `timer.remove()`、`tb.remove()`（文件 body） | ✅ 同上：输入框/计时器等行内附属节点 |
+| `child.remove()`（命令列表回写桥里清行内） | ✅ 有意为之：重建前清空行内（保留 fold 把手），这正是"重复渲染"缺陷的修法 |
+
+⇒ 两个巨石里**已无**"清空/摘除 Vue 所拥有的行元素"的代码。
