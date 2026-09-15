@@ -243,6 +243,12 @@ export interface CommandListApiOptions {
 	setTooltip?: (el: HTMLElement, tip: string) => void;
 }
 
+/** 按变量文本的 `name`（`local-number-speed` 这类 id）在**已渲染**的行里找文本元素 */
+const findVariableTexts = (...ids: string[]): HTMLElement[] =>
+	Array.from(document.querySelectorAll<HTMLElement>('.command-text')).filter((el) =>
+		ids.includes((el as unknown as { name?: string }).name ?? '')
+	);
+
 export const commandListStatics = {
 	alphabetCode,
 	highlightedTexts: [] as HTMLElement[],
@@ -270,17 +276,18 @@ export const commandListStatics = {
 			case 'string':
 			case 'object':
 				commandListStatics.highlightedTexts = [
-					...document.getElementsByName(`${varSpace}-${varType}-${varKey}`),
-					...document.getElementsByName(`${varSpace}-any-${varKey}`)
+					...findVariableTexts(`${varSpace}-${varType}-${varKey}`, `${varSpace}-any-${varKey}`)
 				];
 				break;
 			case 'any':
 				commandListStatics.highlightedTexts = [
-					...document.getElementsByName(`${varSpace}-${varType}-${varKey}`),
-					...document.getElementsByName(`${varSpace}-boolean-${varKey}`),
-					...document.getElementsByName(`${varSpace}-number-${varKey}`),
-					...document.getElementsByName(`${varSpace}-string-${varKey}`),
-					...document.getElementsByName(`${varSpace}-object-${varKey}`)
+					...findVariableTexts(
+						`${varSpace}-${varType}-${varKey}`,
+						`${varSpace}-boolean-${varKey}`,
+						`${varSpace}-number-${varKey}`,
+						`${varSpace}-string-${varKey}`,
+						`${varSpace}-object-${varKey}`
+					)
 				];
 				break;
 		}

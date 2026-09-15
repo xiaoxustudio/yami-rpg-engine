@@ -302,6 +302,9 @@
 
 - 2026-09-12 **补测：插入路径（`command.insert`）此前零覆盖**。命令列表的插入此前没有用例 —— 新增一条走**键盘**触发（聚焦 + 有选区 + 输入字母 ⇒ `insert` 被调用）。试过两条路径：**点击末尾空白行的指针路径在 jsdom 里触发不了**（`pointerdown` 不足以走到 `insert`），因此那条仍留在真机冒烟清单里，用例注释已写明这一分工。**验证**：命令列表 **100 例**、ui-kit **109 文件 770/770**、`pnpm lint` 0/0。
 
+- 2026-09-12 **修既有缺陷：变量高亮的查找方式（`getElementsByName` 永远命中不了）**。命令列表悬停变量文本时用 `document.getElementsByName(...)` 找同名文本，而 `text.name = id` 对 div/span 只是 **expando、不反射成属性** ⇒ 该查找命中不了任何元素（高亮一直是坏的，与换源无关）。改为按**已渲染的 `.command-text`** 扫描同名元素（读同一份 `name` 数据），全文件 `getElementsByName` **7 → 0**。
+    - **诚实边界**：端到端的"悬停即高亮"用例**没能建成**——夹具里没走到给 `name` 赋值的解析分支（实测文本元素上 `name` 为空），要构造那条路径得先摸清赋值来源；因此这条仍留在真机冒烟清单，用例文件里已写明分工。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。
