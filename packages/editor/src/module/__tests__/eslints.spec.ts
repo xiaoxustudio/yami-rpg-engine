@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { CommandList } from '@app/components/command-list.ts';
 import {
 	applyCommandListInstanceOverride,
 	ensureUpdateCommandElementOverride,
 	updateCommandElement
 } from '@app/module/eslints.ts';
-import { createCommandListElement, type CommandListApiOptions } from '@ui-kit';
+import { YMCommandList, type CommandListApiOptions } from '@ui-kit';
 
 type CommandItemElement = Parameters<typeof updateCommandElement>[0];
 
@@ -31,6 +33,22 @@ const createFakeThis = (): typeof CommandList & {
 	computeTextIndent: (indent: number) => `${indent * 8}px`,
 	elements: { count: 0, findIndex: () => -1 }
 });
+
+
+/** 取渲染出来的行元素（换源后行归模板渲染；api 侧 elements 是离屏元素） */
+const renderedRows = (el: HTMLElement): (HTMLElement & { lines?: HTMLElement[] })[] =>
+	Array.from(el.querySelectorAll<HTMLElement & { lines?: HTMLElement[] }>('.command-item'));
+
+/** 挂载命令列表组件（换源后必须走组件，行元素才会被渲染） */
+const mountCommandList = async (options: CommandListApiOptions): Promise<HTMLElement> => {
+	const wrapper = mount(YMCommandList, { props: { options } });
+	const el = wrapper.element as unknown as HTMLElement;
+	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+	(el as unknown as { scroll: unknown }).scroll = (): void => {};
+	await nextTick();
+	return el;
+};
 
 describe('eslints updateCommandElement Vue 渲染（command-mark-major / command-line 回归保护）', () => {
 	it('经 Vue 渲染 command-mark-major 与 command-line 缩进线', () => {
@@ -230,9 +248,9 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		}
 	});
 
-	it('循环块 + 顶层等待 + 最后一行：块 header line-start、块结束行（footer）line-end、顶层普通行隐藏', () => {
+	it('循环块 + 顶层等待 + 最后一行：块 header line-start、块结束行（footer）line-end、顶层普通行隐藏', async () => {
 		ensureUpdateCommandElementOverride();
-		const el = createCommandListElement(makeOptions()) as unknown as HTMLElement & {
+		const el = await mountCommandList(makeOptions()) as unknown as HTMLElement & {
 			write: (data: unknown[]) => void;
 			update: () => void;
 			elements: {
@@ -264,7 +282,7 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 
 		const realRows: Array<{ dataIndent: number; lines: HTMLElement[] }> = [];
 		for (let i = 0; i < el.elements.count; i++) {
-			const row = el.elements[i];
+			const row = renderedRows(el)[i];
 			if (row && row.dataItem !== null && row.lines) {
 				realRows.push({ dataIndent: row.dataIndent, lines: row.lines });
 			}
@@ -299,9 +317,9 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		expect(repeat.lines[0].classList.contains('line-end')).toBe(false);
 	});
 
-	it('write 后立即经 resize 应用折叠线（不依赖额外 update 派发）', () => {
+	it('write 后立即经 resize 应用折叠线（不依赖额外 update 派发）', async () => {
 		ensureUpdateCommandElementOverride();
-		const el = createCommandListElement(makeOptions()) as unknown as HTMLElement & {
+		const el = await mountCommandList(makeOptions()) as unknown as HTMLElement & {
 			write: (data: unknown[]) => void;
 			elements: {
 				count: number;
@@ -326,7 +344,7 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 
 		const rows: Array<{ dataIndent: number; lines: HTMLElement[] }> = [];
 		for (let i = 0; i < el.elements.count; i++) {
-			const row = el.elements[i];
+			const row = renderedRows(el)[i];
 			if (row && row.dataItem !== null && row.lines) {
 				rows.push({ dataIndent: row.dataIndent, lines: row.lines });
 			}

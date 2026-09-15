@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import {
 	createCommandListApi,
 	type CommandListApiOptions,
@@ -40,6 +40,18 @@ function refreshRows(): void {
 	const el = root.value as CommandListRootElement | null;
 	if (!el?.getRowModel) return;
 	rows.value = el.getRowModel().rows;
+	// **重要**：行元素在 key 不变时被 Vue 复用（`:ref` 不会再触发），而内容可能已经变了
+	// （重写数据、安装/更换 `updateCommandElement` 覆写等）。旧实现靠 `resize()` 里的
+	// `updateOnResize(element)` 兜这件事；换源后由这里显式补一次：等 DOM 稳定后按序重绑。
+	void nextTick().then(() => {
+		const node = root.value as CommandListRootElement | null;
+		if (!node?.bindRowElement) return;
+		const rendered = node.querySelectorAll('.command-item');
+		rows.value.forEach((row, i) => {
+			const element = rendered[i];
+			if (element instanceof HTMLElement) node.bindRowElement(element, row.index);
+		});
+	});
 }
 
 /** `:ref` 回写桥：把模板挂出的行交给 api（挂数据 + fold 把手 + 既有的 updateCommandElement） */
