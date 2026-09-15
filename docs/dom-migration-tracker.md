@@ -99,12 +99,12 @@
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1642 | 51 | - |
-| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2383 | 34 | - |
+| packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2380 | 34 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 890 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1435 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2618 | 26 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 2848 | 26 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 741 | 17 | - |
@@ -1212,7 +1212,7 @@
 | packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
 | packages/ui-kit/src/components/business/type-registry.ts | 476 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 254 | 0 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 283 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/YMCommandList.vue | 373 | 0 | - |
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
 | packages/ui-kit/src/components/business/YMDragAndDropHint/YMDragAndDropHint.vue | 53 | 0 | - |

@@ -408,3 +408,8 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 **🔎 边界实测（2026-09-12，决定"换源的行来源"）**：写了两条对比用例（`YMCommandList.derive-boundary.spec.ts`）实测"派生层的行序列"与"api 实际建出的行序列"：① **普通列表**（`parse` 只产出文本）两边**逐项一致**（含末尾空白行）；② 一旦 `parse` 产出 **`break` / `script` / `children`**，**行集合就由 `parse` 决定**——一条命令可拆成多行、多行脚本各占一行、子列表只有在 `parse` 给出 `children` 时才展开，而派生层只看命令树、看不到这些 ⇒ 两边必然不同（实测 api **8** 行 vs 派生 **7** 行）。
 
 **⇒ 结论：换源时模板的行来源必须是 api 自己的行列表（`getRowModel`），派生层继续承担"结构推导 + 数学"，不能当作渲染来源。** 这条修正了切片 4/5 期间的隐含假设（当时以为派生层可直接充当模板数据源）。
+
+**📍 实测：行元素的父节点就是 api 根元素（2026-09-12）**。用探针跑一次 `write()` 后查行元素的父节点：`parentElement === root`（`childCount = 2`：1 条命令行 + 1 条空白行）。也就是说**命令行确实被挂进 api 自己的根元素**，而不只是躺在 `elements[]` 里。
+
+- **对换源的意义**：模板换成 `v-for` 之后，这些行要由 Vue 挂到同一个根元素下，api 侧那段"把行放进去"的行为必须**让位**——但本轮按 `appendChild`/`insertBefore`/`append` 逐个 grep **没有找到挂载点**（`command-api.ts` 里的 `appendChild` 都是行**内部**的片段：fold 把手、文本、脚本行、省略号）。
+- **⇒ 待办（换源第一步要先做）**：定位"行 → 根元素"的实际挂载点（候选：`resize()` 里对 `elements` 的批量摆放、`update()` 的收尾、或 `common-list` 共享工具；本轮 grep 未覆盖到 `node_modules` 镜像之外的共享层）。**做法**：换源时先把 api 的挂载行为掐掉、只留 `elements[]` 填报，用现有 99 例跑一遍——用例会直接指出哪一步依赖了真实挂载。
