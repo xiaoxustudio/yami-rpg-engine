@@ -446,6 +446,8 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 | 折叠线整片消失 | editor 的 `resize` 覆写把分类作用在 api 的**离屏元素**上（换源后它们不再有 `lines`） | 新增 `updateLineClasses` 扩展点：模板挂完行后回调，分类作用在**渲染行**上；`mark` 同时作为类名与属性同步 |
 | break / 续行 / 脚本行漏 key | 三处建行点没写 `rowKey`（既有夹具从不产生这些行） | 统一补 `<命令 key>-b/-c/-s<序号>`，并加"多种行种类混在一起"的用例 |
 
+**收尾**：换源留下的三处未使用声明（`renderDetachedDiv`、`deriveFileRows` 与一个局部 `node`）**只有 `typecheck:vue` 抓得到**（lint/tsc 不看 `.vue` 内部未使用符号）——换源后必须跑这一关，已清零（vue-tsc 0 new）。
+
 **验证**：ui-kit **109 文件 768/768**（其中命令列表 **99 例**）、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK；口径 `appendChild` **121 → 122**、`addEventListener` **568 → 570**（模板监听 `update`/`scroll`）。
 
 **真机冒烟清单（命令列表，与文件 body 那份同级）**：① 折叠/展开与缩进竖线（含块 `line-start`/`line-end` 与 `line-hide`）；② 单击/Shift 扩选/Ctrl 多选；③ 复制粘贴与撤销重做；④ 搜索高亮（变量名高亮整行）；⑤ 点击末尾空白行插入、删除命令；⑥ 拖动排序；⑦ 多行脚本行与 `break` 行的显示与选中；⑧ 滚动到底部时的窗口切换（行不应重复或错位）。
