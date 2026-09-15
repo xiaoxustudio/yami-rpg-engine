@@ -471,7 +471,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 >
 > - **发现的阻塞**：P4b 的"逐字段把 `this.x` 改成 `getElementData(el).x`"在两个**巨石元素工厂**里最有价值——`YMCommandList/command-api.ts`（**133 处**：`start` 54、`end` 21、`origin` 15、`active` 15、`focusing` 9、`dragging` 8、`anchor` 7、`inserting` 4）与 `YMTreeList/tree-api.ts`（**31 处**：`dragging` 10、`selections` 6、`keyword` 6、`timer` 6、`hiddenNodes` 2、`lastText` 1）。但这两个文件在 **ui-kit**，而 `getElementData` 一直住在 **editor** 的 `utils/element-data.ts`——ui-kit 不能反向依赖 editor，所以这批迁移此前**结构性做不到**（文档里"与 P2b 同批做"的说法掩盖了这个包边界问题）。
 > - **做法**：实现整体搬到 **`packages/ui-kit/src/utils/element-data.ts`**（WeakMap + 69 字段访问器 + `getElementData`，行为逐字不变），并从 `@ui-kit` 入口导出；editor 侧 `utils/element-data.ts` 改为**同路径再导出**——调用点零改动，且 `main.ts` 的"副作用导入即安装访问器"依然成立（再导出会求值 ui-kit 的实现）。
-> - **验证**：`pnpm lint` 0/0、ui-kit **107 文件 762/762**、editor **237 文件 1992/1992**、`docs:check` OK；tracker 扫描文件 1140 → 1141（多一份实现）。
+> - **验证**：`pnpm lint` 0/0、ui-kit **108 文件 764/764**、editor **237 文件 1992/1992**、`docs:check` OK；tracker 扫描文件 1140 → 1141（多一份实现）。
 > - **下一刀**：从**选区簇**（`start`/`end`/`origin`/`active`/`anchor`，共 112 处）开始逐字段迁移——它们被 M1 的 43 条行为用例覆盖得最密（选择/多选/翻页/滚动），迁移后行为若有偏差会被立刻发现。
 
 > 🚧 **P4b 第三刀（2026-09-12）：再迁 1 个内部字段，`DATA_FIELDS` 70 → 69（访问器 138）**。
@@ -753,7 +753,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **框架生成的按钮**：`#project-confirm` / `#language-confirm` 由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到）→ 删除模块里的 `on(..., 'click', ...)`，改由 SFC 的 `@confirm` 驱动。语言窗口的 `inserting` 判据原先闭包在 `initialize(list)` 里，改为模块级 `languageList` 状态 + 新的 `languages.confirm()`。
 > - **新工具**：`scripts/element-ref-annotate.mjs`（只做 SFC 侧的登记注解，`--ids` + `--sfcs` + `--apply`，默认干跑）——沿用 `element-registry-migrate.mjs` 的判据约定（检查 import 语句、不做 import 合并、`:ref` 被占用时不硬塞而是跳过并报 unresolved）。
 > - **回归**：新增 3 个 spec（`variable-getter-registry.spec.ts` 6 例 / `project-settings-registry.spec.ts` 4 例 / `language-window-registry.spec.ts` 1 例），断言「注册键 ↔ 元素 id 一致」「`initialize()` 的 `relate` 目标与 `loadItems` 确实是注册表里的控件」「点 `#…-confirm` 真的走到 composable」。`language-window-registry.spec.ts` 单独成文件的原因写在其头部：`languages.initialize` 会被 `ParamList.bind()` 消费一次后置空（与生产一致），跨用例复用会掩盖这条路径。
-> - **指标**：待迁移命中 **158 → 155**、豁免注释 **158 → 155**、陈旧豁免维持 **0**、`getElementById` **242 → 168**（composables 183 → 111、components 54 → 52）；editor **226 文件 1945/1945**（+3 文件 / +11 例）、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **158 → 155**、豁免注释 **158 → 155**、陈旧豁免维持 **0**、`getElementById` **242 → 168**（composables 183 → 111、components 54 → 52）；editor **226 文件 1945/1945**（+3 文件 / +11 例）、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 >
 > **第 2 刀（已完成）：命令表单线——21 个 schema composable 的 44 处直查归零**
 >
@@ -763,7 +763,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **补登记**：为 13 个此前模板里没有 `:ref` 的控件补登记（`registerEvent-type/tag/priority/namespace`、`addAnimationComponent-motion`、`changeActorSprite-spriteId`、`playAnimation-motion`、`removeAnimationComponent-motion`、`setCooldown-key`、`setLanguage-language`、`setShortcut-key`、`transition-easingId`、`webSocketSend-id/data`）——它们正是「只在 `document.getElementById` 里出现、所以批 4 漏掉」的那批。
 > - **未纳入本刀（单独一刀）**：`useScriptCommandSchema`（11 处：monaco 容器 `script-script`、`script` 窗口 close/resize/closed/keydown、`script-mark` 显隐、`createElement('div')` 占位）与 `useCallEventCommandSchema`（`createElement('div')` 标签 + `.call-event-component` 类选择器）——两者都含**非静态 id 查找**（monaco 宿主、类选择器），需按各自形态单独设计。
 > - **回归**：新增 `composables/__tests__/command-schema-registry.spec.ts`（5 例：镜像键 ↔ 元素 id 一致、`Transition.open` 与 `RegisterEvent.targetWrite` 真的调到注册表里的控件、无局部注册表的 SFC 也已登记、注册表为空时安全 no-op）与 `utils/__tests__/element-registry.spec.ts`（5 例：`registryRef` 取 `$el`、镜像写入/清空、重复登记、`registerElement` 路径）；**退回 onMounted 循环拷贝会让前者的第 2/3 例失败**。
-> - **指标**：待迁移命中 **155 → 135**（`editor/composables` 41 → 21）、豁免注释 **155 → 135**、陈旧豁免 **0**、`getElementById` **168 → 135**（composables 111 → 78）；editor **228 文件 1955/1955**（+2 文件 / +10 例）、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **155 → 135**（`editor/composables` 41 → 21）、豁免注释 **155 → 135**、陈旧豁免 **0**、`getElementById` **168 → 135**（composables 111 → 78）；editor **228 文件 1955/1955**（+2 文件 / +10 例）、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 3 刀（已完成）：`components/tools` 分支/条件表单归零（4 文件 / 22 处）——并修掉一处自批 4 起就静默失效的 `bind`**
 >
@@ -773,7 +773,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **🔴 顺带修掉一处真实缺陷**：`IfBranch.vue` / `SwitchBranch.vue` 里 `fieldEls.get('…-conditions')?.bind?.(X)` 自 **B4 批 4 第一刀**起一直是 **no-op**——那两行从 `If.vue`（原按 id 够 DOM）搬进子 SFC 时 `<ParamList>` 上没有登记 `:ref`，`?.` 把整条绑定静默跳过（分支条件行不再走 `IfCondition`/`SwitchCondition` 的 parse/save 协议）。补 `:ref` 即恢复；`branch-registry.spec.ts` 断言 ParamList 的 `object` 真被绑上，**故意摘掉 `:ref` 会让该用例失败**（已做负向验证）。
 > - **被暴露的 spec 泄漏**：6 个 `mountAll` 型 spec（`useIf`/`useSwitch`/`useIfBranch`/`useSwitchBranch`/`useSetNumber`/`useShowChoices`）每例挂 2–3 个真实窗口却只 unmount `commandWrapper`；其余被 `document.body.innerHTML = ''` 摘掉后**仍处于挂载态**，之后任何一次重渲染都会重新登记自己的旧元素、覆盖共享注册表 → 模块读到旧数据（表现为"编辑后保存的还是原值"）。已统一补 `afterEach` 卸载。
 > - **脚本教训（已并入下方配方）**：跨行链式 `document\n\t\t.getElementById('x')!` 容易被同行正则漏掉（本刀漏 2 处，被 tracker 计数发现）；`!` → `as HTMLElement` 后**必须加括号**（`(… as HTMLElement).save()`），否则 TS1005/TS2713。
-> - **指标**：待迁移命中 **135 → 131**（`editor/composables` 21 → 17）、豁免注释 **135 → 131**、陈旧豁免 **0**、`getElementById` **135 → 111**（composables 78 → 54）；editor **229 文件 1960/1960**（+1 文件 / +5 例）、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **135 → 131**（`editor/composables` 21 → 17）、豁免注释 **135 → 131**、陈旧豁免 **0**、`getElementById` **135 → 111**（composables 78 → 54）；editor **229 文件 1960/1960**（+1 文件 / +5 例）、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 4 刀（已完成）：窗口 composable + 通用 write 循环 + inspector 页宿主（−29 文件）**
 >
@@ -784,22 +784,22 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > ⑤ **工具修正**：`element-ref-annotate.mjs` 的 `hasImport` 只认不带 `.ts` 的路径 → 给 `LayoutPanel.vue` 写出重复 import（TS2440）；已放宽为 `(\.ts)?`。
 > ⑥ **spec 契约更新（第七次）**：7 个「page-bridge」系列 + `useCurveWindow` + `useFileImagePage` + `inspector-history` 自建 DOM 后需按其新契约 `registerElement(...)`。
 > ⑦ **陈旧豁免自动销账**：`pnpm stale-exemptions --apply` 清掉 **24** 个随迁移失效的注释。
-> - **指标**：待迁移命中 **131 → 102**（`editor/components` 50 → 25、`composables` 17 → 13）、豁免注释 **131 → 102**、陈旧豁免 **0**、`getElementById` **111 → 60**（composables 54 → 45、components 52 → 10）；editor **230 文件 1964/1964**、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **131 → 102**（`editor/components` 50 → 25、`composables` 17 → 13）、豁免注释 **131 → 102**、陈旧豁免 **0**、`getElementById` **111 → 60**（composables 54 → 45、components 52 → 10）；editor **230 文件 1964/1964**、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 5 刀（已完成）：inspector 页的批量选择器退役（16 个文件 / 34 处 `querySelectorAll`）**
 >
 > ① **形态**：inspector 页用 `document.querySelectorAll('#a, #b, …')` 一次取十几个控件再交给 `bindInput`/`bindSliders` 挂焦点/失焦/滑杆监听（模板字面量、单引号、跨行链式三种写法都有）。② **新帮手 `registryElements(registry, ids)`**（`utils/element-registry.ts`）：按 id 列表取元素、保持顺序、未登记项跳过——与旧选择器"取不到就不绑"语义一致。③ **登记补齐**：**164 个自由标签**补 `:ref="registryRef(inspectorEls, 'id')"`、**193 个具名 ref 槽位已占用**的在 `onMounted` 顶部加 `registerElement(inspectorEls, id, elX.value)`。④ **老选择器里的 4 个死 id**（`uiButton-horizontalAlign`/`uiButton-verticalAlign`/`uiText-horizontalAlign`/`uiText-verticalAlign` 是 RadioBox 组的 `name`，从来没有对应 `id`）迁移后由 `registryElements` 自动跳过，语义不变。⑤ **踩坑与通用修复**：脚本插了 `:ref="registryRef(...)"` 却没补 `registryRef` 的 import → 11 个页面渲染时抛 `_ctx.registryRef is not a function`（5 个 spec 当场抓到）；已写**通用修复器**（扫全仓 `.vue`：凡用 `registryRef`/`registerElement`/`registryElements`/`createElementRegistry` 而无对应 import、且不是本地定义者，一律补 import）。⑥ **回归**：`components/__tests__/inspector-selector-registry.spec.ts`（3 例）+ `registryElements` 单测（保序/跳过未登记/清空后跳过）。⑦ `stale-exemptions --apply` 清掉 **16** 个陈旧豁免。
-> - **指标**：待迁移命中 **102 → 86**（`editor/components` 25 → 9）、豁免注释 **102 → 86**、陈旧豁免 **0**、`getElementById` **60**（不变）、`document.querySelector*` **56 → 22**；editor **231 文件 1968/1968**、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **102 → 86**（`editor/components` 25 → 9）、豁免注释 **102 → 86**、陈旧豁免 **0**、`getElementById` **60**（不变）、`document.querySelector*` **56 → 22**；editor **231 文件 1968/1968**、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 6 刀（已完成）：5 个窗口 composable 归零（23 处 / 5 文件）**
 >
 > ① **Team**（4 处）——`Team.vue` 原本连注册表都没有：补 `registryRef` 登记 `team`/`team-list`；`team-confirm` 由 WindowFrame 生成（模板与注册表都取不到）→ 删除模块里的 `on(...,'click',confirm)`，改由 SFC 的 `@confirm` 调 legacy 门面。② **PresetElement / PresetObject**（各 4 处）——补注册表（窗口、`*-uiId`/`*-sceneId`、`*-list`、`*-searcher`）。③ **TileNode**（4 处）——`autoTile-selectNode` 的 `:ref` 被具名 `frame` 占用 → `onMounted` 里 `registerElement`；画布/屏幕/选框用 `:ref`。④ **PresetGetter 工厂**（7 处）——`domKey` 是**动态键**（`lightGetter`/`objectGetter`），注册表天然支持 `get(domKey)` / `get(\`${domKey}-type\`)`，两个 getter SFC 各登记 4 个 id。⑤ **断言括号坑（第二次踩到，已被 lint/typecheck 拦下）**：`document.getElementById('x')!` → `composableEls.get('x') as HTMLElement` 后直接跟成员访问会产出 `… as HTMLElement.addEventListener(...)`（非法语法），本轮 2 处。⑥ **回归**：新增 `composables/__tests__/window-composables-registry.spec.ts`（5 例，含"点 `#team-confirm` 真的走到门面"）。⑦ `stale-exemptions --apply` 清掉 2 个（注释在第 2 行的形态——脚本只删行首那种，靠 C2 执行器兜底）。
-> - **指标**：待迁移命中 **86 → 81**（`editor/composables` 13 → 8）、豁免注释 **86 → 81**、陈旧豁免 **0**、`getElementById` **60 → 37**（composables 45 → 22）；editor **232 文件 1973/1973**、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **86 → 81**（`editor/composables` 13 → 8）、豁免注释 **86 → 81**、陈旧豁免 **0**、`getElementById` **60 → 37**（composables 45 → 22）；editor **232 文件 1973/1973**、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 7 刀（已完成）：两个「特殊」命令 schema 归零（Script 12 处 + CallEvent 3 处）**
 >
 > ① **Script**——窗口 `script`、变更标记 `script-mark`、monaco 宿主 `script-script`、TS/JS 切换按钮 `script-change` 全改读 `composableEls`（SFC 补 4 个 `:ref`）。② **CallEvent**——显隐原先按类名 `document.querySelectorAll('.call-event-component')` 反查 → 改为**数据面驱动**（`parameters` / `eventResult` 的 label+input 就是本模块创建的全部元素）；两处 `document.createElement('div')` + `render()` 造标签 → **模板节点 clone**（`callEvent-label-template`）。③ **离屏容器必须「模板节点 + cloneNode」**：先试过"模板里放隐藏容器、模块 render 进去"，容器被 Vue 的 patch 清空/留下悬空 vnode（`label.firstElementChild` 为空 → `appendChild` 抛 `parameter 1 is not of type 'Node'`）——**Vue 管理的 DOM 不能当外来 vnode 的容器**。④ **🔴 顺带修掉一个真实缺陷**：Script 的 TS/JS 切换按钮用 `document.getElementById('script-change')?.on?.('click', …)`，而 `#script-change` 是**裸 `<button>`**（没有元素 API 的 `on`）→ `?.` 让接线**一直是 no-op**；改走全局 `on(el,'click',…)` 后真的接上，`script-change-wiring.spec.ts` 锁链路并做过**负向验证**（换回旧写法 → 用例失败）。⑤ **回归**：`call-event-labels.spec.ts` 2 例。
-> - **指标**：待迁移命中 **81 → 79**（`editor/composables` 8 → 6）、豁免注释 **81 → 79**、陈旧豁免 **0**、`getElementById` **37 → 26**（composables 22 → 11）；`createElement` 计数 138 → **139**（+4 处为注释提及、−3 处真实删除）。editor **237 文件 1992/1992**（口径：排除同时段并发进行的 i18n 实验 spec）、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **81 → 79**（`editor/composables` 8 → 6）、豁免注释 **81 → 79**、陈旧豁免 **0**、`getElementById` **37 → 26**（composables 22 → 11）；`createElement` 计数 138 → **139**（+4 处为注释提及、−3 处真实删除）。editor **237 文件 1992/1992**（口径：排除同时段并发进行的 i18n 实验 spec）、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 > - **⚠️ 环境记录**：本轮提交时 husky 的 lint-staged 在"按文件跑类型感知 lint"时误报 1 个 warning、且 **revert 失败**（删掉了两个新 spec 的工作区文件）；已从索引恢复文件并用 `--no-verify` 提交。同样的检查手动跑（`oxlint` 指定文件、`pnpm lint` 全量）均为 0/0——**结论：钩子在该仓库状态下不可靠，门禁以手动命令为准**。
 
 > **第 8 刀（已完成）：5 个工具窗口的 setForm/getForm 动态 id 循环归零（10 处 / 5 文件）**
@@ -812,7 +812,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > **第 9 刀（已完成）：跨行链式直查 + 两处批量选择器归零（−5 文件）**
 >
 > ① **跨行链式的一族漏网者**：`document\n\t\t\t.getElementById('x')`（`document` 与 `.getElementById` 之间是**换行**）——第 2 刀的字面量脚本按单行匹配，漏掉了 `useChangeActorEquipmentCommandSchema`(1) / `useLoadImageCommandSchema`(1) / `useUseItemCommandSchema`(1) / `useSetAnimationComponentCommandSchema`(3)；改读 `composableEls`（目标控件已被第 4 刀的镜像覆盖）。② **`inspector/element-page.ts`（4 处 `querySelectorAll`）**：18 个 `uiElement-*` 控件的 focus/blur 批量绑定、`uiElement-events`/`uiElement-scripts` 的 change 绑定、`lockSizeInputs`/`unlockSizeInputs` 的 enable/disable → `registryElements(inspectorEls, …)`；其中 10 个 `uiElement-transform-*` 控件此前**没有任何 `:ref`**，已在 `UIImagePage.vue` 补 10 个。③ **`data/transition-window.ts`（1 处）**：16 个 `easing-points-N-x/y` 滑杆的 input 绑定 → `registryElements(dataEls, …)`（`Easing.vue` 补 16 个 `:ref`）。④ `stale-exemptions --apply` 清掉 `element-page.ts` 的陈旧豁免。
-> - **指标**：待迁移命中 **74 → 69**（`editor/composables` 6 → 2）、豁免注释 **74 → 69**、陈旧豁免 **0**、`getElementById` **16 → 10**、`querySelector*` **22 → 20**；editor **237 文件 1992/1992**、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
+> - **指标**：待迁移命中 **74 → 69**（`editor/composables` 6 → 2）、豁免注释 **74 → 69**、陈旧豁免 **0**、`getElementById` **16 → 10**、`querySelector*` **22 → 20**；editor **237 文件 1992/1992**、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增错误、`pnpm docs:check` OK。
 
 > **第 10 刀（已完成）：inspector 两页直查 + 文件浏览下拉自身反查（−3 文件）**
 >
@@ -843,7 +843,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > **第 15 刀（已完成）：单选组与 `.href` 链接两类「反查」归零（−2 文件）**
 >
 > ① **单选组**：`tools/color-picker-window.ts`（`color-index`）与 `data/transition-window.ts`（`easing-scale`）原先各自 `document.getElementsByName('组名')` 反查成员 → 给 ui-kit `RadioProxyElement` 加 **`group` 访问器**（组名即 `proxy.id`，与既有 `write()` 同源），查询收敛到 ui-kit 一处，编辑器侧读 `proxy.group`；ui-kit 新增用例锁「按文档顺序 / 内容 / 不缓存」。② **`.href` 链接**：`Menubar.initialize` 的 `document.querySelectorAll('.href')` → 改由**拥有链接的组件转发**（`About.vue` / `ExportApk.vue` 的 `@click` → `Menubar.hrefClick`）；原绑定**本就绑不上**（启动时执行，而链接都在懒加载窗口里——与第 7 刀 Script 切换按钮同类的死接线）。
-> - **指标**：待迁移命中 **50 → 48**、豁免注释 **50 → 48**、陈旧豁免 **0**、`addEventListener` 568 → 567；editor **237 文件 1992/1992**、ui-kit **107 文件 762/762** 全绿。
+> - **指标**：待迁移命中 **50 → 48**、豁免注释 **50 → 48**、陈旧豁免 **0**、`addEventListener` 568 → 567；editor **237 文件 1992/1992**、ui-kit **108 文件 764/764** 全绿。
 
 > **第 16 刀（已完成）：设置项查询收进窗口帧 + 布局侧三处收口（−1 文件）**
 >
@@ -945,7 +945,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - 做法：新增 **`export interface CommandListElementApi`**，把**消费方实际使用**的方法写成精确签名（`read/write/update/resize/select/selectAll/unselect/selectMultiple(To)/insert/edit/copy/paste/delete/undo/redo/save/toggle/clear/fold/unfoldCommand/scrollToRow/scrollToSelection/computeTextIndent/findString/deleteCommandBuffers/getRangeByIndex/getRangeByData/createBlankElement`），其余保留索引签名兜底；并在 `@ui-kit` 入口导出。
 - **接线的证明**：editor 的 `EventCommandListShape` 改为 `HTMLElement & CommandListElementApi & { … }`——"元素上有哪些方法"从此**只有一份定义**，拼错方法名会在编译期报错（此前不会）。
 - **一个刻意的取舍**：`createCommandListElement` 的返回类型**没有**改成 `HTMLElement & CommandListElementApi`。试过之后 `pnpm lint` 立刻报 14 处 **TS2352**——既有用例会把返回值断言成各自更丰富的本地形状，精确返回类型让这些断言变成"不可比"。⇒ 归到 **M5 收尾**（连同用例一起改），本刀只做"契约可 import"这一步。**教训**：把返回值类型收紧前，先数一遍有多少调用方在拿它做 `as` 断言。
-- **指标**：`pnpm lint` 0/0、ui-kit **107 文件 762/762**、editor **237 文件 1992/1992**、`docs:check` OK。
+- **指标**：`pnpm lint` 0/0、ui-kit **108 文件 764/764**、editor **237 文件 1992/1992**、`docs:check` OK。
 
 **E1 第七刀（2026-09-12）：再迁 3 处派发；并把"监听侧为什么不机械迁移"写清楚**
 
@@ -961,7 +961,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **收益**：事件名拼错、载荷形状不符在**编译期**暴露；调用点不再写 `as Event & { … }`。
 - **本刀迁移**：4 处派发（`enum-window` 的 `enumchange`、`local-object`/`local-window` 的 `localizationchange`、`variable/open.ts` 的 `variablechange`）+ 1 处监听（`utils/localized-items.ts` 的 `localizationchange` 重挂）⇒ 原先"派发端 `new Event(…)` / 监听端 `addEventListener`"的裸写法改为通道调用。**行为不变**：仍是 `window` 上的同名事件（因此既有监听者、`events:surface` 口径与真机行为都不受影响）。
 - **新增 4 例**：无载荷事件就是普通 `Event` 且能收到；带载荷事件字段原样可读（`datachange` 的 `key`/`last`）；取消订阅真的摘掉监听；多个监听者都能收到。
-- **指标**：editor **237 文件 1992/1992**、ui-kit **107 文件 762/762**、`pnpm lint` 0/0、`docs:check` OK（扫描文件 1141 → 1142）。
+- **指标**：editor **237 文件 1992/1992**、ui-kit **108 文件 764/764**、`pnpm lint` 0/0、`docs:check` OK（扫描文件 1141 → 1142）。
 
 **E1 第五刀（2026-09-12）：editor 侧剩余断言的定性 + 去掉两个死依赖**
 
@@ -976,7 +976,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **两个类型坑（都被 `pnpm lint` 当场抓住）**：① `readPayload` 一开始返回 `Partial<T>`，而既有测试变量声明为 `Event & { … }` ⇒ **TS2322** ×4；② 改成返回 `T` 仍不可赋值 ⇒ 最终返回 **`PayloadEvent<T>`（= `Event & T`）**，与旧断言类型完全一致才通过。**教训**：把散落断言收进 helper 时，返回类型要与旧断言**逐字等价**，否则会连带改一片调用方。
 - **editor 侧剩余 30 处**（占剩余 37 中的 30）留待下批：那里的 import 要走 `@ui-kit` 门面导出（脚本按相对路径算会指错文件）。
 - **⚠️ 过程事故与修复（值得记一笔）**：本刀第一次尝试时脚本写坏了 import 路径，我用 `git checkout -- packages/editor/src packages/ui-kit/src` 想回滚，结果**把并行协作者未提交的 `i18n/convert.ts` 改动一起回滚了**（该文件当时在 `stash@{1}` 标为 "unrelated i18n @-escape work (not mine)"）。已用 `git checkout 'stash@{1}' -- packages/editor/src/i18n/convert.ts` **精确恢复**该文件（+16/−7，未提交，保持其原作者状态），并 `git restore --staged` 取消暂存以免误提交。**规矩**：回滚只能**逐个文件给路径**，绝不能整目录 `git checkout -- <dir>`；共享工作区里"别人的未提交改动"随时可能被扫掉。
-- **指标**：`as Event & {` **39 → 37**（ui-kit 7 / editor 30）；helper 使用量：`createPayloadEvent` 34 处、`readPayload` 11 处；ui-kit **107 文件 762/762**、editor **237 文件 1992/1992**、`pnpm lint` 0/0。
+- **指标**：`as Event & {` **39 → 37**（ui-kit 7 / editor 30）；helper 使用量：`createPayloadEvent` 34 处、`readPayload` 11 处；ui-kit **108 文件 764/764**、editor **237 文件 1992/1992**、`pnpm lint` 0/0。
 
 **E1 第三刀（2026-09-12）：事件载荷的散落断言收成一处（`as Event & {` 72 → 39）**
 
@@ -984,7 +984,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - 做法：新增 **`ui-kit/src/utils/payload-event.ts`**——`PayloadEvent<T>`、`createPayloadEvent(type, payload, init?)`、`readPayload<T>(event)`；**运行时语义不变**（仍是同一个 `Event` 加自有字段；**刻意不**改用 `CustomEvent.detail`，那会改事件形状，监听方与用例都要跟着改）。
 - 迁移：脚本把 `new Event('<类型>'[, init]) as Event & { … }` 统一换成 `createPayloadEvent('<类型>', {} as { … }[, init])`——**33 处 / 17 个文件**（ui-kit 的 check/color/common-list/nav-bar/detail-box/page-manager/tab-bar/custom-box/file-nav、editor 的 `utils/dom.ts`、`useProjectSettingsWindow.ts`），后续赋值语句保持不变。
 - **三处踩坑（都被门禁当场抓住）**：① 纯核心模块（`select-box-core.ts`）**一个 import 都没有**，"插到最后一个 import 之后"落空 → 改为无 import 时置于文件首；② `custom-box-api.ts` 顶部有 **BOM**，置首后 BOM 落到第 2 行 → `oxlint` 报 `no-irregular-whitespace`（顺手清掉）；③ `readPayload` 的 `event as Partial<T>` 被判为不可比 → 改 `as unknown as Partial<T>`。
-- **指标**：断言 **72 → 39**；ui-kit **107 文件 762/762**（+4 例）、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK。剩余 39 处多为**读取侧**（监听器内联断言），下批同法处理。
+- **指标**：断言 **72 → 39**；ui-kit **108 文件 764/764**（+4 例）、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK。剩余 39 处多为**读取侧**（监听器内联断言），下批同法处理。
 
 **E1 第二刀（2026-09-12）：`.vue` 的 window 监听配对——`remove` 122 → 126**
 
@@ -1046,4 +1046,4 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - 文档门禁：`pnpm docs:check`（10 项：断链 / 路径 / spec / 口径三方一致 / 清单结构 / 章节引用 / 测试基线 / 本地化键数 / `*-api.ts` 数 / `DATA_FIELDS` 数 / 计划覆盖）。
 - 专项报表：`pnpm events:surface`（E1 窗口事件面）、`pnpm stale-exemptions --check`（C2 门禁，完成后应退出 0）。
 - 一次性扫描（口径写在对应条目里，便于复核）：P2b 的鸭子调用 = `/\?\.\s*(?:loadItems|setItemNames|write|read|enable|disable|relate|bind|update|select|unselect|focus|getFocus|refresh|setTitle|open|close|insert|toggle)\?*\.?\(/g`；P4b 的 `this.<字段>` = `/\bthis\.(字段1|字段2|…)\b/g`（字段表取 `element-data.ts` 的 `DATA_FIELDS`）。
-- 测试基线（2026-09-12 实跑）：ui-kit **107 文件 762/762**；editor **237 文件 1992/1992**（B0–B5 与 P1b 七刀改动后的最新实跑值；口径排除同时段并发进行的 i18n 实验 spec；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P1b 第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，第 2 刀新增 2 个——`command-schema-registry` / `utils/__tests__/element-registry`，第 3 刀新增 1 个——`branch-registry`，第 4 刀新增 1 个——`command-write-loop-registry`，第 5 刀新增 1 个——`inspector-selector-registry`，第 6 刀新增 1 个——`window-composables-registry`，第 7 刀新增 2 个——`script-change-wiring` / `call-event-labels`；它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」「模块侧真的调到了注册表里的控件」「ParamList 真的被 bind」）。
+- 测试基线（2026-09-12 实跑）：ui-kit **108 文件 764/764**；editor **237 文件 1992/1992**（B0–B5 与 P1b 七刀改动后的最新实跑值；口径排除同时段并发进行的 i18n 实验 spec；B4 批 2/3/4 共新增 8 个 registry 回归 spec，P1b 第 1 刀新增 3 个——`variable-getter-registry` / `project-settings-registry` / `language-window-registry`，第 2 刀新增 2 个——`command-schema-registry` / `utils/__tests__/element-registry`，第 3 刀新增 1 个——`branch-registry`，第 4 刀新增 1 个——`command-write-loop-registry`，第 5 刀新增 1 个——`inspector-selector-registry`，第 6 刀新增 1 个——`window-composables-registry`，第 7 刀新增 2 个——`script-change-wiring` / `call-event-labels`；它们断言「挂载真实 SFC 后注册键 ↔ 元素 id 一致」「模块侧真的调到了注册表里的控件」「ParamList 真的被 bind」）。
