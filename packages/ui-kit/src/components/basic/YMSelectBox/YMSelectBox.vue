@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import {
@@ -41,7 +41,6 @@ type SelectBoxHost = HTMLElement & {
 	relations?: RelationEntry[];
 	invalid?: boolean;
 	hideUnrelated?: boolean;
-	savedValue?: unknown;
 	_initialized?: boolean;
 };
 
@@ -224,7 +223,8 @@ function initializeApi(): void {
 	(el as SelectBoxHost).relations = state.relations;
 	(el as SelectBoxHost).invalid = state.invalid;
 	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
-	(el as SelectBoxHost).savedValue = state.savedValue;
+	// P4b：原先这里还有 `(el as SelectBoxHost).savedValue = state.savedValue` 的镜像——
+	// 全仓检索确认**无人读取元素上的 savedValue**（真正的状态在 core 的 `state` 里），已删。
 	attachApi(el, {
 		read,
 		write,

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<div class="file-head-pane" ref="el" @pointerdown="pointerdown">
 		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown">
 			<AddressPart v-for="node in addressNodes" :key="node.id" :node="node" />
@@ -343,7 +343,8 @@ onMounted(() => {
 			viewRoot.input = viewInputEl;
 			viewInputEl.max = '4';
 		}
-		viewRoot.activeWheel = true;
+		// P4b：原先这里写 `viewRoot.activeWheel = true`（元素数据），但 YMSliderBox 只读
+		// `props.activeWheel`——**没有任何读取方**，属死写入，已删（字段也从 DATA_FIELDS 摘除）。
 		viewRoot.addEventListener('focus', viewFocus);
 		viewRoot.addEventListener('input', viewInput);
 	}

@@ -1,4 +1,4 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
 import {
 	createSelectBoxCore,
 	type RelationEntry,
@@ -24,7 +24,6 @@ export type SelectBoxApi = HTMLElement & {
 	relations: RelationEntry[];
 	invalid: boolean;
 	hideUnrelated: boolean;
-	savedValue: unknown;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
@@ -216,7 +215,8 @@ export function attachSelectBoxApi(
 	box.relations = state.relations;
 	box.invalid = state.invalid;
 	box.hideUnrelated = state.hideUnrelated;
-	box.savedValue = state.savedValue;
+	// P4b：删掉 `box.savedValue = state.savedValue` 的镜像（全仓无人读取元素上的 savedValue；
+	// 真正的 saved/restore 状态在 core 的 `state` 里）
 	box.writeEventEnabled = state.writeEventEnabled;
 	box.inputEventEnabled = state.inputEventEnabled;
 	box._initialized = true;

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<div class="file-nav-pane" ref="el" tabindex="-1" :data-v-ref="''"></div>
 </template>
 
@@ -18,6 +18,7 @@ import {
 	type CommonListLike
 } from '../../../utils/common-list';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { createFileNavCore } from './file-nav-pane-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -56,6 +57,12 @@ type FolderElement = HTMLElement & {
 	markVisible?: boolean;
 	textIndent?: number;
 	expanded?: boolean;
+}
+
+/** P4b：`folderMark`/`markVisible` 走元素数据（WeakMap），不再是元素上的隐式属性 */
+interface FolderElementData {
+	folderMark?: HTMLElement;
+	markVisible?: boolean;
 }
 
 interface FolderItemList extends Array<FileItem> {
@@ -283,6 +290,8 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 
 function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
+	// P4b：`folderMark`/`markVisible` 不再是元素上的隐式属性，改成显式元素数据
+	const data = elementDataOf<FolderElementData>(element);
 	if (!element.textNode) {
 		const folderMark = renderElement(h('span', { class: 'folder-mark' }));
 		element.appendChild(folderMark);
@@ -295,28 +304,28 @@ function updateFolderElement(element: FolderElement): void {
 
 		element.draggable = true;
 		element.expanded = false;
-		element.markVisible = true;
+		data.markVisible = true;
 		element.textIndent = 0;
-		element.folderMark = folderMark;
+		data.folderMark = folderMark;
 		element.fileIcon = fileIcon;
 		element.textNode = textNode;
 	}
 
 	const { markVisible, expanded } = core.computeFolderExpansionState(file, context.expanded);
-	if (element.markVisible !== markVisible) {
-		element.markVisible = markVisible;
-		element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
+	if (data.markVisible !== markVisible) {
+		data.markVisible = markVisible;
+		data.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
 	}
 
 	if (element.expanded !== expanded) {
 		element.expanded = expanded;
 		switch (expanded) {
 			case true:
-				addClass(element.folderMark!, 'expanded');
+				addClass(data.folderMark!, 'expanded');
 				addClass(element.fileIcon!, 'expanded');
 				break;
 			case false:
-				removeClass(element.folderMark!, 'expanded');
+				removeClass(data.folderMark!, 'expanded');
 				removeClass(element.fileIcon!, 'expanded');
 				break;
 		}

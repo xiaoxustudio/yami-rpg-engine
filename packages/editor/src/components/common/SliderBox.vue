@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMSliderBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -24,6 +24,7 @@ import {
 	read as readElement
 } from '@app/utils/element-utils';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { elementDataOf } from '@ui-kit';
 
 interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;
@@ -128,7 +129,10 @@ const synchronize = (
 	if (!el) return;
 	const slider = el as SliderBoxElement;
 	const number = target;
-	if (slider.synchronizer) {
+	// P4b：`synchronizer` 走显式元素数据（已从 DATA_FIELDS 摘除）——原先它既被
+	// `attachElementApi` 以 `null` 写成元素自有属性、又被这里赋成目标元素，两处不是同一个槽位。
+	const sliderData = elementDataOf<SliderBoxElement>(slider);
+	if (sliderData.synchronizer) {
 		return;
 	}
 
@@ -150,7 +154,7 @@ const synchronize = (
 			if (event) slider.dispatchEvent(new Event('input'));
 		};
 
-		slider.synchronizer = target;
+		sliderData.synchronizer = target;
 
 		slider.input.addEventListener('pointerdown', sliderPointerdown);
 		slider.input.addEventListener('input', sliderInput);
@@ -207,7 +211,6 @@ const api = {
 	bar: null as HTMLElement | null,
 	filler: null as HTMLElement | null,
 	input: null as HTMLInputElement | null,
-	synchronizer: null,
 	focusEventEnabled: false,
 	blurEventEnabled: false,
 	activeWheel: props.activeWheel,

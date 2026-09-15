@@ -1,5 +1,6 @@
 import { h, render } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf, getElementData } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 import {
 	hideDragImage,
@@ -39,6 +40,18 @@ import {
 } from './tree-render';
 
 const treeCore = createTreeCore();
+
+/**
+ * P4b：树列表自身的可变状态（`keyword` 等）从"元素上的原型访问器"改成**显式元素数据**。
+ * 这里给一个类型化视图，避免 `getElementData(el).x` 的 `unknown` 参与运算
+ * （P4b 第五刀试过在 `command-api` 直接换写法的负结果：访问器天生无类型，
+ * 一旦换成 `unknown` 就要处处收窄；**按字段给出准确类型**才是可做的那条路）。
+ */
+interface TreeListElementData {
+	keyword: RegExp | null;
+}
+const treeData = (el: unknown): TreeListElementData =>
+	getElementData(el as HTMLElement) as unknown as TreeListElementData;
 
 // 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
 // oxlint-disable-next-line no-explicit-any
@@ -338,13 +351,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 			this.searchNodesAlgorithm(
 				data,
-				(this.keyword = keyword) as RegExp,
+				(treeData(this).keyword = keyword as RegExp),
 				(this.searchResults = [])
 			);
 		} else {
 			if (this.display === 'search') {
 				this.display = 'normal';
-				this.keyword = null;
+				treeData(this).keyword = null;
 				this.searchResults = [];
 			}
 		}
@@ -396,10 +409,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		const last = item?.name;
 		this.syncRenderRows();
 		if (this.display === 'search') {
-			const keyword = this.keyword;
+			const keyword = treeData(this).keyword;
 			const name = this.parseName(item);
 			if (keyword!.test(last) || keyword!.test(name)) {
-				this.searchNodes(this.keyword);
+				this.searchNodes(treeData(this).keyword);
 			}
 		}
 	},
@@ -1008,7 +1021,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				element.parentNode
 			) {
 				const nodes = [];
-				const { folderMark, nodeIcon } = element;
+				const { folderMark, nodeIcon } = elementDataOf<NodeElement>(element);
 				for (const node of element.childNodes) {
 					if (
 						node instanceof HTMLElement &&
@@ -1045,7 +1058,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	clear: function (this: any): HTMLElement {
 		if (this.display === 'search') {
 			this.display = 'normal';
-			this.keyword = null;
+			treeData(this).keyword = null;
 			this.searchResults = [];
 		}
 		this.unselect();
@@ -1429,7 +1442,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	dataChange: function (this: any, _event: Event): void {
 		if (this.display === 'search') {
-			this.searchNodes(this.keyword);
+			this.searchNodes(treeData(this).keyword);
 		}
 	}
 };
@@ -1450,7 +1463,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 
 	list._initialized = false;
 	list.display = 'normal';
-	list.keyword = null;
+	treeData(list).keyword = null;
 	list.searchResults = [];
 	const listConfig = getListConfig(list);
 	listConfig.creators = [];

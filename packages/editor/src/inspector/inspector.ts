@@ -1,4 +1,5 @@
-﻿import { Window } from '@app/tools/window-object.ts';
+import { Window } from '@app/tools/window-object.ts';
+import { elementDataOf } from '@ui-kit';
 import { inspectorEls } from './element-registry.ts';
 import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@app/utils/element-utils';
 import { ParamHistory, registerParamHistoryProcessors } from '@app/composables/useParamHistory';
@@ -492,14 +493,15 @@ Inspector.inputBlur = function (
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
 	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
-		this.synchronizer.dispatchEvent(focus);
+		// P4b：`synchronizer` 走显式元素数据（原先靠原型访问器透明落到 WeakMap）
+		elementDataOf<{ synchronizer: HTMLElement }>(this).synchronizer.dispatchEvent(focus);
 	};
 })();
 
 Inspector.sliderBlur = (function IIFE() {
 	const blur = new FocusEvent('blur');
 	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
-		this.synchronizer.dispatchEvent(blur);
+		elementDataOf<{ synchronizer: HTMLElement }>(this).synchronizer.dispatchEvent(blur);
 	};
 })();
 

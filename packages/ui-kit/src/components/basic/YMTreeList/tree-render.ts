@@ -19,6 +19,7 @@ import {
 	type ShallowRef
 } from 'vue';
 import type { NodeElement, TreeItem } from './tree-core';
+import { elementDataOf } from '../../../utils/element-data';
 
 export const ROW_HEIGHT = 20;
 
@@ -234,7 +235,9 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 		) as HTMLElement | null;
 		const extras = element.querySelector(':scope > .tree-node-extras') as HTMLElement | null;
 		const textHost = element.querySelector(':scope > .node-text') as HTMLElement | null;
-		element.folderMark = folderMark;
+		// P4b：行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
+		const data = elementDataOf<NodeElement>(element);
+		data.folderMark = folderMark;
 		element.nodeIcon = nodeIcon as HTMLElement;
 		element.extras = extras;
 		element.textNode = (textHost?.firstChild ?? null) as Text | null;
@@ -244,13 +247,13 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 			element.indent = row.indent;
 			element.textIndent = row.textIndent;
 			element.markIndent = row.textIndent - row.indent * 12;
-			element.markVisible = row.markVisible;
+			data.markVisible = row.markVisible;
 			element.expanded = row.expanded;
 		} else {
 			element.indent = 0;
 			element.textIndent = 0;
 			element.markIndent = folderMark === null ? 16 : 0;
-			element.markVisible = folderMark !== null;
+			data.markVisible = folderMark !== null;
 			element.expanded = false;
 		}
 		state.rowElements.set(key, element);

@@ -49,15 +49,12 @@ const DATA_FIELDS = [
 	'inserting',
 	'focusing',
 	'_initialized',
-	'keyword',
 	'rawScrollLeft',
 	'rawScrollTop',
 	'expanded',
 	'changed',
 	'nodeIcon',
 	'group',
-	'markVisible',
-	'folderMark',
 	'textNode',
 	'item',
 	'indent',
@@ -69,15 +66,10 @@ const DATA_FIELDS = [
 	'mode',
 	'info',
 	'invalid',
-	'savedValue',
 	'lastText',
 	'hiddenNodes',
 	'varBox',
-	'fileBox',
-	'numBox',
-	'bar',
-	'synchronizer',
-	'activeWheel'
+	'numBox'
 ] as const;
 
 function defineDataAccessors(): void {
@@ -98,4 +90,14 @@ defineDataAccessors();
 
 export function getElementData(el: HTMLElement): Record<string, unknown> {
 	return getElementDataStore(el);
+}
+
+/**
+ * P4b 的迁移助手：把元素数据**当成给定形状**读（`getElementData` 返回 `Record<string, unknown>`，
+ * 直接取字段会拿到 `unknown` 而无法参与运算——P4b 第五刀的负结果就是这么来的）。
+ * 传进来的类型必须是"该元素上真实存在的字段形状"（例如 `NodeElement`、`FolderElement`），
+ * 迁移时逐个字段把 `el.x` 换成 `elementDataOf<Shape>(el).x`。
+ */
+export function elementDataOf<T>(el: unknown): T {
+	return getElementData(el as HTMLElement) as unknown as T;
 }
