@@ -289,9 +289,11 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 > 为什么单独写：命令列表的 SFC（`YMCommandList.vue`）**没有任何模板**——它在 `onMounted` 里 `createCommandListApi(el, options)`，此后**所有**行、行内文本、缩进线、折叠把手、空白行都由 api 往那个根元素里建。换源因此不是"改几行模板"，而是**把行渲染抽成一个私有组件**。施工顺序与风险都列在下面，供开工时逐条对照。
 
 **目标结构**：
-1. 新增私有组件 `CommandRow.vue`：入参 `row: CommandRowDescriptor`（含 `key`/`indent`/`folded`/`contents`/`selected`/`disabled`），渲染 `<div class="command-item" :style="{ textIndent }">` + 行内文本片段（按 `contents` 的 `color`/`class`/`tooltip` 映射）。
-2. SFC 模板：`<CommandRow v-for="row in rows" :key="row.key" :ref="bindRowElement" :row="row" />`；桥函数把元素登记进 `elements[]`、`file`→`context` 等价物（命令侧是 `rowData[i]` + 元素的 `file`/`context` 类比字段）并调用**既有的** `updateCommandElement`。
+1. 新增私有组件 `CommandRow.vue`：**只渲染行的"壳"**——`<div class="command-item" :key="row.key" :style="{ textIndent }" :ref="bindRowElement" />`。
+2. **关键简化（读完 `updateCommandElement` 后确定）**：行内文本、变量标记 `>`/`:`、`.command-text` 片段、变量元数据、搜索高亮**全部继续由既有的 `updateCommandElement` 生成**——桥在挂行时先挂好数据闭包，再调它一次即可（与文件 body 的 `updateOnResize` → `updateFileElement` 完全同形）。因此**不需要把 ~150 行的 `updateCommandElement` 搬进组件**，换源的规模从"重写行渲染"降到"换掉建行的人"。
 3. api：`createCommandBuffer`/`createItems` 从"建元素"改为"产出行描述"；`resize()` 只算窗口；`commonListClearElements` 与版本回收退场（与文件 body 的 5a/5b 同形）。
+4. **壳需要补的两点**（原先由建行代码顺手做掉，模板管不到）：`fold` 把手 `<span class="command-fold">`（建行时创建）与 `.command-item` 上的数据闭包（`contents`/`dataKey`/`dataList`/`dataItem`/`dataIndex`/`dataIndent`/`dataParent`，建行时用 `Object.defineProperty` 定义）——桥要在挂行时把两者补齐。
+5. **闭包不要"顺手重构"**：这些 getter 捕获的是**构建期的局部变量**（`command`/`index`/`indent`），换个写法（例如抽成"传值快照"的工厂）就可能改变"变量随后被修改时 getter 读到什么"的语义——换源时**照抄它们的定义方式**，别合并。
 
 **必须原样保留的三件事（换源最容易踩）**：
 - **`updateCommandElement` 的覆写点**：editor 侧 `module/eslints.ts` **覆写**了这个方法（画 `.command-mark-major` + 每层一条 `.command-line` 缩进线）。新组件必须**继续调用同名函数**（由桥在做完基础渲染后回调），否则缩进线与侧栏标记会整片消失——这是本仓"缩进线扩展点"的契约。
