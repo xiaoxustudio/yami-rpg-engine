@@ -10,7 +10,10 @@
 				class="file-body-item"
 				:class="{ 'file-item': !row.isFolder, selected: row.selected }"
 				:style="row.style"
-			/>
+			>
+				<!-- M5：文件名由模板渲染（Vue 负责改名后的更新）；图标仍由 api 建（画布/图片类不可替代） -->
+				<span class="file-body-name">{{ row.name }}</span>
+			</div>
 		</div>
 	</div>
 </template>
@@ -772,17 +775,24 @@ function updateFolderElement(element: FileBodyItemApi): void {
 
 function updateFileElement(element: FileBodyItemApi): void {
 	const { file } = element;
-	if (!element.nameBox) {
+	// M5：名字那一段由**模板**渲染（`{{ row.name }}`）⇒ 这里只补图标，并把它插到名字之前；
+	// 名字本身不再由 api 写（改名走模型 → 模板重渲染）。
+	const nameBox =
+		element.nameBox ?? (element.querySelector('.file-body-name') as HTMLElement | null);
+	if (!element.nameBox && nameBox) element.nameBox = nameBox;
+	if (!element.fileIcon) {
 		const fileIcon = createIcon(file);
-		element.appendChild(fileIcon);
-
-		const nameBox = renderElement(h('span', { class: 'file-body-name' }));
-		nameBox.textContent = file.basename;
-		element.appendChild(nameBox);
+		if (nameBox) element.insertBefore(fileIcon, nameBox);
+		else element.appendChild(fileIcon);
+		if (!nameBox) {
+			const created = renderElement(h('span', { class: 'file-body-name' }));
+			created.textContent = file.basename;
+			element.appendChild(created);
+			element.nameBox = created;
+		}
 
 		element.draggable = true;
 		element.fileIcon = fileIcon;
-		element.nameBox = nameBox;
 
 		const { selections: sels } = { selections };
 		if (sels.length !== 0 && sels.includes(file)) {

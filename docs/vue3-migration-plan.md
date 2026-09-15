@@ -294,6 +294,8 @@
 
 - 2026-09-12 **M4 步骤 2 完成：类名反查 → 数据反查**。`stores/browser.ts` 与 `stores/selector.ts` 里的 `targetElement.closest('.file-body-item')` 换成新增的 `utils/dom.ts#fileItemElementOf(target)`——沿祖先找**带 `file` 数据的节点**（行上的 `file` 由回写桥挂上）。理由：类名是渲染细节，`file` 才是数据契约；换源后模板渲染行，类名结构不再是稳定的查询面。**验证**：`file-body-popup` 2 例通过、`tsc` 通过、`vue-tsc` 0 new、`pnpm lint` 0/0。
 
+- 2026-09-12 **M5 进展：文件 body 的文件名移入模板**。模板渲染 `<span class="file-body-name">{{ row.name }}</span>`；`updateFileElement` 只补**图标**（画布类例外）并插到名字之前，名字不再由 api 写（改名走模型 → 模板更新）；桥把该 span 认作 `nameBox`，重命名等既有消费方不受影响。**验证**：文件 body 56 例、ui-kit **109 文件 768/768**、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`typecheck:vue` **0 new**（顺带修掉一个 `querySelector<T>` 泛型用法）。
+
 ## 一、现状总览
 
 - 2026-09-12 **B1/M3 切片 2：`YMFileBodyPane.vue` 的受限调用收口（`document.createElement` 3 → 0）**。① 新增 ui-kit 的离屏建元素接缝 `packages/ui-kit/src/utils/detached.ts`（`createDetachedHost`/`renderDetached`/`renderDetachedDiv`，与 editor 的 `utils/dom.ts` 同形），并按 **C1 设计豁免**加入 `scripts/dom-guard.mjs` 的 `WHITELIST` 与 `.oxlintrc.json` overrides（与 editor 的 `utils/dom.ts` 同类"唯一缝隙"）。② `YMFileBodyPane.vue` 的本地 `renderElement` 转调 `renderDetached`，两处行元素改用 `renderDetachedDiv` ⇒ **该文件 `document.createElement` 命中 3 → 0**（B1 验收"两文件受限命中归零"的第一半）；顺手删掉因此变成死导入的 `render`。③ 口径联动：全仓 `createElement` **132 → 131**（−3 +1）、扫描文件 **1137 → 1138**，README 与计划总览同步（`docs:check` 的三方一致门禁逼着一起改）。④ 行为不变：文件 body 14 + key 3 例全绿、`vue-tsc` 0 新增。**下一步**：同样收口 `command-api.ts`（17 处受限命中）+ M3 主体 `v-for` 换源。

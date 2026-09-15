@@ -382,6 +382,11 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 - **第一版审计的教训**：最初只统计 `\.name(` 调用形态且**跳过了 api 自身**，得出"26 个零引用"的假结论——其中 `keydown`/`listFocus`/`windowVariableChange` 其实是 `el.addEventListener('focus', el.listFocus)` 这种**不带括号**的引用；`updateLineClasses` 是 `?.updateLineClasses?.(` 形态。**计量工具先验证，再相信它的数字**（这条在本仓已经重复出现多次）。
 - **⇒ 结论**：API 门面**不需要**为换源做退役清理；M4 的剩余工作只是"逐步按用途分类迁移消费方"，而不是"删方法"。
 
+**🧹 M5 进展（2026-09-12）：文件 body 的文件名移入模板**。行模板现在渲染 `<span class="file-body-name">{{ row.name }}</span>`，`updateFileElement` 只负责**图标**（画布/图片类，计划明确允许保留）并把它插到名字之前；名字不再由 api 用 `textContent` 写（改名走模型 → 模板重渲染）。`bindRowElement` 会把模板里的那个 `span` 认作 `nameBox`，因此既有消费方（重命名输入框等）不受影响。
+
+- **验证**：文件 body **56 例**（含"行描述里的 `name` 与 DOM 中 `.file-body-name` 文本一致"那条）、ui-kit **109 文件 768/768**、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`typecheck:vue` **0 new**。
+- **仍未动**：命令列表的行内文本/变量标记（`updateCommandElement`）与缩进线（editor 侧 `eslints` 的覆盖）——这两块是"行内内容"，计划允许把画布类与扩展点保留，且改动需要真机冒烟（改名/切视图在 jsdom 里测不到）。
+
 ### M5：清理与收口
 
 删除 `createElement`/`appendChild` 手工建 DOM 的实现与 `renderElement` 临时宿主（仅保留 WebGL/画布类不可替代者）、移除两文件的 `oxlint-disable` 豁免（受限 API 计数：`command-api.ts` **17 处**、`YMFileBodyPane.vue` **3 处**）、`pnpm dom:guard:tracker` 与文档口径刷新。
