@@ -17,7 +17,6 @@ import {
 import {
 	type CommonListLike,
 	commonListClearElements,
-	commonListResize,
 	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
 import { attachScrollListener } from '../YMParamList/scroll-listener';
@@ -363,6 +362,10 @@ export interface CommandRowDescriptor {
 	 * 换源后模板要照它渲染行内文本，故一并带进模型（与文件 body 的 `name`/`isFolder` 同理）。
 	 */
 	contents: CommandContent[];
+	/** 该行是否需要 `fold` 把手（原由建行代码插入 `<span class="command-fold">`） */
+	fold: boolean;
+	/** 该行承担的外边距（px）：首行 marginTop、末行 marginBottom，用于撑出滚动高度 */
+	margin: number;
 }
 
 export interface CommandRowModel {
@@ -439,16 +442,25 @@ function rebuildCommandRowData(elements: CommandListShape): void {
 	}
 }
 
-/** 从 `elements[]` 重建行模型（在 `update` 之后调用） */
-function rebuildCommandRowModel(elements: {
-	count: number;
-	start?: number;
-	end?: number;
-	[i: number]: CommandItemElement | undefined;
-}): void {
+/** 从 `elements[]` 重建行模型（在 `update`/`resize` 之后调用） */
+function rebuildCommandRowModel(
+	elements: {
+		count: number;
+		start?: number;
+		end?: number;
+		[i: number]: CommandItemElement | undefined;
+	},
+	options: { padded?: boolean } = {}
+): void {
 	const rows: CommandRowDescriptor[] = [];
 	const keys: string[] = [];
 	const count = elements.count;
+	const start = elements.start ?? 0;
+	const end = elements.end ?? count;
+	const pad = options.padded === true ? 1 : 0;
+	// 几何与 `commonListUpdateHeadAndFoot` 一致：首行 marginTop、末行 marginBottom 撑出滚动高度
+	const marginTop = count === 0 ? 0 : start * 20;
+	const marginBottom = count === 0 ? 0 : (count - end + pad) * 20;
 	for (let i = 0; i < count; i++) {
 		const element = elements[i];
 		if (element === undefined) continue;
@@ -460,13 +472,16 @@ function rebuildCommandRowModel(elements: {
 			indent: element.dataIndent,
 			folded: element.folded === true,
 			dataKey: element.dataKey === true,
-			selected: element.classList.contains('selected'),
+			// 换源后行的"选中"不再看元素类名（元素归模板），改由索引区间决定
+			selected: i >= start && i < end && start < end,
 			disabled: element.classList.contains('disabled'),
-			contents: element.contents ?? []
+			contents: element.contents ?? [],
+			fold: element.fold !== undefined,
+			margin: i === start ? marginTop : i === end - 1 ? marginBottom : 0
 		});
 	}
-	commandRowModel.start = elements.start ?? 0;
-	commandRowModel.end = elements.end ?? count;
+	commandRowModel.start = start;
+	commandRowModel.end = end;
 	commandRowModel.keys = keys;
 	commandRowModel.rows = rows;
 }
@@ -534,7 +549,28 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	resize: function (this: any, ..._args: unknown[]): void {
-		commonListResize(this);
+		// M3-5b′（命令列表换源）：**不再调用 `commonListResize`**——它负责的"把行挂进根元素"
+		// 现在归模板（`v-for`）。api 只算可见窗口并更新行模型；几何仍与原实现一致
+		// （行高 20、窗口起点 = floor(scrollTop/20)、窗口长度 = ceil(clientHeight/20)+1）。
+		const els = this.elements;
+		const ch = this.clientHeight;
+		const count = els.count;
+		if (ch === 0) return;
+		if (count === 0) {
+			els.start = 0;
+			els.end = 0;
+			rebuildCommandRowModel(els, { padded: this.padded === true });
+			this.scheduleCheckVariables();
+			return;
+		}
+		const st = this.scrollTop;
+		const start = Math.min(Math.floor(st / 20), count - 1);
+		const end = Math.min(start + Math.ceil(ch / 20) + 1, count);
+		if (els.start !== start || els.end !== end) {
+			els.start = start;
+			els.end = end;
+			rebuildCommandRowModel(els, { padded: this.padded === true });
+		}
 
 		this.scheduleCheckVariables();
 	},
