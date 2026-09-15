@@ -1437,13 +1437,15 @@ function clearElements(start: number): void {
 function clear(): HTMLElement {
 	const node = el.value as FileBodyPaneApi;
 	unselect();
-	const content = contentEl.value as FileBodyContentApi;
-	content.textContent = '';
+	// M3 切片 5b：**不再 `content.textContent = ''`**——行归模板（Vue）管，直接清空会把 Vue 的节点表打乱；
+	// 行数只经 `elements.count` / 行模型反映。
 	clearElements(0);
 	elements.count = 0;
 	elements.start = -1;
 	elements.end = -1;
 	resetContentStyle();
+	// 清空后必须把行模型也归零（否则模型留着旧行、与 DOM 不一致——探针实测 count=0/dom=0 但 modelRows=5）
+	rebuildRowDescriptors(0, 0, 0);
 	return node;
 }
 
