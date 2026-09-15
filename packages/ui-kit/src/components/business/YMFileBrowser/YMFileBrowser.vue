@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMFileNavPane ref="navEl" :links="links" :directory-api="childDirectoryApi" :file-system="childFileSystem" :path-util="childPathUtil" :menu-state="childMenuState" :create-text-box="childCreateTextBox" />
 	<YMFileHeadPane ref="headEl" :links="links" :menu-popup="props.menuPopup" :is-folder-item="isFolderItem" />
 	<YMFileBodyPane ref="bodyEl" :links="links" :data-api="props.dataApi" :window-api="props.windowApi" :gl-api="props.glApi" :menu-state="props.menuState" :clipboard-api="props.clipboardApi" :reference-api="props.referenceApi" :localize="props.localize" :editor-api="props.editorApi" :directory-api="props.directoryApi" :file-system-api="props.fileSystemApi" :path-util="props.pathUtil" :file-classes="props.fileClasses" :set-icon-clip="props.setIconClip" :create-text-box="props.createTextBox" />
@@ -235,7 +235,8 @@ function restoreDisplay(): void {
 			display = 'normal';
 			backupFolders = [];
 			searchResults = [];
-			(headEl.value as unknown as FileHeadApi)?.el?.querySelector?.('.file-head-searcher');
+			// P2b 清理：此处原本有一句裸的 `?.el?.querySelector?.('.file-head-searcher')`——
+			// 有调用无接收方，等于什么都没做（且是"按类名伸手进子组件"的写法）。已删。
 			break;
 	}
 }
@@ -304,7 +305,7 @@ function close(): void {
 		restoreDisplay();
 		// oxlint-disable-next-line no-unsafe-optional-chaining
 		(navEl.value?.el as unknown as FileNavApi).clear?.();
-		(headEl.value as unknown as FileHeadApi)?.el?.querySelector?.('.file-head-address');
+		// P2b 清理：此处原本也有一句裸的 `querySelector('.file-head-address')`（无接收方）。已删。
 		// oxlint-disable-next-line no-unsafe-optional-chaining
 		(bodyEl.value?.el as unknown as FileBodyApi).clear?.();
 	}
