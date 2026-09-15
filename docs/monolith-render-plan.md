@@ -375,6 +375,13 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 
 验证：editor 全量测试 + 真机事件编辑器/文件浏览器冒烟。
 
+
+**🔍 M4 步骤 3 的审计结论（2026-09-12）：69 个方法**没有**可退役项**。做法：解析 `commandListPrototype` 的方法名（69 个），然后在整个 `packages/editor/src` + `packages/ui-kit/src` 里统计**任意属性访问**形态的引用（`.name`，含 `el.keydown`、`?.updateLineClasses?.(` 这类非调用用法），排除定义文件自身。
+
+- **外部零引用：16 个**——`createFoldedCommandBuffer`、`createCommandBuffer`、`updateCommandElementFold`、`createBlankElement`、`selectMultiple`、`selectUp`、`selectDown`、`selectMultipleUp`、`selectMultipleDown`、`isParentEnabled`、`reselectAfterFolding`、`copyAsText`、`copyAsJSCode`、`analyzeVariables`、`scheduleCheckVariables`、`checkVariables`——逐一看都是**api 内部通过 `this.x()` 调用**的自身方法（不是死代码）。
+- **第一版审计的教训**：最初只统计 `\.name(` 调用形态且**跳过了 api 自身**，得出"26 个零引用"的假结论——其中 `keydown`/`listFocus`/`windowVariableChange` 其实是 `el.addEventListener('focus', el.listFocus)` 这种**不带括号**的引用；`updateLineClasses` 是 `?.updateLineClasses?.(` 形态。**计量工具先验证，再相信它的数字**（这条在本仓已经重复出现多次）。
+- **⇒ 结论**：API 门面**不需要**为换源做退役清理；M4 的剩余工作只是"逐步按用途分类迁移消费方"，而不是"删方法"。
+
 ### M5：清理与收口
 
 删除 `createElement`/`appendChild` 手工建 DOM 的实现与 `renderElement` 临时宿主（仅保留 WebGL/画布类不可替代者）、移除两文件的 `oxlint-disable` 豁免（受限 API 计数：`command-api.ts` **17 处**、`YMFileBodyPane.vue` **3 处**）、`pnpm dom:guard:tracker` 与文档口径刷新。
