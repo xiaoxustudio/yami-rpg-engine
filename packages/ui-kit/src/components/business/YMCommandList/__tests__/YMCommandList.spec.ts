@@ -277,4 +277,28 @@ describe('YMCommandList', () => {
 		fold?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(!!li?.dataItem?.folded).toBe(!foldedBefore);
 	});
+
+	/**
+	 * 插入路径（`command.insert`）此前没有用例覆盖。这里走**键盘**触发（输入字母即插入），
+	 * 它在 jsdom 里可靠；"点击末尾空白行插入"那条指针路径留给真机冒烟（空白行本身已由
+	 * 行模型/用例覆盖在案，这里只补"插入真的被调用"这一环）。
+	 */
+	it('输入字母 → 走 command.insert（插入路径覆盖率补齐）', async () => {
+		const insert = vi.fn();
+		const options = makeOptions();
+		options.command!.insert = insert;
+		const el = await mountCommandList<CommandListElement>(options);
+		mockHeight(el);
+		el.write([makeCommand('a')]);
+		await nextTick();
+		// keydown 分支要求列表处于聚焦态（`focusing`）且有选区
+		(el as unknown as { focusing: boolean }).focusing = true;
+		el.focus();
+		el.select(0);
+		await nextTick();
+
+		el.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyS', key: 's', bubbles: true }));
+		await nextTick();
+		expect(insert).toHaveBeenCalled();
+	});
 });
