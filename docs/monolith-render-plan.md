@@ -385,7 +385,9 @@ export const setRowClass: (state: FileBodyRenderState, file: FileBodyFile, class
 **🧹 M5 进展（2026-09-12）：文件 body 的文件名移入模板**。行模板现在渲染 `<span class="file-body-name">{{ row.name }}</span>`，`updateFileElement` 只负责**图标**（画布/图片类，计划明确允许保留）并把它插到名字之前；名字不再由 api 用 `textContent` 写（改名走模型 → 模板重渲染）。`bindRowElement` 会把模板里的那个 `span` 认作 `nameBox`，因此既有消费方（重命名输入框等）不受影响。
 
 - **验证**：文件 body **56 例**（含"行描述里的 `name` 与 DOM 中 `.file-body-name` 文本一致"那条）、ui-kit **109 文件 768/768**、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`typecheck:vue` **0 new**。
-- **仍未动**：命令列表的行内文本/变量标记（`updateCommandElement`）与缩进线（editor 侧 `eslints` 的覆盖）——这两块是"行内内容"，计划允许把画布类与扩展点保留，且改动需要真机冒烟（改名/切视图在 jsdom 里测不到）。
+- - **改名也走模型（2026-09-12）**：文件名移入模板后，改名必须经"模型 → 模板"反映，而原实现只在**窗口变化**时重建行描述 ⇒ 改名可能不刷新。现改为**每次 `resize()` 都重建**（`rebuildRowDescriptors()`，O(可见行) 的代价），并补一条用例：改 `basename` → `resize()` → 模板显示新名字（`YMFileBodyPane.m1.spec.ts`，17 例）。这条把"改名"从真机冒烟清单里的**未知项**变成了**已覆盖项**。
+
+**仍未动**：命令列表的行内文本/变量标记（`updateCommandElement`）与缩进线（editor 侧 `eslints` 的覆盖）——这两块是"行内内容"，计划允许把画布类与扩展点保留，且改动需要真机冒烟（改名/切视图在 jsdom 里测不到）。
 
 ### M5：清理与收口
 

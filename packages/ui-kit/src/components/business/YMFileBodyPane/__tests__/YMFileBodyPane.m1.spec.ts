@@ -270,4 +270,24 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 		const after = Array.from(content.range ?? []);
 		expect(after[0]).toBeGreaterThanOrEqual(before[0]);
 	});
+
+	/**
+	 * M5：文件名改由**模板**渲染（`{{ row.name }}`），因此改名必须经"模型 → 模板"反映出来。
+	 * 这条用例正是为此加的：改名后 `resize()` 会重建行描述（不再只在窗口变化时重建），
+	 * 名字随之更新——旧实现靠 `updateFileElement` 直接写 DOM，才不需要这一步。
+	 */
+	it('改名：改 basename 后 resize 会让模板显示新名字', async () => {
+		const { el } = mountBody();
+		const list = items(3);
+		await renderItems(el, list);
+		const names = (): (string | null)[] =>
+			Array.from(el.querySelectorAll('.file-body-name')).map((n) => n.textContent);
+		expect(names()[0]).toBe('ev0');
+
+		(list[0] as unknown as { basename: string }).basename = 'renamed';
+		el.resize();
+		await nextTick();
+
+		expect(names()[0]).toBe('renamed');
+	});
 });

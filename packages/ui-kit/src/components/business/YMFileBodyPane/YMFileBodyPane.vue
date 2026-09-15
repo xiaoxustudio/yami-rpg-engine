@@ -556,6 +556,54 @@ function bindRowElement(row: FileBodyRowDescriptor, target: Element | ComponentP
 	updateOnResize(node);
 }
 
+/**
+ * M5：重建可见行描述（模板的渲染数据源）。
+ * **每次 `resize()` 都调用**（不再只在窗口变化时）——文件名、选中态等数据可能已变，
+ * 而改名如今走"模型 → 模板"，不再有 `updateFileElement` 直接写 DOM 的兜底。
+ */
+function rebuildRowDescriptors(start: number, end: number, cpl: number): void {
+	const content = contentEl.value as FileBodyContentApi;
+	const { countPerLine, itemSize, itemWidth } = content;
+	const descriptors: FileBodyRowDescriptor[] = [];
+	const keys: string[] = [];
+	for (let i = start; i < end; i++) {
+		const file = flatFiles[i];
+		if (file === undefined) continue;
+		let left: string;
+		let top: string;
+		if (viewMode === 'list') {
+			const col = Math.floor(i / countPerLine!);
+			const row = i % countPerLine!;
+			left = `${col * itemWidth! + 4}px`;
+			top = `${row * 20}px`;
+		} else {
+			const col = i % countPerLine!;
+			const row = Math.floor(i / countPerLine!);
+			left = `${col * itemWidth! + 4}px`;
+			top = `${row * itemSize! + 4}px`;
+		}
+		const key = fileRowKeyOf(file);
+		keys.push(key);
+		descriptors.push({
+			key,
+			index: i,
+			// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
+			name: file instanceof FileItem ? ((file as unknown as { basename?: string }).basename ?? '') : file.name,
+			isFolder: !(file instanceof FileItem),
+			selected: selections.includes(file),
+			style: { left, top }
+		});
+	}
+	rowModel.value = {
+		start,
+		end,
+		countPerLine: cpl,
+		viewMode: viewMode ?? 'list',
+		keys,
+		rows: descriptors
+	};
+}
+
 function resize(): void {
 	const node = el.value as FileBodyPaneApi;
 	const ch = node.clientHeight;
@@ -569,49 +617,11 @@ function resize(): void {
 		els.end = end;
 		els.cpl = cpl;
 		updateContentOffset();
-		const content = contentEl.value as FileBodyContentApi;
-		const { countPerLine, itemSize, itemWidth } = content;
-		// M3 切片 5b：行描述**只从数据算**（不再从 DOM 反读）——模板照它渲染行，
-		// api 不再建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）
-		const descriptors: FileBodyRowDescriptor[] = [];
-		const keys: string[] = [];
-		for (let i = start; i < end; i++) {
-			const file = flatFiles[i];
-			if (file === undefined) continue;
-			let left: string;
-			let top: string;
-			if (viewMode === 'list') {
-				const col = Math.floor(i / countPerLine!);
-				const row = i % countPerLine!;
-				left = `${col * itemWidth! + 4}px`;
-				top = `${row * 20}px`;
-			} else {
-				const col = i % countPerLine!;
-				const row = Math.floor(i / countPerLine!);
-				left = `${col * itemWidth! + 4}px`;
-				top = `${row * itemSize! + 4}px`;
-			}
-			const key = fileRowKeyOf(file);
-			keys.push(key);
-			descriptors.push({
-				key,
-				index: i,
-				// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
-				name: file instanceof FileItem ? ((file as unknown as { basename?: string }).basename ?? '') : file.name,
-				isFolder: !(file instanceof FileItem),
-				selected: selections.includes(file),
-				style: { left, top }
-			});
-		}
-		rowModel.value = {
-			start,
-			end,
-			countPerLine: cpl,
-			viewMode: viewMode ?? 'list',
-			keys,
-			rows: descriptors
-		};
 	}
+	// M3 切片 5b：行描述**只从数据算**（不再从 DOM 反读）——模板照它渲染行，
+	// api 不再建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）。
+	// M5：**每次 resize 都重建**（不再只在窗口变化时），这样改名等数据变化能经模型反映到模板。
+	rebuildRowDescriptors(start, end, cpl);
 }
 
 /** M3 切片 3：读取可见行模型（只读副本，避免调用方改到内部状态） */
