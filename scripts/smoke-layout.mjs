@@ -1,15 +1,35 @@
-// F.5 / E.3 / M4 布局真机冒烟驱动（CDP over WebSocket，Node >=22 全局 WebSocket）。
+// F.5 / E.3 / M4 / L1 / S1 真机冒烟驱动（CDP over WebSocket，Node >=22 全局 WebSocket）。
 // 前提：editor 已构建（pnpm -F @yami/editor build:all）并以如下方式启动：
 //   electron --remote-debugging-port=9223 <packages/editor>（home 需有最近项目 game.yamirpg 可打开）
-// 用法: node scripts/smoke-layout.mjs <phase> [port]
+// 用法: node scripts/smoke-layout.mjs <phase> [port] [args…]
 // phase: debug | open-project | mode2-directory | roundtrip-scene | mode0-control
 //        | drag-mode0 | drag-mode2 | drag-here | drag-scene | drag-region
+//        | drag-region-edge <left|right|top|bottom> [pick=a|b]      ← L1：region 四方向
+//        | drag-region-all [<方向>] [pick=…]                        （drag-region-edge 的别名）
+//        | tree-windows keys=F3,F6,… | ids=<窗口 id,…> [interact=1]  ← S1：数据绑定型窗口
+//        | menu-windows index=5,6                                    ← S1：走「窗口」菜单的条目
+// L1 的稳妥做法：**每个方向重启一次 app**（layout 是会话态），顺序为
+//   open-project → drag-region-edge <方向> pick=a → drag-region-edge <方向> pick=b
+// （pick=a：源取最后一个叶子、目标取第一个；pick=b 反之——两个都跑，才能区分"设计内的相邻 no-op"
+//   与"方向没实现"。S1 的 `interact=1` 会在核对行数后追加交互链路：选中 → 折叠 → 展开 → F2。）
 import { writeFileSync } from 'node:fs';
 
-const port = Number(process.argv[3] || 9223);
+const port = Number(process.argv.slice(3).find((a) => /^\d+$/.test(a)) || 9223);
 const phase = process.argv[2];
+// 方向参数（仅在 drag-region-edge / drag-region-all 用）：left|right|top|bottom，
+// 允许与端口号以任意顺序出现——早先按固定位置取 argv[3] 会把方向当成端口（PORT=NaN → 连不上）。
+const edgeArg = String(
+	process.argv.slice(3).find((a) => /^(left|right|top|bottom)$/i.test(a)) ?? 'right'
+).toLowerCase();
+// 源/目标选择（同样是位置无关的参数）：pick=a → 源取最后一个叶子、目标取第一个叶子；
+// pick=b → 反过来。同一方向跑两次，避免"源本来就紧邻目标"导致设计内的 no-op 被误读成失败。
+const pickArg = String(process.argv.slice(3).find((a) => /^pick=[ab]$/i.test(a)) ?? 'pick=a')
+	.split('=')[1]
+	.toLowerCase();
+// S1 的 `interact=1`：核对行数后再跑一遍交互链路（选中 → 折叠 → 展开 → F2）
+const interact = process.argv.slice(3).includes('interact=1');
 if (!phase) {
-	console.error('usage: node scripts/smoke-layout.mjs <phase> [port]');
+	console.error('usage: node scripts/smoke-layout.mjs <phase> [port] [edge]');
 	process.exit(2);
 }
 
@@ -59,7 +79,24 @@ async function connect() {
 	const send = (method, params = {}) =>
 		new Promise((resolve, reject) => {
 			const id = ++seq;
-			pending.set(id, { resolve, reject });
+			// 超时兜底：页内被节流的 await 会让 CDP 永不回包（实测卡死过一次），
+			// 没有这一层的话整个 phase 会挂到人工 Ctrl-C。
+			const timer = setTimeout(() => {
+				if (pending.has(id)) {
+					pending.delete(id);
+					reject(new Error(`CDP ${method} timed out after 30s`));
+				}
+			}, 30000);
+			pending.set(id, {
+				resolve: (value) => {
+					clearTimeout(timer);
+					resolve(value);
+				},
+				reject: (error) => {
+					clearTimeout(timer);
+					reject(error);
+				}
+			});
 			ws.send(JSON.stringify({ id, method, params }));
 		});
 	return { ws, send };
@@ -216,7 +253,9 @@ async function runPhase(phaseFn) {
 		log('phase done');
 	} catch (e) {
 		console.error(JSON.stringify({ phase, error: String(e?.stack ?? e) }));
-		process.exitCode = 1;
+		// 出错路径上 phase 内部的 `ws.close()` 不会执行，而打开的 WebSocket 会让事件循环
+		// 一直活着 ⇒ 命令挂到人工 Ctrl-C（实测踩过两次）。报错即退出。
+		process.exit(1);
 	}
 }
 
@@ -230,7 +269,12 @@ async function debug() {
 			hasApp: !!document.getElementById('app'),
 			workspaceManager: !!document.getElementById('workspace-page-manager'),
 			bodyHead: document.body?.innerText?.slice(0, 300) ?? null,
-			readyState: document.readyState
+			readyState: document.readyState,
+			// 页面上的运行时单例（脚手架能不能直接驱动 layout 就看这里）
+			globals: ['Layout', 'Window', 'Editor', 'File', 'Data', 'Path', 'Log', 'GUID'].filter(
+				(k) => k in window
+			),
+			layoutKeys: 'Layout' in window && window.Layout ? Object.keys(window.Layout).length : 0
 		}))()`
 	);
 	out('state', state);
@@ -589,6 +633,325 @@ async function dragRegion() {
 	await dragRegionPhase();
 }
 
+// 布局树（叶子 = 带 tabs 的 .group）：给四方向 region 走查做前后对照
+const LAYOUT_TREE = `(() => {
+	const ws = document.getElementById('workspace-page-manager');
+	const frame = ws && [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+	if (!frame) return { workspace: null };
+	const root = [...frame.children].find((c) => c.classList.contains('group'));
+	const navValues = (node) =>
+		node && node.nav
+			? [...node.nav.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'))
+			: null;
+	const walk = (node, depth) => ({
+		depth,
+		split: node.split ?? null,
+		end: typeof node.end === 'number' ? Number(node.end.toFixed(4)) : null,
+		tabs: node.tabs ? [...node.tabs] : null,
+		nav: navValues(node),
+		children: [...node.children]
+			.filter((c) => c.classList && c.classList.contains('group'))
+			.map((c) => walk(c, depth + 1))
+	});
+	return {
+		workspace: frame.getAttribute('value'),
+		tree: root ? walk(root, 0) : null
+	};
+})()`;
+
+// L1：region 四方向真机走查（left/right/top/bottom）。每个方向跑之前由外部脚本把 layout 还原，
+// 因此本 phase 只做「一次拖拽 + 前后快照」——不做回滚，相邻方向的 no-op 判定也照实记录。
+async function dragRegionEdge() {
+	const edge = edgeArg;
+	if (!['left', 'right', 'top', 'bottom'].includes(edge)) {
+		throw new Error('edge must be one of left|right|top|bottom');
+	}
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	const workspace = await waitForActiveWorkspace(send, 20000);
+	const before = await evaluate(send, LAYOUT_TREE);
+	const drag = await evaluate(
+		send,
+		`(() => {
+			const edge = ${JSON.stringify(edge)};
+			const pick = ${JSON.stringify(pickArg)};
+			const ws = document.getElementById('workspace-page-manager');
+			const frame = [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home');
+			const leaves = [...frame.querySelectorAll('.group')].filter((g) => g.tabs && g.tabs.length > 0);
+			const navs = [...frame.querySelectorAll('.nav-bar')];
+			const values = (n) => [...n.children].filter((c) => c.classList.contains('nav-item')).map((c) => c.getAttribute('value'));
+			// pick=a：源 = 最后一个叶子，目标 = 第一个叶子（两者在树里通常不相邻 ⇒ 结构性 drop 可观测）
+			// pick=b：反过来
+			const ordered = pick === 'b' ? [...leaves].reverse() : leaves;
+			const srcLeaf = ordered[ordered.length - 1];
+			const dstLeaf = ordered[0];
+			const srcNav = srcLeaf?.nav;
+			const dstNav = dstLeaf?.nav;
+			if (!srcNav || !dstNav || srcNav === dstNav) {
+				return { error: 'need two leaves', leaves: leaves.length, navs: navs.map(values) };
+			}
+			const item = srcNav.querySelector('.nav-item');
+			const dt = new DataTransfer();
+			const log = [];
+			const fire = (el, type, init) => {
+				const e = new DragEvent(type, Object.assign({ bubbles: true, cancelable: true, dataTransfer: dt }, init || {}));
+				el.dispatchEvent(e);
+				log.push(type + ':' + (e.defaultPrevented ? 'prevented' : 'ok'));
+			};
+			fire(item, 'dragstart');
+			const region = dstNav.parentNode.querySelector('group-region');
+			if (!region) return { error: 'no group-region (navDragstart 未注册)', log };
+			const rect = region.getBoundingClientRect();
+			const cx = Math.round(rect.left + rect.width / 2);
+			const cy = Math.round(rect.top + rect.height / 2);
+			const point = {
+				left: { clientX: Math.round(rect.left + 2), clientY: cy },
+				right: { clientX: Math.round(rect.right - 2), clientY: cy },
+				top: { clientX: cx, clientY: Math.round(rect.top + 2) },
+				bottom: { clientX: cx, clientY: Math.round(rect.bottom - 2) }
+			}[edge];
+			fire(region, 'dragover', point);
+			fire(region, 'drop', point);
+			for (const n of navs) n.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true }));
+			return {
+				edge,
+				pick,
+				log,
+				dragged: item.getAttribute('value'),
+				from: values(srcNav),
+				to: values(dstNav),
+				point,
+				regionRect: { x: Math.round(rect.left), y: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) }
+			};
+		})()`
+	);
+	await sleep(1500);
+	const after = await evaluate(send, LAYOUT_TREE);
+	out('edge', { edge, pick: pickArg, workspace, before, drag, after });
+	ws.close();
+}
+
+async function dragRegionAll() {
+	await dragRegionEdge();
+}
+
+// S1：数据绑定型窗口逐窗冒烟。两条真实入口都支持：
+//   ① `keys=F3,F6,…`：派发真实加速键（`registerWindowKeydown('menubar')` → 模块的 `open()`，
+//      数据由模块自己加载——这是"有效数据"的唯一来源）
+//   ② `ids=variable,enum,…`：调窗口管理器 `Window.open(id)`（只开窗、不加载数据，用于可达性核对）
+// 行高固定 20px（YMTreeList 的 spacer 就是 `行数 * 20`），故绑定行数 = (上下 spacer 高)/20 + 渲染行数。
+const PROBE_TREE = (idExpr) => `(() => {
+	const frame = document.getElementById(${idExpr});
+	if (!frame) return { found: false };
+	const list = frame.querySelector('.tree-list');
+	const top = list?.querySelector('.scroll-spacer.top');
+	const bottom = list?.querySelector('.scroll-spacer.bottom');
+	const rows = list ? [...list.querySelectorAll('.node-item')] : [];
+	const h = (el) => (el ? Math.round(parseFloat(el.style.height) || 0) : 0);
+	const bound = list ? Math.round((h(top) + h(bottom)) / 20) + rows.length : 0;
+	return {
+		found: true,
+		open: frame.classList.contains('open'),
+		hasTree: !!list,
+		bound,
+		rendered: rows.length,
+		texts: rows.slice(0, 3).map((r) => (r.querySelector('.node-text')?.textContent ?? '').trim().slice(0, 18)),
+		hasMarker: rows.some((r) => r.querySelector('.folder-mark'))
+	};
+})()`;
+
+// S1 的交互链路：选中 → 折叠 → 展开 → F2 重命名（重命名框 = `.node-list-text-box-input`）。
+// **每一步都是独立的一次 evaluate，等待放在 Node 侧**——页内 `await sleep()` 会被 Chromium
+// 对隐藏窗口的定时器节流拖死（实测：`menu-windows interact=1` 因此卡到超时）。
+const treeExpr = (idExpr, body) => `(() => {
+	const frame = document.getElementById(${idExpr});
+	if (!frame) return 'no-frame';
+	const list = frame.querySelector('.tree-list');
+	if (!list) return 'no-tree';
+	${body}
+})()`;
+
+const ROW_COUNT = `return list.querySelectorAll('.node-item').length;`;
+const SELECTED_COUNT = `return list.querySelectorAll('.node-item.selected').length;`;
+const SELECT_FIRST = `const first = list.querySelector('.node-item');
+	if (!first) return 'no-rows';
+	const box = first.getBoundingClientRect();
+	for (const type of ['pointerdown', 'pointerup']) {
+		first.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, clientX: box.left + 4, clientY: box.top + 4 }));
+	}
+	return 'selected';`;
+// 折叠把手走的是 pointerdown（见 tree-api 的 pointerdown 分支），不是 click
+const TOGGLE_FIRST_MARKER = `const marker = list.querySelector('.node-item .folder-mark');
+	if (!marker) return 'no-marker';
+	for (const type of ['pointerdown', 'pointerup']) {
+		marker.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0 }));
+	}
+	return 'toggled';`;
+const PRESS_F2 = `list.dispatchEvent(new KeyboardEvent('keydown', { code: 'F2', key: 'F2', bubbles: true, cancelable: true }));
+	return 'f2';`;
+
+async function interactTree(send, idExpr) {
+	const step = (body) => evaluate(send, treeExpr(idExpr, body));
+	const before = await step('return list.querySelectorAll(".node-item").length;');
+	const select = await step(SELECT_FIRST);
+	await sleep(500);
+	const selected = await step(SELECTED_COUNT);
+	const hasMarker = await step('return !!list.querySelector(".node-item .folder-mark");');
+	let folded = null;
+	let unfolded = null;
+	if (hasMarker === true) {
+		const first = await step(TOGGLE_FIRST_MARKER);
+		await sleep(600);
+		folded = await step(ROW_COUNT);
+		const second = await step(TOGGLE_FIRST_MARKER);
+		await sleep(600);
+		unfolded = await step(ROW_COUNT);
+		if (first !== 'toggled' || second !== 'toggled') folded = `marker:${first}/${second}`;
+	}
+	await step(PRESS_F2);
+	await sleep(600);
+	const renameInput = await step('return !!frame.querySelector(".node-list-text-box-input");');
+	const after = await step(ROW_COUNT);
+	return { before, select, selected, folded, unfolded, renameInput, after };
+}
+
+async function treeWindows() {
+	const keysArg = process.argv.slice(3).find((a) => a.startsWith('keys=')) ?? '';
+	const idsArg = process.argv.slice(3).find((a) => a.startsWith('ids=')) ?? '';
+	const keys = keysArg
+		.slice(5)
+		.split(',')
+		.map((s) => s.trim())
+		.filter(Boolean);
+	const ids = idsArg
+		.slice(4)
+		.split(',')
+		.map((s) => s.trim())
+		.filter(Boolean);
+	if (keys.length === 0 && ids.length === 0) {
+		throw new Error('usage: node scripts/smoke-layout.mjs tree-windows keys=F3,F6 | ids=a,b');
+	}
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	const results = [];
+	for (const key of keys) {
+		const before = await evaluate(
+			send,
+			`[...document.querySelectorAll('.window-frame.open')].map((f) => f.id)`
+		);
+		await evaluate(
+			send,
+			`(() => {
+				const event = new KeyboardEvent('keydown', { code: ${JSON.stringify(key)}, key: ${JSON.stringify(key)}, bubbles: true, cancelable: true });
+				window.dispatchEvent(event);
+				return true;
+			})()`
+		);
+		await sleep(2500);
+		const opened = await evaluate(
+			send,
+			`[...document.querySelectorAll('.window-frame.open')].map((f) => f.id).filter((id) => !${JSON.stringify(before)}.includes(id))`
+		);
+		const id = opened[0] ?? null;
+		// oxlint-disable-next-line no-await-in-loop
+		const probe = id ? await evaluate(send, PROBE_TREE(JSON.stringify(id))) : null;
+		const chain =
+			interact && id !== null && probe?.hasTree
+				? // oxlint-disable-next-line no-await-in-loop
+					await interactTree(send, JSON.stringify(id))
+				: null;
+		results.push({ key, before, opened, id, probe, chain });
+		if (id !== null) {
+			await evaluate(send, `window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`);
+			await sleep(600);
+		}
+	}
+	for (const id of ids) {
+		const open = await evaluate(
+			send,
+			`(() => {
+				try {
+					if (!('Window' in window) || typeof window.Window.open !== 'function') return 'no-api';
+					window.Window.open(${JSON.stringify(id)});
+					return 'called';
+				} catch (error) {
+					return 'throw: ' + String(error && error.message);
+				}
+			})()`
+		);
+		await sleep(900);
+		// oxlint-disable-next-line no-await-in-loop
+		const probe = await evaluate(send, PROBE_TREE(JSON.stringify(id)));
+		results.push({ id, open, probe });
+	}
+	out('tree-windows', { results });
+	ws.close();
+}
+
+// S1 续：没有加速键的数据绑定窗口（过渡 / 队伍…）走**真实菜单路径**——点「窗口」菜单 →
+// 点弹层里的对应条目（按 0 基下标定位，跑完打印弹层标签供人工核对）。
+async function menuWindows() {
+	const idxArg = process.argv.slice(3).find((a) => a.startsWith('index=')) ?? '';
+	const indices = idxArg
+		.slice(6)
+		.split(',')
+		.map((s) => Number(s.trim()))
+		.filter((n) => Number.isInteger(n));
+	if (indices.length === 0) throw new Error('usage: node scripts/smoke-layout.mjs menu-windows index=5,6');
+	const { ws, send } = await connect();
+	await send('Runtime.enable');
+	const results = [];
+	for (const index of indices) {
+		const labels = await evaluate(
+			send,
+			`(() => {
+				const trigger = document.getElementById('menu-window');
+				trigger.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, cancelable: true }));
+				const popup = document.querySelector('.menu-list, .menu, .popup');
+				return popup ? [...popup.children].map((li) => (li.textContent || '').trim()) : ['<no-popup>'];
+			})()`
+		);
+		const before = await evaluate(
+			send,
+			`[...document.querySelectorAll('.window-frame.open')].map((f) => f.id)`
+		);
+		const clicked = await evaluate(
+			send,
+			`(() => {
+				const popup = document.querySelector('.menu-list, .menu, .popup');
+				const li = popup?.children[${index}];
+				if (!li) return 'no-item';
+				li.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, cancelable: true }));
+				li.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, cancelable: true }));
+				li.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+				return (li.textContent || '').trim();
+			})()`
+		);
+		await sleep(2200);
+		const opened = await evaluate(
+			send,
+			`[...document.querySelectorAll('.window-frame.open')].map((f) => f.id).filter((id) => !${JSON.stringify(before)}.includes(id))`
+		);
+		const id = opened[0] ?? null;
+		// oxlint-disable-next-line no-await-in-loop
+		const probe = id ? await evaluate(send, PROBE_TREE(JSON.stringify(id))) : null;
+		const chain =
+			interact && id !== null && probe?.hasTree
+				? // oxlint-disable-next-line no-await-in-loop
+					await interactTree(send, JSON.stringify(id))
+				: null;
+		results.push({ index, labels, clicked, opened, id, probe, chain });
+		await evaluate(send, `document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }))`);
+		await sleep(400);
+		if (id !== null) {
+			await evaluate(send, `window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`);
+			await sleep(600);
+		}
+	}
+	out('menu-windows', { results });
+	ws.close();
+}
+
 const phases = {
 	debug,
 	'open-project': openProject,
@@ -599,6 +962,10 @@ const phases = {
 	'drag-mode2': dragMode2,
 	'drag-here': dragHere,
 	'drag-scene': dragScene,
-	'drag-region': dragRegion
+	'drag-region': dragRegion,
+	'drag-region-edge': dragRegionEdge,
+	'drag-region-all': dragRegionAll,
+	'tree-windows': treeWindows,
+	'menu-windows': menuWindows
 };
 await runPhase(phases[phase]);

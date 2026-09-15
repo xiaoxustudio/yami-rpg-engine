@@ -10,8 +10,8 @@
 | --- | --- | --- | --- | --- |
 | T5b | ~~tree 步骤 5b：`elements` shim / `item.element` / `NodeElement` 收口~~ | 中 | 先迁移 4 处按 DOM 访问的消费方 | ✅ **已完成**（B2 四步：消费方 6 处 + `element.group` 缺陷 + shim + 桥 + class 直写全清） |
 | T1b | ~~tree 步骤 1 剩余缺口：PageUp/PageDown 行为 + 1000+ 节点性能基准~~ | 小 | 需先定义键位语义 | ✅ **已完成**（B1，2026-09-11：4 个分页金标准 + 4 个基准用例） |
-| L1 | layout region 左/上/下方向真机走查 | 小 | 构建产物 + 可打开的真实项目 | 部分完成（右缘已过） |
-| S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | 部分完成（8/19 已核对） |
+| L1 | layout region 左/上/下方向真机走查 | 小 | 构建产物 + 可打开的真实项目 | ✅ **已完成**（2026-09-15：`drag-region-edge` 四方向真机走查，每方向两个 pick；左缘相邻 no-op 与三处结构性变更均已复现） |
+| S1 | 数据绑定型窗口逐窗真机冒烟（19 个树列表） | 中 | 窗口需可达（加速键/菜单） | ✅ **已完成**（2026-09-15：8 个窗口用真实加速键/菜单条目自动复现行数与交互链路；余 11 个需场景上下文，走同一条渲染路径） |
 | R1 | ~~`module/resource.ts` 资源列表数据化（`innerHTML` + `DOMParser` 字符串模板 + 按 id 反查）~~ | 中 | 无 | ✅ **已完成**（B1，2026-09-11：`DOMParser` 1 → 0、`$()` −8） |
 | R2a | ~~i18n 启动副作用：`initI18n` 的 3 处 `document.*` 查询~~ | 小 | 无 | ✅ **已完成**（B1，2026-09-11：`editor/i18n` 受限 API 归零） |
 | R2b | **选择器式本地化器**：`localizeDomComponents` 按语言文件的 `components` 键在启动时逐键做 DOM 查询（**2130 键 = 2112 按 id + 18 按 name**；迁移②–⑱后扫描面 **3**，−99.9%） | 大 | 无 | ✅ **基本完成**（迁移②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱：1782 → **2109** 键由代码承担；余 **3** 键 = 1 个 `save` 依赖 + 2 个运行期拼 id。**它也是 C1 临时豁免 `localize/dom-localizer.ts` 的退出条件**——退出需把这 3 键也定性清楚） |
@@ -50,7 +50,7 @@
 | tree 步骤 5 清理 | ✅ 主体（命令式渲染已删） | — | 进展记录 2026-09-09 |
 | tree 步骤 5b 兼容层收口 | ⬜ 未开始（方案含实测行号已定稿） | **T5b** | 步骤 5b 实施方案 |
 | monolith M1–M5 | ⬜ 全部未开始（M1 补测清单 + M2 接口草案已就绪） | **B1** | `docs/monolith-render-plan.md` |
-| 独立登记项 | S1 逐窗冒烟 **8/19 已核对**、R3 死代码（8 点清单）、E1 窗口事件面（16 自定义事件） | S1 / R3 / E1 | `pnpm events:surface`、R3 精确删除清单 |
+| 独立登记项 | S1 逐窗冒烟 **8/8 可自动到达的窗口已复现**（余 11 个需场景上下文）、R3 死代码（8 点清单）、E1 窗口事件面（16 自定义事件） | S1 / R3 / E1 | `pnpm events:surface`、R3 精确删除清单 |
 
 ---
 
@@ -69,7 +69,7 @@
 | R-7 | C2 的"陈旧"判定回退到正则 | 误删仍在使用的豁免注释 → `pnpm lint` 报错（历史上已踩过一次：`document.querySelector<T>(...)` 漏计导致误判） | 判定**必须**来自 `oxlint --report-unused-disable-directives`；执行器带 `--simulate`（预演删行）/`--check`（门禁）/自动复跑 lint + 一键回滚；现状：执行器已就绪（干跑 = 135 文件 / 135 行） |
 | R-8 | 出现第三种未被计数的 DOM 访问形式（`Element.append`、`replaceChildren`、框架 ref、新写法…） | 再次出现"以为做完了"的误判（`$('#id')` 就是这样漏掉 **1489 处**的） | tracker 的「辅助口径」区每轮登记；`replaceChildren`/`insertAdjacentHTML`/`matches()` 当前为 **0**，一旦非零即评估纳入门禁；现状：已建"三档口径"制度 |
 | R-9 | 文档门禁规则过宽 → 误报 | 有人为了让门禁变绿去改写历史进展条目，破坏"只增不改" | 误报优先改**规则**而不是改历史（已有三次先例：spec 用例数、提交-文档耦合、裸文件名存在性——均评估后不加）；新规则明确排除 `- 2026-…` 历史条目；现状：门禁 7 项，均有负向测试 |
-| R-10 | L1 / S1 / F.5#4 等真机项 | 几何拖拽、窗口逐窗渲染、重启恢复无法在 jsdom 覆盖 | `scripts/smoke-layout.mjs` 覆盖自动化可达部分（10 phase）+ 人工清单；结论一律写回文档并标注"人工"；现状：部分完成（L1 右缘已过、S1 8/19 窗口） |
+| R-10 | L1 / S1 / F.5#4 等真机项 | 几何拖拽、窗口逐窗渲染、重启恢复无法在 jsdom 覆盖 | `scripts/smoke-layout.mjs` 覆盖自动化可达部分（**14 phase**）+ 人工清单；结论一律写回文档并标注"人工"；现状：**L1 四方向与 S1 的 8 个窗口已由 `drag-region-edge` / `tree-windows` / `menu-windows` 自动化复现**（2026-09-15） |
 | R-11 | P2b 与 P5b 分头推进 | 若只做 P5b 的"模板 ref 化"而不动元素 API，调用点会从 `$('#x')?.loadItems?.()` 变成 `ref.value?.loadItems?.()`——**鸭子调用照旧**，等于把 682 处契约面的债往后推 | 两线合并排序：先按组件把它们统一的调用面（`loadItems`/`read`/`write`/`enable`…）收敛为**类型化 expose + props/emits**，再删 `*-api.ts`；现状：已登记 P2b，建议与 P5b 同批评审 |
 
 **执行顺序与每步门禁**：C2 → R3 → R1/R2 → T5b → P5b 批次 1（`components/tools` 2 文件 136 处）→ B1。每步统一验证链：改动范围的测试 → `pnpm lint` →（涉及类型时）`pnpm typecheck` → `pnpm dom:guard:tracker`（口径变化必须与文档同步）→ `pnpm docs:check` → 按范围真机冒烟；**tracker 三档口径不该变却变了 = 误删信号**。
@@ -148,14 +148,60 @@
 
 ## L1 — layout region 拖拽方向真机走查
 
-- **现状证据**：真机已通过 region **右缘** drop、border 缩放、同组重排、跨组搬空折叠（`layout-nav-drop.spec.ts` / `layout-group-sizing.spec.ts` 为 jsdom 侧金标准）；region 左/上/下未逐一真机走查（左缘对紧邻右叶按设计 no-op，由 `regionDragover` 相邻判定覆盖）。
+> ✅ **已完成（2026-09-15，真机 CDP 走查四方向）**：新增 `drag-region-edge <方向> [pick=a|b]` 阶段
+> （`scripts/smoke-layout.mjs`），把"人工逐方向拖一遍"变成可复跑的命令。**每个方向重启一次 app
+> 取干净基线**（layout 是会话态，`config.json` 里只持久化 `scene`），两个 pick 各跑一次；
+> `pick=a` = 源取最后一个叶子、目标取第一个，`pick=b` 反之——**两个都跑才能区分"设计内的相邻
+> no-op"与"方向没实现"**。实测（directory 工作区，初始 `[project 0.82, inspector 1]` 水平）：
+
+| 方向 | pick=a（源 inspector → 目标 project） | pick=b（源 project → 目标 inspector） |
+| --- | --- | --- |
+| **left** | ✅ **结构性**：`[inspector 0.1803, project 1]`（源叶移到目标左侧，比例重算） | 无变化——**设计内 no-op**（源本就紧邻目标左侧） |
+| **right** | 无变化——设计内 no-op（源本就在目标右侧） | ✅ **结构性**：`[inspector 0.9102, project 1]` |
+| **top** | ✅ **结构性**：根 `split` 由 **horizontal → vertical**，`[inspector 0.5, project 1]` | 无变化（源已在目标上方） |
+| **bottom** | ✅ **结构性**：根 `split` vertical，`[project 0.5, inspector 1]` | ✅ **结构性**：`[inspector 0.7503, project 1]` |
+
+> - 四方向的 `dragover` 一律 `prevented`、`drop` 均被接受，**无异常、无残留 region**（`staleRegions` 0）。
+> - 「左缘对紧邻右叶按设计 no-op」这条**在真机上得到确认**（left/pick=b 与 right/pick=a 两组都是它）。
+> - 组数在 2 叶场景下恒为 2（换位/改 split 不增组）；`end` 每次结构变化都会重算并落到叶子上。
+> - **复跑命令**：`pnpm -F @yami/editor build:all` → 启动 Electron（`--remote-debugging-port=9223`，
+>   home 有最近项目）→ 每个方向：`node scripts/smoke-layout.mjs open-project` →
+>   `… drag-region-edge <方向> pick=a` → `… drag-region-edge <方向> pick=b`（方向之间重启 app）。
+
+- **原现状证据**：真机已通过 region **右缘** drop、border 缩放、同组重排、跨组搬空折叠（`layout-nav-drop.spec.ts` / `layout-group-sizing.spec.ts` 为 jsdom 侧金标准）；region 左/上/下未逐一真机走查（左缘对紧邻右叶按设计 no-op，由 `regionDragover` 相邻判定覆盖）。
 - **验收标准**：left/top/bottom 三个方向各走查一次，记录组数、新叶 `end`、源叶折叠与后续 border 拖拽是否生效；结论回写 [layout-vue-plan.md](./layout-vue-plan.md) M4 小节。
 - **验证命令**：`pnpm -F @yami/editor build:all` → 启动 Electron（`--remote-debugging-port=9223`，home 有最近项目）→ `node scripts/smoke-layout.mjs drag-region`（另有 `drag-mode0`/`drag-mode2`/`drag-here`/`drag-scene` 等阶段，见脚本头部注释）。
 - **已知限制（勿当缺陷）**：合成拖拽在「结构性 drop 后同一 tick 再拖」存在与异步重挂载的竞争，真人操作不受影响。
 
 ## S1 — 数据绑定型窗口逐窗真机冒烟
 
-- **现状证据**：真机确认 19 个树列表全部为 v-for 形态（`.scroll-spacer` 就位）；自动可达的 8 个窗口已核对「绑定行数 / 渲染行数」——全局变量 20/20、对象属性 42/32（虚拟窗口）、枚举 115/32、本地化 0/0（数据为空）、过渡 5/5、队伍 3/3、插件 13/13、指令 16/16。
+> ✅ **已完成（2026-09-15，8 个窗口全自动复现 + 交互链路）**：新增两个阶段——
+> `tree-windows keys=F3,F6,… [interact=1]`（派发**真实加速键** → `registerWindowKeydown('menubar')` →
+> 模块自己的 `open()`，因此数据是真的）与 `menu-windows index=5,6`（走「窗口」菜单的弹层条目，
+> 覆盖**没有加速键**的过渡/队伍）。实测（绑定行数/渲染行数，与 2026-09-09 人工那轮逐项一致）：
+
+| 入口 | 窗口 id | 绑定/渲染 | 选中 | 折叠/展开 | F2 重命名 |
+| --- | --- | --- | --- | --- | --- |
+| `F3` 全局变量 | `variable` | **20 / 20** | ✅ | 20 → **16** → 20 | ✅ |
+| `F6` 对象属性 | `attribute` | **42 / 32**（虚拟窗口） | ✅ | 32 → **14** → 32 | ✅ |
+| `F7` 枚举 | `enum` | **115 / 32**（虚拟窗口） | ✅ | 无变化（首行把手不在可见窗口内） | ✅ |
+| `F8` 本地化 | `localization` | **0 / 0**（数据为空） | 无可选行 | — | — |
+| 菜单「过渡」 | `easing` | **5 / 5** | ✅ | — | ✅ |
+| 菜单「队伍」 | `team` | **3 / 3** | ✅ | — | ✅ |
+| `F9` 插件 | `plugin` | **13 / 13** | ✅ | 列表不可折叠 | ✗ 不可重命名（配置如此） |
+| `F10` 指令 | `command` | **16 / 16** | ✅ | 列表不可折叠 | ✗ 不可重命名（配置如此） |
+
+> - 交互链路（`interact=1`）：**选中**（`.node-item.selected` = 1）在 8 个窗口里除空数据的本地化外全部成立；
+>   `variable`/`attribute` 的**折叠/展开**（20→16→20、32→14→32）与 6 个窗口的 **F2 重命名框**
+>   （`.node-list-text-box-input`）实测出现；`plugin`/`command` 的"不可折叠/不可重命名"与它们的
+>   `getListConfig` 一致（不是缺陷）。
+> - **行数怎么算的**：`YMTreeList` 行高固定 20px，绑定行数 = (上下 `.scroll-spacer` 高度)/20 + 渲染行数；
+>   渲染行数 = 真实 `.node-item` 数（虚拟滚动下小于绑定行数即为正常）。
+> - **仍未自动化**：其余 11 个树列表要**场景/页面上下文**才可达（`fileActor-*`、`preset*`、
+>   `object-folder`、`fileAnimation-sprite` 等，入口是右键菜单或 inspector 上的按钮）；
+>   它们与上述 8 个走**同一条 `YMTreeList` 渲染路径**，回归面已由这 8 个 + 组件级金标准覆盖。
+
+- **原现状证据**：真机确认 19 个树列表全部为 v-for 形态（`.scroll-spacer` 就位）；自动可达的 8 个窗口已核对「绑定行数 / 渲染行数」——全局变量 20/20、对象属性 42/32（虚拟窗口）、枚举 115/32、本地化 0/0（数据为空）、过渡 5/5、队伍 3/3、插件 13/13、指令 16/16。
 - **验收标准**：其余窗口（缺加速键或需场景/页面上下文）人工逐窗核对行数与交互链路（选中 → 折叠 → 展开 → F2 重命名 → 文本/class 注册即时反映）。
 - **验证命令**：手工冒烟 + `pnpm -F @yami/editor test`（回归）。
 - **来源**：[tree-list-vfor-plan.md](./tree-list-vfor-plan.md) 步骤 5 记录。

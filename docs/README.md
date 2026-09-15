@@ -29,7 +29,7 @@
   - ✅ **已完成**：C1（收尾脚手架：口径 `待迁移命中 0` / `豁免注释 0` / `陈旧豁免 0`，白名单 45 设计 + 1 临时）、P1b（受限 API 直查，十七刀）、R2b（本地化器扫描面 **2112 → 3**，余键均已定性）、**E1**（载荷类型化 + 类型化通道 `emitCustom`/`onCustom`）、**B1/B6 的 M1–M4**（组件级金标准 17 → 43+；两个派生层；**两个巨石都已换源**：文件 body 与命令列表都改为"api 数据化 + 模板 `v-for` + `:ref` 回写桥"；M4 三步收口，含 69 方法 API 面审计）。
   - ✅ **M5 已收口**：两个巨石的**行归属**都归模板（`v-for` + `:ref` 回写桥，api 不再建/挂/摘行）；文件 body 的名字也入模板且改名有用例覆盖；行**内部内容**（文本/变量标记/缩进线）按"画布类例外"同理保留——它是**内容生成**而非 DOM 归属，模板化属视觉性重写且收益低（判定理由见 monolith-render-plan 的 M5 小节）。
   - 🚧 **其余**：P2b（契约已有，Vue 内子集改走 ref/expose 待做）、P4b（原型访问器 **69** 字段，已并入 M3/M5）、O1（可选）。
-  - ⛔ **需要人**：**L1/S1 真机走查**（19 个窗口）以及**两个巨石的换源后冒烟**（文件 body：拖拽/右键菜单/双击/切视图；命令列表：折叠线、复制粘贴、悬停高亮、空白行点击插入、拖动排序）——这是本清单里唯一无法由代理自证的验收项。
+  - ✅ **真机项已自动化（2026-09-15）**：**L1**（region 四方向）与 **S1**（8 个数据绑定型窗口）不再依赖人工——`scripts/smoke-layout.mjs` 新增 `drag-region-edge` / `tree-windows` / `menu-windows` 三个阶段，用真实拖拽、真实加速键与真实菜单条目驱动，结果见 [remaining-work.md](./remaining-work.md) 的 L1 / S1 小节。仍**只能人工**的只剩两个巨石的换源后冒烟（文件 body：拖拽/右键菜单/双击/切视图；命令列表：折叠线、复制粘贴、悬停高亮、空白行点击插入、拖动排序）。
   - 📋 **逐条状态与证据见** [monolith-render-plan.md 的「完成判定」附录](./monolith-render-plan.md#附录完成判定2026-09-12-复核)。
 
 ## 维护约定（避免再次漂移）
@@ -47,7 +47,7 @@
 | `scripts/docs-check.mjs` | `pnpm docs:check` | **只读门禁**（退出码 0/1）：断链 · 路径存在 · spec 存在 · 口径三方一致（含 P5 轴）· 清单 ID↔小节 · 章节引用可解析；`--verbose` 打印口径明细 |
 | `scripts/stale-exemptions.mjs` | `pnpm stale-exemptions` | **C2 执行器**：默认干跑；`--simulate` 预演删行数；`--check` 作门禁（仍有陈旧豁免 → 1）；`--apply` 真删并自动复跑 oxlint |
 | `scripts/event-surface.mjs` | `pnpm events:surface` | **只读报表**：窗口事件面清单（事件名 / add-remove 计数 / 自定义事件 / 死事件 / 内联匿名监听 / `.vue` 未配对监听 / `mitt`·`useEventListener` 使用情况），E1 的度量来源 |
-| `scripts/smoke-layout.mjs` | `node scripts/smoke-layout.mjs <phase>` | **真机冒烟**（CDP over WebSocket）：phase = `debug` / `open-project` / `mode2-directory` / `roundtrip-scene` / `mode0-control` / `drag-mode0` / `drag-mode2` / `drag-here` / `drag-scene` / `drag-region`；前置：`pnpm -F @yami/editor build:all` + Electron 带 `--remote-debugging-port=9223` |
+| `scripts/smoke-layout.mjs` | `node scripts/smoke-layout.mjs <phase> [port] [args…]` | **真机冒烟**（CDP over WebSocket）：phase = `debug` / `open-project` / `mode2-directory` / `roundtrip-scene` / `mode0-control` / `drag-mode0` / `drag-mode2` / `drag-here` / `drag-scene` / `drag-region` / **`drag-region-edge <left\|right\|top\|bottom> [pick=a\|b]`**（L1：每个方向重启一次 app 各跑两个 pick）/ **`tree-windows keys=F3,F6,… \| ids=… [interact=1]`**（S1：真实加速键打开数据绑定窗口，核对绑定/渲染行数，`interact=1` 追加选中→折叠→展开→F2）/ **`menu-windows index=5,6`**（S1：走「窗口」菜单条目，覆盖无加速键的过渡/队伍）；前置：`pnpm -F @yami/editor build:all` + Electron 带 `--remote-debugging-port=9223` |
 | `packages/editor/scripts/check-vue-types.mjs` | `pnpm -F @yami/editor typecheck:vue` | **vue-tsc 增量门禁**：baseline 模式只拦新增错误，baseline 存同目录 `vue-types-baseline.json` |
 | `scripts/i18n-skip-list.mjs` | `node scripts/i18n-skip-list.mjs [--check]` | **生成器**：写出 `packages/editor/src/localize/template-localized.ts`（「全部字段已由模板 `t()`/`v-tip` 承担」的本地化键集合，本地化器对其跳过 DOM 查询）；`--check` 只比对不写入。防漂移同源：`localize/__tests__/template-localized.spec.ts` |
 | `scripts/element-registry-migrate.mjs` | `node scripts/element-registry-migrate.mjs audit <src 子目录…>` / `… migrate --registry=… --registry-file=… --sfcs=… --modules=… [--apply]` | **P5b 分组迁移工具**：`audit` 列出某目录各模块用到的 `$('#id')` 及其渲染 SFC；`migrate` 生成分组注册表、改写模块侧读取、给渲染 SFC 补 `:ref`/命令式登记（默认干跑，`--apply` 才写）。文件头写明判据约定（只看 import 语句 / 不做 import 合并 / 清理前剥离注释与正则字面量） |

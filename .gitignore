@@ -13,3 +13,7 @@ dist
 dist-*
 xr.md
 .trae
+# 真机冒烟脚本的产物（scripts/smoke-layout.mjs 的 out() 写出，属复跑副产品）
+scripts/smoke-report-*
+electron-out.log
+electron-err.log
