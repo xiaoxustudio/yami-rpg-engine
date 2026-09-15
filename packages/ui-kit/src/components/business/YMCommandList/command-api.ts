@@ -1983,6 +1983,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.elements.start = -1;
 		this.elements.end = -1;
 		this.updateHeadAndFoot();
+		// M3-5b′：行归模板渲染 ⇒ 清空后必须**重建行模型并通知模板**，
+		// 否则书里归零了、屏幕上还是旧的那几行（探针实测：clear 后模型与 DOM 都仍是 6 行）。
+		rebuildCommandRowData(this.elements);
+		rebuildCommandRowModel(this.elements, { padded: this.padded === true });
+		dispatchUpdateEvent(this);
 		return this;
 	},
 
