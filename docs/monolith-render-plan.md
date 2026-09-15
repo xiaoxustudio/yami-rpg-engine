@@ -465,3 +465,43 @@ insertBefore ← commonListResize (utils/common-list.ts:87)  ← command-api.res
 **验证**：ui-kit **109 文件 768/768**（其中命令列表 **99 例**）、editor **237 文件 1992/1992**、`pnpm lint` 0/0、`docs:check` OK；口径 `appendChild` **121 → 122**、`addEventListener` **568 → 570**（模板监听 `update`/`scroll`）。
 
 **真机冒烟清单（命令列表，与文件 body 那份同级）**：① 折叠/展开与缩进竖线（含块 `line-start`/`line-end` 与 `line-hide`）；② 单击/Shift 扩选/Ctrl 多选；③ 复制粘贴与撤销重做；④ 搜索高亮（变量名高亮整行）；⑤ 点击末尾空白行插入、删除命令；⑥ 拖动排序；⑦ 多行脚本行与 `break` 行的显示与选中；⑧ 滚动到底部时的窗口切换（行不应重复或错位）。
+
+---
+
+## 附录：完成判定（2026-09-12 复核）
+
+**用途**：回答"这份计划还剩什么"。逐条列出**状态 + 可核对证据**；只要有任一条非 ✅，计划就不算完成。
+
+### ✅ 已完成（有门禁证据）
+
+| 事项 | 证据 |
+| --- | --- |
+| C1 收尾脚手架 | 口径 `待迁移命中 0` / `豁免注释 0` / `陈旧豁免 0`；白名单 45 设计 + 1 临时；`dom:guard:exempt` 退役 |
+| P1b 受限 API 直查 | 十七刀完成；编辑器侧仅剩白名单 |
+| R2b 选择器本地化器 | 扫描面 **2112 → 3**（余 3 键已定性） |
+| E1 事件面收口 | 载荷类型化 + **类型化通道** `emitCustom`/`onCustom`（15 个自定义事件名册）；`events:surface` 266 add / 127 remove |
+| B1/B6 M1 | 两个巨石组件级金标准 **17 → 43+**；派生层、翻页/定位数学抽为纯函数 |
+| B1/B6 M2 | `command-render.ts` / `file-body-render.ts` 派生层 + 用例 |
+| B1/B6 M3 | **两个巨石都已换源**：文件 body（api 数据化 55 处 + 模板 `v-for` + 回写桥 + 删死代码）；命令列表（`resize` 自算窗口 + 模板渲染 + `bindRowElement` + `updateLineClasses` 扩展点 + 每行稳定 key） |
+| B1/B6 M4 | 三步收口：扩展点、`closest('.file-body-item')` → 按 `file` 数据反查、69 方法 API 面审计（无可退役） |
+| P2b 契约侧 | `CommandListElementApi` 等类型化契约；26 个 `*-api.ts` 审计 |
+| M5（部分） | 文件 body 的名字入模板、改名有用例覆盖；删掉换源死代码与 `versionId` 簿记 |
+| 卫生项 | `getElementsByName` 查找缺陷已修（7 → 0）；插入路径补测；`vue-tsc` 0 new |
+
+### ⏳ 需真机确认（本人无法自证）
+
+| 事项 | 为什么必须真机 | 清单位置 |
+| --- | --- | --- |
+| L1 layout region 左/上/下 | 依赖真实构建产物与可打开项目 | `remaining-work.md` L1 行 |
+| S1 数据绑定型窗口逐窗冒烟（19 个） | 窗口需可达（加速键/菜单） | `remaining-work.md` S1 行 |
+| 文件 body 冒烟 | 拖拽/右键菜单/双击/切视图在 jsdom 测不到 | 本文件 M3 小节 |
+| 命令列表冒烟 | 折叠线视觉、复制粘贴、**悬停高亮**、空白行点击插入、拖动排序 | 本文件 M3 小节 |
+
+### 🚧 尚未开始（计划内、非阻塞）
+
+| 事项 | 说明 |
+| --- | --- |
+| M5 余项 | 命令列表行内文本/变量标记（`updateCommandElement`）与缩进线（editor `eslints` 覆写）仍是手工建 DOM；计划允许保留画布类例外，且改动需真机确认视觉 |
+| P2b 余项 | Vue 内子集改走 ref/expose（随 P5b 手法） |
+| P4b | 原型访问器 **69** 字段；已并入 M3/M5（逐字段脚本化在做过的实验里被证否，需随函数重写一起做） |
+| O1 | layout M6 评估（可选） |
