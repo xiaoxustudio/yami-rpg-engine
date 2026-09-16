@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { sceneEls } from '@app/scene/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
@@ -439,7 +440,9 @@ Scene.marquee.selectInObjectMode = null;
 Scene.marquee.getTiles = null;
 
 Scene.list.page = sceneEls.get('scene-object') as HTMLElement;
-Scene.list.head = sceneEls.get('scene-list-head') as HTMLElement;
+elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
+	'scene-list-head'
+) as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Scene.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -490,7 +493,9 @@ Scene.initialize = function (this: SceneShape) {
 		Object.assign(this.list, oldList);
 	}
 	this.list.page = sceneEls.get('scene-object') as HTMLElement;
-	this.list.head = sceneEls.get('scene-list-head') as HTMLElement;
+	elementDataOf<{ head: HTMLElement }>(this.list).head = sceneEls.get(
+		'scene-list-head'
+	) as HTMLElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	this.translationTimer = new Timer({

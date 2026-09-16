@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRadioBoxElement } from '../radio-box-api';
 import type { RadioBoxApi } from '../radio-box-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 describe('createRadioBoxElement', () => {
 	it('creates radio-box with proxy', () => {
@@ -9,7 +10,7 @@ describe('createRadioBoxElement', () => {
 		expect(el.classList.contains('radio-box')).toBe(true);
 		expect(el.getAttribute('name')).toBe('grp');
 		expect(el.dataValue).toBe('a');
-		expect(el.proxy).toBeTruthy();
+		expect(elementDataOf<{ proxy?: { read(): unknown } }>(el).proxy).toBeTruthy();
 		expect(typeof el.read).toBe('function');
 		el.remove();
 	});
@@ -19,7 +20,9 @@ describe('createRadioBoxElement', () => {
 		const b = createRadioBoxElement({ name: 'g2', value: 'b' }) as unknown as RadioBoxApi;
 		document.body.appendChild(a);
 		document.body.appendChild(b);
-		expect(a.proxy).toBe(b.proxy);
+		expect(elementDataOf<{ proxy?: unknown }>(a).proxy).toBe(
+			elementDataOf<{ proxy?: unknown }>(b).proxy
+		);
 		a.remove();
 		b.remove();
 	});
@@ -30,7 +33,7 @@ describe('createRadioBoxElement', () => {
 		document.body.appendChild(a);
 		document.body.appendChild(b);
 		b.input('b');
-		expect(b.proxy.read()).toBe('b');
+		expect(elementDataOf<{ proxy: { read(): unknown } }>(b).proxy.read()).toBe('b');
 		expect(a.classList.contains('selected')).toBe(false);
 		expect(b.classList.contains('selected')).toBe(true);
 		a.remove();

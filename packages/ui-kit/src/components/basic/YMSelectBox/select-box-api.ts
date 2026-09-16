@@ -212,7 +212,6 @@ export function attachSelectBoxApi(
 			state.dataValue = value;
 		}
 	});
-	box.relations = state.relations;
 	box.invalid = state.invalid;
 	box.hideUnrelated = state.hideUnrelated;
 	// P4b：删掉 `box.savedValue = state.savedValue` 的镜像（全仓无人读取元素上的 savedValue；

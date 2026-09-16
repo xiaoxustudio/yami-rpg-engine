@@ -1,4 +1,5 @@
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from './dom';
+import { elementDataOf } from './element-data';
 
 export type RadioRelationTarget = HTMLElement & {
 	enable?(): void;
@@ -56,8 +57,10 @@ const subtract = <T>(a: T[], b: T[]): T[] => {
 
 export function attachRadioProxyApi(el: HTMLElement): void {
 	const proxy = el as RadioProxyElement;
+	// P4b: relations now lives in element data (field removed from DATA_FIELDS)
+	const data = elementDataOf<RadioProxyElement>(proxy);
 	proxy.dataValue = null;
-	proxy.relations = [];
+	data.relations = [];
 	proxy.cancelable = false;
 	proxy.writeEventEnabled = false;
 	proxy.inputEventEnabled = false;
@@ -152,13 +155,13 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 	};
 
 	proxy.relate = function (entries: RadioRelationEntry[]): void {
-		proxy.relations = entries;
+		data.relations = entries;
 	};
 
 	proxy.toggleRelatedElements = function (): void {
-		if (proxy.relations.length !== 0) {
+		if (data.relations.length !== 0) {
 			if (!hasClass(proxy, 'disabled')) {
-				const entries = proxy.relations;
+				const entries = data.relations;
 				const selection = entries.find((entry) => entry.case === proxy.dataValue);
 				for (const entry of entries) {
 					if (entry.case === proxy.dataValue) {
@@ -182,7 +185,7 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 					}
 				}
 			} else {
-				const entries = proxy.relations;
+				const entries = data.relations;
 				for (const entry of entries) {
 					for (const element of entry.targets) {
 						if (typeof element.disable === 'function') {

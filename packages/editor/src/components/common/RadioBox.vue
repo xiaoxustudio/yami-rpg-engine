@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMRadioBox
 		ref="ym"
 		:name="props.name"
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
-import { YMRadioBox } from '@ui-kit';
+import { elementDataOf, YMRadioBox } from '@ui-kit';
 import {
 	createRadioProxy,
 	radioProxyMap,
@@ -147,7 +147,8 @@ onMounted(() => {
 		isNewProxy = true;
 	}
 	state.proxy = proxy;
-	el.proxy = proxy;
+	// P4b: proxy now lives in element data (field removed from DATA_FIELDS)
+	elementDataOf<{ proxy?: RadioProxyElement | null }>(el).proxy = proxy;
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
 		get: () => state.dataValue,

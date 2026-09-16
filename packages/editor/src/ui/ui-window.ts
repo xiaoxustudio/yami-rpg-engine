@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
@@ -259,7 +260,7 @@ export const UI: UIShape = {
 UI.marquee.resize = null;
 
 UI.list.page = uiEls.get('ui-element') as HTMLElement;
-UI.list.head = uiEls.get('ui-list-head') as HTMLElement;
+elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as HTMLElement;
 UI.list.copy = null;
 UI.list.paste = null;
 UI.list.delete = null;

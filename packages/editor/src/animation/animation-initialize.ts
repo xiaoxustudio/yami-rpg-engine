@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { Animation } from './animation-window.ts';
 import { animationEls } from '@app/animation/element-registry';
 import type {
@@ -45,7 +46,9 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.list, oldList);
 	}
 	this.list.page = animationEls.get('animation-motion') as HTMLElement;
-	this.list.head = animationEls.get('animation-list-head') as HTMLElement;
+	elementDataOf<{ head: HTMLElement }>(this.list).head = animationEls.get(
+		'animation-list-head'
+	) as HTMLElement;
 	// 模块求值先于 Vue 挂载，$() 会拿到占位对象；重查询真实元素时回迁模块级挂载的属性/方法
 	const oldLayerList = this.layerList;
 	this.layerList = animationEls.get('animation-layer-list') as HTMLElement;
@@ -57,7 +60,9 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
-	this.timeline.head = animationEls.get('animation-timeline-head') as HTMLElement;
+	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationEls.get(
+		'animation-timeline-head'
+	) as HTMLElement;
 	this.toolbar = animationEls.get('animation-timeline-toolbar') as HTMLElement;
 	const oldOuterTimelineList = this.outerTimelineList;
 	this.outerTimelineList = animationEls.get('animation-timeline-list-outer') as HTMLElement;

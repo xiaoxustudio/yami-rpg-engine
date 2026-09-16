@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/ui/element-registry';
 import { UI } from './ui-window.ts';
@@ -33,7 +34,7 @@ UI.initialize = function (this: UIShape) {
 		Object.assign(this.list, oldList);
 	}
 	this.list.page = uiEls.get('ui-element') as HTMLElement;
-	this.list.head = uiEls.get('ui-list-head') as HTMLElement;
+	elementDataOf<{ head: HTMLElement }>(this.list).head = uiEls.get('ui-list-head') as HTMLElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	const points = {

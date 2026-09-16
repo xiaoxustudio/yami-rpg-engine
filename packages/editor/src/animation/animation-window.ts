@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
@@ -438,7 +439,9 @@ export const Animation: AnimationShape = {
 Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
 Animation.list.page = animationEls.get('animation-motion') as HTMLElement;
-Animation.list.head = animationEls.get('animation-list-head') as HTMLElement;
+elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationEls.get(
+	'animation-list-head'
+) as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -465,7 +468,9 @@ Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
-Animation.timeline.head = animationEls.get('animation-timeline-head') as HTMLElement;
+elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get(
+	'animation-timeline-head'
+) as HTMLElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 

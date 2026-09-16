@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { engineEls } from '@app/engine/element-registry';
 import { storesEls } from '@app/stores/element-registry';
@@ -441,7 +442,9 @@ Layout.initialize = function () {
 		palettePages.length !== 0
 			? palettePages
 			: (
-					Array.from(manager?.querySelectorAll('.page-frame[value]') ?? []) as HTMLElement[]
+					Array.from(
+						manager?.querySelectorAll('.page-frame[value]') ?? []
+					) as HTMLElement[]
 				).filter(
 					(frame) => frame.id !== '' || frame.closest('#layout-page-manager') !== null
 				);
@@ -479,12 +482,12 @@ Layout.initialize = function () {
 
 	this.heads = [
 		Scene.head,
-		Scene.list.head,
+		elementDataOf<{ head: HTMLElement }>(Scene.list).head,
 		UI.head,
-		UI.list.head,
+		elementDataOf<{ head: HTMLElement }>(UI.list).head,
 		Animation.head,
-		Animation.list.head,
-		Animation.timeline.head,
+		elementDataOf<{ head: HTMLElement }>(Animation.list).head,
+		elementDataOf<{ head: HTMLElement }>(Animation.timeline).head,
 		getBrowserInstance()?.head,
 		Palette.head
 	];

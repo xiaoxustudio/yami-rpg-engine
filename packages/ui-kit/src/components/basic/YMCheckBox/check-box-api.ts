@@ -66,7 +66,6 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		configurable: true,
 		get: () => dataValue
 	});
-	box.relations = relations;
 
 	const write = function (value: boolean): void {
 		dataValue = !!value;
@@ -114,7 +113,6 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 
 	const relate = function (elements: HTMLElement[]): void {
 		relations = elements;
-		box.relations = relations;
 	};
 
 	const on = function (

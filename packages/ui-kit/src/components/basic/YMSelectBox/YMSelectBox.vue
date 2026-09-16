@@ -99,8 +99,8 @@ const enableHiddenMode = (): HTMLElement => {
 
 const relate = (entries: unknown): void => {
 	core.relate(entries);
-	const el = root.value;
-	if (el) (el as SelectBoxHost).relations = entries as RelationEntry[];
+	// P4b：原先这里把 entries 镜像到元素上（`(el as SelectBoxHost).relations = …`），
+	// 但全仓无人读取元素上的 relations——真正的状态在 core 的 `state` 里，已删。
 	if (state.dataValue !== undefined) {
 		toggleRelatedElements();
 	}
@@ -220,7 +220,6 @@ function initializeApi(): void {
 			state.dataValue = value;
 		}
 	});
-	(el as SelectBoxHost).relations = state.relations;
 	(el as SelectBoxHost).invalid = state.invalid;
 	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
 	// P4b：原先这里还有 `(el as SelectBoxHost).savedValue = state.savedValue` 的镜像——
