@@ -1,14 +1,14 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 
 export interface DetailSummaryApi extends HTMLElement {
-	_initialized: boolean;
 	toggle(): void;
 	on(...args: unknown[]): void;
 }
 
 export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 	const summary = el as DetailSummaryApi;
-	if (summary._initialized) return summary;
+	if (isApiAttached(summary)) return summary;
 
 	const findBox = (node: Element): (HTMLElement & { toggle?: () => void }) | null => {
 		let parent = node.parentElement;
@@ -62,7 +62,7 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		}
 	});
 
-	summary._initialized = true;
+	markApiAttached(summary);
 	summary.addEventListener('keydown', keydown);
 	summary.addEventListener('pointerdown', pointerdown);
 

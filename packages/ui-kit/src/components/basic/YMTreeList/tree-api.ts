@@ -1471,7 +1471,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		list[name] = treeListPrototype[name];
 	}
 
-	list._initialized = false;
+	// P4b: the attach guard now lives in element data (helper in element-data.ts)
+	elementDataOf<{ _initialized?: boolean }>(list)._initialized = false;
 	list.display = 'normal';
 	treeData(list).keyword = null;
 	list.searchResults = [];

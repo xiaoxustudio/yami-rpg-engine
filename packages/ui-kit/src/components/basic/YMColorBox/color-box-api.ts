@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
@@ -12,7 +13,6 @@ export interface ColorBoxApi extends HTMLElement {
 	foreground: HTMLElement;
 	dataValue: string | null;
 	inputEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	input(...args: unknown[]): void;
@@ -37,7 +37,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 
 export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions = {}): ColorBoxApi {
 	const box = el as unknown as ColorBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const background = document.createElement('div');
 	addClass(background, 'box');
@@ -56,7 +56,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		}
 	});
 	box.inputEventEnabled = false;
-	box._initialized = true;
+	markApiAttached(box);
 
 	box.appendChild(background);
 	box.appendChild(foreground);
@@ -79,9 +79,12 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		if (box.dataValue !== color) {
 			box.write(color);
 			if (box.inputEventEnabled) {
-				const input = createPayloadEvent('input', {} as {
-					value: string;
-				});
+				const input = createPayloadEvent(
+					'input',
+					{} as {
+						value: string;
+					}
+				);
 				input.value = box.dataValue ?? '';
 				box.dispatchEvent(input);
 			}

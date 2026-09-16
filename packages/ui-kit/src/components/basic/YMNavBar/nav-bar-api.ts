@@ -1,10 +1,10 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface NavBarApi extends HTMLElement {
 	writeEventEnabled: boolean;
 	selectEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	unselect(...args: unknown[]): void;
@@ -25,7 +25,7 @@ const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => 
 
 export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	const nav = el as NavBarApi;
-	if (nav._initialized) return nav;
+	if (isApiAttached(nav)) return nav;
 
 	nav.writeEventEnabled = false;
 	nav.selectEventEnabled = false;
@@ -121,7 +121,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	}
 
-	nav._initialized = true;
+	markApiAttached(nav);
 	return nav;
 }
 

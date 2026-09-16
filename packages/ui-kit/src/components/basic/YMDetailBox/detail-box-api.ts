@@ -1,9 +1,9 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { show, hide } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface DetailBoxApi extends HTMLElement {
-	_initialized: boolean;
 	toggle(): void;
 	open(...args: unknown[]): void;
 	close(...args: unknown[]): void;
@@ -12,7 +12,7 @@ export interface DetailBoxApi extends HTMLElement {
 
 export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 	const box = el as DetailBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 	let toggleEventEnabled = false;
 
 	const isSummary = (node: Element): boolean =>
@@ -76,7 +76,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 
 	attachApi(box, { open, close, toggle, on });
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	if (box.hasAttribute('open')) {
 		apply(true);

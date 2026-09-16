@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 
@@ -12,7 +13,6 @@ export interface KeyboardBoxApi extends HTMLElement {
 	inputEventEnabled: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	inputCode(...args: unknown[]): void;
@@ -47,7 +47,7 @@ export function attachKeyboardBoxApi(
 	options: KeyboardBoxApiOptions = {}
 ): KeyboardBoxApi {
 	const box = el as unknown as KeyboardBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const input = document.createElement('input');
 	addClass(input, 'keyboard-box-input');
@@ -167,7 +167,7 @@ export function attachKeyboardBoxApi(
 
 	attachApi(box, { read, write, inputCode, enable, disable, getFocus, on });
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	if (options.modelValue) {
 		box.write(options.modelValue);

@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 
 export interface TextBoxApiOptions {
@@ -12,7 +12,6 @@ export interface TextBoxApi extends HTMLElement {
 	input?: HTMLInputElement;
 	lastText: string;
 	hiddenNodes: HTMLElement[];
-	_initialized: boolean;
 	read(...args: unknown[]): string;
 	write(...args: unknown[]): void;
 	insert(...args: unknown[]): void;
@@ -31,7 +30,7 @@ export interface TextBoxApi extends HTMLElement {
 
 export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {}): TextBoxApi {
 	const box = el as TextBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const input = document.createElement('input');
 	input.className = 'text-box-input';
@@ -123,7 +122,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 		box.dispatchEvent(new Event('change', { bubbles: true }));
 	});
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	attachApi(box, {
 		read,

@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, hasClass, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -5,7 +6,6 @@ export interface PageManagerApi extends HTMLElement {
 	index: string | null;
 	active: HTMLElement | null;
 	switchEventEnabled: boolean;
-	_initialized: boolean;
 	switch(value: string | null): void;
 	on(...args: unknown[]): void;
 }
@@ -20,7 +20,7 @@ const dispatchResizeEvent = (el: HTMLElement): void => {
 
 export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	const manager = el as PageManagerApi;
-	if (manager._initialized) return manager;
+	if (isApiAttached(manager)) return manager;
 
 	manager.index = null;
 	manager.active = null;
@@ -50,10 +50,13 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 				if (active) removeClass(active, 'visible');
 				if (target) addClass(target, 'visible');
 				if (manager.switchEventEnabled) {
-					const event = createPayloadEvent('switch', {} as {
-						last: string | null;
-						value: string | null;
-					});
+					const event = createPayloadEvent(
+						'switch',
+						{} as {
+							last: string | null;
+							value: string | null;
+						}
+					);
 					event.last = last;
 					event.value = value;
 					el.dispatchEvent(event);
@@ -88,7 +91,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		}
 	}
 
-	manager._initialized = true;
+	markApiAttached(manager);
 	return manager;
 }
 

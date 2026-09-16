@@ -1,2 +1,6 @@
 #!/bin/bash
-pnpm dlx lint-staged --config lint-staged.config.js --max-arg-length 4096
+# --concurrent false：lint-staged 默认把不同 glob 的**任务组并行**跑，而 oxfmt（写文件）与
+# oxlint（读文件）正好是两组 ⇒ oxlint 有机会读到 oxfmt 改到一半的文件，报出"下一行已带
+# oxlint-disable 注释却被判违规"的假警告（实测踩到两次：command-api.ts 与 custom-box-api.ts）。
+# 串行后 oxfmt 先落地、oxlint 再读，结果稳定。
+pnpm dlx lint-staged --config lint-staged.config.js --max-arg-length 4096 --concurrent false

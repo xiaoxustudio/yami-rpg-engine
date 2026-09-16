@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { TextAreaApi } from '../YMTextArea/text-area-api';
@@ -16,7 +16,6 @@ export interface TextAreaVarApi extends HTMLElement {
 	mode: string | null;
 	strBox?: TextAreaApi | null;
 	varBox?: CustomBoxApi | null;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	switch(...args: unknown[]): void;
@@ -33,7 +32,7 @@ export function attachTextAreaVarApi(
 	options: TextAreaVarApiOptions = {}
 ): TextAreaVarApi {
 	const box = el as TextAreaVarApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	let currentMode: string | null = null;
 
@@ -177,7 +176,7 @@ export function attachTextAreaVarApi(
 		on
 	});
 
-	box._initialized = true;
+	markApiAttached(box);
 	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
 	// oxlint-disable-next-line unbound-method

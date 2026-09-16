@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createPayloadEvent } from '../../../utils/payload-event';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -34,7 +35,6 @@ export type CustomBoxApi = HTMLElement & {
 	dataValue: unknown;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
-	_initialized: boolean;
 	isPluginInput?: boolean;
 	type: string | null;
 	filter: string | null;
@@ -58,7 +58,7 @@ export function attachCustomBoxApi(
 	options: CustomBoxApiOptions = {}
 ): CustomBoxApi {
 	const box = el as CustomBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const props = {
 		getters: options.getters ?? null,
@@ -253,7 +253,7 @@ export function attachCustomBoxApi(
 	});
 	box.writeEventEnabled = false;
 	box.inputEventEnabled = false;
-	box._initialized = true;
+	markApiAttached(box);
 
 	const read = (): unknown => state.dataValue;
 

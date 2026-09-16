@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass } from '../../../utils/dom';
 import { TextHistory } from '../../../utils/history';
@@ -14,7 +15,6 @@ export interface TextAreaApi extends HTMLElement {
 	input?: HTMLTextAreaElement | null;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): string;
 	write(...args: unknown[]): void;
 	insert(...args: unknown[]): void;
@@ -84,7 +84,7 @@ const getFocus = (input: HTMLTextAreaElement, mode?: string): void => {
 
 export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions = {}): TextAreaApi {
 	const box = el as TextAreaApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const input = document.createElement('textarea');
 	(input as HistoryTextAreaElement).history = new TextHistory(input);
@@ -190,7 +190,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	}
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	if (options.modelValue !== undefined) {
 		box.write(options.modelValue);

@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import {
 	createSelectBoxCore,
@@ -26,7 +27,6 @@ export type SelectBoxApi = HTMLElement & {
 	hideUnrelated: boolean;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): unknown;
 	write2(value: unknown): void;
@@ -57,7 +57,7 @@ export function attachSelectBoxApi(
 	options: SelectBoxApiOptions = {}
 ): SelectBoxApi {
 	const box = el as SelectBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const popupEnabled = options.popup ?? true;
 	const popupHandler = typeof options.popup === 'function' ? options.popup : null;
@@ -218,7 +218,7 @@ export function attachSelectBoxApi(
 	// 真正的 saved/restore 状态在 core 的 `state` 里）
 	box.writeEventEnabled = state.writeEventEnabled;
 	box.inputEventEnabled = state.inputEventEnabled;
-	box._initialized = true;
+	markApiAttached(box);
 
 	attachApi(box, {
 		read,

@@ -1,6 +1,6 @@
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, rect } from '../../../utils/dom';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 
 export interface ScrollBarApiOptions {
 	target?: HTMLElement | null;
@@ -44,7 +44,6 @@ export interface ScrollBarApi extends HTMLElement {
 	timer: ScrollTimer | null;
 	dragging: ScrollDragging | null;
 	visible: boolean;
-	_initialized: boolean;
 	bind(target: HTMLElement, type: string): void;
 	updateHorizontalBar(): void;
 	updateVerticalBar(): void;
@@ -63,7 +62,7 @@ export function attachScrollBarApi(
 	options: ScrollBarApiOptions = {}
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
-	if (bar._initialized) return bar;
+	if (isApiAttached(bar)) return bar;
 	// P4b：	humb 走显式元素数据（该字段已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<ScrollBarApi>(bar);
 
@@ -371,7 +370,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	bar._initialized = true;
+	markApiAttached(bar);
 	el.addEventListener('pointerdown', pointerdown);
 
 	return bar;

@@ -1,14 +1,14 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 
 export interface ToastManagerApi extends HTMLElement {
-	_initialized: boolean;
 	show(...args: unknown[]): HTMLDivElement;
 	dismiss(el: HTMLElement | null): void;
 }
 
 export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 	const manager = el as ToastManagerApi;
-	if (manager._initialized) return manager;
+	if (isApiAttached(manager)) return manager;
 
 	const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
 
@@ -50,7 +50,7 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 
 	attachApi(manager, { show, dismiss });
 
-	manager._initialized = true;
+	markApiAttached(manager);
 	return manager;
 }
 

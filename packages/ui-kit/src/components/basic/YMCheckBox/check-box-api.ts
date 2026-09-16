@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
@@ -11,7 +12,6 @@ export interface CheckBoxApiOptions {
 export interface CheckBoxApi extends HTMLElement {
 	dataValue: boolean | null;
 	relations: HTMLElement[];
-	_initialized: boolean;
 	read(...args: unknown[]): boolean;
 	write(...args: unknown[]): void;
 	input(...args: unknown[]): void;
@@ -42,7 +42,7 @@ const disableElement = (element: HTMLElement & { disable?: () => void }): void =
 
 export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions = {}): CheckBoxApi {
 	const box = el as unknown as CheckBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const standard = options.standard ?? hasClass(box, 'standard');
 	let dataValue = false;
@@ -182,7 +182,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		box.addEventListener('pointerdown', box.pointerdown as EventListener);
 	}
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	if (options.modelValue) {
 		box.write(options.modelValue);

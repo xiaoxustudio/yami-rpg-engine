@@ -1,3 +1,4 @@
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
@@ -20,7 +21,6 @@ export interface NumberBoxApi extends HTMLElement {
 	decimals: number;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): number;
 	write(...args: unknown[]): void;
 	enable(...args: unknown[]): void;
@@ -38,7 +38,7 @@ export function attachNumberBoxApi(
 	options: NumberBoxApiOptions = {}
 ): NumberBoxApi {
 	const box = el as NumberBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const input = document.createElement('input');
 	addClass(input, 'number-box-input');
@@ -110,7 +110,7 @@ export function attachNumberBoxApi(
 
 	attachApi(box, { read, write, enable, disable, getFocus, on });
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
 		box.write(options.modelValue);

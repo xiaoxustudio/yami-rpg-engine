@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import { defVar } from '../YMNumberVar/number-var-api';
@@ -15,7 +15,6 @@ export interface FileVarApi extends HTMLElement {
 	mode: string | null;
 	fileBox: CustomBoxApi;
 	varBox?: CustomBoxApi | null;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	switch(...args: unknown[]): void;
@@ -29,7 +28,7 @@ export interface FileVarApi extends HTMLElement {
 
 export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {}): FileVarApi {
 	const box = el as FileVarApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	const factory = options.customBoxFactory ?? (() => null);
 	// P4b：`fileBox` 从"原型访问器"改成显式元素数据（`fileBox` 这个字段已从 DATA_FIELDS 摘除）
@@ -170,7 +169,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		on
 	});
 
-	box._initialized = true;
+	markApiAttached(box);
 	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
 	// oxlint-disable-next-line unbound-method

@@ -42,7 +42,6 @@ const DATA_FIELDS = [
 	'anchor',
 	'inserting',
 	'focusing',
-	'_initialized',
 	'expanded',
 	'changed',
 	'group',
@@ -83,4 +82,19 @@ export function getElementData(el: HTMLElement): Record<string, unknown> {
  */
 export function elementDataOf<T>(el: unknown): T {
 	return getElementData(el as HTMLElement) as unknown as T;
+}
+
+/**
+ * P4b：元素 API 工厂的"只装配一次"守卫。
+ *
+ * 20 个 `*-api.ts` 原先都写成 `if (box._initialized) return box;` … `box._initialized = true;`，
+ * 靠 `HTMLElement.prototype` 上的 `_initialized` 访问器落到 WeakMap。现在改走这两个 helper，
+ * `_initialized` 也从 `DATA_FIELDS` 摘掉——调用点仍然是一行，语义完全相同。
+ */
+export function isApiAttached(el: unknown): boolean {
+	return elementDataOf<{ _initialized?: boolean }>(el)._initialized === true;
+}
+
+export function markApiAttached(el: unknown): void {
+	elementDataOf<{ _initialized?: boolean }>(el)._initialized = true;
 }

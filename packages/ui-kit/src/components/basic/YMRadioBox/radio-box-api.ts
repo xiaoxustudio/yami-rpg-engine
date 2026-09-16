@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, hasClass } from '../../../utils/dom';
 import {
 	radioProxyMap,
@@ -20,7 +20,6 @@ export type RadioBoxApi = HTMLElement & {
 	name: string;
 	proxy: RadioProxyElement;
 	dataValue: number | string | boolean;
-	_initialized: boolean;
 	read(...args: unknown[]): number | string | boolean;
 	write(...args: unknown[]): void;
 	input(...args: unknown[]): void;
@@ -32,7 +31,7 @@ export type RadioBoxApi = HTMLElement & {
 
 export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions = {}): RadioBoxApi {
 	const box = el as unknown as RadioBoxApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 	// P4b: proxy now lives in element data (field removed from DATA_FIELDS)
 	const data = elementDataOf<RadioBoxApi>(box);
 
@@ -153,7 +152,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.insertBefore(mark, box.childNodes[0]);
 	}
 
-	box._initialized = true;
+	markApiAttached(box);
 
 	const read = (): number | string | boolean => box.dataValue;
 	const write = (v: number | string | boolean): void => {

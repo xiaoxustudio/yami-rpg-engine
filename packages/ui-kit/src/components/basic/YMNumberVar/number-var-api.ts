@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import {
 	addClass,
 	removeClass,
@@ -22,7 +22,6 @@ export interface NumberVarApi extends HTMLElement {
 	mode: string | null;
 	numBox: NumberBoxApi;
 	varBox?: CustomBoxApi | null;
-	_initialized: boolean;
 	read(...args: unknown[]): unknown;
 	write(...args: unknown[]): void;
 	switch(...args: unknown[]): void;
@@ -42,7 +41,7 @@ export function attachNumberVarApi(
 	options: NumberVarApiOptions = {}
 ): NumberVarApi {
 	const box = el as NumberVarApi;
-	if (box._initialized) return box;
+	if (isApiAttached(box)) return box;
 
 	let currentMode: string | null = null;
 
@@ -196,7 +195,7 @@ export function attachNumberVarApi(
 		on
 	});
 
-	box._initialized = true;
+	markApiAttached(box);
 	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);
 	// oxlint-disable-next-line unbound-method

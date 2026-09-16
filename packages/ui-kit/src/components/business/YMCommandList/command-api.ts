@@ -23,6 +23,7 @@ import { attachScrollListener } from '../YMParamList/scroll-listener';
 import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createCommandCore } from './command-core';
 import * as commandRender from './command-render';
+import { elementDataOf } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 
 const commandCore = createCommandCore();
@@ -2895,7 +2896,8 @@ export function createCommandListApi(
 	}
 	Object.setPrototypeOf(list, commandListPrototype);
 
-	list._initialized = false;
+	// P4b: the attach guard now lives in element data (helper in element-data.ts)
+	elementDataOf<{ _initialized?: boolean }>(list)._initialized = false;
 	list._paddingTop = 0;
 	list.data = null;
 	list.varList = null;
