@@ -27,6 +27,7 @@ import { useChangeActorMotionCommandSchema } from '@app/composables/commands/use
 import { GameLocal } from '@app/local/local-object.ts';
 import ChangeActorPortrait from '@app/components/commands/ChangeActorPortrait.vue';
 import '@app/animation/register.ts';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -126,8 +127,8 @@ vi.mock('@app/stores/local', () => ({
 			) as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(rotatable.dataItems!.map((item) => item.value)).toEqual([true, false]);
-			expect(syncAngle.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(rotatable)!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(syncAngle)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -425,7 +426,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('callEvent-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(10);
+			expect(dataItemsOf(type)).toHaveLength(10);
 			wrapper.unmount();
 		});
 
@@ -547,8 +548,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('castSkill-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(mode.dataItems).toHaveLength(4);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(mode)).toHaveLength(4);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -715,7 +716,7 @@ vi.mock('@app/stores/local', () => ({
 			) as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(5);
+			expect(dataItemsOf(operation)).toHaveLength(5);
 			wrapper.unmount();
 		});
 
@@ -926,7 +927,7 @@ vi.mock('@app/stores/local', () => ({
 			const mode = document.getElementById('changeActorPortrait-mode') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(mode.dataItems).toHaveLength(3);
+			expect(dataItemsOf(mode)).toHaveLength(3);
 			wrapper.unmount();
 		});
 

@@ -21,6 +21,7 @@ import StopActorAnimation from '@app/components/commands/StopActorAnimation.vue'
 import { useStopActorAnimationCommandSchema } from '@app/composables/commands/useStopActorAnimationCommandSchema';
 import StopAudio from '@app/components/commands/StopAudio.vue';
 import { useStopAudioCommandSchema } from '@app/composables/commands/useStopAudioCommandSchema';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -676,8 +677,8 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('simulateKey-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(3);
-			expect(operation.dataItems!.map((item) => item.value)).toEqual([
+			expect(dataItemsOf(operation)).toHaveLength(3);
+			expect(dataItemsOf(operation)!.map((item) => item.value)).toEqual([
 				'click',
 				'press',
 				'release'

@@ -6,6 +6,7 @@ import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 interface ControlEl extends HTMLElement {
 	read(): unknown;
@@ -37,7 +38,7 @@ describe('useSetListCommandSchema（setList 命令表单 composable：insert/edi
 		const operation = document.getElementById('setList-operation') as unknown as {
 			dataItems?: Array<{ name: string; value: string }>;
 		};
-		expect(operation.dataItems).toHaveLength(15);
+		expect(dataItemsOf(operation)).toHaveLength(15);
 		wrapper.unmount();
 	});
 

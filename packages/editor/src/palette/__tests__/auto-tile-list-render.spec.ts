@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { elementDataOf, YMCommonList } from '@ui-kit';
+import { elementDataValueOf, YMCommonList } from '@ui-kit';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import '@app/utils/number';
 
@@ -33,7 +33,10 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0');
 		expect(items[1].textContent).toBe('#1 !');
 		expect(items[2].textContent).toBe('#2');
-		expect(elementDataOf<{ dataValue?: number }>(items[1]).dataValue).toBe(1);
+		// P4b 收口：行元素上的 `.dataValue` 由 Vue 的 `patchDOMProp` 写成**元素自己的属性**
+		// （消费方 `common-list-core` 经 `elementDataValueOf` 读取，own 优先、否则元素数据）。
+		// 断言一律走同一个门，而不是假定它具体存在哪一侧存储。
+		expect(elementDataValueOf(items[1])).toBe(1);
 	});
 
 	it('createFrameItems 经 Vue 渲染 common-item 与帧坐标', async () => {
@@ -47,6 +50,6 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0: 0,0');
 		expect(items[1].textContent).toBe('#1: 2,1');
 		expect(items[2].textContent).toBe('#2: 2,3');
-		expect(elementDataOf<{ dataValue?: number }>(items[2]).dataValue).toBe(2);
+		expect(elementDataValueOf(items[2])).toBe(2);
 	});
 });

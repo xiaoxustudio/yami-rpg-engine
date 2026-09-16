@@ -4,6 +4,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import SetButtonProperty from '@app/components/tools/SetButtonProperty.vue';
 import { ButtonProperty } from '../set-button-property-window';
 import { Window } from '@app/tools/window-object';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -25,7 +26,7 @@ describe('属性窗口懒挂载初始化（ensureSetup）', () => {
 		const keyEl = document.getElementById('setButton-property-key') as unknown as {
 			dataItems?: Array<{ value: string }>;
 		};
-		expect(keyEl.dataItems?.length).toBeGreaterThan(0);
+		expect(dataItemsOf(keyEl)?.length).toBeGreaterThan(0);
 
 		ButtonProperty.open!({ key: 'normalClip', value: [1, 2, 3, 4] });
 		await wrapper.vm.$nextTick();

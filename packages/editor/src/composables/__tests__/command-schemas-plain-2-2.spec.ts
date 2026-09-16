@@ -26,6 +26,7 @@ import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataC
 import GetActor from '@app/components/commands/GetActor.vue';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -221,8 +222,8 @@ vi.mock('@app/stores/local', () => ({
 			const inSight = document.getElementById('detectTargets-inSight') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(selector.dataItems).toHaveLength(6);
-			expect(inSight.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(selector)).toHaveLength(6);
+			expect(dataItemsOf(inSight)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -997,11 +998,11 @@ vi.mock('@app/stores/local', () => ({
 			const exclusion = document.getElementById('getActor-exclusion') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(area.dataItems).toHaveLength(2);
-			expect(selector.dataItems).toHaveLength(4);
-			expect(condition.dataItems).toHaveLength(7);
-			expect(activation.dataItems).toHaveLength(3);
-			expect(exclusion.dataItems).toHaveLength(3);
+			expect(dataItemsOf(area)).toHaveLength(2);
+			expect(dataItemsOf(selector)).toHaveLength(4);
+			expect(dataItemsOf(condition)).toHaveLength(7);
+			expect(dataItemsOf(activation)).toHaveLength(3);
+			expect(dataItemsOf(exclusion)).toHaveLength(3);
 			wrapper.unmount();
 		});
 

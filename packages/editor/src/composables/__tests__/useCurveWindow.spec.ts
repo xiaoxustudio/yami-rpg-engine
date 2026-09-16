@@ -7,6 +7,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { Timer } from '@app/utils/timer';
+import { elementDataValueOf } from '@ui-kit';
 
 /** P1b：`useCurveWindow` 改读 `animationEls`（原先按 id 直查）→ 用例自建的 DOM 需登记进注册表 */
 const CURVE_IDS = [
@@ -170,7 +171,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		curve.load(frame);
 		expect(curve.target).toBe(frame);
 		expect(getList().classList.contains('hidden')).toBe(false);
-		expect(getList().dataValue).toBe('easing-1');
+		expect(elementDataValueOf(getList())).toBe('easing-1');
 		curve.load(null);
 		expect(curve.target).toBeNull();
 		expect(curve.index).toBeNull();
@@ -182,7 +183,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		const frame = { easingId: 'easing-1', key };
 		curve.load(frame);
 		curve.load(frame);
-		expect(getList().dataValue).toBe('easing-1');
+		expect(elementDataValueOf(getList())).toBe('easing-1');
 	});
 
 	it('easingIdWrite 更新选中 id 并刷新曲线', async () => {
@@ -238,7 +239,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		event.key = 'easings';
 		window.dispatchEvent(event);
 		expect(curve.index).toBeNull();
-		expect(getList().dataValue).toBe('easing-1');
+		expect(elementDataValueOf(getList())).toBe('easing-1');
 	});
 
 	it('settingsPointerdown 打开过渡窗口', async () => {

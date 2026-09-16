@@ -25,6 +25,7 @@ import { useCommentCommandSchema } from '@app/composables/commands/useCommentCom
 import ControlButton from '@app/components/commands/ControlButton.vue';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
 import '@app/animation/register.ts';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -59,7 +60,7 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('changeActorSkill-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(4);
+			expect(dataItemsOf(operation)).toHaveLength(4);
 			wrapper.unmount();
 		});
 
@@ -274,7 +275,7 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('changeActorState-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(3);
+			expect(dataItemsOf(operation)).toHaveLength(3);
 			wrapper.unmount();
 		});
 
@@ -413,7 +414,7 @@ vi.mock('@app/stores/local', () => ({
 			};
 			const text = document.querySelector('#changeActorTeam-teamId .select-box-text');
 			// 修复前：下拉只靠窗口 'open' 事件加载选项，open 未触发时选项为空、无默认文本
-			expect(team.dataItems?.map((item) => item.value)).toEqual(['team0']);
+			expect(dataItemsOf(team)?.map((item) => item.value)).toEqual(['team0']);
 			expect(team.read()).toBe('team0');
 			// P4b 第十九刀：`invalid` 不再是元素上的原型访问器（改走元素数据），
 			// 这里改为断言**可见状态**——无效值会让文本节点挂上 `invalid` class（core 的 write 分支）
@@ -502,8 +503,8 @@ vi.mock('@app/stores/local', () => ({
 			const passage = document.getElementById('changePassableTerrain-passage') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(passage.dataItems).toHaveLength(3);
-			expect(passage.dataItems!.map((item) => item.value)).toEqual([
+			expect(dataItemsOf(passage)).toHaveLength(3);
+			expect(dataItemsOf(passage)!.map((item) => item.value)).toEqual([
 				'land',
 				'water',
 				'unrestricted'
@@ -766,7 +767,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('commandLine-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(4);
+			expect(dataItemsOf(type)).toHaveLength(4);
 			wrapper.unmount();
 		});
 

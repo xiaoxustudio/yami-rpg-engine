@@ -519,8 +519,13 @@ function checkApiFileCount(files) {
 }
 
 /**
- * 原型数据字段数：`utils/element-data.ts` 的 `DATA_FIELDS` 长度
- * 与文档里「`DATA_FIELDS` … **N**」的声明必须一致（P4b 的规模基线）。
+ * P4b 原型访问器门禁（**双向**）。
+ *
+ * P4b 收口前：`utils/element-data.ts` 里有 `DATA_FIELDS` + `defineDataAccessors()`，
+ * 本项核对「字段数与文档里『`DATA_FIELDS` … **N**』的**当前**口径声明一致」。
+ * P4b 收口后（2026-09-16 起）：两者都**不允许再出现**，本项转为回归门禁——
+ * 代码里若又冒出 `DATA_FIELDS`/`defineDataAccessors`/`HTMLElement.prototype` 安装，
+ * 或者文档仍在宣称"还有 N 个字段"，都会失败。
  *
  * 实现于 2026-09-12 的 P4b 第四刀从 editor 迁到 **ui-kit**（editor 侧变成同路径再导出），
  * 于是这里必须按候选路径找——只认 editor 那份会让本项**静默跳过**（曾经如此）。
@@ -532,20 +537,19 @@ function checkPrototypeFields(files) {
 	];
 	const target = candidates.find((p) => existsSync(p));
 	if (target === undefined) {
-		notes.push('element-data.ts 不存在（跳过 DATA_FIELDS 计数核对）');
+		notes.push('element-data.ts 不存在（跳过原型访问器门禁）');
 		return;
 	}
-	const block = /const DATA_FIELDS = \[([\s\S]*?)\]\s*as const;/.exec(readFileSync(target, 'utf8'));
-	if (block === null) {
-		fail(
-			`${relative(ROOT, target).replace(/\\/g, '/')} 里未解析到 DATA_FIELDS（P4b 的规模基线失去门禁）`
-		);
-		return;
-	}
-	const count = block[1]
-		.split('\n')
-		.map((line) => line.trim())
-		.filter((line) => /^'[\w$]+',?$/.test(line)).length;
+	const source = readFileSync(target, 'utf8');
+	const block = /const DATA_FIELDS = \[([\s\S]*?)\]\s*as const;/.exec(source);
+	const installsAccessors = /Object\.defineProperty\(\s*HTMLElement\.prototype/.test(source);
+	const count =
+		block === null
+			? 0
+			: block[1]
+					.split('\n')
+					.map((line) => line.trim())
+					.filter((line) => /^'[\w$]+',?$/.test(line)).length;
 	const re = /`DATA_FIELDS`[^\n]{0,40}?\*\*(\d+)\*\*/g;
 	let declared = 0;
 	for (const file of files) {
@@ -562,9 +566,14 @@ function checkPrototypeFields(files) {
 			}
 		});
 	}
-	if (declared > 0) {
-		notes.push(`DATA_FIELDS 字段数一致（${count}，目标 0）`);
-	} else {
+	if (count === 0 && !installsAccessors) {
+		if (declared > 0) {
+			fail(`文档仍宣称 DATA_FIELDS 有字段数（${declared} 处），但代码里已经退役（P4b 已收口）`);
+		}
+		notes.push('P4b 已收口：DATA_FIELDS / defineDataAccessors 不存在（回归门禁）');
+		return;
+	}
+	if (declared === 0) {
 		// 曾经如此：文档改用「**83 → 72**」的箭头写法后，正则一条都匹配不到，
 		// 本项静默失效（"未解析到 DATA_FIELDS（跳过计数核对）"被当成正常路径）。
 		fail(

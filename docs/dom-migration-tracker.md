@@ -48,13 +48,13 @@
 | ui-kit/composables  | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1143 |  | 0 | 45 | 1 | 0 | 10 | 16 | 1 | 11 | 0 | 121 | 122 | 11 | 29 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
+| ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
+| 合计                  | 1143 |  | 0 | 45 | 1 | 0 | 10 | 16 | 1 | 12 | 0 | 121 | 122 | 11 | 29 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
 
 ## 口径
 
 - 扫描文件：**1143**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
-- 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`（⚠️ oxlint 不可用，当前为**正则估算**））
+- 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
 - **设计豁免文件（C1 白名单）：45**——按设计必须使用受限 API，已由 `.oxlintrc.json` 的 `overrides` 关掉规则、**不再需要豁免注释**（画布上下文 / 应用挂载点 / 唯一 DOM 缝隙 / index.html 外壳元素 / ui-kit 元素优先组件层）
@@ -74,7 +74,7 @@
 | style.* 赋值 | 306 | 77 |
 | .children 遍历 | 231 | 73 |
 | hasClass() 读 class 当状态 | 212 | 51 |
-| clientWidth/Height 读 | 140 | 40 |
+| clientWidth/Height 读 | 143 | 40 |
 | classList.add/remove/toggle | 134 | 41 |
 | textContent 赋值 | 128 | 44 |
 | get/set/removeAttribute | 85 | 35 |
@@ -87,9 +87,9 @@
 | offsetWidth/Height 读 | 6 | 3 |
 | getComputedStyle | 6 | 5 |
 | innerHTML 赋值 | 1 | 1 |
-| prototype 访问器定义（逗号形式） | 1 | 1 |
 | replaceChildren/insertAdjacentHTML/matches() | 0 | 0 |
 | customElements.define / attachShadow | 0 | 0 |
+| prototype 访问器定义（逗号形式） | 0 | 0 |
 | dataset.* 状态（R-8 监测位） | 0 | 0 |
 
 ## 明细
@@ -97,41 +97,41 @@
 | 文件 | 行数 | 命中 | 豁免注释 |
 | --- | --- | --- | --- |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1131 | 56 | - |
-| packages/editor/src/engine/layout/layout.ts | 2097 | 53 | - |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1675 | 51 | - |
+| packages/editor/src/engine/layout/layout.ts | 2098 | 53 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1699 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2409 | 35 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 906 | 31 | - |
-| packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1437 | 29 | - |
-| packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
-| packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
+| packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1438 | 29 | - |
+| packages/editor/src/utils/element-utils.ts | 647 | 27 | - |
+| packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 699 | 27 | - |
 | packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 3080 | 21 | - |
-| packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
+| packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 532 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 482 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 752 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 160 | 14 | - |
-| packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 407 | 13 | - |
+| packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 416 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
-| packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 391 | 12 | - |
+| packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 398 | 12 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 210 | 12 | - |
+| packages/ui-kit/src/utils/radio-proxy.ts | 235 | 12 | - |
 | packages/editor/src/utils/dom.ts | 236 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 273 | 11 | - |
-| packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 418 | 11 | - |
+| packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 449 | 11 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
-| packages/ui-kit/src/utils/radio-proxy.ts | 226 | 11 | - |
 | packages/editor/src/components/common/SliderBox.vue | 253 | 10 | - |
 | packages/editor/src/data/transition-window.ts | 1403 | 10 | - |
 | packages/editor/src/utils/drag-drop.ts | 63 | 10 | - |
 | packages/ui-kit/src/components/basic/YMKeyboardBox/keyboard-box-api.ts | 187 | 10 | - |
 | packages/ui-kit/src/utils/history.ts | 774 | 10 | - |
 | packages/editor/src/components/layout/LayoutPanel.vue | 2090 | 9 | - |
-| packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
+| packages/editor/src/composables/useTileNodeWindow.ts | 551 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 202 | 9 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 158 | 9 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 62 | 9 | - |
-| packages/editor/src/animation/animation-list.ts | 1149 | 8 | - |
+| packages/editor/src/animation/animation-list.ts | 1153 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
 | packages/editor/src/commands/text-tip.ts | 392 | 8 | - |
 | packages/editor/src/inspector/inspector.ts | 530 | 8 | - |
@@ -145,7 +145,7 @@
 | packages/editor/src/tools/window-object.ts | 510 | 7 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 140 | 7 | - |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
-| packages/ui-kit/src/utils/dom.ts | 220 | 7 | - |
+| packages/ui-kit/src/utils/dom.ts | 212 | 7 | - |
 | packages/editor/src/animation/animation-initialize.ts | 512 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
 | packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 638 | 6 | - |
@@ -153,16 +153,16 @@
 | packages/editor/src/title/title-bar.ts | 769 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 307 | 6 | - |
 | packages/ui-kit/src/components/basic/YMFileVar/file-var-api.ts | 193 | 6 | - |
-| packages/ui-kit/src/components/basic/YMFileVar/YMFileVar.vue | 245 | 6 | - |
-| packages/ui-kit/src/components/basic/YMNavBar/nav-bar-api.ts | 133 | 6 | - |
+| packages/ui-kit/src/components/basic/YMFileVar/YMFileVar.vue | 246 | 6 | - |
+| packages/ui-kit/src/components/basic/YMNavBar/nav-bar-api.ts | 147 | 6 | - |
 | packages/ui-kit/src/components/basic/YMNumberVar/number-var-api.ts | 219 | 6 | - |
-| packages/ui-kit/src/components/basic/YMNumberVar/YMNumberVar.vue | 289 | 6 | - |
+| packages/ui-kit/src/components/basic/YMNumberVar/YMNumberVar.vue | 290 | 6 | - |
 | packages/ui-kit/src/components/basic/YMSelectVar/select-var-api.ts | 205 | 6 | - |
-| packages/ui-kit/src/components/basic/YMSelectVar/YMSelectVar.vue | 247 | 6 | - |
+| packages/ui-kit/src/components/basic/YMSelectVar/YMSelectVar.vue | 248 | 6 | - |
 | packages/ui-kit/src/components/basic/YMStringVar/string-var-api.ts | 200 | 6 | - |
-| packages/ui-kit/src/components/basic/YMStringVar/YMStringVar.vue | 263 | 6 | - |
+| packages/ui-kit/src/components/basic/YMStringVar/YMStringVar.vue | 264 | 6 | - |
 | packages/ui-kit/src/components/basic/YMTextAreaVar/textarea-var-api.ts | 200 | 6 | - |
-| packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 264 | 6 | - |
+| packages/ui-kit/src/components/basic/YMTextAreaVar/YMTextAreaVar.vue | 265 | 6 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 109 | 6 | - |
 | packages/editor/src/components/common/WindowFrame.vue | 184 | 5 | - |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 257 | 5 | - |
@@ -175,7 +175,7 @@
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 186 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-core.ts | 171 | 5 | - |
-| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 103 | 5 | - |
+| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 110 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 141 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 411 | 4 | - |
 | packages/editor/src/commands/command-tip.ts | 457 | 4 | - |
@@ -226,7 +226,7 @@
 | packages/editor/src/components/inspector/SceneParallaxPage.vue | 568 | 2 | - |
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
-| packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
+| packages/editor/src/composables/useCurveWindow.ts | 460 | 2 | - |
 | packages/editor/src/engine/palette/palette-engine.ts | 730 | 2 | - |
 | packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
 | packages/editor/src/engine/webgl/texture.ts | 132 | 2 | - |
@@ -237,14 +237,14 @@
 | packages/editor/src/log/log-window.ts | 184 | 2 | - |
 | packages/editor/src/log/related-references.ts | 934 | 2 | - |
 | packages/editor/src/main/startup.ts | 43 | 2 | - |
-| packages/editor/src/main.ts | 29 | 2 | - |
+| packages/editor/src/main.ts | 28 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
 | packages/editor/src/module/constants.ts | 106 | 2 | - |
 | packages/editor/src/palette/auto-tile.ts | 979 | 2 | - |
 | packages/editor/src/particle/particle-events.ts | 217 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1402 | 2 | - |
 | packages/editor/src/services/project/setting-config/renderer.ts | 176 | 2 | - |
-| packages/editor/src/tools/event-list.ts | 185 | 2 | - |
+| packages/editor/src/tools/event-list.ts | 197 | 2 | - |
 | packages/editor/src/utils/keyboard.ts | 43 | 2 | - |
 | packages/ui-kit/src/components/basic/YMEmptyState/YMEmptyState.vue | 63 | 2 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/YMSelectBox.vue | 377 | 2 | - |
@@ -305,7 +305,7 @@
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
 | packages/editor/src/services/project/setting-config/index.ts | 142 | 1 | - |
 | packages/editor/src/stores/browser.ts | 583 | 1 | - |
-| packages/editor/src/tools/condition-list.ts | 314 | 1 | - |
+| packages/editor/src/tools/condition-list.ts | 315 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/dpr.ts | 14 | 1 | - |
 | packages/editor/src/utils/element-registry.ts | 60 | 1 | - |
@@ -582,7 +582,7 @@
 | packages/editor/src/components/layout/LayoutTreeView.vue | 37 | 0 | - |
 | packages/editor/src/components/layout/PaletteNode.vue | 25 | 0 | - |
 | packages/editor/src/components/number-var.ts | 8 | 0 | - |
-| packages/editor/src/components/select-box.ts | 37 | 0 | - |
+| packages/editor/src/components/select-box.ts | 42 | 0 | - |
 | packages/editor/src/components/select-list.ts | 14 | 0 | - |
 | packages/editor/src/components/select-var.ts | 8 | 0 | - |
 | packages/editor/src/components/string-var.ts | 8 | 0 | - |
@@ -756,7 +756,7 @@
 | packages/editor/src/composables/commands/useSetAngleCommandSchema.ts | 54 | 0 | - |
 | packages/editor/src/composables/commands/useSetAnimationCommandSchema.ts | 55 | 0 | - |
 | packages/editor/src/composables/commands/useSetAnimationComponentCommandSchema.ts | 191 | 0 | - |
-| packages/editor/src/composables/commands/useSetBooleanCommandSchema.ts | 202 | 0 | - |
+| packages/editor/src/composables/commands/useSetBooleanCommandSchema.ts | 205 | 0 | - |
 | packages/editor/src/composables/commands/useSetButtonCommandSchema.ts | 55 | 0 | - |
 | packages/editor/src/composables/commands/useSetCooldownCommandSchema.ts | 59 | 0 | - |
 | packages/editor/src/composables/commands/useSetCursorCommandSchema.ts | 31 | 0 | - |
@@ -858,12 +858,12 @@
 | packages/editor/src/composables/useFileUIPage.ts | 42 | 0 | - |
 | packages/editor/src/composables/useFileVideoPage.ts | 41 | 0 | - |
 | packages/editor/src/composables/useIfBranchSchema.ts | 131 | 0 | - |
-| packages/editor/src/composables/useIfConditionSchema.ts | 975 | 0 | - |
+| packages/editor/src/composables/useIfConditionSchema.ts | 977 | 0 | - |
 | packages/editor/src/composables/useImageClipWindow.ts | 40 | 0 | - |
 | packages/editor/src/composables/useItemGetterWindow.ts | 114 | 0 | - |
 | packages/editor/src/composables/useLocalizedOptions.ts | 50 | 0 | - |
 | packages/editor/src/composables/useMenuService.ts | 2 | 0 | - |
-| packages/editor/src/composables/useNumberOperandSchema.ts | 886 | 0 | - |
+| packages/editor/src/composables/useNumberOperandSchema.ts | 888 | 0 | - |
 | packages/editor/src/composables/useParamHistory.ts | 141 | 0 | - |
 | packages/editor/src/composables/useParticleLayerPage.ts | 275 | 0 | - |
 | packages/editor/src/composables/usePositionGetterWindow.ts | 141 | 0 | - |
@@ -900,7 +900,7 @@
 | packages/editor/src/composables/useUITextPage.ts | 105 | 0 | - |
 | packages/editor/src/composables/useUIVideoPage.ts | 45 | 0 | - |
 | packages/editor/src/composables/useUIWindowPage.ts | 61 | 0 | - |
-| packages/editor/src/composables/useVariableGetterWindow.ts | 646 | 0 | - |
+| packages/editor/src/composables/useVariableGetterWindow.ts | 647 | 0 | - |
 | packages/editor/src/composables/useWordList.ts | 2 | 0 | - |
 | packages/editor/src/composables/useZoomWindow.ts | 45 | 0 | - |
 | packages/editor/src/constants/editor.ts | 20 | 0 | - |
@@ -1053,7 +1053,7 @@
 | packages/editor/src/scene/scene-events-list.ts | 490 | 0 | - |
 | packages/editor/src/scene/scene-events-scroll.ts | 91 | 0 | - |
 | packages/editor/src/scene/scene-events.ts | 22 | 0 | - |
-| packages/editor/src/scene/scene-list.ts | 315 | 0 | - |
+| packages/editor/src/scene/scene-list.ts | 317 | 0 | - |
 | packages/editor/src/scene/scene-map-record.ts | 146 | 0 | - |
 | packages/editor/src/scene/scene-marquee.ts | 14 | 0 | - |
 | packages/editor/src/scene/scene-selection.ts | 14 | 0 | - |
@@ -1161,7 +1161,7 @@
 | packages/editor/src/ui/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/ui/register.ts | 8 | 0 | - |
 | packages/editor/src/ui/ui-file.ts | 258 | 0 | - |
-| packages/editor/src/ui/ui-list.ts | 450 | 0 | - |
+| packages/editor/src/ui/ui-list.ts | 452 | 0 | - |
 | packages/editor/src/ui/ui-transform.ts | 360 | 0 | - |
 | packages/editor/src/ui/ui-window.ts | 323 | 0 | - |
 | packages/editor/src/update/updater-hooks.ts | 21 | 0 | - |
@@ -1200,7 +1200,7 @@
 | packages/editor/src/variable/window-events.ts | 44 | 0 | - |
 | packages/ui-kit/src/components/basic/YMButton/YMButton.vue | 116 | 0 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/YMCheckBox.vue | 149 | 0 | - |
-| packages/ui-kit/src/components/basic/YMCommonList/common-list-core.ts | 113 | 0 | - |
+| packages/ui-kit/src/components/basic/YMCommonList/common-list-core.ts | 121 | 0 | - |
 | packages/ui-kit/src/components/basic/YMDetailBox/context.ts | 6 | 0 | - |
 | packages/ui-kit/src/components/basic/YMDetailBox/YMDetailBox.vue | 83 | 0 | - |
 | packages/ui-kit/src/components/basic/YMLoadingOverlay/YMLoadingOverlay.vue | 76 | 0 | - |
@@ -1228,12 +1228,12 @@
 | packages/ui-kit/src/composables/useMenuService.ts | 16 | 0 | - |
 | packages/ui-kit/src/composables/useTheme.ts | 8 | 0 | - |
 | packages/ui-kit/src/composables/useWordList.ts | 45 | 0 | - |
-| packages/ui-kit/src/index.ts | 249 | 0 | - |
+| packages/ui-kit/src/index.ts | 250 | 0 | - |
 | packages/ui-kit/src/theme/theme.ts | 52 | 0 | - |
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 142 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 78 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |

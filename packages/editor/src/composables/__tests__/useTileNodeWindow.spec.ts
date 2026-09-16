@@ -7,6 +7,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { Palette } from '@app/palette/palette.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Timer } from '@app/utils/timer';
+import { elementDataOf } from '@ui-kit';
 import '@app/utils/math';
 
 vi.mock('@app/stores/local', () => ({
@@ -24,13 +25,21 @@ vi.mock('@app/palette/palette.ts', () => ({
 
 vi.mock('@app/scene/scene-window.ts', () => ({
 	Scene: {
-		marquee: {
-			key: 'tile',
-			tiles: [1],
-			saveData: {}
-		}
+		marquee: null
 	}
 }));
+
+/**
+ * P4b：`Scene.marquee.key` 是**元素数据**（生产侧由 `scene-marquee-engine.ts` / `palette-engine.ts` /
+ * `scene-window.ts` 写入场景选框元素），不再有原型访问器 ⇒ 夹具必须是**真元素**并显式写元素数据，
+ * 否则 `sceneMarqueeData(...).key` 恒为 `undefined`，代码会走 `saveData.tile.tiles` 分支并抛错
+ * （表现为 Enter/pointerup 后选区根本没写进 `tiles`）。
+ */
+const sceneMarquee = (tiles: number[], key: string | null = 'tile'): typeof Scene.marquee => {
+	const el = document.createElement('div');
+	elementDataOf<{ key?: string | null }>(el).key = key;
+	return Object.assign(el, { tiles, saveData: {} }) as unknown as typeof Scene.marquee;
+};
 
 type MarqueeEl = HTMLElement & {
 	visible: boolean;
@@ -77,11 +86,7 @@ describe('useTileNodeWindow（自动图块节点选择窗口 composable：open/�
 		Window.close = vi.fn();
 		vi.mocked(Palette).explicit = false;
 		vi.mocked(Palette).marquee = null;
-		vi.mocked(Scene).marquee = {
-			key: 'tile',
-			tiles: [1],
-			saveData: {}
-		} as unknown as typeof Scene.marquee;
+		vi.mocked(Scene).marquee = sceneMarquee([1]);
 		Timer.appendUpdater = vi.fn();
 		Timer.removeUpdater = vi.fn();
 		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
@@ -118,11 +123,7 @@ describe('useTileNodeWindow（自动图块节点选择窗口 composable：open/�
 		const { wrapper, tileNode } = await mountAndInit();
 		tileNode.open(nodes, document.createElement('img'), 0, 0);
 		const tiles = [1];
-		vi.mocked(Scene).marquee = {
-			key: 'tile',
-			tiles,
-			saveData: {}
-		} as unknown as typeof Scene.marquee;
+		vi.mocked(Scene).marquee = sceneMarquee(tiles);
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter' }));
 		expect(tiles[0]).toBe(0);
 		expect(Palette.explicit).toBe(true);
@@ -143,11 +144,7 @@ describe('useTileNodeWindow（自动图块节点选择窗口 composable：open/�
 		tileNode.open(nodes, document.createElement('img'), 0, 0);
 		const marquee = getMarquee();
 		const tiles = [1];
-		vi.mocked(Scene).marquee = {
-			key: 'tile',
-			tiles,
-			saveData: {}
-		} as unknown as typeof Scene.marquee;
+		vi.mocked(Scene).marquee = sceneMarquee(tiles);
 		marquee.dispatchEvent(
 			new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerId: 7 })
 		);

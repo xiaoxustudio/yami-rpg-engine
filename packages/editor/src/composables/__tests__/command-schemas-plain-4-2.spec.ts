@@ -24,6 +24,7 @@ import SetState from '@app/components/commands/SetState.vue';
 import { useSetStateCommandSchema } from '@app/composables/commands/useSetStateCommandSchema';
 import SetString from '@app/components/commands/SetString.vue';
 import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -68,9 +69,9 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('setObjectAnimation-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(sort.dataItems).toHaveLength(4);
-			expect(operation.dataItems).toHaveLength(6);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(sort)).toHaveLength(4);
+			expect(dataItemsOf(operation)).toHaveLength(6);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -180,7 +181,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('setObject-operand-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(12);
+			expect(dataItemsOf(type)).toHaveLength(12);
 			wrapper.unmount();
 		});
 
@@ -291,8 +292,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('setPan-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(type.dataItems).toHaveLength(4);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(type)).toHaveLength(4);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -573,8 +574,13 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('setReverb-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(type.dataItems!.map((item) => item.value)).toEqual(['bgm', 'bgs', 'cv', 'se']);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(type)!.map((item) => item.value)).toEqual([
+				'bgm',
+				'bgs',
+				'cv',
+				'se'
+			]);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -683,7 +689,7 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('setShortcut-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(4);
+			expect(dataItemsOf(operation)).toHaveLength(4);
 			wrapper.unmount();
 		});
 
@@ -980,7 +986,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('setString-operand-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(12);
+			expect(dataItemsOf(type)).toHaveLength(12);
 			wrapper.unmount();
 		});
 

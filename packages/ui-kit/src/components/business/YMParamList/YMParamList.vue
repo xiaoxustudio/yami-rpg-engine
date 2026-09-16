@@ -1321,15 +1321,16 @@ onMounted(() => {
 });
 </script>
 
+<!--
+	P4b：`:filter` / `:group` 两个绑定已删除。它们在"`HTMLElement.prototype` 上挂着元素数据访问器"的年代
+	会经 Vue 的 patchDOMProp 写进 WeakMap（`'filter' in el` 为真 ⇒ 走属性而不是 attribute），而**没有任何
+	代码读这两个槽位**（组件用的是 `props.filter` / `props.group`）；访问器退役后它们只会变成两个多余的
+	DOM 属性。删掉是等价且更诚实的写法。
+	注意：说明必须放在 `<template>` **之外**——模板里的顶层注释会让组件变成多根（注释 + div），
+	vue-test-utils 的 `wrapper.element` 就不再是元素本身。
+-->
 <template>
-	<div
-		ref="root"
-		class="param-list"
-		:id="props.id"
-		tabindex="0"
-		:filter="props.filter || undefined"
-		:group="props.group || undefined"
-	/>
+	<div ref="root" class="param-list" :id="props.id" tabindex="0" />
 </template>
 
 <style module>

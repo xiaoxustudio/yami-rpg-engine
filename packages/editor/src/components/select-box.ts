@@ -1,4 +1,4 @@
-import { createSelectBoxElement, type SelectBoxApi } from '@ui-kit';
+import { createSelectBoxElement, elementDataOf, type SelectBoxApi } from '@ui-kit';
 import { Select } from '@app/components/select-list';
 
 export function createSelectBox(): SelectBoxApi {
@@ -13,7 +13,12 @@ export function selectBoxSetItemNames(
 	},
 	options: Record<string, string | { name?: string; tip?: string }>
 ): void {
-	for (const item of box.dataItems ?? []) {
+	// P4b：`dataItems` 是选择框元素上的元素数据（原型访问器退役后 `box.dataItems` 会读到 undefined，
+	// 于是 `setItemNames` 会静默什么都不改）。
+	const data = elementDataOf<{
+		dataItems?: Array<{ name?: string; tip?: string; value: string | number }> | null;
+	}>(box);
+	for (const item of data.dataItems ?? []) {
 		const key = item.value;
 		const option = options[key];
 		switch (typeof option) {

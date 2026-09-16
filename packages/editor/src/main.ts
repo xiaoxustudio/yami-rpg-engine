@@ -4,7 +4,6 @@ import { pinia } from '@app/stores/pinia';
 import { initYamiI18n } from '@app/i18n';
 import { vFocus } from '@app/directives/focus';
 import { vTip } from '@app/directives/tip';
-import '@app/utils/element-data.ts';
 import '@app/main/startup.ts';
 import { emitCustom } from '@app/events/custom-events';
 

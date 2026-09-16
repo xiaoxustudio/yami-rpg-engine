@@ -21,6 +21,7 @@ import TranslateActor from '@app/components/commands/TranslateActor.vue';
 import { useTranslateActorCommandSchema } from '@app/composables/commands/useTranslateActorCommandSchema';
 import UnloadSubscene from '@app/components/commands/UnloadSubscene.vue';
 import { useUnloadSubsceneCommandSchema } from '@app/composables/commands/useUnloadSubsceneCommandSchema';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -59,7 +60,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('stopEvent-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(10);
+			expect(dataItemsOf(type)).toHaveLength(10);
 			wrapper.unmount();
 		});
 
@@ -581,7 +582,7 @@ vi.mock('@app/stores/local', () => ({
 			const easing = document.getElementById('transition-easingId') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(easing.dataItems).toHaveLength(2);
+			expect(dataItemsOf(easing)).toHaveLength(2);
 			Command.cases.transition.customLoad!({
 				variable: { type: 'local', key: 'v' },
 				start: 0,

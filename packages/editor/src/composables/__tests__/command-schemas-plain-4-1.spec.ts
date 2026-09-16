@@ -20,6 +20,7 @@ import SetInventory from '@app/components/commands/SetInventory.vue';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
 import SetLanguage from '@app/components/commands/SetLanguage.vue';
 import { useSetLanguageCommandSchema } from '@app/composables/commands/useSetLanguageCommandSchema';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -279,7 +280,7 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('setCooldown-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(3);
+			expect(dataItemsOf(operation)).toHaveLength(3);
 			wrapper.unmount();
 		});
 
@@ -458,9 +459,9 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('setElement-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(7);
-			expect(operation.dataItems!.map((item) => item.value)).toContain('hide');
-			expect(operation.dataItems!.map((item) => item.value)).toContain('move-to-last');
+			expect(dataItemsOf(operation)).toHaveLength(7);
+			expect(dataItemsOf(operation)!.map((item) => item.value)).toContain('hide');
+			expect(dataItemsOf(operation)!.map((item) => item.value)).toContain('move-to-last');
 			wrapper.unmount();
 		});
 
@@ -634,8 +635,8 @@ vi.mock('@app/stores/local', () => ({
 			const mode = document.getElementById('setFocus-mode') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(4);
-			expect(mode.dataItems).toHaveLength(2);
+			expect(dataItemsOf(operation)).toHaveLength(4);
+			expect(dataItemsOf(mode)).toHaveLength(2);
 			wrapper.unmount();
 		});
 
@@ -814,7 +815,7 @@ vi.mock('@app/stores/local', () => ({
 			const operation = document.getElementById('setInventory-operation') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(operation.dataItems).toHaveLength(14);
+			expect(dataItemsOf(operation)).toHaveLength(14);
 			wrapper.unmount();
 		});
 

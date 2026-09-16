@@ -23,6 +23,7 @@ import SetAnimation from '@app/components/commands/SetAnimation.vue';
 import { useSetAnimationCommandSchema } from '@app/composables/commands/useSetAnimationCommandSchema';
 import SetAnimationComponent from '@app/components/commands/SetAnimationComponent.vue';
 import { Animation } from '@app/animation/animation-window.ts';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -62,8 +63,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('moveCamera-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(mode.dataItems).toHaveLength(2);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(mode)).toHaveLength(2);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -435,7 +436,7 @@ vi.mock('@app/stores/local', () => ({
 			const type = document.getElementById('registerEvent-type') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(type.dataItems).toHaveLength(2);
+			expect(dataItemsOf(type)).toHaveLength(2);
 			expect(form.type).toBe('keydown');
 			Command.cases.registerEvent.customLoad!({
 				target: 'global',
@@ -557,7 +558,7 @@ vi.mock('@app/stores/local', () => ({
 						.querySelector('#registerEvent-type .select-box-text')
 						?.classList.contains('invalid');
 				// 修复前：insert 打开窗口后 type 下拉没有任何选项，默认值 autorun 显示为红色无效文本
-				expect(type.dataItems?.map((item) => item.value)).toEqual([
+				expect(dataItemsOf(type)?.map((item) => item.value)).toEqual([
 					'autorun',
 					'keydown',
 					'keyup'
@@ -575,7 +576,7 @@ vi.mock('@app/stores/local', () => ({
 					tag: 'tag1'
 				});
 				await wrapper.vm.$nextTick();
-				expect(type.dataItems?.map((item) => item.value)).toEqual([
+				expect(dataItemsOf(type)?.map((item) => item.value)).toEqual([
 					'autorun',
 					'keydown',
 					'keyup'
@@ -586,7 +587,7 @@ vi.mock('@app/stores/local', () => ({
 				// 用户切换 target：按新目标集重载选项（回到该组首个事件类型）
 				Command.cases.registerEvent.targetWrite!({ value: 'actor' });
 				await wrapper.vm.$nextTick();
-				expect(type.dataItems?.map((item) => item.value)).toEqual([
+				expect(dataItemsOf(type)?.map((item) => item.value)).toEqual([
 					'autorun',
 					'mousedownLB',
 					'click'
@@ -633,7 +634,7 @@ vi.mock('@app/stores/local', () => ({
 			const method = document.getElementById('requestURL-method') as unknown as {
 				dataItems?: Array<{ value: string }>;
 			};
-			expect(method.dataItems).toHaveLength(4);
+			expect(dataItemsOf(method)).toHaveLength(4);
 			wrapper.unmount();
 		});
 
@@ -832,8 +833,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('setAngle-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(wait.dataItems).toHaveLength(2);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(wait)).toHaveLength(2);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 
@@ -1017,8 +1018,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('setAnimationComponent-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(operation.dataItems).toHaveLength(9);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(operation)).toHaveLength(9);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 

@@ -26,6 +26,7 @@ import LoadScene from '@app/components/commands/LoadScene.vue';
 import Loop from '@app/components/commands/Loop.vue';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
 import MoveActor from '@app/components/commands/MoveActor.vue';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -61,26 +62,12 @@ vi.mock('@app/stores/local', () => ({
 		it('onMounted loadItems 填充 area/selector/activation 选项', async () => {
 			const wrapper = mount(GetMultipleActors, { attachTo: document.body });
 			await wrapper.vm.$nextTick();
+			expect(dataItemsOf(document.getElementById('getMultipleActors-area'))).toHaveLength(2);
+			expect(dataItemsOf(document.getElementById('getMultipleActors-selector'))).toHaveLength(
+				4
+			);
 			expect(
-				(
-					document.getElementById('getMultipleActors-area') as unknown as {
-						dataItems?: Array<{ value: string }>;
-					}
-				).dataItems
-			).toHaveLength(2);
-			expect(
-				(
-					document.getElementById('getMultipleActors-selector') as unknown as {
-						dataItems?: Array<{ value: string }>;
-					}
-				).dataItems
-			).toHaveLength(4);
-			expect(
-				(
-					document.getElementById('getMultipleActors-activation') as unknown as {
-						dataItems?: Array<{ value: string }>;
-					}
-				).dataItems
+				dataItemsOf(document.getElementById('getMultipleActors-activation'))
 			).toHaveLength(3);
 			wrapper.unmount();
 		});
@@ -326,8 +313,8 @@ vi.mock('@app/stores/local', () => ({
 			const condition = document.getElementById('getTarget-condition') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(selector.dataItems).toHaveLength(6);
-			expect(condition.dataItems).toHaveLength(8);
+			expect(dataItemsOf(selector)).toHaveLength(6);
+			expect(dataItemsOf(condition)).toHaveLength(8);
 			wrapper.unmount();
 		});
 
@@ -1009,8 +996,8 @@ vi.mock('@app/stores/local', () => ({
 			const wait = document.getElementById('moveActor-wait') as unknown as {
 				dataItems?: Array<{ name: string; value: boolean }>;
 			};
-			expect(mode.dataItems).toHaveLength(6);
-			expect(wait.dataItems!.map((item) => item.value)).toEqual([true, false]);
+			expect(dataItemsOf(mode)).toHaveLength(6);
+			expect(dataItemsOf(wait)!.map((item) => item.value)).toEqual([true, false]);
 			wrapper.unmount();
 		});
 

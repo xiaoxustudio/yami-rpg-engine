@@ -18,6 +18,7 @@ import { useWebSocketCloseCommandSchema } from '@app/composables/commands/useWeb
 import WebSocketConnect from '@app/components/commands/WebSocketConnect.vue';
 import { useWebSocketConnectCommandSchema } from '@app/composables/commands/useWebSocketConnectCommandSchema';
 import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() })
@@ -158,7 +159,7 @@ vi.mock('@app/stores/local', () => ({
 			const mode = document.getElementById('useItem-mode') as unknown as {
 				dataItems?: Array<{ name: string; value: string }>;
 			};
-			expect(mode.dataItems).toHaveLength(3);
+			expect(dataItemsOf(mode)).toHaveLength(3);
 			wrapper.unmount();
 		});
 
