@@ -27,12 +27,10 @@ const DATA_FIELDS = [
 	'number',
 	'selection',
 	'filter',
-	'page',
 	'dataItems',
 	'parameters',
 	'key',
 	'target',
-	'links',
 	'count',
 	'direction',
 	'end',
@@ -48,8 +46,7 @@ const DATA_FIELDS = [
 	'item',
 	'indent',
 	'visible',
-	'mode',
-	'invalid'
+	'mode'
 ] as const;
 
 function defineDataAccessors(): void {

@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import { elementDataOf } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
@@ -480,7 +481,6 @@ const typeInput = (event: Event & { value: string }): void => {
 							textContent: string;
 							write(v: unknown): void;
 							read(): unknown;
-							invalid: boolean;
 							dataItems: VarTypeItem[];
 						};
 				  })
@@ -489,7 +489,8 @@ const typeInput = (event: Event & { value: string }): void => {
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;
 			selectBox.write(selectBox.read());
-			if (selectBox.invalid) {
+			// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			if (elementDataOf<{ invalid?: boolean }>(selectBox).invalid) {
 				const items = selectBox.dataItems;
 				let defValue = items[0]?.value;
 				for (const item of items) {

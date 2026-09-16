@@ -259,7 +259,10 @@ export const UI: UIShape = {
 
 UI.marquee.resize = null;
 
-UI.list.page = uiEls.get('ui-element') as HTMLElement;
+// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get(
+	'ui-element'
+) as HTMLElement;
 elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as HTMLElement;
 UI.list.copy = null;
 UI.list.paste = null;

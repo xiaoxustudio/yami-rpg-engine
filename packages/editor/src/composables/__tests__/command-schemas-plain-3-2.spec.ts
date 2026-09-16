@@ -548,9 +548,14 @@ vi.mock('@app/stores/local', () => ({
 				await wrapper.vm.$nextTick();
 				const type = document.getElementById('registerEvent-type') as unknown as {
 					dataItems?: Array<{ value: string }>;
-					invalid?: boolean;
 					read(): unknown;
 				};
+				// P4b 第十九刀：`invalid` 改走元素数据（不再是原型访问器）→ 断言**可见状态**：
+				// 值为无效时 core 会给 `.select-box-text` 挂 `invalid` class 并写入原始文本
+				const typeInvalid = (): boolean | undefined =>
+					document
+						.querySelector('#registerEvent-type .select-box-text')
+						?.classList.contains('invalid');
 				// 修复前：insert 打开窗口后 type 下拉没有任何选项，默认值 autorun 显示为红色无效文本
 				expect(type.dataItems?.map((item) => item.value)).toEqual([
 					'autorun',
@@ -558,7 +563,7 @@ vi.mock('@app/stores/local', () => ({
 					'keyup'
 				]);
 				expect(type.read()).toBe('autorun');
-				expect(type.invalid).toBe(false);
+				expect(typeInvalid()).toBe(false);
 				expect(form.type).toBe('autorun');
 				// 编辑已有指令（同 target）：选项按 target 刷新且保留已存 type
 				Command.cases.registerEvent.customLoad!({
@@ -576,7 +581,7 @@ vi.mock('@app/stores/local', () => ({
 					'keyup'
 				]);
 				expect(type.read()).toBe('keydown');
-				expect(type.invalid).toBe(false);
+				expect(typeInvalid()).toBe(false);
 				expect(form.type).toBe('keydown');
 				// 用户切换 target：按新目标集重载选项（回到该组首个事件类型）
 				Command.cases.registerEvent.targetWrite!({ value: 'actor' });
@@ -587,7 +592,7 @@ vi.mock('@app/stores/local', () => ({
 					'click'
 				]);
 				expect(form.type).toBe('autorun');
-				expect(type.invalid).toBe(false);
+				expect(typeInvalid()).toBe(false);
 			} finally {
 				Enum.getMergedItems = prevMerged;
 				EventEditor.types = prevTypes;

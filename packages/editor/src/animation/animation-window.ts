@@ -438,7 +438,10 @@ export const Animation: AnimationShape = {
 // oxlint-disable-next-line no-explicit-any
 Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
-Animation.list.page = animationEls.get('animation-motion') as HTMLElement;
+// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls.get(
+	'animation-motion'
+) as HTMLElement;
 elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationEls.get(
 	'animation-list-head'
 ) as HTMLElement;

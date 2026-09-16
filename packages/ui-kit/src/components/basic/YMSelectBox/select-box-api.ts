@@ -213,7 +213,8 @@ export function attachSelectBoxApi(
 			state.dataValue = value;
 		}
 	});
-	box.invalid = state.invalid;
+	// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	elementDataOf<{ invalid?: boolean }>(box).invalid = state.invalid;
 	box.hideUnrelated = state.hideUnrelated;
 	// P4b：删掉 `box.savedValue = state.savedValue` 的镜像（全仓无人读取元素上的 savedValue；
 	// 真正的 saved/restore 状态在 core 的 `state` 里）

@@ -142,7 +142,6 @@ interface HTMLElement {
 	file: any;
 	folders: any[];
 	target: any;
-	links: any;
 	// toast.ts 涓眬浣跨敤锛坋l._timer 鎸傝浇 setTimeout 鍙ユ焺锛?
 	_timer: any;
 	// file-browser.ts 涓眬浣跨敤锛坰File.stats.ino 鍙栨枃浠?inode锛?
@@ -158,7 +157,6 @@ interface HTMLElement {
 	src?: string;
 	filter?: string | null;
 	input?: HTMLElement | Record<string, any> | null;
-	page?: Record<string, any> | null;
 	creators?: unknown[];
 	updaters?: unknown[];
 	dataItems?: unknown[] | null;
@@ -305,7 +303,6 @@ interface HTMLElement {
 	name: string;
 	fileBox: any;
 	history: any;
-	links: any;
 	submenu: any;
 	dragging: any;
 	restoring: boolean;
@@ -353,8 +350,7 @@ interface ParentNode {
 	directory: any;
 	activeWheel: any;
 	inputCode(code: any): void;
-	// file-head-pane.ts 涓眬浣跨敤锛坔ead = this.parentNode 涓?ParentNode锛岄渶璁块棶 .links锛?
-	links: any;
+	// 注：`links` 声明已随 P4b 退役——`head.links` 走 SFC 自己的实例属性、`Browser.links` / `Selector.links` 是 store 字段，全仓无 `parentNode.links` 用法
 	textNode: any;
 }
 

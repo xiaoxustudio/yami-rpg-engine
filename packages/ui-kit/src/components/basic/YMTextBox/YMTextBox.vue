@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 
 interface Props {
@@ -29,7 +29,6 @@ const closeButtonEl = ref<HTMLElement | null>(null);
 const closeButtonDisplay = ref('none');
 
 type TextBoxApi = HTMLElement & {
-	_initialized?: boolean;
 	lastText?: string;
 	hiddenNodes?: HTMLElement[];
 	closeButton?: HTMLElement | null;
@@ -219,7 +218,7 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
-	if (!el || !input || (el as TextBoxApi)._initialized) return;
+	if (!el || !input || isApiAttached(el)) return;
 	// P4b：走显式元素数据
 	elementDataOf<TextBoxApi>(el).lastText = '';
 	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
@@ -242,7 +241,8 @@ function initializeApi(): void {
 	});
 	write(props.modelValue);
 	if (props.disabled) disable();
-	(el as TextBoxApi)._initialized = true;
+	// P4b：与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
+	markApiAttached(el);
 };
 
 onMounted(initializeApi);

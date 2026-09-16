@@ -20,8 +20,9 @@
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」；**尾项「确认按钮启用态属性化」也已收口**，见该小节） |
 | P1b | ✅ **已完成**（十七刀 + C1 收尾）：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义；**契约侧已收口**：第 34 轮审计发现 26 个 `*-api.ts` 里 25 个已有 `XxxApi`，唯一缺的巨石 `YMCommandList` 已补 `CommandListElementApi` 并由 editor 的 `EventCommandListShape` 派生自它；余下是 ref/expose 迁移与 M5 的返回值收紧） |
-| P4b | **原型访问器退役**：元素数据 WeakMap 与 **29** 个字段的 get/set（共 58 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`、**第六刀删列表配置簇 10 个 + 死字段 `filler`**、第十七刀删 `info`、第十八刀删 `timer` + `decimals`）；实现已迁至 **ui-kit**（editor 侧同路径再导出），`main.ts` 仍以副作用导入安装访问器 | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | 🚧 **进行中**（83 → 29；余下字段的用量表已记入本文件，作为后续批次与 P2b 的验收输入） |
-| P4c | **类型层的同一条债**：`packages/editor/Project/global.d.ts` 的两个 `interface HTMLElement` 块把 **189 条**成员声明（183 个唯一名）加在**全局** `HTMLElement` 上——P4b 删掉访问器后，是**这层声明**在继续宣称"每个元素上都有 `el.start` / `el.item` / `el.decimals`…"，使 `el.任意字段` 永远能通过编译（真跑起来是 `undefined`）；2026-09-16 新发现，此前**从未登记、无度量、无门禁** | 中 | 与 P4b 同一批（同一批字段的两端） | 🚧 **已登记 + 首刀**（2026-09-16：量化 **189 声明 / 183 唯一名**，其中 **27 条零引用**（`createXxxIcon`/`updateXxxIcon` 一族 + `seekUp`/`addElementClass`/`varSpace`/`_built` 等）已删；余下的分类与验收见下方 P4c 小节） |
+| P4b | **原型访问器退役**：元素数据 WeakMap 与 **26** 个字段的 get/set（共 52 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`、**第六刀删列表配置簇 10 个 + 死字段 `filler`**、第十七刀删 `info`、第十八刀删 `timer` + `decimals`、第十九刀删 `links` 并迁移 `page`/`invalid`）；实现已迁至 **ui-kit**（editor 侧同路径再导出），`main.ts` 仍以副作用导入安装访问器 | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | 🚧 **进行中**（83 → 26；余下字段的用量表已记入本文件，作为后续批次与 P2b 的验收输入） |
+| P4c | **类型层的同一条债**：`packages/editor/Project/global.d.ts` 的两个 `interface HTMLElement` 块把 **189 条**成员声明（183 个唯一名）加在**全局** `HTMLElement` 上——P4b 删掉访问器后，是**这层声明**在继续宣称"每个元素上都有 `el.start` / `el.item` / `el.decimals`…"，使 `el.任意字段` 永远能通过编译（真跑起来是 `undefined`）；2026-09-16 新发现，此前**从未登记、无度量、无门禁** | 中 | 与 P4b 同一批（同一批字段的两端） | 🚧 **已登记 + 首刀**（2026-09-16：量化 **189 声明 / 183 唯一名**，其中 **27 条零引用**（`createXxxIcon`/`updateXxxIcon` 一族 + `seekUp`/`addElementClass`/`varSpace`/`_built` 等）已删；第十九刀又随 P4b 摘掉 `page` + `links`×3；全量盘点见下方 P4c 小节） |
+| P4d | **内置 / 宿主对象的原型与静态扩展**（第六处漏档）：`Math.*` 8、`Object.*` 2、`Array.*` 2 + `Array.prototype.*` 3、`String.compress`、`Number.*` 2、`RegExp.number`、`Function.empty`、`Event.prototype.spaceKey`、`CSS.*` 3、`CanvasRenderingContext2D.prototype.resize`、`Timer.*` 15——实现分散在 `editor/src/utils/*.ts` 与 `engine/webgl/webgl-methods.ts`，声明集中在 `Project/global.d.ts`（**36 个 `interface` 块 / 274 条**） | 中 | 与 P4c 共用同一份审计（`global.d.ts`） | 🚧 **已登记**（2026-09-16：轴与"声明↔实现"对应关系已量；**首批类型残留已定位**（`Array.prototype.*` 只在一个 spec 里被临时补丁、`Clipboard.*` 已改成 `GlobalClipboard` 对象）；逐成员判定待下一刀） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | ✅ **M1–M4 完成、M5 进行中**（2026-09-12）：M1 组件级金标准 **17 → 43+**、M2 两个派生层、**M3 两个巨石都已换源**（文件 body：api 数据化 55 处 + 模板 `v-for` + 回写桥 + 删死代码；命令列表：`resize` 自算窗口 + 模板渲染 + `bindRowElement` + `updateLineClasses` 扩展点）、**M4 三步全部收口**（扩展点、按数据反查、API 面 69 方法审计无可退役）、M5 已把文件 body 的名字移入模板且改名有用例覆盖。**余**：命令列表行内文本/变量标记与缩进线仍是手工建 DOM（画布类例外），改动需真机冒烟 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
@@ -568,6 +569,21 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 ## P4b — 原型访问器退役（`utils/element-data.ts`）
 
+> ✅ **P4b 第十九刀（2026-09-16）：`links` 删除 + `page` / `invalid` 收口，`DATA_FIELDS` 29 → 26（访问器 58 → 52）**。
+> 这一刀用到的手法是**先按"接收者"归类再决定动作**——三个字段同名的普通用法都远多于元素数据用法，逐个站点读接收者才不会误伤。
+>
+> | 字段 | 判定 | 处理 |
+> | --- | --- | --- |
+> | `links` | **零处经原型访问器**（等价死状态） | 直接删字段。三类真实用法都另有归属：① 两个 SFC 自己的**实例属性**——`YMFileHeadPane.vue` / `YMFileNavPane.vue` 的 `Object.defineProperty(root, 'links', { get: () => props.links, set: () => {} })`（实例属性遮蔽原型访问器，“写入被忽略”是**既有**行为）；② 组件 `props.links`；③ 单例字段 `Browser.links` / `Selector.links`（`stores/browser.ts` / `stores/selector.ts` 各自声明了 `links?: …`） |
+> | `page` | 元素数据站点 **9 处 / 4 文件** | 迁移到 `elementDataOf<{ page?: HTMLElement \| null }>(…)`：`Animation.list.page`（`animation-initialize.ts` 写 + `animation-window.ts` 写）、`Scene.list.page`（`scene-window.ts` 两处写）、`UI.list.page`（`ui-initialize.ts` 写 + `ui-window.ts` 写），以及三处 `on(list.page, 'resize', …)` 绑定 |
+> | `invalid` | 元素数据站点 **6 处 / 4 文件 + 1 spec** | 选择框簇：`select-box-core.ts` 的 `(root as …).invalid =` → `elementDataOf`、`select-box-api.ts` 的 `box.invalid =`、`YMSelectBox.vue` 的镜像（并从局部 `SelectBoxHost` 摘掉 `invalid?`）、消费方 `composables/useVariableGetterWindow.ts` 的 `if (selectBox.invalid)`，以及 `select-box-api.spec.ts` 两处断言 |
+>
+> - **真假同名（本刀的判断依据）**：`page` 在 `animation-initialize.ts:32` 这类 `this.page = …`（**模块对象**持有的页面元素）、`engine/layout/layout.ts` 的 `items[key].page`（布局条目）、`stores/browser.ts` 的 `Browser.page` 上都不是元素数据；`invalid` 在 `Command.invalid`（`commands/schema.ts` 等 30+ 处）、`commandState.invalid`（`useCommandParse.ts` 9 处）、`YMCustomBox` 的 `result.invalid` 上是**数据对象/解析结果**字段，全部不动。`links` 同理（见上表）。
+> - **类型层的同步**：`Project/global.d.ts` 的 `links: any`（HTMLElement 块两处 + `interface ParentNode` 一处）与 `page?: Record<string, any> | null` 一并摘除——这正是上一刀登记的 **P4c** 的执行方式（字段退役 → 声明同批退役）；`ParentNode` 那条注释改成现状说明（全仓已无 `parentNode.links` 用法，`tsc` 为证）。
+> - **顺带修掉第十六刀留下的三处"守卫静默失效/不一致"（真实缺陷，写进教训）**：`isApiAttached`/`markApiAttached` 的推广只覆盖了 `*-api.ts` 工厂，**三个 SFC 仍写私有 `el._initialized` expando**——其中 `YMCustomBox.vue` 是**读侧仍是 expando（`el._initialized`，恒 `undefined`）+ 写侧已改成 `markApiAttached`（WeakMap）**，两存储不相通 ⇒ **守卫等于没有**（第十六刀之前两侧都走访问器，是一致的）。另两个 SFC（`YMSelectBox.vue` / `YMTextBox.vue`）读写都在 expando 上，暂时自洽但与共享契约不一致。三个文件统一改走 `isApiAttached(el)` / `markApiAttached(el)`，局部类型里的 `_initialized?: boolean` 一并摘掉。**为什么套件没抓到**：三个 SFC 的 `initializeApi` 目前只有 `onMounted` 一个调用点，守卫的第二次调用路径不存在（`YMCustomBox` 虽 `defineExpose` 了它，但全仓无人调用）。
+> - **⚠️ 本刀真实踩到的坑（写进教训）**：我在 `YMSelectBox.vue` 里用了 `elementDataOf` 却**忘了加 import**——`pnpm typecheck`（editor tsc）与 `pnpm -F @yami/editor typecheck:vue` **都通过**（该 SFC 不在 editor 的 vue-tsc 覆盖范围内）、`pnpm lint` 也 0 警告，只有**套件**当场红：ui-kit **18 例失败**（`YMSelectBox` 10 + `YMSelectVar` 6 + `repro` 2）、editor **638 例失败**（大量命令表单会挂载选择框）。修掉 import 后全绿。**结论：动 `.vue` 一律要跑 ui-kit 套件**——这一刀之前的所有 P4b 刀次都只改了 `.ts`，是第一次栽在"未导入标识符"上。
+> - **指标**：`DATA_FIELDS` **29 → 26**（访问器 58 → 52）；ui-kit **111 文件 780/780**、editor **239 文件 2004/2004**、`pnpm lint` 0/0、`tsc` strict 通过、`typecheck:vue` 0 new。
+
 > ✅ **P4b 第十八刀（2026-09-16）：`timer` + `decimals` 收口，`DATA_FIELDS` 31 → 29（访问器 62 → 58）**。
 > 这一刀的两个字段都是"**真假同名**"型：同一个名字在仓库里各有两套含义，必须逐站点确认接收者是不是元素。
 >
@@ -769,7 +785,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **剩余 70 个字段都有真实读取**，且多数是**跨组件约定**（如 `lastText`/`hiddenNodes` 在 `YMTextBox` 与 `YMTreeList` 之间传递、`togglable` 属于 `getListConfig` 的公开面）——这类要连同 **P2b 的类型化元素 API 契约**一起改，否则只是把隐式约定换个地方藏。
 > - **指标**：`DATA_FIELDS` **72 → 70**（tracker 的「prototype 访问器定义（逗号形式）」列同步）；`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、两个测试套件全绿。
 
-- **现状证据（2026-09-11 实测；字段数口径见下）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 83 个字段 / 166 个访问器；现 `DATA_FIELDS` 为 **29** 个字段 / 58 个访问器——实现已于 2026-09-12 迁到 `packages/ui-kit/src/utils/element-data.ts`，editor 侧同路径再导出），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
+- **现状证据（2026-09-11 实测；字段数口径见下）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 83 个字段 / 166 个访问器；现 `DATA_FIELDS` 为 **26** 个字段 / 52 个访问器——实现已于 2026-09-12 迁到 `packages/ui-kit/src/utils/element-data.ts`，editor 侧同路径再导出），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
 - **为什么此前没被记到**：tracker 的 `protoExt` 模式要求 `prototype` 后跟**点**（`…\.prototype\.`），而这里是 `Object.defineProperty(HTMLElement.prototype, field, …)` 的**逗号形式**，因此长期显示为 0。本轮已在 tracker 的「辅助口径」新增列「prototype 访问器定义（逗号形式）」把它暴露出来（当前 **1 处 / 1 文件**）。
 - **调用面（近似，2026-09-11 实测）**：`this.<字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**2026-09-15 复测**：**768 处 / 124 文件**（B3/B2/M3 后小幅下降；前 5 仍是 `command-api.ts` 133、`tree-api.ts` 31、`scene-events-pointer.ts` 23、`text-capture.ts` 23、`transition-window.ts` 21，另有 `engine/sprite/sprite.ts` 15、`engine/scene/draw-wireframes.ts` 14、`palette/palette-pointer.ts` 14、`tools/property-list.ts` 14）。**注意**：字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
 - **推进策略**：① ~~先删 11 个死字段~~（已完成）；② 按组件把 `this.x` / `el.x` 改为显式 API（模块已导出 `getElementData(el)`；与 **P2b** 的元素 API 收尾同批做最省事）；③ 每组件一个提交 + 真机冒烟；④ 终态删除 `defineDataAccessors()` 与 `main.ts` 的副作用导入——届时 P4 的验收「全仓无 `HTMLElement.prototype` 扩展」才真正成立。
@@ -787,12 +803,39 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > | 类别 | 条数 | 说明 |
 > | --- | --- | --- |
 > | **零引用（死声明）** | **27** | `seekUp`、`addElementClass`、`createKeyTextNode`、`updateKeyTextNode`、`createRefCount`、`updateToggleStyle`、`updateVisibilityIcon`、`updateLockIcon`、`createMarks`、`updateMarks`、`createInitText`/`updateInitText`、`createGroupText`/`updateGroupText`、`createConditionIcon`/`updateConditionIcon`、`createEventIcon`/`updateEventIcon`、`createNoteIcon`/`updateNoteIcon`、`createScriptIcon`/`updateScriptIcon`、`createLockIcon`/`createVisibilityIcon`、`updateItem`、`updateItemClass`、`_built` |
-> | 与 `DATA_FIELDS` 同名 | 19 | 必须**随 P4b 逐字段摘除**（第十八刀已摘掉 `decimals` 一条） |
+> | 与 `DATA_FIELDS` 同名 | 19 | 必须**随 P4b 逐字段摘除**（第十八刀摘掉 `decimals`；第十九刀摘掉 `page` + `links`×3 ⇒ 余 **15**） |
 > | 其他（真·原型扩展 / 实例 expando / 疑似同类残留） | 其余 ~137 | 需逐条判定：如 `addScrollListener`/`beginScrolling`/`setScroll`（`scroll-listener.ts`/`element-utils.ts` 真的挂在原型/实例上）、`elements`（T5b 已删的 shim 名字仍留着声明）、`_timer`/`varSpace`（有引用但需确认接收者） |
 >
 > **首刀已完成（2026-09-16）**：删掉上表 **27 条零引用声明**（纯类型层，运行时零影响；判据 = 词边界 `\bname\b` 在 `packages/**` + `scripts/**` + `main/**` 内 0 命中，且不排除注释）。验证：`pnpm typecheck`（tsc strict）、`pnpm -F @yami/editor typecheck:vue`、`pnpm lint`、两个测试套件全绿。
-> **剩余与验收**：① 19 个与 `DATA_FIELDS` 同名的声明**跟着 P4b 走**（P4b 每摘一个字段就删对应声明）；② 其余成员逐条定性，把"真·原型扩展"（有运行期定义）与"死声明"分开，前者要么保留并注明出处、要么随 P5b 的注册表化退役；③ 终态：`Project/global.d.ts` 不再有 `interface HTMLElement` 块——与 P4b 的「`defineDataAccessors()` 消失」是同一条验收的两端；④ 门禁候选：给 `docs:check` 加第 11 项「`global.d.ts` 的 `HTMLElement` 声明数」与文档口径对账（本轮先记数，暂不入门禁，避免在只剩一半时把数字写死）。
+>
+> **🔭 2026-09-16 首次全量盘点（本轮补）**：把审计口径从"只数 `HTMLElement`"扩到**整个 `global.d.ts`** 后，真实的类型债面比首刀时写的大得多——该文件共 **36 个 `interface` 块 / 274 条成员声明**，除两个 `HTMLElement` 块（现 **121 + 38 = 159** 条，与 `DATA_FIELDS` 同名 **26** 条）外，还有 `Window`(4)、`Event`(7+14)、`Element`(14)、`ParentNode`(6)、`ChildNode`(7)、`NodeList`(2+1)、`MouseEvent`/`PointerEvent`/`KeyboardEvent`、`HTMLButtonElement`/`HTMLInputElement`（共 3）、`CanvasRenderingContext2D`(2)、`DataTransfer`(1)、`TextBox`(3)、`PlatformPath`(1)、`TimerStatic`(**15**)，以及**内建构造器扩展**——`Math`(8)、`Array`(3) + `ArrayConstructor`(2)、`String`(1) + `StringConstructor`(1+1)、`NumberConstructor`(2+2)、`ObjectConstructor`(2+2)、`RegExpConstructor`(1+1)、`Clipboard`(3)、`FunctionConstructor`(1)；事件类重复声明 `MouseEvent`(1+1) / `PointerEvent`(1+1) / `KeyboardEvent`(1)。**含义**：P4c 的终态不只是"删掉 `HTMLElement` 块"，而是"把非必要的全局增强逐块退役"——其中构造器扩展属另一类风险（改内建类型 → 影响全仓类型推断），需要单独判定，已在本小节登记。
+> **剩余与验收**：① 15 个仍与 `DATA_FIELDS` 同名的声明**跟着 P4b 走**（P4b 每摘一个字段就删对应声明）；② 其余成员逐条定性，把"真·原型扩展"（有运行期定义）与"死声明"分开，前者要么保留并注明出处、要么随 P5b 的注册表化退役；③ 16 个非 `HTMLElement` 的 DOM 接口块（`Element`/`ParentNode`/`ChildNode`/`NodeList`/事件类）与 15 条 `TimerStatic` 同样逐块判定；④ **内建构造器扩展**（`Math`/`Array`/`String`/`Number`/`Object`/`RegExp`/`Clipboard`/`Function` 共 8 个块）单独评估：先量"每个成员是否真有实现（`Math.xxx = …`）与是否真有调用"；⑤ 终态：`Project/global.d.ts` 只剩"确有运行期实现且被使用"的声明；⑥ 门禁候选：给 `docs:check` 加第 11 项「`global.d.ts` 的声明数」与文档口径对账（本轮先记数，暂不入门禁，避免在只剩一半时把数字写死）。
 > **验证命令**：`pnpm typecheck`、`pnpm -F @yami/editor typecheck:vue`、`pnpm lint`、`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm docs:check`。
+
+## P4d — 内置 / 宿主对象的原型与静态扩展（第六处漏档）
+
+> **🔎 2026-09-16 新发现**：把 P4c 的审计口径从"只看两个 `HTMLElement` 块"扩到**整个 `global.d.ts`** 后，露出这一轴——**对内建与宿主对象打补丁**。它的存在感一直很低，因为声明写着"这是语言/浏览器的一部分"，看不出是仓库自己加的行为。已核实的实现位置（`grep` 实证）：
+>
+> | 宿主对象 | 扩展成员 | 运行期实现处 |
+> | --- | --- | --- |
+> | `Math` | `clamp`/`roundTo`/`dist`/`randomBetween`/`radians`/`degrees`/`modDegrees`/`modRadians`（**8**） | `editor/src/utils/math.ts:36-43`（`Math.xxx = …`） |
+> | `Array`（静态） | `empty`/`subtract`（**2**） | `editor/src/utils/array.ts:31-32` |
+> | `Array.prototype` | `append`/`remove`/`set`（**3**） | **已无实现**——`utils/array.ts` 现在只导出同名普通函数，唯一的 `Array.prototype.append = …` 补丁在一个测试文件里（`engine/__tests__/ui.spec.ts`）⇒ **类型残留** |
+> | `String`（静态） | `compress` | `editor/src/utils/string.ts:1` |
+> | `Number`（静态） | `computeIndexDigits`/`padZero` | `editor/src/utils/number.ts:1,5` |
+> | `Object`（静态） | `empty`/`clone` | `editor/src/utils/object.ts:20-21` |
+> | `RegExp`（静态） | `number` | `editor/src/utils/regexp.ts:1` |
+> | `Function`（静态） | `empty` | `editor/src/utils/function.ts:1` |
+> | `Event.prototype` | `spaceKey`（另有 `cmdOrCtrlKey`/`doubleclickProcessed`/`raw`/`latest` 等**声明**） | `editor/src/utils/keyboard.ts:25,37` |
+> | `CSS`（命名空间） | `encodeURL`/`rasterize`/`getDevicePixelContentBoxSize` | `editor/src/utils/css.ts:1`（`Object.assign(CSS, …)`） |
+> | `CanvasRenderingContext2D.prototype` | `resize` | `editor/src/engine/webgl/webgl-methods.ts:1739` |
+> | `Clipboard` | `has`/`read`/`write`（**3**） | **已改成显式对象** `GlobalClipboard`（`utils/clipboard.ts`），全仓经 `const Clipboard = GlobalClipboard` 使用；字面上仍有一处 `as unknown as Clipboard` 的断言 ⇒ **半残留**（删声明需同时给该断言一个局部类型） |
+> | `Timer`（静态） | **15** 条（`timers`/`updaters`/`timestamp`/`deltaTime`/`frameCount`/`frameTime`/`tpf`/`animationIndex`/`animationWaiting`/`initialize`/`start`/`update`/`play`/`appendUpdater`/`removeUpdater`） | `editor/src/utils/timer.ts`（**待逐条核对**） |
+>
+> **为什么这与"迁移"有关**：本项目的目标是"Vue 3 + 数据化，去掉隐式全局约定"。给内置/宿主对象打补丁是同一类隐式约定（读代码时看不出 `Math.clamp` 从哪来、`Array.empty` 是谁加的、`navigator.clipboard.has` 被谁换掉了实现），而且**类型声明会掩盖"实现已被删除"**——`Array.prototype.append` 就是活证据：声明还在、实现没了，代码里若还有人写 `arr.append(x)` 会**编译通过、运行期抛 TypeError**（当前全仓已无人这样写，属侥幸）。
+>
+> **判定与推进策略（下一刀）**：① 逐成员比对"声明 ↔ 实现 ↔ 调用"三件套，分成 **真扩展（保留，注明出处）** / **类型残留（删声明）** / **半残留（改成显式模块 API）** 三类；② 内建扩展的**去向**需与 P2b/P5b 的"显式 API"方向一致（`utils/*.ts` 已有同名导出函数，调用点改成 `import { clamp } from '@app/utils/math'` 即可，风险低）；③ 每删一类都跑 `tsc`（内建接口改动会立刻体现在类型错误上）+ 两个套件；④ 终态：`global.d.ts` 只剩"确有运行期实现且被使用"的声明，且每条都能指到实现文件。
+> **验证命令**：`pnpm typecheck`、`pnpm -F @yami/editor typecheck:vue`、`pnpm lint`、`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`。
 
 ### 批次 1 执行清单（`components/tools` 两文件，136 处）——**✅ 已执行（2026-09-11，B3/B4-批 1）**
 
@@ -1350,8 +1393,11 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 | `customElements.define` / `attachShadow` / `replaceChildren` / `insertAdjacentHTML` / `matches()` | **0** | ✅ 与阶段 4 / 阶段 7 结论一致 |
 | `Element.prototype` 全局扩展 | 1 处（`element-data.ts`，即 P4b） | ⚠️ 已登记 |
 | **全局 `interface HTMLElement` 类型声明**（类型层的同一条债） | **189 条声明 / 183 唯一名**（`Project/global.d.ts` 两个块；与 `DATA_FIELDS` 交集 19 条；**27 条零引用**） | ⚠️ **新登记（2026-09-16，第五处漏档）** → **P4c**（此前无度量、无门禁；`docs:check` 10 项均不覆盖） |
+| **内置 / 宿主对象的原型与静态扩展** | `Math.*` 8、`Array.*` 2、`Array.prototype.*` 3、`String.compress`、`Number.*` 2、`Object.*` 2、`RegExp.number`、`Function.empty`、`Event.prototype.spaceKey`、`CSS.*` 3、`CanvasRenderingContext2D.prototype.resize`、`Timer.*` 15（`Project/global.d.ts` 的 36 个 `interface` 块 / 274 条声明里，**非 `HTMLElement` 的部分基本都属于这一轴**） | ⚠️ **新登记（2026-09-16，第六处漏档）** → **P4d**：本表的第 24 轴只数了 `Element.prototype`（即 P4b），**没数内置对象**——`Math.clamp` 这类"给内建打补丁"的写法既无度量也无判定 |
 
 > **2026-09-16 追记（第五处漏档）**：上面这张表原本的结论是"未发现新类别"。做 P4b 第十八刀时发现**第五处**：`Project/global.d.ts` 的全局 `HTMLElement` 声明（189 条）——它是 P4b「原型访问器」在**类型层**的同一条债，也是"为什么删了访问器还能写出 `el.decimals` 且编译通过"的答案。与前十轮那四处（`$('#id')` / 本地化器 / 元素 API / 原型访问器）的发现方式相同：**都是"运行时口径看不见的那一半"**。已登记为 **P4c**（含 27 条零引用清单）并记入风险 **R-12**；`docs:check` 的第 11 项门禁候选也记在 P4c 小节，等分类完成后再上闸。
+>
+> **2026-09-16 追记（第六处漏档）**：做 P4b 第十九刀时把审计口径从"只看 `HTMLElement` 块"扩到**整个 `global.d.ts`**，于是露出**第六处**：**对内建/宿主对象打补丁**——`Math.clamp`、`Object.clone`、`Array.empty`、`String.compress`、`Number.padZero`、`RegExp.number`、`Function.empty`、`CSS.encodeURL`、`Event.prototype.spaceKey`、`CanvasRenderingContext2D.prototype.resize`…，实现散落在 `editor/src/utils/{math,object,array,string,number,regexp,function,css,keyboard}.ts` 与 `engine/webgl/webgl-methods.ts`。本表第 24 行只数了 `Element.prototype`（P4b），**内置对象从未进过任何口径**。已登记为 **P4d**（见该小节；含"声明仍在、实现已无"的类型残留清单，如 `Array.prototype.{append,remove,set}`——它们现在只在一个测试文件里被临时补上）。
 
 ---
 

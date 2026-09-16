@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import {
 	createSelectBoxCore,
 	type RelationEntry,
@@ -38,9 +39,7 @@ type SelectBoxHost = HTMLElement & {
 	dataItems?: SelectItem[] | null;
 	dataValue?: unknown;
 	relations?: RelationEntry[];
-	invalid?: boolean;
 	hideUnrelated?: boolean;
-	_initialized?: boolean;
 };
 
 const state: SelectBoxCoreState = {
@@ -208,7 +207,7 @@ watch(
 function initializeApi(): void {
 	const el = root.value;
 	const infoEl = info.value;
-	if (!el || !infoEl || (el as SelectBoxHost)._initialized) return;
+	if (!el || !infoEl || isApiAttached(el)) return;
 	el.tabIndex = 0;
 	// P4b：info 不再镜像到元素（字段已从 DATA_FIELDS 摘除）——core 经 getInfo
 	// 读模板 ref（info.value），全仓无人读元素侧的 info。
@@ -220,7 +219,8 @@ function initializeApi(): void {
 			state.dataValue = value;
 		}
 	});
-	(el as SelectBoxHost).invalid = state.invalid;
+	// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	elementDataOf<{ invalid?: boolean }>(el).invalid = state.invalid;
 	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
 	// P4b：原先这里还有 `(el as SelectBoxHost).savedValue = state.savedValue` 的镜像——
 	// 全仓检索确认**无人读取元素上的 savedValue**（真正的状态在 core 的 `state` 里），已删。
@@ -255,7 +255,8 @@ function initializeApi(): void {
 	el.addEventListener('change', () => emit('change', read()));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
-	(el as SelectBoxHost)._initialized = true;
+	// P4b：与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
+	markApiAttached(el);
 }
 
 onMounted(initializeApi);

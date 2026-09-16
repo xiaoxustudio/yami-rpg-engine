@@ -45,7 +45,10 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.list.page = animationEls.get('animation-motion') as HTMLElement;
+	// P4b：`page`（列表所属的页面元素）走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationEls.get(
+		'animation-motion'
+	) as HTMLElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = animationEls.get(
 		'animation-list-head'
 	) as HTMLElement;
@@ -488,7 +491,7 @@ Animation.initialize = function (this: typeof Animation) {
 	on(list, 'pointerdown', this.listPointerdown);
 	// list select/record/open/popup 经 Vue 模板转发（LayoutPanel @select/@record/@open/@popup → Animation.list*）
 	// list change 经 Vue 模板转发（LayoutPanel @change → Animation.listChange）
-	on(list.page, 'resize', this.listPageResize);
+	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
 	on(this.timeline, 'resize', this.timelinePageResize);
 	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
 	on(this.layerList, 'scroll', this.layerListScroll);

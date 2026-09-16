@@ -1,3 +1,4 @@
+import { elementDataOf } from '../../../utils/element-data';
 import { createPayloadEvent } from '../../../utils/payload-event';
 export interface SelectItem {
 	value: unknown;
@@ -165,7 +166,8 @@ export function createSelectBoxCore(
 			if (infoEl) infoEl.textContent = String(value);
 		}
 		const root = getRoot();
-		if (root) (root as HTMLElement & { invalid?: boolean }).invalid = state.invalid;
+		// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+		if (root) elementDataOf<{ invalid?: boolean }>(root).invalid = state.invalid;
 	};
 
 	const write = (value: unknown): void => {

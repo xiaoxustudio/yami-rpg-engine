@@ -439,7 +439,10 @@ Scene.marquee.selectInCopyMode = null;
 Scene.marquee.selectInObjectMode = null;
 Scene.marquee.getTiles = null;
 
-Scene.list.page = sceneEls.get('scene-object') as HTMLElement;
+// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
+	'scene-object'
+) as HTMLElement;
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
 ) as HTMLElement;
@@ -492,7 +495,10 @@ Scene.initialize = function (this: SceneShape) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	this.list.page = sceneEls.get('scene-object') as HTMLElement;
+	// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = sceneEls.get(
+		'scene-object'
+	) as HTMLElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = sceneEls.get(
 		'scene-list-head'
 	) as HTMLElement;
@@ -919,7 +925,7 @@ Scene.initialize = function (this: SceneShape) {
 	});
 	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → Scene.list*）
 	// list change 经 Vue 模板转发（LayoutPanel @change → Scene.listChange）
-	on(list.page, 'resize', this.listPageResize);
+	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
 
 	ObjectFolder.initialize!();
 	SceneShift.initialize!();

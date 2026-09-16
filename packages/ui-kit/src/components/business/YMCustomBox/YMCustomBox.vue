@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
-import { markApiAttached } from '../../../utils/element-data';
+import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -239,7 +239,10 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	const text = infoEl.value;
-	if (!el || !text || el._initialized) return;
+	// P4b：守卫读侧必须是 `isApiAttached`（与下面 `markApiAttached` 同一存储）——
+	// 第十六刀只改了写侧，而 `el._initialized` 已不再是访问器 ⇒ 读到的恒为 undefined、
+	// 守卫静默失效（当前唯一调用点是 onMounted，故套件没抓到；改成数据视图后恢复原意）
+	if (!el || !text || isApiAttached(el)) return;
 
 	info = text;
 

@@ -197,13 +197,13 @@ describe('createSelectBoxElement', () => {
 		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		el.loadItems([{ name: 'A', value: 'a' }]);
 		el.write('nope');
-		expect(el.invalid).toBe(true);
+		expect(elementDataOf<{ invalid?: boolean }>(el).invalid).toBe(true);
 		expect(elementDataOf<{ info: HTMLElement }>(el).info.classList.contains('invalid')).toBe(
 			true
 		);
 		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('nope');
 		el.write('a');
-		expect(el.invalid).toBe(false);
+		expect(elementDataOf<{ invalid?: boolean }>(el).invalid).toBe(false);
 		expect(elementDataOf<{ info: HTMLElement }>(el).info.classList.contains('invalid')).toBe(
 			false
 		);
