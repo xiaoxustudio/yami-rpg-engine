@@ -1,4 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
+import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -84,7 +85,9 @@ const writeHandler = (event: { value: string }): void => {
 	}
 	const element = composableEls.get('setBoolean-common-variable');
 	if (element) {
-		element.filter = filter;
+		// P4c：`filter` 是 CustomBox 组件自己的实例属性（`custom-box-api.ts` 里代理到 `filter` 属性），
+		// 不再由全局 `interface HTMLElement` 声明兜底——类型来自 `CustomBoxApi`
+		(element as CustomBoxApi).filter = filter;
 	}
 };
 

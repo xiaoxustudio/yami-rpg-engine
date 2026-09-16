@@ -25,6 +25,18 @@ interface EventListEventShape {
 
 interface EventListDom extends HTMLElement {
 	inserting?: boolean;
+	/**
+	 * 事件列表（树列表）元素的虚拟窗口起点/终点。
+	 *
+	 * **⚠️ 2026-09-16 记录（P4c 第二刀发现）**：T5b 之后树列表的窗口起点已由
+	 * `renderState.start/end`（`tree-render.ts` 的 ref）承载，**元素上这两个属性没有任何写入方**
+	 * （`module/editdata.ts` 也按同样方式读 `start`/`end`）⇒ 这里的 `list.start!--` 运行期读到的是
+	 * `undefined`（自增后成 `NaN`，随后 `select(NaN + 1)` 静默落空）。本刀**只做类型化**（保持与
+	 * 迁移前逐字一致的行为），"是否应改读 `renderState`"作为独立问题登记在
+	 * docs/remaining-work.md 的 P4c 小节，待有真机/用例覆盖时再动。
+	 */
+	start?: number;
+	end?: number;
 }
 
 const FILTER_BY_LIST_ID: Record<string, string> = {

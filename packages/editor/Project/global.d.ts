@@ -104,14 +104,11 @@ interface DataTransfer {
 }
 
 interface HTMLElement {
-	count: number;
 	test(name: string): RegExp;
-	direction: number;
 	// ScrollBar / CommandList 鍏辩敤鐨勬粴鍔ㄧ洃鍚柟娉曪紙scroll-listener.ts 涓寕杞藉埌 HTMLElement.prototype锛?
 	addScrollListener: (...args: any[]) => any;
 	removeScrollListener: (...args: any[]) => any;
 	// element-utils.ts 涓?read/write 璁块棶 dataValue锛沘ddScrollbars / listenDraggingScrollbarEvent 杩愯鏃惰祴鍊间笅鍒楀疄渚嬫垚鍛?
-	dataValue: boolean | string | number | Record<string, any> | null;
 	beginScrolling(): void;
 	endScrolling(): void;
 	setScroll(left: number, top: number): void;
@@ -121,7 +118,6 @@ interface HTMLElement {
 	scrollPointerup: (event: EditorEvent) => void;
 	scrollPointermove: (event: EditorEvent) => void;
 	scrollPointerdown?: (event: EditorEvent) => void;
-	dragging: Record<string, any> | null;
 	// scroll-bar.ts 涓?ScrollBar 绫绘柟娉曪紙addScrollbars 鍐?hBar/vBar 璋冪敤锛?
 	bind(...args: unknown[]): unknown;
 	updateHorizontalBar(): void;
@@ -130,36 +126,28 @@ interface HTMLElement {
 	isImageChanged: () => boolean;
 	content: HTMLElement;
 	// parameter-pane.ts 涓眬浣跨敤锛坈ontainer/row 鍏冪礌灞炴€э級
-	parameters: any;
-	key: any;
 	wraps: any[];
 	// tab-bar.ts 涓眬浣跨敤锛坕tems[i].item / popup menu 鍏冪礌灞炴€э級
-	item: Record<string, any> | null;
 	value: any;
 	clientX: number;
 	clientY: number;
 	// file-head-pane.ts 涓眬浣跨敤锛坋lFolder/elArrow/head 鍏冪礌灞炴€э級
 	file: any;
 	folders: any[];
-	target: any;
 	// toast.ts 涓眬浣跨敤锛坋l._timer 鎸傝浇 setTimeout 鍙ユ焺锛?
 	_timer: any;
 	// file-browser.ts 涓眬浣跨敤锛坰File.stats.ino 鍙栨枃浠?inode锛?
 	stats: { ino: number };
 	// ---- legacy 鍛戒护寮忕粍浠舵墿灞曪紙types/element-extensions.ts 鍚堝苟锛?---
 	// ---- 鏁版嵁鎸傝浇锛堝彲閫夆€斺€旇繍琛屾椂鍔ㄦ€侊級----
-	start?: number;
-	selection?: HTMLElement | Record<string, any> | null;
 	activeFile?: Record<string, any> | null;
 	selectionIndex?: number;
 	lastScrollTop?: number;
 	initialized?: boolean;
 	src?: string;
-	filter?: string | null;
 	input?: HTMLElement | Record<string, any> | null;
 	creators?: unknown[];
 	updaters?: unknown[];
-	dataItems?: unknown[] | null;
 	head?: HTMLElement | Record<string, any> | null;
 	strBox?: HTMLElement | null;
 	create(...args: unknown[]): any;
@@ -280,7 +268,6 @@ interface Event {
 interface HTMLElement {
 	_paddingTop: number;
 	innerHeight: number;
-	dataValue: any;
 	dataIndex: any;
 	dataKey: any;
 	dataParent: any;
@@ -304,7 +291,6 @@ interface HTMLElement {
 	fileBox: any;
 	history: any;
 	submenu: any;
-	dragging: any;
 	restoring: boolean;
 	_initialized: boolean;
 	_checkVariablesScheduled: boolean;
@@ -312,9 +298,7 @@ interface HTMLElement {
 	speedX: number;
 	speedY: number;
 	complete: boolean;
-	start: number;
 	back: any;
-	item: any;
 	elements: any[] & {
 		versionId?: number;
 		count?: number;

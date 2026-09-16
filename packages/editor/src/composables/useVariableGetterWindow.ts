@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { elementDataOf } from '@ui-kit';
+import { elementDataOf, type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
@@ -247,7 +247,10 @@ const open = (
 	composableEls.get(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
 	const globalKeyEl = composableEls.get(`${prefix}-global-key`);
 	if (globalKeyEl) {
-		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
+		// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+		(globalKeyEl as CustomBoxApi).filter = filter.startsWith('writable-')
+			? filter.slice(9)
+			: filter;
 	}
 	if (prefix === 'variableGetter') filterState.filter = filter;
 

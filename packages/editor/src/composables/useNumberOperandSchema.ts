@@ -1,4 +1,5 @@
 import { getWindowStore } from '@app/stores/window';
+import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { hide, read, show } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
@@ -148,7 +149,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			break;
 	}
 	const el = composableEls.get('setNumber-operand-common-variable');
-	if (el) el.filter = filter;
+	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+	if (el) (el as CustomBoxApi).filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {

@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { createElementRegistry } from '@app/utils/element-registry';
-import { treeOwnerListOf } from '@ui-kit';
+import { treeOwnerListOf, type CustomBoxApi } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -226,7 +226,8 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-number':
 			case 'global-string':
 				const keyEl = conditionEls.get('condition-key');
-				if (keyEl) keyEl.filter = type.slice(7);
+				// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+				if (keyEl) (keyEl as CustomBoxApi).filter = type.slice(7);
 				break;
 		}
 	}
@@ -292,21 +293,23 @@ export class ConditionListInterface implements IListInterface {
 		]);
 
 		applyLocalizedItems('condition-boolean-operation', ['equal', 'unequal'], (items) =>
-		conditionEls.get('condition-boolean-operation')?.loadItems?.(items)
-	);
+			conditionEls.get('condition-boolean-operation')?.loadItems?.(items)
+		);
 
 		conditionEls.get('condition-boolean-value')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
 
-		applyLocalizedItems('condition-number-operation', ['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'], (items) =>
-		conditionEls.get('condition-number-operation')?.loadItems?.(items)
-	);
+		applyLocalizedItems(
+			'condition-number-operation',
+			['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'],
+			(items) => conditionEls.get('condition-number-operation')?.loadItems?.(items)
+		);
 
 		applyLocalizedItems('condition-string-operation', ['equal', 'unequal'], (items) =>
-		conditionEls.get('condition-string-operation')?.loadItems?.(items)
-	);
+			conditionEls.get('condition-string-operation')?.loadItems?.(items)
+		);
 
 		// 确定按钮 - 鼠标点击事件
 	}

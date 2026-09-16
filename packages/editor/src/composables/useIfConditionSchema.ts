@@ -1,4 +1,5 @@
 import { getWindowStore } from '@app/stores/window';
+import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
@@ -161,8 +162,9 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter2 = 'all';
 			break;
 	}
-	(composableEls.get('if-condition-common-variable') as HTMLElement).filter = filter1;
-	(composableEls.get('if-condition-operand-variable') as HTMLElement).filter = filter2;
+	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+	(composableEls.get('if-condition-common-variable') as CustomBoxApi).filter = filter1;
+	(composableEls.get('if-condition-operand-variable') as CustomBoxApi).filter = filter2;
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {

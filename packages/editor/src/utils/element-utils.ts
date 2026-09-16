@@ -164,7 +164,10 @@ export function write(el: unknown, value: unknown): void {
 	}
 	if (typeof (el as unknown as { write: (value: unknown) => void }).write === 'function') {
 		(el as unknown as { write: (value: unknown) => void }).write(value);
-	} else if (el instanceof HTMLElement && !Object.prototype.hasOwnProperty.call(el, 'dataValue')) {
+	} else if (
+		el instanceof HTMLElement &&
+		!Object.prototype.hasOwnProperty.call(el, 'dataValue')
+	) {
 		elementDataOf<{ dataValue?: unknown }>(el).dataValue = value;
 	} else {
 		(el as unknown as { dataValue: unknown }).dataValue = value;
@@ -515,8 +518,28 @@ export function addSetScrollMethod(el: HTMLElement): void {
 	};
 }
 
+/**
+ * P4b：默认滚动拖拽记录（`dragging`）走**显式元素数据**——与 `Inspector.scrollPointerdown` 里的
+ * `scrollData(this)` 是同一份存储。
+ *
+ * **为什么两边必须一致**：inspector 传的是自己的 `scrollPointerdown`（写元素数据），而 pointerup /
+ * pointermove 用的是本文件的默认实现。若这里继续写普通 expando，写入与读取就落在**两个地方**——
+ * `dragging` 永远清不掉（光标卡在 grab、后续 alt+拖拽被函数开头的早退挡掉）。访问器时代两者同走
+ * WeakMap，所以这个分叉只在 P4b 收口（删除原型访问器）之后才显现。
+ */
+type ScrollDragEvent = PointerEvent & {
+	mode?: string;
+	scrollLeft: number;
+	scrollTop: number;
+};
+interface ScrollDragData {
+	dragging: ScrollDragEvent | null;
+}
+const scrollDragData = (el: unknown): ScrollDragData => elementDataOf<ScrollDragData>(el);
+
 const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
-	if (this.dragging) {
+	const data = scrollDragData(this);
+	if (data.dragging) {
 		return;
 	}
 	switch (event.button) {
@@ -524,7 +547,8 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 			if (event.altKey) {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				this.dragging = event;
+				// 监听的是 `pointerdown`，运行期必然是 PointerEvent
+				data.dragging = event as ScrollDragEvent;
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
@@ -537,21 +561,22 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 };
 
 const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
-	const { dragging } = this;
+	const data = scrollDragData(this);
+	const { dragging } = data;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				Cursor.close('cursor-grab');
 				break;
 		}
-		this.dragging = null;
+		data.dragging = null;
 		window.removeEventListener('pointerup', this.scrollPointerup);
 		window.removeEventListener('pointermove', this.scrollPointermove);
 	}
 };
 
 const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
-	const { dragging } = this;
+	const { dragging } = scrollDragData(this);
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
