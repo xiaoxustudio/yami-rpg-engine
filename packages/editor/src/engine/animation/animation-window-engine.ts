@@ -1,3 +1,4 @@
+import { screenScrollData } from '../screen-scroll-data';
 import { getAnimationStore } from '@app/stores/animation';
 import type { Animation } from '@app/animation/animation-window.ts';
 import { Timer } from '@app/utils/timer';
@@ -48,9 +49,9 @@ AnimationWindowEngine.updateCamera = function (
 	const scrollX = x * this.scaleX + this.outerWidth / 2;
 	const scrollY = y * this.scaleY + this.outerHeight / 2;
 	const toleranceForDPR = 0.0001;
-	screen.rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
-	screen.rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
@@ -68,8 +69,8 @@ AnimationWindowEngine.updateTransform = function (this: typeof Animation) {
 	this.scrollRight = right / this.scaleX;
 	this.scrollBottom = bottom / this.scaleY;
 	this.updateMatrix!();
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
+	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
+	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
 	this.centerX = Math.roundTo((scrollX - this.outerWidth / 2) / this.scaleX, 4);
 	this.centerY = Math.roundTo((scrollY - this.outerHeight / 2) / this.scaleY, 4);
 };

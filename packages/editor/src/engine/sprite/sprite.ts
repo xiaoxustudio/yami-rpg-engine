@@ -1,3 +1,4 @@
+import { screenScrollData } from '../screen-scroll-data';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { engineEls } from '@app/engine/element-registry';
@@ -431,9 +432,9 @@ Sprite.updateCamera = function (this: typeof Sprite, x = this.centerX, y = this.
 	const scrollY = y * this.scaledUnitHeight + this.paddingTop;
 	const toleranceX = this.scaledUnitWidth * 0.0001;
 	const toleranceY = this.scaledUnitHeight * 0.0001;
-	screen.rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
-	screen.rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
 	screen.scrollLeft = (scrollX - (this.screenWidth >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
@@ -451,8 +452,8 @@ Sprite.updateTransform = function (this: typeof Sprite) {
 	this.scrollRight = right;
 	this.scrollBottom = bottom;
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
+	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
+	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
 	this.centerX = Math.roundTo((scrollX - this.paddingLeft) / this.scaledUnitWidth, 4);
 	this.centerY = Math.roundTo((scrollY - this.paddingTop) / this.scaledUnitHeight, 4);
 };
@@ -698,8 +699,8 @@ Sprite.screenWheel = function (this: typeof Sprite, event: WheelEvent) {
 
 Sprite.screenUserscroll = function (this: typeof Sprite, _event: Event) {
 	if (this.state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
+		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
 		this.updateTransform();
 		this.updateBackground();
 		this.requestRendering();

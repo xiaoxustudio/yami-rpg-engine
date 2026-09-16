@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Palette } from './palette.ts';
 import { addClass, hide, off, on, removeClass, show } from '@app/utils/element-utils.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -309,8 +310,8 @@ Palette.screenWheel = (function IIFE() {
 
 Palette.screenUserscroll = function (this: typeof Palette, _event: Event) {
 	if (getPaletteStore().state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
+		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
 		this.updateTransform();
 		this.updateBackground();
 		this.requestRendering();

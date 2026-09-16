@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Particle } from './particle-window.ts';
 import { particleEls } from '@app/particle/element-registry';
 import type { ParticleShape } from './particle-window.ts';
@@ -191,9 +192,9 @@ Particle.updateCamera = function (
 	const scrollX = x * getParticleStore().scaleX! + this.outerWidth! / 2;
 	const scrollY = y * getParticleStore().scaleY! + this.outerHeight! / 2;
 	const toleranceForDPR = 0.0001;
-	screen.rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX!, 0, this.outerWidth! - GL.width) / dpr;
-	screen.rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY!, 0, this.outerHeight! - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
@@ -213,8 +214,8 @@ Particle.updateTransform = function () {
 	this.matrix!.reset()
 		.scale(getParticleStore().scaleX!, getParticleStore().scaleY!)
 		.translate(-this.scrollLeft!, -this.scrollTop!);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX!;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY!;
+	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX!;
+	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY!;
 	this.centerX = Math.roundTo((scrollX - this.outerWidth! / 2) / getParticleStore().scaleX!, 4);
 	this.centerY = Math.roundTo((scrollY - this.outerHeight! / 2) / getParticleStore().scaleY!, 4);
 };

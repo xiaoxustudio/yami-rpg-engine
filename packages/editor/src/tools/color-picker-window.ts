@@ -1,5 +1,6 @@
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
+import { elementDataOf } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
@@ -105,8 +106,9 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawPalette = function (this: typeof Color) {
 	const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
-	if (!canvas.initialized) {
-		canvas.initialized = true;
+	// P4b: initialized now lives in element data (field removed from DATA_FIELDS)
+	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
+		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
 
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const gradient = context.createLinearGradient(0.5, 0, 255.5, 0);

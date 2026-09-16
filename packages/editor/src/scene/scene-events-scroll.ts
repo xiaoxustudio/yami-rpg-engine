@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Scene } from './scene-window.ts';
 import type { ScrollableScreen } from './scene-events.ts';
 
@@ -72,8 +73,8 @@ Scene.screenWheel = function (this: typeof Scene, event: WheelEvent) {
 Scene.screenUserscroll = function (this: typeof Scene, _event: Event) {
 	if (this.state === 'open') {
 		const screen = this.screen as ScrollableScreen;
-		screen.rawScrollLeft = screen.scrollLeft;
-		screen.rawScrollTop = screen.scrollTop;
+		screenScrollData(screen).rawScrollLeft = screen.scrollLeft;
+		screenScrollData(screen).rawScrollTop = screen.scrollTop;
 		this.updateTransform();
 		this.requestRendering!();
 		this.marquee.resize();

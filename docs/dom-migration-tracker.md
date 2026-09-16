@@ -18,7 +18,7 @@
 | editor/constants    | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | editor/data         | 7 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 4 | 1 | 2 | 0 | 0 |
 | editor/directives   | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| editor/engine       | 53 | 8 | 0 | 4 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 5 | 17 | 0 | 9 | 22 | 0 | 14 | 0 | 1 | 0 | 0 |
+| editor/engine       | 54 | 8 | 0 | 4 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 5 | 17 | 0 | 9 | 22 | 0 | 14 | 0 | 1 | 0 | 0 |
 | editor/enum         | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | editor/events       | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 |
 | editor/file         | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -49,11 +49,11 @@
 | ui-kit/index.ts     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/theme        | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ui-kit/utils        | 14 | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 3 | 1 | 0 | 1 | 4 | 0 | 13 | 6 | 0 | 0 | 0 |
-| 合计                  | 1142 |  | 0 | 45 | 1 | 0 | 10 | 16 | 1 | 11 | 0 | 121 | 122 | 11 | 29 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
+| 合计                  | 1143 |  | 0 | 45 | 1 | 0 | 10 | 16 | 1 | 11 | 0 | 121 | 122 | 11 | 29 | 125 | 2 | 570 | 165 | 20 | 0 | 0 |
 
 ## 口径
 
-- 扫描文件：**1142**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
+- 扫描文件：**1143**（`packages/editor/src` + `packages/ui-kit/src`，排除 `*.spec.ts` / `__tests__` / `.demo.vue`）
 - 待迁移命中文件：**0**（判定来源：oxlint `--report-unused-disable-directives`）
 - 豁免注释文件：**0**
 - 陈旧豁免文件：**0**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）
@@ -109,7 +109,7 @@
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 524 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 482 | 15 | - |
-| packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
+| packages/editor/src/scene/scene-events-pointer.ts | 752 | 14 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 161 | 14 | - |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 407 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
@@ -139,7 +139,7 @@
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 194 | 8 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 341 | 8 | - |
 | packages/editor/src/inspector/element-page.ts | 389 | 7 | - |
-| packages/editor/src/tools/color-picker-window.ts | 450 | 7 | - |
+| packages/editor/src/tools/color-picker-window.ts | 452 | 7 | - |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/editor/src/tools/text-capture.ts | 993 | 7 | - |
 | packages/editor/src/tools/window-object.ts | 510 | 7 | - |
@@ -148,7 +148,7 @@
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
 | packages/editor/src/animation/animation-initialize.ts | 504 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
-| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 636 | 6 | - |
+| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 639 | 6 | - |
 | packages/editor/src/local/local-window.ts | 911 | 6 | - |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 307 | 6 | - |
@@ -166,7 +166,7 @@
 | packages/ui-kit/src/components/basic/YMToastManager/YMToastManager.vue | 109 | 6 | - |
 | packages/editor/src/components/common/WindowFrame.vue | 184 | 5 | - |
 | packages/editor/src/components/inspector/FileAudioPage.vue | 257 | 5 | - |
-| packages/editor/src/engine/sprite/sprite.ts | 781 | 5 | - |
+| packages/editor/src/engine/sprite/sprite.ts | 782 | 5 | - |
 | packages/editor/src/inspector/file-entity-page.ts | 115 | 5 | - |
 | packages/editor/src/plugin/plugin-initialize.ts | 144 | 5 | - |
 | packages/editor/src/scene/scene-events-window.ts | 367 | 5 | - |
@@ -177,8 +177,8 @@
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-core.ts | 171 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 100 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 141 | 5 | - |
-| packages/editor/src/animation/animation-events.ts | 410 | 4 | - |
-| packages/editor/src/commands/command-tip.ts | 456 | 4 | - |
+| packages/editor/src/animation/animation-events.ts | 411 | 4 | - |
+| packages/editor/src/commands/command-tip.ts | 457 | 4 | - |
 | packages/editor/src/commands/schema.ts | 434 | 4 | - |
 | packages/editor/src/composables/useInspectorInput.ts | 60 | 4 | - |
 | packages/editor/src/composables/usePointerObjectWindow.ts | 38 | 4 | - |
@@ -187,7 +187,7 @@
 | packages/editor/src/particle/particle-pointer.ts | 131 | 4 | - |
 | packages/editor/src/title/home-page.ts | 510 | 4 | - |
 | packages/editor/src/tools/script-list.ts | 201 | 4 | - |
-| packages/editor/src/ui/ui-events.ts | 319 | 4 | - |
+| packages/editor/src/ui/ui-events.ts | 320 | 4 | - |
 | packages/editor/src/ui/ui-initialize.ts | 333 | 4 | - |
 | packages/ui-kit/src/components/basic/YMDetailBox/detail-box-api.ts | 96 | 4 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/detail-summary-api.ts | 77 | 4 | - |
@@ -227,7 +227,7 @@
 | packages/editor/src/components/inspector/SceneTilemapPage.vue | 372 | 2 | - |
 | packages/editor/src/composables/commands/useScriptCommandSchema.ts | 507 | 2 | - |
 | packages/editor/src/composables/useCurveWindow.ts | 457 | 2 | - |
-| packages/editor/src/engine/palette/palette-engine.ts | 718 | 2 | - |
+| packages/editor/src/engine/palette/palette-engine.ts | 719 | 2 | - |
 | packages/editor/src/engine/ui/reference-element.ts | 356 | 2 | - |
 | packages/editor/src/engine/webgl/texture.ts | 132 | 2 | - |
 | packages/editor/src/enum/enum-window.ts | 899 | 2 | - |
@@ -241,7 +241,7 @@
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
 | packages/editor/src/module/constants.ts | 106 | 2 | - |
 | packages/editor/src/palette/auto-tile.ts | 976 | 2 | - |
-| packages/editor/src/particle/particle-events.ts | 216 | 2 | - |
+| packages/editor/src/particle/particle-events.ts | 217 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1402 | 2 | - |
 | packages/editor/src/services/project/setting-config/renderer.ts | 176 | 2 | - |
 | packages/editor/src/tools/event-list.ts | 185 | 2 | - |
@@ -913,7 +913,7 @@
 | packages/editor/src/directives/focus.ts | 54 | 0 | - |
 | packages/editor/src/directives/tip.ts | 32 | 0 | - |
 | packages/editor/src/engine/animation/animation-player.ts | 878 | 0 | - |
-| packages/editor/src/engine/animation/animation-window-engine.ts | 835 | 0 | - |
+| packages/editor/src/engine/animation/animation-window-engine.ts | 836 | 0 | - |
 | packages/editor/src/engine/codec/codec.ts | 455 | 0 | - |
 | packages/editor/src/engine/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/engine/layout/layout-deserialize.ts | 76 | 0 | - |
@@ -931,11 +931,12 @@
 | packages/editor/src/engine/scene/draw-tilemap.ts | 277 | 0 | - |
 | packages/editor/src/engine/scene/draw-wireframes.ts | 156 | 0 | - |
 | packages/editor/src/engine/scene/scene-animate-engine.ts | 76 | 0 | - |
-| packages/editor/src/engine/scene/scene-camera-engine.ts | 194 | 0 | - |
+| packages/editor/src/engine/scene/scene-camera-engine.ts | 195 | 0 | - |
 | packages/editor/src/engine/scene/scene-draw-engine.ts | 53 | 0 | - |
 | packages/editor/src/engine/scene/scene-edit-engine.ts | 573 | 0 | - |
 | packages/editor/src/engine/scene/scene-marquee-engine.ts | 185 | 0 | - |
 | packages/editor/src/engine/scene/scene-selection-engine.ts | 547 | 0 | - |
+| packages/editor/src/engine/screen-scroll-data.ts | 18 | 0 | - |
 | packages/editor/src/engine/ui/animation-element.ts | 246 | 0 | - |
 | packages/editor/src/engine/ui/button-element.ts | 427 | 0 | - |
 | packages/editor/src/engine/ui/container-element.ts | 21 | 0 | - |
@@ -948,7 +949,7 @@
 | packages/editor/src/engine/ui/root-element.ts | 75 | 0 | - |
 | packages/editor/src/engine/ui/text-box-element.ts | 315 | 0 | - |
 | packages/editor/src/engine/ui/text-element.ts | 474 | 0 | - |
-| packages/editor/src/engine/ui/ui-engine.ts | 674 | 0 | - |
+| packages/editor/src/engine/ui/ui-engine.ts | 675 | 0 | - |
 | packages/editor/src/engine/ui/video-element.ts | 35 | 0 | - |
 | packages/editor/src/engine/ui/window-element.ts | 361 | 0 | - |
 | packages/editor/src/engine/webgl/base-texture.ts | 86 | 0 | - |
@@ -1016,7 +1017,7 @@
 | packages/editor/src/module/zip.ts | 71 | 0 | - |
 | packages/editor/src/palette/element-registry.ts | 9 | 0 | - |
 | packages/editor/src/palette/palette-autotile.ts | 67 | 0 | - |
-| packages/editor/src/palette/palette-events.ts | 326 | 0 | - |
+| packages/editor/src/palette/palette-events.ts | 327 | 0 | - |
 | packages/editor/src/palette/palette-file.ts | 82 | 0 | - |
 | packages/editor/src/palette/palette-image.ts | 293 | 0 | - |
 | packages/editor/src/palette/palette-selection.ts | 53 | 0 | - |
@@ -1026,7 +1027,7 @@
 | packages/editor/src/particle/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/particle/particle-file.ts | 135 | 0 | - |
 | packages/editor/src/particle/particle-list.ts | 232 | 0 | - |
-| packages/editor/src/particle/particle-motion.ts | 684 | 0 | - |
+| packages/editor/src/particle/particle-motion.ts | 685 | 0 | - |
 | packages/editor/src/particle/particle-window.ts | 423 | 0 | - |
 | packages/editor/src/particle/register.ts | 7 | 0 | - |
 | packages/editor/src/plugin/element-registry.ts | 7 | 0 | - |
@@ -1050,7 +1051,7 @@
 | packages/editor/src/scene/scene-edit.ts | 16 | 0 | - |
 | packages/editor/src/scene/scene-events-drag.ts | 51 | 0 | - |
 | packages/editor/src/scene/scene-events-list.ts | 490 | 0 | - |
-| packages/editor/src/scene/scene-events-scroll.ts | 90 | 0 | - |
+| packages/editor/src/scene/scene-events-scroll.ts | 91 | 0 | - |
 | packages/editor/src/scene/scene-events.ts | 22 | 0 | - |
 | packages/editor/src/scene/scene-list.ts | 315 | 0 | - |
 | packages/editor/src/scene/scene-map-record.ts | 146 | 0 | - |
@@ -1232,7 +1233,7 @@
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 95 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 92 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |

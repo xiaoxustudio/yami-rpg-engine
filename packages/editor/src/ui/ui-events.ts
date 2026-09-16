@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { UI } from './ui-window.ts';
 import type { UIShape } from './ui-window.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -302,8 +303,8 @@ UI.screenWheel = function (this: UIShape, event: WheelEvent) {
 
 UI.screenUserscroll = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
+		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
 		this.requestRendering!();
 		this.marquee.resize();

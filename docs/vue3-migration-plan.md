@@ -328,7 +328,7 @@
 
 | 指标                                 | 数值（2026-09-12 实测）              |
 | ------------------------------------ | ----------------------------------- |
-| 扫描文件总数                         | 1142（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
+| 扫描文件总数                         | 1143（B1/R1 的 store 与组件 + B2 的 helper + B4 批 2/3/4 的 `element-registry.ts` 十八个 + B5 的 `tip.ts` 与 `template-localized.ts` + R2b 迁移⑦ 的 `useLocalizedOptions.ts`） |
 | 待迁移命中文件（oxlint 判定仍在用）  | **0**（初始 299；P1b 十七刀 −112 → 余 46 → C1 白名单归零：设计豁免 45 + 临时豁免 1） |
 | 带豁免注释文件（`oxlint-disable`）   | **0**（C2 执行前 295；C1 后白名单由 `overrides` 承担，**豁免机制退役**） |
 | 其中陈旧豁免（注释在、命中已为 0）   | 0（C2 执行前 135）                  |

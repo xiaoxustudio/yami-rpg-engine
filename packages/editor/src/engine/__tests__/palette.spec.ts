@@ -1,3 +1,4 @@
+import { screenScrollData } from '../screen-scroll-data';
 import { describe, expect, it, vi } from 'vitest';
 import '@app/utils/math';
 
@@ -99,8 +100,8 @@ function createMockPalette(overrides: Record<string, any> = {}) {
 	const screen = document.createElement('div') as any;
 	screen.scrollLeft = 0;
 	screen.scrollTop = 0;
-	screen.rawScrollLeft = 0;
-	screen.rawScrollTop = 0;
+	screenScrollData(screen).rawScrollLeft = 0;
+	screenScrollData(screen).rawScrollTop = 0;
 	screen.updateScrollbars = vi.fn();
 	Object.defineProperty(screen, 'clientWidth', { value: 800 });
 	Object.defineProperty(screen, 'clientHeight', { value: 600 });
@@ -174,6 +175,17 @@ function createMockPalette(overrides: Record<string, any> = {}) {
 		selectTiles: PaletteEngine.selectTiles,
 		...overrides
 	};
+	// P4b：screen 上的滚动缓存（rawScroll*）已经是元素数据——覆盖项里若给了这两个值，
+	// 必须写进 WeakMap，否则引擎读不到（夹具直接写在对象字面量里的话不会生效）。
+	const rawOverride = overrides.screen as
+		| { rawScrollLeft?: number; rawScrollTop?: number }
+		| undefined;
+	if (rawOverride && typeof rawOverride.rawScrollLeft === 'number') {
+		screenScrollData(palette.screen).rawScrollLeft = rawOverride.rawScrollLeft;
+	}
+	if (rawOverride && typeof rawOverride.rawScrollTop === 'number') {
+		screenScrollData(palette.screen).rawScrollTop = rawOverride.rawScrollTop;
+	}
 	return palette;
 }
 
@@ -240,8 +252,8 @@ describe('PaletteEngine.updateCamera', () => {
 		});
 		Object.defineProperty(window, 'devicePixelRatio', { value: 1, configurable: true });
 		PaletteEngine.updateCamera.call(palette);
-		expect(palette.screen.rawScrollLeft).toBeDefined();
-		expect(palette.screen.rawScrollTop).toBeDefined();
+		expect(screenScrollData(palette.screen).rawScrollLeft).toBeDefined();
+		expect(screenScrollData(palette.screen).rawScrollTop).toBeDefined();
 	});
 
 	it('传入 x/y 覆盖 meta 值', () => {
@@ -256,7 +268,7 @@ describe('PaletteEngine.updateCamera', () => {
 		});
 		Object.defineProperty(window, 'devicePixelRatio', { value: 1, configurable: true });
 		PaletteEngine.updateCamera.call(palette, 10, 20);
-		expect(palette.screen.rawScrollLeft).toBeDefined();
+		expect(screenScrollData(palette.screen).rawScrollLeft).toBeDefined();
 	});
 });
 

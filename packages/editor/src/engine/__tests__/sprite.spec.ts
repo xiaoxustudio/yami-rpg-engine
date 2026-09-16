@@ -1,3 +1,4 @@
+import { screenScrollData } from '../screen-scroll-data';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('@app/utils/element-utils', () => ({
@@ -98,8 +99,8 @@ function initSpriteDOM() {
 	screen.id = 'sprite-screen';
 	screen.scrollLeft = 0;
 	screen.scrollTop = 0;
-	screen.rawScrollLeft = 0;
-	screen.rawScrollTop = 0;
+	screenScrollData(screen).rawScrollLeft = 0;
+	screenScrollData(screen).rawScrollTop = 0;
 	screen.updateScrollbars = vi.fn();
 	screen.beginScrolling = vi.fn();
 	screen.endScrolling = vi.fn();

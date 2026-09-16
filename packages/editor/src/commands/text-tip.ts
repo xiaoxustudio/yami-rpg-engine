@@ -353,8 +353,8 @@ TextSuggestion.list.updateNodeElement = function (
 	this: TextSuggestionList,
 	element: HTMLElement & { item: TextSuggestionItem; initialized?: boolean }
 ): void {
-	if (!element.initialized) {
-		element.initialized = true;
+	if (!elementDataOf<{ initialized?: boolean }>(element).initialized) {
+		elementDataOf<{ initialized?: boolean }>(element).initialized = true;
 		const item = element.item;
 		const nodes: VNode[] = [];
 		const classList = ['text-suggestion-content', 'text'];

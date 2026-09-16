@@ -1,3 +1,4 @@
+import { screenScrollData } from '../screen-scroll-data';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { clear, removeClass } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -54,9 +55,9 @@ PaletteEngine.updateCamera = function (this: typeof Palette, x = this.meta.x, y 
 	const scrollY = y * this.scaledTileHeight + this.paddingTop;
 	const toleranceX = this.scaledTileWidth * 0.0001;
 	const toleranceY = this.scaledTileHeight * 0.0001;
-	screen.rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
-	screen.rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
 	screen.scrollLeft = (scrollX - (this.screenWidth >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
@@ -74,8 +75,8 @@ PaletteEngine.updateTransform = function (this: typeof Palette) {
 	this.scrollRight = right;
 	this.scrollBottom = bottom;
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
+	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
+	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
 	this.meta.x = Math.roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
 	this.meta.y = Math.roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;

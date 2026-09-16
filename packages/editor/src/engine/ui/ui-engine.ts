@@ -1,4 +1,5 @@
-﻿import { getUIStore } from '@app/stores/ui';
+import { screenScrollData } from '../screen-scroll-data';
+import { getUIStore } from '@app/stores/ui';
 import { engineEls } from '@app/engine/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { write } from '@app/utils/element-utils.ts';
@@ -415,9 +416,9 @@ UIEngine.updateCamera = function (this: UIShape, x = this.centerX, y = this.cent
 	const scrollX = x * this.scaleX + this.paddingLeft;
 	const scrollY = y * this.scaleY + this.paddingTop;
 	const toleranceForDPR = 0.0001;
-	screen.rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
-	screen.rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
@@ -438,8 +439,8 @@ UIEngine.updateTransform = function (this: UIShape) {
 		.reset()
 		.scale(this.scaleX, this.scaleY)
 		.translate(-this.scrollLeft, -this.scrollTop);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
+	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
+	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
 	this.centerX = Math.roundTo((scrollX - this.paddingLeft) / this.scaleX, 4);
 	this.centerY = Math.roundTo((scrollY - this.paddingTop) / this.scaleY, 4);
 };

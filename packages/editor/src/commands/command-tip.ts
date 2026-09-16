@@ -7,6 +7,7 @@ import {
 	treeRowIndexOf,
 	type TreeListRowApi
 } from '@ui-kit';
+import { elementDataOf } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { getWindowStore } from '@app/stores/window';
@@ -306,8 +307,8 @@ CommandSuggestion.open = function (): void {
 		widget.y = y;
 		widget.style.left = `${x}px`;
 		widget.style.top = `${y}px`;
-		if (!list.initialized) {
-			list.initialized = true;
+		if (!elementDataOf<{ initialized?: boolean }>(list).initialized) {
+			elementDataOf<{ initialized?: boolean }>(list).initialized = true;
 			list.updateCommandNames!();
 			list.update();
 			list.selectDefaultCommand!();
@@ -328,8 +329,8 @@ CommandSuggestion.select = function (item: CommandSuggestionItem): void {
 CommandSuggestion.windowLocalize = function (_event: Event): void {
 	// 步骤 5b：行由 v-for 渲染，不能再手清 DOM（会炸掉 vnode）；改为重派生以刷新本地化文本
 	const { list } = CommandSuggestion;
-	if (list.initialized) {
-		list.initialized = false;
+	if (elementDataOf<{ initialized?: boolean }>(list).initialized) {
+		elementDataOf<{ initialized?: boolean }>(list).initialized = false;
 		list.syncRenderRows();
 	}
 };

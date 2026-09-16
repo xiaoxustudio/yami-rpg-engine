@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Particle } from './particle-window.ts';
 import { particleEls } from '@app/particle/element-registry';
 import type { ParticleConfigShape, ParticleShape } from './particle-window.ts';
@@ -202,8 +203,8 @@ Particle.screenWheel = function (this: ParticleShape, event: WheelEvent) {
 
 Particle.screenUserscroll = function (this: ParticleShape, _event: Event) {
 	if (getParticleStore().state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
+		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
 		this.requestRendering!();
 	}

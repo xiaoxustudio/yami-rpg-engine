@@ -1,3 +1,4 @@
+import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Animation } from './animation-window.ts';
 import { hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -395,8 +396,8 @@ Animation.screenWheel = function (this: typeof Animation, event: WheelEvent) {
 
 Animation.screenUserscroll = function (this: typeof Animation, _event: Event) {
 	if (getAnimationStore().state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
+		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
 		this.requestRendering!();
 	}
