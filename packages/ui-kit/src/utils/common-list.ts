@@ -1,4 +1,5 @@
 import { getListConfig } from './list-config';
+import { elementDataOf } from './element-data';
 
 export interface CommonListLike {
 	scrollTop: number;
@@ -17,6 +18,10 @@ export interface CommonListLike {
 		foot: HTMLElement | null;
 	};
 }
+
+/** P4b: row element versionId now lives in element data (field removed from DATA_FIELDS) */
+const versionOf = (el: unknown): { versionId?: number } =>
+	elementDataOf<{ versionId?: number }>(el);
 
 export const commonListClearElements = (list: CommonListLike, start: number): void => {
 	let i = start;
@@ -67,14 +72,14 @@ export const commonListResize = (list: CommonListLike): void => {
 		const versionId = list.elements.versionId++;
 		for (let i = start; i < end; i++) {
 			const element = list.elements[i];
-			element.versionId = versionId;
+			versionOf(element).versionId = versionId;
 			list.updateOnResize(element);
 		}
 		const nodes = el.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
 			const element = nodes[i] as HTMLElement & { versionId?: number };
-			if (element.versionId !== versionId) {
+			if (versionOf(element).versionId !== versionId) {
 				element.remove();
 			}
 		}

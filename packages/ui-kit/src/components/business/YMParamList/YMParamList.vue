@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 import {
 	addClass,
@@ -444,14 +445,14 @@ const resize = (): void => {
 		const versionId = elements.versionId++;
 		for (let i = range.start; i < range.end; i++) {
 			const element = elements[i];
-			element.versionId = versionId;
+			elementDataOf<{ versionId?: number }>(element).versionId = versionId;
 			updateOnResize(element);
 		}
 		const nodes = self.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
 			const element = nodes[i];
-			if ((element as ParamItemElement).versionId !== versionId) {
+			if (elementDataOf<{ versionId?: number }>(element).versionId !== versionId) {
 				element.remove();
 			}
 		}

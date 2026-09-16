@@ -42,7 +42,6 @@ const DATA_FIELDS = [
 	'end',
 	'foot',
 	'selections',
-	'versionId',
 	'origin',
 	'active',
 	'anchor',

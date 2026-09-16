@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { hasClass, seek } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { createCommonListCore, type RelativeDirection } from './common-list-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -122,14 +123,14 @@ const resize = (): void => {
 		const versionId = elements.versionId++;
 		for (let i = range.start; i < range.end; i++) {
 			const element = elements[i];
-			element.versionId = versionId;
+			elementDataOf<{ versionId?: number }>(element).versionId = versionId;
 			updateOnResize(element);
 		}
 		const nodes = el.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
 			const element = nodes[i] as ListItem;
-			if (element.versionId !== versionId) {
+			if (elementDataOf<{ versionId?: number }>(element).versionId !== versionId) {
 				element.remove();
 			}
 		}

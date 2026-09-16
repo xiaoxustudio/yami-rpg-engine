@@ -20,7 +20,7 @@
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」；**尾项「确认按钮启用态属性化」也已收口**，见该小节） |
 | P1b | ✅ **已完成**（十七刀 + C1 收尾）：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
 | P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义；**契约侧已收口**：第 34 轮审计发现 26 个 `*-api.ts` 里 25 个已有 `XxxApi`，唯一缺的巨石 `YMCommandList` 已补 `CommandListElementApi` 并由 editor 的 `EventCommandListShape` 派生自它；余下是 ref/expose 迁移与 M5 的返回值收紧） |
-| P4b | **原型访问器退役**：元素数据 WeakMap 与 **45** 个字段的 get/set（共 90 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`、**第六刀删列表配置簇 10 个 + 死字段 `filler`**）；实现已迁至 **ui-kit**（editor 侧同路径再导出），`main.ts` 仍以副作用导入安装访问器 | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | 🚧 **进行中**（83 → 45；余下字段的用量表已记入本文件，作为后续批次与 P2b 的验收输入） |
+| P4b | **原型访问器退役**：元素数据 WeakMap 与 **44** 个字段的 get/set（共 88 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`、**第六刀删列表配置簇 10 个 + 死字段 `filler`**）；实现已迁至 **ui-kit**（editor 侧同路径再导出），`main.ts` 仍以副作用导入安装访问器 | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | 🚧 **进行中**（83 → 44；余下字段的用量表已记入本文件，作为后续批次与 P2b 的验收输入） |
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | ✅ **M1–M4 完成、M5 进行中**（2026-09-12）：M1 组件级金标准 **17 → 43+**、M2 两个派生层、**M3 两个巨石都已换源**（文件 body：api 数据化 55 处 + 模板 `v-for` + 回写桥 + 删死代码；命令列表：`resize` 自算窗口 + 模板渲染 + `bindRowElement` + `updateLineClasses` 扩展点）、**M4 三步全部收口**（扩展点、按数据反查、API 面 69 方法审计无可退役）、M5 已把文件 body 的名字移入模板且改名有用例覆盖。**余**：命令列表行内文本/变量标记与缩进线仍是手工建 DOM（画布类例外），改动需真机冒烟 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
@@ -550,6 +550,14 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 ## P4b — 原型访问器退役（`utils/element-data.ts`）
 
+> ✅ **P4b 第十刀（2026-09-15）：`versionId` 收口，`DATA_FIELDS` 45 → 44（访问器 90 → 88）**。
+> 行元素上的 `versionId` 是虚拟滚动用来"回收越界行"的世代号，站点只有 3 个 ui-kit 文件：
+> `common-list.ts`（写/读 2 处）、`YMCommonList.vue`（2 处）、`YMParamList.vue`（2 处）——
+> 全部改走 `elementDataOf<{ versionId?: number }>(element)`。**注意同名不同物**：`list.elements.versionId`
+> 是"行集合"这个 baggage 对象上的计数器（`select-list-api` / `command-api` / `YMFileNavPane` 都有），
+> 与元素数据无关，本刀**不动**它们。
+> - **验证**：ui-kit **111 文件 780/780**、`pnpm lint` 0/0、`tsc` strict 通过。
+
 > ✅ **P4b 第九刀（2026-09-15）：`lastText` / `hiddenNodes` 收口，`DATA_FIELDS` 47 → 45（访问器 94 → 90）**。
 > 这两个字段是**跨组件约定**的样板：重命名用的共享文本框（`treeListStatics.textBox`）在
 > `YMTextBox` 家族与树列表之间传递"上一次文本"与"被隐藏的兄弟节点"，过去全靠同名访问器透明读写。
@@ -650,7 +658,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > - **剩余 70 个字段都有真实读取**，且多数是**跨组件约定**（如 `lastText`/`hiddenNodes` 在 `YMTextBox` 与 `YMTreeList` 之间传递、`togglable` 属于 `getListConfig` 的公开面）——这类要连同 **P2b 的类型化元素 API 契约**一起改，否则只是把隐式约定换个地方藏。
 > - **指标**：`DATA_FIELDS` **72 → 70**（tracker 的「prototype 访问器定义（逗号形式）」列同步）；`pnpm lint` 0/0、`tsc` strict 与 `vue-tsc` 0 新增、两个测试套件全绿。
 
-- **现状证据（2026-09-11 实测；字段数口径见下）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 83 个字段 / 166 个访问器；现 `DATA_FIELDS` 为 **45** 个字段 / 90 个访问器——实现已于 2026-09-12 迁到 `packages/ui-kit/src/utils/element-data.ts`，editor 侧同路径再导出），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
+- **现状证据（2026-09-11 实测；字段数口径见下）**：`packages/editor/src/utils/element-data.ts`（119 行）把元素数据搬进 `WeakMap`（这一步本身是对的：不再往 DOM 元素自身上复写属性），但**访问语法仍依赖全局原型访问器**——`defineDataAccessors()` 对 `DATA_FIELDS` 的每个字段逐个 `Object.defineProperty(HTMLElement.prototype, field, { get, set })`（B3 前 83 个字段 / 166 个访问器；现 `DATA_FIELDS` 为 **44** 个字段 / 88 个访问器——实现已于 2026-09-12 迁到 `packages/ui-kit/src/utils/element-data.ts`，editor 侧同路径再导出），并在 `packages/editor/src/main.ts:7` 以副作用方式导入生效。模块注释自述："数据不污染 DOM 元素…通过原型访问器透明迁移——`el.dragging` 等读写自动走 WeakMap（挂载/读取处零改动）"。
 - **为什么此前没被记到**：tracker 的 `protoExt` 模式要求 `prototype` 后跟**点**（`…\.prototype\.`），而这里是 `Object.defineProperty(HTMLElement.prototype, field, …)` 的**逗号形式**，因此长期显示为 0。本轮已在 tracker 的「辅助口径」新增列「prototype 访问器定义（逗号形式）」把它暴露出来（当前 **1 处 / 1 文件**）。
 - **调用面（近似，2026-09-11 实测）**：`this.<字段之一>` 命中 **774 处 / 123 文件**（`this` 多为元素接收者；热点：`YMCommandList/command-api.ts` 134、`YMTreeList/tree-api.ts` 32、`scene/scene-events-pointer.ts` 23、`tools/text-capture.ts` 23、`data/transition-window.ts` 21）。**2026-09-15 复测**：**768 处 / 124 文件**（B3/B2/M3 后小幅下降；前 5 仍是 `command-api.ts` 133、`tree-api.ts` 31、`scene-events-pointer.ts` 23、`text-capture.ts` 23、`transition-window.ts` 21，另有 `engine/sprite/sprite.ts` 15、`engine/scene/draw-wireframes.ts` 14、`palette/palette-pointer.ts` 14、`tools/property-list.ts` 14）。**注意**：字段里混有大量通用名（`key`/`mode`/`target`/`start`/`end`/`active`/`count`/`page`…），文本检索**无法区分**"元素数据"与"普通对象状态"，因此迁移必须按组件逐个确认，不能全局替换。
 - **推进策略**：① ~~先删 11 个死字段~~（已完成）；② 按组件把 `this.x` / `el.x` 改为显式 API（模块已导出 `getElementData(el)`；与 **P2b** 的元素 API 收尾同批做最省事）；③ 每组件一个提交 + 真机冒烟；④ 终态删除 `defineDataAccessors()` 与 `main.ts` 的副作用导入——届时 P4 的验收「全仓无 `HTMLElement.prototype` 扩展」才真正成立。
