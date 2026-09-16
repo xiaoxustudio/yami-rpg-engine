@@ -610,6 +610,22 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > **收口结果（2026-09-16 实跑）**：editor **239 文件 2004/2004 全绿**、ui-kit **111 文件 780/780**、
 > `tsc` strict 0 错、`vue-tsc` 0 错、`oxlint` 0/0、`docs:check` OK。**上面 P4b 第二十刀的数字现在才是真的。**
 >
+> **🔴 又一个被"只看用例数"掩盖的问题（2026-09-16 同日发现并修复）**：套件虽然 **2004/2004 全绿**，
+> 但 `pnpm -F @yami/editor test` 的**退出码是 1**——vitest 报了 **5 个 "Uncaught Exception"**：
+> `TypeError: Cannot read properties of undefined (reading 'frames')` @ `palette/auto-tile.ts`。
+> 即"测试全绿"与"命令通过"是两件事，**门禁看的是退出码**。
+>
+> - **根因**：`AutoTile.nodesWrite` 假定 `event.value` 一定指向一个存在的节点，写成
+>   `this.node = this.nodes[nodeIndex]; this.frames = this.node.frames;`。而 `<CommonList id="autoTile-nodes">`
+>   在**还没有任何节点**时也会派发 `write`（`event.value` 为 `undefined`）⇒ `this.nodes[undefined]` 是
+>   `undefined` ⇒ 下一行取 `.frames` 抛错。窗口挂载期即触发（`AutoTile.nodes` 初值就是 `null`）。
+> - **修法**：先取 `const node = this.nodes?.[nodeIndex]`，无节点则 **早退**（不写 store、不动
+>   `node`/`frames`）——"没有可选的节点"本就该是 no-op。
+> - **为什么长期没被发现**：这类异常**不影响任何用例的断言**（它发生在 Vue 的 emit 链里，被
+>   `callWithErrorHandling` 捕获后仅打印），所以只有看**退出码**才暴露。**教训：验收标准必须写
+>   "退出码 0"，不能只写"用例数全绿"。**
+> - **验证**：该 spec 的 5 例仍全绿、`Errors` 归零、命令退出码 **0**。
+>
 > **顺手修掉的一处真实运行期缺陷（不是测试问题）——`element-utils.ts` 的滚动拖拽状态被劈成两份存储**：
 > `Inspector.scrollPointerdown` 走 `scrollData(this)`（**元素数据**），而 `element-utils.ts` 里共享的
 > `scrollPointerup` / `scrollPointermove` 读的是 `this.dragging`（**普通属性**）⇒ 拖拽记录**永远清不掉**：

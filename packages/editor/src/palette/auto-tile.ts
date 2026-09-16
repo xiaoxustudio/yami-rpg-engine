@@ -624,10 +624,17 @@ AutoTile.templatesPopup = function (
 
 AutoTile.nodesWrite = function (this: typeof AutoTile, event: Event & { value?: number }) {
 	const nodeIndex = event.value;
+	// 列表在「还没有任何节点」时也会派发 `write`（`event.value` 为 undefined），此时
+	// `this.nodes[nodeIndex]` 是 undefined，旧写法会在下一行抛
+	// `Cannot read properties of undefined (reading 'frames')`——这是一条**未捕获异常**
+	// （窗口挂载期即触发，vitest 记为 "Uncaught Exception"，让 `pnpm test` 以退出码 1 结束，
+	// 即使 2004/2004 全绿）。没有对应节点时按"无可选节点"处理：不写 store、不动 node/frames。
+	const node = this.nodes?.[nodeIndex as number];
+	if (!node) return;
 	getAutoTileStore().nodeIndex = nodeIndex;
-	this.node = this.nodes[nodeIndex];
-	this.frames = this.node.frames;
-	const rule = this.node.rule;
+	this.node = node;
+	this.frames = node.frames;
+	const rule = node.rule;
 	const ruleBits = getAutoTileStore().ruleBits;
 	for (let i = 0; i < 8; i++) {
 		ruleBits[i] = (rule >> (i * 2)) & 0b11;
