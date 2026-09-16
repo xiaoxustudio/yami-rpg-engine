@@ -165,8 +165,11 @@ export const treeListStatics = {
 		input.type = 'text';
 		textBox.appendChild(input);
 		textBox.input = input;
-		textBox.hiddenNodes = null;
-		textBox.lastText = '';
+		const textBoxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
+			textBox
+		);
+		textBoxData.hiddenNodes = null;
+		textBoxData.lastText = '';
 
 		textBox.read = function (): string {
 			return input.value;
@@ -244,10 +247,13 @@ export const treeListStatics = {
 			const list = element.parentNode;
 			const item = element.item;
 			const name = this.read().trim();
-			for (const node of this.hiddenNodes) {
+			const boxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
+				this
+			);
+			for (const node of boxData.hiddenNodes ?? []) {
 				removeClass(node, 'hidden');
 			}
-			this.hiddenNodes = null;
+			boxData.hiddenNodes = null;
 			this.remove();
 			const last = item.name;
 			if (last !== name) {
@@ -266,7 +272,7 @@ export const treeListStatics = {
 				}
 				dispatchChangeEvent(list);
 			} else {
-				rowData(element).textNode!.nodeValue = this.lastText;
+				rowData(element).textNode!.nodeValue = boxData.lastText;
 			}
 		});
 
@@ -1035,10 +1041,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						nodes.push(node);
 					}
 				}
-				textBox.lastText = rowData(element).textNode!.nodeValue as string;
+				elementDataOf<{ lastText: string }>(textBox).lastText = rowData(element).textNode!
+					.nodeValue as string;
 				rowData(element).textNode!.nodeValue = '';
 				element.appendChild(textBox);
-				textBox.hiddenNodes = nodes;
+				elementDataOf<{ hiddenNodes: HTMLElement[] | null }>(textBox).hiddenNodes = nodes;
 				textBox.write(item.name);
 				textBox.getFocus('all');
 				textBox.fitContent();

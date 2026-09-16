@@ -1,4 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 
 export interface TextBoxApiOptions {
@@ -38,8 +39,10 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	box.appendChild(input);
 	box.input = input;
 
-	box.lastText = '';
-	box.hiddenNodes = [];
+	// P4b：这两个字段走显式元素数据（已从 DATA_FIELDS 摘除）
+	const data = elementDataOf<TextBoxApi>(box);
+	data.lastText = '';
+	data.hiddenNodes = [];
 
 	let isEditing = false;
 	const keydownFilters: ((event: KeyboardEvent) => boolean)[] = [];
@@ -63,7 +66,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 
 	const write = (value: string): void => {
 		input.value = value;
-		box.lastText = value;
+		data.lastText = value;
 	};
 	const addCloseButton = (): void => {
 		const close = document.createElement('button');
@@ -114,7 +117,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 		{ capture: true }
 	);
 	input.addEventListener('input', () => {
-		box.lastText = read();
+		data.lastText = read();
 	});
 	input.addEventListener('change', () => {
 		box.dispatchEvent(new Event('change', { bubbles: true }));

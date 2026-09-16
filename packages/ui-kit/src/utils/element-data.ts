@@ -63,8 +63,6 @@ const DATA_FIELDS = [
 	'mode',
 	'info',
 	'invalid',
-	'lastText',
-	'hiddenNodes',
 	'varBox',
 	'numBox'
 ] as const;

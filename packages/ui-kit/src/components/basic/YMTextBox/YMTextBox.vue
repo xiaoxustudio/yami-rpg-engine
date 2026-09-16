@@ -1,6 +1,7 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 
 interface Props {
@@ -219,8 +220,9 @@ function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input || (el as TextBoxApi)._initialized) return;
-	(el as TextBoxApi).lastText = '';
-	(el as TextBoxApi).hiddenNodes = [];
+	// P4b：走显式元素数据
+	elementDataOf<TextBoxApi>(el).lastText = '';
+	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
 	attachApi(el, {
 		read,

@@ -98,9 +98,9 @@
 | --- | --- | --- | --- |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1114 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2085 | 53 | - |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1661 | 51 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1663 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2400 | 35 | - |
-| packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 899 | 31 | - |
+| packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 900 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1436 | 29 | - |
 | packages/editor/src/utils/element-utils.ts | 618 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 664 | 27 | - |
@@ -110,7 +110,7 @@
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 482 | 15 | - |
 | packages/editor/src/scene/scene-events-pointer.ts | 751 | 14 | - |
-| packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 158 | 14 | - |
+| packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 161 | 14 | - |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 406 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 385 | 12 | - |
@@ -137,7 +137,7 @@
 | packages/editor/src/inspector/inspector.ts | 509 | 8 | - |
 | packages/editor/src/ui/ui-pointer.ts | 583 | 8 | - |
 | packages/ui-kit/src/components/basic/YMRadioBox/radio-box-api.ts | 194 | 8 | - |
-| packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 339 | 8 | - |
+| packages/ui-kit/src/components/basic/YMTextBox/YMTextBox.vue | 341 | 8 | - |
 | packages/editor/src/inspector/element-page.ts | 389 | 7 | - |
 | packages/editor/src/tools/color-picker-window.ts | 450 | 7 | - |
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
@@ -1232,7 +1232,7 @@
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 101 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 99 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |
