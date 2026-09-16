@@ -13,8 +13,20 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
+import { elementDataOf } from '@app/utils/element-data';
 
 const Clipboard = GlobalClipboard;
+
+/**
+ * P4b：时间轴选框（`Animation.timelineMarquee`）的元素数据视图。
+ * `origin` 是本次多选/框选的锚点帧号（`selectMarquee` 写入，扩展选择时用来判断方向）。
+ */
+interface TimelineMarqueeElementData {
+	origin: number;
+}
+
+const marqueeData = (el: unknown): TimelineMarqueeElementData =>
+	elementDataOf<TimelineMarqueeElementData>(el);
 
 Animation.selectFrame = function (
 	this: typeof Animation,
@@ -83,7 +95,7 @@ Animation.selectMarquee = function (
 			this.layerList.selectWithNoEvent(layer);
 		}
 		if (origin !== undefined) {
-			marquee.origin = origin;
+			marqueeData(marquee).origin = origin;
 		}
 	}
 };
@@ -100,7 +112,7 @@ Animation.unselectMarquee = function (this: typeof Animation, frame?: AnimationF
 		}
 		marquee.x = -1;
 		marquee.length = -1;
-		marquee.origin = -1;
+		marqueeData(marquee).origin = -1;
 		this.updateMarquee!();
 	}
 };
@@ -125,7 +137,8 @@ Animation.updateMarquee = function (this: typeof Animation) {
 };
 
 Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: boolean) {
-	const { x, y, length, origin } = this.timelineMarquee;
+	const { x, y, length } = this.timelineMarquee;
+	const origin = marqueeData(this.timelineMarquee).origin;
 	if (y !== -1) {
 		const list = this.outerTimelineList;
 		const left = list.scrollLeft;
@@ -233,7 +246,8 @@ Animation.selectAllFramesOfKey = function (this: typeof Animation) {
 	if (marquee.y === -1) {
 		return;
 	}
-	const { layer, y, origin } = marquee;
+	const { layer, y } = marquee;
+	const origin = marqueeData(marquee).origin;
 	for (const frame of layer.frames) {
 		const start = frame.start;
 		const end = frame.end;
@@ -250,7 +264,8 @@ Animation.multiSelectFramesRelative = function (this: typeof Animation, directio
 	if (marquee.y === -1) {
 		return;
 	}
-	let { x, y, length, origin } = marquee;
+	let { x, y, length } = marquee;
+	const origin = marqueeData(marquee).origin;
 	const forward = x === origin;
 	switch (direction) {
 		case 'left':
@@ -280,7 +295,8 @@ Animation.multiSelectFramesToHomeEnd = function (this: typeof Animation, directi
 	if (marquee.y === -1) {
 		return;
 	}
-	let { layer, x, y, length, origin } = marquee;
+	let { layer, x, y, length } = marquee;
+	const origin = marqueeData(marquee).origin;
 	const frames = layer.frames;
 	const fLength = frames.length;
 	switch (direction) {

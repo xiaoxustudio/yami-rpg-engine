@@ -33,6 +33,7 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
@@ -190,6 +191,12 @@ type FileBodyPaneApi = HTMLElement & {
 		options?: boolean | AddEventListenerOptions
 	) => void;
 }
+
+/** P4b：内容元素上的元素数据（`count` 仍在 DATA_FIELDS 内） */
+const contentData = (el: unknown): { count?: number } => elementDataOf<{ count?: number }>(el);
+
+/** P4b：行元素上的元素数据（`changed` 仍在 DATA_FIELDS 内） */
+const rowData = (el: unknown): { changed?: boolean } => elementDataOf<{ changed?: boolean }>(el);
 
 interface Props {
 	links: FileBrowserLinks;
@@ -551,7 +558,7 @@ function bindRowElement(row: FileBodyRowDescriptor, target: Element | ComponentP
 	node.file = file;
 	node.context = context;
 	context.element = node;
-	node.changed = true;
+	rowData(node).changed = true;
 	elements[row.index] = node;
 	updateOnResize(node);
 }
@@ -659,7 +666,7 @@ function computeGridProperties(): void {
 	const nodeRect = rect(node);
 	if (nodeRect.width <= 0) return;
 	const content = contentEl.value as FileBodyContentApi;
-	content.count = -1;
+	contentData(content).count = -1;
 	elements.start = -1;
 	elements.end = -1;
 	// M2 切片 5：模式 → 度量 的映射改由派生层给（`list`/`small`/`medium`/`large`/`huge` 与原先同一张表；
@@ -696,10 +703,11 @@ function computeStartAndEnd(): Uint32Array {
 function updateContentSize(): void {
 	const node = el.value as FileBodyPaneApi;
 	const content = contentEl.value as FileBodyContentApi;
+	const data = contentData(content);
 	const count = elements.count;
 	const cpl = content.countPerLine;
-	if (node.clientHeight !== 0 && (content.count !== count || content.cpl !== cpl)) {
-		content.count = count;
+	if (node.clientHeight !== 0 && (data.count !== count || content.cpl !== cpl)) {
+		data.count = count;
 		content.cpl = cpl;
 		const PADDING = 4;
 		const GAP = 2;
@@ -722,7 +730,7 @@ function updateContentOffset(): void {
 }
 function resetContentStyle(): void {
 	const content = contentEl.value as FileBodyContentApi;
-	content.count = -1;
+	contentData(content).count = -1;
 	content.cpl = -1;
 	const { style } = content;
 	switch (viewMode) {
@@ -738,8 +746,9 @@ function resetContentStyle(): void {
 }
 
 function updateOnResize(element: FileBodyItemApi): void {
-	if (element.changed) {
-		element.changed = false;
+	const data = rowData(element);
+	if (data.changed) {
+		data.changed = false;
 		const { file } = element;
 		if (file instanceof FileItem) {
 			updateFileElement(element);

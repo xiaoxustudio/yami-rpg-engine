@@ -6,7 +6,7 @@
 //
 // C1 后不再提供 exempt 子命令：受限 API 的用法只剩「迁移」或「进白名单」两条路，
 // 后者由 WHITELIST / TEMP_WHITELIST + .oxlintrc.json 的 overrides 承担。
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -180,18 +180,6 @@ function hasRuleDisabled(source) {
 		if (names.trim() === '' || names.includes('no-restricted-properties')) return true;
 	}
 	return false;
-}
-
-function insertDisable(rel, source) {
-	const bom = source.charCodeAt(0) === 0xfeff ? '\ufeff' : '';
-	if (rel.endsWith('.vue')) {
-		const m = /(\s*<script[^>]*>)/.exec(source);
-		if (!m) return null;
-		const at = m.index + m[1].length;
-		return bom + source.slice(bom ? 1 : 0, at) + '\n' + DISABLE_COMMENT + source.slice(at);
-	}
-	const body = bom ? source.slice(1) : source;
-	return bom + DISABLE_COMMENT + '\n' + body;
 }
 
 function fix() {
@@ -390,7 +378,14 @@ function tracker() {
 		lines.push(`| ${row.rel} | ${readFileSync(row.file, 'utf8').split('\n').length} | ${row.total} | ${row.exempt ? '是' : '-'} |`);
 	}
 	const out = join(ROOT, 'docs');
-	if (!existsSync(out)) mkdirSync(out, { recursive: true });
+	// 「docs/ 可以被删除」是 P15 收尾的验收之一：目录已经不存在时**不要再创建它**。
+	// 旧行为是 `mkdirSync(recursive)`——那样删掉文档后随手跑一次 tracker，docs/ 又变回承重结构。
+	if (!existsSync(out)) {
+		console.log(
+			`tracker: docs/ 不存在，跳过写出（${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}）。`
+		);
+		return;
+	}
 	writeFileSync(join(out, 'dom-migration-tracker.md'), lines.join('\n') + '\n');
 	console.log(
 		`tracker: wrote docs/dom-migration-tracker.md (${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`

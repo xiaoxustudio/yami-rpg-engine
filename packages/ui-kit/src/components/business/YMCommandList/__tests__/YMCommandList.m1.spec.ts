@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { type CommandListApiOptions, type CommandListElementApi } from '../command-api';
+import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 
 /**
@@ -24,14 +25,21 @@ interface CommandListElement extends HTMLElement {
 	fold: (element?: unknown) => void;
 	computeTextIndent: (indent: number) => string;
 	data: unknown;
-	start: number | null;
-	end: number | null;
-	active: number;
-	origin: number;
 	scrollTop: number;
-	focusing?: boolean;
 	elements: { count: number } & Record<number, { dataIndent: number; fold?: HTMLElement; dataKey?: boolean }>;
 }
+
+/**
+ * P4b：命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
+ * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
+ */
+interface CommandListState {
+	start: number | null;
+	end: number | null;
+	focusing?: boolean;
+}
+
+const listState = (el: unknown): CommandListState => elementDataOf<CommandListState>(el);
 
 /** 生产由 `YMCommandList.vue` 注入 `el.scroll`；这里换成 spy 只断言"请求了滚动" */
 const setScrollSpy = (el: CommandListElement): ReturnType<typeof vi.fn> => {
@@ -224,36 +232,36 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 
 	it('selectAll：focusing 状态下选中全部行', async () => {
 		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
-		el.focusing = true;
+		listState(el).focusing = true;
 		el.selectAll();
 		await nextTick();
-		expect(el.start).toBe(0);
+		expect(listState(el).start).toBe(0);
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(0);
 	});
 
 	it('selectMultipleTo：从 start 扩选，end 推进且选中多行', async () => {
 		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c'), makeCommand('d')]);
-		el.focusing = true;
+		listState(el).focusing = true;
 		el.select(0);
 		await nextTick();
-		const endBefore = el.end;
+		const endBefore = listState(el).end;
 		el.selectMultipleTo(2);
-		expect(el.end).not.toBe(endBefore);
+		expect(listState(el).end).not.toBe(endBefore);
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(1);
 	});
 
 	it('pageDown/pageUp：请求滚动，并在 select=true 时把选区带过头/带回来', async () => {
 		const el = await makeList(manyCommands());
-		el.focusing = true;
+		listState(el).focusing = true;
 		const scrollSpy = setScrollSpy(el);
 		el.select(0);
 		await nextTick();
 		el.pageDown(true);
 		expect(scrollSpy).toHaveBeenCalled();
-		const movedStart = el.start;
+		const movedStart = listState(el).start;
 		expect(movedStart).not.toBe(0);
 		el.pageUp(true);
-		expect(el.start).not.toBe(movedStart);
+		expect(listState(el).start).not.toBe(movedStart);
 	});
 
 	it('scrollToRow：把指定行滚进视野（scrollTop 变化）', async () => {
@@ -265,7 +273,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 
 	it('scrollToSelection：选中靠后的行会把视口带过去', async () => {
 		const el = await makeList(manyCommands());
-		el.focusing = true;
+		listState(el).focusing = true;
 		el.scrollTop = 0;
 		el.select(35);
 		await nextTick();

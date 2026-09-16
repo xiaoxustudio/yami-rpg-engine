@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 import { type CommandListApiOptions, type CommandListElementApi } from '../command-api';
 
@@ -24,11 +25,20 @@ interface CommandListElement extends HTMLElement {
 	clear: () => HTMLElement;
 	resize: () => void;
 	data: unknown;
-	start: number | null;
-	end: number | null;
 	elements: { count: number };
 	history: { canUndo: () => boolean; canRedo: () => boolean };
 }
+
+/**
+ * P4b：命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
+ * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
+ */
+interface CommandListState {
+	start: number | null;
+	focusing?: boolean;
+}
+
+const listState = (el: unknown): CommandListState => elementDataOf<CommandListState>(el);
 
 const makeCommand = (id: string, params: Record<string, unknown> = {}) => ({
 	id,
@@ -152,10 +162,10 @@ describe('YMCommandList', () => {
 		mockHeight(el);
 		el.write([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
 		await nextTick();
-		el.focusing = true;
+		listState(el).focusing = true;
 		el.select(1);
 		await nextTick();
-		expect(el.start).toBe(1);
+		expect(listState(el).start).toBe(1);
 		const items = Array.from(el.querySelectorAll('.command-item'));
 		expect(items[1].classList.contains('selected')).toBe(true);
 	});
@@ -293,7 +303,7 @@ describe('YMCommandList', () => {
 		el.write([makeCommand('a')]);
 		await nextTick();
 		// keydown 分支要求列表处于聚焦态（`focusing`）且有选区
-		(el as unknown as { focusing: boolean }).focusing = true;
+		listState(el).focusing = true;
 		el.focus();
 		el.select(0);
 		await nextTick();

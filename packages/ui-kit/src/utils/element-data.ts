@@ -49,14 +49,60 @@ const DATA_FIELDS = [
 	'mode'
 ] as const;
 
+/**
+ * P4b 迁移探针（**临时脚手架**，退役前删除）。
+ *
+ * 为什么需要它：静态扫描只能按「接收者类型」猜——`any` 接收者与「元素自己装了同名 own 访问器」
+ * 都会被误判成元素数据，而真正残留的站点又可能藏在解构 / 强制转换写法里。启用后，**每一次经由原型
+ * 访问器的读写**都会记录「字段 + 调用栈里的源码位置」，于是"还有谁在用访问器"变成可实测的事实。
+ *
+ * 启用方式（默认关闭、零开销）：环境变量 `P4B_PROBE=1`；命中以 `P4B_PROBE<TAB>字段<TAB>栈帧`
+ * 打印到测试输出（不写文件，避免在浏览器包里引入 node 内置模块）。
+ */
+const P4B_PROBE_ENABLED = typeof process !== 'undefined' && process.env?.P4B_PROBE === '1';
+const probe = P4B_PROBE_ENABLED ? { reported: new Set<string>(), counts: new Map<string, number>() } : null;
+
+function probeAccess(field: string): void {
+	if (probe === null) return;
+	// 探针绝不允许影响被测代码：任何异常都被吞掉（历史上它曾在 jsdom 选择器路径里抛错，
+	// 连带弄红 17 个无关用例）。
+	try {
+		const seen = (probe.counts.get(field) ?? 0) + 1;
+		probe.counts.set(field, seen);
+		// 采样取栈：每 25 次命中记一次调用点。站点在用例里通常会被执行多次，采样足以覆盖，
+		// 而取栈本身有成本——不采样会让探针把整个套件拖慢一个数量级。
+		if (seen % 25 !== 0) return;
+		let immediate = '';
+		let ours = '';
+		const stack = new Error().stack ?? '';
+		for (const line of stack.split('\n')) {
+			if (!/^\s*at\s/.test(line)) continue;
+			if (/utils[\\/]element-data\.ts/.test(line)) continue; // 探针自身/访问器实现不算调用方
+			const trimmed = line.trim();
+			if (immediate === '') immediate = trimmed;
+			if (!/packages[\\/](editor|ui-kit)[\\/](src|main)[\\/]/.test(line)) continue;
+			ours = trimmed;
+			break;
+		}
+		const key = `${field}\t${ours === '' ? '(no-own-frame)' : ours}\t${immediate}`;
+		if (probe.reported.has(key)) return;
+		probe.reported.add(key);
+		console.log(`P4B_PROBE\t${key}`);
+	} catch {
+		/* 探针失败一律忽略 */
+	}
+}
+
 function defineDataAccessors(): void {
 	for (const field of DATA_FIELDS) {
 		Object.defineProperty(HTMLElement.prototype, field, {
 			configurable: true,
 			get(this: HTMLElement) {
+				probeAccess(field);
 				return getElementDataStore(this)[field];
 			},
 			set(this: HTMLElement, value: unknown) {
+				probeAccess(field);
 				getElementDataStore(this)[field] = value;
 			}
 		});

@@ -89,6 +89,14 @@ type ParamInput = HTMLElement & {
 	numBox?: { input: HTMLElement & { value?: string } };
 }
 
+/** P4b：控件元素上的元素数据（`parameters` / `key` 仍在 DATA_FIELDS 内） */
+interface ParamInputData {
+	parameters?: Record<string, unknown> | null;
+	key?: string | null;
+}
+
+const inputData = (el: unknown): ParamInputData => elementDataOf<ParamInputData>(el);
+
 interface ParamWrap {
 	tag: string;
 	label: HTMLElement;
@@ -277,7 +285,7 @@ const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 		const map = script.parameters;
 		if (map !== parameters) continue;
 		for (const { input } of wrap.children) {
-			if (input.key === key) {
+			if (inputData(input).key === key) {
 				write(input, parameters[key]);
 				if (self.scriptList) dispatchChangeEvent(self.scriptList);
 				if (input.branched) {
@@ -325,6 +333,7 @@ const createParamRow = (
 		) => {
 			const inputWrap = self.createParamInput(parameter)!;
 			const { label, input } = inputWrap;
+			const data = inputData(input);
 			const key = parameter.key;
 			const name = langMap.get(parameter.alias) ?? key;
 			const desc = langMap.get(parameter.desc);
@@ -332,8 +341,8 @@ const createParamRow = (
 			self.updateParamInput(inputWrap, parameters[key]);
 			label.textContent = name;
 			getSetTooltip()?.(input as HTMLElement, tip);
-			input.parameters = parameters;
-			input.key = key;
+			data.parameters = parameters;
+			data.key = key;
 			grid.appendChild(label);
 			if (parameter.prefix || parameter.suffix) {
 				self.applyAffix(input, parameter);
@@ -345,7 +354,9 @@ const createParamRow = (
 			}
 			if (parameter.validate) {
 				const validateInput = () => {
-					const val = input.parameters?.[input.key];
+					const data = inputData(input);
+					// `key!`：与同文件 `states[key!]` / `paramMap[key!]` 一致——只有 createParamRow 配过的控件才会注册本回调
+					const val = data.parameters?.[data.key!];
 					const ok = core.isParamValueValid(parameter, val, getPlugin());
 					if (ok) {
 						removeClass(input as HTMLElement, 'validate-error');
@@ -497,7 +508,7 @@ const updateParamDisplay = (detailBox: DetailBoxElement): void => {
 	for (const p of mParams) paramMap[p.key] = p;
 	const wraps = detailBox.wrap!.children;
 	for (const wrap of wraps) {
-		const key = wrap.input.key;
+		const key = inputData(wrap.input).key;
 		switch (states[key!]) {
 			case false:
 				hide(wrap.label);
@@ -510,9 +521,10 @@ const updateParamDisplay = (detailBox: DetailBoxElement): void => {
 		}
 	}
 	for (const wrap of wraps) {
-		const key = wrap.input.key;
+		const data = inputData(wrap.input);
+		const key = data.key;
 		const param = paramMap[key!];
-		const parameters = wrap.input.parameters;
+		const parameters = data.parameters;
 		if (param?.validate && parameters) {
 			const value = parameters[key!];
 			const ok = !!getPlugin()?.checkValidate(param, value);
@@ -667,8 +679,9 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	container.appendChild(addBtn);
 	const input = container as unknown as RepeatableGroupInput;
 	input.setTooltip = () => {};
-	input.parameters = null;
-	input.key = null;
+	const data = inputData(input);
+	data.parameters = null;
+	data.key = null;
 	const pane = el!;
 	input.read = function () {
 		const result: Array<Record<string, unknown>> = [];
@@ -708,8 +721,9 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 					const val = core.resolveSubParamValue(item, subParam);
 					if (wrap) {
 						wrap.label.textContent = '';
-						wrap.input.parameters = item;
-						wrap.input.key = subParam.key;
+						const data = inputData(wrap.input);
+						data.parameters = item;
+						data.key = subParam.key;
 						write(wrap.input, val);
 						enableInput(wrap.input);
 						removeClass(wrap.input, 'validate-error');
@@ -761,8 +775,8 @@ const recycle = (wrap: RecycleWrap): void => {
 		case 'repeatable-group':
 			wrap.label.remove();
 			wrap.input.remove();
-			wrap.input.parameters = null;
-			wrap.input.key = null;
+			inputData(wrap.input).parameters = null;
+			inputData(wrap.input).key = null;
 			if (wrap.tag === 'check-box') self.checkBoxes.push(wrap);
 			if (wrap.tag === 'number-box') self.numberBoxes.push(wrap);
 			if (wrap.tag === 'number-var') self.numberVars.push(wrap);
@@ -772,16 +786,16 @@ const recycle = (wrap: RecycleWrap): void => {
 		case 'select-box':
 			wrap.label.remove();
 			wrap.input.remove();
-			wrap.input.parameters = null;
-			wrap.input.key = null;
+			inputData(wrap.input).parameters = null;
+			inputData(wrap.input).key = null;
 			wrap.input.clear!();
 			self.selectBoxes.push(wrap);
 			break;
 		case 'color-box':
 			wrap.label.remove();
 			wrap.input.remove();
-			wrap.input.parameters = null;
-			wrap.input.key = null;
+			inputData(wrap.input).parameters = null;
+			inputData(wrap.input).key = null;
 			if (wrap.input.tabIndex === 0) {
 				self.colorBoxes.push(wrap);
 			}
@@ -789,8 +803,8 @@ const recycle = (wrap: RecycleWrap): void => {
 		case 'custom-box':
 			wrap.label.remove();
 			wrap.input.remove();
-			wrap.input.parameters = null;
-			wrap.input.key = null;
+			inputData(wrap.input).parameters = null;
+			inputData(wrap.input).key = null;
 			if (wrap.input.tabIndex === 0) {
 				self.customBoxes.push(wrap);
 			}
@@ -835,10 +849,10 @@ const componentChange = (event: Event): void => {
 	if ((element.parentNode as HTMLElement | null)?.classList?.contains('number-var')) {
 		element = element.parentNode as HTMLElement;
 	}
-	const { parameters, key } = element as HTMLElement & {
+	const { parameters, key } = elementDataOf<{
 		parameters: Record<string, unknown>;
 		key: string;
-	};
+	}>(element);
 	const { scriptList } = self;
 	if (scriptList?.classList?.contains('param-list')) {
 		const { history } = scriptList;

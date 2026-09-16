@@ -35,6 +35,30 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
+import { elementDataOf } from '@app/utils/element-data';
+
+/**
+ * P4b：方向列表（`animation-dirList`）的元素数据视图。
+ * `mode` 是列表当前呈现的动作模式（`1-dir` / `4-dir` / `none` …），随动作模式变化而更新。
+ */
+interface AnimationDirListElementData {
+	mode: string;
+}
+
+const dirListData = (el: unknown): AnimationDirListElementData =>
+	elementDataOf<AnimationDirListElementData>(el);
+
+/**
+ * P4b：时间轴内层刻度尺（`animation-timeline-ruler-inner`）的元素数据视图。
+ * `start` 是刻度尺当前起始刻度号，首次滚动前为空（`Animation.outerTimelineListScroll` 写入）。
+ */
+interface AnimationRulerElementData {
+	start?: number;
+}
+
+const innerRulerData = (el: unknown): AnimationRulerElementData =>
+	elementDataOf<AnimationRulerElementData>(el);
+
 Animation.play = function (this: typeof Animation) {
 	if (getAnimationStore().playing) {
 		return this.stop!();
@@ -368,9 +392,10 @@ Animation.createDirItems = function (this: typeof Animation) {
 	const dirList = this.dirList;
 	const motion = getAnimationStore().motion;
 	const mode = motion?.mode ?? 'none';
+	const data = dirListData(dirList);
 	// 当动作模式发生变化时，更新方向选项
-	if (dirList.mode !== mode) {
-		dirList.mode = mode;
+	if (data.mode !== mode) {
+		data.mode = mode;
 		const dirs = this.dirTags[mode] ?? [];
 		dirList.setDirItems?.(dirs, getAnimationStore().direction);
 	}
@@ -1050,7 +1075,7 @@ Animation.updateRuler = function (this: typeof Animation) {
 		let i = nodes.length;
 		if (i !== length) {
 			if (i < length) {
-				const start = innerRuler.start ?? 0;
+				const start = innerRulerData(innerRuler).start ?? 0;
 				let number = (start + i) * 5;
 				while (i < length) {
 					// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙

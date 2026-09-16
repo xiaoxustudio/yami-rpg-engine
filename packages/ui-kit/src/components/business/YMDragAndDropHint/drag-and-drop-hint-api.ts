@@ -1,4 +1,5 @@
 import { css, rect } from '../../../utils/dom';
+import { elementDataOf } from '../../../utils/element-data';
 export interface DragAndDropHintCoords {
 	left: number;
 	top: number;
@@ -20,6 +21,10 @@ export interface DragAndDropHintApi extends HTMLElement {
 	set(coords: DragAndDropHintCoords): void;
 }
 
+/** P4b：`target` 住在元素数据里（WeakMap），不再是元素上的隐式属性 */
+const hintData = (el: unknown): { target: HTMLElement | null } =>
+	elementDataOf<{ target: HTMLElement | null }>(el);
+
 export function attachDragAndDropHintApi(el: HTMLElement): DragAndDropHintApi {
 	const hint = el as DragAndDropHintApi;
 
@@ -28,7 +33,7 @@ export function attachDragAndDropHintApi(el: HTMLElement): DragAndDropHintApi {
 	hint.width = 0;
 	hint.height = 0;
 	hint.upper = false;
-	hint.target = null;
+	hintData(hint).target = null;
 	hint.position = null;
 
 	hint.measure = function (item: HTMLElement): DragAndDropHintCoords {

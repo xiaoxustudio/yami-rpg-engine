@@ -436,7 +436,8 @@ export interface CommandRowData {
 const rowData: CommandRowData[] = [];
 
 function rowOf(element: CommandItemElement): CommandRowData {
-	const index = typeof element.dataValue === 'number' ? element.dataValue : -1;
+	const elData = rowElementData(element);
+	const index = typeof elData.dataValue === 'number' ? elData.dataValue : -1;
 	return (
 		rowData[index] ?? {
 			command: element.dataItem as CommandData,
@@ -520,6 +521,37 @@ function rebuildCommandRowModel(
 	commandRowModel.rows = rows;
 }
 
+/**
+ * P4b：命令列表自身的可变状态（选区窗口、拖拽、焦点、插入态）从"元素上的原型访问器"改成**显式元素数据**。
+ *
+ * 选区窗口的五个字段（`start`/`end`/`origin`/`active`/`anchor`）是**整组**写入的：`select()` 一次写全，
+ * `clear()` 与 `reselectAfterFolding()` 一次清空 ⇒ `start !== null` 时 `end`/`origin`/`active` 必为数字
+ * （原型访问器天生无类型，原实现正是靠这一点隐式成立）。需要数字的站点因此要么在守卫里一并判空，
+ * 要么落在"刚调用过 `select()`"之后。
+ */
+interface CommandListData {
+	/** 拖拽中的指针事件（`pointerdown` 登记、`windowPointerup` 清空） */
+	dragging: ListPointerEvent | null;
+	start: number | null;
+	end: number | null;
+	/** 选中行数组；`count` 是数组自身的 own 属性，不是元素数据 */
+	selections: CommandSelections;
+	origin: number | null;
+	active: number | null;
+	anchor: number | null;
+	inserting: boolean;
+	focusing: boolean;
+}
+
+/** 选中行数组（`unselect`/`reselect` 按下标填 `undefined`，故元素可空） */
+type CommandSelections = (CommandItemElement | undefined)[] & { count: number };
+
+const commandListData = (el: unknown): CommandListData => elementDataOf<CommandListData>(el);
+
+/** P4b：行元素上的 `dataValue`（= 行下标，`update()` 里统一写过）也走显式元素数据 */
+const rowElementData = (el: unknown): { dataValue?: number } =>
+	elementDataOf<{ dataValue?: number }>(el);
+
 // oxlint-disable-next-line no-explicit-any
 export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
@@ -555,7 +587,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		const { count } = elements;
 		for (let i = 0; i < count; i++) {
-			elements[i].dataValue = i;
+			rowElementData(elements[i]).dataValue = i;
 		}
 
 		commonListClearElements(this, elements.count);
@@ -602,7 +634,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		for (const child of Array.from(node.children)) {
 			if (!child.classList.contains('command-fold')) child.remove();
 		}
-		node.dataValue = index;
+		rowElementData(node).dataValue = index;
 		attachRowData(node, {
 			rowKey: source.rowKey ?? '',
 			command: row.command,
@@ -1245,15 +1277,16 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	select: function (this: any, start: number, end: number = start): void {
+		const listData = commandListData(this);
 		[start, end] = commandCore.computeSelectRange(this.elements, start, end);
 
 		this.unselect();
 
-		this.start = start;
-		this.end = end;
-		this.origin = start;
-		this.active = start;
-		this.anchor = null;
+		listData.start = start;
+		listData.end = end;
+		listData.origin = start;
+		listData.active = start;
+		listData.anchor = null;
 
 		this.reselect();
 
@@ -1264,23 +1297,25 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectMultiple: function (this: any, active: number): void {
-		const origin = this.origin;
+		const listData = commandListData(this);
+		const origin = listData.origin;
 		this.select(origin, active);
-		this.origin = origin;
-		this.active = clamp(active, this.start, this.end);
+		listData.origin = origin;
+		// `select()` 刚把窗口整组写成数字（`computeSelectRange` 返回 `[number, number]`），此处必非空
+		listData.active = clamp(active, listData.start!, listData.end!);
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	selectAll: function (this: any): void {
+		const listData = commandListData(this);
 		this.select(0, Infinity);
-		this.active = this.getRangeByIndex(this.end)[0];
+		listData.active = this.getRangeByIndex(listData.end)[0];
 	},
 
 	unselect: function (this: HTMLElement & { [k: string]: unknown }): void {
-		if (this.start !== null) {
-			const { selections } = this as unknown as {
-				selections: (CommandItemElement | undefined)[] & { count: number };
-			};
+		const listData = commandListData(this);
+		if (listData.start !== null) {
+			const { selections } = listData;
 			const { count } = selections;
 			for (let i = 0; i < count; i++) {
 				removeClass(selections[i], 'selected');
@@ -1295,11 +1330,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	reselect: function (this: any): void {
-		if (this.focusing && this.start !== null) {
-			const { selections } = this;
+		const listData = commandListData(this);
+		if (listData.focusing && listData.start !== null && listData.end !== null) {
+			const { selections } = listData;
 			const elements = this.elements;
-			const start = this.start;
-			const end = this.end;
+			const start = listData.start;
+			const end = listData.end;
 			let count = 0;
 			for (let i = start; i <= end; i++) {
 				const element = elements[i];
@@ -1312,8 +1348,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectUp: function (this: any): void {
-		if (this.start !== null) {
-			const i = commandCore.getSelectUpIndex(this.elements, this.start, this.end);
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.end !== null) {
+			const i = commandCore.getSelectUpIndex(this.elements, listData.start, listData.end);
 			this.select(i);
 			this.scrollToSelection();
 		}
@@ -1321,8 +1358,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectDown: function (this: any): void {
-		if (this.start !== null) {
-			const i = commandCore.getSelectDownIndex(this.elements, this.start, this.end);
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.end !== null) {
+			const i = commandCore.getSelectDownIndex(this.elements, listData.start, listData.end);
 			this.select(i);
 			this.scrollToSelection();
 		}
@@ -1330,9 +1368,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	pageUp: function (this: any, select: boolean): void {
-		let anchor = this.anchor;
+		const listData = commandListData(this);
+		let anchor = listData.anchor;
 		if (anchor === null) {
-			anchor = this.active;
+			anchor = listData.active;
 		}
 		if (anchor !== null) {
 			// M2 切片 2：翻页数学抽到 command-render.ts 的纯函数（行为与原先逐字一致）
@@ -1346,7 +1385,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			if (select) {
 				const targetIndex = commandRender.computePageUpTargetIndex(context);
 				this.select(targetIndex);
-				this.anchor = Math.max(targetIndex, this.start);
+				// `select()` 刚写过 `start`，此处必为数字
+				listData.anchor = Math.max(targetIndex, listData.start!);
 			}
 			this.scroll(0, nextScrollTop);
 		}
@@ -1354,9 +1394,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	pageDown: function (this: any, select: boolean): void {
-		let anchor = this.anchor;
+		const listData = commandListData(this);
+		let anchor = listData.anchor;
 		if (anchor === null) {
-			anchor = this.active;
+			anchor = listData.active;
 		}
 		if (anchor !== null) {
 			const context = {
@@ -1369,7 +1410,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			if (select) {
 				const targetIndex = commandRender.computePageDownTargetIndex(context);
 				this.select(targetIndex);
-				this.anchor = Math.min(targetIndex, this.end);
+				// `select()` 刚写过 `end`，此处必为数字
+				listData.anchor = Math.min(targetIndex, listData.end!);
 			}
 			this.scroll(0, Math.max(context.scrollTop, nextScrollTop));
 		}
@@ -1377,14 +1419,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectMultipleTo: function (this: any, index: number): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.origin !== null && listData.active !== null) {
 			this.selectMultiple(index);
 			const elements = this.elements;
-			const sElement = elements[this.start];
-			const aElement = elements[this.active];
+			const sElement = elements[listData.start];
+			const aElement = elements[listData.active];
 			const sIndent = rowOf(sElement).indent;
 			const aIndent = rowOf(aElement).indent;
-			let n = this.active;
+			let n = listData.active;
 			if (sIndent < aIndent) {
 				for (let i = n - 1; i >= 0; i--) {
 					const element = elements[i];
@@ -1395,22 +1438,31 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 			}
 			const range = this.getRangeByIndex(n);
-			if (this.origin < this.active && this.origin > range[0] && this.origin < range[1]) {
-				this.active = range[1];
+			const origin = listData.origin;
+			const active = listData.active;
+			if (origin < active && origin > range[0] && origin < range[1]) {
+				listData.active = range[1];
 			} else {
-				this.active = range[0];
+				listData.active = range[0];
 			}
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	selectMultipleUp: function (this: any): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		// 窗口整组写入：`start` 非空时 `end`/`origin`/`active` 必为数字（见 `CommandListData`）
+		if (
+			listData.start !== null &&
+			listData.end !== null &&
+			listData.origin !== null &&
+			listData.active !== null
+		) {
 			const elements = this.elements;
-			if (this.active <= this.origin) {
-				const sElement = elements[this.start];
+			if (listData.active <= listData.origin) {
+				const sElement = elements[listData.start];
 				const indent = rowOf(sElement).indent;
-				let i = this.start;
+				let i = listData.start;
 				while (--i >= 0) {
 					const element = elements[i];
 					if (rowOf(element).indent <= indent && rowOf(element).dataKey === true) {
@@ -1419,11 +1471,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 			} else {
-				const eElement = elements[this.end];
+				const eElement = elements[listData.end];
 				const data = rowOf(eElement).command;
-				const end = this.end;
+				const end = listData.end;
 				let indent = Infinity;
-				let n = this.origin;
+				let n = listData.origin;
 				for (let i = n; i < end; i++) {
 					const element = elements[i];
 					if (rowOf(element).indent < indent) {
@@ -1438,7 +1490,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 				const range = this.getRangeByIndex(n);
-				if (this.origin < n && this.origin > range[0] && this.origin < range[1]) {
+				if (listData.origin < n && listData.origin > range[0] && listData.origin < range[1]) {
 					n = range[1];
 				} else {
 					n = range[0];
@@ -1451,13 +1503,19 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	selectMultipleDown: function (this: any): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		if (
+			listData.start !== null &&
+			listData.end !== null &&
+			listData.origin !== null &&
+			listData.active !== null
+		) {
 			const elements = this.elements;
-			if (this.active >= this.origin) {
-				const eElement = elements[this.end];
+			if (listData.active >= listData.origin) {
+				const eElement = elements[listData.end];
 				const indent = rowOf(eElement).indent;
 				const count = elements.count;
-				let i = this.end;
+				let i = listData.end;
 				while (++i < count) {
 					const element = elements[i];
 					if (rowOf(element).indent < indent) {
@@ -1474,9 +1532,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 				this.selectMultiple(i);
 			} else {
-				const start = this.start;
+				const start = listData.start;
 				let indent = Infinity;
-				let n = this.origin;
+				let n = listData.origin;
 				for (let i = n; i > start; i--) {
 					const element = elements[i];
 					if (rowOf(element).indent < indent) {
@@ -1494,18 +1552,26 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	scrollToSelection: function (this: any, mode = 'active'): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		// 窗口整组写入：`start` 非空时 `end`/`origin`/`active` 必为数字（见 `CommandListData`）
+		if (
+			listData.start !== null &&
+			listData.end !== null &&
+			listData.origin !== null &&
+			listData.active !== null
+		) {
 			// M2 切片 3：三个分支的夹取数学抽到 command-render.ts（行为与原先逐字一致）
-			const range = this.getRangeByIndex(this.active) as [number, number];
+			const range = this.getRangeByIndex(listData.active) as [number, number];
 			const scrollTop = commandRender.computeScrollToSelection(mode, {
 				scrollTop: this.scrollTop,
 				viewportHeight: this.innerHeight,
 				rowCount: this.elements.count,
-				anchor: this.anchor,
-				active: this.active,
-				origin: this.origin,
-				start: this.start,
-				end: this.end,
+				// `anchor` 可为 `null`（未翻页）；消费方声明为 `number`，`null` 数值上等价于 0
+				anchor: listData.anchor ?? 0,
+				active: listData.active,
+				origin: listData.origin,
+				start: listData.start,
+				end: listData.end,
 				activeRange: range
 			});
 			if (scrollTop === null) return;
@@ -1549,29 +1615,31 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	insert: function (this: any, id = ''): void {
+		const listData = commandListData(this);
 		const options = this.__options;
-		if (this.start !== null) {
+		if (listData.start !== null) {
 			const elements = this.elements;
-			const element = elements[this.start];
+			const element = elements[listData.start];
 			if (!this.isParentEnabled(element)) {
 				return;
 			}
-			this.inserting = true;
+			listData.inserting = true;
 			options.command?.insert(this, id);
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	edit: function (this: any, _data?: CommandData): void {
+		const listData = commandListData(this);
 		const options = this.__options;
-		if (this.start !== null) {
+		if (listData.start !== null) {
 			const elements = this.elements;
-			const element = elements[this.start];
+			const element = elements[listData.start];
 			if (!this.isParentEnabled(element)) {
 				return;
 			}
-			this.inserting = rowOf(element).command === null;
-			switch (this.inserting) {
+			listData.inserting = rowOf(element).command === null;
+			switch (listData.inserting) {
 				case true:
 					options.command?.insert(this, '');
 					break;
@@ -1588,12 +1656,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	fold: function (this: any, element?: CommandItemElement): void {
-		if (element === undefined && this.start !== null) {
+		const listData = commandListData(this);
+		if (element === undefined && listData.start !== null) {
 			const elements = this.elements;
-			const startItem = rowAt(this.start)?.command ?? null;
-			const endItem = rowAt(this.end)?.command ?? null;
+			const startItem = rowAt(listData.start)?.command ?? null;
+			const endItem = rowAt(listData.end)?.command ?? null;
 			if (startItem === endItem) {
-				element = elements[this.start];
+				element = elements[listData.start];
 			}
 		}
 		if (element && element.fold) {
@@ -1635,13 +1704,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	reselectAfterFolding: function (this: any): void {
+		const listData = commandListData(this);
 		let head;
 		let foot;
-		const { selections } = this;
+		const { selections } = listData;
 		const { count } = selections;
 		for (let i = 0; i < count; i++) {
 			const element = selections[i];
-			if (element.parentNode) {
+			// 0..count-1 恒由 `reselect` 填好（元素数组里该下标的行元素必存在，故这里按非空读）
+			if (element!.parentNode) {
 				if (head === undefined) {
 					head = element;
 				}
@@ -1654,15 +1725,18 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			this.select(start, end);
 		} else {
 			this.unselect();
-			this.start = null;
-			this.end = null;
+			listData.start = null;
+			listData.end = null;
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	toggle: function (this: any): void {
-		if (this.start !== null) {
-			const { elements, start, end } = this;
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.end !== null) {
+			const { elements } = this;
+			const start = listData.start;
+			const end = listData.end;
 			const element = elements[start];
 			if (!this.isParentEnabled(element)) {
 				return;
@@ -1721,10 +1795,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						break;
 				}
 				this.update();
-				if (!this.focusing) {
-					this.focusing = true;
+				if (!listData.focusing) {
+					listData.focusing = true;
 				}
-				this.select(this.start);
+				this.select(listData.start);
 				this.scrollToSelection('alter');
 				dispatchChangeEvent(this);
 			}
@@ -1747,12 +1821,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	copy: function (this: any): void {
+		const listData = commandListData(this);
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
-		if (this.start !== null) {
+		if (listData.start !== null && listData.end !== null) {
 			const elements = this.elements;
-			const sElement = elements[this.start];
-			const eElement = elements[this.end];
+			const sElement = elements[listData.start];
+			const eElement = elements[listData.end];
 			const list = rowOf(sElement).list;
 			const start = sElement.dataIndex;
 			const end = eElement.dataIndex + 1;
@@ -1765,11 +1840,14 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	copyAsText: function (this: any): void {
+		const listData = commandListData(this);
 		const options = this.__options;
-		if (this.start !== null) {
+		if (listData.start !== null && listData.end !== null) {
 			let string = '';
 			let lastIndent;
-			const { start, end, elements } = this;
+			const { elements } = this;
+			const start = listData.start;
+			const end = listData.end;
 			for (let i = start; i <= end; i++) {
 				const element = elements[i];
 				if (element.contents !== null) {
@@ -1805,8 +1883,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	copyAsJSCode: function (this: any): void {
-		if (this.start !== null) {
-			const { start, end, elements } = this;
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.end !== null) {
+			const { elements } = this;
+			const start = listData.start;
+			const end = listData.end;
 			const commands = [];
 
 			for (let i = start; i <= end; i++) {
@@ -1844,11 +1925,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	paste: function (this: any): void {
+		const listData = commandListData(this);
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
-		if (this.start !== null) {
+		if (listData.start !== null) {
 			const elements = this.elements;
-			const element = elements[this.start];
+			const element = elements[listData.start];
 			if (!this.isParentEnabled(element)) {
 				return;
 			}
@@ -1867,7 +1949,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				});
 				list.splice(start, 0, ...copies);
 				this.update();
-				this.select(this.start + elements.count - count);
+				this.select(listData.start + elements.count - count);
 				this.scrollToSelection('alter');
 				dispatchChangeEvent(this);
 			}
@@ -1876,10 +1958,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	delete: function (this: any): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		if (listData.start !== null && listData.end !== null) {
 			const elements = this.elements;
-			const sElement = elements[this.start];
-			const eElement = elements[this.end];
+			const sElement = elements[listData.start];
+			const eElement = elements[listData.end];
 			const parent = rowOf(sElement).parent;
 			const list = rowOf(sElement).list;
 			const start = sElement.dataIndex;
@@ -1895,10 +1978,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				});
 				list.splice(start, end - start);
 				this.update();
-				if (!this.focusing) {
-					this.focusing = true;
+				if (!listData.focusing) {
+					listData.focusing = true;
 				}
-				this.select(this.start);
+				this.select(listData.start);
 				this.scrollToSelection('alter');
 				dispatchChangeEvent(this);
 			}
@@ -1907,27 +1990,30 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	undo: function (this: any): void {
-		if (!this.dragging && this.history.canUndo()) {
+		const listData = commandListData(this);
+		if (!listData.dragging && this.history.canUndo()) {
 			this.history.restore('undo');
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	redo: function (this: any): void {
-		if (!this.dragging && this.history.canRedo()) {
+		const listData = commandListData(this);
+		if (!listData.dragging && this.history.canRedo()) {
 			this.history.restore('redo');
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	save: function (this: any, command: CommandData): void {
-		if (this.start !== null) {
+		const listData = commandListData(this);
+		if (listData.start !== null) {
 			const elements = this.elements;
-			const element = elements[this.start];
+			const element = elements[listData.start];
 			const parent = rowOf(element).parent;
 			const list = rowOf(element).list;
 			const index = element.dataIndex;
-			switch (this.inserting) {
+			switch (listData.inserting) {
 				case true:
 					this.history.save({
 						type: 'insert',
@@ -1936,7 +2022,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						index: index,
 						commands: [command]
 					});
-					this.end = this.start;
+					listData.end = listData.start;
 					list.splice(index, 0, command);
 					this.update();
 					this.selectDown();
@@ -1951,7 +2037,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					});
 					list[index] = command;
 					this.update();
-					this.select(this.start);
+					this.select(listData.start);
 					break;
 			}
 			this.scrollToSelection('alter');
@@ -1962,11 +2048,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	getSelectionPosition: function (
 		this: HTMLElement & { [k: string]: unknown }
 	): { x: number; y: number } | null {
-		if (this.start === null) {
+		const listData = commandListData(this);
+		if (listData.start === null) {
 			return null;
 		}
 		const elements = this.elements as CommandItemElement[];
-		const element = elements[this.start as number];
+		const element = elements[listData.start];
 		if (!element.parentNode) {
 			return null;
 		}
@@ -1986,16 +2073,17 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	clear: function (this: any): HTMLElement {
+		const listData = commandListData(this);
 		this.unselect();
 		// M3-5b′：同样不再清空 DOM 文本（行归模板管）；行数由 `elements.count` 归零后经模型反映
 		this.data = null;
 		this.varList = null;
 		this.varMap = null;
-		this.start = null;
-		this.end = null;
-		this.origin = null;
-		this.active = null;
-		this.anchor = null;
+		listData.start = null;
+		listData.end = null;
+		listData.origin = null;
+		listData.active = null;
+		listData.anchor = null;
 		commonListClearElements(this, 0);
 		this.elements.count = 0;
 		this.elements.start = -1;
@@ -2284,19 +2372,21 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	listFocus: function (this: any, _event: FocusEvent): void {
-		if (!this.focusing) {
-			this.focusing = true;
-			if (this.start !== null) this.reselect();
+		const listData = commandListData(this);
+		if (!listData.focusing) {
+			listData.focusing = true;
+			if (listData.start !== null) this.reselect();
 			else this.select(0);
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	listBlur: function (this: any, _event: FocusEvent): void {
-		if (this.dragging) {
-			this.windowPointerup(this.dragging);
+		const listData = commandListData(this);
+		if (listData.dragging) {
+			this.windowPointerup(listData.dragging);
 		}
-		if (this.focusing) {
+		if (listData.focusing) {
 			// oxlint-disable-next-line no-this-alias
 			let element = this;
 			while ((element = element.parentNode)) {
@@ -2311,7 +2401,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 			}
-			this.focusing = false;
+			listData.focusing = false;
 			this.unselect();
 		}
 	},
@@ -2436,6 +2526,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	keydown: function (this: any, event: KeyboardEvent): void {
+		const listData = commandListData(this);
 		const options = this.__options;
 		if (cmdOrCtrlKey(event)) {
 			switch (event.code) {
@@ -2511,10 +2602,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					return;
 				case 'Enter':
 				case 'NumpadEnter':
-					if (this.start !== null) {
+					if (listData.start !== null) {
 						event.stopPropagation();
-						const sData = rowAt(this.start)?.command ?? null;
-						const eData = rowAt(this.end)?.command ?? null;
+						const sData = rowAt(listData.start)?.command ?? null;
+						const eData = rowAt(listData.end)?.command ?? null;
 						if (sData === eData) {
 							this.edit();
 						}
@@ -2577,8 +2668,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	pointerdown: function (this: any, event: ListPointerEvent): void {
+		const listData = commandListData(this);
 		const options = this.__options;
-		if (this.dragging) {
+		if (listData.dragging) {
 			return;
 		}
 		switch (event.button) {
@@ -2603,7 +2695,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 				if (index >= 0) {
 					element = this.elements[index] as CommandItemElement;
-					if (event.shiftKey && this.start !== null) {
+					if (event.shiftKey && listData.start !== null) {
 						this.selectMultipleTo(index);
 					} else {
 						this.select(index);
@@ -2617,7 +2709,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							}
 						}
 					}
-					this.dragging = event;
+					listData.dragging = event;
 					event.mode = 'select';
 					event.itemIndex = index;
 					event.itemHeight = element!.clientHeight;
@@ -2658,16 +2750,21 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	pointerup: function (this: any, event: ListPointerEvent): void {
+		const listData = commandListData(this);
 		const options = this.__options;
-		if (this.dragging) {
+		if (listData.dragging) {
 			return;
 		}
 		switch (event.button) {
 			case 2:
-				if (this.start !== null && document.activeElement === this) {
+				if (
+					listData.start !== null &&
+					listData.end !== null &&
+					document.activeElement === this
+				) {
 					const elements = this.elements;
-					const sElement = elements[this.start];
-					const dElement = elements[this.end];
+					const sElement = elements[listData.start];
+					const dElement = elements[listData.end];
 					const sData = rowOf(sElement).command;
 					const eData = rowOf(dElement).command;
 					const valid = !!sData;
@@ -2825,9 +2922,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
-		if (this.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
-			const sData = rowAt(this.start)?.command ?? null;
-			const eData = rowAt(this.end)?.command ?? null;
+		const listData = commandListData(this);
+		if (listData.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
+			const sData = rowAt(listData.start)?.command ?? null;
+			const eData = rowAt(listData.end)?.command ?? null;
 			if (sData === eData) {
 				this.edit(sData);
 			}
@@ -2836,14 +2934,16 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	windowPointerup: function (this: any, event: PointerEvent): void {
-		const { dragging } = this;
+		const listData = commandListData(this);
+		// 本函数只在拖拽期间挂在 window 上（`pointerdown` 登记、下面摘掉），故此时必有拖拽
+		const dragging = listData.dragging!;
 		if (relate(dragging, event)) {
 			switch (dragging.mode) {
 				case 'select':
 					this.scrollListener.removeScrollListener();
 					break;
 			}
-			this.dragging = null;
+			listData.dragging = null;
 			window.removeEventListener('pointerup', this.windowPointerup);
 			window.removeEventListener('pointermove', this.windowPointermove);
 		}
@@ -2851,7 +2951,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	windowPointermove: function (this: any, event: PointerEvent): void {
-		const { dragging } = this;
+		const listData = commandListData(this);
+		// 同上：`windowPointermove` 也只在拖拽期间挂着
+		const dragging = listData.dragging!;
 		if (relate(dragging, event)) {
 			switch (dragging.mode) {
 				case 'select': {
@@ -2860,9 +2962,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					const count = elements.count;
 					if (count > 0) {
 						const pt = this.paddingTop;
+						// `itemHeight` 与 `mode: 'select'` 在 `pointerdown` 里一起写，故此处必已定义
 						const { itemHeight } = dragging;
 						const { y } = getRelativeCoords(event, this);
-						const line = Math.floor((y - pt) / itemHeight);
+						const line = Math.floor((y - pt) / itemHeight!);
 						const index = clamp(line, 0, count - 1);
 						if (dragging.itemIndex !== index) {
 							dragging.itemIndex = index;
@@ -2889,6 +2992,7 @@ export function createCommandListApi(
 ): HTMLElement {
 	// oxlint-disable-next-line no-explicit-any
 	const list = el as HTMLElement & { [k: string]: any };
+	const listData = commandListData(list);
 	list.__options = options;
 
 	if (Object.getPrototypeOf(commandListPrototype) !== HTMLElement.prototype) {
@@ -2916,16 +3020,16 @@ export function createCommandListApi(
 	list.elements.end = -1;
 	list.elements.head = null;
 	list.elements.foot = null;
-	list.selections = [];
-	list.selections.count = 0;
-	list.start = null as unknown as number;
-	list.end = null as unknown as number;
-	list.origin = null;
-	list.active = null;
-	list.anchor = null;
-	list.inserting = false;
-	list.focusing = false;
-	list.dragging = null;
+	listData.selections = [] as unknown as CommandSelections;
+	listData.selections.count = 0;
+	listData.start = null;
+	listData.end = null;
+	listData.origin = null;
+	listData.active = null;
+	listData.anchor = null;
+	listData.inserting = false;
+	listData.focusing = false;
+	listData.dragging = null;
 	list._checkVariablesScheduled = false;
 	list.windowPointerup = list.windowPointerup.bind(list);
 	list.windowPointermove = list.windowPointermove.bind(list);

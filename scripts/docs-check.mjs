@@ -617,8 +617,11 @@ function checkPlanCoverage() {
 function main() {
 	const files = docFiles();
 	if (files.length === 0) {
-		console.error('docs-check: docs/ 下没有 .md 文件。');
-		process.exit(1);
+		// 「docs/ 可以被删除」是 P15 的验收之一（见 monolith-render-plan.md 的附录）：
+		// 目录整体不存在时按「文档已退役」口径**跳过**，不再让门禁失败——
+		// 否则删掉文档目录就必然让 `pnpm docs:check` 变红，等于它仍然是承重结构。
+		console.log('docs-check: docs/ 不存在（或已无 .md 文件）——按「文档已退役」口径跳过，退出 0。');
+		return;
 	}
 	checkLinks(files);
 	checkPaths(files);

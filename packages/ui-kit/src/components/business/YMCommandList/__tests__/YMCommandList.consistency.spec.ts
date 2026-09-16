@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import YMCommandList from '../YMCommandList.vue';
 import { type CommandListApiOptions } from '../command-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 /**
  * 一致性回归：换源后"模型驱动渲染"，因此**每一步操作之后**行模型的 key 序列都应当与 DOM 一致。
@@ -115,7 +116,6 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 			selectUp: (a: boolean, b: boolean) => void;
 			selectMultipleDown: () => void;
 			selectMultipleUp: () => void;
-			focusing: boolean;
 		};
 		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 		Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
@@ -142,7 +142,8 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 			{ id: 'd', params: {}, commands: [] }
 		]);
 		await nextTick();
-		el.focusing = true;
+		// P4b：`focusing` 是元素数据（原走 `HTMLElement.prototype` 上的访问器）
+		elementDataOf<{ focusing?: boolean }>(el).focusing = true;
 		expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
 
 		await step(() => el.select(1));

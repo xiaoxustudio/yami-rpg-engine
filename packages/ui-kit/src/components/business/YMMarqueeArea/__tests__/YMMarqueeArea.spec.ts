@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMMarqueeArea from '../YMMarqueeArea.vue';
+import { elementDataOf } from '../../../../utils/element-data';
 
 interface MarqueeElement extends HTMLElement {
 	[k: string]: unknown;
@@ -99,6 +100,9 @@ describe('YMMarqueeArea', () => {
 		expect(typeof el.resize).toBe('function');
 		expect(typeof el.clear).toBe('function');
 		expect(typeof el.select).toBe('function');
-		expect(el.selection).toBe(wrapper.element.querySelector('.selection'));
+		// P4b：`selection` 是元素数据（WeakMap），不是组件实例属性
+		expect(elementDataOf<{ selection: HTMLElement | null }>(el).selection).toBe(
+			wrapper.element.querySelector('.selection')
+		);
 	});
 });

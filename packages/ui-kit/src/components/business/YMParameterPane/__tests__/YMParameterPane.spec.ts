@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMParameterPane from '../YMParameterPane.vue';
+import { elementDataOf } from '../../../../utils/element-data';
 
 interface MockInputElement extends HTMLElement {
 	dataValue: unknown;
@@ -12,13 +13,22 @@ interface MockInputElement extends HTMLElement {
 	clear: () => void;
 }
 
+/** P4b：`dataValue` / `parameters` / `key` 是元素数据（WeakMap），不是 mock 元素上的属性 */
+interface MockInputData {
+	dataValue: unknown;
+	parameters?: Record<string, unknown> | null;
+	key?: string | null;
+}
+
+const inputData = (el: unknown): MockInputData => elementDataOf<MockInputData>(el);
+
 const makeInput = (): MockInputElement => {
 	const el = document.createElement('div') as unknown as MockInputElement;
 	el.classList.add('mock-input');
-	el.dataValue = null;
-	el.read = () => el.dataValue;
+	inputData(el).dataValue = null;
+	el.read = () => inputData(el).dataValue;
 	el.write = (v: unknown) => {
-		el.dataValue = v;
+		inputData(el).dataValue = v;
 	};
 	el.enable = () => {};
 	el.disable = () => {};
@@ -201,8 +211,8 @@ describe('YMParameterPane', () => {
 		expect(wrapper.element.querySelectorAll('.mock-input').length).toBe(2);
 		expect(wrapper.element.querySelector('.text').textContent).toBe('a');
 		const inputs = wrapper.element.querySelectorAll('.mock-input');
-		expect((inputs[0] as HTMLElement & { dataValue?: unknown }).dataValue).toBe('A1');
-		expect((inputs[1] as HTMLElement & { dataValue?: unknown }).dataValue).toBe(5);
+		expect(inputData(inputs[0]).dataValue).toBe('A1');
+		expect(inputData(inputs[1]).dataValue).toBe(5);
 	});
 
 	it('bind wraps param-list object.update', () => {
@@ -247,9 +257,9 @@ describe('YMParameterPane', () => {
 		const input = wrapper.element.querySelector('.mock-input') as unknown as HTMLElement & {
 			[k: string]: unknown;
 		};
-		input.dataValue = 'A2';
-		input.parameters = params;
-		input.key = 'a';
+		inputData(input).dataValue = 'A2';
+		inputData(input).parameters = params;
+		inputData(input).key = 'a';
 		let changed = 0;
 		el.addEventListener('change', () => changed++);
 		input.dispatchEvent(new Event('change', { bubbles: true }));

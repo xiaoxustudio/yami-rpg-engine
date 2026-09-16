@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { type CommandListApiOptions, type CommandListElementApi } from '../command-api';
+import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 
 /**
@@ -19,13 +20,22 @@ interface ListElement extends HTMLElement {
 	clear: () => HTMLElement;
 	deleteCommandBuffers: (commands: unknown[]) => void;
 	select: (start: number, end?: number) => void;
+	elements: { count: number } & Record<number, unknown>;
+}
+
+/**
+ * P4b：命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
+ * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
+ */
+interface CommandListState {
 	start: number | null;
 	end: number | null;
 	active: number | null;
 	origin: number | null;
 	focusing?: boolean;
-	elements: { count: number } & Record<number, unknown>;
 }
+
+const listState = (el: unknown): CommandListState => elementDataOf<CommandListState>(el);
 
 interface CommandWithBuffer {
 	id: string;
@@ -95,17 +105,17 @@ const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandLis
 describe('YMCommandList（M1 补测：行生命周期与选区重置——换源前置加固）', () => {
 	it('clear：清空后行数归零、选区状态复位，且可重新写入', async () => {
 		const el = await makeList(items(5));
-		el.focusing = true;
+		listState(el).focusing = true;
 		el.select(1);
 		await nextTick();
 		expect(el.elements.count).toBeGreaterThan(1);
 
 		el.clear();
 		expect(el.elements.count).toBe(0);
-		expect(el.start).toBeNull();
-		expect(el.end).toBeNull();
-		expect(el.active).toBeNull();
-		expect(el.origin).toBeNull();
+		expect(listState(el).start).toBeNull();
+		expect(listState(el).end).toBeNull();
+		expect(listState(el).active).toBeNull();
+		expect(listState(el).origin).toBeNull();
 
 		el.write(items(2));
 		await nextTick();

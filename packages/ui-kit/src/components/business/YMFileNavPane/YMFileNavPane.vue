@@ -64,6 +64,10 @@ interface FolderElementData {
 	folderMark?: HTMLElement;
 	markVisible?: boolean;
 	textNode?: Text;
+	/** P4b：`expanded` / `changed` / `indent` 同样住在元素数据里（仍在 DATA_FIELDS 内） */
+	expanded?: boolean;
+	changed?: boolean;
+	indent: number;
 }
 
 interface FolderItemList extends Array<FileItem> {
@@ -246,8 +250,9 @@ function updateHeadAndFoot(): void {
 }
 
 function updateOnResize(element: FolderElement): void {
-	if (element.changed) {
-		element.changed = false;
+	const data = elementDataOf<FolderElementData>(element);
+	if (data.changed) {
+		data.changed = false;
 		updateFolderElement(element);
 	}
 }
@@ -284,8 +289,9 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 			addClass(element, 'selected');
 		}
 	}
-	element.indent = indent;
-	element.changed = true;
+	const data = elementDataOf<FolderElementData>(element);
+	data.indent = indent;
+	data.changed = true;
 	return element;
 }
 
@@ -304,7 +310,7 @@ function updateFolderElement(element: FolderElement): void {
 		element.appendChild(textNode);
 
 		element.draggable = true;
-		element.expanded = false;
+		data.expanded = false;
 		data.markVisible = true;
 		element.textIndent = 0;
 		data.folderMark = folderMark;
@@ -318,8 +324,8 @@ function updateFolderElement(element: FolderElement): void {
 		data.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
 	}
 
-	if (element.expanded !== expanded) {
-		element.expanded = expanded;
+	if (data.expanded !== expanded) {
+		data.expanded = expanded;
 		switch (expanded) {
 			case true:
 				addClass(data.folderMark!, 'expanded');
@@ -332,7 +338,7 @@ function updateFolderElement(element: FolderElement): void {
 		}
 	}
 
-	const textIndent = core.computeTextIndent(element.indent);
+	const textIndent = core.computeTextIndent(data.indent);
 	if (element.textIndent !== textIndent) {
 		element.textIndent = textIndent;
 		element.style.textIndent = `${textIndent}px`;
