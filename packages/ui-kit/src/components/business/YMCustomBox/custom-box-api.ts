@@ -1,4 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createPayloadEvent } from '../../../utils/payload-event';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -31,7 +31,6 @@ export interface CustomBoxApiOptions {
 }
 
 export type CustomBoxApi = HTMLElement & {
-	info: HTMLElement;
 	dataValue: unknown;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
@@ -81,7 +80,8 @@ export function attachCustomBoxApi(
 	const text = document.createElement('div');
 	text.className = 'custom-box-text text';
 	box.appendChild(text);
-	box.info = text;
+	// P4b: info now lives in element data (field removed from DATA_FIELDS)
+	elementDataOf<{ info: HTMLElement }>(box).info = text;
 	box.tabIndex = 0;
 
 	Object.defineProperty(box, 'type', {

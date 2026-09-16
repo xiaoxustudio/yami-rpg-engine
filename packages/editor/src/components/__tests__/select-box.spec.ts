@@ -1,4 +1,5 @@
-﻿import { describe, expect, it } from 'vitest';
+import { elementDataOf } from '@ui-kit';
+import { describe, expect, it } from 'vitest';
 import type { SelectBoxApi } from '@ui-kit';
 import { createSelectBox, selectBoxSetItemNames } from '@app/components/select-box';
 
@@ -52,6 +53,6 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 		]);
 		el.write(true);
 		expect(el.read()).toBe(true);
-		expect(el.info.textContent).toBe('True');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('True');
 	});
 });

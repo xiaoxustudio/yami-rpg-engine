@@ -6,7 +6,8 @@
  * 于是把这份"存储 + 原型访问器"放到 ui-kit，editor 侧保留同路径的**再导出**（`@app/utils/element-data`
  * 继续可用，`main.ts` 的副作用导入仍然生效）。
  *
- * 行为与迁移前完全一致：仍是 69 个字段的 get/set + `getElementData(el)`。
+ * 行为与迁移前完全一致：仍是 DATA_FIELDS 所列字段的 get/set + `getElementData(el)`
+ * （字段数随 P4b 各刀递减，见 docs/remaining-work.md 的 P4b 小节）。
  */
 const elementDataMap = new WeakMap<HTMLElement, Record<string, unknown>>();
 
@@ -50,7 +51,6 @@ const DATA_FIELDS = [
 	'timer',
 	'visible',
 	'mode',
-	'info',
 	'invalid'
 ] as const;
 

@@ -35,7 +35,6 @@ const root = ref<HTMLElement | null>(null);
 const info = ref<HTMLElement | null>(null);
 
 type SelectBoxHost = HTMLElement & {
-	info?: HTMLElement;
 	dataItems?: SelectItem[] | null;
 	dataValue?: unknown;
 	relations?: RelationEntry[];
@@ -211,7 +210,8 @@ function initializeApi(): void {
 	const infoEl = info.value;
 	if (!el || !infoEl || (el as SelectBoxHost)._initialized) return;
 	el.tabIndex = 0;
-	(el as SelectBoxHost).info = infoEl;
+	// P4b：info 不再镜像到元素（字段已从 DATA_FIELDS 摘除）——core 经 getInfo
+	// 读模板 ref（info.value），全仓无人读元素侧的 info。
 	(el as SelectBoxHost).dataItems = state.dataItems;
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,

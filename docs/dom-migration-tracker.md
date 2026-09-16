@@ -116,7 +116,7 @@
 | packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 384 | 12 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 210 | 12 | - |
 | packages/editor/src/utils/dom.ts | 236 | 11 | - |
-| packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 271 | 11 | - |
+| packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 272 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectList/select-list-api.ts | 418 | 11 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/YMTextArea.vue | 261 | 11 | - |
 | packages/ui-kit/src/utils/radio-proxy.ts | 226 | 11 | - |
@@ -129,7 +129,7 @@
 | packages/editor/src/composables/useTileNodeWindow.ts | 541 | 9 | - |
 | packages/editor/src/palette/tile-frame-index.ts | 371 | 9 | - |
 | packages/ui-kit/src/components/basic/YMCheckBox/check-box-api.ts | 202 | 9 | - |
-| packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 155 | 9 | - |
+| packages/ui-kit/src/components/basic/YMColorBox/color-box-api.ts | 158 | 9 | - |
 | packages/ui-kit/src/components/basic/YMToastManager/toast-api.ts | 62 | 9 | - |
 | packages/editor/src/animation/animation-list.ts | 1119 | 8 | - |
 | packages/editor/src/animation/animation-pointer.ts | 383 | 8 | - |
@@ -175,7 +175,7 @@
 | packages/ui-kit/src/components/basic/YMKeyboardBox/YMKeyboardBox.vue | 197 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNavBar/YMNavBar.vue | 186 | 5 | - |
 | packages/ui-kit/src/components/basic/YMNumberBox/number-box-core.ts | 171 | 5 | - |
-| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 100 | 5 | - |
+| packages/ui-kit/src/components/basic/YMPageManager/page-manager-api.ts | 103 | 5 | - |
 | packages/ui-kit/src/components/basic/YMPageManager/YMPageManager.vue | 141 | 5 | - |
 | packages/editor/src/animation/animation-events.ts | 411 | 4 | - |
 | packages/editor/src/commands/command-tip.ts | 457 | 4 | - |
@@ -211,7 +211,7 @@
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
 | packages/ui-kit/src/components/basic/YMFilterBox/YMFilterBox.vue | 133 | 3 | - |
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-core.ts | 134 | 3 | - |
-| packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 357 | 3 | - |
+| packages/ui-kit/src/components/business/YMCustomBox/YMCustomBox.vue | 359 | 3 | - |
 | packages/editor/src/animation/animation-timeline.ts | 1185 | 2 | - |
 | packages/editor/src/attribute/attribute-window.ts | 1057 | 2 | - |
 | packages/editor/src/audio/multiple-audio-player.ts | 60 | 2 | - |
@@ -535,7 +535,7 @@
 | packages/editor/src/components/common/NumberVar.vue | 183 | 0 | - |
 | packages/editor/src/components/common/ParameterPane.vue | 120 | 0 | - |
 | packages/editor/src/components/common/ParamList.vue | 107 | 0 | - |
-| packages/editor/src/components/common/SelectBox.vue | 302 | 0 | - |
+| packages/editor/src/components/common/SelectBox.vue | 301 | 0 | - |
 | packages/editor/src/components/common/SelectVar.vue | 192 | 0 | - |
 | packages/editor/src/components/common/StringVar.vue | 158 | 0 | - |
 | packages/editor/src/components/common/TabBar.vue | 147 | 0 | - |
@@ -1228,7 +1228,7 @@
 | packages/ui-kit/src/composables/useMenuService.ts | 16 | 0 | - |
 | packages/ui-kit/src/composables/useTheme.ts | 8 | 0 | - |
 | packages/ui-kit/src/composables/useWordList.ts | 45 | 0 | - |
-| packages/ui-kit/src/index.ts | 244 | 0 | - |
+| packages/ui-kit/src/index.ts | 249 | 0 | - |
 | packages/ui-kit/src/theme/theme.ts | 52 | 0 | - |
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |

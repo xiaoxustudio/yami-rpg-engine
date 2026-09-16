@@ -25,7 +25,6 @@ import { pinia } from '@app/stores/pinia';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
-	info: HTMLElement & { [k: string]: unknown };
 	read(): unknown;
 	write(value: unknown): void;
 	write2(value: unknown): void;

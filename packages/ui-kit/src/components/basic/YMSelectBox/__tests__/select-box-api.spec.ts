@@ -1,3 +1,4 @@
+import { elementDataOf } from '../../../../utils/element-data';
 import { describe, expect, it } from 'vitest';
 import { createSelectBoxElement } from '../select-box-api';
 import type { SelectBoxApi } from '../select-box-api';
@@ -14,7 +15,7 @@ describe('createSelectBoxElement', () => {
 		expect(typeof el.enable).toBe('function');
 		expect(typeof el.disable).toBe('function');
 		expect(typeof el.on).toBe('function');
-		expect(el.info).toBeTruthy();
+		expect(elementDataOf<{ info: HTMLElement }>(el).info).toBeTruthy();
 	});
 
 	it('loadItems + write + read roundtrip with names', () => {
@@ -25,7 +26,7 @@ describe('createSelectBoxElement', () => {
 		]);
 		el.write(true);
 		expect(el.read()).toBe(true);
-		expect(el.info.textContent).toBe('True');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('True');
 	});
 
 	it('write2 falls back to first item when value unknown', () => {
@@ -90,13 +91,13 @@ describe('createSelectBoxElement', () => {
 		expect(labelA.style.display).toBe('none');
 		expect(targetB.style.display).toBe('none');
 		expect(labelB.style.display).toBe('none');
-		expect(el.info.style.display).toBe('none');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.style.display).toBe('none');
 		el.enable();
 		expect(targetB.style.display).not.toBe('none');
 		expect(labelB.style.display).not.toBe('none');
 		expect(targetA.style.display).toBe('none');
 		expect(labelA.style.display).toBe('none');
-		expect(el.info.style.display).not.toBe('none');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.style.display).not.toBe('none');
 		container.remove();
 	});
 
@@ -197,12 +198,16 @@ describe('createSelectBoxElement', () => {
 		el.loadItems([{ name: 'A', value: 'a' }]);
 		el.write('nope');
 		expect(el.invalid).toBe(true);
-		expect(el.info.classList.contains('invalid')).toBe(true);
-		expect(el.info.textContent).toBe('nope');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.classList.contains('invalid')).toBe(
+			true
+		);
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('nope');
 		el.write('a');
 		expect(el.invalid).toBe(false);
-		expect(el.info.classList.contains('invalid')).toBe(false);
-		expect(el.info.textContent).toBe('A');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.classList.contains('invalid')).toBe(
+			false
+		);
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('A');
 	});
 
 	it('save/restore roundtrip restores saved value exactly once', () => {

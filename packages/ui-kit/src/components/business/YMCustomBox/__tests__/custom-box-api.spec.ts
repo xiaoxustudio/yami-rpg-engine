@@ -1,3 +1,4 @@
+import { elementDataOf } from '../../../../utils/element-data';
 import { describe, expect, it } from 'vitest';
 import { createCustomBoxElement } from '../custom-box-api';
 import type { CustomBoxApi } from '../custom-box-api';
@@ -29,7 +30,7 @@ describe('createCustomBoxElement', () => {
 		const el = createCustomBoxElement() as unknown as CustomBoxApi;
 		el.write({ id: 1, name: 'Hero' });
 		expect(el.read()).toEqual({ id: 1, name: 'Hero' });
-		expect(el.info).toBeTruthy();
+		expect(elementDataOf<{ info: HTMLElement }>(el).info).toBeTruthy();
 	});
 
 	it('renders parser text when parser injected', () => {
@@ -40,6 +41,6 @@ describe('createCustomBoxElement', () => {
 			}
 		}) as unknown as CustomBoxApi;
 		el.write({ id: 1, name: 'Hero' });
-		expect(el.info.textContent).toBe('Actor:Hero');
+		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('Actor:Hero');
 	});
 });

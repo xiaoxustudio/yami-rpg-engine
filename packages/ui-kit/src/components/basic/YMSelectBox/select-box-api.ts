@@ -1,4 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import {
 	createSelectBoxCore,
@@ -19,7 +19,6 @@ export interface SelectBoxApiOptions {
 }
 
 export type SelectBoxApi = HTMLElement & {
-	info: HTMLElement;
 	dataItems: SelectItem[];
 	dataValue: unknown;
 	relations: RelationEntry[];
@@ -65,7 +64,9 @@ export function attachSelectBoxApi(
 	const text = document.createElement('div');
 	text.className = 'select-box-text';
 	box.appendChild(text);
-	box.info = text;
+	// P4b: info now lives in element data (field removed from DATA_FIELDS)
+	const infoData = elementDataOf<{ info: HTMLElement }>(box);
+	infoData.info = text;
 	box.tabIndex = 0;
 
 	const state: SelectBoxCoreState = {
@@ -82,7 +83,7 @@ export function attachSelectBoxApi(
 	let popupEl: HTMLElement | null = null;
 	let documentPointerdown: ((event: PointerEvent) => void) | null = null;
 
-	const core = createSelectBoxCore({ getRoot: () => box, getInfo: () => box.info }, state, {
+	const core = createSelectBoxCore({ getRoot: () => box, getInfo: () => infoData.info }, state, {
 		onItemsLoaded: () => renderPopup()
 	});
 	const {

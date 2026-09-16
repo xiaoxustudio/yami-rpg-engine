@@ -1,6 +1,7 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { markApiAttached } from '../../../utils/element-data';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -250,10 +251,11 @@ function initializeApi(): void {
 		}
 	});
 
-	el.info = text;
+	// P4b：_initialized 走元素数据（isApiAttached/markApiAttached，字段已从 DATA_FIELDS 摘除）；
+	// info 不再镜像到元素——组件内部经局部变量 `info` 读写，全仓无人读元素侧的 info。
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;
-	el._initialized = true;
+	markApiAttached(el);
 	attachApi(el, {
 		read,
 		write,
