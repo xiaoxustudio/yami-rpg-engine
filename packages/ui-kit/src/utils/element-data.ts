@@ -56,8 +56,7 @@ const DATA_FIELDS = [
 	'relations',
 	'mode',
 	'info',
-	'invalid',
-	'varBox'
+	'invalid'
 ] as const;
 
 function defineDataAccessors(): void {

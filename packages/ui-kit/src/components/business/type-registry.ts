@@ -110,7 +110,10 @@ export function createTypeRegistry(dataSource: TypeRegistryDataSource): TypeRegi
 			numBox.input.min = param.min!.toString();
 			numBox.input.max = param.max!.toString();
 			numBox.decimals = param.decimals;
-			wrap.input.varBox.isPluginInput = true;
+			// P4b: varBox now lives in element data (field removed from DATA_FIELDS)
+			elementDataOf<{ varBox: { isPluginInput?: boolean } }>(
+				wrap.input
+			).varBox.isPluginInput = true;
 			if (param.placeholder) {
 				numBox.setPlaceholder(param.placeholder);
 			}

@@ -36,18 +36,18 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	const data = elementDataOf<FileVarApi>(box);
 	box.mode = null;
 	data.fileBox = factory() as CustomBoxApi;
-	box.varBox = factory() as CustomBoxApi;
+	data.varBox = factory() as CustomBoxApi;
 	data.fileBox.type = 'file';
 	data.fileBox.filter = options.filter ?? el.getAttribute('filter');
-	box.varBox!.type = 'variable';
-	box.varBox!.filter = 'string';
+	data.varBox!.type = 'variable';
+	data.varBox!.filter = 'string';
 
 	const readValue = function (): unknown {
 		switch (box.mode) {
 			case 'constant':
 				return read(data.fileBox);
 			case 'variable':
-				return box.varBox?.read();
+				return data.varBox?.read();
 		}
 	};
 
@@ -56,12 +56,12 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			case 'string':
 				box.switch('constant');
 				write(data.fileBox, value);
-				box.varBox?.write(defVar);
+				data.varBox?.write(defVar);
 				break;
 			case 'object':
 				box.switch('variable');
 				write(data.fileBox, '');
-				box.varBox?.write(value);
+				data.varBox?.write(value);
 				break;
 		}
 	};
@@ -84,7 +84,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					box.varBox?.remove();
+					data.varBox?.remove();
 					box.appendChild(data.fileBox!);
 					if (focus) {
 						data.fileBox.focus();
@@ -92,9 +92,9 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 					break;
 				case 'variable':
 					data.fileBox.remove();
-					box.appendChild(box.varBox!);
+					box.appendChild(data.varBox!);
 					if (focus) {
-						box.varBox?.focus();
+						data.varBox?.focus();
 					}
 					break;
 			}
@@ -104,14 +104,14 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			data.fileBox.enable();
-			box.varBox?.enable();
+			data.varBox?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			data.fileBox.disable();
-			box.varBox?.disable();
+			data.varBox?.disable();
 		}
 	};
 
@@ -120,7 +120,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			case 'constant':
 				return data.fileBox.focus();
 			case 'variable':
-				return box.varBox?.focus();
+				return data.varBox?.focus();
 		}
 	};
 

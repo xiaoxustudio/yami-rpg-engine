@@ -116,7 +116,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 const api = {
 	mode: 'constant',
 	// P4b：numBox 改为元素数据（WeakMap），不再放进 api 对象（否则会以同名自有属性遮蔽）
-	varBox: null as (HTMLElement & { isPluginInput?: boolean }) | null,
 	read,
 	write,
 	switch: switchMode,
@@ -158,16 +157,23 @@ onMounted(() => {
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			elementDataOf<{ numBox: HTMLElement | null }>(el).numBox =
 				(ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
-			api.varBox = getChildRoot(varBoxRef.value);
-			if (api.varBox) api.varBox.isPluginInput = false;
+			// P4b: varBox now lives in element data (field removed from DATA_FIELDS)
+			const varBoxData = elementDataOf<{
+				varBox: (HTMLElement & { isPluginInput?: boolean }) | null;
+			}>(el);
+			varBoxData.varBox = getChildRoot(varBoxRef.value);
+			if (varBoxData.varBox) varBoxData.varBox.isPluginInput = false;
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		api.varBox = getChildRoot(val);
-		if (api.varBox) api.varBox.isPluginInput = false;
+		const varBoxData = elementDataOf<{
+			varBox: (HTMLElement & { isPluginInput?: boolean }) | null;
+		}>(el);
+		varBoxData.varBox = getChildRoot(val);
+		if (varBoxData.varBox) varBoxData.varBox.isPluginInput = false;
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

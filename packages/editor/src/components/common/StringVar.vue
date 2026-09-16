@@ -99,7 +99,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 
 const api = {
 	mode: 'constant',
-	varBox: null as HTMLElement | null,
 	read,
 	write,
 	switch: switchMode,
@@ -142,14 +141,14 @@ onMounted(() => {
 			// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			elementDataOf<{ strBox: HTMLElement | null }>(el).strBox =
 				(ym.value?.root?.querySelector('.text-box') as HTMLElement) ?? null;
-			api.varBox = getChildRoot(varBoxRef.value);
+			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		api.varBox = getChildRoot(val);
+		elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(val);
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMTextAreaVar
 		ref="ym"
 		:model-value="props.modelValue"
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { YMTextAreaVar } from '@ui-kit';
+import { elementDataOf, YMTextAreaVar } from '@ui-kit';
 import { defVar } from '@app/components/textarea-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -100,7 +100,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 const api = {
 	mode: 'constant',
 	areaBox: null as HTMLElement | null,
-	varBox: null as HTMLElement | null,
 	read,
 	write,
 	switch: switchMode,
@@ -141,14 +140,14 @@ onMounted(() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			api.areaBox = (ym.value?.root?.querySelector('.text-area') as HTMLElement) ?? null;
-			api.varBox = getChildRoot(varBoxRef.value);
+			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		api.varBox = getChildRoot(val);
+		elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(val);
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

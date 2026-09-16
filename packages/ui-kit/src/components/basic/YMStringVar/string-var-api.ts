@@ -45,7 +45,7 @@ export function attachStringVarApi(
 	box.mode = currentMode;
 	// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<StringVarApi>(box).strBox = strBox;
-	box.varBox = varBox;
+	elementDataOf<StringVarApi>(box).varBox = varBox;
 
 	const readValue = function (): unknown {
 		switch (currentMode) {

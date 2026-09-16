@@ -54,7 +54,7 @@ export function attachNumberVarApi(
 	box.mode = currentMode;
 	// P4b: numBox now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<NumberVarApi>(box).numBox = numBox;
-	box.varBox = varBox;
+	elementDataOf<NumberVarApi>(box).varBox = varBox;
 
 	const readValue = function (): unknown {
 		switch (currentMode) {

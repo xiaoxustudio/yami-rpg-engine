@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMSelectVar
 		ref="ym"
 		:items="props.items"
@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { YMSelectVar } from '@ui-kit';
+import { elementDataOf, YMSelectVar } from '@ui-kit';
 import { defVar } from '@app/components/select-var';
 import { Select } from '@app/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -129,7 +129,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, l
 
 const api = {
 	selectBox: null as HTMLElement | null,
-	varBox: null as HTMLElement | null,
 	mode: 'constant',
 	read,
 	write,
@@ -166,7 +165,8 @@ onMounted(() => {
 	};
 	if (!el) return;
 	api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-	api.varBox = getChildRoot(varBoxRef.value);
+	// P4b: varBox now lives in element data (field removed from DATA_FIELDS)
+	elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	attachElementApi(el, api);
 	watch(
@@ -175,14 +175,14 @@ onMounted(() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-			api.varBox = getChildRoot(varBoxRef.value);
+			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		api.varBox = getChildRoot(val);
+		elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(val);
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

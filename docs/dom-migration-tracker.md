@@ -157,7 +157,7 @@
 | packages/ui-kit/src/components/basic/YMNavBar/nav-bar-api.ts | 133 | 6 | - |
 | packages/ui-kit/src/components/basic/YMNumberVar/number-var-api.ts | 220 | 6 | - |
 | packages/ui-kit/src/components/basic/YMNumberVar/YMNumberVar.vue | 289 | 6 | - |
-| packages/ui-kit/src/components/basic/YMSelectVar/select-var-api.ts | 204 | 6 | - |
+| packages/ui-kit/src/components/basic/YMSelectVar/select-var-api.ts | 206 | 6 | - |
 | packages/ui-kit/src/components/basic/YMSelectVar/YMSelectVar.vue | 247 | 6 | - |
 | packages/ui-kit/src/components/basic/YMStringVar/string-var-api.ts | 201 | 6 | - |
 | packages/ui-kit/src/components/basic/YMStringVar/YMStringVar.vue | 263 | 6 | - |
@@ -532,15 +532,15 @@
 | packages/editor/src/components/common/MarqueeArea.vue | 43 | 0 | - |
 | packages/editor/src/components/common/NavBar.vue | 59 | 0 | - |
 | packages/editor/src/components/common/NumberBox.vue | 124 | 0 | - |
-| packages/editor/src/components/common/NumberVar.vue | 177 | 0 | - |
+| packages/editor/src/components/common/NumberVar.vue | 183 | 0 | - |
 | packages/editor/src/components/common/ParameterPane.vue | 120 | 0 | - |
 | packages/editor/src/components/common/ParamList.vue | 107 | 0 | - |
 | packages/editor/src/components/common/SelectBox.vue | 302 | 0 | - |
 | packages/editor/src/components/common/SelectVar.vue | 192 | 0 | - |
-| packages/editor/src/components/common/StringVar.vue | 159 | 0 | - |
+| packages/editor/src/components/common/StringVar.vue | 158 | 0 | - |
 | packages/editor/src/components/common/TabBar.vue | 147 | 0 | - |
 | packages/editor/src/components/common/TextArea.vue | 112 | 0 | - |
-| packages/editor/src/components/common/TextAreaVar.vue | 158 | 0 | - |
+| packages/editor/src/components/common/TextAreaVar.vue | 157 | 0 | - |
 | packages/editor/src/components/common/TextBox.vue | 180 | 0 | - |
 | packages/editor/src/components/common/TitleBar.vue | 43 | 0 | - |
 | packages/editor/src/components/common/TreeList.vue | 75 | 0 | - |
@@ -931,7 +931,7 @@
 | packages/editor/src/engine/scene/draw-tilemap.ts | 277 | 0 | - |
 | packages/editor/src/engine/scene/draw-wireframes.ts | 156 | 0 | - |
 | packages/editor/src/engine/scene/scene-animate-engine.ts | 76 | 0 | - |
-| packages/editor/src/engine/scene/scene-camera-engine.ts | 195 | 0 | - |
+| packages/editor/src/engine/scene/scene-camera-engine.ts | 193 | 0 | - |
 | packages/editor/src/engine/scene/scene-draw-engine.ts | 53 | 0 | - |
 | packages/editor/src/engine/scene/scene-edit-engine.ts | 573 | 0 | - |
 | packages/editor/src/engine/scene/scene-marquee-engine.ts | 185 | 0 | - |
@@ -1212,7 +1212,7 @@
 | packages/ui-kit/src/components/basic/YMTreeList/tree-core.ts | 174 | 0 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/tree-render.ts | 265 | 0 | - |
 | packages/ui-kit/src/components/basic/YMTreeList/YMTreeList.vue | 656 | 0 | - |
-| packages/ui-kit/src/components/business/type-registry.ts | 483 | 0 | - |
+| packages/ui-kit/src/components/business/type-registry.ts | 484 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-core.ts | 270 | 0 | - |
 | packages/ui-kit/src/components/business/YMCommandList/command-render.ts | 283 | 0 | - |
 | packages/ui-kit/src/components/business/YMConfirmation/YMConfirmation.vue | 72 | 0 | - |
@@ -1233,7 +1233,7 @@
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 92 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 91 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |

@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { SelectBoxApi } from '../YMSelectBox/select-box-api';
@@ -38,16 +39,17 @@ export function attachSelectVarApi(
 
 	box.mode = null;
 	box.selectBox = (options.selectBoxFactory ?? (() => null))() as SelectBoxApi;
-	box.varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
-	box.varBox!.type = 'variable';
-	box.varBox!.filter = 'all';
+	const data = elementDataOf<SelectVarApi>(box);
+	data.varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
+	data.varBox!.type = 'variable';
+	data.varBox!.filter = 'all';
 
 	const readValue = function (): unknown {
 		switch (box.mode) {
 			case 'constant':
 				return read(box.selectBox);
 			case 'variable':
-				return box.varBox?.read();
+				return data.varBox?.read();
 		}
 	};
 
@@ -56,12 +58,12 @@ export function attachSelectVarApi(
 			case 'string':
 				box.switch('constant');
 				write(box.selectBox, value);
-				box.varBox?.write(defVar);
+				data.varBox?.write(defVar);
 				break;
 			case 'object':
 				box.switch('variable');
 				box.selectBox.writeDefault();
-				box.varBox?.write(value);
+				data.varBox?.write(value);
 				break;
 		}
 	};
@@ -84,7 +86,7 @@ export function attachSelectVarApi(
 			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					box.varBox?.remove();
+					data.varBox?.remove();
 					box.appendChild(box.selectBox!);
 					if (focus) {
 						box.selectBox.focus();
@@ -92,9 +94,9 @@ export function attachSelectVarApi(
 					break;
 				case 'variable':
 					box.selectBox.remove();
-					box.appendChild(box.varBox!);
+					box.appendChild(data.varBox!);
 					if (focus) {
-						box.varBox?.focus();
+						data.varBox?.focus();
 					}
 					break;
 			}
@@ -104,14 +106,14 @@ export function attachSelectVarApi(
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			box.selectBox.enable();
-			box.varBox?.enable();
+			data.varBox?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			box.selectBox.disable();
-			box.varBox?.disable();
+			data.varBox?.disable();
 		}
 	};
 
@@ -124,7 +126,7 @@ export function attachSelectVarApi(
 			case 'constant':
 				return box.selectBox.focus();
 			case 'variable':
-				return box.varBox?.focus();
+				return data.varBox?.focus();
 		}
 	};
 
