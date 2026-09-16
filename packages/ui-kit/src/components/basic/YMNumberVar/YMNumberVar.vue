@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMNumberBox from '../YMNumberBox/YMNumberBox.vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
 	id?: string;
@@ -99,7 +100,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as NumberVarApi).mode = target;
+			elementDataOf<NumberVarApi>(el).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
@@ -218,7 +219,7 @@ onMounted(() => {
 	if (!el) return;
 	el.tabIndex = 0;
 	attachApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
-	(el as NumberVarApi).mode = mode.value;
+	elementDataOf<NumberVarApi>(el).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

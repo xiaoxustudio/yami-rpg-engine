@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMSelectBox from '../YMSelectBox/YMSelectBox.vue';
+import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
 	id?: string;
@@ -78,7 +79,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as SelectVarApi).mode = target;
+			elementDataOf<SelectVarApi>(el).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
@@ -188,7 +189,7 @@ onMounted(() => {
 	(el as SelectVarApi).disable = disable;
 	(el as SelectVarApi).getFocus = getFocus;
 	(el as SelectVarApi).on = on;
-	(el as SelectVarApi).mode = mode.value;
+	elementDataOf<SelectVarApi>(el).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

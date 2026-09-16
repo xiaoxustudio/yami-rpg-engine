@@ -1,12 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRadioProxy, radioProxyMap, RadioProxy } from '../radio-proxy';
 import type { RadioProxyElement } from '../radio-proxy';
+import { elementDataOf } from '../element-data';
 
 function makeProxy(id: string, value: unknown = null) {
 	const el = createRadioProxy() as unknown as RadioProxyElement;
 	el.id = id;
 	el.setAttribute('name', id);
-	el.dataValue = value;
+	elementDataOf<RadioProxyElement>(el).dataValue = value;
 	el.style.display = '';
 	document.body.appendChild(el);
 	return el;
@@ -90,7 +91,11 @@ describe('radio-proxy', () => {
 		const other = makeProxy('group6', 'x');
 
 		expect(proxy.group).toEqual([proxy, a, b]);
-		expect(proxy.group.map((el) => el.dataValue)).toEqual([null, 'a', 'b']);
+		expect(proxy.group.map((el) => elementDataOf<RadioProxyElement>(el).dataValue)).toEqual([
+			null,
+			'a',
+			'b'
+		]);
 		expect(proxy.group).not.toContain(other);
 
 		// 成员变更后访问器要跟着变（每次读都重查，不做缓存）

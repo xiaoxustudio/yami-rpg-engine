@@ -211,7 +211,7 @@ function initializeApi(): void {
 	el.tabIndex = 0;
 	// P4b：info 不再镜像到元素（字段已从 DATA_FIELDS 摘除）——core 经 getInfo
 	// 读模板 ref（info.value），全仓无人读元素侧的 info。
-	(el as SelectBoxHost).dataItems = state.dataItems;
+	elementDataOf<SelectBoxHost>(el).dataItems = state.dataItems;
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
 		get: () => state.dataValue,

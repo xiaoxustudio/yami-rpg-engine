@@ -60,9 +60,30 @@ const DATA_FIELDS = [
  * 打印到测试输出（不写文件，避免在浏览器包里引入 node 内置模块）。
  */
 const P4B_PROBE_ENABLED = typeof process !== 'undefined' && process.env?.P4B_PROBE === '1';
+/** P4b 退役验收模式：任何**真实**的访问器使用都直接抛错（见 probeAccess 的说明）。 */
+const P4B_STRICT_ENABLED = typeof process !== 'undefined' && process.env?.P4B_STRICT === '1';
 const probe = P4B_PROBE_ENABLED ? { reported: new Set<string>(), counts: new Map<string, number>() } : null;
 
 function probeAccess(field: string): void {
+	// P4B_STRICT=1：退役验收用。除"库内部读 `mode`"（jsdom 的选择器引擎会 destructure
+	// `{ host, mode, nodeType, parentNode }`）之外，任何访问器使用都抛错——于是"还有谁在用"
+	// 从"探针可能采样漏掉"变成"跑一次套件就知道"，而且失败点就是待迁移的站点。
+	if (P4B_STRICT_ENABLED) {
+		let immediate = '';
+		const stack = new Error().stack ?? '';
+		for (const line of stack.split('\n')) {
+			if (!/^\s*at\s/.test(line)) continue;
+			if (/utils[\\/]element-data\.ts/.test(line)) continue;
+			immediate = line.trim();
+			break;
+		}
+		const externalModeRead = field === 'mode' && !/packages[\\/](editor|ui-kit)[\\/](src|main)[\\/]/.test(immediate);
+		if (!externalModeRead) {
+			throw new Error(
+				`P4b: element data field "${field}" is still read/written through the prototype accessor.\n${stack}`
+			);
+		}
+	}
 	if (probe === null) return;
 	// 探针绝不允许影响被测代码：任何异常都被吞掉（历史上它曾在 jsdom 选择器路径里抛错，
 	// 连带弄红 17 个无关用例）。

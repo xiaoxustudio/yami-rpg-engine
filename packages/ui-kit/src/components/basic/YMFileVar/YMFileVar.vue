@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
 	id?: string;
@@ -63,7 +64,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as HTMLElement & { mode?: string }).mode = target;
+			elementDataOf<{ mode?: 'constant' | 'variable' }>(el).mode = target;
 		}
 		mode.value = target;
 		if (focus) {
@@ -186,7 +187,7 @@ onMounted(() => {
 		getFocus,
 		on
 	});
-	(el as HTMLElement & { [k: string]: unknown }).mode = mode.value;
+	elementDataOf<{ mode?: 'constant' | 'variable' }>(el).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

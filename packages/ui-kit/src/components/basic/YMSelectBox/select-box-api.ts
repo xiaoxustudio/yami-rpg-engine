@@ -205,7 +205,7 @@ export function attachSelectBoxApi(
 		openPopup();
 	};
 
-	box.dataItems = state.dataItems as SelectItem[];
+	elementDataOf<SelectBoxApi>(box).dataItems = state.dataItems as SelectItem[];
 	Object.defineProperty(box, 'dataValue', {
 		configurable: true,
 		get: () => state.dataValue,

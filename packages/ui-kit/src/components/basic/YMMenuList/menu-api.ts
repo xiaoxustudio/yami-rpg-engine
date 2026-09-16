@@ -1,4 +1,5 @@
 ﻿import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
 export interface MenuItem {
@@ -58,6 +59,13 @@ type MenuItemElement = HTMLElement & {
 	label?: HTMLElement;
 	accelerator?: HTMLElement;
 };
+
+// P4b：menu-item 上挂的 `MenuItem` 走显式元素数据（`label`/`accelerator` 是普通 own 属性，保持原样）
+interface MenuItemData {
+	dataValue?: MenuItem;
+}
+
+const menuItemData = (el: unknown): MenuItemData => elementDataOf<MenuItemData>(el);
 
 export function createMenuApi(el: HTMLElement): MenuApi {
 	const menu: MenuApi = {
@@ -199,7 +207,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			default: {
 				const li = document.createElement('div');
 				li.classList.add('menu-item');
-				(li as MenuItemElement).dataValue = item;
+				menuItemData(li).dataValue = item;
 				if (item.enabled === false) {
 					li.classList.add('disabled');
 				}
@@ -293,7 +301,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 	function popupSubmenu(delay: number): void {
 		const element = menu.selection;
 		if (element instanceof HTMLElement && element !== menu.submenu?.parentMenuItem) {
-			const node = (element as MenuItemElement).dataValue as MenuItem;
+			const node = menuItemData(element).dataValue as MenuItem;
 			if (node.submenu) {
 				if (!menu.popupTimer) {
 					menu.popupTimer = new MenuTimer({
@@ -371,7 +379,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 				case 'Enter':
 				case 'NumpadEnter':
 					if (menu.selection) {
-						const node = (menu.selection as MenuItemElement).dataValue as MenuItem;
+						const node = menuItemData(menu.selection).dataValue as MenuItem;
 						if (node.submenu) {
 							popupSubmenu(0);
 							(menu.submenu as MenuApi | null)?.reselect(1);
@@ -442,7 +450,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 					if (menu.buttonPressed) {
 						menu.buttonPressed = false;
 						if (!element.classList.contains('disabled')) {
-							const node = (element as MenuItemElement).dataValue as MenuItem;
+							const node = menuItemData(element).dataValue as MenuItem;
 							if (node.submenu) {
 								popupSubmenu(0);
 							} else if (node.click) {

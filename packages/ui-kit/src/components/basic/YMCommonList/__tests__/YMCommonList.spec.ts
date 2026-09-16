@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMCommonList from '../YMCommonList.vue';
+import { elementDataOf } from '../../../../utils/element-data';
 
 interface CommonListElement extends HTMLElement {
 	[k: string]: unknown;
@@ -17,7 +18,7 @@ interface CommonListElement extends HTMLElement {
 const createItem = (value: unknown): HTMLElement => {
 	const el = document.createElement('div');
 	el.className = 'common-item';
-	(el as HTMLElement & { dataValue?: unknown }).dataValue = value;
+	elementDataOf<{ dataValue?: unknown }>(el).dataValue = value;
 	el.textContent = String(value);
 	return el;
 };

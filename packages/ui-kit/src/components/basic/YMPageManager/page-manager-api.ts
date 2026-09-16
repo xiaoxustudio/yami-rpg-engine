@@ -1,4 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, hasClass, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -13,6 +13,12 @@ export interface PageManagerApi extends HTMLElement {
 type PageFrameElement = HTMLElement & {
 	dataValue?: string | null;
 };
+
+// P4b：page-frame 的 `dataValue`（`value` 属性的缓存）走显式元素数据。
+// 注意 `manager.active` **不在此列**：Vue 版 YMPageManager 在元素上自建 `active` 访问器
+// （遮蔽原型），命令式 createPageManagerElement 走原型访问器——两种实现并存，读取方
+// （editor 的 layout.ts 等）按属性读，故这里保持原样。
+const frameData = (el: unknown): PageFrameElement => elementDataOf<PageFrameElement>(el);
 
 const dispatchResizeEvent = (el: HTMLElement): void => {
 	el.dispatchEvent(new Event('resize'));
@@ -33,10 +39,11 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 			if (value !== null) {
 				for (const child of el.childNodes as unknown as PageFrameElement[]) {
 					if (hasClass(child, 'page-frame')) {
-						if (child.dataValue === undefined) {
-							child.dataValue = child.getAttribute('value');
+						const data = frameData(child);
+						if (data.dataValue === undefined) {
+							data.dataValue = child.getAttribute('value');
 						}
-						if (child.dataValue === value) {
+						if (data.dataValue === value) {
 							target = child;
 							break;
 						}
@@ -84,7 +91,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		while (--i >= 0) {
 			const child = nodes[i] as PageFrameElement;
 			if (hasClass(child, 'page-frame')) {
-				child.dataValue = child.getAttribute('value');
+				frameData(child).dataValue = child.getAttribute('value');
 			} else {
 				el.removeChild(child);
 			}

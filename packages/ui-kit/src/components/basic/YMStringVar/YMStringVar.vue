@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMTextBox from '../YMTextBox/YMTextBox.vue';
+import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
 	id?: string;
@@ -78,7 +79,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as StringVarApi).mode = target;
+			elementDataOf<StringVarApi>(el).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
@@ -203,7 +204,7 @@ onMounted(() => {
 	(el as StringVarApi).disable = disable;
 	(el as StringVarApi).getFocus = getFocus;
 	(el as StringVarApi).on = on;
-	(el as StringVarApi).mode = mode.value;
+	elementDataOf<StringVarApi>(el).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

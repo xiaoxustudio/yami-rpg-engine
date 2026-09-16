@@ -1,3 +1,11 @@
+import { elementDataOf } from '../../../utils/element-data';
+
+/** P4b：own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据。 */
+const itemDataValue = (item: { dataValue?: unknown }): unknown =>
+	Object.prototype.hasOwnProperty.call(item, 'dataValue')
+		? item.dataValue
+		: elementDataOf<{ dataValue?: unknown }>(item).dataValue;
+
 export type RelativeDirection = 'up' | 'down';
 
 export type VisibleRange = {
@@ -39,7 +47,10 @@ export function createCommonListCore(): CommonListCore {
 	): number => {
 		let index = 0;
 		for (let i = 0; i < count; i++) {
-			if (items[i].dataValue === value) {
+			// P4b：行元素的 `dataValue` 是元素数据（原型访问器退役后 `items[i].dataValue` 会变成
+			// 读普通 expando，`findItemIndex` 会恒返回 0 ⇒ 选中项静默失效）。规则与 `utils/dom.ts`
+			// 的 `read` 一致：**own 属性优先**（宿主自己装的访问器 / 普通对象夹具），否则读元素数据。
+			if (itemDataValue(items[i]) === value) {
 				index = i;
 				break;
 			}

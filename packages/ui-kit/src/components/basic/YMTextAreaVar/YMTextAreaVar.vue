@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMTextArea from '../YMTextArea/YMTextArea.vue';
+import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
 	id?: string;
@@ -78,7 +79,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as TextAreaVarApi).mode = target;
+			elementDataOf<TextAreaVarApi>(el).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
@@ -203,7 +204,7 @@ onMounted(() => {
 	(el as TextAreaVarApi).disable = disable;
 	(el as TextAreaVarApi).getFocus = getFocus;
 	(el as TextAreaVarApi).on = on;
-	(el as TextAreaVarApi).mode = mode.value;
+	elementDataOf<TextAreaVarApi>(el).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

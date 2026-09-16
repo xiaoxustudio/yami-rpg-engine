@@ -1,4 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -14,13 +14,21 @@ export interface NavBarApi extends HTMLElement {
 
 const numberRegex = /^-?\d+(?:\.\d+)?$/;
 
+// P4b：nav-item 的 `dataValue`（按 `value` 属性解析出的选中值）走显式元素数据
+interface NavItemData {
+	dataValue?: unknown;
+}
+
+const navItemData = (el: unknown): NavItemData => elementDataOf<NavItemData>(el);
+
 const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => {
-	if (element.dataValue === undefined) {
+	const data = navItemData(element);
+	if (data.dataValue === undefined) {
 		const string = element.getAttribute('value') ?? '';
 		const isNumber = numberRegex.test(string);
-		element.dataValue = isNumber ? parseFloat(string) : string;
+		data.dataValue = isNumber ? parseFloat(string) : string;
 	}
-	return element.dataValue;
+	return data.dataValue;
 };
 
 export function attachNavBarApi(el: HTMLElement): NavBarApi {
@@ -48,10 +56,14 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 
 	nav.read = function (): unknown {
 		const item = el.querySelector('.selected') as (HTMLElement & { dataValue: unknown }) | null;
-		if (item && item.dataValue === undefined && hasClass(item, 'nav-item')) {
-			parseValue(item);
+		if (item) {
+			const data = navItemData(item);
+			if (data.dataValue === undefined && hasClass(item, 'nav-item')) {
+				parseValue(item);
+			}
+			return data.dataValue;
 		}
-		return item ? item.dataValue : undefined;
+		return undefined;
 	};
 
 	nav.write = function (value: unknown): void {
@@ -62,10 +74,11 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 			let target: HTMLElement | undefined;
 			for (let i = 0; i < length; i++) {
 				const item = items[i] as HTMLElement & { dataValue: unknown };
-				if (hasClass(item, 'nav-item') && item.dataValue === undefined) {
+				const data = navItemData(item);
+				if (hasClass(item, 'nav-item') && data.dataValue === undefined) {
 					parseValue(item);
 				}
-				if (item.dataValue === value) {
+				if (data.dataValue === value) {
 					target = item;
 					break;
 				}
@@ -93,10 +106,11 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 			case 0: {
 				const element = event.target as HTMLElement & { dataValue: unknown };
 				if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
+					const data = navItemData(element);
 					nav.write(parseValue(element));
 					if (nav.selectEventEnabled) {
 						const select = createPayloadEvent('select', {} as { value: unknown });
-						select.value = element.dataValue;
+						select.value = data.dataValue;
 						el.dispatchEvent(select);
 					}
 				}

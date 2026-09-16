@@ -50,7 +50,7 @@ export function attachNumberVarApi(
 	varBox.type = 'variable';
 	varBox.filter = 'number';
 
-	box.mode = currentMode;
+	elementDataOf<NumberVarApi>(box).mode = currentMode;
 	// P4b: numBox now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<NumberVarApi>(box).numBox = numBox;
 	elementDataOf<NumberVarApi>(box).varBox = varBox;
@@ -104,7 +104,7 @@ export function attachNumberVarApi(
 			removeClass(box, currentMode as string);
 			addClass(box, target as string);
 			currentMode = target as string;
-			box.mode = currentMode;
+			elementDataOf<NumberVarApi>(box).mode = currentMode;
 			switch (target) {
 				case 'constant':
 					varBox.remove();

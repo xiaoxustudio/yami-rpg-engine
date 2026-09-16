@@ -33,7 +33,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	const factory = options.customBoxFactory ?? (() => null);
 	// P4b：`fileBox` 从"原型访问器"改成显式元素数据（`fileBox` 这个字段已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<FileVarApi>(box);
-	box.mode = null;
+	data.mode = null;
 	data.fileBox = factory() as CustomBoxApi;
 	data.varBox = factory() as CustomBoxApi;
 	data.fileBox.type = 'file';
@@ -42,7 +42,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	data.varBox!.filter = 'string';
 
 	const readValue = function (): unknown {
-		switch (box.mode) {
+		switch (data.mode) {
 			case 'constant':
 				return read(data.fileBox);
 			case 'variable':
@@ -68,7 +68,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	const switchMode = function (mode?: string): void {
 		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
-			switch (box.mode) {
+			switch (data.mode) {
 				case 'constant':
 					mode = 'variable';
 					break;
@@ -77,10 +77,10 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 					break;
 			}
 		}
-		if (box.mode !== mode) {
-			removeClass(box, box.mode as string);
+		if (data.mode !== mode) {
+			removeClass(box, data.mode as string);
 			addClass(box, mode as string);
-			box.mode = mode as string;
+			data.mode = mode as string;
 			switch (mode) {
 				case 'constant':
 					data.varBox?.remove();
@@ -115,7 +115,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	};
 
 	const getFocus = function (_mode?: string): void {
-		switch (box.mode) {
+		switch (data.mode) {
 			case 'constant':
 				return data.fileBox.focus();
 			case 'variable':

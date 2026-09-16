@@ -36,7 +36,7 @@ export function attachSelectVarApi(
 	const box = el as SelectVarApi;
 	if (isApiAttached(box)) return box;
 
-	box.mode = null;
+	elementDataOf<SelectVarApi>(box).mode = null;
 	box.selectBox = (options.selectBoxFactory ?? (() => null))() as SelectBoxApi;
 	const data = elementDataOf<SelectVarApi>(box);
 	data.varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
@@ -44,7 +44,7 @@ export function attachSelectVarApi(
 	data.varBox!.filter = 'all';
 
 	const readValue = function (): unknown {
-		switch (box.mode) {
+		switch (data.mode) {
 			case 'constant':
 				return read(box.selectBox);
 			case 'variable':
@@ -70,7 +70,7 @@ export function attachSelectVarApi(
 	const switchMode = function (mode?: string): void {
 		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
-			switch (box.mode) {
+			switch (data.mode) {
 				case 'constant':
 					mode = 'variable';
 					break;
@@ -79,10 +79,10 @@ export function attachSelectVarApi(
 					break;
 			}
 		}
-		if (box.mode !== mode) {
-			removeClass(box, box.mode as string);
+		if (data.mode !== mode) {
+			removeClass(box, data.mode as string);
 			addClass(box, mode as string);
-			box.mode = mode as string;
+			data.mode = mode as string;
 			switch (mode) {
 				case 'constant':
 					data.varBox?.remove();
@@ -121,7 +121,7 @@ export function attachSelectVarApi(
 	};
 
 	const getFocus = function (_mode: unknown): void {
-		switch (box.mode) {
+		switch (data.mode) {
 			case 'constant':
 				return box.selectBox.focus();
 			case 'variable':

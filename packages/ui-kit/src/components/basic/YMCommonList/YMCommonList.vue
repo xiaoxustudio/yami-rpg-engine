@@ -36,6 +36,13 @@ type ListItem = HTMLElement & {
 	versionId?: number;
 };
 
+// P4b：common-item 元素上的 `dataValue`（该项承载的值）走显式元素数据
+interface ListItemData {
+	dataValue?: unknown;
+}
+
+const itemData = (el: unknown): ListItemData => elementDataOf<ListItemData>(el);
+
 let elements = [] as unknown as ListItem[] & ListData;
 elements.versionId = 0;
 elements.count = 0;
@@ -48,7 +55,7 @@ let writeEventEnabled = false;
 let selectEventEnabled = false;
 let popupEventEnabled = false;
 
-const read = (): unknown => (selection as HTMLElement & { dataValue: unknown })?.dataValue;
+const read = (): unknown => (selection === null ? undefined : itemData(selection).dataValue);
 
 const write = (value: unknown): void => {
 	const el = root.value;
@@ -59,12 +66,13 @@ const write = (value: unknown): void => {
 	target.classList.add('selected');
 	selection = target;
 	scrollToItem(index);
+	const targetData = itemData(target);
 	if (writeEventEnabled) {
 		const writeEvent = createPayloadEvent('write', {} as { value: unknown });
-		writeEvent.value = target.dataValue;
+		writeEvent.value = targetData.dataValue;
 		el.dispatchEvent(writeEvent);
 	}
-	emit('write', target.dataValue);
+	emit('write', targetData.dataValue);
 };
 
 const reload = (): HTMLElement => {
@@ -151,13 +159,14 @@ const updateOnResize = (_element?: HTMLElement): void => {};
 
 const select = (element: HTMLElement): void => {
 	if (element instanceof HTMLElement && selection !== element) {
-		write((element as HTMLElement & { dataValue: unknown }).dataValue);
+		const elementData = itemData(element);
+		write(elementData.dataValue);
 		if (selectEventEnabled) {
 			const selectEvent = createPayloadEvent('select', {} as { value: unknown });
-			selectEvent.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
+			selectEvent.value = elementData.dataValue;
 			root.value!.dispatchEvent(selectEvent);
 		}
-		emit('select', (element as HTMLElement & { dataValue: unknown }).dataValue);
+		emit('select', elementData.dataValue);
 	}
 };
 
@@ -287,7 +296,7 @@ const element = seek(event.target as HTMLElement, '.common-item');
 						clientX: number;
 						clientY: number;
 					});
-					popup.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
+					popup.value = itemData(element).dataValue;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;
 					el.dispatchEvent(popup);

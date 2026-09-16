@@ -1,5 +1,6 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { createNumberVarElement } from '../number-var-api';
+import { elementDataOf } from '../../../../utils/element-data';
 import { createCustomBoxElement } from '../../../business/YMCustomBox/custom-box-api';
 import { createNumberBoxElement } from '../../YMNumberBox/number-box-api';
 import { createSelectVarElement } from '../../YMSelectVar/select-var-api';
@@ -23,7 +24,7 @@ describe('createNumberVarElement', () => {
 			numberBoxFactory
 		}) as unknown as NumberVarApi;
 		el.write(42);
-		expect(el.mode).toBe('constant');
+		expect(elementDataOf<NumberVarApi>(el).mode).toBe('constant');
 		expect(el.read()).toBe(42);
 	});
 
@@ -34,7 +35,7 @@ describe('createNumberVarElement', () => {
 		}) as unknown as NumberVarApi;
 		const v = { type: 'local', key: 'x' };
 		el.write(v);
-		expect(el.mode).toBe('variable');
+		expect(elementDataOf<NumberVarApi>(el).mode).toBe('variable');
 		expect(el.read()).toEqual(v);
 	});
 
@@ -47,7 +48,7 @@ describe('createNumberVarElement', () => {
 		el.dispatchEvent(
 			new KeyboardEvent('keydown', { code: 'Slash', bubbles: true, cancelable: true })
 		);
-		expect(el.mode).toBe('variable');
+		expect(elementDataOf<NumberVarApi>(el).mode).toBe('variable');
 	});
 });
 
@@ -57,18 +58,19 @@ describe('createSelectVarElement', () => {
 			customBoxFactory,
 			selectBoxFactory: (): SelectBoxApi => {
 				const el = document.createElement('div') as unknown as SelectBoxApi;
+				const data = elementDataOf<SelectBoxApi>(el);
 				el.classList.add('select-box');
-				el.dataValue = null;
-				el.dataItems = [];
-				el.read = () => el.dataValue;
+				data.dataValue = null;
+				data.dataItems = [];
+				el.read = () => data.dataValue;
 				el.write = (v: unknown) => {
-					el.dataValue = v;
+					data.dataValue = v;
 				};
 				el.writeDefault = () => {};
 				el.enable = () => {};
 				el.disable = () => {};
 				el.loadItems = (items: unknown) => {
-					el.dataItems = items as SelectItem[];
+					data.dataItems = items as SelectItem[];
 				};
 				el.clear = () => {};
 				(el as unknown as { focus: () => void }).focus = () => {};
@@ -102,7 +104,7 @@ describe('createStringVarElement', () => {
 		}) as unknown as StringVarApi;
 		el.write('hello');
 		expect(el.read()).toBe('hello');
-		expect(el.mode).toBe('constant');
+		expect(elementDataOf<StringVarApi>(el).mode).toBe('constant');
 	});
 });
 

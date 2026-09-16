@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileVar from '../YMFileVar.vue';
 import type { FileVarApi } from '../file-var-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 describe('YMFileVar', () => {
 	it('write string switches to constant and stores value', () => {
@@ -65,7 +66,7 @@ describe('YMFileVar', () => {
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');
-		expect(el.mode).toBe('constant');
+		expect(elementDataOf<FileVarApi>(el).mode).toBe('constant');
 	});
 
 	it('disable adds disabled class', () => {

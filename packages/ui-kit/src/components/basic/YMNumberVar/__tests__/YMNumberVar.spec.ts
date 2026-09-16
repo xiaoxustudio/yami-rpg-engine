@@ -2,6 +2,7 @@
 import { mount } from '@vue/test-utils';
 import YMNumberVar from '../YMNumberVar.vue';
 import type { NumberVarApi } from '../number-var-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 describe('YMNumberVar', () => {
 	it('write number switches to constant and stores value', () => {
@@ -65,7 +66,7 @@ describe('YMNumberVar', () => {
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');
-		expect(el.mode).toBe('constant');
+		expect(elementDataOf<NumberVarApi>(el).mode).toBe('constant');
 	});
 
 	it('disable adds disabled class', () => {

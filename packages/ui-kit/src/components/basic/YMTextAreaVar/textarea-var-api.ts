@@ -41,7 +41,7 @@ export function attachTextAreaVarApi(
 	varBox.type = 'variable';
 	varBox.filter = 'string';
 
-	box.mode = currentMode;
+	elementDataOf<TextAreaVarApi>(box).mode = currentMode;
 	// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<TextAreaVarApi>(box).strBox = strBox;
 	elementDataOf<TextAreaVarApi>(box).varBox = varBox;
@@ -86,7 +86,7 @@ export function attachTextAreaVarApi(
 			removeClass(box, currentMode as string);
 			addClass(box, target as string);
 			currentMode = target as string;
-			box.mode = currentMode;
+			elementDataOf<TextAreaVarApi>(box).mode = currentMode;
 			switch (target) {
 				case 'constant':
 					varBox.remove();
