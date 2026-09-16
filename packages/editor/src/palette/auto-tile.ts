@@ -1,4 +1,4 @@
-import { getListConfig } from '@ui-kit';
+import { elementDataOf, getListConfig } from '@ui-kit';
 import { renderDetached } from '@app/utils/dom';
 import { paletteEls } from '@app/palette/element-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -460,7 +460,10 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const prefix = Number.padZero(index, length);
 	const x = frame & 0xff;
 	const y = frame >> 8;
-	this.frameList.selection.textContent = `#${prefix}: ${x},${y}`;
+	// P4b：`selection`（列表选中行元素）走显式元素数据。注：YMCommonList（Vue）把选中行存在组件闭包里、
+	// 不再往元素数据上写 ⇒ 这里读到的是 `undefined`（迁移前同样如此），属既有行为，本次不改动。
+	elementDataOf<{ selection: HTMLElement }>(this.frameList).selection.textContent =
+		`#${prefix}: ${x},${y}`;
 	this.drawFrame();
 };
 

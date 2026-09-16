@@ -364,6 +364,12 @@ import { SceneCameraEngine } from '@app/engine/scene/scene-camera-engine.ts';
 import { SceneSelectionEngine } from '@app/engine/scene/scene-selection-engine.ts';
 import { SceneMarqueeEngine } from '@app/engine/scene/scene-marquee-engine.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
+import { elementDataOf } from '@ui-kit';
+
+// P4b：选框元素的 `key` 是元素数据（WeakMap）——夹具里的 plain marquee 也按同一份存储读写，
+// 否则 `switch` 写进去的 key 在这里读不到（`visible` 等是组件实例属性，不走元素数据）。
+const marqueeData = (el: unknown): { key: string | null } =>
+	elementDataOf<{ key: string | null }>(el);
 
 describe('SceneCameraEngine.getConvertedCoords', () => {
 	it('将图块坐标转换为像素坐标', () => {
@@ -472,7 +478,7 @@ describe('SceneMarqueeEngine', () => {
 		Scene.marquee.offsetX = 0;
 		Scene.marquee.offsetY = 0;
 		Scene.marquee.saveData = {};
-		Scene.marquee.key = 'default';
+		marqueeData(Scene.marquee).key = 'default';
 		Scene.requestRendering.mockClear();
 	});
 
@@ -494,9 +500,9 @@ describe('SceneMarqueeEngine', () => {
 	});
 
 	it('switch 保存并恢复不同 key 的状态', () => {
-		Scene.marquee.key = 'default';
+		marqueeData(Scene.marquee).key = 'default';
 		SceneMarqueeEngine.switch.call(Scene.marquee, 'tile');
-		expect(Scene.marquee.key).toBe('tile');
+		expect(marqueeData(Scene.marquee).key).toBe('tile');
 		expect(Scene.marquee.save).toHaveBeenCalled();
 		expect(Scene.marquee.restore).toHaveBeenCalledWith('tile');
 	});

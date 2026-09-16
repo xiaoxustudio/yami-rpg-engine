@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { YMCommonList } from '@ui-kit';
+import { elementDataOf, YMCommonList } from '@ui-kit';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import '@app/utils/number';
 
@@ -33,7 +33,7 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0');
 		expect(items[1].textContent).toBe('#1 !');
 		expect(items[2].textContent).toBe('#2');
-		expect((items[1] as HTMLElement & { dataValue?: unknown }).dataValue).toBe(1);
+		expect(elementDataOf<{ dataValue?: number }>(items[1]).dataValue).toBe(1);
 	});
 
 	it('createFrameItems 经 Vue 渲染 common-item 与帧坐标', async () => {
@@ -47,6 +47,6 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0: 0,0');
 		expect(items[1].textContent).toBe('#1: 2,1');
 		expect(items[2].textContent).toBe('#2: 2,3');
-		expect((items[2] as HTMLElement & { dataValue?: unknown }).dataValue).toBe(2);
+		expect(elementDataOf<{ dataValue?: number }>(items[2]).dataValue).toBe(2);
 	});
 });

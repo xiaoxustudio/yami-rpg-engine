@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { elementDataOf } from '@ui-kit';
 import { Layout, getNavLastValue, awaitVueLayoutLoad } from '@app/engine/layout/layout.ts';
 import { getLayoutStore } from '@app/stores/layout';
 import '@app/utils/math';
@@ -128,7 +129,7 @@ describe('mergeGroups 折叠合并', () => {
 			'inspector'
 		]);
 
-		const ends = groups.map((group) => (group as HTMLElement & { end: number }).end);
+		const ends = groups.map((group) => elementDataOf<{ end: number }>(group).end);
 		expect(ends[0]).toBeCloseTo(0.3, 6);
 		expect(ends[1]).toBeCloseTo(0.6, 6);
 		expect(ends[2]).toBeCloseTo(1, 6);

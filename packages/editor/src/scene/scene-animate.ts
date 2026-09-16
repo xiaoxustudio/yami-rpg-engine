@@ -1,8 +1,19 @@
+import { elementDataOf } from '@ui-kit';
 import { sceneEls } from '@app/scene/element-registry';
 import { addClass, removeClass, hasClass } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
+
+/**
+ * P4b：marquee 元素上的元素数据（`key`/`visible` 原先靠原型访问器透明落到 WeakMap）。
+ * `key` 是选框当前工具（`tile`/`object`/`terrain`…，初始化写入、`switch` 时切换），`visible` 是选框可见态。
+ */
+interface SceneMarqueeData {
+	key: string | null;
+	visible: boolean;
+}
+const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
 Scene.requestAnimation = SceneAnimateEngine.requestAnimation;
 Scene.updateAnimation = SceneAnimateEngine.updateAnimation;
@@ -161,12 +172,13 @@ Scene.switchSettings = function (this: typeof Scene) {
 };
 
 Scene.switchTerrain = function (this: typeof Scene) {
-	const context = this.marquee.key === 'terrain' ? this.marquee : this.marquee.saveData.terrain;
+	const context =
+		marqueeData(this.marquee).key === 'terrain' ? this.marquee : this.marquee.saveData.terrain;
 	context.terrain = (context.terrain + 2) % 3;
 	if (this.brush === 'eraser') {
 		this.switchBrush!('pencil');
 	}
-	if (this.marquee.visible) {
+	if (marqueeData(this.marquee).visible) {
 		this.requestRendering!();
 	}
 };

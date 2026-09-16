@@ -416,6 +416,12 @@ export const Scene: SceneShape = {
 	Point: null
 };
 
+/** P4b：marquee 元素上的元素数据（`key` 原先靠原型访问器透明落到 WeakMap） */
+interface SceneMarqueeData {
+	key: string | null;
+}
+const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
+
 Scene.marquee.key = null;
 Scene.marquee.offsetX = null;
 Scene.marquee.offsetY = null;
@@ -559,7 +565,7 @@ Scene.initialize = function (this: SceneShape) {
 		}
 	});
 
-	this.marquee.key = 'tile';
+	marqueeData(this.marquee).key = 'tile';
 	this.marquee.x = 0;
 	this.marquee.y = 0;
 	this.marquee.width = 1;

@@ -1,9 +1,16 @@
+import { elementDataOf } from '@ui-kit';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+
+/** P4b：inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap） */
+interface InspectorManagerData {
+	focusing: HTMLElement | null;
+}
+const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
 {
 	interface SceneTilemapLightItem {
@@ -29,6 +36,12 @@ import { Scene } from '@app/scene/scene-window.ts';
 			| null;
 		[k: string]: unknown;
 	}
+	/** P4b：light 选择框元素上的元素数据（`dataItems` 原先靠原型访问器透明落到 WeakMap） */
+	interface SceneTilemapLightData {
+		dataItems: SceneTilemapLightItem[] | null;
+	}
+	const lightData = (el: unknown): SceneTilemapLightData =>
+		elementDataOf<SceneTilemapLightData>(el);
 	interface SceneTilemapShape {
 		nameBox: HTMLElement | null;
 		lightBox: SceneTilemapLightBox | null;
@@ -182,16 +195,19 @@ import { Scene } from '@app/scene/scene-window.ts';
 		SceneTilemap.lightBox = lightBox;
 		const type = event.value === 'object' ? 'sprite' : 'tile';
 		const items = lightBox.lightItems[type];
-		if (lightBox.dataItems !== items) {
+		if (lightData(lightBox).dataItems !== items) {
 			lightBox.loadItems(items);
 		}
 	};
 
 	SceneTilemap.layerInput = function (this: typeof SceneTilemap, _event: Event) {
-		if (Inspector.manager.focusing === this) {
+		// 运行时 `this` 是 lightBox 元素（SceneTilemapPage.vue 把本方法注册为 elLayer 的 input 监听），
+		// 方法签名仍沿用 `this: typeof SceneTilemap`，故比较前先按元素取视图
+		const element = this as unknown as HTMLElement;
+		if (managerData(Inspector.manager).focusing === element) {
 			const lightBox = SceneTilemap.lightBox!;
 			const value = read(lightBox);
-			for (const item of lightBox.dataItems ?? []) {
+			for (const item of lightData(lightBox).dataItems ?? []) {
 				if (item.value === value) {
 					return;
 				}

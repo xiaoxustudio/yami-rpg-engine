@@ -5,7 +5,7 @@
 // onMounted 时把命令式 API 挂到 root 元素，因此引擎侧可零改动继续命令式驱动。
 
 import { h, nextTick, render, type VNode } from 'vue';
-import type { PageManagerApi } from '@ui-kit';
+import { elementDataOf, type PageManagerApi } from '@ui-kit';
 import LayoutTreeView from '@app/components/layout/LayoutTreeView.vue';
 import { on } from '@app/utils/element-utils';
 import { parseLayoutScheme, type LayoutSchemeData, type LayoutTreeNode } from './layout-scheme';
@@ -18,13 +18,19 @@ const BORDER_CLASS = 'group-border';
 const isGroup = (el: Element): boolean => el.classList.contains(GROUP_CLASS);
 
 type LayoutGroupHost = HTMLElement & {
-	end?: number;
 	split?: string;
 	tabs?: string[];
 	nav?: HTMLElement;
 	manager?: PageManagerApi;
 	border?: HTMLElement;
 };
+
+// P4b：`end` 是元素数据（原型访问器即将退役），不再是元素自身属性
+interface LayoutGroupData {
+	end: number;
+}
+
+const groupData = (el: unknown): LayoutGroupData => elementDataOf<LayoutGroupData>(el);
 
 export interface VueLeafHost {
 	/** 叶子 .group 元素（引擎侧 expando 载体，parentNode 即该 group） */
@@ -123,7 +129,7 @@ export async function mountVueGroupTree(
 				render(null, host);
 				throw new Error('[mountVueGroupTree] 结构分叉：DOM 为 split 而数据为叶子 group');
 			}
-			el.end = node.end;
+			groupData(el).end = node.end;
 			el.split = node.split;
 			continue;
 		}
@@ -141,7 +147,7 @@ export async function mountVueGroupTree(
 			`:scope > .${MANAGER_CLASS}.group-manager`
 		) as PageManagerApi;
 		const border = el.querySelector(`:scope > .${BORDER_CLASS}`) as HTMLElement;
-		el.end = node.end;
+		groupData(el).end = node.end;
 		el.tabs = [...node.tabs];
 		el.nav = nav;
 		el.manager = manager;

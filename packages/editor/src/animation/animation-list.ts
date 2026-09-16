@@ -28,9 +28,45 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { getElementData } from '@app/utils/element-data';
+import { elementDataOf, getElementData } from '@app/utils/element-data';
 
 const Clipboard = GlobalClipboard;
+
+/**
+ * P4b：时间轴外框列表（`outerTimelineList`）的元素数据（`dragging` 原先靠原型访问器透明落到 WeakMap）。
+ * 拖拽记录按分支写入、也只在该分支内读：`select`/`shift` 写 `pointerdownX`/`pointerdownY`/`layer`，
+ * `scroll`/`ready-to-scroll` 写 `scrollLeft`/`scrollTop`。
+ */
+type TimelineListDragEvent = PointerEvent & {
+	dragKey?: boolean;
+	mode?: string;
+	scrollLeft: number;
+	scrollTop: number;
+	layer: AnimationLayer;
+	pointerdownX: number;
+	pointerdownY: number;
+	enableDblclickEvent?: boolean;
+	latest?: PointerEvent;
+};
+interface TimelineListElementData {
+	dragging: TimelineListDragEvent | null;
+}
+const timelineListData = (el: unknown): TimelineListElementData =>
+	elementDataOf<TimelineListElementData>(el);
+
+/** P4b：时间轴选框（`timelineMarquee`）的元素数据（`origin` 是多选/框选的锚点帧号） */
+interface TimelineMarqueeElementData {
+	origin: number;
+}
+const timelineMarqueeData = (el: unknown): TimelineMarqueeElementData =>
+	elementDataOf<TimelineMarqueeElementData>(el);
+
+/** P4b：时间轴内层刻度尺（`innerRuler`）的元素数据（`start` 是当前起始刻度号，首次滚动前为空） */
+interface TimelineRulerElementData {
+	start?: number;
+}
+const innerRulerData = (el: unknown): TimelineRulerElementData =>
+	elementDataOf<TimelineRulerElementData>(el);
 
 Animation.searcherInput = function (this: typeof Animation, event: Event & { inputType?: string }) {
 	if (event.inputType !== 'insertCompositionText') {
@@ -75,9 +111,9 @@ Animation.listKeydown = function (this: typeof Animation, event: KeyboardEvent) 
 Animation.listPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement & { item?: AnimationMotion };
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'node-item') && hasClass(element, 'selected')) {
-				Inspector.open!('animMotion', element.item);
+				Inspector.open!('animMotion', elementDataOf<{ item?: AnimationMotion }>(element).item);
 			}
 			break;
 		}
@@ -289,10 +325,10 @@ Animation.layerListKeydown = function (this: typeof Animation, event: KeyboardEv
 Animation.layerListPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement & { item?: AnimationLayer };
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'node-item')) {
 				if (hasClass(element, 'selected')) {
-					Animation.openLayer!(element.item);
+					Animation.openLayer!(elementDataOf<{ item?: AnimationLayer }>(element).item);
 				}
 			}
 			break;
@@ -457,7 +493,7 @@ Animation.layerListChange = function (this: typeof Animation, _event: Event) {
 };
 
 Animation.outerTimelineListKeydown = function (this: typeof Animation, event: KeyboardEvent) {
-	if (this.dragging !== null) return;
+	if (timelineListData(this).dragging !== null) return;
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyA':
@@ -544,8 +580,9 @@ Animation.outerTimelineListScroll = function (this: typeof Animation, _event: Ev
 		this.lastScrollLeft = scrollLeft;
 		const { outerRuler, innerRuler, outerPointerArea } = Animation;
 		const start = Math.floor(scrollLeft / 80);
-		if (innerRuler.start !== start) {
-			innerRuler.start = start;
+		const rulerData = innerRulerData(innerRuler);
+		if (rulerData.start !== start) {
+			rulerData.start = start;
 			let number = start * 5;
 			for (const node of innerRuler.childNodes) {
 				node.textContent = number.toString();
@@ -578,25 +615,16 @@ Animation.outerTimelineListBlur = function (this: typeof Animation, _event: Even
 
 Animation.outerTimelineListPointerdown = function (
 	this: typeof Animation,
-	event: PointerEvent & {
-		dragKey?: boolean;
-		mode?: string;
-		scrollLeft?: number;
-		scrollTop?: number;
-		layer?: unknown;
-		pointerdownX?: number;
-		pointerdownY?: number;
-		enableDblclickEvent?: boolean;
-		latest?: unknown;
-	}
+	event: TimelineListDragEvent
 ) {
 	if (Animation.dragging) {
 		return;
 	}
+	const listData = timelineListData(this);
 	switch (event.button) {
 		case 0: {
 			if (event.dragKey) {
-				this.dragging = event;
+				listData.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
@@ -611,7 +639,8 @@ Animation.outerTimelineListPointerdown = function (
 				let length = 1;
 				let origin = x;
 				if (event.shiftKey) {
-					const { y: my, origin: mo } = marquee;
+					const { y: my } = marquee;
+					const { origin: mo } = timelineMarqueeData(marquee);
 					if (y === my) {
 						length = Math.abs(x - mo) + 1;
 						x = Math.min(x, mo);
@@ -625,7 +654,7 @@ Animation.outerTimelineListPointerdown = function (
 						Animation.updateMarqueeShift!(x, y, length);
 						show(Animation.timelineMarqueeShift);
 						Animation.loadFrames!(x);
-						this.dragging = event;
+						listData.dragging = event;
 						event.mode = 'shift';
 						event.layer = layer;
 						event.pointerdownX = x;
@@ -645,7 +674,7 @@ Animation.outerTimelineListPointerdown = function (
 				Animation.selectMarquee!(x, y, length, origin);
 				Animation.scrollToMarquee!(false);
 				Animation.loadFrames!(x);
-				this.dragging = event;
+				listData.dragging = event;
 				event.mode = 'select';
 				event.pointerdownX = origin;
 				event.pointerdownY = y;
@@ -659,7 +688,7 @@ Animation.outerTimelineListPointerdown = function (
 			break;
 		}
 		case 2:
-			this.dragging = event;
+			listData.dragging = event;
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.scrollLeft;
 			event.scrollTop = this.scrollTop;
@@ -673,7 +702,8 @@ Animation.outerTimelineListPointerup = function (
 	this: typeof Animation,
 	event: PointerEvent | undefined
 ) {
-	const { dragging } = Animation.outerTimelineList;
+	const listData = timelineListData(Animation.outerTimelineList);
+	const { dragging } = listData;
 	if (!dragging) {
 		return;
 	}
@@ -792,14 +822,14 @@ Animation.outerTimelineListPointerup = function (
 				break;
 		}
 		Animation.innerTimelineList.pointerevent = dragging;
-		Animation.outerTimelineList.dragging = null;
+		listData.dragging = null;
 		window.removeEventListener('pointerup', Animation.outerTimelineListPointerup);
 		window.removeEventListener('pointermove', Animation.outerTimelineListPointermove);
 	}
 };
 
 Animation.outerTimelineListPointermove = function (this: typeof Animation, event: PointerEvent) {
-	const { dragging } = Animation.outerTimelineList;
+	const { dragging } = timelineListData(Animation.outerTimelineList);
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
@@ -942,7 +972,9 @@ Animation.list.cancelSearch = function (this: typeof Animation) {
 
 // 列表 - 更新头部位置
 Animation.list.updateHead = function (this: typeof Animation) {
-	const { page, head } = this;
+	// P4b：`page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），而 `this` 是列表**元素**——
+	// 直接解构会拿到 undefined（下一行 `page.clientWidth` 当场抛错）。改读同一份元素数据。
+	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
 		const item = lastNavItemOf(nav);
@@ -1046,7 +1078,9 @@ getListConfig(Animation.layerList).onDelete = function (
 
 // 时间轴 - 更新头部位置
 Animation.timeline.updateHead = function (this: typeof Animation) {
-	const { head } = this;
+	// P4b：同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
+	// `padding` 不属元素数据（是 head 元素上的普通 expando），故在形状里一并声明。
+	const { head } = elementDataOf<{ head: HTMLElement & { padding?: number } }>(this);
 	if (this.clientWidth !== 0) {
 		const nav = headNavOf(head);
 		const item = lastNavItemOf(nav);

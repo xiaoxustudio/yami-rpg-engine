@@ -73,13 +73,22 @@ type LayoutItems = Record<string, LayoutItemElement> & {
 };
 
 type LayoutGroupElement = HTMLElement & {
-	end: number;
 	split?: string;
 	tabs?: string[];
 	nav: HTMLElement;
 	manager: PageManagerApi;
 	border?: HTMLElement;
 };
+
+// P4b：`end`（组的分数结束位置）是元素数据——原型访问器即将退役，这里给出显式视图
+// （写法同 ui-kit 的 tree-api.ts）。manager 上的 `active` **不走元素数据**：Vue 版
+// YMPageManager 在元素上 `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），
+// 命令式 createPageManagerElement 走原型访问器——两种实现并存，故 `manager.active` 保持原样。
+interface LayoutGroupData {
+	end: number;
+}
+
+const groupData = (el: unknown): LayoutGroupData => elementDataOf<LayoutGroupData>(el);
 
 type LayoutDragLocation = {
 	trigger: HTMLElement;
@@ -528,7 +537,7 @@ Layout.updateGroups = (function IIFE() {
 	const update = (group: LayoutGroupElement, split: string, start: number) => {
 		// M4-2：结构变更窗口内可能传入已脱离文档的组，直接跳过而不是抛错中断
 		if (!group) return start;
-		const end = group.end;
+		const end = groupData(group).end;
 		const style = group.style;
 		switch (split) {
 			case 'horizontal': {
@@ -671,8 +680,9 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 		if (root !== null && hasClass(root, 'group')) {
 			const walk = (group: LayoutGroupElement, depth: number): void => {
 				const indent = ' '.repeat(depth * 2);
+				const groupEnd = groupData(group).end;
 				lines.push(
-					`${indent}group: ${describe(group)} end:${group.end} split:${group.split ?? '-'}`
+					`${indent}group: ${describe(group)} end:${groupEnd} split:${group.split ?? '-'}`
 				);
 				const groupManager = group.manager as PageManagerApi | undefined;
 				if (groupManager !== undefined) {
@@ -768,15 +778,15 @@ Layout.mergeGroups = (function IIFE() {
 				while (prev !== null && !hasClass(prev, 'group')) {
 					prev = prev.previousElementSibling as LayoutGroupElement | null;
 				}
-				const gs = prev?.end ?? 0;
-				const ge = inner.end;
+				const gs = prev === null ? 0 : (groupData(prev).end ?? 0);
+				const ge = groupData(inner).end;
 				const nodes = inner.childNodes as unknown as LayoutGroupElement[];
 				while (nodes.length > 1) {
 					const node = nodes[0];
-					const end = node.end;
+					const end = groupData(node).end;
 					// 这是由于两次划分变成了一次划分 而每次划分都是取得近似的整数值
 					if (end !== undefined && ge !== undefined) {
-						node.end = Math.roundTo(gs * (1 - end) + ge * end, 6);
+						groupData(node).end = Math.roundTo(gs * (1 - end) + ge * end, 6);
 					}
 					outer.insertBefore(node, inner);
 				}
@@ -824,19 +834,19 @@ Layout.setGroupSize = function (
 		switch (direction) {
 			case 'forward':
 				if (prev) {
-					end = prev.end + end;
+					end = groupData(prev).end + end;
 				}
 				if (next === null) {
 					end = 1;
 				}
-				group.end = Math.roundTo(end, 6);
+				groupData(group).end = Math.roundTo(end, 6);
 				this.computeSizesBefore!(group);
 				this.computeSizesAfter!(group);
 				break;
 			case 'backward':
 				if (prev) {
-					end = group.end - end;
-					prev.end = Math.roundTo(end, 6);
+					end = groupData(group).end - end;
+					groupData(prev).end = Math.roundTo(end, 6);
 					this.computeSizesBefore!(prev);
 					this.computeSizesAfter!(prev);
 				}
@@ -861,19 +871,19 @@ Layout.computeSizesBefore = function (group: LayoutGroupElement) {
 		const head = groups[0];
 		const length = run.length;
 		const min = Math.min(0.1, 32 / space);
-		for (let i = length - 2, end = group.end; i >= 0; i--) {
+		for (let i = length - 2, end = groupData(group).end; i >= 0; i--) {
 			const group = run[i];
 			const pad = 2;
-			end = Math.min(group.end, end - min - pad / space);
+			end = Math.min(groupData(group).end, end - min - pad / space);
 			end = Math.roundTo(end, 6);
-			group.end = end;
+			groupData(group).end = end;
 		}
 		for (let i = 0, end = 0; i < length; i++) {
 			const group = run[i];
 			const pad = (group === head ? 0 : 1) + 1;
-			end = Math.max(group.end, end + min + pad / space);
+			end = Math.max(groupData(group).end, end + min + pad / space);
 			end = Math.roundTo(end, 6);
-			group.end = end;
+			groupData(group).end = end;
 		}
 	}
 };
@@ -897,16 +907,16 @@ Layout.computeSizesAfter = function (group: LayoutGroupElement) {
 		for (let i = 0, end = 0; i < last; i++) {
 			const group = groups[i];
 			const pad = 2;
-			end = Math.max(group.end, end + min + pad / space);
+			end = Math.max(groupData(group).end, end + min + pad / space);
 			end = Math.roundTo(end, 6);
-			group.end = end;
+			groupData(group).end = end;
 		}
 		for (let i = last - 1, end = 1; i >= 0; i--) {
 			const group = groups[i];
 			const pad = (groups[i + 1] === foot ? 0 : 1) + 1;
-			end = Math.min(group.end, end - min - pad / space);
+			end = Math.min(groupData(group).end, end - min - pad / space);
 			end = Math.roundTo(end, 6);
-			group.end = end;
+			groupData(group).end = end;
 		}
 	}
 };
@@ -1635,7 +1645,7 @@ Layout.navDrop = function (event: EditorEvent) {
 
 		if (split !== undefined && parent.split !== split) {
 			parent.replaceChild((parent = renderElement(h('group', { class: 'group' }))), target);
-			parent.end = target.end;
+			groupData(parent).end = groupData(target).end;
 			parent.split = split;
 			addClass(parent, split);
 			parent.style.left = target.style.left;
@@ -1643,7 +1653,7 @@ Layout.navDrop = function (event: EditorEvent) {
 			parent.style.width = target.style.width;
 			parent.style.height = target.style.height;
 			parent.appendChild(target);
-			target.end = 1;
+			groupData(target).end = 1;
 			Layout.createGroupBorder!(parent);
 		}
 
@@ -1654,8 +1664,8 @@ Layout.navDrop = function (event: EditorEvent) {
 		while (prev !== null && !hasClass(prev, 'group')) {
 			prev = prev.previousElementSibling as LayoutGroupElement | null;
 		}
-		const spanStart = prev?.end ?? 0;
-		const spanEnd = target.end ?? 1;
+		const spanStart = prev === null ? 0 : (groupData(prev).end ?? 0);
+		const spanEnd = groupData(target).end ?? 1;
 		const spanMid = (spanStart + spanEnd) / 2;
 
 		switch (direction) {
@@ -1665,7 +1675,7 @@ Layout.navDrop = function (event: EditorEvent) {
 			case 'left':
 			case 'top':
 				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
-				dGroup.end = spanMid;
+				groupData(dGroup).end = spanMid;
 				parent.insertBefore(dGroup, target);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
@@ -1673,8 +1683,8 @@ Layout.navDrop = function (event: EditorEvent) {
 			case 'right':
 			case 'bottom':
 				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
-				dGroup.end = spanEnd;
-				target.end = spanMid;
+				groupData(dGroup).end = spanEnd;
+				groupData(target).end = spanMid;
 				parent.insertBefore(dGroup, target.nextSibling);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
@@ -1729,14 +1739,14 @@ Layout.navDrop = function (event: EditorEvent) {
 				const siblings = groupChildrenOf(pGroup);
 				const prev = prevGroupOf(sGroup);
 				if (prev !== null && nextGroupOf(sGroup) === null) {
-					prev.end = 1;
+					groupData(prev).end = 1;
 				}
 				sGroup.remove();
 
 				if (siblings.length === 2) {
 					const survivor = siblings.find((group) => group !== sGroup);
 					if (survivor !== undefined) {
-						survivor.end = pGroup.end;
+						groupData(survivor).end = groupData(pGroup).end;
 						pGroup.parentNode!.replaceChild(survivor, pGroup);
 					}
 				}
@@ -1981,18 +1991,18 @@ Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutR
 				switch (outer.split) {
 					case 'horizontal':
 						event.mode = 'col-resize';
-						event.startX = Math.round(outer.clientWidth * group.end);
+						event.startX = Math.round(outer.clientWidth * groupData(group).end);
 						Cursor.open('cursor-col-resize');
 						break;
 					case 'vertical':
 						event.mode = 'row-resize';
-						event.startY = Math.round(outer.clientHeight * group.end);
+						event.startY = Math.round(outer.clientHeight * groupData(group).end);
 						Cursor.open('cursor-row-resize');
 						break;
 				}
 				event.outer = outer;
 				event.group = group;
-				event.end = group.end;
+				event.end = groupData(group).end;
 				window.addEventListener('pointerup', Layout.pointerup!);
 				window.addEventListener('pointermove', Layout.pointermove!);
 				const groups = Layout.getKeyGroups!();
@@ -2054,9 +2064,9 @@ Layout.pointermove = function (event: EditorEvent) {
 	end = Math.roundTo(end!, 6);
 	if (end !== undefined) {
 		const { group } = resizing;
-		const lastEnd = group.end;
+		const lastEnd = groupData(group).end;
 		if (lastEnd !== end) {
-			group.end = end;
+			groupData(group).end = end;
 			if (end > lastEnd) {
 				Layout.computeSizesAfter!(group);
 			} else {

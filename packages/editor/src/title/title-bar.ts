@@ -12,7 +12,7 @@ import { UI } from '@app/ui/ui-window.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Menu } from '@app/components/menu-list.ts';
-import { treeRowCount, treeRowItemAt } from '@ui-kit';
+import { elementDataOf, treeRowCount, treeRowItemAt } from '@ui-kit';
 import { Data } from '@app/data/data-object.ts';
 import { Directory } from '@app/file/directory-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
@@ -59,6 +59,12 @@ interface TitleTargetShape extends HTMLElement {
 	element?: HTMLElement;
 	active?: boolean;
 }
+
+/** P4b：title 元素上的元素数据（`active` 原先靠原型访问器透明落到 WeakMap） */
+interface TitleTargetData {
+	active: boolean;
+}
+const targetData = (el: unknown): TitleTargetData => elementDataOf<TitleTargetData>(el);
 
 interface TitleTabBarShape extends HTMLElement {
 	data: TitleTabItem[];
@@ -578,8 +584,9 @@ Title.windowLocalize = function (this: TitleShape, _event: Event) {
 Title.pointerenter = function (this: TitleShape, _event: Event) {
 	const { target } = this;
 	if (!target) return;
-	if (!target.active) {
-		target.active = true;
+	const data = targetData(target);
+	if (!data.active) {
+		data.active = true;
 		(target.style as CSSStyleDeclaration & { WebkitAppRegion: string }).WebkitAppRegion =
 			'drag';
 		this.updateAppRegion!();
@@ -590,7 +597,8 @@ Title.pointerenter = function (this: TitleShape, _event: Event) {
 Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 	const { target } = this;
 	if (!target) return;
-	if (target.active) {
+	const data = targetData(target);
+	if (data.active) {
 		let element: Node | null = event.target as Node | null;
 		while (element) {
 			if (element === target) {
@@ -600,7 +608,7 @@ Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 			}
 		}
 		if (!element) {
-			target.active = false;
+			data.active = false;
 			(target.style as CSSStyleDeclaration & { WebkitAppRegion: string }).WebkitAppRegion =
 				'no-drag';
 			this.updateAppRegion!();

@@ -4,6 +4,18 @@ import { addClass, hide, off, on, removeClass, show } from '@app/utils/element-u
 import { Scene } from '@app/scene/scene-window.ts';
 import { Timer } from '@app/utils/timer';
 import { getPaletteStore } from '@app/stores/palette';
+import { elementDataOf } from '@ui-kit';
+
+/**
+ * P4b：选框区域元素上的 `selection`（覆盖层）走显式元素数据。
+ * 同一元素上的 `visible` / `x` / `y` / `scaleX`… 不是元素数据——它们由 `YMMarqueeArea.vue`
+ * 用 `Object.defineProperty(el, …)` 定义成**组件自己的实例属性**（实例属性优先于原型访问器），
+ * 换成元素数据会读到 `undefined`。
+ */
+interface PaletteMarqueeData {
+	selection: HTMLElement | null;
+}
+const marqueeData = (el: unknown): PaletteMarqueeData => elementDataOf<PaletteMarqueeData>(el);
 
 Palette.skipScrollEvent = (function IIFE() {
 	const restore = () => {
@@ -45,13 +57,13 @@ Palette.switchPriority = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'priority') {
 		if (enabled) {
 			addClass(this.itemPriority, 'selected');
-			if (this.marquee.visible) hide(this.marquee.selection);
+			if (this.marquee.visible) hide(marqueeData(this.marquee).selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemPriority, 'selected');
-			if (this.marquee.visible) show(this.marquee.selection);
+			if (this.marquee.visible) show(marqueeData(this.marquee).selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -68,13 +80,13 @@ Palette.switchTag = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'tag') {
 		if (enabled) {
 			addClass(this.itemTag, 'selected');
-			if (this.marquee.visible) hide(this.marquee.selection);
+			if (this.marquee.visible) hide(marqueeData(this.marquee).selection);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemTag, 'selected');
-			if (this.marquee.visible) show(this.marquee.selection);
+			if (this.marquee.visible) show(marqueeData(this.marquee).selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -91,13 +103,13 @@ Palette.switchTerrain = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'terrain') {
 		if (enabled) {
 			addClass(this.itemTerrain, 'selected');
-			if (this.marquee.visible) hide(this.marquee.selection);
+			if (this.marquee.visible) hide(marqueeData(this.marquee).selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemTerrain, 'selected');
-			if (this.marquee.visible) show(this.marquee.selection);
+			if (this.marquee.visible) show(marqueeData(this.marquee).selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
@@ -114,13 +126,13 @@ Palette.switchEdit = (function IIFE() {
 	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'edit') {
 		if (enabled) {
 			addClass(this.itemEdit, 'selected');
-			if (this.marquee.visible) hide(this.marquee.selection);
+			if (this.marquee.visible) hide(marqueeData(this.marquee).selection);
 			off(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 			on(this.marquee, 'pointermove', this.marqueePointermove);
 			on(this.marquee, 'pointerleave', this.marqueePointerleave);
 		} else {
 			removeClass(this.itemEdit, 'selected');
-			if (this.marquee.visible) show(this.marquee.selection);
+			if (this.marquee.visible) show(marqueeData(this.marquee).selection);
 			off(this.marquee, 'pointermove', this.marqueePointermove);
 			off(this.marquee, 'pointerleave', this.marqueePointerleave);
 			on(this.marquee, 'doubleclick', this.marqueeDoubleclick);

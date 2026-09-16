@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { elementDataOf } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout.ts';
 import '@app/utils/math';
 
@@ -8,14 +9,20 @@ import '@app/utils/math';
 // → 兄弟叶子重叠（新叶占满、目标被压到 0）→ 边界线不可命中、无法拖拽缩放。
 
 interface SizedElement extends HTMLElement {
-	end?: number;
 	split?: string;
 }
+
+// P4b：`end` 是元素数据（原型访问器即将退役），规格改走显式视图
+interface SizedElementData {
+	end: number;
+}
+
+const sizedData = (el: unknown): SizedElementData => elementDataOf<SizedElementData>(el);
 
 const createGroup = (end: number | undefined): SizedElement => {
 	const group = document.createElement('group') as SizedElement;
 	group.className = 'group';
-	if (end !== undefined) group.end = end;
+	if (end !== undefined) sizedData(group).end = end;
 	return group;
 };
 
@@ -33,7 +40,7 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		const parent = document.createElement('group') as SizedElement;
 		parent.className = 'group horizontal';
 		parent.split = 'horizontal';
-		parent.end = 1;
+		sizedData(parent).end = 1;
 		setWidth(parent, 1000);
 		const g1 = createGroup(0.5);
 		const g3 = createGroup(1);
@@ -53,18 +60,18 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 
 		Layout.setGroupSize!(g2 as never, { width: 200, height: 200 }, 'forward');
 
-		expect(Number.isFinite(g2.end)).toBe(true);
-		expect(Number.isFinite(g1.end)).toBe(true);
-		expect(Number.isFinite(g3.end)).toBe(true);
+		expect(Number.isFinite(sizedData(g2).end)).toBe(true);
+		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
+		expect(Number.isFinite(sizedData(g3).end)).toBe(true);
 		// 新组 = 前一组 end + 自身宽度比例；后继组存在时 size 额外 +1px（边框留白）
-		expect(g2.end).toBeCloseTo(0.701, 5);
+		expect(sizedData(g2).end).toBeCloseTo(0.701, 5);
 	});
 
 	it('末尾组（其后仅有锚点与 border）在 forward 下取整段跨度', () => {
 		const parent = document.createElement('group') as SizedElement;
 		parent.className = 'group horizontal';
 		parent.split = 'horizontal';
-		parent.end = 1;
+		sizedData(parent).end = 1;
 		setWidth(parent, 800);
 		const g1 = createGroup(0.4);
 		const g2 = createGroup(0.9);
@@ -75,9 +82,9 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 
 		Layout.setGroupSize!(g2 as never, { width: 100, height: 100 }, 'forward');
 
-		expect(Number.isFinite(g2.end)).toBe(true);
-		expect(Number.isFinite(g1.end)).toBe(true);
-		expect(g1.end).toBeLessThanOrEqual(g2.end!);
-		expect(g2.end).toBe(1);
+		expect(Number.isFinite(sizedData(g2).end)).toBe(true);
+		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
+		expect(sizedData(g1).end).toBeLessThanOrEqual(sizedData(g2).end);
+		expect(sizedData(g2).end).toBe(1);
 	});
 });

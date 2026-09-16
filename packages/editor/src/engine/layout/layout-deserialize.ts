@@ -3,6 +3,7 @@
 // kind/split 以 group 元素 expando `split` 为准；叶子 tabs 读 expando `tabs`，
 // active 读 `manager.index`（无/undefined 归一为 null）；id 按先序分配。
 
+import { elementDataOf } from '@ui-kit';
 import type { LayoutGroupNode, LayoutSplitDirection, LayoutTreeNode } from './layout-scheme';
 
 const SPLIT_DIRECTIONS = ['horizontal', 'vertical'] as const;
@@ -10,11 +11,17 @@ const SPLIT_DIRECTIONS = ['horizontal', 'vertical'] as const;
 type ManagerShape = HTMLElement & { index?: string | null };
 
 type GroupShape = HTMLElement & {
-	end?: number;
 	tabs?: string[];
 	nav?: HTMLElement;
 	manager?: ManagerShape;
 };
+
+// P4b：`end` 是元素数据（原型访问器即将退役），不再是元素自身属性
+interface GroupElementData {
+	end?: number;
+}
+
+const groupData = (el: unknown): GroupElementData => elementDataOf<GroupElementData>(el);
 
 const isGroup = (el: Element): boolean => el.classList.contains('group');
 
@@ -25,8 +32,10 @@ const splitOf = (group: GroupShape): LayoutSplitDirection | undefined => {
 		: undefined;
 };
 
-const endOf = (group: GroupShape): number =>
-	typeof group.end === 'number' && Number.isFinite(group.end) ? group.end : 1;
+const endOf = (group: GroupShape): number => {
+	const { end } = groupData(group);
+	return typeof end === 'number' && Number.isFinite(end) ? end : 1;
+};
 
 const tabsOf = (group: GroupShape): string[] => {
 	if (Array.isArray(group.tabs)) return [...group.tabs];

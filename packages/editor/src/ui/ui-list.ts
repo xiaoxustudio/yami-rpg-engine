@@ -1,4 +1,4 @@
-import { getListConfig } from '@ui-kit';
+import { getListConfig, elementDataOf } from '@ui-kit';
 import { UI } from './ui-window.ts';
 import type { UIShape, UINodeShape, UIPointerEvent } from './ui-window.ts';
 import type { MenuItem } from '@ui-kit';
@@ -408,7 +408,9 @@ UI.list.cancelSearch = function (this: UIShape) {
 
 // 列表 - 更新头部位置
 UI.list.updateHead = function (this: UIShape) {
-	const { page, head } = this;
+	// P4b：`page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），`this` 是列表元素 ⇒ 解构 `this`
+	// 会拿到 undefined（`page.clientWidth` 抛错）。改读同一份元素数据。
+	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
 		const item = lastNavItemOf(nav);

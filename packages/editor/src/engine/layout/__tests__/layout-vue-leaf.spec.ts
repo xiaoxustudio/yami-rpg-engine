@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { elementDataOf } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { write } from '@app/utils/element-utils';
 import type { PageManagerApi } from '@ui-kit';
@@ -57,6 +58,9 @@ const countLeaves = (root: Element): number =>
 			(child) => child instanceof HTMLElement && child.classList.contains('nav-bar')
 		)
 	).length;
+
+/** P4b：组的 `end` 是元素数据（原型访问器即将退役），规格改走显式视图 */
+const groupEndOf = (el: unknown): number => elementDataOf<{ end: number }>(el).end;
 
 /** 命令式基线：进入 directory 工作区并加载 scheme（palette 被清、页/页签搬进 group）。 */
 const commandState = async (scheme: LayoutSchemeData): Promise<LayoutFixture> => {
@@ -130,13 +134,13 @@ describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
 			navWrite: Layout.navWrite as unknown as (event: Event) => void
 		});
 		try {
-			const root = handle.root as HTMLElement & { end?: number; split?: string };
-			expect(root.end).toBe(1);
+			const root = handle.root as HTMLElement & { split?: string };
+			expect(groupEndOf(root)).toBe(1);
 			expect(root.split).toBe('horizontal');
 
 			expect(handle.leaves).toHaveLength(2);
 			const [left, right] = handle.leaves;
-			expect((left.element as HTMLElement & { end?: number }).end).toBe(0.5);
+			expect(groupEndOf(left.element)).toBe(0.5);
 			expect(left.tabs).toEqual(['project', 'inspector']);
 			expect(right.tabs).toEqual(['scene']);
 

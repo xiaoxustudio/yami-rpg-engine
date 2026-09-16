@@ -7,6 +7,13 @@ import { Data } from '@app/data/data-object.ts';
 import { Timer } from '@app/utils/timer';
 import { getPaletteStore } from '@app/stores/palette';
 import type { Palette } from '@app/palette/palette.ts';
+import { elementDataOf } from '@ui-kit';
+
+/** P4b：场景选框元素上的 `key`（当前选框状态名：tile / terrain / object / eraser…）走显式元素数据 */
+interface SceneMarqueeData {
+	key: string | null;
+}
+const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
 // oxlint-disable-next-line no-explicit-any
 export const PaletteEngine: Record<string, any> = {};
@@ -569,7 +576,9 @@ PaletteEngine.selectTiles = function (
 	Scene.marquee.tilesetMap = this.tilesetMap;
 	Scene.marquee.tilesetMap[1] = this.meta.guid;
 
-	const marquee = Scene.marquee.key === 'tile' ? Scene.marquee : Scene.marquee.saveData.tile;
+	const sceneMarquee = Scene.marquee;
+	const marquee =
+		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile;
 	marquee.tiles = dTiles;
 	marquee.width = width;
 	marquee.height = height;
@@ -602,7 +611,9 @@ PaletteEngine.copyTilesFromScene = function (
 
 	Scene.marquee.tilesetMap = Scene.tilemap.tilesetMap;
 
-	const marquee = Scene.marquee.key === 'tile' ? Scene.marquee : Scene.marquee.saveData.tile;
+	const sceneMarquee = Scene.marquee;
+	const marquee =
+		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile;
 	marquee.tiles = dTiles;
 
 	for (let y = by; y < ey; y++) {
@@ -618,7 +629,7 @@ PaletteEngine.copyTilesFromScene = function (
 
 PaletteEngine.flipTiles = function (this: typeof Palette) {
 	const marquee = Scene.marquee;
-	if (Scene.state !== 'open' || Scene.dragging !== null || marquee.key !== 'tile') {
+	if (Scene.state !== 'open' || Scene.dragging !== null || marqueeData(marquee).key !== 'tile') {
 		return;
 	}
 	if (marquee.visible) {

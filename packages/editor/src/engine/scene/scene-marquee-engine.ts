@@ -1,5 +1,16 @@
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import { elementDataOf } from '@ui-kit';
+
+/**
+ * P4b：选框元素上的 `key`（当前选框状态名：tile / terrain / object…）走显式元素数据。
+ * 同一元素上的 `visible` / `x` / `y` 等不是元素数据——它们由 `YMMarqueeArea.vue` 定义成
+ * **组件自己的实例属性**（实例属性优先于原型访问器）。
+ */
+interface SceneMarqueeData {
+	key: string | null;
+}
+const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
 // oxlint-disable-next-line no-explicit-any
 export const SceneMarqueeEngine: Record<string, any> = {};
@@ -60,9 +71,10 @@ SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key = 'default')
 
 // 选框 - 切换状态
 SceneMarqueeEngine.switch = function (this: typeof Scene.marquee, key: string) {
-	if (this.key !== key) {
-		this.save(this.key);
-		this.restore((this.key = key));
+	const data = marqueeData(this);
+	if (data.key !== key) {
+		this.save(data.key);
+		this.restore((data.key = key));
 	}
 };
 

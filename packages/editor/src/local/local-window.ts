@@ -1,4 +1,4 @@
-import { createTextAreaElement, getListConfig } from '@ui-kit';
+import { createTextAreaElement, elementDataOf, getListConfig } from '@ui-kit';
 import { localEls } from '@app/local/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -51,6 +51,12 @@ interface LocalizationItem {
 interface LocalizationTarget {
 	input?: (id: string) => void;
 }
+
+/** P4b：内容面板元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
+interface LocalizationPanelData {
+	item: LocalizationItem | null;
+}
+const panelData = (el: unknown): LocalizationPanelData => elementDataOf<LocalizationPanelData>(el);
 
 interface LocalizationHistoryData {
 	item: LocalizationItem;
@@ -234,7 +240,7 @@ Localization.initialize = function () {
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
 
-	if (this.panel) this.panel.item = null;
+	if (this.panel) panelData(this.panel).item = null;
 
 	this.searcher?.addCloseButton?.();
 
@@ -244,7 +250,7 @@ Localization.initialize = function () {
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
-		if (read(list) === null && this.panel!.item !== null) {
+		if (read(list) === null && panelData(this.panel!).item !== null) {
 			this.closeContentPanel();
 		}
 		this.changed = true;
@@ -256,7 +262,7 @@ Localization.initialize = function () {
 		const { item, language, content } = data;
 		data.content = item.contents![language];
 		item.contents![language] = content;
-		if (this.panel!.item === item) {
+		if (panelData(this.panel!).item === item) {
 			const textarea = this.inputs![language];
 			write(textarea, content);
 			this.resizeTextArea(textarea);
@@ -407,8 +413,9 @@ Localization.getItemById = (function IIFE() {
 
 Localization.openContentPanel = function (item: LocalizationItem) {
 	const panel = this.panel!;
-	if (panel.item !== item) {
-		panel.item = item;
+	const data = panelData(panel);
+	if (data.item !== item) {
+		data.item = item;
 		show(panel);
 		const inputs = this.inputs!;
 		for (const language of this.languages!) {
@@ -421,8 +428,9 @@ Localization.openContentPanel = function (item: LocalizationItem) {
 
 Localization.closeContentPanel = function () {
 	const panel = this.panel!;
-	if (panel.item) {
-		panel.item = null;
+	const data = panelData(panel);
+	if (data.item) {
+		data.item = null;
 		hide(panel);
 	}
 };
@@ -727,7 +735,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 Localization.panelInput = function (event: Event) {
 	const element = event.target as HTMLElement;
 	if (element.tagName === 'TEXTAREA') {
-		const item = Localization.panel!.item;
+		const item = panelData(Localization.panel!).item;
 		const textarea = element.parentNode as HTMLElement & { language: string };
 		const language = textarea.language;
 		const history = Localization.history!;

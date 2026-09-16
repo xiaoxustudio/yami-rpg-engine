@@ -9,6 +9,13 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Palette } from '@app/palette/palette.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
+import { elementDataOf } from '@ui-kit';
+
+/** P4b：inspector 页管理器元素上的 `focusing`（当前聚焦的输入框元素）走显式元素数据 */
+interface InspectorManagerData {
+	focusing: HTMLElement | null;
+}
+const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
 interface SpriteScreen extends HTMLElement {
 	rawScrollLeft: number;
@@ -713,7 +720,7 @@ Sprite.marqueePointerdown = function (
 	event: PointerEvent & { dragKey?: boolean }
 ) {
 	// 优先触发检查器输入框的blur事件
-	if (Inspector.manager.focusing) {
+	if (managerData(Inspector.manager).focusing) {
 		document.activeElement!.blur();
 	}
 	if (this.dragging) {

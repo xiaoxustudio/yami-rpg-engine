@@ -478,7 +478,8 @@ elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 
 // outerTimelineList properties
-Animation.outerTimelineList.dragging = null;
+// P4b：`dragging` 是 outerTimelineList 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+elementDataOf<{ dragging: PointerEvent | null }>(Animation.outerTimelineList).dragging = null;
 // outerTimelineList methods
 Animation.outerTimelineList.restoreMotionAndLayer = null;
 
@@ -493,7 +494,8 @@ Animation.timelineMarquee.layer = null;
 Animation.timelineMarquee.x = -1;
 Animation.timelineMarquee.y = -1;
 Animation.timelineMarquee.length = -1;
-Animation.timelineMarquee.origin = -1;
+// P4b：`origin` 是 timelineMarquee 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+elementDataOf<{ origin: number }>(Animation.timelineMarquee).origin = -1;
 // timelineMarquee methods
 Animation.timelineMarquee.isPointIn = null;
 Animation.timelineMarquee.isSelected = null;

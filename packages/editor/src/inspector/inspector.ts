@@ -76,6 +76,22 @@ const writeFormValue = (form: Record<string, unknown>, key: string, value: unkno
 	return true;
 };
 
+/**
+ * P4b：inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap）。
+ * 注意 manager 上的 `active` **不走元素数据**：Vue 版 YMPageManager 在元素上
+ * `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），故保持原样。
+ */
+interface InspectorManagerData {
+	focusing: HTMLElement | null;
+}
+const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
+
+/** P4b：滚动拖拽状态（`dragging`）走显式元素数据 */
+interface InspectorScrollData {
+	dragging: PointerEvent | null;
+}
+const scrollData = (el: unknown): InspectorScrollData => elementDataOf<InspectorScrollData>(el);
+
 export const Inspector: DynamicShape = {
 	manager: null,
 	type: null,
@@ -147,7 +163,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 	}
 	this.manager = inspectorEls.get('inspector-page-manager') as HTMLElement;
 	if (!this.manager) return;
-	this.manager.focusing = null;
+	managerData(this.manager).focusing = null;
 	this.manager.oldValue = null;
 	listenDraggingScrollbarEvent(this.manager, this.scrollPointerdown, {
 		capture: true
@@ -339,11 +355,13 @@ Inspector.getKey = function (
 	this: typeof Inspector,
 	element: { key?: string; id: string }
 ): string {
-	let key = element.key;
+	// P4b：`key` 是元素数据（原先靠原型访问器透明落到 WeakMap，本函数的 element 实参都是控件元素）
+	const data = elementDataOf<{ key?: string }>(element);
+	let key = data.key;
 	if (key === undefined) {
 		const id = element.id;
 		const index = id.indexOf('-') + 1;
-		key = element.key = id.slice(index);
+		key = data.key = id.slice(index);
 	}
 	return key as string;
 };
@@ -393,7 +411,7 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 				switch (event.code) {
 					case 'KeyZ':
 					case 'KeyY':
-						if (Inspector.manager.focusing) {
+						if (managerData(Inspector.manager).focusing) {
 							(document.activeElement as HTMLElement).blur();
 						}
 						break;
@@ -403,7 +421,8 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 };
 
 Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) {
-	if (this.dragging) {
+	const data = scrollData(this);
+	if (data.dragging) {
 		return;
 	}
 	switch (event.button) {
@@ -418,7 +437,7 @@ Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) 
 				}
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				this.dragging = event;
+				data.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
@@ -433,12 +452,13 @@ Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) 
 Inspector.inputFocus = function (this: HTMLElement, _event: Event) {
 	if (Window.activeElement === null) {
 		const { manager } = Inspector;
-		if (manager.focusing !== null) {
-			const id1 = manager.focusing.id;
+		const managerView = managerData(manager);
+		if (managerView.focusing !== null) {
+			const id1 = managerView.focusing.id;
 			const id2 = this.id;
 			return Log.throw!(new Error(`Inspector focus error: ${id1} -> ${id2}`));
 		}
-		manager.focusing = this;
+		managerView.focusing = this;
 		manager.oldValue = read(this);
 	}
 };
@@ -452,7 +472,8 @@ Inspector.inputBlur = function (
 		if (Window.activeElement === null) {
 			// 鍥犳闇€瑕佸垽鏂璵anager.focusing
 			const { manager } = Inspector;
-			if (manager.focusing === null) {
+			const managerView = managerData(manager);
+			if (managerView.focusing === null) {
 				return;
 			}
 			const target = editor.target;
@@ -484,7 +505,7 @@ Inspector.inputBlur = function (
 			if (this.changes) {
 				delete this.changes;
 			}
-			manager.focusing = null;
+			managerView.focusing = null;
 			manager.oldValue = null;
 		}
 	};

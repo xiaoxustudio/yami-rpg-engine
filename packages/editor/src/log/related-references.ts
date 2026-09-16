@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { logEls } from '@app/log/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
@@ -67,6 +68,12 @@ type TreeItemShape = {
 	enum?: string;
 	contents?: unknown;
 };
+
+/** P4b：树行元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
+interface ReferenceRowData {
+	item?: { id?: string; presetId?: string };
+}
+const rowData = (el: unknown): ReferenceRowData => elementDataOf<ReferenceRowData>(el);
 
 export const Reference = {
 	keydownMap: new Map<HTMLElement, (event: KeyboardEvent) => void>(),
@@ -896,7 +903,7 @@ Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLE
 					item?: { id?: string; presetId?: string };
 				};
 				if (hasClass(element, 'node-item')) {
-					const item = element.item;
+					const item = rowData(element).item;
 					const guid = item!.id ?? item!.presetId;
 					if (guid) {
 						// 阻止focus后快捷键不被禁用的情�?
