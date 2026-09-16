@@ -26,7 +26,7 @@
 | B1 | 巨石渲染层重写：`command-api.ts` / `YMFileBodyPane.vue`（P6） | 大 | 先补集成测试快照 | ✅ **M1–M4 完成、M5 进行中**（2026-09-12）：M1 组件级金标准 **17 → 43+**、M2 两个派生层、**M3 两个巨石都已换源**（文件 body：api 数据化 55 处 + 模板 `v-for` + 回写桥 + 删死代码；命令列表：`resize` 自算窗口 + 模板渲染 + `bindRowElement` + `updateLineClasses` 扩展点）、**M4 三步全部收口**（扩展点、按数据反查、API 面 69 方法审计无可退役）、M5 已把文件 body 的名字移入模板且改名有用例覆盖。**余**：命令列表行内文本/变量标记与缩进线仍是手工建 DOM（画布类例外），改动需真机冒烟 |
 | C1 | 收尾：删豁免机制 + 画布白名单 lint overrides（白名单外为 0） | 中 | 白名单外的迁移项清零 | ✅ **已完成**（2026-09-12：待迁移命中/豁免注释/陈旧豁免全部 **0**，设计豁免 45 + 临时豁免 1，`dom:guard:exempt` 退役，C1 硬断言入门禁） |
 | C2 | ~~删除 135 个陈旧豁免注释~~（注释在、命中已为 0） | 小 | 无（零行为风险） | ✅ **已完成**（B0，2026-09-11：豁免注释 295 → 160、陈旧 135 → 0） |
-| E1 | **窗口事件面收口**：33 个事件名 / **266** 处 `window.addEventListener` / **127** 处 `remove`；15 个自定义事件已迁到类型化通道（`emitCustom`/`onCustom`，载荷走 `createPayloadEvent`/`readPayload`）；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | 🚧 **部分完成**（B0 已删死事件 `attributechange`；余项待做） |
+| E1 | **窗口事件面收口**：33 个事件名 / **266** 处 `window.addEventListener` / **127** 处 `remove`；15 个自定义事件已迁到类型化通道（`emitCustom`/`onCustom`，载荷走 `createPayloadEvent`/`readPayload`）；`mitt` / `useEventListener` 均 0 使用 | 中 | 无（与 DOM 主线并行） | ✅ **已完成**（B0 删死事件 `attributechange`；第六/七刀建类型化通道并迁移派发点；第八刀修度量器——报表此前不认 `emitCustom`，把已迁移的事件误判成"监听无派发"，现已 **单侧事件 (无)**） |
 | O1 | layout M6（可选）：active-only 渲染 + 页面 state 外置评估 | 评估 | M5 已完成 | ✅ **评估完成，结论"不做"**（2026-09-15：四方向真机走查通过、无时序现象 ⇒ 触发条件不成立；复活条件已写明） |
 
 ## 计划条目对照（阶段 / 里程碑 → 状态与出处）
@@ -94,7 +94,7 @@
 | **B6 巨石** | **B1 的 M1 → M5**：先补组件级用例（12 + 5 → ~40+，含 `eslints` 缩进线）→ 派生层（接口草案已就绪）→ 模板换源 → 消费方迁移 → 清理 | M1 可独立做；M3 起需 M1/M2 完成 | `command-api.ts` 2609 + `YMFileBodyPane.vue` 2327 + 各自 core/模板；`eslints.ts`、`CommandList.vue`、`stores/browser.ts`、`stores/selector.ts` | 组件级用例 **17 → 40+**；两文件受限 API 命中 **17 / 3 → 0**；`*-api.ts` 里 command/tree/file 等大件随 P2b 一并归零 | 每步一个 PR；M3 之前可随时停 |
 | **B7 真机与收尾** | L1（region 左/上/下真机）→ S1（余下 11 个窗口）→ C1（`.oxlintrc.json` 白名单 + 删豁免机制 + `dom:guard:exempt` 退役）——**C1 本体已于本轮完成，B7 只剩 L1/S1** | C1 需"白名单外待迁移 = 0" | L1/S1 无源码改动（`smoke-layout.mjs` + 人工）；C1 改 lint 配置 + 4~8 个白名单文件 | 待迁移命中 **160 → 156（A 类 4 个）或 152（A+B）**；豁免机制退役；tracker 增加「设计豁免」分列 | C1 的配置改动单独提交，revert 即回到当前口径 |
 | 🚧 **P1b 受限 API 直查** | 把 `document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族改读分组注册表（沿用 P5b 手法 + `@confirm` 覆盖框架按钮 + `createElementRegistry(mirror)` 创建时镜像），逐模块成刀 | 无；与 B6 在 `ui-kit/components` 上汇合 | **131 个文件 / `getElementById` 111 处**（components 50、ui-kit/components 34、composables 17…） | 第 1 刀：待迁移命中 **158 → 155**、`getElementById` **242 → 168**；第 2 刀：**155 → 135**、**168 → 135**；第 3 刀：**135 → 131**、**135 → 111**；终点 = 白名单外为 0（与 C1 同一终点） | 每刀独立提交 revert |
-| **并行/旁路** | E1 余项（自定义事件改强类型通道、`.vue` 监听配对、`mitt` 去留）、O1（layout M6 评估） | 不阻塞主线 | E1：16 个自定义事件 + 5 个 `.vue` + 13 处内联匿名 | `pnpm events:surface` 的"单侧事件""未配对 .vue"归零 | 按事件逐个提交 |
+| ✅ **并行/旁路（E1 已完成 / O1 已评估）** | E1（自定义事件改强类型通道 ✅、`.vue` 监听配对 ✅、`mitt` 去留 ✅ 删依赖）、O1（layout M6 评估 ✅ 结论"不做"） | 不阻塞主线 | E1：15 个自定义事件 + 5 个 `.vue` + 13 处内联匿名 | 实测：`events:surface` 的"单侧事件" **(无)**、"未配对 .vue" **0**、`mitt(` **0**；O1 见其小节 | 按事件逐个提交 |
 
 **批次纪律**：① 每批开工前跑一次 `pnpm dom:guard:tracker` 与 `pnpm docs:check` 记录基线；② 收尾时把该批的指标变化**写回本表与 README 快照**（门禁会拦数字不一致）；③ 任何一批若让 tracker 出现"本不该变"的口径变化，先当误删处理。
 
@@ -1270,7 +1270,18 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 ## E1 — 窗口事件面收口（34 事件名 / 265 监听点 / 16 自定义事件）
 
-> 🚧 **部分完成（2026-09-12，三刀）**：① 死事件 `attributechange` 已删（`attribute/attribute-window.ts` 的派发点）。`pnpm events:surface` 复测：事件名 **34 → 33**、自定义 **16 → 15**、**单侧事件「(无)」**（此前唯一的就是它）。② `.vue` 的 window 监听配对**已归零**（验收 ③ 达成，见下方「E1 第二/三刀」）。余项：③（15 个自定义事件改强类型通道）、④（`mitt` 去留）待做。
+> ✅ **已完成（2026-09-16，第八刀补上度量盲区）**：验收 ①（死事件 `attributechange` 归零，B0）、
+> ③（`.vue` 内「add 有、remove 无」归零，第二刀）、④（套件/lint 全绿）均已达成，
+> ②「自定义事件不再往 Event 挂字段」由第六/七刀的类型化通道 `emitCustom`/`onCustom` 落地
+> （7 个派发点 + 按需 `readPayload`，散落断言 72 → 37 且余项已定性为"伪造事件"而非"读事件"）。
+> **第八刀修的是度量器本身**：`scripts/event-surface.mjs` 只认 `window.dispatchEvent(new Event(…))`
+> 与「变量形式派发」，于是**七个已迁到类型化通道的事件全被误判成"监听无派发"**——
+> 报表长期报 6 个单侧事件（`dirchange`/`dprchange`/`enumchange`/`localizationchange`/
+> `variablechange`/`vue-app-mounted`），验收项⑤的"单侧事件"永远绿不了。第八刀让报表同时认
+> `emitCustom('名')`（派发）与 `onCustom('名'`（监听）⇒ **单侧事件 (无)**，与代码事实一致
+> （`emitCustom` 内部仍是 `window.dispatchEvent`，行为与口径都没变，只是量对了）。
+> 复测：`事件名 33 个（自定义 15 个）`、`单侧 (无)`、`.vue add 有 remove 无 0`、
+> `内联匿名监听 11 处 / 10 文件`（皆为 app 生命周期单例的**有意**写法，见下）。
 
 **E1 第三刀（2026-09-12）：修正度量器两处误报，`add 有 remove 无` 5 → 0、内联匿名 13/11 → 11/10**
 

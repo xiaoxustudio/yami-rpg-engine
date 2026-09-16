@@ -118,6 +118,11 @@ function main() {
 			const name = constructed.get(m[1]);
 			if (name !== undefined) add(dispatchers, name, rel);
 		}
+		// P4b/E1：自定义事件在 2026-09-12 之后走**类型化通道** `emitCustom` / `onCustom`
+		// （`events/custom-events.ts`：名册 + 载荷形状集中成一张表，内部仍是 window 事件）。
+		// 这两行只是让本报表认得它们——否则整批已迁移的事件会被误判成"派发无监听 / 监听无派发"。
+		for (const m of src.matchAll(/\bemitCustom\(\s*['"]([\w:-]+)['"]/g)) add(dispatchers, m[1], rel);
+		for (const m of src.matchAll(/\bonCustom\(\s*['"]([\w:-]+)['"]/g)) add(listeners, m[1], rel);
 		const calls = scanAddListenerCalls(src);
 		// 内联匿名 + 非 once 才是真正的"无法 remove"风险（once 由浏览器自动摘除）
 		const inlineRisk = calls.filter((c) => c.inline && !c.once).length;
