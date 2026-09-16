@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 import { treeRowCount, treeRowElement } from '../tree-api';
+import { elementDataOf } from '../../../../utils/element-data';
 import { getListConfig } from '../../../../utils/list-config';
 import { readPayload } from '../../../../utils/payload-event';
 
@@ -36,11 +37,20 @@ interface TreeListElement extends HTMLElement {
 	removable: boolean;
 	lockDirectory: boolean;
 	display: string;
+	root: TreeData | null;
+}
+
+/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+interface TreeListElementData {
 	dragging:
 		| null
 		| (MouseEvent & { target: HTMLElement; hint: HTMLElement & { [k: string]: unknown } });
-	root: TreeData | null;
 }
+const listData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
+
+/** P4b：拖拽指示器元素数据里的 `target`（当前命中的行元素） */
+const hintTarget = (el: unknown): HTMLElement | null =>
+	elementDataOf<{ target: HTMLElement | null }>(el).target;
 
 const makeData = (): TreeData[] => [
 	{
@@ -105,14 +115,14 @@ describe('YMTreeList 拖拽交互', () => {
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
 			dataTransfer: makeDataTransfer()
 		});
-		expect(el.dragging).not.toBe(null);
-		const hint = el.dragging!.hint;
+		expect(listData(el).dragging).not.toBe(null);
+		const hint = listData(el).dragging!.hint;
 		expect(hint.classList.contains('drag-and-drop-hint')).toBe(true);
 		expect(hint.classList.contains('for-list')).toBe(true);
 		expect(hint.classList.contains('hidden')).toBe(true);
 		expect(hint.parentNode).toBe(el.parentNode);
 		expect(el.classList.contains('dragging')).toBe(true);
-		expect(Object.getOwnPropertyDescriptor(el.dragging!, 'offsetY')).toMatchObject({
+		expect(Object.getOwnPropertyDescriptor(listData(el).dragging!, 'offsetY')).toMatchObject({
 			writable: true
 		});
 		wrapper.unmount();
@@ -127,13 +137,13 @@ describe('YMTreeList 拖拽交互', () => {
 		fireMouse(treeRowElement(data[0]) as HTMLElement, 'dragstart', {
 			dataTransfer: makeDataTransfer()
 		});
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		el.select(data[1]);
 		await nextTick();
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
 			dataTransfer: makeDataTransfer()
 		});
-		expect(el.dragging).not.toBe(null);
+		expect(listData(el).dragging).not.toBe(null);
 		wrapper.unmount();
 	});
 
@@ -146,7 +156,7 @@ describe('YMTreeList 拖拽交互', () => {
 		el.select(data[0]);
 		await nextTick();
 		fireMouse(row, 'dragstart', { dataTransfer: makeDataTransfer() });
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		wrapper.unmount();
 	});
 
@@ -160,15 +170,15 @@ describe('YMTreeList 拖拽交互', () => {
 		});
 		const folder = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 2 });
-		expect(el.dragging!.hint.position).toBe('before');
-		expect(el.dragging!.hint.target).toBe(folder);
+		expect(listData(el).dragging!.hint.position).toBe('before');
+		expect(hintTarget(listData(el).dragging!.hint)).toBe(folder);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
-		expect(el.dragging!.hint.position).toBe('into');
+		expect(listData(el).dragging!.hint.position).toBe('into');
 		// 步骤 4：hint class 由派生行渲染，需等一次 patch
 		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 20 });
-		expect(el.dragging!.hint.position).toBe('after');
+		expect(listData(el).dragging!.hint.position).toBe('after');
 		fireMouse(el, 'dragend', {});
 		wrapper.unmount();
 	});
@@ -183,9 +193,9 @@ describe('YMTreeList 拖拽交互', () => {
 		});
 		const child = treeRowElement(data[0].children![0]) as HTMLElement;
 		fireMouse(child, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 5 });
-		expect(el.dragging!.hint.position).toBe('before');
+		expect(listData(el).dragging!.hint.position).toBe('before');
 		fireMouse(child, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 12 });
-		expect(el.dragging!.hint.position).toBe('after');
+		expect(listData(el).dragging!.hint.position).toBe('after');
 		fireMouse(el, 'dragend', {});
 		wrapper.unmount();
 	});
@@ -199,9 +209,9 @@ describe('YMTreeList 拖拽交互', () => {
 			dataTransfer: makeDataTransfer()
 		});
 		fireMouse(el, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 100 });
-		const hint = el.dragging!.hint;
+		const hint = listData(el).dragging!.hint;
 		expect(hint.position).toBe('append');
-		expect(hint.target).toBe(treeRowElement(data[1]) as HTMLElement);
+		expect(hintTarget(hint)).toBe(treeRowElement(data[1]) as HTMLElement);
 		fireMouse(el, 'dragend', {});
 		wrapper.unmount();
 	});
@@ -234,7 +244,7 @@ describe('YMTreeList 拖拽交互', () => {
 			}
 		]);
 		expect(el.classList.contains('dragging')).toBe(false);
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		wrapper.unmount();
 	});
 
@@ -301,11 +311,11 @@ describe('YMTreeList 拖拽交互', () => {
 			dataTransfer: makeDataTransfer(),
 			offsetY: 3
 		});
-		expect(el.dragging!.hint.classList.contains('hidden')).toBe(true);
+		expect(listData(el).dragging!.hint.classList.contains('hidden')).toBe(true);
 		fireMouse(el, 'drop', { dataTransfer: makeDataTransfer() });
 		expect(data[0].children!.map((c: TreeData) => c.id)).toEqual(['child1', 'child2']);
 		expect(data.map((i: TreeData) => i.id)).toEqual(['folder1', 'item1']);
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		wrapper.unmount();
 	});
 });

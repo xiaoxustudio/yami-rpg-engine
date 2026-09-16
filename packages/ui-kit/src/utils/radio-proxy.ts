@@ -1,5 +1,5 @@
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from './dom';
-import { elementDataOf } from './element-data';
+import { elementDataOf, elementDataValueOf } from './element-data';
 
 export type RadioRelationTarget = HTMLElement & {
 	enable?(): void;
@@ -48,12 +48,10 @@ const disable = (el: HTMLElement): void => {
  * P4b：组内成员（`document.getElementsByName`）可能是两种宿主——
  * ① radio-box 元素：`YMRadioBox`/`RadioBox.vue` 在元素上自建 own `dataValue` 访问器（组件自持状态，遮蔽原型）；
  * ② radio-proxy 自身：`dataValue` 是元素数据。
- * 原来的 `element.dataValue` 属性读正好覆盖两者，访问器退役后必须显式二选一——口径同 `utils/dom.ts` 的 `read`。
+ * 原来的 `element.dataValue` 属性读正好覆盖两者，访问器退役后必须显式二选一——统一走
+ * `elementDataValueOf`（own 属性优先，否则元素数据；口径同 `utils/dom.ts` 的 `read`）。
  */
-const memberDataValue = (el: RadioProxyElement): unknown =>
-	Object.prototype.hasOwnProperty.call(el, 'dataValue')
-		? el.dataValue
-		: elementDataOf<RadioProxyElement>(el).dataValue;
+const memberDataValue = (el: RadioProxyElement): unknown => elementDataValueOf(el);
 
 const subtract = <T>(a: T[], b: T[]): T[] => {
 	const differences: T[] = [];

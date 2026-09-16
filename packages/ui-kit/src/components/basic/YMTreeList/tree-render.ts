@@ -227,16 +227,16 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 	const key = rowKeyOf(item);
 	if (el instanceof HTMLElement) {
 		const element = el as NodeElement;
-		element.item = item;
-		element.changed = false;
+		// P4b：行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
+		const data = elementDataOf<NodeElement>(element);
+		data.item = item;
+		data.changed = false;
 		const folderMark = element.querySelector(':scope > .folder-mark') as HTMLElement | null;
 		const nodeIcon = element.querySelector(
 			':scope > .node-icon, :scope > .tree-node-icon'
 		) as HTMLElement | null;
 		const extras = element.querySelector(':scope > .tree-node-extras') as HTMLElement | null;
 		const textHost = element.querySelector(':scope > .node-text') as HTMLElement | null;
-		// P4b：行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
-		const data = elementDataOf<NodeElement>(element);
 		data.folderMark = folderMark;
 		data.nodeIcon = nodeIcon as HTMLElement;
 		element.extras = extras;
@@ -244,17 +244,17 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 		// expando 字段与派生行对齐（旧实现里这些字段是渲染期的值缓存，消费方/测试会读）
 		const row = state.rowData.get(key);
 		if (row !== undefined) {
-			element.indent = row.indent;
+			data.indent = row.indent;
 			element.textIndent = row.textIndent;
 			element.markIndent = row.textIndent - row.indent * 12;
 			data.markVisible = row.markVisible;
-			element.expanded = row.expanded;
+			data.expanded = row.expanded;
 		} else {
-			element.indent = 0;
+			data.indent = 0;
 			element.textIndent = 0;
 			element.markIndent = folderMark === null ? 16 : 0;
 			data.markVisible = folderMark !== null;
-			element.expanded = false;
+			data.expanded = false;
 		}
 		state.rowElements.set(key, element);
 		return;

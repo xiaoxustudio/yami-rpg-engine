@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { elementDataOf } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
 import { createTabBarCore, type TabItem, type TabItemMeta } from './tab-bar-core';
@@ -66,6 +67,25 @@ interface Props {
 	updateAppRegion?: () => void;
 }
 
+/**
+ * P4b：标签栏元素自身的元素数据。`dragging` 是拖拽/长按中的拖拽态对象——tab-bar 元素没有装 own
+ * 访问器，所以它一直是原型访问器落进 WeakMap 的元素数据。
+ */
+interface TabBarElementData {
+	dragging: TabDraggingEvent | null;
+}
+const tabBarData = (el: unknown): TabBarElementData => elementDataOf<TabBarElementData>(el);
+
+/** P4b：标签元素（`TabElement`）自身的元素数据——`item` 是这一行代表的标签数据 */
+interface TabElementData {
+	item: TabItem;
+}
+const tabData = (el: unknown): TabElementData => elementDataOf<TabElementData>(el);
+
+/** P4b：拖拽指示器（本身就是 HTMLElement）的元素数据——`target` 指向当前命中的标签元素 */
+const hintData = (el: unknown): { target: HTMLElement | null } =>
+	elementDataOf<{ target: HTMLElement | null }>(el);
+
 const props = withDefaults(defineProps<Props>(), {
 	updateAppRegion: null as unknown as () => void
 });
@@ -85,7 +105,7 @@ const read = (): TabItem | undefined => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
 	const item = el.querySelector('.selected') as HTMLElement | null;
-	return item ? (item as TabElement).item : undefined;
+	return item ? tabData(item).item : undefined;
 };
 
 const write = (value: TabItem | undefined): void => {
@@ -97,7 +117,7 @@ const write = (value: TabItem | undefined): void => {
 		unselect();
 		let target: HTMLElement | undefined;
 		for (let i = 0; i < length; i++) {
-			if ((items[i] as TabElement).item === value) {
+			if (tabData(items[i]).item === value) {
 				selectionIndex = i;
 				target = items[i] as HTMLElement;
 				break;
@@ -128,7 +148,7 @@ const update = (): void => {
 			addClass(text, 'tab-text');
 			text.textContent = parseTabName(item);
 			(tab as HTMLElement & { draggable: boolean }).draggable = true;
-			(tab as TabElement).item = item;
+			tabData(tab).item = item;
 			(tab as TabElement & { text: HTMLElement }).text = text;
 			tab.appendChild(text);
 			if (item.type !== 'directory') {
@@ -262,8 +282,9 @@ const find = (meta: TabItemMeta): TabItem | undefined => {
 	if (!el) return undefined;
 	// oxlint-disable-next-line no-explicit-any
 	for (const node of el.childNodes as unknown as NodeListOf<any>) {
-		if (node.item && node.item.meta === meta) {
-			return node.item;
+		const nodeItem = tabData(node).item;
+		if (nodeItem && nodeItem.meta === meta) {
+			return nodeItem;
 		}
 	}
 	return undefined;
@@ -303,10 +324,11 @@ const on = (
 const dragend = (): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el || !el.parentNode) return;
-	if (el.dragging) {
+	const data = tabBarData(el);
+	if (data.dragging) {
 		removeClass(el, 'dragging');
-		el.dragging.hint.remove();
-		el.dragging = null;
+		data.dragging.hint.remove();
+		data.dragging = null;
 		el.removeEventListener('dragenter', dragenter);
 		el.removeEventListener('dragleave', dragleave);
 		el.removeEventListener('dragover', dragover);
@@ -317,6 +339,7 @@ const dragend = (): void => {
 const pointerdown = (event: PointerEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
+	const data = tabBarData(el);
 	dragend();
 	switch (event.button) {
 		case 0: {
@@ -333,12 +356,12 @@ const pointerdown = (event: PointerEvent): void => {
 						return (event.target as HTMLElement).closest('.tab-item') === parent;
 					}
 				};
-				el.dragging = dragging;
+				data.dragging = dragging;
 				window.addEventListener('pointerup', windowPointerup);
 				return;
 			}
 			if (hasClass(element, 'tab-item') && !hasClass(element, 'selected')) {
-				select((element as TabElement).item);
+				select(tabData(element).item);
 			}
 			break;
 		}
@@ -352,7 +375,7 @@ const pointerdown = (event: PointerEvent): void => {
 						offsetX: event.offsetX,
 						mode: 'popup'
 					};
-					el.dragging = dragging;
+					data.dragging = dragging;
 					window.addEventListener('pointerup', windowPointerup);
 				}
 			}
@@ -363,14 +386,15 @@ const pointerdown = (event: PointerEvent): void => {
 const dragstart = (event: DragEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el || !el.parentNode) return;
-	if (!el.dragging) {
+	const data = tabBarData(el);
+	if (!data.dragging) {
 		const hint = createDragAndDropHintElement() as unknown as TabHint;
 		const dragging: TabDraggingEvent = {
 			hint,
 			target: event.target as HTMLElement,
 			offsetX: event.offsetX
 		};
-		el.dragging = dragging;
+		data.dragging = dragging;
 		Object.defineProperty(event, 'offsetX', { writable: true });
 		event.preventDefault = (() => {}) as unknown as () => void;
 		addClass(hint, 'for-tab');
@@ -385,7 +409,8 @@ const dragstart = (event: DragEvent): void => {
 };
 
 const dragenter = (event: DragEvent): void => {
-	if ((root.value as TabBarElement | null)?.dragging) {
+	const el = root.value as TabBarElement | null;
+	if (el && tabBarData(el).dragging) {
 		event.preventDefault();
 		(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
 	}
@@ -394,27 +419,32 @@ const dragenter = (event: DragEvent): void => {
 const dragleave = (event: DragEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	if (el.dragging && !el.contains(event.relatedTarget as Node)) {
-		el.dragging.offsetX = -1;
-		hide(el.dragging.hint);
+	const data = tabBarData(el);
+	if (data.dragging && !el.contains(event.relatedTarget as Node)) {
+		data.dragging.offsetX = -1;
+		hide(data.dragging.hint);
 	}
 };
 
 const dragover = (event: DragEvent): void => {
 	const el = root.value as TabBarElement | null;
-	if (!el || !el.dragging) return;
+	if (!el) return;
+	const data = tabBarData(el);
+	const dragging = data.dragging;
+	if (!dragging) return;
 	event.preventDefault();
 	(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
-	if (el.dragging.offsetX === event.offsetX) {
+	if (dragging.offsetX === event.offsetX) {
 		return;
 	}
-	el.dragging.offsetX = event.offsetX;
+	dragging.offsetX = event.offsetX;
 	const element = (event.target as HTMLElement).closest('.tab-item') as HTMLElement | null;
-	const hint = el.dragging.hint;
+	const hint = dragging.hint;
+	const hintState = hintData(hint);
 	show(hint);
 	if (element && hasClass(element, 'tab-item')) {
-		const sItem = (el.dragging.target as TabDragTarget).item;
-		const dItem = (element as TabElement).item;
+		const sItem = tabData(dragging.target).item;
+		const dItem = tabData(element).item;
 		if (sItem === dItem) {
 			hide(hint);
 			return;
@@ -423,23 +453,23 @@ const dragover = (event: DragEvent): void => {
 		const position = core.computeDropPosition(event.clientX, box);
 		switch (position) {
 			case 'before':
-				if (hint.target !== element || hint.position !== position) {
-					if (element.previousSibling === el.dragging.target) {
+				if (hintState.target !== element || hint.position !== position) {
+					if (element.previousSibling === dragging.target) {
 						hide(hint);
 						return;
 					}
-					hint.target = element;
+					hintState.target = element;
 					hint.position = position;
 					hint.set(core.computeHintRect(hint.measure(element), position));
 				}
 				break;
 			case 'after':
-				if (hint.target !== element || hint.position !== position) {
-					if (element.nextSibling === el.dragging.target) {
+				if (hintState.target !== element || hint.position !== position) {
+					if (element.nextSibling === dragging.target) {
 						hide(hint);
 						return;
 					}
-					hint.target = element;
+					hintState.target = element;
 					hint.position = position;
 					hint.set(core.computeHintRect(hint.measure(element), position));
 				}
@@ -449,15 +479,15 @@ const dragover = (event: DragEvent): void => {
 		const elements = el.childNodes;
 		const index = elements.length - 1;
 		const last = elements[index] as HTMLElement;
-		if (last === el.dragging.target) {
+		if (last === dragging.target) {
 			hide(hint);
 			return;
 		}
-		if (last !== undefined && (hint.target !== last || hint.position !== 'after')) {
+		if (last !== undefined && (hintState.target !== last || hint.position !== 'after')) {
 			const r = hint.measure(last);
 			r.left += r.width - 1;
 			r.width = 2;
-			hint.target = last;
+			hintState.target = last;
 			hint.position = 'after';
 			hint.set(r);
 		}
@@ -466,13 +496,16 @@ const dragover = (event: DragEvent): void => {
 
 const drop = (event: DragEvent): void => {
 	const el = root.value as TabBarElement | null;
-	if (!el || !el.dragging) return;
+	if (!el) return;
+	const data = tabBarData(el);
+	const dragging = data.dragging;
+	if (!dragging) return;
 	event.stopPropagation();
-	const hint = el.dragging.hint;
+	const hint = dragging.hint;
 	if (!hasClass(hint, 'hidden')) {
 		const items = el.data!;
-		const sItem = (el.dragging.target as TabDragTarget).item;
-		const dItem = (hint.target as TabDragTarget).item;
+		const sItem = tabData(dragging.target).item;
+		const dItem = tabData(hintData(hint).target).item;
 		const dIndex = core.moveTabItem(items, sItem, dItem, hint.position);
 		if (dIndex !== null) {
 			selectionIndex = dIndex;
@@ -489,25 +522,27 @@ const drop = (event: DragEvent): void => {
 const windowPointerup = (event: PointerEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	if (el.dragging && el.dragging.relate!(event)) {
-		switch (el.dragging.mode) {
+	const data = tabBarData(el);
+	const dragging = data.dragging;
+	if (dragging && dragging.relate!(event)) {
+		switch (dragging.mode) {
 			case 'close': {
 				const target = (event.target as HTMLElement).closest(
 					'.tab-item'
 				) as TabDragTarget | null;
-				if (target && el.dragging.target === target) {
-					close(target.item);
+				if (target && dragging.target === target) {
+					close(tabData(target).item);
 				}
 				break;
 			}
 			case 'popup':
-				if (el.dragging.target === event.target) {
+				if (dragging.target === event.target) {
 					const popupEvent = createPayloadEvent('popup', {} as {
 						value?: TabItem | null;
 						clientX: number;
 						clientY: number;
 					});
-					const item = (event.target as TabElement).item;
+					const item = tabData(event.target).item;
 					popupEvent.value = item ?? null;
 					popupEvent.clientX = event.clientX;
 					popupEvent.clientY = event.clientY;
@@ -516,7 +551,7 @@ const windowPointerup = (event: PointerEvent): void => {
 				}
 				break;
 		}
-		el.dragging = null;
+		data.dragging = null;
 		window.removeEventListener('pointerup', windowPointerup);
 	}
 };
@@ -543,7 +578,7 @@ onMounted(() => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	el.data = null;
-	el.dragging = null;
+	tabBarData(el).dragging = null;
 	selectionIndex = 0;
 	el.writeEventEnabled = false;
 	el.selectEventEnabled = false;

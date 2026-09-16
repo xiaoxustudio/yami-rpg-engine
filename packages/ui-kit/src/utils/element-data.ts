@@ -147,6 +147,24 @@ export function elementDataOf<T>(el: unknown): T {
 }
 
 /**
+ * P4b：读「这个承载者身上的 `dataValue`」——**own 属性优先**（组件自己装的访问器、普通对象夹具），
+ * 否则读元素数据。
+ *
+ * 为什么需要它：`dataValue` 是本仓库唯一一个**同一个字段有两种存储**的字段——选择框一族
+ * （`select-box-api` / `YMSelectBox.vue` / `YMColorBox` / `check-box` / `keyboard-box` / `radio-box` /
+ * `YMParamList.vue`…）在根元素上装了 own 访问器读写组件内部状态，而列表行元素（命令行、选择列表项、
+ * 通用列表项…）用的是元素数据。`el.dataValue` 在访问器时代对两者都成立（own 覆盖原型），退役后就只剩
+ * own 那一半 ⇒ 凡是要同时面对"宿主"和"行元素"的代码都必须走这个函数。
+ */
+export function elementDataValueOf(el: unknown): unknown {
+	if (el === null || typeof el !== 'object') return undefined;
+	if (Object.prototype.hasOwnProperty.call(el, 'dataValue')) {
+		return (el as { dataValue?: unknown }).dataValue;
+	}
+	return el instanceof HTMLElement ? elementDataOf<{ dataValue?: unknown }>(el).dataValue : undefined;
+}
+
+/**
  * P4b：元素 API 工厂的"只装配一次"守卫。
  *
  * 20 个 `*-api.ts` 原先都写成 `if (box._initialized) return box;` … `box._initialized = true;`，

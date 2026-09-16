@@ -1,7 +1,11 @@
 import { $, renderDetached } from '@app/utils/dom';
 import { Timer } from '@app/utils/timer';
 import { Cursor } from '../composables/usePointerObjectWindow';
-import { createScrollBarElement as createScrollBar } from '@ui-kit';
+import {
+	createScrollBarElement as createScrollBar,
+	elementDataOf,
+	elementDataValueOf
+} from '@ui-kit';
 import { attachDoubleclick, detachDoubleclick } from '@app/utils/doubleclick';
 import { Fragment, h, render, type VNode } from 'vue';
 
@@ -150,7 +154,8 @@ export function read(el: unknown): any {
 	if (typeof (el as unknown as { read: () => unknown }).read === 'function') {
 		return (el as unknown as { read: () => unknown }).read();
 	}
-	return (el as unknown as { dataValue: unknown }).dataValue;
+	// P4b：`dataValue` 有两种承载者（组件 own 访问器 / 元素数据），统一走 elementDataValueOf。
+	return elementDataValueOf(el);
 }
 
 export function write(el: unknown, value: unknown): void {
@@ -159,6 +164,8 @@ export function write(el: unknown, value: unknown): void {
 	}
 	if (typeof (el as unknown as { write: (value: unknown) => void }).write === 'function') {
 		(el as unknown as { write: (value: unknown) => void }).write(value);
+	} else if (el instanceof HTMLElement && !Object.prototype.hasOwnProperty.call(el, 'dataValue')) {
+		elementDataOf<{ dataValue?: unknown }>(el).dataValue = value;
 	} else {
 		(el as unknown as { dataValue: unknown }).dataValue = value;
 	}

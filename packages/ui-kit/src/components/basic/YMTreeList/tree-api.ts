@@ -51,12 +51,24 @@ interface TreeListElementData {
 	keyword: RegExp | null;
 	/** P4b：重命名用的计时器（`timer` 已从 DATA_FIELDS 摘除） */
 	timer: Timer;
+	/** P4b：拖拽中的 dragstart 事件；`dragging.target` 是事件目标（行元素），不是元素数据 */
+	dragging: TreeListDragEvent | null;
+	/** P4b：当前选中项（列表元素自身的元素数据） */
+	selections: TreeItem[];
 }
 const treeData = (el: unknown): TreeListElementData =>
 	getElementData(el as HTMLElement) as unknown as TreeListElementData;
 
 /** 行元素（`NodeElement`）上的字段同样走元素数据（P4b：`nodeIcon`/`textNode` 已从 DATA_FIELDS 摘除） */
 const rowData = (el: unknown): NodeElement => elementDataOf<NodeElement>(el);
+
+/** P4b：`?.` 兼容视图——null/undefined 时返回 undefined（`elementDataOf` 遇到 null 会抛 WeakMap key 错） */
+const rowDataOrUndefined = (el: unknown): NodeElement | undefined =>
+	el == null ? undefined : rowData(el);
+
+/** 拖拽指示器（`DragAndDropHintApi` 本身就是 HTMLElement）的元素数据：`target` 指向当前命中行 */
+const hintData = (el: unknown): { target: HTMLElement | null } =>
+	elementDataOf<{ target: HTMLElement | null }>(el);
 
 // 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
 // oxlint-disable-next-line no-explicit-any
@@ -247,7 +259,8 @@ export const treeListStatics = {
 		textBox.addEventListener('blur', function (this: any) {
 			const element = this.parentNode;
 			const list = element.parentNode;
-			const item = element.item;
+			// 重命名框的父节点就是行元素（`bindRowElement` 必定写过 item），与原 `element.item` 同义
+			const item = rowData(element).item!;
 			const name = this.read().trim();
 			const boxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
 				this
@@ -311,7 +324,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	read: function (this: HTMLElement & { [k: string]: unknown }): TreeItem | null {
-		const selections = this.selections as TreeItem[];
+		const selections = treeData(this).selections;
 		return selections.length === 1 ? selections[0] : null;
 	},
 
@@ -793,7 +806,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	select: function (this: any, item: TreeItem | null | undefined): void {
 		if (item instanceof Object && this.read() !== item) {
 			this.unselect();
-			this.selections.push(item);
+			treeData(this).selections.push(item);
 			// 步骤 5b：不再直写行元素 class——选中态由派生行（row.selected）渲染，下面 syncRenderRows 即刷新
 			this.syncRenderRows();
 			if (this.selectEventEnabled) {
@@ -813,11 +826,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	unselect: function (this: HTMLElement & { [k: string]: unknown }, item?: TreeItem): void {
+		const data = treeData(this);
 		let selections: TreeItem[] = [];
 		if (item === undefined) {
-			selections = this.selections as TreeItem[];
+			selections = data.selections;
 		}
-		if ((this.selections as (TreeItem | undefined)[]).includes(item)) {
+		if ((data.selections as (TreeItem | undefined)[]).includes(item)) {
 			selections = [item!];
 		}
 		if (selections.length !== 0) {
@@ -828,7 +842,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				select.value = selections;
 				this.dispatchEvent(select);
 			}
-			this.selections = [];
+			data.selections = [];
 			if (this.renderState !== undefined) {
 				(this as unknown as { syncRenderRows: () => void }).syncRenderRows();
 			}
@@ -838,8 +852,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	unselectIn: function (this: any, item: TreeItem): void {
 		const targets = [];
-		for (let target of this.selections) {
-			let node = target;
+		for (let target of treeData(this).selections) {
+			let node: TreeItem | null | undefined = target;
 			while (node) {
 				if (node === item) {
 					targets.push(target);
@@ -1189,15 +1203,16 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				const element = event.target as NodeElement;
 				if (hasClass(element, 'folder-mark')) {
 					event.preventDefault();
-					const { item } = element.parentNode as NodeElement;
+					const { item } = rowData(element.parentNode);
 					item!.expanded = !item!.expanded;
 					this.update();
 					dispatchChangeEvent(this);
 				} else {
 					if (hasClass(element, 'node-item')) {
 						// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
-						if (element.item !== undefined && this.read() !== element.item) {
-							this.select(element.item);
+						const item = rowData(element).item;
+						if (item !== undefined && this.read() !== item) {
+							this.select(item);
 						} else if (
 							getListConfig(this).renamable &&
 							this.getMenuState() === 'closed' &&
@@ -1212,7 +1227,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 			case 2: {
 				const element = seek(event.target, '.node-item');
-				const item = (element as NodeItemElement).item;
+				const item = rowData(element).item;
 				if (hasClass(element, 'node-item') && item !== undefined && this.read() !== item) {
 					this.select(item);
 				}
@@ -1223,7 +1238,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	pointerup: function (this: any, event: PointerEvent): void {
-		if (this.dragging || !this.data) {
+		if (treeData(this).dragging || !this.data) {
 			return;
 		}
 		switch (event.button) {
@@ -1240,7 +1255,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			case 2:
 				if (this.popupEventEnabled && document.activeElement === this) {
 					const element = seek(event.target, '.node-item');
-					const item = (element as NodeItemElement).item;
+					const item = rowData(element).item;
 					// 步骤 5b：是否已选中按数据判断（pointerdown 选中后派生 class 要等一次 patch）
 					const isSelected = item !== undefined && this.read() === item;
 					const popup: PopupEvent = new Event('popup') as PopupEvent;
@@ -1258,7 +1273,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		const element = event.target as NodeItemElement;
 		if (hasClass(element, 'node-item')) {
 			this.cancelRenaming();
-			const item = element.item!;
+			const item = rowData(element).item!;
 			if (item.class === 'folder') {
 				item.expanded = !item.expanded;
 				this.update();
@@ -1273,13 +1288,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	dragstart: function (this: any, event: TreeListDragEvent): void {
 		if (
 			getListConfig(this).removable &&
-			!this.dragging &&
+			!treeData(this).dragging &&
 			this.display === 'normal' &&
 			this.read() !== null &&
 			!treeListStatics.textBox.parentNode &&
 			(getListConfig(this).lockDirectory === false || this.read()!.class !== 'folder')
 		) {
-			this.dragging = event;
+			treeData(this).dragging = event;
 			Object.defineProperty(event, 'offsetY', { writable: true });
 			event.preventDefault = () => {};
 			hideDragImage(event.dataTransfer);
@@ -1296,10 +1311,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	dragend: function (this: any, _event?: DragEvent): void {
-		if (this.dragging) {
+		const data = treeData(this);
+		if (data.dragging) {
 			removeClass(this, 'dragging');
-			this.parentNode.removeChild(this.dragging.hint);
-			this.dragging = null;
+			this.parentNode.removeChild(data.dragging.hint);
+			data.dragging = null;
 			// 步骤 4：hint 行 class 由派生行渲染，拖拽结束需重派生清除
 			this.syncRenderRows();
 			this.removeEventListener('dragenter', this.dragenter);
@@ -1310,22 +1326,23 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	dragenter: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
-		if (this.dragging) {
+		if (treeData(this).dragging) {
 			event.preventDefault();
 			event.dataTransfer!.dropEffect = 'move';
 		}
 	},
 
 	dragleave: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
-		if (this.dragging && !this.contains(event.relatedTarget as Node)) {
-			(this.dragging as TreeListDragEvent).offsetY = -1;
-			hide((this.dragging as TreeListDragEvent).hint);
+		const data = treeData(this);
+		if (data.dragging && !this.contains(event.relatedTarget as Node)) {
+			data.dragging.offsetY = -1;
+			hide(data.dragging.hint);
 		}
 	},
 
 	// oxlint-disable-next-line no-explicit-any
 	dragover: function (this: any, event: TreeListDragEvent): void {
-		const { dragging } = this;
+		const { dragging } = treeData(this);
 		if (dragging) {
 			event.preventDefault();
 			event.dataTransfer!.dropEffect = 'move';
@@ -1335,9 +1352,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			dragging.offsetY = event.offsetY;
 			const element = seek(event.target, '.node-item');
 			const hint = show(dragging.hint) as DragAndDropHintApi;
+			const hintState = hintData(hint);
 			if (hasClass(element, 'node-item')) {
-				const sItem = dragging.target.item;
-				const dItem = (element as NodeItemElement).item!;
+				const sItem = rowData(dragging.target).item;
+				const dItem = rowData(element).item!;
 				if (this.contain(sItem, dItem)) {
 					{
 						hide(hint);
@@ -1357,9 +1375,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						: 'after';
 				switch (position) {
 					case 'into':
-						if (hint.target !== element || hint.position !== position) {
+						if (hintState.target !== element || hint.position !== position) {
 							const r = hint.measure(element);
-							hint.target = element;
+							hintState.target = element;
 							hint.position = position;
 							hint.moveDown().set(r);
 							// 步骤 4：行 hint class 由派生行渲染（position 变化需重派生）
@@ -1367,22 +1385,22 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						}
 						break;
 					case 'before':
-						if (hint.target !== element || hint.position !== position) {
+						if (hintState.target !== element || hint.position !== position) {
 							const r = hint.measure(element);
 							r.top -= 1;
 							r.height = 2;
-							hint.target = element;
+							hintState.target = element;
 							hint.position = position;
 							hint.moveUp().set(r);
 							this.syncRenderRows();
 						}
 						break;
 					case 'after':
-						if (hint.target !== element || hint.position !== position) {
+						if (hintState.target !== element || hint.position !== position) {
 							const r = hint.measure(element);
 							r.top += r.height - 1;
 							r.height = 2;
-							hint.target = element;
+							hintState.target = element;
 							hint.position = position;
 							hint.moveUp().set(r);
 							this.syncRenderRows();
@@ -1398,12 +1416,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					lastRow === undefined ? undefined : state.rowElements.get(lastRow.key);
 				if (
 					element !== undefined &&
-					(hint.target !== element || hint.position !== 'append')
+					(hintState.target !== element || hint.position !== 'append')
 				) {
 					const r = hint.measure(element);
 					r.top += r.height - 1;
 					r.height = 2;
-					hint.target = element;
+					hintState.target = element;
 					hint.position = 'append';
 					hint.moveUp().set(r);
 					this.syncRenderRows();
@@ -1414,15 +1432,17 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	// oxlint-disable-next-line no-explicit-any
 	drop: function (this: any, event: DragEvent): void {
-		const { dragging } = this;
+		const { dragging } = treeData(this);
 		if (!dragging) {
 			return;
 		}
 		event.stopPropagation();
-		const hint = dragging.hint;
+		// drop 只在 dragstart 装配的拖拽流程里触发，此时 hint 必定存在（原 `dragging.hint` 同义）
+		const hint = dragging.hint!;
+		const hintState = hintData(hint);
 		if (!hasClass(hint, 'hidden')) {
-			const sItem = dragging.target.item;
-			const dItem = hint.target.item;
+			const sItem = rowData(dragging.target).item;
+			const dItem = rowData(hintState.target).item;
 			if (hint.position !== 'append' && this.contain(sItem, dItem)) {
 				return;
 			}
@@ -1439,7 +1459,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					const state = renderStateOf(this) as TreeRenderState;
 					const rows = state.rows.value;
 					const index = rows.findIndex(
-						(row) => state.rowElements.get(row.key) === hint.target
+						(row) => state.rowElements.get(row.key) === hintState.target
 					);
 					const next = rows[index + 1]?.item;
 					if (next) {
@@ -1493,6 +1513,13 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		// oxlint-disable-next-line no-explicit-any
 		const self = this as any;
 		self.initialize();
+		// P4b：`selections` / `dragging` 走显式元素数据；`?.` 链一律保留（hint/target 可能为空）
+		const listOwnerData = treeData(self);
+		const draggingHint = listOwnerData.dragging?.hint;
+		const hintItem =
+			draggingHint?.position === 'into'
+				? (rowDataOrUndefined(hintData(draggingHint).target)?.item ?? null)
+				: null;
 		const rows =
 			overrideRows !== undefined
 				? (overrideRows as ReturnType<typeof flattenRows>)
@@ -1502,12 +1529,9 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 						searchResults: self.searchResults ?? [],
 						foldable: getListConfig(self).foldable === true,
 						parseName: (item: TreeItem) => self.parseName(item),
-						selections: (self.selections ?? []) as TreeItem[],
+						selections: listOwnerData.selections ?? [],
 						// 步骤 4：与旧实现一致——只有 'into' 位置才给目标行加 hint class
-						hintItem:
-							self.dragging?.hint?.position === 'into'
-								? (self.dragging?.hint?.target?.item ?? null)
-								: null,
+						hintItem,
 						root: (self.root ?? null) as TreeItem | null
 					});
 		state.rows.value = rows;
@@ -1588,10 +1612,10 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		const self = this as any;
 		const updaters = getListConfig(self).updaters as ((item: TreeItem) => void)[];
 		for (const el of state.rowElements.values()) {
-			const item = el.item;
-			if (item === undefined) continue;
-			// P4b：行元素的 nodeIcon 走显式元素数据
+			// P4b：行元素的 item / nodeIcon 走显式元素数据
 			const elData = rowData(el);
+			const item = elData.item;
+			if (item === undefined) continue;
 			// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
 			if (typeof self.renderNodeIcon === 'function') {
 				if (elData.nodeIcon) self.renderNodeIcon(item, elData.nodeIcon);
@@ -1637,8 +1661,8 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			timer.running = false;
 		}
 	});
-	list.selections = [];
-	list.dragging = null;
+	treeData(list).selections = [];
+	treeData(list).dragging = null;
 	// P4b：列表配置不再是元素上的属性，统一经 getListConfig 落到元素数据（WeakMap）
 	listConfig.padded = el.hasAttribute('padded');
 	listConfig.removable = false;

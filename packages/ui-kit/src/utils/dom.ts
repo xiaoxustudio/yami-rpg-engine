@@ -1,4 +1,4 @@
-import { elementDataOf } from './element-data';
+import { elementDataOf, elementDataValueOf } from './element-data';
 
 export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
@@ -70,24 +70,16 @@ export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingCli
  * 正是 `HTMLElement.prototype` 上有 `dataValue` 访问器。访问器退役后它对**元素**恒为 false
  * （元素数据在 WeakMap 里，`in` 看不见），于是 `read` 会静默返回 undefined、`write` 会静默什么都不做。
  *
- * 等价改写，三种接收者各走各的：
- * ① 自带 own `dataValue` 的宿主（普通对象，或 `CheckBox.vue` 这类自己 `defineProperty` 的元素）→ own 属性；
- * ② 元素 → 元素数据（与访问器时代同一份 WeakMap 记录）；
- * ③ 其余（null / 基本类型 / 没有 dataValue 的普通对象）→ "没有值"，读写都不发生（与原实现一致）。
+ * 现在两种承载者分别处理（规则见 `elementDataValueOf`）：自带 own `dataValue` 的宿主走 own 属性，
+ * 元素走元素数据，其余（null / 基本类型 / 没有 dataValue 的普通对象）读写都不发生 —— 与旧实现一致。
  */
-const hasOwnDataValue = (el: object): boolean => Object.prototype.hasOwnProperty.call(el, 'dataValue');
-
 export const read = (
 	el: HTMLElement | { read?: () => unknown; dataValue?: unknown } | null | undefined
 ): unknown => {
 	if (el && 'read' in el && typeof el.read === 'function') {
 		return el.read();
 	}
-	if (el === null || el === undefined || typeof el !== 'object') return undefined;
-	if (hasOwnDataValue(el)) return (el as { dataValue: unknown }).dataValue;
-	return el instanceof HTMLElement
-		? elementDataOf<{ dataValue?: unknown }>(el).dataValue
-		: undefined;
+	return elementDataValueOf(el);
 };
 
 export const write = (
@@ -99,7 +91,7 @@ export const write = (
 		return;
 	}
 	if (el === null || el === undefined || typeof el !== 'object') return;
-	if (hasOwnDataValue(el)) {
+	if (Object.prototype.hasOwnProperty.call(el, 'dataValue')) {
 		(el as { dataValue: unknown }).dataValue = value;
 		return;
 	}

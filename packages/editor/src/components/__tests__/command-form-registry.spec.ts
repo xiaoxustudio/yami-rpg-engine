@@ -5,6 +5,7 @@ import SetString from '@app/components/commands/SetString.vue';
 import ChangeActorEquipment from '@app/components/commands/ChangeActorEquipment.vue';
 import JumpTo from '@app/components/commands/JumpTo.vue';
 import { initYamiI18n } from '@app/i18n';
+import { elementDataOf } from '@ui-kit';
 
 /**
  * P5b 批次 4 端到端回归：命令表单 SFC 的 `onMounted` 过去用 `按 id` 找控件再 loadItems，
@@ -16,9 +17,13 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-const itemsOf = (id: string): unknown[] =>
-	((document.getElementById(id) as unknown as { dataItems?: unknown[] })?.dataItems ??
-		[]) as unknown[];
+// P4b：`dataItems` 是控件元素上的**元素数据**（原型访问器退役后 `el.dataItems` 会读到 undefined）。
+// 注意 `elementDataOf(null)` 会抛（WeakMap 键），故先取元素再判空。
+const itemsOf = (id: string): unknown[] => {
+	const el = document.getElementById(id);
+	if (el === null) return [];
+	return (elementDataOf<{ dataItems?: unknown[] }>(el).dataItems ?? []) as unknown[];
+};
 
 describe('命令表单注册表（P5b 批次 4）', () => {
 	beforeEach(() => {

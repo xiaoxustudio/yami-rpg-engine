@@ -55,6 +55,12 @@ export interface ScrollBarApi extends HTMLElement {
 interface ScrollBarData {
 	thumb: ScrollThumb | null;
 	timer: ScrollTimer | null;
+	/** P4b：宿主元素（被滚动的内容元素） */
+	target: HTMLElement | null;
+	/** P4b：拖拽中的 pointerdown 事件；`dragging.target` 是事件目标（thumb），不是元素数据 */
+	dragging: ScrollDragging | null;
+	/** P4b：显示状态（对应 `visible` class） */
+	visible: boolean;
 }
 
 const roundTo = (value: number, decimals: number): number => {
@@ -70,15 +76,16 @@ export function attachScrollBarApi(
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
 	if (isApiAttached(bar)) return bar;
-	// P4b：`thumb` / `timer` 走显式元素数据（这两个字段已从 DATA_FIELDS 摘除）
+	// P4b：`thumb` / `timer` / `target` / `dragging` / `visible` 走显式元素数据
+	// （`thumb`/`timer` 已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<ScrollBarData>(bar);
 
-	bar.target = options.target ?? null;
+	data.target = options.target ?? null;
 	bar.type = options.type ?? null;
 	data.thumb = null;
 	data.timer = null;
-	bar.dragging = null;
-	bar.visible = false;
+	data.dragging = null;
+	data.visible = false;
 
 	const updateHorizontalThumb = (left: number, width: number): void => {
 		const thumb = data.thumb!;
@@ -105,8 +112,8 @@ export function attachScrollBarApi(
 	};
 
 	const updateDisplay = function (state: boolean): void {
-		if (bar.visible !== state) {
-			bar.visible = state;
+		if (data.visible !== state) {
+			data.visible = state;
 			switch (state) {
 				case true:
 					addClass(el, 'visible');
@@ -119,7 +126,7 @@ export function attachScrollBarApi(
 	};
 
 	const updateHorizontalBar = function (): void {
-		const target = bar.target!;
+		const target = data.target!;
 		const cw = target.clientWidth;
 		const sw = target.scrollWidth;
 		if (cw < sw) {
@@ -134,7 +141,7 @@ export function attachScrollBarApi(
 	};
 
 	const updateVerticalBar = function (): void {
-		const target = bar.target!;
+		const target = data.target!;
 		const ch = target.clientHeight;
 		const sh = target.scrollHeight;
 		if (ch < sh) {
@@ -155,7 +162,7 @@ export function attachScrollBarApi(
 		addClass(inner, 'scroll-thumb-inner');
 		thumb.appendChild(inner);
 		el.appendChild((data.thumb = thumb as unknown as ScrollThumb));
-		bar.target = target;
+		data.target = target;
 		bar.type = type;
 		addClass(el, type);
 		switch (type) {
@@ -171,7 +178,7 @@ export function attachScrollBarApi(
 	attachApi(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
 
 	const scrollRelative = (sign: number): void => {
-		const { target } = bar;
+		const { target } = data;
 		let { timer } = data;
 		if (!timer) {
 			let rafId: number | null = null;
@@ -189,7 +196,7 @@ export function attachScrollBarApi(
 				rafId = requestAnimationFrame(step);
 				switch (state.name) {
 					case 'wait': {
-						const { dragging } = bar;
+						const { dragging } = data;
 						if (!dragging || dragging.target !== el) {
 							return;
 						}
@@ -287,20 +294,20 @@ export function attachScrollBarApi(
 	};
 
 	const windowPointerup = (event: PointerEvent): void => {
-		const { dragging } = bar;
+		const { dragging } = data;
 		if (dragging!.relate(event)) {
-			bar.dragging = null;
+			data.dragging = null;
 			window.removeEventListener('pointerup', windowPointerup, true);
 			window.removeEventListener('pointermove', windowPointermove, true);
 		}
 	};
 
 	const windowPointermove = (event: PointerEvent): void => {
-		const { dragging } = bar;
+		const { dragging } = data;
 		if (dragging!.relate(event)) {
 			switch (dragging!.mode) {
 				case 'scroll': {
-					const target = bar.target!;
+					const target = data.target!;
 					switch (bar.type) {
 						case 'horizontal': {
 							const denom = el.clientWidth > 0 ? el.clientWidth : target.clientWidth;
@@ -331,7 +338,7 @@ export function attachScrollBarApi(
 					break;
 				}
 				case 'repeat':
-					bar.dragging = event as unknown as ScrollDragging;
+					data.dragging = event as unknown as ScrollDragging;
 					(event as unknown as ScrollDragging).mode = 'repeat';
 					break;
 			}
@@ -339,19 +346,19 @@ export function attachScrollBarApi(
 	};
 
 	const pointerdown = (event: PointerEvent): void => {
-		if (bar.dragging) {
+		if (data.dragging) {
 			return;
 		}
 		switch (event.button) {
 			case 0:
-				bar.target!.focus();
+				data.target!.focus();
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				if (event.target === data.thumb) {
-					bar.dragging = event as unknown as ScrollDragging;
+					data.dragging = event as unknown as ScrollDragging;
 					(event as unknown as ScrollDragging).mode = 'scroll';
-					(event as unknown as ScrollDragging).scrollLeft = bar.target!.scrollLeft;
-					(event as unknown as ScrollDragging).scrollTop = bar.target!.scrollTop;
+					(event as unknown as ScrollDragging).scrollLeft = data.target!.scrollLeft;
+					(event as unknown as ScrollDragging).scrollTop = data.target!.scrollTop;
 					(event as unknown as ScrollDragging).relate = (e: PointerEvent) =>
 						relate(event, e);
 					window.addEventListener('pointerup', windowPointerup, true);
@@ -366,7 +373,7 @@ export function attachScrollBarApi(
 							scrollRelative(event.clientY < r.top ? -1 : 1);
 							break;
 					}
-					bar.dragging = event as unknown as ScrollDragging;
+					data.dragging = event as unknown as ScrollDragging;
 					(event as unknown as ScrollDragging).mode = 'repeat';
 					(event as unknown as ScrollDragging).relate = (e: PointerEvent) =>
 						relate(event, e);

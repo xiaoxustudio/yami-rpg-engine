@@ -1,5 +1,6 @@
 import { animationEls } from '@app/animation/element-registry';
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
+import { elementDataValueOf } from '@ui-kit';
 import { Timer } from '@app/utils/timer';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -102,7 +103,9 @@ const initialize = (): void => {
 		if (name !== undefined) {
 			item.name = name;
 		}
-		if (this.dataValue !== null) {
+		// P4b：`dataValue` 的两种承载者（列表项的 own 访问器 / 元素数据）统一走 elementDataValueOf，
+		// 访问器退役后这一读仍然成立。
+		if (elementDataValueOf(this) !== null) {
 			this.update?.();
 		}
 	};

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMSelectList from '../YMSelectList.vue';
 import { createSelectListApi } from '../select-list-api';
+import { elementDataOf } from '../../../../utils/element-data';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 200, configurable: true });
@@ -27,12 +28,17 @@ const makeTarget = (
 		value: () => rect,
 		configurable: true
 	});
-	target.dataItems = [
+	// P4b：`dataItems` / `dataValue` 是宿主元素的元素数据（不再是元素自身的属性）
+	const targetData = elementDataOf<{
+		dataItems: { value: string; name: string; tip?: string }[];
+		dataValue: string;
+	}>(target);
+	targetData.dataItems = [
 		{ value: 'a', name: 'Alpha' },
 		{ value: 'b', name: 'Beta', tip: 'beta tip' },
 		{ value: 'c', name: 'Gamma' }
 	];
-	target.dataValue = value;
+	targetData.dataValue = value;
 	target.input = () => {};
 	return target;
 };

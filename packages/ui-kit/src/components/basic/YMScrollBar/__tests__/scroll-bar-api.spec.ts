@@ -9,7 +9,8 @@ describe('createScrollBarElement', () => {
 		expect(el.classList.contains('scroll-bar')).toBe(true);
 		const target = document.createElement('div');
 		el.bind(target, 'vertical');
-		expect(el.target).toBe(target);
+		// P4b：`target` 是滚动条元素的元素数据（`ScrollBarApi.target` 已不再是元素属性）
+		expect(elementDataOf<{ target: HTMLElement | null }>(el).target).toBe(target);
 		expect(el.type).toBe('vertical');
 		expect(elementDataOf<{ thumb: HTMLElement | null }>(el).thumb).toBeTruthy();
 		expect(typeof el.updateVerticalBar).toBe('function');

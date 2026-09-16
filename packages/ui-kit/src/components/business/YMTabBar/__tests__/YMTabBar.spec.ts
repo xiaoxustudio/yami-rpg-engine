@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMTabBar from '../YMTabBar.vue';
+import { elementDataOf } from '../../../../utils/element-data';
 
 const makeData = (): { icon: string; name: string; type: string; meta: string }[] => [
 	{ icon: 'A', name: 'Alpha', type: 'file', meta: 'm1' },
@@ -26,8 +27,10 @@ interface TabBarElement extends HTMLElement {
 	on: (name: string, cb: (e: Event & { value: unknown; closedItems: unknown }) => void) => void;
 	data: unknown;
 	dirItem: unknown;
-	dragging: unknown;
 }
+
+/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+const listData = (el: unknown): { dragging: unknown } => elementDataOf<{ dragging: unknown }>(el);
 
 describe('YMTabBar', () => {
 	it('mounts and exposes api', () => {
@@ -166,11 +169,11 @@ describe('YMTabBar', () => {
 		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-		expect(el.dragging).toBeTruthy();
+		expect(listData(el).dragging).toBeTruthy();
 		const alpha = data[0];
 		closeMark.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
 		expect(data).not.toContain(alpha);
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 	});
 
 	it('pointerdown on tab selects it', () => {

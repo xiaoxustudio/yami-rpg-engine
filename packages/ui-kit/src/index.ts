@@ -196,6 +196,7 @@ export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './util
 // P4b：元素数据的存储层（WeakMap + 原型访问器）放在 ui-kit，editor 侧同路径再导出
 export {
 	elementDataOf,
+	elementDataValueOf,
 	getElementData,
 	isApiAttached,
 	markApiAttached

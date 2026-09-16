@@ -47,9 +47,6 @@ interface TreeListElement extends HTMLElement {
 	lockDirectory: boolean;
 	renamable: boolean;
 	display: string;
-	dragging:
-		| null
-		| (MouseEvent & { target: HTMLElement; hint: HTMLElement & { [k: string]: unknown } });
 	root: TreeData | null;
 	/** 步骤 5b：`elements` shim 已删，虚拟窗口改从渲染状态读取 */
 	renderState: {
@@ -58,6 +55,14 @@ interface TreeListElement extends HTMLElement {
 		end: { value: number };
 	};
 }
+
+/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+interface TreeListElementData {
+	dragging:
+		| null
+		| (MouseEvent & { target: HTMLElement; hint: HTMLElement & { [k: string]: unknown } });
+}
+const listData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
 
 const makeDataTransfer = (): DataTransfer => {
 	return {
@@ -132,11 +137,11 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		fireMouse(treeRowElement(data[1]) as HTMLElement, 'dragstart', {
 			dataTransfer: makeDataTransfer()
 		});
-		expect(el.dragging).not.toBe(null);
-		const hint = el.dragging!.hint;
+		expect(listData(el).dragging).not.toBe(null);
+		const hint = listData(el).dragging!.hint;
 		expect(el.classList.contains('dragging')).toBe(true);
 		fireMouse(el, 'dragend', {});
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		expect(el.classList.contains('dragging')).toBe(false);
 		expect(hint.parentNode).toBe(null);
 		expect(el.classList.contains('dragenter')).toBe(false);
@@ -160,7 +165,7 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		fireMouse(el, 'dragend', {});
 		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(false);
-		expect(el.dragging).toBe(null);
+		expect(listData(el).dragging).toBe(null);
 		expect(el.querySelector('.drag-and-drop-hint')).toBe(null);
 		wrapper.unmount();
 	});

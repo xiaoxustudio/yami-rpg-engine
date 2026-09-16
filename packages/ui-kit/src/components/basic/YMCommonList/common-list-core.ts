@@ -1,10 +1,7 @@
-import { elementDataOf } from '../../../utils/element-data';
+import { elementDataValueOf } from '../../../utils/element-data';
 
-/** P4b：own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据。 */
-const itemDataValue = (item: { dataValue?: unknown }): unknown =>
-	Object.prototype.hasOwnProperty.call(item, 'dataValue')
-		? item.dataValue
-		: elementDataOf<{ dataValue?: unknown }>(item).dataValue;
+/** P4b：own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据——见 `elementDataValueOf`。 */
+const itemDataValue = (item: { dataValue?: unknown }): unknown => elementDataValueOf(item);
 
 export type RelativeDirection = 'up' | 'down';
 

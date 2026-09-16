@@ -32,13 +32,15 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 			this: typeof el,
 			options: Record<string, string | { name?: string; tip?: string }>
 		) {
-			const backup = this.dataItems;
-			this.dataItems = this.lightItems.all;
+			// P4b：`dataItems` 是控件元素上的元素数据（原型访问器退役后 `this.dataItems` 会读到 undefined）。
+			const data = elementDataOf<{ dataItems?: unknown[] }>(this);
+			const backup = data.dataItems;
+			data.dataItems = this.lightItems.all;
 			selectBoxSetItemNames(
 				this as unknown as Parameters<typeof selectBoxSetItemNames>[0],
 				options
 			);
-			this.dataItems = backup;
+			data.dataItems = backup;
 		};
 		el.setItemNames({ raw: 'RAW-OK', global: 'GLOBAL-OK' });
 		expect(el.lightItems.all[0].name).toBe('RAW-OK');
