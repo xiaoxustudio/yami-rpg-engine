@@ -1,4 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import {
 	addClass,
 	removeClass,
@@ -51,7 +52,8 @@ export function attachNumberVarApi(
 	varBox.filter = 'number';
 
 	box.mode = currentMode;
-	box.numBox = numBox;
+	// P4b: numBox now lives in element data (field removed from DATA_FIELDS)
+	elementDataOf<NumberVarApi>(box).numBox = numBox;
 	box.varBox = varBox;
 
 	const readValue = function (): unknown {

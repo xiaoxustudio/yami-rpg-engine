@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMNumberVar
 		ref="ym"
 		:min="props.min"
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { YMNumberVar } from '@ui-kit';
+import { elementDataOf, YMNumberVar } from '@ui-kit';
 import { defVar } from '@app/components/number-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -115,7 +115,7 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 
 const api = {
 	mode: 'constant',
-	numBox: null as HTMLElement | null,
+	// P4b：numBox 改为元素数据（WeakMap），不再放进 api 对象（否则会以同名自有属性遮蔽）
 	varBox: null as (HTMLElement & { isPluginInput?: boolean }) | null,
 	read,
 	write,
@@ -156,7 +156,8 @@ onMounted(() => {
 		() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
-			api.numBox = (ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
+			elementDataOf<{ numBox: HTMLElement | null }>(el).numBox =
+				(ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
 			api.varBox = getChildRoot(varBoxRef.value);
 			if (api.varBox) api.varBox.isPluginInput = false;
 			nextTick(() => {

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMStringVar
 		ref="ym"
 		:model-value="props.modelValue"
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { YMStringVar } from '@ui-kit';
+import { elementDataOf, YMStringVar } from '@ui-kit';
 import { defVar } from '@app/components/string-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -99,7 +99,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 
 const api = {
 	mode: 'constant',
-	strBox: null as HTMLElement | null,
 	varBox: null as HTMLElement | null,
 	read,
 	write,
@@ -140,7 +139,9 @@ onMounted(() => {
 		() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
-			api.strBox = (ym.value?.root?.querySelector('.text-box') as HTMLElement) ?? null;
+			// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			elementDataOf<{ strBox: HTMLElement | null }>(el).strBox =
+				(ym.value?.root?.querySelector('.text-box') as HTMLElement) ?? null;
 			api.varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());

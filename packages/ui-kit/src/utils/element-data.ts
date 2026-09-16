@@ -31,10 +31,8 @@ const DATA_FIELDS = [
 	'page',
 	'dataItems',
 	'head',
-	'strBox',
 	'parameters',
 	'key',
-	'folders',
 	'target',
 	'links',
 	'count',
@@ -62,8 +60,7 @@ const DATA_FIELDS = [
 	'mode',
 	'info',
 	'invalid',
-	'varBox',
-	'numBox'
+	'varBox'
 ] as const;
 
 function defineDataAccessors(): void {

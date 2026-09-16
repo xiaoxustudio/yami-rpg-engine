@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { getFocus, read, write } from '@app/utils/element-utils';
 import { composableEls } from '@app/composables/element-registry';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
@@ -238,12 +239,20 @@ Command.cases.callEvent = new CommandSchema({
 
 interface CallEventInputApi {
 	loadItems?(items: unknown[]): void;
-	numBox?: { input?: HTMLInputElement; decimals?: number };
-	strBox?: HTMLElement | null;
 	type?: string | null;
 	filter?: string | null;
 	on?(type: string, listener: (event: Event) => void): void;
 }
+
+/** P4b：`numBox` / `strBox` 现在是元素数据（WeakMap），消费者经此形状读取 */
+const numBoxOf = (
+	el: unknown
+): { input?: { min?: string; max?: string; value?: string }; decimals?: number } =>
+	elementDataOf<{
+		numBox: { input?: { min?: string; max?: string; value?: string }; decimals?: number };
+	}>(el).numBox;
+const strBoxOf = (el: unknown): HTMLElement | null =>
+	elementDataOf<{ strBox?: HTMLElement | null }>(el).strBox ?? null;
 
 interface CallEventParameter {
 	key: string;
@@ -277,8 +286,8 @@ export function useCallEventCommandSchema() {
 	};
 	const clearGlobalEventElements = (): void => {
 		for (const { label, input } of parameters) {
-			if (input.strBox) {
-				Selection.removeEventListeners!(input.strBox as HTMLTextAreaElement);
+			if (strBoxOf(input)) {
+				Selection.removeEventListeners!(strBoxOf(input) as HTMLTextAreaElement);
 			}
 			label.remove();
 			input.remove();
@@ -315,9 +324,9 @@ export function useCallEventCommandSchema() {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
 		// P1b：标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
-		const labelEl = (
-			composableEls.get('callEvent-label-template') as HTMLElement
-		).cloneNode(true) as HTMLElement;
+		const labelEl = (composableEls.get('callEvent-label-template') as HTMLElement).cloneNode(
+			true
+		) as HTMLElement;
 		labelEl.textContent = name;
 		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
 			CallEventInputApi;
@@ -331,19 +340,19 @@ export function useCallEventCommandSchema() {
 				break;
 			case 'number':
 				input = createNumberVar();
-				input.numBox!.input!.min = '-1000000000';
-				input.numBox!.input!.max = '1000000000';
-				input.numBox!.decimals = 10;
+				numBoxOf(input).input!.min = '-1000000000';
+				numBoxOf(input).input!.max = '1000000000';
+				numBoxOf(input).decimals = 10;
 				break;
 			case 'string':
 				input = createTextAreaVar();
-				input.strBox!.setAttribute(
+				strBoxOf(input)!.setAttribute(
 					'menu',
 					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
 				);
 				addClass(input, 'callEvent-argument-string');
 				input.on!('change', () => resizeWindow());
-				Selection.addEventListeners!(input.strBox!);
+				Selection.addEventListeners!(strBoxOf(input)!);
 				break;
 			case 'object':
 				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
@@ -435,9 +444,9 @@ export function useCallEventCommandSchema() {
 		write(input, { type: 'local', key: '' });
 		const text = t('command.callEvent.return');
 		const tip = t('command.callEvent.return.tip');
-		const labelEl = (
-			composableEls.get('callEvent-label-template') as HTMLElement
-		).cloneNode(true) as HTMLElement;
+		const labelEl = (composableEls.get('callEvent-label-template') as HTMLElement).cloneNode(
+			true
+		) as HTMLElement;
 		labelEl.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
 		addClass(input, 'call-event-component');

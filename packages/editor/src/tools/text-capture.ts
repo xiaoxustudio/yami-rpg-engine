@@ -1,3 +1,4 @@
+import { elementDataOf } from '@ui-kit';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { composableEls } from '@app/composables/element-registry';
 import { createElementRegistry } from '@app/utils/element-registry';
@@ -181,7 +182,8 @@ Selection.initialize = function (this: SelectionShape) {
 	}
 
 	for (const textbox of $('text-area-var')) {
-		this.addEventListeners!(textbox.strBox!);
+		// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+		this.addEventListeners!(elementDataOf<{ strBox?: HTMLElement }>(textbox).strBox!);
 	}
 
 	for (const textarea of $('textarea')) {

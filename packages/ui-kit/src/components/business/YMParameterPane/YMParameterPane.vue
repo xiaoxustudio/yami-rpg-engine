@@ -11,6 +11,7 @@ import {
 	write
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
 import { readPayload } from '../../../utils/payload-event';
 
@@ -464,7 +465,9 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else if (typeof value === 'number') {
-				wrap.input.numBox!.input.value = value.toString();
+				// P4b：numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+				elementDataOf<{ numBox?: { input: { value: string } } }>(wrap.input).numBox!.input.value =
+					value.toString();
 			}
 			break;
 		case 'keyboard-box':

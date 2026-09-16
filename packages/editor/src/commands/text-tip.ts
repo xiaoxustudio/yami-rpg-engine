@@ -6,6 +6,7 @@ import {
 	treeRowItemAt,
 	type TreeListRowApi
 } from '@ui-kit';
+import { elementDataOf } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
@@ -214,8 +215,10 @@ TextSuggestion.select = function (this: TextSuggestionShape, item: TextSuggestio
 	this.inserting = true;
 	let target: TextSuggestionTarget | { input: { select(): void }; insert(name: string): void } =
 		this.target!;
-	if ((target as unknown as { strBox: TextSuggestionTarget }).strBox) {
-		target = (target as unknown as { strBox: TextSuggestionTarget }).strBox;
+	// P4b：strBox 现在是元素数据（字段已从 DATA_FIELDS 摘除）
+	const strBox = elementDataOf<{ strBox?: TextSuggestionTarget }>(target).strBox;
+	if (strBox) {
+		target = strBox;
 	}
 	target.input!.select();
 	target?.insert?.(item.name);

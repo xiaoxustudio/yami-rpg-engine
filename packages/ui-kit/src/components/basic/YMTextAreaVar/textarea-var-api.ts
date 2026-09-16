@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { TextAreaApi } from '../YMTextArea/text-area-api';
@@ -42,7 +43,8 @@ export function attachTextAreaVarApi(
 	varBox.filter = 'string';
 
 	box.mode = currentMode;
-	box.strBox = strBox;
+	// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	elementDataOf<TextAreaVarApi>(box).strBox = strBox;
 	box.varBox = varBox;
 
 	const readValue = function (): unknown {

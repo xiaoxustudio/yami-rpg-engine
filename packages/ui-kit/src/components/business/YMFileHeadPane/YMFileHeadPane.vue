@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { defineComponent, h, type PropType, onMounted, ref } from 'vue';
 import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../../utils/dom';
+import { elementDataOf } from '../../../utils/element-data';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
 
@@ -125,14 +126,16 @@ const AddressPart = defineComponent({
 		onMounted(() => {
 			const element = root.value as unknown as {
 				file?: FileItem;
-				folders?: FileItem[];
-				target?: FileItem;
 				disabled?: boolean;
 			};
 			if (!element) return;
 			element.file = props.node.file;
-			element.folders = props.node.folders;
-			element.target = props.node.target;
+			// P4b：`folders`/`target` 走显式元素数据（`folders` 已从 DATA_FIELDS 摘除）。
+			// ⚠️ 教训：这两个字段的**读取点是解构**（`const { folders, target } = element`），
+			// 按 `.folders` 检索会漏掉它们——第一次删字段时就是这么踩空的（file-head-pane 的用例当场转红）。
+			const data = elementDataOf<{ folders?: FileItem[]; target?: FileItem }>(element);
+			data.folders = props.node.folders;
+			data.target = props.node.target;
 			element.disabled = props.node.disabled === true;
 		});
 		return () =>
@@ -243,7 +246,12 @@ function addressPointerdown(event: PointerEvent) {
 									break;
 								case 'FILE-HEAD-ADDRESS-ARROW': {
 									const MAX_MENU_ITEMS = 32;
-									const { folders, target } = element;
+									// P4b：与写入点同源——都读显式元素数据
+									const addressData = elementDataOf<{ folders?: FileItem[]; target?: FileItem }>(
+										element
+									);
+									const folders = addressData.folders ?? [];
+									const target = addressData.target;
 									const elementRect = rect(element);
 									const length = Math.min(folders.length, MAX_MENU_ITEMS);
 									const menuItems = Array.from<MenuItem>({ length });
