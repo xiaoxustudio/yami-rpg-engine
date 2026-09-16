@@ -495,6 +495,22 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 
 ## P2b — ui-kit 元素 API 收尾（`*-api.ts` + `attachApi` 退役）
 
+> **📊 2026-09-15 复测（本轮，口径与 2026-09-11 一致）**：鸭子式可选链调用 **774 处 / 288 文件**
+> （`?.loadItems?.(` 一族；方法分布 `loadItems` **309**、`bind` 90、`relate` 87、`read` 44、`write` 39、
+> `update` 39、`close` 34、`open` 29、`enable`/`disable` 各 16）；ui-kit 的 `*-api.ts` **26** 个
+> （门禁口径 = `packages/ui-kit/src` 去掉 `__tests__`；editor 侧另有 2 个），其中 22 个已带
+> `XxxApi` 接口）；这些文件里的 `oxlint-disable` 合计 **126** 处，构成是
+> `no-explicit-any` **105**（都是原型方法上的 `this: any`）、`unbound-method` 17、`no-base-to-string` 2 等。
+> 热点文件：`IfCondition.vue` 25、`SetNumberOperand.vue` 13、`FileActorPage.vue` 12、`GetActor.vue` 11、
+> `YMFileBodyPane.vue` 11 —— **绝大部分在 Vue 组件里**，正是 P2b-2（ref/expose）的靶子。
+>
+> **⇒ 结论（本轮判定）**：P2b-1 的"契约侧"已完成，剩下的两条都很**大**且性质不同——
+> ② P2b-2 是 288 个文件量级的调用面迁移（收益是编译期类型安全，风险是触碰面积极大，
+> 且 `loadItems` 一族本身是"给控件喂选项"的正当用法）；
+> ③ P2b-3 的 105 处 `no-explicit-any` 绑定在"元素原型方法 `this: any`"这个设计上，
+> 收窄它等于给每个组件的方法逐个写 `this` 类型——与 P4b 的剩余字段是**同一批工作**（两者都要求
+> 先把"元素上有什么"变成类型化契约）。**建议与 P4b 的剩余字段合并排期，按组件成对推进**。
+
 - **现状证据（2026-09-11 实测）**：`packages/ui-kit/src/**/*-api.ts` **26** 个文件（其中 **21** 个调用 `attachApi`）；`packages/ui-kit/src/utils/attach-api.ts` 本体仅 8 行，却被 **41** 个文件 import；editor + ui-kit 侧的**鸭子式可选链 API 调用**（`?.loadItems?.(` / `?.write?.(` / `?.enable?.(` / `?.relate?.(` …）合计 **682 处 / 246 文件**。也就是说：**阶段 2 的"去重"（core 抽取）已完成，但其验收条件「`-api.ts` 文件数从 27 → 0」远未达成，且从未登记为待办**。
 - **为什么单列**：这是 P2「ui-kit 组件契约化」的**另一半**——把 `read/write/enable/disable/loadItems/relate/…` 从"挂在元素实例上的鸭子方法"改为**类型化组件 API**（props/emits + `defineExpose`）。它与 P5b **同源**：P5b 里那 247 行「组件 API」桶（`$('#id')?.loadItems?.()`）正是元素 API 的调用面——不退役元素 API，调用点只会从 `$('#x')` 变成 `ref.value`，鸭子调用照旧。
 - **推进策略（与 P5b 合并排序，按组件逐个收口）**：① 盘点 26 个 api 文件的**调用面**（哪些方法、被谁以鸭子方式调用、对应组件是否已有 expose）；② 选一个高频组件（`YMSelectBox` / `YMNumberBox` 之类）做样板：`defineExpose` 补类型 + 调用方改用模板 ref（SFC）或注入实例（非 SFC）；③ 每完成一个组件就删它的 `*-api.ts` 并清掉调用方可选链；④ 26 个全部退役后删 `attach-api.ts`、更新 playground demo 与文档口径。
