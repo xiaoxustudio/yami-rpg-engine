@@ -41,7 +41,8 @@ describe('YMNumberBox', () => {
 
 	it('exposes bridge functions and decimals property', () => {
 		const wrapper = mount(YMNumberBox);
-		const el = wrapper.element as unknown as NumberBoxApi;
+		// P4b：SFC 自己在根元素上 `defineProperty(el, 'decimals', …)`（组件内部状态，与元素数据无关）
+		const el = wrapper.element as unknown as NumberBoxApi & { decimals: number };
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(el.input!.tagName).toBe('INPUT');

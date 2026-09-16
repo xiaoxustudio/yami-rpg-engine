@@ -26,7 +26,6 @@ const DATA_FIELDS = [
 	'start',
 	'number',
 	'selection',
-	'decimals',
 	'filter',
 	'page',
 	'dataItems',
@@ -48,7 +47,6 @@ const DATA_FIELDS = [
 	'group',
 	'item',
 	'indent',
-	'timer',
 	'visible',
 	'mode',
 	'invalid'

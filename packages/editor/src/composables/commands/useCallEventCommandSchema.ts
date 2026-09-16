@@ -245,11 +245,9 @@ interface CallEventInputApi {
 }
 
 /** P4b：`numBox` / `strBox` 现在是元素数据（WeakMap），消费者经此形状读取 */
-const numBoxOf = (
-	el: unknown
-): { input?: { min?: string; max?: string; value?: string }; decimals?: number } =>
+const numBoxOf = (el: unknown): { input?: { min?: string; max?: string; value?: string } } =>
 	elementDataOf<{
-		numBox: { input?: { min?: string; max?: string; value?: string }; decimals?: number };
+		numBox: { input?: { min?: string; max?: string; value?: string } };
 	}>(el).numBox;
 const strBoxOf = (el: unknown): HTMLElement | null =>
 	elementDataOf<{ strBox?: HTMLElement | null }>(el).strBox ?? null;
@@ -342,7 +340,8 @@ export function useCallEventCommandSchema() {
 				input = createNumberVar();
 				numBoxOf(input).input!.min = '-1000000000';
 				numBoxOf(input).input!.max = '1000000000';
-				numBoxOf(input).decimals = 10;
+				// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+				elementDataOf<{ decimals?: number }>(numBoxOf(input)).decimals = 10;
 				break;
 			case 'string':
 				input = createTextAreaVar();

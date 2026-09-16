@@ -1,4 +1,4 @@
-﻿/// <reference types="vite/client" />
+/// <reference types="vite/client" />
 
 // 鍏ㄥ眬绫诲瀷鎵╁睍澹版槑 鏈枃浠堕泦涓０鏄?src/utils/ 鍚勬ā鍧楀鍐呯疆瀵硅薄 / window 鐨勬柊澧炴垚鍛樼被鍨? 閬垮厤 TS2339 / TS2551 鎶ラ敊銆傛墍鏈夋墿灞曞潎鏉ヨ嚜 utils/*.ts 鐨勫疄闄呰繍琛屾椂鎸傝浇銆?
 
@@ -112,7 +112,6 @@ interface HTMLElement {
 	removeScrollListener: (...args: any[]) => any;
 	// element-utils.ts 涓?read/write 璁块棶 dataValue锛沘ddScrollbars / listenDraggingScrollbarEvent 杩愯鏃惰祴鍊间笅鍒楀疄渚嬫垚鍛?
 	dataValue: boolean | string | number | Record<string, any> | null;
-	seekUp(tagName: string, count?: number): HTMLElement | null;
 	beginScrolling(): void;
 	endScrolling(): void;
 	setScroll(left: number, top: number): void;
@@ -155,7 +154,6 @@ interface HTMLElement {
 	activeFile?: Record<string, any> | null;
 	selectionIndex?: number;
 	lastScrollTop?: number;
-	decimals?: number;
 	initialized?: boolean;
 	src?: string;
 	filter?: string | null;
@@ -179,21 +177,14 @@ interface HTMLElement {
 	saveSelection(...args: unknown[]): any;
 	restoreSelection(...args: unknown[]): any;
 	updateNodeElement(...args: unknown[]): any;
-	addElementClass(...args: unknown[]): any;
 	updateTextNode(...args: unknown[]): any;
-	createKeyTextNode(...args: unknown[]): any;
-	updateKeyTextNode(...args: unknown[]): any;
 	createIcon: (item: unknown) => unknown;
 	createText: (item: unknown) => unknown;
-	createRefCount(...args: unknown[]): any;
 	createComment: (item: unknown) => unknown;
-	updateToggleStyle(...args: unknown[]): any;
 	createEditIcon(...args: unknown[]): any;
 	updateHead: () => unknown;
 	updateItemName: (item: unknown) => unknown;
 	updateIcon: (item: unknown) => unknown;
-	updateVisibilityIcon(...args: unknown[]): any;
-	updateLockIcon(...args: unknown[]): any;
 	createItem(...args: unknown[]): any;
 	deleteItem(...args: unknown[]): any;
 	getItemByProperties(...args: unknown[]): any;
@@ -201,28 +192,10 @@ interface HTMLElement {
 	cancelSearch(...args: unknown[]): any;
 	searchNodesDebounced(...args: unknown[]): any;
 	createFolder(...args: unknown[]): any;
-	createMarks(...args: unknown[]): any;
-	updateMarks(...args: unknown[]): any;
-	createInitText(...args: unknown[]): any;
-	updateInitText(...args: unknown[]): any;
-	createGroupText(...args: unknown[]): any;
-	updateGroupText(...args: unknown[]): any;
-	createConditionIcon(...args: unknown[]): any;
-	updateConditionIcon(...args: unknown[]): any;
-	createEventIcon(...args: unknown[]): any;
-	updateEventIcon(...args: unknown[]): any;
-	createNoteIcon(...args: unknown[]): any;
-	updateNoteIcon(...args: unknown[]): any;
-	createScriptIcon(...args: unknown[]): any;
-	updateScriptIcon(...args: unknown[]): any;
-	createLockIcon(...args: unknown[]): any;
-	createVisibilityIcon(...args: unknown[]): any;
 	createAttribute(...args: unknown[]): any;
 	parseName(...args: unknown[]): any;
 	synchronize(...args: unknown[]): any;
 	setMaxLength(...args: unknown[]): any;
-	updateItem(...args: unknown[]): any;
-	updateItemClass(...args: unknown[]): any;
 	update(...args: unknown[]): any;
 	write2(...args: unknown[]): any;
 	write?(value: any): any;
@@ -336,7 +309,6 @@ interface HTMLElement {
 	submenu: any;
 	dragging: any;
 	restoring: boolean;
-	_built: boolean;
 	_initialized: boolean;
 	_checkVariablesScheduled: boolean;
 	windowVariableChange: (event: EditorEvent) => void;

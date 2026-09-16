@@ -98,7 +98,7 @@
 | --- | --- | --- | --- |
 | packages/ui-kit/src/components/business/YMParameterPane/YMParameterPane.vue | 1117 | 56 | - |
 | packages/editor/src/engine/layout/layout.ts | 2088 | 53 | - |
-| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1669 | 51 | - |
+| packages/ui-kit/src/components/basic/YMTreeList/tree-api.ts | 1675 | 51 | - |
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2400 | 35 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 900 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1437 | 29 | - |
@@ -113,7 +113,7 @@
 | packages/ui-kit/src/components/basic/YMTextBox/text-box-api.ts | 160 | 14 | - |
 | packages/ui-kit/src/components/basic/YMCommonList/YMCommonList.vue | 407 | 13 | - |
 | packages/ui-kit/src/components/business/YMCustomBox/custom-box-api.ts | 299 | 13 | - |
-| packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 384 | 12 | - |
+| packages/ui-kit/src/components/basic/YMScrollBar/scroll-bar-api.ts | 391 | 12 | - |
 | packages/ui-kit/src/components/basic/YMTextArea/text-area-api.ts | 210 | 12 | - |
 | packages/editor/src/utils/dom.ts | 236 | 11 | - |
 | packages/ui-kit/src/components/basic/YMSelectBox/select-box-api.ts | 272 | 11 | - |
@@ -143,12 +143,12 @@
 | packages/editor/src/tools/image-crop-window.ts | 371 | 7 | - |
 | packages/editor/src/tools/text-capture.ts | 993 | 7 | - |
 | packages/editor/src/tools/window-object.ts | 510 | 7 | - |
-| packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 130 | 7 | - |
+| packages/ui-kit/src/components/basic/YMNumberBox/number-box-api.ts | 140 | 7 | - |
 | packages/ui-kit/src/components/business/YMTitleBar/YMTitleBar.vue | 166 | 7 | - |
 | packages/ui-kit/src/utils/dom.ts | 197 | 7 | - |
 | packages/editor/src/animation/animation-initialize.ts | 509 | 6 | - |
 | packages/editor/src/commands/custom-command-window.ts | 585 | 6 | - |
-| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 639 | 6 | - |
+| packages/editor/src/composables/commands/useCallEventCommandSchema.ts | 638 | 6 | - |
 | packages/editor/src/local/local-window.ts | 911 | 6 | - |
 | packages/editor/src/title/title-bar.ts | 761 | 6 | - |
 | packages/ui-kit/src/components/basic/YMColorBox/YMColorBox.vue | 307 | 6 | - |
@@ -978,7 +978,7 @@
 | packages/editor/src/inspector/element-reference-page.ts | 105 | 0 | - |
 | packages/editor/src/inspector/element-registry.ts | 27 | 0 | - |
 | packages/editor/src/inspector/element-text-page.ts | 224 | 0 | - |
-| packages/editor/src/inspector/element-textbox-page.ts | 162 | 0 | - |
+| packages/editor/src/inspector/element-textbox-page.ts | 171 | 0 | - |
 | packages/editor/src/inspector/element-video-page.ts | 116 | 0 | - |
 | packages/editor/src/inspector/element-window-page.ts | 123 | 0 | - |
 | packages/editor/src/inspector/file-actor-page.ts | 525 | 0 | - |
@@ -1233,7 +1233,7 @@
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 101 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 99 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |

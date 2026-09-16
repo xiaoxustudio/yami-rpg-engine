@@ -1,4 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
@@ -18,7 +18,6 @@ export interface NumberBoxApiOptions {
 
 export interface NumberBoxApi extends HTMLElement {
 	input?: HTMLInputElement;
-	decimals: number;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	read(...args: unknown[]): number;
@@ -27,6 +26,15 @@ export interface NumberBoxApi extends HTMLElement {
 	disable(...args: unknown[]): void;
 	getFocus(mode?: string): void;
 	on(...args: unknown[]): void;
+}
+
+/**
+ * P4b：数字框工厂的"小数位"走**显式元素数据**（`decimals` 已从 DATA_FIELDS 摘除）。
+ * 注意 SFC（`YMNumberBox.vue`）自己 `defineProperty(el, 'decimals', …)` 定义了一个同名实例属性，
+ * 那是组件内部状态、与本字段无关——两者不会互相遮蔽（实例属性优先于原型访问器）。
+ */
+interface NumberBoxData {
+	decimals: number;
 }
 
 interface HistoryInputElement extends HTMLInputElement {
@@ -39,6 +47,8 @@ export function attachNumberBoxApi(
 ): NumberBoxApi {
 	const box = el as NumberBoxApi;
 	if (isApiAttached(box)) return box;
+	// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	const data = elementDataOf<NumberBoxData>(box);
 
 	const input = document.createElement('input');
 	addClass(input, 'number-box-input');
@@ -63,7 +73,7 @@ export function attachNumberBoxApi(
 
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('change', () => {
-		input.value = String(readValue(box.decimals));
+		input.value = String(readValue(data.decimals));
 	});
 
 	const src = options.dom instanceof HTMLElement ? options.dom : el;
@@ -78,7 +88,7 @@ export function attachNumberBoxApi(
 	input.step = step;
 
 	box.input = input;
-	box.decimals = decimals;
+	data.decimals = decimals;
 	// P4b：`box._unit = unit` 已删除——该字段只写不读（等价死状态），随 DATA_FIELDS 一并退役
 
 	el.appendChild(input);
@@ -102,10 +112,10 @@ export function attachNumberBoxApi(
 		input.style.paddingRight = `${padding}px`;
 	}
 
-	const read = (): number => readValue(box.decimals);
+	const read = (): number => readValue(data.decimals);
 
 	const write = (value: string | number): void => {
-		core.write(value, box.decimals);
+		core.write(value, data.decimals);
 	};
 
 	attachApi(box, { read, write, enable, disable, getFocus, on });

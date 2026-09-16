@@ -40,14 +40,21 @@ interface ScrollTimer {
 export interface ScrollBarApi extends HTMLElement {
 	target: HTMLElement | null;
 	type: string | null;
-	thumb: ScrollThumb | null;
-	timer: ScrollTimer | null;
 	dragging: ScrollDragging | null;
 	visible: boolean;
 	bind(target: HTMLElement, type: string): void;
 	updateHorizontalBar(): void;
 	updateVerticalBar(): void;
 	updateDisplay(state: boolean): void;
+}
+
+/**
+ * P4b：滚动条自身的可变状态走**显式元素数据**（`thumb` / `timer` 已从 DATA_FIELDS 摘除）。
+ * `timer` 是"按键连续滚动"的帧循环句柄，绑定在元素上以便同一条滚动条复用。
+ */
+interface ScrollBarData {
+	thumb: ScrollThumb | null;
+	timer: ScrollTimer | null;
 }
 
 const roundTo = (value: number, decimals: number): number => {
@@ -63,13 +70,13 @@ export function attachScrollBarApi(
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
 	if (isApiAttached(bar)) return bar;
-	// P4b：	humb 走显式元素数据（该字段已从 DATA_FIELDS 摘除）
-	const data = elementDataOf<ScrollBarApi>(bar);
+	// P4b：`thumb` / `timer` 走显式元素数据（这两个字段已从 DATA_FIELDS 摘除）
+	const data = elementDataOf<ScrollBarData>(bar);
 
 	bar.target = options.target ?? null;
 	bar.type = options.type ?? null;
 	data.thumb = null;
-	bar.timer = null;
+	data.timer = null;
 	bar.dragging = null;
 	bar.visible = false;
 
@@ -165,7 +172,7 @@ export function attachScrollBarApi(
 
 	const scrollRelative = (sign: number): void => {
 		const { target } = bar;
-		let { timer } = bar;
+		let { timer } = data;
 		if (!timer) {
 			let rafId: number | null = null;
 			let cancelled = false;
@@ -241,7 +248,7 @@ export function attachScrollBarApi(
 					}
 				}
 			};
-			bar.timer = {
+			data.timer = {
 				state,
 				add: () => {
 					if (rafId === null) {
@@ -256,7 +263,7 @@ export function attachScrollBarApi(
 					}
 				}
 			};
-			timer = bar.timer;
+			timer = data.timer;
 		}
 		let start = 0;
 		let offset = 0;

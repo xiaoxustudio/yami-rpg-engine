@@ -49,6 +49,8 @@ const treeCore = createTreeCore();
  */
 interface TreeListElementData {
 	keyword: RegExp | null;
+	/** P4b：重命名用的计时器（`timer` 已从 DATA_FIELDS 摘除） */
+	timer: Timer;
 }
 const treeData = (el: unknown): TreeListElementData =>
 	getElementData(el as HTMLElement) as unknown as TreeListElementData;
@@ -1054,7 +1056,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	cancelRenaming: function (this: HTMLElement & { [k: string]: unknown }): void {
-		const timer = this.timer as Timer;
+		// P4b：`timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+		const timer = treeData(this).timer;
 		if (timer.target) {
 			timer.target = null;
 		}
@@ -1201,7 +1204,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 							document.activeElement === this &&
 							event.clientX > (rect(rowData(element).nodeIcon)?.right ?? 0)
 						) {
-							this.timer.target = event.target;
+							treeData(this).timer.target = event.target;
 						}
 					}
 				}
@@ -1225,10 +1228,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 		switch (event.button) {
 			case 0:
-				if (document.activeElement === this && this.timer.target === event.target) {
-					this.timer.running = true;
-					this.timer.elapsed = 0;
-					this.timer.add();
+				if (document.activeElement === this) {
+					const timer = treeData(this).timer;
+					if (timer.target === event.target) {
+						timer.running = true;
+						timer.elapsed = 0;
+						timer.add();
+					}
 				}
 				break;
 			case 2:
@@ -1616,7 +1622,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.root = Object.defineProperty({}, 'children', {
 		get: () => list.data
 	});
-	list.timer = new Timer({
+	treeData(list).timer = new Timer({
 		duration: 500,
 		callback: (timer: Timer) => {
 			const item = list.read();

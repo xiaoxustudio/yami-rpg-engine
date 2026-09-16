@@ -8,6 +8,15 @@ import { UI } from '@app/ui/ui-window.ts';
 		update: ((node: UITextBoxData, key: string, value: unknown) => void) | null;
 		[k: string]: unknown;
 	}
+	/**
+	 * `uiTextBox-number` 登记的是 `YMNumberBox` 的根元素：`decimals` 由该 SFC 自己
+	 * `defineProperty(el, 'decimals', …)` 定义（组件内部状态），**不是** P4b 的元素数据
+	 * ——所以这里给局部形状，而不是继续靠 `global.d.ts` 的 `interface HTMLElement` 兜底。
+	 */
+	interface NumberBoxHostElement extends HTMLElement {
+		input?: HTMLElement;
+		decimals?: number;
+	}
 	interface UITextBoxData {
 		type: string;
 		align: string;
@@ -76,7 +85,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const number = inspectorEls.get('uiTextBox-number') as HTMLElement;
+			const number = inspectorEls.get('uiTextBox-number') as NumberBoxHostElement;
 			(number.input! as HTMLInputElement).min = node.min;
 			(number.input! as HTMLInputElement).max = node.max;
 			number.decimals = node.decimals;
@@ -139,7 +148,7 @@ import { UI } from '@app/ui/ui-window.ts';
 					// element[key] = value
 					node.instances.setProperty(key, value);
 					const numberEl = inspectorEls.get('uiTextBox-number') as
-						| (HTMLElement & { input?: Record<string, unknown> })
+						| (NumberBoxHostElement & { input?: Record<string, unknown> })
 						| null;
 					if (numberEl?.input) numberEl.input[key] = value;
 				}
@@ -149,7 +158,7 @@ import { UI } from '@app/ui/ui-window.ts';
 					node.decimals = value as number;
 					// element.decimals = value
 					node.instances.setProperty(key, value);
-					(inspectorEls.get('uiTextBox-number') as HTMLElement).decimals =
+					(inspectorEls.get('uiTextBox-number') as NumberBoxHostElement).decimals =
 						value as number;
 				}
 				break;
