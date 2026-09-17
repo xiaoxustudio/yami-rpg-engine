@@ -10,6 +10,8 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { History } from '@app/tools/history.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import type { StageColor } from '@app/utils/stage-color';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 
 // oxlint-disable-next-line no-explicit-any
 export const UIEngine: Record<string, any> = {};
@@ -30,7 +32,7 @@ interface UIShape {
 	page: HTMLElement;
 	head: HTMLElement;
 	body: HTMLElement;
-	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+	screen: YamiElement;
 	history: History;
 	controlPoints: UIControlPoints | null;
 	controlPointActive: ControlPoint | null;
@@ -64,7 +66,7 @@ interface UIShape {
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
-		const slider = engineEls.get('ui-zoom') as HTMLElement;
+		const slider = engineEls.get('ui-zoom') as YamiElement;
 		if (getUIStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -181,8 +183,7 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 					instancesCtor: instances?.constructor?.name,
 					instancesProto: Object.getPrototypeOf(instances)?.constructor?.name,
 					instancesContent: Array.isArray(instances)
-						? // oxlint-disable-next-line no-base-to-string
-							instances.map((e: unknown) => `${typeof e}:${String(e)}`)
+						? instances.map((e: unknown) => `${typeof e}:${String(e)}`)
 						: String(instances),
 					instancesSetType: typeof instances.set,
 					instancesSetName: instances.set?.name,
@@ -309,7 +310,7 @@ UIEngine.setControlPoint = function (this: UIShape, point: ControlPoint | null) 
 			case points.resize.TR:
 			case points.resize.BL:
 			case points.resize.BR: {
-				const angle = Math.modDegrees(point.angle + this.controlPointRotation, 180);
+				const angle = modDegrees(point.angle + this.controlPointRotation, 180);
 				if (angle < 22.5 || angle >= 157.5) {
 					cursor = 'ew-resize';
 				} else if (angle < 67.5) {
@@ -417,9 +418,9 @@ UIEngine.updateCamera = function (this: UIShape, x = this.centerX, y = this.cent
 	const scrollY = y * this.scaleY + this.paddingTop;
 	const toleranceForDPR = 0.0001;
 	screenScrollData(screen).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
+		clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
 	screenScrollData(screen).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
+		clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
@@ -427,8 +428,8 @@ UIEngine.updateCamera = function (this: UIShape, x = this.centerX, y = this.cent
 UIEngine.updateTransform = function (this: UIShape) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
-	const left = Math.roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
-	const top = Math.roundTo(screen.scrollTop * dpr - this.paddingTop, 4);
+	const left = roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
+	const top = roundTo(screen.scrollTop * dpr - this.paddingTop, 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
 	this.scrollLeft = left / this.scaleX;
@@ -441,8 +442,8 @@ UIEngine.updateTransform = function (this: UIShape) {
 		.translate(-this.scrollLeft, -this.scrollTop);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.centerX = Math.roundTo((scrollX - this.paddingLeft) / this.scaleX, 4);
-	this.centerY = Math.roundTo((scrollY - this.paddingTop) / this.scaleY, 4);
+	this.centerX = roundTo((scrollX - this.paddingLeft) / this.scaleX, 4);
+	this.centerY = roundTo((scrollY - this.paddingTop) / this.scaleY, 4);
 };
 
 UIEngine.drawBackground = function (this: UIShape) {
@@ -497,25 +498,25 @@ UIEngine.drawCoordinateAxes = function (this: UIShape) {
 		vertices[2] = 0;
 		vertices[3] = x2;
 		vertices[4] = y2 + 0.5;
-		vertices[5] = Math.dist(x1, y1, x2, y2);
+		vertices[5] = dist(x1, y1, x2, y2);
 		vertices[6] = x3;
 		vertices[7] = y3 + 0.5;
 		vertices[8] = 0;
 		vertices[9] = x4;
 		vertices[10] = y4 + 0.5;
-		vertices[11] = Math.dist(x3, y3, x4, y4);
+		vertices[11] = dist(x3, y3, x4, y4);
 		vertices[12] = x5 + 0.5;
 		vertices[13] = y5;
 		vertices[14] = 0;
 		vertices[15] = x6 + 0.5;
 		vertices[16] = y6;
-		vertices[17] = Math.dist(x5, y5, x6, y6);
+		vertices[17] = dist(x5, y5, x6, y6);
 		vertices[18] = x7 + 0.5;
 		vertices[19] = y7;
 		vertices[20] = 0;
 		vertices[21] = x8 + 0.5;
 		vertices[22] = y8;
-		vertices[23] = Math.dist(x7, y7, x8, y8);
+		vertices[23] = dist(x7, y7, x8, y8);
 		matrix.project(gl.flip, gl.width, gl.height);
 		gl.alpha = 1;
 		gl.blend = 'normal';

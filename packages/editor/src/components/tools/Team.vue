@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { composableEls } from '@app/composables/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -81,8 +82,8 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const onListSelect = (event: Event & { value?: unknown }) => {
 	Team?.listSelect?.(event);
 };
-const onListPopup = (event: Event & { value?: unknown }) => {
-	Team?.listPopup?.(event as PointerEvent & { value?: unknown });
+const onListPopup = (event: YamiEvent) => {
+	Team?.listPopup?.(event as never);
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Team?.listChange?.(event);

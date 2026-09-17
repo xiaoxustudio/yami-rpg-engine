@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
 import { on } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface FrameGeneratorForm {
 	strideX: number;
@@ -27,7 +28,7 @@ FrameGenerator.initialize = function (this: typeof FrameGenerator) {
 	form.strideY = 0;
 	form.count = 1;
 
-	const frameWindow = paletteEls.get('autoTile-generateFrames') as HTMLElement;
+	const frameWindow = paletteEls.get('autoTile-generateFrames') as YamiElement;
 	if (frameWindow) on(frameWindow, 'closed', this.windowClosed);
 	// confirm 由 AutoTileGenerateFrames.vue 的 @confirm 驱动（按钮由 WindowFrame 生成）
 };

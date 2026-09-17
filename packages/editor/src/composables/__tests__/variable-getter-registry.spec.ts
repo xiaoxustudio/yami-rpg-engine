@@ -43,7 +43,7 @@ const VARIABLE_GETTER2_IDS = [
 type LoadableEl = HTMLElement & { loadItems?: (items: unknown[]) => void };
 
 const loadItemsOf = (id: string): ReturnType<typeof vi.fn> => {
-	const el = composableEls.get(id) as LoadableEl;
+	const el = composableEls.get(id) as unknown as LoadableEl;
 	const spy = vi.fn();
 	el.loadItems = spy;
 	return spy;
@@ -91,7 +91,7 @@ describe('变量访问器窗口注册表（P5b 后续批次）', () => {
 		const wrapper = mount(VariableGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const typeEl = composableEls.get('variableGetter-type') as HTMLElement & {
+		const typeEl = composableEls.get('variableGetter-type') as unknown as HTMLElement & {
 			enableHiddenMode(): { relate(cases: unknown[]): void };
 		};
 		const relate = vi.fn();

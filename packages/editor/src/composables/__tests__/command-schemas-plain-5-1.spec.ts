@@ -556,9 +556,7 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 tilemap + 坐标/图集文本', () => {
 			setWords();
 			Command.parseTilemap = vi.fn(() => 'TM') as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			const contents = Command.cases.setTile.parse!({
 				tilemap: { type: 'trigger' },
@@ -736,7 +734,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + 操作/时长文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerDuration.parse!({
 				trigger: { type: 'trigger' },
@@ -837,7 +834,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + motion 文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseEnumString = vi.fn((v: unknown) => `EN:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerMotion.parse!({
 				trigger: { type: 'trigger' },
@@ -916,7 +912,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 trigger + speed 文本', () => {
 			setWords();
 			Command.parseTrigger = vi.fn((t: { type: string }) => `TR:${t.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setTriggerSpeed.parse!({
 				trigger: { type: 'trigger' },

@@ -10,17 +10,18 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from '@app/variable/variable.ts';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 const Clipboard = GlobalClipboard;
 
-Variable.listSelect = function (event: Event) {
+Variable.listSelect = function (event: YamiMouseEvent) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Variable.openPropertyPanel(item)
 		: Variable.closePropertyPanel();
 };
 
-Variable.listRecord = function (event: Event) {
+Variable.listRecord = function (event: YamiMouseEvent) {
 	Variable.changed = true;
 	const response = event.value;
 	switch (response.type) {
@@ -42,7 +43,7 @@ Variable.listRecord = function (event: Event) {
 	}
 };
 
-Variable.listPopup = function (event: Event) {
+Variable.listPopup = function (event: YamiMouseEvent) {
 	const list = Variable.list as unknown as {
 		createFolder: () => unknown;
 		createVariable: () => unknown;
@@ -152,7 +153,7 @@ Variable.listPopup = function (event: Event) {
 	);
 };
 
-Variable.listOpen = function (event: Event) {
+Variable.listOpen = function (event: YamiMouseEvent) {
 	if (event.value.class !== 'folder' && Variable.target instanceof Object) {
 		Variable.target.getFocus?.();
 		Variable.confirm();

@@ -188,8 +188,8 @@ const onListRecord = (event: Event) => {
 const onListOpen = (event: Event) => {
 	Attribute?.listOpen?.(event as MouseEvent);
 };
-const onListPopup = (event: Event & { clientX: number; clientY: number }) => {
-	Attribute?.listPopup?.(event);
+const onListPopup = (event: Event & { value?: unknown; clientX?: number; clientY?: number }) => {
+	Attribute?.listPopup?.(event as unknown as Event & { clientX: number; clientY: number });
 };
 const onNameInput = (value: string) => {
 	Attribute?.nameInput?.({ target: { value } } as InputEvent & { target: HTMLInputElement });

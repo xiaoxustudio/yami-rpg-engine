@@ -42,7 +42,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.motion = Animation.motion;
 			Curve.load!(frame);
 			(
-				inspectorEls.get('animJointFrame-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('animJointFrame-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -61,7 +63,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		_options: Record<string, unknown>
 	) {
 		(
-			inspectorEls.get('animJointFrame-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('animJointFrame-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 

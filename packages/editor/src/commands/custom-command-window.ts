@@ -96,7 +96,12 @@ interface CustomCommandShape {
 	windowClosed: ((event: Event) => void) | null;
 	pointerdown: CustomCommandMethod;
 	scriptChange: ((event: Event & { changedMeta: unknown }) => void) | null;
-	listKeydown: ((this: CustomCommandList, event: KeyboardEvent) => void) | null;
+	listKeydown:
+		| ((
+				this: CustomCommandList,
+				event: KeyboardEvent & { cmdOrCtrlKey: boolean; altKey: boolean }
+		  ) => void)
+		| null;
 	listSelect: ((event: Event & { value: CustomCommandData }) => void) | null;
 	listUnselect: (() => void) | null;
 	listChange: (() => void) | null;
@@ -230,7 +235,7 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 CustomCommand.open = function (this: CustomCommandShape): void {
 	Window.open!('command');
 
-	this.data = Object.clone(Data.commands);
+	this.data = deepClone(Data.commands);
 
 	this.list.restoreSelection!();
 
@@ -474,7 +479,7 @@ CustomCommand.apply = function (this: CustomCommandShape, event: Event): void {
 
 		let commands = this.data;
 		if (event instanceof Event) {
-			commands = Object.clone(commands);
+			commands = deepClone(commands);
 		} else {
 			TreeList.deleteCaches(
 				commands as unknown as Parameters<typeof TreeList.deleteCaches>[0]
@@ -566,6 +571,8 @@ CustomCommand.list_restoreSelection = function (this: CustomCommandList): void {
 
 const customCommandBridgeKeys = ['state', 'commands'] as const;
 import { getCustomCommandStore } from '@app/stores/custom-command';
+import type {} from '@app/types/editor-event';
+import { clone as deepClone } from '@app/utils/object';
 
 for (const key of customCommandBridgeKeys) {
 	Object.defineProperty(CustomCommand, key, {

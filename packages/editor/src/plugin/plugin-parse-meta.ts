@@ -15,6 +15,7 @@ import { PositionGetter } from '@app/commands/accessors/position-accessor-window
 import { SkillGetter } from '@app/commands/accessors/skill-accessor-window.ts';
 import { StateGetter } from '@app/commands/accessors/state-accessor-window.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
+import { clamp } from '@app/utils/math';
 
 PluginManager.parseMeta = (function IIFE() {
 	const event = new Event('script-change');
@@ -314,7 +315,7 @@ PluginManager.parseMeta = (function IIFE() {
 			}
 			const min = Math.max(-1000000000, Math.min(...numbers));
 			const max = Math.min(+1000000000, Math.max(...numbers));
-			parameter.value = Math.clamp(parameter.value as number, min, max);
+			parameter.value = clamp(parameter.value as number, min, max);
 			parameter.min = min;
 			parameter.max = max;
 		}
@@ -692,7 +693,7 @@ PluginManager.parseMeta = (function IIFE() {
 					active = owner.value;
 				}
 			}
-			const actives = map[active as string] ?? Array.empty;
+			const actives = map[active as string] ?? [];
 			for (const option of options!) {
 				const keys = map[option as string];
 				if (keys === undefined) continue;

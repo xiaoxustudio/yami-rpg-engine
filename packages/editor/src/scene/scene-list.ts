@@ -11,6 +11,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
+import { clone as deepClone } from '@app/utils/object';
 
 type SceneItem = {
 	class: string;
@@ -69,12 +70,12 @@ Scene.list.duplicate = function (this: typeof Scene, item: SceneItem) {
 	switch (item.class) {
 		case 'tilemap':
 			Codec.encodeTilemap!(item);
-			copy = Object.clone(item);
+			copy = deepClone(item);
 			Codec.decodeTilemap!(copy);
 			copy.shortcut = 0;
 			break;
 		default:
-			copy = Object.clone(item);
+			copy = deepClone(item);
 			break;
 	}
 	copy.name = this.generateUniqueName!(item);
@@ -117,7 +118,7 @@ Scene.list.cancelSearch = function (this: typeof Scene) {
 		Scene.searcher.deleteInputContent();
 		this.expandToSelection!();
 		this.scrollToSelection!();
-		active!.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 

@@ -3,6 +3,7 @@ import { disable, enable, hide, read, show, write } from '@app/utils/element-uti
 import { getVariableStore } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
 import { Variable } from '@app/variable/variable.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 Variable.openPropertyPanel = function (this: typeof Variable, variable: unknown) {
 	const panel = this.panel;
@@ -49,10 +50,10 @@ Variable.sortWrite = function (event: Event & { value?: number }) {
 	switch (event.value) {
 		case 0:
 		case 1:
-			disable(variableEls.get('variable-type-object') as HTMLElement);
+			disable(variableEls.get('variable-type-object') as YamiElement);
 			break;
 		case 2:
-			enable(variableEls.get('variable-type-object') as HTMLElement);
+			enable(variableEls.get('variable-type-object') as YamiElement);
 			break;
 	}
 };
@@ -76,7 +77,7 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 
 Variable.typeWrite = function (event: Event & { value?: string }) {
 	const { style } = Variable.inputs.value;
-	Variable.manager.switch(event.value);
+	Variable.manager.switch(event.value ?? null);
 	switch (event.value) {
 		case 'boolean':
 		case 'number':

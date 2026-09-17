@@ -1,3 +1,4 @@
+import type { YamiEvent } from '@app/types/editor-event';
 // @type {WebGLRenderingContext}
 // oxlint-disable-next-line no-explicit-any
 export let GL: any;
@@ -37,7 +38,7 @@ interface WebGLPrototypeBufferData {
 		dark: { r: 0x20, g: 0x20, b: 0x20 }
 	};
 
-	window.addEventListener('themechange', function (event) {
+	window.addEventListener('themechange', function (event: YamiEvent) {
 		const { r, g, b } = background[event.value];
 		GL.BACKGROUND_RED = r / 255;
 		GL.BACKGROUND_GREEN = g / 255;

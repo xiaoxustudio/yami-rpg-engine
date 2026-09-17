@@ -13,6 +13,7 @@ import { eventEditorEls } from './event-editor-initialize.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
+import { clone as deepClone } from '@app/utils/object';
 
 EventEditor.clearAllEventClasses = function (this: EventEditorShape, ...items: EventListItem[]) {
 	for (const item of items) {
@@ -35,7 +36,7 @@ EventEditor.save = function (this: EventEditorShape, item: EventListItem) {
 	const commands = item.commands!;
 	commands.history.saveState();
 	this.appendCommandsToCaches!(commands);
-	const commandsClone = Object.clone(commands);
+	const commandsClone = deepClone(commands);
 	Object.defineProperty(commandsClone, 'symbol', {
 		configurable: true,
 		value: commands.symbol
@@ -128,7 +129,7 @@ EventEditor.unpackOpenEvents = function (this: EventEditorShape) {
 	for (const item of events) {
 		if ('name' in item) {
 			item.name = EventEditor.getGlobalEventName!(item.id);
-			EventEditor.list.updateItemName!(item);
+			EventEditor.list.updateItemName!(item as never);
 			copies.push(item as EventListItem);
 		} else {
 			copies.push(EventEditor.list.createGlobalEventItem!(item.id));
@@ -158,7 +159,9 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 			if (i < length) {
 				while (i < length) {
 					// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + addClass）
-					const node = renderDetached(h('div', { class: 'box event-commands-line-number' }));
+					const node = renderDetached(
+						h('div', { class: 'box event-commands-line-number' })
+					);
 					innerGutter.appendChild(node);
 					i++;
 				}
@@ -216,7 +219,7 @@ EventEditor.fetchCommandBuffer = function (this: EventEditorShape, item: EventLi
 	});
 
 	if (!commandsClone) {
-		commandsClone = Object.clone(commands);
+		commandsClone = deepClone(commands);
 		Object.defineProperties(commandsClone, {
 			symbol: {
 				configurable: true,

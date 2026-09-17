@@ -103,7 +103,6 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 			el.id = id;
 			document.body.appendChild(el);
 		}
-		Array.empty = [];
 		Window.open = vi.fn();
 		Window.close = vi.fn();
 		vi.mocked(Data).scenePresets = {};
@@ -182,7 +181,9 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 		presetObject.open({ filter: 'tilemap', input: vi.fn() });
 		vi.mocked(Data).scenes = { 'scene-1': { objects: makeNodes() } };
 		const list = getList();
-		const unselect = vi.spyOn(list, 'unselect').mockImplementation(() => undefined);
+		const unselect = vi
+			.spyOn(list as unknown as Record<'unselect', () => void>, 'unselect')
+			.mockImplementation(() => undefined);
 		presetObject.sceneIdWrite({ value: 'scene-1' } as Event & { value?: string });
 		expect(presetObject.nodes).toEqual([
 			{ class: 'folder', name: 'Folder', expanded: undefined, children: [] }

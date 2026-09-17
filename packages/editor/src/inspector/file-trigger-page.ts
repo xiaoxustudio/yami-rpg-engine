@@ -6,6 +6,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import type { TriggerForm } from '@app/composables/useFileTriggerPage';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileTriggerShape {
@@ -87,7 +88,9 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('fileTrigger-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('fileTrigger-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -130,7 +133,7 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			case 'shape-type':
 				if (trigger.shape.type !== value) {
 					const form = (
-						inspectorEls.get('fileTrigger-vue-mount') as
+						inspectorEls.get('fileTrigger-vue-mount') as unknown as unknown as
 							| (HTMLElement & { form?: TriggerForm })
 							| null
 					)?.form;
@@ -198,7 +201,7 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elMotion = inspectorEls.get('fileTrigger-motion') as HTMLElement;
+		const elMotion = inspectorEls.get('fileTrigger-motion') as YamiElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};

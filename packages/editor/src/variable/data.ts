@@ -1,6 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Variable } from '@app/variable/variable.ts';
+import { clone as deepClone } from '@app/utils/object';
 
 interface VariableNode {
 	class: string;
@@ -39,7 +40,7 @@ Variable.unpackVariables = (function IIFE() {
 			const item = items[i];
 			if (item.class !== 'folder') {
 				Variable.idMap[item.id!] = true;
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
@@ -66,7 +67,7 @@ Variable.packVariables = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item) as PackedVariableNode;
+				copies[i] = deepClone(item) as PackedVariableNode;
 			} else {
 				copies[i] = {
 					class: item.class,

@@ -7,6 +7,7 @@ import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { StageColor } from '@app/utils/stage-color';
 import { getAnimationStore } from '@app/stores/animation';
 import { getElementData } from '@app/utils/element-data';
+import { roundTo } from '@app/utils/math';
 
 Animation.requestRefreshingList = function (this: typeof Animation) {
 	if (getAnimationStore().state === 'open') {
@@ -335,8 +336,8 @@ Animation.screenKeydown = function (this: typeof Animation, event: KeyboardEvent
 						offsetX *= 10;
 						offsetY *= 10;
 					}
-					const x = Math.roundTo(target.x! + offsetX, 4);
-					const y = Math.roundTo(target.y! + offsetY, 4);
+					const x = roundTo(target.x! + offsetX, 4);
+					const y = roundTo(target.y! + offsetY, 4);
 					this.shiftTarget!(x, y);
 				}
 				break;

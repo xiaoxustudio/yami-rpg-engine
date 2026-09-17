@@ -57,7 +57,9 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 			Sprite.open(frame);
 			Curve.load!(frame);
 			(
-				inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('animSpriteFrame-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -77,7 +79,9 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 		_options: Record<string, unknown>
 	) {
 		(
-			inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('animSpriteFrame-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 

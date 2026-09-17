@@ -16,6 +16,7 @@ import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { SceneShift } from './move-scene.ts';
 import { ObjectFolder } from './default-object-folder.ts';
 import type { MenuItem } from '@ui-kit';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 Scene.searcherInput = function (
 	this: HTMLElement & { input?: HTMLInputElement | null },
@@ -162,7 +163,10 @@ Scene.listRecord = function (
 	}
 };
 
-Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneItem | null }) {
+Scene.listPopup = function (
+	this: typeof Scene,
+	event: YamiMouseEvent & { value?: SceneItem | null }
+) {
 	const list = Scene.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
@@ -188,7 +192,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 					},
 					{
 						label: get('shift'),
-						enabled: item.tiles.length !== 0,
+						enabled: (item.tiles?.length ?? 0) !== 0,
 						click: () => {
 							SceneShift.open!((x: number, y: number) => {
 								Scene.history.save({
@@ -302,7 +306,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: '/',
 			enabled: copyable,
 			click: () => {
-				list.toggle!(item);
+				list.toggle!(item as unknown as never);
 			}
 		},
 		{
@@ -313,8 +317,8 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: ctrl('X'),
 			enabled: copyable,
 			click: () => {
-				list.copy!(item);
-				list.delete!(item);
+				list.copy!(item as unknown as never);
+				list.delete!(item as unknown as never);
 			}
 		},
 		{
@@ -322,7 +326,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				list.copy!(item);
+				list.copy!(item as unknown as never);
 			}
 		},
 		{
@@ -330,7 +334,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				list.paste!(item);
+				(list.paste as unknown as (item: unknown) => unknown)(item);
 			}
 		},
 		{
@@ -346,7 +350,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: 'Delete',
 			enabled: deletable,
 			click: () => {
-				list.delete!(item);
+				list.delete!(item as unknown as never);
 			}
 		},
 		{
@@ -361,7 +365,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			label: get('copy-id'),
 			enabled: !!item,
 			click: () => {
-				void navigator.clipboard.writeText(item.presetId);
+				void navigator.clipboard.writeText(item!.presetId!);
 			}
 		}
 	);
@@ -371,7 +375,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 			accelerator: 'Alt+LB',
 			enabled: copyable,
 			click: () => {
-				Reference.openRelated!(item.presetId);
+				Reference.openRelated!(item!.presetId!);
 			}
 		});
 	}

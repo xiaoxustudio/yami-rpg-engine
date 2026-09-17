@@ -525,7 +525,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染分辨率 + 缩放文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setResolution.parse!({
 				width: 1920,
@@ -846,7 +845,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 skill + 操作文本', () => {
 			setWords();
 			Command.parseSkill = vi.fn((s: { type: string }) => `SK:${s.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setSkill.parse!({
 				skill: { type: 'trigger' },
@@ -940,7 +938,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 state + 操作文本', () => {
 			setWords();
 			Command.parseState = vi.fn((s: { type: string }) => `ST:${s.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setState.parse!({
 				state: { type: 'trigger' },

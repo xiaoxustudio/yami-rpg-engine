@@ -1,6 +1,7 @@
 import { Scene } from './scene-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { empty as fnEmpty } from '@app/utils/function';
 
 interface ParallaxData {
 	shiftSpeedX: number;
@@ -148,8 +149,8 @@ export class Parallax {
 			if (texture.complete) {
 				return texture;
 			}
-			this.update = Function.empty;
-			this.draw = Function.empty;
+			this.update = fnEmpty;
+			this.draw = fnEmpty;
 			texture.on('load', () => {
 				Scene.requestRendering!();
 				delete (this as unknown as { update?: unknown; draw?: unknown }).update;

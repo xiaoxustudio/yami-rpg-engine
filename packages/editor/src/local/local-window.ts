@@ -96,23 +96,23 @@ interface LocalizationShape {
 	unpackLocalization: (this: LocalizationShape) => void;
 	packLocalization: (this: LocalizationShape) => void;
 	resizeTextArea: (this: LocalizationShape, target: HTMLElement) => void;
-	windowClose: (this: LocalizationShape, event: Event) => void;
-	windowClosed: (this: LocalizationShape, event: Event) => void;
-	keydown: (event: Event) => void;
+	windowClose: (this: LocalizationShape, event: YamiEvent) => void;
+	windowClosed: (this: LocalizationShape, event: YamiEvent) => void;
+	keydown: (event: YamiEvent) => void;
 	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
 	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
 	listDoubleclick: (event: MouseEvent) => void;
-	listSelect: (event: Event) => void;
-	listRecord: (event: Event) => void;
+	listSelect: (event: YamiEvent) => void;
+	listRecord: (event: YamiEvent) => void;
 	listOpen: (event: MouseEvent) => void;
-	listPopup: (this: TreeListElement, event: Event) => void;
-	panelInput: (event: Event) => void;
+	listPopup: (this: TreeListElement, event: YamiMouseEvent) => void;
+	panelInput: (event: YamiEvent) => void;
 	panelKeydown: (event: KeyboardEvent) => void;
-	searcherInput: (this: TextBox, event: InputEvent) => void;
+	searcherInput: (this: YamiElement, event: InputEvent) => void;
 	confirm: (this: LocalizationShape, event?: Event) => void;
 	apply: (this: LocalizationShape, event?: Event) => void;
 	createInputs: (this: LocalizationShape) => void;
-	fromExcel: (this: LocalizationShape, event: Event) => Promise<void>;
+	fromExcel: (this: LocalizationShape, event: YamiEvent) => Promise<void>;
 	toExcel: (this: LocalizationShape, event?: Event) => void;
 	list_saveScroll: (this: TreeListElement) => void;
 	list_restoreScroll: (this: TreeListElement) => void;
@@ -196,18 +196,14 @@ export const Localization: LocalizationShape = {
 
 function ensureDomBound() {
 	if (Localization.list) return;
-	const list = localEls.get('localization-list') as HTMLElement;
+	const list = localEls.get('localization-list') as YamiElement;
 	if (!list) return;
 	Localization.list = list as unknown as TreeListElement;
-	Localization.panel = localEls.get(
-		'localization-inspector'
-	) as HTMLElement as unknown as HTMLElement & {
+	Localization.panel = localEls.get('localization-inspector') as unknown as HTMLElement & {
 		item: LocalizationItem | null;
 	};
 	hide(Localization.panel);
-	Localization.searcher = localEls.get(
-		'localization-searcher'
-	) as HTMLElement as unknown as HTMLElement & {
+	Localization.searcher = localEls.get('localization-searcher') as unknown as HTMLElement & {
 		addCloseButton(): void;
 		deleteInputContent(): void;
 	};
@@ -275,7 +271,7 @@ Localization.initialize = function () {
 		this.changed = true;
 	};
 
-	on(localEls.get('localization') as HTMLElement, 'close', this.windowClose);
+	on(localEls.get('localization') as YamiElement, 'close', this.windowClose);
 
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
@@ -287,8 +283,8 @@ Localization.initialize = function () {
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 
-	on(localEls.get('localization-to-excel') as HTMLElement, 'click', this.toExcel);
-	on(localEls.get('localization-from-excel') as HTMLElement, 'click', this.fromExcel);
+	on(localEls.get('localization-to-excel') as YamiElement, 'click', this.toExcel);
+	on(localEls.get('localization-from-excel') as YamiElement, 'click', this.fromExcel);
 
 	ExportLanguage.initialize();
 	ImportLanguage.initialize();
@@ -341,7 +337,7 @@ Localization.open = function (target: LocalizationTarget | null | undefined = nu
 
 	getFocus(list);
 
-	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown as EventListener);
 	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'localization'));
 };
 
@@ -463,7 +459,7 @@ Localization.unpackLocalization = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 				Localization.idMap![item.id!] = true;
 			} else {
 				copies[i] = new ReferencedFolder(item);
@@ -487,7 +483,7 @@ Localization.packLocalization = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 			} else {
 				copies[i] = {
 					class: item.class,
@@ -508,10 +504,10 @@ Localization.packLocalization = (function IIFE() {
 Localization.resizeTextArea = function (textarea: HTMLElement) {
 	const shadowDOM = textarea.querySelector('textarea');
 	textarea.style.height = '0';
-	textarea.style.height = `${Math.clamp(shadowDOM!.scrollHeight + 11, 40, 200)}px`;
+	textarea.style.height = `${clamp(shadowDOM!.scrollHeight + 11, 40, 200)}px`;
 };
 
-Localization.windowClose = function (this: LocalizationShape, event: Event) {
+Localization.windowClose = function (this: LocalizationShape, event: YamiEvent) {
 	this.list!.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
@@ -536,7 +532,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 	}
 }.bind(Localization);
 
-Localization.windowClosed = function (this: LocalizationShape, _event: Event) {
+Localization.windowClosed = function (this: LocalizationShape, _event: YamiEvent) {
 	getLocalizationStore().state = 'closed';
 	this.data = null;
 	this.idMap = null;
@@ -554,7 +550,7 @@ Localization.windowClosed = function (this: LocalizationShape, _event: Event) {
 	clear(this.list);
 	clear(this.panel);
 	this.closeContentPanel();
-	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('keydown', this.keydown as EventListener);
 	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list!));
 }.bind(Localization);
 
@@ -611,14 +607,14 @@ Localization.listDoubleclick = function (event: MouseEvent) {
 	}
 };
 
-Localization.listSelect = function (event: Event) {
+Localization.listSelect = function (event: YamiEvent) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Localization.openContentPanel(item)
 		: Localization.closeContentPanel();
 };
 
-Localization.listRecord = function (event: Event) {
+Localization.listRecord = function (event: YamiEvent) {
 	Localization.changed = true;
 	Localization.history!.save({
 		type: 'localization-list-operation',
@@ -630,7 +626,7 @@ Localization.listOpen = function (event: MouseEvent) {
 	Localization.listDoubleclick(event);
 };
 
-Localization.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+Localization.listPopup = function (event: YamiMouseEvent) {
 	const list = Localization.list!;
 	const item = event.value;
 	const selected = !!item;
@@ -732,7 +728,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	);
 };
 
-Localization.panelInput = function (event: Event) {
+Localization.panelInput = function (event: YamiEvent) {
 	const element = event.target as HTMLElement;
 	if (element.tagName === 'TEXTAREA') {
 		const item = panelData(Localization.panel!).item;
@@ -775,11 +771,11 @@ Localization.panelKeydown = function (event: KeyboardEvent) {
 	}
 };
 
-Localization.searcherInput = function (this: TextBox, event: InputEvent) {
+Localization.searcherInput = function (this: YamiElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input!.value;
+	const text = (this.input as { value: string }).value;
 	Localization.list!.searchNodesDebounced(text);
 };
 
@@ -809,7 +805,7 @@ Localization.apply = function (this: LocalizationShape, _event?: Event) {
 	}
 }.bind(Localization);
 
-Localization.fromExcel = async function (this: LocalizationShape, event: Event) {
+Localization.fromExcel = async function (this: LocalizationShape, event: YamiEvent) {
 	const items = await YamiIpc.invoke.fromExcel();
 	if (JSON.stringify(items) == JSON.stringify(Data.localization.list) || !items.length) return;
 	Data.localization.list = items;
@@ -854,7 +850,7 @@ Localization.list_cancelSearch = function (this: TreeListElement) {
 		Localization.searcher!.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
-		active?.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 
@@ -904,6 +900,10 @@ Localization.list_onResume = function (item: LocalizationItem) {
 
 import { getLocalizationStore } from '@app/stores/localization';
 import { emitCustom } from '@app/events/custom-events';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
+import { clamp } from '@app/utils/math';
+import { clone as deepClone } from '@app/utils/object';
 
 const localizationBridgeKeys = ['state', 'strings'] as const;
 

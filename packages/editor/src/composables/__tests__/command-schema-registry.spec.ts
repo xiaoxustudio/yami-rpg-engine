@@ -62,7 +62,7 @@ describe('命令表单 composable 注册表（P1b）', () => {
 	it('Transition：open 经注册表把缓动选项写进控件（链路有效，不是静默 no-op）', async () => {
 		const wrapper = await mountAndSettle(Transition);
 
-		const el = composableEls.get('transition-easingId') as LoadableEl;
+		const el = composableEls.get('transition-easingId') as unknown as LoadableEl;
 		expect(el?.id).toBe('transition-easingId');
 		const loadItems = vi.fn();
 		el.loadItems = loadItems;
@@ -78,7 +78,7 @@ describe('命令表单 composable 注册表（P1b）', () => {
 	it('RegisterEvent：targetWrite 经注册表刷新 type 控件（模块侧真的调到了控件）', async () => {
 		const wrapper = await mountAndSettle(RegisterEvent);
 
-		const typeEl = composableEls.get('registerEvent-type') as LoadableEl;
+		const typeEl = composableEls.get('registerEvent-type') as unknown as LoadableEl;
 		expect(typeEl?.id).toBe('registerEvent-type');
 		const loadItems = vi.fn();
 		typeEl.loadItems = loadItems;

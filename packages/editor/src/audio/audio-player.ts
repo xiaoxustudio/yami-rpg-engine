@@ -1,6 +1,7 @@
 import { File } from '@app/file/file-system-core.ts';
 import { AudioManager } from './audio-manager.ts';
 import { Reverb } from './reverb.ts';
+import { clamp, roundTo } from '@app/utils/math';
 
 export class AudioPlayer {
 	// HTMLAudioElement 运行时挂载 .path 字段（play/stop 读写）
@@ -11,7 +12,7 @@ export class AudioPlayer {
 
 	constructor() {
 		const context = AudioManager.context!;
-		this.audio = new Audio();
+		this.audio = new Audio() as unknown as HTMLAudioElement & { path: string };
 		this.source = context.createMediaElementSource(this.audio);
 		this.panner = context.createStereoPanner();
 		this.reverb = null;
@@ -44,11 +45,11 @@ export class AudioPlayer {
 	}
 
 	setVolume(volume: number): void {
-		this.audio.volume = Math.clamp(volume, 0, 1);
+		this.audio.volume = clamp(volume, 0, 1);
 	}
 
 	setPan(pan: number): void {
-		this.panner.pan.value = Math.clamp(pan, -1, 1);
+		this.panner.pan.value = clamp(pan, -1, 1);
 	}
 
 	setReverb(dry: number, wet: number) {
@@ -62,10 +63,10 @@ export class AudioPlayer {
 
 	getParams() {
 		return {
-			volume: Math.roundTo(this.audio.volume, 2),
-			pan: Math.roundTo(this.panner.pan.value, 2),
-			dry: this.reverb ? Math.roundTo(this.reverb.dryGain.gain.value, 2) : 1,
-			wet: this.reverb ? Math.roundTo(this.reverb.wetGain.gain.value / 2, 2) : 0
+			volume: roundTo(this.audio.volume, 2),
+			pan: roundTo(this.panner.pan.value, 2),
+			dry: this.reverb ? roundTo(this.reverb.dryGain.gain.value, 2) : 1,
+			wet: this.reverb ? roundTo(this.reverb.wetGain.gain.value / 2, 2) : 0
 		};
 	}
 }

@@ -6,6 +6,7 @@ import { enable } from '@app/utils/element-utils.ts';
 import { Path } from '@app/utils/config';
 import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from './global.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 interface ApkConfig {
 	[k: string]: unknown;
@@ -31,18 +32,20 @@ export const ApkBuilder = new (class {
 		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
-		(moduleEls.get('export-apk-content') as HTMLElement & { update?: () => void }).update?.();
+		(
+			moduleEls.get('export-apk-content') as unknown as HTMLElement & { update?: () => void }
+		).update?.();
 	}
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();
 		if (log.done) {
-			enable(titleEls.get('export-apk-button') as HTMLElement);
+			enable(titleEls.get('export-apk-button') as YamiElement);
 		}
 	}
 	reset() {
 		this.logs.length = 0;
 		this.notifyLogContent();
-		enable(titleEls.get('export-apk-button') as HTMLElement);
+		enable(titleEls.get('export-apk-button') as YamiElement);
 	}
 	clearLog() {
 		this.logs = [];

@@ -1,5 +1,6 @@
 import { Path } from '@app/utils/config';
 import { Editor } from './editor.ts';
+import { remove } from '@app/utils/array';
 
 function updatePath(this: typeof Editor, path: string) {
 	const { config } = this;
@@ -13,7 +14,7 @@ function updatePath(this: typeof Editor, path: string) {
 	const item = items.find((a: { path: string }) => a.path === path);
 	if (item) {
 		item.date = date;
-		items.remove(item);
+		remove(items, item);
 		items.unshift(item);
 	} else {
 		items.unshift({ path, date });

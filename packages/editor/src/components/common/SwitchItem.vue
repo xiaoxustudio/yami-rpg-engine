@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { YMSwitchItem } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
@@ -65,7 +66,7 @@ const input = (value: number): void => {
 	emit('input', dataValue.value);
 	if (inputEventEnabled.value) {
 		const inputEvent = new Event('input');
-		inputEvent.value = dataValue.value;
+		(inputEvent as YamiEvent).value = dataValue.value;
 		root.value?.dispatchEvent(inputEvent);
 	}
 };

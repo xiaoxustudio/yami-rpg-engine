@@ -3,8 +3,7 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 
 Scene.Textures = class Textures {
 	state: string;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	[k: string]: unknown;
 
 	constructor() {
 		this.state = 'open';

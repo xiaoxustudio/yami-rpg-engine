@@ -4,6 +4,7 @@ import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Window } from '@app/tools/window-object.ts';
 import { disable, enable, on, read, write } from '@app/utils/element-utils.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 interface SearchMode {
 	caseInsensitive: boolean;
@@ -35,29 +36,29 @@ export const SearchString = new (class {
 	private bindButtons() {
 		getSearchStringStore().syncState();
 		if (this._bound) return;
-		const win = storesEls.get('event-search-string') as HTMLElement;
+		const win = storesEls.get('event-search-string') as YamiElement;
 		if (!win) return;
 		this._bound = true;
 		this.window = win;
-		this.log = storesEls.get('event-search-string-log') as HTMLElement;
+		this.log = storesEls.get('event-search-string-log') as YamiElement;
 		on(win, 'keydown', (e: KeyboardEvent) => {
 			if (e.key == 'Enter' && this.lastArr.length > 0) {
 				this.next();
 			}
 		});
 		on(win, 'closed', () => this.close());
-		on(storesEls.get('event-search-string-previous') as HTMLElement, 'click', () =>
+		on(storesEls.get('event-search-string-previous') as YamiElement, 'click', () =>
 			this.previous()
 		);
-		on(storesEls.get('event-search-string-next') as HTMLElement, 'click', () => this.next());
-		on(storesEls.get('event-search-string-search') as HTMLElement, 'input', (e: Event) =>
+		on(storesEls.get('event-search-string-next') as YamiElement, 'click', () => this.next());
+		on(storesEls.get('event-search-string-search') as YamiElement, 'input', (e: Event) =>
 			this.input(e)
 		);
 	}
 	refresh() {
-		if (read(storesEls.get('event-search-string-search') as HTMLElement))
+		if (read(storesEls.get('event-search-string-search') as YamiElement))
 			this.input({
-				target: { value: read(storesEls.get('event-search-string-search') as HTMLElement) }
+				target: { value: read(storesEls.get('event-search-string-search') as YamiElement) }
 			});
 	}
 	locationLine() {
@@ -80,7 +81,7 @@ export const SearchString = new (class {
 		});
 	}
 	clearHistory() {
-		write(storesEls.get('event-search-string-search') as HTMLElement, '');
+		write(storesEls.get('event-search-string-search') as YamiElement, '');
 	}
 	input(e: { target?: { value?: unknown } } | Event) {
 		const val = (e.target as { value?: unknown })?.value as string;
@@ -99,11 +100,11 @@ export const SearchString = new (class {
 		});
 		this.log!.textContent = String(findArr.length);
 		if (this.lastArr.length == 0) {
-			disable(storesEls.get('event-search-string-previous') as HTMLElement);
-			disable(storesEls.get('event-search-string-next') as HTMLElement);
+			disable(storesEls.get('event-search-string-previous') as YamiElement);
+			disable(storesEls.get('event-search-string-next') as YamiElement);
 		} else {
-			enable(storesEls.get('event-search-string-previous') as HTMLElement);
-			enable(storesEls.get('event-search-string-next') as HTMLElement);
+			enable(storesEls.get('event-search-string-previous') as YamiElement);
+			enable(storesEls.get('event-search-string-next') as YamiElement);
 		}
 	}
 	clearCurrentHighlight() {
@@ -136,12 +137,12 @@ export const SearchString = new (class {
 		Window.open!('event-search-string');
 		this.index = 0;
 		this.current = eventWindow;
-		disable(storesEls.get('event-search-string-previous') as HTMLElement);
-		disable(storesEls.get('event-search-string-next') as HTMLElement);
+		disable(storesEls.get('event-search-string-previous') as YamiElement);
+		disable(storesEls.get('event-search-string-next') as YamiElement);
 		storesEls.get('event-search-string-search')?.focus?.();
-		if (read(storesEls.get('event-search-string-search') as HTMLElement))
+		if (read(storesEls.get('event-search-string-search') as YamiElement))
 			this.input({
-				target: { value: read(storesEls.get('event-search-string-search') as HTMLElement) }
+				target: { value: read(storesEls.get('event-search-string-search') as YamiElement) }
 			});
 	}
 	close() {

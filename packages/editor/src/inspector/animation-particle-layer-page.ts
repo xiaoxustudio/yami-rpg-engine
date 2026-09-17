@@ -43,7 +43,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.motion = Animation.motion;
 
 			(
-				inspectorEls.get('animParticleLayer-vue-mount') as HTMLElement & {
+				inspectorEls.get('animParticleLayer-vue-mount') as unknown as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

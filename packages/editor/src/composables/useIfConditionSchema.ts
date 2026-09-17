@@ -163,8 +163,9 @@ const writeHandler = (event: { value?: unknown }): void => {
 			break;
 	}
 	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-	(composableEls.get('if-condition-common-variable') as CustomBoxApi).filter = filter1;
-	(composableEls.get('if-condition-operand-variable') as CustomBoxApi).filter = filter2;
+	(composableEls.get('if-condition-common-variable') as unknown as CustomBoxApi).filter = filter1;
+	(composableEls.get('if-condition-operand-variable') as unknown as CustomBoxApi).filter =
+		filter2;
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {
@@ -552,7 +553,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		composableEls.get('if-condition') as
+		composableEls.get('if-condition') as unknown as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void })
 			| null
 	)?.setForm;
@@ -604,7 +605,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		composableEls.get('if-condition') as
+		composableEls.get('if-condition') as unknown as unknown as
 			| (HTMLElement & { getForm?: () => IfConditionForm })
 			| null
 	)?.getForm;

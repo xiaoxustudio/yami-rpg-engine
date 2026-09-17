@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { YMKeyboardBox } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
@@ -78,7 +79,7 @@ onMounted(() => {
 		getFocus,
 		on
 	});
-	on('input', (event: Event) => emit('input', event.value));
+	on('input', (event: YamiEvent) => emit('input', event.value));
 	on('focus', () => emit('focus'));
 	on('blur', () => emit('blur'));
 });

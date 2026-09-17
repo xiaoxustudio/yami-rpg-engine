@@ -18,6 +18,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Variable } from '@app/variable/variable.ts';
+import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 /** P5b 批次 3：元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记。
  *  P1b 第 4 刀：同时镜像进 `composableEls`——`useTextCaptureWindow` 的焦点目标 id 是运行时传入的
@@ -56,7 +57,7 @@ type TagName =
 	| 'dynamicGlobalVariable'
 	| 'localization';
 
-type EventTargetElement = HTMLInputElement | HTMLTextAreaElement;
+type EventTargetElement = (HTMLInputElement | HTMLTextAreaElement) & YamiElementApi;
 
 interface EventListenerElement {
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
@@ -415,10 +416,10 @@ Selection.wrap = function (
 			string = prefix;
 			input.selectionEnd = input.selectionStart;
 		}
-		(input.parentNode as HTMLElement).insert(string);
+		(input.parentNode as unknown as YamiElement).insert(string);
 		input.selectionStart = start;
 	} else {
-		(input.parentNode as HTMLElement).insert(prefix);
+		(input.parentNode as unknown as YamiElement).insert(prefix);
 		input.selectionStart = start;
 	}
 };

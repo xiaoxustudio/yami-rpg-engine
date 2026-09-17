@@ -1,3 +1,4 @@
+import type { EditorEvent } from '@app/types/editor-event';
 {
 	let dragging = false;
 	let osdragging = false;

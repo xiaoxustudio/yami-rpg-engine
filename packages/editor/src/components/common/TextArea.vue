@@ -104,7 +104,7 @@ onMounted(() => {
 	const el = root.value as TextAreaElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	input.history = new TextHistory(input);
+	(input as unknown as { history: unknown }).history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
 	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });
 });

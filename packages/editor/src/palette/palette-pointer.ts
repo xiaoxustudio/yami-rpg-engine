@@ -1,4 +1,4 @@
-﻿import { Palette } from './palette.ts';
+import { Palette } from './palette.ts';
 import { relate, removeClass } from '@app/utils/element-utils';
 import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import { File } from '@app/file/file-system-core.ts';
@@ -11,6 +11,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getPaletteStore } from '@app/stores/palette';
+import { isDragKey } from '@app/utils/event-accessors';
 
 Palette.marqueePointerdown = function (
 	this: typeof Palette,
@@ -35,8 +36,8 @@ Palette.marqueePointerdown = function (
 	switch (event.button) {
 		case 0: {
 			// 濡傛灉姝ｅ湪淇敼鍥惧潡缁勫楂橈紝璁╁畠绔嬪嵆鐢熸晥
-			document.activeElement!.blur();
-			if (event.dragKey) {
+			(document.activeElement as HTMLElement | null)?.blur();
+			if (isDragKey(event)) {
 				this.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
@@ -92,7 +93,7 @@ Palette.marqueePointerdown = function (
 						this.updateTransform();
 						this.requestRendering();
 						this.screen.updateScrollbars();
-						this.pointermove(event.latest);
+						this.pointermove((event as unknown as { latest: never }).latest);
 					});
 					Scene.marquee.style.pointerEvents = 'none';
 					break;

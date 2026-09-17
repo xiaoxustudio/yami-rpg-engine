@@ -5,6 +5,8 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { PARTICLE_APPEAR_TIMEOUT_MS } from '@app/constants/editor.ts';
 import { debounce } from '@app/utils/safe';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { randomBetween, radians } from '@app/utils/math';
+import { empty as fnEmpty } from '@app/utils/function';
 
 // oxlint-disable-next-line no-explicit-any
 export const ParticleEngine: Record<string, any> = {};
@@ -574,7 +576,7 @@ class ParticleLayer {
 				}
 			});
 		}
-		this.draw = Function.empty;
+		this.draw = fnEmpty;
 	}
 
 	calculateElementSize() {
@@ -810,9 +812,9 @@ class ParticleElement {
 		this.anchorSpeedX = ParticleElement.getRandomParameter(anchor.speedX) / 1e3;
 		this.anchorSpeedY = ParticleElement.getRandomParameter(anchor.speedY) / 1e3;
 		this.rotationAngle =
-			Math.radians(ParticleElement.getRandomParameter(rotation.angle)) + emitter.angle;
-		this.rotationSpeed = Math.radians(ParticleElement.getRandomParameter(rotation.speed)) / 1e3;
-		this.rotationAccel = Math.radians(ParticleElement.getRandomParameter(rotation.accel)) / 1e6;
+			radians(ParticleElement.getRandomParameter(rotation.angle)) + emitter.angle;
+		this.rotationSpeed = radians(ParticleElement.getRandomParameter(rotation.speed)) / 1e3;
+		this.rotationAccel = radians(ParticleElement.getRandomParameter(rotation.accel)) / 1e6;
 		this.hRotationOffsetX = 0;
 		this.hRotationOffsetY = 0;
 		this.hRotationRadius = ParticleElement.getRandomParameter(hRotation.radius) * emitter.scale;
@@ -820,19 +822,19 @@ class ParticleElement {
 			(ParticleElement.getRandomParameter(hRotation.expansionSpeed) * emitter.scale) / 1e3;
 		this.hRotationExpansionAccel =
 			(ParticleElement.getRandomParameter(hRotation.expansionAccel) * emitter.scale) / 1e6;
-		this.hRotationAngle = Math.radians(ParticleElement.getRandomParameter(hRotation.angle));
+		this.hRotationAngle = radians(ParticleElement.getRandomParameter(hRotation.angle));
 		this.hRotationAngularSpeed =
-			Math.radians(ParticleElement.getRandomParameter(hRotation.angularSpeed)) / 1e3;
+			radians(ParticleElement.getRandomParameter(hRotation.angularSpeed)) / 1e3;
 		this.hRotationAngularAccel =
-			Math.radians(ParticleElement.getRandomParameter(hRotation.angularAccel)) / 1e6;
+			radians(ParticleElement.getRandomParameter(hRotation.angularAccel)) / 1e6;
 		const movementAngle =
-			Math.radians(ParticleElement.getRandomParameter(movement.angle)) + emitter.angle;
+			radians(ParticleElement.getRandomParameter(movement.angle)) + emitter.angle;
 		const movementSpeed =
 			(ParticleElement.getRandomParameter(movement.speed) * emitter.scale) / 1e3;
 		this.movementSpeedX = movementSpeed * Math.cos(movementAngle);
 		this.movementSpeedY = movementSpeed * Math.sin(movementAngle);
 		const movementAccelAngle =
-			Math.radians(ParticleElement.getRandomParameter(movement.accelAngle)) + emitter.angle;
+			radians(ParticleElement.getRandomParameter(movement.accelAngle)) + emitter.angle;
 		const movementAccel =
 			(ParticleElement.getRandomParameter(movement.accel) * emitter.scale) / 1e6;
 		this.movementAccelX = movementAccel * Math.cos(movementAccelAngle);
@@ -1020,12 +1022,12 @@ class ParticleElement {
 			case 'fixed':
 				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorFixed;
-				this.updateColor = Function.empty;
+				this.updateColor = fnEmpty;
 				break;
 			case 'random':
 				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorRandom;
-				this.updateColor = Function.empty;
+				this.updateColor = fnEmpty;
 				break;
 			case 'easing':
 				if (this.color.start === undefined) {
@@ -1040,7 +1042,7 @@ class ParticleElement {
 			case 'texture':
 				// oxlint-disable-next-line unbound-method
 				this.setStartColor = this.setStartColorTexture;
-				this.updateColor = Function.empty;
+				this.updateColor = fnEmpty;
 				break;
 		}
 	}
@@ -1089,8 +1091,8 @@ class ParticleElement {
 		const y = emitter.startY + pos[1];
 		const wh = (area.width! * emitter.scale) / 2;
 		const hh = (area.height! * emitter.scale) / 2;
-		this.x = Math.randomBetween(x - wh, x + wh);
-		this.y = Math.randomBetween(y - hh, y + hh);
+		this.x = randomBetween(x - wh, x + wh);
+		this.y = randomBetween(y - hh, y + hh);
 		this.transformStartPosition!();
 	}
 
@@ -1232,24 +1234,24 @@ class ParticleElement {
 		const { min, max } = this.data.color;
 		const { color } = this;
 		color.changed = true;
-		color[0] = Math.randomBetween(min[0], max[0]);
-		color[1] = Math.randomBetween(min[1], max[1]);
-		color[2] = Math.randomBetween(min[2], max[2]);
-		color[3] = Math.randomBetween(min[3], max[3]);
+		color[0] = randomBetween(min[0], max[0]);
+		color[1] = randomBetween(min[1], max[1]);
+		color[2] = randomBetween(min[2], max[2]);
+		color[3] = randomBetween(min[3], max[3]);
 	}
 
 	setStartColorEasing() {
 		const { startMin, startMax, endMin, endMax } = this.data.color;
 		const start = this.color.start!;
 		const end = this.color.end!;
-		start[0] = Math.randomBetween(startMin[0], startMax[0]);
-		start[1] = Math.randomBetween(startMin[1], startMax[1]);
-		start[2] = Math.randomBetween(startMin[2], startMax[2]);
-		start[3] = Math.randomBetween(startMin[3], startMax[3]);
-		end[0] = Math.randomBetween(endMin[0], endMax[0]);
-		end[1] = Math.randomBetween(endMin[1], endMax[1]);
-		end[2] = Math.randomBetween(endMin[2], endMax[2]);
-		end[3] = Math.randomBetween(endMin[3], endMax[3]);
+		start[0] = randomBetween(startMin[0], startMax[0]);
+		start[1] = randomBetween(startMin[1], startMax[1]);
+		start[2] = randomBetween(startMin[2], startMax[2]);
+		start[3] = randomBetween(startMin[3], startMax[3]);
+		end[0] = randomBetween(endMin[0], endMax[0]);
+		end[1] = randomBetween(endMin[1], endMax[1]);
+		end[2] = randomBetween(endMin[2], endMax[2]);
+		end[3] = randomBetween(endMin[3], endMax[3]);
 	}
 
 	updateColorEasing() {

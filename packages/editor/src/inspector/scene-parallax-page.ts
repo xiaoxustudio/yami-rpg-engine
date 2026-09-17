@@ -78,7 +78,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneParallax-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -97,7 +99,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneParallax.write = function (this: typeof SceneParallax, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('sceneParallax-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 

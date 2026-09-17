@@ -4,6 +4,7 @@ import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 export type PresetObjectNode = {
 	class: string;
@@ -25,7 +26,8 @@ export interface PresetObjectListItem {
 	teamId?: string;
 }
 
-export interface PresetObjectListElement extends HTMLElement, TreeListRowApi<PresetObjectListItem> {
+export interface PresetObjectListElement
+	extends HTMLElement, YamiElementApi, TreeListRowApi<PresetObjectListItem> {
 	elements: Array<{ item: PresetObjectListItem }>;
 	bind(getter: () => PresetObjectNode[] | null): void;
 	clear(): void;
@@ -48,9 +50,9 @@ export type PresetObjectTarget = {
 };
 
 interface PresetObjectWindow {
-	scene: HTMLElement;
+	scene: YamiElement;
 	list: PresetObjectListElement;
-	searcher: HTMLElement;
+	searcher: YamiElement;
 	target: PresetObjectTarget | null;
 	nodes: PresetObjectNode[] | null;
 	initialize: () => void;
@@ -65,25 +67,27 @@ interface PresetObjectWindow {
 	confirm: (event?: Event) => void;
 }
 
-let scene: HTMLElement;
+let scene: YamiElement;
 let list: PresetObjectListElement;
-let searcher: HTMLElement;
+let searcher: YamiElement;
 let target: PresetObjectTarget | null = null;
 let nodes: PresetObjectNode[] | null = null;
 let initializedElement: PresetObjectListElement | null = null;
 
 function initialize(): void {
-	const current = composableEls.get('presetObject-list') as PresetObjectListElement | null;
+	const current = composableEls.get(
+		'presetObject-list'
+	) as unknown as PresetObjectListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	scene = composableEls.get('presetObject-sceneId') as HTMLElement;
+	scene = composableEls.get('presetObject-sceneId') as YamiElement;
 	list = current;
-	searcher = composableEls.get('presetObject-searcher') as HTMLElement;
+	searcher = composableEls.get('presetObject-searcher') as YamiElement;
 	list.bind(() => nodes);
 	searcher.addCloseButton();
 	on(searcher, 'keydown', searcherKeydown);
-	(composableEls.get('presetObject') as HTMLElement).addEventListener('closed', windowClosed);
+	(composableEls.get('presetObject') as YamiElement).addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetObjectTarget): void {
@@ -149,7 +153,7 @@ function sceneIdWrite(event: Event & { value?: string }): void {
 	if (!event.value) return;
 	const scene = Data.scenes[event.value];
 	const filter = target!.filter;
-	const built = scene ? buildNodes(scene.objects, filter) : Array.empty;
+	const built = scene ? buildNodes(scene.objects, filter) : [];
 	nodes = built;
 	list.update();
 	if (built.length !== 0) {

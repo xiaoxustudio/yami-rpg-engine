@@ -95,7 +95,6 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 			el.id = id;
 			document.body.appendChild(el);
 		}
-		Array.empty = [];
 		Window.open = vi.fn();
 		Window.close = vi.fn();
 		vi.mocked(Data).uiPresets = {};
@@ -181,7 +180,9 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		const { wrapper, presetElement } = await mountAndInit();
 		presetElement.open({ input: vi.fn() });
 		const list = getList();
-		const unselect = vi.spyOn(list, 'unselect').mockImplementation(() => undefined);
+		const unselect = vi
+			.spyOn(list as unknown as Record<'unselect', () => void>, 'unselect')
+			.mockImplementation(() => undefined);
 		presetElement.uiIdWrite({ value: 'missing-ui' } as Event & { value?: string });
 		expect(presetElement.nodes).toHaveLength(0);
 		expect(unselect).toHaveBeenCalled();

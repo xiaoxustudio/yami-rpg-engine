@@ -11,6 +11,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Path } from '@app/utils/config';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp } from '@app/utils/math';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const imageClipEls = createElementRegistry();
@@ -37,8 +39,8 @@ interface CropMarquee extends HTMLElement {
 }
 
 export const ImageClip = {
-	window: null as unknown as HTMLElement,
-	screen: null as unknown as HTMLElement,
+	window: null as unknown as YamiElement,
+	screen: null as unknown as YamiElement,
 	image: null as unknown as HTMLImageElement,
 	marquee: null as unknown as CropMarquee,
 	target: null as unknown as CropTarget | null,
@@ -70,10 +72,10 @@ function ensureDomBound() {
 	const win = imageClipEls.get('imageClip');
 	if (!win) return;
 	ImageClip.window = win;
-	ImageClip.screen = imageClipEls.get('imageClip-screen') as HTMLElement;
-	ImageClip.image = imageClipEls.get('imageClip-image') as HTMLImageElement;
+	ImageClip.screen = imageClipEls.get('imageClip-screen') as YamiElement;
+	ImageClip.image = imageClipEls.get('imageClip-image') as unknown as HTMLImageElement;
 	hide(ImageClip.image!);
-	ImageClip.marquee = imageClipEls.get('imageClip-marquee') as CropMarquee;
+	ImageClip.marquee = imageClipEls.get('imageClip-marquee') as unknown as CropMarquee;
 	hide(ImageClip.marquee!);
 }
 
@@ -194,8 +196,8 @@ ImageClip.shiftMarquee = function (this: typeof ImageClip, ...args: unknown[]) {
 	const sy = form.y;
 	const sw = form.width;
 	const sh = form.height;
-	const dx = Math.clamp(sx + ox * sw, 0, iw - sw);
-	const dy = Math.clamp(sy + oy * sh, 0, ih - sh);
+	const dx = clamp(sx + ox * sw, 0, iw - sw);
+	const dy = clamp(sy + oy * sh, 0, ih - sh);
 	if (sx !== dx) form.x = dx;
 	if (sy !== dy) form.y = dy;
 	this.updateMarquee!();
@@ -219,8 +221,8 @@ ImageClip.scrollToMarquee = function (this: typeof ImageClip, ...args: unknown[]
 			const maxSL = mx / dpr;
 			const minST = (my + mh - sh) / dpr;
 			const maxST = my / dpr;
-			screen.scrollLeft = Math.clamp(screen.scrollLeft, minSL, maxSL);
-			screen.scrollTop = Math.clamp(screen.scrollTop, minST, maxST);
+			screen.scrollLeft = clamp(screen.scrollLeft, minSL, maxSL);
+			screen.scrollTop = clamp(screen.scrollTop, minST, maxST);
 			break;
 		}
 		case 'center': {
@@ -307,7 +309,7 @@ ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerE
 	switch (event.button) {
 		case 0: {
 			if (event.altKey) {
-				return this.startDragging!(event);
+				return this.startDragging!(event as unknown as CropDrag);
 			}
 			const marquee = this.marquee;
 			const coords = getRelativeCoords(event, marquee);
@@ -324,7 +326,7 @@ ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerE
 			break;
 		}
 		case 2:
-			this.startDragging!(event);
+			this.startDragging!(event as unknown as CropDrag);
 			break;
 	}
 }.bind(ImageClip);

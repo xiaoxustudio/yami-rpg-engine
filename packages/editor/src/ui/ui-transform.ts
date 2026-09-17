@@ -8,6 +8,7 @@ import { Timer } from '@app/utils/timer';
 import { Title } from '@app/title/title-bar.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 UI.setSize = function (this: UIShape, width: number, height: number) {
 	const currentWidth = getUIStore().width;
@@ -327,7 +328,7 @@ UI.resize = function (this: UIShape) {
 		const scaledPadding = Math.round(this.padding * scale);
 		const innerWidth = Math.round((width * scale) / 2) * 2;
 		const innerHeight = Math.round((height * scale) / 2) * 2;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const paddingLeft = Math.max((screenWidth - innerWidth) >> 1, scaledPadding);

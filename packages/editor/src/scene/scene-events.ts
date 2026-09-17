@@ -1,6 +1,10 @@
+import type { YamiElement } from '@app/types/element-api';
 export type SceneItem = {
 	class: string;
 	element: HTMLElement;
+	parent?: SceneItem | null;
+	tiles?: unknown[];
+	presetId?: string;
 };
 
 export type DragEventItem = PointerEvent & {
@@ -16,4 +20,4 @@ export type DragEventItem = PointerEvent & {
 	startY?: number;
 };
 
-export type ScrollableScreen = HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+export type ScrollableScreen = YamiElement;

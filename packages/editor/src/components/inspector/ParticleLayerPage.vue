@@ -1326,7 +1326,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -1334,7 +1334,6 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -1344,7 +1343,6 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput: onParamInputEvent } = useParticleLayerPage();
@@ -1352,9 +1350,6 @@ const { form, sync, onParamInput: onParamInputEvent } = useParticleLayerPage();
 const onParamInput = (value: unknown): void => {
 	onParamInputEvent(value as unknown as Event);
 };
-
-const getOptions = (id: string) =>
-	local.components?.[id]?.options as Record<string, { name?: string }> | undefined;
 
 const { bindInput, bindSliders } = useInspectorInput();
 
@@ -1395,6 +1390,18 @@ const elTint2Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint2 = ref<InstanceType<typeof NumberBox> | null>(null);
 const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
+
+// R2b 迁移⑦：选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用**全局 Composer** +
+// `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时 effect 因读到新 ref
+// 重跑，那时才真正 `loadItems`）。原先在 onMounted 里调用 + 末尾再挂一套"监听 `localize` +
+// `local.components` watcher"的重复实现已删除：后者会在**事件回调**里再调本组合式函数，抛
+// vue-i18n 的 `Must be called at the top of a setup function`，也正是本轮报错的第二处来源。
+useLocalizedOptions('particleLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
+	elBlend.value?.loadItems?.(items)
+);
+useLocalizedOptions('particleLayer-light', ['raw', 'global', 'ambient'], (items) =>
+	elLight.value?.loadItems?.(items)
+);
 
 onMounted(() => {
 	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
@@ -1458,18 +1465,6 @@ onMounted(() => {
 				]
 			}
 		]);
-	}
-
-	if (elBlend.value) {
-		useLocalizedOptions('particleLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
-		elBlend.value?.loadItems?.(items)
-	);
-	}
-
-	if (elLight.value) {
-		useLocalizedOptions('particleLayer-light', ['raw', 'global', 'ambient'], (items) =>
-		elLight.value?.loadItems?.(items)
-	);
 	}
 
 	elSort.value?.loadItems([
@@ -1634,22 +1629,6 @@ onMounted(() => {
 	]);
 	bindInput(elements, editor, Particle as unknown as { history: unknown });
 	bindSliders(sliders);
-	const refreshLocalizedItems = () => {
-		const getNames = (id: string, values: string[]) => {
-			const options = getOptions(id);
-			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
-		};
-		elBlend.value?.loadItems(
-			getNames('particleLayer-blend', ['normal', 'additive', 'subtract'])
-		);
-		elLight.value?.loadItems(getNames('particleLayer-light', ['raw', 'global', 'ambient']));
-	};
-	window.addEventListener('localize', refreshLocalizedItems);
-	watch(
-		() => local.components,
-		() => refreshLocalizedItems()
-	);
-	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 
 	sync();
 });

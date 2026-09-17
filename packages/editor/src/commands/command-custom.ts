@@ -10,6 +10,9 @@ import { Data } from '@app/data/data-object.ts';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { PluginManager } from '@app/plugin/plugin.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
+import { compress } from '@app/utils/string';
+import { clone as deepClone } from '@app/utils/object';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -59,11 +62,11 @@ interface ParameterWrapBox extends HTMLElement {
 
 interface ParameterWrap {
 	box: ParameterWrapBox;
-	grid: HTMLElement;
+	grid: YamiElement;
 	children: unknown[];
 }
 
-interface ParameterPane extends HTMLElement {
+interface ParameterPane extends YamiElement {
 	getData: () => ScriptObject[];
 	onResize: () => void;
 	createDetailBox: () => ParameterWrap;
@@ -87,14 +90,14 @@ Command.custom = {
 	parsingScript: { id: '', parameters: null } as ScriptObject,
 	loadedScript: { id: '', parameters: null } as ScriptObject,
 	// P5b 批次 2：这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
-	windowFrame: null as unknown as HTMLElement & {
+	windowFrame: null as unknown as YamiElement & {
 		style: CSSStyleDeclaration;
 		absolute(x: number | null, y: number | null): void;
 		setTitle(title: string): void;
 		addEventListener(type: string, listener: (event: Event) => void): void;
 	},
 	parameterPane: null as unknown as ParameterPane,
-	parameterGrid: null as unknown as HTMLElement,
+	parameterGrid: null as unknown as YamiElement,
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
@@ -108,7 +111,7 @@ Command.custom = {
 		this.parameterPane = scriptCommandEls.get(
 			'scriptCommand-parameter-pane'
 		) as unknown as ParameterPane;
-		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as HTMLElement;
+		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as YamiElement;
 
 		if (!this.parameterPane) return;
 		const scriptList: ScriptObject[] = [this.loadedScript];
@@ -122,8 +125,10 @@ Command.custom = {
 			this.windowFrame.absolute(this.windowX, this.windowY);
 		};
 
-		const box = scriptCommandEls.get('scriptCommand-parameter-detail') as ParameterWrapBox;
-		const wrap = { box, grid, children: [] } as ParameterWrap;
+		const box = scriptCommandEls.get(
+			'scriptCommand-parameter-detail'
+		) as unknown as ParameterWrapBox;
+		const wrap = { box, grid, children: [] } as unknown as ParameterWrap;
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {
 			return wrap;
@@ -189,7 +194,6 @@ Command.custom = {
 					words.push(Command.parseVariableNumber!(value));
 					continue;
 				case 'string':
-					// oxlint-disable-next-line no-base-to-string
 					words.push(Command.setStringColor!(`"${String(value)}"`));
 					continue;
 				case 'option': {
@@ -302,7 +306,7 @@ Command.custom = {
 
 	load: function (id: string, parameters: Record<string, unknown>): void {
 		this.loadedScript.id = id;
-		this.loadedScript.parameters = Object.clone(parameters);
+		this.loadedScript.parameters = deepClone(parameters);
 		this.windowX = Window.absolutePos.x;
 		this.windowY = Window.absolutePos.y;
 		this.parameterPane.update();
@@ -363,7 +367,7 @@ export async function loadCustomCommandList(): Promise<void> {
 			name: name,
 			desc: map.get(meta.overview.desc),
 			keywords: command.keywords,
-			unspacedName: String.compress(name)
+			unspacedName: compress(name)
 		});
 	}
 	Command.custom.customFolder.children = commands;

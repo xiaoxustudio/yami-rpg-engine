@@ -6,29 +6,31 @@ import { on, rect, css } from '@app/utils/element-utils.ts';
 import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp } from '@app/utils/math';
 
 // oxlint-disable-next-line no-explicit-any
 export const TileFrame: Record<string, any> = {
 	get window() {
-		return paletteEls.get('autoTile-frameIndex') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex') as YamiElement;
 	},
 	get screen() {
-		return paletteEls.get('autoTile-frameIndex-screen') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-screen') as YamiElement;
 	},
 	get clip() {
-		return paletteEls.get('autoTile-frameIndex-image-clip') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-image-clip') as YamiElement;
 	},
 	get mask() {
-		return paletteEls.get('autoTile-frameIndex-mask') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-mask') as YamiElement;
 	},
 	get image() {
-		return paletteEls.get('autoTile-frameIndex-image') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-image') as YamiElement;
 	},
 	get marquee() {
-		return paletteEls.get('autoTile-frameIndex-marquee') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-marquee') as YamiElement;
 	},
 	get info() {
-		return paletteEls.get('autoTile-frameIndex-info') as HTMLElement;
+		return paletteEls.get('autoTile-frameIndex-info') as YamiElement;
 	},
 	dragging: null,
 	hframes: null,
@@ -80,8 +82,8 @@ TileFrame.open = function (this: typeof TileFrame) {
 	const hframes = Math.floor(sprite.naturalWidth / tileWidth);
 	const vframes = Math.floor(sprite.naturalHeight / tileHeight);
 	const dpr = window.devicePixelRatio;
-	const innerWidth = tileWidth * Math.clamp(hframes, 1, 256);
-	const innerHeight = tileHeight * Math.clamp(vframes, 1, 256);
+	const innerWidth = tileWidth * clamp(hframes, 1, 256);
+	const innerHeight = tileHeight * clamp(vframes, 1, 256);
 	let contentWidth = innerWidth / dpr;
 	let contentHeight = innerHeight / dpr;
 	this.hframes = hframes;
@@ -101,8 +103,8 @@ TileFrame.open = function (this: typeof TileFrame) {
 		screen.style.overflowY = 'hidden';
 	}
 
-	contentWidth = Math.clamp(contentWidth, MIN_CONTENT_WIDTH, MAX_CONTENT_WIDTH);
-	contentHeight = Math.clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
+	contentWidth = clamp(contentWidth, MIN_CONTENT_WIDTH, MAX_CONTENT_WIDTH);
+	contentHeight = clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
 	window.addEventListener('keydown', this.keydown);
@@ -249,8 +251,8 @@ TileFrame.keydown = function (this: typeof TileFrame, event: KeyboardEvent) {
 					break;
 			}
 			const marquee = this.marquee;
-			const x = Math.clamp(marquee.x + offsetX, 0, this.hframes - 1);
-			const y = Math.clamp(marquee.y + offsetY, 0, this.vframes - 1);
+			const x = clamp(marquee.x + offsetX, 0, this.hframes - 1);
+			const y = clamp(marquee.y + offsetY, 0, this.vframes - 1);
 			if (marquee.x !== x || marquee.y !== y) {
 				marquee.select(x, y, 1, 1);
 				this.scrollToSelection();

@@ -47,7 +47,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.motion = Animation.motion;
 			Curve.load!(frame);
 			(
-				inspectorEls.get('animParticleFrame-vue-mount') as HTMLElement & {
+				inspectorEls.get('animParticleFrame-vue-mount') as unknown as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -68,7 +68,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		_options: Record<string, unknown>
 	) {
 		(
-			inspectorEls.get('animParticleFrame-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('animParticleFrame-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, shallowRef, watch } from 'vue';
-import { createTreeListApi } from './tree-api';
+import { createTreeListApi, type TreeListHost } from './tree-api';
+import type { TreeItem } from './tree-core';
 import type { TreeRenderRow, TreeRenderState } from './tree-render';
 
 interface Props {
@@ -10,17 +11,12 @@ interface Props {
 	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
 }
 
-interface TreeListRootElement extends HTMLElement {
-	resize: EventListener;
-	keydown: EventListener;
-	pointerdown: EventListener;
-	pointerup: EventListener;
-	dragstart: EventListener;
-	dragend: EventListener;
-	dataChange: EventListener;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
-}
+/**
+ * P2b-2：原先这里是 `interface TreeListRootElement extends HTMLElement { … [k: string]: any }`——
+ * 一个"任何成员都能过"的逃生口。收掉后直接复用 `tree-api.ts` 的宿主契约 `TreeListHost`
+ * （成员拼错、签名用错都会被 vue-tsc 当场报出），列元素上的方法只此一处定义。
+ */
+type TreeListRootElement = TreeListHost;
 
 const props = withDefaults(defineProps<Props>(), {
 	padded: false
@@ -60,15 +56,15 @@ const rowClasses = (row: TreeRenderRow): unknown[] => [
 	...row.extraClasses
 ];
 
-const onRowRef = (item: unknown, el: unknown): void => {
+const onRowRef = (item: TreeItem, el: unknown): void => {
 	listOf()?.bindRow?.(item, el);
 };
 
-const onIconRef = (item: unknown, el: unknown): void => {
+const onIconRef = (item: TreeItem, el: unknown): void => {
 	if (el instanceof HTMLElement) listOf()?.bindNodeIcon?.(item, el);
 };
 
-const onExtrasRef = (item: unknown, el: unknown): void => {
+const onExtrasRef = (item: TreeItem, el: unknown): void => {
 	if (el instanceof HTMLElement) listOf()?.bindNodeExtras?.(item, el);
 };
 

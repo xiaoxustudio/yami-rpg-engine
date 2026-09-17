@@ -116,6 +116,13 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		window.removeEventListener(type, listener as EventListener, options);
 	};
 
+	/**
+	 * P2b-3：`pointerenter` 是本地函数（`attachApi` 挂在 `menu` 上的就是它本身）。
+	 * 以前 add/remove 两处都写成 `menu.pointerenter`——方法引用丢 `this`，正是 unbound-method 的成因；
+	 * 这里显式包一层并复用同一个引用（removeEventListener 要求同一函数对象）。
+	 */
+	const onPointerEnter = (event: Event): void => pointerenter(event as PointerEvent);
+
 	const rect = (element: HTMLElement): DOMRect => element.getBoundingClientRect();
 
 	function popup(options: MenuOptions, items: MenuItem[]): void {
@@ -146,8 +153,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		onWindow('pointerover', menu.windowPointerover);
 		onWindow('pointerout', menu.windowPointerout);
 		onWindow('keydown', menu.windowKeydown, { capture: true });
-		// oxlint-disable-next-line unbound-method
-		el.addEventListener('pointerenter', menu.pointerenter);
+		el.addEventListener('pointerenter', onPointerEnter);
 	}
 
 	function computeMenuWidth(): void {
@@ -187,8 +193,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			offWindow('pointerover', menu.windowPointerover);
 			offWindow('pointerout', menu.windowPointerout);
 			offWindow('keydown', menu.windowKeydown, { capture: true });
-			// oxlint-disable-next-line unbound-method
-			el.removeEventListener('pointerenter', menu.pointerenter);
+			el.removeEventListener('pointerenter', onPointerEnter);
 		}
 	}
 

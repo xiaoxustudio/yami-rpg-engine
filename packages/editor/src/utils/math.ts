@@ -32,12 +32,3 @@ export function modDegrees(degrees: number, period = 360): number {
 export function modRadians(radians: number, period = Math.PI * 2): number {
 	return ((radians % period) + period) % period;
 }
-
-Math.clamp = clamp;
-Math.roundTo = roundTo;
-Math.dist = dist;
-Math.randomBetween = randomBetween;
-Math.radians = radians;
-Math.degrees = degrees;
-Math.modDegrees = modDegrees;
-Math.modRadians = modRadians;

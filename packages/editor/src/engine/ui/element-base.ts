@@ -1,6 +1,8 @@
 import { UI } from '@app/ui/ui-window.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { radians } from '@app/utils/math';
+import { append, remove } from '@app/utils/array';
 
 interface UIElementShape {
 	// oxlint-disable-next-line no-explicit-any
@@ -207,7 +209,7 @@ UI.Element = class UIElement {
 	}
 
 	appendChild(element: UIElementShape) {
-		if (element && this.children.append(element)) {
+		if (element && append(this.children, element)) {
 			if (element.parent instanceof UI.Element) element.parent!.children.remove(element);
 			element.parent = this;
 			if (this.connected) {
@@ -237,7 +239,7 @@ UI.Element = class UIElement {
 	}
 
 	remove() {
-		if (this.parent instanceof UI.Element && this.parent!.children.remove(this)) {
+		if (this.parent instanceof UI.Element && remove(this.parent!.children, this)) {
 			UI.root.tryUpdateReferenceElements(this.parent);
 			if (this.parent instanceof UI.Window) {
 				this.parent!.requestResizing();
@@ -279,7 +281,7 @@ UI.Element = class UIElement {
 		this.opacity = opacity;
 
 		if (rotation !== 0) {
-			matrix.rotateAt(x, y, Math.radians(rotation));
+			matrix.rotateAt(x, y, radians(rotation));
 		}
 		if (scaleX !== 1 || scaleY !== 1) {
 			matrix.scaleAt(x, y, scaleX, scaleY);

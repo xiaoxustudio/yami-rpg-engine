@@ -5,6 +5,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileScriptShape {
@@ -66,7 +67,7 @@ export default class Plugin {
 	};
 
 	FileScript.update = function (this: typeof FileScript) {
-		const el = inspectorEls.get('fileScript') as HTMLElement;
+		const el = inspectorEls.get('fileScript') as YamiElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

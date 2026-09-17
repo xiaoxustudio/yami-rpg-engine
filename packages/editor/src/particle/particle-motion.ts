@@ -11,6 +11,9 @@ import { getRelativeCoords } from '@app/utils/element-utils';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Timer } from '@app/utils/timer';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp, roundTo, dist } from '@app/utils/math';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 Particle.undo = function () {
 	if (getParticleStore().state === 'open' && !this.dragging && this.history!.canUndo()) {
@@ -27,14 +30,14 @@ Particle.redo = function () {
 Particle.setSpeed = (function IIFE() {
 	return function (this: ParticleShape, speed: number) {
 		getParticleStore().speed = speed;
-		const numberBox = particleEls.get('particle-speed') as HTMLElement;
+		const numberBox = particleEls.get('particle-speed') as YamiElement;
 		if (numberBox) write(numberBox, speed);
 	};
 })();
 
 Particle.setZoom = (function IIFE() {
 	return function (this: ParticleShape, zoom: number) {
-		const slider = particleEls.get('particle-zoom') as HTMLElement;
+		const slider = particleEls.get('particle-zoom') as YamiElement;
 		if (getParticleStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -147,7 +150,7 @@ Particle.updateHead = function () {
 Particle.resize = function () {
 	if (getParticleStore().state === 'open' && this.screen && this.screen.clientWidth !== 0) {
 		const scale = this.scale!;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const stageWidth = screenWidth + this.padding!;
@@ -193,9 +196,9 @@ Particle.updateCamera = function (
 	const scrollY = y * getParticleStore().scaleY! + this.outerHeight! / 2;
 	const toleranceForDPR = 0.0001;
 	screenScrollData(screen).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX!, 0, this.outerWidth! - GL.width) / dpr;
+		clamp(scrollX - this.centerOffsetX!, 0, this.outerWidth! - GL.width) / dpr;
 	screenScrollData(screen).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY!, 0, this.outerHeight! - GL.height) / dpr;
+		clamp(scrollY - this.centerOffsetY!, 0, this.outerHeight! - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
@@ -203,8 +206,8 @@ Particle.updateCamera = function (
 Particle.updateTransform = function () {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
-	const left = Math.roundTo(screen.scrollLeft * dpr - (this.outerWidth! >> 1), 4);
-	const top = Math.roundTo(screen.scrollTop * dpr - (this.outerHeight! >> 1), 4);
+	const left = roundTo(screen.scrollLeft * dpr - (this.outerWidth! >> 1), 4);
+	const top = roundTo(screen.scrollTop * dpr - (this.outerHeight! >> 1), 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
 	this.scrollLeft = left / getParticleStore().scaleX!;
@@ -216,8 +219,8 @@ Particle.updateTransform = function () {
 		.translate(-this.scrollLeft!, -this.scrollTop!);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX!;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY!;
-	this.centerX = Math.roundTo((scrollX - this.outerWidth! / 2) / getParticleStore().scaleX!, 4);
-	this.centerY = Math.roundTo((scrollY - this.outerHeight! / 2) / getParticleStore().scaleY!, 4);
+	this.centerX = roundTo((scrollX - this.outerWidth! / 2) / getParticleStore().scaleX!, 4);
+	this.centerY = roundTo((scrollY - this.outerHeight! / 2) / getParticleStore().scaleY!, 4);
 };
 
 Particle.updateElements = function (deltaTime: number) {
@@ -265,13 +268,13 @@ Particle.drawCoordinateAxes = function () {
 		vertices[2] = 0;
 		vertices[3] = x2;
 		vertices[4] = y2 + 0.5;
-		vertices[5] = Math.dist(x1, y1, x2, y2);
+		vertices[5] = dist(x1, y1, x2, y2);
 		vertices[6] = x3 + 0.5;
 		vertices[7] = y3;
 		vertices[8] = 0;
 		vertices[9] = x4 + 0.5;
 		vertices[10] = y4;
-		vertices[11] = Math.dist(x3, y3, x4, y4);
+		vertices[11] = dist(x3, y3, x4, y4);
 		matrix.project(gl.flip, gl.width, gl.height);
 		gl.alpha = 1;
 		gl.blend = 'normal';
@@ -645,7 +648,7 @@ Particle.stopRendering = function () {
 
 Particle.switchWireframe = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showWireframe) {
-		const item = particleEls.get('particle-view-wireframe') as HTMLElement;
+		const item = particleEls.get('particle-view-wireframe') as YamiElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -658,7 +661,7 @@ Particle.switchWireframe = (function IIFE() {
 
 Particle.switchAnchor = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showAnchor) {
-		const item = particleEls.get('particle-view-anchor') as HTMLElement;
+		const item = particleEls.get('particle-view-anchor') as YamiElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -671,7 +674,7 @@ Particle.switchAnchor = (function IIFE() {
 
 Particle.switchPause = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().paused) {
-		const item = particleEls.get('particle-control-pause') as HTMLElement;
+		const item = particleEls.get('particle-control-pause') as YamiElement;
 		getParticleStore().paused = enabled;
 		if (enabled) {
 			addClass(item, 'selected');

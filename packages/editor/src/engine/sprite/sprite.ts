@@ -10,19 +10,21 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Palette } from '@app/palette/palette.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { elementDataOf } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
+import { isDragKey } from '@app/utils/event-accessors';
+import { clamp, roundTo } from '@app/utils/math';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 /** P4b：inspector 页管理器元素上的 `focusing`（当前聚焦的输入框元素）走显式元素数据 */
 interface InspectorManagerData {
-	focusing: HTMLElement | null;
+	focusing: YamiElement | null;
 }
 const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
-interface SpriteScreen extends HTMLElement {
-	rawScrollLeft: number;
-	rawScrollTop: number;
-}
+interface SpriteScreen extends YamiElement {}
 
-interface SpriteMarquee extends HTMLElement {
+interface SpriteMarquee extends YamiElement {
 	visible: boolean;
 	x: number;
 	y: number;
@@ -35,12 +37,12 @@ interface SpriteMarquee extends HTMLElement {
 
 interface SpriteModule {
 	state: 'closed' | 'open' | 'suspended' | 'loading';
-	body: HTMLElement;
-	window: HTMLElement;
+	body: YamiElement;
+	window: YamiElement;
 	canvas: HTMLCanvasElement & { dpr?: number };
 	context: CanvasRenderingContext2D;
-	info: HTMLElement;
-	slider: HTMLElement;
+	info: YamiElement;
+	slider: YamiElement;
 	screen: SpriteScreen;
 	marquee: SpriteMarquee;
 	symbol: symbol | null;
@@ -48,7 +50,7 @@ interface SpriteModule {
 	hframes: number;
 	vframes: number;
 	image: CanvasImageSource | null;
-	dragging: PointerEvent | null;
+	dragging: YamiMouseEvent | null;
 	showGrid: boolean;
 	gridColor: string;
 	zoom: number | null;
@@ -83,7 +85,7 @@ interface SpriteModule {
 	loadImage: () => Promise<void>;
 	updateTargetInfo: () => void;
 	resize: () => void;
-	getUnitCoords: (event: PointerEvent) => { x: number; y: number };
+	getUnitCoords: (event: YamiMouseEvent) => { x: number; y: number };
 	updateCamera: (x?: number, y?: number) => void;
 	updateTransform: () => void;
 	updateBackground: () => void;
@@ -97,26 +99,26 @@ interface SpriteModule {
 	stopRendering: () => void;
 	saveToProject: (project: EditorProjectShape) => void;
 	loadFromProject: (project: EditorProjectShape) => void;
-	windowResize: (event: Event) => void;
-	themechange: (event: Event) => void;
-	zoomFocus: (event: Event) => void;
-	zoomInput: (event: Event) => void;
+	windowResize: (event: YamiEvent) => void;
+	themechange: (event: YamiEvent) => void;
+	zoomFocus: (event: YamiEvent) => void;
+	zoomInput: (event: YamiEvent) => void;
 	screenKeydown: (event: KeyboardEvent) => void;
 	screenWheel: (event: WheelEvent) => void;
-	screenUserscroll: (event: Event) => void;
-	marqueePointerdown: (event: PointerEvent & { dragKey?: boolean }) => void;
-	pointerup: (event: PointerEvent) => void;
-	pointermove: (event: PointerEvent) => void;
+	screenUserscroll: (event: YamiEvent) => void;
+	marqueePointerdown: (event: YamiMouseEvent & { dragKey?: boolean }) => void;
+	pointerup: (event: YamiMouseEvent) => void;
+	pointermove: (event: YamiMouseEvent) => void;
 }
 
 export const Sprite: SpriteModule = {
 	state: 'closed',
-	body: null as unknown as HTMLElement,
-	window: null as unknown as HTMLElement,
+	body: null as unknown as YamiElement,
+	window: null as unknown as YamiElement,
 	canvas: null as unknown as HTMLCanvasElement & { dpr?: number },
 	context: null as unknown as CanvasRenderingContext2D,
-	info: null as unknown as HTMLElement,
-	slider: null as unknown as HTMLElement,
+	info: null as unknown as YamiElement,
+	slider: null as unknown as YamiElement,
 	screen: null as unknown as SpriteScreen,
 	marquee: null as unknown as SpriteMarquee,
 	symbol: null,
@@ -159,7 +161,7 @@ export const Sprite: SpriteModule = {
 	loadImage: null as unknown as () => Promise<void>,
 	updateTargetInfo: null as unknown as () => void,
 	resize: null as unknown as () => void,
-	getUnitCoords: null as unknown as (event: PointerEvent) => { x: number; y: number },
+	getUnitCoords: null as unknown as (event: YamiMouseEvent) => { x: number; y: number },
 	updateCamera: null as unknown as (x?: number, y?: number) => void,
 	updateTransform: null as unknown as () => void,
 	updateBackground: Palette?.updateBackground ?? (() => {}),
@@ -173,29 +175,29 @@ export const Sprite: SpriteModule = {
 	stopRendering: null as unknown as () => void,
 	saveToProject: null as unknown as (project: EditorProjectShape) => void,
 	loadFromProject: null as unknown as (project: EditorProjectShape) => void,
-	windowResize: null as unknown as (event: Event) => void,
-	themechange: null as unknown as (event: Event) => void,
-	zoomFocus: null as unknown as (event: Event) => void,
-	zoomInput: null as unknown as (event: Event) => void,
+	windowResize: null as unknown as (event: YamiEvent) => void,
+	themechange: null as unknown as (event: YamiEvent) => void,
+	zoomFocus: null as unknown as (event: YamiEvent) => void,
+	zoomInput: null as unknown as (event: YamiEvent) => void,
 	screenKeydown: null as unknown as (event: KeyboardEvent) => void,
 	screenWheel: null as unknown as (event: WheelEvent) => void,
-	screenUserscroll: null as unknown as (event: Event) => void,
-	marqueePointerdown: null as unknown as (event: PointerEvent & { dragKey?: boolean }) => void,
-	pointerup: null as unknown as (event: PointerEvent) => void,
-	pointermove: null as unknown as (event: PointerEvent) => void
+	screenUserscroll: null as unknown as (event: YamiEvent) => void,
+	marqueePointerdown: null as unknown as (event: YamiMouseEvent & { dragKey?: boolean }) => void,
+	pointerup: null as unknown as (event: YamiMouseEvent) => void,
+	pointermove: null as unknown as (event: YamiMouseEvent) => void
 };
 
 Sprite.initialize = function (this: typeof Sprite) {
-	this.body = engineEls.get('sprite-body') as HTMLElement;
-	this.window = engineEls.get('sprite-frame') as HTMLElement;
+	this.body = engineEls.get('sprite-body') as YamiElement;
+	this.window = engineEls.get('sprite-frame') as YamiElement;
 	hide(this.window);
-	this.canvas = engineEls.get('sprite-canvas') as HTMLElement as HTMLCanvasElement & {
+	this.canvas = engineEls.get('sprite-canvas') as unknown as HTMLCanvasElement & {
 		dpr?: number;
 	};
-	this.info = engineEls.get('sprite-info') as HTMLElement;
-	this.slider = engineEls.get('sprite-zoom') as HTMLElement;
-	this.screen = engineEls.get('sprite-screen') as HTMLElement as SpriteScreen;
-	this.marquee = engineEls.get('sprite-marquee') as HTMLElement as SpriteMarquee;
+	this.info = engineEls.get('sprite-info') as YamiElement;
+	this.slider = engineEls.get('sprite-zoom') as YamiElement;
+	this.screen = engineEls.get('sprite-screen') as unknown as SpriteScreen;
+	this.marquee = engineEls.get('sprite-marquee') as unknown as SpriteMarquee;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
@@ -216,14 +218,14 @@ Sprite.initialize = function (this: typeof Sprite) {
 		}
 	});
 
-	window.addEventListener('themechange', this.themechange);
-	on(inspectorEls.get('animSpriteFrame-vue-mount') as HTMLElement, 'resize', this.windowResize);
+	window.addEventListener('themechange', this.themechange as EventListener);
+	on(inspectorEls.get('animSpriteFrame-vue-mount') as YamiElement, 'resize', this.windowResize);
 	on(
-		engineEls.get('animSpriteFrame-properties-detail') as HTMLElement,
+		engineEls.get('animSpriteFrame-properties-detail') as YamiElement,
 		'toggle',
 		this.windowResize
 	);
-	on(engineEls.get('animSpriteFrame-sprite-detail') as HTMLElement, 'toggle', this.windowResize);
+	on(engineEls.get('animSpriteFrame-sprite-detail') as YamiElement, 'toggle', this.windowResize);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 };
 
@@ -355,7 +357,7 @@ Sprite.resize = function (this: typeof Sprite) {
 		const scaledUnitHeight = Math.round(this.unitHeight * scale);
 		const innerWidth = this.hframes * scaledUnitWidth;
 		const innerHeight = this.vframes * scaledUnitHeight;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const paddingLeft = Math.max((screenWidth - innerWidth) >> 1, 0);
@@ -421,13 +423,13 @@ Sprite.resize = function (this: typeof Sprite) {
 
 Sprite.getUnitCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: typeof Sprite, event: PointerEvent) {
+	return function (this: typeof Sprite, event: YamiMouseEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const suw = this.scaledUnitWidth;
 		const suh = this.scaledUnitHeight;
 		const dpr = window.devicePixelRatio;
-		point.x = Math.clamp(Math.floor((coords.x * dpr) / suw), 0, this.hframes - 1);
-		point.y = Math.clamp(Math.floor((coords.y * dpr) / suh), 0, this.vframes - 1);
+		point.x = clamp(Math.floor((coords.x * dpr) / suw), 0, this.hframes - 1);
+		point.y = clamp(Math.floor((coords.y * dpr) / suh), 0, this.vframes - 1);
 		return point;
 	};
 })();
@@ -440,9 +442,9 @@ Sprite.updateCamera = function (this: typeof Sprite, x = this.centerX, y = this.
 	const toleranceX = this.scaledUnitWidth * 0.0001;
 	const toleranceY = this.scaledUnitHeight * 0.0001;
 	screenScrollData(screen).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
+		clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
 	screenScrollData(screen).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
+		clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
 	screen.scrollLeft = (scrollX - (this.screenWidth >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
 };
@@ -450,8 +452,8 @@ Sprite.updateCamera = function (this: typeof Sprite, x = this.centerX, y = this.
 Sprite.updateTransform = function (this: typeof Sprite) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
-	const left = Math.roundTo(screen.scrollLeft * dpr, 4);
-	const top = Math.roundTo(screen.scrollTop * dpr, 4);
+	const left = roundTo(screen.scrollLeft * dpr, 4);
+	const top = roundTo(screen.scrollTop * dpr, 4);
 	const right = left + this.canvas.width;
 	const bottom = top + this.canvas.height;
 	this.scrollLeft = left;
@@ -461,8 +463,8 @@ Sprite.updateTransform = function (this: typeof Sprite) {
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.centerX = Math.roundTo((scrollX - this.paddingLeft) / this.scaledUnitWidth, 4);
-	this.centerY = Math.roundTo((scrollY - this.paddingTop) / this.scaledUnitHeight, 4);
+	this.centerX = roundTo((scrollX - this.paddingLeft) / this.scaledUnitWidth, 4);
+	this.centerY = roundTo((scrollY - this.paddingTop) / this.scaledUnitHeight, 4);
 };
 
 Sprite.updateBackground = Palette?.updateBackground ?? (() => {});
@@ -614,7 +616,7 @@ Sprite.loadFromProject = function (this: typeof Sprite, project: EditorProjectSh
 	this.setZoom(sprite!.zoom!);
 };
 
-Sprite.windowResize = function (this: typeof Sprite, _event: Event) {
+Sprite.windowResize = function (this: typeof Sprite, _event: YamiEvent) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -629,7 +631,7 @@ Sprite.windowResize = function (this: typeof Sprite, _event: Event) {
 	}
 }.bind(Sprite);
 
-Sprite.themechange = function (this: typeof Sprite, event: Event) {
+Sprite.themechange = function (this: typeof Sprite, event: YamiEvent) {
 	switch (event.value) {
 		case 'light':
 			this.gridColor = 'rgba(0, 0, 0, 0.5)';
@@ -641,11 +643,11 @@ Sprite.themechange = function (this: typeof Sprite, event: Event) {
 	this.requestRendering();
 }.bind(Sprite);
 
-Sprite.zoomFocus = function (_event: Event) {
+Sprite.zoomFocus = function (_event: YamiEvent) {
 	Sprite.screen.focus();
 };
 
-Sprite.zoomInput = function (this: HTMLElement, _event: Event) {
+Sprite.zoomInput = function (this: HTMLElement, _event: YamiEvent) {
 	Sprite.setZoom(read(this));
 };
 
@@ -673,8 +675,8 @@ Sprite.screenKeydown = function (event: KeyboardEvent) {
 						break;
 				}
 				const marquee = Sprite.marquee;
-				const x = Math.clamp(marquee.x + offsetX, 0, Sprite.hframes - 1);
-				const y = Math.clamp(marquee.y + offsetY, 0, Sprite.vframes - 1);
+				const x = clamp(marquee.x + offsetX, 0, Sprite.hframes - 1);
+				const y = clamp(marquee.y + offsetY, 0, Sprite.vframes - 1);
 				if (marquee.x !== x || marquee.y !== y) {
 					Sprite.selectSprite(x, y);
 					Sprite.scrollToSelection();
@@ -704,7 +706,7 @@ Sprite.screenWheel = function (this: typeof Sprite, event: WheelEvent) {
 	}
 }.bind(Sprite);
 
-Sprite.screenUserscroll = function (this: typeof Sprite, _event: Event) {
+Sprite.screenUserscroll = function (this: typeof Sprite, _event: YamiEvent) {
 	if (this.state === 'open') {
 		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
 		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
@@ -717,25 +719,25 @@ Sprite.screenUserscroll = function (this: typeof Sprite, _event: Event) {
 
 Sprite.marqueePointerdown = function (
 	this: typeof Sprite,
-	event: PointerEvent & { dragKey?: boolean }
+	event: YamiMouseEvent & { dragKey?: boolean }
 ) {
 	// 优先触发检查器输入框的blur事件
 	if (managerData(Inspector.manager).focusing) {
-		document.activeElement!.blur();
+		(document.activeElement as HTMLElement | null)?.blur();
 	}
 	if (this.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0: {
-			if (event.dragKey) {
+			if (isDragKey(event)) {
 				this.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open('cursor-grab');
-				window.addEventListener('pointerup', this.pointerup);
-				window.addEventListener('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup as EventListener);
+				window.addEventListener('pointermove', this.pointermove as EventListener);
 				return;
 			}
 			const { x, y } = this.getUnitCoords(event);
@@ -751,13 +753,13 @@ Sprite.marqueePointerdown = function (
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
 			Cursor.open('cursor-grab');
-			window.addEventListener('pointerup', this.pointerup);
-			window.addEventListener('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup as EventListener);
+			window.addEventListener('pointermove', this.pointermove as EventListener);
 			break;
 	}
 }.bind(Sprite);
 
-Sprite.pointerup = function (this: typeof Sprite, event: PointerEvent) {
+Sprite.pointerup = function (this: typeof Sprite, event: YamiMouseEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -767,20 +769,23 @@ Sprite.pointerup = function (this: typeof Sprite, event: PointerEvent) {
 				break;
 		}
 		this.dragging = null;
-		window.removeEventListener('pointerup', this.pointerup);
-		window.removeEventListener('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup as EventListener);
+		window.removeEventListener('pointermove', this.pointermove as EventListener);
 	}
 }.bind(Sprite);
 
-Sprite.pointermove = function (this: typeof Sprite, event: PointerEvent) {
+Sprite.pointermove = function (this: typeof Sprite, event: YamiMouseEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll': {
-				const distX = event.clientX - dragging.clientX;
+				const distX = event.clientX - (dragging.clientX ?? 0);
 				const distY = event.clientY - dragging.clientY;
 				this.screen.beginScrolling();
-				this.screen.setScroll(dragging.scrollLeft - distX, dragging.scrollTop - distY);
+				this.screen.setScroll(
+					(dragging.scrollLeft ?? 0) - distX,
+					(dragging.scrollTop ?? 0) - distY
+				);
 				break;
 			}
 		}

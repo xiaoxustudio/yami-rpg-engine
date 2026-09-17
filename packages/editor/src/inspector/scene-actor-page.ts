@@ -4,6 +4,9 @@ import { clear, hide, show } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { radians } from '@app/utils/math';
 
 {
 	interface SceneActorPlayer {
@@ -19,7 +22,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 	interface SceneActorShape {
 		target: SceneActorData | null;
 		update: ((actor: SceneActorData, key: string, value: unknown) => void) | null;
-		typeWrite: ((event: Event) => void) | null;
+		typeWrite: ((event: YamiEvent) => void) | null;
 		[k: string]: unknown;
 	}
 	const SceneActor: SceneActorShape = {
@@ -63,7 +66,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 		if (this.target !== actor) {
 			this.target = actor;
 
-			const elTeamId = inspectorEls.get('sceneActor-teamId') as HTMLElement;
+			const elTeamId = inspectorEls.get('sceneActor-teamId') as YamiElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 
 			const write = getElementWriter('sceneActor', actor);
@@ -71,7 +74,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneActor-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneActor-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -89,7 +94,11 @@ import { Scene } from '@app/scene/scene-window.ts';
 	};
 
 	SceneActor.write = function (this: typeof SceneActor, _options: Record<string, unknown>) {
-		(inspectorEls.get('sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneActor-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
+		)?.sync?.();
 	};
 
 	SceneActor.update = function (
@@ -133,7 +142,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 				if (actor.angle !== value) {
 					actor.angle = value;
 					if (actor.player) {
-						actor.player.setAngle(Math.radians(value as number));
+						actor.player.setAngle(radians(value as number));
 					}
 				}
 				break;
@@ -149,7 +158,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneActor.datachange = function (this: typeof SceneActor, event: Event & { key: string }) {
 		if (this.target && event.key === 'teams') {
-			const elTeamId = inspectorEls.get('sceneActor-teamId') as HTMLElement;
+			const elTeamId = inspectorEls.get('sceneActor-teamId') as YamiElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 			this.target.teamId = '';
 			elTeamId.update();
@@ -157,7 +166,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 		}
 	}.bind(SceneActor);
 
-	SceneActor.typeWrite = function (this: typeof SceneActor, event: Event & { value: unknown }) {
+	SceneActor.typeWrite = function (this: typeof SceneActor, event: YamiEvent) {
 		switch (event.value) {
 			case 'local':
 				show(inspectorEls.get('sceneActor-scripts-detail'));

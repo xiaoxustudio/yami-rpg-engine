@@ -19,15 +19,10 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setStringColor: (value: unknown) => `[str:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`
 }));
 

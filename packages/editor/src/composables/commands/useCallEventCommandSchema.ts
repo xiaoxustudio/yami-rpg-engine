@@ -20,6 +20,7 @@ import { Selection } from '@app/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 interface CallEventArg {
 	type: string;
@@ -255,13 +256,13 @@ const strBoxOf = (el: unknown): HTMLElement | null =>
 interface CallEventParameter {
 	key: string;
 	type: string;
-	label: HTMLElement;
+	label: Node;
 	input: HTMLElement & CallEventInputApi;
 }
 
 interface CallEventResultEl {
 	type: string;
-	label: HTMLElement;
+	label: Node;
 	input: HTMLElement & CallEventInputApi;
 }
 
@@ -287,12 +288,12 @@ export function useCallEventCommandSchema() {
 			if (strBoxOf(input)) {
 				Selection.removeEventListeners!(strBoxOf(input) as HTMLTextAreaElement);
 			}
-			label.remove();
+			(label as Element).remove();
 			input.remove();
 		}
 		parameters.length = 0;
 		if (eventResult) {
-			eventResult.label.remove();
+			(eventResult.label as Element)!.remove();
 			eventResult.input!.remove();
 			eventResult = null;
 		}
@@ -322,16 +323,16 @@ export function useCallEventCommandSchema() {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
 		// P1b：标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
-		const labelEl = (composableEls.get('callEvent-label-template') as HTMLElement).cloneNode(
+		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;
 		labelEl.textContent = name;
-		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
+		let input: HTMLElement & CallEventInputApi = null as unknown as YamiElement &
 			CallEventInputApi;
 		switch (type) {
 			case 'boolean':
-				input = createSelectBox() as unknown as HTMLElement & CallEventInputApi;
-				input.loadItems([
+				input = createSelectBox() as unknown as YamiElement & CallEventInputApi;
+				(input as unknown as { loadItems?: (items: unknown[]) => void }).loadItems?.([
 					{ name: 'False', value: false },
 					{ name: 'True', value: true }
 				]);
@@ -402,7 +403,7 @@ export function useCallEventCommandSchema() {
 		parameters.push({ key, type, label: labelEl, input });
 	};
 	const createEventResultElements = (type: string): void => {
-		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
+		let input: HTMLElement & CallEventInputApi = null as unknown as YamiElement &
 			CallEventInputApi;
 		switch (type) {
 			case 'none':
@@ -443,7 +444,7 @@ export function useCallEventCommandSchema() {
 		write(input, { type: 'local', key: '' });
 		const text = t('command.callEvent.return');
 		const tip = t('command.callEvent.return.tip');
-		const labelEl = (composableEls.get('callEvent-label-template') as HTMLElement).cloneNode(
+		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;
 		labelEl.textContent = text;
@@ -504,7 +505,7 @@ export function useCallEventCommandSchema() {
 	const typeWrite = (event: { value: string }): void => {
 		const type = event.value;
 		if (type !== 'inherited') {
-			const elEventType = composableEls.get('callEvent-eventType') as HTMLElement;
+			const elEventType = composableEls.get('callEvent-eventType') as YamiElement;
 			const source = EventEditor.types?.[type] ?? EventEditor.types?.all;
 			if (!source) return;
 			const eventTypes = Enum.getMergedItems!(source, type + '-event');

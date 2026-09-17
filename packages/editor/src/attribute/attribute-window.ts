@@ -23,6 +23,9 @@ import { type TreeListElement } from '@app/components/tree-list.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import type { AttributeItemShape } from '@app/stores/attribute';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { clone as deepClone } from '@app/utils/object';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const attributeEls = createElementRegistry();
@@ -37,7 +40,7 @@ interface AttributeItem {
 	note?: string;
 	expanded?: boolean;
 	children?: AttributeItem[];
-	element?: HTMLElement;
+	element?: YamiElement;
 	[k: string]: unknown;
 }
 
@@ -54,15 +57,15 @@ interface AttributeHistoryData {
 
 interface AttributeWindowShape {
 	list: TreeListElement;
-	panel: HTMLElement;
-	searcher: HTMLElement;
+	panel: YamiElement;
+	searcher: YamiElement;
 	inputs: {
-		name: HTMLElement | null;
-		key: HTMLElement | null;
-		note: HTMLElement | null;
-		enum: HTMLElement | null;
-		enumBox: HTMLElement | null;
-		type: HTMLElement | null;
+		name: YamiElement | null;
+		key: YamiElement | null;
+		note: YamiElement | null;
+		enum: YamiElement | null;
+		enumBox: YamiElement | null;
+		type: YamiElement | null;
 	};
 	initialize: (this: typeof Attribute) => void;
 	open: (this: typeof Attribute, target?: AttributeTarget, mode?: string) => void;
@@ -92,27 +95,34 @@ interface AttributeWindowShape {
 	unpackAttribute: (this: typeof Attribute) => void;
 	packAttribute: (this: typeof Attribute) => void;
 	saveHistory: (this: typeof Attribute, item: AttributeItem, key: string, value?: string) => void;
-	windowClose: (this: typeof Attribute, event: Event) => void;
-	windowClosed: (this: typeof Attribute, event: Event) => void;
-	keydown: (event: Event) => void;
+	/**
+	 * P2b-2：**桥接到 `stores/attribute`**——本文件末尾按 `attributeStateKeys` 用
+	 * `Object.defineProperty` 把 `idMap` 等状态装到 `Attribute` 上，不是模块自己的字段。
+	 * 原先被类型上的 `[k: string]: any` 兜住，收掉逃生口后由 `tsc` 当场报出
+	 * （`module/monkey-patches.ts` 1 处）。
+	 */
+	idMap: Record<string, boolean>;
+	windowClose: (this: typeof Attribute, event: YamiEvent) => void;
+	windowClosed: (this: typeof Attribute, event: YamiEvent) => void;
+	keydown: (event: YamiEvent) => void;
 	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
 	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
 	listDoubleclick: (event: MouseEvent) => void;
-	listSelect: (event: Event) => void;
-	listRecord: (event: Event) => void;
+	listSelect: (event: YamiEvent) => void;
+	listRecord: (event: YamiEvent) => void;
 	listOpen: (event: MouseEvent) => void;
 	listPopup: (
 		this: typeof Attribute,
-		event: Event & { clientX: number; clientY: number }
+		event: YamiEvent & { clientX: number; clientY: number }
 	) => void;
 	nameInput: (event: InputEvent & { target: HTMLInputElement }) => void;
 	keyInput: (event: InputEvent & { target: HTMLInputElement }) => void;
-	typeWrite: (event: Event) => void;
-	typeInput: (event: Event) => void;
-	enumInput: (event: Event) => void;
+	typeWrite: (event: YamiEvent) => void;
+	typeInput: (event: YamiEvent) => void;
+	enumInput: (event: YamiEvent) => void;
 	noteInput: (this: HTMLElement, event: InputEvent) => void;
 	panelKeydown: (event: KeyboardEvent) => void;
-	searcherInput: (this: TextBox, event: InputEvent) => void;
+	searcherInput: (this: YamiElement, event: InputEvent) => void;
 	confirm: (this: typeof Attribute, event?: Event) => void;
 	apply: (this: typeof Attribute, event?: Event) => void;
 	list_saveScroll: (this: TreeListElement) => void;
@@ -124,11 +134,15 @@ interface AttributeWindowShape {
 	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onResume: (this: typeof Attribute, item: AttributeItem) => void;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
-export const Attribute: AttributeWindowShape = {
+/**
+ * P2b-2：`idMap` 是**桥键**（本文件末尾按 `attributeStateKeys` 用 `Object.defineProperty` 装 get/set），
+ * 字面量给不出它 ⇒ 字面量按 `Omit<AttributeWindowShape, 'idMap'>` 校验（其余成员仍逐项受检），
+ * 导出时再断言成完整形状（与 `AudioManager`/`Log`/`Variable` 同一手法）。
+ */
+const attribute: Omit<AttributeWindowShape, 'idMap'> = {
 	list: null as unknown as AttributeWindowShape['list'],
 	panel: null as unknown as AttributeWindowShape['panel'],
 	searcher: null as unknown as AttributeWindowShape['searcher'],
@@ -190,20 +204,22 @@ export const Attribute: AttributeWindowShape = {
 	list_onResume: null as unknown as AttributeWindowShape['list_onResume']
 };
 
+export const Attribute = attribute as AttributeWindowShape;
+
 function ensureDomBound() {
 	if (Attribute.list) return;
 	const list = attributeEls.get('attribute-list');
 	if (!list) return;
 	// P2b-1：`attributeEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Attribute.list = list as TreeListElement;
-	Attribute.panel = attributeEls.get('attribute-properties-flex') as HTMLElement;
+	Attribute.panel = attributeEls.get('attribute-properties-flex') as YamiElement;
 	hide(Attribute.panel);
-	Attribute.searcher = attributeEls.get('attribute-searcher') as HTMLElement;
-	Attribute.inputs.name = attributeEls.get('attribute-name') as HTMLElement;
-	Attribute.inputs.key = attributeEls.get('attribute-key') as HTMLElement;
-	Attribute.inputs.note = attributeEls.get('attribute-note') as HTMLElement;
-	Attribute.inputs.enum = attributeEls.get('attribute-enum') as HTMLElement;
-	Attribute.inputs.enumBox = attributeEls.get('attribute-enum-box') as HTMLElement;
+	Attribute.searcher = attributeEls.get('attribute-searcher') as YamiElement;
+	Attribute.inputs.name = attributeEls.get('attribute-name') as YamiElement;
+	Attribute.inputs.key = attributeEls.get('attribute-key') as YamiElement;
+	Attribute.inputs.note = attributeEls.get('attribute-note') as YamiElement;
+	Attribute.inputs.enum = attributeEls.get('attribute-enum') as YamiElement;
+	Attribute.inputs.enumBox = attributeEls.get('attribute-enum-box') as YamiElement;
 	list.copy = null as unknown as (...args: unknown[]) => void;
 	list.paste = null as unknown as (...args: unknown[]) => void;
 	list.delete = null as unknown as (...args: unknown[]) => void;
@@ -401,7 +417,7 @@ Attribute.open = function (
 
 	getFocus(list);
 
-	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown as EventListener);
 	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'attribute'));
 };
 
@@ -437,7 +453,7 @@ Attribute.setFolderGroup = function (
 	const settings = getAttributeStore().state.settings!;
 	const oldGroup = folderGroupOf(settings, folder.id);
 	if (oldGroup !== newGroup) {
-		const copy = Object.clone(settings);
+		const copy = deepClone(settings);
 		if (oldGroup) settings[oldGroup] = '';
 		if (newGroup) settings[newGroup] = folder.id;
 		(getAttributeStore().state.history as History).save({
@@ -527,7 +543,7 @@ Attribute.unpackAttribute = (function IIFE() {
 			const item = items![i];
 			getAttributeStore().state.idMap![item.id] = true;
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
@@ -537,7 +553,7 @@ Attribute.unpackAttribute = (function IIFE() {
 	return function (this: typeof Attribute) {
 		getAttributeStore().state.idMap = {};
 		getAttributeStore().state.data = clone(Data.attribute.keys) as AttributeItemShape[];
-		getAttributeStore().state.settings = Object.clone(Data.attribute.settings);
+		getAttributeStore().state.settings = deepClone(Data.attribute.settings);
 		if (!getAttributeStore().state.settingKeys) {
 			getAttributeStore().state.settingKeys = Object.keys(
 				getAttributeStore().state.settings!
@@ -553,7 +569,7 @@ Attribute.packAttribute = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
-				const copy = Object.clone(item);
+				const copy = deepClone(item);
 				if (copy.enum !== '' && copy.type !== 'enum') {
 					copy.enum = '';
 				}
@@ -574,7 +590,7 @@ Attribute.packAttribute = (function IIFE() {
 		Data.attribute.keys = clone(
 			getAttributeStore().state.data as unknown as AttributeItem[] | null
 		);
-		Data.attribute.settings = Object.clone(getAttributeStore().state.settings);
+		Data.attribute.settings = deepClone(getAttributeStore().state.settings);
 		Data.createAttributeContext();
 	};
 })();
@@ -588,7 +604,7 @@ Attribute.saveHistory = function (
 	getAttributeStore().saveHistory(item as AttributeItemShape, key, value);
 };
 
-Attribute.windowClose = function (this: typeof Attribute, event: Event) {
+Attribute.windowClose = function (this: typeof Attribute, event: YamiEvent) {
 	this.list.saveScroll();
 	if (getAttributeStore().state.changed) {
 		event.preventDefault();
@@ -613,12 +629,12 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 	}
 }.bind(Attribute);
 
-Attribute.windowClosed = function (this: typeof Attribute, _event: Event) {
+Attribute.windowClosed = function (this: typeof Attribute, _event: YamiEvent) {
 	getAttributeStore().close();
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
-	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('keydown', this.keydown as EventListener);
 	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list));
 }.bind(Attribute);
 
@@ -685,14 +701,14 @@ Attribute.listDoubleclick = function (event: MouseEvent) {
 	}
 };
 
-Attribute.listSelect = function (event: Event) {
+Attribute.listSelect = function (event: YamiEvent) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Attribute.openPropertyPanel(item)
 		: Attribute.closePropertyPanel();
 };
 
-Attribute.listRecord = function (event: Event) {
+Attribute.listRecord = function (event: YamiEvent) {
 	getAttributeStore().state.changed = true;
 	const response = event.value;
 	switch (response.type) {
@@ -718,7 +734,7 @@ Attribute.listOpen = function (event: MouseEvent) {
 	Attribute.listDoubleclick(event);
 };
 
-Attribute.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+Attribute.listPopup = function (event: YamiEvent & { clientX: number; clientY: number }) {
 	const list = Attribute.list!;
 	const item = event.value;
 	const selected = !!item;
@@ -869,7 +885,7 @@ Attribute.keyInput = function (event: InputEvent & { target: HTMLInputElement })
 	}
 };
 
-Attribute.typeWrite = function (event: Event) {
+Attribute.typeWrite = function (event: YamiEvent) {
 	const { style } = Attribute.inputs.enumBox!;
 	switch (event.value) {
 		case 'enum':
@@ -884,7 +900,7 @@ Attribute.typeWrite = function (event: Event) {
 	}
 };
 
-Attribute.typeInput = function (event: Event) {
+Attribute.typeInput = function (event: YamiEvent) {
 	const item = getAttributeStore().state.selected as AttributeItem;
 	if (item === null) return;
 	Attribute.saveHistory(item, 'type', item.type);
@@ -893,7 +909,7 @@ Attribute.typeInput = function (event: Event) {
 	getAttributeStore().state.changed = true;
 };
 
-Attribute.enumInput = function (event: Event) {
+Attribute.enumInput = function (event: YamiEvent) {
 	const item = getAttributeStore().state.selected as AttributeItem;
 	Attribute.saveHistory(item, 'enum', item.enum);
 	item.enum = event.value;
@@ -928,11 +944,11 @@ Attribute.panelKeydown = function (event: KeyboardEvent) {
 	}
 };
 
-Attribute.searcherInput = function (this: TextBox, event: InputEvent) {
+Attribute.searcherInput = function (this: YamiElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input!.value;
+	const text = (this.input as { value: string }).value;
 	Attribute.list!.searchNodesDebounced(text);
 };
 
@@ -999,7 +1015,7 @@ Attribute.list_cancelSearch = function (this: TreeListElement) {
 		Attribute.searcher!.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
-		active!.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 

@@ -3,6 +3,7 @@ import { Printer } from '@app/printer/printer.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { empty as fnEmpty } from '@app/utils/function';
 
 interface TextBoxElementData {
 	align?: string;
@@ -191,7 +192,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		if (printer === null) {
 			const texture = new Texture();
 			printer = new Printer(texture);
-			printer.matchTag = Function.empty as () => boolean;
+			printer.matchTag = fnEmpty as () => boolean;
 			printer.sizes[0] = this.size;
 			printer.fonts[0] = this.font || (Printer.font as string);
 			printer.colors[0] = '#ffffff';

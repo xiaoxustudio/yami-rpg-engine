@@ -9,6 +9,7 @@ import { Light } from './light.ts';
 import { Parallax } from './parallax.ts';
 import { Scene } from './scene-window.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
+import { radians } from '@app/utils/math';
 
 Scene.updateParallaxes = SceneAnimateEngine.updateParallaxes;
 
@@ -301,7 +302,7 @@ Scene.loadActorContext = function (this: typeof Scene, actor: SceneActor) {
 			player.rotatable = data.rotatable;
 			player.setSpriteImages(images);
 			player.setMotion(data.idleMotion);
-			player.setAngle(Math.radians(actor.angle ?? 0));
+			player.setAngle(radians(actor.angle ?? 0));
 			Object.defineProperty(actor, 'player', {
 				configurable: true,
 				value: player
@@ -341,7 +342,7 @@ Scene.loadAnimationContext = function (this: typeof Scene, animation: SceneAnima
 		player.opacity = animation.opacity ?? 1;
 		player.rotatable = animation.rotatable;
 		player.setMotion(animation.motion);
-		player.setAngle(Math.radians(animation.angle ?? 0));
+		player.setAngle(radians(animation.angle ?? 0));
 		Object.defineProperty(animation, 'player', {
 			configurable: true,
 			value: player
@@ -375,7 +376,7 @@ Scene.loadParticleContext = function (this: typeof Scene, particle: SceneParticl
 	if (data !== undefined) {
 		const emitter = new Particle.Emitter!(data);
 		emitter.bounding = emitter.calculateOuterRect();
-		emitter.angle = Math.radians(particle.angle ?? 0);
+		emitter.angle = radians(particle.angle ?? 0);
 		emitter.scale = particle.scale ?? 1;
 		emitter.speed = particle.speed ?? 1;
 		emitter.opacity = particle.opacity ?? 1;

@@ -126,14 +126,14 @@ function initSpriteDOM() {
 	document.body.appendChild(screen);
 	document.body.appendChild(marquee);
 
-	Sprite.body = body;
-	Sprite.window = win;
-	Sprite.canvas = canvas as any;
+	Sprite.body = body as unknown as (typeof Sprite)['body'];
+	Sprite.window = win as unknown as (typeof Sprite)['window'];
+	Sprite.canvas = canvas as unknown as (typeof Sprite)['canvas'];
 	(Sprite as any).context = ctx;
-	Sprite.info = info;
-	Sprite.slider = slider;
-	Sprite.screen = screen;
-	Sprite.marquee = marquee;
+	Sprite.info = info as unknown as (typeof Sprite)['info'];
+	Sprite.slider = slider as unknown as (typeof Sprite)['slider'];
+	Sprite.screen = screen as unknown as (typeof Sprite)['screen'];
+	Sprite.marquee = marquee as unknown as (typeof Sprite)['marquee'];
 	(Sprite as any).zoomTimer = {
 		start: 0,
 		end: 0,

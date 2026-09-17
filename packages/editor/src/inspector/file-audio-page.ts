@@ -1,4 +1,5 @@
 import { inspectorEls } from './element-registry.ts';
+import { padZero } from '@app/utils/number';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
 import { AudioManager } from '@app/audio/audio-manager.ts';
@@ -7,6 +8,10 @@ import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Timer } from '@app/utils/timer';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { roundTo } from '@app/utils/math';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 {
 	interface FileAudioShape {
@@ -164,7 +169,7 @@ import { Timer } from '@app/utils/timer';
 	};
 
 	FileAudio.update = function (this: typeof FileAudio) {
-		const el = inspectorEls.get('fileAudio') as HTMLElement;
+		const el = inspectorEls.get('fileAudio') as YamiElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};
@@ -184,12 +189,12 @@ import { Timer } from '@app/utils/timer';
 			canvas.style.width = '100%';
 			canvas.style.height = '0';
 			const dpr = window.devicePixelRatio;
-			const height = CSS.getDevicePixelContentBoxSize(canvas).width;
+			const height = getDevicePixelContentBoxSize(canvas).width;
 			if (canvas.height !== height) {
 				canvas.height = height;
 			}
 			canvas.style.height = `${height / dpr}px`;
-			const width = CSS.getDevicePixelContentBoxSize(canvas).width;
+			const width = getDevicePixelContentBoxSize(canvas).width;
 			if (canvas.width !== width) {
 				canvas.width = width;
 			}
@@ -201,8 +206,7 @@ import { Timer } from '@app/utils/timer';
 	};
 
 	FileAudio.formatTime = function (this: typeof FileAudio, time: number) {
-		// oxlint-disable-next-line unbound-method
-		const pad = Number.padZero;
+		const pad = padZero;
 		const length = Math.floor(time);
 		const hours = Math.floor(length / 3600);
 		const minutes = Math.floor(length / 60) % 60;
@@ -224,7 +228,7 @@ import { Timer } from '@app/utils/timer';
 		const duration = audio.duration || Infinity;
 		const cw = Inspector.manager.clientWidth;
 		const pw = Math.round((cw * currentTime) / duration);
-		const pp = Math.roundTo((pw / cw) * 100, 6);
+		const pp = roundTo((pw / cw) * 100, 6);
 		const { progress, progressFiller } = FileAudio;
 		if (progress.percent !== pp) {
 			progress.percent = pp;
@@ -348,7 +352,7 @@ import { Timer } from '@app/utils/timer';
 		Timer.removeUpdater!('sharedAnimation', this.updateAnimation);
 	};
 
-	FileAudio.themechange = function (this: typeof FileAudio, event: Event) {
+	FileAudio.themechange = function (this: typeof FileAudio, event: YamiEvent) {
 		switch (event.value) {
 			case 'light':
 				this.lineColor = '#000000';
@@ -359,7 +363,7 @@ import { Timer } from '@app/utils/timer';
 		}
 	}.bind(FileAudio);
 
-	FileAudio.windowResize = function (this: typeof FileAudio, _event: Event) {
+	FileAudio.windowResize = function (this: typeof FileAudio, _event: YamiEvent) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
 			FileAudio.updateCanvas();
 		}

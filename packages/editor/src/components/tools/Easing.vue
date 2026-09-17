@@ -274,6 +274,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { dataEls } from '@app/data/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -304,14 +305,14 @@ const onDelayInput = () => {
 	Easing?.delayInput?.();
 };
 
-const onListSelect = (event: Event & { value?: unknown }) => {
-	Easing?.listSelect?.(event);
+const onListSelect = (event: YamiEvent) => {
+	Easing?.listSelect?.(event as never);
 };
-const onListOpen = (event: Event & { value?: unknown }) => {
-	Easing?.listOpen?.(event);
+const onListOpen = (event: YamiEvent) => {
+	Easing?.listOpen?.(event as never);
 };
-const onListPopup = (event: Event & { value?: unknown }) => {
-	Easing?.listPopup?.(event as PointerEvent & { value?: unknown });
+const onListPopup = (event: YamiEvent) => {
+	Easing?.listPopup?.(event as never);
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Easing?.dataChange?.(event);

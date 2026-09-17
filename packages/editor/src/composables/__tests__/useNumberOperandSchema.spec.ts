@@ -14,17 +14,11 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setStringColor: (value: unknown) => `[str:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setScriptColor: (value: unknown) => `[script:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`
 }));
 
@@ -33,7 +27,6 @@ vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariableNumber: (value: unknown) =>
 		// oxlint-disable-next-line no-base-to-string
 		`[vnum:${String(typeof value === 'object' ? (value as { key: string }).key : value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseVariableString: (value: unknown) => `[vstr:${String(value)}]`,
 	parseVariableFile: (id: string) => `<vfile:${id}>`,
 	parseVariableEnum: (group: string, key: string) => `<venum:${group}:${key}>`,
@@ -98,11 +91,8 @@ describe('useNumberOperandSchema（数值操作数窗口 composable：parse 树�
 		Enum.getStringItems = vi.fn(() => []) as never;
 		Enum.getDefStringId = vi.fn(() => 'id0') as never;
 		Data.teams = { list: [{ id: 'team0' }] } as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setOperatorColor = ((value: unknown) => `[op:${String(value)}]`) as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setDelimiterColor = ((value: unknown) => `[dl:${String(value)}]`) as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setBooleanColor = ((value: unknown) => `[bool:${String(value)}]`) as never;
 		NumberOperand.target = null;
 	});

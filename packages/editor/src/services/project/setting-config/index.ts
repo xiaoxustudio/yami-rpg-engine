@@ -7,6 +7,7 @@ import nodeFs from 'node:fs';
 import nodePath from 'node:path';
 import { SettingRenderer } from './renderer.ts';
 import { settingSchema, buildDefaultConfig } from './schema.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 export const path = nodePath;
 
@@ -44,7 +45,7 @@ export const SettingConfig = new (class {
 	private bindButtons() {
 		if (this._buttonsBound) return;
 		if (typeof document === 'undefined') return;
-		const settingEl = serviceEls.get('setting') as HTMLElement;
+		const settingEl = serviceEls.get('setting') as YamiElement;
 		if (!settingEl) return;
 		this._buttonsBound = true;
 		on(settingEl, 'open', this.open.bind(this));
@@ -55,7 +56,7 @@ export const SettingConfig = new (class {
 		this.bindButtons();
 		this.load();
 		this.render();
-		on(serviceEls.get('setting') as HTMLElement, 'closed', () => this.close(), { once: true });
+		on(serviceEls.get('setting') as YamiElement, 'closed', () => this.close(), { once: true });
 	}
 	close() {
 		this.save();

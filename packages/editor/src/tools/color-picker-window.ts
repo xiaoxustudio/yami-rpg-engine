@@ -13,6 +13,8 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Rename } from '@app/composables/useRenameWindow';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp } from '@app/utils/math';
 
 /** P5b 批次 3：元素注册表——由 Color.vue 在模板里登记 */
 export const colorEls = createElementRegistry();
@@ -69,9 +71,9 @@ Color.initialize = function (this: typeof Color) {
 	const colorIndex = radioProxyMap['color-index'] as RadioProxyElement | undefined;
 	if (colorIndex) colorIndex.cancelable = true;
 
-	(colorEls.get('color') as HTMLElement)?.addEventListener('closed', this.windowClosed);
-	on(colorEls.get('color-palette-frame') as HTMLElement, 'pointerdown', this.palettePointerdown);
-	on(colorEls.get('color-pillar-frame') as HTMLElement, 'pointerdown', this.pillarPointerdown);
+	(colorEls.get('color') as YamiElement)?.addEventListener('closed', this.windowClosed);
+	on(colorEls.get('color-palette-frame') as YamiElement, 'pointerdown', this.palettePointerdown);
+	on(colorEls.get('color-pillar-frame') as YamiElement, 'pointerdown', this.pillarPointerdown);
 	$('[name="color-index"]').forEach((el) =>
 		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
 	);
@@ -105,7 +107,7 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 };
 
 Color.drawPalette = function (this: typeof Color) {
-	const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
+	const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
 	// P4b: initialized now lives in element data (field removed from DATA_FIELDS)
 	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
 		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
@@ -154,7 +156,7 @@ Color.drawPalette = function (this: typeof Color) {
 
 Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b] = args[0] as [number, number, number];
-	const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
+	const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
 	const context = canvas.getContext('2d', { willReadFrequently: true })!;
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
 	gradient.addColorStop(0, `rgba(${r}, ${g}, ${b})`);
@@ -165,14 +167,14 @@ Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawViewer = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b, a] = args[0] as [number, number, number, number];
-	(colorEls.get('color-viewer') as HTMLElement).style.backgroundColor =
+	(colorEls.get('color-viewer') as YamiElement).style.backgroundColor =
 		`rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
 Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 	const x = args[0] as number;
 	const y = args[1] as number;
-	const cursor = colorEls.get('color-palette-cursor') as HTMLElement;
+	const cursor = colorEls.get('color-palette-cursor') as YamiElement;
 	this.paletteX = x;
 	this.paletteY = y;
 	cursor.style.left = `${x - 5}px`;
@@ -181,7 +183,7 @@ Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 
 Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 	const y = args[0] as number;
-	const cursor = colorEls.get('color-pillar-cursor') as HTMLElement;
+	const cursor = colorEls.get('color-pillar-cursor') as YamiElement;
 	this.pillarY = y;
 	cursor.style.top = `${y}px`;
 };
@@ -189,7 +191,7 @@ Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 Color.getRGBFromPalette = function (this: typeof Color) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
-	const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
+	const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(x, y, 1, 1).data;
 	return [r, g, b];
@@ -197,7 +199,7 @@ Color.getRGBFromPalette = function (this: typeof Color) {
 
 Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
-	const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
+	const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(0, y, 1, 1).data;
 	return [r, g, b];
@@ -285,10 +287,10 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
+			const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
-			const x = Math.clamp(coords.x, 0, 255);
-			const y = Math.clamp(coords.y, 0, 193);
+			const x = clamp(coords.x, 0, 255);
+			const y = clamp(coords.y, 0, 193);
 			this.setPaletteCursor(x, y);
 
 			const rgb = this.getRGBFromPalette();
@@ -314,9 +316,9 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = colorEls.get('color-pillar-canvas') as HTMLCanvasElement;
+			const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
-			const y = Math.clamp(coords.y, 0, 255);
+			const y = clamp(coords.y, 0, 255);
 			this.setPillarCursor(y);
 
 			const rgb = this.getRGBFromPillar();
@@ -331,7 +333,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 }.bind(Color);
 
 Color.indexedColorInput = function (this: typeof Color, event: Event & { value?: string }) {
-	const index = event.value;
+	const index = event.value ?? 0;
 	const hex = Data.config.indexedColors[index].code;
 	const rgba = this.getRGBAFromHex(hex);
 	this.drawPillar(rgba);
@@ -346,8 +348,8 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEvent) {
 	switch (event.button) {
 		case 2: {
-			const element = event.target as HTMLElement & { dataValue?: string };
-			const index = element.dataValue;
+			const element = event.target as unknown as YamiElement & { dataValue?: string };
+			const index = element.dataValue as unknown as number;
 			const indexedColor = Data.config.indexedColors[index];
 			const get = (key: string) => t('menuIndexedColor.' + key);
 			Menu.popup(
@@ -401,9 +403,9 @@ Color.pointermove = function (this: typeof Color, event: PointerEvent) {
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'palette':
-				return this.palettePointerdown(event);
+				return this.palettePointerdown(event as unknown as ColorDrag);
 			case 'pillar':
-				return this.pillarPointerdown(event);
+				return this.pillarPointerdown(event as unknown as ColorDrag);
 		}
 	}
 }.bind(Color);

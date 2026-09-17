@@ -37,6 +37,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -47,7 +48,7 @@ const onConfirm = () => {
 onMounted(() => {
 	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
 	fieldEls.get('if-branch-conditions')?.bind?.(IfCondition);
-	const modeEl = fieldEls.get('if-branch-mode') as HTMLElement;
+	const modeEl = fieldEls.get('if-branch-mode') as YamiElement;
 	if (!modeEl) return;
 	modeEl.loadItems([
 		{ name: 'Meet All', value: 'all' },

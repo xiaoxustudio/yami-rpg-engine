@@ -187,7 +187,7 @@ describe('useTextCaptureWindow（文字捕获窗口 composable：六个标签窗
 		const wrappers = await mountAll();
 		const insert = vi.fn();
 		const parent = document.createElement('div');
-		(parent as HTMLElement & { insert(value: unknown): void }).insert = insert;
+		(parent as unknown as HTMLElement & { insert(value: unknown): void }).insert = insert;
 		const input = document.createElement('input');
 		input.value = 'x';
 		parent.appendChild(input);

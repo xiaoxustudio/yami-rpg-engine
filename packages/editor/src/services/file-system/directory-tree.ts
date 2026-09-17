@@ -3,6 +3,7 @@ import { Path } from '@app/utils/config';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import type { FileItemHooks } from '@app/services/file-system/file-item.ts';
+import { empty as fnEmpty } from '@app/utils/function';
 
 export interface DirectoryTreeHooks {
 	onVersionTick?: () => void;
@@ -423,7 +424,7 @@ async function copy(
 							break;
 						}
 					}
-				}, Function.empty)
+				}, fnEmpty)
 				.finally(() => {
 					const children = (file as FolderItem).children;
 					if (children) {

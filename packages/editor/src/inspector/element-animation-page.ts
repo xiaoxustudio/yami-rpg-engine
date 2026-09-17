@@ -3,13 +3,15 @@ import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
 
 {
 	interface UIAnimationShape {
 		target: UIAnimationData | null;
 		update: ((node: UIAnimationData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
-		animationIdWrite: ((event: Event) => void) | null;
+		paramInput: ((event: YamiEvent) => void) | null;
+		animationIdWrite: ((event: YamiEvent) => void) | null;
 		[k: string]: unknown;
 	}
 	interface UIAnimationData {
@@ -64,7 +66,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiAnimation-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -105,7 +109,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIAnimation.paramInput = function (this: typeof UIAnimation, event: Event) {
+	UIAnimation.paramInput = function (this: typeof UIAnimation, event: YamiEvent) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
@@ -119,8 +123,8 @@ import { UI } from '@app/ui/ui-window.ts';
 		);
 	};
 
-	UIAnimation.animationIdWrite = function (this: typeof UIAnimation, event: Event) {
-		const elMotion = inspectorEls.get('uiAnimation-motion') as HTMLElement;
+	UIAnimation.animationIdWrite = function (this: typeof UIAnimation, event: YamiEvent) {
+		const elMotion = inspectorEls.get('uiAnimation-motion') as YamiElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};

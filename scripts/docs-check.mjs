@@ -114,6 +114,10 @@ function scanCode() {
 }
 
 function docFiles() {
+	// 「docs/ 可以被删除」是 P15 的验收之一：目录整体不存在时返回空列表，
+	// 由 `main()` 按「文档已退役」口径跳过（**曾经这里是 `readdirSync` 直接 scandir**，
+	// 删目录后会让本命令以 ENOENT 崩掉——那等于文档目录仍是承重结构）。
+	if (!existsSync(DOCS_DIR)) return [];
 	return readdirSync(DOCS_DIR)
 		.filter((name) => name.endsWith('.md'))
 		.map((name) => join(DOCS_DIR, name));

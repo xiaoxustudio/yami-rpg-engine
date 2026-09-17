@@ -149,7 +149,7 @@ export class ScriptListInterface implements IScriptListInterface {
 					item?: { id: string };
 				};
 				const item = el.dataItem ?? el.item;
-				const path = File.getPath!(item.id);
+				const path = File.getPath!(item!.id);
 				if (path) getBrowserStore().openScript?.(path);
 			}
 			element = null;

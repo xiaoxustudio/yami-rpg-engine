@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref, type VNode } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
@@ -124,8 +125,8 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	return [h('span', { class: ['node-icon', ['icon-command', 'custom']] })];
 };
 
-const onListSelect = (event: Event & { value?: unknown }) => {
-	CustomCommand?.listSelect?.(event);
+const onListSelect = (event: YamiEvent) => {
+	CustomCommand?.listSelect?.(event as never);
 };
 const onListPopup = (event: Event & { value?: unknown }) => {
 	(

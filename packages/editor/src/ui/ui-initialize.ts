@@ -13,31 +13,33 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { getUIStore } from '@app/stores/ui';
+import type { YamiElement } from '@app/types/element-api';
+import { roundTo } from '@app/utils/math';
 
 UI.initialize = function (this: UIShape) {
-	this.page = uiEls.get('ui') as HTMLElement;
-	this.head = uiEls.get('ui-head') as HTMLElement;
-	this.body = hide(uiEls.get('ui-body') as HTMLElement);
-	this.screen = uiEls.get('ui-screen') as HTMLElement as HTMLElement & {
+	this.page = uiEls.get('ui') as YamiElement;
+	this.head = uiEls.get('ui-head') as YamiElement;
+	this.body = hide(uiEls.get('ui-body') as YamiElement);
+	this.screen = uiEls.get('ui-screen') as unknown as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};
 	const oldMarquee = this.marquee;
-	this.marquee = uiEls.get('ui-marquee') as HTMLElement;
+	this.marquee = uiEls.get('ui-marquee') as YamiElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = uiEls.get('ui-searcher') as HTMLElement;
+	this.searcher = uiEls.get('ui-searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = uiEls.get('ui-list') as HTMLElement;
+	this.list = uiEls.get('ui-list') as YamiElement;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
 	// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiEls.get(
 		'ui-element'
-	) as HTMLElement;
-	elementDataOf<{ head: HTMLElement }>(this.list).head = uiEls.get('ui-list-head') as HTMLElement;
+	) as YamiElement;
+	elementDataOf<{ head: HTMLElement }>(this.list).head = uiEls.get('ui-list-head') as YamiElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	const points = {
@@ -109,8 +111,8 @@ UI.initialize = function (this: UIShape) {
 				const screen = this.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				const cx = Math.roundTo(this.centerX + x, 4);
-				const cy = Math.roundTo(this.centerY + y, 4);
+				const cx = roundTo(this.centerX + x, 4);
+				const cy = roundTo(this.centerY + y, 4);
 				this.updateCamera!(cx, cy);
 				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {

@@ -8,6 +8,7 @@ import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { TextSuggestion, TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { selectBoxSetItemNames } from '@app/components/select-box.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 type VarTypeItem = { name: string; value: string };
 
@@ -248,7 +249,7 @@ const open = (
 	const globalKeyEl = composableEls.get(`${prefix}-global-key`);
 	if (globalKeyEl) {
 		// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-		(globalKeyEl as CustomBoxApi).filter = filter.startsWith('writable-')
+		(globalKeyEl as unknown as CustomBoxApi).filter = filter.startsWith('writable-')
 			? filter.slice(9)
 			: filter;
 	}
@@ -396,7 +397,7 @@ const createVarListGenerator = (filterObject: {
 						: 'any';
 
 		const list = EventEditor.commandList as unknown as {
-			elements: HTMLElement[] & { count?: number };
+			elements: YamiElement[] & { count?: number };
 			active: number | null | undefined;
 			varList?: VarListEntry[];
 		};
@@ -478,7 +479,7 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = composableEls.get('variableGetter-preset-key') as
+			const keyBox = composableEls.get('variableGetter-preset-key') as unknown as unknown as
 				| (HTMLElement & {
 						selectBox?: HTMLElement & {
 							textContent: string;

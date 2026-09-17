@@ -11,6 +11,8 @@ import type { Timer } from '@app/utils/timer';
 import type { History } from '@app/tools/history.ts';
 import type { StageColor } from '@app/utils/stage-color';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 export interface ControlPoint {
 	x: number;
@@ -25,10 +27,10 @@ export interface UIControlPoints {
 }
 
 export interface UIShape {
-	page: HTMLElement;
-	head: HTMLElement;
-	body: HTMLElement;
-	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+	page: YamiElement;
+	head: YamiElement;
+	body: YamiElement;
+	screen: YamiElement;
 	history: History;
 	controlPoints: UIControlPoints | null;
 	controlPointActive: ControlPoint | null;
@@ -80,7 +82,7 @@ export interface UIContextShape {
 	[k: string]: any;
 }
 
-export type UIPointerEvent = PointerEvent & {
+export type UIPointerEvent = YamiMouseEvent & {
 	dragKey?: boolean;
 	absoluteAnchorX?: number;
 	absoluteAnchorY?: number;
@@ -96,16 +98,13 @@ export type UIPointerEvent = PointerEvent & {
 };
 
 export const UI: UIShape = {
-	page: uiEls.get('ui') as HTMLElement,
-	head: uiEls.get('ui-head') as HTMLElement,
-	body: hide(uiEls.get('ui-body') as HTMLElement),
-	screen: uiEls.get('ui-screen') as HTMLElement as HTMLElement & {
-		rawScrollLeft: number;
-		rawScrollTop: number;
-	},
-	marquee: (uiEls.get('ui-marquee') as HTMLElement) || {},
-	searcher: uiEls.get('ui-searcher') as HTMLElement,
-	list: (uiEls.get('ui-list') as HTMLElement) || {},
+	page: uiEls.get('ui') as YamiElement,
+	head: uiEls.get('ui-head') as YamiElement,
+	body: hide(uiEls.get('ui-body') as YamiElement),
+	screen: uiEls.get('ui-screen') as YamiElement,
+	marquee: (uiEls.get('ui-marquee') as YamiElement) || {},
+	searcher: uiEls.get('ui-searcher') as YamiElement,
+	list: (uiEls.get('ui-list') as YamiElement) || {},
 	dragging: null,
 	hover: null,
 	history: null as unknown as History,
@@ -260,10 +259,8 @@ export const UI: UIShape = {
 UI.marquee.resize = null;
 
 // P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
-elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get(
-	'ui-element'
-) as HTMLElement;
-elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as HTMLElement;
+elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
+elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as YamiElement;
 UI.list.copy = null;
 UI.list.paste = null;
 UI.list.delete = null;

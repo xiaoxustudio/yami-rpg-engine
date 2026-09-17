@@ -12,6 +12,7 @@ import { getMonaco } from '@app/utils/monaco';
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -34,9 +35,9 @@ Command.cases.script = new CommandSchema({
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
 		// P1b：文本节点由 Script.vue 的模板节点 clone 而来（原先 document.createElement('div') + render）
-		const text = (
-			composableEls.get('script-text-template') as HTMLElement
-		).cloneNode(true) as HTMLElement;
+		const text = (composableEls.get('script-text-template') as YamiElement).cloneNode(
+			true
+		) as HTMLElement;
 		text.textContent = code;
 		const options = this.colorOptions;
 		options.theme = Title.theme;
@@ -268,7 +269,7 @@ const isMaximized = (): boolean => hasClass(composableEls.get('script'), 'maximi
 
 const resize = (): void => {
 	if (!editor) return;
-	const content = composableEls.get('script-script') as HTMLElement;
+	const content = composableEls.get('script-script') as YamiElement;
 	const parent = content.parentElement!;
 	if (!isMaximized()) {
 		content.style.width = '';
@@ -293,39 +294,42 @@ const createEditor = async (): Promise<void> => {
 	const monaco = await getMonaco();
 	const { theme } = Title;
 	await Command.cases.script.createTheme(theme);
-	editor = monaco.editor.create(composableEls.get('script-script') as HTMLElement, {
-		language: 'javascript',
-		theme: theme ?? '',
-		tabSize: 2,
-		fontSize: 14,
-		lineHeight: 14,
-		mouseWheelScrollSensitivity: (14 * 3) / 50,
-		fastScrollSensitivity: 5,
-		wordWrap: 'on',
-		matchBrackets: 'never',
-		folding: true,
-		formatOnType: false,
-		showDeprecated: false,
-		selectionHighlight: true,
-		detectIndentation: false,
-		insertSpaces: true,
-		roundedSelection: false,
-		overviewRulerBorder: false,
-		hideCursorInOverviewRuler: true,
-		automaticLayout: false,
-		hover: { enabled: true },
-		lightbulb: {
-			enabled: false as never
-		},
-		minimap: {
-			enabled: false
-		},
-		scrollbar: {
-			useShadows: false,
-			horizontalScrollbarSize: 12,
-			verticalScrollbarSize: 12
-		}
-	} as unknown as Parameters<typeof monaco.editor.create>[1]);
+	editor = monaco.editor.create(
+		composableEls.get('script-script') as YamiElement,
+		{
+			language: 'javascript',
+			theme: theme ?? '',
+			tabSize: 2,
+			fontSize: 14,
+			lineHeight: 14,
+			mouseWheelScrollSensitivity: (14 * 3) / 50,
+			fastScrollSensitivity: 5,
+			wordWrap: 'on',
+			matchBrackets: 'never',
+			folding: true,
+			formatOnType: false,
+			showDeprecated: false,
+			selectionHighlight: true,
+			detectIndentation: false,
+			insertSpaces: true,
+			roundedSelection: false,
+			overviewRulerBorder: false,
+			hideCursorInOverviewRuler: true,
+			automaticLayout: false,
+			hover: { enabled: true },
+			lightbulb: {
+				enabled: false as never
+			},
+			minimap: {
+				enabled: false
+			},
+			scrollbar: {
+				useShadows: false,
+				horizontalScrollbarSize: 12,
+				verticalScrollbarSize: 12
+			}
+		} as unknown as Parameters<typeof monaco.editor.create>[1]
+	);
 	model = editor!.getModel() as unknown as ScriptModel;
 
 	on(composableEls.get('script-change'), 'click', async () => {

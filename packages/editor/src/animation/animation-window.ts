@@ -1,5 +1,6 @@
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
 import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { getAnimationStore } from '@app/stores/animation';
@@ -10,7 +11,7 @@ import {
 
 // DOM 元素字段：运行时挂载大量扩展方法（.hide()/.show()/.update()/.write()/.on() 等），统一用 HTMLElement & {[ k: string ]: any} 兜底，避免穷举
 // oxlint-disable-next-line no-explicit-any
-export type AnimationElement = HTMLElement & { [k: string]: any };
+export type AnimationElement = YamiElement & { [k: string]: any };
 
 export type AnimationFrame = {
 	start: number;
@@ -153,10 +154,7 @@ export type AnimationHistoryTargetIndex = {
 export interface AnimationShape {
 	page: AnimationElement;
 	head: AnimationElement;
-	body: AnimationElement & {
-		hide(): HTMLElement;
-		show(): HTMLElement;
-	};
+	body: AnimationElement;
 	screen: AnimationElement;
 	marquee: AnimationElement;
 	dirList: AnimationElement;
@@ -181,42 +179,42 @@ export interface AnimationShape {
 }
 
 export const Animation: AnimationShape = {
-	page: animationEls.get('animation') as HTMLElement,
-	head: animationEls.get('animation-head') as HTMLElement,
-	body: animationEls.get('animation-body') as HTMLElement,
-	screen: animationEls.get('animation-screen') as HTMLElement,
+	page: animationEls.get('animation') as YamiElement,
+	head: animationEls.get('animation-head') as YamiElement,
+	body: animationEls.get('animation-body') as YamiElement,
+	screen: animationEls.get('animation-screen') as YamiElement,
 	marquee:
-		(animationEls.get('animation-marquee') as HTMLElement) ||
+		(animationEls.get('animation-marquee') as YamiElement) ||
 		({} as unknown as AnimationElement),
-	dirList: animationEls.get('animation-dirList') as HTMLElement,
-	searcher: animationEls.get('animation-searcher') as HTMLElement,
+	dirList: animationEls.get('animation-dirList') as YamiElement,
+	searcher: animationEls.get('animation-searcher') as YamiElement,
 	list:
-		(animationEls.get('animation-list') as HTMLElement) || ({} as unknown as AnimationElement),
+		(animationEls.get('animation-list') as YamiElement) || ({} as unknown as AnimationElement),
 	layerList:
-		(animationEls.get('animation-layer-list') as HTMLElement) ||
+		(animationEls.get('animation-layer-list') as YamiElement) ||
 		({} as unknown as AnimationElement),
 	timeline:
-		(animationEls.get('animation-timeline') as HTMLElement) ||
+		(animationEls.get('animation-timeline') as YamiElement) ||
 		({} as unknown as AnimationElement),
-	toolbar: animationEls.get('animation-timeline-toolbar') as HTMLElement,
-	outerRuler: animationEls.get('animation-timeline-ruler-outer') as HTMLElement,
-	innerRuler: animationEls.get('animation-timeline-ruler-inner') as HTMLElement,
+	toolbar: animationEls.get('animation-timeline-toolbar') as YamiElement,
+	outerRuler: animationEls.get('animation-timeline-ruler-outer') as YamiElement,
+	innerRuler: animationEls.get('animation-timeline-ruler-inner') as YamiElement,
 	outerTimelineList:
-		(animationEls.get('animation-timeline-list-outer') as HTMLElement) ||
+		(animationEls.get('animation-timeline-list-outer') as YamiElement) ||
 		({} as unknown as AnimationElement),
 	innerTimelineList:
-		(animationEls.get('animation-timeline-list-inner') as HTMLElement) ||
+		(animationEls.get('animation-timeline-list-inner') as YamiElement) ||
 		({} as unknown as AnimationElement),
 	timelineCursor:
-		(animationEls.get('animation-timeline-cursor') as HTMLElement) ||
+		(animationEls.get('animation-timeline-cursor') as YamiElement) ||
 		({} as unknown as AnimationElement),
 	timelineMarquee:
-		(animationEls.get('animation-timeline-marquee') as HTMLElement) ||
+		(animationEls.get('animation-timeline-marquee') as YamiElement) ||
 		({} as unknown as AnimationElement),
-	timelineMarqueeShift: animationEls.get('animation-timeline-marquee-shift') as HTMLElement,
-	outerPointerArea: animationEls.get('animation-timeline-pointer-area-outer') as HTMLElement,
-	innerPointerArea: animationEls.get('animation-timeline-pointer-area-inner') as HTMLElement,
-	pointer: animationEls.get('animation-timeline-pointer') as HTMLElement,
+	timelineMarqueeShift: animationEls.get('animation-timeline-marquee-shift') as YamiElement,
+	outerPointerArea: animationEls.get('animation-timeline-pointer-area-outer') as YamiElement,
+	innerPointerArea: animationEls.get('animation-timeline-pointer-area-inner') as YamiElement,
+	pointer: animationEls.get('animation-timeline-pointer') as YamiElement,
 	dirTags: null,
 	dragging: null,
 	hover: null,
@@ -441,10 +439,10 @@ Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 // P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls.get(
 	'animation-motion'
-) as HTMLElement;
+) as YamiElement;
 elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationEls.get(
 	'animation-list-head'
-) as HTMLElement;
+) as YamiElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -473,7 +471,7 @@ getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown)
 
 elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get(
 	'animation-timeline-head'
-) as HTMLElement;
+) as YamiElement;
 // oxlint-disable-next-line no-explicit-any
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 

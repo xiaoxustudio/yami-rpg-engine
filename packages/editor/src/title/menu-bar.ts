@@ -296,7 +296,7 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 			}
 		};
 		// 提前触发检查器输入框的blur事件
-		document.activeElement!.blur();
+		(document.activeElement as HTMLElement | null)?.blur();
 		switch (Layout.manager.index) {
 			case 'scene':
 				if (Scene.state === 'open') {
@@ -686,17 +686,17 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
 						Window.open!('about');
-						(titleEls.get('editor-version') as HTMLElement).textContent =
+						(titleEls.get('editor-version') as YamiElement).textContent =
 							Editor.config!.version!;
-						(titleEls.get('electron-version') as HTMLElement).textContent =
+						(titleEls.get('electron-version') as YamiElement).textContent =
 							process.versions.electron;
-						(titleEls.get('chrome-version') as HTMLElement).textContent =
+						(titleEls.get('chrome-version') as YamiElement).textContent =
 							process.versions.chrome;
-						(titleEls.get('node-version') as HTMLElement).textContent =
+						(titleEls.get('node-version') as YamiElement).textContent =
 							process.versions.node;
-						(titleEls.get('v8-version') as HTMLElement).textContent =
+						(titleEls.get('v8-version') as YamiElement).textContent =
 							process.versions.v8;
-						(titleEls.get('os-version') as HTMLElement).textContent = osversion;
+						(titleEls.get('os-version') as YamiElement).textContent = osversion;
 					}
 				},
 				{
@@ -767,9 +767,9 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 					click: async () => {
 						Window.open!('export-apk');
 						Window.open!('windowProgress');
-						const progressInfo = titleEls.get('windowProgress-info') as HTMLElement;
+						const progressInfo = titleEls.get('windowProgress-info') as YamiElement;
 						progressInfo.textContent = '加载中...';
-						(titleEls.get('export-apk') as HTMLElement)?.addEventListener?.(
+						(titleEls.get('export-apk') as YamiElement)?.addEventListener?.(
 							'closed',
 							() => {
 								if (stopExportApkFormWatch) {
@@ -833,18 +833,18 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 								});
 								apkConfigSave();
 							});
-							(titleEls.get('export-apk-apkIcon') as HTMLElement)?.addEventListener?.(
+							(titleEls.get('export-apk-apkIcon') as YamiElement)?.addEventListener?.(
 								'mouseenter',
 								(_e: Event) =>
 									setTooltip(
-										titleEls.get('export-apk-apkIcon') as HTMLElement,
+										titleEls.get('export-apk-apkIcon') as YamiElement,
 										ApkBuilder.processPathOnly!(config.iconPath)
 									)
 							);
-							(titleEls.get('export-apk-button') as HTMLElement)?.addEventListener?.(
+							(titleEls.get('export-apk-button') as YamiElement)?.addEventListener?.(
 								'click',
 								(_e: Event) => {
-									disable(titleEls.get('export-apk-button') as HTMLElement);
+									disable(titleEls.get('export-apk-button') as YamiElement);
 									apkConfigSave();
 									SettingConfig.load(); // 更新配置
 									ApkBuilder.build!({
@@ -856,12 +856,12 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							);
 							// 加载状态
 							if (ApkBuilder.isBuilding!()) {
-								disable(titleEls.get('export-apk-button') as HTMLElement);
+								disable(titleEls.get('export-apk-button') as YamiElement);
 								ApkBuilder.logs.forEach((log) => {
 									ApkBuilder.apkLog!(log);
 								});
 							} else {
-								enable(titleEls.get('export-apk-button') as HTMLElement);
+								enable(titleEls.get('export-apk-button') as YamiElement);
 							}
 							Window.close!('windowProgress');
 						});
@@ -1172,6 +1172,7 @@ Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
 };
 
 import { getMenubarStore } from '@app/stores/menubar';
+import type { YamiElement } from '@app/types/element-api';
 
 const menubarBridgeKeys = ['state'] as const;
 

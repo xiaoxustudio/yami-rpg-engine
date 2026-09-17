@@ -3,6 +3,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { rect, show, write } from '@app/utils/element-utils.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { getPaletteStore } from '@app/stores/palette';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 Palette.setZoom = (function IIFE() {
 	return function (this: typeof Palette, zoom: number) {
@@ -227,7 +228,7 @@ Palette.resize = function (this: typeof Palette) {
 		const scaledTileHeight = Math.round(tileset.tileHeight * scale);
 		const innerWidth = tileset.width * scaledTileWidth;
 		const innerHeight = tileset.height * scaledTileHeight;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const paddingLeft = Math.max((screenWidth - innerWidth) >> 1, 0);

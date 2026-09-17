@@ -49,7 +49,7 @@ interface TextCommandShape {
 	drawingMethod: (...args: unknown[]) => unknown;
 }
 
-type FontNameList = string[] & { remove(name: string): boolean };
+type FontNameList = string[];
 
 export class Printer {
 	static print: ((...args: unknown[]) => void) | null = null;
@@ -456,7 +456,7 @@ export class Printer {
 		command.imageWidth = imageWidth;
 		command.imageHeight = imageHeight;
 		command.imageSpacing = (horizontal ? imageWidth : imageHeight) + letterSpacing;
-		command.drawingMethod = Function.empty;
+		command.drawingMethod = fnEmpty;
 
 		this.breakable = true;
 		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高�?
@@ -1100,7 +1100,7 @@ export class Printer {
 					(buffer: ArrayBuffer) => {
 						new FontFace(name, buffer).load().then(
 							(font: FontFace) => {
-								if (importing.remove(name)) {
+								if (remove(importing, name)) {
 									document.fonts.add(font);
 									(
 										font as FontFace & {
@@ -1126,12 +1126,12 @@ export class Printer {
 								}
 							},
 							(_error: unknown) => {
-								importing.remove(name);
+								remove(importing, name);
 							}
 						);
 					},
 					(_error: unknown) => {
-						importing.remove(name);
+						remove(importing, name);
 					}
 				)
 			);
@@ -1154,7 +1154,8 @@ export class Printer {
 				).guid === guid
 			) {
 				fonts.delete(font);
-				this.imported.remove(
+				remove(
+					this.imported,
 					(
 						font as FontFace & {
 							imported: boolean;
@@ -1188,7 +1189,7 @@ export class Printer {
 	}
 
 	static parseEffect(effect: TextEffectShape): TextEffectShape {
-		const copy = Object.clone(effect);
+		const copy = deepClone(effect);
 		if (copy.color !== undefined) {
 			copy.color = CSSRGBA(copy.color as string);
 		}
@@ -1387,6 +1388,9 @@ export class Printer {
 
 const printerBridgeKeys = ['state'] as const;
 import { getPrinterStore } from '@app/stores/printer';
+import { clone as deepClone } from '@app/utils/object';
+import { empty as fnEmpty } from '@app/utils/function';
+import { remove } from '@app/utils/array';
 
 for (const key of printerBridgeKeys) {
 	Object.defineProperty(Printer, key, {

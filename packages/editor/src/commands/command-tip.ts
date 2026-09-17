@@ -28,6 +28,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { parseLocalTip } from '@app/localize/dom-localizer';
+import { compress } from '@app/utils/string';
 
 export interface CommandSuggestionItem {
 	value: string;
@@ -210,7 +211,7 @@ function bindListMethods() {
 				const desc = get(key + '.desc');
 				item.name = name;
 				item.desc = desc;
-				item.unspacedName = String.compress(name);
+				item.unspacedName = compress(name);
 				const children = item.children;
 				if (children instanceof Array && key !== 'custom') {
 					update(children, get);
@@ -379,7 +380,7 @@ CommandSuggestion.searcherKeydown = function (event: KeyboardEvent): void {
 
 CommandSuggestion.searcherInput = function (event: InputEvent): void {
 	if (event.inputType !== 'insertCompositionText') {
-		const text = String.compress(read(this));
+		const text = compress(read(this));
 		CommandSuggestion.list.searchNodes(text);
 		CommandSuggestion.list.selectDefaultCommand!();
 	}

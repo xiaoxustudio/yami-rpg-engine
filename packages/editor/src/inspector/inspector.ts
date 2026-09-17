@@ -9,9 +9,11 @@ import { Log } from '@app/log/log-window.ts';
 import { History } from '@app/tools/history.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { DynamicShape } from '@app/types/shapes.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 interface InspectorChange {
-	input: HTMLElement;
+	input: YamiElement;
 	oldValue: unknown;
 	newValue: unknown;
 }
@@ -82,7 +84,7 @@ const writeFormValue = (form: Record<string, unknown>, key: string, value: unkno
  * `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），故保持原样。
  */
 interface InspectorManagerData {
-	focusing: HTMLElement | null;
+	focusing: YamiElement | null;
 }
 const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
@@ -161,7 +163,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 	if (this._initialized) {
 		return;
 	}
-	this.manager = inspectorEls.get('inspector-page-manager') as HTMLElement;
+	this.manager = inspectorEls.get('inspector-page-manager') as YamiElement;
 	if (!this.manager) return;
 	managerData(this.manager).focusing = null;
 	this.manager.oldValue = null;
@@ -420,20 +422,20 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 	}
 };
 
-Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) {
-	const data = scrollData(this);
+Inspector.scrollPointerdown = function (this: YamiElement, event: YamiMouseEvent) {
+	const data = scrollData(this) as unknown as { dragging: YamiMouseEvent | null };
 	if (data.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0:
 			if (event.altKey && !(event.target as HTMLElement).closest('.marquee-area')) {
-				let element: HTMLElement = event.target as HTMLElement;
+				let element = event.target as unknown as YamiElement;
 				while (element !== this) {
 					if (typeof element.scrollPointerup === 'function' && hasScrollBar(element)) {
 						return;
 					}
-					element = element.parentNode as HTMLElement;
+					element = element.parentNode as YamiElement;
 				}
 				event.preventDefault();
 				event.stopImmediatePropagation();
@@ -449,7 +451,7 @@ Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) 
 	}
 };
 
-Inspector.inputFocus = function (this: HTMLElement, _event: Event) {
+Inspector.inputFocus = function (this: YamiElement, _event: Event) {
 	if (Window.activeElement === null) {
 		const { manager } = Inspector;
 		const managerView = managerData(manager);
@@ -468,7 +470,7 @@ Inspector.inputBlur = function (
 	owner: { history: History | null },
 	callback: ((data: InspectorChangeData) => void) | null = null
 ) {
-	return function (this: HTMLElement & { changes?: InspectorChange[] }, _event: Event) {
+	return function (this: YamiElement & { changes?: InspectorChange[] }, _event: Event) {
 		if (Window.activeElement === null) {
 			// 鍥犳闇€瑕佸垽鏂璵anager.focusing
 			const { manager } = Inspector;

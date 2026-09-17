@@ -11,20 +11,14 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setBooleanColor: (value: unknown) => `[bool:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setStringColor: (value: unknown) => `[str:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setOperatorColor: (value: unknown) => `[op:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	setDelimiterColor: (value: unknown) => `[dl:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	parseMultiLineString: (value: unknown) => String(value),
 	parseVariable: (variable: { key: string }, type: string) => `<var:${variable.key}:${type}>`,
 	parseAttributeTag: (id: string) => `<attr:${id}>`,
@@ -56,11 +50,8 @@ describe('useSwitchConditionSchema（switch 条件窗口 composable：open/save/
 		Window.open = vi.fn();
 		Window.close = vi.fn();
 		Data.attribute = { context: { getAttribute: () => null } } as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setOperatorColor = ((value: unknown) => `[op:${String(value)}]`) as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setDelimiterColor = ((value: unknown) => `[dl:${String(value)}]`) as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.setBooleanColor = ((value: unknown) => `[bool:${String(value)}]`) as never;
 		SwitchCondition.target = target as never;
 	});

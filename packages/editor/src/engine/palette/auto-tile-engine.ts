@@ -3,6 +3,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { getPaletteStore } from '@app/stores/palette';
 import { getAutoTileStore } from '@app/stores/auto-tile';
 import type { AutoTile } from '@app/palette/auto-tile.ts';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 type AutoTileNodeData = {
 	rule: number;
@@ -89,7 +90,7 @@ AutoTileEngine.createFrameData = function (this: typeof AutoTile) {
 
 AutoTileEngine.updateCanvas = function (this: typeof AutoTile) {
 	const canvas = this.canvas;
-	const { width, height } = CSS.getDevicePixelContentBoxSize(canvas);
+	const { width, height } = getDevicePixelContentBoxSize(canvas);
 	if (canvas.width !== width) {
 		canvas.width = width;
 	}

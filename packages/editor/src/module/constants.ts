@@ -8,6 +8,7 @@ import { Resources } from './resource.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import { Updater } from '@app/services/updater/updater.ts';
 import OriginPackmeta from './packmeta.json';
+import type { YamiElement } from '@app/types/element-api';
 
 const GlobalPath =
 	typeof Path.resolve === 'function' ? Path.resolve(os.homedir?.() ?? '', '.openyami') : '';
@@ -89,7 +90,7 @@ export let homeElem: HTMLElement | null = null;
 window.addEventListener(
 	'vue-app-mounted',
 	() => {
-		homeElem = moduleEls.get('home-version') as HTMLElement;
+		homeElem = moduleEls.get('home-version') as YamiElement;
 		if (homeElem) {
 			homeElem.textContent = `当前社区版本：${CommunityVersion} 当前编辑器版本：${Updater.latestEditorVersion} 
 当前项目版本：${Updater.latestProjectVersion}`;

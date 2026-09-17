@@ -886,7 +886,6 @@ vi.mock('@app/stores/local', () => ({
 			Command.parseActor = vi.fn(
 				(a: unknown) => `A:${(a as { type: string }).type}`
 			) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseEnumString = vi.fn((v: unknown) => `E:${String(v)}`) as never;
 			const contents = Command.cases.changeActorMotion.parse!({
 				actor: { type: 'trigger' },

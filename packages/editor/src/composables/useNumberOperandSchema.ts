@@ -29,6 +29,7 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -150,7 +151,7 @@ const writeHandler = (event: { value?: unknown }): void => {
 	}
 	const el = composableEls.get('setNumber-operand-common-variable');
 	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-	if (el) (el as CustomBoxApi).filter = filter;
+	if (el) (el as unknown as CustomBoxApi).filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {
@@ -433,7 +434,7 @@ const open = (
 	getWindowStore().open('setNumber-operand');
 
 	if (target!.start === 0) {
-		(composableEls.get('setNumber-operation') as HTMLElement).save();
+		(composableEls.get('setNumber-operation') as YamiElement).save();
 		show(composableEls.get('setNumber-operation'));
 		requestFocus('setNumber-operation');
 		hide(composableEls.get('setNumber-operand-operation'));
@@ -544,7 +545,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		composableEls.get('setNumber-operand') as
+		composableEls.get('setNumber-operand') as unknown as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
 			| null
 	)?.setForm;
@@ -586,7 +587,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		composableEls.get('setNumber-operand') as
+		composableEls.get('setNumber-operand') as unknown as unknown as
 			| (HTMLElement & { getForm?: () => NumberOperandForm })
 			| null
 	)?.getForm;
@@ -851,7 +852,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	(composableEls.get('setNumber-operation') as HTMLElement).save();
+	(composableEls.get('setNumber-operation') as YamiElement).save();
 	getWindowStore().close('setNumber-operand');
 	return operand;
 };

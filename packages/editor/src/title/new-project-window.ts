@@ -18,6 +18,7 @@ import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -84,7 +85,7 @@ export const NewProject: NewProjectShape = {
 };
 
 NewProject.initialize = function (this: typeof NewProject) {
-	const template = titleEls.get('newProject-template') as HTMLElement;
+	const template = titleEls.get('newProject-template') as YamiElement;
 	if (!template) return;
 	template.loadItems([
 		{ name: 'ARPG - English', value: 'arpg-ts-english' },
@@ -121,7 +122,7 @@ NewProject.check = function (this: typeof NewProject) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			(titleEls.get('newProject-warning') as HTMLElement).textContent = t(
+			(titleEls.get('newProject-warning') as YamiElement).textContent = t(
 				'confirmation.enterFolderName'
 			);
 		}
@@ -129,7 +130,7 @@ NewProject.check = function (this: typeof NewProject) {
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			(titleEls.get('newProject-warning') as HTMLElement).textContent = t(
+			(titleEls.get('newProject-warning') as YamiElement).textContent = t(
 				'confirmation.folderAlreadyExists'
 			);
 		}
@@ -137,7 +138,7 @@ NewProject.check = function (this: typeof NewProject) {
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			(titleEls.get('newProject-warning') as HTMLElement).textContent = '';
+			(titleEls.get('newProject-warning') as YamiElement).textContent = '';
 		}
 		// 「最小化当前项目」模板要有可最小化的项目：编辑器已关闭（无项目可复制）时禁止确认。
 		// 原实现的 `if (template === 'minimized-project' && Editor.state === 'closed') disable`，
@@ -197,8 +198,8 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 	const dPath = args[1] as string;
 	const idFilter = args[2];
 	Window.open!('copyProgress');
-	const progressBar = titleEls.get('copyProgress-bar') as HTMLElement;
-	const progressInfo = titleEls.get('copyProgress-info') as HTMLElement;
+	const progressBar = titleEls.get('copyProgress-bar') as YamiElement;
+	const progressInfo = titleEls.get('copyProgress-info') as YamiElement;
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';
 	return this.readFileList!(sPath, idFilter).then(
@@ -356,7 +357,7 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 const newProjectConfirmOriginal = NewProject.confirm;
 
 NewProject.confirm = function (this: typeof NewProject) {
-	const template = read(titleEls.get('newProject-template') as HTMLElement);
+	const template = read(titleEls.get('newProject-template') as YamiElement);
 	const noResourceObj = isNoResource();
 	if (
 		(template == 'arpg-ts-english' && noResourceObj['arpg-ts-english'].check) ||

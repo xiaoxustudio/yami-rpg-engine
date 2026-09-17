@@ -8,6 +8,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { getLocalStore } from '@app/stores/local';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
 import type { SettingOption, SettingSection } from './types.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface SettingHost {
 	config: Record<string, unknown>;
@@ -108,10 +109,10 @@ export class SettingRenderer {
 	 * 原先用 `document.querySelectorAll('#id')`（bindOption/writeValue/loadSelectOptions）
 	 * 与 `$('#id')`（applyL10n）在**全文档**范围反查，现在把查询收敛到 `#setting` 帧的子树里。
 	 */
-	private byId(id: string): HTMLElement | null {
+	private byId(id: string): YamiElement | null {
 		if (id === '') return null;
-		const frame = serviceEls.get('setting') as HTMLElement | undefined;
-		return (frame?.querySelector(`#${CSS.escape(id)}`) as HTMLElement | null) ?? null;
+		const frame = serviceEls.get('setting') as unknown as HTMLElement | undefined;
+		return (frame?.querySelector(`#${CSS.escape(id)}`) as YamiElement | null) ?? null;
 	}
 
 	private bindOption(sectionPath: string[], opt: SettingOption) {

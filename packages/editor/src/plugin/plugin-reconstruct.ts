@@ -12,6 +12,7 @@ import { SkillGetter } from '@app/commands/accessors/skill-accessor-window.ts';
 import { StateGetter } from '@app/commands/accessors/state-accessor-window.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { getVariable } from '@app/utils/safe';
+import { clamp, roundTo } from '@app/utils/math';
 
 PluginManager.reconstruct = (function IIFE() {
 	const guidRegExp = /^[0-9a-f]{16}$/;
@@ -28,28 +29,26 @@ PluginManager.reconstruct = (function IIFE() {
 			case 'number':
 				if (typeof value === type) {
 					const { min, max, decimals } = parameter;
-					return (
-						Math.clamp(Math.roundTo(value as number, decimals!), min!, max!) === value
-					);
+					return clamp(roundTo(value as number, decimals!), min!, max!) === value;
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals!), min!, max!) === n;
+						return clamp(roundTo(n, decimals!), min!, max!) === n;
 					}
 				}
 				return false;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals!), min!, max!) === value;
+					return clamp(roundTo(value, decimals!), min!, max!) === value;
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals!), min!, max!) === n;
+						return clamp(roundTo(n, decimals!), min!, max!) === n;
 					}
 				}
 				return VariableGetter.checkDataForPlugin!(value as { getter?: string });
@@ -143,25 +142,25 @@ PluginManager.reconstruct = (function IIFE() {
 			case 'number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals!), min!, max!);
+					return clamp(roundTo(value, decimals!), min!, max!);
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals!), min!, max!);
+						return clamp(roundTo(n, decimals!), min!, max!);
 					}
 				}
 				return parameter.value;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals!), min!, max!);
+					return clamp(roundTo(value, decimals!), min!, max!);
 				} else if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals!), min!, max!);
+						return clamp(roundTo(n, decimals!), min!, max!);
 					}
 				} else if (VariableGetter.checkDataForPlugin!(value as { getter?: string })) {
 					return value;

@@ -46,7 +46,7 @@ describe('分支/条件表单注册表（P1b 第 3 刀）', () => {
 		const wrapper = await mountSettle(IfBranch);
 
 		expect(composableEls.get('if-branch-mode')?.id).toBe('if-branch-mode');
-		const conditions = composableEls.get('if-branch-conditions') as BoundList | null;
+		const conditions = composableEls.get('if-branch-conditions') as unknown as BoundList | null;
 		expect(conditions?.id).toBe('if-branch-conditions');
 		expect(conditions).toBe(document.getElementById('if-branch-conditions'));
 		// 批 4 之后这里恒为 undefined（`:ref` 没登记 → bind 被 `?.` 静默跳过）
@@ -59,7 +59,9 @@ describe('分支/条件表单注册表（P1b 第 3 刀）', () => {
 	it('SwitchBranch：conditions 列表同样登记并被 bind', async () => {
 		const wrapper = await mountSettle(SwitchBranch);
 
-		const conditions = composableEls.get('switch-branch-conditions') as BoundList | null;
+		const conditions = composableEls.get(
+			'switch-branch-conditions'
+		) as unknown as BoundList | null;
 		expect(conditions?.id).toBe('switch-branch-conditions');
 		expect(conditions).toBe(document.getElementById('switch-branch-conditions'));
 		expect(conditions?.object, 'switch-branch-conditions 未被 bind').toBeTruthy();
@@ -81,7 +83,7 @@ describe('分支/条件表单注册表（P1b 第 3 刀）', () => {
 			expect(el).toBe(document.getElementById(id));
 		}
 		// 窗口元素：`:ref` 槽位被具名 ref 占用 → onMounted 命令式登记（模块读它取 setForm/getForm）
-		const frame = composableEls.get('if-condition') as
+		const frame = composableEls.get('if-condition') as unknown as unknown as
 			| (HTMLElement & { setForm?: unknown; getForm?: unknown })
 			| null;
 		expect(frame?.id).toBe('if-condition');
@@ -103,7 +105,7 @@ describe('分支/条件表单注册表（P1b 第 3 刀）', () => {
 			expect(el, `${id} 未镜像`).toBeTruthy();
 			expect(el?.id).toBe(id);
 		}
-		const frame = composableEls.get('setNumber-operand') as
+		const frame = composableEls.get('setNumber-operand') as unknown as unknown as
 			| (HTMLElement & { setForm?: unknown })
 			| null;
 		expect(frame?.id).toBe('setNumber-operand');

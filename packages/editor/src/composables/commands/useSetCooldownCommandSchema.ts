@@ -9,6 +9,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { requestFocus } from '@app/directives/focus';
+import type { YamiElement } from '@app/types/element-api';
 
 Command.cases.setCooldown = new CommandSchema({
 	name: 'setCooldown',
@@ -50,7 +51,7 @@ export function useSetCooldownCommandSchema() {
 	return useCommandSchema('setCooldown', {
 		skipWrite: true,
 		onLoad() {
-			const el = composableEls.get('setCooldown-key') as HTMLElement;
+			const el = composableEls.get('setCooldown-key') as YamiElement;
 			el.loadItems(Enum.getStringItems!('cooldown-key'));
 			requestFocus('setCooldown-actor');
 		}

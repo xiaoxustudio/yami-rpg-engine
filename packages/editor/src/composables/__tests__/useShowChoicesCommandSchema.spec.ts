@@ -12,12 +12,10 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`
 }));
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	parseVariableTag: (value: unknown) => `<tag:${String(value)}>`,
 	removeTextTags: (value: string) => value
 }));
@@ -68,9 +66,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		setActivePinia(createPinia());
 		Window.open = vi.fn();
 		Window.close = vi.fn();
-		// oxlint-disable-next-line no-base-to-string
 		Command.setNumberColor = ((value: unknown) => `[num:${String(value)}]`) as never;
-		// oxlint-disable-next-line no-base-to-string
 		Command.parseVariableTag = ((value: unknown) => `<tag:${String(value)}>`) as never;
 		Command.removeTextTags = ((value: string) => value) as never;
 		Choices.target = null;

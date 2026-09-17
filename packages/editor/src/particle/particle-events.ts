@@ -8,6 +8,8 @@ import { getParticleStore } from '@app/stores/particle';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { addClass, hasClass, read, removeClass } from '@app/utils/element-utils.ts';
 import { StageColor } from '@app/utils/stage-color';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
 
 Particle.planToSave = function () {
 	File.planToSave!(this.meta);
@@ -39,13 +41,13 @@ Particle.loadFromProject = function (project: EditorProjectShape) {
 	this.setZoom!(particle!.zoom!);
 };
 
-Particle.webglRestored = function (_event: Event) {
+Particle.webglRestored = function (_event: YamiEvent) {
 	if (getParticleStore().state === 'open') {
 		Particle.requestRendering!();
 	}
 };
 
-Particle.windowResize = function (this: ParticleShape, _event: Event) {
+Particle.windowResize = function (this: ParticleShape, _event: YamiEvent) {
 	this.updateHead!();
 	if (getParticleStore().state === 'open') {
 		this.resize!();
@@ -54,11 +56,11 @@ Particle.windowResize = function (this: ParticleShape, _event: Event) {
 	}
 }.bind(Particle);
 
-Particle.themechange = function (this: ParticleShape, _event: Event) {
+Particle.themechange = function (this: ParticleShape, _event: YamiEvent) {
 	this.requestRendering!();
 }.bind(Particle);
 
-Particle.datachange = function (event: Event) {
+Particle.datachange = function (event: YamiEvent) {
 	if (getParticleStore().state === 'open' && event.key === 'easings') {
 		Particle.emitter.updateEasing();
 	}
@@ -77,7 +79,7 @@ Particle.keydown = function (event: KeyboardEvent) {
 						Particle.restartKey = true;
 						Particle.restart!();
 						addClass(
-							particleEls.get('particle-control-restart') as HTMLElement,
+							particleEls.get('particle-control-restart') as YamiElement,
 							'selected'
 						);
 						window.addEventListener('keyup', Particle.restartKeyup!);
@@ -103,7 +105,7 @@ Particle.restartKeyup = function (event: KeyboardEvent) {
 		case undefined:
 			if (Particle.restartKey) {
 				Particle.restartKey = false;
-				removeClass(particleEls.get('particle-control-restart') as HTMLElement, 'selected');
+				removeClass(particleEls.get('particle-control-restart') as YamiElement, 'selected');
 				window.removeEventListener('keyup', Particle.restartKeyup!);
 				window.removeEventListener('blur', Particle.restartKeyup!);
 			}
@@ -154,15 +156,15 @@ Particle.controlPointerdown = function (event: PointerEvent) {
 	}
 };
 
-Particle.speedInput = function (this: HTMLElement, _event: Event) {
+Particle.speedInput = function (this: HTMLElement, _event: YamiEvent) {
 	getParticleStore().speed = read(this);
 };
 
-Particle.zoomFocus = function (_event: Event) {
+Particle.zoomFocus = function (_event: YamiEvent) {
 	Particle.screen.focus();
 };
 
-Particle.zoomInput = function (this: HTMLElement, _event: Event) {
+Particle.zoomInput = function (this: HTMLElement, _event: YamiEvent) {
 	Particle.setZoom!(read(this));
 };
 
@@ -201,7 +203,7 @@ Particle.screenWheel = function (this: ParticleShape, event: WheelEvent) {
 	}
 }.bind(Particle);
 
-Particle.screenUserscroll = function (this: ParticleShape, _event: Event) {
+Particle.screenUserscroll = function (this: ParticleShape, _event: YamiEvent) {
 	if (getParticleStore().state === 'open') {
 		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
 		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
@@ -210,7 +212,7 @@ Particle.screenUserscroll = function (this: ParticleShape, _event: Event) {
 	}
 }.bind(Particle);
 
-Particle.screenBlur = function (this: ParticleShape, _event: Event) {
+Particle.screenBlur = function (this: ParticleShape, _event: YamiEvent) {
 	// this.translationKeyup() this.pointerup()
 	this.marqueePointerleave!();
 }.bind(Particle);

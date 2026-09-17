@@ -114,14 +114,14 @@ AutoTile.generateFrames = AutoTileEngine.generateFrames;
 AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
 function ensureDomBound(): boolean {
-	const canvas = paletteEls.get('autoTile-canvas') as HTMLElement;
-	const templateList = paletteEls.get('autoTile-templates') as HTMLElement;
+	const canvas = paletteEls.get('autoTile-canvas') as YamiElement;
+	const templateList = paletteEls.get('autoTile-templates') as YamiElement;
 	if (!templateList || !canvas) return false;
 	if (AutoTile.templateList === templateList && AutoTile.canvas === canvas) return false;
 	AutoTile.canvas = canvas;
 	AutoTile.templateList = templateList;
-	AutoTile.nodeList = paletteEls.get('autoTile-nodes') as HTMLElement;
-	AutoTile.frameList = paletteEls.get('autoTile-frames') as HTMLElement;
+	AutoTile.nodeList = paletteEls.get('autoTile-nodes') as YamiElement;
+	AutoTile.frameList = paletteEls.get('autoTile-frames') as YamiElement;
 	templateList.updateItemName = Team.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
@@ -144,7 +144,7 @@ function configureLists() {
 }
 
 function registerWindowEvents() {
-	const frame = paletteEls.get('autoTile') as HTMLElement;
+	const frame = paletteEls.get('autoTile') as YamiElement;
 	if (!frame || !AutoTile.templateList || !AutoTile.nodeList || !AutoTile.frameList) return;
 	window.addEventListener('dprchange', AutoTile.dprchange);
 	on(frame, 'close', AutoTile.windowClose);
@@ -170,7 +170,7 @@ AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: Auto
 		registerWindowEvents();
 	}
 	Window.open!('autoTile');
-	getAutoTileStore().templates = Object.clone(Data.autotiles);
+	getAutoTileStore().templates = deepClone(Data.autotiles);
 	getAutoTileStore().nodeIndex = 0;
 	getAutoTileStore().frameIndex = 0;
 	getAutoTileStore().imageId = image;
@@ -346,7 +346,7 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 	const cover = getAutoTileStore().template.cover;
 	const nodes = this.nodes;
 	const length = nodes.length;
-	const digits = Number.computeIndexDigits(length);
+	const digits = computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
 		const index = i.toString().padStart(digits, '0');
 		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
@@ -428,7 +428,7 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileSto
 	const list = this.frameList.reload();
 	const frames = this.frames;
 	const length = frames.length;
-	const digits = Number.computeIndexDigits(length);
+	const digits = computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
 		const frame = frames[i];
 		const x = frame & 0xff;
@@ -449,7 +449,7 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const index = getAutoTileStore().frameIndex;
 	const length = frames.length;
 	const frame = frames[index];
-	const prefix = Number.padZero(index, length);
+	const prefix = padZero(index, length);
 	const x = frame & 0xff;
 	const y = frame >> 8;
 	// P4b：`selection`（列表选中行元素）走显式元素数据。注：YMCommonList（Vue）把选中行存在组件闭包里、
@@ -534,7 +534,7 @@ AutoTile.templatesSelect = function (
 ) {
 	const item = event.value;
 	getAutoTileStore().template = item;
-	this.nodes = item.nodes;
+	this.nodes = item!.nodes;
 
 	this.createNodeItems();
 }.bind(AutoTile);
@@ -963,6 +963,9 @@ const autoTileBridgeKeys = [
 	'changed'
 ] as const;
 import { getAutoTileStore } from '@app/stores/auto-tile';
+import type { YamiElement } from '@app/types/element-api';
+import { computeIndexDigits, padZero } from '@app/utils/number';
+import { clone as deepClone } from '@app/utils/object';
 
 for (const key of autoTileBridgeKeys) {
 	Object.defineProperty(AutoTile, key, {

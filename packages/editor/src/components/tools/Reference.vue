@@ -27,7 +27,7 @@ import CommonList from '@app/components/common/CommonList.vue';
 import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	const list = fieldEls.get('reference-list') as HTMLElement & {
+	const list = fieldEls.get('reference-list') as unknown as HTMLElement & {
 		reload(): void;
 		appendElement(element: HTMLElement): void;
 		update(): void;

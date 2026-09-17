@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { pinia } from './pinia';
-import type { EditorEvent } from '@app/types/editor-event.ts';
 import { shallowReactive, shallowRef } from 'vue';
+import type { EditorEvent } from '@app/types/editor-event';
 
 type LayoutSchemeShape = {
 	end: number;

@@ -9,6 +9,11 @@ import { Easing } from '@app/data/transition-window.ts';
 import { Timer } from '@app/utils/timer';
 import { elementDataValueOf } from '@ui-kit';
 
+vi.mock('@app/utils/css', async (importOriginal) => ({
+	...(await importOriginal<typeof import('@app/utils/css')>()),
+	getDevicePixelContentBoxSize: () => ({ width: 100, height: 50 })
+}));
+
 /** P1b：`useCurveWindow` 改读 `animationEls`（原先按 id 直查）→ 用例自建的 DOM 需登记进注册表 */
 const CURVE_IDS = [
 	'animation-easing',
@@ -272,7 +277,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		const frame = { easingId: 'easing-1', key };
 		CurveController.load!(frame);
 		expect(CurveController.target).toBe(frame);
-		CurveController.easingIdWrite?.({ value: 'easing-2' } as Event);
+		CurveController.easingIdWrite?.({ value: 'easing-2' } as unknown as Event);
 		expect(CurveController.index).toBe('easing-2');
 		CurveController.close!();
 		expect(CurveController.state).toBe('closed');

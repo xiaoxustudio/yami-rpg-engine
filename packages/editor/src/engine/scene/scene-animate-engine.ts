@@ -17,7 +17,7 @@ SceneAnimateEngine.requestAnimation = function (this: typeof Scene) {
  * 渲染循环据此跳过绘制（尺寸恢复后自动继续，无需重挂 updater）。
  */
 const hasRenderableCanvas = (): boolean => {
-	const screen = Scene.screen as HTMLCanvasElement | null | undefined;
+	const screen = Scene.screen as unknown as HTMLCanvasElement | null | undefined;
 	return screen !== null && screen !== undefined && screen.width !== 0 && screen.height !== 0;
 };
 

@@ -23,6 +23,7 @@ import {
 	type RadioRelationEntry
 } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { number as numberPattern } from '@app/utils/regexp';
 
 interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;
@@ -78,7 +79,8 @@ const isStandard = computed(
 	() => props.standard || (typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
 );
 
-const read = (): number | string | boolean | null | undefined => state.proxy?.read();
+const read = (): number | string | boolean | null | undefined =>
+	state.proxy?.read() as number | string | boolean | null | undefined;
 const write = (value: number | string | boolean): void => {
 	state.proxy?.write(value);
 };
@@ -128,7 +130,7 @@ onMounted(() => {
 	if (!el) return;
 
 	const string = String(props.value ?? '');
-	const isNumber = RegExp.number.test(string);
+	const isNumber = numberPattern.test(string);
 	state.dataValue = isNumber
 		? parseFloat(string)
 		: string === 'false'
@@ -170,7 +172,7 @@ onMounted(() => {
 		syncSelected();
 	});
 	proxy.on('change', () => {
-		emit('change', proxy.read());
+		emit('change', proxy.read() as never);
 		syncSelected();
 	});
 	if (props.disabled) disable();

@@ -6,6 +6,8 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
+import type { YamiEvent } from '@app/types/editor-event';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
 
@@ -61,10 +63,10 @@ interface CurveWindow {
 	renderingFunction: () => void;
 	stopRendering: () => void;
 	windowResize: (event?: Event) => void;
-	themechange: (event: Event) => void;
-	datachange: (event: Event) => void;
-	easingIdWrite: (event: Event) => void;
-	easingIdInput: (event: Event) => void;
+	themechange: (event: YamiEvent) => void;
+	datachange: (event: YamiEvent) => void;
+	easingIdWrite: (event: YamiEvent) => void;
+	easingIdInput: (event: YamiEvent) => void;
 	settingsPointerdown: (event: PointerEvent) => void;
 }
 
@@ -205,7 +207,7 @@ const updateTimeline = (frameTarget: CurveFrame): void => {
 
 const resize = (): void => {
 	if (state === 'open') {
-		const screenBox = CSS.getDevicePixelContentBoxSize(page!);
+		const screenBox = getDevicePixelContentBoxSize(page!);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 
@@ -341,7 +343,7 @@ const windowResize = (_event?: Event): void => {
 	}
 };
 
-const themechange = (event: Event): void => {
+const themechange = (event: YamiEvent): void => {
 	const currentCanvas = canvas!;
 	switch (event.value) {
 		case 'light':
@@ -360,7 +362,7 @@ const themechange = (event: Event): void => {
 	requestRendering();
 };
 
-const datachange = (event: Event): void => {
+const datachange = (event: YamiEvent): void => {
 	if (state === 'open' && event.key === 'easings') {
 		updateEasingOptions();
 		const currentIndex = index;
@@ -371,7 +373,7 @@ const datachange = (event: Event): void => {
 	}
 };
 
-const easingIdWrite = (event: Event): void => {
+const easingIdWrite = (event: YamiEvent): void => {
 	const id = event.value;
 	if (index !== id) {
 		index = id;
@@ -392,7 +394,7 @@ const easingIdWrite = (event: Event): void => {
 	}
 };
 
-const easingIdInput = (event: Event): void => {
+const easingIdInput = (event: YamiEvent): void => {
 	Animation.planToSave!();
 	Animation.history.save({
 		type: 'animation-easing-change',

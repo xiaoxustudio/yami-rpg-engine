@@ -14,6 +14,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 UI.searcherInput = function (this: UIShape, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
@@ -71,11 +72,11 @@ UI.listPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.listSelect = function (this: UIShape, event: Event) {
+UI.listSelect = function (this: UIShape, event: YamiMouseEvent) {
 	UI.setTarget!(event.value);
 };
 
-UI.listRecord = function (this: UIShape, event: Event) {
+UI.listRecord = function (this: UIShape, event: YamiMouseEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
@@ -102,7 +103,7 @@ UI.listRecord = function (this: UIShape, event: Event) {
 	}
 };
 
-UI.listPopup = function (this: UIShape, event: Event) {
+UI.listPopup = function (this: UIShape, event: YamiMouseEvent) {
 	const list = UI.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
@@ -308,7 +309,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 	);
 };
 
-UI.listOpen = function (this: UIShape, event: Event) {
+UI.listOpen = function (this: UIShape, event: YamiMouseEvent) {
 	UI.revealTarget!(event.value);
 };
 
@@ -335,11 +336,11 @@ UI.listRename = function (
 	});
 };
 
-UI.listChange = function (this: UIShape, _event: Event) {
+UI.listChange = function (this: UIShape, _event: YamiMouseEvent) {
 	UI.planToSave!();
 };
 
-UI.listPageResize = function (this: UIShape, _event: Event) {
+UI.listPageResize = function (this: UIShape, _event: YamiMouseEvent) {
 	UI.list.updateHead();
 	UI.list.resize();
 };
@@ -402,7 +403,7 @@ UI.list.cancelSearch = function (this: UIShape) {
 		UI.searcher.deleteInputContent();
 		this.expandToSelection!();
 		this.scrollToSelection!();
-		active!.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 

@@ -33,7 +33,7 @@ export type RadioProxyElement = HTMLElement & {
 	readonly group: RadioProxyElement[];
 };
 
-export const radioProxyMap: Record<string, HTMLElement> = {};
+export const radioProxyMap: Record<string, RadioProxyElement> = {};
 
 export const RadioProxy = { map: radioProxyMap };
 

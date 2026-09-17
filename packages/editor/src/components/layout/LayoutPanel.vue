@@ -1105,6 +1105,7 @@ import { getLazyWindow } from '@app/tools/window-registry';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { setIconClip } from '@app/utils/icon-clip';
+import { encodeURL } from '@app/utils/css';
 
 const { t } = useI18n();
 
@@ -1152,8 +1153,22 @@ interface LayerExtrasNode {
 	locked?: boolean;
 }
 
-// oxlint-disable-next-line no-explicit-any
-type ExtrasListElement = HTMLElement & { [k: string]: any };
+/**
+ * P2b-2：`.tree-list` 元素上由**场景列表**装的扩展方法（出处 `scene/scene-list.ts` 的
+ * `Scene.list.canSwitchState` / `setRecursiveStates` / `updateFolderState` / `update`）。
+ *
+ * 原先这里是 `HTMLElement & { [k: string]: any }`——拼错的成员名、用错的签名都能通过编译；
+ * 现在只声明真正用到的那几个。
+ */
+type ExtrasListElement = HTMLElement & {
+	/** 该节点（文件夹则递归看子节点）的状态是否允许开关 */
+	canSwitchState: (item: unknown) => boolean;
+	/** 递归设置状态并返回被改写的原值备份（用于历史记录）；`value` 允许 `undefined`（`UiExtrasNode.hidden` 是可选的） */
+	setRecursiveStates: (item: unknown, key: string, value: boolean | undefined) => unknown[];
+	/** 依据子节点状态回推所在文件夹的状态 */
+	updateFolderState: (item: unknown, key: string) => void;
+	update: () => void;
+};
 
 const onSceneVisibilityPointerdown =
 	(item: SceneExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
@@ -1310,7 +1325,7 @@ const sceneNodeIcon = (item: unknown): VNode[] => {
 				return [
 					h('span', {
 						class: ['node-icon', 'icon-scene-parallax'],
-						style: { backgroundImage: CSS.encodeURL(File.route!(path)) }
+						style: { backgroundImage: encodeURL(File.route!(path)) }
 					})
 				];
 			}

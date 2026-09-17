@@ -47,7 +47,7 @@ interface LanguageSettings {
 GameLocal.initialize = function () {
 	void this.setLanguage(Data.config.localization.default);
 
-	window.addEventListener('datachange', this.datachange);
+	window.addEventListener('datachange', this.datachange as EventListener);
 };
 
 GameLocal.setLanguage = async function (language: string) {

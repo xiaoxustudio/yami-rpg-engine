@@ -61,7 +61,9 @@ import { UI } from '@app/ui/ui-window.ts';
 			this.target = node;
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiDialogBox-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiDialogBox-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

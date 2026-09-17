@@ -1,5 +1,6 @@
 import { reactive, watch } from 'vue';
 import type { ObjectDirective } from 'vue';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface FocusRequest {
 	id: string;
@@ -16,14 +17,16 @@ export function requestFocus(id: string, mode?: string): void {
 }
 
 const applyFocus = (el: HTMLElement, mode?: string): void => {
+	// P4c：焦点目标可能是本仓库装配过 `getFocus` / `select` 的控件元素
+	const target = el as unknown as YamiElement;
 	setTimeout(() => {
-		if (typeof el.getFocus === 'function') {
-			el.getFocus(mode);
+		if (typeof target.getFocus === 'function') {
+			target.getFocus(mode);
 			return;
 		}
 		el.focus();
-		if (mode === 'all' && typeof el.select === 'function') {
-			el.select();
+		if (mode === 'all' && typeof target.select === 'function') {
+			target.select();
 		}
 	});
 };

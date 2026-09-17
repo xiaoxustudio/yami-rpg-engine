@@ -216,6 +216,8 @@ export {
 } from './utils/tree-data-context';
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
+// P4c：元素 API 契约——把过去挂在**全局** `HTMLElement` 上的成员面改成显式命名类型
+export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {
 	createTypeRegistry,
@@ -248,3 +250,6 @@ export { default as YMFontSize } from './components/business/YMFontSize/YMFontSi
 export { default as YMArrayListNumber } from './components/business/YMArrayListNumber/YMArrayListNumber.vue';
 export { default as YMArrayListString } from './components/business/YMArrayListString/YMArrayListString.vue';
 export { default as YMRequestKeyValue } from './components/business/YMRequestKeyValue/YMRequestKeyValue.vue';
+
+// P4d：`CSS.rasterize` 的等价实现（原先由 editor 的 `utils/css.ts` 挂在宿主 `CSS` 上）
+export { rasterize } from './utils/dom';

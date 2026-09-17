@@ -21,7 +21,12 @@ type WindowFrame = HTMLElement & {
 };
 
 interface WindowShape extends DynamicShape {
-	readonly ambient: HTMLElement;
+	readonly ambient: YamiElement;
+	/**
+	 * 窗口栈。`append` / `remove` 是**装在该数组实例上**的方法
+	 * （见下方 `Object.defineProperty(frames, 'append' | 'remove', …)`），
+	 * 也是窗口 store 的唯一同步点——**不是** `Array.prototype` 补丁。
+	 */
 	frames: HTMLElement[] & {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
@@ -51,7 +56,7 @@ export const Window: WindowShape = {
 		// P5b 白名单：#window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
 		return $('#window-ambient');
 	},
-	frames: [] as HTMLElement[] & {
+	frames: [] as unknown as HTMLElement[] & {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
 	},
@@ -80,7 +85,7 @@ Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
 	// P1b：窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
-	const element = windowShellEls.get(id) as WindowFrame | undefined;
+	const element = windowShellEls.get(id) as unknown as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
 		if (modalActive() && frames.length === 0) {
@@ -237,7 +242,7 @@ Window.saveActiveElement = function (this: typeof Window) {
 	const { activeElement } = document;
 	if (activeElement !== null && activeElement !== document.body) {
 		getWindowStore().activeElement = activeElement;
-		activeElement.blur();
+		(activeElement as HTMLElement).blur();
 	}
 };
 
@@ -255,8 +260,8 @@ Window.restoreActiveElement = function (this: typeof Window) {
 Window.refocus = function (this: typeof Window) {
 	const active = document.activeElement;
 	if (active !== document.body) {
-		active!.blur();
-		active!.focus();
+		(active as HTMLElement | null)?.blur();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 
@@ -292,7 +297,7 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();
 					if (active !== document.body) {
-						active!.blur();
+						(active as HTMLElement | null)?.blur();
 					}
 					button.click();
 				}
@@ -308,8 +313,8 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 					const active = document.activeElement;
 					if (active !== document.body) {
 						// 调用blur来触发change事件
-						active!.blur();
-						active!.focus();
+						(active as HTMLElement | null)?.blur();
+						(active as HTMLElement | null)?.focus();
 					}
 					button.click();
 				}
@@ -351,6 +356,7 @@ Window.ambient.update = function (this: typeof Window) {
 
 const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeElement'] as const;
 import { getWindowStore } from '@app/stores/window';
+import type { YamiElement } from '@app/types/element-api';
 
 /** P5b 批次 3：应用外壳元素注册表——由 AppShell.vue 登记（如 `title`） */
 export const windowShellEls = createElementRegistry();
@@ -385,7 +391,7 @@ const activateModalMode = (): void => {
 		console.error('[window] activate disableFocusableElements error:', e);
 	}
 	try {
-		document.activeElement!.blur();
+		(document.activeElement as HTMLElement | null)?.blur();
 	} catch (e: unknown) {
 		console.error('[window] activate blur error:', e);
 	}

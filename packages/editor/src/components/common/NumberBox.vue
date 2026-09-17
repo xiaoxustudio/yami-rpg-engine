@@ -117,7 +117,7 @@ onMounted(() => {
 	const el = root.value as NumberBoxElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	input.history = new NumberHistory(input);
+	(input as unknown as { history: unknown }).history = new NumberHistory(input);
 	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
 });
 </script>

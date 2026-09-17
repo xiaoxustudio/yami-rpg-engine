@@ -77,7 +77,7 @@ describe('取色窗口注册表（P5b 批次 3）', () => {
 		const wrapper = mount(ColorWindow, { attachTo: document.body });
 		await nextTick();
 
-		const canvas = colorEls.get('color-palette-canvas') as HTMLCanvasElement;
+		const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
 		expect(canvas).toBeInstanceOf(HTMLCanvasElement);
 		expect(canvas.getContext('2d')).toBeTruthy();
 

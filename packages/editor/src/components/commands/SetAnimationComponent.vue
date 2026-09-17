@@ -129,6 +129,7 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -150,9 +151,9 @@ const offsetY = computed({
 
 const onAnimationIdWrite = (value: unknown) => {
 	const animationId = value as string;
-	const elMotion = fieldEls.get('setAnimationComponent-motion') as HTMLElement;
-	const elPlayMotion = fieldEls.get('setAnimationComponent-playMotion') as HTMLElement;
-	const elSpriteId = fieldEls.get('setAnimationComponent-spriteId') as HTMLElement;
+	const elMotion = fieldEls.get('setAnimationComponent-motion') as YamiElement;
+	const elPlayMotion = fieldEls.get('setAnimationComponent-playMotion') as YamiElement;
+	const elSpriteId = fieldEls.get('setAnimationComponent-spriteId') as YamiElement;
 	const prevMotion = read(elMotion) || form.motion || '';
 	const prevSprite = read(elSpriteId) || form.spriteId || '';
 	const motionItems = Animation.getMotionListItems!(animationId);

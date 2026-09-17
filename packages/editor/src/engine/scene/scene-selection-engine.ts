@@ -1,6 +1,7 @@
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Vector } from '@app/engine/webgl/vector2.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { dist, radians } from '@app/utils/math';
 
 // oxlint-disable-next-line no-explicit-any
 export const SceneSelectionEngine: Record<string, any> = {};
@@ -66,7 +67,7 @@ SceneSelectionEngine.selectObject = function (this: SceneSelectionThis, x: numbe
 				const t = ay - radius - 1;
 				const b = ay + radius;
 				if (x >= l && x < r && y >= t && y < b) {
-					const p = Math.dist(x, y, ax, ay) <= radius;
+					const p = dist(x, y, ax, ay) <= radius;
 					const w = (p ? 0 : -100) + ay / 2 - Math.abs(x - ax) - Math.abs(y - ay);
 					if (target === null || weight < w) {
 						if (!precise) {
@@ -207,7 +208,7 @@ SceneSelectionEngine.selectParticleEmitter = function (
 			const rt = rect.top * particle.scale;
 			const rr = rect.right * particle.scale;
 			const rb = rect.bottom * particle.scale;
-			const angle = Math.radians(particle.angle);
+			const angle = radians(particle.angle);
 			const cos = Math.cos(-angle);
 			const sin = Math.sin(-angle);
 			const px = rx * cos - ry * sin;

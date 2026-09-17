@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 interface FileImageForm {
 	name: string;
@@ -27,11 +28,12 @@ export function useFileImagePage() {
 	};
 
 	const updateImage = (): void => {
-		const image = (inspectorEls.get('fileImage-image') as HTMLImageElement | null) ?? null;
+		const image =
+			(inspectorEls.get('fileImage-image') as unknown as HTMLImageElement | null) ?? null;
 		if (!image) return;
 		hide(image);
 		const frame = image.parentElement!;
-		const frameBox = CSS.getDevicePixelContentBoxSize(frame);
+		const frameBox = getDevicePixelContentBoxSize(frame);
 		const cw = frameBox.width;
 		const ch = frameBox.height;
 		if (cw > 0 && ch > 0) {

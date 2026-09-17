@@ -1,4 +1,5 @@
 import { elementDataOf } from '@ui-kit';
+import type { AnimationElement } from '@app/animation/animation-window.ts';
 import { Animation } from './animation-window.ts';
 import { animationEls } from '@app/animation/element-registry';
 import type {
@@ -27,48 +28,50 @@ import { History } from '@app/tools/history.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
+import type { YamiElement } from '@app/types/element-api';
+import { roundTo } from '@app/utils/math';
 
 Animation.initialize = function (this: typeof Animation) {
-	this.page = animationEls.get('animation') as HTMLElement;
-	this.head = animationEls.get('animation-head') as HTMLElement;
-	this.screen = animationEls.get('animation-screen') as HTMLElement;
+	this.page = animationEls.get('animation') as YamiElement;
+	this.head = animationEls.get('animation-head') as YamiElement;
+	this.screen = animationEls.get('animation-screen') as YamiElement;
 	const oldMarquee = this.marquee;
-	this.marquee = animationEls.get('animation-marquee') as HTMLElement;
+	this.marquee = animationEls.get('animation-marquee') as YamiElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.body = animationEls.get('animation-body') as HTMLElement;
-	this.dirList = animationEls.get('animation-dirList') as HTMLElement;
-	this.searcher = animationEls.get('animation-searcher') as HTMLElement;
+	this.body = animationEls.get('animation-body') as AnimationElement;
+	this.dirList = animationEls.get('animation-dirList') as YamiElement;
+	this.searcher = animationEls.get('animation-searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = animationEls.get('animation-list') as HTMLElement;
+	this.list = animationEls.get('animation-list') as YamiElement;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
 	// P4b：`page`（列表所属的页面元素）走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationEls.get(
 		'animation-motion'
-	) as HTMLElement;
+	) as YamiElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = animationEls.get(
 		'animation-list-head'
-	) as HTMLElement;
+	) as YamiElement;
 	// 模块求值先于 Vue 挂载，$() 会拿到占位对象；重查询真实元素时回迁模块级挂载的属性/方法
 	const oldLayerList = this.layerList;
-	this.layerList = animationEls.get('animation-layer-list') as HTMLElement;
+	this.layerList = animationEls.get('animation-layer-list') as YamiElement;
 	if (oldLayerList && this.layerList && oldLayerList !== this.layerList) {
 		Object.assign(this.layerList, oldLayerList);
 	}
 	const oldTimeline = this.timeline;
-	this.timeline = animationEls.get('animation-timeline') as HTMLElement;
+	this.timeline = animationEls.get('animation-timeline') as YamiElement;
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
 	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationEls.get(
 		'animation-timeline-head'
-	) as HTMLElement;
-	this.toolbar = animationEls.get('animation-timeline-toolbar') as HTMLElement;
+	) as YamiElement;
+	this.toolbar = animationEls.get('animation-timeline-toolbar') as YamiElement;
 	const oldOuterTimelineList = this.outerTimelineList;
-	this.outerTimelineList = animationEls.get('animation-timeline-list-outer') as HTMLElement;
+	this.outerTimelineList = animationEls.get('animation-timeline-list-outer') as YamiElement;
 	if (
 		oldOuterTimelineList &&
 		this.outerTimelineList &&
@@ -77,7 +80,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.outerTimelineList, oldOuterTimelineList);
 	}
 	const oldInnerTimelineList = this.innerTimelineList;
-	this.innerTimelineList = animationEls.get('animation-timeline-list-inner') as HTMLElement;
+	this.innerTimelineList = animationEls.get('animation-timeline-list-inner') as YamiElement;
 	if (
 		oldInnerTimelineList &&
 		this.innerTimelineList &&
@@ -86,25 +89,25 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.innerTimelineList, oldInnerTimelineList);
 	}
 	const oldTimelineCursor = this.timelineCursor;
-	this.timelineCursor = animationEls.get('animation-timeline-cursor') as HTMLElement;
+	this.timelineCursor = animationEls.get('animation-timeline-cursor') as YamiElement;
 	if (oldTimelineCursor && this.timelineCursor && oldTimelineCursor !== this.timelineCursor) {
 		Object.assign(this.timelineCursor, oldTimelineCursor);
 	}
 	const oldTimelineMarquee = this.timelineMarquee;
-	this.timelineMarquee = animationEls.get('animation-timeline-marquee') as HTMLElement;
+	this.timelineMarquee = animationEls.get('animation-timeline-marquee') as YamiElement;
 	if (oldTimelineMarquee && this.timelineMarquee && oldTimelineMarquee !== this.timelineMarquee) {
 		Object.assign(this.timelineMarquee, oldTimelineMarquee);
 	}
-	this.timelineMarqueeShift = animationEls.get('animation-timeline-marquee-shift') as HTMLElement;
-	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as HTMLElement;
-	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as HTMLElement;
+	this.timelineMarqueeShift = animationEls.get('animation-timeline-marquee-shift') as YamiElement;
+	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as YamiElement;
+	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as YamiElement;
 	this.outerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-outer'
-	) as HTMLElement;
+	) as YamiElement;
 	this.innerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-inner'
-	) as HTMLElement;
-	this.pointer = animationEls.get('animation-timeline-pointer') as HTMLElement;
+	) as YamiElement;
+	this.pointer = animationEls.get('animation-timeline-pointer') as YamiElement;
 	if (this.screen) addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);
@@ -172,8 +175,8 @@ Animation.initialize = function (this: typeof Animation) {
 				const screen = this.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				const cx = Math.roundTo(this.centerX + x, 4);
-				const cy = Math.roundTo(this.centerY + y, 4);
+				const cx = roundTo(this.centerX + x, 4);
+				const cy = roundTo(this.centerY + y, 4);
 				this.updateCamera!(cx, cy);
 				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
@@ -239,8 +242,12 @@ Animation.initialize = function (this: typeof Animation) {
 	getListConfig(layerList).renamable = true;
 	layerList.bind(() => this.layers);
 	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 567/569/580/582 段 layerList.* 调用姿势不变
-	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
-	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
+	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates as unknown as (
+		...args: unknown[]
+	) => unknown;
+	layerList.setRecursiveStates = Scene.list.setRecursiveStates as unknown as (
+		...args: unknown[]
+	) => unknown;
 
 	History.processors['animation-object-create'] = (
 		operation: string,

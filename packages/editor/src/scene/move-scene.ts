@@ -1,6 +1,7 @@
 import { sceneEls } from '@app/scene/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { requestFocus } from '@app/directives/focus';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface SceneShiftForm {
 	x: number;
@@ -22,7 +23,7 @@ export const SceneShift: {
 };
 
 SceneShift.initialize = function () {
-	const shiftEl = sceneEls.get('scene-shift') as HTMLElement;
+	const shiftEl = sceneEls.get('scene-shift') as YamiElement;
 	if (!shiftEl) return;
 	shiftEl.addEventListener('closed', this.windowClosed!);
 };
@@ -31,7 +32,7 @@ SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	this.callback = callback;
 	Window.open!('scene-shift');
 	const setForm = (
-		sceneEls.get('scene-shift') as
+		sceneEls.get('scene-shift') as unknown as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void })
 			| null
 	)?.setForm;
@@ -45,7 +46,9 @@ SceneShift.windowClosed = function (_event: Event) {
 
 SceneShift.confirm = function (_event: Event) {
 	const getForm = (
-		sceneEls.get('scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null
+		sceneEls.get('scene-shift') as unknown as
+			| (HTMLElement & { getForm?: () => SceneShiftForm })
+			| null
 	)?.getForm;
 	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);
 	if (x === 0 && y === 0) {

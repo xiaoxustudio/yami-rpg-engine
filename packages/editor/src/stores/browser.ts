@@ -28,6 +28,7 @@ import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import child_process from 'node:child_process';
 import { fileItemElementOf } from '@app/utils/dom';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface FileBrowserBody {
 	activeFile?: unknown;
@@ -141,7 +142,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			case 'event': {
 				const item = file.data;
 				if (item) {
-					EventEditor.openGlobalEvent?.(file.meta.guid);
+					EventEditor.openGlobalEvent?.(file.meta!.guid);
 				}
 				break;
 			}
@@ -382,7 +383,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			return;
 		}
 		initRetryCount = 0;
-		Browser.page = storesEls.get('project') as HTMLElement;
+		Browser.page = storesEls.get('project') as YamiElement;
 		Browser.searcher = (
 			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
 		)?.searcher;

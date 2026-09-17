@@ -40,7 +40,7 @@ interface FakeInput extends HTMLElement {
 }
 
 const createInput = (id: string, initial: unknown): FakeInput => {
-	const input = document.createElement('div') as FakeInput;
+	const input = document.createElement('div') as unknown as FakeInput;
 	input.id = id;
 	let value = initial;
 	input.read = () => value;

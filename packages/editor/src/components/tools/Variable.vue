@@ -178,6 +178,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
 import { variableEls } from '@app/variable/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -254,17 +255,17 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	];
 };
 
-const onListSelect = (event: Event) => {
-	Variable?.listSelect?.(event);
+const onListSelect = (event: YamiEvent) => {
+	Variable?.listSelect?.(event as YamiMouseEvent);
 };
-const onListRecord = (event: Event) => {
-	Variable?.listRecord?.(event);
+const onListRecord = (event: YamiEvent) => {
+	Variable?.listRecord?.(event as YamiMouseEvent);
 };
-const onListPopup = (event: Event) => {
-	Variable?.listPopup?.(event);
+const onListPopup = (event: YamiEvent) => {
+	Variable?.listPopup?.(event as YamiMouseEvent);
 };
-const onListOpen = (event: Event) => {
-	Variable?.listOpen?.(event);
+const onListOpen = (event: YamiEvent) => {
+	Variable?.listOpen?.(event as YamiMouseEvent);
 };
 const onNameInput = (value: string) => {
 	Variable?.nameInput?.({ target: { value } } as Event & { target: HTMLInputElement });

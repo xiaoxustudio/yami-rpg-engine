@@ -11,12 +11,13 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { Menu } from '@app/components/menu-list.ts';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const File = getLazyWindow('file', () => loadCluster().then((m) => m.File));
 const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));
 
-EventEditor.windowLocalize = function (this: EventEditorShape, _event: Event) {
+EventEditor.windowLocalize = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	const types = EventEditor.types;
 	const getType = (key: string) => t('eventTypes.' + key);
 	const getTip = (key: string) => t('eventTips.' + key);
@@ -39,7 +40,7 @@ EventEditor.windowLocalize = function (this: EventEditorShape, _event: Event) {
 	}
 };
 
-EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
+EventEditor.windowClose = function (this: EventEditorShape, event: YamiMouseEvent) {
 	this.closing = true;
 	if (this.isChanged!()) {
 		event.preventDefault();
@@ -77,7 +78,7 @@ EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
 	this.closing = false;
 }.bind(EventEditor);
 
-EventEditor.windowClosed = function (this: EventEditorShape, _event: Event) {
+EventEditor.windowClosed = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	this.clearAllEventClasses!(...(this.data ?? []));
 	this.packOpenEvents!();
 	this.data = null;
@@ -87,7 +88,7 @@ EventEditor.windowClosed = function (this: EventEditorShape, _event: Event) {
 	window.removeEventListener('keydown', this.windowKeydown!);
 }.bind(EventEditor);
 
-EventEditor.windowResize = function (this: EventEditorShape, _event: Event) {
+EventEditor.windowResize = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	const { list, commandList } = EventEditor;
 	const parent = commandList.parentNode as HTMLElement;
 	const outerHeight = parent.clientHeight;
@@ -175,14 +176,14 @@ EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEv
 	}
 };
 
-EventEditor.listSelect = function (this: EventEditorShape, event: Event) {
+EventEditor.listSelect = function (this: EventEditorShape, event: YamiMouseEvent) {
 	const item = event.value;
 	EventEditor.openCommandList!(item);
 	// 步骤 4：行 class 经派生层注册（窗口外行同样生效）
 	setTreeItemClass(item, 'related-event', false);
 };
 
-EventEditor.listPopup = function (this: EventEditorShape, event: Event) {
+EventEditor.listPopup = function (this: EventEditorShape, event: YamiMouseEvent) {
 	const item = event.value;
 	const selected = !!item;
 	const get = (key: string) => t('menuEventList.' + key);
@@ -233,7 +234,7 @@ EventEditor.listPopup = function (this: EventEditorShape, event: Event) {
 	);
 };
 
-EventEditor.typeInput = function (this: EventEditorShape, event: Event) {
+EventEditor.typeInput = function (this: EventEditorShape, event: YamiMouseEvent) {
 	const item = read(EventEditor.list);
 	if (!item.changed) {
 		item.changed = true;
@@ -243,7 +244,7 @@ EventEditor.typeInput = function (this: EventEditorShape, event: Event) {
 	EventEditor.list.updateItemName!(item);
 };
 
-EventEditor.commandListChange = function (this: EventEditorShape, _event: Event) {
+EventEditor.commandListChange = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	if (EventEditor.closing) return;
 	const item = read(EventEditor.list);
 	if (!item.changed) {
@@ -253,21 +254,21 @@ EventEditor.commandListChange = function (this: EventEditorShape, _event: Event)
 	}
 };
 
-EventEditor.commandListUpdate = function (this: EventEditorShape, _event: Event) {
+EventEditor.commandListUpdate = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	EventEditor.resizeGutter!();
 	EventEditor.updateGutter!();
 };
 
-EventEditor.commandListScroll = function (this: EventEditorShape, _event: Event) {
+EventEditor.commandListScroll = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	EventEditor.updateGutter!();
 };
 
-EventEditor.confirm = function (this: EventEditorShape, _event: Event) {
+EventEditor.confirm = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	this.apply!();
 	Window.close!('event');
 }.bind(EventEditor);
 
-EventEditor.apply = function (this: EventEditorShape, _event: Event) {
+EventEditor.apply = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	for (const item of this.data!) {
 		switch (item.class) {
 			case 'global':

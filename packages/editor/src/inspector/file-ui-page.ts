@@ -4,6 +4,7 @@ import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileUIShape {
@@ -34,7 +35,7 @@ import { UI } from '@app/ui/ui-window.ts';
 
 	FileUI.initialize = function (this: typeof FileUI) {
 		if (!inspectorEls.get('ui-switch-settings')) return;
-		this.button = inspectorEls.get('ui-switch-settings') as HTMLElement;
+		this.button = inspectorEls.get('ui-switch-settings') as YamiElement;
 		this.owner = {
 			setTarget: (target: Record<string, unknown>) => {
 				if (this.target !== target) {
@@ -52,7 +53,9 @@ import { UI } from '@app/ui/ui-window.ts';
 		// P1b：宽高输入框的焦点/失焦批量绑定——改按 id 列表读 inspectorEls
 		const elements = registryElements(inspectorEls, ['fileUI-width', 'fileUI-height']);
 		elements.forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(this, this.owner)));
+		elements.forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
+		);
 	};
 
 	FileUI.create = function (this: typeof FileUI) {
@@ -70,7 +73,11 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			addClass(this.button, 'selected');
 
-			(inspectorEls.get('fileUI-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+			(
+				inspectorEls.get('fileUI-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
+			)?.sync?.();
 		}
 	};
 

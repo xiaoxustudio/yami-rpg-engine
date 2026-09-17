@@ -6,6 +6,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileSceneShape {
@@ -32,7 +33,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 	};
 
 	FileScene.initialize = function () {};
-	FileScene.button = inspectorEls.get('scene-switch-settings') as HTMLElement;
+	FileScene.button = inspectorEls.get('scene-switch-settings') as YamiElement;
 	FileScene.owner = {
 		setTarget: (target: unknown) => {
 			if (FileScene.target !== target) {
@@ -111,7 +112,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('fileScene-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('fileScene-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -131,7 +134,11 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 		this: typeof FileScene,
 		_options: { width?: number; height?: number }
 	) {
-		(inspectorEls.get('fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('fileScene-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
+		)?.sync?.();
 	};
 
 	FileScene.update = function (

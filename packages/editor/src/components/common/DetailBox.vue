@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { YMDetailBox } from '@ui-kit';
 
 interface DetailBoxElement extends HTMLElement {
@@ -49,7 +50,7 @@ const onToggle = (value: string): void => {
 	emit('toggle', value);
 	if (state.toggleEventEnabled) {
 		const toggle = new Event('toggle');
-		toggle.value = value;
+		(toggle as YamiEvent).value = value;
 		root.value?.dispatchEvent(toggle);
 	}
 };

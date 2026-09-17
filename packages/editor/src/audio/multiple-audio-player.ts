@@ -1,4 +1,5 @@
 import { AudioManager } from './audio-manager.ts';
+import { remove } from '@app/utils/array';
 
 // HTMLAudioElement 运行时挂载的扩展字段（getAudio 内赋值）
 interface MultipleAudioElement extends HTMLAudioElement {
@@ -22,7 +23,7 @@ export class MultipleAudioPlayer {
 			audio = new Audio() as unknown as MultipleAudioElement;
 			const source = AudioManager.context!.createMediaElementSource(audio);
 			const onStop = () => {
-				if (this.audios.remove(audio!)) {
+				if (remove(this.audios, audio!)) {
 					this.audioPool.push(audio!);
 					source.disconnect(AudioManager.context!.destination);
 				}

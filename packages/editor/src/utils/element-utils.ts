@@ -8,6 +8,29 @@ import {
 } from '@ui-kit';
 import { attachDoubleclick, detachDoubleclick } from '@app/utils/doubleclick';
 import { Fragment, h, render, type VNode } from 'vue';
+import type { EditorEvent, YamiMouseEvent, YamiEvent } from '@app/types/editor-event';
+
+/**
+ * P4c：`element-utils.ts` 装配 / 消费的**滚动宿主**契约。
+ *
+ * 这些成员过去声明在全局 `HTMLElement` 上——于是"没装滚动条的普通 `div`"也看起来有
+ * `setScroll()`（拼错方法名同样不报错）。现在只有**显式声明为滚动宿主**的元素才具备，
+ * 而"装配点"（`addScrollbars` / `addSetScrollMethod`）就是这个契约的唯一来源。
+ */
+export interface ScrollableElement extends HTMLElement {
+	beginScrolling(): void;
+	endScrolling(): void;
+	setScroll(left: number, top: number): void;
+	setScrollLeft(left: number): void;
+	setScrollTop(top: number): void;
+	updateScrollbars(): void;
+	scrollPointerup: (event: YamiMouseEvent) => void;
+	scrollPointermove: (event: YamiMouseEvent) => void;
+	scrollPointerdown?: (event: YamiEvent) => void;
+	/** 画布引擎缓存的"未乘 dpr 的滚动位置"（`engine/screen-scroll-data.ts`） */
+	rawScrollLeft?: number;
+	rawScrollTop?: number;
+}
 
 export function on(
 	// oxlint-disable-next-line no-explicit-any
@@ -56,18 +79,18 @@ export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
 	return el.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
-export function show(el: unknown): HTMLElement {
+export function show<T>(el: T): T {
 	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return el as unknown as HTMLElement;
+	if (!target) return el;
 	removeClass(target, 'hidden');
-	return el as unknown as HTMLElement;
+	return el;
 }
 
-export function hide(el: unknown): HTMLElement {
+export function hide<T>(el: T): T {
 	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return el as unknown as HTMLElement;
+	if (!target) return el;
 	addClass(target, 'hidden');
-	return el as unknown as HTMLElement;
+	return el;
 }
 
 export function addClass(el: unknown, className: string): boolean {
@@ -422,6 +445,7 @@ function renderElement(vnode: VNode): HTMLElement {
 }
 
 export function addScrollbars(el: HTMLElement): void {
+	const host = el as ScrollableElement;
 	const hBar = createScrollBar();
 	const vBar = createScrollBar();
 	const corner = renderElement(h('div', { class: 'scroll-corner' }));
@@ -448,17 +472,17 @@ export function addScrollbars(el: HTMLElement): void {
 
 	const userscroll = new Event('userscroll');
 
-	el.beginScrolling = function () {
+	host.beginScrolling = function () {
 		addClass(hBar, 'dragging');
 		addClass(vBar, 'dragging');
 	};
 
-	el.endScrolling = function () {
+	host.endScrolling = function () {
 		removeClass(hBar, 'dragging');
 		removeClass(vBar, 'dragging');
 	};
 
-	el.setScroll = function (left: number, top: number) {
+	host.setScroll = function (left: number, top: number) {
 		const sl = el.scrollLeft;
 		const st = el.scrollTop;
 		el.scroll(left, top);
@@ -467,7 +491,7 @@ export function addScrollbars(el: HTMLElement): void {
 		}
 	};
 
-	el.setScrollLeft = function (left: number) {
+	host.setScrollLeft = function (left: number) {
 		const sl = el.scrollLeft;
 		el.scrollLeft = left;
 		if (el.scrollLeft !== sl) {
@@ -475,7 +499,7 @@ export function addScrollbars(el: HTMLElement): void {
 		}
 	};
 
-	el.setScrollTop = function (top: number) {
+	host.setScrollTop = function (top: number) {
 		const st = el.scrollTop;
 		el.scrollTop = top;
 		if (el.scrollTop !== st) {
@@ -484,7 +508,7 @@ export function addScrollbars(el: HTMLElement): void {
 	};
 
 	let withCorner = false;
-	el.updateScrollbars = function () {
+	host.updateScrollbars = function () {
 		if (el.clientWidth < el.scrollWidth && el.clientHeight < el.scrollHeight) {
 			if (!withCorner) {
 				withCorner = true;
@@ -506,9 +530,10 @@ export function addScrollbars(el: HTMLElement): void {
 }
 
 export function addSetScrollMethod(el: HTMLElement): void {
+	const host = el as ScrollableElement;
 	const userscroll = new Event('userscroll');
 
-	el.setScroll = function (left: number, top: number) {
+	host.setScroll = function (left: number, top: number) {
 		const sl = el.scrollLeft;
 		const st = el.scrollTop;
 		el.scroll(left, top);
@@ -537,7 +562,7 @@ interface ScrollDragData {
 }
 const scrollDragData = (el: unknown): ScrollDragData => elementDataOf<ScrollDragData>(el);
 
-const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
+const defaultPointerdown = function (this: ScrollableElement, event: YamiMouseEvent) {
 	const data = scrollDragData(this);
 	if (data.dragging) {
 		return;
@@ -553,14 +578,14 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
 				Cursor.open('cursor-grab');
-				window.addEventListener('pointerup', this.scrollPointerup);
-				window.addEventListener('pointermove', this.scrollPointermove);
+				window.addEventListener('pointerup', this.scrollPointerup as EventListener);
+				window.addEventListener('pointermove', this.scrollPointermove as EventListener);
 			}
 			break;
 	}
 };
 
-const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
+const scrollPointerup = function (this: ScrollableElement, event: YamiMouseEvent) {
 	const data = scrollDragData(this);
 	const { dragging } = data;
 	if (dragging && relate(dragging, event)) {
@@ -570,12 +595,12 @@ const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 				break;
 		}
 		data.dragging = null;
-		window.removeEventListener('pointerup', this.scrollPointerup);
-		window.removeEventListener('pointermove', this.scrollPointermove);
+		window.removeEventListener('pointerup', this.scrollPointerup as EventListener);
+		window.removeEventListener('pointermove', this.scrollPointermove as EventListener);
 	}
 };
 
-const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
+const scrollPointermove = function (this: ScrollableElement, event: YamiMouseEvent) {
 	const { dragging } = scrollDragData(this);
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -589,15 +614,16 @@ const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
 
 export function listenDraggingScrollbarEvent(
 	el: HTMLElement,
-	pointerdown: (event: EditorEvent) => void = defaultPointerdown,
+	pointerdown: (event: YamiMouseEvent) => void = defaultPointerdown,
 	options?: boolean | AddEventListenerOptions
 ): void {
-	el.scrollPointerup = scrollPointerup.bind(el);
-	el.scrollPointermove = scrollPointermove.bind(el);
+	const host = el as ScrollableElement;
+	host.scrollPointerup = scrollPointerup.bind(host);
+	host.scrollPointermove = scrollPointermove.bind(host);
 	on(el, 'pointerdown', pointerdown, options as AddEventListenerOptions);
 }
 
-export function getRelativeCoords(event: Event, el: unknown): { x: number; y: number } {
+export function getRelativeCoords(event: YamiMouseEvent, el: unknown): { x: number; y: number } {
 	const target = el as Element;
 	const rect = target.getBoundingClientRect();
 	return {

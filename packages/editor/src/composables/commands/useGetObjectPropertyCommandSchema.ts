@@ -9,13 +9,14 @@ import { requestFocus } from '@app/directives/focus';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { reactive } from 'vue';
+import type { YamiElement } from '@app/types/element-api';
 
 export type ObjectPropertyItem = { text: string };
 
 export const indexForm = reactive<{ name: string }>({ name: '' });
 
 export const IndexBind = {
-	target: null as unknown as HTMLElement | null,
+	target: null as unknown as YamiElement | null,
 	type: null as unknown as string | null,
 	initialize() {
 		this.target = null;

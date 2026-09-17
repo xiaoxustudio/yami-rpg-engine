@@ -48,7 +48,9 @@ import { write } from '@app/utils/element-utils.ts';
 		if (this.target !== motion) {
 			this.target = motion;
 			(
-				inspectorEls.get('animMotion-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('animMotion-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

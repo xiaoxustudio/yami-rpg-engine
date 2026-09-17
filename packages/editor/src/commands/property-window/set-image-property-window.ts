@@ -43,9 +43,7 @@ export const ImageProperty = createPropertyWindow({
 	},
 	parsers: {
 		image: (value) => Command.parseFileName(value),
-		// oxlint-disable-next-line no-base-to-string
 		display: (value, get) => get('display.' + value),
-		// oxlint-disable-next-line no-base-to-string
 		flip: (value, get) => get('flip.' + value),
 		blend: (value) => Command.parseBlend(value),
 		shiftX: (value) => Command.parseVariableNumber(value),

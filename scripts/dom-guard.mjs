@@ -44,15 +44,18 @@ const WHITELIST = [
 	'packages/editor/src/composables/usePointerObjectWindow.ts',
 	// 元素优先的组件 API 层（P2b 重定义：架构性设计豁免，不以文件数归零为准）
 	'packages/ui-kit/src/components/**',
-	'packages/ui-kit/src/utils/radio-proxy.ts'
-];
-
-/** C1 临时豁免（有退出条件）：不是设计使然，而是归属别的任务线，收尾时须逐条销账。 */
-const TEMP_WHITELIST = [
-	// R2b 遗留的本地化扫描器：它的存在意义就是按语言表 key 全文档发现元素；
-	// 退出条件 = R2b 剩余键全部改走模板 t() / v-tip（见 remaining-work.md R2b）。
+	'packages/ui-kit/src/utils/radio-proxy.ts',
+	// R2b 收口后的**设计豁免**：选择器式本地化器。它的职责是按语言表的键发现元素；
+	// 其中 id 键的扫描面已归零（改由模板 `t()` / `v-tip` / `useLocalizedOptions` 承担），
+	// 剩下的只有 18 个 `[name=…]` / `[.class]` 分组键——`name` 是组件内部的**稳定契约属性**
+	// （`YMFormButtons` 的 CSS 就依赖 `button[name="confirm"]`），无法用 id/模板替代。
 	'packages/editor/src/localize/dom-localizer.ts'
 ];
+
+/** C1 临时豁免（有退出条件）：**已全部销账（2026-09-17）**。
+ * 历史上只有一项——`localize/dom-localizer.ts`（归属 R2b）；R2b 的可量化目标达成后
+ * 已转为设计豁免，见上方 WHITELIST 的说明。保留空数组是为了让「临时豁免」这一档仍然可见。 */
+const TEMP_WHITELIST = [];
 
 const globToRegExp = (pattern) => {
 	const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');

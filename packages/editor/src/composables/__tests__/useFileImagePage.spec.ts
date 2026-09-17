@@ -19,6 +19,11 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 
 const cssSpy = vi.hoisted(() => vi.fn(() => ({ width: 200, height: 200 })));
 
+vi.mock('@app/utils/css', async (importOriginal) => ({
+	...(await importOriginal<typeof import('@app/utils/css')>()),
+	getDevicePixelContentBoxSize: cssSpy
+}));
+
 const Host = defineComponent({
 	setup() {
 		return useFileImagePage();
@@ -28,7 +33,7 @@ const Host = defineComponent({
 
 describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 	beforeAll(() => {
-		Object.assign(CSS, { getDevicePixelContentBoxSize: cssSpy });
+		// P4d：`getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出，改为 mock 模块
 	});
 
 	beforeEach(() => {

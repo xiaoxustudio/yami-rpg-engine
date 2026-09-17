@@ -1,6 +1,7 @@
 import { INTRGBA } from '@app/utils/color-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import { radians } from '@app/utils/math';
 
 export const drawTilemapWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'tilemap') {
@@ -110,7 +111,7 @@ export const drawParticleEmitterWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'particle') {
 		const particle = this.target;
 		const rect = particle.emitter?.bounding;
-		const angle = Math.radians(particle.angle);
+		const angle = radians(particle.angle);
 		if (rect?.hasArea) {
 			const coords = this.getConvertedCoords!(particle);
 			const ax = coords.x;

@@ -8,18 +8,20 @@ import { bindListClipboardMethods } from '@app/tools/list-clipboard-methods.ts';
 import type { PageManagerApi } from '@ui-kit';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 interface VariableModule {
-	list: HTMLElement;
-	panel: HTMLElement;
+	list: YamiElement;
+	panel: YamiElement;
 	manager: PageManagerApi;
-	searcher: HTMLElement;
+	searcher: YamiElement;
 	inputs: {
-		name: HTMLElement;
-		value: HTMLElement;
-		number: HTMLElement;
-		string: HTMLElement;
-		note: HTMLElement;
+		name: YamiElement;
+		value: YamiElement;
+		number: YamiElement;
+		string: YamiElement;
+		note: YamiElement;
 		boolean: { read: unknown };
 		type: { write: unknown };
 		sort?: unknown;
@@ -43,10 +45,10 @@ interface VariableModule {
 	keydown: ((event: Event) => void) | null;
 	listKeydown: ((event: KeyboardEvent) => void) | null;
 	listPointerdown: ((event: PointerEvent) => void) | null;
-	listSelect: ((event: Event) => void) | null;
-	listRecord: ((event: Event) => void) | null;
-	listPopup: ((event: Event) => void) | null;
-	listOpen: ((event: Event) => void) | null;
+	listSelect: ((event: YamiMouseEvent) => void) | null;
+	listRecord: ((event: YamiMouseEvent) => void) | null;
+	listPopup: ((event: YamiMouseEvent) => void) | null;
+	listOpen: ((event: YamiMouseEvent) => void) | null;
 	nameInput: ((event: Event) => void) | null;
 	sortWrite: ((event: Event) => void) | null;
 	sortInput: ((event: Event) => void) | null;
@@ -67,21 +69,35 @@ interface VariableModule {
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
 	_listMethodsLoaded: boolean;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * P2b-2：以下三个成员**不是模块自己的字段，而是桥接到 `stores/variable`**——本文件末尾按
+	 * `variableStateKeys`（`target`/`data`/`idMap`/`history`/`changed`/`selected`）用
+	 * `Object.defineProperty` 装 get/set。原先它们被类型上的 `[k: string]: any` 兜着，所以"这里有座桥"
+	 * 在类型里完全看不见；收掉逃生口后由 `tsc` 当场报出（`variable/data.ts` 1 处、
+	 * `variable/list-events.ts` 4 处、`module/monkey-patches.ts` 1 处）。
+	 */
+	target: { getFocus?: () => void } | null;
+	idMap: Record<string, boolean>;
+	history: History;
+	[k: string]: unknown;
 }
 
-export const Variable: VariableModule = {
-	list: null as unknown as HTMLElement,
-	panel: null as unknown as HTMLElement,
+/**
+ * P2b-2：桥键（`target`/`idMap`/`history`）由本文件末尾的 `Object.defineProperty` 安装，
+ * 字面量给不出它们 ⇒ 字面量按 `Omit<VariableModule, 'target' | 'idMap' | 'history'>` 校验，
+ * **其余四十多个成员的拼写仍逐项受检**，导出时再断言成完整形状（与 `AudioManager`/`Log` 同一手法）。
+ */
+const variable: Omit<VariableModule, 'target' | 'idMap' | 'history'> = {
+	list: null as unknown as YamiElement,
+	panel: null as unknown as YamiElement,
 	manager: null as unknown as PageManagerApi,
-	searcher: null as unknown as HTMLElement,
+	searcher: null as unknown as YamiElement,
 	inputs: {
-		name: null as unknown as HTMLElement,
-		value: null as unknown as HTMLElement,
-		number: null as unknown as HTMLElement,
-		string: null as unknown as HTMLElement,
-		note: null as unknown as HTMLElement,
+		name: null as unknown as YamiElement,
+		value: null as unknown as YamiElement,
+		number: null as unknown as YamiElement,
+		string: null as unknown as YamiElement,
+		note: null as unknown as YamiElement,
 		boolean: { read: null },
 		type: { write: null }
 	},
@@ -129,20 +145,22 @@ export const Variable: VariableModule = {
 	_listMethodsLoaded: false
 };
 
+export const Variable = variable as VariableModule;
+
 function ensureDomBound() {
 	if (Variable.list) return;
-	const list = variableEls.get('variable-list') as HTMLElement;
+	const list = variableEls.get('variable-list') as YamiElement;
 	if (!list) return;
 	Variable.list = list;
-	Variable.panel = variableEls.get('variable-properties-flex') as HTMLElement as HTMLElement;
+	Variable.panel = variableEls.get('variable-properties-flex') as unknown as YamiElement;
 	hide(Variable.panel);
-	Variable.manager = variableEls.get('variable-value-manager') as HTMLElement as PageManagerApi;
-	Variable.searcher = variableEls.get('variable-searcher') as HTMLElement;
-	Variable.inputs.name = variableEls.get('variable-name') as HTMLElement;
-	Variable.inputs.value = variableEls.get('variable-value-box') as HTMLElement;
-	Variable.inputs.number = variableEls.get('variable-value-number') as HTMLElement;
-	Variable.inputs.string = variableEls.get('variable-value-string') as HTMLElement;
-	Variable.inputs.note = variableEls.get('variable-note') as HTMLElement;
+	Variable.manager = variableEls.get('variable-value-manager') as unknown as PageManagerApi;
+	Variable.searcher = variableEls.get('variable-searcher') as YamiElement;
+	Variable.inputs.name = variableEls.get('variable-name') as YamiElement;
+	Variable.inputs.value = variableEls.get('variable-value-box') as YamiElement;
+	Variable.inputs.number = variableEls.get('variable-value-number') as YamiElement;
+	Variable.inputs.string = variableEls.get('variable-value-string') as YamiElement;
+	Variable.inputs.note = variableEls.get('variable-note') as YamiElement;
 	Variable.list.copy = null as unknown as (...args: unknown[]) => void;
 	Variable.list.paste = null as unknown as (...args: unknown[]) => void;
 	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
@@ -328,8 +346,8 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 
-	on(variableEls.get('variable') as HTMLElement, 'close', this.windowClose!);
-	on(variableEls.get('variable') as HTMLElement, 'closed', this.windowClosed!);
+	on(variableEls.get('variable') as YamiElement, 'close', this.windowClose!);
+	on(variableEls.get('variable') as YamiElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	on(list, 'pointerdown', this.listPointerdown!);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {

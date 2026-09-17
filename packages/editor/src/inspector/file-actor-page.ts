@@ -13,6 +13,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -105,7 +106,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			write('scripts');
 
 			(
-				inspectorEls.get('fileActor-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('fileActor-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -230,8 +233,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elIdleMotion = inspectorEls.get('fileActor-idleMotion') as HTMLElement;
-		const elMoveMotion = inspectorEls.get('fileActor-moveMotion') as HTMLElement;
+		const elIdleMotion = inspectorEls.get('fileActor-idleMotion') as YamiElement;
+		const elMoveMotion = inspectorEls.get('fileActor-moveMotion') as YamiElement;
 		const items = Animation.getMotionListItems!(event.value);
 		elIdleMotion.loadItems(items);
 		elMoveMotion.loadItems(items);
@@ -315,7 +318,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', key = '' } = {}) {
 			Window.open!('fileActor-skill');
-			const elSkillKey = inspectorEls.get('fileActor-skill-key') as HTMLElement;
+			const elSkillKey = inspectorEls.get('fileActor-skill-key') as YamiElement;
 			const items = Enum.getStringItems!('shortcut-key', true);
 			elSkillKey.loadItems(items);
 			Object.assign(fileActorSkillForm, { id, key });
@@ -354,7 +357,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
 			Window.open!('fileActor-equipment');
-			const elEquipmentKey = inspectorEls.get('fileActor-equipment-slot') as HTMLElement;
+			const elEquipmentKey = inspectorEls.get('fileActor-equipment-slot') as YamiElement;
 			const items = Enum.getStringItems!('equipment-slot');
 			elEquipmentKey.loadItems(items);
 			Object.assign(fileActorEquipmentForm, { id, slot });
@@ -379,7 +382,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileActor.inventory.loadTypeItems();
 		},
 		loadTypeItems: function () {
-			const invTypeEl = inspectorEls.get('fileActor-inventory-type') as HTMLElement;
+			const invTypeEl = inspectorEls.get('fileActor-inventory-type') as YamiElement;
 			if (!invTypeEl) return;
 			invTypeEl.loadItems([
 				{ name: 'Item', value: 'item' },

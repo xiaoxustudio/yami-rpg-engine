@@ -4,6 +4,7 @@ import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import { radians } from '@app/utils/math';
 
 {
 	interface SceneAnimationData {
@@ -75,7 +76,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneAnimation-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -98,7 +101,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 		_options: Record<string, unknown>
 	) {
 		(
-			inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('sceneAnimation-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 
@@ -151,7 +156,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 			case 'angle':
 				if (animation.angle !== value) {
 					animation.angle = value;
-					animation.player.setAngle(Math.radians(value as number));
+					animation.player.setAngle(radians(value as number));
 				}
 				break;
 			case 'scale':
@@ -180,7 +185,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = inspectorEls.get('sceneAnimation-motion') as
+		const elMotion = inspectorEls.get('sceneAnimation-motion') as unknown as unknown as
 			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
 			| null;
 		const items = Animation.getMotionListItems!(event.value);

@@ -22,6 +22,7 @@ const IfCondition = useIfConditionSchema();
 import { Token } from '@app/commands/token.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -185,8 +186,8 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 		mouseButton,
 		variable: variableVariable
 	});
-	write(composableEls.get('switch-condition-keyboard-keycode') as HTMLElement, keyboardKeycode);
-	write(composableEls.get('switch-condition-gamepad-button') as HTMLElement, gamepadButton);
+	write(composableEls.get('switch-condition-keyboard-keycode') as YamiElement, keyboardKeycode);
+	write(composableEls.get('switch-condition-gamepad-button') as YamiElement, gamepadButton);
 	requestFocus('switch-condition-type');
 };
 
@@ -234,7 +235,7 @@ const save = (): SwitchConditionData => {
 		}
 		case 'keyboard': {
 			const keycode = read(
-				composableEls.get('switch-condition-keyboard-keycode') as HTMLElement
+				composableEls.get('switch-condition-keyboard-keycode') as YamiElement
 			) as string;
 			if (keycode === '') {
 				return requestFocus(
@@ -246,7 +247,7 @@ const save = (): SwitchConditionData => {
 		}
 		case 'gamepad': {
 			const button = read(
-				composableEls.get('switch-condition-gamepad-button') as HTMLElement
+				composableEls.get('switch-condition-gamepad-button') as YamiElement
 			) as number;
 			if (button === -1) {
 				return requestFocus(

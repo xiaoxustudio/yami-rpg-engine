@@ -9,6 +9,7 @@ import { requestFocus } from '@app/directives/focus';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileAnimationShape {
@@ -34,7 +35,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileAnimation.initialize = function () {};
-	FileAnimation.button = inspectorEls.get('animation-switch-settings') as HTMLElement;
+	FileAnimation.button = inspectorEls.get('animation-switch-settings') as YamiElement;
 	FileAnimation.owner = {
 		setTarget: (target: unknown) => {
 			if (FileAnimation.target !== target) {

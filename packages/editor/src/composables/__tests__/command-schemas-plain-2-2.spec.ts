@@ -110,7 +110,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 tilemap 文本', () => {
 			setWords();
 			Command.parseTilemap = vi.fn(() => 'TM') as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.deleteTile.parse!({
 				tilemap: { type: 'trigger' },
@@ -381,7 +380,6 @@ vi.mock('@app/stores/local', () => ({
 			Command.parseActor = vi.fn(
 				(a: unknown) => `A:${(a as { type: string }).type}`
 			) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseActorSelector = vi.fn((v: unknown) => `S:${String(v)}`) as never;
 			const contents = Command.cases.discardTargets.parse!({
 				actor: { type: 'trigger' },
@@ -939,9 +937,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 save 操作文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.setVariableColor = vi.fn((v: unknown) => `V:${String(v)}`) as never;
 			const contents = Command.cases.gameData.parse!({
 				operation: 'save',

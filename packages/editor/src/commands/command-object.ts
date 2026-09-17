@@ -83,6 +83,7 @@ export {
 import * as CommandColor from '@app/composables/useCommandColor.ts';
 import { WordList } from '@app/composables/useWordList.ts';
 import * as CommandParse from '@app/composables/useCommandParse.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 // oxlint-disable-next-line no-explicit-any
 type CommandMethod = (...args: any[]) => any;
@@ -110,7 +111,7 @@ interface CommandCustomShape {
 		absolute(x: number | null, y: number | null): void;
 		setTitle(title: string): void;
 	};
-	parameterPane: HTMLElement & {
+	parameterPane: YamiElement & {
 		getData?: () => Array<{ id: string; parameters: Record<string, unknown> | null }>;
 		onResize?: () => void;
 		createDetailBox?: () => unknown;

@@ -54,7 +54,7 @@ type EasingMapInstance = Float32Array & {
 	ease(time: number): number;
 };
 type EasingListItem = EasingData & {
-	element: HTMLElement & {
+	element: YamiElement & {
 		textNode: Text;
 	} & Record<string, unknown>;
 	parent: { children: EasingListItem[] };
@@ -76,7 +76,7 @@ type EasingCanvasShape = HTMLCanvasElement & {
 export const Easing = {
 	data: null as unknown as EasingData[] | null,
 	list: null as
-		| (HTMLElement & {
+		| (YamiElement & {
 				// oxlint-disable-next-line no-explicit-any
 				read: () => Record<string, any>;
 				rename: (item: EasingData | null) => void;
@@ -133,27 +133,27 @@ export const Easing = {
 	requestRendering: null as unknown as () => void,
 	renderingFunction: null as unknown as () => void,
 	stopRendering: null as unknown as () => void,
-	windowClose: null as unknown as (event: Event) => void,
-	windowClosed: null as unknown as (event: Event) => void,
-	dprchange: null as unknown as (event: Event) => void,
-	themechange: null as unknown as (event: Event & { value?: string }) => void,
-	dataChange: null as unknown as (event: Event) => void,
+	windowClose: null as unknown as (event: YamiEvent) => void,
+	windowClosed: null as unknown as (event: YamiEvent) => void,
+	dprchange: null as unknown as (event: YamiEvent) => void,
+	themechange: null as unknown as (event: YamiEvent & { value?: string }) => void,
+	dataChange: null as unknown as (event: YamiEvent) => void,
 	listKeydown: null as unknown as (event: KeyboardEvent) => void,
-	listSelect: null as unknown as (event: Event & { value?: EasingData }) => void,
-	listOpen: null as unknown as (event: Event & { value?: EasingData }) => void,
+	listSelect: null as unknown as (event: YamiEvent & { value?: EasingData }) => void,
+	listOpen: null as unknown as (event: YamiEvent & { value?: EasingData }) => void,
 	listPopup: null as unknown as (event: PointerEvent & { value?: EasingData | null }) => void,
-	modeSelect: null as unknown as (event: Event) => void,
-	pointInput: null as unknown as (event: Event) => void,
-	scaleInput: null as unknown as (event: Event & { value?: number }) => void,
+	modeSelect: null as unknown as (event: YamiEvent) => void,
+	pointInput: null as unknown as (event: YamiEvent) => void,
+	scaleInput: null as unknown as (event: YamiEvent & { value?: number }) => void,
 	curveKeydown: null as unknown as (event: KeyboardEvent) => void,
 	curvePointerdown: null as unknown as (event: PointerEvent & EasingDrag) => void,
 	curveWheel: null as unknown as (event: WheelEvent) => void,
-	curveBlur: null as unknown as (event: Event) => void,
+	curveBlur: null as unknown as (event: YamiEvent) => void,
 	pointerup: null as unknown as (event?: PointerEvent) => void,
 	pointermove: null as unknown as (event: PointerEvent) => void,
 	durationInput: null as unknown as () => void,
 	delayInput: null as unknown as () => void,
-	confirm: null as unknown as (event: Event) => void,
+	confirm: null as unknown as (event: YamiEvent) => void,
 	CurveMap: null as unknown as { new (): CurveMapInstance },
 	EasingMap: null as unknown as { new (): EasingMapInstance } & {
 		easeInOut: EasingMapInstance;
@@ -169,15 +169,11 @@ export const Easing = {
 
 function ensureDomBound() {
 	if (Easing.list) return;
-	const list = dataEls.get('easing-list') as HTMLElement;
+	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
 	Easing.list = list as unknown as typeof Easing.list;
-	Easing.curve = dataEls.get(
-		'easing-curve-canvas'
-	) as HTMLElement as unknown as EasingCanvasShape;
-	Easing.preview = dataEls.get(
-		'easing-preview-canvas'
-	) as HTMLElement as unknown as EasingCanvasShape;
+	Easing.curve = dataEls.get('easing-curve-canvas') as unknown as EasingCanvasShape;
+	Easing.preview = dataEls.get('easing-preview-canvas') as unknown as EasingCanvasShape;
 	list.saveSelection = Easing.list_saveSelection;
 	list.restoreSelection = Easing.list_restoreSelection;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
@@ -266,15 +262,15 @@ Easing.initialize = () => {
 		}
 	});
 
-	window.addEventListener('dprchange', Easing.dprchange);
-	window.addEventListener('themechange', Easing.themechange);
-	on(dataEls.get('easing') as HTMLElement, 'close', Easing.windowClose);
-	on(dataEls.get('easing') as HTMLElement, 'closed', Easing.windowClosed);
-	on(dataEls.get('easing-points-grid') as HTMLElement, 'change', Easing.dataChange);
+	window.addEventListener('dprchange', Easing.dprchange as EventListener);
+	window.addEventListener('themechange', Easing.themechange as EventListener);
+	on(dataEls.get('easing') as YamiElement, 'close', Easing.windowClose);
+	on(dataEls.get('easing') as YamiElement, 'closed', Easing.windowClosed);
+	on(dataEls.get('easing-points-grid') as YamiElement, 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
 	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
 	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
-	on(dataEls.get('easing-mode') as HTMLElement, 'input', Easing.modeSelect);
+	on(dataEls.get('easing-mode') as YamiElement, 'input', Easing.modeSelect);
 	// P1b：缓动点控件批量绑 input——改按 id 列表读 dataEls（原先 document.querySelectorAll）
 	registryElements(dataEls, [
 		'easing-points-0-x',
@@ -338,7 +334,7 @@ Easing.initialize = () => {
 
 Easing.open = function (this: typeof Easing, target?: unknown) {
 	Window.open!('easing');
-	getEasingStore().data = Object.clone(Data.easings);
+	getEasingStore().data = deepClone(Data.easings);
 	getEasingStore().target = (target as Record<string, unknown> | undefined) ?? null;
 
 	getEasingStore().state = 'open';
@@ -471,7 +467,7 @@ Easing.updateMaps = function (this: typeof Easing) {
 
 Easing.updateCanvases = function (this: typeof Easing) {
 	const curve = this.curve!;
-	const { width: cWidth, height: cHeight } = CSS.getDevicePixelContentBoxSize(curve);
+	const { width: cWidth, height: cHeight } = getDevicePixelContentBoxSize(curve);
 	if (curve.width !== cWidth || curve.height !== cHeight) {
 		if (curve.width !== cWidth) {
 			curve.width = cWidth;
@@ -485,7 +481,7 @@ Easing.updateCanvases = function (this: typeof Easing) {
 	}
 
 	const preview = this.preview!;
-	const { width: pWidth, height: pHeight } = CSS.getDevicePixelContentBoxSize(preview);
+	const { width: pWidth, height: pHeight } = getDevicePixelContentBoxSize(preview);
 	if (preview.width !== pWidth) {
 		preview.width = pWidth;
 	}
@@ -789,7 +785,7 @@ Easing.stopRendering = function (this: typeof Easing) {
 	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-Easing.windowClose = function (this: typeof Easing, event: Event) {
+Easing.windowClose = function (this: typeof Easing, event: YamiEvent) {
 	if (Easing.changed) {
 		event.preventDefault();
 		const get = (key: string) => t('confirmation.' + key);
@@ -813,7 +809,7 @@ Easing.windowClose = function (this: typeof Easing, event: Event) {
 	}
 };
 
-Easing.windowClosed = function (this: typeof Easing, _event: Event) {
+Easing.windowClosed = function (this: typeof Easing, _event: YamiEvent) {
 	getEasingStore().state = 'closed';
 	getEasingStore().target = null;
 	this.list!.saveSelection();
@@ -829,14 +825,14 @@ Easing.windowClosed = function (this: typeof Easing, _event: Event) {
 	this.stopRendering();
 }.bind(Easing);
 
-Easing.dprchange = function (this: typeof Easing, _event: Event) {
+Easing.dprchange = function (this: typeof Easing, _event: YamiEvent) {
 	if (getEasingStore().data !== null) {
 		this.updateCanvases();
 		this.requestRendering();
 	}
 }.bind(Easing);
 
-Easing.themechange = function (this: typeof Easing, event: Event & { value?: string }) {
+Easing.themechange = function (this: typeof Easing, event: YamiEvent & { value?: string }) {
 	const canvas = this.curve!;
 	switch (event.value) {
 		case 'light':
@@ -859,11 +855,11 @@ Easing.themechange = function (this: typeof Easing, event: Event & { value?: str
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.dataChange = function (this: typeof Easing, _event: Event) {
+Easing.dataChange = function (this: typeof Easing, _event: YamiEvent) {
 	this.changed = true;
 }.bind(Easing);
 
-Easing.listKeydown = function (this: HTMLElement, event: KeyboardEvent) {
+Easing.listKeydown = function (this: YamiElement, event: KeyboardEvent) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -888,11 +884,11 @@ Easing.listKeydown = function (this: HTMLElement, event: KeyboardEvent) {
 	}
 };
 
-Easing.listSelect = function (this: typeof Easing, event: Event & { value?: EasingData }) {
+Easing.listSelect = function (this: typeof Easing, event: YamiEvent & { value?: EasingData }) {
 	Easing.load(event.value!);
 };
 
-Easing.listOpen = function (this: typeof Easing, event: Event & { value?: EasingData }) {
+Easing.listOpen = function (this: typeof Easing, event: YamiEvent & { value?: EasingData }) {
 	Easing.setEasingKey(event.value!);
 };
 
@@ -962,7 +958,7 @@ Easing.listPopup = function (
 	);
 };
 
-Easing.modeSelect = function (this: typeof Easing, _event: Event) {
+Easing.modeSelect = function (this: typeof Easing, _event: YamiEvent) {
 	this.updatePoints();
 	const points = this.points!;
 	const easingMap = this.easingMap!;
@@ -1027,7 +1023,7 @@ Easing.modeSelect = function (this: typeof Easing, _event: Event) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.pointInput = function (this: HTMLElement, _event: Event) {
+Easing.pointInput = function (this: YamiElement, _event: YamiEvent) {
 	const key = Inspector.getKey(this);
 	const value = read(this);
 	const keys = key.split('-');
@@ -1044,7 +1040,7 @@ Easing.pointInput = function (this: HTMLElement, _event: Event) {
 	Easing.requestRendering();
 };
 
-Easing.scaleInput = function (this: typeof Easing, event: Event & { value?: number }) {
+Easing.scaleInput = function (this: typeof Easing, event: YamiEvent & { value?: number }) {
 	this.scale = event.value!;
 	this.requestRendering();
 }.bind(Easing);
@@ -1135,7 +1131,7 @@ Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 	}
 }.bind(Easing);
 
-Easing.curveBlur = function (this: typeof Easing, _event: Event) {
+Easing.curveBlur = function (this: typeof Easing, _event: YamiEvent) {
 	this.pointerup();
 	if (this.activePoint !== null) {
 		this.activePoint = null;
@@ -1173,10 +1169,10 @@ Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 		const point = this.activePoint;
 		const index = this.points!.indexOf(point);
 		const fullSize = this.curve!.spacing * this.scale * 10;
-		const transX = Math.roundTo((event.clientX - dragging.clientX) / fullSize, 2);
-		const transY = Math.roundTo((dragging.clientY - event.clientY) / fullSize, 2);
-		const pointX = Math.clamp(Math.roundTo(dragging.pointStartX + transX, 2), 0, 1);
-		const pointY = Math.clamp(Math.roundTo(dragging.pointStartY + transY, 2), -5, 5);
+		const transX = roundTo((event.clientX - dragging.clientX) / fullSize, 2);
+		const transY = roundTo((dragging.clientY - event.clientY) / fullSize, 2);
+		const pointX = clamp(roundTo(dragging.pointStartX + transX, 2), 0, 1);
+		const pointY = clamp(roundTo(dragging.pointStartY + transY, 2), -5, 5);
 		point.x = pointX;
 		point.y = pointY;
 		const form = useEasingWindow().form;
@@ -1206,7 +1202,7 @@ Easing.delayInput = function (this: typeof Easing) {
 	}
 }.bind(Easing);
 
-Easing.confirm = function (this: typeof Easing, _event: Event) {
+Easing.confirm = function (this: typeof Easing, _event: YamiEvent) {
 	if (this.changed) {
 		this.changed = false;
 		this.clear();
@@ -1215,7 +1211,7 @@ Easing.confirm = function (this: typeof Easing, _event: Event) {
 		Data.easings = easings;
 		Data.createGUIDMap(easings);
 		File.planToSave!(Data.manifest.project.easings);
-		const datachange = new Event('datachange');
+		const datachange = new Event('datachange') as YamiEvent;
 		datachange.key = 'easings';
 		window.dispatchEvent(datachange);
 	}
@@ -1314,7 +1310,7 @@ Easing.EasingMap = (function IIFE() {
 	};
 })();
 
-Easing.list_saveSelection = function (this: HTMLElement) {
+Easing.list_saveSelection = function (this: YamiElement) {
 	const { easings } = Data;
 	if (easings.selection === undefined) {
 		Object.defineProperty(easings, 'selection', {
@@ -1328,7 +1324,7 @@ Easing.list_saveSelection = function (this: HTMLElement) {
 	}
 };
 
-Easing.list_restoreSelection = function (this: HTMLElement) {
+Easing.list_restoreSelection = function (this: YamiElement) {
 	const id = Data.easings.selection;
 	const item = Easing.getItemById(id) ?? this.data?.[0];
 	this.select(item);
@@ -1336,16 +1332,16 @@ Easing.list_restoreSelection = function (this: HTMLElement) {
 	this.scrollToSelection();
 };
 
-Easing.list_updateItemName = function (this: HTMLElement, item: EasingListItem) {
+Easing.list_updateItemName = function (this: YamiElement, item: EasingListItem) {
 	this.updateTextNode(item);
 	this.update();
 };
 
-Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) {
+Easing.list_updateTextNode = function (this: YamiElement, item: EasingListItem) {
 	const items = item.parent.children;
 	const index = items.indexOf(item);
 	const length = items.length;
-	const digits = Number.computeIndexDigits(length);
+	const digits = computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
 	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
 	setTreeItemText(item, `${sn}:${item.name}`);
@@ -1353,6 +1349,12 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) 
 
 import { getEasingStore } from '@app/stores/easing';
 import { applyLocalizedItems } from '@app/utils/localized-items';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { clamp, roundTo } from '@app/utils/math';
+import { computeIndexDigits } from '@app/utils/number';
+import { clone as deepClone } from '@app/utils/object';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 const easingStateKeys = ['state', 'target', 'data'] as const;
 

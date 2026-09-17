@@ -1,5 +1,6 @@
 import { Scene } from './scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { radians } from '@app/utils/math';
 
 interface LightData {
 	enabled: boolean;
@@ -150,7 +151,7 @@ export class Light {
 		const b = -anchorOffsetY;
 		const c = a + width;
 		const d = b + height;
-		const angle = Math.radians(light.angle!);
+		const angle = radians(light.angle!);
 		const angle1 = Math.atan2(b, a) + angle;
 		const angle2 = Math.atan2(b, c) + angle;
 		const angle3 = Math.atan2(d, c) + angle;

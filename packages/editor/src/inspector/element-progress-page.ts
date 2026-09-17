@@ -65,7 +65,9 @@ import { UI } from '@app/ui/ui-window.ts';
 			Inspector.uiElement.open(node);
 
 			(
-				inspectorEls.get('uiProgressBar-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiProgressBar-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

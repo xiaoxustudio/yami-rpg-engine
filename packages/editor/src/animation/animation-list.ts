@@ -12,7 +12,7 @@ import {
 	removeClass,
 	show
 } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/utils/event-accessors';
+import { ctrl, isDragKey } from '@app/utils/event-accessors';
 import { Command } from '@app/commands/command-object.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Menu } from '@app/components/menu-list.ts';
@@ -29,6 +29,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { elementDataOf, getElementData } from '@app/utils/element-data';
+import { clamp } from '@app/utils/math';
+import { empty as fnEmpty } from '@app/utils/function';
 
 const Clipboard = GlobalClipboard;
 
@@ -113,7 +115,10 @@ Animation.listPointerdown = function (this: typeof Animation, event: PointerEven
 		case 0: {
 			const element = event.target as HTMLElement;
 			if (hasClass(element, 'node-item') && hasClass(element, 'selected')) {
-				Inspector.open!('animMotion', elementDataOf<{ item?: AnimationMotion }>(element).item);
+				Inspector.open!(
+					'animMotion',
+					elementDataOf<{ item?: AnimationMotion }>(element).item
+				);
 			}
 			break;
 		}
@@ -171,7 +176,7 @@ Animation.listPopup = function (
 		pastable = Clipboard.has('yami.animation.object');
 		deletable = false;
 	}
-	let headItems = Array.empty;
+	let headItems: { label: string; accelerator?: string; click: () => void }[] = [];
 	if (item) {
 		headItems = [
 			{
@@ -468,7 +473,7 @@ Animation.layerListPopup = function (
 			},
 			{
 				label: get('shift'),
-				enabled: 0 < item?.frames.length,
+				enabled: 0 < (item?.frames?.length ?? 0),
 				click: () => {
 					SceneShift.open!((x: number, y: number) => {
 						Animation.history.save({
@@ -623,7 +628,7 @@ Animation.outerTimelineListPointerdown = function (
 	const listData = timelineListData(this);
 	switch (event.button) {
 		case 0: {
-			if (event.dragKey) {
+			if (isDragKey(event)) {
 				listData.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
@@ -842,7 +847,7 @@ Animation.outerTimelineListPointermove = function (this: typeof Animation, event
 					}
 				}
 				const coords = Animation.getFrameCoords!(event, true);
-				const x = Math.clamp(coords.x, 0, Animation.frameMax - 1);
+				const x = clamp(coords.x, 0, Animation.frameMax - 1);
 				const mx = Math.min(x, dragging.pointerdownX);
 				const mw = Math.abs(x - dragging.pointerdownX) + 1;
 				Animation.selectMarquee!(mx, dragging.pointerdownY, mw);
@@ -862,8 +867,8 @@ Animation.outerTimelineListPointermove = function (this: typeof Animation, event
 				const marquee = Animation.timelineMarqueeShift;
 				const right = Animation.frameMax - marquee.length;
 				const bottom = Animation.innerTimelineList.childNodes.length - 1;
-				const x = Math.clamp(coords.x, 0, right);
-				const y = Math.clamp(coords.y, 0, bottom);
+				const x = clamp(coords.x, 0, right);
+				const y = clamp(coords.y, 0, bottom);
 				Animation.updateMarqueeShift!(x, y);
 				if (dragging.layer.class === marquee.layer?.class) removeClass(marquee, 'disabled');
 				else addClass(marquee, 'disabled');
@@ -966,7 +971,7 @@ Animation.list.cancelSearch = function (this: typeof Animation) {
 		Animation.searcher.deleteInputContent();
 		this.expandToSelection!();
 		this.scrollToSelection!();
-		active!.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 
@@ -1108,7 +1113,7 @@ Animation.outerTimelineList.restoreMotionAndLayer = function (
 	layer: AnimationLayer
 ) {
 	const { updateTimeline } = Animation;
-	Animation.updateTimeline = Function.empty;
+	Animation.updateTimeline = fnEmpty;
 	Animation.setMotion!(motion);
 	Animation.setDirection!(direction);
 	Animation.layerList.expandToItem(layer);

@@ -29,6 +29,9 @@ import { DynamicShape } from '@app/types/shapes.ts';
 import { getYamiI18n } from '@app/i18n';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
+import { remove } from '@app/utils/array';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -170,8 +173,8 @@ export const Title: TitleShape = {
 };
 
 Title.initialize = function (this: TitleShape) {
-	this.target = windowShellEls.get('title') as HTMLElement;
-	this.tabBar = titleEls.get('title-tabBar') as HTMLElement as unknown as TitleTabBarShape;
+	this.target = windowShellEls.get('title') as YamiElement;
+	this.tabBar = titleEls.get('title-tabBar') as unknown as TitleTabBarShape;
 	if (this.tabBar) this.tabBar.data = [];
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
@@ -187,7 +190,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = titleEls.get('title-app-region') as HTMLElement as HTMLElement;
+	this.target.element = titleEls.get('title-app-region') as unknown as HTMLElement;
 
 	this.pointerenter!();
 
@@ -269,7 +272,7 @@ Title.deployment = function (this: TitleShape) {
 
 Title.addRecentTab = function (this: TitleShape, guid: string) {
 	const tabs = Editor.project!.recentTabs!;
-	if (tabs.remove(guid)) {
+	if (remove(tabs, guid)) {
 		tabs.unshift(guid);
 	} else {
 		tabs.unshift(guid);
@@ -393,7 +396,7 @@ Title.switchTheme = function (this: TitleShape, scheme: 'light' | 'dark') {
 };
 
 Title.dispatchThemechangeEvent = (function IIFE() {
-	const themechange = new Event('themechange');
+	const themechange = new Event('themechange') as YamiEvent;
 	return function (this: TitleShape, theme: 'light' | 'dark') {
 		getTitleStore().theme = theme;
 		themechange.value = theme;
@@ -402,14 +405,14 @@ Title.dispatchThemechangeEvent = (function IIFE() {
 })();
 
 Title.playGame = async function (this: TitleShape) {
-	const element = titleEls.get('title-play') as HTMLElement;
+	const element = titleEls.get('title-play') as YamiElement;
 	if (Editor.state === 'open' && !getTitleStore().playing) {
 		getTitleStore().setPlaying(true);
 		addClass(element, 'selected');
 
 		const { activeElement } = document;
-		activeElement!.blur();
-		activeElement!.focus();
+		(activeElement as HTMLElement | null)?.blur();
+		(activeElement as HTMLElement | null)?.focus();
 
 		AudioManager.player!.stop();
 
@@ -517,7 +520,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	Layout.manager.switch('directory');
 };
 
-Title.windowBeforeClose = function (this: TitleShape, _event: Event) {
+Title.windowBeforeClose = function (this: TitleShape, _event: YamiEvent) {
 	if (getWindowStore().stack.length === 0) {
 		YamiIpc.send.preventCloseWindow();
 		Title.askWhetherToSave!(() => {
@@ -526,22 +529,22 @@ Title.windowBeforeClose = function (this: TitleShape, _event: Event) {
 	}
 };
 
-Title.windowMaximize = function (this: TitleShape, _event: Event) {
+Title.windowMaximize = function (this: TitleShape, _event: YamiEvent) {
 	getTitleStore().maximized = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowUnmaximize = function (this: TitleShape, _event: Event) {
+Title.windowUnmaximize = function (this: TitleShape, _event: YamiEvent) {
 	getTitleStore().maximized = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowEnterFullScreen = function (this: TitleShape, _event: Event) {
+Title.windowEnterFullScreen = function (this: TitleShape, _event: YamiEvent) {
 	getTitleStore().fullscreen = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowLeaveFullScreen = function (this: TitleShape, _event: Event) {
+Title.windowLeaveFullScreen = function (this: TitleShape, _event: YamiEvent) {
 	getTitleStore().fullscreen = false;
 	this.updateBodyClass!();
 }.bind(Title);
@@ -559,7 +562,7 @@ Title.windowDrop = function (this: TitleShape, event: DragEvent) {
 	}
 }.bind(Title);
 
-Title.windowDirchange = function (this: TitleShape, _event: Event) {
+Title.windowDirchange = function (this: TitleShape, _event: YamiEvent) {
 	const { tabBar } = Title;
 	if (!tabBar?.data) return;
 	for (const item of tabBar.data) {
@@ -574,14 +577,14 @@ Title.windowDirchange = function (this: TitleShape, _event: Event) {
 	}
 };
 
-Title.windowLocalize = function (this: TitleShape, _event: Event) {
+Title.windowLocalize = function (this: TitleShape, _event: YamiEvent) {
 	const text = Title.tabBar.dirItem?.tab?.text;
 	if (text instanceof HTMLElement) {
 		text.textContent = t('common.directory');
 	}
 };
 
-Title.pointerenter = function (this: TitleShape, _event: Event) {
+Title.pointerenter = function (this: TitleShape, _event: YamiEvent) {
 	const { target } = this;
 	if (!target) return;
 	const data = targetData(target);
@@ -617,7 +620,7 @@ Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 	}
 }.bind(Title);
 
-Title.tabBarPointerdown = function (this: TitleShape, _event: Event) {
+Title.tabBarPointerdown = function (this: TitleShape, _event: YamiEvent) {
 	switch (this.read!()?.type) {
 		case 'scene':
 			Layout.readyToFocus(Scene.screen);
@@ -633,7 +636,7 @@ Title.tabBarPointerdown = function (this: TitleShape, _event: Event) {
 	}
 };
 
-Title.tabBarSelect = function (this: TitleShape, event: Event) {
+Title.tabBarSelect = function (this: TitleShape, event: YamiEvent) {
 	if (Layout.resizing) {
 		Layout.pointerup();
 	}
@@ -665,7 +668,7 @@ Title.tabBarSelect = function (this: TitleShape, event: Event) {
 	}
 };
 
-Title.tabBarClosed = function (this: TitleShape, event: Event & { closedItems: TitleTab[] }) {
+Title.tabBarClosed = function (this: TitleShape, event: YamiEvent & { closedItems: TitleTab[] }) {
 	const { closedItems, lastValue } = event;
 	for (const context of closedItems) {
 		switch (context.type) {
@@ -699,7 +702,7 @@ Title.tabBarClosed = function (this: TitleShape, event: Event & { closedItems: T
 	}
 };
 
-Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
+Title.tabBarPopup = function (this: TitleShape, event: YamiMouseEvent) {
 	const item = event.value;
 	if (!item) return;
 	const items = this.data;
@@ -737,19 +740,19 @@ Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
 	);
 };
 
-Title.playClick = function (this: TitleShape, _event: MouseEvent) {
+Title.playClick = function (this: TitleShape, _event: YamiMouseEvent) {
 	Title.playGame!();
 };
 
-Title.minimizeClick = function (this: TitleShape, _event: MouseEvent) {
+Title.minimizeClick = function (this: TitleShape, _event: YamiMouseEvent) {
 	YamiIpc.send.minimizeWindow();
 };
 
-Title.maximizeClick = function (this: TitleShape, _event: MouseEvent) {
+Title.maximizeClick = function (this: TitleShape, _event: YamiMouseEvent) {
 	YamiIpc.send.maximizeWindow();
 };
 
-Title.closeClick = function (this: TitleShape, _event: MouseEvent) {
+Title.closeClick = function (this: TitleShape, _event: YamiMouseEvent) {
 	Title.windowBeforeClose!();
 };
 

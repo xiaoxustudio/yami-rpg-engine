@@ -6,6 +6,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 /** P1b：尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
 const SIZE_INPUT_IDS = [
@@ -80,13 +81,13 @@ const SIZE_INPUT_IDS = [
 
 	UIElement.initialize = function (this: typeof UIElement) {
 		if (!inspectorEls.get('uiElement-name')) return;
-		this.nameBox = inspectorEls.get('uiElement-name') as HTMLElement;
-		this.pointerEvents = inspectorEls.get('uiElement-pointerEvents') as HTMLElement;
-		this.generalGroup = inspectorEls.get('uiElement-general-group') as HTMLElement;
-		this.transformGroup = inspectorEls.get('uiElement-transform-group') as HTMLElement;
-		this.eventsGroup = inspectorEls.get('uiElement-events-group') as HTMLElement;
-		this.scriptsGroup = inspectorEls.get('uiElement-scripts-group') as HTMLElement;
-		this.parameterPane = inspectorEls.get('uiElement-parameter-pane') as HTMLElement;
+		this.nameBox = inspectorEls.get('uiElement-name') as YamiElement;
+		this.pointerEvents = inspectorEls.get('uiElement-pointerEvents') as YamiElement;
+		this.generalGroup = inspectorEls.get('uiElement-general-group') as YamiElement;
+		this.transformGroup = inspectorEls.get('uiElement-transform-group') as YamiElement;
+		this.eventsGroup = inspectorEls.get('uiElement-events-group') as YamiElement;
+		this.scriptsGroup = inspectorEls.get('uiElement-scripts-group') as YamiElement;
+		this.parameterPane = inspectorEls.get('uiElement-parameter-pane') as YamiElement;
 		this.pointerEvents.loadItems([
 			{ name: 'Enabled', value: 'enabled' },
 			{ name: 'Disabled', value: 'disabled' },
@@ -190,7 +191,9 @@ const SIZE_INPUT_IDS = [
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('uiImage-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiImage-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -306,7 +309,7 @@ const SIZE_INPUT_IDS = [
 		const changes: { input: HTMLElement; oldValue: number; newValue: number }[] = [];
 		if (x !== undefined) {
 			if (transform.anchorX !== x) {
-				const input = inspectorEls.get('uiElement-transform-anchorX') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-anchorX') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.anchorX,
@@ -316,7 +319,7 @@ const SIZE_INPUT_IDS = [
 				elements.setProperty('transform-anchorX', x);
 			}
 			if (transform.x !== 0) {
-				const input = inspectorEls.get('uiElement-transform-x') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-x') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.x,
@@ -326,7 +329,7 @@ const SIZE_INPUT_IDS = [
 				elements.setProperty('transform-x', 0);
 			}
 			if (transform.x2 !== x) {
-				const input = inspectorEls.get('uiElement-transform-x2') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-x2') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.x2,
@@ -338,7 +341,7 @@ const SIZE_INPUT_IDS = [
 		}
 		if (y !== undefined) {
 			if (transform.anchorY !== y) {
-				const input = inspectorEls.get('uiElement-transform-anchorY') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-anchorY') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.anchorY,
@@ -348,7 +351,7 @@ const SIZE_INPUT_IDS = [
 				elements.setProperty('transform-anchorY', y);
 			}
 			if (transform.y !== 0) {
-				const input = inspectorEls.get('uiElement-transform-y') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-y') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.y,
@@ -358,7 +361,7 @@ const SIZE_INPUT_IDS = [
 				elements.setProperty('transform-y', 0);
 			}
 			if (transform.y2 !== y) {
-				const input = inspectorEls.get('uiElement-transform-y2') as HTMLElement;
+				const input = inspectorEls.get('uiElement-transform-y2') as YamiElement;
 				changes.push({
 					input: input,
 					oldValue: transform.y2,
@@ -379,7 +382,9 @@ const SIZE_INPUT_IDS = [
 				changes: changes
 			});
 			(
-				inspectorEls.get('uiImage-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiImage-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

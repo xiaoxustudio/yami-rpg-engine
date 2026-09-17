@@ -384,7 +384,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -395,7 +395,6 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -407,7 +406,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
 const { t } = useI18n();
 
 const { form, sync, onParamInput: onParamInputEvent } = useSceneParallaxPage();
@@ -444,6 +442,21 @@ const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
 const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
+// R2b 迁移⑦：三个下拉的选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用
+// **全局 Composer** + `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时
+// effect 因读到新 ref 重跑，那时才真正 `loadItems`）。原先 layer 用行内 `t()` 一次性装载、light/blend
+// 放在 `refreshLocalizedItems` 里由 `localize` 事件回调再调一次——后者会在**事件回调**里调用本组合式
+// 函数，运行期抛 vue-i18n 的 `Must be called at the top of a setup function`（本轮报错的第一处来源）。
+useLocalizedOptions('sceneParallax-layer', ['background', 'foreground'], (items) =>
+	elLayer.value?.loadItems?.(items)
+);
+useLocalizedOptions('sceneParallax-light', ['raw', 'global', 'anchor', 'ambient'], (items) =>
+	elLight.value?.loadItems?.(items)
+);
+useLocalizedOptions('sceneParallax-blend', ['normal', 'additive', 'subtract'], (items) =>
+	elBlend.value?.loadItems?.(items)
+);
+
 onMounted(() => {
 	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'sceneParallax-layer', elLayer.value);
@@ -468,25 +481,6 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { sync });
 	}
-
-	elLayer.value?.loadItems([
-		{ name: t('components.sceneParallax-layer.options.background.name'), tip: t('components.sceneParallax-layer.options.background.tip'), value: 'background'  },
-		{ name: t('components.sceneParallax-layer.options.foreground.name'), tip: t('components.sceneParallax-layer.options.foreground.tip'), value: 'foreground'  }
-	]);
-
-	const refreshLocalizedItems = () => {
-		if (elLight.value) {
-			useLocalizedOptions('sceneParallax-light', ['raw', 'global', 'anchor', 'ambient'], (items) =>
-		elLight.value?.loadItems?.(items)
-	);
-		}
-		if (elBlend.value) {
-			useLocalizedOptions('sceneParallax-blend', ['normal', 'additive', 'subtract'], (items) =>
-		elBlend.value?.loadItems?.(items)
-	);
-		}
-	};
-	refreshLocalizedItems();
 
 	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
 	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
@@ -539,12 +533,6 @@ onMounted(() => {
 		.forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
-	window.addEventListener('localize', refreshLocalizedItems);
-	watch(
-		() => local.components,
-		() => refreshLocalizedItems()
-	);
-	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 });
 </script>
 

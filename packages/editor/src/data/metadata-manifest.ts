@@ -2,6 +2,7 @@ import { Data } from './data-object.ts';
 import { Meta } from './metadata.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Title } from '@app/title/title-bar.ts';
+import { remove } from '@app/utils/array';
 
 export type FileMeta = InstanceType<typeof Meta>;
 
@@ -68,8 +69,8 @@ export class Manifest {
 		const { guidMap } = this;
 		const { pathMap } = this;
 		const { guid, path } = meta;
-		this.metaList.remove(meta);
-		meta.group.remove(meta);
+		remove(this.metaList, meta);
+		remove(meta.group, meta);
 		if (guidMap[guid] === meta) {
 			delete guidMap[guid];
 		}

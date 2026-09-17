@@ -19,7 +19,7 @@ import {
 	commonListClearElements,
 	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
-import { attachScrollListener } from '../YMParamList/scroll-listener';
+import { attachScrollListener, type ScrollListenerApi } from '../YMParamList/scroll-listener';
 import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createCommandCore } from './command-core';
 import * as commandRender from './command-render';
@@ -57,12 +57,12 @@ interface DataLookupAdapter {
 	attribute(id: string): { name: string } | null | undefined;
 	enumString(id: string): { name: string } | null | undefined;
 	gameLocalReplace(text: string): string;
-	// oxlint-disable-next-line no-explicit-any
-	guidMap?: Record<string, any> | (() => Record<string, any>);
-	// oxlint-disable-next-line no-explicit-any
-	scenePresets?: Record<string, any> | (() => Record<string, any>);
-	// oxlint-disable-next-line no-explicit-any
-	uiPresets?: Record<string, any> | (() => Record<string, any>);
+	// P2b-3：这三份"元信息表"由消费方（编辑器）提供，本文件只用其中很少的字段，
+	// 故按 `Record<string, unknown>` 声明，用到的地方在本地显式收窄（见 `checkVariables`）——
+	// 不再用 `Record<string, any>` 把整张表变成 `any`。
+	guidMap?: Record<string, unknown> | (() => Record<string, unknown>);
+	scenePresets?: Record<string, unknown> | (() => Record<string, unknown>);
+	uiPresets?: Record<string, unknown> | (() => Record<string, unknown>);
 }
 
 interface LocalizeAdapter {
@@ -314,8 +314,9 @@ export const commandListStatics = {
  * P2b-1：命令列表的**元素 API 契约**。此前消费方只能拿 `HTMLElement` 再自己写 `as HTMLElement & { … }`
  * （editor 侧就有一份 `EventCommandListShape`）；这里把「元素上有哪些方法」定成可 import 的类型。
  *
- * 说明：`commandListPrototype` 本体仍是 `Record<string, (...args) => any>`（运行时不变），
- * 本接口是对**同一个对象**的静态描述——消费方用 `HTMLElement & CommandListElementApi` 即可获得补全与拼写检查。
+ * 说明：`commandListPrototype` 本体是 `Record<string, (this: CommandListHost, ...args) => unknown>`
+ * （P2b-3 起不再用 `any` 描述形状），本接口是对**同一个对象**的静态描述——
+ * 消费方用 `HTMLElement & CommandListElementApi` 即可获得补全与拼写检查。
  */
 export interface CommandListElementApi {
 	// —— 消费方实际使用的方法（精确签名）——
@@ -359,6 +360,152 @@ export interface CommandListElementApi {
 	): CommandItemElement;
 	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
 	[k: string]: unknown;
+}
+
+/**
+ * P2b-3：`elements` 的形状——行元素数组本体，另挂 `count/start/end` 窗口游标
+ * （与 `createCommandListApi` 的装配一一对应；这些字段原先只能经 `any` 访问）。
+ */
+interface CommandListElements extends Array<CommandItemElement> {
+	versionId: number;
+	count: number;
+	start: number;
+	end: number;
+	/** 首/末行（`commonList*` 助手拿它撑滚动高度） */
+	head: CommandItemElement | null;
+	foot: CommandItemElement | null;
+}
+
+/**
+ * P2b-3：命令列表元素的**宿主契约**——`commandListPrototype` 各方法里 `this` 的真实成员面，
+ * 外加装配代码（`createCommandListApi`）挂到元素上的字段。
+ *
+ * 这些方法过去一律把 `this` 声明成 `any`，于是每条都要配一句 `oxlint-disable-next-line no-explicit-any`
+ * （本文件原有的 `no-explicit-any` 里 50 条正是这么来的）。成员逐个写出来后：成员拼错、签名用错
+ * 都会当场被 tsc 抓到，"命令列表元素上到底有什么"也第一次留在类型里。
+ * 写法与同包 `YMTreeList/tree-api.ts` 的 `TreeListHost` 一致。
+ *
+ * **刻意不继承 `CommandListElementApi`**：那个对外契约带 `[k: string]: unknown` 索引签名
+ * （消费方要的宽松兜底），继承它等于让"没声明的成员"继续静默通过——那份宽松正是这里要收窄掉的东西。
+ * 公开方法契约仍只有 `CommandListElementApi` 一份，本接口只描述"被访问到的成员"。
+ */
+interface CommandListHost extends HTMLElement {
+	// —— 装配期字段（`createCommandListApi` 逐个挂上）——
+	/** 元素 API 选项（装配时写入，之后只读） */
+	__options: CommandListApiOptions;
+	/**
+	 * 命令列表数据。公开契约 `write(data: CommandData)` 与实际用法不一致（内部按**命令行数组**用：
+	 * `createItems` 逐行遍历、`data.length`），这里取公开契约那一侧——与 `read()` 原有的
+	 * `as CommandData | null` 是同一取舍；两处按数组用的站点各自显式断言（见 `update`/`pointerup`）。
+	 */
+	data: CommandData | null;
+	/** 行元素数组（装配时赋成同一数组，另挂窗口游标；见 `CommandListElements`） */
+	elements: CommandListElements;
+	/** 变量表（`analyzeVariables` 写、`clear` 清空） */
+	varList: VariableItem[] | null;
+	/** 变量索引（同上） */
+	varMap: Record<string, VariableItem> | null;
+	/** 撤销栈：元素上的 `history` 是 getter，代理到 `data.history` */
+	history: CommandHistory;
+	/** 元素上的可视高度（由上层装配）——不是 `HTMLElement` 成员 */
+	innerHeight: number;
+	/** 内容区 `padding-top` 的惰性缓存（`paddingTop` getter 读它） */
+	_paddingTop?: number;
+	/** `paddingTop` getter 暴露出来的值 */
+	paddingTop: number;
+	/** `scheduleCheckVariables` 的去重标记 */
+	_checkVariablesScheduled: boolean;
+	/** 拖拽时的自动滚动监听器（`attachScrollListener(list)` 的返回值） */
+	scrollListener: ScrollListenerApi;
+
+	// —— 列表读写与选区（内部会互相调用，签名与实现一致）——
+	read(): CommandData | null;
+	update(): void;
+	select(start: number, end?: number): void;
+	selectMultiple(active: number): void;
+	selectAll(): void;
+	unselect(): void;
+	reselect(): void;
+	selectUp(): void;
+	selectDown(): void;
+	selectMultipleUp(): void;
+	selectMultipleDown(): void;
+	selectMultipleTo(index: number): void;
+	pageUp(select: boolean): void;
+	pageDown(select: boolean): void;
+	/** 折叠后重算选区（`fold` 里调用） */
+	reselectAfterFolding(): void;
+	scrollToSelection(mode?: string): void;
+	insert(id?: string): void;
+	/** 实现忽略这个参数；`doubleclick` 会传 `null`（公开契约仍是 `edit(data?: CommandData)`） */
+	edit(data?: CommandData | null): void;
+	fold(element?: CommandItemElement): void;
+	toggle(): void;
+	copy(): void;
+	copyAsText(): void;
+	copyAsJSCode(): void;
+	paste(): void;
+	delete(): void;
+	undo(): void;
+	redo(): void;
+	/** "编辑数据"入口：ui-kit 未实现，由编辑器侧的 `monkey-patches` 覆写挂上（与原先一样必存在） */
+	openEdit(): void;
+
+	// —— 行渲染与数据 ——
+	analyzeVariables(): { varList: VariableItem[]; varMap: Record<string, VariableItem> };
+	checkVariables(): void;
+	scheduleCheckVariables(): void;
+	computeTextIndent(indent: number): string;
+	createCommandBuffer(
+		commands: CommandList,
+		index: number,
+		indent: number,
+		parent: CommandData | null
+	): CommandBuffer;
+	createFoldedCommandBuffer(
+		buffer: CommandBuffer,
+		indent: number,
+		parent: CommandData | null
+	): void;
+	createItems(commands: CommandList, indent: number, parent?: CommandData | null): void;
+	createBlankElement(
+		commands: CommandList,
+		index: number,
+		indent: number,
+		parent: CommandData | null
+	): CommandItemElement;
+	deleteCommandBuffers(commands: CommandData[]): void;
+	updateCommandElement(element: CommandItemElement): void;
+	/** `element` 允许 `undefined`：`unfoldCommand` 取自 `command.buffer?.[0]`，实现自身按 `element?.fold` 兜底 */
+	updateCommandElementFold(element: CommandItemElement | undefined): void;
+	updateHeadAndFoot(): void;
+	enableItems(commands: CommandData[]): void;
+	disableItems(commands: CommandData[]): void;
+	generateExecutableCode(commands: CommandData[]): string;
+	getRangeByIndex(index: number): number[];
+	isParentEnabled(element: CommandItemElement): boolean;
+	tryGetEventId(data: CommandData | null | undefined): string | undefined;
+	findString(
+		str: string | RegExp,
+		elements: CommandItemElement[],
+		searchMode?: FindSearchMode
+	): FindResult[];
+
+	// —— 事件处理器 ——
+	// 一律写成**函数类型属性**（而不是方法）：`this` 由 DOM 绑成元素本身，方法声明带的隐式 `this`
+	// 与 `addEventListener` 期望的 `(this: HTMLElement, ev)` 不兼容（也会被 `unbound-method` 命中）；
+	// 函数类型属性没有隐式 `this`，因此可以原样登记/注销（行为不变）。
+	/** 对外契约是 `resize()`；实现收 `..._args`（`scrollToRow` 里会多传一个 `this`） */
+	resize: (..._args: unknown[]) => void;
+	listFocus: (event: FocusEvent) => void;
+	listBlur: (event: FocusEvent) => void;
+	keydown: (event: KeyboardEvent) => void;
+	pointerdown: (event: ListPointerEvent) => void;
+	pointerup: (event: ListPointerEvent) => void;
+	doubleclick: (event: MouseEvent) => void;
+	windowPointerup: (event: PointerEvent) => void;
+	windowPointermove: (event: PointerEvent) => void;
+	windowVariableChange: (event: Event) => void;
 }
 
 /** M3-5b′：选区变化后刷新行模型并通知模板（行元素归模板，`selected` 由模型驱动） */
@@ -552,22 +699,37 @@ const commandListData = (el: unknown): CommandListData => elementDataOf<CommandL
 const rowElementData = (el: unknown): { dataValue?: number } =>
 	elementDataOf<{ dataValue?: number }>(el);
 
-// oxlint-disable-next-line no-explicit-any
-export const commandListPrototype: Record<string, (...args: any[]) => any> = {
-	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
+/**
+ * 原型对象本体：`this` 一律是 `CommandListHost`（见该接口）。
+ *
+ * P2b-3：这里的 `Record` 形状原为 `(...args: any[]) => any`（自带一句 `no-explicit-any` 豁免）。
+ * 换成 `this: CommandListHost, ...args: never[], => unknown` 后**不再需要 `any`**：
+ * 参数位是 `never`（对 `Record` 的属性签名而言，参数反向可比 ⇒ 任何实参签名都收得住），
+ * 返回位是 `unknown`（任何返回值都收得住）——形状的宽松度不变，只是不再有 `any`。
+ * 与同包 `YMTreeList/tree-api.ts` 的 `treeListPrototype` 写法一致。
+ */
+export const commandListPrototype: Record<
+	string,
+	(this: CommandListHost, ...args: never[]) => unknown
+> = {
+	read: function (this: CommandListHost): CommandData | null {
 		return this.data as CommandData | null;
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	write: function (this: any, data: CommandData): void {
+	write: function (this: CommandListHost, data: CommandData): void {
 		const options = this.__options;
 		this.data = data;
 		// M3-5b′：**不再 `this.textContent = ''`**——行元素归模板（Vue）管，api 清空会破坏 Vue 的节点表
 		this.update();
 		if (!data.history) {
+			// P2b-3：`commandHistory` 在对外契约里的构造签名是 `new (list: never)`（"收任何类"的占位，
+			// 于是无法直接 `new`）。这里只做一次显式转写——按运行期实情：它就是"拿命令列表元素去构造"。
+			const HistoryCtor = options.commandHistory as unknown as new (
+				list: CommandListHost
+			) => CommandHistory;
 			Object.defineProperty(data, 'history', {
 				configurable: true,
-				value: options.commandHistory ? new options.commandHistory(this) : null
+				value: options.commandHistory ? new HistoryCtor(this) : null
 			});
 		}
 		void Promise.resolve().then(() => {
@@ -575,22 +737,25 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		});
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	update: function (this: any): void {
+	update: function (this: CommandListHost): void {
 		this.analyzeVariables();
 
 		const { elements } = this;
 		elements.start = -1;
 		elements.count = 0;
 
-		this.createItems(this.data, 0);
+		// P2b-3：`data` 的公开契约是 `CommandData`（`write`），运行期实为**命令行数组**（`createItems` 逐行遍历）；
+		// 这两个按数组用的站点各自显式转写一次，行为不变（见 `CommandListHost.data` 的说明）。
+		this.createItems(this.data as unknown as CommandList, 0);
 
 		const { count } = elements;
 		for (let i = 0; i < count; i++) {
 			rowElementData(elements[i]).dataValue = i;
 		}
 
-		commonListClearElements(this, elements.count);
+		// P2b-3：`CommonListLike` 比 `HTMLElement` 更严（例如把 `textContent` 声明成 `string`，
+		// 而 DOM 上是 `string | null`），这里与 `clearElements` 同一处理：显式跨到助手契约的形状。
+		commonListClearElements(this as unknown as CommonListLike, elements.count);
 
 		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
@@ -616,14 +781,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		};
 	},
 
-	// oxlint-disable-next-line no-explicit-any
 	/**
 	 * M3-5b′（换源）：模板挂出一行后的**回写桥**——把该行的数据挂到元素上（`attachRowData`）、
 	 * 补上 `fold` 把手，再交给既有的 `updateCommandElement` 生成行内内容。
 	 * 编辑器侧对 `updateCommandElement` 的覆写（`eslints` 的缩进线与标记）因此照旧生效。
 	 */
-	// oxlint-disable-next-line no-explicit-any
-	bindRowElement: function (this: any, element: HTMLElement, index: number): void {
+	bindRowElement: function (this: CommandListHost, element: HTMLElement, index: number): void {
 		const node = element as CommandItemElement;
 		const source = this.elements[index] as CommandItemElement | undefined;
 		const row = rowData[index];
@@ -661,8 +824,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	 */
 	updateLineClasses: function (): void {},
 
-	// oxlint-disable-next-line no-explicit-any
-	resize: function (this: any, ..._args: unknown[]): void {
+	resize: function (this: CommandListHost, ..._args: unknown[]): void {
 		// M3-5b′（命令列表换源）：**不再调用 `commonListResize`**——它负责的"把行挂进根元素"
 		// 现在归模板（`v-for`）。api 只算可见窗口并更新行模型；几何仍与原实现一致
 		// （行高 20、窗口起点 = floor(scrollTop/20)、窗口长度 = ceil(clientHeight/20)+1）。
@@ -689,20 +851,18 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scheduleCheckVariables();
 	},
 
-	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
+	updateHeadAndFoot: function (this: CommandListHost): void {
 		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	updateOnResize: function (this: any, element: CommandItemElement): void {
+	updateOnResize: function (this: CommandListHost, element: CommandItemElement): void {
 		if (element.contents !== null) {
 			this.updateCommandElement(element);
 		}
 	},
 
 	createFoldedCommandBuffer: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
+		this: CommandListHost,
 		buffer: CommandBuffer,
 		indent: number,
 		parent: CommandData | null
@@ -722,8 +882,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createItems: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
+		this: CommandListHost,
 		commands: CommandList,
 		indent: number,
 		parent: CommandData | null = null
@@ -733,7 +892,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		for (let i = 0; i < length; i++) {
 			const buffer = this.createCommandBuffer(commands, i, indent, parent);
 			if ((buffer[0] as CommandItemElement).dataItem?.folded) {
-				elements[elements.count++] = buffer[0];
+				// `buffer[0]` 上面已按行元素读过（`.dataItem`），这里与那处同一取舍
+				elements[elements.count++] = buffer[0] as CommandItemElement;
 				this.createFoldedCommandBuffer(buffer, indent + 1, commands[i]);
 				continue;
 			}
@@ -753,7 +913,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createCommandBuffer: function (
-		this: HTMLElement & { [k: string]: unknown },
+		this: CommandListHost,
 		commands: CommandList,
 		index: number,
 		indent: number,
@@ -1033,8 +1193,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return buffer;
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	updateCommandElement: function (this: any, element: CommandItemElement): void {
+	updateCommandElement: function (this: CommandListHost, element: CommandItemElement): void {
 		const options = this.__options;
 		element.style.textIndent = this.computeTextIndent(rowOf(element).indent);
 
@@ -1119,14 +1278,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					text.name = id;
 					addClass(text, varType + '-type');
 					addClass(text, 'command-text-identifier');
-					// oxlint-disable-next-line unbound-method
-					text.onpointerenter = commandListStatics.textPointerenter as unknown as (
-						this: GlobalEventHandlers,
-						ev: PointerEvent
-						// oxlint-disable-next-line no-explicit-any
-					) => any;
-					// oxlint-disable-next-line unbound-method
-					text.onpointerleave = commandListStatics.textPointerleave;
+					// P2b-3：改为箭头包装 + `.call` 显式绑定 `this` 到该文本元素——
+					// 之前是直接把方法引用挂上去（`this` 由 DOM 绑成元素本身），行为不变，
+					// 但不再需要 `unbound-method` 豁免，也不再需要那处 `(… ) => any` 断言。
+					text.onpointerenter = () => {
+						commandListStatics.textPointerenter.call(text);
+					};
+					text.onpointerleave = () => {
+						commandListStatics.textPointerleave();
+					};
 				}
 				if (content.tooltip) {
 					options.setTooltip?.(text, content.tooltip);
@@ -1150,8 +1310,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	updateCommandElementFold: function (
-		this: HTMLElement & { [k: string]: unknown },
-		element: CommandItemElement
+		this: CommandListHost,
+		element: CommandItemElement | undefined
 	): void {
 		if (element?.fold) {
 			const command = rowOf(element).command;
@@ -1176,8 +1336,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	deleteCommandBuffers: function (this: any, commands: CommandData[]): void {
+	deleteCommandBuffers: function (this: CommandListHost, commands: CommandData[]): void {
 		for (const command of commands) {
 			const { buffer } = command;
 			if (!buffer) continue;
@@ -1191,7 +1350,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	createBlankElement: function (
-		this: HTMLElement & { [k: string]: unknown },
+		this: CommandListHost,
 		commands: CommandList,
 		index: number,
 		indent: number,
@@ -1266,17 +1425,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return blank;
 	},
 
-	computeTextIndent: function (
-		this: HTMLElement & { [k: string]: unknown },
-		indent: number
-	): string {
+	computeTextIndent: function (this: CommandListHost, indent: number): string {
 		const lang = (this.__options as CommandListApiOptions).localize?.language;
 		const langText = typeof lang === 'function' ? lang() : lang;
 		return commandCore.computeTextIndent(indent, langText);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	select: function (this: any, start: number, end: number = start): void {
+	select: function (this: CommandListHost, start: number, end: number = start): void {
 		const listData = commandListData(this);
 		[start, end] = commandCore.computeSelectRange(this.elements, start, end);
 
@@ -1295,24 +1450,24 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		refreshRowsAfterSelection(this);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectMultiple: function (this: any, active: number): void {
+	selectMultiple: function (this: CommandListHost, active: number): void {
 		const listData = commandListData(this);
 		const origin = listData.origin;
-		this.select(origin, active);
+		// `origin` 是"窗口整组写入"的五个字段之一（见 `CommandListData`）：调用方保证 `select()` 已经写过
+		this.select(origin!, active);
 		listData.origin = origin;
 		// `select()` 刚把窗口整组写成数字（`computeSelectRange` 返回 `[number, number]`），此处必非空
 		listData.active = clamp(active, listData.start!, listData.end!);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectAll: function (this: any): void {
+	selectAll: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		this.select(0, Infinity);
-		listData.active = this.getRangeByIndex(listData.end)[0];
+		// `select()` 刚写过 `end`，此处必为数字（同上）
+		listData.active = this.getRangeByIndex(listData.end!)[0];
 	},
 
-	unselect: function (this: HTMLElement & { [k: string]: unknown }): void {
+	unselect: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null) {
 			const { selections } = listData;
@@ -1328,8 +1483,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	reselect: function (this: any): void {
+	reselect: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.focusing && listData.start !== null && listData.end !== null) {
 			const { selections } = listData;
@@ -1346,8 +1500,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectUp: function (this: any): void {
+	selectUp: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.end !== null) {
 			const i = commandCore.getSelectUpIndex(this.elements, listData.start, listData.end);
@@ -1356,8 +1509,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectDown: function (this: any): void {
+	selectDown: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.end !== null) {
 			const i = commandCore.getSelectDownIndex(this.elements, listData.start, listData.end);
@@ -1366,8 +1518,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	pageUp: function (this: any, select: boolean): void {
+	pageUp: function (this: CommandListHost, select: boolean): void {
 		const listData = commandListData(this);
 		let anchor = listData.anchor;
 		if (anchor === null) {
@@ -1392,8 +1543,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	pageDown: function (this: any, select: boolean): void {
+	pageDown: function (this: CommandListHost, select: boolean): void {
 		const listData = commandListData(this);
 		let anchor = listData.anchor;
 		if (anchor === null) {
@@ -1417,8 +1567,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectMultipleTo: function (this: any, index: number): void {
+	selectMultipleTo: function (this: CommandListHost, index: number): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.origin !== null && listData.active !== null) {
 			this.selectMultiple(index);
@@ -1448,8 +1597,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectMultipleUp: function (this: any): void {
+	selectMultipleUp: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		// 窗口整组写入：`start` 非空时 `end`/`origin`/`active` 必为数字（见 `CommandListData`）
 		if (
@@ -1505,8 +1653,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	selectMultipleDown: function (this: any): void {
+	selectMultipleDown: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (
 			listData.start !== null &&
@@ -1554,8 +1701,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	scrollToSelection: function (this: any, mode = 'active'): void {
+	scrollToSelection: function (this: CommandListHost, mode = 'active'): void {
 		const listData = commandListData(this);
 		// 窗口整组写入：`start` 非空时 `end`/`origin`/`active` 必为数字（见 `CommandListData`）
 		if (
@@ -1585,8 +1731,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	scrollAndResize: function (this: any): void {
+	scrollAndResize: function (this: CommandListHost): void {
 		const scrolltop = this.scrollTop;
 		this.scrollToSelection('active');
 		if (this.scrollTop !== scrolltop) {
@@ -1594,31 +1739,21 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	getRangeByIndex: function (
-		this: HTMLElement & { [k: string]: unknown },
-		index: number
-	): number[] {
+	getRangeByIndex: function (this: CommandListHost, index: number): number[] {
 		const elements = this.elements as CommandItemElement[] & { count: number };
 		return commandCore.getRangeByIndex(elements, index);
 	},
 
-	getRangeByData: function (
-		this: HTMLElement & { [k: string]: unknown },
-		data: CommandData
-	): number[] {
+	getRangeByData: function (this: CommandListHost, data: CommandData): number[] {
 		const elements = this.elements as CommandItemElement[] & { count: number };
 		return commandCore.getRangeByData(elements, data);
 	},
 
-	isParentEnabled: function (
-		this: HTMLElement & { [k: string]: unknown },
-		element: CommandItemElement
-	): boolean {
+	isParentEnabled: function (this: CommandListHost, element: CommandItemElement): boolean {
 		return rowOf(element).parent?.buffer?.enabled ?? true;
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	insert: function (this: any, id = ''): void {
+	insert: function (this: CommandListHost, id = ''): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (listData.start !== null) {
@@ -1632,8 +1767,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	edit: function (this: any, _data?: CommandData): void {
+	edit: function (this: CommandListHost, _data?: CommandData): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (listData.start !== null) {
@@ -1658,8 +1792,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	fold: function (this: any, element?: CommandItemElement): void {
+	fold: function (this: CommandListHost, element?: CommandItemElement): void {
 		const listData = commandListData(this);
 		if (element === undefined && listData.start !== null) {
 			const elements = this.elements;
@@ -1685,8 +1818,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	unfoldCommand: function (this: any, command: CommandData | null): void {
+	unfoldCommand: function (this: CommandListHost, command: CommandData | null): void {
 		let changed = false;
 		const commands: CommandData[] = [];
 		while (command && !commands.includes(command)) {
@@ -1706,8 +1838,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	reselectAfterFolding: function (this: any): void {
+	reselectAfterFolding: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		let head;
 		let foot;
@@ -1725,7 +1856,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 		if (head) {
 			const start = this.elements.indexOf(head);
-			const end = this.elements.indexOf(foot);
+			// 与上面 `element!` 同理：`head` 有值时 `head`/`foot` 来自同一轮填值
+			const end = this.elements.indexOf(foot!);
 			this.select(start, end);
 		} else {
 			this.unselect();
@@ -1734,8 +1866,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	toggle: function (this: any): void {
+	toggle: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.end !== null) {
 			const { elements } = this;
@@ -1809,22 +1940,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	enableItems: function (
-		this: HTMLElement & { [k: string]: unknown },
-		commands: CommandData[]
-	): void {
+	enableItems: function (this: CommandListHost, commands: CommandData[]): void {
 		commandCore.enableItems(commands);
 	},
 
-	disableItems: function (
-		this: HTMLElement & { [k: string]: unknown },
-		commands: CommandData[]
-	): void {
+	disableItems: function (this: CommandListHost, commands: CommandData[]): void {
 		commandCore.disableItems(commands);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	copy: function (this: any): void {
+	copy: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
@@ -1842,8 +1966,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	copyAsText: function (this: any): void {
+	copyAsText: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (listData.start !== null && listData.end !== null) {
@@ -1885,8 +2008,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	copyAsJSCode: function (this: any): void {
+	copyAsJSCode: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.end !== null) {
 			const { elements } = this;
@@ -1920,15 +2042,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	generateExecutableCode: function (
-		this: HTMLElement & { [k: string]: unknown },
-		commands: CommandData[]
-	): string {
+	generateExecutableCode: function (this: CommandListHost, commands: CommandData[]): string {
 		return commandCore.generateExecutableCode(commands);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	paste: function (this: any): void {
+	paste: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		const clipboard = this.__options.clipboard;
 		if (!clipboard) return;
@@ -1960,8 +2078,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	delete: function (this: any): void {
+	delete: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (listData.start !== null && listData.end !== null) {
 			const elements = this.elements;
@@ -1992,24 +2109,21 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	undo: function (this: any): void {
+	undo: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (!listData.dragging && this.history.canUndo()) {
 			this.history.restore('undo');
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	redo: function (this: any): void {
+	redo: function (this: CommandListHost): void {
 		const listData = commandListData(this);
 		if (!listData.dragging && this.history.canRedo()) {
 			this.history.restore('redo');
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	save: function (this: any, command: CommandData): void {
+	save: function (this: CommandListHost, command: CommandData): void {
 		const listData = commandListData(this);
 		if (listData.start !== null) {
 			const elements = this.elements;
@@ -2049,9 +2163,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	getSelectionPosition: function (
-		this: HTMLElement & { [k: string]: unknown }
-	): { x: number; y: number } | null {
+	getSelectionPosition: function (this: CommandListHost): { x: number; y: number } | null {
 		const listData = commandListData(this);
 		if (listData.start === null) {
 			return null;
@@ -2071,12 +2183,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return { x, y };
 	},
 
-	clearElements: function (this: HTMLElement & { [k: string]: unknown }, start: number): void {
+	clearElements: function (this: CommandListHost, start: number): void {
 		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	clear: function (this: any): HTMLElement {
+	clear: function (this: CommandListHost): HTMLElement {
 		const listData = commandListData(this);
 		this.unselect();
 		// M3-5b′：同样不再清空 DOM 文本（行归模板管）；行数由 `elements.count` 归零后经模型反映
@@ -2088,7 +2199,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		listData.origin = null;
 		listData.active = null;
 		listData.anchor = null;
-		commonListClearElements(this, 0);
+		// 同上（`CommonListLike` 的收窄）
+		commonListClearElements(this as unknown as CommonListLike, 0);
 		this.elements.count = 0;
 		this.elements.start = -1;
 		this.elements.end = -1;
@@ -2101,8 +2213,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return this;
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	analyzeVariables: function (this: any): {
+	analyzeVariables: function (this: CommandListHost): {
 		varList: VariableItem[];
 		varMap: Record<string, VariableItem>;
 	} {
@@ -2206,8 +2317,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return { varList, varMap };
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	scheduleCheckVariables: function (this: any): void {
+	scheduleCheckVariables: function (this: CommandListHost): void {
 		if (this._checkVariablesScheduled) return;
 		this._checkVariablesScheduled = true;
 		requestAnimationFrame(() => {
@@ -2216,7 +2326,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		});
 	},
 
-	checkVariables: function (this: HTMLElement & { [k: string]: unknown }): void {
+	checkVariables: function (this: CommandListHost): void {
 		const options = this.__options as CommandListApiOptions;
 		const varMap = this.varMap as Record<string, VariableItem>;
 		const varTypes = ['boolean', 'number', 'string', 'object', 'any'];
@@ -2318,7 +2428,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			if (fileId === '') continue;
 			const guidMap =
 				typeof lookup?.guidMap === 'function' ? lookup.guidMap() : (lookup?.guidMap ?? {});
-			const meta = guidMap[fileId];
+			// P2b-3：`guidMap` 是 `Record<string, unknown>`（消费方自己那份元信息表），
+			// 这里只读 `file.basename` ⇒ 在本站点显式收窄；断言的判据与原来 `any` 时一致（表由编辑器同源提供）。
+			const meta = guidMap[fileId] as { file: { basename: string } } | undefined;
 			if (meta) {
 				removeClass(text, 'invalid');
 			} else {
@@ -2368,14 +2480,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	tryGetEventId: function (
-		this: HTMLElement & { [k: string]: unknown },
+		this: CommandListHost,
 		data: CommandData | null | undefined
 	): string | undefined {
 		return commandCore.tryGetEventId(data);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	listFocus: function (this: any, _event: FocusEvent): void {
+	listFocus: function (this: CommandListHost, _event: FocusEvent): void {
 		const listData = commandListData(this);
 		if (!listData.focusing) {
 			listData.focusing = true;
@@ -2384,26 +2495,30 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	listBlur: function (this: any, _event: FocusEvent): void {
+	listBlur: function (this: CommandListHost, _event: FocusEvent): void {
 		const listData = commandListData(this);
 		if (listData.dragging) {
 			this.windowPointerup(listData.dragging);
 		}
 		if (listData.focusing) {
-			// oxlint-disable-next-line no-this-alias
-			let element = this;
-			while ((element = element.parentNode)) {
-				if (element.nodeType !== Node.ELEMENT_NODE) {
-					continue;
-				}
-				if ((element as HTMLElement).classList.contains('window-frame')) {
-					if (hasClass(element, 'blur')) {
-						return;
-					} else {
-						break;
+			// P2b-3：从父节点起沿 `parentNode` 往上找 `window-frame`（原来是把 `this` 起个头再逐级上溯，
+			// 于是要 `no-this-alias` 豁免）。改成从 `this.parentNode` 起步后语义逐步等价：
+			// 只会检查**父链**上的节点（与原来一样，不含 `this` 自身）、非元素节点跳过、
+			// 命中 `window-frame` 时 `blur` 直接 return / 否则 break。
+			let node: Node | null = this.parentNode;
+			while (node !== null) {
+				if (node.nodeType === Node.ELEMENT_NODE) {
+					// 上面刚判过是元素节点
+					const frame = node as HTMLElement;
+					if (frame.classList.contains('window-frame')) {
+						if (hasClass(frame, 'blur')) {
+							return;
+						} else {
+							break;
+						}
 					}
 				}
+				node = node.parentNode;
 			}
 			listData.focusing = false;
 			this.unselect();
@@ -2411,8 +2526,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	findString: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
+		this: CommandListHost,
 		str: string | RegExp,
 		elements: CommandItemElement[],
 		searchMode: FindSearchMode = { caseInsensitive: false, regex: false, matchLine: false }
@@ -2423,7 +2537,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				str = parsed;
 			}
 		}
-		const findList = [];
+		const findList: FindResult[] = [];
 		for (let i = 0; i < elements.length; i++) {
 			const element = elements[i];
 			if (!element) continue;
@@ -2463,10 +2577,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						const realNode = item.map(
 							(v: CommandData) => v.buffer![0] as CommandItemElement
 						);
-						// oxlint-disable-next-line no-map-spread
 						const _subfind = this.findString(str, realNode, searchMode).map(
-							(v: FindResult) => ({
-								...v,
+							(v: FindResult): FindResult => ({
+								// P2b-3：原来是 `{ ...v, sub: element }`（`no-map-spread` 豁免）。
+								// `FindResult` 恰好只有这三个字段，显式构造与原展开**逐键等价**
+								// （键序也一样：node/index/sub，`sub` 只是被覆盖）。
+								node: v.node,
+								index: v.index,
 								sub: element
 							})
 						);
@@ -2500,7 +2617,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					if (searchMode.regex && str instanceof RegExp) {
 						if (str.test(node.textContent ?? ''))
 							findList.push({
-								node,
+								// P2b-3：`element.children` 给的是 `Element`；命中的都是行内 `<span>`/`<div>`，
+								// 运行期就是 HTML 元素——与下面 `node as HTMLElement` 同一处理。
+								node: node as HTMLElement,
 								index: i,
 								sub: element
 							});
@@ -2516,8 +2635,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return findList;
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	scrollToRow: function (this: any, targetIndex: number, position: string = 'center'): void {
+	scrollToRow: function (
+		this: CommandListHost,
+		targetIndex: number,
+		position: string = 'center'
+	): void {
 		// M2 切片 3：下标夹取与居中/贴边数学抽到 command-render.ts（行为与原先逐字一致）
 		this.scrollTop = commandRender.computeScrollToRowScrollTop(
 			targetIndex,
@@ -2528,8 +2650,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.resize(this);
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	keydown: function (this: any, event: KeyboardEvent): void {
+	keydown: function (this: CommandListHost, event: KeyboardEvent): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (cmdOrCtrlKey(event)) {
@@ -2670,8 +2791,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	pointerdown: function (this: any, event: ListPointerEvent): void {
+	pointerdown: function (this: CommandListHost, event: ListPointerEvent): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (listData.dragging) {
@@ -2682,7 +2802,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				let element: CommandItemElement | null = null;
 				element = event.target as CommandItemElement | null;
 				let index = -1;
-				if (element === this) {
+				// P2b-3：`element` 是 `event.target` 的"行元素视图"、`this` 是列表根元素——同一个 DOM 的两副
+				// 类型视图，TS 认为"无可比性"；这里按 `HTMLElement` 视图比较（引用相等，语义不变）。
+				if ((element as HTMLElement | null) === this) {
 					if (isInContent(element as HTMLElement, event)) {
 						index = this.elements.count - 1;
 					}
@@ -2729,7 +2851,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				let element: CommandItemElement | null = null;
 				element = event.target as CommandItemElement | null;
 				let index = -1;
-				if (element === this) {
+				// 同上（`HTMLElement` 视图比较）
+				if ((element as HTMLElement | null) === this) {
 					if (isInContent(element as HTMLElement, event)) {
 						index = this.elements.count - 1;
 					}
@@ -2752,8 +2875,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	pointerup: function (this: any, event: ListPointerEvent): void {
+	pointerup: function (this: CommandListHost, event: ListPointerEvent): void {
 		const listData = commandListData(this);
 		const options = this.__options;
 		if (listData.dragging) {
@@ -2777,7 +2899,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					const sEnabled = valid ? sData.buffer!.enabled : pEnabled;
 					const editable = sEnabled && sData === eData;
 					const pastable = pEnabled && !!options.clipboard?.has('yami.commands');
-					const allSelectable = this.data.length > 0;
+					// 同样按运行期实情读命令行数组（见 `CommandListHost.data`），判定语义不变
+					const allSelectable = (this.data as unknown as CommandList).length > 0;
 					const undoable = this.history.canUndo();
 					const redoable = this.history.canRedo();
 					const get =
@@ -2924,8 +3047,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	doubleclick: function (this: any, event: MouseEvent): void {
+	doubleclick: function (this: CommandListHost, event: MouseEvent): void {
 		const listData = commandListData(this);
 		if (
 			listData.start !== null &&
@@ -2939,8 +3061,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	windowPointerup: function (this: any, event: PointerEvent): void {
+	windowPointerup: function (this: CommandListHost, event: PointerEvent): void {
 		const listData = commandListData(this);
 		// 本函数只在拖拽期间挂在 window 上（`pointerdown` 登记、下面摘掉），故此时必有拖拽
 		const dragging = listData.dragging!;
@@ -2956,8 +3077,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	windowPointermove: function (this: any, event: PointerEvent): void {
+	windowPointermove: function (this: CommandListHost, event: PointerEvent): void {
 		const listData = commandListData(this);
 		// 同上：`windowPointermove` 也只在拖拽期间挂着
 		const dragging = listData.dragging!;
@@ -2985,8 +3105,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	// oxlint-disable-next-line no-explicit-any
-	windowVariableChange: function (this: any, _event: Event): void {
+	windowVariableChange: function (this: CommandListHost, _event: Event): void {
 		if (this.read()) {
 			this.scheduleCheckVariables();
 		}
@@ -2997,8 +3116,9 @@ export function createCommandListApi(
 	el: HTMLElement,
 	options: CommandListApiOptions = {}
 ): HTMLElement {
-	// oxlint-disable-next-line no-explicit-any
-	const list = el as HTMLElement & { [k: string]: any };
+	// P2b-3：装配期局部变量按**宿主契约**声明（原为 `HTMLElement & { [k: string]: any }`），
+	// 下面每个字段赋值、每个事件处理器注册从此都受类型检查。
+	const list = el as CommandListHost;
 	const listData = commandListData(list);
 	list.__options = options;
 
@@ -3013,14 +3133,7 @@ export function createCommandListApi(
 	list.data = null;
 	list.varList = null;
 	list.varMap = null;
-	list.elements = [] as unknown as unknown[] & {
-		versionId: number;
-		count: number;
-		start: number;
-		end: number;
-		head: unknown;
-		foot: unknown;
-	};
+	list.elements = [] as unknown as CommandListElements;
 	list.elements.versionId = 0;
 	list.elements.count = 0;
 	list.elements.start = -1;

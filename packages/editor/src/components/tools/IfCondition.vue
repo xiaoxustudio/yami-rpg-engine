@@ -336,6 +336,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
+import type { YamiElement } from '@app/types/element-api';
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
@@ -766,7 +767,7 @@ onMounted(() => {
 		fieldEls.get('if-condition-other-key')?.loadItems?.(items)
 	);
 
-	fieldEls.get('if-condition')?.root?.on?.('open', () => {
+	(fieldEls.get('if-condition') as unknown as { root?: YamiElement } | null)?.root?.on?.('open', () => {
 		fieldEls.get('if-condition-actor-teamId')?.loadItems?.(Data.createTeamItems!());
 	});
 

@@ -7,6 +7,7 @@ import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { hasClass, read } from '@app/utils/element-utils.ts';
 import { StageColor } from '@app/utils/stage-color';
 import { getUIStore } from '@app/stores/ui';
+import { roundTo } from '@app/utils/math';
 
 UI.switchSettings = function (this: UIShape) {
 	if (!hasClass(Inspector.fileUI.button, 'selected')) {
@@ -233,16 +234,16 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 							break;
 					}
 					if (event.ctrlKey || event.metaKey) {
-						const ax = Math.roundTo(transform.anchorX - offsetX * 0.5, 4);
-						const ay = Math.roundTo(transform.anchorY - offsetY * 0.5, 4);
+						const ax = roundTo(transform.anchorX - offsetX * 0.5, 4);
+						const ay = roundTo(transform.anchorY - offsetY * 0.5, 4);
 						return this.shiftAnchor!(ax, ay);
 					}
 					if (event.shiftKey) {
 						offsetX *= 10;
 						offsetY *= 10;
 					}
-					const x = Math.roundTo(transform.x + offsetX, 4);
-					const y = Math.roundTo(transform.y + offsetY, 4);
+					const x = roundTo(transform.x + offsetX, 4);
+					const y = roundTo(transform.y + offsetY, 4);
 					this.shiftTarget!(x, y);
 				}
 				break;

@@ -35,7 +35,7 @@ Variable.list_cancelSearch = function (this: VariableList) {
 		Variable.searcher.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
-		active!.focus();
+		(active as HTMLElement | null)?.focus();
 	}
 };
 

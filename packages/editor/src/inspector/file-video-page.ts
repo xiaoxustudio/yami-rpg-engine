@@ -5,6 +5,7 @@ import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileVideoInfo {
@@ -103,7 +104,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileVideo.update = function (this: typeof FileVideo) {
-		const el = inspectorEls.get('fileVideo') as HTMLElement;
+		const el = inspectorEls.get('fileVideo') as YamiElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

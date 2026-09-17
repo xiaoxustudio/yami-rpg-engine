@@ -425,15 +425,15 @@ export const Layout: DynamicShape = {
 	navDrop: null as ((event: EditorEvent) => void) | null,
 	regionDragleave: null as ((event: EditorEvent) => void) | null,
 	regionDragover: null as ((event: DragEvent) => void) | null,
-	borderPointerdown: null as ((event: Event & LayoutResizeEvent) => void) | null,
+	borderPointerdown: null as ((event: YamiMouseEvent & LayoutResizeEvent) => void) | null,
 	pointerup: null as ((event?: EditorEvent) => void) | null,
 	pointermove: null as ((event: EditorEvent) => void) | null
 };
 
 Layout.initialize = function () {
-	this.manager = engineEls.get('workspace-page-manager') as HTMLElement;
-	const nav = engineEls.get('layout-nav') as HTMLElement;
-	const manager = engineEls.get('layout-page-manager') as HTMLElement;
+	this.manager = engineEls.get('workspace-page-manager') as YamiElement;
+	const nav = engineEls.get('layout-nav') as YamiElement;
+	const manager = engineEls.get('layout-page-manager') as YamiElement;
 	const items = (this.items = {} as LayoutItems);
 	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）。
 	// P1b：登记缺失时的兜底改为**在 palette 容器子树内**查找——原先用
@@ -543,8 +543,8 @@ Layout.updateGroups = (function IIFE() {
 			case 'horizontal': {
 				const pn = group.parentNode as LayoutGroupElement | null;
 				const pw = pn?.clientWidth ?? 0;
-				const sl = CSS.rasterize(pw * start);
-				const sr = CSS.rasterize(pw * end);
+				const sl = rasterize(pw * start);
+				const sr = rasterize(pw * end);
 				style.left = `${sl}px`;
 				style.top = '0';
 				style.width = `${sr - sl}px`;
@@ -554,8 +554,8 @@ Layout.updateGroups = (function IIFE() {
 			case 'vertical': {
 				const pn = group.parentNode as LayoutGroupElement | null;
 				const ph = pn?.clientHeight ?? 0;
-				const st = CSS.rasterize(ph * start);
-				const sb = CSS.rasterize(ph * end);
+				const st = rasterize(ph * start);
+				const sb = rasterize(ph * end);
 				style.left = '0';
 				style.top = `${st}px`;
 				style.width = '100%';
@@ -643,7 +643,7 @@ Layout.updateGroupTabs = function (group: LayoutGroupElement) {
 
 Layout.updateGroupInfo = function () {
 	for (const info of getLayoutStore().resizing.infos) {
-		const box = CSS.getDevicePixelContentBoxSize(info.manager);
+		const box = getDevicePixelContentBoxSize(info.manager);
 		info.textContent = `${box.width} x ${box.height}`;
 	}
 };
@@ -728,7 +728,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 		}
 	}
 	// P1b：布局诊断里改读注册表（原先 document.getElementById）
-	const browser = storesEls.get('project-browser') as HTMLElement | null;
+	const browser = storesEls.get('project-browser') as unknown as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();
 		lines.push(`#project-browser: ${describe(browser)}`);
@@ -786,7 +786,7 @@ Layout.mergeGroups = (function IIFE() {
 					const end = groupData(node).end;
 					// 这是由于两次划分变成了一次划分 而每次划分都是取得近似的整数值
 					if (end !== undefined && ge !== undefined) {
-						groupData(node).end = Math.roundTo(gs * (1 - end) + ge * end, 6);
+						groupData(node).end = roundTo(gs * (1 - end) + ge * end, 6);
 					}
 					outer.insertBefore(node, inner);
 				}
@@ -839,14 +839,14 @@ Layout.setGroupSize = function (
 				if (next === null) {
 					end = 1;
 				}
-				groupData(group).end = Math.roundTo(end, 6);
+				groupData(group).end = roundTo(end, 6);
 				this.computeSizesBefore!(group);
 				this.computeSizesAfter!(group);
 				break;
 			case 'backward':
 				if (prev) {
 					end = groupData(group).end - end;
-					groupData(prev).end = Math.roundTo(end, 6);
+					groupData(prev).end = roundTo(end, 6);
 					this.computeSizesBefore!(prev);
 					this.computeSizesAfter!(prev);
 				}
@@ -875,14 +875,14 @@ Layout.computeSizesBefore = function (group: LayoutGroupElement) {
 			const group = run[i];
 			const pad = 2;
 			end = Math.min(groupData(group).end, end - min - pad / space);
-			end = Math.roundTo(end, 6);
+			end = roundTo(end, 6);
 			groupData(group).end = end;
 		}
 		for (let i = 0, end = 0; i < length; i++) {
 			const group = run[i];
 			const pad = (group === head ? 0 : 1) + 1;
 			end = Math.max(groupData(group).end, end + min + pad / space);
-			end = Math.roundTo(end, 6);
+			end = roundTo(end, 6);
 			groupData(group).end = end;
 		}
 	}
@@ -908,14 +908,14 @@ Layout.computeSizesAfter = function (group: LayoutGroupElement) {
 			const group = groups[i];
 			const pad = 2;
 			end = Math.max(groupData(group).end, end + min + pad / space);
-			end = Math.roundTo(end, 6);
+			end = roundTo(end, 6);
 			groupData(group).end = end;
 		}
 		for (let i = last - 1, end = 1; i >= 0; i--) {
 			const group = groups[i];
 			const pad = (groups[i + 1] === foot ? 0 : 1) + 1;
 			end = Math.min(groupData(group).end, end - min - pad / space);
-			end = Math.roundTo(end, 6);
+			end = roundTo(end, 6);
 			groupData(group).end = end;
 		}
 	}
@@ -1315,7 +1315,7 @@ Layout.windowLocalize = function (_event: EditorEvent) {
 	}
 };
 
-Layout.pageSwitch = function (event: EditorEvent) {
+Layout.pageSwitch = function (event: YamiEvent) {
 	try {
 		switch (event.last) {
 			case 'scene':
@@ -1422,7 +1422,7 @@ Layout.pageSwitch = function (event: EditorEvent) {
 	}
 };
 
-Layout.navWrite = function (this: typeof Layout, event: EditorEvent) {
+Layout.navWrite = function (this: typeof Layout, event: YamiEvent) {
 	const index = event.value;
 	(this as typeof Layout).parentNode.manager.switch(index);
 	// 切页签后重新量尺寸：新激活的页面此前可能处于隐藏态（宽高缓存缺失/dpr 未记录），
@@ -1509,7 +1509,7 @@ Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 		getLayoutStore().dragging = event;
 		Object.defineProperty(event, 'clientX', { writable: true });
 		Object.defineProperty(event, 'clientY', { writable: true });
-		event.preventDefault = Function.empty;
+		event.preventDefault = fnEmpty;
 		hideDragImage(event.dataTransfer!);
 		event.group = (this as HTMLElement & typeof Layout).parentNode as HTMLElement | null;
 		event.hint = createDragAndDropHint();
@@ -1979,7 +1979,10 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 	}
 };
 
-Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutResizeEvent) {
+Layout.borderPointerdown = function (
+	this: typeof Layout,
+	event: YamiMouseEvent & LayoutResizeEvent
+) {
 	// event.preventDefault()
 	switch (event.button) {
 		case 0:
@@ -2047,7 +2050,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 	}
 };
 
-Layout.pointermove = function (event: EditorEvent) {
+Layout.pointermove = function (event: YamiMouseEvent) {
 	let end: number | undefined = undefined;
 	const { resizing } = getLayoutStore();
 	switch (resizing.mode) {
@@ -2060,8 +2063,8 @@ Layout.pointermove = function (event: EditorEvent) {
 				+(event.clientY + resizing.startY - resizing.clientY) / resizing.outer.clientHeight;
 			break;
 	}
-	end = Math.clamp(end!, 0, 1);
-	end = Math.roundTo(end!, 6);
+	end = clamp(end!, 0, 1);
+	end = roundTo(end!, 6);
 	if (end !== undefined) {
 		const { group } = resizing;
 		const lastEnd = groupData(group).end;
@@ -2085,6 +2088,11 @@ const layoutBridgeKeys = [
 	'focusableElements'
 ] as const;
 import { getLayoutStore } from '@app/stores/layout';
+import type { YamiElement } from '@app/types/element-api';
+import type { EditorEvent, YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
+import { clamp, roundTo } from '@app/utils/math';
+import { empty as fnEmpty } from '@app/utils/function';
+import { rasterize, getDevicePixelContentBoxSize } from '@app/utils/css';
 
 for (const key of layoutBridgeKeys) {
 	Object.defineProperty(Layout, key, {

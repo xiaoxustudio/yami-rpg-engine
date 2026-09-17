@@ -1,6 +1,7 @@
 import { UI } from '@app/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { clamp, radians, modRadians } from '@app/utils/math';
 
 interface ProgressBarElementData {
 	image?: string;
@@ -132,7 +133,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 
 	calculateProgressVertices() {
 		const type = this.type;
-		const progress = Math.clamp(this.progress, 0, 1);
+		const progress = clamp(this.progress, 0, 1);
 		const texture = this.texture!;
 		const x = texture.x;
 		const y = texture.y;
@@ -149,7 +150,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 				let sh = h;
 				if (step !== 0) {
 					sw = Math.round(sw / step) * step;
-					sw = Math.clamp(sw, 0, w);
+					sw = clamp(sw, 0, w);
 				}
 				const dl = 0;
 				const dt = 0;
@@ -184,7 +185,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 				let sh = h * progress;
 				if (step !== 0) {
 					sh = Math.round(sh / step) * step;
-					sh = Math.clamp(sh, 0, h);
+					sh = clamp(sh, 0, h);
 				}
 				const dl = 0;
 				const dt = h - sh;
@@ -231,8 +232,8 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 					currentAngle = -currentAngle;
 					startAngle -= currentAngle;
 				}
-				startAngle = Math.radians(startAngle);
-				currentAngle = Math.radians(currentAngle);
+				startAngle = radians(startAngle);
+				currentAngle = radians(currentAngle);
 				const dl = 0;
 				const dt = 0;
 				const dr = w;
@@ -247,10 +248,10 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 				const st = y / th;
 				const sr = (x + w) / tw;
 				const sb = (y + h) / th;
-				angles[0] = Math.modRadians(Math.atan2(dt - doy, dr - dox) - startAngle);
-				angles[1] = Math.modRadians(Math.atan2(db - doy, dr - dox) - startAngle);
-				angles[2] = Math.modRadians(Math.atan2(db - doy, dl - dox) - startAngle);
-				angles[3] = Math.modRadians(Math.atan2(dt - doy, dl - dox) - startAngle);
+				angles[0] = modRadians(Math.atan2(dt - doy, dr - dox) - startAngle);
+				angles[1] = modRadians(Math.atan2(db - doy, dr - dox) - startAngle);
+				angles[2] = modRadians(Math.atan2(db - doy, dl - dox) - startAngle);
+				angles[3] = modRadians(Math.atan2(dt - doy, dl - dox) - startAngle);
 				vertices[0] = dox;
 				vertices[1] = doy;
 				vertices[2] = sox;

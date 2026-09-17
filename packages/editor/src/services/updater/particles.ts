@@ -1,6 +1,7 @@
 import { getDataStore } from '@app/stores/data';
 import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
+import { roundTo } from '@app/utils/math';
 
 interface ParticleLayerShape {
 	anchor: Record<string, number[]>;
@@ -21,8 +22,8 @@ function updateParticles(verNum: number) {
 		const convert = (array: number[]) => {
 			const min = array[0];
 			const max = array[1];
-			const std = Math.roundTo((min + max) / 2, 4);
-			const dev = Math.roundTo(Math.abs(std - min), 4);
+			const std = roundTo((min + max) / 2, 4);
+			const dev = roundTo(Math.abs(std - min), 4);
 			array[0] = std;
 			array[1] = dev;
 		};

@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { YMColorBox } from '@ui-kit';
 import { Color } from '@app/tools/color-picker-window';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -121,7 +122,7 @@ onMounted(() => {
 				break;
 		}
 	});
-	on('input', (e: Event & { value?: unknown }) => {
+	on('input', (e: YamiEvent) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
 	});

@@ -13,6 +13,9 @@ import { getYamiI18n } from '@app/i18n';
 import { getHomeStore } from '@app/stores/home';
 
 import type { Dirent, Stats } from 'node:fs';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiMouseEvent } from '@app/types/editor-event';
+import { remove } from '@app/utils/array';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -64,11 +67,11 @@ interface HomeShape {
 	publishRecent: ((this: typeof Home) => void) | null;
 	readFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
 	countFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
-	windowResize: ((this: typeof Home, event: Event) => void) | null;
-	windowLocalize: ((this: typeof Home, event: Event) => void) | null;
-	startClick: ((this: typeof Home, event: Event) => void) | null;
-	recentClick: ((this: typeof Home, event: Event) => void) | null;
-	recentPointerup: ((this: typeof Home, event: Event) => void) | null;
+	windowResize: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
+	windowLocalize: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
+	startClick: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
+	recentClick: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
+	recentPointerup: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
@@ -94,18 +97,18 @@ export const Home: HomeShape = {
 
 Home.initialize = function (this: typeof Home) {
 	getHomeStore().state = Layout.manager?.index === 'home' ? 'open' : 'closed';
-	on(Layout.manager, 'switch', (event: Event & { value: string | null }) => {
+	on(Layout.manager, 'switch', (event: YamiMouseEvent & { value: string | null }) => {
 		getHomeStore().state = event.value === 'home' ? 'open' : 'closed';
 	});
-	window.addEventListener('resize', this.windowResize!);
-	window.addEventListener('localize', this.windowLocalize!);
+	window.addEventListener('resize', this.windowResize! as EventListener);
+	window.addEventListener('localize', this.windowLocalize! as EventListener);
 	// start/recent 事件经 Vue 模板转发（LayoutPanel @click/@pointerup → Home.startClick/recentClick/recentPointerup）
 };
 
 Home.updateCenterPosition = function (this: typeof Home) {
 	if (Layout.manager?.index === 'home') {
-		const elPage = titleEls.get('home') as HTMLElement;
-		const elContent = titleEls.get('home-content') as HTMLElement;
+		const elPage = titleEls.get('home') as YamiElement;
+		const elContent = titleEls.get('home-content') as YamiElement;
 		const pageRect = rect(elPage);
 		const contentRect = rect(elContent);
 		const left = (pageRect.width - contentRect.width) / 2;
@@ -115,7 +118,7 @@ Home.updateCenterPosition = function (this: typeof Home) {
 	}
 };
 
-Home.windowResize = function (this: typeof Home, _event: Event) {
+Home.windowResize = function (this: typeof Home, _event: YamiMouseEvent) {
 	// 不支持page(home):resize事件 先用window:resize代替
 	Home.updateCenterPosition!();
 };
@@ -253,7 +256,7 @@ Home.removeRecentProject = function (this: typeof Home, index: number) {
 	const items = Editor.config!.recent! as RecentProject[];
 	const item = items[index];
 	if (item) {
-		items.remove(item);
+		remove(items, item);
 		Home.parseRecentProjects!();
 	}
 };
@@ -406,13 +409,13 @@ Home.readFileList = (function IIFE() {
 	};
 })();
 
-Home.windowLocalize = function (this: typeof Home, _event: Event) {
+Home.windowLocalize = function (this: typeof Home, _event: YamiMouseEvent) {
 	if (Layout.manager?.index === 'home') {
 		Home.parseRecentProjects!();
 	}
 };
 
-Home.startClick = function (this: typeof Home, event: Event) {
+Home.startClick = function (this: typeof Home, event: YamiMouseEvent) {
 	const element = event.target as HTMLElement;
 	if (hasClass(element, 'home-start-item')) {
 		switch (element.getAttribute('value')) {
@@ -440,7 +443,7 @@ for (const key of homeBridgeKeys) {
 	});
 }
 
-Home.recentClick = function (this: typeof Home, event: Event) {
+Home.recentClick = function (this: typeof Home, event: YamiMouseEvent) {
 	const element = event.target as HTMLElement;
 	if (hasClass(element, 'home-recent-item') && !hasClass(element, 'disabled')) {
 		const index = element.getAttribute('value');
@@ -450,7 +453,7 @@ Home.recentClick = function (this: typeof Home, event: Event) {
 	}
 };
 
-Home.recentPointerup = function (this: typeof Home, event: Event) {
+Home.recentPointerup = function (this: typeof Home, event: YamiMouseEvent) {
 	switch (event.button) {
 		case 2: {
 			const element = event.target as HTMLElement;

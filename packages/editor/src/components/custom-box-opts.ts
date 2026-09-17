@@ -122,8 +122,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 				clip == null || clip === '' || (Array.isArray(clip) && clip.length === 0)
 					? t('common.none')
 					: Array.isArray(clip)
-						? // oxlint-disable-next-line no-base-to-string
-							(clip as unknown[]).join(', ')
+						? (clip as unknown[]).join(', ')
 						: // oxlint-disable-next-line no-base-to-string
 							String(clip)
 		}),
@@ -138,8 +137,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 					| undefined;
 				const parsed = parseVariable
 					? Command.removeTextTags!(parseVariable(data))
-					: // oxlint-disable-next-line no-base-to-string
-						String(data.key);
+					: String(data.key);
 				return { text: parsed ?? '' };
 			}
 			return { text: t('common.none') };
@@ -224,8 +222,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		array: (array: unknown) => ({
 			text:
 				array != null && (array as unknown[]).length !== 0
-					? // oxlint-disable-next-line no-base-to-string
-						(Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
+					? (Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
 						t('common.empty'))
 					: t('common.empty')
 		}),

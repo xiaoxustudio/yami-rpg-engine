@@ -1,5 +1,6 @@
 import { h, render } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { type YamiElementApi } from '../../../utils/element-contract';
 import { elementDataOf, getElementData } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 import {
@@ -71,8 +72,8 @@ const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 
 // 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
-// oxlint-disable-next-line no-explicit-any
-const renderStateOf = (list: any): TreeRenderState | undefined => list?.renderState;
+const renderStateOf = (list: TreeListHost | null | undefined): TreeRenderState | undefined =>
+	list?.renderState;
 
 /**
  * 消费方 API（步骤 4）：按 item 直接操作行状态，无需触碰 DOM。
@@ -255,10 +256,11 @@ export const treeListStatics = {
 			textBox.dispatchEvent(new FocusEvent('blur'));
 		});
 
-		// oxlint-disable-next-line no-explicit-any
-		textBox.addEventListener('blur', function (this: any) {
-			const element = this.parentNode;
-			const list = element.parentNode;
+		textBox.addEventListener('blur', function (this: TextBox) {
+			// P2b-3：这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
+			// （结构由 `rename()` 保证：文本框会被挂到行元素下）。类型上按这条链显式写出来。
+			const element = this.parentNode as HTMLElement;
+			const list = element.parentNode as TreeListHost;
 			// 重命名框的父节点就是行元素（`bindRowElement` 必定写过 item），与原 `element.item` 同义
 			const item = rowData(element).item!;
 			const name = this.read().trim();
@@ -314,7 +316,7 @@ export interface TreeListApiOptions {
  *
  * 同时它也是 `attachApi` 的键集合校验依据：`attachApi<TreeListElementApi>(list, { getMenuState })`。
  */
-export interface TreeListElementApi {
+export interface TreeListElementApi extends YamiElementApi {
 	/** 当前行数据（虚拟滚动下是**全量**行，不是可见窗口内的那些） */
 	read<T = unknown>(): T | null;
 	update(): void;
@@ -349,1178 +351,1282 @@ type TreeListDragEvent = DragEvent & {
 	hint?: DragAndDropHintApi;
 };
 
-// oxlint-disable-next-line no-explicit-any
-export const treeListPrototype: Record<string, (...args: any[]) => any> = {
-	bind: function (
-		this: HTMLElement & { [k: string]: unknown },
-		getter: () => TreeItem[]
-	): HTMLElement {
-		return Object.defineProperty(this, 'data', { get: getter });
-	},
+/**
+ * P2b-3：树列表元素的**宿主契约**——`treeListPrototype` 的方法与装配代码里 `this` 的真实成员面。
+ *
+ * 这些方法过去一律写 `this: any`，于是每条都要配一句 `oxlint-disable-next-line no-explicit-any`
+ * （本文件原有 48 处禁用，其中 40 余处正是这么来的）。把成员逐个写出来后：成员拼错、签名用错都会
+ * 当场被 tsc 抓到，而"树列表元素上到底有什么"也第一次留在类型里。
+ *
+ * **刻意不继承 `TreeListElementApi`**：那个对外契约带 `[k: string]: unknown` 索引签名（消费方要的宽松兜底），
+ * 继承它等于让"没声明的成员"继续静默通过——那份宽松正是这里要收窄掉的东西。
+ */
+export interface TreeListHost extends HTMLElement {
+	// —— 数据与视图状态 ——
+	/** 行数据（虚拟滚动下是**全量**行）。根节点就是本数组本身，历史语义见 `addNodeTo` */
+	data: TreeItem[] | null;
+	/** 根"节点"：`bind` 里用 `Object.defineProperty` 造出的 `{ children: get data }` */
+	root: TreeItem | null;
+	/** `'normal' | 'search'`（对外契约里是 `string`，保持宽松比较） */
+	display: string;
+	searchResults: TreeItem[] | null;
+	renderState: TreeRenderState;
+	rowHeight: number;
+	/** 元素上的可视高度（`scrollToSelection` 用；不是 `HTMLElement` 成员） */
+	innerHeight: number;
+	/** `searchNodesDebounced` 的防抖缓存 */
+	_searchNodesDebounced?: (keyword: string | RegExp) => void;
 
-	read: function (this: HTMLElement & { [k: string]: unknown }): TreeItem | null {
-		const selections = treeData(this).selections;
-		return selections.length === 1 ? selections[0] : null;
-	},
+	// —— 事件开关（`on()` 按事件名置位，各方法体里读） ——
+	recordEventEnabled: boolean;
+	selectEventEnabled: boolean;
+	unselectEventEnabled: boolean;
+	popupEventEnabled: boolean;
+	openEventEnabled: boolean;
+	updateEventEnabled: boolean;
 
-	initialize: function (this: HTMLElement & { [k: string]: unknown }): void {
-		const data = this.data as TreeItem[] & { initialized?: unknown };
-		if (data && !data.initialized) {
-			treeListStatics.createParents(data, this.root as TreeItem | null);
-			Object.defineProperty(data, 'initialized', {
-				configurable: true,
-				value: true
-			});
-		}
-	},
+	// —— 列表读写（消费方 API） ——
+	read(): TreeItem | null;
+	update(): void;
+	refresh(): void;
+	resize(): void;
+	select(item: TreeItem | null | undefined): void;
+	selectWithNoEvent(item: TreeItem | null | undefined): void;
+	unselect(item?: TreeItem): void;
+	unselectIn(item: TreeItem): void;
+	selectRelative(direction: string): void;
+	expandSelection(): void;
+	expandToSelection(update?: boolean): void;
+	expandToItem(item: TreeItem | null | undefined, update?: boolean): void;
+	open(item: TreeItem | null | undefined): void;
+	clear(): HTMLElement;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
 
-	// 步骤 5：唯一渲染路径 = 数据派生（v-for），命令式差量渲染实现已删除
-	// oxlint-disable-next-line no-explicit-any
-	update: function (this: any): void {
-		this.syncRenderRows();
-		if (this.updateEventEnabled) {
-			dispatchUpdateEvent(this);
-		}
-	},
+	// —— 节点增删改 ——
+	addNodeTo(sItem: TreeItem, dItem: TreeItem | null | undefined, insertBefore?: boolean): void;
+	deleteNode(item: TreeItem): void;
+	removeItemTo(sItem: TreeItem, dItem: TreeItem | null | undefined): void;
+	removeItemToInsert(sItem: TreeItem, dItem: TreeItem | null | undefined): void;
+	contain(node: unknown, target: TreeItem | null | undefined): boolean;
+	getItemByProperties(properties: object): TreeItem | undefined;
+	generateUniqueName(item: TreeItem): string;
+	generateCopyName(item: TreeItem): string;
+	updateItemName(item: TreeItem): void;
+	updateNodeElement(...args: unknown[]): unknown;
+	updateHeadAndFoot(): void;
+	initialize(): void;
 
-	// oxlint-disable-next-line no-explicit-any
-	refresh: function (this: any): void {
-		this.update();
-	},
+	// —— 重命名 / 行渲染入口 ——
+	rename(item: TreeItem): void;
+	cancelRenaming(): void;
+	parseName(item: TreeItem): string;
+	createIcon(item: TreeItem): HTMLElement;
 
-	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
-		(this as unknown as { syncRenderWindow: () => void }).syncRenderWindow();
-	},
+	// —— 搜索 ——
+	searchNodes(keyword: string | RegExp): void;
+	searchNodesAlgorithm(data: TreeItem[], keyword: RegExp, list: TreeItem[]): void;
 
-	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
-		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
-	},
+	// —— 虚拟滚动 / 行查询 ——
+	syncRenderRows(overrideRows?: unknown): void;
+	syncRenderWindow(): void;
+	rowCount(): number;
+	rowItemAt(index: number): TreeItem | undefined;
+	rowIndexOf(item: TreeItem): number;
+	scrollToSelection(mode?: string): void;
+	scrollToHome(): void;
+	scrollToEnd(): void;
+	pageUp(select: boolean): void;
+	pageDown(select: boolean): void;
+	getElementIndexOfSelection(defIndex: number): number;
 
-	// oxlint-disable-next-line no-explicit-any
-	searchNodes: function (this: any, keyword: string | RegExp): void {
-		const { data } = this;
-		if (!data) return;
-		if (keyword instanceof RegExp || (keyword as string).length !== 0) {
-			if (this.display === 'normal') {
-				this.display = 'search';
+	// —— 行元素绑定（模板 :ref 回调 → 派生层） ——
+	setItemClass(item: TreeItem, className: string, on?: boolean): void;
+	bindRow(item: TreeItem, el: unknown): void;
+	bindNodeIcon(item: TreeItem, el: HTMLElement): void;
+	bindNodeExtras(item: TreeItem, el: HTMLElement): void;
+	applyRowUpdaters(): void;
+
+	// —— 事件处理器（原型上的同名成员，也是注册到 DOM 的监听器） ——
+	// DOM 边界上一律按标准事件类型声明（`cmdOrCtrlKey` 之类扩展字段是实现内部的事，见各实现签名）
+	keydown(event: KeyboardEvent): void;
+	pointerdown(event: PointerEvent): void;
+	pointerup(event: PointerEvent): void;
+	doubleclick(event: MouseEvent): void;
+	dragstart(event: TreeListDragEvent): void;
+	dragend(event?: DragEvent): void;
+	dragenter(event: DragEvent): void;
+	dragleave(event: DragEvent): void;
+	dragover(event: DragEvent): void;
+	drop(event: DragEvent): void;
+	dataChange(event: Event): void;
+	/** 拖拽期间的临时监听器：`dragstart` 装、`dragend` 拆，必须共用同一函数引用 */
+	dragListeners: {
+		dragenter: (event: DragEvent) => void;
+		dragleave: (event: DragEvent) => void;
+		dragover: (event: DragEvent) => void;
+		drop: (event: DragEvent) => void;
+	};
+
+	// —— 宿主（消费方）注入 / 覆写的钩子 ——
+	renderNodeExtras?: (item: TreeItem, container: HTMLElement) => void;
+	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
+	/** 由宿主经选项注入（`attachApi`），弹右键菜单前据此避让 */
+	getMenuState(): string;
+}
+
+export const treeListPrototype: Record<string, (this: TreeListHost, ...args: never[]) => unknown> =
+	{
+		bind: function (this: TreeListHost, getter: () => TreeItem[]): HTMLElement {
+			return Object.defineProperty(this, 'data', { get: getter });
+		},
+
+		read: function (this: TreeListHost): TreeItem | null {
+			const selections = treeData(this).selections;
+			return selections.length === 1 ? selections[0] : null;
+		},
+
+		initialize: function (this: TreeListHost): void {
+			const data = this.data as TreeItem[] & { initialized?: unknown };
+			if (data && !data.initialized) {
+				treeListStatics.createParents(data, this.root as TreeItem | null);
+				Object.defineProperty(data, 'initialized', {
+					configurable: true,
+					value: true
+				});
 			}
-			if (typeof keyword === 'string') {
-				keyword = keyword.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
-				keyword = new RegExp(keyword, 'i');
+		},
+
+		// 步骤 5：唯一渲染路径 = 数据派生（v-for），命令式差量渲染实现已删除
+		update: function (this: TreeListHost): void {
+			this.syncRenderRows();
+			if (this.updateEventEnabled) {
+				dispatchUpdateEvent(this);
 			}
-			this.searchNodesAlgorithm(
-				data,
-				(treeData(this).keyword = keyword as RegExp),
-				(this.searchResults = [])
+		},
+
+		refresh: function (this: TreeListHost): void {
+			this.update();
+		},
+
+		resize: function (this: TreeListHost): void {
+			(this as unknown as { syncRenderWindow: () => void }).syncRenderWindow();
+		},
+
+		updateHeadAndFoot: function (this: TreeListHost): void {
+			return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
+		},
+
+		searchNodes: function (this: TreeListHost, keyword: string | RegExp): void {
+			const { data } = this;
+			if (!data) return;
+			if (keyword instanceof RegExp || (keyword as string).length !== 0) {
+				if (this.display === 'normal') {
+					this.display = 'search';
+				}
+				if (typeof keyword === 'string') {
+					keyword = keyword.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
+					keyword = new RegExp(keyword, 'i');
+				}
+				this.searchNodesAlgorithm(
+					data,
+					(treeData(this).keyword = keyword as RegExp),
+					(this.searchResults = [])
+				);
+			} else {
+				if (this.display === 'search') {
+					this.display = 'normal';
+					treeData(this).keyword = null;
+					this.searchResults = [];
+				}
+			}
+			this.update();
+		},
+
+		searchNodesDebounced: function (this: TreeListHost, keyword: string | RegExp): void {
+			(this._searchNodesDebounced ??= debounce(
+				(kw: string | RegExp) => this.searchNodes(kw),
+				150
+			))(keyword);
+		},
+
+		searchNodesAlgorithm: function (
+			this: TreeListHost,
+			data: TreeItem[],
+			keyword: RegExp,
+			list: TreeItem[]
+		): void {
+			treeCore.searchNodesAlgorithm(data, keyword, list);
+		},
+
+		createIcon: function (this: TreeListHost, item: TreeItem): HTMLElement {
+			const icon = renderElement(
+				h('span', {
+					class: ['node-icon', item.class === 'folder' ? 'icon-folder' : 'icon-file']
+				})
 			);
-		} else {
+			return icon;
+		},
+
+		createText: function (this: TreeListHost, item: TreeItem): Text {
+			return document.createTextNode(this.parseName(item));
+		},
+
+		parseName: function (this: TreeListHost, item: TreeItem): string {
+			return item.name;
+		},
+
+		updateItemName: function (this: TreeListHost, item: TreeItem): void {
+			// 步骤 5：行文本由派生层渲染 —— 名称变更触发重派生（直写 textNode 会被 patch 覆盖）
+			const last = item?.name;
+			this.syncRenderRows();
+			if (this.display === 'search') {
+				const keyword = treeData(this).keyword;
+				const name = this.parseName(item);
+				if (keyword!.test(last) || keyword!.test(name)) {
+					// 进入本分支即 `display === 'search'`，此时 keyword 必已由 `searchNodes` 写入
+					this.searchNodes(treeData(this).keyword!);
+				}
+			}
+		},
+
+		getItemByProperties: function (
+			this: TreeListHost,
+			properties: object
+		): TreeItem | undefined {
+			return treeCore.findItemByProperties(this.data as TreeItem[], properties);
+		},
+
+		contain: function (
+			this: TreeListHost,
+			node: unknown,
+			target: TreeItem | null | undefined
+		): boolean {
+			return treeCore.containsItem(node, target);
+		},
+
+		renameNode: function (this: TreeListHost, item: TreeItem | null, newName: string): void {
+			if (item) {
+				item.name = newName;
+				this.updateItemName(item);
+			}
+		},
+
+		resetItemName: function (this: TreeListHost, item: TreeItem | null): void {
+			if (item) {
+				item.name = this.generateCopyName(item);
+				this.updateItemName(item);
+			}
+		},
+
+		generateUniqueName: function (this: TreeListHost, item: TreeItem): string {
+			return treeCore.generateUniqueName(item);
+		},
+
+		duplicate: function (this: TreeListHost, item: TreeItem): void {
+			const copy = treeCore.cloneNode(item);
+			copy.name = this.generateUniqueName(item);
+			const index = item.parent!.children!.indexOf(item);
+			const next = item.parent!.children![index + 1];
+			if (next) {
+				this.addNodeTo(copy, next, true);
+			} else {
+				this.addNodeTo(copy, item.parent);
+			}
+		},
+
+		addNodeTo: function (
+			this: TreeListHost,
+			sItem: TreeItem,
+			dItem: TreeItem | null | undefined,
+			insertBefore: boolean = false
+		): void {
+			if (!sItem) {
+				return;
+			}
+
+			// P2b-3：把原先靠 `this: any` 兜住的两个局部变量显式类型化（`dList` 可能为 null）
+			let dList: TreeItem[] | null | undefined;
+			let dIndex = 0;
+
+			const { data } = this;
+			if (!dItem) {
+				// 根"节点"就是 `data` 数组本身（历史语义，见 `bind` 里对该元素的 `data` 定义）
+				dItem = data as unknown as TreeItem;
+			}
+			if ((dItem as unknown) === data) {
+				dList = data;
+				dIndex = data?.length ?? 0;
+			} else if (dItem!.children && !insertBefore) {
+				dList = dItem!.children;
+				dIndex = dList.length;
+			} else {
+				dList = dItem!.parent!.children;
+				if (dList instanceof Array) {
+					dIndex = dList.indexOf(dItem!);
+				}
+			}
+			if (dList) {
+				dList.splice(dIndex, 0, sItem);
+				// 步骤 2：unselect() 会触发派生重算，新节点必须先把 parent 建好（否则派生抛 No parent!）
+				if (sItem.parent === undefined) {
+					treeListStatics.createParents([sItem], null);
+				}
+				this.unselect();
+
+				let item = dItem!;
+				while (item.parent !== undefined) {
+					if (item.expanded === false) {
+						item.expanded = true;
+					}
+					item = item.parent!;
+				}
+
+				if (this.recordEventEnabled) {
+					const record: ValueEvent = new Event('record') as ValueEvent;
+					const response = {
+						type: 'create',
+						sItem: sItem,
+						dItem: dItem,
+						insertBefore: insertBefore
+					};
+					record.value = response;
+					this.dispatchEvent(record);
+				}
+
+				if (!sItem.parent) getListConfig(this).onCreate?.(sItem);
+				this.update();
+				this.select(sItem);
+				this.scrollToSelection();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		deleteNode: function (this: TreeListHost, item: TreeItem): void {
+			const items = item.parent!.children!;
+			if (items instanceof Array) {
+				const index = items.indexOf(item);
+				items.splice(index, 1);
+
+				if (this.recordEventEnabled) {
+					const record: ValueEvent = new Event('record') as ValueEvent;
+					const response = {
+						type: 'delete',
+						items: items,
+						index: index,
+						item: item
+					};
+					record.value = response;
+					this.dispatchEvent(record);
+				}
+
+				this.unselectIn(item);
+				getListConfig(this).onDelete?.(item);
+				this.update();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		removeItemTo: function (
+			this: TreeListHost,
+			sItem: TreeItem,
+			dItem: TreeItem | null | undefined
+		): void {
+			if (sItem === dItem || (getListConfig(this).lockDirectory && dItem === this.root)) {
+				return;
+			}
+			const sParent = sItem.parent;
+			if (sParent && dItem) {
+				const sList = sParent.children!;
+				const dList = dItem.children!;
+				const sIndex = sList.indexOf(sItem);
+				sList.splice(sIndex, 1);
+				const dIndex = dList.length;
+				dList.splice(dIndex, 0, sItem);
+				if (sList === dList && sIndex === dIndex) {
+					return;
+				}
+				if (dItem.expanded === false) {
+					dItem.expanded = true;
+				}
+
+				if (this.recordEventEnabled) {
+					const record: ValueEvent = new Event('record') as ValueEvent;
+					const response = {
+						type: 'remove',
+						item: sItem,
+						source: {
+							parent: sParent,
+							index: sIndex
+						},
+						destination: {
+							parent: dItem,
+							index: dIndex
+						}
+					};
+					record.value = response;
+					this.dispatchEvent(record);
+				}
+				this.update();
+				getListConfig(this).onRemove?.(sItem);
+				this.scrollToSelection();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		removeItemToInsert: function (
+			this: TreeListHost,
+			sItem: TreeItem,
+			dItem: TreeItem | null | undefined
+		): void {
+			if (
+				sItem === dItem ||
+				(getListConfig(this).lockDirectory && dItem!.parent === this.root)
+			) {
+				return;
+			}
+			const sParent = sItem.parent;
+			const dParent = dItem!.parent;
+			if (sParent && dParent) {
+				const sList = sParent.children!;
+				const dList = dParent.children!;
+				const sIndex = sList.indexOf(sItem);
+				sList.splice(sIndex, 1);
+				const dIndex = dList.indexOf(dItem!);
+				dList.splice(dIndex, 0, sItem);
+				if (sList === dList && sIndex === dIndex) {
+					return;
+				}
+
+				if (this.recordEventEnabled) {
+					const record: ValueEvent = new Event('record') as ValueEvent;
+					const response = {
+						type: 'remove',
+						item: sItem,
+						source: {
+							parent: sParent,
+							index: sIndex
+						},
+						destination: {
+							parent: dParent,
+							index: dIndex
+						}
+					};
+					record.value = response;
+					this.dispatchEvent(record);
+				}
+				this.update();
+				getListConfig(this).onRemove?.(sItem);
+				this.scrollToSelection();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		restore: function (
+			this: TreeListHost,
+			operation: string,
+			response: { type: string; [k: string]: unknown }
+		): void {
+			if (this.display === 'search') {
+				this.searchResults = [];
+			}
+			switch (response.type) {
+				case 'rename': {
+					const { item, oldValue, newValue } = response as unknown as {
+						item: TreeItem;
+						oldValue: string;
+						newValue: string;
+					};
+					if (operation === 'undo') {
+						item.name = oldValue;
+					} else {
+						item.name = newValue;
+					}
+					this.updateItemName(item);
+					this.expandToItem(item);
+					if (!this.textContent) {
+						this.update();
+					}
+					this.select(item);
+					this.scrollToSelection();
+					dispatchChangeEvent(this);
+					break;
+				}
+				case 'create': {
+					const { sItem, dItem, insertBefore } = response as unknown as {
+						sItem: TreeItem;
+						dItem: TreeItem | null | undefined;
+						insertBefore: boolean;
+					};
+					if (operation === 'undo') {
+						const enabled = this.recordEventEnabled;
+						this.recordEventEnabled = false;
+						this.deleteNode(sItem);
+						this.recordEventEnabled = enabled;
+					} else {
+						const enabled = this.recordEventEnabled;
+						this.recordEventEnabled = false;
+						this.addNodeTo(sItem, dItem, insertBefore);
+						this.recordEventEnabled = enabled;
+						getListConfig(this).onResume?.(sItem);
+					}
+					break;
+				}
+				case 'delete': {
+					const { items, index, item } = response as unknown as {
+						items: TreeItem[];
+						index: number;
+						item: TreeItem;
+					};
+					if (operation === 'undo') {
+						if (index <= items.length) {
+							items.splice(index, 0, item);
+							this.unselect();
+							this.expandToItem(item, false);
+							getListConfig(this).onResume?.(item);
+						}
+					} else {
+						if (index < items.length) {
+							items.splice(index, 1);
+							this.unselectIn(item);
+							getListConfig(this).onDelete?.(item);
+						}
+					}
+
+					this.update();
+					if (operation === 'undo') this.select(item);
+					this.scrollToSelection();
+					dispatchChangeEvent(this);
+					break;
+				}
+				case 'remove': {
+					const { item, source, destination } = response as unknown as {
+						item: TreeItem;
+						source: { parent: TreeItem; index: number };
+						destination: { parent: TreeItem; index: number };
+					};
+					const { parent: sParent, index: sIndex } = source;
+					const { parent: dParent, index: dIndex } = destination;
+					const sList = sParent.children!;
+					const dList = dParent.children!;
+					if (operation === 'undo') {
+						if (item.parent !== undefined) {
+							item.parent = sParent;
+						}
+						if (sIndex <= sList.length && dIndex < dList.length) {
+							dList.splice(dIndex, 1);
+							sList.splice(sIndex, 0, item);
+							this.expandToItem(item, false);
+						}
+					} else {
+						if (item.parent !== undefined) {
+							item.parent = dParent;
+						}
+						if (dIndex <= dList.length && sIndex < sList.length) {
+							sList.splice(sIndex, 1);
+							dList.splice(dIndex, 0, item);
+							this.expandToItem(item, false);
+						}
+					}
+					this.update();
+					this.select(item);
+					getListConfig(this).onRemove?.(item);
+					this.scrollToSelection();
+					dispatchChangeEvent(this);
+					break;
+				}
+			}
+		},
+
+		open: function (this: TreeListHost, item: TreeItem | null | undefined): void {
+			if (item && this.openEventEnabled) {
+				const open: ValueEvent = new Event('open') as ValueEvent;
+				open.value = item;
+				this.dispatchEvent(open);
+			}
+		},
+
+		select: function (this: TreeListHost, item: TreeItem | null | undefined): void {
+			if (item instanceof Object && this.read() !== item) {
+				this.unselect();
+				treeData(this).selections.push(item);
+				// 步骤 5b：不再直写行元素 class——选中态由派生行（row.selected）渲染，下面 syncRenderRows 即刷新
+				this.syncRenderRows();
+				if (this.selectEventEnabled) {
+					const select: ValueEvent = new Event('select') as ValueEvent;
+					select.value = this.read();
+					this.dispatchEvent(select);
+				}
+			}
+		},
+
+		selectWithNoEvent: function (this: TreeListHost, item: TreeItem | null | undefined): void {
+			const enabled = this.selectEventEnabled;
+			this.selectEventEnabled = false;
+			this.select(item);
+			this.selectEventEnabled = enabled;
+		},
+
+		unselect: function (this: TreeListHost, item?: TreeItem): void {
+			const data = treeData(this);
+			let selections: TreeItem[] = [];
+			if (item === undefined) {
+				selections = data.selections;
+			}
+			if ((data.selections as (TreeItem | undefined)[]).includes(item)) {
+				selections = [item!];
+			}
+			if (selections.length !== 0) {
+				treeListStatics.textBox.input.blur();
+				// 步骤 5b：不再直写行元素 class——取消选中由派生行（row.selected）渲染，末尾 syncRenderRows 即刷新
+				if (this.unselectEventEnabled) {
+					const select: ValueEvent = new Event('unselect') as ValueEvent;
+					select.value = selections;
+					this.dispatchEvent(select);
+				}
+				data.selections = [];
+				if (this.renderState !== undefined) {
+					(this as unknown as { syncRenderRows: () => void }).syncRenderRows();
+				}
+			}
+		},
+
+		unselectIn: function (this: TreeListHost, item: TreeItem): void {
+			const targets = [];
+			for (let target of treeData(this).selections) {
+				let node: TreeItem | null | undefined = target;
+				while (node) {
+					if (node === item) {
+						targets.push(target);
+						break;
+					}
+					node = node.parent;
+				}
+			}
+			for (const target of targets) {
+				this.unselect(target);
+			}
+		},
+
+		selectRelative: function (this: TreeListHost, direction: string): void {
+			const rows: { item: TreeItem }[] = this.renderState.rows.value;
+			const count = rows.length;
+			if (count > 0) {
+				let index = -1;
+				const last = count - 1;
+				const selection = this.read();
+				if (selection) {
+					index = this.rowIndexOf(selection);
+				}
+				switch (direction) {
+					case 'up':
+						if (index !== -1) {
+							index = Math.max(index - 1, 0);
+						} else {
+							index = last;
+						}
+						break;
+					case 'down':
+						if (index !== -1) {
+							index = Math.min(index + 1, last);
+						} else {
+							index = 0;
+						}
+						break;
+				}
+				this.select(rows[index]?.item);
+				this.scrollToSelection();
+			}
+		},
+
+		expandSelection: function (this: TreeListHost): void {
+			const item = this.read();
+			if (item !== null && item.expanded !== undefined && rowElementOf(item) !== undefined) {
+				item.expanded = !item.expanded;
+				this.update();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		expandToSelection: function (this: TreeListHost, update = true): void {
+			const item = this.read();
+			if (item !== null) {
+				this.expandToItem(item, update);
+			}
+		},
+
+		expandToItem: function (
+			this: TreeListHost,
+			item: TreeItem | null | undefined,
+			update = true
+		): void {
+			item = item!.parent!;
+			if (!item) return;
+			let changed = false;
+			while (item.expanded !== undefined) {
+				if (!item.expanded) {
+					item.expanded = true;
+					changed = true;
+				}
+				item = item.parent!;
+			}
+			if (changed && update) {
+				this.update();
+				dispatchChangeEvent(this);
+			}
+		},
+
+		scrollToSelection: function (this: TreeListHost, mode = 'active'): void {
+			const selection = this.read();
+			if (selection && hasScrollBar(this)) {
+				const rows: { item: TreeItem }[] = this.renderState.rows.value;
+				for (let i = 0; i < rows.length; i++) {
+					const item = rows[i]?.item;
+					if (item === selection) {
+						let scrollTop;
+						switch (mode) {
+							case 'active':
+								scrollTop = clamp(
+									this.scrollTop,
+									i * 20 + 20 - this.innerHeight,
+									i * 20
+								);
+								break;
+							case 'middle':
+								scrollTop =
+									Math.round((i * 20 + 10 - this.innerHeight / 2) / 20) * 20;
+								break;
+							default:
+								return;
+						}
+						if (this.scrollTop !== scrollTop) {
+							this.scrollTop = scrollTop;
+							this.syncRenderWindow();
+						}
+						break;
+					}
+				}
+			}
+		},
+
+		scrollToHome: function (this: TreeListHost): void {
+			const item = this.rowItemAt(0);
+			if (item !== undefined) {
+				this.select(item);
+			}
+			this.scroll(0, 0);
+		},
+
+		scrollToEnd: function (this: TreeListHost): void {
+			const item = this.rowItemAt(this.rowCount() - 1);
+			if (item !== undefined) {
+				this.select(item);
+			}
+			this.scroll(0, this.scrollHeight);
+		},
+
+		rowItemAt: function (this: TreeListHost, index: number): TreeItem | undefined {
+			return this.renderState.rows.value[index]?.item;
+		},
+
+		rowCount: function (this: TreeListHost): number {
+			return this.renderState.rows.value.length;
+		},
+
+		pageUp: function (this: TreeListHost, select: boolean): void {
+			const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+			if (select) {
+				const bottom = this.scrollTop + this.clientHeight;
+				const bottomIndex = Math.floor(bottom / 20) - 1;
+				let index = this.getElementIndexOfSelection(Infinity);
+				index = Math.min(index, bottomIndex) - scrollLines;
+				index = Math.max(index, 0);
+				this.select(this.rowItemAt(index));
+			}
+			// 等价于 scrollBy(0, -delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
+			this.scrollTop -= scrollLines * 20;
+		},
+
+		pageDown: function (this: TreeListHost, select: boolean): void {
+			const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+			if (select) {
+				const count = this.rowCount();
+				const topIndex = Math.floor(this.scrollTop / 20);
+				let index = this.getElementIndexOfSelection(0);
+				index = Math.max(index, topIndex) + scrollLines;
+				index = Math.min(index, count - 1);
+				this.select(this.rowItemAt(index));
+			}
+			// 等价于 scrollBy(0, +delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
+			this.scrollTop += scrollLines * 20;
+		},
+
+		getElementIndexOfSelection: function (this: TreeListHost, defIndex: number): number {
+			const item = this.read();
+			if (!item) return defIndex;
+			const index = this.rowIndexOf(item);
+			return index === -1 ? defIndex : index;
+		},
+
+		rename: function (this: TreeListHost, item: TreeItem): void {
+			if (getListConfig(this).renamable) {
+				// 步骤 5b：行元素由渲染状态持有（窗口外的行未物化 → 直接不进入重命名）
+				const element = rowElementOf(item);
+				const { textBox } = treeListStatics;
+				if (
+					element !== undefined &&
+					document.activeElement === this &&
+					!textBox.parentNode &&
+					element.parentNode
+				) {
+					const nodes = [];
+					const { folderMark, nodeIcon } = elementDataOf<NodeElement>(element);
+					for (const node of element.childNodes) {
+						if (
+							node instanceof HTMLElement &&
+							node !== folderMark &&
+							node !== nodeIcon &&
+							addClass(node, 'hidden')
+						) {
+							nodes.push(node);
+						}
+					}
+					elementDataOf<{ lastText: string }>(textBox).lastText = rowData(element)
+						.textNode!.nodeValue as string;
+					rowData(element).textNode!.nodeValue = '';
+					element.appendChild(textBox);
+					elementDataOf<{ hiddenNodes: HTMLElement[] | null }>(textBox).hiddenNodes =
+						nodes;
+					textBox.write(item.name);
+					textBox.getFocus('all');
+					textBox.fitContent();
+				}
+			}
+		},
+
+		cancelRenaming: function (this: TreeListHost): void {
+			// P4b：`timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			const timer = treeData(this).timer;
+			if (timer.target) {
+				timer.target = null;
+			}
+			if (timer.running) {
+				timer.running = false;
+				timer.remove();
+			}
+		},
+
+		clear: function (this: TreeListHost): HTMLElement {
 			if (this.display === 'search') {
 				this.display = 'normal';
 				treeData(this).keyword = null;
 				this.searchResults = [];
 			}
-		}
-		this.update();
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	searchNodesDebounced: function (this: any, keyword: string | RegExp): void {
-		(this._searchNodesDebounced ??= debounce(
-			(kw: string | RegExp) => this.searchNodes(kw),
-			150
-		))(keyword);
-	},
-
-	searchNodesAlgorithm: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
-		data: TreeItem[],
-		keyword: RegExp,
-		list: TreeItem[]
-	): void {
-		treeCore.searchNodesAlgorithm(data, keyword, list);
-	},
-
-	createIcon: function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem
-	): HTMLElement {
-		const icon = renderElement(
-			h('span', {
-				class: ['node-icon', item.class === 'folder' ? 'icon-folder' : 'icon-file']
-			})
-		);
-		return icon;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	createText: function (this: any, item: TreeItem): Text {
-		return document.createTextNode(this.parseName(item));
-	},
-
-	parseName: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): string {
-		return item.name;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	updateItemName: function (this: any, item: TreeItem): void {
-		// 步骤 5：行文本由派生层渲染 —— 名称变更触发重派生（直写 textNode 会被 patch 覆盖）
-		const last = item?.name;
-		this.syncRenderRows();
-		if (this.display === 'search') {
-			const keyword = treeData(this).keyword;
-			const name = this.parseName(item);
-			if (keyword!.test(last) || keyword!.test(name)) {
-				this.searchNodes(treeData(this).keyword);
-			}
-		}
-	},
-
-	getItemByProperties: function (
-		this: HTMLElement & { [k: string]: unknown },
-		properties: object
-	): TreeItem | undefined {
-		return treeCore.findItemByProperties(this.data as TreeItem[], properties);
-	},
-
-	contain: function (
-		this: HTMLElement & { [k: string]: unknown },
-		node: unknown,
-		target: TreeItem | null | undefined
-	): boolean {
-		return treeCore.containsItem(node, target);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	renameNode: function (this: any, item: TreeItem | null, newName: string): void {
-		if (item) {
-			item.name = newName;
-			this.updateItemName(item);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	resetItemName: function (this: any, item: TreeItem | null): void {
-		if (item) {
-			item.name = this.generateCopyName(item);
-			this.updateItemName(item);
-		}
-	},
-
-	generateUniqueName: function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem
-	): string {
-		return treeCore.generateUniqueName(item);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	duplicate: function (this: any, item: TreeItem): void {
-		const copy = treeCore.cloneNode(item);
-		copy.name = this.generateUniqueName(item);
-		const index = item.parent!.children!.indexOf(item);
-		const next = item.parent!.children![index + 1];
-		if (next) {
-			this.addNodeTo(copy, next, true);
-		} else {
-			this.addNodeTo(copy, item.parent);
-		}
-	},
-
-	addNodeTo: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
-		sItem: TreeItem,
-		dItem: TreeItem | null | undefined,
-		insertBefore: boolean = false
-	): void {
-		if (!sItem) {
-			return;
-		}
-
-		let dList;
-		let dIndex;
-
-		const { data } = this;
-		if (!dItem) {
-			dItem = data;
-		}
-		if (dItem === data) {
-			dList = data;
-			dIndex = dList.length;
-		} else if (dItem!.children && !insertBefore) {
-			dList = dItem!.children;
-			dIndex = dList.length;
-		} else {
-			dList = dItem!.parent!.children;
-			if (dList instanceof Array) {
-				dIndex = dList.indexOf(dItem!);
-			}
-		}
-		if (dList) {
-			dList.splice(dIndex, 0, sItem);
-			// 步骤 2：unselect() 会触发派生重算，新节点必须先把 parent 建好（否则派生抛 No parent!）
-			if (sItem.parent === undefined) {
-				treeListStatics.createParents([sItem], null);
-			}
 			this.unselect();
+			// 步骤 5b：只有派生行一条路径——Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
+			this.syncRenderRows([]);
+			return this;
+		},
 
-			let item = dItem!;
-			while (item.parent !== undefined) {
-				if (item.expanded === false) {
-					item.expanded = true;
-				}
-				item = item.parent!;
+		on: function (
+			this: TreeListHost,
+			type: string,
+			listener: (event: Event) => void,
+			options?: boolean | AddEventListenerOptions
+		): void {
+			this.addEventListener(type, listener, options);
+			switch (type) {
+				case 'select':
+					this.selectEventEnabled = true;
+					break;
+				case 'unselect':
+					this.unselectEventEnabled = true;
+					break;
+				case 'record':
+					this.recordEventEnabled = true;
+					break;
+				case 'popup':
+					this.popupEventEnabled = true;
+					break;
+				case 'open':
+					this.openEventEnabled = true;
+					break;
+				case 'update':
+					this.updateEventEnabled = true;
+					break;
 			}
+		},
 
-			if (this.recordEventEnabled) {
-				const record: ValueEvent = new Event('record') as ValueEvent;
-				const response = {
-					type: 'create',
-					sItem: sItem,
-					dItem: dItem,
-					insertBefore: insertBefore
-				};
-				record.value = response;
-				this.dispatchEvent(record);
-			}
-
-			if (!sItem.parent) getListConfig(this).onCreate?.(sItem);
-			this.update();
-			this.select(sItem);
-			this.scrollToSelection();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	deleteNode: function (this: any, item: TreeItem): void {
-		const items = item.parent!.children!;
-		if (items instanceof Array) {
-			const index = items.indexOf(item);
-			items.splice(index, 1);
-
-			if (this.recordEventEnabled) {
-				const record: ValueEvent = new Event('record') as ValueEvent;
-				const response = {
-					type: 'delete',
-					items: items,
-					index: index,
-					item: item
-				};
-				record.value = response;
-				this.dispatchEvent(record);
-			}
-
-			this.unselectIn(item);
-			getListConfig(this).onDelete?.(item);
-			this.update();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	removeItemTo: function (this: any, sItem: TreeItem, dItem: TreeItem | null | undefined): void {
-		if (sItem === dItem || (getListConfig(this).lockDirectory && dItem === this.root)) {
-			return;
-		}
-		const sParent = sItem.parent;
-		if (sParent && dItem) {
-			const sList = sParent.children!;
-			const dList = dItem.children!;
-			const sIndex = sList.indexOf(sItem);
-			sList.splice(sIndex, 1);
-			const dIndex = dList.length;
-			dList.splice(dIndex, 0, sItem);
-			if (sList === dList && sIndex === dIndex) {
+		keydown: function (
+			this: TreeListHost,
+			event: KeyboardEvent & { cmdOrCtrlKey: boolean }
+		): void {
+			if (!this.data) {
 				return;
 			}
-			if (dItem.expanded === false) {
-				dItem.expanded = true;
-			}
-
-			if (this.recordEventEnabled) {
-				const record: ValueEvent = new Event('record') as ValueEvent;
-				const response = {
-					type: 'remove',
-					item: sItem,
-					source: {
-						parent: sParent,
-						index: sIndex
-					},
-					destination: {
-						parent: dItem,
-						index: dIndex
-					}
-				};
-				record.value = response;
-				this.dispatchEvent(record);
-			}
-			this.update();
-			getListConfig(this).onRemove?.(sItem);
-			this.scrollToSelection();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	removeItemToInsert: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
-		sItem: TreeItem,
-		dItem: TreeItem | null | undefined
-	): void {
-		if (sItem === dItem || (getListConfig(this).lockDirectory && dItem!.parent === this.root)) {
-			return;
-		}
-		const sParent = sItem.parent;
-		const dParent = dItem!.parent;
-		if (sParent && dParent) {
-			const sList = sParent.children!;
-			const dList = dParent.children!;
-			const sIndex = sList.indexOf(sItem);
-			sList.splice(sIndex, 1);
-			const dIndex = dList.indexOf(dItem!);
-			dList.splice(dIndex, 0, sItem);
-			if (sList === dList && sIndex === dIndex) {
+			if (event.cmdOrCtrlKey) {
+				switch (event.code) {
+					case 'ArrowUp':
+						this.scrollTop -= 20;
+						break;
+					case 'ArrowDown':
+						this.scrollTop += 20;
+						break;
+					default:
+						return;
+				}
+				event.stopImmediatePropagation();
+			} else if (event.altKey) {
 				return;
-			}
-
-			if (this.recordEventEnabled) {
-				const record: ValueEvent = new Event('record') as ValueEvent;
-				const response = {
-					type: 'remove',
-					item: sItem,
-					source: {
-						parent: sParent,
-						index: sIndex
-					},
-					destination: {
-						parent: dParent,
-						index: dIndex
+			} else {
+				switch (event.code) {
+					case 'Enter':
+					case 'NumpadEnter': {
+						const item = this.read();
+						if (item) {
+							event.preventDefault();
+							event.stopPropagation();
+							this.open(item);
+						}
+						break;
 					}
-				};
-				record.value = response;
-				this.dispatchEvent(record);
-			}
-			this.update();
-			getListConfig(this).onRemove?.(sItem);
-			this.scrollToSelection();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	restore: function (
-		// oxlint-disable-next-line no-explicit-any
-		this: any,
-		operation: string,
-		response: { type: string; [k: string]: unknown }
-	): void {
-		if (this.display === 'search') {
-			this.searchResults = [];
-		}
-		switch (response.type) {
-			case 'rename': {
-				const { item, oldValue, newValue } = response as unknown as {
-					item: TreeItem;
-					oldValue: string;
-					newValue: string;
-				};
-				if (operation === 'undo') {
-					item.name = oldValue;
-				} else {
-					item.name = newValue;
-				}
-				this.updateItemName(item);
-				this.expandToItem(item);
-				if (!this.textContent) {
-					this.update();
-				}
-				this.select(item);
-				this.scrollToSelection();
-				dispatchChangeEvent(this);
-				break;
-			}
-			case 'create': {
-				const { sItem, dItem, insertBefore } = response as unknown as {
-					sItem: TreeItem;
-					dItem: TreeItem | null | undefined;
-					insertBefore: boolean;
-				};
-				if (operation === 'undo') {
-					const enabled = this.recordEventEnabled;
-					this.recordEventEnabled = false;
-					this.deleteNode(sItem);
-					this.recordEventEnabled = enabled;
-				} else {
-					const enabled = this.recordEventEnabled;
-					this.recordEventEnabled = false;
-					this.addNodeTo(sItem, dItem, insertBefore);
-					this.recordEventEnabled = enabled;
-					getListConfig(this).onResume?.(sItem);
-				}
-				break;
-			}
-			case 'delete': {
-				const { items, index, item } = response as unknown as {
-					items: TreeItem[];
-					index: number;
-					item: TreeItem;
-				};
-				if (operation === 'undo') {
-					if (index <= items.length) {
-						items.splice(index, 0, item);
-						this.unselect();
-						this.expandToItem(item, false);
-						getListConfig(this).onResume?.(item);
-					}
-				} else {
-					if (index < items.length) {
-						items.splice(index, 1);
-						this.unselectIn(item);
-						getListConfig(this).onDelete?.(item);
-					}
-				}
-
-				this.update();
-				if (operation === 'undo') this.select(item);
-				this.scrollToSelection();
-				dispatchChangeEvent(this);
-				break;
-			}
-			case 'remove': {
-				const { item, source, destination } = response as unknown as {
-					item: TreeItem;
-					source: { parent: TreeItem; index: number };
-					destination: { parent: TreeItem; index: number };
-				};
-				const { parent: sParent, index: sIndex } = source;
-				const { parent: dParent, index: dIndex } = destination;
-				const sList = sParent.children!;
-				const dList = dParent.children!;
-				if (operation === 'undo') {
-					if (item.parent !== undefined) {
-						item.parent = sParent;
-					}
-					if (sIndex <= sList.length && dIndex < dList.length) {
-						dList.splice(dIndex, 1);
-						sList.splice(sIndex, 0, item);
-						this.expandToItem(item, false);
-					}
-				} else {
-					if (item.parent !== undefined) {
-						item.parent = dParent;
-					}
-					if (dIndex <= dList.length && sIndex < sList.length) {
-						sList.splice(sIndex, 1);
-						dList.splice(dIndex, 0, item);
-						this.expandToItem(item, false);
-					}
-				}
-				this.update();
-				this.select(item);
-				getListConfig(this).onRemove?.(item);
-				this.scrollToSelection();
-				dispatchChangeEvent(this);
-				break;
-			}
-		}
-	},
-
-	open: function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem | null | undefined
-	): void {
-		if (item && this.openEventEnabled) {
-			const open: ValueEvent = new Event('open') as ValueEvent;
-			open.value = item;
-			this.dispatchEvent(open);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	select: function (this: any, item: TreeItem | null | undefined): void {
-		if (item instanceof Object && this.read() !== item) {
-			this.unselect();
-			treeData(this).selections.push(item);
-			// 步骤 5b：不再直写行元素 class——选中态由派生行（row.selected）渲染，下面 syncRenderRows 即刷新
-			this.syncRenderRows();
-			if (this.selectEventEnabled) {
-				const select: ValueEvent = new Event('select') as ValueEvent;
-				select.value = this.read();
-				this.dispatchEvent(select);
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	selectWithNoEvent: function (this: any, item: TreeItem | null | undefined): void {
-		const enabled = this.selectEventEnabled;
-		this.selectEventEnabled = false;
-		this.select(item);
-		this.selectEventEnabled = enabled;
-	},
-
-	unselect: function (this: HTMLElement & { [k: string]: unknown }, item?: TreeItem): void {
-		const data = treeData(this);
-		let selections: TreeItem[] = [];
-		if (item === undefined) {
-			selections = data.selections;
-		}
-		if ((data.selections as (TreeItem | undefined)[]).includes(item)) {
-			selections = [item!];
-		}
-		if (selections.length !== 0) {
-			treeListStatics.textBox.input.blur();
-			// 步骤 5b：不再直写行元素 class——取消选中由派生行（row.selected）渲染，末尾 syncRenderRows 即刷新
-			if (this.unselectEventEnabled) {
-				const select: ValueEvent = new Event('unselect') as ValueEvent;
-				select.value = selections;
-				this.dispatchEvent(select);
-			}
-			data.selections = [];
-			if (this.renderState !== undefined) {
-				(this as unknown as { syncRenderRows: () => void }).syncRenderRows();
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	unselectIn: function (this: any, item: TreeItem): void {
-		const targets = [];
-		for (let target of treeData(this).selections) {
-			let node: TreeItem | null | undefined = target;
-			while (node) {
-				if (node === item) {
-					targets.push(target);
-					break;
-				}
-				node = node.parent;
-			}
-		}
-		for (const target of targets) {
-			this.unselect(target);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	selectRelative: function (this: any, direction: string): void {
-		const rows: { item: TreeItem }[] = this.renderState.rows.value;
-		const count = rows.length;
-		if (count > 0) {
-			let index = -1;
-			const last = count - 1;
-			const selection = this.read();
-			if (selection) {
-				index = this.rowIndexOf(selection);
-			}
-			switch (direction) {
-				case 'up':
-					if (index !== -1) {
-						index = Math.max(index - 1, 0);
-					} else {
-						index = last;
-					}
-					break;
-				case 'down':
-					if (index !== -1) {
-						index = Math.min(index + 1, last);
-					} else {
-						index = 0;
-					}
-					break;
-			}
-			this.select(rows[index]?.item);
-			this.scrollToSelection();
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	expandSelection: function (this: any): void {
-		const item = this.read();
-		if (item !== null && item.expanded !== undefined && rowElementOf(item) !== undefined) {
-			item.expanded = !item.expanded;
-			this.update();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	expandToSelection: function (this: any, update = true): void {
-		const item = this.read();
-		if (item !== null) {
-			this.expandToItem(item, update);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	expandToItem: function (this: any, item: TreeItem | null | undefined, update = true): void {
-		item = item!.parent!;
-		if (!item) return;
-		let changed = false;
-		while (item.expanded !== undefined) {
-			if (!item.expanded) {
-				item.expanded = true;
-				changed = true;
-			}
-			item = item.parent!;
-		}
-		if (changed && update) {
-			this.update();
-			dispatchChangeEvent(this);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	scrollToSelection: function (this: any, mode = 'active'): void {
-		const selection = this.read();
-		if (selection && hasScrollBar(this)) {
-			const rows: { item: TreeItem }[] = this.renderState.rows.value;
-			for (let i = 0; i < rows.length; i++) {
-				const item = rows[i]?.item;
-				if (item === selection) {
-					let scrollTop;
-					switch (mode) {
-						case 'active':
-							scrollTop = clamp(
-								this.scrollTop,
-								i * 20 + 20 - this.innerHeight,
-								i * 20
-							);
-							break;
-						case 'middle':
-							scrollTop = Math.round((i * 20 + 10 - this.innerHeight / 2) / 20) * 20;
-							break;
-						default:
-							return;
-					}
-					if (this.scrollTop !== scrollTop) {
-						this.scrollTop = scrollTop;
-						this.syncRenderWindow();
-					}
-					break;
-				}
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	scrollToHome: function (this: any): void {
-		const item = this.rowItemAt(0);
-		if (item !== undefined) {
-			this.select(item);
-		}
-		this.scroll(0, 0);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	scrollToEnd: function (this: any): void {
-		const item = this.rowItemAt(this.rowCount() - 1);
-		if (item !== undefined) {
-			this.select(item);
-		}
-		this.scroll(0, this.scrollHeight);
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	rowItemAt: function (this: any, index: number): TreeItem | undefined {
-		return this.renderState.rows.value[index]?.item;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	rowCount: function (this: any): number {
-		return this.renderState.rows.value.length;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	pageUp: function (this: any, select: boolean): void {
-		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
-		if (select) {
-			const bottom = this.scrollTop + this.clientHeight;
-			const bottomIndex = Math.floor(bottom / 20) - 1;
-			let index = this.getElementIndexOfSelection(Infinity);
-			index = Math.min(index, bottomIndex) - scrollLines;
-			index = Math.max(index, 0);
-			this.select(this.rowItemAt(index));
-		}
-		// 等价于 scrollBy(0, -delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
-		this.scrollTop -= scrollLines * 20;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	pageDown: function (this: any, select: boolean): void {
-		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
-		if (select) {
-			const count = this.rowCount();
-			const topIndex = Math.floor(this.scrollTop / 20);
-			let index = this.getElementIndexOfSelection(0);
-			index = Math.max(index, topIndex) + scrollLines;
-			index = Math.min(index, count - 1);
-			this.select(this.rowItemAt(index));
-		}
-		// 等价于 scrollBy(0, +delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
-		this.scrollTop += scrollLines * 20;
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	getElementIndexOfSelection: function (this: any, defIndex: number): number {
-		const item = this.read();
-		if (!item) return defIndex;
-		const index = this.rowIndexOf(item);
-		return index === -1 ? defIndex : index;
-	},
-
-	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
-		if (getListConfig(this).renamable) {
-			// 步骤 5b：行元素由渲染状态持有（窗口外的行未物化 → 直接不进入重命名）
-			const element = rowElementOf(item);
-			const { textBox } = treeListStatics;
-			if (
-				element !== undefined &&
-				document.activeElement === this &&
-				!textBox.parentNode &&
-				element.parentNode
-			) {
-				const nodes = [];
-				const { folderMark, nodeIcon } = elementDataOf<NodeElement>(element);
-				for (const node of element.childNodes) {
-					if (
-						node instanceof HTMLElement &&
-						node !== folderMark &&
-						node !== nodeIcon &&
-						addClass(node, 'hidden')
-					) {
-						nodes.push(node);
-					}
-				}
-				elementDataOf<{ lastText: string }>(textBox).lastText = rowData(element).textNode!
-					.nodeValue as string;
-				rowData(element).textNode!.nodeValue = '';
-				element.appendChild(textBox);
-				elementDataOf<{ hiddenNodes: HTMLElement[] | null }>(textBox).hiddenNodes = nodes;
-				textBox.write(item.name);
-				textBox.getFocus('all');
-				textBox.fitContent();
-			}
-		}
-	},
-
-	cancelRenaming: function (this: HTMLElement & { [k: string]: unknown }): void {
-		// P4b：`timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
-		const timer = treeData(this).timer;
-		if (timer.target) {
-			timer.target = null;
-		}
-		if (timer.running) {
-			timer.running = false;
-			timer.remove();
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	clear: function (this: any): HTMLElement {
-		if (this.display === 'search') {
-			this.display = 'normal';
-			treeData(this).keyword = null;
-			this.searchResults = [];
-		}
-		this.unselect();
-		// 步骤 5b：只有派生行一条路径——Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
-		this.syncRenderRows([]);
-		return this;
-	},
-
-	on: function (
-		this: HTMLElement & { [k: string]: unknown },
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void {
-		this.addEventListener(type, listener, options);
-		switch (type) {
-			case 'select':
-				this.selectEventEnabled = true;
-				break;
-			case 'unselect':
-				this.unselectEventEnabled = true;
-				break;
-			case 'record':
-				this.recordEventEnabled = true;
-				break;
-			case 'popup':
-				this.popupEventEnabled = true;
-				break;
-			case 'open':
-				this.openEventEnabled = true;
-				break;
-			case 'update':
-				this.updateEventEnabled = true;
-				break;
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	keydown: function (this: any, event: KeyboardEvent & { cmdOrCtrlKey: boolean }): void {
-		if (!this.data) {
-			return;
-		}
-		if (event.cmdOrCtrlKey) {
-			switch (event.code) {
-				case 'ArrowUp':
-					this.scrollTop -= 20;
-					break;
-				case 'ArrowDown':
-					this.scrollTop += 20;
-					break;
-				default:
-					return;
-			}
-			event.stopImmediatePropagation();
-		} else if (event.altKey) {
-			return;
-		} else {
-			switch (event.code) {
-				case 'Enter':
-				case 'NumpadEnter': {
-					const item = this.read();
-					if (item) {
+					case 'Space':
 						event.preventDefault();
-						event.stopPropagation();
-						this.open(item);
+						return;
+					case 'ArrowRight':
+						event.preventDefault();
+						this.expandSelection();
+						break;
+					case 'ArrowUp':
+						event.preventDefault();
+						this.selectRelative('up');
+						break;
+					case 'ArrowDown':
+						event.preventDefault();
+						this.selectRelative('down');
+						break;
+					// 分页键（步骤 1 缺口收口）：与搜索框的 searcherKeydown 语义一致——
+					// 选中随页移动 + 滚动联动；preventDefault 抑制浏览器自身的 PageUp/PageDown 滚动。
+					case 'PageUp':
+						event.preventDefault();
+						this.pageUp(true);
+						break;
+					case 'PageDown':
+						event.preventDefault();
+						this.pageDown(true);
+						break;
+					case 'F2': {
+						const item = this.read();
+						if (item) {
+							this.cancelRenaming();
+							this.rename(item);
+						}
+						break;
 					}
-					break;
+					default:
+						return;
 				}
-				case 'Space':
-					event.preventDefault();
-					return;
-				case 'ArrowRight':
-					event.preventDefault();
-					this.expandSelection();
-					break;
-				case 'ArrowUp':
-					event.preventDefault();
-					this.selectRelative('up');
-					break;
-				case 'ArrowDown':
-					event.preventDefault();
-					this.selectRelative('down');
-					break;
-				// 分页键（步骤 1 缺口收口）：与搜索框的 searcherKeydown 语义一致——
-				// 选中随页移动 + 滚动联动；preventDefault 抑制浏览器自身的 PageUp/PageDown 滚动。
-				case 'PageUp':
-					event.preventDefault();
-					this.pageUp(true);
-					break;
-				case 'PageDown':
-					event.preventDefault();
-					this.pageDown(true);
-					break;
-				case 'F2': {
-					const item = this.read();
-					if (item) {
-						this.cancelRenaming();
-						this.rename(item);
-					}
-					break;
-				}
-				default:
-					return;
+				event.stopImmediatePropagation();
 			}
-			event.stopImmediatePropagation();
-		}
-	},
+		},
 
-	// oxlint-disable-next-line no-explicit-any
-	pointerdown: function (this: any, event: PointerEvent): void {
-		this.dragend();
-		this.cancelRenaming();
-		switch (event.button) {
-			case 0: {
-				const element = event.target as NodeElement;
-				if (hasClass(element, 'folder-mark')) {
-					event.preventDefault();
-					const { item } = rowData(element.parentNode);
-					item!.expanded = !item!.expanded;
+		pointerdown: function (this: TreeListHost, event: PointerEvent): void {
+			this.dragend();
+			this.cancelRenaming();
+			switch (event.button) {
+				case 0: {
+					const element = event.target as NodeElement;
+					if (hasClass(element, 'folder-mark')) {
+						event.preventDefault();
+						const { item } = rowData(element.parentNode);
+						item!.expanded = !item!.expanded;
+						this.update();
+						dispatchChangeEvent(this);
+					} else {
+						if (hasClass(element, 'node-item')) {
+							// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
+							const item = rowData(element).item;
+							if (item !== undefined && this.read() !== item) {
+								this.select(item);
+							} else if (
+								getListConfig(this).renamable &&
+								this.getMenuState() === 'closed' &&
+								document.activeElement === this &&
+								event.clientX > (rect(rowData(element).nodeIcon)?.right ?? 0)
+							) {
+								treeData(this).timer.target = event.target;
+							}
+						}
+					}
+					break;
+				}
+				case 2: {
+					const element = seek(event.target, '.node-item');
+					const item = rowData(element).item;
+					if (
+						hasClass(element, 'node-item') &&
+						item !== undefined &&
+						this.read() !== item
+					) {
+						this.select(item);
+					}
+					break;
+				}
+			}
+		},
+
+		pointerup: function (this: TreeListHost, event: PointerEvent): void {
+			if (treeData(this).dragging || !this.data) {
+				return;
+			}
+			switch (event.button) {
+				case 0:
+					if (document.activeElement === this) {
+						const timer = treeData(this).timer;
+						if (timer.target === event.target) {
+							timer.running = true;
+							timer.elapsed = 0;
+							timer.add();
+						}
+					}
+					break;
+				case 2:
+					if (this.popupEventEnabled && document.activeElement === this) {
+						const element = seek(event.target, '.node-item');
+						const item = rowData(element).item;
+						// 步骤 5b：是否已选中按数据判断（pointerdown 选中后派生 class 要等一次 patch）
+						const isSelected = item !== undefined && this.read() === item;
+						const popup: PopupEvent = new Event('popup') as PopupEvent;
+						popup.value = hasClass(element, 'node-item') && isSelected ? item : null;
+						popup.clientX = event.clientX;
+						popup.clientY = event.clientY;
+						this.dispatchEvent(popup);
+					}
+					break;
+			}
+		},
+
+		doubleclick: function (this: TreeListHost, event: MouseEvent): void {
+			const element = event.target as NodeItemElement;
+			if (hasClass(element, 'node-item')) {
+				this.cancelRenaming();
+				const item = rowData(element).item!;
+				if (item.class === 'folder') {
+					item.expanded = !item.expanded;
 					this.update();
 					dispatchChangeEvent(this);
 				} else {
-					if (hasClass(element, 'node-item')) {
-						// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
-						const item = rowData(element).item;
-						if (item !== undefined && this.read() !== item) {
-							this.select(item);
-						} else if (
-							getListConfig(this).renamable &&
-							this.getMenuState() === 'closed' &&
-							document.activeElement === this &&
-							event.clientX > (rect(rowData(element).nodeIcon)?.right ?? 0)
-						) {
-							treeData(this).timer.target = event.target;
-						}
-					}
+					this.open(item);
 				}
-				break;
 			}
-			case 2: {
+		},
+
+		dragstart: function (this: TreeListHost, event: TreeListDragEvent): void {
+			if (
+				getListConfig(this).removable &&
+				!treeData(this).dragging &&
+				this.display === 'normal' &&
+				this.read() !== null &&
+				!treeListStatics.textBox.parentNode &&
+				(getListConfig(this).lockDirectory === false || this.read()!.class !== 'folder')
+			) {
+				treeData(this).dragging = event;
+				Object.defineProperty(event, 'offsetY', { writable: true });
+				event.preventDefault = () => {};
+				hideDragImage(event.dataTransfer);
+				event.hint = createDragAndDropHintElement();
+				addClass(event.hint, 'for-list');
+				this.parentNode!.insertBefore(hide(event.hint), this);
+				addClass(this, 'dragging');
+				// P2b-3：拖拽期间的临时监听器取自 `dragListeners`（`dragend` 要按**同一函数引用**拆掉，
+				// 所以不能在两处各写一个箭头），这里不再直接传 `this.dragenter` 这类方法引用。
+				const listeners = this.dragListeners;
+				this.addEventListener('dragenter', listeners.dragenter);
+				this.addEventListener('dragleave', listeners.dragleave);
+				this.addEventListener('dragover', listeners.dragover);
+				this.addEventListener('drop', listeners.drop);
+			}
+		},
+
+		dragend: function (this: TreeListHost, _event?: DragEvent): void {
+			const data = treeData(this);
+			if (data.dragging) {
+				removeClass(this, 'dragging');
+				// 拖拽起于本列表（`dragstart` 里 `parentNode.insertBefore` 装过 hint），故两者都必定存在
+				this.parentNode!.removeChild(data.dragging.hint!);
+				data.dragging = null;
+				// 步骤 4：hint 行 class 由派生行渲染，拖拽结束需重派生清除
+				this.syncRenderRows();
+				const listeners = this.dragListeners;
+				this.removeEventListener('dragenter', listeners.dragenter);
+				this.removeEventListener('dragleave', listeners.dragleave);
+				this.removeEventListener('dragover', listeners.dragover);
+				this.removeEventListener('drop', listeners.drop);
+			}
+		},
+
+		dragenter: function (this: TreeListHost, event: DragEvent): void {
+			if (treeData(this).dragging) {
+				event.preventDefault();
+				event.dataTransfer!.dropEffect = 'move';
+			}
+		},
+
+		dragleave: function (this: TreeListHost, event: DragEvent): void {
+			const data = treeData(this);
+			if (data.dragging && !this.contains(event.relatedTarget as Node)) {
+				data.dragging.offsetY = -1;
+				hide(data.dragging.hint);
+			}
+		},
+
+		dragover: function (this: TreeListHost, event: TreeListDragEvent): void {
+			const { dragging } = treeData(this);
+			if (dragging) {
+				event.preventDefault();
+				event.dataTransfer!.dropEffect = 'move';
+				if (dragging.offsetY === event.offsetY) {
+					return;
+				}
+				dragging.offsetY = event.offsetY;
 				const element = seek(event.target, '.node-item');
-				const item = rowData(element).item;
-				if (hasClass(element, 'node-item') && item !== undefined && this.read() !== item) {
-					this.select(item);
-				}
-				break;
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	pointerup: function (this: any, event: PointerEvent): void {
-		if (treeData(this).dragging || !this.data) {
-			return;
-		}
-		switch (event.button) {
-			case 0:
-				if (document.activeElement === this) {
-					const timer = treeData(this).timer;
-					if (timer.target === event.target) {
-						timer.running = true;
-						timer.elapsed = 0;
-						timer.add();
+				const hint = show(dragging.hint) as DragAndDropHintApi;
+				const hintState = hintData(hint);
+				if (hasClass(element, 'node-item')) {
+					const sItem = rowData(dragging.target).item;
+					const dItem = rowData(element).item!;
+					if (this.contain(sItem, dItem)) {
+						{
+							hide(hint);
+							return;
+						}
 					}
-				}
-				break;
-			case 2:
-				if (this.popupEventEnabled && document.activeElement === this) {
-					const element = seek(event.target, '.node-item');
-					const item = rowData(element).item;
-					// 步骤 5b：是否已选中按数据判断（pointerdown 选中后派生 class 要等一次 patch）
-					const isSelected = item !== undefined && this.read() === item;
-					const popup: PopupEvent = new Event('popup') as PopupEvent;
-					popup.value = hasClass(element, 'node-item') && isSelected ? item : null;
-					popup.clientX = event.clientX;
-					popup.clientY = event.clientY;
-					this.dispatchEvent(popup);
-				}
-				break;
-		}
-	},
 
-	// oxlint-disable-next-line no-explicit-any
-	doubleclick: function (this: any, event: MouseEvent): void {
-		const element = event.target as NodeItemElement;
-		if (hasClass(element, 'node-item')) {
-			this.cancelRenaming();
-			const item = rowData(element).item!;
-			if (item.class === 'folder') {
-				item.expanded = !item.expanded;
-				this.update();
-				dispatchChangeEvent(this);
-			} else {
-				this.open(item);
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	dragstart: function (this: any, event: TreeListDragEvent): void {
-		if (
-			getListConfig(this).removable &&
-			!treeData(this).dragging &&
-			this.display === 'normal' &&
-			this.read() !== null &&
-			!treeListStatics.textBox.parentNode &&
-			(getListConfig(this).lockDirectory === false || this.read()!.class !== 'folder')
-		) {
-			treeData(this).dragging = event;
-			Object.defineProperty(event, 'offsetY', { writable: true });
-			event.preventDefault = () => {};
-			hideDragImage(event.dataTransfer);
-			event.hint = createDragAndDropHintElement();
-			addClass(event.hint, 'for-list');
-			this.parentNode!.insertBefore(hide(event.hint), this);
-			addClass(this, 'dragging');
-			this.addEventListener('dragenter', this.dragenter);
-			this.addEventListener('dragleave', this.dragleave);
-			this.addEventListener('dragover', this.dragover);
-			this.addEventListener('drop', this.drop);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	dragend: function (this: any, _event?: DragEvent): void {
-		const data = treeData(this);
-		if (data.dragging) {
-			removeClass(this, 'dragging');
-			this.parentNode.removeChild(data.dragging.hint);
-			data.dragging = null;
-			// 步骤 4：hint 行 class 由派生行渲染，拖拽结束需重派生清除
-			this.syncRenderRows();
-			this.removeEventListener('dragenter', this.dragenter);
-			this.removeEventListener('dragleave', this.dragleave);
-			this.removeEventListener('dragover', this.dragover);
-			this.removeEventListener('drop', this.drop);
-		}
-	},
-
-	dragenter: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
-		if (treeData(this).dragging) {
-			event.preventDefault();
-			event.dataTransfer!.dropEffect = 'move';
-		}
-	},
-
-	dragleave: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
-		const data = treeData(this);
-		if (data.dragging && !this.contains(event.relatedTarget as Node)) {
-			data.dragging.offsetY = -1;
-			hide(data.dragging.hint);
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	dragover: function (this: any, event: TreeListDragEvent): void {
-		const { dragging } = treeData(this);
-		if (dragging) {
-			event.preventDefault();
-			event.dataTransfer!.dropEffect = 'move';
-			if (dragging.offsetY === event.offsetY) {
-				return;
-			}
-			dragging.offsetY = event.offsetY;
-			const element = seek(event.target, '.node-item');
-			const hint = show(dragging.hint) as DragAndDropHintApi;
-			const hintState = hintData(hint);
-			if (hasClass(element, 'node-item')) {
-				const sItem = rowData(dragging.target).item;
-				const dItem = rowData(element).item!;
-				if (this.contain(sItem, dItem)) {
-					{
-						hide(hint);
-						return;
+					const offsetY = event.offsetY!;
+					const position = dItem!.children
+						? offsetY < 4
+							? 'before'
+							: offsetY < 16
+								? 'into'
+								: 'after'
+						: offsetY < 10
+							? 'before'
+							: 'after';
+					switch (position) {
+						case 'into':
+							if (hintState.target !== element || hint.position !== position) {
+								const r = hint.measure(element);
+								hintState.target = element;
+								hint.position = position;
+								hint.moveDown().set(r);
+								// 步骤 4：行 hint class 由派生行渲染（position 变化需重派生）
+								this.syncRenderRows();
+							}
+							break;
+						case 'before':
+							if (hintState.target !== element || hint.position !== position) {
+								const r = hint.measure(element);
+								r.top -= 1;
+								r.height = 2;
+								hintState.target = element;
+								hint.position = position;
+								hint.moveUp().set(r);
+								this.syncRenderRows();
+							}
+							break;
+						case 'after':
+							if (hintState.target !== element || hint.position !== position) {
+								const r = hint.measure(element);
+								r.top += r.height - 1;
+								r.height = 2;
+								hintState.target = element;
+								hint.position = position;
+								hint.moveUp().set(r);
+								this.syncRenderRows();
+							}
+							break;
 					}
-				}
-
-				const offsetY = event.offsetY!;
-				const position = dItem!.children
-					? offsetY < 4
-						? 'before'
-						: offsetY < 16
-							? 'into'
-							: 'after'
-					: offsetY < 10
-						? 'before'
-						: 'after';
-				switch (position) {
-					case 'into':
-						if (hintState.target !== element || hint.position !== position) {
-							const r = hint.measure(element);
-							hintState.target = element;
-							hint.position = position;
-							hint.moveDown().set(r);
-							// 步骤 4：行 hint class 由派生行渲染（position 变化需重派生）
-							this.syncRenderRows();
-						}
-						break;
-					case 'before':
-						if (hintState.target !== element || hint.position !== position) {
-							const r = hint.measure(element);
-							r.top -= 1;
-							r.height = 2;
-							hintState.target = element;
-							hint.position = position;
-							hint.moveUp().set(r);
-							this.syncRenderRows();
-						}
-						break;
-					case 'after':
-						if (hintState.target !== element || hint.position !== position) {
-							const r = hint.measure(element);
-							r.top += r.height - 1;
-							r.height = 2;
-							hintState.target = element;
-							hint.position = position;
-							hint.moveUp().set(r);
-							this.syncRenderRows();
-						}
-						break;
-				}
-			} else {
-				// 步骤 5b：取"最后一行"的已物化元素（窗口外行同样为空 ⇒ 与旧 `elements[count-1]` 语义一致）
-				const state = renderStateOf(this) as TreeRenderState;
-				const rows = state.rows.value;
-				const lastRow = rows[rows.length - 1];
-				const element =
-					lastRow === undefined ? undefined : state.rowElements.get(lastRow.key);
-				if (
-					element !== undefined &&
-					(hintState.target !== element || hint.position !== 'append')
-				) {
-					const r = hint.measure(element);
-					r.top += r.height - 1;
-					r.height = 2;
-					hintState.target = element;
-					hint.position = 'append';
-					hint.moveUp().set(r);
-					this.syncRenderRows();
-				}
-			}
-		}
-	},
-
-	// oxlint-disable-next-line no-explicit-any
-	drop: function (this: any, event: DragEvent): void {
-		const { dragging } = treeData(this);
-		if (!dragging) {
-			return;
-		}
-		event.stopPropagation();
-		// drop 只在 dragstart 装配的拖拽流程里触发，此时 hint 必定存在（原 `dragging.hint` 同义）
-		const hint = dragging.hint!;
-		const hintState = hintData(hint);
-		if (!hasClass(hint, 'hidden')) {
-			const sItem = rowData(dragging.target).item;
-			const dItem = rowData(hintState.target).item;
-			if (hint.position !== 'append' && this.contain(sItem, dItem)) {
-				return;
-			}
-			switch (hint.position) {
-				case 'into':
-					this.removeItemTo(sItem, dItem);
-					break;
-				case 'before':
-					this.removeItemToInsert(sItem, dItem);
-					break;
-				case 'after':
-				case 'append': {
-					// 步骤 5b：先定位 hint.target 所在行，再取下一行的 item（语义同旧 `elements.indexOf` + 1）
+				} else {
+					// 步骤 5b：取"最后一行"的已物化元素（窗口外行同样为空 ⇒ 与旧 `elements[count-1]` 语义一致）
 					const state = renderStateOf(this) as TreeRenderState;
 					const rows = state.rows.value;
-					const index = rows.findIndex(
-						(row) => state.rowElements.get(row.key) === hintState.target
-					);
-					const next = rows[index + 1]?.item;
-					if (next) {
-						this.removeItemToInsert(sItem, next);
-					} else {
-						this.removeItemTo(sItem, this.root);
+					const lastRow = rows[rows.length - 1];
+					const element =
+						lastRow === undefined ? undefined : state.rowElements.get(lastRow.key);
+					if (
+						element !== undefined &&
+						(hintState.target !== element || hint.position !== 'append')
+					) {
+						const r = hint.measure(element);
+						r.top += r.height - 1;
+						r.height = 2;
+						hintState.target = element;
+						hint.position = 'append';
+						hint.moveUp().set(r);
+						this.syncRenderRows();
 					}
-					break;
 				}
 			}
-		}
+		},
 
-		this.dragend();
-	},
+		drop: function (this: TreeListHost, event: DragEvent): void {
+			const { dragging } = treeData(this);
+			if (!dragging) {
+				return;
+			}
+			event.stopPropagation();
+			// drop 只在 dragstart 装配的拖拽流程里触发，此时 hint 必定存在（原 `dragging.hint` 同义）
+			const hint = dragging.hint!;
+			const hintState = hintData(hint);
+			if (!hasClass(hint, 'hidden')) {
+				// 拖拽源与 hint 指向的目标行都必定是已物化行（`dragover` 才会给 hint 定 target）
+				const sItem = rowData(dragging.target).item!;
+				const dItem = rowData(hintState.target).item!;
+				if (hint.position !== 'append' && this.contain(sItem, dItem)) {
+					return;
+				}
+				switch (hint.position) {
+					case 'into':
+						this.removeItemTo(sItem, dItem);
+						break;
+					case 'before':
+						this.removeItemToInsert(sItem, dItem);
+						break;
+					case 'after':
+					case 'append': {
+						// 步骤 5b：先定位 hint.target 所在行，再取下一行的 item（语义同旧 `elements.indexOf` + 1）
+						const state = renderStateOf(this) as TreeRenderState;
+						const rows = state.rows.value;
+						const index = rows.findIndex(
+							(row) => state.rowElements.get(row.key) === hintState.target
+						);
+						const next = rows[index + 1]?.item;
+						if (next) {
+							this.removeItemToInsert(sItem, next);
+						} else {
+							this.removeItemTo(sItem, this.root);
+						}
+						break;
+					}
+				}
+			}
 
-	// oxlint-disable-next-line no-explicit-any
-	dataChange: function (this: any, _event: Event): void {
-		if (this.display === 'search') {
-			this.searchNodes(treeData(this).keyword);
+			this.dragend();
+		},
+
+		dataChange: function (this: TreeListHost, _event: Event): void {
+			if (this.display === 'search') {
+				// `display === 'search'` 时 keyword 必已写入（与 `updateItemName` 同一不变式）
+				this.searchNodes(treeData(this).keyword!);
+			}
 		}
-	}
-};
+	};
 
 export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions): HTMLElement {
-	// oxlint-disable-next-line no-explicit-any
-	const list = el as HTMLElement & { [k: string]: any };
+	const list = el as TreeListHost;
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
@@ -1528,8 +1634,11 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.renderState = createTreeRenderState(list);
 	attachApi<TreeListElementApi>(list, { getMenuState });
 
+	// 原型表是动态键集合（`Object.keys` 驱动），这里显式落到索引访问上；
+	// 其余成员访问一律走 `TreeListHost` 的逐项声明。
+	const prototypeSink = list as unknown as Record<string, unknown>;
 	for (const name of Object.keys(treeListPrototype)) {
-		list[name] = treeListPrototype[name];
+		prototypeSink[name] = (treeListPrototype as Record<string, unknown>)[name];
 	}
 
 	// P4b: the attach guard now lives in element data (helper in element-data.ts)
@@ -1540,16 +1649,11 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const listConfig = getListConfig(list);
 	listConfig.creators = [];
 	listConfig.updaters = [];
-	list.syncRenderRows = function (
-		this: HTMLElement & { [k: string]: unknown },
-		overrideRows?: unknown
-	): void {
+	list.syncRenderRows = function (this: TreeListHost, overrideRows?: unknown): void {
 		const state = renderStateOf(this) as TreeRenderState;
-		// oxlint-disable-next-line no-explicit-any
-		const self = this as any;
-		self.initialize();
+		this.initialize();
 		// P4b：`selections` / `dragging` 走显式元素数据；`?.` 链一律保留（hint/target 可能为空）
-		const listOwnerData = treeData(self);
+		const listOwnerData = treeData(this);
 		const draggingHint = listOwnerData.dragging?.hint;
 		const hintItem =
 			draggingHint?.position === 'into'
@@ -1559,38 +1663,33 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			overrideRows !== undefined
 				? (overrideRows as ReturnType<typeof flattenRows>)
 				: flattenRows(state, {
-						display: self.display,
-						data: self.data ?? null,
-						searchResults: self.searchResults ?? [],
-						foldable: getListConfig(self).foldable === true,
-						parseName: (item: TreeItem) => self.parseName(item),
+						display: this.display,
+						data: this.data ?? null,
+						searchResults: this.searchResults ?? [],
+						foldable: getListConfig(this).foldable === true,
+						parseName: (item: TreeItem) => this.parseName(item),
 						selections: listOwnerData.selections ?? [],
 						// 步骤 4：与旧实现一致——只有 'into' 位置才给目标行加 hint class
 						hintItem,
-						root: (self.root ?? null) as TreeItem | null
+						root: (this.root ?? null) as TreeItem | null
 					});
 		state.rows.value = rows;
 		state.bump();
-		(self.syncRenderWindow as () => void)();
+		this.syncRenderWindow();
 	};
 	/** 同步虚拟窗口（start/end）——步骤 5b 后 `elements` shim 已删，这里只剩窗口计算 */
-	list.syncRenderWindow = function (this: HTMLElement & { [k: string]: unknown }): void {
+	list.syncRenderWindow = function (this: TreeListHost): void {
 		const state = renderStateOf(this) as TreeRenderState;
-		// oxlint-disable-next-line no-explicit-any
-		const self = this as any;
 		const rows = state.rows.value;
 		const { start, end } = computeWindow(
-			self.scrollTop ?? 0,
-			self.clientHeight ?? 0,
+			this.scrollTop ?? 0,
+			this.clientHeight ?? 0,
 			rows.length
 		);
 		state.start.value = start;
 		state.end.value = end;
 	};
-	list.rowIndexOf = function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem
-	): number {
+	list.rowIndexOf = function (this: TreeListHost, item: TreeItem): number {
 		const state = renderStateOf(this) as TreeRenderState;
 		const rows = state.rows.value;
 		for (let i = 0; i < rows.length; i++) {
@@ -1599,7 +1698,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		return -1;
 	};
 	list.setItemClass = function (
-		this: HTMLElement & { [k: string]: unknown },
+		this: TreeListHost,
 		item: TreeItem,
 		className: string,
 		on = true
@@ -1609,57 +1708,41 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	};
 	list.rowHeight = ROW_HEIGHT;
 	// 行元素绑定（模板 :ref 回调）：维护行元素上的内部字段，并跑 creators/updaters 钩子
-	list.bindRow = function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem,
-		el: unknown
-	): void {
+	list.bindRow = function (this: TreeListHost, item: TreeItem, el: unknown): void {
 		const state = renderStateOf(this);
 		if (state === undefined) return;
-		// oxlint-disable-next-line no-explicit-any
-		const self = this as any;
 		const firstBind = el instanceof HTMLElement && rowElementOf(item) !== el;
 		bindRowElement(state, item, el);
 		if (firstBind) {
-			for (const creator of getListConfig(self).creators) creator(item);
+			for (const creator of getListConfig(this).creators) creator(item);
 		}
 	};
-	list.bindNodeIcon = function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem,
-		el: HTMLElement
-	): void {
+	list.bindNodeIcon = function (this: TreeListHost, item: TreeItem, el: HTMLElement): void {
 		const row = rowElementOf(item);
 		if (row !== undefined) rowData(row).nodeIcon = el;
 	};
-	list.bindNodeExtras = function (
-		this: HTMLElement & { [k: string]: unknown },
-		item: TreeItem,
-		el: HTMLElement
-	): void {
+	list.bindNodeExtras = function (this: TreeListHost, item: TreeItem, el: HTMLElement): void {
 		const row = rowElementOf(item);
 		if (row !== undefined) row.extras = el;
 	};
-	list.applyRowUpdaters = function (this: HTMLElement & { [k: string]: unknown }): void {
+	list.applyRowUpdaters = function (this: TreeListHost): void {
 		const state = renderStateOf(this);
 		if (state === undefined) return;
-		// oxlint-disable-next-line no-explicit-any
-		const self = this as any;
-		const updaters = getListConfig(self).updaters as ((item: TreeItem) => void)[];
+		const updaters = getListConfig(this).updaters as ((item: TreeItem) => void)[];
 		for (const el of state.rowElements.values()) {
 			// P4b：行元素的 item / nodeIcon 走显式元素数据
 			const elData = rowData(el);
 			const item = elData.item;
 			if (item === undefined) continue;
 			// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
-			if (typeof self.renderNodeIcon === 'function') {
-				if (elData.nodeIcon) self.renderNodeIcon(item, elData.nodeIcon);
+			if (typeof this.renderNodeIcon === 'function') {
+				if (elData.nodeIcon) this.renderNodeIcon(item, elData.nodeIcon);
 			} else if (
 				elData.nodeIcon === undefined ||
 				elData.nodeIcon === null ||
 				elData.nodeIcon.classList?.contains('tree-node-icon-placeholder')
 			) {
-				const created = self.createIcon(item) as HTMLElement;
+				const created = this.createIcon(item);
 				if (elData.nodeIcon != null && elData.nodeIcon.parentNode === el) {
 					elData.nodeIcon.replaceWith(created);
 				} else {
@@ -1668,19 +1751,20 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 				elData.nodeIcon = created;
 			}
 			for (const updater of updaters) updater(item);
-			if (typeof self.renderNodeExtras === 'function' && el.extras) {
-				self.renderNodeExtras(item, el.extras);
+			if (typeof this.renderNodeExtras === 'function' && el.extras) {
+				this.renderNodeExtras(item, el.extras);
 			}
 			// 兼容扩展点：消费方实例级覆写 updateNodeElement（如 text-tip 的富行内容）
 			// 时按其语义调用；默认实现已在步骤 5 删除，故此处不会触发内置渲染。
-			if (typeof self.updateNodeElement === 'function') {
-				self.updateNodeElement(el);
+			if (typeof this.updateNodeElement === 'function') {
+				this.updateNodeElement(el);
 			}
 		}
 	};
+	// 根"节点"：`{ children: data }` 的惰性视图（历史语义），显式断言成 `TreeItem`
 	list.root = Object.defineProperty({}, 'children', {
 		get: () => list.data
-	});
+	}) as TreeItem;
 	treeData(list).timer = new Timer({
 		duration: 500,
 		callback: (timer: Timer) => {
@@ -1713,14 +1797,23 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.updateEventEnabled = false;
 	list.tabIndex = 0;
 
-	list.addEventListener('scroll', list.resize);
-	list.addEventListener('keydown', list.keydown);
-	list.addEventListener('pointerdown', list.pointerdown);
-	list.addEventListener('pointerup', list.pointerup);
-	attachDoubleclick(list, list.doubleclick);
-	list.addEventListener('dragstart', list.dragstart);
-	list.addEventListener('dragend', list.dragend);
-	list.addEventListener('change', list.dataChange);
+	// P2b-3：拖拽临时监听器一次生成（箭头包装把接收者写死为本元素），
+	// 这样 `dragstart` 装、`dragend` 拆拿到的必然是同一个函数对象。
+	list.dragListeners = {
+		dragenter: (event) => list.dragenter(event),
+		dragleave: (event) => list.dragleave(event),
+		dragover: (event) => list.dragover(event),
+		drop: (event) => list.drop(event)
+	};
+
+	list.addEventListener('scroll', () => list.resize());
+	list.addEventListener('keydown', (event) => list.keydown(event));
+	list.addEventListener('pointerdown', (event) => list.pointerdown(event));
+	list.addEventListener('pointerup', (event) => list.pointerup(event));
+	attachDoubleclick(list, (event) => list.doubleclick(event));
+	list.addEventListener('dragstart', (event) => list.dragstart(event as TreeListDragEvent));
+	list.addEventListener('dragend', (event) => list.dragend(event));
+	list.addEventListener('change', (event) => list.dataChange(event));
 
 	return el;
 }

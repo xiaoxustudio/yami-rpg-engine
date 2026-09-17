@@ -1736,20 +1736,5 @@ GL.createTextureFBO = function (texture: TextureFBOShape) {
 	return fbo;
 };
 
-CanvasRenderingContext2D.prototype.resize = function (width, height) {
-	const canvas = this.canvas;
-	if (canvas.width === width && canvas.height === height) {
-		canvas.width = width;
-	} else {
-		// 尽量少的画布缓冲区重置次数
-		if (canvas.width !== width) {
-			canvas.width = width;
-		}
-		if (canvas.height !== height) {
-			canvas.height = height;
-		}
-	}
-};
-
 // 初始化WebGL上下文 必须立即调用（不能延到 requestAnimationFrame）：Printer.initialize 等启动期同步代码 会裸取 GL.arrays[1].uint32 / GL.textureManager.images，若 initialize 没跑过会炸 undefined。webgl-init.js 的 IIFE 已在模块求值期就绪 GL 上下文，此处立即初始化属性安全
 GL.initialize();

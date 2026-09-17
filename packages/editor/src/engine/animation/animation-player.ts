@@ -14,6 +14,9 @@ import {
 	AnimationImageMap,
 	AnimationTextureMap
 } from '@app/types/animation-player.ts';
+import { clamp, radians, modRadians } from '@app/utils/math';
+import { empty as fnEmpty } from '@app/utils/function';
+import { remove } from '@app/utils/array';
 
 interface AnimationData {
 	sprites: Array<AnimationSprite & { image: string }>;
@@ -70,7 +73,7 @@ export class AnimationPlayer {
 		this.direction = -1;
 		this.mirror = false;
 		this.data = animation;
-		this.dirMap = Array.empty;
+		this.dirMap = [];
 		this.dirCases = null;
 		this.layers = null;
 		this.motion = null;
@@ -130,7 +133,7 @@ export class AnimationPlayer {
 	setAngle(angle: number) {
 		this.angle = angle;
 		const directions = this.dirMap.length;
-		const proportion = Math.modRadians(angle) / (Math.PI * 2);
+		const proportion = modRadians(angle) / (Math.PI * 2);
 		const section = (proportion * directions + 0.5) % directions;
 		const direction = Math.floor(section);
 		const dirChanged = this.setDirection(direction);
@@ -164,7 +167,7 @@ export class AnimationPlayer {
 	}
 
 	goto(index: number) {
-		index = Math.clamp(index, 0, this.length - 1);
+		index = clamp(index, 0, this.length - 1);
 		// 跳转到前面的动画帧时增加循环计数
 		if (index < this.index) {
 			this.cycleIndex++;
@@ -425,8 +428,8 @@ export class AnimationPlayer {
 		const anchor =
 			light !== 'anchor'
 				? 0
-				: Math.round(Math.clamp(this.anchorX, 0, 1) * 0xffff) |
-					(Math.round(Math.clamp(this.anchorY, 0, 1) * 0xffff) << 16);
+				: Math.round(clamp(this.anchorX, 0, 1) * 0xffff) |
+					(Math.round(clamp(this.anchorY, 0, 1) * 0xffff) << 16);
 		vertices[vi] = x1;
 		vertices[vi + 1] = y1;
 		vertices[vi + 2] = sl;
@@ -546,7 +549,7 @@ export class AnimationPlayer {
 				emitter.disabled = true;
 				if (emitter.isEmpty()) {
 					emitter.destroy();
-					this.emitters.remove(emitter);
+					remove(this.emitters, emitter);
 				}
 				delete context.emitter;
 			}
@@ -694,7 +697,7 @@ export class AnimationPlayer {
 					context.update = AnimationPlayer.contextUpdateParticle;
 					break;
 				case 'sound':
-					context.update = Function.empty;
+					context.update = fnEmpty;
 					break;
 			}
 			if (layer.class === 'joint') {
@@ -746,7 +749,7 @@ export class AnimationPlayer {
 			scaleY = scaleY * reverse + next.scaleY * time!;
 			opacity = opacity * reverse + next.opacity * time!;
 		}
-		matrix.translate(positionX, positionY).rotate(Math.radians(rotation)).scale(scaleX, scaleY);
+		matrix.translate(positionX, positionY).rotate(radians(rotation)).scale(scaleX, scaleY);
 		this.opacity *= opacity;
 		this.frame = frame;
 	}
@@ -772,10 +775,10 @@ export class AnimationPlayer {
 			anchorY = anchorY * reverse + next.anchorY * time!;
 			pivotX = pivotX * reverse + next.pivotX * time!;
 			pivotY = pivotY * reverse + next.pivotY * time!;
-			red = Math.clamp(red * reverse + next.tint[0] * time!, -255, 255);
-			green = Math.clamp(green * reverse + next.tint[1] * time!, -255, 255);
-			blue = Math.clamp(blue * reverse + next.tint[2] * time!, -255, 255);
-			gray = Math.clamp(gray * reverse + next.tint[3] * time!, 0, 255);
+			red = clamp(red * reverse + next.tint[0] * time!, -255, 255);
+			green = clamp(green * reverse + next.tint[1] * time!, -255, 255);
+			blue = clamp(blue * reverse + next.tint[2] * time!, -255, 255);
+			gray = clamp(gray * reverse + next.tint[3] * time!, 0, 255);
 		}
 		let tint = this.tint;
 		if (tint === undefined) {

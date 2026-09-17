@@ -11,6 +11,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { ctrl } from '@app/utils/event-accessors';
 import { show, hide } from '@app/utils/element-utils.ts';
+import { clone as deepClone } from '@app/utils/object';
 
 PluginManager.overviewPointerdown = (function IIFE() {
 	const once = { once: true };
@@ -62,7 +63,7 @@ PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 
 		let plugins = this.data;
 		if (event instanceof Event) {
-			plugins = Object.clone(plugins);
+			plugins = deepClone(plugins);
 		} else {
 			TreeList.deleteCaches(
 				plugins as unknown as Parameters<typeof TreeList.deleteCaches>[0]

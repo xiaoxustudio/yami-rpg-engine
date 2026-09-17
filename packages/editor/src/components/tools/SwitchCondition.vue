@@ -98,6 +98,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { form } from '@app/composables/useSwitchConditionSchema';
+import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -110,7 +111,7 @@ onMounted(() => {
 	for (const id of ['switch-condition-keyboard-keycode', 'switch-condition-gamepad-button']) {
 		registerElement(composableEls, id, fieldEls.get(id));
 	}
-	const typeEl = fieldEls.get('switch-condition-type') as HTMLElement;
+	const typeEl = fieldEls.get('switch-condition-type') as YamiElement;
 	if (!typeEl) return;
 	typeEl.loadItems([
 		{ name: 'None', value: 'none' },

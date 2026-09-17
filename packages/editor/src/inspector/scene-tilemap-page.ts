@@ -110,7 +110,9 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneTilemap-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -129,7 +131,9 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 
 	SceneTilemap.write = function (this: typeof SceneTilemap, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('sceneTilemap-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 

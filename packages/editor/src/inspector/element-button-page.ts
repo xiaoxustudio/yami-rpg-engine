@@ -4,6 +4,7 @@ import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import type { ButtonForm } from '@app/composables/useUIButtonPage';
+import type { YamiEvent } from '@app/types/editor-event';
 
 {
 	interface UIButtonShape {
@@ -100,7 +101,9 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 			Inspector.uiElement.open(node);
 
 			(
-				inspectorEls.get('uiButton-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiButton-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -125,7 +128,7 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 		switch (key) {
 			case 'horizontalAlign':
 				if (node.horizontalAlign !== value) {
-					const event = window.event;
+					const event = window.event as YamiEvent | null;
 					if (event && event.type === 'input' && event.value !== undefined) {
 						UI.history.save({
 							type: 'inspector-change',
@@ -151,7 +154,7 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 				break;
 			case 'verticalAlign':
 				if (node.verticalAlign !== value) {
-					const event = window.event;
+					const event = window.event as YamiEvent | null;
 					if (event && event.type === 'input' && event.value !== undefined) {
 						UI.history.save({
 							type: 'inspector-change',
@@ -242,7 +245,7 @@ import type { ButtonForm } from '@app/composables/useUIButtonPage';
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
 					const form = (
-						inspectorEls.get('uiButton-vue-mount') as
+						inspectorEls.get('uiButton-vue-mount') as unknown as unknown as
 							| (HTMLElement & { form?: ButtonForm })
 							| null
 					)?.form;

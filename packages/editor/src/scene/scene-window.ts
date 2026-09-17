@@ -59,11 +59,11 @@ interface SceneListExtensions {
 }
 
 interface SceneShape {
-	page: HTMLElement;
+	page: YamiElement;
 	head: HTMLElement & { width?: number };
-	body: HTMLElement & { hide(): HTMLElement; show(): HTMLElement };
-	info: HTMLElement;
-	screen: HTMLElement & { updateScrollbars: () => void };
+	body: YamiElement;
+	info: YamiElement;
+	screen: YamiElement;
 	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
 	// oxlint-disable-next-line no-explicit-any
 	marquee: HTMLElement & { [k: string]: any };
@@ -149,16 +149,14 @@ export interface SceneContextShape {
 type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
 export const Scene: SceneShape = {
-	page: sceneEls.get('scene') as HTMLElement,
-	head: sceneEls.get('scene-head') as HTMLElement,
-	body: hide(sceneEls.get('scene-body') as HTMLElement),
-	info: sceneEls.get('scene-info') as HTMLElement,
-	screen: sceneEls.get('scene-screen') as HTMLElement & {
-		updateScrollbars: () => void;
-	},
+	page: sceneEls.get('scene') as YamiElement,
+	head: sceneEls.get('scene-head') as YamiElement,
+	body: hide(sceneEls.get('scene-body') as YamiElement),
+	info: sceneEls.get('scene-info') as YamiElement,
+	screen: sceneEls.get('scene-screen') as YamiElement,
 	// oxlint-disable-next-line no-explicit-any
 	marquee: sceneEls.get('scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
-	searcher: sceneEls.get('scene-searcher') as HTMLElement,
+	searcher: sceneEls.get('scene-searcher') as YamiElement,
 	list: (sceneEls.get('scene-list') as unknown as never) || ({} as never),
 	dragging: null,
 	brush: null,
@@ -448,10 +446,10 @@ Scene.marquee.getTiles = null;
 // P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
 	'scene-object'
-) as HTMLElement;
+) as YamiElement;
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
-) as HTMLElement;
+) as YamiElement;
 // oxlint-disable-next-line no-explicit-any
 Scene.list.copy = null as unknown as (...args: unknown[]) => any;
 // oxlint-disable-next-line no-explicit-any
@@ -481,21 +479,19 @@ getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
-	this.page = sceneEls.get('scene') as HTMLElement;
-	this.head = sceneEls.get('scene-head') as HTMLElement;
-	this.body = hide(sceneEls.get('scene-body') as HTMLElement);
-	this.info = sceneEls.get('scene-info') as HTMLElement;
-	this.screen = sceneEls.get('scene-screen') as HTMLElement & {
-		updateScrollbars: () => void;
-	};
+	this.page = sceneEls.get('scene') as YamiElement;
+	this.head = sceneEls.get('scene-head') as YamiElement;
+	this.body = hide(sceneEls.get('scene-body') as YamiElement);
+	this.info = sceneEls.get('scene-info') as YamiElement;
+	this.screen = sceneEls.get('scene-screen') as YamiElement;
 	const oldMarquee = this.marquee;
-	this.marquee = sceneEls.get('scene-marquee') as HTMLElement;
+	this.marquee = sceneEls.get('scene-marquee') as YamiElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = sceneEls.get('scene-searcher') as HTMLElement;
+	this.searcher = sceneEls.get('scene-searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = sceneEls.get('scene-list') as HTMLElement as unknown as HTMLElement &
+	this.list = sceneEls.get('scene-list') as unknown as HTMLElement &
 		// oxlint-disable-next-line no-explicit-any
 		SceneListExtensions & { [k: string]: any };
 	if (oldList && this.list && oldList !== this.list) {
@@ -504,10 +500,10 @@ Scene.initialize = function (this: SceneShape) {
 	// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = sceneEls.get(
 		'scene-object'
-	) as HTMLElement;
+	) as YamiElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = sceneEls.get(
 		'scene-list-head'
-	) as HTMLElement;
+	) as YamiElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	this.translationTimer = new Timer({
@@ -534,8 +530,8 @@ Scene.initialize = function (this: SceneShape) {
 				const screen = this.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				const cx = Math.roundTo(meta.x + x, 4);
-				const cy = Math.roundTo(meta.y + y, 4);
+				const cx = roundTo(meta.x + x, 4);
+				const cy = roundTo(meta.y + y, 4);
 				this.updateCamera!(cx, cy);
 				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
@@ -693,11 +689,19 @@ Scene.initialize = function (this: SceneShape) {
 	) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
-			list.restoreRecursiveStates!(item, 'hidden', oldValues);
+			list.restoreRecursiveStates!(
+				item as unknown as SceneListItem,
+				'hidden',
+				oldValues as unknown as SceneListItem[]
+			);
 		} else {
-			list.setRecursiveStates!(item, 'hidden', newValue);
+			list.setRecursiveStates!(
+				item as unknown as SceneListItem,
+				'hidden',
+				newValue as unknown as boolean
+			);
 		}
-		list.updateFolderState(item.parent, 'hidden');
+		list.updateFolderState(item.parent as unknown as SceneListItem, 'hidden');
 		list.update();
 		Scene.requestRendering!();
 		Scene.planToSave!();
@@ -708,11 +712,19 @@ Scene.initialize = function (this: SceneShape) {
 	) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
-			list.restoreRecursiveStates!(item, 'locked', oldValues);
+			list.restoreRecursiveStates!(
+				item as unknown as SceneListItem,
+				'locked',
+				oldValues as unknown as SceneListItem[]
+			);
 		} else {
-			list.setRecursiveStates!(item, 'locked', newValue);
+			list.setRecursiveStates!(
+				item as unknown as SceneListItem,
+				'locked',
+				newValue as unknown as boolean
+			);
 		}
-		list.updateFolderState(item.parent, 'locked');
+		list.updateFolderState(item.parent as unknown as SceneListItem, 'locked');
 		list.update();
 		Scene.planToSave!();
 	};
@@ -897,7 +909,7 @@ Scene.initialize = function (this: SceneShape) {
 		const { editor, target, angle } = data;
 		data.angle = target.angle;
 		target.angle = angle;
-		target.player.setAngle(Math.radians(angle));
+		target.player.setAngle(radians(angle));
 		if (editor.target === target) {
 			write(editor, { angle });
 		}
@@ -1290,8 +1302,6 @@ Scene.computeObjectShifting = function (this: SceneShape, ox: number, oy: number
 	for (const key of keys) {
 		length += this[key].length;
 	}
-	// oxlint-disable-next-line unbound-method
-	const clamp = Math.clamp;
 	const targets = Array.from({ length: length });
 	const posX = new Float64Array(length);
 	const posY = new Float64Array(length);
@@ -1341,8 +1351,8 @@ Scene.paste = function (this: SceneShape, x?: number, y?: number) {
 				case 'animation':
 				case 'particle':
 				case 'parallax':
-					data.x = Math.clamp(Math.floor(x!), 0, this.width - 1) + 0.5;
-					data.y = Math.clamp(Math.floor(y!), 0, this.height - 1) + 0.5;
+					data.x = clamp(Math.floor(x!), 0, this.width - 1) + 0.5;
+					data.y = clamp(Math.floor(y!), 0, this.height - 1) + 0.5;
 					break;
 			}
 		});
@@ -1531,6 +1541,8 @@ const sceneBridgeKeys = [
 	'scaleY'
 ] as const;
 import { getSceneStore } from '@app/stores/scene';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp, roundTo, radians } from '@app/utils/math';
 
 for (const key of sceneBridgeKeys) {
 	Object.defineProperty(Scene, key, {

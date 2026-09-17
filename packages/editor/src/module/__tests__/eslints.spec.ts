@@ -8,6 +8,7 @@ import {
 	updateCommandElement
 } from '@app/module/eslints.ts';
 import { YMCommandList, type CommandListApiOptions } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
 
 type CommandItemElement = Parameters<typeof updateCommandElement>[0];
 
@@ -34,10 +35,9 @@ const createFakeThis = (): typeof CommandList & {
 	elements: { count: 0, findIndex: () => -1 }
 });
 
-
 /** 取渲染出来的行元素（换源后行归模板渲染；api 侧 elements 是离屏元素） */
-const renderedRows = (el: HTMLElement): (HTMLElement & { lines?: HTMLElement[] })[] =>
-	Array.from(el.querySelectorAll<HTMLElement & { lines?: HTMLElement[] }>('.command-item'));
+const renderedRows = (el: HTMLElement): (YamiElement & { lines?: HTMLElement[] })[] =>
+	Array.from(el.querySelectorAll<YamiElement & { lines?: HTMLElement[] }>('.command-item'));
 
 /** 挂载命令列表组件（换源后必须走组件，行元素才会被渲染） */
 const mountCommandList = async (options: CommandListApiOptions): Promise<HTMLElement> => {
@@ -213,15 +213,12 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 					return [
 						{ fold: true },
 						{ color: 'normal' },
-						// oxlint-disable-next-line no-base-to-string
 						{ text: String(item.id) },
 						{ children: cmds },
 						{ color: 'normal' },
-						// oxlint-disable-next-line no-base-to-string
 						{ text: String(item.id) + '.end' }
 					];
 				}
-				// oxlint-disable-next-line no-base-to-string
 				return [{ color: 'normal' }, { text: String(item.id) }];
 			},
 			fetchVariables: () => [],
@@ -250,7 +247,7 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 
 	it('循环块 + 顶层等待 + 最后一行：块 header line-start、块结束行（footer）line-end、顶层普通行隐藏', async () => {
 		ensureUpdateCommandElementOverride();
-		const el = await mountCommandList(makeOptions()) as unknown as HTMLElement & {
+		const el = (await mountCommandList(makeOptions())) as unknown as HTMLElement & {
 			write: (data: unknown[]) => void;
 			update: () => void;
 			elements: {
@@ -321,7 +318,7 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 
 	it('write 后立即经 resize 应用折叠线（不依赖额外 update 派发）', async () => {
 		ensureUpdateCommandElementOverride();
-		const el = await mountCommandList(makeOptions()) as unknown as HTMLElement & {
+		const el = (await mountCommandList(makeOptions())) as unknown as HTMLElement & {
 			write: (data: unknown[]) => void;
 			elements: {
 				count: number;

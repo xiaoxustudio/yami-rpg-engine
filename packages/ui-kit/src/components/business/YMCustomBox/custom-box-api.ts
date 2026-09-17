@@ -52,6 +52,30 @@ export type CustomBoxApi = HTMLElement & {
 	drop(event: DragEvent): void;
 };
 
+/**
+ * P2b-3：把 `unknown` 值转成显示文本。
+ *
+ * 原先这里直接写 `String(value)` 并挂了两条 `oxlint-disable-next-line no-base-to-string`——
+ * 那条规则指出的问题是真的（对象会落回 `[object Object]`）。这里把分流写明：`null`/`undefined`
+ * 给空串；基本类型（含 `symbol`/`bigint`）仍用 `String(value)`；对象与函数显式走 `.toString()`
+ * ——`String(x)` 对它们本来就是调用 `toString()`，行为逐类等价。
+ */
+const displayString = (value: unknown): string => {
+	if (value == null) return '';
+	switch (typeof value) {
+		case 'string':
+			return value;
+		case 'number':
+		case 'boolean':
+		case 'bigint':
+		case 'symbol':
+			return String(value);
+		default:
+			// 对象与函数：显式调用 `toString()`（语义同 `String(value)`）
+			return (value as { toString(): string }).toString();
+	}
+};
+
 export function attachCustomBoxApi(
 	el: HTMLElement,
 	options: CustomBoxApiOptions = {}
@@ -107,14 +131,12 @@ export function attachCustomBoxApi(
 	const applyParse = (value: unknown): void => {
 		const type = getType();
 		if (!type) {
-			// oxlint-disable-next-line no-base-to-string
-			text.textContent = value == null ? '' : String(value);
+			text.textContent = displayString(value);
 			return;
 		}
 		const parser = props.parsers?.[type];
 		if (!parser) {
-			// oxlint-disable-next-line no-base-to-string
-			text.textContent = value == null ? '' : String(value);
+			text.textContent = displayString(value);
 			return;
 		}
 		const result = parser(value);

@@ -3,6 +3,7 @@ import { getRelativeCoords } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import { clamp, roundTo } from '@app/utils/math';
 
 // oxlint-disable-next-line no-explicit-any
 export const SceneCameraEngine: Record<string, any> = {};
@@ -156,9 +157,9 @@ SceneCameraEngine.updateCamera = function (this: typeof Scene, x = this.meta.x, 
 	const toleranceY = this.scaledTileHeight * 0.0001;
 	const screenExt = screen as unknown as { rawScrollLeft: number; rawScrollTop: number };
 	screenScrollData(screenExt).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
+		clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
 	screenScrollData(screenExt).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
+		clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceY) / dpr;
 };
@@ -166,8 +167,8 @@ SceneCameraEngine.updateCamera = function (this: typeof Scene, x = this.meta.x, 
 SceneCameraEngine.updateTransform = function (this: typeof Scene) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
-	const left = Math.roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
-	const top = Math.roundTo(screen.scrollTop * dpr - this.paddingTop, 4);
+	const left = roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
+	const top = roundTo(screen.scrollTop * dpr - this.paddingTop, 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
 	const scaleX = this.scaleX;
@@ -186,7 +187,7 @@ SceneCameraEngine.updateTransform = function (this: typeof Scene) {
 	this.matrix.reset().scale(scaleX, scaleY).translate(-this.scrollLeft, -this.scrollTop);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.meta.x = Math.roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
-	this.meta.y = Math.roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
+	this.meta.x = roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
+	this.meta.y = roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;
 };

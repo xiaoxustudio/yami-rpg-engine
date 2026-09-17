@@ -5,6 +5,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileImageInfo {
@@ -65,7 +66,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 				if (this.symbol === symbol) {
 					this.symbol = null;
 					(
-						inspectorEls.get('fileImage') as HTMLElement & { updateImage?: () => void }
+						inspectorEls.get('fileImage') as unknown as HTMLElement & {
+							updateImage?: () => void;
+						}
 					)?.updateImage?.();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
@@ -87,7 +90,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileImage.update = function (this: typeof FileImage) {
-		const el = inspectorEls.get('fileImage') as HTMLElement;
+		const el = inspectorEls.get('fileImage') as YamiElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};

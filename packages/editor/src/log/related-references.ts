@@ -5,6 +5,9 @@ import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-u
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
+import { clone as deepClone } from '@app/utils/object';
+import { empty as fnEmpty } from '@app/utils/function';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -107,10 +110,10 @@ export const Reference = {
 };
 
 Reference.initialize = function () {
-	const refEl = logEls.get('reference') as HTMLElement;
+	const refEl = logEls.get('reference') as YamiElement;
 	if (!refEl) return;
 	on(refEl, 'closed', this.windowClosed!);
-	const refListEl = logEls.get('reference-list') as HTMLElement;
+	const refListEl = logEls.get('reference-list') as YamiElement;
 	if (refListEl) on(refListEl, 'popup', this.listPopup!);
 };
 
@@ -198,8 +201,8 @@ Reference.findAllGuids = function (targetGuid = '') {
 				_pushToUsedMap(path, guid);
 			}
 		};
-		pushToInnerMap = Function.empty;
-		pushToOuterMap = Function.empty;
+		pushToInnerMap = fnEmpty;
+		pushToOuterMap = fnEmpty;
 	}
 	const getPathOfGuid = (guid: string) => {
 		fileId = guid;
@@ -639,7 +642,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 		resetFileId();
 		pushComment(get('config'));
 		const path = 'Data/config.json';
-		const copy = Object.clone(Data.config);
+		const copy = deepClone(Data.config);
 		pushToUsedMap2(path, 'startPosition.sceneId', copy.startPosition.sceneId);
 		delete copy.gameId;
 		delete copy.save;
@@ -824,7 +827,7 @@ Reference.update = function (items: ReferenceItem[]) {
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (_event: Event) {
-	clear(logEls.get('reference-list') as HTMLElement);
+	clear(logEls.get('reference-list') as YamiElement);
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {

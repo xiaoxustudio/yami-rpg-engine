@@ -11,6 +11,7 @@ import { ctrl } from '@app/utils/event-accessors';
 import { read, write } from '@app/utils/element-utils.ts';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
+import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
 
 Particle.listKeydown = function (this: ParticleShape['list'], event: KeyboardEvent) {
 	if (!this.data) {
@@ -42,11 +43,11 @@ Particle.listKeydown = function (this: ParticleShape['list'], event: KeyboardEve
 	}
 };
 
-Particle.listSelect = function (event: Event) {
+Particle.listSelect = function (event: YamiEvent) {
 	Particle.setTarget!(event.value);
 };
 
-Particle.listRecord = function (event: Event) {
+Particle.listRecord = function (event: YamiEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
@@ -91,7 +92,7 @@ Particle.listRecord = function (event: Event) {
 	}
 };
 
-Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent) {
+Particle.listPopup = function (this: ParticleShape['list'], event: YamiMouseEvent) {
 	const item = event.value;
 	const get = (key: string) => t('menuParticleList.' + key);
 	let copyable;
@@ -169,7 +170,7 @@ Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent)
 	);
 };
 
-Particle.listChange = function (_event: Event) {
+Particle.listChange = function (_event: YamiEvent) {
 	Particle.planToSave!();
 };
 

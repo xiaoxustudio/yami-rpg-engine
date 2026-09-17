@@ -50,7 +50,7 @@ const setForm = (data: Partial<PresetGetterForm>): void => {
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
 		const control = composableEls.get(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
+		unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
@@ -62,7 +62,7 @@ const getForm = (): PresetGetterForm => {
 	const data = { ...form } as PresetGetterForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		const control = composableEls.get(id) as
-			| (HTMLElement & { read?: () => unknown })
+		unknown as 	unknown as | (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;

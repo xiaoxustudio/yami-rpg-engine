@@ -4,6 +4,7 @@ import { addClass, read, removeClass, write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
+import { radians } from '@app/utils/math';
 Scene.setTarget = function (this: typeof Scene, target: { class: string } | null) {
 	if (this.target !== target) {
 		if (target !== null && this.tilemap !== null && this.tilemap !== target) {
@@ -181,7 +182,7 @@ Scene.redirectTarget = function (this: typeof Scene, angle: number) {
 		}
 		this.requestRendering!();
 		target.angle = angle;
-		target.player.setAngle(Math.radians(angle));
+		target.player.setAngle(radians(angle));
 		if (editor.target === target) {
 			write(editor, { angle });
 		}

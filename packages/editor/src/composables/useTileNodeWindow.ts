@@ -7,6 +7,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp } from '@app/utils/math';
 
 /**
  * P4b：场景选框元素上的 `key`（`'tile' | 'terrain' | 'edit' | …` 的选区种类）是**元素数据**，
@@ -30,7 +32,7 @@ type TileNodeMarquee = HTMLElement & {
 
 type TileNodeDragging = PointerEvent & {
 	mode: 'select' | 'scroll';
-	screen: HTMLElement;
+	screen: YamiElement;
 	scrollLeft: number;
 	scrollTop: number;
 };
@@ -78,9 +80,9 @@ interface TileNodeWindow {
 }
 
 const getCanvas = (): HTMLCanvasElement =>
-	composableEls.get('autoTile-selectNode-canvas') as HTMLCanvasElement;
+	composableEls.get('autoTile-selectNode-canvas') as unknown as HTMLCanvasElement;
 
-const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as HTMLElement;
+const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as YamiElement;
 
 const getMarquee = (): TileNodeMarquee =>
 	composableEls.get('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
@@ -118,7 +120,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = composableEls.get('autoTile-selectNode') as HTMLElement;
+	const windowFrame = composableEls.get('autoTile-selectNode') as YamiElement;
 	const screen = getScreen();
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;
@@ -150,8 +152,8 @@ const open = (
 		screen.style.overflowY = 'hidden';
 	}
 
-	contentWidth = Math.clamp(contentWidth, MIN_CONTENT_WIDTH, MAX_CONTENT_WIDTH);
-	contentHeight = Math.clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
+	contentWidth = clamp(contentWidth, MIN_CONTENT_WIDTH, MAX_CONTENT_WIDTH);
+	contentHeight = clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
 	window.addEventListener('keydown', keydown);
@@ -365,8 +367,8 @@ const keydown = (event: KeyboardEvent): void => {
 					break;
 			}
 			const marquee = getMarquee();
-			const x = Math.clamp(marquee.x + offsetXArrow, 0, hframes! - 1);
-			const y = Math.clamp(marquee.y + offsetYArrow, 0, vframes! - 1);
+			const x = clamp(marquee.x + offsetXArrow, 0, hframes! - 1);
+			const y = clamp(marquee.y + offsetYArrow, 0, vframes! - 1);
 			if (marquee.x !== x || marquee.y !== y) {
 				const index = x | (y << 3);
 				if (index < nodes!.length) {
@@ -394,7 +396,7 @@ const marqueePointerdown = (event: PointerEvent): void => {
 			if (event.altKey) {
 				dragging = event as unknown as TileNodeDragging;
 				dragging.mode = 'scroll';
-				dragging.screen = (event.target as HTMLElement).parentNode as HTMLElement;
+				dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
 				dragging.scrollLeft = dragging.screen.scrollLeft;
 				dragging.scrollTop = dragging.screen.scrollTop;
 				Cursor.open('cursor-grab');
@@ -418,7 +420,7 @@ const marqueePointerdown = (event: PointerEvent): void => {
 		case 2:
 			dragging = event as unknown as TileNodeDragging;
 			dragging.mode = 'scroll';
-			dragging.screen = (event.target as HTMLElement).parentNode as HTMLElement;
+			dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
 			dragging.scrollLeft = dragging.screen.scrollLeft;
 			dragging.scrollTop = dragging.screen.scrollTop;
 			Cursor.open('cursor-grab');

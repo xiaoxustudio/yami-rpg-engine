@@ -10,6 +10,8 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Command } from '@app/commands/command-object.ts';
+import type { YamiElement } from '@app/types/element-api';
+import { padZero } from '@app/utils/number';
 
 export interface ArrayForm {
 	values: unknown[];
@@ -145,7 +147,7 @@ interface ArrayListInterface {
 	parsers: Record<string, (value: unknown) => string>;
 	defaults: Record<string, number | string>;
 	windows: Record<string, string>;
-	inputs: Record<string, HTMLElement>;
+	inputs: Record<string, YamiElement>;
 	initialize(list: HTMLElement): void;
 	parse(value: unknown, data: unknown, index: number): HTMLElement[];
 	open(value: unknown): void;
@@ -169,12 +171,12 @@ const windows: Record<string, string> = {
 	string: 'arrayList-string'
 };
 
-const inputs: Record<string, HTMLElement> = {
+const inputs: Record<string, YamiElement> = {
 	get number() {
-		return composableEls.get('arrayList-number-value') as HTMLElement;
+		return composableEls.get('arrayList-number-value') as YamiElement;
 	},
 	get string() {
-		return composableEls.get('arrayList-string-value') as HTMLElement;
+		return composableEls.get('arrayList-string-value') as YamiElement;
 	}
 };
 
@@ -183,10 +185,10 @@ const listInterface: ArrayListInterface = {
 	defaults,
 	windows,
 	inputs,
-	initialize: function (this: unknown, list: HTMLElement) {
-		const numberConfirm = composableEls.get('arrayList-number-confirm') as HTMLElement;
+	initialize: function (this: unknown, list: YamiElement) {
+		const numberConfirm = composableEls.get('arrayList-number-confirm') as YamiElement;
 		if (numberConfirm) on(numberConfirm, 'click', () => list.save());
-		const stringConfirm = composableEls.get('arrayList-string-confirm') as HTMLElement;
+		const stringConfirm = composableEls.get('arrayList-string-confirm') as YamiElement;
 		if (stringConfirm) on(stringConfirm, 'click', () => list.save());
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
@@ -196,7 +198,7 @@ const listInterface: ArrayListInterface = {
 			h(
 				'div',
 				{ class: 'array-index text' },
-				Number.padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':'
+				padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':'
 			)
 		);
 		const valueText = renderDetached(
@@ -222,7 +224,7 @@ const listInterface: ArrayListInterface = {
 	}
 };
 
-const getList = (): HTMLElement => composableEls.get('arrayList-list') as HTMLElement;
+const getList = (): YamiElement => composableEls.get('arrayList-list') as YamiElement;
 
 const initialize = (): void => {
 	const list = getList();

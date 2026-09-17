@@ -21,6 +21,7 @@ import {
 	setPresetColor,
 	setWeakColor
 } from './useCommandColor.ts';
+import { append } from '@app/utils/array';
 
 interface CommandObjectShape {
 	type: string;
@@ -109,7 +110,7 @@ export function fetchVariables(
 			if (id == null || id[0] === '!') continue;
 			commandState.currentCommand = command;
 			if (id === 'callEvent') {
-				if (params?.type === 'global' && calledEvents.append(params.eventId)) {
+				if (params?.type === 'global' && append(calledEvents, params.eventId)) {
 					const file = Data.manifest?.guidMap[params.eventId]?.file;
 					if (
 						file instanceof FileItem &&

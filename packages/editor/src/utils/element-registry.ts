@@ -6,7 +6,14 @@
  * （组件 ref 取 `$el`，裸元素直接用），适用于模块把这些元素当作**命令式 API 对象**使用的场景
  * （tree list / text box / window frame 等）。
  */
-export type ElementRegistry = Map<string, HTMLElement | null>;
+import type { YamiElement } from '@app/types/element-api';
+
+/**
+ * 元素句柄类型（P4c）：注册表里的元素**明确来自本仓库**（SFC 的模板 ref），因此带 `YamiElementApi`
+ * 契约。过去这一步靠 `global.d.ts` 的全局 `interface HTMLElement` 兜底——那会让**所有** `HTMLElement`
+ * 都"看起来"有这些方法，普通 DOM 元素也失去了拼写检查。现在只有显式来源才具备。
+ */
+export type ElementRegistry = Map<string, YamiElement | null>;
 
 /**
  * 建一个注册表。可选 `mirror`：本注册表的每次写入（含卸载时的 `null`）同时镜像一份过去——
@@ -22,7 +29,7 @@ export const createElementRegistry = (mirror?: ElementRegistry): ElementRegistry
 	const registry: ElementRegistry = new Map();
 	if (!mirror) return registry;
 	const set = registry.set.bind(registry);
-	registry.set = (id: string, el: HTMLElement | null): ElementRegistry => {
+	registry.set = (id: string, el: YamiElement | null): ElementRegistry => {
 		mirror.set(id, el);
 		return set(id, el);
 	};
@@ -38,8 +45,10 @@ export const registryRef =
 			return;
 		}
 		const element =
-			el instanceof HTMLElement ? el : ((el as { $el?: HTMLElement }).$el ?? null);
-		registry.set(id, element);
+			el instanceof HTMLElement
+				? (el as YamiElement)
+				: ((el as { $el?: HTMLElement }).$el ?? null);
+		registry.set(id, element as YamiElement | null);
 	};
 
 /**
@@ -55,5 +64,5 @@ export const registerElement = (registry: ElementRegistry, id: string, el: unkno
  * 按 id 列表取注册表里的元素（P1b：替代「一次批量取多个控件」的
  * `document.querySelectorAll('#a, #b, …')`——返回顺序与传入 ids 一致，未登记的项跳过）。
  */
-export const registryElements = (registry: ElementRegistry, ids: string[]): HTMLElement[] =>
-	ids.map((id) => registry.get(id)).filter((el): el is HTMLElement => el instanceof HTMLElement);
+export const registryElements = (registry: ElementRegistry, ids: string[]): YamiElement[] =>
+	ids.map((id) => registry.get(id)).filter((el): el is YamiElement => el instanceof HTMLElement);

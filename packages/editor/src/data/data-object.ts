@@ -10,6 +10,8 @@ import { Reference } from '@app/log/related-references.ts';
 
 import { PluginManager } from '@app/plugin/plugin.ts';
 import { dataKeys, getDataStore } from '@app/stores/data';
+import { computeIndexDigits } from '@app/utils/number';
+import { clone as deepClone } from '@app/utils/object';
 
 type DataEntry = { guid?: string; name?: string; [k: string]: unknown };
 
@@ -258,7 +260,7 @@ Data.createEasingItems = function (this: typeof Data) {
 		items = this.easings.items = [];
 		const easings = this.easings;
 		const length = easings.length;
-		const digits = Number.computeIndexDigits(length);
+		const digits = computeIndexDigits(length);
 		for (let i = 0; i < length; i++) {
 			const index = i.toString().padStart(digits, '0');
 			const easing = easings[i];
@@ -277,7 +279,7 @@ Data.createTeamItems = function (this: typeof Data) {
 		items = this.teams.list.items = [];
 		const teams = this.teams.list;
 		const length = teams.length;
-		const digits = Number.computeIndexDigits(length);
+		const digits = computeIndexDigits(length);
 		for (let i = 0; i < length; i++) {
 			const index = i.toString().padStart(digits, '0');
 			const team = teams[i];
@@ -690,8 +692,8 @@ Data.filterManifest = function (this: typeof Data, manifest: Manifest & Record<s
 	for (const key of Object.keys(manifest)) {
 		copy[key] = manifest[key];
 	}
-	copy.images = Object.clone(manifest.images);
-	copy.audio = Object.clone(manifest.audio);
+	copy.images = deepClone(manifest.images);
+	copy.audio = deepClone(manifest.audio);
 	const { usedMap } = Reference.findAllGuids!();
 	for (const list of [copy.images, copy.audio] as Array<Array<{ path: string; size: number }>>) {
 		for (const meta of list) {

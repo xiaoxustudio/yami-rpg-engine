@@ -119,8 +119,9 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	};
 
-	// oxlint-disable-next-line unbound-method
-	el.addEventListener('pointerdown', nav.pointerdown as EventListener);
+	// P2b-3：显式箭头包装——`nav.pointerdown` 是方法引用，直接当监听器传会丢 `this`
+	// （unbound-method 的成因）。这里把接收者写死成 `nav`，与派发时 `this === nav` 等价。
+	el.addEventListener('pointerdown', (event) => nav.pointerdown(event as PointerEvent));
 
 	const elements = el.childNodes;
 	if (elements.length > 0) {

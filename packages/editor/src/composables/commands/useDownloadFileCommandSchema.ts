@@ -6,6 +6,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 import { requestFocus } from '@app/directives/focus';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -110,9 +111,9 @@ export function useDownloadFileCommandSchema() {
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
 		if (params.isBackground) {
-			enable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
+			enable(composableEls.get('downloadFile-isBackground-path') as YamiElement);
 		} else {
-			disable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
+			disable(composableEls.get('downloadFile-isBackground-path') as YamiElement);
 		}
 		load(params);
 	};

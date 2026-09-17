@@ -348,7 +348,6 @@ ipcMain.handle(CHANNELS.invoke.buildApk, (event, config) => {
 	} catch (err) {
 		send({
 			done: true,
-			// oxlint-disable-next-line no-base-to-string
 			msg: `错误: ${String(err)}`
 		});
 	}

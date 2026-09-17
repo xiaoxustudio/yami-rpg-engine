@@ -11,8 +11,7 @@ type FileEntityData = {
 	attributes: unknown[];
 	events: unknown[];
 	scripts: unknown[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	[k: string]: unknown;
 };
 
 interface FileEntityPage {

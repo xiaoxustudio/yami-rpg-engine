@@ -213,12 +213,9 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 actor 文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseTeam = vi.fn((v: unknown) => `T:${String(v)}`) as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.createActor.parse!({
 				actorId: 'a1',
@@ -405,9 +402,7 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 actor 文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseTeam = vi.fn((v: unknown) => `T:${String(v)}`) as never;
 			const contents = Command.cases.createGlobalActor.parse!({
 				actorId: 'a1',
@@ -514,7 +509,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 preset 文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parsePresetObject = vi.fn((v: unknown) => `P:${String(v)}`) as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
 			const contents = Command.cases.createObject.parse!({
@@ -632,12 +626,10 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 trigger 文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableFile = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			Command.parseActor = vi.fn(() => 'ACTOR') as never;
 			Command.parsePosition = vi.fn(() => 'POS') as never;
 			Command.parseAngle = vi.fn(() => 'ANG') as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.createTrigger.parse!({
 				triggerId: 't1',

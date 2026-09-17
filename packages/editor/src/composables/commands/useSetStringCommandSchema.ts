@@ -564,9 +564,9 @@ export function useSetStringCommandSchema() {
 				filter = 'object';
 				break;
 		}
-		const element = composableEls.get('setString-operand-common-variable') as
-			| (HTMLElement & { filter?: string })
-			| null;
+		const element = composableEls.get(
+			'setString-operand-common-variable'
+		) as unknown as unknown as (HTMLElement & { filter?: string }) | null;
 		if (element) {
 			element.filter = filter;
 		}

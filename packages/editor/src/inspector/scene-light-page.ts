@@ -67,7 +67,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneLight-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneLight-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -85,7 +87,11 @@ import { Scene } from '@app/scene/scene-window.ts';
 	};
 
 	SceneLight.write = function (this: typeof SceneLight, _options: Record<string, unknown>) {
-		(inspectorEls.get('sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('sceneLight-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
+		)?.sync?.();
 	};
 
 	SceneLight.update = function (

@@ -1,5 +1,6 @@
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import { append, remove } from '@app/utils/array';
 
 interface PrefabElementShape {
 	node: { presetId: unknown; [k: string]: unknown } | null;
@@ -44,14 +45,14 @@ UI.Root = class RootElement extends UI.Element {
 		if (map[id] === undefined) {
 			map[id] = [];
 		}
-		map[id].append(prefabElement!);
+		append(map[id], prefabElement!);
 	}
 
 	removeReference(prefabElement: PrefabElementShape | null) {
 		const map = this.references;
 		const id = prefabElement!.node!.presetId as string;
 		if (map[id] !== undefined) {
-			map[id].remove(prefabElement!);
+			remove(map[id], prefabElement!);
 		}
 	}
 

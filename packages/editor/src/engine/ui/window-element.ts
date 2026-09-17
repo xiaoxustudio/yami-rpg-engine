@@ -2,6 +2,7 @@ import { Timer } from '@app/utils/timer';
 import { UI } from '@app/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { clamp } from '@app/utils/math';
 
 interface WindowProxyShape {
 	x: number;
@@ -107,7 +108,7 @@ UI.Window = class WindowElement extends UI.Element {
 
 	set scrollX(value: number) {
 		const max = this.scrollWidth - this.width;
-		const scrollX = Math.clamp(value, 0, max);
+		const scrollX = clamp(value, 0, max);
 		if (this._scrollX !== scrollX) {
 			this._scrollX = scrollX;
 			if (this.connected) {
@@ -123,7 +124,7 @@ UI.Window = class WindowElement extends UI.Element {
 
 	set scrollY(value: number) {
 		const max = this.scrollHeight - this.height;
-		const scrollY = Math.clamp(value, 0, max);
+		const scrollY = clamp(value, 0, max);
 		if (this._scrollY !== scrollY) {
 			this._scrollY = scrollY;
 			if (this.connected) {

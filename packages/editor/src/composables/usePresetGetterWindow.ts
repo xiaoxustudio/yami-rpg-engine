@@ -48,7 +48,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 	let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 	const getFrame = (): PresetGetterFrame | null =>
-		composableEls.get(domKey) as PresetGetterFrame | null;
+		composableEls.get(domKey) as unknown as PresetGetterFrame | null;
 
 	const initialize = (): void => {
 		const typeEl = composableEls.get(`${domKey}-type`);

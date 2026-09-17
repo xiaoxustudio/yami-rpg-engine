@@ -1,11 +1,12 @@
 ﻿import { read } from '@app/utils/element-utils.ts';
 import { Variable } from '@app/variable/variable.ts';
 import { Shortcuts } from '@app/tools/shortcut-registry.ts';
+import type { YamiElement } from '@app/types/element-api';
 
 Variable.keydown = Shortcuts.createUndoRedo(Variable);
 
 Variable.listKeydown = function (
-	this: HTMLElement & { createVariable: () => unknown },
+	this: YamiElement & { createVariable: () => unknown },
 	event: KeyboardEvent
 ) {
 	const item = read(this);
@@ -35,7 +36,7 @@ Variable.listKeydown = function (
 	}
 };
 
-Variable.listPointerdown = function (this: HTMLElement, event: PointerEvent) {
+Variable.listPointerdown = function (this: YamiElement, event: PointerEvent) {
 	switch (event.button) {
 		case 3:
 			this.cancelSearch();
@@ -61,10 +62,10 @@ Variable.panelKeydown = function (event: KeyboardEvent) {
 	}
 };
 
-Variable.searcherInput = function (this: HTMLElement, event: InputEvent) {
+Variable.searcherInput = function (this: YamiElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input!.value;
+	const text = (this.input as { value: string }).value;
 	Variable.list.searchNodesDebounced(text);
 };

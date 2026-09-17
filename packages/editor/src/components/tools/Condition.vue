@@ -57,6 +57,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import type { YamiElement } from '@app/types/element-api';
 import { conditionEls } from '@app/tools/condition-list';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -74,7 +75,7 @@ const onTypeWrite = (value: unknown) => {
 	ConditionListInterface?.typeWrite?.({ value } as Event & { value: string });
 };
 const onConfirm = () => {
-	ConditionListInterface?.target?.save?.();
+	(ConditionListInterface?.target as unknown as YamiElement | undefined)?.save?.();
 };
 
 onMounted(() => {});

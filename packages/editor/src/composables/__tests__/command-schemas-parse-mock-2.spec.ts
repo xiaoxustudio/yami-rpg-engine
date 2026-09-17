@@ -35,39 +35,24 @@ import '@app/animation/register.ts';
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (value: unknown) => `[var:${(value as { key?: string })?.key ?? ''}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseGlobalVariable: (value: unknown) => `[gvar:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseVariableNumber: (value: unknown, unit = '') => `[num:${String(value)}]${unit}`,
-	// oxlint-disable-next-line no-base-to-string
 	parseVariableString: (value: unknown) => `[str:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseVariableFile: (value: unknown) => `[file:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseMultiLineString: (value: unknown) => String(value),
-	// oxlint-disable-next-line no-base-to-string
 	parseActor: (value: unknown) =>
 		`[actor:${String((value as { type?: string })?.type ?? value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseEnumString: (value: unknown) => `[enum:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseFileName: (value: unknown) => `[file:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseAudioType: (value: unknown) => `[audio:${String(value)}]`,
 	parseWait: (value: unknown) => (value ? '[wait]' : ''),
-	// oxlint-disable-next-line no-base-to-string
 	parseEasing: (value: unknown) => `[easing:${String(value)}]`,
 	parsePosition: (value: unknown) => `[pos:${(value as { type?: string })?.type}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseElement: (value: unknown) =>
 		`[element:${String((value as { type?: string })?.type ?? value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseItem: (value: unknown) => `[item:${String((value as { type?: string })?.type ?? value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseHexColor: (value: unknown) => `[hex:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseAttributeGroup: (value: unknown) => `[attrGroup:${String(value)}]`,
-	// oxlint-disable-next-line no-base-to-string
 	parseEnumGroup: (value: unknown) => `[enumGroup:${String(value)}]`,
 	parseTextTags: (value: unknown) => value,
 	removeTextTags: (value: unknown) => value,

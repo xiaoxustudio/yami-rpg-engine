@@ -4,6 +4,7 @@ import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 export type PresetElementNode = {
 	class: string;
@@ -18,7 +19,8 @@ export interface PresetElementListItem {
 	presetId?: string;
 }
 
-export interface PresetElementList extends HTMLElement, TreeListRowApi<PresetElementListItem> {
+export interface PresetElementList
+	extends HTMLElement, YamiElementApi, TreeListRowApi<PresetElementListItem> {
 	elements: Array<{ item: PresetElementListItem }>;
 	bind(getter: () => PresetElementNode[] | null): void;
 	clear(): void;
@@ -40,9 +42,9 @@ export type PresetElementTarget = {
 };
 
 interface PresetElementWindow {
-	ui: HTMLElement;
+	ui: YamiElement;
 	list: PresetElementList;
-	searcher: HTMLElement;
+	searcher: YamiElement;
 	target: PresetElementTarget | null;
 	nodes: PresetElementNode[] | null;
 	initialize: () => void;
@@ -57,24 +59,24 @@ interface PresetElementWindow {
 	confirm: (event?: Event) => void;
 }
 
-let ui: HTMLElement;
+let ui: YamiElement;
 let list: PresetElementList;
-let searcher: HTMLElement;
+let searcher: YamiElement;
 let target: PresetElementTarget | null = null;
 let nodes: PresetElementNode[] | null = null;
 let initializedElement: PresetElementList | null = null;
 
 function initialize(): void {
-	const current = composableEls.get('presetElement-list') as PresetElementList | null;
+	const current = composableEls.get('presetElement-list') as unknown as PresetElementList | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	ui = composableEls.get('presetElement-uiId') as HTMLElement;
+	ui = composableEls.get('presetElement-uiId') as YamiElement;
 	list = current;
-	searcher = composableEls.get('presetElement-searcher') as HTMLElement;
+	searcher = composableEls.get('presetElement-searcher') as YamiElement;
 	list.bind(() => nodes);
 	on(searcher, 'keydown', searcherKeydown);
-	(composableEls.get('presetElement') as HTMLElement).addEventListener('closed', windowClosed);
+	(composableEls.get('presetElement') as YamiElement).addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {
@@ -122,7 +124,7 @@ function windowClosed(_event: Event): void {
 function uiIdWrite(event: Event & { value?: string }): void {
 	if (!event.value) return;
 	const ui = Data.ui[event.value];
-	const built = ui ? buildNodes(ui.nodes ?? []) : Array.empty;
+	const built = ui ? buildNodes(ui.nodes ?? []) : [];
 	nodes = built;
 	list.update();
 	if (built.length !== 0) {

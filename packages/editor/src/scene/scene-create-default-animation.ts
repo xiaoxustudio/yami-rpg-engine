@@ -3,6 +3,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
+import { clone as deepClone } from '@app/utils/object';
 Scene.createDefaultAnimation = (function IIFE() {
 	type DefaultPlayerClass = new (target: object) => (typeof Animation)['Player'];
 	let DefaultPlayer: DefaultPlayerClass | undefined;
@@ -33,7 +34,7 @@ Scene.createDefaultAnimation = (function IIFE() {
 			frames[0].y = -8;
 			frames[0].scaleX = 0.25;
 			frames[0].scaleY = 0.25;
-			frames[1] = Object.clone(frames[0]);
+			frames[1] = deepClone(frames[0]);
 			frames[1].start = 1;
 			frames[1].end = 2;
 			frames[1].spriteY = 1;

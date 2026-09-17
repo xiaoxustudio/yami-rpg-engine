@@ -1,21 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import '@app/utils/math';
-
-if (!Array.prototype.append) {
-	(Array.prototype as any).append = function (this: any[], ...items: any[]) {
-		this.push(...items);
-	};
-}
-if (!Array.prototype.remove) {
-	(Array.prototype as any).remove = function (this: any[], item: any) {
-		const idx = this.indexOf(item);
-		if (idx !== -1) {
-			this.splice(idx, 1);
-			return true;
-		}
-		return false;
-	};
-}
 
 vi.mock('@app/inspector/inspector', () => ({
 	Inspector: { manager: { focusing: false }, uiElement: { target: null, write: vi.fn() } }

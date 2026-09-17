@@ -87,7 +87,7 @@ const writeHandler = (event: { value: string }): void => {
 	if (element) {
 		// P4c：`filter` 是 CustomBox 组件自己的实例属性（`custom-box-api.ts` 里代理到 `filter` 属性），
 		// 不再由全局 `interface HTMLElement` 声明兜底——类型来自 `CustomBoxApi`
-		(element as CustomBoxApi).filter = filter;
+		(element as unknown as CustomBoxApi).filter = filter;
 	}
 };
 

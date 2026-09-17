@@ -7,16 +7,18 @@ import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 import type { TreeListElement } from '@app/components/tree-list.ts';
+import type { YamiElement } from '@app/types/element-api';
+import { clone as deepClone } from '@app/utils/object';
 
 function ensureDomBound() {
 	if (PluginManager.list) return;
-	const list = pluginEls.get('plugin-list') as HTMLElement;
+	const list = pluginEls.get('plugin-list') as YamiElement;
 	if (!list) return;
 	PluginManager.list = list;
-	PluginManager.overviewPane = pluginEls.get('plugin-overview-detail') as HTMLElement;
+	PluginManager.overviewPane = pluginEls.get('plugin-overview-detail') as YamiElement;
 	hide(PluginManager.overviewPane);
-	PluginManager.overview = pluginEls.get('plugin-overview') as HTMLElement;
-	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as HTMLElement;
+	PluginManager.overview = pluginEls.get('plugin-overview') as YamiElement;
+	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as YamiElement;
 	hide(PluginManager.parameterPane);
 	// oxlint-disable-next-line no-explicit-any
 	list.insert = null as unknown as (...args: unknown[]) => any;
@@ -72,21 +74,23 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 		(this.parameterPane as TreeListElement).bind(list);
 	}
 
-	on(pluginEls.get('plugin') as HTMLElement, 'close', this.windowClose!);
-	on(pluginEls.get('plugin') as HTMLElement, 'closed', this.windowClosed!);
+	on(pluginEls.get('plugin') as YamiElement, 'close', this.windowClose!);
+	on(pluginEls.get('plugin') as YamiElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect!);
 	// list change 经 Vue 模板转发（Plugin.vue @change → PluginManager.listChange）
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate!);
-	on(pluginEls.get('plugin-confirm') as HTMLElement, 'click', this.confirm!);
+	// confirm 按钮由 `WindowFrame`/`YMFormButtons` 生成、注册表里没有它 ⇒ 不能在这里按 id 绑定
+	// （`pluginEls.get('plugin-confirm')` 恒为 null，过去会打一行 `[on] el is null/undefined` 并让
+	// 确认按钮失效）。改由 `Plugin.vue` 的 `@confirm` 转发 —— 与其它窗口同一手法。
 };
 
 PluginManager.open = function (this: typeof PluginManager) {
 	Window.open!('plugin');
 
-	this.data = Object.clone(Data.plugins);
+	this.data = deepClone(Data.plugins);
 
 	(this.list as TreeListElement).restoreSelection();
 

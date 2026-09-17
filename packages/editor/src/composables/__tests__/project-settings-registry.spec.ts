@@ -145,11 +145,13 @@ describe('项目设置窗口注册表（P5b 后续批次）', () => {
 		const wrapper = mount(ProjectSettings, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const display = composableEls.get('config-window-display') as LoadableEl;
+		const display = composableEls.get('config-window-display') as unknown as LoadableEl;
 		const loadItems = vi.fn();
 		display.loadItems = loadItems;
 
-		const sceneEnabled = composableEls.get('config-collision-scene-enabled') as HTMLElement & {
+		const sceneEnabled = composableEls.get(
+			'config-collision-scene-enabled'
+		) as unknown as HTMLElement & {
 			enableHiddenMode(): { relate(cases: unknown[]): void };
 		};
 		const relate = vi.fn();
@@ -176,7 +178,7 @@ describe('项目设置窗口注册表（P5b 后续批次）', () => {
 		settings.initialize();
 		settings.open();
 
-		const control = composableEls.get('config-window-title') as HTMLElement & {
+		const control = composableEls.get('config-window-title') as unknown as HTMLElement & {
 			write(value: unknown): void;
 		};
 		control.write('From registry');

@@ -26,6 +26,8 @@ import { requestFocus } from '@app/directives/focus';
 import '@app/utils/object';
 import { getProjectStore } from '@app/stores/project';
 import { createPayloadEvent } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
+import { clone as deepClone } from '@app/utils/object';
 
 type ImportedFonts = {
 	fontId: string | null;
@@ -189,7 +191,7 @@ let tscStarted = false;
 let languageList: { inserting?: boolean } = {};
 
 /** 取注册表里的控件元素（沿用原先 `document.getElementById(id)!` 的非空断言语义） */
-const el = (id: string): HTMLElement => composableEls.get(id) as HTMLElement;
+const el = (id: string): YamiElement => composableEls.get(id) as YamiElement;
 
 /** 参数控件 id：`initialize()` 给它们统一挂 `input` 监听（渲染方 ProjectSettings.vue 逐个 `:ref` 登记） */
 const PARAM_IDS = [
@@ -328,7 +330,7 @@ function initialize(): void {
 function open(): void {
 	getWindowStore().open('project-settings');
 
-	getProjectStore().data = Object.clone(Data.config);
+	getProjectStore().data = deepClone(Data.config);
 	getProjectStore().target = getProjectStore().data;
 
 	getProjectStore().state = 'open';

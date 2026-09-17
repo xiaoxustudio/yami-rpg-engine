@@ -3,7 +3,7 @@ import { Scene } from './scene-window.ts';
 import type { DragEventItem, ScrollableScreen } from './scene-events.ts';
 import { relate } from '@app/utils/element-utils';
 import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
-import { ctrl } from '@app/utils/event-accessors';
+import { ctrl, isDragKey } from '@app/utils/event-accessors';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -20,6 +20,7 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
+import { clamp, roundTo } from '@app/utils/math';
 
 Scene.marqueePointerdown = function (this: typeof Scene, event: DragEventItem) {
 	if (this.dragging) {
@@ -27,7 +28,7 @@ Scene.marqueePointerdown = function (this: typeof Scene, event: DragEventItem) {
 	}
 	switch (event.button) {
 		case 0: {
-			if (event.dragKey) {
+			if (isDragKey(event)) {
 				this.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
@@ -314,8 +315,8 @@ Scene.pointerup = function (this: typeof Scene, event: PointerEvent | undefined)
 				const marquee = this.marquee;
 				const coords = this.getTileCoords(event, true);
 				const context = this.tilemap ?? this;
-				const x = Math.clamp(coords.x, 0, context.width - 1);
-				const y = Math.clamp(coords.y, 0, context.height - 1);
+				const x = clamp(coords.x, 0, context.width - 1);
+				const y = clamp(coords.y, 0, context.height - 1);
 				marquee.offsetX = marquee.x - x;
 				marquee.offsetY = marquee.y - y;
 				if (marquee.pointerevent !== null) {
@@ -361,8 +362,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 				const oy = marquee.offsetY;
 				const coords = this.getTileCoords(event, true);
 				const context = this.tilemap ?? this;
-				const x = Math.clamp(coords.x, 1 - ox - mw, context.width - 1 - ox);
-				const y = Math.clamp(coords.y, 1 - oy - mh, context.height - 1 - oy);
+				const x = clamp(coords.x, 1 - ox - mw, context.width - 1 - ox);
+				const y = clamp(coords.y, 1 - oy - mh, context.height - 1 - oy);
 				const mx = x + ox;
 				const my = y + oy;
 				if (mx !== marquee.x || my !== marquee.y) {
@@ -405,8 +406,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 			case 'copy': {
 				const coords = this.getTileCoords(event, true);
 				const context = this.tilemap ?? this;
-				const x = Math.clamp(coords.x, 0, context.width - 1);
-				const y = Math.clamp(coords.y, 0, context.height - 1);
+				const x = clamp(coords.x, 0, context.width - 1);
+				const y = clamp(coords.y, 0, context.height - 1);
 				const mx = Math.min(x, dragging.pointerdownX);
 				const my = Math.min(y, dragging.pointerdownY);
 				const mw = Math.abs(x - dragging.pointerdownX) + 1;
@@ -449,8 +450,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 						if (this.shiftKey) {
 							x = dragging.startX - dragging.pointerdownX + coords.x;
 							y = dragging.startY - dragging.pointerdownY + coords.y;
-							x = Math.roundTo(Math.clamp(x, radius, width - radius), 4);
-							y = Math.roundTo(Math.clamp(y, radius, height - radius), 4);
+							x = roundTo(clamp(x, radius, width - radius), 4);
+							y = roundTo(clamp(y, radius, height - radius), 4);
 						} else {
 							x =
 								dragging.startX -
@@ -460,8 +461,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 								dragging.startY -
 								Math.floor(dragging.pointerdownY * divider) / divider +
 								Math.floor(coords.y * divider) / divider;
-							x = Math.clamp(x, radius, width - radius);
-							y = Math.clamp(y, radius, height - radius);
+							x = clamp(x, radius, width - radius);
+							y = clamp(y, radius, height - radius);
 						}
 						this.shiftTarget(x, y);
 						break;
@@ -473,8 +474,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 						if (this.shiftKey) {
 							x = dragging.startX - dragging.pointerdownX + coords.x;
 							y = dragging.startY - dragging.pointerdownY + coords.y;
-							x = Math.roundTo(Math.clamp(x, rwh, width - rwh), 4);
-							y = Math.roundTo(Math.clamp(y, rhh, height - rhh), 4);
+							x = roundTo(clamp(x, rwh, width - rwh), 4);
+							y = roundTo(clamp(y, rhh, height - rhh), 4);
 						} else {
 							x =
 								dragging.startX -
@@ -484,8 +485,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 								dragging.startY -
 								Math.floor(dragging.pointerdownY * divider) / divider +
 								Math.floor(coords.y * divider) / divider;
-							x = Math.clamp(x, rwh, width - rwh);
-							y = Math.clamp(y, rhh, height - rhh);
+							x = clamp(x, rwh, width - rwh);
+							y = clamp(y, rhh, height - rhh);
 						}
 						this.shiftTarget(x, y);
 						break;
@@ -498,8 +499,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 						if (this.shiftKey) {
 							x = dragging.startX - dragging.pointerdownX + coords.x;
 							y = dragging.startY - dragging.pointerdownY + coords.y;
-							x = Math.roundTo(Math.clamp(x, 0, width), 4);
-							y = Math.roundTo(Math.clamp(y, 0, height), 4);
+							x = roundTo(clamp(x, 0, width), 4);
+							y = roundTo(clamp(y, 0, height), 4);
 						} else {
 							x =
 								dragging.startX -
@@ -509,8 +510,8 @@ Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 								dragging.startY -
 								Math.floor(dragging.pointerdownY * divider) / divider +
 								Math.floor(coords.y * divider) / divider;
-							x = Math.clamp(x, 0, width);
-							y = Math.clamp(y, 0, height);
+							x = clamp(x, 0, width);
+							y = clamp(y, 0, height);
 						}
 						this.shiftTarget(x, y);
 						break;

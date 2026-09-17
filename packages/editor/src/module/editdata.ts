@@ -13,6 +13,7 @@ import { renderDetached } from '@app/utils/dom';
 
 import { getMonaco } from '@app/utils/monaco';
 import type * as monacoNs from 'monaco-editor';
+import type { YamiElement } from '@app/types/element-api';
 
 interface EditDataNodeShape {
 	dataItem?: { id: string; params: unknown; commands: unknown };
@@ -43,21 +44,21 @@ export const EditDataInstance = new (class {
 		theme: ''
 	};
 	isCreated = false;
-	mark = moduleEls.get('edit-data-mark') as HTMLElement;
+	mark = moduleEls.get('edit-data-mark') as YamiElement;
 	editorParent: HTMLElement | null = null;
 	editorDom: HTMLElement | null = null;
-	eventListDom: HTMLElement | null = null;
+	eventListDom: YamiElement | null = null;
 	currentContent: EditDataContentItem[] | EditDataContentItem | null = null;
 	createTheme: (() => void) | null = null;
 	constructor() {}
 
 	bindDom() {
 		if (this.editorParent) return;
-		this.mark = moduleEls.get('edit-data-mark') as HTMLElement;
-		this.editorParent = moduleEls.get('edit-data') as HTMLElement;
-		this.editorDom = moduleEls.get('edit-data-current') as HTMLElement;
-		this.eventListDom = eventEditorEls.get('event-commands') as HTMLElement;
-		on(moduleEls.get('edit-data') as HTMLElement, 'resize', () => {
+		this.mark = moduleEls.get('edit-data-mark') as YamiElement;
+		this.editorParent = moduleEls.get('edit-data') as YamiElement;
+		this.editorDom = moduleEls.get('edit-data-current') as YamiElement;
+		this.eventListDom = eventEditorEls.get('event-commands') as YamiElement;
+		on(moduleEls.get('edit-data') as YamiElement, 'resize', () => {
 			this.resize();
 		});
 		// confirm 由 EditData.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
@@ -104,7 +105,7 @@ export const EditDataInstance = new (class {
 		});
 	}
 	isMaximized() {
-		return hasClass(moduleEls.get('edit-data') as HTMLElement, 'maximized');
+		return hasClass(moduleEls.get('edit-data') as YamiElement, 'maximized');
 	}
 	resize() {
 		const content = this.editorDom!;

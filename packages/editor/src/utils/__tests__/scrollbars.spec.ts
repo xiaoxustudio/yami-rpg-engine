@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { addScrollbars } from '@app/utils/element-utils';
 import { elementDataOf } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
 
 describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 	it('creates horizontal/vertical scroll bars bound to target', () => {
@@ -64,7 +65,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
 
 		addScrollbars(target);
-		target.updateScrollbars();
+		(target as unknown as YamiElement).updateScrollbars();
 		const hBar = parent.querySelector('.scroll-bar.horizontal')!;
 		const vBar = parent.querySelector('.scroll-bar.vertical')!;
 		expect(hBar.classList.contains('with-corner')).toBe(true);

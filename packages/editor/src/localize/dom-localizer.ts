@@ -1,4 +1,5 @@
 import { setTooltip } from '@app/utils/element-utils';
+import type { YamiElement } from '@app/types/element-api';
 import { templateLocalizedKeys } from './template-localized.ts';
 
 export interface LocalComponentItem {
@@ -29,6 +30,8 @@ const titleTagExp = /\$([\S ]+)(?=\n|$)/g;
 let saveItems: Record<string, LocalComponentItem> = {};
 
 export function setLocalElement(element: HTMLElement, item: LocalComponentItem): void {
+	// P4c：外壳元素（window-frame / text-box / select-box）带本仓库装配的元素 API
+	const target = element as unknown as YamiElement;
 	if (item.save !== undefined) {
 		saveItems[item.save] = item;
 	}
@@ -37,8 +40,8 @@ export function setLocalElement(element: HTMLElement, item: LocalComponentItem):
 	}
 	if (item.title !== undefined) {
 		if (element.classList.contains('window-frame')) {
-			if (typeof element.setTitle === 'function') {
-				element.setTitle(item.title);
+			if (typeof target.setTitle === 'function') {
+				target.setTitle(item.title);
 			}
 		}
 	}
@@ -53,12 +56,12 @@ export function setLocalElement(element: HTMLElement, item: LocalComponentItem):
 	}
 	if (item.placeholder !== undefined) {
 		if (element.classList.contains('text-box')) {
-			element.setPlaceholder(item.placeholder);
+			target.setPlaceholder(item.placeholder);
 		}
 	}
 	if (item.options !== undefined) {
 		if (element.classList.contains('select-box')) {
-			element.setItemNames(item.options);
+			target.setItemNames(item.options);
 		}
 	}
 }

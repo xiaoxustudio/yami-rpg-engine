@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="plugin"
-				:ref="registryRef(pluginEls, 'plugin')" show-apply @apply="onApply">
+				:ref="registryRef(pluginEls, 'plugin')" show-apply @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.plugin.title') }}
@@ -116,6 +116,12 @@ const onListOpen = (event: Event & { value?: unknown }) => {
 
 const onApply = () => {
 	PluginManager?.apply?.();
+};
+
+// confirm 按钮由 `WindowFrame` 生成（注册表里没有 `plugin-confirm`）⇒ 走模板 `@confirm` 转发，
+// 与其它窗口一致（模块侧原先按 id 绑定的那句恒为 null，已删除）。
+const onConfirm = () => {
+	PluginManager?.confirm?.();
 };
 
 onMounted(() => {});

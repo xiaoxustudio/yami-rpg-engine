@@ -1,5 +1,6 @@
 import { Scene } from './scene-window.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
+import { empty as fnEmpty } from '@app/utils/function';
 
 Scene.screenDragenter = function (this: HTMLElement, event: DragEvent) {
 	const file = getBrowserInstance()?.body?.activeFile as { type?: string } | undefined;
@@ -42,7 +43,7 @@ Scene.screenDrop = function (this: HTMLElement, _event: DragEvent) {
 		const kind = Scene.previewObject.class;
 		const folder = Scene.getDefaultObjectFolder!(kind);
 		const fn = Scene.loadObjectContext;
-		Scene.loadObjectContext = Function.empty;
+		Scene.loadObjectContext = fnEmpty;
 		Scene.list.addNodeTo(Scene.previewObject, folder);
 		Scene.loadObjectContext = fn;
 		Scene.previewObject = null;

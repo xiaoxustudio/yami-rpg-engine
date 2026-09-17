@@ -18,6 +18,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
+import type { YamiElement } from '@app/types/element-api';
 
 /** P5b 批次 2：事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
 export const eventEditorEls = createElementRegistry();
@@ -31,8 +32,8 @@ function ensureDomBound() {
 		'event-commands'
 	) as unknown as EventCommandListShape;
 	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
-	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as HTMLElement;
-	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as HTMLElement;
+	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
+	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
 	// P4b：滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
 	getElementData(EventEditor.list as unknown as HTMLElement).lastScrollTop = 0;
 	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => void;

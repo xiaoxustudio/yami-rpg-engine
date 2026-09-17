@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 import { YMCommonList } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -129,8 +130,8 @@ onMounted(() => {
 	});
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	on('select', (e: Event & { value?: unknown }) => emit('select', e.value));
-	on('popup', (e: Event & { value?: unknown; clientX: number; clientY: number }) =>
-		emit('popup', e.value, e.clientX, e.clientY)
+	on('popup', (e: Event) =>
+		emit('popup', (e as YamiMouseEvent).value, (e as YamiMouseEvent).clientX, (e as YamiMouseEvent).clientY)
 	);
 });
 </script>

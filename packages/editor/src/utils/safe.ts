@@ -7,7 +7,6 @@ export function getVariable(id: string | number | null | undefined): VariableNod
 }
 
 export function reportError(err: unknown, context?: string): void {
-	// oxlint-disable-next-line no-base-to-string
 	const message = `[Yami] ${context ?? '运行时错误'}: ${(err as Error)?.message ?? err}`;
 	console.error(message, err);
 	if (typeof window !== 'undefined') {

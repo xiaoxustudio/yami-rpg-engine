@@ -38,6 +38,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+import { encodeURL } from '@app/utils/css';
 
 const { t } = useI18n();
 
@@ -105,7 +106,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 				return [
 					h('span', {
 						class: ['node-icon', 'icon-scene-parallax'],
-						style: { backgroundImage: CSS.encodeURL(File.route!(path)) }
+						style: { backgroundImage: encodeURL(File.route!(path)) }
 					})
 				];
 			}

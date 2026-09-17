@@ -256,6 +256,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
+import type { YamiElement } from '@app/types/element-api';
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
@@ -320,7 +321,7 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
 		const control = composableEls.get(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
+		unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
@@ -332,7 +333,7 @@ const getForm = (): NumberOperandForm => {
 	const data = { ...form } as NumberOperandForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		const control = composableEls.get(id) as
-			| (HTMLElement & { read?: () => unknown })
+		unknown as 	unknown as | (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
@@ -670,7 +671,7 @@ onMounted(() => {
 	});
 
 	on(frame.value?.root, 'closed', () => {
-		fieldEls.get('setNumber-operation')?.root?.restore();
+		(fieldEls.get('setNumber-operation') as unknown as { root?: YamiElement } | null)?.root?.restore();
 	});
 });
 </script>

@@ -3,6 +3,8 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
+import { encodeURL } from '@app/utils/css';
 
 {
 	interface FileFontFileShape {
@@ -45,7 +47,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 
 			const previews = this.previews;
 			const path = File.route!(file.path);
-			const url = CSS.encodeURL(path);
+			const url = encodeURL(path);
 			const font = new FontFace('preview', url);
 			for (const preview of previews) {
 				hide(preview);
@@ -81,7 +83,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 	};
 
 	FileFont.update = function (this: FileFontShape) {
-		const el = inspectorEls.get('fileFont') as HTMLElement;
+		const el = inspectorEls.get('fileFont') as YamiElement;
 		if (!el) return;
 		(el as HTMLElement & { update?: () => void }).update?.();
 	};
@@ -91,7 +93,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;
-			(inspectorEls.get('fileFont-font-grid') as HTMLElement).style.fontSize =
+			(inspectorEls.get('fileFont-font-grid') as YamiElement).style.fontSize =
 				`${12 / dpr}px`;
 		}
 	};

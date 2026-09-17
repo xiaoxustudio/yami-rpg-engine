@@ -74,6 +74,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -88,7 +89,7 @@ const onTypeWrite = (value: unknown) => {
 	if (!source) {
 		return;
 	}
-	const elEventType = fieldEls.get('stopEvent-eventType') as HTMLElement;
+	const elEventType = fieldEls.get('stopEvent-eventType') as YamiElement;
 	const eventTypes = Enum.getMergedItems!(source, type + '-event');
 	elEventType?.loadItems?.(eventTypes);
 	elEventType?.createTooltip?.();

@@ -9,6 +9,8 @@ import type { StageColor } from '@app/utils/stage-color';
 import type { Timer } from '@app/utils/timer';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import type { ParticleElementLayer } from '@app/engine/particle/particle-engine.ts';
+import type { YamiElement } from '@app/types/element-api';
+import type { DragEventItem } from '@app/scene/scene-events.ts';
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 export type ParticleMethod = ((...args: any[]) => any) | null;
@@ -109,16 +111,16 @@ export interface ParticleShape {
 	head: HTMLElement & { width: number };
 	body: HTMLElement;
 	info: HTMLElement;
-	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
-	marquee: HTMLElement & { pointerevent: unknown };
-	list: HTMLElement & {
+	screen: YamiElement;
+	marquee: YamiElement & { pointerevent: unknown };
+	list: YamiElement & {
 		// 运行时挂载的列表方法（Scene.list / Particle.list 共享）
-		create: ((dItem?: unknown) => unknown) | null;
-		copy: ((item?: unknown) => unknown) | null;
-		paste: ((dItem?: unknown) => unknown) | null;
-		delete: ((item?: unknown) => unknown) | null;
-		onCreate: ((item?: unknown) => unknown) | null;
-		onRemove: ((item?: unknown) => unknown) | null;
+		create: (dItem?: unknown) => unknown;
+		copy: (item?: unknown) => unknown;
+		paste: (dItem?: unknown) => unknown;
+		delete: (item?: unknown) => unknown;
+		onCreate: (item?: unknown) => unknown;
+		onRemove: (item?: unknown) => unknown;
 		onDelete: ((item?: unknown) => unknown) | null;
 		onResume: ((item?: unknown) => unknown) | null;
 		// inspector 调用路径（particle-layer-page.ts:411/426）
@@ -140,17 +142,7 @@ export interface ParticleShape {
 		rename: (item: unknown) => void;
 		[k: string]: unknown;
 	};
-	dragging:
-		| (PointerEvent & {
-				mode?: 'object-move' | 'scroll';
-				dragKey?: boolean;
-				enabled?: boolean;
-				startX?: number;
-				startY?: number;
-				scrollLeft?: number;
-				scrollTop?: number;
-		  })
-		| null;
+	dragging: DragEventItem | null;
 	history: History | null;
 	restartKey: boolean;
 	translationKey: number;
@@ -259,20 +251,20 @@ export interface ParticleShape {
 }
 
 export const Particle: ParticleShape = {
-	page: particleEls.get('particle') as HTMLElement,
-	head: particleEls.get('particle-head') as HTMLElement as unknown as HTMLElement & {
+	page: particleEls.get('particle') as YamiElement,
+	head: particleEls.get('particle-head') as unknown as HTMLElement & {
 		left: number;
 		width: number;
 		padding?: number;
 	},
-	body: hide(particleEls.get('particle-body') as HTMLElement),
-	info: particleEls.get('particle-info') as HTMLElement,
-	screen: particleEls.get('particle-screen') as HTMLElement as unknown as HTMLElement & {
+	body: hide(particleEls.get('particle-body') as YamiElement),
+	info: particleEls.get('particle-info') as YamiElement,
+	screen: particleEls.get('particle-screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 		pointerevent: unknown;
 	},
-	marquee: particleEls.get('particle-marquee') as HTMLElement as unknown as HTMLElement & {
+	marquee: particleEls.get('particle-marquee') as YamiElement & {
 		pointerevent: unknown;
 	},
 	list: (particleEls.get('particle-list') as unknown as never) || ({} as never),

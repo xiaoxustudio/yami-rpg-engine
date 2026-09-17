@@ -10,6 +10,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Path } from '@app/utils/config';
+import type { YamiElement } from '@app/types/element-api';
 
 export const ImportLanguage: {
 	filePath: string;
@@ -93,7 +94,7 @@ ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string
 ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 	const get = (key: string) => t('confirmation.' + key);
 	const filename = Path.basename!(ImportLanguage.filePath);
-	const language = read(localEls.get('importLanguage-language') as HTMLElement);
+	const language = read(localEls.get('importLanguage-language') as YamiElement);
 	const langname = t('languages.' + language);
 	Window.confirm!(
 		{

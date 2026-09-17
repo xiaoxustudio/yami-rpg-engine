@@ -98,7 +98,7 @@ describe('语言窗口注册表（P5b 后续批次）', () => {
 		settings.languages.target = { save };
 		settings.languages.initialize({ inserting: true });
 
-		const nameControl = composableEls.get('language-name') as HTMLElement & {
+		const nameControl = composableEls.get('language-name') as unknown as HTMLElement & {
 			loadItems(items: unknown[]): void;
 			write2(value: unknown): void;
 		};

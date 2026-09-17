@@ -85,14 +85,16 @@ import { UI } from '@app/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const number = inspectorEls.get('uiTextBox-number') as NumberBoxHostElement;
+			const number = inspectorEls.get('uiTextBox-number') as unknown as NumberBoxHostElement;
 			(number.input! as HTMLInputElement).min = node.min;
 			(number.input! as HTMLInputElement).max = node.max;
 			number.decimals = node.decimals;
 			Inspector.uiElement.open(node);
 
 			(
-				inspectorEls.get('uiTextBox-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiTextBox-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -147,7 +149,7 @@ import { UI } from '@app/ui/ui-window.ts';
 					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
-					const numberEl = inspectorEls.get('uiTextBox-number') as
+					const numberEl = inspectorEls.get('uiTextBox-number') as unknown as unknown as
 						| (NumberBoxHostElement & { input?: Record<string, unknown> })
 						| null;
 					if (numberEl?.input) numberEl.input[key] = value;
@@ -158,8 +160,9 @@ import { UI } from '@app/ui/ui-window.ts';
 					node.decimals = value as number;
 					// element.decimals = value
 					node.instances.setProperty(key, value);
-					(inspectorEls.get('uiTextBox-number') as NumberBoxHostElement).decimals =
-						value as number;
+					(
+						inspectorEls.get('uiTextBox-number') as unknown as NumberBoxHostElement
+					).decimals = value as number;
 				}
 				break;
 		}

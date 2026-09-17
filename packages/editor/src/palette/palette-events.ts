@@ -5,6 +5,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Timer } from '@app/utils/timer';
 import { getPaletteStore } from '@app/stores/palette';
 import { elementDataOf } from '@ui-kit';
+import type { YamiEvent } from '@app/types/editor-event';
+import { clamp } from '@app/utils/math';
 
 /**
  * P4b：选框区域元素上的 `selection`（覆盖层）走显式元素数据。
@@ -145,7 +147,7 @@ Palette.switchEdit = (function IIFE() {
 	};
 })();
 
-Palette.windowResize = function (this: typeof Palette, _event: Event) {
+Palette.windowResize = function (this: typeof Palette, _event: YamiEvent) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -161,7 +163,7 @@ Palette.windowResize = function (this: typeof Palette, _event: Event) {
 	}
 }.bind(Palette);
 
-Palette.themechange = function (this: typeof Palette, event: Event) {
+Palette.themechange = function (this: typeof Palette, event: YamiEvent) {
 	switch (event.value) {
 		case 'light':
 			this.gridColor = 'rgba(0, 0, 0, 0.5)';
@@ -266,8 +268,8 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 						offsetY = +1;
 						break;
 				}
-				const x = Math.clamp(mx + offsetX, 0, hframes - mw);
-				const y = Math.clamp(my + offsetY, 0, vframes - mh);
+				const x = clamp(mx + offsetX, 0, hframes - mw);
+				const y = clamp(my + offsetY, 0, vframes - mh);
 				if (mx !== x || my !== y) {
 					marquee.select(x, y, mw, mh);
 					marquee.originX += x - mx;
@@ -320,7 +322,7 @@ Palette.screenWheel = (function IIFE() {
 	}.bind(Palette);
 })();
 
-Palette.screenUserscroll = function (this: typeof Palette, _event: Event) {
+Palette.screenUserscroll = function (this: typeof Palette, _event: YamiEvent) {
 	if (getPaletteStore().state === 'open') {
 		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
 		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
@@ -331,7 +333,7 @@ Palette.screenUserscroll = function (this: typeof Palette, _event: Event) {
 	}
 }.bind(Palette);
 
-Palette.screenBlur = function (this: typeof Palette, _event: Event) {
+Palette.screenBlur = function (this: typeof Palette, _event: YamiEvent) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}

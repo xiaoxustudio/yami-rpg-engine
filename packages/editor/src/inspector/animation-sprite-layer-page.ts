@@ -43,7 +43,9 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			inspectorEls.get('animSpriteLayer-sprite')?.loadItems?.(items);
 
 			(
-				inspectorEls.get('animSpriteLayer-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('animSpriteLayer-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

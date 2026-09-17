@@ -36,7 +36,7 @@ interface LogShape {
 /** 同 `AudioManager`：`list` 由本文件末尾的桥安装，字面量按 `Omit<…, 'list'>` 校验后再断言。 */
 const log: Omit<LogShape, 'list'> = {
 	get box() {
-		return logEls.get('log-message') as HTMLElement;
+		return logEls.get('log-message') as YamiElement;
 	},
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
@@ -66,7 +66,6 @@ let tickInterval: ReturnType<typeof setInterval> | null = null;
 
 Log.initialize = function () {
 	if (tickInterval) return;
-	// oxlint-disable-next-line no-implied-eval
 	tickInterval = setInterval(this.tick!, 1000);
 
 	window.addEventListener('error', this.catchError!);
@@ -180,6 +179,7 @@ Log.tscLog = function (_event: unknown, tscMessage: unknown) {
 };
 
 import { getLogStore } from '@app/stores/log';
+import type { YamiElement } from '@app/types/element-api';
 
 Object.defineProperty(Log, 'list', {
 	get: () => getLogStore().logs,

@@ -10,6 +10,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { requestFocus } from '@app/directives/focus';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getYamiI18n } from '@app/i18n';
+import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -24,8 +25,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		description: string;
 		parameters: unknown[];
 		commands: unknown[];
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 
 	interface FileEventList {
@@ -96,7 +96,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			write('parameters');
 
 			(
-				inspectorEls.get('fileEvent-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('fileEvent-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -111,7 +113,11 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	};
 
 	FileEvent.write = function (this: FileEventPage, _options: { type?: string }) {
-		(inspectorEls.get('fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
+		(
+			inspectorEls.get('fileEvent-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
+		)?.sync?.();
 	};
 
 	FileEvent.update = function (
@@ -141,9 +147,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	};
 
 	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {
-		const enabledInput = inspectorEls.get('fileEvent-enabled') as HTMLElement;
+		const enabledInput = inspectorEls.get('fileEvent-enabled') as YamiElement;
 		const enabledLabel = enabledInput.previousElementSibling;
-		const priorityInput = inspectorEls.get('fileEvent-priority') as HTMLElement;
+		const priorityInput = inspectorEls.get('fileEvent-priority') as YamiElement;
 		const priorityLabel = priorityInput.previousElementSibling;
 		switch (event.value) {
 			case 'common':
@@ -190,7 +196,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileEvent.parameters.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
-			const el = inspectorEls.get('fileEvent-parameter-type') as HTMLElement;
+			const el = inspectorEls.get('fileEvent-parameter-type') as YamiElement;
 			if (!el) return;
 			el.loadItems([
 				{ name: 'Boolean', value: 'boolean' },

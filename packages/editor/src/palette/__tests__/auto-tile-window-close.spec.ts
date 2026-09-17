@@ -28,6 +28,16 @@ import { getAutoTileStore } from '@app/stores/auto-tile';
 import { getPaletteStore } from '@app/stores/palette';
 import { Data } from '@app/data/data-object.ts';
 
+vi.mock('@app/utils/css', async (importOriginal) => ({
+	...(await importOriginal<typeof import('@app/utils/css')>()),
+	getDevicePixelContentBoxSize: () => ({
+		width: 128,
+		height: 128,
+		inlineSize: 128,
+		blockSize: 128
+	})
+}));
+
 vi.mock('@app/scene/scene-window.ts', () => ({
 	Scene: {
 		requestRendering: vi.fn(),
@@ -71,15 +81,7 @@ describe('AutoTile 窗口关闭链（用户反馈：关闭后锁死 / ESC 复现
 		title.id = 'title';
 		document.body.appendChild(title);
 		vi.stubGlobal('scrollTo', vi.fn());
-		// @ts-expect-error jsdom 无 CSS.getDevicePixelContentBoxSize
-		window.CSS = {
-			getDevicePixelContentBoxSize: () => ({
-				width: 128,
-				height: 128,
-				inlineSize: 128,
-				blockSize: 128
-			})
-		};
+		// P4d：`getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出（模块 mock 见文件顶部）
 		Data.autotiles = templates;
 		Data.createGUIDMap = vi.fn();
 		Data.manifest = { project: { autotiles: 'auto.json' } };

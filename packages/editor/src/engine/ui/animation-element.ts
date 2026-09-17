@@ -2,6 +2,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { UI } from '@app/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { radians } from '@app/utils/math';
 
 type PlayerContextShape = Array<Record<string, unknown>> & { count?: number };
 
@@ -72,7 +73,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 				player.setAsUIComponent();
 				player.setMotion(this.motion);
 				player.rotatable = this.rotatable;
-				player.setAngle(Math.radians(this.angle));
+				player.setAngle(radians(this.angle));
 				player.goto(this.frame);
 			}
 		}
@@ -100,7 +101,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 				this.player.rotatable = value;
 				this.player.rotation = 0;
 				if (typeof this.angle === 'number') {
-					this.player.setAngle(Math.radians(this.angle));
+					this.player.setAngle(radians(this.angle));
 				}
 			}
 		}
@@ -113,7 +114,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 	set angle(value: number) {
 		if (this._angle !== value) {
 			this._angle = value;
-			this.player?.setAngle(Math.radians(value));
+			this.player?.setAngle(radians(value));
 		}
 	}
 

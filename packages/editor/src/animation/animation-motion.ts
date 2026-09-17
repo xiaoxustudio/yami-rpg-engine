@@ -36,6 +36,9 @@ import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import { elementDataOf } from '@app/utils/element-data';
+import { clamp as mathClamp, modDegrees } from '@app/utils/math';
+import { computeIndexDigits } from '@app/utils/number';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 /**
  * P4b：方向列表（`animation-dirList`）的元素数据视图。
@@ -634,7 +637,7 @@ Animation.setControlPoint = function (
 			case points.rectResize.TR:
 			case points.rectResize.BL:
 			case points.rectResize.BR: {
-				const angle = Math.modDegrees(point!.angle + this.controlPointRotation, 180);
+				const angle = modDegrees(point!.angle + this.controlPointRotation, 180);
 				if (angle < 22.5 || angle >= 157.5) {
 					cursor = 'ew-resize';
 				} else if (angle < 67.5) {
@@ -902,7 +905,7 @@ Animation.updateHead = function (this: typeof Animation) {
 Animation.resize = function (this: typeof Animation) {
 	if (getAnimationStore().state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const stageWidth = screenWidth + this.padding;
@@ -953,8 +956,8 @@ Animation.getFrameCoords = (function IIFE() {
 			const st = list.scrollTop / ANIM_GRID_Y;
 			const sr = list.clientWidth / ANIM_GRID_X + sl;
 			const sb = list.clientHeight / ANIM_GRID_Y + st;
-			x = Math.clamp(x, Math.floor(sl), Math.ceil(sr) - 1);
-			y = Math.clamp(y, Math.floor(st), Math.ceil(sb) - 1);
+			x = mathClamp(x, Math.floor(sl), Math.ceil(sr) - 1);
+			y = mathClamp(y, Math.floor(st), Math.ceil(sb) - 1);
 		}
 		point.x = x;
 		point.y = y;
@@ -1050,7 +1053,7 @@ Animation.getSpriteListItems = function (this: typeof Animation, animationId: st
 	let items = sprites.listItems;
 	if (items === undefined) {
 		const length = sprites.length;
-		const digits = Number.computeIndexDigits(length);
+		const digits = computeIndexDigits(length);
 		items = Array.from({ length: length + 1 });
 		items[0] = { name: 'No Image', value: '' };
 		for (let i = 0; i < length; i++) {

@@ -8,6 +8,7 @@ import { Timer } from '@app/utils/timer';
 import { getPaletteStore } from '@app/stores/palette';
 import type { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
+import { clamp as mathClamp, roundTo } from '@app/utils/math';
 
 /** P4b：场景选框元素上的 `key`（当前选框状态名：tile / terrain / object / eraser…）走显式元素数据 */
 interface SceneMarqueeData {
@@ -46,8 +47,8 @@ PaletteEngine.getTileCoords = (function IIFE() {
 		let x = Math.floor((coords.x * dpr) / stw);
 		let y = Math.floor((coords.y * dpr) / sth);
 		if (clamp) {
-			x = Math.clamp(x, 0, tileset.width - 1);
-			y = Math.clamp(y, 0, tileset.height - 1);
+			x = mathClamp(x, 0, tileset.width - 1);
+			y = mathClamp(y, 0, tileset.height - 1);
 		}
 		point.x = x;
 		point.y = y;
@@ -63,9 +64,9 @@ PaletteEngine.updateCamera = function (this: typeof Palette, x = this.meta.x, y 
 	const toleranceX = this.scaledTileWidth * 0.0001;
 	const toleranceY = this.scaledTileHeight * 0.0001;
 	screenScrollData(screen).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
+		mathClamp(scrollX - this.centerOffsetX, 0, this.outerWidth - this.screenWidth) / dpr;
 	screenScrollData(screen).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
+		mathClamp(scrollY - this.centerOffsetY, 0, this.outerHeight - this.screenHeight) / dpr;
 	screen.scrollLeft = (scrollX - (this.screenWidth >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
 };
@@ -73,8 +74,8 @@ PaletteEngine.updateCamera = function (this: typeof Palette, x = this.meta.x, y 
 PaletteEngine.updateTransform = function (this: typeof Palette) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
-	const left = Math.roundTo(screen.scrollLeft * dpr, 4);
-	const top = Math.roundTo(screen.scrollTop * dpr, 4);
+	const left = roundTo(screen.scrollLeft * dpr, 4);
+	const top = roundTo(screen.scrollTop * dpr, 4);
 	const right = left + this.canvas.width;
 	const bottom = top + this.canvas.height;
 	this.scrollLeft = left;
@@ -84,8 +85,8 @@ PaletteEngine.updateTransform = function (this: typeof Palette) {
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.meta.x = Math.roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
-	this.meta.y = Math.roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
+	this.meta.x = roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
+	this.meta.y = roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;
 };
 

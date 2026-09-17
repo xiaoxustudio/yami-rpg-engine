@@ -3,6 +3,8 @@ import { on } from '@app/utils/element-utils.ts';
 import { CommandList } from '@app/components/command-list.ts';
 import { h } from 'vue';
 import { renderDetached } from '@app/utils/dom';
+import type { YamiElement } from '@app/types/element-api';
+import { clamp } from '@app/utils/math';
 
 let _origUpdateCommandElement:
 	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
@@ -12,7 +14,7 @@ let _origUpdateLineClasses: (() => void) | undefined;
 // 缩进线生成后（updateCommandElement 内）批量重算显示状态，避免滚动新渲染行没有样式
 const lineClassesScheduled = new WeakSet<object>();
 // command-list 内 command-item 元素运行时挂载的扩展字段
-interface CommandItemElement extends HTMLElement {
+interface CommandItemElement extends YamiElement {
 	pre: HTMLElement;
 	lines: HTMLElement[];
 	dataIndent: number;
@@ -171,10 +173,7 @@ function renderedRowsOf(list: {
 	}) as unknown as CommandListShape & { lineClassEnabled?: boolean };
 }
 
-function resize(
-	this: { elements: CommandListShape } & HTMLElement,
-	...args: unknown[]
-): unknown {
+function resize(this: { elements: CommandListShape } & HTMLElement, ...args: unknown[]): unknown {
 	const ret = _origResize?.apply(this, args);
 	// 折叠线要同时作用在**渲染出来的行**上（用户看到的是它们）
 	const rendered = renderedRowsOf(this);
@@ -287,8 +286,8 @@ export function range(
 	end: number = start
 ): { start: number; end: number; indent?: number } {
 	const count = elements.count;
-	start = Math.clamp(start, 0, count - 1);
-	end = Math.clamp(end, 0, count - 1);
+	start = clamp(start, 0, count - 1);
+	end = clamp(end, 0, count - 1);
 	let indent = Infinity;
 	for (let i = start; i <= end; i++) {
 		// 步骤 4：窗口外行未物化，跳过（elements[i] 为空）

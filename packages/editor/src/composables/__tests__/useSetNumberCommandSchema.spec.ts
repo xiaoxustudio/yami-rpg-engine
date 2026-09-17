@@ -11,7 +11,6 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
-	// oxlint-disable-next-line no-base-to-string
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`
 }));
 

@@ -1,5 +1,7 @@
 import { render, type VNode } from 'vue';
 import { createPayloadEvent } from '@ui-kit';
+import type { YamiElement } from '@app/types/element-api';
+import { append, remove } from '@app/utils/array';
 
 /**
  * P1b：**唯一的「离屏节点」创建缝隙**。
@@ -160,9 +162,9 @@ export const measureText = (function IIFE() {
 export const request = (function IIFE() {
 	const callbacks: (() => void)[] = [];
 	return function (callback: () => void): void {
-		if (callbacks.append(callback)) {
+		if (append(callbacks, callback)) {
 			requestAnimationFrame(() => {
-				if (callbacks.remove(callback)) {
+				if (remove(callbacks, callback)) {
 					callback();
 				}
 			});
@@ -170,14 +172,14 @@ export const request = (function IIFE() {
 	};
 })();
 
-function $(selector: `#${string}`): HTMLElement;
-function $(selector: string): NodeListOf<HTMLElement>;
-function $(selector: string): HTMLElement | NodeListOf<HTMLElement> {
+function $(selector: `#${string}`): YamiElement;
+function $(selector: string): NodeListOf<YamiElement>;
+function $(selector: string): YamiElement | NodeListOf<YamiElement> {
 	const regexp = /^#(\w|-)+$/;
 	if (regexp.test(selector)) {
-		return document.querySelector(selector) as HTMLElement;
+		return document.querySelector(selector) as YamiElement;
 	} else {
-		return document.querySelectorAll(selector) as unknown as NodeListOf<HTMLElement>;
+		return document.querySelectorAll(selector) as unknown as NodeListOf<YamiElement>;
 	}
 }
 export { $ };
@@ -203,7 +205,7 @@ export const getElementWriter = function (prefix: string, bindingObject?: Record
 				value = (value as Record<string, unknown>)[node];
 			}
 		}
-		const element: HTMLElement = $(`#${prefix}-${suffix}`);
+		const element: YamiElement = $(`#${prefix}-${suffix}`);
 		if (!element) {
 			console.warn(`[writer] element not found: #${prefix}-${suffix}`);
 			return;

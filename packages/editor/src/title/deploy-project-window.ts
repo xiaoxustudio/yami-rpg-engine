@@ -21,6 +21,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
+import type { YamiElement } from '@app/types/element-api';
+import { clone as deepClone } from '@app/utils/object';
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
 	typeof fileURLToPath === 'function' && _moduleURL.protocol === 'file:'
@@ -136,7 +138,7 @@ export const Deployment: DeploymentShape = {
 };
 
 Deployment.initialize = function (this: typeof Deployment) {
-	const platform = titleEls.get('deployment-platform') as HTMLElement;
+	const platform = titleEls.get('deployment-platform') as YamiElement;
 	if (!platform) return;
 	platform.loadItems([
 		{ name: 'Windows x64', value: 'windows-x64' },
@@ -170,7 +172,7 @@ Deployment.check = function (this: typeof Deployment) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			(titleEls.get('deployment-warning') as HTMLElement).textContent = t(
+			(titleEls.get('deployment-warning') as YamiElement).textContent = t(
 				'confirmation.enterFolderName'
 			);
 		}
@@ -180,7 +182,7 @@ Deployment.check = function (this: typeof Deployment) {
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			(titleEls.get('deployment-warning') as HTMLElement).textContent = t(
+			(titleEls.get('deployment-warning') as YamiElement).textContent = t(
 				'confirmation.folderAlreadyExists'
 			);
 		}
@@ -188,7 +190,7 @@ Deployment.check = function (this: typeof Deployment) {
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			(titleEls.get('deployment-warning') as HTMLElement).textContent = '';
+			(titleEls.get('deployment-warning') as YamiElement).textContent = '';
 		}
 		deploymentConfirmDisabled.value = false;
 	}
@@ -335,7 +337,7 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 			}
 		}
 	}
-	const config = Object.clone(Data.config);
+	const config = deepClone(Data.config);
 	config.deployed = true;
 	fileList.push(
 		{
@@ -485,8 +487,8 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	Window.open!('copyProgress');
 	const platform = DeploymentForm.platform;
-	const progressBar = titleEls.get('copyProgress-bar') as HTMLElement;
-	const progressInfo = titleEls.get('copyProgress-info') as HTMLElement;
+	const progressBar = titleEls.get('copyProgress-bar') as YamiElement;
+	const progressInfo = titleEls.get('copyProgress-info') as YamiElement;
 	const { extnameToTypeMap } = FolderItem;
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';

@@ -1,6 +1,7 @@
 import { Path } from '@app/utils/config';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
+import { append } from '@app/utils/array';
 
 export interface FileMetaLike {
 	guid: string;
@@ -196,7 +197,7 @@ export class FileItem {
 
 	static addGuidConflictPaths(...paths: string[]) {
 		for (const path of paths) {
-			this.guidConflictPaths.append(path);
+			append(this.guidConflictPaths, path);
 		}
 		// oxlint-disable-next-line unbound-method
 		display?.request(this.warnGuidConflicts);
@@ -224,7 +225,7 @@ export class FileItem {
 
 	static addOversizeImagePaths(...paths: string[]) {
 		for (const path of paths) {
-			this.oversizeImagePaths.append(path);
+			append(this.oversizeImagePaths, path);
 		}
 		// oxlint-disable-next-line unbound-method
 		display?.request(this.warnOversizeImages);
@@ -280,8 +281,8 @@ export class FolderItem {
 		this.path = path;
 		this.stats = null;
 		this.parent = parent;
-		this.children = Array.empty as unknown as FileItem[];
-		this.subfolders = Array.empty as unknown as FolderItem[];
+		this.children = [] as unknown as FileItem[];
+		this.subfolders = [] as unknown as FolderItem[];
 		this.contexts = null;
 		this.hooks = hooks;
 	}

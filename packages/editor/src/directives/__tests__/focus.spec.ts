@@ -2,6 +2,7 @@
 import { defineComponent, h, nextTick, withDirectives } from 'vue';
 import { mount } from '@vue/test-utils';
 import { focusTarget, requestFocus, vFocus } from '@app/directives/focus';
+import type { YamiElement } from '@app/types/element-api';
 
 const flushFocus = async (): Promise<void> => {
 	await nextTick();
@@ -24,7 +25,7 @@ describe('v-focus 指令与 requestFocus 基建', () => {
 
 	it('requestFocus 命中 id 时优先调用元素 getFocus API', async () => {
 		const wrapper = mountWithFocus('api-target', 'div');
-		const el = document.getElementById('api-target') as HTMLElement;
+		const el = document.getElementById('api-target') as unknown as YamiElement;
 		const getFocus = vi.fn();
 		el.getFocus = getFocus;
 		requestFocus('api-target');
@@ -36,7 +37,7 @@ describe('v-focus 指令与 requestFocus 基建', () => {
 
 	it('getFocus 接收到透传的 mode 参数', async () => {
 		const wrapper = mountWithFocus('api-mode-target', 'div');
-		const el = document.getElementById('api-mode-target') as HTMLElement;
+		const el = document.getElementById('api-mode-target') as unknown as YamiElement;
 		const getFocus = vi.fn();
 		el.getFocus = getFocus;
 		requestFocus('api-mode-target', 'all');
@@ -67,7 +68,7 @@ describe('v-focus 指令与 requestFocus 基建', () => {
 
 	it('token 递增保证重复聚焦同一 id 再次触发', async () => {
 		const wrapper = mountWithFocus('repeat-target', 'div');
-		const el = document.getElementById('repeat-target') as HTMLElement;
+		const el = document.getElementById('repeat-target') as unknown as YamiElement;
 		const getFocus = vi.fn();
 		el.getFocus = getFocus;
 		requestFocus('repeat-target');

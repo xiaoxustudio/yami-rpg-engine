@@ -10,22 +10,23 @@ import { AutoTile } from './auto-tile.ts';
 import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
 import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
+import type { YamiElement } from '@app/types/element-api';
 
 Palette.initialize = function (this: typeof Palette) {
 	if (!paletteEls.get('palette-frame')) return;
-	this.page = inspectorEls.get('fileTileset') as HTMLElement;
-	this.head = paletteEls.get('palette-head') as HTMLElement;
-	this.body = paletteEls.get('palette-body') as HTMLElement;
-	this.window = hide(paletteEls.get('palette-frame') as HTMLElement);
-	this.canvas = paletteEls.get('palette-canvas') as HTMLElement;
-	this.screen = paletteEls.get('palette-screen') as HTMLElement;
-	this.marquee = paletteEls.get('palette-marquee') as HTMLElement;
-	this.itemScroll = paletteEls.get('palette-scroll') as HTMLElement;
-	this.itemPriority = paletteEls.get('palette-priority') as HTMLElement;
-	this.itemTag = paletteEls.get('palette-tag') as HTMLElement;
-	this.itemTerrain = paletteEls.get('palette-terrain') as HTMLElement;
-	this.itemEdit = paletteEls.get('palette-edit') as HTMLElement;
-	this.zoomSlider = paletteEls.get('palette-zoom') as HTMLElement;
+	this.page = inspectorEls.get('fileTileset') as YamiElement;
+	this.head = paletteEls.get('palette-head') as YamiElement;
+	this.body = paletteEls.get('palette-body') as YamiElement;
+	this.window = hide(paletteEls.get('palette-frame') as YamiElement);
+	this.canvas = paletteEls.get('palette-canvas') as YamiElement;
+	this.screen = paletteEls.get('palette-screen') as YamiElement;
+	this.marquee = paletteEls.get('palette-marquee') as YamiElement;
+	this.itemScroll = paletteEls.get('palette-scroll') as YamiElement;
+	this.itemPriority = paletteEls.get('palette-priority') as YamiElement;
+	this.itemTag = paletteEls.get('palette-tag') as YamiElement;
+	this.itemTerrain = paletteEls.get('palette-terrain') as YamiElement;
+	this.itemEdit = paletteEls.get('palette-edit') as YamiElement;
+	this.zoomSlider = paletteEls.get('palette-zoom') as YamiElement;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true });
@@ -135,7 +136,7 @@ Palette.initialize = function (this: typeof Palette) {
 
 	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
-	on(paletteEls.get('fileTileset-general-detail') as HTMLElement, 'toggle', this.windowResize);
+	on(paletteEls.get('fileTileset-general-detail') as YamiElement, 'toggle', this.windowResize);
 	// keydown/wheel 经 Vue 模板转发（FileTilesetPage @keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);

@@ -19,6 +19,9 @@ import '@app/utils/number';
 import '@app/utils/object';
 import { getTeamStore } from '@app/stores/team';
 import type { TeamDataShape } from '@app/stores/team';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { computeIndexDigits } from '@app/utils/number';
 
 const Clipboard = GlobalClipboard;
 
@@ -32,7 +35,7 @@ export type TeamData = {
 	[k: string]: any;
 };
 
-export type TeamListElement = HTMLElement & {
+export type TeamListElement = YamiElement & {
 	data: TeamData[];
 	deleteNode(item: TeamData): void;
 	update(): void;
@@ -49,12 +52,12 @@ interface TeamWindow {
 	getItemById: (id: string) => TeamData | null;
 	unpackTeams: () => void;
 	packTeams: () => void;
-	windowClose: (event: Event) => void;
-	windowClosed: (event: Event) => void;
+	windowClose: (event: YamiEvent) => void;
+	windowClosed: (event: YamiEvent) => void;
 	setChanged: (value: boolean) => void;
 	listKeydown: (event: KeyboardEvent) => void;
 	listPointerdown: (event: PointerEvent) => void;
-	listSelect: (event: Event) => void;
+	listSelect: (event: YamiEvent) => void;
 	listChange: (event?: Event) => void;
 	listPopup: (event: PointerEvent & { value?: TeamData | null }) => void;
 	confirm: (event?: Event) => void;
@@ -90,7 +93,7 @@ function mountListMethods(listElement: TeamListElement): void {
 }
 
 function initialize(): void {
-	const current = composableEls.get('team-list') as TeamListElement | null;
+	const current = composableEls.get('team-list') as unknown as TeamListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
@@ -231,7 +234,7 @@ function packTeams(): void {
 	Data.createTeamMap();
 }
 
-function windowClose(event: Event): void {
+function windowClose(event: YamiEvent): void {
 	if (changed) {
 		event.preventDefault();
 		const get = (key: string) => t('confirmation.' + key);
@@ -255,7 +258,7 @@ function windowClose(event: Event): void {
 	}
 }
 
-function windowClosed(_event: Event): void {
+function windowClosed(_event: YamiEvent): void {
 	getTeamStore().state = 'closed';
 	getTeamStore().teams = null;
 	getTeamStore().data = null;
@@ -295,7 +298,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
-				const element = (event.target as HTMLElement).parentNode as HTMLElement;
+				const element = (event.target as HTMLElement).parentNode as YamiElement;
 				const team = element.item!;
 				return Color.open({
 					read: () => {
@@ -309,7 +312,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				});
 			}
 			if (hasClass(event.target, 'team-relation-mark')) {
-				const element = (event.target as HTMLElement).closest('.node-item') as HTMLElement;
+				const element = (event.target as HTMLElement).closest('.node-item') as YamiElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.relations[teamB.id] ^= 1;
@@ -320,7 +323,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				changed = true;
 			}
 			if (hasClass(event.target, 'team-collision-mark')) {
-				const element = (event.target as HTMLElement).closest('.node-item') as HTMLElement;
+				const element = (event.target as HTMLElement).closest('.node-item') as YamiElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.collisions[teamB.id] ^= 1;
@@ -334,7 +337,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	}
 }
 
-function listSelect(_event: Event): void {
+function listSelect(_event: YamiEvent): void {
 	const listElement = list!;
 	let rendered = false;
 	for (const team of listElement.data) {
@@ -419,7 +422,7 @@ function confirm(_event?: Event): void {
 		changed = false;
 		packTeams();
 		File.planToSave!(Data.manifest.project.teams);
-		const datachange = new Event('datachange');
+		const datachange = new Event('datachange') as YamiEvent;
 		datachange.key = 'teams';
 		window.dispatchEvent(datachange);
 	}
@@ -533,7 +536,7 @@ function list_updateTextNode(this: TeamListElement, item: TeamData): void {
 	const items = item.parent.children;
 	const index = items.indexOf(item);
 	const length = items.length;
-	const digits = Number.computeIndexDigits(length);
+	const digits = computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
 	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
 	setTreeItemText(item, `${sn}:${item.name}`);

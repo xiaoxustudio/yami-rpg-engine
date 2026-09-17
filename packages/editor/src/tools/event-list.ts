@@ -10,12 +10,13 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { IListInterface } from '@app/types/list-interface.ts';
 import { HistoryData, IEditableHistory } from '@app/types/history.ts';
+import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 interface EventListTargetShape {
 	guid?: string;
 	presetId?: string;
 	events?: unknown;
-	element?: HTMLElement | null;
+	element?: YamiElement | null;
 }
 
 interface EventListEventShape {
@@ -23,7 +24,7 @@ interface EventListEventShape {
 	enabled: boolean;
 }
 
-interface EventListDom extends HTMLElement {
+interface EventListDom extends HTMLElement, YamiElementApi {
 	inserting?: boolean;
 	/**
 	 * 事件列表（树列表）元素的虚拟窗口起点/终点。
@@ -120,7 +121,7 @@ export class EventListInterface implements IListInterface {
 		};
 	}
 
-	update(list: HTMLElement) {
+	update(list: YamiElement) {
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {

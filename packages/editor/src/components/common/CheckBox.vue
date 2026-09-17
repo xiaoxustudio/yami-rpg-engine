@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMCheckBox
 		ref="ym"
 		:model-value="state.dataValue"
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
+import type { YamiEvent } from '@app/types/editor-event';
 import { YMCheckBox } from '@ui-kit';
 import {
 	on as onElement,
@@ -87,7 +88,7 @@ const write = (value: boolean): void => {
 		toggleRelatedElements();
 	}
 	if (state.writeEventEnabled) {
-		const writeEvent = new Event('write');
+		const writeEvent = new Event('write') as YamiEvent;
 		writeEvent.value = state.dataValue;
 		el.dispatchEvent(writeEvent);
 	}
@@ -104,7 +105,7 @@ const input = (value: boolean): void => {
 			const inputEvent = new Event('input', {
 				bubbles: true
 			});
-			inputEvent.value = state.dataValue;
+			(inputEvent as YamiEvent).value = state.dataValue;
 			el.dispatchEvent(inputEvent);
 		}
 		dispatchChangeEvent(el);
@@ -203,11 +204,11 @@ onMounted(() => {
 			state.relations = value;
 		}
 	});
-	onElement(el, 'input', (e: Event & { value?: unknown }) => {
+	onElement(el, 'input', (e: YamiEvent) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
 	});
-	onElement(el, 'write', (e: Event & { value?: unknown }) => emit('write', e.value));
+	onElement(el, 'write', (e: YamiEvent) => emit('write', e.value));
 	onElement(el, 'change', () => emit('change', read()));
 	if (props.modelValue) write(true);
 	if (props.disabled) disable();

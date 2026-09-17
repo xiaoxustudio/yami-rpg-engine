@@ -1,3 +1,5 @@
+import { setSpacePressed } from '@app/utils/event-accessors';
+import type { EditorEvent } from '@app/types/editor-event';
 window.addEventListener(
 	'keydown',
 	function (event: EditorEvent) {
@@ -22,7 +24,7 @@ window.addEventListener(
 		}
 		switch ((event as KeyboardEvent).code) {
 			case 'Space':
-				Event.prototype.spaceKey = true;
+				setSpacePressed(true);
 				break;
 		}
 	},
@@ -34,7 +36,7 @@ window.addEventListener(
 	function (event: EditorEvent) {
 		switch ((event as KeyboardEvent).code) {
 			case 'Space':
-				Event.prototype.spaceKey = false;
+				setSpacePressed(false);
 				break;
 		}
 	},

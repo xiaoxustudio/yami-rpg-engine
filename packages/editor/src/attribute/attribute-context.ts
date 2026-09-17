@@ -1,6 +1,7 @@
 import { TreeDataContext } from '@app/components/tree-data-context.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import type { TreeDataItem } from '@ui-kit';
+import { append } from '@app/utils/array';
 
 export class AttributeContext extends TreeDataContext {
 	constructor(attribute: Record<string, unknown>) {
@@ -42,7 +43,7 @@ export class AttributeContext extends TreeDataContext {
 			if (group) {
 				const attrTypes = attrType.split(' ');
 				if (attrTypes.includes('string')) {
-					attrTypes.append('enum');
+					append(attrTypes, 'enum');
 				}
 				const itemCache = this.itemCache;
 				for (const attr of group.itemList) {

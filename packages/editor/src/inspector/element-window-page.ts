@@ -64,7 +64,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiWindow-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiWindow-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

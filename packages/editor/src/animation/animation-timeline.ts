@@ -14,6 +14,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { elementDataOf } from '@app/utils/element-data';
+import { clamp, dist as mathDist } from '@app/utils/math';
+import { clone as deepClone } from '@app/utils/object';
+import { empty as fnEmpty } from '@app/utils/function';
 
 const Clipboard = GlobalClipboard;
 
@@ -148,7 +151,7 @@ Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: boolean)
 			shiftKey && x === origin && length > 1
 				? Math.max(Math.min(left, max), min)
 				: Math.min(Math.max(left, min), max);
-		const scrollTop = Math.clamp(list.scrollTop, y * 20 + 20 - list.clientHeight, y * 20);
+		const scrollTop = clamp(list.scrollTop, y * 20 + 20 - list.clientHeight, y * 20);
 		if (list.scrollLeft !== scrollLeft) {
 			list.scrollLeft = scrollLeft;
 		}
@@ -551,7 +554,7 @@ Animation.saveFrames = function (
 
 Animation.cloneFrame = function (this: typeof Animation, frames: AnimationFrame[], index: number) {
 	const frame = frames[index];
-	const clone = (frames[index] = Object.clone(frame));
+	const clone = (frames[index] = deepClone(frame));
 	return Object.defineProperty(clone, 'key', {
 		configurable: true,
 		value: frame.key
@@ -574,14 +577,14 @@ Animation.insertFrame = function (this: typeof Animation) {
 		const end = frame.end;
 		if (x >= end) continue;
 		if (x > start) {
-			const insert = Object.clone(frame);
+			const insert = deepClone(frame);
 			insert.start = x;
 			insert.end = Math.max(ex, end);
 			this.cloneFrame!(frames, i).end = x;
 			frames.splice(i + 1, 0, insert);
 		} else if (x === start) {
 			const proto = frames[i - 1] ?? frame;
-			const insert = Object.clone(proto);
+			const insert = deepClone(proto);
 			insert.start = x;
 			insert.end = ex;
 			frames.splice(i, 0, insert);
@@ -589,7 +592,7 @@ Animation.insertFrame = function (this: typeof Animation) {
 			if (i !== 0) {
 				this.cloneFrame!(frames, i - 1).end = x;
 			}
-			const insert = Object.clone(frame);
+			const insert = deepClone(frame);
 			insert.start = x;
 			insert.end = ex;
 			frames.splice(i, 0, insert);
@@ -602,7 +605,7 @@ Animation.insertFrame = function (this: typeof Animation) {
 	const last = frames[fLength - 1];
 	let insert = last;
 	if (last) {
-		insert = Object.clone(last);
+		insert = deepClone(last);
 	} else {
 		const map = this.inspectorTypeMap;
 		const key = map[layer.class];
@@ -714,7 +717,7 @@ Animation.copyFrame = function (this: typeof Animation, returnData = false) {
 		const end = frame.end;
 		if (x >= end) continue;
 		if (ex <= start) break;
-		copies.push(Object.clone(frame));
+		copies.push(deepClone(frame));
 	}
 	if (copies.length !== 0) {
 		for (const frame of copies) {
@@ -815,9 +818,9 @@ Animation.dragAndDropFrame = function (this: typeof Animation) {
 			const layers = [sLayer];
 			layers.push(dLayer);
 			this.saveFrames!(layers, sMarquee, dMarquee);
-			this.updateTimeline = Function.empty;
-			this.openFrame = Function.empty;
-			this.saveFrames = Function.empty;
+			this.updateTimeline = fnEmpty;
+			this.openFrame = fnEmpty;
+			this.saveFrames = fnEmpty;
 			this.deleteFrame!();
 			this.pasteFrame!(data, this.timelineMarqueeShift);
 			this.updateTimeline = updateTimeline;
@@ -954,9 +957,9 @@ Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) 
 			const layers = [sLayer];
 			layers.push(dLayer);
 			this.saveFrames!(layers, sMarquee, dMarquee);
-			this.updateTimeline = Function.empty;
-			this.openFrame = Function.empty;
-			this.saveFrames = Function.empty;
+			this.updateTimeline = fnEmpty;
+			this.openFrame = fnEmpty;
+			this.saveFrames = fnEmpty;
 			this.deleteFrame!();
 			this.pasteFrame!(data, destination);
 			this.updateTimeline = updateTimeline;
@@ -982,7 +985,7 @@ Animation.selectControlPoint = function (this: typeof Animation, x: number, y: n
 				if (target === this.selectObject!(x, y)) {
 					const ox = context.matrix[6];
 					const oy = context.matrix[7];
-					if (Math.dist(ox, oy, x, y) > radius) {
+					if (mathDist(ox, oy, x, y) > radius) {
 						return points.jointRotate;
 					}
 				}
@@ -1031,7 +1034,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 			if (frame !== null && layer.class === 'joint' && !layer.hidden && !layer.locked) {
 				const ox = context.matrix[6];
 				const oy = context.matrix[7];
-				const dist = Math.dist(ox, oy, x, y);
+				const dist = mathDist(ox, oy, x, y);
 				if (dist <= jointRadius) {
 					const w = active === context ? Infinity : jointRadius - dist;
 					if (target === null || weight < w) {
@@ -1054,7 +1057,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 			if (frame !== null && layer.class === 'particle' && !layer.hidden && !layer.locked) {
 				const ox = context.matrix[6];
 				const oy = context.matrix[7];
-				const dist = Math.dist(ox, oy, x, y);
+				const dist = mathDist(ox, oy, x, y);
 				if (dist <= anchorRadius) {
 					const w = anchorRadius - dist;
 					if (target === null || weight < w) {
@@ -1090,7 +1093,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 				const sy = parent.matrix[7];
 				const dx = context.matrix[6];
 				const dy = context.matrix[7];
-				const dist = Math.dist(sx, sy, dx, dy);
+				const dist = mathDist(sx, sy, dx, dy);
 				if (dist > 4) {
 					const angle = Math.atan2(dy - sy, dx - sx);
 					const cos = Math.cos(-angle);

@@ -6,6 +6,7 @@ import { UI } from '@app/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
+import { clamp, roundTo, dist, radians } from '@app/utils/math';
 
 // oxlint-disable-next-line no-explicit-any
 export const AnimationWindowEngine: Record<string, any> = {};
@@ -50,9 +51,9 @@ AnimationWindowEngine.updateCamera = function (
 	const scrollY = y * this.scaleY + this.outerHeight / 2;
 	const toleranceForDPR = 0.0001;
 	screenScrollData(screen).rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
+		clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
 	screenScrollData(screen).rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
+		clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
@@ -60,8 +61,8 @@ AnimationWindowEngine.updateCamera = function (
 AnimationWindowEngine.updateTransform = function (this: typeof Animation) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
-	const left = Math.roundTo(screen.scrollLeft * dpr - (this.outerWidth >> 1), 4);
-	const top = Math.roundTo(screen.scrollTop * dpr - (this.outerHeight >> 1), 4);
+	const left = roundTo(screen.scrollLeft * dpr - (this.outerWidth >> 1), 4);
+	const top = roundTo(screen.scrollTop * dpr - (this.outerHeight >> 1), 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
 	this.scrollLeft = left / this.scaleX;
@@ -71,8 +72,8 @@ AnimationWindowEngine.updateTransform = function (this: typeof Animation) {
 	this.updateMatrix!();
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.centerX = Math.roundTo((scrollX - this.outerWidth / 2) / this.scaleX, 4);
-	this.centerY = Math.roundTo((scrollY - this.outerHeight / 2) / this.scaleY, 4);
+	this.centerX = roundTo((scrollX - this.outerWidth / 2) / this.scaleX, 4);
+	this.centerY = roundTo((scrollY - this.outerHeight / 2) / this.scaleY, 4);
 };
 
 AnimationWindowEngine.updateMatrix = function (this: typeof Animation) {
@@ -281,13 +282,13 @@ AnimationWindowEngine.drawCoordinateAxes = function (this: typeof Animation) {
 	vertices[2] = 0;
 	vertices[3] = x2;
 	vertices[4] = y2 + 0.5;
-	vertices[5] = Math.dist(x1, y1, x2, y2);
+	vertices[5] = dist(x1, y1, x2, y2);
 	vertices[6] = x3 + 0.5;
 	vertices[7] = y3;
 	vertices[8] = 0;
 	vertices[9] = x4 + 0.5;
 	vertices[10] = y4;
-	vertices[11] = Math.dist(x3, y3, x4, y4);
+	vertices[11] = dist(x3, y3, x4, y4);
 	matrix.project(gl.flip, gl.width, gl.height);
 	gl.alpha = 1;
 	gl.blend = 'normal';
@@ -465,7 +466,7 @@ AnimationWindowEngine.drawJointSpinner = function (this: typeof Animation) {
 				rotation += frame.rotation;
 			}
 		}
-		const angle = Math.radians(rotation);
+		const angle = radians(rotation);
 		const sAngle = angle - Math.PI / 12;
 		const eAngle = angle + Math.PI / 12;
 		const arrowSegments = 5;

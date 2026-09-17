@@ -62,7 +62,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiVideo-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('uiVideo-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};

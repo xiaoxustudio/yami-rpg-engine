@@ -13,6 +13,7 @@ import { IEditableHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 import { applyLocalizedItems } from '@app/utils/localized-items';
+import type { YamiElement } from '@app/types/element-api';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const conditionEls = createElementRegistry();
@@ -118,7 +119,7 @@ export class ConditionListInterface implements IListInterface {
 		}
 	}
 
-	update(list: HTMLElement) {
+	update(list: YamiElement) {
 		const item = this.editor?.target as {
 			conditions?: unknown;
 			element?: { parentNode?: Node };
@@ -227,7 +228,7 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-string':
 				const keyEl = conditionEls.get('condition-key');
 				// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-				if (keyEl) (keyEl as CustomBoxApi).filter = type.slice(7);
+				if (keyEl) (keyEl as unknown as CustomBoxApi).filter = type.slice(7);
 				break;
 		}
 	}

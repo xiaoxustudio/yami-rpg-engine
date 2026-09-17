@@ -4,6 +4,8 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { SceneCameraEngine } from '@app/engine/scene/scene-camera-engine.ts';
+import type { YamiElement } from '@app/types/element-api';
+import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 Scene.getTileCoords = SceneCameraEngine.getTileCoords;
 Scene.getConvertedCoords = SceneCameraEngine.getConvertedCoords;
@@ -16,7 +18,7 @@ Scene.updateTransform = SceneCameraEngine.updateTransform;
 
 Scene.setZoom = (function IIFE() {
 	return function (this: typeof Scene, zoom: number) {
-		const slider = sceneEls.get('scene-zoom') as HTMLElement;
+		const slider = sceneEls.get('scene-zoom') as YamiElement;
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -145,7 +147,7 @@ Scene.resize = function (this: typeof Scene) {
 		const scaledTileHeight = Math.round(this.tileHeight * scale);
 		const innerWidth = this.width * scaledTileWidth;
 		const innerHeight = this.height * scaledTileHeight;
-		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
+		const screenBox = getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
 		const paddingLeft = Math.max((screenWidth - innerWidth) >> 1, scaledPadding);

@@ -23,6 +23,9 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import type { EnumItemShape } from '@app/stores/enum';
 import { emitCustom } from '@app/events/custom-events';
+import type { YamiElement } from '@app/types/element-api';
+import type { YamiEvent } from '@app/types/editor-event';
+import { clone as deepClone } from '@app/utils/object';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const enumEls = createElementRegistry();
@@ -35,7 +38,7 @@ interface EnumItem {
 	note?: string;
 	expanded?: boolean;
 	children?: EnumItem[];
-	element?: HTMLElement;
+	element?: YamiElement;
 	[k: string]: unknown;
 }
 
@@ -52,12 +55,12 @@ interface EnumHistoryData {
 
 interface EnumModule {
 	list: TreeListElement;
-	panel: HTMLElement;
-	searcher: HTMLElement;
+	panel: YamiElement;
+	searcher: YamiElement;
 	inputs: {
-		name: HTMLElement | null;
-		value: HTMLElement | null;
-		note: HTMLElement | null;
+		name: YamiElement | null;
+		value: YamiElement | null;
+		note: YamiElement | null;
 	};
 	initialize: (this: typeof Enum) => void;
 	open: (this: typeof Enum, target?: EnumTarget, mode?: string) => void;
@@ -92,21 +95,21 @@ interface EnumModule {
 	unpackEnumeration: (this: typeof Enum) => void;
 	packEnumeration: (this: typeof Enum) => void;
 	saveHistory: (this: typeof Enum, item: EnumItem, key: string, value?: string) => void;
-	windowClose: (this: typeof Enum, event: Event) => void;
-	windowClosed: (this: typeof Enum, event: Event) => void;
+	windowClose: (this: typeof Enum, event: YamiEvent) => void;
+	windowClosed: (this: typeof Enum, event: YamiEvent) => void;
 	keydown: (event: KeyboardEvent) => void;
 	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
 	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
 	listDoubleclick: (event: MouseEvent) => void;
-	listSelect: (event: Event) => void;
-	listRecord: (event: Event) => void;
+	listSelect: (event: YamiEvent) => void;
+	listRecord: (event: YamiEvent) => void;
 	listOpen: (event: MouseEvent) => void;
-	listPopup: (event: Event & { clientX: number; clientY: number }) => void;
+	listPopup: (event: YamiEvent & { clientX: number; clientY: number }) => void;
 	nameInput: (event: InputEvent & { target: HTMLInputElement }) => void;
 	valueInput: (event: InputEvent & { target: HTMLInputElement }) => void;
 	noteInput: (this: HTMLElement, event: InputEvent) => void;
 	panelKeydown: (event: KeyboardEvent) => void;
-	searcherInput: (this: TextBox, event: InputEvent) => void;
+	searcherInput: (this: YamiElement, event: InputEvent) => void;
 	confirm: (this: typeof Enum, event?: Event) => void;
 	apply: (this: typeof Enum, event?: Event) => void;
 	// oxlint-disable-next-line no-explicit-any
@@ -167,12 +170,12 @@ function ensureDomBound() {
 	if (!list) return;
 	// P2b-1：`enumEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Enum.list = list as TreeListElement;
-	Enum.panel = enumEls.get('enum-properties-flex') as HTMLElement;
+	Enum.panel = enumEls.get('enum-properties-flex') as YamiElement;
 	hide(Enum.panel!);
-	Enum.searcher = enumEls.get('enum-searcher') as HTMLElement;
-	Enum.inputs.name = enumEls.get('enum-name') as HTMLElement;
-	Enum.inputs.value = enumEls.get('enum-value') as HTMLElement;
-	Enum.inputs.note = enumEls.get('enum-note') as HTMLElement;
+	Enum.searcher = enumEls.get('enum-searcher') as YamiElement;
+	Enum.inputs.name = enumEls.get('enum-name') as YamiElement;
+	Enum.inputs.value = enumEls.get('enum-value') as YamiElement;
+	Enum.inputs.note = enumEls.get('enum-note') as YamiElement;
 	Enum.list.copy = null as unknown as (...args: unknown[]) => void;
 	Enum.list.paste = null as unknown as (...args: unknown[]) => void;
 	Enum.list.delete = null as unknown as (...args: unknown[]) => void;
@@ -207,7 +210,7 @@ function ensureDomBound() {
 			Enum.searcher!.deleteInputContent();
 			this.expandToSelection();
 			this.scrollToSelection();
-			active!.focus();
+			(active as HTMLElement | null)?.focus();
 		}
 	};
 	Enum.list.createFolder = function () {
@@ -391,7 +394,7 @@ Enum.setFolderGroup = function (this: typeof Enum, folder: EnumItem, newGroup: s
 	const settings = getEnumStore().state.settings!;
 	const oldGroup = folderGroupOf(settings, folder.id);
 	if (oldGroup !== newGroup) {
-		const copy = Object.clone(settings);
+		const copy = deepClone(settings);
 		if (oldGroup) settings[oldGroup] = '';
 		if (newGroup) settings[newGroup] = folder.id;
 		getEnumStore().state.history!.save({
@@ -487,7 +490,7 @@ Enum.unpackEnumeration = (function IIFE() {
 			const item = items![i];
 			getEnumStore().state.idMap![item.id] = true;
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
@@ -497,7 +500,7 @@ Enum.unpackEnumeration = (function IIFE() {
 	return function (this: typeof Enum) {
 		getEnumStore().state.idMap = {} as Record<string, boolean>;
 		getEnumStore().state.data = clone(Data.enumeration.strings) as EnumItemShape[];
-		getEnumStore().state.settings = Object.clone(Data.enumeration.settings);
+		getEnumStore().state.settings = deepClone(Data.enumeration.settings);
 		if (!getEnumStore().state.settingKeys) {
 			getEnumStore().state.settingKeys = Object.keys(getEnumStore().state.settings!);
 		}
@@ -511,7 +514,7 @@ Enum.packEnumeration = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
 			if (item.class !== 'folder') {
-				copies[i] = Object.clone(item);
+				copies[i] = deepClone(item);
 			} else {
 				copies[i] = {
 					class: item.class,
@@ -526,7 +529,7 @@ Enum.packEnumeration = (function IIFE() {
 	};
 	return function (this: typeof Enum) {
 		Data.enumeration.strings = clone(getEnumStore().state.data as unknown as EnumItem[] | null);
-		Data.enumeration.settings = Object.clone(getEnumStore().state.settings);
+		Data.enumeration.settings = deepClone(getEnumStore().state.settings);
 		Data.createEnumerationContext();
 	};
 })();
@@ -535,7 +538,7 @@ Enum.saveHistory = function (this: typeof Enum, item: EnumItem, key: string, val
 	getEnumStore().saveHistory(item as EnumItemShape, key, value);
 };
 
-Enum.windowClose = function (this: typeof Enum, event: Event) {
+Enum.windowClose = function (this: typeof Enum, event: YamiEvent) {
 	this.list.saveScroll();
 	if (getEnumStore().state.changed) {
 		event.preventDefault();
@@ -560,7 +563,7 @@ Enum.windowClose = function (this: typeof Enum, event: Event) {
 	}
 }.bind(Enum);
 
-Enum.windowClosed = function (this: typeof Enum, _event: Event) {
+Enum.windowClosed = function (this: typeof Enum, _event: YamiEvent) {
 	getEnumStore().close();
 	write(this.searcher, '');
 	clear(this.list);
@@ -632,12 +635,12 @@ Enum.listDoubleclick = function (event: MouseEvent) {
 	}
 };
 
-Enum.listSelect = function (event: Event) {
+Enum.listSelect = function (event: YamiEvent) {
 	const item = event.value;
 	return item.class !== 'folder' ? Enum.openPropertyPanel(item) : Enum.closePropertyPanel();
 };
 
-Enum.listRecord = function (event: Event) {
+Enum.listRecord = function (event: YamiEvent) {
 	getEnumStore().state.changed = true;
 	const response = event.value;
 	switch (response.type) {
@@ -663,7 +666,7 @@ Enum.listOpen = function (event: MouseEvent) {
 	Enum.listDoubleclick(event);
 };
 
-Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+Enum.listPopup = function (event: YamiEvent & { clientX: number; clientY: number }) {
 	const list = Enum.list!;
 	const item = event.value;
 	const selected = !!item;
@@ -842,11 +845,11 @@ Enum.panelKeydown = function (event: KeyboardEvent) {
 	}
 };
 
-Enum.searcherInput = function (this: TextBox, event: InputEvent) {
+Enum.searcherInput = function (this: YamiElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input!.value;
+	const text = (this.input as { value: string }).value;
 	Enum.list!.searchNodesDebounced(text);
 };
 

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+import type { YamiMouseEvent } from '@app/types/editor-event';
 
 const loadHome = () =>
 	import('@app/tools/window-cluster').then(async (m) => {
@@ -51,23 +52,23 @@ export const useHomeStore = defineStore('home', () => {
 		return Home?.countFileList?.(path);
 	}
 
-	function windowResize(event: Event) {
+	function windowResize(event: YamiMouseEvent) {
 		Home?.windowResize?.(event);
 	}
 
-	function windowLocalize(event: Event) {
+	function windowLocalize(event: YamiMouseEvent) {
 		Home?.windowLocalize?.(event);
 	}
 
-	function startClick(event: Event) {
+	function startClick(event: YamiMouseEvent) {
 		Home?.startClick?.(event);
 	}
 
-	function recentClick(event: Event) {
+	function recentClick(event: YamiMouseEvent) {
 		Home?.recentClick?.(event);
 	}
 
-	function recentPointerup(event: Event) {
+	function recentPointerup(event: YamiMouseEvent) {
 		Home?.recentPointerup?.(event);
 	}
 

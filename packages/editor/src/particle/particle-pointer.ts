@@ -3,17 +3,19 @@ import type { ParticleShape } from './particle-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { getParticleStore } from '@app/stores/particle';
 import { relate } from '@app/utils/element-utils';
+import { isDragKey } from '@app/utils/event-accessors';
+import type { DragEventItem } from '@app/scene/scene-events.ts';
 
 Particle.marqueePointerdown = function (
 	this: ParticleShape,
-	event: PointerEvent & { dragKey?: boolean; startX?: number; startY?: number; enabled?: boolean }
+	event: DragEventItem & { startX?: number; startY?: number; enabled?: boolean }
 ) {
 	if (this.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0:
-			if (!event.dragKey) {
+			if (!isDragKey(event)) {
 				const { emitter } = this;
 				if (emitter.active) {
 					emitter.selected = true;
@@ -122,7 +124,10 @@ Particle.pointermove = function (event: PointerEvent) {
 			case 'scroll': {
 				const distX = event.clientX - dragging.clientX;
 				const distY = event.clientY - dragging.clientY;
-				Particle.screen.setScroll(dragging.scrollLeft - distX, dragging.scrollTop - distY);
+				Particle.screen.setScroll(
+					(dragging.scrollLeft ?? 0) - distX,
+					(dragging.scrollTop ?? 0) - distY
+				);
 				break;
 			}
 		}

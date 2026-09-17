@@ -1,5 +1,6 @@
 import { Inspector } from '@app/inspector/inspector.ts';
 import { UI } from '@app/ui/ui-window.ts';
+import { set } from '@app/utils/array';
 
 interface TextEffectShape {
 	type: string;
@@ -344,7 +345,7 @@ UI.Button = class ButtonElement extends UI.Element {
 						case 'tint-1':
 						case 'tint-2':
 						case 'tint-3':
-							this.shadowImage.tint.set(this.normalTint);
+							set(this.shadowImage.tint, this.normalTint);
 							break;
 					}
 					break;
@@ -356,11 +357,11 @@ UI.Button = class ButtonElement extends UI.Element {
 						case 'none':
 							break;
 						case 'tint-1':
-							this.shadowImage.tint.set(this.normalTint);
+							set(this.shadowImage.tint, this.normalTint);
 							break;
 						case 'tint-2':
 						case 'tint-3':
-							this.shadowImage.tint.set(this.hoverTint);
+							set(this.shadowImage.tint, this.hoverTint);
 							break;
 					}
 					break;
@@ -375,13 +376,13 @@ UI.Button = class ButtonElement extends UI.Element {
 						case 'none':
 							break;
 						case 'tint-1':
-							this.shadowImage.tint.set(this.normalTint);
+							set(this.shadowImage.tint, this.normalTint);
 							break;
 						case 'tint-2':
-							this.shadowImage.tint.set(this.hoverTint);
+							set(this.shadowImage.tint, this.hoverTint);
 							break;
 						case 'tint-3':
-							this.shadowImage.tint.set(this.activeTint);
+							set(this.shadowImage.tint, this.activeTint);
 							break;
 					}
 					break;

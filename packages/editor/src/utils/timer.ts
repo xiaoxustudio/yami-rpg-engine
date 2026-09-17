@@ -1,6 +1,8 @@
 import { hasClass, on } from '@app/utils/element-utils';
 import { registryElements } from '@app/utils/element-registry';
 import { windowShellEls } from '@app/tools/window-object.ts';
+import { empty as fnEmpty } from '@app/utils/function';
+import { append, remove } from '@app/utils/array';
 
 export class Timer {
 	static state: string | null = null;
@@ -65,8 +67,8 @@ export class Timer {
 		this.playbackRate = 1;
 		this.elapsed = 0;
 		this.duration = duration;
-		this.update = update ?? Function.empty;
-		this.callback = callback ?? Function.empty;
+		this.update = update ?? fnEmpty;
+		this.callback = callback ?? fnEmpty;
 	}
 
 	tick(deltaTime: number) {
@@ -91,14 +93,14 @@ export class Timer {
 	}
 
 	add() {
-		if (Timer.timers.append(this)) {
+		if (append(Timer.timers, this)) {
 			Timer.play?.();
 		}
 		return this;
 	}
 
 	remove() {
-		Timer.timers.remove(this);
+		remove(Timer.timers, this);
 		return this;
 	}
 }

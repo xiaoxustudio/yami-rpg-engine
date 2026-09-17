@@ -1,6 +1,7 @@
 import { Scene } from './scene-window.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { hasClass, read } from '@app/utils/element-utils.ts';
+import { clamp, roundTo } from '@app/utils/math';
 
 Scene.webglRestored = function (this: typeof Scene, _event: Event) {
 	if (Scene.state === 'open') {
@@ -320,18 +321,18 @@ Scene.screenKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 								const actor = this.target;
 								const size = actor.data?.size ?? 1;
 								const radius = Math.max(size, 1) / 2;
-								const x = Math.clamp(actor.x + offsetX, radius, width - radius);
-								const y = Math.clamp(actor.y + offsetY, radius, height - radius);
-								this.shiftTarget(Math.roundTo(x, 4), Math.roundTo(y, 4));
+								const x = clamp(actor.x + offsetX, radius, width - radius);
+								const y = clamp(actor.y + offsetY, radius, height - radius);
+								this.shiftTarget(roundTo(x, 4), roundTo(y, 4));
 								break;
 							}
 							case 'region': {
 								const region = this.target;
 								const rwh = region.width / 2;
 								const rhh = region.height / 2;
-								const x = Math.clamp(region.x + offsetX, rwh, width - rwh);
-								const y = Math.clamp(region.y + offsetY, rhh, height - rhh);
-								this.shiftTarget(Math.roundTo(x, 4), Math.roundTo(y, 4));
+								const x = clamp(region.x + offsetX, rwh, width - rwh);
+								const y = clamp(region.y + offsetY, rhh, height - rhh);
+								this.shiftTarget(roundTo(x, 4), roundTo(y, 4));
 								break;
 							}
 							case 'tilemap':
@@ -340,9 +341,9 @@ Scene.screenKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 							case 'particle':
 							case 'parallax': {
 								const target = this.target;
-								const x = Math.clamp(target.x + offsetX, 0, width);
-								const y = Math.clamp(target.y + offsetY, 0, height);
-								this.shiftTarget(Math.roundTo(x, 4), Math.roundTo(y, 4));
+								const x = clamp(target.x + offsetX, 0, width);
+								const y = clamp(target.y + offsetY, 0, height);
+								this.shiftTarget(roundTo(x, 4), roundTo(y, 4));
 								break;
 							}
 						}

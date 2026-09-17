@@ -20,6 +20,7 @@ import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
 import { fileItemElementOf } from '@app/utils/dom';
 import { applyLocalizedTip } from '@app/utils/localized-items';
+import type { YamiElement } from '@app/types/element-api';
 
 export interface SelectorInstance {
 	state?: string;
@@ -44,13 +45,13 @@ export interface SelectorInstance {
 	allowNone?: boolean;
 	lastDir?: string;
 	filters?: unknown[] | null;
-	nav?: HTMLElement & {
+	nav?: YamiElement & {
 		load?(...folders: unknown[]): void;
 		selections?: unknown[];
 		clear?(): void;
 		resize?(): void;
 	};
-	body?: HTMLElement & {
+	body?: YamiElement & {
 		computeGridProperties?(): void;
 		selectByPath?(path?: string): void;
 		selections?: unknown[];
@@ -63,15 +64,15 @@ export interface SelectorInstance {
 		select?(file?: unknown): void;
 		elements?: unknown[] & { count?: number };
 		activateFile?: unknown;
-		on?(type: string, listener: (event: unknown) => void): void;
+		on?(type: string, listener: (event: never) => void): void;
 	};
-	head?: HTMLElement & {
-		searcher?: HTMLElement & {
-			on?(type: string, listener: (event: unknown) => void): void;
+	head?: YamiElement & {
+		searcher?: YamiElement & {
+			on?(type: string, listener: (event: never) => void): void;
 			getFocus?(): void;
 			read?(): unknown;
 		};
-		address?: HTMLElement;
+		address?: YamiElement;
 	};
 }
 
@@ -118,8 +119,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.on?.('open', bodyOpen);
 		Selector.body?.on?.('popup', bodyPopup);
 		Selector.head?.searcher?.on?.('keydown', searcherKeydown);
-		(storesEls.get('selector') as HTMLElement)?.on?.('closed', windowClosed);
-		(storesEls.get('selector') as HTMLElement)?.on?.('resize', windowResize);
+		(storesEls.get('selector') as YamiElement)?.on?.('closed', windowClosed);
+		(storesEls.get('selector') as YamiElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
 			// R2b 收口：`selector-search` 的 tip 过去靠"运行期赋 id + 本地化器按 id 反查"，
 			// 所以它一直留在本地化器的扫描面里。改成直接把文案挂到搜索框上（语言切换自动重挂），
@@ -319,7 +320,9 @@ export const useSelectorStore = defineStore('selector', () => {
 				}
 			});
 		} else {
-			const element = itemElement as (HTMLElement & { file: unknown }) | null;
+			const element = itemElement as unknown as
+				| (YamiElement & { file: { type?: string } })
+				| null;
 			if (element !== null && hasClass(element, 'selected')) {
 				const { selections } = Selector ?? {};
 				const { file } = element;

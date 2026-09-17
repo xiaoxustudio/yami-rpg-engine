@@ -261,7 +261,6 @@ vi.mock('@app/stores/local', () => ({
 		it('parse 路径：customParse 渲染 actor + weight 文本', () => {
 			setWords();
 			Command.parseActor = vi.fn((a: { type: string }) => `A:${a.type}`) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.setWeight.parse!({
 				actor: { type: 'trigger' },
@@ -438,7 +437,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染 zoom + easing 文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			Command.parseEasing = vi.fn(() => 'EASING') as never;
 			const contents = Command.cases.setZoomFactor.parse!({
@@ -552,7 +550,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染模式 + 强度 + 缓动文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.setNumberColor = vi.fn((v: unknown) => `C:${String(v)}`) as never;
 			Command.parseEasing = vi.fn(() => 'EASING') as never;
 			const contents = Command.cases.shakeScreen.parse!({
@@ -860,7 +857,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染音频类型文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseAudioType = vi.fn((v: unknown) => `AT:${String(v)}`) as never;
 			const contents = Command.cases.stopAudio.parse!({ type: 'bgm' });
 			expect(contents).toContainEqual({ text: 'AT:bgm' });

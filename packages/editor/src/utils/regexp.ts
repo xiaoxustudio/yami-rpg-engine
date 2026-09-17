@@ -1,1 +1,1 @@
-RegExp.number = /^-?\d+(?:\.\d+)?$/;
+export const number = /^-?\d+(?:\.\d+)?$/;

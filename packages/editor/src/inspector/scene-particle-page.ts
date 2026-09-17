@@ -3,6 +3,7 @@ import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import { radians } from '@app/utils/math';
 
 {
 	interface SceneParticleData {
@@ -64,7 +65,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & { sync?: () => void }
+				inspectorEls.get('sceneParticle-vue-mount') as unknown as HTMLElement & {
+					sync?: () => void;
+				}
 			)?.sync?.();
 		}
 	};
@@ -83,7 +86,9 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneParticle.write = function (this: typeof SceneParticle, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & { sync?: () => void }
+			inspectorEls.get('sceneParticle-vue-mount') as unknown as HTMLElement & {
+				sync?: () => void;
+			}
 		)?.sync?.();
 	};
 
@@ -120,7 +125,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 				if (particle.angle !== value) {
 					particle.angle = value;
 					if (particle.emitter) {
-						particle.emitter.angle = Math.radians(value as number);
+						particle.emitter.angle = radians(value as number);
 					}
 				}
 				break;

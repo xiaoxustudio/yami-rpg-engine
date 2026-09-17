@@ -232,7 +232,6 @@ vi.mock('@app/stores/local', () => ({
 			Command.parseActor = vi.fn(
 				(a: unknown) => `A:${(a as { type: string }).type}`
 			) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseFileName = vi.fn((v: unknown) => `F:${String(v)}`) as never;
 			Command.parseSpriteName = vi.fn(() => 'SPRITE') as never;
 			const contents = Command.cases.changeActorSprite.parse!({
@@ -638,7 +637,6 @@ vi.mock('@app/stores/local', () => ({
 			Command.parseActor = vi.fn(
 				(a: unknown) => `A:${(a as { type: string }).type}`
 			) as never;
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.changeThreat.parse!({
 				actor: { type: 'trigger' },
@@ -722,7 +720,6 @@ vi.mock('@app/stores/local', () => ({
 
 		it('parse 路径：customParse 渲染四边文本', () => {
 			setWords();
-			// oxlint-disable-next-line no-base-to-string
 			Command.parseVariableNumber = vi.fn((v: unknown) => `N:${String(v)}`) as never;
 			const contents = Command.cases.clampCamera.parse!({
 				left: 1,

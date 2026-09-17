@@ -4,7 +4,7 @@ import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getRelativeCoords, relate } from '@app/utils/element-utils.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
-import { ctrl } from '@app/utils/event-accessors';
+import { ctrl, isDragKey } from '@app/utils/event-accessors';
 import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -14,6 +14,7 @@ import { Reference } from '@app/log/related-references.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { getUIStore } from '@app/stores/ui';
+import { radians, degrees, modRadians } from '@app/utils/math';
 
 UI.selectObject = (function IIFE() {
 	const find = (elements: UINodeShape[], x: number, y: number): UINodeShape | null => {
@@ -44,7 +45,7 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 	}
 	switch (event.button) {
 		case 0: {
-			if (event.dragKey) {
+			if (isDragKey(event)) {
 				this.dragging = event;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
@@ -217,10 +218,10 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					const distX = x * dpr - dragging.absoluteAnchorX;
 					const distY = y * dpr - dragging.absoluteAnchorY;
 					const currentAngle = Math.atan2(distY, distX);
-					const angle = Math.modRadians(currentAngle - dragging.lastAngle);
+					const angle = modRadians(currentAngle - dragging.lastAngle);
 					dragging.rotationRadians += angle < Math.PI ? angle : angle - Math.PI * 2;
 					let rotation = Math.round(
-						dragging.startRotation + Math.degrees(dragging.rotationRadians)
+						dragging.startRotation + degrees(dragging.rotationRadians)
 					);
 					if (event.shiftKey) {
 						rotation = Math.round(rotation / 15) * 15;
@@ -240,7 +241,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					const { parent, transform } = instance;
 					const points = this.controlPoints!;
 					const point = this.controlPointActive!;
-					const angle = Math.radians(point.angle + this.controlPointRotation);
+					const angle = radians(point.angle + this.controlPointRotation);
 					const distX = ((event.clientX - dragging.clientX) * dpr) / this.scaleX;
 					const distY = ((event.clientY - dragging.clientY) * dpr) / this.scaleY;
 					const dist = Math.sqrt(distX ** 2 + distY ** 2);
@@ -354,7 +355,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					if (event.shiftKey) {
 						const angle = Math.atan2(distY, distX);
 						const directions = 4;
-						const proportion = Math.modRadians(angle) / (Math.PI * 2);
+						const proportion = modRadians(angle) / (Math.PI * 2);
 						const section = (proportion * directions + 0.5) % directions;
 						switch (Math.floor(section)) {
 							case 0:
