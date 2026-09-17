@@ -1,5 +1,5 @@
 import { PluginManager } from './plugin.ts';
-import type { PluginItemShape, ClipboardShape } from './plugin.ts';
+import type { PluginItemShape } from './plugin.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { read } from '@app/utils/element-utils.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -66,7 +66,7 @@ PluginManager.listPopup = function (
 	const list = PluginManager.list as TreeListElement;
 	const item = event.value;
 	const selected = !!item;
-	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.data.plugin');
+	const pastable = GlobalClipboard.has('yami.data.plugin');
 	const deletable = selected;
 	const get = (key: string) => t('menuPluginList.' + key);
 	Menu.popup(
@@ -179,13 +179,13 @@ PluginManager.list_toggle = function (this: TreeListElement, item: PluginItemSha
 // 列表 - 复制
 PluginManager.list_copy = function (this: TreeListElement, item: PluginItemShape) {
 	if (item) {
-		(GlobalClipboard as unknown as ClipboardShape).write('yami.data.plugin', item);
+		GlobalClipboard.write('yami.data.plugin', item);
 	}
 };
 
 // 列表 - 粘贴
 PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemShape) {
-	const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.data.plugin');
+	const copy = GlobalClipboard.read('yami.data.plugin');
 	if (copy) {
 		this.addNodeTo(copy, dItem);
 	}

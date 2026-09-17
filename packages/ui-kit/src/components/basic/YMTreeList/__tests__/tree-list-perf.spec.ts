@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 
 /**
- * docs/tree-list-vfor-plan.md 步骤 1 的最后一个缺口：**大数据（1000+ 节点）性能基准**。
+ * tree 迁移规划 步骤 1 的最后一个缺口：**大数据（1000+ 节点）性能基准**。
  *
  * 口径（与计划「步骤间回归闸门」一致）：不劣于现状 10%。本文件给出可复现的绝对耗时快照，
  * 而不是精确阈值——阈值取观测值的 5~10 倍，只用于拦住"数量级回退"（例如每次 bump 都全树重派生）。

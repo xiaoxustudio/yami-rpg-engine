@@ -1,5 +1,4 @@
 import { Palette } from './palette.ts';
-import type { ClipboardShape } from './palette.ts';
 import { AutoTile } from './auto-tile.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -23,7 +22,7 @@ Palette.copyAutoTile = function (this: typeof Palette, index: number) {
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
 		if (tiles[index]) {
-			(GlobalClipboard as unknown as ClipboardShape).write('yami.tile', {
+			GlobalClipboard.write('yami.tile', {
 				tile: tiles[index],
 				priority: priorities[index],
 				terrain: terrains[index]
@@ -38,7 +37,7 @@ Palette.pasteAutoTile = function (this: typeof Palette, index: number) {
 		const tiles = tileset.tiles;
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
-		const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.tile');
+		const copy = GlobalClipboard.read('yami.tile');
 		if (copy && index < tiles.length) {
 			tiles[index] = copy.tile;
 			priorities[index] = copy.priority;

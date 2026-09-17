@@ -19,6 +19,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { EventBus } from '@app/utils/event-bus.ts';
 import { pinia } from './pinia';
 import { fileItemElementOf } from '@app/utils/dom';
+import { applyLocalizedTip } from '@app/utils/localized-items';
 
 export interface SelectorInstance {
 	state?: string;
@@ -120,11 +121,10 @@ export const useSelectorStore = defineStore('selector', () => {
 		(storesEls.get('selector') as HTMLElement)?.on?.('closed', windowClosed);
 		(storesEls.get('selector') as HTMLElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
-			if (Selector.head && Selector.head?.searcher) {
-				if (Selector.head?.searcher) {
-					Selector.head.searcher.id = 'selector-search';
-				}
-			}
+			// R2b 收口：`selector-search` 的 tip 过去靠"运行期赋 id + 本地化器按 id 反查"，
+			// 所以它一直留在本地化器的扫描面里。改成直接把文案挂到搜索框上（语言切换自动重挂），
+			// 该键随之退出扫描面。
+			applyLocalizedTip(Selector.head?.searcher, 'selector-search');
 		});
 	}
 

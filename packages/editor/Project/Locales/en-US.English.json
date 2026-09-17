@@ -9382,7 +9382,7 @@
 			"label": "Actor",
 			"tip": "Select an actor object"
 		},
-		"setListIndexSkipCheck": {
+		"setList-index-skip-check": {
 			"label": "Boundary Limit",
 			"tip": "When enabled, if [list].length is less than index, no content will be added"
 		},

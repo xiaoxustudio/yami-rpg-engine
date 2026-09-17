@@ -667,7 +667,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.enumeration');
+	const pastable = GlobalClipboard.has('yami.data.enumeration');
 	const undoable = getEnumStore().state.history!.canUndo();
 	const redoable = getEnumStore().state.history!.canRedo();
 	const get = (key: string) => t('menuEnumList.' + key);

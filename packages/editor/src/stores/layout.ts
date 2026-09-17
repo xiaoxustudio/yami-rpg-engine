@@ -43,7 +43,7 @@ export const useLayoutStore = defineStore('layout', () => {
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);
 
 	// 运行时页面/页签归属：value → 当前承载该页面的 group-manager / leaf nav 元素
-	// （M3b 整壳 Teleport :to 输入，docs/layout-vue-plan.md 附录 F.1）。
+	// （M3b 整壳 Teleport :to 输入，layout 迁移规划 附录 F.1）。
 	const pageTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 	const tabTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 

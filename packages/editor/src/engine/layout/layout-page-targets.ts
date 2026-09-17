@@ -1,4 +1,4 @@
-// 运行时页面归属收集（docs/layout-vue-plan.md M3b）
+// 运行时页面归属收集（layout 迁移规划 M3b）
 // 遍历命令式 group DOM 树，收集每个 page-frame 当前归属的 manager 元素：
 // map[value] = 包含该 page-frame 的叶子 group-manager。收敛点（loadLayoutScheme/navDrop）
 // 后由 layout.ts 同步进 store，供页面 Teleport 换源作 :to 输入。

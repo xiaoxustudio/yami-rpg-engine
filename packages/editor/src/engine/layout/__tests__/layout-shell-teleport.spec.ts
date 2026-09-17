@@ -6,7 +6,7 @@ import { getLayoutStore } from '@app/stores/layout';
 import { collectPageTargets } from '../layout-page-targets';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 
-// M3b-2b 接线前决策探针（docs/layout-vue-plan.md 附录 F）：
+// M3b-2b 接线前决策探针（layout 迁移规划 附录 F）：
 // 验证「整壳 .page-frame Teleport」与「引擎后置 nav 排序 pass」两种机制在 jsdom 成立，
 // 为 LayoutPanel 12 页接入与 clear 语义终版定稿提供依据。
 

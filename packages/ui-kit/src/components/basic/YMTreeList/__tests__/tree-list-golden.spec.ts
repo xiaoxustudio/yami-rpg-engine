@@ -7,7 +7,7 @@ import { elementDataOf } from '../../../../utils/element-data';
 import { getListConfig } from '../../../../utils/list-config';
 
 /**
- * docs/tree-list-vfor-plan.md 步骤 1 的金标准测试补充（2026-09-09）。
+ * tree 迁移规划 步骤 1 的金标准测试补充（2026-09-09）。
  * 全部用例在「当前命令式渲染实现」上录制，只断言对外行为/数据/DOM 语义，
  * 供将来 v-for 化（步骤 2+）双路径共用；改动实现时不得改动断言语义。
  */

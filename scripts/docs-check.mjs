@@ -11,7 +11,7 @@
 //      （`scripts/x` 允许解析为 packages/*/scripts/x）；
 //   3) 文档中提到的 `*.spec.ts` 文件在仓库中存在；
 //   4) 文档引用的 DOM 扫描口径与**当前代码**一致，且与
-//      docs/dom-migration-tracker.md 的合计行一致。
+//      DOM 迁移台账 的合计行一致。
 //
 // 不检查（需实跑）：测试用例数、真机冒烟结论、构建产物。
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
@@ -237,7 +237,7 @@ function hasRuleDisabled(source) {
 	return false;
 }
 
-/** docs/dom-migration-tracker.md 合计行 + 口径区（按表头列名/文案取值，避免列序变化出错） */
+/** DOM 迁移台账 合计行 + 口径区（按表头列名/文案取值，避免列序变化出错） */
 function trackerTotals() {
 	const file = join(DOCS_DIR, 'dom-migration-tracker.md');
 	if (!existsSync(file)) return null;
@@ -274,7 +274,7 @@ function trackerTotals() {
 	};
 }
 
-/** docs/vue3-migration-plan.md「一、现状总览」表 */
+/** 主迁移规划「一、现状总览」表 */
 function planTotals() {
 	const file = join(DOCS_DIR, 'vue3-migration-plan.md');
 	if (!existsSync(file)) return null;
@@ -343,13 +343,13 @@ function compareMetrics(label, expected, actual) {
 }
 
 /**
- * docs/remaining-work.md：速览表条目 ID 与明细小节必须一一对应。
+ * 迁移收尾清单：速览表条目 ID 与明细小节必须一一对应。
  * 规则：速览表每行首列是 ID（`| T5b | ... |`），明细用 `## <ID> — 标题`。
  */
 function checkChecklist() {
 	const file = join(DOCS_DIR, 'remaining-work.md');
 	if (!existsSync(file)) {
-		notes.push('docs/remaining-work.md: 不存在（跳过清单结构检查）');
+		notes.push('迁移收尾清单: 不存在（跳过清单结构检查）');
 		return;
 	}
 	const lines = readDoc(file);
@@ -369,16 +369,16 @@ function checkChecklist() {
 		if (/^[A-Za-z][\w.]*$/.test(id)) tableIds.add(id);
 	}
 	if (tableIds.size === 0) {
-		fail('docs/remaining-work.md「速览」表未解析到条目 ID（格式应为 `| ID | 事项 | ... |`）');
+		fail('迁移收尾清单「速览」表未解析到条目 ID（格式应为 `| ID | 事项 | ... |`）');
 		return;
 	}
 	for (const id of tableIds) {
-		if (!sectionIds.has(id)) fail(`docs/remaining-work.md 速览表条目 ${id} 缺少对应明细小节（## ${id} — ...）`);
+		if (!sectionIds.has(id)) fail(`迁移收尾清单 速览表条目 ${id} 缺少对应明细小节（## ${id} — ...）`);
 	}
 	for (const id of sectionIds) {
-		if (!tableIds.has(id)) fail(`docs/remaining-work.md 明细小节 ${id} 未登记在速览表`);
+		if (!tableIds.has(id)) fail(`迁移收尾清单 明细小节 ${id} 未登记在速览表`);
 	}
-	notes.push(`docs/remaining-work.md: 清单结构一致（${tableIds.size} 条）`);
+	notes.push(`迁移收尾清单: 清单结构一致（${tableIds.size} 条）`);
 }
 
 /**
@@ -654,7 +654,7 @@ function main() {
 			tracker.exempt + tracker.stale !== tracker.annotated
 		) {
 			fail(
-				`docs/dom-migration-tracker.md 口径恒等式不成立：待迁移命中 ${tracker.exempt} + 陈旧豁免 ${tracker.stale} ≠ 豁免注释 ${tracker.annotated}`
+				`DOM 迁移台账 口径恒等式不成立：待迁移命中 ${tracker.exempt} + 陈旧豁免 ${tracker.stale} ≠ 豁免注释 ${tracker.annotated}`
 			);
 		}
 		for (const key of [
@@ -668,7 +668,7 @@ function main() {
 			'domParser'
 		]) {
 			if (tracker[key] !== undefined && tracker[key] !== metrics[key]) {
-				fail(`docs/dom-migration-tracker.md 与代码不一致：${key} tracker 写 ${tracker[key]}，当前为 ${metrics[key]}`);
+				fail(`DOM 迁移台账 与代码不一致：${key} tracker 写 ${tracker[key]}，当前为 ${metrics[key]}`);
 			}
 		}
 		// 交叉验证：正则命中文件 − 正则误报 − 命中落在注释/字符串 = tracker 的待迁移命中数
@@ -681,9 +681,9 @@ function main() {
 			);
 		}
 	} else {
-		notes.push('docs/dom-migration-tracker.md: 未解析到口径（跳过多口径核对）');
+		notes.push('DOM 迁移台账: 未解析到口径（跳过多口径核对）');
 	}
-	compareMetrics('docs/vue3-migration-plan.md「现状总览」表', planTotals(), tracker ?? metrics);
+	compareMetrics('主迁移规划「现状总览」表', planTotals(), tracker ?? metrics);
 	compareMetrics('docs/README.md「当前快照」', readmeTotals(), tracker ?? metrics);
 
 	// ── C1 验收：白名单外待迁移命中 = 0，且白名单三处同源（dom-guard 常量 ↔ oxlint overrides ↔ 文件存在）

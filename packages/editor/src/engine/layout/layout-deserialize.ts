@@ -1,4 +1,4 @@
-// DOM group 树 → 数据树反序列化（docs/layout-vue-plan.md M2b / 附录 D 契约）
+// DOM group 树 → 数据树反序列化（layout 迁移规划 M2b / 附录 D 契约）
 // 从宿主 page-frame 内的命令式 group DOM 读回 layout-scheme 数据模型：
 // kind/split 以 group 元素 expando `split` 为准；叶子 tabs 读 expando `tabs`，
 // active 读 `manager.index`（无/undefined 归一为 null）；id 按先序分配。

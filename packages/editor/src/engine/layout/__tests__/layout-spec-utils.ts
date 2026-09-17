@@ -9,7 +9,7 @@ import {
 } from '@app/engine/layout/layout.ts';
 import * as elementUtils from '@app/utils/element-utils';
 
-// layout 行为金标准共享 fixture（docs/layout-vue-plan.md M1）
+// layout 行为金标准共享 fixture（layout 迁移规划 M1）
 // 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再驱动 Layout 命令式构建，
 // 断言最终 DOM 形态（现状语义），供后续 Vue 化重写对照。
 

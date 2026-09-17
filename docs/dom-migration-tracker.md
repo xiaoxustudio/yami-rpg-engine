@@ -102,10 +102,10 @@
 | packages/ui-kit/src/components/business/YMFileBodyPane/YMFileBodyPane.vue | 2409 | 35 | - |
 | packages/ui-kit/src/components/business/YMFileNavPane/YMFileNavPane.vue | 906 | 31 | - |
 | packages/ui-kit/src/components/business/YMParamList/YMParamList.vue | 1438 | 29 | - |
-| packages/editor/src/utils/element-utils.ts | 647 | 27 | - |
+| packages/editor/src/utils/element-utils.ts | 650 | 27 | - |
 | packages/ui-kit/src/components/business/YMTabBar/YMTabBar.vue | 699 | 27 | - |
-| packages/editor/src/palette/palette-pointer.ts | 491 | 24 | - |
-| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 3080 | 21 | - |
+| packages/editor/src/palette/palette-pointer.ts | 490 | 24 | - |
+| packages/ui-kit/src/components/business/YMCommandList/command-api.ts | 3084 | 21 | - |
 | packages/ui-kit/src/components/basic/YMMenuList/menu-api.ts | 532 | 19 | - |
 | packages/ui-kit/src/components/business/YMFileBrowser/YMFileBrowser.vue | 742 | 17 | - |
 | packages/ui-kit/src/components/business/YMWindowFrame/YMWindowFrame.vue | 482 | 15 | - |
@@ -201,11 +201,11 @@
 | packages/editor/src/components/toast.ts | 44 | 3 | - |
 | packages/editor/src/composables/useProjectSettingsWindow.ts | 585 | 3 | - |
 | packages/editor/src/composables/useTeamWindow.ts | 578 | 3 | - |
-| packages/editor/src/localize/dom-localizer.ts | 91 | 3 | - |
+| packages/editor/src/localize/dom-localizer.ts | 114 | 3 | - |
 | packages/editor/src/module/editdata.ts | 380 | 3 | - |
 | packages/editor/src/module/eslints.ts | 332 | 3 | - |
 | packages/editor/src/particle/particle-initialize.ts | 138 | 3 | - |
-| packages/editor/src/title/menu-bar.ts | 1193 | 3 | - |
+| packages/editor/src/title/menu-bar.ts | 1187 | 3 | - |
 | packages/editor/src/utils/doubleclick.ts | 61 | 3 | - |
 | packages/editor/src/variable/open.ts | 86 | 3 | - |
 | packages/ui-kit/src/components/basic/YMDetailSummary/YMDetailSummary.vue | 124 | 3 | - |
@@ -240,7 +240,7 @@
 | packages/editor/src/main.ts | 28 | 2 | - |
 | packages/editor/src/module/browser-search-history.ts | 109 | 2 | - |
 | packages/editor/src/module/constants.ts | 106 | 2 | - |
-| packages/editor/src/palette/auto-tile.ts | 979 | 2 | - |
+| packages/editor/src/palette/auto-tile.ts | 978 | 2 | - |
 | packages/editor/src/particle/particle-events.ts | 217 | 2 | - |
 | packages/editor/src/printer/printer.ts | 1402 | 2 | - |
 | packages/editor/src/services/project/setting-config/renderer.ts | 176 | 2 | - |
@@ -305,7 +305,7 @@
 | packages/editor/src/services/project/hotkey.ts | 39 | 1 | - |
 | packages/editor/src/services/project/setting-config/index.ts | 142 | 1 | - |
 | packages/editor/src/stores/browser.ts | 583 | 1 | - |
-| packages/editor/src/tools/condition-list.ts | 315 | 1 | - |
+| packages/editor/src/tools/condition-list.ts | 317 | 1 | - |
 | packages/editor/src/ui/ui-prefab.ts | 167 | 1 | - |
 | packages/editor/src/utils/dpr.ts | 14 | 1 | - |
 | packages/editor/src/utils/element-registry.ts | 60 | 1 | - |
@@ -369,7 +369,7 @@
 | packages/editor/src/commands/token.ts | 51 | 0 | - |
 | packages/editor/src/components/check-box.ts | 6 | 0 | - |
 | packages/editor/src/components/color-box.ts | 7 | 0 | - |
-| packages/editor/src/components/command-list.ts | 115 | 0 | - |
+| packages/editor/src/components/command-list.ts | 111 | 0 | - |
 | packages/editor/src/components/commands/ActivateScene.vue | 66 | 0 | - |
 | packages/editor/src/components/commands/AddAnimationComponent.vue | 129 | 0 | - |
 | packages/editor/src/components/commands/AppendTarget.vue | 54 | 0 | - |
@@ -465,7 +465,7 @@
 | packages/editor/src/components/commands/SetInventory.vue | 137 | 0 | - |
 | packages/editor/src/components/commands/SetItem.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetLanguage.vue | 57 | 0 | - |
-| packages/editor/src/components/commands/SetList.vue | 272 | 0 | - |
+| packages/editor/src/components/commands/SetList.vue | 273 | 0 | - |
 | packages/editor/src/components/commands/SetLoop.vue | 76 | 0 | - |
 | packages/editor/src/components/commands/SetMovementSpeed.vue | 108 | 0 | - |
 | packages/editor/src/components/commands/SetNumber.vue | 84 | 0 | - |
@@ -900,7 +900,7 @@
 | packages/editor/src/composables/useUITextPage.ts | 105 | 0 | - |
 | packages/editor/src/composables/useUIVideoPage.ts | 45 | 0 | - |
 | packages/editor/src/composables/useUIWindowPage.ts | 61 | 0 | - |
-| packages/editor/src/composables/useVariableGetterWindow.ts | 647 | 0 | - |
+| packages/editor/src/composables/useVariableGetterWindow.ts | 649 | 0 | - |
 | packages/editor/src/composables/useWordList.ts | 2 | 0 | - |
 | packages/editor/src/composables/useZoomWindow.ts | 45 | 0 | - |
 | packages/editor/src/constants/editor.ts | 20 | 0 | - |
@@ -999,7 +999,7 @@
 | packages/editor/src/local/element-registry.ts | 10 | 0 | - |
 | packages/editor/src/local/export-language-window.ts | 117 | 0 | - |
 | packages/editor/src/local/import-language-window.ts | 123 | 0 | - |
-| packages/editor/src/localize/template-localized.ts | 2125 | 0 | - |
+| packages/editor/src/localize/template-localized.ts | 2128 | 0 | - |
 | packages/editor/src/log/element-registry.ts | 7 | 0 | - |
 | packages/editor/src/main/editor-hooks.ts | 18 | 0 | - |
 | packages/editor/src/main/initialize.ts | 151 | 0 | - |
@@ -1016,7 +1016,7 @@
 | packages/editor/src/module/update-log.ts | 77 | 0 | - |
 | packages/editor/src/module/zip.ts | 71 | 0 | - |
 | packages/editor/src/palette/element-registry.ts | 9 | 0 | - |
-| packages/editor/src/palette/palette-autotile.ts | 67 | 0 | - |
+| packages/editor/src/palette/palette-autotile.ts | 66 | 0 | - |
 | packages/editor/src/palette/palette-events.ts | 339 | 0 | - |
 | packages/editor/src/palette/palette-file.ts | 82 | 0 | - |
 | packages/editor/src/palette/palette-image.ts | 293 | 0 | - |
@@ -1177,7 +1177,7 @@
 | packages/editor/src/utils/folder-group.ts | 16 | 0 | - |
 | packages/editor/src/utils/function.ts | 4 | 0 | - |
 | packages/editor/src/utils/icon-clip.ts | 45 | 0 | - |
-| packages/editor/src/utils/localized-items.ts | 43 | 0 | - |
+| packages/editor/src/utils/localized-items.ts | 70 | 0 | - |
 | packages/editor/src/utils/math.ts | 44 | 0 | - |
 | packages/editor/src/utils/monaco-worker.ts | 29 | 0 | - |
 | packages/editor/src/utils/monaco.ts | 27 | 0 | - |
@@ -1233,7 +1233,7 @@
 | packages/ui-kit/src/theme/ThemeProvider.vue | 21 | 0 | - |
 | packages/ui-kit/src/utils/attach-api.ts | 9 | 0 | - |
 | packages/ui-kit/src/utils/color.ts | 16 | 0 | - |
-| packages/ui-kit/src/utils/element-data.ts | 78 | 0 | - |
+| packages/ui-kit/src/utils/element-data.ts | 80 | 0 | - |
 | packages/ui-kit/src/utils/event-bus.ts | 59 | 0 | - |
 | packages/ui-kit/src/utils/list-config.ts | 140 | 0 | - |
 | packages/ui-kit/src/utils/payload-event.ts | 35 | 0 | - |

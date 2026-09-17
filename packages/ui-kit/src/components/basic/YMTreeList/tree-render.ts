@@ -1,4 +1,4 @@
-// YMTreeList 行渲染数据层（docs/tree-list-vfor-plan.md 步骤 2，方案 B）
+// YMTreeList 行渲染数据层（tree 迁移规划 步骤 2，方案 B）
 // 目标：把「命令式 createNodeElement/appendChild 差量」换成「数据派生 + v-for」，
 // 同时保持对外契约（update/select/read/drop/... 与 item.element 缓存）零改动。
 //

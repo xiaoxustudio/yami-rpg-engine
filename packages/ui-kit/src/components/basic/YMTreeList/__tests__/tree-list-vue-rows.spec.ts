@@ -5,7 +5,7 @@ import YMTreeList from '../YMTreeList.vue';
 import { treeRowCount, treeRowElement, setTreeItemClass, setTreeItemText } from '../tree-api';
 import { elementDataOf } from '../../../../utils/element-data';
 
-// 数据派生行渲染（docs/tree-list-vfor-plan.md 步骤 2；步骤 5 后为唯一渲染路径）：
+// 数据派生行渲染（tree 迁移规划 步骤 2；步骤 5 后为唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
 
 interface TreeData {

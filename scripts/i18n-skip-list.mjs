@@ -7,7 +7,8 @@
  * `localizeDomComponents` 对这些键**跳过 DOM 查询**，因此本集合的大小反比于本地化器的扫描面。
  *
  * 键**不从语言文件删除**：`components` 同时是 vue-i18n 的消息树（`t('components.…')` 引用它），
- * 删键会让模板解析失败 —— 详见 docs/remaining-work.md 的「R2b 迁移②及其重要更正」。
+ * 删键会让模板解析失败 —— `components` 既是本地化器的键表，也是 vue-i18n 的消息树，
+ * 两者共用同一份数据（R2b 迁移②确立的关键约束）。
  *
  * 用法：node scripts/i18n-skip-list.mjs [--check]
  *   --check：只比对，不写入（供 CI/人工核对；等价于 spec 里的防漂移断言）
@@ -54,17 +55,32 @@ const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options') ? sel
 const covered = [];
 for (const [key, item] of Object.entries(components)) {
 	if (key === '[comment]' || key[0] === '[') continue;
-	if (item.save !== undefined) continue; // saveItems 依赖，跳过后仍会被本地化器处理
 	const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
 	// R2b 迁移⑩：有些键的元素由 ui-kit 组件内部持有 id（`<YMRename>` 之类），承载 SFC 里
 	// 根本没有 `id="<键>"`；这些键的字段仍在模板里用 `t('components.<键>.<字段>')` 承担。
 	// 判据放宽为：**唯一**引用该键消息的 SFC 也算承载者（多文件引用时仍要求含 id，避免误判）。
 	const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
 	const effective = carriers.length > 0 ? carriers : byMessage.length === 1 ? byMessage : [];
-	if (effective.length === 0) continue;
-	const fields = Object.keys(item);
+	// `save` 不算"需要在 SFC 里承担"的显示字段：它是 `#别名` 的注册项，
+	// 由 `localizeDomComponents` 按**全表**建索引（见 dom-localizer.ts 与
+	// `__tests__/save-alias.spec.ts`），与"该键是否落在扫描面内"无关。
+	// ⇒ 只有 `save` 没被模板承担的键（`particleLayer-anchor-x-1` 就是这种）
+	// 也可以安全跳过。
+	const fields = Object.keys(item).filter((field) => field !== 'save');
+	// 模块侧等价路径：`applyLocalizedTip(el, '<键>')`（tooltip 的"代码已承担"形态，
+	// 与 `applyLocalizedItems` 对 options 的作用相同）。用于元素由模板之外持有、
+	// 模板 `v-tip` 够不着的键（`selector-search` 就是这种：搜索框在
+	// `YMFileHeadPane` 里，而那个组件所在的 ui-kit 按设计不接 i18n）。
+	const moduleCarriesTip = modules.some(
+		(m) => m.src.includes('applyLocalizedTip(') && m.src.includes(`'${key}'`)
+	);
+	// 只有在"需要 SFC 承担某些字段"时才强制要求承载者存在
+	if (effective.length === 0 && !(fields.length > 0 && fields.every((f) => f === 'tip' && moduleCarriesTip)))
+		continue;
 	const ok = fields.every((field) =>
-		effective.some((v) =>
+		field === 'tip' && moduleCarriesTip
+			? true
+			: effective.some((v) =>
 			field === 'tip'
 				? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
 					new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)

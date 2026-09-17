@@ -100,9 +100,10 @@
 		<CustomBox id="setList-actor"
 				v-tip="t('components.setList-actor.tip')"
 				:ref="registryRef(fieldEls, 'setList-actor')" type="actor" v-model="form.actor" />
-			<div class="text">Default</div>
+			<div class="text">{{ t('components.setList-index-skip-check.label') }}</div>
 			<CheckBox
 				id="setList-index-skip-check"
+				v-tip="t('components.setList-index-skip-check.tip')"
 				:ref="registryRef(fieldEls, 'setList-index-skip-check')"
 				class="standard"
 				v-model="indexSkipCheck"

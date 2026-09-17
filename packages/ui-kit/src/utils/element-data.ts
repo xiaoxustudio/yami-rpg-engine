@@ -14,7 +14,7 @@
  * editor 侧保留同路径的**再导出**（`@app/utils/element-data` 继续可用；`main.ts` 的副作用导入
  * 已随访问器退役一并删除）。
  *
- * 历史见 docs/remaining-work.md 的 P4b 小节（21 刀：83 → 26 → 退役）。
+ * 历史见 迁移收尾清单 的 P4b 小节（21 刀：83 → 26 → 退役）。
  */
 const elementDataMap = new WeakMap<HTMLElement, Record<string, unknown>>();
 

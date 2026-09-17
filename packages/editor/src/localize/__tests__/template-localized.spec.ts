@@ -52,39 +52,55 @@ const deriveKeys = (): string[] => {
 	).components as Record<string, Record<string, unknown>>;
 	// R2b 迁移⑮：editor 的 SelectBox 包装器自己按 `components.<id>.options` 生成选项名；
 	// 该通用逻辑存在时，`<SelectBox id="<键>">` 的 options 由宿主组件承担（与生成器同源）。
-	const selectBoxSrc = readFileSync(
-		join(SRC, 'components/common/SelectBox.vue'),
-		'utf8'
-	);
+	const selectBoxSrc = readFileSync(join(SRC, 'components/common/SelectBox.vue'), 'utf8');
 	const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options');
 	const out: string[] = [];
 	for (const [key, item] of Object.entries(components)) {
 		if (key === '[comment]' || key[0] === '[') continue;
-		if (item.save !== undefined) continue;
 		const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
 		// R2b 迁移⑩：元素由 ui-kit 组件内部持有 id 的键（`<YMRename>` 之类）没有 `id="<键>"`
 		// 承载者；判据放宽为「唯一引用该键消息的 SFC」，多文件引用时仍要求含 id（与生成器同源）。
 		const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
 		const effective = carriers.length > 0 ? carriers : byMessage.length === 1 ? byMessage : [];
-		if (effective.length === 0) continue;
-		const ok = Object.keys(item).every((field) =>
-			effective.some((v) =>
-				field === 'tip'
-					? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
-						new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
-					: field === 'options'
-						? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
-							// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
-							v.src.includes(`useLocalizedOptions('${key}'`) ||
-							// R2b 迁移⑭：模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
-							modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`)) ||
-							// R2b 迁移⑮：宿主组件按约定承担
-							(selectBoxGeneric &&
-								new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(v.src))
-						: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(
-								v.src
-							)
-			)
+		// `save` 不算需要在 SFC 里承担的显示字段：它是 `#别名` 的注册项，
+		// 由 `localizeDomComponents` 按**全表**建索引（见 dom-localizer.ts 与 save-alias.spec.ts）。
+		const fields = Object.keys(item).filter((field) => field !== 'save');
+		// 模块侧 tooltip 路径：`applyLocalizedTip(el, '<键>')`（元素由模板之外持有的键）
+		const moduleCarriesTip = modules.some(
+			(m) => m.src.includes('applyLocalizedTip(') && m.src.includes(`'${key}'`)
+		);
+		// 只有在"需要 SFC 承担某些字段"时才强制要求承载者存在（与生成器同源）
+		if (
+			effective.length === 0 &&
+			!(fields.length > 0 && fields.every((f) => f === 'tip' && moduleCarriesTip))
+		)
+			continue;
+		const ok = fields.every((field) =>
+			field === 'tip' && moduleCarriesTip
+				? true
+				: effective.some((v) =>
+						field === 'tip'
+							? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
+								new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
+							: field === 'options'
+								? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(
+										v.src
+									) ||
+									// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
+									v.src.includes(`useLocalizedOptions('${key}'`) ||
+									// R2b 迁移⑭：模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
+									modules.some((m) =>
+										m.src.includes(`applyLocalizedItems('${key}'`)
+									) ||
+									// R2b 迁移⑮：宿主组件按约定承担
+									(selectBoxGeneric &&
+										new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(
+											v.src
+										))
+								: new RegExp(
+										`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`
+									).test(v.src)
+					)
 		);
 		if (ok) out.push(key);
 	}

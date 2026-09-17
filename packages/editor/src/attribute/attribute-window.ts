@@ -722,7 +722,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.attribute');
+	const pastable = GlobalClipboard.has('yami.data.attribute');
 	const undoable = (getAttributeStore().state.history as History).canUndo();
 	const redoable = (getAttributeStore().state.history as History).canRedo();
 	const get = (key: string) => t('menuAttributeList.' + key);

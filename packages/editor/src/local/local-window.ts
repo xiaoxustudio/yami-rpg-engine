@@ -635,7 +635,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.localization');
+	const pastable = GlobalClipboard.has('yami.data.localization');
 	const undoable = Localization.history!.canUndo();
 	const redoable = Localization.history!.canRedo();
 	const get = (key: string) => t('menuLocalList.' + key);

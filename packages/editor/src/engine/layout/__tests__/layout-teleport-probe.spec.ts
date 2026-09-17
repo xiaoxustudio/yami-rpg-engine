@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
 import { defineComponent, h, nextTick, onMounted, ref, Teleport } from 'vue';
 
-// M3 方案 A 前提试验（docs/layout-vue-plan.md 附录 C.3 / 风险 R1-R2）：
+// M3 方案 A 前提试验（layout 迁移规划 附录 C.3 / 风险 R1-R2）：
 // 页面内容块用动态 Teleport 挂到「命令式创建的 group manager」元素：
 // 1) :to 在 managerA↔managerB 间切换只移动不重建子组件；
 // 2) manager 内被命令式插入的外部兄弟节点，在 Vue patch 期间不被吞掉；

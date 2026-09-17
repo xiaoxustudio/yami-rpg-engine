@@ -26,14 +26,6 @@ import { SetQuantity } from '@app/tools/set-number-window.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { h } from 'vue';
 
-type AutoTileClipboardData = AutoTileTemplateData | { frame: unknown };
-
-interface ClipboardShape {
-	has(format: string): boolean;
-	read(format: string): (AutoTileTemplateData & { frame?: unknown }) | undefined;
-	write(format: string, object: AutoTileClipboardData): void;
-}
-
 type AutoTileNodeData = {
 	rule: number;
 	frames: number[];
@@ -207,12 +199,12 @@ AutoTile.insertTemplate = function (this: typeof AutoTile, dItem: AutoTileTempla
 
 AutoTile.copyTemplate = function (this: typeof AutoTile, item: AutoTileTemplateData | null) {
 	if (item) {
-		(GlobalClipboard as unknown as ClipboardShape).write('yami.ruletile.template', item);
+		GlobalClipboard.write('yami.ruletile.template', item);
 	}
 };
 
 AutoTile.pasteTemplate = function (this: typeof AutoTile, dItem: AutoTileTemplateData | null) {
-	const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.ruletile.template');
+	const copy = GlobalClipboard.read('yami.ruletile.template');
 	if (copy) {
 		copy.name += ' - Copy';
 		copy.id = this.createTemplateId();
@@ -296,12 +288,12 @@ AutoTile.cutNode = function (this: typeof AutoTile, id = getAutoTileStore().node
 
 AutoTile.copyNode = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	if (id < this.nodes.length) {
-		(GlobalClipboard as unknown as ClipboardShape).write('yami.ruletile.node', this.nodes[id]);
+		GlobalClipboard.write('yami.ruletile.node', this.nodes[id]);
 	}
 };
 
 AutoTile.pasteNode = function (this: typeof AutoTile, id = this.nodes.length) {
-	const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.ruletile.node');
+	const copy = GlobalClipboard.read('yami.ruletile.node');
 	if (copy && id <= this.nodes.length) {
 		this.nodes.splice(id, 0, copy);
 		this.createNodeItems(id);
@@ -394,14 +386,14 @@ AutoTile.cutFrame = function (this: typeof AutoTile, id = getAutoTileStore().fra
 
 AutoTile.copyFrame = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	if (id < this.frames.length) {
-		(GlobalClipboard as unknown as ClipboardShape).write('yami.ruletile.frame', {
+		GlobalClipboard.write('yami.ruletile.frame', {
 			frame: this.frames[id]
 		});
 	}
 };
 
 AutoTile.pasteFrame = function (this: typeof AutoTile, id = this.frames.length) {
-	const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.ruletile.frame');
+	const copy = GlobalClipboard.read('yami.ruletile.frame');
 	if (copy && id <= this.frames.length) {
 		this.frames.splice(id, 0, copy.frame);
 		this.createFrameItems(id);
@@ -558,7 +550,7 @@ AutoTile.templatesPopup = function (
 	const list = AutoTile.templateList;
 	const item = event.value;
 	const selected = !!item;
-	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.template');
+	const pastable = GlobalClipboard.has('yami.ruletile.template');
 	const deletable = selected && getAutoTileStore().templates.length > 1;
 	const get = (key: string) => t('menuAutoTileTemplateList.' + key);
 	Menu.popup(
@@ -653,8 +645,7 @@ AutoTile.nodesPopup = function (
 	const selected = id !== null;
 	const insertable = nodes.length < this.nodeMaximum;
 	const copyable = selected;
-	const pastable =
-		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.node');
+	const pastable = insertable && GlobalClipboard.has('yami.ruletile.node');
 	const deletable = selected && nodes.length > 1;
 	const coverable = selected && id !== cover;
 	const get = (key: string) => t('menuAutoTileNodeList.' + key);
@@ -782,8 +773,7 @@ AutoTile.framesPopup = function (
 	const editable = selected && this.image instanceof Image;
 	const insertable = frames.length < this.frameMaximum;
 	const copyable = selected;
-	const pastable =
-		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.frame');
+	const pastable = insertable && GlobalClipboard.has('yami.ruletile.frame');
 	const deletable = selected && frames.length > 1;
 	const get = (key: string) => t('menuAutoTileFrameList.' + key);
 	Menu.popup(

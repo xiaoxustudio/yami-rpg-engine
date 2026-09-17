@@ -15,7 +15,7 @@ import {
 } from './layout-spec-utils';
 import type { LayoutLeaf } from './layout-spec-utils';
 
-// M4 前置（docs/layout-vue-plan.md M1/M4）：navDrop 生效动作金标准。
+// M4 前置（layout 迁移规划 M1/M4）：navDrop 生效动作金标准。
 // 在当前命令式实现上锁定 nav 拖拽 drop 的 DOM/数据语义（同组重排/插前、跨组搬入），
 // 供 M4「生效动作数据化（moveLayoutTab/updateGroupTabs 读数据）」改造对照与回滚。
 // 几何依赖（region 落点方向/缩放）jsdom 无 clientWidth，另留真机冒烟。

@@ -3,7 +3,7 @@
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2112 键降到
- * 3 键。
+ * 0 键。
  *
  * 键本身**不从语言文件删除**：`components` 既是本地化器的键表，也是 vue-i18n 的消息树，
  * 删键会让模板里的 `t('components.…')` 解析失败。
@@ -930,6 +930,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'particleLayer-anchor-speedY-1',
 	'particleLayer-anchor-speedY-box',
 	'particleLayer-anchor-x-0',
+	'particleLayer-anchor-x-1',
 	'particleLayer-anchor-x-box',
 	'particleLayer-anchor-y-0',
 	'particleLayer-anchor-y-1',
@@ -1280,6 +1281,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'sceneTilemap-y',
 	'script',
 	'selector',
+	'selector-search',
 	'setActive',
 	'setActive-active',
 	'setActive-actor',
@@ -1425,6 +1427,7 @@ export const templateLocalizedKeys: ReadonlySet<string> = new Set([
 	'setList-boolean',
 	'setList-enum-groupId',
 	'setList-index',
+	'setList-index-skip-check',
 	'setList-number',
 	'setList-numbers',
 	'setList-operand',

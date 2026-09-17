@@ -1,4 +1,4 @@
-// 布局树数据模型与不可变变换（docs/layout-vue-plan.md M2 数据层）
+// 布局树数据模型与不可变变换（layout 迁移规划 M2 数据层）
 // 纯数据、无 DOM：把 docking scheme 解析为带稳定 id 的树；激活/移动页签走不可变更新，
 // 源组清空时按现状 DOM 折叠语义（空 split 删除、单子组提升并继承父 end）收敛结构。
 
@@ -206,7 +206,7 @@ export function moveLayoutTab(
 	}));
 }
 
-// M4-2（docs/layout-vue-plan.md M4）：规整冗余容器。
+// M4-2（layout 迁移规划 M4）：规整冗余容器。
 // Teleport 组树不渲染容器 border，命令式「源组搬空折叠」后容器可能只剩单个子组
 // （命令式模式的 flatten 依赖 border 子节点计数），此处按同一收敛语义提升单子组并继承父 end。
 export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
@@ -219,7 +219,7 @@ export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
 	return walk(root);
 }
 
-// M4（docs/layout-vue-plan.md M4）：同组内页签顺序移动（数据先行）。
+// M4（layout 迁移规划 M4）：同组内页签顺序移动（数据先行）。
 // 与现状 navDrop 的 DOM 语义等价：先移除该页签，anchor=null 视为 append 到末尾，
 // 否则插到 anchor 页签（移除后）所在位置之前；anchor 不存在时回退 append。
 // 纯函数、无 DOM，供引擎层以 tabs 数据驱动 DOM 收敛（取代命令式 insertBefore 差量）。

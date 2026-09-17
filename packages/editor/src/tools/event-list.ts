@@ -33,7 +33,7 @@ interface EventListDom extends HTMLElement {
 	 * （`module/editdata.ts` 也按同样方式读 `start`/`end`）⇒ 这里的 `list.start!--` 运行期读到的是
 	 * `undefined`（自增后成 `NaN`，随后 `select(NaN + 1)` 静默落空）。本刀**只做类型化**（保持与
 	 * 迁移前逐字一致的行为），"是否应改读 `renderState`"作为独立问题登记在
-	 * docs/remaining-work.md 的 P4c 小节，待有真机/用例覆盖时再动。
+	 * 迁移收尾清单 的 P4c 小节，待有真机/用例覆盖时再动。
 	 */
 	start?: number;
 	end?: number;

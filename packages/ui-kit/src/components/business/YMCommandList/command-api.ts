@@ -1490,7 +1490,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 				const range = this.getRangeByIndex(n);
-				if (listData.origin < n && listData.origin > range[0] && listData.origin < range[1]) {
+				if (
+					listData.origin < n &&
+					listData.origin > range[0] &&
+					listData.origin < range[1]
+				) {
 					n = range[1];
 				} else {
 					n = range[0];
@@ -2923,7 +2927,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 	// oxlint-disable-next-line no-explicit-any
 	doubleclick: function (this: any, event: MouseEvent): void {
 		const listData = commandListData(this);
-		if (listData.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
+		if (
+			listData.start !== null &&
+			!hasClass(event.target as HTMLElement | null, 'command-fold')
+		) {
 			const sData = rowAt(listData.start)?.command ?? null;
 			const eData = rowAt(listData.end)?.command ?? null;
 			if (sData === eData) {
@@ -3067,13 +3074,17 @@ export function createCommandListApi(
 }
 
 /**
- * 说明：返回类型仍写 `HTMLElement`（运行时对象上确实挂着 `CommandListElementApi` 的方法）。
- * 暂不改成 `HTMLElement & CommandListElementApi`：若干既有用例会把返回值断言成**自己的、更丰富的本地形状**，
- * 精确返回类型会让那些断言变成"不可比"（TS2352）——那属于 M5 收尾时连同用例一起改的事。
- * 消费方若想要类型，直接 `HTMLElement & CommandListElementApi` 即可（见 editor 的 `EventCommandListShape`）。
+ * 返回类型在 **M5 收尾**（2026-09-17）收紧为 `HTMLElement & CommandListElementApi`。
+ *
+ * 此前刻意留成裸 `HTMLElement`，因为若干既有用例会把返回值断言成自己那份更丰富的本地形状
+ * （`as HTMLElement & { … }`），精确返回类型会让那些断言变成"不可比"（TS2352）。
+ * 现在连同用例一起改完：**"元素上有哪些方法"只有 `CommandListElementApi` 一份定义**，
+ * 拼错方法名在编译期就会报错。需要额外形状的调用方请用 `as unknown as <形状>` 显式跨越。
  */
-export function createCommandListElement(options: CommandListApiOptions = {}): HTMLElement {
+export function createCommandListElement(
+	options: CommandListApiOptions = {}
+): HTMLElement & CommandListElementApi {
 	const el = renderDetachedDiv('command-list');
 	createCommandListApi(el, options);
-	return el;
+	return el as HTMLElement & CommandListElementApi;
 }

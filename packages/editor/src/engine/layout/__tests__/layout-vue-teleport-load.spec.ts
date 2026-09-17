@@ -13,7 +13,7 @@ import { getLayoutStore } from '@app/stores/layout';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// M3b-2b Teleport 模式端到端（docs/layout-vue-plan.md 附录 F，默认关）：
+// M3b-2b Teleport 模式端到端（layout 迁移规划 附录 F，默认关）：
 // 引擎只渲染/挂载 Vue 组树并按叶子发布归属（页→manager、页签→nav），
 // palette 的整壳 .page-frame / nav-item 经 LayoutPalettePage 落位——无命令式搬移。
 

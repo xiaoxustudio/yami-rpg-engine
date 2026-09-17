@@ -1,4 +1,4 @@
-// Vue group 树挂载/水合层（docs/layout-vue-plan.md M3b-1，C.5#1）
+// Vue group 树挂载/水合层（layout 迁移规划 M3b-1，C.5#1）
 // 供双路开关的 Vue 分支使用：把数据树经 LayoutTreeView 渲染进宿主 page，
 // 再把命令式布局引擎所需的 expando（end/split/tabs/nav/manager/border）与事件接线
 // 绑到 Vue 渲染出的 DOM 上——叶子 nav/manager 由 YMNavBar/YMPageManager .vue 在

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // DOM 迁移守卫：扫描命令式 DOM 用法，为存量代码打豁免标记，输出迁���矩阵。
 // 用法：
-//   node scripts/dom-guard.mjs tracker  生成 docs/dom-migration-tracker.md（白名单口径见 WHITELIST）
+//   node scripts/dom-guard.mjs tracker  生成 DOM 迁移台账（白名单口径见 WHITELIST）
 //   node scripts/dom-guard.mjs fix      修 BOM 错位的豁免注释（历史遗留）
 //
 // C1 后不再提供 exempt 子命令：受限 API 的用法只剩「迁移」或「进白名单」两条路，
@@ -388,7 +388,7 @@ function tracker() {
 	}
 	writeFileSync(join(out, 'dom-migration-tracker.md'), lines.join('\n') + '\n');
 	console.log(
-		`tracker: wrote docs/dom-migration-tracker.md (${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`
+		`tracker: wrote DOM 迁移台账 (${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`
 	);
 }
 

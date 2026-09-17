@@ -44,7 +44,7 @@ import { UI } from '@app/ui/ui-window.ts';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { h, nextTick, type VNode } from 'vue';
 
-// M5-b（docs/layout-vue-plan.md M5）：双路开关与命令式装载路径已退场——
+// M5-b（layout 迁移规划 M5）：双路开关与命令式装载路径已退场——
 // 组树一律由 LayoutTreeView(.vue) 渲染并水合，页/页签一律经整壳 Teleport 落位。
 // 每个宿主 page 上挂载中的 Vue 组树（再次首载/切布局时先收回页签再 unmount）
 const vueTreeHandles = new WeakMap<HTMLElement, VueGroupTreeHandle>();
@@ -144,7 +144,7 @@ const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 
 // 组容器的兄弟遍历必须是「组元素」序列：Vue 组树会在容器内留注释/文本锚点，
 // 按 childNodes/previousSibling 取会拿到锚点（end 为 undefined → 比例算成 NaN →
-// 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。见 docs/layout-vue-plan.md 修复记录。
+// 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。见 layout 迁移规划 修复记录。
 const groupChildrenOf = (parent: Element): LayoutGroupElement[] =>
 	Array.from(parent.children).filter((child) => hasClass(child, 'group')) as LayoutGroupElement[];
 
@@ -160,7 +160,7 @@ const nextGroupOf = (group: Element): LayoutGroupElement | null => {
 	return node as LayoutGroupElement | null;
 };
 
-// M5-a（docs/layout-vue-plan.md M5）：以引擎内部状态取代 DOM expando 读法。
+// M5-a（layout 迁移规划 M5）：以引擎内部状态取代 DOM expando 读法。
 // page.scheme → pageSchemes（幂等判据）、nav.lastValue → navLastValues（会话恢复）、
 // item.page → itemPages（页签↔页配对）；pageTrees 为运行时布局镜像（收敛点刷新），
 // saveToConfig 由「每次读 DOM」改为读镜像。
@@ -244,7 +244,7 @@ const syncPageTargets = (
 	getLayoutStore().setPageTargets(collectPageTargets(root));
 };
 
-// ---- M3b-2b Teleport 模式辅助（docs/layout-vue-plan.md 附录 F）----
+// ---- M3b-2b Teleport 模式辅助（layout 迁移规划 附录 F）----
 // 水合后叶子 group 带 tabs/nav/manager/border expando；按 DOM 收集某组树内全部叶子宿主。
 
 const collectLeafHosts = (root: Element | null): LayoutGroupElement[] => {
@@ -300,7 +300,7 @@ const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
 	}
 };
 
-// M4（docs/layout-vue-plan.md M4）：同组 drop（inside）生效动作数据化。
+// M4（layout 迁移规划 M4）：同组 drop（inside）生效动作数据化。
 // 由 group.tabs 数据 + moveTabWithin 直接推导目标顺序，再按 tabs 序收敛 nav/manager
 // 子节点序（复用附录 F.2 的「排序 pass」语义），取代命令式 insertBefore/appendChild 差量；
 // 对 Vue/Teleport 管理的子节点也安全（pass 只做容器内稳定追加，探针 B 已证）。
@@ -1194,7 +1194,7 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 	syncPageTargets(this.manager);
 };
 
-// M4-2（docs/layout-vue-plan.md M4）：Teleport 模式下结构性 drop（跨组搬入/region 分割）
+// M4-2（layout 迁移规划 M4）：Teleport 模式下结构性 drop（跨组搬入/region 分割）
 // 的命令式 DOM 变更后，Vue 组树的认知已与 DOM 失配（后续拖拽/补丁会在失配树上失效，
 // 2026-09-09 真机探针）。这里把「当前 DOM → scheme」写回 layout 并整树重挂载，
 // 使 Vue 树重新成为 DOM 的忠实渲染；命令式效果本身保持不变（保留到 M5）。

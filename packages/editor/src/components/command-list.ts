@@ -1,10 +1,4 @@
-import {
-	createCommandListApi,
-	createCommandListElement,
-	commandListPrototype,
-	commandListStatics,
-	type CommandListApiOptions
-} from '@ui-kit';
+import { commandListPrototype, commandListStatics, type CommandListApiOptions } from '@ui-kit';
 import type { MenuItem, MenuOptions } from '@ui-kit';
 import { SettingConfig } from '@app/services/project/setting-config';
 import { getVariable } from '@app/utils/safe';
@@ -105,10 +99,8 @@ export const CommandList: CommandListStaticsType = {
 
 export const commandListOptions = options as unknown as CommandListApiOptions;
 
-export function attachCommandListApi(el: HTMLElement): void {
-	createCommandListApi(el, options as unknown as CommandListApiOptions);
-}
-
-export function createCommandList(): HTMLElement {
-	return createCommandListElement(options as unknown as CommandListApiOptions);
-}
+// M5 收尾（2026-09-17）：删掉两个从未被调用的转发函数
+//   - `attachCommandListApi(el)`：元素 API 的装载现在由 `YMCommandList.vue` 自己经
+//     `createCommandListApi` 完成，这条转发没有消费者；
+//   - `createCommandList()`：全仓 0 调用（列表一律经 `<CommandList>` 组件 / `YMCommandList` 装载）。
+// 二者都是"巨石换源"（M3/M4）之后遗留的旧入口。

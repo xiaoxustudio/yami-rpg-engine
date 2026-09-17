@@ -18,7 +18,7 @@ import {
 import { mountVueGroupTree, type VueLeafHost } from '../layout-vue-tree';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// M3b-1 金标准（docs/layout-vue-plan.md C.5#1）：叶子宿主 Vue 化后命令式兼容零改动。
+// M3b-1 金标准（layout 迁移规划 C.5#1）：叶子宿主 Vue 化后命令式兼容零改动。
 // 双路对照：命令式 loadLayoutScheme 产出的 group DOM ↔ LayoutTreeView(.vue 叶子宿主)
 // + mountVueGroupTree 水合后的 DOM——结构、expando、页签激活与点击切换必须等价。
 

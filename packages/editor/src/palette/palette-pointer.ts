@@ -1,5 +1,4 @@
 ﻿import { Palette } from './palette.ts';
-import type { ClipboardShape } from './palette.ts';
 import { relate, removeClass } from '@app/utils/element-utils';
 import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import { File } from '@app/file/file-system-core.ts';
@@ -271,7 +270,7 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 		const existing = !!tiles[index];
 		const editable = true;
 		const copyable = existing;
-		const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.tile');
+		const pastable = GlobalClipboard.has('yami.tile');
 		const deletable = existing;
 		const get = (key: string) => t('menuTileset.' + key);
 		Menu.popup(
