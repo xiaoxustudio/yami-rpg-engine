@@ -133,7 +133,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		options.colorPicker?.(box);
 	};
 
-	attachApi(box, { read, write, input, enable, disable, on, keydown, mouseclick });
+	attachApi<ColorBoxApi>(box, { read, write, input, enable, disable, on, keydown, mouseclick });
 
 	// oxlint-disable-next-line unbound-method
 	box.addEventListener('keydown', box.keydown as EventListener);

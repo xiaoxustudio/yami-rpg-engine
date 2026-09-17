@@ -194,7 +194,8 @@ function ensureDomBound() {
 	if (Attribute.list) return;
 	const list = attributeEls.get('attribute-list');
 	if (!list) return;
-	Attribute.list = list;
+	// P2b-1：`attributeEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
+	Attribute.list = list as TreeListElement;
 	Attribute.panel = attributeEls.get('attribute-properties-flex') as HTMLElement;
 	hide(Attribute.panel);
 	Attribute.searcher = attributeEls.get('attribute-searcher') as HTMLElement;

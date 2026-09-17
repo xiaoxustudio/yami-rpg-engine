@@ -50,7 +50,8 @@ export {
 	treeRowIndexOf,
 	treeOwnerListOf,
 	type TreeListRowApi,
-	type TreeListApiOptions
+	type TreeListApiOptions,
+	type TreeListElementApi
 } from './components/basic/YMTreeList/tree-api';
 export { default as YMSelectList } from './components/basic/YMSelectList/YMSelectList.vue';
 export {

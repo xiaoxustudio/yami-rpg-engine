@@ -257,7 +257,7 @@ export function attachCustomBoxApi(
 
 	const read = (): unknown => state.dataValue;
 
-	attachApi(box, {
+	attachApi<CustomBoxApi>(box, {
 		read,
 		write,
 		input,

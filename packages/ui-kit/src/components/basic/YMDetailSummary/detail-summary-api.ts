@@ -51,7 +51,7 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		}
 	};
 
-	attachApi(summary, {
+	attachApi<DetailSummaryApi>(summary, {
 		toggle,
 		on: (
 			type: string,

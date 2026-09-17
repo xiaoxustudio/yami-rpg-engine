@@ -1,8 +1,6 @@
 export type SceneItem = {
 	class: string;
 	element: HTMLElement;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 };
 
 export type DragEventItem = PointerEvent & {

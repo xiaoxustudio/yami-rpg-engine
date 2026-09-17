@@ -178,7 +178,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi(box, { read, write, input, enable, disable, relate, on });
+	attachApi<RadioBoxApi>(box, { read, write, input, enable, disable, relate, on });
 
 	if (options.disabled) {
 		box.disable();

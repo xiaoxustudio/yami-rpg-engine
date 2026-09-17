@@ -157,7 +157,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi(box, {
+	attachApi<FileVarApi>(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,

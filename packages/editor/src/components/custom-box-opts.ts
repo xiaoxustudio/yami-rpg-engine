@@ -37,8 +37,6 @@ interface GetterElement {
 	input(...args: unknown[]): void;
 	filter: string | null;
 	previousSibling: Node | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 const parseText = (

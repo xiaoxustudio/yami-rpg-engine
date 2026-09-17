@@ -1,4 +1,4 @@
-﻿import { Editor } from '@app/services/project/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { logEls } from '@app/log/element-registry';
 
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
@@ -25,11 +25,16 @@ interface LogShape {
 	displayDonationList: ((...args: unknown[]) => void) | null;
 	parseCommunityReleases: ((...args: unknown[]) => void) | null;
 	openVSCode: ((file: string, line: number, column: number) => void) | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * P2b-2：**桥接到 `stores/log` 的 `logs`**（本文件末尾用 `Object.defineProperty` 安装 get/set），
+	 * 不是独立字段。**这一条在去掉逃生口前就已经有生产读取方**——`components/tools/LogMessage.vue`
+	 * 的 `Log.list.slice()` 一直是靠 `[k: string]: any` 通过的（那正是"假绿"）。
+	 */
+	list: { type: string; message: string; duration: number }[];
 }
 
-export const Log: LogShape = {
+/** 同 `AudioManager`：`list` 由本文件末尾的桥安装，字面量按 `Omit<…, 'list'>` 校验后再断言。 */
+const log: Omit<LogShape, 'list'> = {
 	get box() {
 		return logEls.get('log-message') as HTMLElement;
 	},
@@ -54,6 +59,8 @@ export const Log: LogShape = {
 	parseCommunityReleases: null as ((...args: unknown[]) => void) | null,
 	openVSCode: null as ((file: string, line: number, column: number) => void) | null
 };
+
+export const Log = log as LogShape;
 
 let tickInterval: ReturnType<typeof setInterval> | null = null;
 

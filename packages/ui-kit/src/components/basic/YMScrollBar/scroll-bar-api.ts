@@ -175,7 +175,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	attachApi(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
+	attachApi<ScrollBarApi>(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
 
 	const scrollRelative = (sign: number): void => {
 		const { target } = data;

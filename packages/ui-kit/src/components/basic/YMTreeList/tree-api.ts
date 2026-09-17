@@ -301,6 +301,41 @@ export interface TreeListApiOptions {
 	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
 }
 
+/**
+ * tree 列表元素的**元素 API 契约**（P2b-1）。
+ *
+ * 与命令列表的 `CommandListElementApi` 同一套约定：**消费方实际使用的方法写精确签名**，其余用
+ * `[k: string]: unknown` 兜底（"其余内部/较少使用的方法保留松散签名，保证既有调用点不因类型化而报错"）。
+ *
+ * **它替掉了编辑器侧原来的逃生口**：`@app/components/tree-list.ts` 过去写
+ * `interface TreeListElement extends HTMLElement { [k: string]: any }`——那是**没有任何类型安全**的写法，
+ * 任何拼错的方法名、任何根本不存在的成员都能通过编译（这类"假绿"本仓库已踩过多次）。
+ * 实测把它换掉只需补 3 个成员（`display` / `deleteNode` / `createString`）。
+ *
+ * 同时它也是 `attachApi` 的键集合校验依据：`attachApi<TreeListElementApi>(list, { getMenuState })`。
+ */
+export interface TreeListElementApi {
+	/** 当前行数据（虚拟滚动下是**全量**行，不是可见窗口内的那些） */
+	read<T = unknown>(): T | null;
+	update(): void;
+	refresh(): void;
+	resize(): void;
+	select(...args: unknown[]): void;
+	insert(...args: unknown[]): unknown;
+	delete(...args: unknown[]): unknown;
+	clear(): unknown;
+	on(...args: unknown[]): unknown;
+	rename(...args: unknown[]): unknown;
+	parseName(...args: unknown[]): unknown;
+	deleteNode(...args: unknown[]): unknown;
+	/** 列表显示模式：搜索时切到 `'search'`，否则 `'normal'`（编辑器各窗口读它判断当前是否在搜索结果视图） */
+	display: string;
+	/** 菜单状态查询——由宿主经选项注入，树列表在弹右键菜单前据此避让 */
+	getMenuState(): string;
+	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
+	[k: string]: unknown;
+}
+
 type NodeItemElement = HTMLElement & {
 	item?: TreeItem;
 };
@@ -1491,7 +1526,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.renderNodeIcon = options?.renderNodeIcon;
 	// 步骤 5：渲染状态恒存在（数据派生 + v-for）
 	list.renderState = createTreeRenderState(list);
-	attachApi(list, { getMenuState });
+	attachApi<TreeListElementApi>(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {
 		list[name] = treeListPrototype[name];

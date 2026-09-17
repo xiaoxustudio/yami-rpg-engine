@@ -1,4 +1,4 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
@@ -501,7 +501,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	attachApi(menu as unknown as HTMLElement, {
+	attachApi<MenuApi>(menu as unknown as HTMLElement, {
 		windowBlur,
 		windowKeydown,
 		windowPointerdown,

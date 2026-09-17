@@ -124,7 +124,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 
 	markApiAttached(box);
 
-	attachApi(box, {
+	attachApi<TextBoxApi>(box, {
 		read,
 		write,
 		insert,

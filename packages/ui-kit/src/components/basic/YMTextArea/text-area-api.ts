@@ -164,7 +164,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	};
 
-	attachApi(box, { read, write, insert, enable, disable, getFocus: focusBox, on });
+	attachApi<TextAreaApi>(box, { read, write, insert, enable, disable, getFocus: focusBox, on });
 
 	function inputKeydown(event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {

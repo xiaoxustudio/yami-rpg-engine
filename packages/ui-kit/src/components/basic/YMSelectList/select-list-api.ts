@@ -412,7 +412,7 @@ export function createSelectListApi(
 		close();
 	};
 
-	attachApi(box, {
+	attachApi<SelectListApi>(box, {
 		read,
 		write,
 		select,

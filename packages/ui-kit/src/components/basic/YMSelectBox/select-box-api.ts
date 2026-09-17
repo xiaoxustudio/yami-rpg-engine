@@ -222,7 +222,7 @@ export function attachSelectBoxApi(
 	box.inputEventEnabled = state.inputEventEnabled;
 	markApiAttached(box);
 
-	attachApi(box, {
+	attachApi<SelectBoxApi>(box, {
 		read,
 		write,
 		write2,

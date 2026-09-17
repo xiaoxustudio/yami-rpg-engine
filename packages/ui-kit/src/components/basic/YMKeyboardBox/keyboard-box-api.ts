@@ -165,7 +165,7 @@ export function attachKeyboardBoxApi(
 		}
 	};
 
-	attachApi(box, { read, write, inputCode, enable, disable, getFocus, on });
+	attachApi<KeyboardBoxApi>(box, { read, write, inputCode, enable, disable, getFocus, on });
 
 	markApiAttached(box);
 

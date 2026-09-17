@@ -118,7 +118,7 @@ export function attachNumberBoxApi(
 		core.write(value, data.decimals);
 	};
 
-	attachApi(box, { read, write, enable, disable, getFocus, on });
+	attachApi<NumberBoxApi>(box, { read, write, enable, disable, getFocus, on });
 
 	markApiAttached(box);
 

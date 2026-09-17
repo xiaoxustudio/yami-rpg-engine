@@ -19,7 +19,7 @@
 | R2c | **vue-i18n 消息表的字面量语法转义**：`@` / `\|` / `{…}` 会被当成消息语法（linked message / 复数分支 / 插值），文案里的普通字符轻则丢内容、重则编译报错炸掉窗口渲染 | 小 | 无 | ✅ **已完成**（2026-09-15：`{…}` 按「白名单插值 vs 字面量」分类转义，2 处真实缺陷修复、全量消息逐字渲染用例护航） |
 | P5b | `$('#id')` 反查退役（element-utils 的 jQuery 风格寻址） | 大 | 需按模块分批，先度量后动手 | ✅ **完成**（1489 → **22 处 / 11 文件**，−98.5%；残余全为动态 id 16 / 外壳元素 2 / 基础设施 2 / 白名单 1，见下方「P5b 批次 1–4 结项」；**尾项「确认按钮启用态属性化」也已收口**，见该小节） |
 | P1b | ✅ **已完成**（十七刀 + C1 收尾）：`document.getElementById('静态id')` / `document.querySelectorAll('#a, #b, …')` 一族（**81 个文件 / 37 处 `getElementById` / 22 处 `querySelector*`**）改读分组元素注册表 | 大 | 无（沿用 P5b 的注册表与 `@confirm` 手法） | 🚧 **进行中**（第 1–4 刀 −56：窗口 composable + 通用 write 循环 + 40 个 inspector 页宿主 + 90 个命令 SFC 统一镜像；第 5 刀 −16：inspector 页批量选择器 → `registryElements`；第 6 刀 −5：Team / PresetElement / PresetObject / TileNode / PresetGetter 五个窗口 composable；第 7 刀 −2：Script / CallEvent 两个特殊命令 schema；第 8 刀 −5：5 个工具的 setForm/getForm 动态 id 循环；第 9 刀 −5：跨行链式命令 schema + element-page/transition-window 批量选择器；第 10 刀 −3：inspector 的 sceneTilemap/fileUI 直查与文件浏览下拉自身反查；第 11 刀 −1：窗口壳层 `window-object.ts`；第 12 刀 −5：离屏节点统一走 `renderDetached`；第 13 刀 −6：element-utils/editdata/Reference/menu-list/toast/timer 收口；第 14 刀 −4：时间轴/运动曲线/自动图块/调色板选区离屏节点；第 15 刀 −2：单选组 `proxy.group` 与 `.href` 组件转发；第 16 刀 −1：设置项帧内查找；第 17 刀 −1：布局 fixture 走注册表、删全文档回退） |
-| P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | 🚧 **进行中**（B3：目标重定义；**契约侧已收口**：第 34 轮审计发现 26 个 `*-api.ts` 里 25 个已有 `XxxApi`，唯一缺的巨石 `YMCommandList` 已补 `CommandListElementApi` 并由 editor 的 `EventCommandListShape` 派生自它；余下是 ref/expose 迁移与 M5 的返回值收紧） |
+| P2b | **ui-kit 元素 API 契约化**（B3 复核后重定义）：25 个组件 api 文件**都是元素优先实现、零死文件** → 目标改为「类型化契约 + Vue 内子集随 P5b 走 ref + 豁免收窄」，**不再以文件数归零为准** | 大 | 与 P5b 合并排序 | ✅ **P2b-1 已全部收口（2026-09-17）**：① 26 个 `*-api.ts` 里 25 个已有 `XxxApi`，巨石 `YMCommandList` 补 `CommandListElementApi` 并由 editor 的 `EventCommandListShape` 派生自它；② `attachApi` 改为 `Partial<Api>` + 调用点显式给类型参数 ⇒ **键集合编译期校验**（**21/21 调用点全覆盖**，含最后补齐的 tree）；③ 新增 `TreeListElementApi`，editor 的 `TreeListElement` 不再是 `[k: string]: any` 逃生口（实测代价仅 3 个成员）。**余下：P2b-2**（ref/expose 迁移，774 处鸭子调用）、**P2b-3**（豁免收窄） |
 | P4b | **原型访问器退役**：元素数据 WeakMap 与 **26** 个字段的 get/set（共 52 访问器；B3 首刀删 11 个零访问字段、第二刀删 2 个只写/纯内部状态字段、第三刀删 `lastScrollTop`、**第六刀删列表配置簇 10 个 + 死字段 `filler`**、第十七刀删 `info`、第十八刀删 `timer` + `decimals`、第十九刀删 `links` 并迁移 `page`/`invalid`）；实现已迁至 **ui-kit**（editor 侧同路径再导出） | 中 | **已并入 M3/M5**（逐字段脚本化在做过的实验里被证否：访问器天生无类型，既有代码靠它做隐式收窄） | ✅ **已完成（2026-09-16，第二十刀收口）**：`DATA_FIELDS` 与 `defineDataAccessors()` 整块删除、`main.ts` 的副作用导入删除；83 → 0。逐字段用量表与 21 刀记录见下方小节；收口期新登记的 `el.<字段>` 读取由编辑器套件与探针清出（详见「P4b 第二十刀」） |
 | P4c | **类型层的同一条债**：`packages/editor/Project/global.d.ts` 的两个 `interface HTMLElement` 块把成员声明加在**全局** `HTMLElement` 上——P4b 删掉访问器后，是**这层声明**在继续宣称"每个元素上都有 `el.start` / `el.item` / `el.decimals`…"，使 `el.任意字段` 永远能通过编译（真跑起来是 `undefined`）；2026-09-16 新发现，此前**从未登记、无度量、无门禁** | 中 | 与 P4b 同一批（同一批字段的两端） | 🚧 **已量化 + 两刀**（2026-09-16 首刀删 **27 条零引用**、第二刀删 **16 条**与退役元素数据字段同名的声明；两个 `HTMLElement` 块 **189 → 143 条**）。**2026-09-17 全量审计**（`node scripts/global-types-audit.mjs`，口径可一键复算）：全文 **24 个接口块 / 220 条声明**，`dup 0` / `dead 0` / `residual 146` / `real 74`；**彻底拆除需改动近 600 个类型站点**（**2026-09-17 复核 = 596**；口径：把 DOM 接口块——`HTMLElement`(×2)/`Element`/`ParentNode`/`ChildNode`/`Event`(×2)/`Window`/`TextBox`/`PointerEvent`/`KeyboardEvent`/`HTMLButtonElement`/`HTMLInputElement`——**整体注释掉**后 `tsc` strict 报出的错误行数；若连内建构造器块一起注释则为 **1001**。原记 591，随文件改动漂了 5）⇒ 余下部分**并入 P2b（元素 API 契约化）**，不再单独立刀。⚠️ `residual` ≠ 死声明（它只表示"脚本的探针模式没发现实现"）：`command-api.ts` 用 `Object.defineProperty(text, 'varType'|'varId'|'currentType', …)` 装的**元素自有属性**就是 `residual`，删了会坏 |
 | P4d | **内置 / 宿主对象的原型与静态扩展**（第六处漏档）：`Math.*` 8、`Object.*` 2、`Array.*` 2 + `Array.prototype.*` 3、`String.compress`、`Number.*` 2、`RegExp.number`、`Function.empty`、`Event.prototype.spaceKey`、`CSS.*` 3、`CanvasRenderingContext2D.prototype.resize`、`Timer.*` 15——实现分散在 `editor/src/utils/*.ts` 与 `engine/webgl/webgl-methods.ts`，声明集中在 `global.d.ts`（**2026-09-17 审计：全文 24 个接口块 / 220 条声明**） | 中 | 与 P4c 共用同一份审计（`global.d.ts`） | 🚧 **已量化**（2026-09-16 登记轴与"声明↔实现"对应；**2026-09-17**：口径脚本化为 `node scripts/global-types-audit.mjs`，`real 74` / `residual 146`。**两处结论已更正**：① `Array.prototype.{append,remove,set}` **有实现**——`editor/src/utils/array.ts:34/45/57`，原先记的"只在一个 spec 里被临时补丁"不成立（那只是兜底）；② `Clipboard` 那条路已走完——全局 `interface Clipboard` 已删、6 处 `as unknown as Clipboard` 断言已去，剪贴板统一经 `GlobalClipboard`。余下逐成员判定**并入 P2b**） |
@@ -517,7 +517,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 - **现状证据（2026-09-11 实测）**：`packages/ui-kit/src/**/*-api.ts` **26** 个文件（其中 **21** 个调用 `attachApi`）；`packages/ui-kit/src/utils/attach-api.ts` 本体仅 8 行，却被 **41** 个文件 import；editor + ui-kit 侧的**鸭子式可选链 API 调用**（`?.loadItems?.(` / `?.write?.(` / `?.enable?.(` / `?.relate?.(` …）合计 **682 处 / 246 文件**。也就是说：**阶段 2 的"去重"（core 抽取）已完成，但其验收条件「`-api.ts` 文件数从 27 → 0」远未达成，且从未登记为待办**。
 - **为什么单列**：这是 P2「ui-kit 组件契约化」的**另一半**——把 `read/write/enable/disable/loadItems/relate/…` 从"挂在元素实例上的鸭子方法"改为**类型化组件 API**（props/emits + `defineExpose`）。它与 P5b **同源**：P5b 里那 247 行「组件 API」桶（`$('#id')?.loadItems?.()`）正是元素 API 的调用面——不退役元素 API，调用点只会从 `$('#x')` 变成 `ref.value`，鸭子调用照旧。
 - **推进策略（与 P5b 合并排序，按组件逐个收口）**：① 盘点 26 个 api 文件的**调用面**（哪些方法、被谁以鸭子方式调用、对应组件是否已有 expose）；② 选一个高频组件（`YMSelectBox` / `YMNumberBox` 之类）做样板：`defineExpose` 补类型 + 调用方改用模板 ref（SFC）或注入实例（非 SFC）；③ 每完成一个组件就删它的 `*-api.ts` 并清掉调用方可选链；④ 26 个全部退役后删 `attach-api.ts`、更新 playground demo 与文档口径。
-- **验收标准**：① 「`*-api.ts` 归零」**已作废**（见上方 B3 复核）；② 改为：**P2b-1** 每个被鸭子调用的组件都有消费方可直接 import 的 `XxxApi` 类型、`attachApi` 泛型化并在编译期校验键集合；**P2b-2** Vue 内使用的组件随 P5b 走 ref/expose、Vue 外的元素工厂保留；**P2b-3** 25 个 api 文件的 `oxlint-disable` 面随类型化收窄；③ 鸭子调用（现 **682 处**）在完成 P2b-1/P2b-2 后**显著下降**（不追求归零，Canvas/引擎侧属合理用法）；④ `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；⑤ `*-api.ts` 计数门禁保留，目标改为**不增长**。
+- **验收标准**：① 「`*-api.ts` 归零」**已作废**（见上方 B3 复核）；② 改为：~~**P2b-1** 每个被鸭子调用的组件都有消费方可直接 import 的 `XxxApi` 类型、`attachApi` 泛型化并在编译期校验键集合~~ → **✅ 全部已于 2026-09-17 完成**（两条见下方「P2b-1 收口：`attachApi` 的键集合校验」与「P2b-1 尾巴收口：tree 列表的元素 API 契约」）；**P2b-2** Vue 内使用的组件随 P5b 走 ref/expose、Vue 外的元素工厂保留；**P2b-3** 25 个 api 文件的 `oxlint-disable` 面随类型化收窄；③ 鸭子调用（现 **682 处**）在完成 P2b-1/P2b-2 后**显著下降**（不追求归零，Canvas/引擎侧属合理用法）；④ `pnpm -F @yami/ui-kit test` + `pnpm -F @yami/editor test` + `pnpm lint` + typecheck 全绿；⑤ `*-api.ts` 计数门禁保留，目标改为**不增长**。
 - **验证命令**：`pnpm -F @yami/ui-kit test`、`pnpm -F @yami/editor test`、`pnpm lint`、`pnpm dom:guard:tracker`、`pnpm docs:check`。
 - **来源**：2026-09-11 第二十三轮度量审计（阶段 2 验收条件未达成且未登记；`docs/vue3-migration-plan.md` 阶段 2 段已补完成度更正）。
 
@@ -531,6 +531,59 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 >
 > **∴ 结论**：把「`*-api.ts` 归零」当作验收，等于要求删掉 ui-kit 的对外元素 API 架构，与"ui-kit 供 editor 以元素/工厂方式使用"的现实冲突。真实的技术债是另外三条：
 > - **P2b-1（类型化契约）**：`attachApi` 目前是 `Record<string, unknown>` 式无类型挂载 → 消费方只能靠 `?.` 兜底（鸭子调用 682 处 / 246 文件）；应让每个组件的 `XxxApi` 接口成为消费方的**唯一入口**（多个已存在：`ScrollBarApi`/`DetailSummaryApi`/`TreeListApi`…），并让 `attachApi` 泛型化、编译期校验键集合。
+>
+> ### P2b-1 收口：`attachApi` 的键集合校验（2026-09-17）
+>
+> **原文有一处需要更正**：`attachApi` 的**类型参数其实早就是泛型的**（`<T extends HTMLElement, A extends Record<string, unknown>>`），
+> 缺的是**校验**——`A extends Record<string, unknown>` 对键集不做任何约束，而调用点又都不写类型参数，
+> 于是键名写错只会安静地挂上一个谁也不读的属性。**"泛型化"与"编译期校验键集合"是两件事**，原句把前者当成了已完成。
+>
+> **做法**：签名改为 `attachApi<Api extends object>(el: HTMLElement, api: Partial<Api>): void`，调用点显式给出该组件的
+> `XxxApi`（20 个文件，`attachApi<CustomBoxApi>(box, { … })`）。参数取 `Partial`，于是语义刚好是需要的两条：
+> **多挂/拼错键 → 编译期报错**（对象字面量的多余属性检查）、**少挂则允许**（有些成员靠 `Object.defineProperty`、
+> HTML 属性或在别处补挂，不能要求全覆盖）。
+>
+> **验证（含负向）**：正向 `tsc --noEmit -p tsconfig.strict.json` **0 错**、`vue-tsc` 0 错、`oxlint` 0/0；
+> **负向**：故意在 `custom-box-api.ts` 的装配对象里插一个 `dragoverTypo: drop`，`tsc` 立刻报
+> `TS2561: … but 'dragoverTypo' does not exist in type 'Partial<CustomBoxApi>'. Did you mean to write 'dragover'?`
+> ——**证明这条校验真的在生效，而不是"看起来加了个泛型"**（随后已还原，该文件只剩预期的一行改动）。
+>
+> **顺带量到的两处缺口（未做，已登记）**：
+> 1. **`tree-api.ts` 没有"列表级"的元素 API 类型**（只导出 `TreeListRowApi`（行 API）与 `TreeListApiOptions`），
+>    所以它的 `attachApi(list, { getMenuState })` **无法做键集合校验**（本刀未给它编类型参数）。
+> 2. 由此带出：**editor 侧仍自带一份手写的 `TreeListElement`**（`@app/components/tree-list.ts`）供各窗口标注
+>    `this`／列表字段——这与**命令列表**当年的情况同类（`EventCommandListShape` 已改为派生自 ui-kit 的
+>    `CommandListElementApi`）。**"元素上有哪些方法"应当只有一份定义**：tree 这边还差这一步，属 P2b-1 的尾巴。
+>
+> ### P2b-1 尾巴收口：tree 列表的元素 API 契约（2026-09-17，同上两处缺口已闭合）
+>
+> **先量化代价再动手**：把 editor 的 `TreeListElement` 里那行 `[k: string]: any` 临时删掉、跑 `tsc`，
+> 结果**只有 8 处错误 / 3 个成员**（`display` / `deleteNode` / `createString`）——说明这个"逃生口"虽然
+> 覆盖 71 处用法，**真正依赖它兜底的成员极少**，于是这一步是可做的（这正是先量后改的价值：
+> 光看"71 处 any"会以为要动一大片）。
+>
+> **做法（与命令列表同一手法）**：
+> - ui-kit `tree-api.ts` 新增导出 **`TreeListElementApi`**：消费方实际使用的方法写精确签名
+>   （`read`/`update`/`refresh`/`resize`/`select`/`insert`/`delete`/`clear`/`on`/`rename`/`parseName`/`deleteNode`、
+>   **`display: string`**（`'normal' | 'search'`，各窗口据此判断是否在搜索结果视图）、**`getMenuState(): string`**），
+>   其余用 **`[k: string]: unknown`** 兜底——与 `CommandListElementApi` 逐字同约定；
+> - `attachApi<TreeListElementApi>(list, { getMenuState })`：**全仓最后一个不带类型参数的 `attachApi` 调用点补齐**，
+>   上一刀记的"无法做键集合校验"随之闭合；
+> - editor 的 `TreeListElement` 从
+>   `interface … extends HTMLElement { [k: string]: any }` 改成
+>   **`type TreeListElement = HTMLElement & TreeListElementApi & { createString(): unknown }`**
+>   （`createString` 是**枚举窗口自己补挂**的工厂：ui-kit 侧只有 `createText`/`createIcon`）。
+> - 随之修掉 3 处真实站点：`Attribute.list = list` / `Enum.list = list` 补断言（注册表给的是 `HTMLElement`），
+>   `Enum.list.createString = null` 改用与相邻几行**同一个** `null as unknown as () => unknown` 惯用法。
+>
+> **验证（含两次负向）**：正向 `tsc` 0、`vue-tsc` 0、`oxlint` 0/0、`docs:check` OK、`stale-exemptions --check` OK、
+> ui-kit **780/780**、editor **2008/2008**（退出码均 0）。负向①：对 `TreeListElement` 类型值调 `notAMethod()`
+> ⇒ `TS18046: 'typed.notAMethod' is of type 'unknown'`（**不再被 `any` 放行**）；负向②：对
+> `createTreeListElement()` 的返回值（`HTMLElement`）调同一方法 ⇒ `TS2339`。两处注入均已还原。
+>
+> **⚠️ 这条契约的边界（有意为之，别当缺陷）**：`[k: string]: unknown` 让**未声明的成员仍可被"读"**（拿到 `unknown`，
+> 用时必须收窄），但**不能被"调用"**——这是为了不把既有读取点一次性全打红（与 `CommandListElementApi` 的取舍相同）。
+> 所以它拦的是"拼错/不存在的方法调用"，不是"所有未声明成员"。
 > - **P2b-2（元素 API 留在 Vue 内使用的子集）**：Vue 内使用的组件（选择/文本框/数字框…）随 **P5b** 一起走模板 ref + `defineExpose`；Vue 外（Canvas/引擎/命令模块）继续用元素工厂——**不强行统一**。
 > - **P2b-3（豁免收窄）**：25 个 api 文件都带 `oxlint-disable eslint/no-restricted-properties`；类型化后逐步把其中的 `document.createElement` 等收敛到 `create*Element` 少数几处，缩小豁免面。
 >
@@ -1536,6 +1589,7 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 | `$('#id')` 反查 | **1489 处 / 239 文件**（B1/R1 后 1481；B4 批 1 后 **1347 / 238**） | ⚠️ **新登记** → P5b（此前不在报表内） |
 | 本地化器选择器键（运行期放大） | `components` **2130** 键（2112 id + 18 name）；**R2b 迁移②③④后扫描面降到 347 键**（1782 键已由模板 `t()`/`v-tip` 承担并跳过，−84%） | ⚠️ **新登记** → R2b（门禁已核对键数） |
 | 鸭子式元素 API 调用 | **682 处 / 246 文件** | ⚠️ **新登记** → P2b（`*-api.ts` 26 件门禁） |
+| **模块/元素上的 `[k: string]: any` 逃生口**（第七处漏档） | **75 处 / 48 文件**（2026-09-17 实测，**已剔除注释**；最集中：`particle-engine.ts` 8、`scene-window.ts` 6、`animation-window.ts` 3、`useCommandParse.ts` 3、`animation-player.ts` 3、`ui-window.ts` 3…） | ⚠️ **新登记（2026-09-17）** → **P2b-2**：与 P4c 的全局声明**同类**（都是"类型层放弃检查"，只不过一个在全局接口、一个在模块单例/元素类型上）。tree 列表那一处已收（见 P2b-1 尾巴收口），**余下 75 处是 P2b-2 的靶子面**；注意它**在 lint 里完全看不见**（不是受限 API、不进 tracker 任何一列） |
 | 原型访问器（逗号形式） | **72 字段 / 144 访问器**（B3 前 83/166） | ⚠️ **新登记** → P4b（门禁已核对字段数） |
 | 窗口事件面 | 265 add / 16 自定义事件 / 1 死事件 | ⚠️ **新登记** → E1（`pnpm events:surface`） |
 | `style.*` 赋值 | 336 处 / 78 文件 | 计数（辅助口径）；多为画布/布局测量，属 C1 白名单讨论范围 |
@@ -1566,6 +1620,12 @@ tip 早已由模板承担（迁移⑤），**label 却还是空占位** ⇒ 这�
 > **2026-09-17 追记（P4c/P4d 度量落定 + 一处更正）**：新增审计器 **`scripts/global-types-audit.mjs`**（P4c/P4d 的度量来源，把每条全局声明与"运行期实现 / 全仓引用"对账，四分类 `real` / `residual` / `dead` / `dup`）。它的头部注释记下了为什么要脚本化：「P4c 首刀曾记下"还剩 26 条同名声明"，复核发现实际是 16 条（文档数字漂移）——判据必须能一键复算，而不是靠人记」。**实测**：全文 **24 个接口块 / 220 条声明**，`dup 0` / `dead 0` / `residual 146` / `real 74`；把 DOM 接口块整体注释掉后 `tsc` strict 报 **596 个错误行**（原记 591，**2026-09-17 复核**；口径见 P4c 小节——块集合为 `HTMLElement`×2/`Element`/`ParentNode`/`ChildNode`/`Event`×2/`Window`/`TextBox`/`PointerEvent`/`KeyboardEvent`/`HTMLButtonElement`/`HTMLInputElement`；连内建构造器块一起注释则为 **1001**）⇒ **余下部分并入 P2b（元素 API 契约化），不再单独立刀**（这条已写进 `global.d.ts` 的头部规矩里）。
 >
 > **更正上面第六处漏档的一段话**：那里写 `Array.prototype.{append,remove,set}` "**已无实现**、只在一个测试文件里被临时补上"——**不成立**。实测 `packages/editor/src/utils/array.ts:34/45/57` 就是它们的实现（`Object.defineProperty(Array.prototype, 'append'|'remove'|'set', …)`），属真扩展；`engine/__tests__/ui.spec.ts` 里那段只是"若不存在则补上"的兜底，不是唯一实现。教训与前面几处一致：**"实现已无"这类结论必须落到具体文件行号上**，否则会把真扩展当残留删掉。
+>
+> **2026-09-17 追记（第七处漏档：`[k: string]: any` 逃生口）**：做 P2b-1 尾巴（tree 列表的元素 API 契约）时，从"`TreeListElement` 原来是 `interface extends HTMLElement { [k: string]: any }`"这条线索往外一查，量出**第七处**：**编辑器侧还有 75 处同样的逃生口、散布在 48 个文件**（口径：`\[k: string\]: any`，**剔除注释行**；最集中 `engine/particle/particle-engine.ts` 8、`scene/scene-window.ts` 6、`animation/animation-window.ts` 3、`composables/useCommandParse.ts` 3、`engine/animation/animation-player.ts` 3、`ui/ui-window.ts` 3）。
+>
+> **为什么它算"漏档"而不是"已知项"**：本表此前只有"鸭子式元素 API 调用（682 处）"一轴，数的是**调用点**；而 `[k: string]: any` 是**声明侧**的放弃——写在模块单例或元素类型上之后，**该类型上的每一次成员访问（拼错的、不存在的、签名改过的）都不会再报错**。它与 P4c 的全局声明是**同一类债的两个位置**（一个在全局 `interface`，一个在模块/元素类型上），而**它在 lint 与 tracker 里完全看不见**（既不是受限 API，也不进任何一列）——正是本表反复强调的"运行时口径看不见的那一半"。
+>
+> **处置**：已登记为 **P2b-2 的靶子面**（那一轴本来就是"类型化契约"）。tree 列表那一处已在同日收掉；剩余 75 处**不单独排期**，随 P2b-2 逐模块推进（`particle-engine` / `scene-window` 这类既有大量动态字段、又有 `*-api.ts` 的组件是最难也最有价值的一批）。
 >
 > **又一个口径陷阱**：`residual`（脚本没探测到实现）**不等于**死声明。反例：`command-api.ts` 用 `Object.defineProperty(text, 'varType'|'varId'|'currentType', …)` 给**文本元素**装的**自有属性**，探针的模式认不出，却被真实读写（`text.varType` / `text.varId` / `currentType = varType` 等）。**删声明前必须逐条看引用站点**，`dead=0` 只说明"没有 0 引用的"。
 >

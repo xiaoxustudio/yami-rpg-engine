@@ -74,7 +74,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	attachApi(box, { open, close, toggle, on });
+	attachApi<DetailBoxApi>(box, { open, close, toggle, on });
 
 	markApiAttached(box);
 

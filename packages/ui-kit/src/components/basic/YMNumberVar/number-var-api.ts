@@ -183,7 +183,7 @@ export function attachNumberVarApi(
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi(box, {
+	attachApi<NumberVarApi>(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,

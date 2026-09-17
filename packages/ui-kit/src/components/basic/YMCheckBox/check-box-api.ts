@@ -158,7 +158,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		box.input(!box.read());
 	};
 
-	attachApi(box, {
+	attachApi<CheckBoxApi>(box, {
 		write,
 		read,
 		input,

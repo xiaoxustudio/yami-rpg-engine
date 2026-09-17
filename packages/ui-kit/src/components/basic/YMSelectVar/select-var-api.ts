@@ -167,7 +167,7 @@ export function attachSelectVarApi(
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi(box, {
+	attachApi<SelectVarApi>(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,

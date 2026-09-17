@@ -48,7 +48,7 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 		setTimeout(() => toast.remove(), 200);
 	};
 
-	attachApi(manager, { show, dismiss });
+	attachApi<ToastManagerApi>(manager, { show, dismiss });
 
 	markApiAttached(manager);
 	return manager;

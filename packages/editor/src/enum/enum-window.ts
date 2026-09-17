@@ -165,7 +165,8 @@ function ensureDomBound() {
 	if (Enum.list) return;
 	const list = enumEls.get('enum-list');
 	if (!list) return;
-	Enum.list = list;
+	// P2b-1：`enumEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
+	Enum.list = list as TreeListElement;
 	Enum.panel = enumEls.get('enum-properties-flex') as HTMLElement;
 	hide(Enum.panel!);
 	Enum.searcher = enumEls.get('enum-searcher') as HTMLElement;
@@ -178,7 +179,7 @@ function ensureDomBound() {
 	Enum.list.saveScroll = null as unknown as (...args: unknown[]) => void;
 	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
 	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => void;
-	Enum.list.createString = null;
+	Enum.list.createString = null as unknown as () => unknown;
 	Enum.list.parseName = null as unknown as (...args: unknown[]) => void;
 	getListConfig(Enum.list).onDelete = null as unknown as (item: unknown) => void;
 	getListConfig(Enum.list).onResume = null as unknown as (item: unknown) => void;

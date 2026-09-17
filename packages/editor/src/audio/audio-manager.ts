@@ -22,11 +22,22 @@ interface AudioManagerShape {
 	playMusic: ((name: string) => void) | null;
 	stopMusic: (() => void) | null;
 	playSound: ((name: string) => void) | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * P2b-2：**桥接到 `stores/audio`**（本文件末尾用 `Object.defineProperty` 按
+	 * `audioBridgeKeys` 安装 get/set），不是独立字段——原先被 `[k: string]: any` 兜住，
+	 * 去掉逃生口后由 `tsc` 当场报出（`stores/__tests__/audio-state.spec.ts` 4 处）。
+	 */
+	state: string;
+	music: { name: string } | null;
 }
 
-export const AudioManager: AudioManagerShape = {
+/**
+ * 字面量按 **`Omit<AudioManagerShape, 'state' | 'music'>`** 校验：这两个成员由**文件末尾的
+ * `Object.defineProperty` 桥**装到 `stores/audio` 上（不是字面量成员），字面量给不出它们。
+ * 这样字面量里其余成员的拼写仍逐项受检，读取方也拿到完整类型——比原来的
+ * `[k: string]: any`（什么都不查）严格得多。
+ */
+const audioManager: Omit<AudioManagerShape, 'state' | 'music'> = {
 	context: null as AudioContext | null,
 	player: null as AudioPlayer | null,
 	se: null as
@@ -43,6 +54,8 @@ export const AudioManager: AudioManagerShape = {
 	stopMusic: null as (() => void) | null,
 	playSound: null as ((name: string) => void) | null
 };
+
+export const AudioManager = audioManager as AudioManagerShape;
 
 AudioManager.initialize = function () {
 	getAudioStore().state = 'open';
