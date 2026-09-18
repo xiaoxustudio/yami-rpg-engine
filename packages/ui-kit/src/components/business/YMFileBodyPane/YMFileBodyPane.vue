@@ -943,6 +943,25 @@ function updateIcon(file: FileBodyFile): void {
 	}
 }
 
+/**
+ * 按下文件行时的「激活」入口：**先看元素上的覆写**，没有才走本实现。
+ *
+ * legacy 里这里是 `this.activateFile(...)`——元素成员，所以选择器窗口能把它换成 `select`
+ * （`Selector.body.activateFile = Selector.body.select`，按下即选中）。换源后闭包直调会让那行
+ * 赋值变成死代码。
+ */
+function activateFileViaElement(file: FileBodyFile): void {
+	const host = el.value as
+		| (FileBodyPaneApi & { activateFile?: (file: FileBodyFile) => void })
+		| undefined;
+	const override = host?.activateFile;
+	if (typeof override === 'function' && override !== activateFile) {
+		override.call(host, file);
+		return;
+	}
+	activateFile(file);
+}
+
 function activateFile(file: FileBodyFile): void {
 	const node = el.value as FileBodyPaneApi;
 	if (file instanceof FolderItem) {
@@ -971,6 +990,28 @@ function selectActiveFile(): void {
 	if (activeFile instanceof FileItem) {
 		if (!selections.includes(activeFile!)) {
 			select(activeFile!);
+		}
+		activeFile = null;
+	}
+}
+
+/**
+ * 取消激活文件（legacy `deactivateFile`）：撤掉按下的临时高亮并恢复选中项的高亮。
+ *
+ * 拖拽流程会用到它——`YMFileBrowser.dragstart`/`dragend` 在**元素上**读 `activeFile`、
+ * 写 `pressing`、调 `selectActiveFile`/`deactivateFile`；这些在 legacy 里都是元素成员，
+ * 换源后成了本模块的闭包变量，不暴露出去就是"读写全落空"（拖未选中的文件会拖空）。
+ */
+function deactivateFile(): void {
+	if (activeFile instanceof FileItem) {
+		const node = el.value as FileBodyPaneApi;
+		if (!selections.includes(activeFile!)) {
+			const context = activeFile!.getContext(node);
+			if (context.element) removeClass(context.element, 'selected');
+			for (const file of selections) {
+				const fileContext = file.getContext(node);
+				if (fileContext.element) addClass(fileContext.element, 'selected');
+			}
 		}
 		activeFile = null;
 	}
@@ -1646,7 +1687,7 @@ function pointerdown(event: PointerEvent): void {
 					if (!hasClass(element, 'selected')) {
 						switch (event.button) {
 							case 0:
-								activateFile((element as FileBodyItemApi).file);
+								activateFileViaElement((element as FileBodyItemApi).file);
 								break;
 							case 2:
 								select((element as FileBodyItemApi).file);
@@ -1665,7 +1706,7 @@ function pointerdown(event: PointerEvent): void {
 							pressing = pointerup;
 							window.addEventListener('pointerup', pointerup, { once: true });
 						} else {
-							activateFile((element as FileBodyItemApi).file);
+							activateFileViaElement((element as FileBodyItemApi).file);
 							if (
 								Menu?.() === 'closed' &&
 								document.activeElement === content &&
@@ -1994,11 +2035,26 @@ onMounted(() => {
 		exportFile,
 		clearElements,
 		clear,
+		selectActiveFile,
+		deactivateFile,
 		on
 	});
 	node.content = content;
 	Object.defineProperty(node, 'selections', {
 		get: () => selections,
+		configurable: true
+	});
+	// 拖拽流程（`YMFileBrowser`）用的四个成员：legacy 里它们是元素成员，
+	// 换源后成了闭包变量 —— 不暴露出去，宿主侧的读/写/调用全部落空。
+	Object.defineProperty(node, 'activeFile', {
+		get: () => activeFile,
+		configurable: true
+	});
+	Object.defineProperty(node, 'pressing', {
+		get: () => pressing,
+		set: (value: ((event: PointerEvent) => void) | null) => {
+			pressing = value;
+		},
 		configurable: true
 	});
 	Object.defineProperty(node, 'elements', {

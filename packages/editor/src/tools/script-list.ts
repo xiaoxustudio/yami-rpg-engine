@@ -3,6 +3,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
 import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
+import { elementDataOf } from '@app/utils/element-data';
 import { collect } from '@app/utils/event-scope';
 import { Command } from '@app/commands/command-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
@@ -144,13 +145,18 @@ export class ScriptListInterface implements IScriptListInterface {
 		const once = { once: true };
 		const pointerup = (event: PointerEvent) => {
 			if (element && element.contains(event.target as Node)) {
-				const el = element.parentNode as HTMLElement & {
-					dataItem?: { id: string };
-					item?: { id: string };
-				};
-				const item = el.dataItem ?? el.item;
-				const path = File.getPath!(item!.id);
-				if (path) getBrowserStore().openScript?.(path);
+				const el = element.parentNode as HTMLElement | null;
+				if (el !== null) {
+					// 兼容两种列表（legacy 注释："临时兼容ParamList和TreeList"）：
+					// ParamList 行把 `dataItem` 作为 own 属性挂在元素上；TreeList 行的 `item` 在 P4b
+					// 之后走**元素数据**（元素属性 `item` 已退役）——按属性读会拿到 undefined，
+					// 随后 `item.id` 直接抛错（点脚本行的编辑按钮时爆）。
+					const item =
+						(el as unknown as { dataItem?: ScriptListItem }).dataItem ??
+						elementDataOf<{ item?: ScriptListItem }>(el).item;
+					const path = item ? File.getPath!(item.id) : undefined;
+					if (path) getBrowserStore().openScript?.(path);
+				}
 			}
 			element = null;
 		};

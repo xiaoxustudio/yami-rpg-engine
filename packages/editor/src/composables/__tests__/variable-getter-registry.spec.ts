@@ -7,6 +7,9 @@ import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindo
 import { composableEls } from '@app/composables/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
+import { EventEditor } from '@app/commands/event-editor.ts';
+import { elementDataOf } from '@app/utils/element-data';
+import type { YamiElement } from '@app/types/element-api';
 
 /**
  * 窗口注册表回归（P5b 后续批次：`document.getElementById('variableGetter-*')` → `composableEls`）。
@@ -123,6 +126,53 @@ describe('变量访问器窗口注册表（P5b 后续批次）', () => {
 		const items = loadItems.mock.calls[0][0] as Array<{ value: string }>;
 		expect(items.map((item) => item.value)).toContain('local');
 		expect(items.map((item) => item.value)).toContain('element');
+
+		wrapper.unmount();
+	});
+
+	it('变量列表按活动命令的命名空间过滤（活动行下标读元素数据）', async () => {
+		const wrapper = mount(VariableGetter, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+
+		const namespaceCommand = {
+			id: 'registerEvent',
+			params: { namespace: 'ns', operation: 'register' }
+		};
+		const otherCommand = {
+			id: 'registerEvent',
+			params: { namespace: 'other', operation: 'register' }
+		};
+		const globalEntry = { name: 'g1', type: 'number', command: null };
+		const namespaceEntry = { name: 'n1', type: 'number', command: namespaceCommand };
+		const otherEntry = { name: 'o1', type: 'number', command: otherCommand };
+
+		const rows = [] as unknown as YamiElement[] & { count?: number };
+		rows.count = 2;
+		rows[0] = { dataKey: true, dataIndent: 0, dataItem: otherCommand } as never;
+		rows[1] = { dataKey: true, dataIndent: 0, dataItem: namespaceCommand } as never;
+
+		const commandList = document.createElement('div') as HTMLElement & {
+			read?: () => unknown;
+			varList?: unknown[];
+		};
+		commandList.read = () => true;
+		commandList.varList = [globalEntry, namespaceEntry, otherEntry];
+		Object.assign(commandList, { elements: rows });
+		// P4b：选区活动行在元素数据里（元素属性 `active` 已退役）
+		elementDataOf<{ active?: number | null }>(commandList).active = 1;
+		EventEditor.commandList = commandList as never;
+
+		const window = useVariableGetterWindow();
+		window.initialize();
+		window.open(makeTarget(() => ({ type: 'local', key: '' })) as never);
+
+		const commonKey = composableEls.get('variableGetter-common-key') as unknown as {
+			generator?: () => { name: string }[];
+		};
+		const items = commonKey.generator?.() ?? [];
+
+		// 活动行属于 `ns` 命名空间 → 只保留同命名空间的变量
+		expect(items.map((item) => item.name)).toEqual(['n1']);
 
 		wrapper.unmount();
 	});

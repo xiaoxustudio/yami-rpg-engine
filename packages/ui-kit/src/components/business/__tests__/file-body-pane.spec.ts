@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
 
@@ -185,6 +186,101 @@ describe('YMFileBodyPane', () => {
 		expect((wrapper.element as unknown as FileBodyPaneElement).elements.count).toBeGreaterThan(
 			0
 		);
+		wrapper.unmount();
+	});
+
+	it('暴露拖拽流程依赖的 activeFile / pressing / deactivateFile（legacy 元素成员）', async () => {
+		const FileItemClass = class FileItem {};
+		const FolderItemClass = class FolderItem {};
+		const a = makeFile('A');
+		const folder = { children: [a] };
+		const props = makeProps({
+			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
+			links: {
+				browser: { display: 'normal', filters: null },
+				nav: { selections: [folder] },
+				head: { view: { write: vi.fn() } }
+			}
+		});
+		Object.setPrototypeOf(a, FileItemClass.prototype);
+		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const node = wrapper.element as unknown as FileBodyPaneElement & {
+			activeFile?: unknown;
+			pressing?: unknown;
+			deactivateFile?: () => void;
+			selectActiveFile?: () => void;
+		};
+		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
+		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
+		Object.defineProperty(node, 'getBoundingClientRect', {
+			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
+			configurable: true
+		});
+		node.setViewIndex(0);
+		node.updateFiles();
+		await nextTick();
+
+		const row = node.querySelector('.file-body-item') as HTMLElement & { file?: unknown };
+		expect(row).not.toBe(null);
+
+		// 按下未选中的行：激活该文件（临时高亮）并登记"抬起即选中"
+		// 注意：经 props 传进来的 links 是响应式代理，行上的 `file` 与 `a` 深相等但非同一对象
+		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(node.activeFile).toBe(row.file);
+		expect(typeof node.pressing).toBe('function');
+
+		// 拖拽开始：宿主把 pressing 置空 ⇒ 抬起不再选中（旧实现写的是元素属性，落空）
+		node.pressing = null;
+		window.dispatchEvent(new PointerEvent('pointerup'));
+		expect(node.selections).toEqual([]);
+
+		// 拖拽结束：宿主调 deactivateFile ⇒ 撤掉临时高亮（旧实现连这个方法都没有）
+		expect(row.classList.contains('selected')).toBe(true);
+		expect(typeof node.deactivateFile).toBe('function');
+		node.deactivateFile?.();
+		expect(node.activeFile).toBe(null);
+		expect(row.classList.contains('selected')).toBe(false);
+
+		wrapper.unmount();
+	});
+
+	it('按下行的激活走元素覆写（选择器窗口 activateFile = select）', async () => {
+		const FileItemClass = class FileItem {};
+		const FolderItemClass = class FolderItem {};
+		const a = makeFile('A');
+		const props = makeProps({
+			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
+			links: {
+				browser: { display: 'normal', filters: null },
+				nav: { selections: [{ children: [a] }] },
+				head: { view: { write: vi.fn() } }
+			}
+		});
+		Object.setPrototypeOf(a, FileItemClass.prototype);
+		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const node = wrapper.element as unknown as FileBodyPaneElement & {
+			activateFile?: (file: unknown) => void;
+			activeFile?: unknown;
+		};
+		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
+		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
+		Object.defineProperty(node, 'getBoundingClientRect', {
+			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
+			configurable: true
+		});
+		node.setViewIndex(0);
+		node.updateFiles();
+		await nextTick();
+
+		const override = vi.fn();
+		node.activateFile = override;
+		const row = node.querySelector('.file-body-item') as HTMLElement;
+		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+
+		// 覆写生效 ⇒ 不再走内置的"临时高亮 + 抬起再选中"
+		expect(override).toHaveBeenCalledTimes(1);
+		expect(node.activeFile).toBe(null);
+
 		wrapper.unmount();
 	});
 

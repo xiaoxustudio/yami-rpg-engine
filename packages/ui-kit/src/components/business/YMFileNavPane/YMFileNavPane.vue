@@ -805,6 +805,15 @@ onMounted(() => {
 		get: () => selections,
 		configurable: true
 	});
+	// 拖拽流程（`YMFileBrowser.dragstart`）会把待定的按下回调置空以取消这次点击选中的副作用；
+	// legacy 里 `pressing` 是元素属性，换源后成了闭包变量 —— 不暴露就没有接收方。
+	Object.defineProperty(node, 'pressing', {
+		get: () => pressing,
+		set: (value: ((event: PointerEvent) => void) | null) => {
+			pressing = value;
+		},
+		configurable: true
+	});
 	Object.defineProperty(node, 'elements', {
 		get: () => elements,
 		configurable: true

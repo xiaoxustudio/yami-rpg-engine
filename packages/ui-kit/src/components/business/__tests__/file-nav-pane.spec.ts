@@ -82,6 +82,22 @@ describe('YMFileNavPane', () => {
 		wrapper.unmount();
 	});
 
+	it('暴露拖拽流程写入的 pressing（legacy 元素属性）', () => {
+		const props = makeProps();
+		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
+		const el = wrapper.element as unknown as FileNavPaneElement & {
+			pressing?: ((event: PointerEvent) => void) | null;
+		};
+		// 宿主（`YMFileBrowser.dragstart`）在拖拽开始时把待定回调置空 ⇒ 抬起不再选中
+		expect(el.pressing).toBe(null);
+		const sentinel = (): void => {};
+		el.pressing = sentinel;
+		expect(el.pressing).toBe(sentinel);
+		el.pressing = null;
+		expect(el.pressing).toBe(null);
+		wrapper.unmount();
+	});
+
 	it('load selects folders and calls browser update', async () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });

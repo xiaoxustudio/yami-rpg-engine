@@ -398,7 +398,6 @@ const createVarListGenerator = (filterObject: {
 
 		const list = EventEditor.commandList as unknown as {
 			elements: YamiElement[] & { count?: number };
-			active: number | null | undefined;
 			varList?: VarListEntry[];
 		};
 		const elements = list.elements;
@@ -437,7 +436,12 @@ const createVarListGenerator = (filterObject: {
 			}
 			return null;
 		};
-		const activeIndex = list.active;
+		// P4b：选区「活动行」在**元素数据**里（`command-api` 的 `CommandListData.active`），
+		// 元素上不再有 `active` 访问器——按元素属性读会永远拿到 `undefined`，
+		// 于是 `activeNamespace` 恒为 null，命名空间内的变量全被过滤掉（只剩全局项）。
+		const activeIndex = elementDataOf<{ active?: number | null }>(
+			EventEditor.commandList
+		).active;
 		const activeElement =
 			activeIndex !== null && activeIndex !== undefined ? elements[activeIndex] : null;
 		const activeCommand = activeElement?.dataItem ?? activeElement?.dataParent ?? null;
