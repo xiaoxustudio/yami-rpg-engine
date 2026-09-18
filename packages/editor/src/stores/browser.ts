@@ -51,7 +51,11 @@ export interface FileBrowserBody {
 
 export interface FileBrowserInstance {
 	state?: string;
-	directory?: string | null;
+	/**
+	 * 当前项目目录根（**数组**：legacy `this.directory = [Directory.assets]`，同时用作
+	 * `Directory.searchFiles` 的搜索基集）。浏览器组件靠它判断"是否已加载项目"并据此清理。
+	 */
+	directory?: unknown[] | null;
 	page?: HTMLElement;
 	searcher?: HTMLElement & { addKeydownFilter?(): void };
 	head?: HTMLElement & { searcher?: HTMLElement };
@@ -80,7 +84,7 @@ export interface FileBrowserInstance {
 
 export const useBrowserStore = defineStore('browser', () => {
 	const state = shallowRef<string>('closed');
-	const directory = shallowRef<string | null>(null);
+	const directory = shallowRef<unknown[] | null>(null);
 	const component = shallowRef<FileBrowserInstance | null>(null);
 
 	function setComponent(instance: FileBrowserInstance | null) {
@@ -543,7 +547,8 @@ export const useBrowserStore = defineStore('browser', () => {
 		if (selections.length === 0) {
 			selections.push(Directory?.assets ?? null);
 		}
-		Browser.directory = Directory?.assets as unknown as string;
+		// legacy：`this.directory = [Directory.assets]`（数组，供 `Directory.searchFiles` 递归搜索用）
+		Browser.directory = [Directory?.assets];
 		Browser.body?.setViewIndex?.(view);
 		Browser.nav?.load?.(...selections);
 	}

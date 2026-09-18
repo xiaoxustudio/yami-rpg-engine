@@ -67,6 +67,23 @@ const rowData = (el: unknown): NodeElement => elementDataOf<NodeElement>(el);
 const rowDataOrUndefined = (el: unknown): NodeElement | undefined =>
 	el == null ? undefined : rowData(el);
 
+/**
+ * 行点击目标归一：把事件目标收窄成「它所属的行元素」。
+ *
+ * 步骤 5 的 v-for 行渲染把标签文本包进了 `.node-text`（legacy 是直接 append 到行上的**裸文本节点**，
+ * 点文字时 `event.target` 就是行元素本身），于是 `event.target` 不再等于行——按住标签文字点选
+ * 带子节点的组件时一直没有反应。
+ *
+ * 列元素里的按钮（`.tree-node-extras` 下的显隐/锁定图标、重命名输入框）**不**归一：
+ * legacy 里它们同样是行内独立元素，点击不应改变选中。
+ */
+const rowTargetOf = (target: EventTarget | null): NodeElement | null => {
+	const element = target as Element | null;
+	if (element === null || typeof element.closest !== 'function') return null;
+	if (element.closest('.tree-node-extras') !== null) return null;
+	return (element.closest('.node-item') as NodeElement | null) ?? null;
+};
+
 /** 拖拽指示器（`DragAndDropHintApi` 本身就是 HTMLElement）的元素数据：`target` 指向当前命中行 */
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
@@ -337,10 +354,6 @@ export interface TreeListElementApi extends YamiElementApi {
 	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
 	[k: string]: unknown;
 }
-
-type NodeItemElement = HTMLElement & {
-	item?: TreeItem;
-};
 
 type ValueEvent = Event & { value: unknown };
 
@@ -1338,15 +1351,17 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			this.cancelRenaming();
 			switch (event.button) {
 				case 0: {
-					const element = event.target as NodeElement;
-					if (hasClass(element, 'folder-mark')) {
+					const target = event.target as NodeElement;
+					if (hasClass(target, 'folder-mark')) {
 						event.preventDefault();
-						const { item } = rowData(element.parentNode);
+						const { item } = rowData(target.parentNode);
 						item!.expanded = !item!.expanded;
 						this.update();
 						dispatchChangeEvent(this);
 					} else {
-						if (hasClass(element, 'node-item')) {
+						// 目标归一：点在标签文字/图标上时取所属行（legacy 的裸文本节点等价物）
+						const element = rowTargetOf(event.target);
+						if (element !== null) {
 							// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
 							const item = rowData(element).item;
 							if (item !== undefined && this.read() !== item) {
@@ -1410,8 +1425,9 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		doubleclick: function (this: TreeListHost, event: MouseEvent): void {
-			const element = event.target as NodeItemElement;
-			if (hasClass(element, 'node-item')) {
+			// 目标归一：双击标签文字时 target 是 `.node-text`，legacy 里它是行上的裸文本节点
+			const element = rowTargetOf(event.target);
+			if (element !== null) {
 				this.cancelRenaming();
 				const item = rowData(element).item!;
 				if (item.class === 'folder') {

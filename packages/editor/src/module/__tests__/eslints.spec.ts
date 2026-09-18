@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { CommandList } from '@app/components/command-list.ts';
@@ -9,6 +9,7 @@ import {
 } from '@app/module/eslints.ts';
 import { YMCommandList, type CommandListApiOptions } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
+import { elementDataOf } from '@app/utils/element-data';
 
 type CommandItemElement = Parameters<typeof updateCommandElement>[0];
 
@@ -200,6 +201,79 @@ describe('eslints 折叠线显示（区块竖线收尾）', () => {
 		expect(a.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(b.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(b.lines[0].classList.contains('line-end')).toBe(false);
+	});
+});
+
+describe('eslints getSelectionPosition（命令控件定位）', () => {
+	interface PositionList extends HTMLElement {
+		getSelectionPosition?: () => { x: number; y: number } | null;
+	}
+
+	/** 造一个「命令列表」：`active` 走元素数据（api 的 CommandListData），行是渲染出来的 `.command-item` */
+	const makeList = (options: {
+		active?: number | null;
+		renderedIndexes?: number[];
+		rects?: Record<number, { x: number; y: number }>;
+	}): PositionList => {
+		const list = document.createElement('div') as PositionList;
+		document.body.appendChild(list);
+		elementDataOf<{ active?: number | null }>(list).active = options.active ?? null;
+
+		const rectOf = (index: number): DOMRect => {
+			const point = options.rects?.[index] ?? { x: 0, y: 0 };
+			return { ...point, width: 1, height: 20 } as DOMRect;
+		};
+
+		for (const index of options.renderedIndexes ?? []) {
+			const row = document.createElement('div');
+			row.className = 'command-item';
+			elementDataOf<{ dataValue?: number }>(row).dataValue = index;
+			const pre = document.createElement('span');
+			pre.className = 'command-mark-major';
+			pre.getBoundingClientRect = () => rectOf(index);
+			row.appendChild(pre);
+			(row as unknown as { pre: HTMLElement }).pre = pre;
+			list.appendChild(row);
+		}
+		return list;
+	};
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('返回渲染行 pre 的位置（行下标取自元素数据 active）', () => {
+		const list = makeList({
+			active: 1,
+			renderedIndexes: [0, 1],
+			rects: { 1: { x: 12, y: 34 } }
+		});
+		applyCommandListInstanceOverride(list);
+		expect(list.getSelectionPosition?.()).toMatchObject({ x: 12, y: 34 });
+	});
+
+	it('未选中（active 为 null）时返回 null 而不是抛错', () => {
+		const list = makeList({ active: null, renderedIndexes: [0] });
+		applyCommandListInstanceOverride(list);
+		expect(() => list.getSelectionPosition?.()).not.toThrow();
+		expect(list.getSelectionPosition?.()).toBe(null);
+	});
+
+	it('活动行未物化时按实测行距外推（滚动后要等 Vue 补丁）', () => {
+		const list = makeList({
+			active: 3,
+			renderedIndexes: [0, 1],
+			rects: { 0: { x: 4, y: 0 }, 1: { x: 4, y: 20 } }
+		});
+		applyCommandListInstanceOverride(list);
+		// 行距 20px：3 号行在窗口下方 → 20 + 2 * 20
+		expect(list.getSelectionPosition?.()).toMatchObject({ x: 4, y: 60 });
+	});
+
+	it('一行都没渲染时返回 null（未换源/空列表）', () => {
+		const list = makeList({ active: 0, renderedIndexes: [] });
+		applyCommandListInstanceOverride(list);
+		expect(list.getSelectionPosition?.()).toBe(null);
 	});
 });
 

@@ -1,3 +1,4 @@
+import { resizeCanvasContext } from '@app/utils/canvas-utils';
 import { CSSRGBA } from '@app/utils/color-utils';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -11,8 +12,6 @@ type CanvasTextContext = CanvasRenderingContext2D & {
 	paddingItalic?: number;
 	paddingVertical?: number;
 	size?: number;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 };
 
 interface TextEffectShape {
@@ -756,7 +755,7 @@ export class Printer {
 			Math.ceil(this.height + this.paddingTop + this.paddingBottom),
 			GL.maxTexSize
 		);
-		this.context!.resize(width, height);
+		resizeCanvasContext(this.context!, width, height);
 
 		this.computeTextPosition!();
 

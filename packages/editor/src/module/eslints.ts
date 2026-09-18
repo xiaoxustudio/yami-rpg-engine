@@ -3,6 +3,7 @@ import { on } from '@app/utils/element-utils.ts';
 import { CommandList } from '@app/components/command-list.ts';
 import { h } from 'vue';
 import { renderDetached } from '@app/utils/dom';
+import { elementDataOf } from '@app/utils/element-data';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
@@ -225,6 +226,45 @@ export function ensureUpdateCommandElementOverride(): void {
 	ensureLineClassesOverride();
 }
 
+/**
+ * 选区里的「活动行」下标。换源后它不再是元素上的 `active` expando，而是**元素数据**
+ * （`command-api` 的 `CommandListData.active`）。原来的 `this.elements[this.active]`
+ * 因此永远读到 `elements[undefined]` → `undefined.pre` 抛
+ * `Cannot read properties of undefined (reading 'pre')`（双击命令 / 打开事件编辑器时爆）。
+ */
+const activeIndexOf = (list: unknown): number | null => {
+	const { active } = elementDataOf<{ active?: number | null }>(list as HTMLElement);
+	return typeof active === 'number' ? active : null;
+};
+
+/**
+ * 活动行的屏幕位置。优先取**渲染出来的那一行**（api 侧 `elements[]` 是离屏元素，
+ * `getBoundingClientRect()` 恒为 0），行下标取元素数据 `dataValue`（见 `bindRowElement`）。
+ *
+ * 活动行可能还没物化：`scrollAndResize()` 会改 `scrollTop`，而模板补丁要等 Vue 的一拍，
+ * 此刻同步读 DOM 只能拿到旧窗口。这时按渲染行的**实测行距**外推（`.command-item` 固定 20px
+ * 行高），让"插入到列表底部"这类需要滚动的流程也能定位命令控件。
+ */
+const selectionPointOf = (list: HTMLElement, index: number): { x: number; y: number } | null => {
+	const rendered: { index: number; rect: DOMRect }[] = [];
+	for (const row of list.querySelectorAll<HTMLElement>('.command-item')) {
+		const rowIndex = elementDataOf<{ dataValue?: number }>(row).dataValue;
+		if (typeof rowIndex !== 'number') continue;
+		const marker = (row as CommandItemElement).pre ?? row;
+		rendered.push({ index: rowIndex, rect: marker.getBoundingClientRect() });
+	}
+	if (rendered.length === 0) return null;
+	rendered.sort((a, b) => a.index - b.index);
+	const exact = rendered.find((row) => row.index === index);
+	if (exact) return { x: exact.rect.x, y: exact.rect.y };
+	const first = rendered[0];
+	const last = rendered[rendered.length - 1];
+	const span = last.index - first.index;
+	const step = span > 0 ? (last.rect.y - first.rect.y) / span : first.rect.height || 20;
+	const anchor = index < first.index ? first : last;
+	return { x: anchor.rect.x, y: anchor.rect.y + (index - anchor.index) * step };
+};
+
 export function initEslints(): void {
 	EventBus.once('editor_loaded', () => {
 		// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
@@ -241,11 +281,11 @@ export function applyCommandListInstanceOverride(
 			? (commandList as typeof CommandList).prototype
 			: (commandList as HTMLElement);
 	// oxlint-disable-next-line no-explicit-any
-	(prototype as HTMLElement & Record<string, any>).getSelectionPosition = function (this: {
-		elements: { pre: HTMLElement }[];
-		active: number;
-	}) {
-		return this.elements[this.active].pre.getBoundingClientRect();
+	(prototype as HTMLElement & Record<string, any>).getSelectionPosition = function (
+		this: HTMLElement
+	): { x: number; y: number } | null {
+		const index = activeIndexOf(this);
+		return index === null ? null : selectionPointOf(this, index);
 	};
 	on(commandList, 'update', function (this: { elements: { dataIndent: number }[] }) {
 		const list = this.elements as unknown as CommandListShape;

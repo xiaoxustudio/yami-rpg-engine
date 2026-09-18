@@ -6,6 +6,8 @@
 
 <script setup lang="ts">
 type FileBrowserApi = HTMLElement & {
+	/** 宿主写入的「当前项目目录根」（`Browser.directory = [Directory.assets]`），close 靠它判断是否已加载项目 */
+	directory?: unknown;
 	load?(folders: unknown[]): void;
 	select?(item: unknown): void;
 	getSelections?(): unknown[];
@@ -40,7 +42,8 @@ type FileBodyApi = HTMLElement & {
 }
 interface FileHeadApi extends HTMLElement {
 	updateAddress?(): void;
-	searcherEl?: { deleteInputContent?(): void };
+	/** 头部搜索框（YMTextBox 元素 API）：close 用 legacy 的 `searcher.write('')` 清关键字 */
+	searcher?: { write?(value: string): void; deleteInputContent?(): void };
 	el?: HTMLElement;
 	[key: string]: unknown;
 }
@@ -181,7 +184,6 @@ const childMenuState = () => props.menuState?.() ?? '';
 const childCreateTextBox = props.createTextBox;
 
 let display: 'normal' | 'search' = 'normal';
-let directory: string | null = null;
 let keyword: RegExp | null = null;
 let dragging: DragEvent | PointerEvent | null = null;
 let filters: unknown[] | null = null;
@@ -190,12 +192,33 @@ let searchResults: unknown[] = [];
 // oxlint-disable-next-line no-explicit-any
 let links: any = {};
 
+/**
+ * 当前项目的目录根（宿主写在浏览器元素上：`Browser.directory = [Directory.assets]`）。
+ *
+ * 迁移期这里是本模块的一个局部变量，但**没有任何赋值点**——于是 `close()` 里的清理分支永远
+ * 进不去：关掉/切换项目时，上一个项目的文件行、文件夹行与地址栏都留在 DOM 里，打开新项目后
+ * 与新内容叠在一起（"上一次的项目在背景"）。这里恢复成读元素属性，与 legacy 的 `this.directory`
+ * 一致（legacy 里它同时是搜索基集：`Directory.searchFiles(filters, kw, this.directory, list)`）。
+ */
+const directoryItems = (): unknown[] | null => {
+	const value = (el.value as unknown as FileBrowserApi | undefined)?.directory;
+	return Array.isArray(value) ? value : null;
+};
+
+/**
+ * 把模块内的 `display` / `searchResults` 镜像到浏览器元素上（nav 侧读 `browser.display`
+ * 决定面包屑与"返回上一级"的行为）。`update()` 与 `restoreDisplay()` 都要镜像一次——
+ * legacy 里 `display` 就是元素属性本身，改完即生效；换源后它是模块变量，漏镜像就会读到旧值。
+ */
+function syncDisplayState(): void {
+	const node = el.value as unknown as FileBrowserApi | undefined;
+	if (!node) return;
+	node.display = display;
+	node.searchResults = searchResults;
+}
+
 function update(): void {
-	const node = el.value as unknown as FileBrowserApi;
-	if (node) {
-		node.display = display;
-		node.searchResults = searchResults;
-	}
+	syncDisplayState();
 	const body = bodyEl.value?.el as unknown as FileBodyApi;
 	body?.updateFiles?.();
 	(headEl.value as unknown as FileHeadApi)?.updateAddress?.();
@@ -213,7 +236,7 @@ function searchFiles(kw: RegExp | string): void {
 			kw = kw.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
 			kw = new RegExp(kw, 'i');
 		}
-		const items = directory ?? Directory?.assets?.subfolders ?? [];
+		const items = directoryItems() ?? Directory?.assets?.subfolders ?? [];
 		Directory?.searchFiles?.(filters, (keyword = kw as RegExp), items, (searchResults = []));
 		update();
 	} else {
@@ -235,8 +258,15 @@ function restoreDisplay(): void {
 			display = 'normal';
 			backupFolders = [];
 			searchResults = [];
-			// P2b 清理：此处原本有一句裸的 `?.el?.querySelector?.('.file-head-searcher')`——
-			// 有调用无接收方，等于什么都没做（且是"按类名伸手进子组件"的写法）。已删。
+			syncDisplayState();
+			// legacy 的 `this.head.searcher.write('')`：搜索框里的关键字同样属于"上一个项目"的残留。
+			// （P2b 删掉的那句裸 `?.el?.querySelector?.('.file-head-searcher')` 正是它的残骸——
+			// 有调用无接收方，从未生效；现在走头部元素的搜索框 API，与 legacy 同一句 `write('')`。）
+			(
+				(headEl.value as unknown as { el?: FileHeadApi } | undefined)?.el?.searcher as
+					| { write?(value: string): void }
+					| undefined
+			)?.write?.('');
 			break;
 	}
 }
@@ -258,7 +288,13 @@ function backToParentFolder(): boolean {
 		}
 		case 'search': {
 			const active = document.activeElement as HTMLElement;
-			(headEl.value as unknown as FileHeadApi)?.searcherEl?.deleteInputContent?.();
+			// 接收方是**头部元素**里的搜索框（组件只暴露 `{ updateAddress, el }`）；
+			// 原来的 `headEl.value?.searcherEl` 字段名与接收方都不对，一直是静默 no-op
+			(
+				(headEl.value as unknown as { el?: FileHeadApi } | undefined)?.el?.searcher as
+					| { deleteInputContent?(): void }
+					| undefined
+			)?.deleteInputContent?.();
 			active.focus();
 			return true;
 		}
@@ -300,14 +336,16 @@ function dirchange(_event: Event): void {
 }
 
 function close(): void {
-	if (directory) {
-		directory = null;
+	const node = el.value as unknown as FileBrowserApi | undefined;
+	if (node?.directory) {
+		node.directory = null;
 		restoreDisplay();
-		// oxlint-disable-next-line no-unsafe-optional-chaining
-		(navEl.value?.el as unknown as FileNavApi).clear?.();
-		// P2b 清理：此处原本也有一句裸的 `querySelector('.file-head-address')`（无接收方）。已删。
-		// oxlint-disable-next-line no-unsafe-optional-chaining
-		(bodyEl.value?.el as unknown as FileBodyApi).clear?.();
+		const nav = navEl.value?.el as unknown as FileNavApi | undefined;
+		const body = bodyEl.value?.el as unknown as FileBodyApi | undefined;
+		nav?.clear?.();
+		body?.clear?.();
+		// legacy 的 `head.address.clear()`：头部的面包屑是数据派生，清空选择后重算即为空
+		(headEl.value as unknown as FileHeadApi | undefined)?.updateAddress?.();
 	}
 }
 

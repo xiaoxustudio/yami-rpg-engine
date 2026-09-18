@@ -507,6 +507,109 @@ describe('YMTreeList unselectIn 与空白点击', () => {
 	});
 });
 
+describe('YMTreeList 行点击选中', () => {
+	const labelOf = (row: HTMLElement): HTMLElement =>
+		row.querySelector('.node-text') as HTMLElement;
+
+	it('点击带子节点行的文本可选中该行', async () => {
+		const { wrapper, el, data } = await mountList();
+		fireMouse(labelOf(treeRowElement(data[0]) as HTMLElement), 'pointerdown', {
+			button: 0,
+			clientX: 60
+		});
+		await nextTick();
+		expect(el.read()).toBe(data[0]);
+		wrapper.unmount();
+	});
+
+	it('点击无子节点行的文本可选中该行', async () => {
+		const { wrapper, el, data } = await mountList();
+		fireMouse(labelOf(treeRowElement(data[1]) as HTMLElement), 'pointerdown', {
+			button: 0,
+			clientX: 60
+		});
+		await nextTick();
+		expect(el.read()).toBe(data[1]);
+		wrapper.unmount();
+	});
+
+	it('点击折叠标记只切换展开，不改变选中', async () => {
+		const { wrapper, el, data } = await mountList();
+		const row = treeRowElement(data[0]) as HTMLElement;
+		fireMouse(row.querySelector('.folder-mark') as HTMLElement, 'pointerdown', {
+			button: 0,
+			clientX: 8
+		});
+		await nextTick();
+		expect(data[0].expanded).toBe(false);
+		expect(el.read()).toBe(null);
+		wrapper.unmount();
+	});
+
+	it('点击行内图标与行空白区域同样选中', async () => {
+		const { wrapper, el, data } = await mountList();
+		const row = treeRowElement(data[0]) as HTMLElement;
+		fireMouse(row, 'pointerdown', { button: 0, clientX: 60 });
+		await nextTick();
+		expect(el.read()).toBe(data[0]);
+		wrapper.unmount();
+	});
+
+	it('双击标签文字同样命中行：文件派发 open、folder 切换展开', async () => {
+		const { wrapper, el, data } = await mountList();
+		let opened: unknown = null;
+		el.on('open', (e: Event & { value: unknown }) => (opened = e.value));
+		el.focus();
+
+		const doubleClick = (target: HTMLElement): void => {
+			fireMouse(target, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });
+			fireMouse(target, 'pointerup', { button: 0, clientX: 200, clientY: 10 });
+			fireMouse(target, 'pointerdown', { button: 0, clientX: 200, clientY: 10 });
+			fireMouse(target, 'pointerup', { button: 0, clientX: 200, clientY: 10 });
+		};
+
+		doubleClick(labelOf(treeRowElement(data[1]) as HTMLElement));
+		expect(opened).toBe(data[1]);
+
+		expect(data[0].expanded).toBe(true);
+		doubleClick(labelOf(treeRowElement(data[0]) as HTMLElement));
+		expect(data[0].expanded).toBe(false);
+		wrapper.unmount();
+	});
+
+	it('点击 extras 内的行内按钮不改变选中', async () => {
+		const wrapper = mount(YMTreeList, {
+			attachTo: document.body,
+			props: {
+				renderNodeExtras: (_item: unknown, container: HTMLElement) => {
+					if (container.querySelector('.visibility-icon') !== null) return;
+					const icon = document.createElement('span');
+					icon.className = 'visibility-icon';
+					container.appendChild(icon);
+				}
+			}
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		const data = makeData();
+		el.bind(() => data);
+		await nextTick();
+		el.update();
+		await nextTick();
+
+		el.select(data[1]);
+		await nextTick();
+		const icon = (treeRowElement(data[0]) as HTMLElement).querySelector(
+			'.visibility-icon'
+		) as HTMLElement;
+		expect(icon).not.toBe(null);
+		fireMouse(icon, 'pointerdown', { button: 0, clientX: 60 });
+		await nextTick();
+		expect(el.read()).toBe(data[1]);
+		wrapper.unmount();
+	});
+});
+
 describe('YMTreeList duplicate', () => {
 	it('duplicate 复制节点到原位后并生成副本后缀名', async () => {
 		const { wrapper, el, data } = await mountList();

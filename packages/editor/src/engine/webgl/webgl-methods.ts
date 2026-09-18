@@ -1,5 +1,6 @@
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
+import { resizeCanvasContext } from '@app/utils/canvas-utils';
 import { BaseTexture } from './base-texture.ts';
 import { BatchRenderer } from './batch-renderer.ts';
 import { ImageTexture } from './image-texture.ts';
@@ -1538,7 +1539,7 @@ GL.fillTextWithOutline = (function fillTextWithOutline() {
 		const width = Math.min(this.maxTexSize, Math.ceil(measureWidth + ox));
 		if (x + width > 0 && x < this.width && y + height > 0 && y < this.height) {
 			const font = context.font;
-			context.resize(width, height);
+			resizeCanvasContext(context, width, height);
 			context.font = font;
 			context.fillStyle = '#ffffff';
 			context.fillText(text, ox, oy);
