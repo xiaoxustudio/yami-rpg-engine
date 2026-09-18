@@ -514,7 +514,7 @@ function refreshRowsAfterSelection(list: {
 	padded?: boolean;
 	dispatchEvent?: (event: Event) => unknown;
 }): void {
-	rebuildCommandRowModel(list.elements as never, { padded: getListConfig(list).padded === true });
+	rebuildCommandRowModel(list, { padded: getListConfig(list).padded === true });
 	dispatchUpdateEvent(list as never);
 }
 
@@ -623,27 +623,39 @@ function rebuildCommandRowData(elements: CommandListShape): void {
 	}
 }
 
+/**
+ * 行元素数组的**宽松视图**：各调用点传进来的都是 api 侧的离屏元素（形状相同，但
+ * `refreshRowsAfterSelection` 之类只声明到 `{ count } & Record<number, unknown>`）。
+ * 逐项取用时在函数内收窄成行元素视图。
+ */
+interface CommandElementsView {
+	count: number;
+	start?: number;
+	end?: number;
+	[i: number]: unknown;
+}
+
 /** 从 `elements[]` 重建行模型（在 `update`/`resize` 之后调用） */
 function rebuildCommandRowModel(
-	elements: {
-		count: number;
-		start?: number;
-		end?: number;
-		[i: number]: CommandItemElement | undefined;
-	},
+	list: { elements: CommandElementsView },
 	options: { padded?: boolean } = {}
 ): void {
+	const elements = list.elements;
 	const rows: CommandRowDescriptor[] = [];
 	const keys: string[] = [];
 	const count = elements.count;
 	const start = elements.start ?? 0;
 	const end = elements.end ?? count;
 	const pad = options.padded === true ? 1 : 0;
+	// 选中态取**选区窗口**（`CommandListData.start/end`，含首尾），不是 `elements.start/end`——
+	// 后者是虚拟滚动窗口，拿它当选中范围会把"当前可见的行"整段标成选中：点一行却选中多行。
+	const selection = commandListData(list);
+	const hasSelection = selection.start !== null && selection.end !== null;
 	// 几何与 `commonListUpdateHeadAndFoot` 一致：首行 marginTop、末行 marginBottom 撑出滚动高度
 	const marginTop = count === 0 ? 0 : start * 20;
 	const marginBottom = count === 0 ? 0 : (count - end + pad) * 20;
 	for (let i = 0; i < count; i++) {
-		const element = elements[i];
+		const element = elements[i] as CommandItemElement | undefined;
 		if (element === undefined) continue;
 		const key = element.rowKey ?? '';
 		keys.push(key);
@@ -653,8 +665,8 @@ function rebuildCommandRowModel(
 			indent: element.dataIndent,
 			folded: element.folded === true,
 			dataKey: element.dataKey === true,
-			// 换源后行的"选中"不再看元素类名（元素归模板），改由索引区间决定
-			selected: i >= start && i < end && start < end,
+			// 换源后行的"选中"不再看元素类名（元素归模板），改由选区区间决定
+			selected: hasSelection && i >= selection.start! && i <= selection.end!,
 			disabled: element.classList.contains('disabled'),
 			contents: element.contents ?? [],
 			fold: element.fold !== undefined,
@@ -696,8 +708,50 @@ type CommandSelections = (CommandItemElement | undefined)[] & { count: number };
 const commandListData = (el: unknown): CommandListData => elementDataOf<CommandListData>(el);
 
 /** P4b：行元素上的 `dataValue`（= 行下标，`update()` 里统一写过）也走显式元素数据 */
-const rowElementData = (el: unknown): { dataValue?: number } =>
-	elementDataOf<{ dataValue?: number }>(el);
+const rowElementData = (el: unknown): { dataValue?: number; renderedSignature?: string } =>
+	elementDataOf<{ dataValue?: number; renderedSignature?: string }>(el);
+
+/**
+ * 行内容的**渲染签名**（`bindRowElement` 用来判断"这一行的行内 DOM 是否已经是对的"）。
+ *
+ * 为什么要它：回写桥会在挂载 / `update` / `scroll` / `:ref` 多处被调用，而 `updateCommandElement`
+ * 是"先清空再追加"的语义。内容没变时重复重建有两个害处：
+ *
+ * 1. 纯浪费——滚动、改选区都会把可见行的行内节点全部丢掉重建；
+ * 2. **行内文本节点的对象身份随之改变**，而 `utils/doubleclick.ts` 判双击用的是
+ *    `event.target === last.target`（**同一个节点**）⇒ 第二次按下落在新建的节点上，判不出双击
+ *    ⇒ 用户看到"双击**文本**打不开指令窗口，双击该行**空白处**可以"（行元素本身由 Vue 复用、
+ *    身份稳定，所以空白处一直好使）。
+ *
+ * 签名只需覆盖"会影响行内 DOM 的东西"：行下标、行 key、缩进、是否有折叠加减号（`dataKey` 决定
+ * `command-mark-major` 还是 `command-mark-minor`）、以及 `contents` 里所有会被渲染的字段。
+ * 行数据的刷新（`attachRowData`）**不在**签名保护范围内——它每次都必须执行。
+ */
+const rowRenderSignatureOf = (
+	source: CommandItemElement,
+	row: CommandRowData,
+	index: number
+): string => {
+	const contents = source.contents ?? null;
+	return JSON.stringify([
+		index,
+		source.rowKey ?? '',
+		row.indent,
+		row.dataKey === true,
+		source.fold !== undefined,
+		contents === null
+			? null
+			: contents.map((content) => [
+					content.text,
+					content.color,
+					content.textId,
+					content.tooltip,
+					content.class,
+					content.break,
+					content.fold
+				])
+	]);
+};
 
 /**
  * 原型对象本体：`this` 一律是 `CommandListHost`（见该接口）。
@@ -759,7 +813,7 @@ export const commandListPrototype: Record<
 
 		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
-		rebuildCommandRowModel(elements, { padded: getListConfig(this).padded === true });
+		rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 
 		// M3-5b′：事件在**模型重建之后**派发（模板要读到最新模型）。
 		// 顺序很要紧：上层（editor 的 eslints）在 `update` 监听里计算 `mark`，
@@ -788,16 +842,14 @@ export const commandListPrototype: Record<
 	 */
 	bindRowElement: function (this: CommandListHost, element: HTMLElement, index: number): void {
 		const node = element as CommandItemElement;
+		// **先记行下标**：`rowOf`（选区/双击编辑）、editor 的活动行定位都靠它；
+		// 行数据暂时缺失（例如列表刚被 clear、模型还没重建）时也不能让整行"没有下标"——
+		// 那会让 `getSelectionPosition()` 返回 null，表现为**双击指令毫无反应**。
+		rowElementData(node).dataValue = index;
 		const source = this.elements[index] as CommandItemElement | undefined;
 		const row = rowData[index];
 		if (source === undefined || row === undefined) return;
-		// **先清干净再重建**：`updateCommandElement` 是"追加"语义（往元素里 append 标记与文本），
-		// 而回写桥会在挂载、刷新、`:ref` 多处被调用 ⇒ 不清就会把行内文本叠成多份（实测 2 份）。
-		// 旧实现只在 `element.changed` 时调用一次，所以没有这个问题。`fold` 把手保留（下面按需补）。
-		for (const child of Array.from(node.children)) {
-			if (!child.classList.contains('command-fold')) child.remove();
-		}
-		rowElementData(node).dataValue = index;
+		// 行数据**每次都要刷**（`update` / `scroll` 都会走到这里，行内的 getter 必须指向最新数据）
 		attachRowData(node, {
 			rowKey: source.rowKey ?? '',
 			command: row.command,
@@ -813,6 +865,18 @@ export const commandListPrototype: Record<
 			addClass(fold, 'command-fold');
 			node.fold = fold;
 			node.appendChild(fold);
+		}
+		// 行内 DOM 已经与内容一致 ⇒ **不重建**。这一步同时保住了行内文本节点的身份
+		// （双击靠 `event.target === last.target` 判定，重建会让它失配，见 `rowRenderSignatureOf`）。
+		const signature = rowRenderSignatureOf(source, row, index);
+		const elData = rowElementData(node);
+		if (elData.renderedSignature === signature) return;
+		elData.renderedSignature = signature;
+		// **先清干净再重建**：`updateCommandElement` 是"追加"语义（往元素里 append 标记与文本），
+		// 而回写桥会在挂载、刷新、`:ref` 多处被调用 ⇒ 不清就会把行内文本叠成多份（实测 2 份）。
+		// 旧实现只在 `element.changed` 时调用一次，所以没有这个问题。`fold` 把手保留（上面按需补）。
+		for (const child of Array.from(node.children)) {
+			if (!child.classList.contains('command-fold')) child.remove();
 		}
 		this.updateCommandElement(node);
 	},
@@ -835,7 +899,7 @@ export const commandListPrototype: Record<
 		if (count === 0) {
 			els.start = 0;
 			els.end = 0;
-			rebuildCommandRowModel(els, { padded: getListConfig(this).padded === true });
+			rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 			this.scheduleCheckVariables();
 			return;
 		}
@@ -845,7 +909,7 @@ export const commandListPrototype: Record<
 		if (els.start !== start || els.end !== end) {
 			els.start = start;
 			els.end = end;
-			rebuildCommandRowModel(els, { padded: getListConfig(this).padded === true });
+			rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 		}
 
 		this.scheduleCheckVariables();
@@ -1363,7 +1427,9 @@ export const commandListPrototype: Record<
 			// M3 换源前置：空白行同样需要**稳定行 key**（`v-for` 的每一行都要 `:key`）。
 			// 派生规则与派生层**共用同一个函数**（`commandRender.blankRowKeyOf`），
 			// 这样"派生层算出的行"与"api 建出的行"key 必然一致（换源前后靠它逐项比对）。
-			blank.rowKey = commandRender.blankRowKeyOf(parent, indent, index);
+			// 第一参数是**列表本身**：一条命令可以有多个子列表（`if` 的每个分支一个），
+			// 只靠「父命令 + 层级 + 下标」会让等长的兄弟列表撞 key。
+			blank.rowKey = commandRender.blankRowKeyOf(commands, indent, index);
 
 			let blankContents: CommandContent[] | null = [];
 			Object.defineProperty(blank, 'contents', {
@@ -2208,7 +2274,7 @@ export const commandListPrototype: Record<
 		// M3-5b′：行归模板渲染 ⇒ 清空后必须**重建行模型并通知模板**，
 		// 否则书里归零了、屏幕上还是旧的那几行（探针实测：clear 后模型与 DOM 都仍是 6 行）。
 		rebuildCommandRowData(this.elements);
-		rebuildCommandRowModel(this.elements, { padded: getListConfig(this).padded === true });
+		rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 		dispatchUpdateEvent(this);
 		return this;
 	},
@@ -2801,6 +2867,10 @@ export const commandListPrototype: Record<
 			case 0: {
 				let element: CommandItemElement | null = null;
 				element = event.target as CommandItemElement | null;
+				// 屏幕上的那一行（模板渲染的 `.command-item`）：拖动选择要用**它的**行高，
+				// 而 `this.elements[index]` 是 api 侧的离屏元素——`clientHeight` 恒为 0，
+				// 用它做 `floor(dy / itemHeight)` 会得到 Infinity，鼠标一动就选到列表末尾（"点一行选中多行"）。
+				let row: CommandItemElement | null = null;
 				let index = -1;
 				// P2b-3：`element` 是 `event.target` 的"行元素视图"、`this` 是列表根元素——同一个 DOM 的两副
 				// 类型视图，TS 认为"无可比性"；这里按 `HTMLElement` 视图比较（引用相等，语义不变）。
@@ -2812,11 +2882,11 @@ export const commandListPrototype: Record<
 					this.fold((element as HTMLElement).parentNode as unknown as CommandItemElement);
 					break;
 				} else {
-					element = (element as HTMLElement)?.closest?.(
+					row = (element as HTMLElement)?.closest?.(
 						'.command-item'
 					) as CommandItemElement | null;
-					if (element && hasClass(element, 'command-item')) {
-						index = read(element) as number;
+					if (row && hasClass(row, 'command-item')) {
+						index = read(row) as number;
 					}
 				}
 				if (index >= 0) {
@@ -2838,7 +2908,7 @@ export const commandListPrototype: Record<
 					listData.dragging = event;
 					event.mode = 'select';
 					event.itemIndex = index;
-					event.itemHeight = element!.clientHeight;
+					event.itemHeight = row?.clientHeight || commandRender.ROW_HEIGHT;
 					window.addEventListener('pointerup', this.windowPointerup);
 					window.addEventListener('pointermove', this.windowPointermove);
 					this.scrollListener.addScrollListener('vertical', 2, true, () => {

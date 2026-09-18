@@ -21,10 +21,12 @@ import {
  * P6/M2 派生层用例：只验证「命令树 → 可见行」的纯数据推导。
  * 这些断言是 M3 把渲染换成 `v-for` 时的对照物（渲染怎么变都行，派生结果不许变）。
  */
-const command = (
-	id: string,
-	extra: Partial<CommandRenderCommand> = {}
-): CommandRenderCommand => ({ id, params: {}, commands: [], ...extra });
+const command = (id: string, extra: Partial<CommandRenderCommand> = {}): CommandRenderCommand => ({
+	id,
+	params: {},
+	commands: [],
+	...extra
+});
 
 /**
  * M3 起派生结果**包含每个列表末尾的空白行**（api 的 `createItems` 一直如此），
@@ -38,7 +40,9 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 		const rows = commandsOf(deriveCommandRows(list));
 		expect(rows.map((row) => row.command?.id)).toEqual(['a', 'b', 'c']);
 		expect(rowIndents(rows)).toEqual([0, 0, 0]);
-		expect(rows.every((row) => row.list === list && row.index === rows.indexOf(row))).toBe(true);
+		expect(rows.every((row) => row.list === list && row.index === rows.indexOf(row))).toBe(
+			true
+		);
 	});
 
 	it('嵌套：深度优先展开，子行 indent = 父 + 1', () => {
@@ -47,7 +51,13 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 		const parent = command('parent', { commands: [child, command('sibling')] });
 		child.commands = [grandChild];
 		const rows = commandsOf(deriveCommandRows([command('first'), parent]));
-		expect(rows.map((row) => row.command?.id)).toEqual(['first', 'parent', 'child', 'grand', 'sibling']);
+		expect(rows.map((row) => row.command?.id)).toEqual([
+			'first',
+			'parent',
+			'child',
+			'grand',
+			'sibling'
+		]);
 		expect(rowIndents(rows)).toEqual([0, 0, 1, 2, 1]);
 	});
 
@@ -78,10 +88,9 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 
 	it('搜索命中：命中集可以是 Set 或数组', () => {
 		const list = [command('a'), command('b')];
-		expect(commandsOf(deriveCommandRows(list, { hits: new Set([1]) })).map((row) => row.hit)).toEqual([
-			false,
-			true
-		]);
+		expect(
+			commandsOf(deriveCommandRows(list, { hits: new Set([1]) })).map((row) => row.hit)
+		).toEqual([false, true]);
 		expect(commandsOf(deriveCommandRows(list, { hits: [0] })).map((row) => row.hit)).toEqual([
 			true,
 			false
@@ -89,21 +98,25 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 	});
 
 	it('禁用态：disabled 透传到行', () => {
-		const rows = commandsOf(deriveCommandRows([command('a', { disabled: true }), command('b')]));
+		const rows = commandsOf(
+			deriveCommandRows([command('a', { disabled: true }), command('b')])
+		);
 		expect(rows.map((row) => row.disabled)).toEqual([true, false]);
 	});
 
 	it('列表末尾有空白行：每层一条，command 为 null，key 由 blankRowKeyOf 给', () => {
 		const child = command('child');
 		const parent = command('parent', { commands: [child] });
-		const rows = deriveCommandRows([parent]);
+		const list = [parent];
+		const rows = deriveCommandRows(list);
 		const blanks = rows.filter((row) => row.blank);
 		// 两层列表 ⇒ 两条空白行；子层那条在前（深度优先，父层空白行最后补）
 		expect(blanks.length).toBe(2);
 		expect(blanks.map((row) => row.indent)).toEqual([1, 0]);
 		expect(blanks.every((row) => row.command === null)).toBe(true);
-		expect(blanks[0].key).toBe(blankRowKeyOf(parent, 1, 1));
-		expect(blanks[1].key).toBe(blankRowKeyOf(null, 0, 1));
+		// 空白行的身份是**所属列表**（同一父命令可以有多个子列表，见 `if` 的分支）
+		expect(blanks[0].key).toBe(blankRowKeyOf(parent.commands!, 1, 1));
+		expect(blanks[1].key).toBe(blankRowKeyOf(list, 0, 1));
 	});
 
 	it('空列表也有且只有一条空白行（空命令列表仍可点击插入）', () => {
@@ -214,7 +227,10 @@ describe('command-render（M2 切片 3：定位数学）', () => {
 	it('scrollToSelection active（向上选）：先取 min 侧夹取', () => {
 		// active <= origin ⇒ min(max(top, min), max)；min = 10*20 + 20 - 400 = -180，max = 200
 		expect(
-			computeScrollToSelection('active', selectionContext({ scrollTop: 0, active: 10, origin: 12 }))
+			computeScrollToSelection(
+				'active',
+				selectionContext({ scrollTop: 0, active: 10, origin: 12 })
+			)
 		).toBe(Math.min(Math.max(0, -180), 200));
 	});
 
@@ -234,14 +250,17 @@ describe('command-render（M2 切片 3：定位数学）', () => {
 	});
 
 	it('scrollToSelection alter：按 active 单行夹取', () => {
-		expect(computeScrollToSelection('alter', selectionContext({ scrollTop: 1000, active: 5 }))).toBe(
-			Math.max(Math.min(1000, 100), 100 + 20 - 400)
-		);
+		expect(
+			computeScrollToSelection('alter', selectionContext({ scrollTop: 1000, active: 5 }))
+		).toBe(Math.max(Math.min(1000, 100), 100 + 20 - 400));
 	});
 
 	it('scrollToSelection restore：按选中区间夹取（从头对齐）', () => {
 		expect(
-			computeScrollToSelection('restore', selectionContext({ scrollTop: 1000, start: 3, end: 30 }))
+			computeScrollToSelection(
+				'restore',
+				selectionContext({ scrollTop: 1000, start: 3, end: 30 })
+			)
 		).toBe(Math.min(Math.max(1000, 30 * 20 + 20 - 400), 3 * 20));
 	});
 

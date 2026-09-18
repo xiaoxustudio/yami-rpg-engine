@@ -312,6 +312,32 @@ export class CommandSchema {
 		}, 2000);
 	}
 
+	/**
+	 * 打开指令窗口并把参数灌进去（`insert` / `edit` 共用）。
+	 *
+	 * `point`（活动行的屏幕位置）**只用于定位**窗口：拿不到时退回当前定位模式，
+	 * 不再"静默不打开"。行改由模板渲染后，活动行可能尚未物化（`scrollAndResize` 改了窗口，
+	 * 而模板要等 Vue 一拍），旧实现会因此什么都不做——用户看到的就是"双击没反应"。
+	 */
+	static openWindow(
+		target: CommandTarget | null | undefined,
+		windowId: string,
+		load: () => void
+	): void {
+		target?.scrollAndResize?.();
+		const point = target?.getSelectionPosition?.();
+		if (point) {
+			Window.setPositionMode!('absolute');
+			Window.absolutePos.x = point.x + 100;
+			Window.absolutePos.y = point.y;
+		}
+		Window.open!(windowId);
+		if (point) {
+			Window.setPositionMode!('overlap');
+		}
+		load();
+	}
+
 	static insert(target: CommandTarget, id: string) {
 		Command.target = target;
 		if (id) {
@@ -326,37 +352,27 @@ export class CommandSchema {
 		if (handler !== undefined) {
 			Command.id = id;
 			if (handler.load) {
-				const point = Command.target?.getSelectionPosition?.();
-				if (point) {
-					Window.setPositionMode!('absolute');
-					Window.absolutePos.x = point.x + 100;
-					Window.absolutePos.y = point.y;
-					Window.open!(id);
-					Window.setPositionMode!('overlap');
-					handler.load({});
-				}
+				CommandSchema.openWindow(Command.target, id, () => handler.load!({}));
 			} else {
 				handler.save();
 			}
 			return;
 		}
 		const meta = Data.scripts[id];
-		if (meta !== undefined && Command.custom.commandNameMap?.[id]) {
+		if (meta !== undefined) {
 			Command.id = id;
 			if (meta.parameters.length !== 0) {
-				const point = Command.target?.getSelectionPosition?.();
-				if (point) {
-					Window.setPositionMode!('absolute');
-					Window.absolutePos.x = point.x + 100;
-					Window.absolutePos.y = point.y;
-					Window.open!('scriptCommand');
-					Window.setPositionMode!('overlap');
-					Command.custom.load(id, {});
-				}
+				// 参数面板由 `Command.custom.load` 按脚本参数描述现场生成，与指令名表无关 ⇒ 不再以
+				// `commandNameMap` 为门槛（它只提供窗口标题，缺失时退回指令 id）。
+				CommandSchema.openWindow(Command.target, 'scriptCommand', () =>
+					Command.custom.load(id, {})
+				);
 			} else {
 				Command.custom.save();
 			}
+			return;
 		}
+		console.warn(`[command] 未定义的指令 id：${id}`);
 	}
 
 	static edit(target: CommandTarget, command: CommandRecord) {
@@ -365,33 +381,26 @@ export class CommandSchema {
 		if (handler?.load instanceof Function) {
 			Command.target = target;
 			Command.id = id;
-			target?.scrollAndResize?.();
-			const point = target?.getSelectionPosition?.();
-			if (point) {
-				Window.setPositionMode!('absolute');
-				Window.absolutePos.x = point.x + 100;
-				Window.absolutePos.y = point.y;
-				Window.open!(id);
-				Window.setPositionMode!('overlap');
-				handler.load(params!);
-			}
+			CommandSchema.openWindow(target, id, () => handler.load(params!));
+			return;
 		}
-		if (handler) return;
+		if (handler) {
+			// 有内置定义但没有参数窗口（`noWindow`：无参数、插入即生效）⇒ 客观上没有可编辑内容
+			console.warn(`[command] "${id}" 没有参数窗口（noWindow），双击无可编辑内容`);
+			return;
+		}
 		const meta = Data.scripts[id];
-		if (meta?.parameters.length > 0 && Command.custom.commandNameMap?.[id]) {
-			Command.target = target;
-			Command.id = id;
-			target?.scrollAndResize?.();
-			const point = target?.getSelectionPosition?.();
-			if (point) {
-				Window.setPositionMode!('absolute');
-				Window.absolutePos.x = point.x + 100;
-				Window.absolutePos.y = point.y;
-				Window.open!('scriptCommand');
-				Window.setPositionMode!('overlap');
-				Command.custom.load(id, params!);
-			}
+		if (meta === undefined) {
+			console.warn(`[command] 无法编辑 "${id}"：既不是内置指令，也不是脚本指令`);
+			return;
 		}
+		if (meta.parameters.length === 0) {
+			console.warn(`[command] "${id}" 是没有参数的脚本指令，双击无可编辑内容`);
+			return;
+		}
+		Command.target = target;
+		Command.id = id;
+		CommandSchema.openWindow(target, 'scriptCommand', () => Command.custom.load(id, params!));
 	}
 
 	static save(params: Record<string, unknown>) {

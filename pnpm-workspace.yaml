@@ -14,3 +14,17 @@ overrides:
 catalog:
   typescript: ^6.0.3
   electron: 43.2.0
+
+minimumReleaseAgeExclude:
+  - '@vue/compiler-core@3.6.0-rc.9'
+  - '@vue/compiler-dom@3.6.0-rc.9'
+  - '@vue/compiler-sfc@3.6.0-rc.9'
+  - '@vue/compiler-ssr@3.6.0-rc.9'
+  - '@vue/compiler-vapor@3.6.0-rc.9'
+  - '@vue/reactivity@3.6.0-rc.9'
+  - '@vue/runtime-core@3.6.0-rc.9'
+  - '@vue/runtime-dom@3.6.0-rc.9'
+  - '@vue/runtime-vapor@3.6.0-rc.9'
+  - '@vue/server-renderer@3.6.0-rc.9'
+  - '@vue/shared@3.6.0-rc.9'
+  - vue@3.6.0-rc.9

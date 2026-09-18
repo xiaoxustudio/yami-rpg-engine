@@ -6,7 +6,7 @@ import type {
 	EventEditorShape,
 	EventListItem
 } from './event-editor.ts';
-import { getListConfig } from '@ui-kit';
+import { getListConfig, treeRowCount, treeRowItemAt } from '@ui-kit';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
@@ -54,11 +54,14 @@ function ensureDomBound() {
 function bindListMethods() {
 	const list = EventEditor.list!;
 	list.selectIndex = function (this: HTMLElement & EventEditorList, index: number) {
-		const elements = this.elements;
-		const last = elements.count - 1;
-		const element = elements[Math.min(index, last)];
-		if (element instanceof HTMLElement) {
-			this.select!(element.item);
+		// 步骤 5b：行元素簿记（`elements` shim）已随模板渲染删除 ⇒ 按**行号**取 item
+		// （窗口外的行同样取得到，与旧实现"取不到就什么都不做"的边界一致）
+		const count = treeRowCount(this);
+		const last = count - 1;
+		if (index < 0 || last < 0) return;
+		const item = treeRowItemAt<EventListItem>(this, Math.min(index, last));
+		if (item !== undefined) {
+			this.select!(item);
 		}
 	};
 

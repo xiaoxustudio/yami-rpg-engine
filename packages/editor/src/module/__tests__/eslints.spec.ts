@@ -434,4 +434,47 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		expect(rows[3].lines[0].classList.contains('line-hide')).toBe(true);
 		expect(rows[3].lines[0].classList.contains('line-end')).toBe(false);
 	});
+
+	/**
+	 * 回归（实机：打开含 `if` 的事件即报 `Duplicate keys found during update: "blank-c6-2-1"`，
+	 * 随后 Vue 崩在 `insertBefore of null`）。
+	 *
+	 * `if` 的真实 `parse` 会为**同一条命令**产出**多个 `children`**（每个分支一个子列表，
+	 * 见 `useIfCommandSchema`）。两个**等长**的分支（各 1 条命令）曾经让两条空白行拿到
+	 * 同一个 key —— 这里按编辑器真实的行结构走完整条链路（CommandList 组件 + eslints 覆写）。
+	 */
+	it('同一命令多个 children（if 的多分支）：行 key 全唯一，模型与渲染行数一致', async () => {
+		ensureUpdateCommandElementOverride();
+		const options = makeOptions();
+		options.command!.parse = (item: Record<string, unknown>) =>
+			item.id === 'if'
+				? [
+						{ fold: true },
+						{ color: 'flow' },
+						{ text: 'if' },
+						{ children: [{ id: 'a1', params: {} }] },
+						{ color: 'flow' },
+						{ text: 'else' },
+						{ children: [{ id: 'a2', params: {} }] }
+					]
+				: [{ color: 'normal' }, { text: String(item.id) }];
+		const el = (await mountCommandList(options)) as unknown as HTMLElement & {
+			write: (data: unknown[]) => void;
+			getRowModel: () => { keys: string[] };
+		};
+		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
+		Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
+		applyCommandListInstanceOverride(el);
+		el.write([{ id: 'if', params: {} }]);
+		await nextTick();
+		await nextTick();
+
+		const keys = el.getRowModel().keys;
+		// if 主行 + 两个分支各 1 行 + 两条续行 + 两条**分支空白行** + 顶层空白行
+		expect(keys.length).toBeGreaterThanOrEqual(7);
+		expect(keys.filter((key) => key.length === 0)).toEqual([]);
+		expect(new Set(keys).size).toBe(keys.length);
+		// 全部行都在虚拟窗口内：渲染出的行数应与行模型一致（重复 key 会把 DOM 行吃掉）
+		expect(renderedRows(el).length).toBe(keys.length);
+	});
 });

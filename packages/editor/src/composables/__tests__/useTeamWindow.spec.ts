@@ -9,6 +9,7 @@ import { Codec } from '@app/engine/codec/codec.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Menu } from '@app/components/menu-list.ts';
+import { elementDataOf } from '@ui-kit';
 import type { TeamData } from '@app/composables/useTeamWindow';
 
 vi.mock('@app/stores/local', () => ({
@@ -201,11 +202,10 @@ describe('useTeamWindow（队伍窗口 composable：数据加载 + 列表编辑 
 		const teamB = store.data![1];
 		const listEl = document.getElementById('team-list') as unknown as TeamListElement;
 		vi.spyOn(listEl, 'read').mockReturnValue(teamA);
-		const nodeItem = document.createElement('div') as unknown as HTMLElement & {
-			item?: TeamData;
-		};
+		const nodeItem = document.createElement('div');
 		nodeItem.classList.add('node-item');
-		nodeItem.item = teamB;
+		// P4b：行 item 存**元素数据**（`nodeItem.item` 这个 expando 已退役）
+		elementDataOf<{ item?: TeamData }>(nodeItem).item = teamB;
 		const mark = document.createElement('div');
 		mark.className = 'team-relation-mark';
 		nodeItem.appendChild(mark);

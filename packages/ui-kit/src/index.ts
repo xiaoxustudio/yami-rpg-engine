@@ -44,6 +44,8 @@ export {
 	setTreeItemText,
 	isTreeItemRendered,
 	treeRowElement,
+	// 步骤 5b 反向入口：事件目标/行内后代 → 行 item（取代 `element.item` expando）
+	treeItemOf,
 	treeListOfItem,
 	treeRowCount,
 	treeRowItemAt,

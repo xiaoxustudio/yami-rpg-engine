@@ -108,8 +108,6 @@ export interface EventEditorList {
 	callback?: (() => void) | null;
 	inserting?: boolean;
 	changed?: boolean;
-	// 运行时挂载的列表项集合
-	elements: (HTMLElement & { item: EventListItem })[] & { count: number };
 	active: number | null;
 	varList?: unknown[];
 	commandList?: unknown;

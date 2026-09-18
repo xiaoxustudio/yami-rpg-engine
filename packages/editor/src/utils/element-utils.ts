@@ -160,13 +160,19 @@ export function rect(el: unknown): DOMRect {
 
 export function clear(el: Node | null | undefined): HTMLElement {
 	if (!el) return el as unknown as HTMLElement;
-	const element = el as HTMLElement & { clear?: () => void };
-	if (element.classList?.contains('tree-list') && typeof element.clear === 'function') {
+	const element = el as HTMLElement & { clear?: () => unknown };
+	// 列表/面板自带 `clear()` 时必须走它：直接 `textContent = ''` 会把**行元素/子组件**从 DOM 里
+	// 摘掉，Vue 的节点表随即失真 —— 之后任何一次 patch 都会以 null 容器 insert，
+	// 真机表现为 `Cannot read properties of null (reading 'insertBefore')`（已在命令列表上复现：
+	// wipe 之后下一次更新必崩，栈与真机一致）。
+	// 树列表自 P4b 起就有这条特判，这里推广到全部自带 clear 的列表/面板
+	// （命令行、通用列表、参数面板、选择框、日志/队伍列表……它们的 clear 都是"清空自身内容"语义）。
+	if (typeof element.clear === 'function') {
 		element.clear();
 		return element;
 	}
 	el.textContent = '';
-	return el as HTMLElement;
+	return element as HTMLElement;
 }
 
 // oxlint-disable-next-line no-explicit-any

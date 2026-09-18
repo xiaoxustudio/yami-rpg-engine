@@ -1,4 +1,4 @@
-import { getListConfig, setTreeItemText } from '@ui-kit';
+import { getListConfig, isTreeItemRendered, setTreeItemText, treeItemOf } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { composableEls } from '@app/composables/element-registry';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
@@ -294,12 +294,25 @@ function listKeydown(this: TeamListElement, event: KeyboardEvent): void {
 	}
 }
 
+/**
+ * 事件目标 → 行 item。
+ *
+ * 先归一到行元素再取 item：队伍行里的关系/冲突标记渲染在 `.tree-node-extras` 下，
+ * 而 `treeItemOf` 按"点击归一"的语义**不**把 extras 当行（那是列按钮的位置）；
+ * 这里要的是"这个节点属于哪一行"，所以先 `closest('.node-item')`。
+ */
+function teamOfTarget(target: EventTarget | null): TeamData | undefined {
+	const row = (target as Element | null)?.closest?.('.node-item') ?? null;
+	return treeItemOf<TeamData>(row);
+}
+
 function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
-				const element = (event.target as HTMLElement).parentNode as YamiElement;
-				const team = element.item!;
+				// P4b：行 → item 经行 API 取（`element.item` expando 已退役）
+				const team = teamOfTarget(event.target);
+				if (team === undefined) return;
 				return Color.open({
 					read: () => {
 						return team.color;
@@ -312,9 +325,9 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				});
 			}
 			if (hasClass(event.target, 'team-relation-mark')) {
-				const element = (event.target as HTMLElement).closest('.node-item') as YamiElement;
 				const teamA = this.read();
-				const teamB = element.item!;
+				const teamB = teamOfTarget(event.target);
+				if (teamB === undefined) return;
 				teamA.relations[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.relations[teamA.id] ^= 1;
@@ -323,9 +336,9 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 				changed = true;
 			}
 			if (hasClass(event.target, 'team-collision-mark')) {
-				const element = (event.target as HTMLElement).closest('.node-item') as YamiElement;
 				const teamA = this.read();
-				const teamB = element.item!;
+				const teamB = teamOfTarget(event.target);
+				if (teamB === undefined) return;
 				teamA.collisions[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.collisions[teamA.id] ^= 1;
@@ -339,17 +352,9 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 
 function listSelect(_event: YamiEvent): void {
 	const listElement = list!;
-	let rendered = false;
-	for (const team of listElement.data) {
-		const element = team.element;
-		if (element !== undefined) {
-			element.changed = true;
-			if (element.parentNode) {
-				rendered = true;
-			}
-		}
-	}
-	if (rendered) {
+	// 步骤 5b：可见性由派生层判断（`item.element` / `element.changed` 均已退役）；
+	// `update()` 自己会重建行，不再需要逐行标 changed
+	if (listElement.data.some((team: TeamData) => isTreeItemRendered(team))) {
 		listElement.update();
 	}
 }

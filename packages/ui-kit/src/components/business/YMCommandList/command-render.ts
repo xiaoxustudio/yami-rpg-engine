@@ -66,16 +66,36 @@ export const rowKeyOf = (command: object): string => {
 const hasChildren = (command: CommandRenderCommand): boolean =>
 	Array.isArray(command.commands) && command.commands.length > 0;
 
+const listKeys = new WeakMap<object, string>();
+let listKeySeq = 0;
+
+/** 列表身份 key：同一个数组跨多次派生稳定（同 `rowKeyOf` 的 WeakMap 发号） */
+export const listKeyOf = (list: object): string => {
+	let key = listKeys.get(list);
+	if (key === undefined) {
+		key = `l${++listKeySeq}`;
+		listKeys.set(list, key);
+	}
+	return key;
+};
+
 /**
  * 空白行的稳定 key。**与 `command-api.ts` 的 `createBlankElement` 共用这一个函数**，
  * 保证"派生层算出的行"与"api 建出的行"key 一致（换源前后要靠它逐项比对）。
+ *
+ * key 必须带**所属列表的身份**：`parse` 可以为**同一条命令**产出**多个 `children`**
+ * （`if` / `showChoices` / `switch` 每个分支一个子列表，见 `useIfCommandSchema`），
+ * 此时"父命令 + 层级 + 列表下标"三者完全相同 —— 两个分支各 1 条命令就会撞成同一个 `:key`，
+ * Vue 的 patch 随即抛 `insertBefore of null`（实机：打开含 `if` 的事件）。
  */
-export const blankRowKeyOf = (parent: object | null, indent: number, index: number): string =>
-	parent === null ? `blank-root-${indent}` : `blank-${rowKeyOf(parent)}-${indent}-${index}`;
+export const blankRowKeyOf = (list: object, indent: number, index: number): string =>
+	`blank-${listKeyOf(list)}-${indent}-${index}`;
 
 /**
  * 命令树 → 可见行（深度优先；折叠的命令**只出自己那一行**，子行不进可见集）。
- * 纯函数：不读写 DOM、不依赖组件状态，同一输入多次调用结果一致（key 亦稳定）。
+ * 纯函数：不读写 DOM、不依赖组件状态；**同一批数组对象**多次调用结果一致（key 亦稳定）。
+ * 边界：空白行的 key 带列表身份，所以"内容相同但是新建的数组"会拿到不同的空白行 key
+ * （调用方一律传真实命令列表数组，不要现建副本）。
  */
 export function deriveCommandRows(
 	commands: CommandRenderCommand[] = [],
@@ -83,14 +103,17 @@ export function deriveCommandRows(
 ): CommandRowDescriptor[] {
 	const rows: CommandRowDescriptor[] = [];
 	const hitSet =
-		options.hits instanceof Set ? (options.hits as ReadonlySet<number>) : new Set(options.hits ?? []);
+		options.hits instanceof Set
+			? (options.hits as ReadonlySet<number>)
+			: new Set(options.hits ?? []);
 	const selection = options.selection ?? null;
 
 	/**
 	 * 深度优先遍历一个列表；遍历完该层后补上它的**空白行**（与 `createItems` 的产出顺序一致：
 	 * 子层空白行先于本层空白行 —— 因为子层是在父命令那一轮递归进去的）。
+	 * 空白行的 key 只认**列表本身**，不再需要父命令（见 `blankRowKeyOf`）。
 	 */
-	const walk = (list: CommandRenderCommand[], indent: number, parent: CommandRenderCommand | null): void => {
+	const walk = (list: CommandRenderCommand[], indent: number): void => {
 		for (let index = 0; index < list.length; index++) {
 			const command = list[index];
 			const folded = hasChildren(command) && command.folded === true;
@@ -109,26 +132,27 @@ export function deriveCommandRows(
 				blank: false
 			});
 			if (!folded && hasChildren(command)) {
-				walk(command.commands as CommandRenderCommand[], indent + 1, command);
+				walk(command.commands as CommandRenderCommand[], indent + 1);
 			}
 		}
 		// 列表末尾的空白行（无命令、点击即插入）
 		const blankIndex = rows.length;
 		rows.push({
-			key: blankRowKeyOf(parent, indent, list.length),
+			key: blankRowKeyOf(list, indent, list.length),
 			command: null,
 			list,
 			index: list.length,
 			indent,
 			folded: false,
-			selected: selection !== null && blankIndex >= selection[0] && blankIndex <= selection[1],
+			selected:
+				selection !== null && blankIndex >= selection[0] && blankIndex <= selection[1],
 			disabled: false,
 			hit: hitSet.has(blankIndex),
 			blank: true
 		});
 	};
 
-	walk(commands, 0, null);
+	walk(commands, 0);
 	return rows;
 }
 
@@ -279,4 +303,3 @@ export const computeScrollToRowScrollTop = (
 	const maxScrollTop = rowCount * ROW_HEIGHT - viewportHeight;
 	return Math.max(0, Math.min(targetScrollTop, maxScrollTop));
 };
-

@@ -2,7 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
-import { treeRowCount, treeRowElement, setTreeItemClass, setTreeItemText } from '../tree-api';
+import {
+	treeItemOf,
+	treeRowCount,
+	treeRowElement,
+	setTreeItemClass,
+	setTreeItemText
+} from '../tree-api';
 import { elementDataOf } from '../../../../utils/element-data';
 
 // 数据派生行渲染（tree 迁移规划 步骤 2；步骤 5 后为唯一渲染路径）：
@@ -207,6 +213,54 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		setTreeItemClass(child, 'weak', false);
 		await nextTick();
 		expect(el.querySelectorAll('.node-item')[1].classList.contains('weak')).toBe(false);
+		wrapper.unmount();
+	});
+
+	/**
+	 * 回归（实机：`Cannot read properties of undefined (reading 'class')` at command-tip listPointerdown）：
+	 * P4b 把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`，
+	 * 消费方必须走 `treeItemOf`。它同时承担"事件目标 → 行"的归一（标签文字在 `.node-text` 里）。
+	 */
+	it('treeItemOf：行元素与行内后代都归一到 item；行外节点返回 undefined', async () => {
+		const data = makeData();
+		const { wrapper, el } = await mountList(data);
+		const row = treeRowElement(data[0]) as HTMLElement;
+		const text = row.querySelector('.node-text') as HTMLElement;
+		const icon = row.querySelector('.tree-node-icon-placeholder') as HTMLElement;
+		expect(treeItemOf(row)).toBe(data[0]);
+		expect(treeItemOf(text)).toBe(data[0]);
+		expect(treeItemOf(icon)).toBe(data[0]);
+		expect(treeItemOf(treeRowElement(data[1]))).toBe(data[1]);
+		// 行外（列表根/spacer/空）不算行
+		expect(treeItemOf(el)).toBeUndefined();
+		expect(treeItemOf(null)).toBeUndefined();
+		expect(treeItemOf(undefined)).toBeUndefined();
+		wrapper.unmount();
+	});
+
+	it('treeItemOf：`.tree-node-extras` 内的列按钮不算行（点击它不改变选中，语义与 doubleclick 归一一致）', async () => {
+		const data = makeData();
+		const wrapper = mount(YMTreeList, {
+			props: {
+				renderNodeExtras: (item: unknown, container: HTMLElement) => {
+					const button = document.createElement('span');
+					button.className = 'extras-button';
+					button.textContent = String((item as TreeData).id);
+					container.appendChild(button);
+				}
+			},
+			attachTo: document.body
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		el.bind(() => data);
+		el.update();
+		await nextTick();
+		const extras = el.querySelector('.tree-node-extras') as HTMLElement;
+		const button = extras.querySelector('.extras-button') as HTMLElement;
+		expect(treeItemOf(button)).toBeUndefined();
+		// 但 extras 所在的行本身依旧取得到
+		expect(treeItemOf(extras.closest('.node-item'))).toBe(data[0]);
 		wrapper.unmount();
 	});
 });

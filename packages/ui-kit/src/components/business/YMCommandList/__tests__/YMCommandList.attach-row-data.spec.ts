@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { attachRowData, type CommandListApiOptions } from '../command-api';
 import YMCommandList from '../YMCommandList.vue';
+import { elementDataOf } from '../../../../utils/element-data';
 
 /**
  * M3-5b′（为命令列表换源准备）：`attachRowData` 是**回写桥**在挂行时用的数据挂载入口。
@@ -155,5 +156,28 @@ describe('command-api（M3-5b′：attachRowData 与建行闭包语义一致）'
 		expect(copy.dataIndent).toBe(source.dataIndent);
 		expect(copy.dataKey).toBe(source.dataKey);
 		expect(copy.contents).toEqual(source.contents);
+	});
+
+	/**
+	 * 回归：`bindRowElement` 必须**先写行下标**再谈其它。
+	 *
+	 * 行下标（元素数据 `dataValue`）是 `rowOf()`（选区、双击编辑）和 editor 的
+	 * `getSelectionPosition()`（指令窗口定位）的唯一依据。旧写法在行数据暂时缺失时
+	 * 直接 `return`，整行没有下标 ⇒ `getSelectionPosition()` 返回 null ⇒
+	 * `CommandSchema` 的 `if (point)` 把"双击编辑"整条链路静默吞掉（双击没反应）。
+	 */
+	it('行数据缺失时也写 dataValue（双击编辑的定位依赖它）', async () => {
+		const api = await makeApi();
+		const el = api as unknown as {
+			bindRowElement: (element: HTMLElement, index: number) => void;
+			write: (d: unknown[]) => void;
+			elements: { count: number };
+		};
+		el.write([{ id: 'a', params: {}, commands: [] }]);
+		await nextTick();
+		const row = api.querySelector<RowElement>('.command-item')!;
+		// 越界下标：模型里没有这一行（源元素/行数据都取不到）
+		el.bindRowElement(row, 99);
+		expect(elementDataOf<{ dataValue?: number }>(row).dataValue).toBe(99);
 	});
 });

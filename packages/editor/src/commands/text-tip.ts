@@ -1,7 +1,9 @@
 import {
 	isTreeItemRendered,
 	setTreeItemClass,
+	treeItemOf,
 	treeRowCount,
+	treeRowElement,
 	treeRowIndexOf,
 	treeRowItemAt,
 	type TreeListRowApi
@@ -29,8 +31,6 @@ type ListMethod = ((...args: any[]) => any) | null;
 interface TextSuggestionList extends Partial<TreeListRowApi<TextSuggestionItem>> {
 	selectDefaultCommand: ListMethod;
 	updateNodeElement: ListMethod;
-	elements: Array<{ item: TextSuggestionItem }> & { count: number };
-	selection: TextSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
 	style: CSSStyleDeclaration;
 	bind(getter: () => TextSuggestionItem[] | null): void;
@@ -109,8 +109,6 @@ function createEmptyList(): TextSuggestionList {
 	return {
 		selectDefaultCommand: null,
 		updateNodeElement: null,
-		elements: Object.assign([], { count: 0 }),
-		selection: null,
 		pressing: null,
 		// P1b：空列表的样式宿主走 utils/dom 的唯一创建缝隙（原先 document.createElement('div').style）
 		style: createDetachedElement().style,
@@ -288,24 +286,23 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 } as unknown as TextBoxMethod;
 
 TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Event): void {
-	const element = event.target as HTMLElement & {
-		item: TextSuggestionItem;
-		tagName: string;
-	};
-	if (hasClass(element, 'node-item')) {
-		event.preventDefault();
-		const pressing = this.pressing;
-		const pointerup = (event: PointerEvent): void => {
-			if (pressing === pointerup) {
-				this.pressing = null;
-				if (element.contains(event.target as Node)) {
-					TextSuggestion.select!(element.item);
-				}
+	// P4b：行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
+	const item = treeItemOf<TextSuggestionItem>(event.target);
+	if (item === undefined) return;
+	const element = treeRowElement(item);
+	if (element === undefined) return;
+	event.preventDefault();
+	const pressing = this.pressing;
+	const pointerup = (event: PointerEvent): void => {
+		if (pressing === pointerup) {
+			this.pressing = null;
+			if (element.contains(event.target as Node)) {
+				TextSuggestion.select!(item);
 			}
-		};
-		this.pressing = pointerup;
-		window.addEventListener('pointerup', pointerup, { once: true });
-	}
+		}
+	};
+	this.pressing = pointerup;
+	window.addEventListener('pointerup', pointerup, { once: true });
 };
 
 TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): void {
@@ -351,30 +348,30 @@ TextSuggestion.listOpen = function (
 
 TextSuggestion.list.updateNodeElement = function (
 	this: TextSuggestionList,
-	element: HTMLElement & { item: TextSuggestionItem; initialized?: boolean }
+	element: HTMLElement
 ): void {
-	if (!elementDataOf<{ initialized?: boolean }>(element).initialized) {
-		elementDataOf<{ initialized?: boolean }>(element).initialized = true;
-		const item = element.item;
-		const nodes: VNode[] = [];
-		const classList = ['text-suggestion-content', 'text'];
-		if (item.class) classList.push(item.class);
-		nodes.push(h('div', { class: classList }, item.name));
-		if (item.refCount) {
-			nodes.push(
-				h('div', { class: 'text-suggestion-ref-count text' }, String(item.refCount))
-			);
-		}
-		if (item.comment) {
-			nodes.push(h('div', { class: 'text-suggestion-comment text' }, item.comment));
-		}
-		render(h(Fragment, nodes), element);
-		setTreeItemClass(item, 'text-suggestion-item', true);
+	if (elementDataOf<{ initialized?: boolean }>(element).initialized) return;
+	// P4b：item 存元素数据（`element.item` 已退役）——取不到就不算渲染过，下一拍再试
+	const item = treeItemOf<TextSuggestionItem>(element);
+	if (item === undefined) return;
+	elementDataOf<{ initialized?: boolean }>(element).initialized = true;
+	const nodes: VNode[] = [];
+	const classList = ['text-suggestion-content', 'text'];
+	if (item.class) classList.push(item.class);
+	nodes.push(h('div', { class: classList }, item.name));
+	if (item.refCount) {
+		nodes.push(h('div', { class: 'text-suggestion-ref-count text' }, String(item.refCount)));
 	}
+	if (item.comment) {
+		nodes.push(h('div', { class: 'text-suggestion-comment text' }, item.comment));
+	}
+	render(h(Fragment, nodes), element);
+	setTreeItemClass(item, 'text-suggestion-item', true);
 };
 
 TextSuggestion.list.selectDefaultCommand = function (this: TextSuggestionList): void {
-	const { selection } = this;
+	// P4b：当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
+	const selection = this.read();
 	// 步骤 4：行号/行项经渲染模式无关的行 API 取得（窗口外行无 element）
 	const count = treeRowCount(this);
 	if (selection && treeRowIndexOf(this, selection) !== -1) {

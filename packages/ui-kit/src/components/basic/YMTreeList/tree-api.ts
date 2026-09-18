@@ -77,9 +77,9 @@ const rowDataOrUndefined = (el: unknown): NodeElement | undefined =>
  * 列元素里的按钮（`.tree-node-extras` 下的显隐/锁定图标、重命名输入框）**不**归一：
  * legacy 里它们同样是行内独立元素，点击不应改变选中。
  */
-const rowTargetOf = (target: EventTarget | null): NodeElement | null => {
-	const element = target as Element | null;
-	if (element === null || typeof element.closest !== 'function') return null;
+const rowTargetOf = (target: EventTarget | null | undefined): NodeElement | null => {
+	const element = target as Element | null | undefined;
+	if (element == null || typeof element.closest !== 'function') return null;
 	if (element.closest('.tree-node-extras') !== null) return null;
 	return (element.closest('.node-item') as NodeElement | null) ?? null;
 };
@@ -130,6 +130,24 @@ export const isTreeItemRendered = (item: unknown): boolean => {
  */
 export const treeRowElement = (item: unknown): HTMLElement | undefined =>
 	rowElementOf(item as TreeItem);
+
+/**
+ * 消费方 API（步骤 5b）：把**事件目标或行内任意后代节点**归一成它所属行的 item。
+ *
+ * 它是 `treeRowElement` 的**反向**入口，取代旧的 `element.item` 反向桥：P4b 起 item 只存在
+ * 元素数据里（`tree-render.bindRowElement` 写的 `data.item`），DOM 元素上不再挂 expando，
+ * 因此 `event.target.item` 一律是 `undefined`（实机表现为 `Cannot read properties of undefined
+ * (reading 'class')`）。顺带把 `event.target` 归一成行——行文本在 `.node-text` 里，
+ * 点击标签时 target 不是行元素本身。
+ *
+ * 非行节点返回 `undefined`：`.tree-node-extras` 下的按钮/输入框（显隐、锁定、重命名）不是行内容，
+ * 语义与 `doubleclick` 的归一保持一致；不在任何行内（或元素已卸载）同样是 `undefined`。
+ */
+export const treeItemOf = <T = unknown>(target: unknown): T | undefined => {
+	const element = rowTargetOf(target as EventTarget | null);
+	if (element === null) return undefined;
+	return rowData(element).item as T | undefined;
+};
 
 export const treeListOfItem = (item: unknown): unknown => stateOfItem(item as TreeItem)?.owner;
 

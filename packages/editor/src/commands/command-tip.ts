@@ -2,6 +2,7 @@ import {
 	getListConfig,
 	isTreeItemRendered,
 	setTreeItemClass,
+	treeItemOf,
 	treeRowCount,
 	treeRowElement,
 	treeRowIndexOf,
@@ -53,9 +54,7 @@ interface CommandSuggestionList extends TreeListRowApi<CommandSuggestionItem> {
 	createCommandTip: ListMethod;
 	selectDefaultCommand: ListMethod;
 	creators: ListMethod[];
-	elements: Array<{ item?: CommandSuggestionItem }> & { count: number };
 	initialized: boolean;
-	selection: CommandSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
 	bind(getter: () => CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null): void;
 	scrollAndResize(): void;
@@ -251,7 +250,8 @@ function bindListMethods() {
 	})();
 
 	list.selectDefaultCommand = function (this: CommandSuggestionList): void {
-		const { selection } = this;
+		// P4b：当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
+		const selection = this.read();
 		if (selection && selection.class !== 'folder') {
 			// 步骤 4：按行号判断选中项是否在列表内（渲染模式无关）
 			if (treeRowIndexOf(this, selection) !== -1) {
@@ -299,27 +299,28 @@ CommandSuggestion.open = function (): void {
 	const list = Command.target as CommandSuggestionList;
 	list.scrollAndResize();
 	const point = list.getSelectionPosition();
-	if (point) {
-		Window.open!('command-widget');
-		const { widget, list, searcher } = this;
-		const x = point.x - 5;
-		const y = point.y;
-		widget.x = x;
-		widget.y = y;
-		widget.style.left = `${x}px`;
-		widget.style.top = `${y}px`;
-		if (!elementDataOf<{ initialized?: boolean }>(list).initialized) {
-			elementDataOf<{ initialized?: boolean }>(list).initialized = true;
-			list.updateCommandNames!();
-			list.update();
-			list.selectDefaultCommand!();
-		} else {
-			dispatchUpdateEvent(list);
-			list.resize();
-		}
-		getFocus(searcher);
-		window.addEventListener('pointerdown', this.pointerdown!, { capture: true });
+	// 定位点拿不到（活动行尚未物化 / 列表刚被清空）时**不能静默不打开**——那正是"双击没反应"。
+	// 退回列表自身位置：窗口位置只是观感，打开与否才是功能。
+	const rect = (Command.target as unknown as HTMLElement).getBoundingClientRect?.();
+	const x = (point?.x ?? rect?.x ?? 0) - 5;
+	const y = point?.y ?? rect?.y ?? 0;
+	Window.open!('command-widget');
+	const { widget, list: suggestionList, searcher } = this;
+	widget.x = x;
+	widget.y = y;
+	widget.style.left = `${x}px`;
+	widget.style.top = `${y}px`;
+	if (!elementDataOf<{ initialized?: boolean }>(suggestionList).initialized) {
+		elementDataOf<{ initialized?: boolean }>(suggestionList).initialized = true;
+		suggestionList.updateCommandNames!();
+		suggestionList.update();
+		suggestionList.selectDefaultCommand!();
+	} else {
+		dispatchUpdateEvent(suggestionList);
+		suggestionList.resize();
 	}
+	getFocus(searcher);
+	window.addEventListener('pointerdown', this.pointerdown!, { capture: true });
 };
 
 CommandSuggestion.select = function (item: CommandSuggestionItem): void {
@@ -412,21 +413,23 @@ CommandSuggestion.listKeydown = function (event: KeyboardEvent): void {
 };
 
 CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
-	const element = event.target as HTMLElement & {
-		item: CommandSuggestionItem;
-	};
-	if (hasClass(element, 'node-item') && element.item.class !== 'folder') {
-		const pointerup = (event: PointerEvent) => {
-			if (this.pressing === pointerup) {
-				this.pressing = null;
-				if (element.contains(event.target as Node)) {
-					CommandSuggestion.select!(element.item);
-				}
+	// P4b：行 → item 经行 API 取（`element.item` expando 已退役，直接读会抛
+	// `Cannot read properties of undefined (reading 'class')`）；顺带把标签文字
+	// （`.node-text`）上的点击归一成行，点名字也能选中。
+	const item = treeItemOf<CommandSuggestionItem>(event.target);
+	if (item === undefined || item.class === 'folder') return;
+	const element = treeRowElement(item);
+	if (element === undefined) return;
+	const pointerup = (event: PointerEvent) => {
+		if (this.pressing === pointerup) {
+			this.pressing = null;
+			if (element.contains(event.target as Node)) {
+				CommandSuggestion.select!(item);
 			}
-		};
-		this.pressing = pointerup;
-		window.addEventListener('pointerup', pointerup, { once: true });
-	}
+		}
+	};
+	this.pressing = pointerup;
+	window.addEventListener('pointerup', pointerup, { once: true });
 };
 
 CommandSuggestion.listUpdate = function (_event: Event): void {

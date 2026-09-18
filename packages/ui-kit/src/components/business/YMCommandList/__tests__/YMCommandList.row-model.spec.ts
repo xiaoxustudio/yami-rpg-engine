@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { type CommandListApiOptions, type CommandRowModel, type CommandListElementApi } from '../command-api';
+import {
+	type CommandListApiOptions,
+	type CommandRowModel,
+	type CommandListElementApi
+} from '../command-api';
 import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
@@ -54,7 +58,10 @@ class MockHistory {
 const makeOptions = (): CommandListApiOptions =>
 	({
 		command: {
-			parse: (item: Record<string, unknown>) => [{ color: 'normal' }, { text: String(item.id) }],
+			parse: (item: Record<string, unknown>) => [
+				{ color: 'normal' },
+				{ text: String(item.id) }
+			],
 			fetchVariables: () => [],
 			insert: vi.fn(),
 			edit: vi.fn(),
@@ -111,12 +118,11 @@ const domKeys = (el: ListElement): (string | undefined)[] =>
 
 /**
  * 换源前置：**每一行都要有稳定 key**（`v-for` 的 `:key`）。空白行由 `createBlankElement` 生成，
- * 现在按"父命令 + 层级 + 所属列表下标"派生 key（见 `command-api.ts`），因此本 spec 不再排除它——
- * 下面对比的是**包括空白行在内**的完整 key 序列。
+ * 现在按"所属列表 + 层级 + 列表下标"派生 key（见 `command-api.ts` / `command-render.ts`），
+ * 因此本 spec 不再排除它——下面对比的是**包括空白行在内**的完整 key 序列。
  */
 const commandKeys = (keys: (string | undefined)[]): string[] =>
 	keys.filter((k): k is string => k !== undefined);
-
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
@@ -226,6 +232,38 @@ describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
 		expect(model.keys.filter((k) => k.length === 0)).toEqual([]);
 		expect(new Set(model.keys).size).toBe(model.keys.length);
 		expect(domKeys(el).every((k) => typeof k === 'string' && k.length > 0)).toBe(true);
+	});
+
+	/**
+	 * 回归（实机报错 `Duplicate keys found during update: "blank-c6-2-1"` + `insertBefore of null`）：
+	 * `if` / `showChoices` / `switch` 的 `parse` 会为**同一条命令**产出**多个 `children`**
+	 * （每个分支一个子列表，见 `useIfCommandSchema`）。空白行此前按「父命令 + 层级 + 列表下标」
+	 * 发 key，两条**等长**的子列表（例如两个分支各 1 条命令）就撞成同一个 `:key`，
+	 * Vue patch 随即崩在 `insertBefore`。
+	 */
+	it('同一命令的多个子列表（if 多分支）：空白行的 key 互不相同', async () => {
+		const options = makeOptions() as unknown as { command: Record<string, unknown> };
+		// 只有 `if` 产出多个 `children`；分支里的命令是普通行（否则会无限递归）
+		options.command.parse = (item: Record<string, unknown>) =>
+			item.id === 'if'
+				? [
+						{ fold: true },
+						{ color: 'flow' },
+						{ children: [makeCommand('branchA')] },
+						{ color: 'flow' },
+						{ children: [makeCommand('branchB')] }
+					]
+				: [{ color: 'normal' }, { text: String(item.id) }];
+		const el = await mountCommandList<ListElement>(options as unknown as CommandListApiOptions);
+		mockHeight(el);
+		el.scroll = vi.fn();
+		el.write([makeCommand('if')]);
+		await nextTick();
+		const model = el.getRowModel();
+		// if 主行 + 两条分支各自的命令行 + 续行 + **两条分支空白行** + 顶层空白行
+		expect(model.rows.length).toBeGreaterThanOrEqual(5);
+		expect(model.keys.filter((k) => k.length === 0)).toEqual([]);
+		expect(new Set(model.keys).size).toBe(model.keys.length);
 	});
 
 	it('多行脚本（parse 返回 script）：脚本占的每一行也都有 key', async () => {

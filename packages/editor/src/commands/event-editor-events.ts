@@ -1,8 +1,8 @@
 import { EventEditor } from './event-editor.ts';
 import type { EventEditorShape, EventListItem } from './event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { addClass, clear, hasClass, read, removeClass, write } from '@app/utils/element-utils';
-import { setTreeItemClass } from '@ui-kit';
+import { addClass, clear, read, removeClass, write } from '@app/utils/element-utils';
+import { setTreeItemClass, treeItemOf } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { getYamiI18n } from '@app/i18n';
@@ -163,15 +163,13 @@ EventEditor.windowPointermove = function (this: EventEditorShape, event: Pointer
 
 EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEvent) {
 	if (event.altKey && event.button === 0) {
-		const element = event.target as HTMLElement & { item: EventListItem };
-		if (hasClass(element, 'node-item')) {
-			const item = element.item;
-			if (item.id) {
-				// 阻止focus后快捷键不被禁用的情况
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				EventEditor.findRelatedEvents!(item.id);
-			}
+		// P4b：行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
+		const item = treeItemOf<EventListItem>(event.target);
+		if (item !== undefined && item.id) {
+			// 阻止focus后快捷键不被禁用的情况
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			EventEditor.findRelatedEvents!(item.id);
 		}
 	}
 };

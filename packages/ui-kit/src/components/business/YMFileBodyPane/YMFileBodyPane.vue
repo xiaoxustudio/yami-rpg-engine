@@ -779,16 +779,25 @@ function createFlatItems(dir: FileBodyFile[]): void {
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
+		// M5：名字同样由**模板**渲染（`{{ row.name }}`）⇒ 只能复用模板那一个，不能再 append
+		// 第二个（否则一行里出现两个 `.file-body-name`，改名时还会 hide 错节点）；
+		// 图标插到名字**之前**，保持与命令式实现一致的"图标 + 名字"顺序。
+		const nameBox = element.querySelector('.file-body-name') as HTMLElement | null;
 		const fileIcon = renderElement(h('span', { class: ['file-body-icon', 'icon-folder'] }));
-		element.appendChild(fileIcon);
+		if (nameBox) {
+			element.insertBefore(fileIcon, nameBox);
+			element.nameBox = nameBox;
+		} else {
+			element.appendChild(fileIcon);
 
-		const nameBox = renderElement(h('span', { class: 'file-body-name' }));
-		nameBox.textContent = element.file.name;
-		element.appendChild(nameBox);
+			const created = renderElement(h('span', { class: 'file-body-name' }));
+			created.textContent = element.file.name;
+			element.appendChild(created);
+			element.nameBox = created;
+		}
 
 		element.draggable = true;
 		element.fileIcon = fileIcon;
-		element.nameBox = nameBox;
 	}
 }
 

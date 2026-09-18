@@ -26,7 +26,10 @@ interface CommandListElement extends HTMLElement {
 	computeTextIndent: (indent: number) => string;
 	data: unknown;
 	scrollTop: number;
-	elements: { count: number } & Record<number, { dataIndent: number; fold?: HTMLElement; dataKey?: boolean }>;
+	elements: { count: number } & Record<
+		number,
+		{ dataIndent: number; fold?: HTMLElement; dataKey?: boolean }
+	>;
 }
 
 /**
@@ -87,7 +90,10 @@ class MockHistory {
 	}
 }
 
-const makeOptions = (language = 'zh-CN', overrides: Partial<CommandListApiOptions> = {}): CommandListApiOptions => ({
+const makeOptions = (
+	language = 'zh-CN',
+	overrides: Partial<CommandListApiOptions> = {}
+): CommandListApiOptions => ({
 	command: {
 		parse: (item: Record<string, unknown>) => [{ color: 'normal' }, { text: String(item.id) }],
 		fetchVariables: () => [],
@@ -116,7 +122,6 @@ const makeList = async (data: unknown[] = [], language = 'zh-CN'): Promise<Comma
 
 /** 40 行足够翻页（innerHeight 400 / 每行 20px） */
 const manyCommands = (n = 40) => Array.from({ length: n }, (_, i) => makeCommand(`c${i}`));
-
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
@@ -169,22 +174,31 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 					colorizeCodeLines: vi.fn()
 				} as never
 			})
-		)
+		);
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
 		await nextTick();
 		expect(el.textContent).toContain('parent');
 		expect(el.textContent).toContain('child');
-		const indents = Array.from({ length: el.elements.count }, (_, i) => el.elements[i].dataIndent);
+		const indents = Array.from(
+			{ length: el.elements.count },
+			(_, i) => el.elements[i].dataIndent
+		);
 		expect(Math.max(...indents)).toBeGreaterThan(Math.min(...indents));
 	});
 
 	it('命中搜索：findString 在选择集里找出包含目标文本的行', async () => {
-		const el = await makeList([makeCommand('alpha'), makeCommand('beta'), makeCommand('gamma')]);
-		const find = (el as unknown as {
-			findString: (s: string, els: unknown[], mode?: unknown) => { index: number }[];
-		}).findString;
+		const el = await makeList([
+			makeCommand('alpha'),
+			makeCommand('beta'),
+			makeCommand('gamma')
+		]);
+		const find = (
+			el as unknown as {
+				findString: (s: string, els: unknown[], mode?: unknown) => { index: number }[];
+			}
+		).findString;
 		expect(typeof find).toBe('function');
 		const elements = Array.from(
 			{ length: el.elements.count },
@@ -220,7 +234,7 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 					colorizeCodeLines: vi.fn()
 				} as never
 			})
-		)
+		);
 		mockHeight(el);
 		setScrollSpy(el);
 		el.write([makeCommand('parent')]);
@@ -240,14 +254,57 @@ describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/�
 	});
 
 	it('selectMultipleTo：从 start 扩选，end 推进且选中多行', async () => {
-		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c'), makeCommand('d')]);
+		const el = await makeList([
+			makeCommand('a'),
+			makeCommand('b'),
+			makeCommand('c'),
+			makeCommand('d')
+		]);
 		listState(el).focusing = true;
 		el.select(0);
 		await nextTick();
 		const endBefore = listState(el).end;
 		el.selectMultipleTo(2);
 		expect(listState(el).end).not.toBe(endBefore);
+		// 选中态由行模型驱动 → 断言渲染结果前要等一拍（否则读到的还是上一次的 patch）
+		await nextTick();
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(1);
+	});
+
+	it('按下后在行内轻微移动不会扩选（行高取渲染行，离屏 elements 的 clientHeight 恒为 0）', async () => {
+		const el = await makeList([
+			makeCommand('a'),
+			makeCommand('b'),
+			makeCommand('c'),
+			makeCommand('d')
+		]);
+		await nextTick();
+		const row = el.querySelectorAll('.command-item')[0] as HTMLElement;
+		const pointer = (type: string, target: EventTarget, clientY: number): void => {
+			target.dispatchEvent(
+				new PointerEvent(type, {
+					bubbles: true,
+					button: 0,
+					clientX: 0,
+					clientY,
+					pointerId: 1
+				})
+			);
+		};
+
+		pointer('pointerdown', row, 10);
+		await nextTick();
+		expect(el.querySelectorAll('.command-item.selected').length).toBe(1);
+
+		// 轻微移动（仍在第一行内）。行高若取离屏元素（0）⇒ `floor(10 / 0)` = Infinity ⇒ 一路选到末尾
+		pointer('pointermove', window, 10);
+		await nextTick();
+		expect(el.querySelectorAll('.command-item.selected').length).toBe(1);
+
+		// 真的往下拖时仍要扩选（别把拖动选择一起改坏）
+		pointer('pointermove', window, 45);
+		await nextTick();
+		expect(el.querySelectorAll('.command-item.selected').length).toBe(3);
 	});
 
 	it('pageDown/pageUp：请求滚动，并在 select=true 时把选区带过头/带回来', async () => {

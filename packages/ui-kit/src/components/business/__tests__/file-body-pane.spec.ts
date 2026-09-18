@@ -12,7 +12,7 @@ function makeFile(name: string, type = 'image') {
 		type: string;
 		stats: { mtimeMs: number };
 		meta: { guid: string };
-		data: null;
+		data: { id?: string } | null;
 		getContext: (element: HTMLElement) => { element: HTMLElement | undefined };
 	} = {
 		name,
@@ -106,6 +106,7 @@ interface FileBodyPaneElement extends HTMLElement {
 	unselect: () => void;
 	setViewIndex: (index: number) => void;
 	clear: () => void;
+	on: (type: string, listener: (event: Event) => void) => void;
 	content: unknown;
 	selections: unknown[];
 	elements: { count: number } & { [i: number]: HTMLElement | undefined };
@@ -299,6 +300,60 @@ describe('YMFileBodyPane', () => {
 		);
 		await new Promise((r) => setTimeout(r, 30));
 		expect(props.windowApi.confirm).toHaveBeenCalled();
+		wrapper.unmount();
+	});
+
+	it('双击行派发 open 事件（文件浏览器据此打开事件编辑器）', async () => {
+		const FileItemClass = class FileItem {};
+		const FolderItemClass = class FolderItem {};
+		const a = makeFile('e1', 'event');
+		a.meta = { guid: 'guid-e1' };
+		a.data = { id: 'e1' };
+		const props = makeProps({
+			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
+			links: {
+				browser: { display: 'normal', filters: null },
+				nav: { selections: [{ children: [a] }] },
+				head: { view: { write: vi.fn() } }
+			}
+		});
+		Object.setPrototypeOf(a, FileItemClass.prototype);
+		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const node = wrapper.element as unknown as FileBodyPaneElement;
+		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
+		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
+		Object.defineProperty(node, 'getBoundingClientRect', {
+			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
+			configurable: true
+		});
+		node.setViewIndex(0);
+		node.updateFiles();
+		const opened: unknown[] = [];
+		node.on('open', (event: Event) =>
+			opened.push((event as Event & { value?: unknown }).value)
+		);
+		await nextTick();
+
+		const row = node.querySelector('.file-body-item') as HTMLElement;
+		const click = (target: HTMLElement, type: string): void => {
+			target.dispatchEvent(
+				new MouseEvent(type, { bubbles: true, button: 0, clientX: 10, clientY: 10 })
+			);
+		};
+		// 第一次点击（真实浏览器按坐标命中行内最深的元素）
+		const firstIcon = row.querySelector('.file-body-icon') as HTMLElement;
+		click(firstIcon, 'pointerdown');
+		click(firstIcon, 'pointerup');
+		await nextTick();
+
+		// 第二次点击：重新按坐标命中（若第一次点击的选中态把行元素换成了新节点，命中的就是另一个元素）
+		const secondRow = node.querySelector('.file-body-item') as HTMLElement;
+		const secondIcon = secondRow.querySelector('.file-body-icon') as HTMLElement;
+		click(secondIcon, 'pointerdown');
+		click(secondIcon, 'pointerup');
+
+		expect(opened).toHaveLength(1);
+		expect((opened[0] as { name?: string }).name).toBe('e1');
 		wrapper.unmount();
 	});
 });

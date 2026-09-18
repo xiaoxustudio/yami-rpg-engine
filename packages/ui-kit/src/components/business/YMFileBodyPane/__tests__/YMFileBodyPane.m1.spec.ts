@@ -295,20 +295,38 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 	 * 行内**不重复**：回写桥会在挂载与多次 `resize` 时重复绑定，而内容构建是"追加"语义
 	 * （命令列表那边就曾因此把行内文本叠成两份）。文件 body 这里是"有则跳过"的写法，
 	 * 这条用例把该不变量钉住：反复 resize 后每行仍只有 1 个图标 + 1 个名字。
+	 * **文件与文件夹都要覆盖**——文件夹那条曾经绕过"有则跳过"，额外 append 了第二个名字。
 	 */
-	it('行内不重复：反复 resize 后每行仍只有 1 个图标 + 1 个名字', async () => {
+	it('行内不重复：反复 resize 后每行仍只有 1 个图标 + 1 个名字（含文件夹行）', async () => {
 		const { el } = mountBody();
-		await renderItems(el, items(3));
+		await renderItems(el, [...items(3), new FolderItem('/a/sub', 'sub')]);
 		el.resize();
 		await nextTick();
 		el.resize();
 		await nextTick();
 
 		const rows = Array.from(el.querySelectorAll('.file-body-item'));
-		expect(rows.length).toBeGreaterThan(0);
+		expect(rows.length).toBeGreaterThanOrEqual(4);
 		for (const row of rows) {
 			expect(row.querySelectorAll('.file-body-name').length).toBe(1);
 			expect(row.children.length).toBe(2); // 图标 + 名字
 		}
+	});
+
+	it('文件夹行：复用模板渲染的名字（不追加第二个），且图标在名字之前', async () => {
+		const { el } = mountBody();
+		await renderItems(el, [new FolderItem('/a/sub', 'sub')]);
+		el.resize();
+		await nextTick();
+
+		const row = rows(el)[0];
+		// 模板已经渲染了 `.file-body-name`：api 只能复用它，不能再造一个（实机表现为"两个名字"）
+		expect(row.querySelectorAll('.file-body-name').length).toBe(1);
+		expect(row.querySelector('.file-body-name')?.textContent).toBe('sub');
+		// 顺序与命令式实现一致：图标在前、名字在后
+		expect(Array.from(row.children).map((child) => child.className)).toEqual([
+			'file-body-icon icon-folder',
+			'file-body-name'
+		]);
 	});
 });

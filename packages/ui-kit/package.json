@@ -37,7 +37,7 @@
 		"typescript": "catalog:",
 		"vite": "^8.1.5",
 		"vitest": "^4.1.10",
-		"vue": "^3.6.0-rc.7",
+		"vue": "^3.6.0-rc.9",
 		"vue-tsc": "^3.3.9"
 	}
 }

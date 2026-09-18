@@ -159,7 +159,9 @@ Command.custom = {
 
 	parse: function (id: string, parameters: Record<string, unknown>): Record<string, unknown>[] {
 		const meta = Data.scripts[id];
-		const name = this.commandNameMap![id];
+		// 指令名表可能还没建好（`loadCommandList` 依赖 Data.commands 与建议列表）：
+		// `!.` 会在表为 null 时抛 "Cannot read properties of null"，这里走"无效指令"分支而不是崩。
+		const name = this.commandNameMap?.[id];
 		if (meta === undefined || name === undefined) {
 			const label = t('command.invalidCommand');
 			const cmdId = Command.parseUnlinkedId!(id);
@@ -313,7 +315,8 @@ Command.custom = {
 		const selector = Layout.focusableSelector;
 		const focusable = this.parameterPane.querySelector(selector);
 		if (focusable) getFocus(focusable);
-		this.windowFrame.setTitle(this.commandNameMap![id]);
+		// 标题只是展示：名表缺失时退回指令 id，窗口照常打开（编辑能力不取决于名表）
+		this.windowFrame.setTitle(this.commandNameMap?.[id] ?? id);
 	},
 
 	save: function (): void {
