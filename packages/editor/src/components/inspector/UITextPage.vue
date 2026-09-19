@@ -250,7 +250,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUITextPage } from '@app/composables/useUITextPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -391,7 +391,7 @@ onMounted(() => {
 		'uiText-blend'
 	]);
 	const sliders = registryElements(inspectorEls, ['uiText-size-slider', 'uiText-lineSpacing-slider', 'uiText-letterSpacing-slider']);
-	bindInput(elements, uiText, UI);
+	bindInput(elements, getUIStore(), uiText);
 	bindSliders(sliders);
 
 	const el = inspectorEls.get('uiText-vue-mount');

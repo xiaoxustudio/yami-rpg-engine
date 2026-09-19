@@ -131,7 +131,7 @@ export interface PluginManagerShape {
 }
 
 /** 同 `AudioManager`：`plugins` 由本文件末尾的桥安装，字面量按 `Omit<…, 'plugins'>` 校验后再断言。 */
-const pluginManager: Omit<PluginManagerShape, 'plugins'> = {
+const pluginManager = {
 	list: null,
 	overviewPane: null,
 	overview: null,
@@ -146,11 +146,9 @@ const pluginManager: Omit<PluginManagerShape, 'plugins'> = {
 	load: null,
 	unload: null,
 	loadOverview: null,
-	createData: null as unknown as (...args: unknown[]) => PluginItemShape,
 	getItemById: null,
 	switchOverviewMode: null,
 	parseMeta: null,
-	reconstruct: null as unknown as (...args: unknown[]) => boolean,
 	saveToProject: null,
 	loadFromProject: null,
 	windowClose: null,
@@ -174,12 +172,11 @@ const pluginManager: Omit<PluginManagerShape, 'plugins'> = {
 	list_toggle: null,
 	list_copy: null,
 	list_paste: null,
-	list_delete: null as unknown as (item: PluginItemShape) => void,
 	list_saveSelection: null,
 	list_restoreSelection: null,
 	list_updateTextNode: null,
 	reload: null
-};
+} satisfies Partial<Omit<PluginManagerShape, 'plugins'>> as Omit<PluginManagerShape, 'plugins'>;
 
 export const PluginManager = pluginManager as PluginManagerShape;
 

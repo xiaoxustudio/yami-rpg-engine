@@ -35,7 +35,14 @@ UI.selectObject = (function IIFE() {
 		return null;
 	};
 	return function (this: UIShape, x: number, y: number) {
-		return find(this.root.children, x, y);
+		// ⚠️ `root` 已迁到 store（`ui-file.ts` 的 `getUIStore().root = this.root`），
+		// 遗留的 `this.root` 是 `undefined` —— 读 `.children` 直接抛
+		// `Cannot read properties of undefined (reading 'children')`，
+		// 表现就是「**在画布上点选毫无反应**，但从左侧列表点选正常」
+		// （列表走 `UI.listSelect`，不经过这里）（2026-09-18 实测定位）。
+		const root = getUIStore().root as { children: UINodeShape[] } | null;
+		if (root === null) return null;
+		return find(root.children, x, y);
 	};
 })();
 

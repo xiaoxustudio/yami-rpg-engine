@@ -32,7 +32,19 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 }));
 
 vi.mock('@app/stores/ui', () => ({
-	useUIStore: () => ({ syncState: vi.fn() })
+	useUIStore: () => ({ syncState: vi.fn() }),
+	// 迁移后这些页面不再 import 遗留单例，而是从 store 取（页面 onMounted 里调
+	// `bindInput(elements, getUIStore(), editor)`）。这个 mock 必须一并提供 getUIStore，
+	// 否则 'getUIStore' 会是 undefined（ESM 具名导入在 mock 模块上缺失即报错）。
+	// 这里只补页面实际用到的成员，保持最小面。
+	getUIStore: () => ({
+		history: null,
+		target: null,
+		state: 'closed',
+		updateTarget: vi.fn(),
+		planToSave: vi.fn(),
+		requestRendering: vi.fn()
+	})
 }));
 
 vi.mock('@app/stores/local', () => ({

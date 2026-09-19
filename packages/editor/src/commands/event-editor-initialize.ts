@@ -36,18 +36,14 @@ function ensureDomBound() {
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
 	// P4b：滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
 	getElementData(EventEditor.list as unknown as HTMLElement).lastScrollTop = 0;
-	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
 	EventEditor.list.closeBelow = null;
 	EventEditor.list.closeOthers = null;
 	EventEditor.list.closeAll = null;
-	EventEditor.list.saveScroll = null as unknown as (...args: unknown[]) => void;
-	EventEditor.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.defineProperties = null;
 	EventEditor.list.createLocalEventItem = null;
 	EventEditor.list.createGlobalEventItem = null;
-	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => void;
 	bindListMethods();
 }
 

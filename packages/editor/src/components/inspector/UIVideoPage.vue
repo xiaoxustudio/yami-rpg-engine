@@ -48,7 +48,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIVideoPage } from '@app/composables/useUIVideoPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -101,7 +101,7 @@ onMounted(() => {
 		elFlip.value?.root,
 		elBlend.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, editor, UI);
+	bindInput(elements, getUIStore(), editor);
 
 	const el = inspectorEls.get('uiVideo-vue-mount');
 	if (el) {

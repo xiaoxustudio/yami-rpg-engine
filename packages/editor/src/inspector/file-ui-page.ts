@@ -3,7 +3,7 @@ import { registryElements } from '@app/utils/element-registry';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import type { YamiElement } from '@app/types/element-api';
 
 {
@@ -43,10 +43,10 @@ import type { YamiElement } from '@app/types/element-api';
 				}
 			},
 			planToSave: () => {
-				UI.planToSave!();
+				getUIStore().planToSave();
 			},
 			get history() {
-				return UI.history;
+				return getUIStore().history;
 			}
 		};
 
@@ -90,7 +90,7 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileUI.update = function (this: typeof FileUI, ui: FileUIData, key: string, value: unknown) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		switch (key) {
 			case 'width':
 				if (ui.width !== value) {

@@ -130,8 +130,12 @@ export class CommandSchema {
 			this[key] = config[key];
 		}
 		if (this.noWindow) {
-			this.load = null as unknown as (...args: unknown[]) => unknown;
-			this.initialize = null as unknown as () => boolean;
+			// noWindow 指令没有参数窗口 ⇒ **故意**把 `load` / `initialize` 置空：
+			// 给实例装上值为 null 的自有属性，遮蔽原型上的实现，调用点靠 `?.` 跳过
+			//（`CommandSchema.open` 等处就是 `initialize?.()`）。
+			// 用 `Object.assign` 而不是 `this.load = null`：这两个槽在类上声明为不可空方法，
+			// 直接赋 null 会被 tsc 拒（原先正是靠 `null as unknown as …` 绕过去的）。
+			Object.assign(this, { load: null, initialize: null });
 		}
 	}
 
@@ -405,10 +409,12 @@ export class CommandSchema {
 
 	static save(params: Record<string, unknown>) {
 		const { id, target } = Command;
-		target?.save?.({ id, params });
-		const handler = CommandSchema._resolve(id);
+		// `id` 在解析阶段写入；`save` 只在解析后的编辑流程里被调用，
+		// 所以这里断言它已就绪（与原先的行为一致：null 值在下面几处本来就会炸）。
+		target?.save?.({ id: id!, params });
+		const handler = CommandSchema._resolve(id!);
 		if (handler !== undefined) {
-			if (!handler.noWindow) Window.close!(id);
+			if (!handler.noWindow) Window.close!(id!);
 		} else {
 			Window.close!('scriptCommand');
 		}

@@ -130,69 +130,21 @@ interface LocalizationShape {
 	[k: string]: any;
 }
 
-export const Localization: LocalizationShape = {
-	list: null as unknown as TreeListElement | null,
-	panel: null as unknown as (HTMLElement & { item: LocalizationItem | null }) | null,
-	searcher: null as unknown as
-		| (HTMLElement & {
-				addCloseButton(): void;
-				deleteInputContent(): void;
-		  })
-		| null,
+export const Localization = {
+	list: null as TreeListElement | null,
 	inputs: null as Record<string, HTMLElement> | null,
 	target: null as LocalizationTarget | null,
 	data: null as LocalizationItem[] | null,
-	idMap: null as unknown as Record<string, unknown>,
 	languages: null as string[] | null,
 	history: null as History | null,
 	changed: false,
 	_previousActive: null as UndoableEditor | null,
-	initialize: null as unknown as LocalizationShape['initialize'],
-	open: null as unknown as LocalizationShape['open'],
-	undo: null as unknown as LocalizationShape['undo'],
-	redo: null as unknown as LocalizationShape['redo'],
-	createId: null as unknown as LocalizationShape['createId'],
-	register: null as unknown as LocalizationShape['register'],
-	unregister: null as unknown as LocalizationShape['unregister'],
-	getItemById: null as unknown as LocalizationShape['getItemById'],
-	openContentPanel: null as unknown as LocalizationShape['openContentPanel'],
-	closeContentPanel: null as unknown as LocalizationShape['closeContentPanel'],
-	unpackLocalization: null as unknown as LocalizationShape['unpackLocalization'],
-	packLocalization: null as unknown as LocalizationShape['packLocalization'],
-	resizeTextArea: null as unknown as LocalizationShape['resizeTextArea'],
-	windowClose: null as unknown as LocalizationShape['windowClose'],
-	windowClosed: null as unknown as LocalizationShape['windowClosed'],
-	keydown: null as unknown as LocalizationShape['keydown'],
-	listKeydown: null as unknown as LocalizationShape['listKeydown'],
-	listPointerdown: null as unknown as LocalizationShape['listPointerdown'],
-	listDoubleclick: null as unknown as LocalizationShape['listDoubleclick'],
-	listSelect: null as unknown as LocalizationShape['listSelect'],
-	listRecord: null as unknown as LocalizationShape['listRecord'],
-	listOpen: null as unknown as LocalizationShape['listOpen'],
-	listPopup: null as unknown as LocalizationShape['listPopup'],
-	panelInput: null as unknown as LocalizationShape['panelInput'],
-	panelKeydown: null as unknown as LocalizationShape['panelKeydown'],
-	searcherInput: null as unknown as LocalizationShape['searcherInput'],
-	confirm: null as unknown as LocalizationShape['confirm'],
-	apply: null as unknown as LocalizationShape['apply'],
 	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载,
-	createInputs: null as unknown as LocalizationShape['createInputs'],
-	fromExcel: null as unknown as LocalizationShape['fromExcel'],
-	toExcel: null as unknown as LocalizationShape['toExcel'],
 	// list 方法引用（ensureDomBound 内挂到真实 list 上）,
-	list_saveScroll: null as unknown as LocalizationShape['list_saveScroll'],
-	list_restoreScroll: null as unknown as LocalizationShape['list_restoreScroll'],
-	list_cancelSearch: null as unknown as LocalizationShape['list_cancelSearch'],
-	list_createFolder: null as unknown as LocalizationShape['list_createFolder'],
-	list_createItem: null as unknown as LocalizationShape['list_createItem'],
-	list_updateItemName: null as unknown as LocalizationShape['list_updateItemName'],
-	list_onCreate: null as unknown as LocalizationShape['list_onCreate'],
-	list_onDelete: null as unknown as LocalizationShape['list_onDelete'],
-	list_onResume: null as unknown as LocalizationShape['list_onResume'],
 	close: null as (() => void) | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
 	loadFromProject: null as ((project: EditorProjectShape) => void) | null
-};
+} satisfies Partial<LocalizationShape> as LocalizationShape;
 
 function ensureDomBound() {
 	if (Localization.list) return;
@@ -207,9 +159,6 @@ function ensureDomBound() {
 		addCloseButton(): void;
 		deleteInputContent(): void;
 	};
-	list.copy = null as unknown as (...args: unknown[]) => unknown;
-	list.paste = null as unknown as (...args: unknown[]) => unknown;
-	list.delete = null as unknown as (...args: unknown[]) => unknown;
 	list.saveScroll = Localization.list_saveScroll;
 	list.restoreScroll = Localization.list_restoreScroll;
 	list.cancelSearch = Localization.list_cancelSearch;

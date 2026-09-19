@@ -1,0 +1,113 @@
+# 持续集成：把「本地人工纪律」变成「机制」
+#
+# 背景（2026-09-17）：本仓库此前**没有** .github/，门禁只在本地 git hook 里 —— 而
+# `lint-staged.config.js` 只对**暂存文件**跑 `oxfmt` + `oxlint --fix`。`tsc` / `vue-tsc` /
+# vitest / `build:vite` / 各体检脚本一次都不在提交路径上。也就是说「全绿」当时是人工纪律的
+# 结果，而不是机制的结果。这个 workflow 把它补上。
+#
+# 设计取舍：
+#   1. **不跑 lint-staged**：CI 要看的是全量，不是暂存子集。
+#   2. **`migration:check` 是核心**：棘轮门禁，任一迁移轴指标上升就红。
+#      它只做纯文本扫描、零子进程，所以比 tsc/test 快得多，且不会因为工具链故障而假绿。
+#   3. **`migration:selftest` 先于 `migration:check`**：门禁自身的口径必须先自证
+#      （零依赖、零子进程，任何环境都能跑）。
+#   4. 三平台矩阵只跑「快」的那批（类型 + lint + 测试口径）；构建与 electron-builder
+#      放在单独一个 job，避免每次 PR 都出完整安装包。
+
+name: CI
+
+on:
+    push:
+        branches: ['**']
+    pull_request:
+    workflow_dispatch:
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    # 与 package.json 的 packageManager 对齐；pnpm 通过 corepack 激活
+    COREPACK_ENABLE_STRICT: '0'
+
+jobs:
+    gates:
+        name: 门禁（类型 / lint / 迁移台账）
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            # --- 迁移台账：先自证口径，再判定棘轮 ---------------------------------
+            - name: 迁移台账自测（门禁自身的口径）
+              run: pnpm run migration:selftest
+
+            - name: 迁移台账棘轮（任一轴上升即失败）
+              run: pnpm run migration:check
+
+            - name: DOM 迁移矩阵（明细，落盘 scripts/dom-migration-tracker.md）
+              run: pnpm run dom:guard:tracker
+
+            # --- 类型与 lint -------------------------------------------------------
+            - name: oxlint（编辑器 + 组件库）
+              run: pnpm run lint
+
+            - name: tsc strict（编辑器）
+              run: pnpm run typecheck
+
+            - name: vue-tsc 棘轮（仅拦截新增错误）
+              run: pnpm -F @yami/editor run typecheck:vue
+
+            # --- 体检脚本 ---------------------------------------------------------
+            - name: 全局类型增强审计（global.d.ts 接口块应为 0）
+              run: node scripts/global-types-audit.mjs
+
+            - name: 事件面报表（内联匿名监听 / 事件名清单）
+              run: pnpm run events:surface
+
+            - name: 陈旧豁免注释（应为 0）
+              run: pnpm run stale-exemptions
+
+    tests:
+        name: 测试（editor / ui-kit）
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+            - run: pnpm install --frozen-lockfile
+
+            - name: ui-kit 测试
+              run: pnpm -F @yami/ui-kit test
+
+            - name: editor 测试
+              run: pnpm -F @yami/editor test
+
+    build:
+        name: 构建（vite）
+        runs-on: ubuntu-latest
+        # 构建比门禁慢得多；只有门禁与测试都过了才值得跑
+        needs: [gates, tests]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+            - run: pnpm install --frozen-lockfile
+
+            - name: vite 构建（含 ui-kit）
+              run: pnpm run build:vite

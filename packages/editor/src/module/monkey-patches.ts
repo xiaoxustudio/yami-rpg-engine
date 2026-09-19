@@ -11,7 +11,7 @@ import { EditDataInstance } from './editdata.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Variable } from '@app/variable/variable.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { find_dItem } from './tree-utils.ts';
@@ -148,8 +148,12 @@ EventBus.once('editor_loaded', () => {
 			}
 		};
 
-	if (UI.list)
-		UI.list.paste = function (
+	// 读 store 的 `elements` 访问器（每次求值）。这里在 `editor_loaded` 回调内执行，
+	// 而 `editor_loaded` 由 `main/initialize.ts:128` 发出、由 `main/startup.ts` 的
+	// `vue-app-mounted` 之后触发，故此刻元素注册表已登记好。
+	const uiList = getUIStore().elements.list;
+	if (uiList)
+		uiList.paste = function (
 			this: HTMLElement & {
 				data?: unknown;
 				addNodeTo: (copy: unknown, dItem?: unknown) => void;
@@ -160,8 +164,8 @@ EventBus.once('editor_loaded', () => {
 			const copy = Clipboard.read('yami.ui.object');
 			if (copy && this.data) {
 				callback?.(copy);
-				this.addNodeTo(copy, UI.target);
-				UI.requestRendering();
+				this.addNodeTo(copy, getUIStore().target);
+				getUIStore().requestRendering();
 			}
 		};
 });

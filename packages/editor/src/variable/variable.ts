@@ -17,11 +17,11 @@ interface VariableModule {
 	manager: PageManagerApi;
 	searcher: YamiElement;
 	inputs: {
-		name: YamiElement;
-		value: YamiElement;
-		number: YamiElement;
-		string: YamiElement;
-		note: YamiElement;
+		name: YamiElement | null;
+		value: YamiElement | null;
+		number: YamiElement | null;
+		string: YamiElement | null;
+		note: YamiElement | null;
 		boolean: { read: unknown };
 		type: { write: unknown };
 		sort?: unknown;
@@ -85,35 +85,29 @@ interface VariableModule {
 /**
  * P2b-2：桥键（`target`/`idMap`/`history`）由本文件末尾的 `Object.defineProperty` 安装，
  * 字面量给不出它们 ⇒ 字面量按 `Omit<VariableModule, 'target' | 'idMap' | 'history'>` 校验，
- * **其余四十多个成员的拼写仍逐项受检**，导出时再断言成完整形状（与 `AudioManager`/`Log` 同一手法）。
+ * **其余成员的拼写仍逐项受检**，导出时再断言成完整形状（与 `AudioManager`/`Log` 同一手法）。
+ *
+ * `satisfies Partial<…>` 同时承担另一件事：延迟绑定槽（DOM 元素、方法）在 `initialize()`
+ * 之后才存在，字面量里写 `null as unknown as T` 是**谎报类型**；改为让这些槽「此刻不存在」，
+ * 由 `initialize()` 里的真实赋值补齐（那些赋值同样逐字段受检）。
  */
-const variable: Omit<VariableModule, 'target' | 'idMap' | 'history'> = {
-	list: null as unknown as YamiElement,
-	panel: null as unknown as YamiElement,
-	manager: null as unknown as PageManagerApi,
-	searcher: null as unknown as YamiElement,
+type VariableLiteral = Omit<VariableModule, 'target' | 'idMap' | 'history'>;
+
+const variable = {
 	inputs: {
-		name: null as unknown as YamiElement,
-		value: null as unknown as YamiElement,
-		number: null as unknown as YamiElement,
-		string: null as unknown as YamiElement,
-		note: null as unknown as YamiElement,
+		name: null,
+		value: null,
+		number: null,
+		string: null,
+		note: null,
 		boolean: { read: null },
 		type: { write: null }
 	},
 	initialize: null,
 	open: null,
-	undo: null as unknown as () => void,
-	redo: null as unknown as () => void,
-	createId: null as unknown as () => string,
-	register: null as unknown as (item: unknown) => void,
-	unregister: null as unknown as (item: unknown) => void,
 	getVariableById: null,
-	openPropertyPanel: null as unknown as (variable: unknown) => void,
-	closePropertyPanel: null as unknown as (this: typeof Variable) => void,
 	unpackVariables: null,
 	packVariables: null,
-	saveHistory: null as unknown as (item: unknown, key: string, value: unknown) => void,
 	windowClose: null,
 	windowClosed: null,
 	keydown: null,
@@ -132,18 +126,9 @@ const variable: Omit<VariableModule, 'target' | 'idMap' | 'history'> = {
 	noteInput: null,
 	panelKeydown: null,
 	searcherInput: null,
-	confirm: null as unknown as (event?: Event) => void,
 	apply: null,
-	list_saveScroll: null as unknown as () => void,
-	list_restoreScroll: null as unknown as () => void,
-	list_cancelSearch: null as unknown as () => void,
-	list_createFolder: null as unknown as () => unknown,
-	list_createVariable: null as unknown as () => unknown,
-	list_onCreate: null as unknown as (item: unknown) => void,
-	list_onDelete: null as unknown as (item: unknown) => void,
-	list_onResume: null as unknown as (item: unknown) => void,
 	_listMethodsLoaded: false
-};
+} satisfies Partial<VariableLiteral> as VariableLiteral;
 
 export const Variable = variable as VariableModule;
 
@@ -161,9 +146,6 @@ function ensureDomBound() {
 	Variable.inputs.number = variableEls.get('variable-value-number') as YamiElement;
 	Variable.inputs.string = variableEls.get('variable-value-string') as YamiElement;
 	Variable.inputs.note = variableEls.get('variable-note') as YamiElement;
-	Variable.list.copy = null as unknown as (...args: unknown[]) => void;
-	Variable.list.paste = null as unknown as (...args: unknown[]) => void;
-	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
 	Variable.list.saveScroll = Variable.list_saveScroll;
 	Variable.list.restoreScroll = Variable.list_restoreScroll;
 	Variable.list.cancelSearch = Variable.list_cancelSearch;

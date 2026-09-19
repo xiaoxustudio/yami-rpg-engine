@@ -1,4 +1,5 @@
 import { UI } from './ui-window.ts';
+import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-window.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -9,6 +10,27 @@ import { Title } from '@app/title/title-bar.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
+import type { YamiElement } from '@app/types/element-api';
+
+/**
+ * `updateTargetItem` 用到的 TreeList 专有方法（不在通用 `YamiElementApi` 上）。
+ * 只补缺的那一个，避免为一个方法把整个 TreeList 类型搬进来。
+ */
+interface UIListApi {
+	selectWithNoEvent(item: unknown): void;
+}
+
+/**
+ * 遗留层各处对 UI 根节点实例的用法（`children` / 文本与打印刷新 / `resize`）。
+ * `root` 已迁到 store，而 store 的类型把它标成 `UIElementInstance`（成员不够用）。
+ * `extends UINodeShape` 是必需的：这些实例本身就要被当作 `UINodeShape` 传给
+ * `update()` / `find()` 的递归参数，否则还得再断言一次。
+ */
+interface UIRootApi extends UINodeShape {
+	updateTextContent?: () => void;
+	updatePrinter?: () => void;
+	resize(): void;
+}
 
 UI.setSize = function (this: UIShape, width: number, height: number) {
 	const currentWidth = getUIStore().width;
@@ -125,22 +147,26 @@ UI.updateHover = function (this: UIShape) {
 };
 
 UI.updateTarget = function (this: UIShape) {
-	const item = read(this.list);
+	// 同 `updateTargetItem`：`this.list` 已迁到元素注册表，注册表未登记时是 `{}` 兜底，
+	// 而 `read({})` 会抛 `Invalid value used as weak map key`。
+	const item = read(getUIStore().elements.list) ?? null;
 	if (item !== getUIStore().target) {
 		this.setTarget!(item);
 	}
 };
 
 UI.updateTargetItem = function (this: UIShape) {
-	const { target } = this;
+	// ⚠️ `target` 已迁到 store、`list` 已迁到元素注册表，**不能**再读 `this.target` /
+	// `this.list`：前者是 `undefined`，后者在注册表未登记时是 `{}` 兜底，而 `read({})`
+	// 会抛 `Invalid value used as weak map key` —— 每次点选都在这里抛异常，
+	// 表现是「UI 整个像截图一样冻住、连选中框都不出现」（异常被 Vue 事件处理吞掉）。
+	const target = getUIStore().elements.target;
 	if (target !== null) {
-		const { list } = this;
-		if (read(list) !== target) {
+		const list = getUIStore().elements.list as (YamiElement & UIListApi) | null;
+		if (list && read(list) !== target) {
 			list.selectWithNoEvent(target);
-			if (target) {
-				list.expandToSelection();
-				list.scrollToSelection();
-			}
+			list.expandToSelection();
+			list.scrollToSelection();
 		}
 	}
 };
@@ -152,13 +178,13 @@ UI.updateElementFont = function (this: UIShape) {
 		}
 		const update = (element: UINodeShape) => {
 			if (
-				element instanceof UI.Text ||
-				element instanceof UI.TextBox ||
-				element instanceof UI.DialogBox ||
-				element instanceof UI.Button
+				element instanceof uiElClasses.Text! ||
+				element instanceof uiElClasses.TextBox! ||
+				element instanceof uiElClasses.DialogBox! ||
+				element instanceof uiElClasses.Button!
 			) {
 				let el = element;
-				if (el instanceof UI.Button) {
+				if (el instanceof uiElClasses.Button!) {
 					el = el.shadowText;
 				}
 				if (el.printer !== null) {
@@ -176,7 +202,8 @@ UI.updateElementFont = function (this: UIShape) {
 				update(children[i]);
 			}
 		};
-		update(this.root);
+		const root = getUIStore().root as UIRootApi | null;
+		if (root) update(root);
 	}
 };
 
@@ -191,7 +218,7 @@ UI.updateElementLanguage = function (this: UIShape) {
 				update(element.children);
 			}
 		};
-		update(this.root.children);
+		update((getUIStore().root as UIRootApi | null)?.children ?? []);
 		this.requestRendering!();
 	}
 };
@@ -207,14 +234,14 @@ UI.updateElementTextScaling = function (this: UIShape) {
 				update(element.children);
 			}
 		};
-		update(this.root.children);
+		update((getUIStore().root as UIRootApi | null)?.children ?? []);
 		this.requestRendering!();
 	}
 };
 
 UI.updateIndexedColor = function (this: UIShape, index: number) {
 	if (getUIStore().state === 'open') {
-		const TextElement = UI.Text;
+		const TextElement = uiElClasses.Text!;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
 		const update = (element: UINodeShape): void => {
 			if (element instanceof TextElement && regexp.test(element.content)) {
@@ -227,7 +254,8 @@ UI.updateIndexedColor = function (this: UIShape, index: number) {
 				update(children[i]);
 			}
 		};
-		update(this.root);
+		const root = getUIStore().root as UIRootApi | null;
+		if (root) update(root);
 	}
 };
 
@@ -255,23 +283,27 @@ UI.updateAllReferences = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		const update = (elements: UINodeShape[]): void => {
 			for (const element of elements) {
-				if (element instanceof UI.Reference) {
+				if (element instanceof uiElClasses.Reference!) {
 					element.update();
 				} else {
 					update(element.children);
 				}
 			}
 		};
-		update(this.root.children);
+		update((getUIStore().root as UIRootApi | null)?.children ?? []);
 	}
 };
 
 UI.updateElement = function (this: UIShape, target: UINodeShape) {
-	let nodes;
+	// `nodes` / `root` 都已迁到 store（`ui-file.ts` 里写入），`this.nodes` 是 `undefined`
+	// —— `.includes` 会直接抛（2026-09-18）。
+	let nodes: UINodeShape[] = [];
 	let instance;
-	if (this.nodes.includes(target)) {
-		nodes = this.nodes;
-		instance = this.root;
+	const rootNodes = getUIStore().nodes as UINodeShape[] | null;
+	const root = getUIStore().root as UIRootApi | null;
+	if (rootNodes?.includes(target)) {
+		nodes = rootNodes;
+		instance = root;
 	} else {
 		const find = (node: UINodeShape): UINodeShape | null => {
 			const children = node.children;
@@ -287,8 +319,8 @@ UI.updateElement = function (this: UIShape, target: UINodeShape) {
 			return null;
 		};
 		const node = find({
-			instance: this.root,
-			children: this.nodes
+			instance: root,
+			children: rootNodes ?? []
 		} as unknown as UINodeShape);
 		if (node) {
 			nodes = node.children;
@@ -353,7 +385,9 @@ UI.resize = function (this: UIShape) {
 		GL.resize!(screenWidth, screenHeight);
 		this.updateCamera!();
 		this.updateTransform!();
-		this.root.resize();
+		// `root` 已迁到 store（`ui-file.ts` 里写入），`this.root` 是 `undefined`
+		// ⇒ `Cannot read properties of undefined (reading 'resize')`（2026-09-18）。
+		(getUIStore().root as UIRootApi | null)?.resize();
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}

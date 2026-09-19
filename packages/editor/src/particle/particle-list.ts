@@ -203,30 +203,30 @@ Particle.list.delete = function (item) {
 
 // 列表 - 在创建数据时回调
 getListConfig(Particle.list).onCreate = function () {
-	Particle.emitter.updateLayers();
+	Particle.emitter!.updateLayers();
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };
 
 // 列表 - 在迁移数据时回调
 getListConfig(Particle.list).onRemove = function () {
-	Particle.emitter.updateLayers();
+	Particle.emitter!.updateLayers();
 	Particle.requestRendering!();
 };
 
 // 列表 - 在删除数据时回调
 getListConfig(Particle.list).onDelete = function () {
 	Particle.updateTarget!();
-	Particle.emitter.updateLayers();
-	Particle.emitter.active = false;
-	Particle.emitter.selected = false;
+	Particle.emitter!.updateLayers();
+	Particle.emitter!.active = false;
+	Particle.emitter!.selected = false;
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };
 
 // 列表 - 在恢复数据时回调
 getListConfig(Particle.list).onResume = function () {
-	Particle.emitter.updateLayers();
+	Particle.emitter!.updateLayers();
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };

@@ -1,15 +1,17 @@
 #!/usr/bin/env node
-// DOM 迁移守卫：扫描命令式 DOM 用法，为存量代码打豁免标记，输出迁���矩阵。
+// DOM 迁移守卫：扫描命令式 DOM 用法，输出迁移矩阵。
 // 用法：
-//   node scripts/dom-guard.mjs tracker  生成 DOM 迁移台账（白名单口径见 WHITELIST）
+//   node scripts/dom-guard.mjs tracker  生成 DOM 迁移台账
 //   node scripts/dom-guard.mjs fix      修 BOM 错位的豁免注释（历史遗留）
 //
 // C1 后不再提供 exempt 子命令：受限 API 的用法只剩「迁移」或「进白名单」两条路，
-// 后者由 WHITELIST / TEMP_WHITELIST + .oxlintrc.json 的 overrides 承担。
+// 后者由 `.oxlintrc.json` 的 `overrides` 承担——**名单只有那一份**（见 `scripts/lib/dom-whitelist.mjs`）。
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { DOM_PATTERNS, countMatches, countCodeMatches } from './lib/scan.mjs';
+import { loadDomWhitelist } from './lib/dom-whitelist.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SCAN_DIRS = [join('packages', 'editor', 'src'), join('packages', 'ui-kit', 'src')];
@@ -18,77 +20,45 @@ const EXCLUDE_RE = /(?:\.spec\.ts$|\.d\.ts$|\/__tests__\/|\.demo\.vue$)/;
 const DISABLE_COMMENT = '/* oxlint-disable eslint/no-restricted-properties */';
 
 /**
- * C1 白名单（设计豁免）：这些文件**按设计**必须使用受限 API，已由 `.oxlintrc.json` 的
- * `overrides` 关掉 `eslint/no-restricted-properties`，因此不再需要豁免注释。
+ * C1 白名单（设计豁免）：这些文件**按设计**必须使用受限 API。
+ *
+ * **真源是 `.oxlintrc.json`**（`overrides` 里把 `eslint/no-restricted-properties` 关成 `off`
+ * 的那些 `files`）——能放行 `pnpm lint` 的才算豁免，台账另认一份名单只会两边对不上。
+ * 本文件过去在这里维护过一份字面量数组，已经和 lint 配置漂移过（报表「设计豁免 46」而白名单
+ * 只有 14 条），2026-09-17 收口为单一真源；`scripts/migration-ledger.mjs` 的
+ * `dom-whitelist-drift` 轴持续守住它。
+ *
+ * 白名单的设计口径（逐条理由记在 `.oxlintrc.json` 对应 override 的 `comment` 上）：
+ *   - A 类·真画布上下文：`createElement('canvas')` 取 2D/WebGL 上下文与像素读回，模板无法替代
+ *   - 应用挂载点：Vue 的挂载容器来自 index.html，只能按 id 取一次
+ *   - 唯一 DOM 创建/查询缝隙：`$()` 与 renderDetached / createDetachedElement 的实现处
+ *   - index.html 外壳元素（`#cursor-region`），非 SFC 渲染
+ *   - 元素优先的组件 API 层（P2b 重定义：架构性设计豁免，不以文件数归零为准）
+ *   - R2b 收口后的选择器式本地化器：按语言表的键发现元素；id 键的扫描面已归零，
+ *     剩下的只有 `[name=…]` / `[.class]` 分组键（`name` 是组件内部的**稳定契约属性**）
  *
  * 口径：`待迁移命中` 只看「带豁免注释且指令仍在用」的文件；白名单文件在 C1 之后都不带注释，
  * 因此「白名单外待迁移命中 = 待迁移命中」——**C1 的验收就是 `待迁移命中 === 0`**。
- * `设计豁免` 列是另一个信息量：白名单里**正则仍命中受限 API**的文件数（说明豁免是被用到的）。
+ * `设计豁免` 列是另一个信息量：白名单里**仍有真实命中**的文件数（说明豁免是被用到的）。
  */
-const WHITELIST = [
-	// A 类·真画布上下文：createElement('canvas') 取 2D/WebGL 上下文与像素读回，模板无法替代
-	'packages/editor/src/engine/webgl/webgl-init.ts',
-	'packages/editor/src/engine/webgl/webgl-methods.ts',
-	'packages/editor/src/engine/palette/palette-engine.ts',
-	'packages/editor/src/engine/scene/draw-start-position.ts',
-	'packages/editor/src/printer/printer.ts',
-	'packages/editor/src/audio/audio-manager.ts',
-	'packages/editor/src/data/transition-window.ts',
-	// 应用挂载点：Vue 的挂载容器来自 index.html，只能按 id 取一次
-	'packages/editor/src/main.ts',
-	// 唯一 DOM 创建/查询缝隙：$() 与 renderDetached / createDetachedElement 的实现处
-	'packages/editor/src/utils/dom.ts',
-	// ui-kit 侧的同类缝隙：离屏建元素收在一处（B1 收口用，组件内不再直接 document.createElement）
-	'packages/ui-kit/src/utils/detached.ts',
-	// index.html 外壳元素（#cursor-region），非 SFC 渲染
-	'packages/editor/src/composables/usePointerObjectWindow.ts',
-	// 元素优先的组件 API 层（P2b 重定义：架构性设计豁免，不以文件数归零为准）
-	'packages/ui-kit/src/components/**',
-	'packages/ui-kit/src/utils/radio-proxy.ts',
-	// R2b 收口后的**设计豁免**：选择器式本地化器。它的职责是按语言表的键发现元素；
-	// 其中 id 键的扫描面已归零（改由模板 `t()` / `v-tip` / `useLocalizedOptions` 承担），
-	// 剩下的只有 18 个 `[name=…]` / `[.class]` 分组键——`name` 是组件内部的**稳定契约属性**
-	// （`YMFormButtons` 的 CSS 就依赖 `button[name="confirm"]`），无法用 id/模板替代。
-	'packages/editor/src/localize/dom-localizer.ts'
-];
+const { match: isWhitelisted } = loadDomWhitelist();
 
-/** C1 临时豁免（有退出条件）：**已全部销账（2026-09-17）**。
+/** 临时豁免（有退出条件）：**已全部销账（2026-09-17）**。
  * 历史上只有一项——`localize/dom-localizer.ts`（归属 R2b）；R2b 的可量化目标达成后
- * 已转为设计豁免，见上方 WHITELIST 的说明。保留空数组是为了让「临时豁免」这一档仍然可见。 */
-const TEMP_WHITELIST = [];
+ * 已转为设计豁免，见 `.oxlintrc.json`。保留一个恒为 0 的计数是为了让「临时豁免」这一档
+ * 仍然出现在报表里（销账不等于这一档消失，未来仍可能有带退出条件的临时豁免）。 */
+const TEMP_WHITELIST_COUNT = 0;
 
-const globToRegExp = (pattern) => {
-	const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-	const body = escaped.replace(/\*\*/g, '\u0000').replace(/\*/g, '[^/]*').replace(/\u0000/g, '.*');
-	return new RegExp(`^${body}$`);
-};
-const WHITELIST_RES = WHITELIST.map(globToRegExp);
-const TEMP_WHITELIST_RES = TEMP_WHITELIST.map(globToRegExp);
-const isWhitelisted = (rel) => WHITELIST_RES.some((re) => re.test(rel));
-const isTempWhitelisted = (rel) => TEMP_WHITELIST_RES.some((re) => re.test(rel));
-
-const PATTERNS = [
-	// 受限 API 按「属性访问」计数：与 .oxlintrc.json 的 no-restricted-properties 对齐，
-	// 不能要求后面紧跟 '('——`document.querySelector<HTMLElement>(...)` 这类带类型实参的写法会漏计。
-	{ key: 'getElementById', re: /document\s*\.\s*getElementById\b/g, lint: true },
-	{ key: 'querySelector', re: /document\s*\.\s*querySelector(?:All)?\b/g, lint: true },
-	{ key: 'getElementsByClass', re: /document\s*\.\s*getElementsByClassName\b/g, lint: true },
-	{ key: 'getElementsByName', re: /document\s*\.\s*getElementsByName\b/g, lint: true },
-	{ key: 'getElementsByTag', re: /document\s*\.\s*getElementsByTagName\b/g, lint: true },
-	{ key: 'createElement', re: /document\s*\.\s*createElement\b/g, lint: true },
-	{ key: 'appendChild', re: /\.appendChild\s*\(/g },
-	{ key: 'removeChild', re: /\.removeChild\s*\(/g },
-	{ key: 'insertBefore', re: /\.insertBefore\s*\(/g },
-	{ key: 'parentNode', re: /\.parentNode\b/g },
-	{ key: 'innerHTML', re: /\.innerHTML\b/g },
-	{ key: 'addEventListener', re: /\.addEventListener\s*\(/g },
-	{ key: 'dispatchEvent', re: /\.dispatchEvent\s*\(/g },
-	// P5 尾巴：element-utils 的 jQuery 风格寻址（utils/dom.ts L147-157 的 `$`）
-	// 与字符串模板建 DOM——都不在 lint 规则内，但同属待迁移的 DOM 耦合，故单列计数。
-	{ key: 'dollarLookup', re: /\$\(\s*['"\u0060]#/g },
-	{ key: 'domParser', re: /new DOMParser\(\)/g },
-	{ key: 'protoExt', re: /(?:HTMLElement|Element|ChildNode|ParentNode)\.prototype\./g }
-];
+/**
+ * 受限 API 模式。
+ *
+ * 2026-09-17 起**统一 import 自 `scripts/lib/scan.mjs`**（`DOM_PATTERNS`），本文件不再维护
+ * 第二份：`migration-ledger.mjs` 数的是同一批模式，两份实现必然分叉。
+ * 计数口径也从「原文正则」改为 `countCodeMatches`（排除注释/字符串/`.vue` 的 template+style）
+ * ——本仓库的注释里大量写着「原先 document.getElementById」这类**已迁完**的记录，
+ * 按原文计数会把它们当成迁移债（2026-09-17 实测虚高 29 文件 / 34 处，而 oxlint 是 0）。
+ */
+const PATTERNS = DOM_PATTERNS;
 
 // 辅助口径：同属 DOM 耦合、但既不在 lint 规则内、也不进每模块列（避免表过宽）。
 // 只作「覆盖面清单」报告——2026-09-11 的度量审计显示这类耦合容易被漏记（`$('#id')` 就是这么发现的）。
@@ -107,11 +77,20 @@ const AUX_PATTERNS = [
 	{ key: 'offsetWidth/Height 读', re: /\.(?:offsetWidth|offsetHeight)\b/g },
 	{ key: 'getComputedStyle', re: /getComputedStyle\(/g },
 	{ key: 'innerHTML 赋值', re: /\.innerHTML\s*=/g },
-	{ key: 'replaceChildren/insertAdjacentHTML/matches()', re: /\.(?:replaceChildren|insertAdjacentHTML|matches)\(/g },
-	{ key: 'customElements.define / attachShadow', re: /(?:customElements\.define|\.attachShadow)\(/g },
+	{
+		key: 'replaceChildren/insertAdjacentHTML/matches()',
+		re: /\.(?:replaceChildren|insertAdjacentHTML|matches)\(/g
+	},
+	{
+		key: 'customElements.define / attachShadow',
+		re: /(?:customElements\.define|\.attachShadow)\(/g
+	},
 	// 原型**访问器**定义（`Object.defineProperty(HTMLElement.prototype, field, …)`）——
 	// protoExt 列要求 `prototype.`，这种"逗号形式"会被漏掉，故单列（2026-09-11 发现）。
-	{ key: 'prototype 访问器定义（逗号形式）', re: /(?:Object\.defineProperty|Object\.setPrototypeOf)\(\s*(?:HTMLElement|Element|ChildNode|ParentNode)\.prototype/g },
+	{
+		key: 'prototype 访问器定义（逗号形式）',
+		re: /(?:Object\.defineProperty|Object\.setPrototypeOf)\(\s*(?:HTMLElement|Element|ChildNode|ParentNode)\.prototype/g
+	},
 	// 覆盖面审计补充轴（2026-09-11）：class 当状态读、属性当状态、data-* 当状态
 	{ key: 'hasClass() 读 class 当状态', re: /\bhasClass\(/g },
 	{ key: 'get/set/removeAttribute', re: /\.(?:get|set|remove)Attribute\(/g },
@@ -140,25 +119,31 @@ function collectFiles() {
 	return files;
 }
 
-function countMatches(source, re) {
-	re.lastIndex = 0;
-	let count = 0;
-	while (re.exec(source) !== null) count++;
-	return count;
-}
-
 function scan() {
 	const rows = [];
 	for (const file of collectFiles()) {
 		const rel = relative(ROOT, file).replace(/\\/g, '/');
 		const source = readFileSync(file, 'utf8');
 		const counts = {};
-		for (const p of PATTERNS) counts[p.key] = countMatches(source, p.re);
+		// 「真实命中」口径：排除注释 / 字符串 / `.vue` 的 template+style。
+		// 另存一份原文口径（rawCounts）只作参考——两者的差额就是「写在注释里的历史记录」。
+		for (const p of PATTERNS) counts[p.key] = countCodeMatches(source, p.re);
+		const rawCounts = {};
+		for (const p of PATTERNS) rawCounts[p.key] = countMatches(source, p.re);
 		const aux = {};
 		for (const p of AUX_PATTERNS) aux[p.key] = countMatches(source, p.re);
 		const lintCount = PATTERNS.filter((p) => p.lint).reduce((sum, p) => sum + counts[p.key], 0);
 		const total = PATTERNS.reduce((sum, p) => sum + counts[p.key], 0);
-		rows.push({ rel, file, counts, aux, lintCount, total, exempt: hasRuleDisabled(source) });
+		rows.push({
+			rel,
+			file,
+			counts,
+			rawCounts,
+			aux,
+			lintCount,
+			total,
+			exempt: hasRuleDisabled(source)
+		});
 	}
 	return rows;
 }
@@ -202,7 +187,10 @@ function fix() {
 					const source = readFileSync(full, 'utf8');
 					const pat = DISABLE_COMMENT + '\n\ufeff';
 					if (source.startsWith(pat)) {
-						writeFileSync(full, '\ufeff' + DISABLE_COMMENT + '\n' + source.slice(pat.length));
+						writeFileSync(
+							full,
+							'\ufeff' + DISABLE_COMMENT + '\n' + source.slice(pat.length)
+						);
 						fixed++;
 					}
 				}
@@ -223,7 +211,15 @@ function detectStaleExemptions(rows) {
 	if (existsSync(bin)) {
 		const res = spawnSync(
 			process.execPath,
-			[bin, '-c', '.oxlintrc.json', '--report-unused-disable-directives', '--format=json', 'packages/editor', 'packages/ui-kit'],
+			[
+				bin,
+				'-c',
+				'.oxlintrc.json',
+				'--report-unused-disable-directives',
+				'--format=json',
+				'packages/editor',
+				'packages/ui-kit'
+			],
 			{ cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }
 		);
 		const text = res.stdout ?? '';
@@ -238,7 +234,9 @@ function detectStaleExemptions(rows) {
 					const line = d.labels?.[0]?.span?.line ?? 1;
 					let directive = '';
 					try {
-						directive = (readFileSync(join(ROOT, file), 'utf8').split('\n')[line - 1] ?? '').trim();
+						directive = (
+							readFileSync(join(ROOT, file), 'utf8').split('\n')[line - 1] ?? ''
+						).trim();
 					} catch {
 						continue;
 					}
@@ -251,10 +249,24 @@ function detectStaleExemptions(rows) {
 		}
 	}
 	// 回退：带注释且正则无命中的文件（会高估陈旧量，故在报表里标注）
-	const stale = new Set(rows.filter((row) => row.exempt && row.lintCount === 0).map((row) => row.rel));
+	const stale = new Set(
+		rows.filter((row) => row.exempt && row.lintCount === 0).map((row) => row.rel)
+	);
 	return { stale, source: 'regex' };
 }
 
+/**
+ * 落盘目标：`scripts/dom-migration-tracker.md`（**不是** `docs/`）。
+ *
+ * 历史：本文件过去写 `docs/dom-migration-tracker.md`。`docs/` 已在 Phase 15 按收尾流程
+ * **有意删除**，源码里当时还专门加了一段「目录不存在就跳过写入、不要 mkdirSync」的注释，
+ * 以免随手跑一次 tracker 又把 `docs/` 变回承重结构。代价是：矩阵每次跑完就丢了，
+ * 而它本来是那份「可复现的迁移矩阵」的唯一载体。
+ *
+ * 现在的口径：
+ *   - `scripts/migration-ledger-baseline.json` 是**数字**的真源（棘轮门禁靠它）；
+ *   - 本函数产出的 Markdown 是**人读明细**，写进 `scripts/`，可用 `--stdout` 不落盘。
+ */
 function tracker() {
 	const rows = scan();
 	const { stale: staleSet, source: staleSource } = detectStaleExemptions(rows);
@@ -291,37 +303,56 @@ function tracker() {
 			totalStale++;
 		}
 		// 待迁移命中 = 带豁免注释且仍被 oxlint 判定「指令在用」的文件
-		// （无注释却正则命中的属正则误报，见口径区，不计入）
+		// （无注释却命中且不在白名单的属**真迁移债**，见下方 missingAnnotation——它必须为 0）
 		if (annotated && !stale) m.pending++;
 		// C1：白名单分类（独立于注释，用于说明"豁免是被设计需要的"）
-		if (row.lintCount > 0 && isWhitelisted(row.rel)) {
+		if (row.total > 0 && isWhitelisted(row.rel)) {
 			m.design++;
 			totalDesign++;
 		}
-		if (row.lintCount > 0 && isTempWhitelisted(row.rel)) {
+		if (row.total > 0 && TEMP_WHITELIST_COUNT > 0) {
 			m.temp++;
 			totalTemp++;
 		}
 		for (const [k, v] of Object.entries(row.counts)) m.counts[k] = (m.counts[k] ?? 0) + v;
 	}
 	const totalPending = [...modules.values()].reduce((sum, m) => sum + m.pending, 0);
-	const missingAnnotation = rows.filter((row) => !row.exempt && row.lintCount > 0).map((row) => row.rel);
+	const missingAnnotation = rows
+		.filter((row) => !row.exempt && row.lintCount > 0)
+		.map((row) => row.rel);
 	// oxlint 判为陈旧、但正则仍命中 → 命中出现在注释/字符串里
-	const commentOnlyHits = rows.filter((row) => row.exempt && staleSet.has(row.rel) && row.lintCount > 0).length;
+	const commentOnlyHits = rows.filter(
+		(row) => row.exempt && staleSet.has(row.rel) && row.lintCount > 0
+	).length;
 	const keyWidth = Math.max(...[...modules.keys()].map((k) => k.length));
-	const header = ['模块', '文件', '命中', '待迁移命中', '设计豁免', '临时豁免', '豁免注释', ...PATTERNS.map((p) => p.key)];
+	const header = [
+		'模块',
+		'文件',
+		'命中',
+		'待迁移命中',
+		'设计豁免',
+		'临时豁免',
+		'豁免注释',
+		...PATTERNS.map((p) => p.key)
+	];
 	const lines = [];
 	lines.push('# DOM 迁移矩阵');
 	lines.push('');
 	lines.push('> 由 `node scripts/dom-guard.mjs tracker` 自动生成。两个口径别混淆：');
-	lines.push('> `待迁移命中` = 仍真正使用受限 API（`eslint/no-restricted-properties`）的文件数——迁移债，靠豁免注释才让 `pnpm lint` 干净；');
-	lines.push('> `豁免注释` = 仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数，其中一部分**已无命中**（`待迁移命中 + 陈旧豁免 = 豁免注释`）。');
+	lines.push(
+		'> `待迁移命中` = 仍真正使用受限 API（`eslint/no-restricted-properties`）的文件数——迁移债，靠豁免注释才让 `pnpm lint` 干净；'
+	);
+	lines.push(
+		'> `豁免注释` = 仍带 `/* oxlint-disable eslint/no-restricted-properties */` 的文件数，其中一部分**已无命中**（`待迁移命中 + 陈旧豁免 = 豁免注释`）。'
+	);
 	lines.push('');
 	lines.push(`| ${header.join(' | ')} |`);
 	lines.push(`|${header.map(() => '---').join('|')}|`);
 	const globalCounts = {};
 	let totalFiles = 0;
-	for (const [key, m] of [...modules.entries()].sort()) {
+	// 显式 localeCompare 比较器：`Array.prototype.sort()` 默认按 UTF-16 码元排序，
+	// 对非 ASCII 的模块键（本仓库报表里是中文）顺序不稳定，也会让生成的报表 diff 抖动。
+	for (const [key, m] of [...modules.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
 		lines.push(
 			`| ${key.padEnd(keyWidth)} | ${m.total} | ${m.affected} | ${m.pending} | ${m.design} | ${m.temp} | ${m.annotated} | ${PATTERNS.map((p) => m.counts[p.key] ?? 0).join(' | ')} |`
 		);
@@ -334,33 +365,41 @@ function tracker() {
 	lines.push('');
 	lines.push('## 口径');
 	lines.push('');
-	lines.push(`- 扫描文件：**${totalFiles}**（\`packages/editor/src\` + \`packages/ui-kit/src\`，排除 \`*.spec.ts\` / \`__tests__\` / \`.demo.vue\`）`);
-	lines.push(`- 待迁移命中文件：**${totalPending}**（判定来源：oxlint \`--report-unused-disable-directives\`${staleSource === 'oxlint' ? '' : '（⚠️ oxlint 不可用，当前为**正则估算**）'}）`);
+	lines.push(
+		`- 扫描文件：**${totalFiles}**（\`packages/editor/src\` + \`packages/ui-kit/src\`，排除 \`*.spec.ts\` / \`__tests__\` / \`.demo.vue\`）`
+	);
+	lines.push(
+		`- 待迁移命中文件：**${totalPending}**（判定来源：oxlint \`--report-unused-disable-directives\`${staleSource === 'oxlint' ? '' : '（⚠️ oxlint 不可用，当前为**正则估算**）'}）`
+	);
 	lines.push(`- 豁免注释文件：**${totalAnnotated}**`);
-	lines.push(`- 陈旧豁免文件：**${totalStale}**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）`);
 	lines.push(
-		`- **设计豁免文件（C1 白名单）：${totalDesign}**——按设计必须使用受限 API，已由 \`.oxlintrc.json\` 的 \`overrides\` 关掉规则、**不再需要豁免注释**（画布上下文 / 应用挂载点 / 唯一 DOM 缝隙 / index.html 外壳元素 / ui-kit 元素优先组件层）`
+		`- 陈旧豁免文件：**${totalStale}**（注释在、命中已为 0，可直接删注释；待迁移命中 + 陈旧豁免 = 豁免注释）`
 	);
 	lines.push(
-		`- **临时豁免文件（有退出条件）：${totalTemp}**——归属别的任务线，见 [remaining-work.md](./remaining-work.md) C1 白名单表`
+		`- **设计豁免文件（C1 白名单）：${totalDesign}**——按设计必须使用受限 API，已由 \`.oxlintrc.json\` 的 \`overrides\` 关掉规则、**不再需要豁免注释**（画布上下文 / 应用挂载点 / 唯一 DOM 缝隙 / index.html 外壳元素 / ui-kit 元素优先组件层）。白名单**真源是 \`.oxlintrc.json\`**，本文件不再持有副本`
 	);
+	lines.push(`- **临时豁免文件（有退出条件）：${totalTemp}**——已全部销账`);
 	lines.push(
-		`- **C1 验收口径：白名单外待迁移命中 = 待迁移命中 ${totalPending} − 0（白名单文件不带注释）⇒ 要求 \`待迁移命中 === 0\`**`
+		`- **C1 验收口径：白名单外待迁移命中 = 待迁移命中 ${totalPending}（白名单文件不带注释）⇒ 要求 \`待迁移命中 === 0\`**`
 	);
 	lines.push(`- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**${commentOnlyHits}**`);
-	lines.push(`- 正则命中但无豁免注释：**${missingAnnotation.length}**（\`pnpm lint\` 干净 ⇒ 这些是**正则误报**；迁移债以「带注释且非陈旧」为准）`);
-	if (missingAnnotation.length > 0 && missingAnnotation.length <= 5) {
+	lines.push(
+		`- **白名单外命中：${missingAnnotation.length} 个文件**——注意这**不是**迁移债。真实命中为 0（见上一条），这 46 个是正则口径下仍匹配到受限 API 的文件，其中绝大多数命中落在注释/字符串里（本仓库的注释大量写有「原先 document.getElementById」这类**已迁完**的记录）。真迁移债的权威口径是 \`scripts/migration-ledger.mjs\` 的 \`dom-pending\` 轴（计数前先剥离注释、字符串与 \`.vue\` 的 template/style），当前为 **0**`
+	);
+	if (missingAnnotation.length > 0 && missingAnnotation.length <= 10) {
 		for (const rel of missingAnnotation) lines.push(`  - \`${rel}\``);
 	}
-	lines.push(`- 各 API 列 = 属性访问的**出现处数**（正则计数，含注释/字符串中的出现，只作趋势参考）`);
+	lines.push(`- 各 API 列 = 受限 API 在**真实代码**里的出现处数（注释/字符串里的历史记录不计）`);
 	const dollarFiles = rows.filter((row) => (row.counts.dollarLookup ?? 0) > 0).length;
 	lines.push(
-		`- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：\`$('#…')\` 反查 **${globalCounts.dollarLookup ?? 0}** 处 / **${dollarFiles}** 文件、\`new DOMParser()\` **${globalCounts.domParser ?? 0}** 处——前者是 element-utils 的 jQuery 风格寻址（\`packages/editor/src/utils/dom.ts\` L147-157），阶段 4 列为改造项但仍在，见 [remaining-work.md](./remaining-work.md) P5b`
+		`- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：\`$('#…')\` 反查 **${globalCounts.dollarLookup ?? 0}** 处 / **${dollarFiles}** 文件、\`new DOMParser()\` **${globalCounts.domParser ?? 0}** 处——前者是 element-utils 的 jQuery 风格寻址（\`packages/editor/src/utils/dom.ts\`），跟踪口径见 \`scripts/migration-ledger.mjs\``
 	);
 	lines.push('');
 	lines.push('## 辅助口径（未门禁，仅计数）');
 	lines.push('');
-	lines.push('> 同属 DOM 耦合，但既不在 lint 规则内、也不进每模块列（避免表过宽）。**只作覆盖面清单**——2026-09-11 的度量审计表明这类耦合最容易被漏记（`$(\'#id\')` 就是这么发现的）。');
+	lines.push(
+		"> 同属 DOM 耦合，但既不在 lint 规则内、也不进每模块列（避免表过宽）。**只作覆盖面清单**——2026-09-11 的度量审计表明这类耦合最容易被漏记（`$('#id')` 就是这么发现的）。"
+	);
 	lines.push('');
 	lines.push('| 类别 | 处数 | 文件数 |');
 	lines.push('| --- | --- | --- |');
@@ -378,21 +417,20 @@ function tracker() {
 	lines.push('| 文件 | 行数 | 命中 | 豁免注释 |');
 	lines.push('| --- | --- | --- | --- |');
 	for (const row of [...rows].sort((a, b) => b.total - a.total)) {
-		lines.push(`| ${row.rel} | ${readFileSync(row.file, 'utf8').split('\n').length} | ${row.total} | ${row.exempt ? '是' : '-'} |`);
-	}
-	const out = join(ROOT, 'docs');
-	// 「docs/ 可以被删除」是 P15 收尾的验收之一：目录已经不存在时**不要再创建它**。
-	// 旧行为是 `mkdirSync(recursive)`——那样删掉文档后随手跑一次 tracker，docs/ 又变回承重结构。
-	if (!existsSync(out)) {
-		console.log(
-			`tracker: docs/ 不存在，跳过写出（${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}）。`
+		lines.push(
+			`| ${row.rel} | ${readFileSync(row.file, 'utf8').split('\n').length} | ${row.total} | ${row.exempt ? '是' : '-'} |`
 		);
+	}
+	const summary =
+		`${rows.length} files; 待迁移命中 ${totalPending}, 白名单外命中 ${missingAnnotation.length}, ` +
+		`设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}`;
+	if (process.argv.includes('--stdout')) {
+		console.log(lines.join('\n'));
 		return;
 	}
-	writeFileSync(join(out, 'dom-migration-tracker.md'), lines.join('\n') + '\n');
-	console.log(
-		`tracker: wrote DOM 迁移台账 (${rows.length} files; 待迁移命中 ${totalPending}, 设计豁免 ${totalDesign}, 临时豁免 ${totalTemp}, 豁免注释 ${totalAnnotated}, 陈旧豁免 ${totalStale}, 来源 ${staleSource}).`
-	);
+	const outDir = join(ROOT, 'scripts');
+	writeFileSync(join(outDir, 'dom-migration-tracker.md'), lines.join('\n') + '\n');
+	console.log(`tracker: wrote scripts/dom-migration-tracker.md (${summary}).`);
 }
 
 const command = process.argv[2];

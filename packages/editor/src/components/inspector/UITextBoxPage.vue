@@ -143,7 +143,7 @@ import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -226,7 +226,7 @@ onMounted(() => {
 		'uiTextBox-selectionColor',
 		'uiTextBox-selectionBgColor'
 	]);
-	bindInput(elements, uiTextBox, UI);
+	bindInput(elements, getUIStore(), uiTextBox);
 
 	const el = inspectorEls.get('uiTextBox-vue-mount');
 	if (el) {

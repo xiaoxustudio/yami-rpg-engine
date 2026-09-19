@@ -1,7 +1,8 @@
 import { getElementReader } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 
 {
 	interface UIDialogBoxShape {
@@ -15,7 +16,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		[k: string]: unknown;
 	}
 	const UIDialogBox: UIDialogBoxShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -70,8 +71,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 	UIDialogBox.close = function (this: typeof UIDialogBox) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -83,7 +85,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'content':
@@ -153,7 +155,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				break;
 			}
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	Inspector.uiDialogBox = UIDialogBox;

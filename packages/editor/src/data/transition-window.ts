@@ -42,8 +42,6 @@ type EasingDrag = {
 	clientY: number;
 	pointStartX: number;
 	pointStartY: number;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 };
 type CurveMapInstance = Float64Array & {
 	count: number;
@@ -73,9 +71,16 @@ type EasingCanvasShape = HTMLCanvasElement & {
 	linkColorActive: string;
 };
 
-export const Easing = {
-	data: null as unknown as EasingData[] | null,
-	list: null as
+const EasingBase = {
+	changed: false
+};
+
+/**
+ * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
+ */
+interface EasingSlots {
+	data: EasingData[] | null;
+	list:
 		| (YamiElement & {
 				// oxlint-disable-next-line no-explicit-any
 				read: () => Record<string, any>;
@@ -88,84 +93,85 @@ export const Easing = {
 				saveSelection: () => void;
 				clear: () => void;
 		  })
-		| null,
-	curve: null as EasingCanvasShape | null,
-	preview: null as EasingCanvasShape | null,
-	points: null as Array<EasingPoint> | null,
-	dragging: null as EasingDrag | null,
-	activePoint: null as EasingPoint | null,
-	scale: null as unknown as number,
-	originX: null as number | null,
-	originY: null as number | null,
-	timer: null as unknown as Timer,
-	reverse: null as unknown as boolean,
-	elapsed: null as unknown as number,
-	duration: null as unknown as number,
-	delay: null as unknown as number,
-	curveMap: null as CurveMapInstance | null,
-	easingMap: null as EasingMapInstance | null,
-	pointImage: null as CanvasImageSource | null,
-	previewImage: null as HTMLCanvasElement | null,
-	startPoint: null as { x: number; y: number } | null,
-	endPoint: null as { x: number; y: number } | null,
-	changed: false,
-	initialize: null as unknown as () => void,
-	get: null as unknown as (id: string) => EasingMapInstance,
-	clear: null as unknown as () => void,
-	open: null as unknown as (target?: unknown) => void,
-	load: null as unknown as (easing: EasingData) => void,
-	insert: null as unknown as (dItem: EasingData) => void,
-	copy: null as unknown as (item: EasingData) => void,
-	paste: null as unknown as (dItem?: EasingData) => void,
-	delete: null as unknown as (item: EasingData) => void,
-	createId: null as unknown as () => string,
-	createData: null as unknown as () => EasingData,
-	setEasingKey: null as unknown as (item: EasingData) => void,
-	getItemById: null as unknown as (id: string) => EasingData | null,
-	updateMaps: null as unknown as () => void,
-	updateCanvases: null as unknown as () => void,
-	drawCurve: null as unknown as () => void,
-	drawPreview: null as unknown as () => void,
-	updatePoints: null as unknown as () => void,
-	selectPointByCoords: null as unknown as (mouseX: number, mouseY: number) => EasingPoint | null,
-	createPointImage: null as unknown as () => void,
-	createPreviewImage: null as unknown as () => void,
-	requestRendering: null as unknown as () => void,
-	renderingFunction: null as unknown as () => void,
-	stopRendering: null as unknown as () => void,
-	windowClose: null as unknown as (event: YamiEvent) => void,
-	windowClosed: null as unknown as (event: YamiEvent) => void,
-	dprchange: null as unknown as (event: YamiEvent) => void,
-	themechange: null as unknown as (event: YamiEvent & { value?: string }) => void,
-	dataChange: null as unknown as (event: YamiEvent) => void,
-	listKeydown: null as unknown as (event: KeyboardEvent) => void,
-	listSelect: null as unknown as (event: YamiEvent & { value?: EasingData }) => void,
-	listOpen: null as unknown as (event: YamiEvent & { value?: EasingData }) => void,
-	listPopup: null as unknown as (event: PointerEvent & { value?: EasingData | null }) => void,
-	modeSelect: null as unknown as (event: YamiEvent) => void,
-	pointInput: null as unknown as (event: YamiEvent) => void,
-	scaleInput: null as unknown as (event: YamiEvent & { value?: number }) => void,
-	curveKeydown: null as unknown as (event: KeyboardEvent) => void,
-	curvePointerdown: null as unknown as (event: PointerEvent & EasingDrag) => void,
-	curveWheel: null as unknown as (event: WheelEvent) => void,
-	curveBlur: null as unknown as (event: YamiEvent) => void,
-	pointerup: null as unknown as (event?: PointerEvent) => void,
-	pointermove: null as unknown as (event: PointerEvent) => void,
-	durationInput: null as unknown as () => void,
-	delayInput: null as unknown as () => void,
-	confirm: null as unknown as (event: YamiEvent) => void,
-	CurveMap: null as unknown as { new (): CurveMapInstance },
-	EasingMap: null as unknown as { new (): EasingMapInstance } & {
+		| null;
+	curve: EasingCanvasShape | null;
+	preview: EasingCanvasShape | null;
+	points: Array<EasingPoint> | null;
+	dragging: EasingDrag | null;
+	activePoint: EasingPoint | null;
+	scale: number;
+	originX: number | null;
+	originY: number | null;
+	timer: Timer;
+	reverse: boolean;
+	elapsed: number;
+	duration: number;
+	delay: number;
+	curveMap: CurveMapInstance | null;
+	easingMap: EasingMapInstance | null;
+	pointImage: CanvasImageSource | null;
+	previewImage: HTMLCanvasElement | null;
+	startPoint: { x: number; y: number } | null;
+	endPoint: { x: number; y: number } | null;
+	initialize: () => void;
+	get: (id: string) => EasingMapInstance;
+	clear: () => void;
+	open: (target?: unknown) => void;
+	load: (easing: EasingData) => void;
+	insert: (dItem: EasingData) => void;
+	copy: (item: EasingData) => void;
+	paste: (dItem?: EasingData) => void;
+	delete: (item: EasingData) => void;
+	createId: () => string;
+	createData: () => EasingData;
+	setEasingKey: (item: EasingData) => void;
+	getItemById: (id: string) => EasingData | null;
+	updateMaps: () => void;
+	updateCanvases: () => void;
+	drawCurve: () => void;
+	drawPreview: () => void;
+	updatePoints: () => void;
+	selectPointByCoords: (mouseX: number, mouseY: number) => EasingPoint | null;
+	createPointImage: () => void;
+	createPreviewImage: () => void;
+	requestRendering: () => void;
+	renderingFunction: () => void;
+	stopRendering: () => void;
+	windowClose: (event: YamiEvent) => void;
+	windowClosed: (event: YamiEvent) => void;
+	dprchange: (event: YamiEvent) => void;
+	themechange: (event: YamiEvent & { value?: string }) => void;
+	dataChange: (event: YamiEvent) => void;
+	listKeydown: (event: KeyboardEvent) => void;
+	listSelect: (event: YamiEvent & { value?: EasingData }) => void;
+	listOpen: (event: YamiEvent & { value?: EasingData }) => void;
+	listPopup: (event: PointerEvent & { value?: EasingData | null }) => void;
+	modeSelect: (event: YamiEvent) => void;
+	pointInput: (event: YamiEvent) => void;
+	scaleInput: (event: YamiEvent & { value?: number }) => void;
+	curveKeydown: (event: KeyboardEvent) => void;
+	curvePointerdown: (event: PointerEvent & EasingDrag) => void;
+	curveWheel: (event: WheelEvent) => void;
+	curveBlur: (event: YamiEvent) => void;
+	pointerup: (event?: PointerEvent) => void;
+	pointermove: (event: PointerEvent) => void;
+	durationInput: () => void;
+	delayInput: () => void;
+	confirm: (event: YamiEvent) => void;
+	CurveMap: { new (): CurveMapInstance };
+	EasingMap: { new (): EasingMapInstance } & {
 		easeInOut: EasingMapInstance;
-	},
-	list_saveSelection: null as unknown as () => void,
-	list_restoreSelection: null as unknown as () => void,
-	list_updateItemName: null as unknown as (item: EasingListItem) => void,
-	list_updateTextNode: null as unknown as (item: EasingListItem) => void,
-	saveToProject: null as ((project: EditorProjectShape) => void) | null,
-	loadFromProject: null as ((project: EditorProjectShape) => void) | null,
-	close: null as (() => void) | null
-};
+	};
+	list_saveSelection: () => void;
+	list_restoreSelection: () => void;
+	list_updateItemName: (item: EasingListItem) => void;
+	list_updateTextNode: (item: EasingListItem) => void;
+	saveToProject: ((project: EditorProjectShape) => void) | null;
+	loadFromProject: ((project: EditorProjectShape) => void) | null;
+	close: (() => void) | null;
+}
+
+export const Easing = EasingBase as typeof EasingBase & EasingSlots;
 
 function ensureDomBound() {
 	if (Easing.list) return;

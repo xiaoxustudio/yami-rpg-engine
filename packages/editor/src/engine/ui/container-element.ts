@@ -1,12 +1,12 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
 
-UI.Container = class ContainerElement extends UI.Element {
+uiElClasses.Container = class ContainerElement extends uiElClasses.Element! {
 	draw() {
 		this.drawChildren();
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();

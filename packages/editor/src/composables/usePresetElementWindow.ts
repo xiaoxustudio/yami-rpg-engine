@@ -3,7 +3,7 @@ import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 export type PresetElementNode = {
@@ -83,8 +83,8 @@ function open(openTarget: PresetElementTarget): void {
 	target = openTarget;
 	getWindowStore().open('presetElement');
 
-	const presetId = read(openTarget) || (UI.target?.presetId ?? '');
-	const uiId = Data.uiPresets[presetId]?.uiId ?? UI.meta?.guid ?? '';
+	const presetId = read(openTarget) || (getUIStore().target?.presetId ?? '');
+	const uiId = Data.uiPresets[presetId]?.uiId ?? getUIStore().meta?.guid ?? '';
 	write(ui, uiId);
 	getFocus(ui);
 	const item = list.getItemByProperties({ presetId });
@@ -112,7 +112,7 @@ function buildNodes(sourceNodes: PresetElementNode[]): PresetElementNode[] {
 }
 
 function getDefaultPresetId(): string {
-	return UI.target?.presetId ?? '';
+	return getUIStore().target?.presetId ?? '';
 }
 
 function windowClosed(_event: Event): void {

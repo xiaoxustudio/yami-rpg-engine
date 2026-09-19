@@ -1355,7 +1355,7 @@ const onUiVisibilityPointerdown =
 		list.update();
 		list.dispatchEvent(new Event('change', { bubbles: true }));
 		UI.requestRendering?.();
-		UI.history.save({
+		UI.history!.save({
 			type: 'ui-object-hidden',
 			item: item,
 			oldValues1: backups1,
@@ -1373,7 +1373,7 @@ const onUiLockPointerdown =
 		const backups = list.setRecursiveStates(item, 'locked', !locked);
 		list.update();
 		list.dispatchEvent(new Event('change', { bubbles: true }));
-		UI.history.save({
+		UI.history!.save({
 			type: 'ui-object-locked',
 			item: item,
 			oldValues: backups,
@@ -1640,9 +1640,11 @@ onMounted(() => {
 	registerElement(engineEls, 'layout-nav', paletteNavEl.value);
 	registerElement(engineEls, 'layout-page-manager', paletteManagerEl.value);
 	registerElement(animationEls, 'animation-dirList', dirListEl.value);
-	const el = dirListEl.value;
-	if (!el) return;
-	attachElementApi(el, { setDirItems, setDirDirection });
+	// ⚠️ 四个 store 的 initialize() **不能**放在下面 `if (!el) return` 之后：
+	// 它们与 `dirListEl`（动画方向列表）毫无关系，却曾整体挂在那个早退之下 ——
+	// `dirListEl` 万一为 null，UI/Scene/Animation/Particle 四套引擎就全都不会初始化，
+	// 表现是「画面能出来、列表能点，但画布交互全死」这种极难定位的半死状态。
+	// 初始化只依赖「Vue 已挂载」，与任何单个元素是否存在无关，因此先无条件发起。
 	nextTick(() => {
 		getUIStore().initialize();
 		getParticleStore().initialize();
@@ -1653,6 +1655,9 @@ onMounted(() => {
 		// 容器 ref 指向组件（NavBar/PageManager）→ 经 $el 取根元素后遍历子节点。
 		registerLayoutItems(collectPaletteItems(paletteNavEl.value, paletteManagerEl.value));
 	});
+	const el = dirListEl.value;
+	if (!el) return;
+	attachElementApi(el, { setDirItems, setDirDirection });
 });
 
 const onSceneHeadPointerdown = (event: PointerEvent) => {

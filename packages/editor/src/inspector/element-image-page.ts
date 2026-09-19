@@ -1,5 +1,6 @@
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 import { read } from '@app/utils/element-utils.ts';
 
 {
@@ -14,7 +15,7 @@ import { read } from '@app/utils/element-utils.ts';
 		[k: string]: unknown;
 	}
 	const UIImage: UIImageShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -65,8 +66,9 @@ import { read } from '@app/utils/element-utils.ts';
 
 	UIImage.close = function (this: typeof UIImage) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -78,7 +80,7 @@ import { read } from '@app/utils/element-utils.ts';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'image':
@@ -109,7 +111,7 @@ import { read } from '@app/utils/element-utils.ts';
 				break;
 			}
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	UIImage.paramInput = function (this: typeof UIImage, _event: Event) {

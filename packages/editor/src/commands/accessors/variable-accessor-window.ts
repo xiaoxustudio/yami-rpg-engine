@@ -69,26 +69,11 @@ interface VariableGetterShape {
 	_confirmCore: (prefix: string) => void;
 }
 
-export const VariableGetter: VariableGetterShape = {
-	keyBox: null as unknown as VariableGetterShape['keyBox'],
+export const VariableGetter = {
 	target: null,
 	filter: null,
-	types: null,
-	_state: null as unknown as VariableGetterShape['_state'],
-	initialize: null as unknown as VariableGetterShape['initialize'],
-	open: null as unknown as VariableGetterShape['open'],
-	_openCore: null as unknown as VariableGetterShape['_openCore'],
-	isNone: null as unknown as VariableGetterShape['isNone'],
-	loadPresetKeys: null as unknown as VariableGetterShape['loadPresetKeys'],
-	checkDataForPlugin: null as unknown as VariableGetterShape['checkDataForPlugin'],
-	createDefaultForPlugin: null as unknown as VariableGetterShape['createDefaultForPlugin'],
-	createVarListGenerator: null as unknown as VariableGetterShape['createVarListGenerator'],
-	typeWrite: null as unknown as VariableGetterShape['typeWrite'],
-	typeInput: null as unknown as VariableGetterShape['typeInput'],
-	confirm: null as unknown as VariableGetterShape['confirm'],
-	confirm2: null as unknown as VariableGetterShape['confirm2'],
-	_confirmCore: null as unknown as VariableGetterShape['_confirmCore']
-};
+	types: null
+} satisfies Partial<VariableGetterShape> as VariableGetterShape;
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
 	useVariableGetterWindow().initialize();

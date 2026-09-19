@@ -115,41 +115,45 @@ Animation.initialize = function (this: typeof Animation) {
 	hide(this.timelineMarquee);
 	hide(this.timelineMarqueeShift);
 
+	const rectRotate = {
+		TL: { x: 0, y: 0, angle: 225 },
+		TR: { x: 0, y: 0, angle: 315 },
+		BL: { x: 0, y: 0, angle: 135 },
+		BR: { x: 0, y: 0, angle: 45 }
+	};
+	const rectResize = {
+		T: { x: 0, y: 0, angle: 270 },
+		L: { x: 0, y: 0, angle: 180 },
+		R: { x: 0, y: 0, angle: 0 },
+		B: { x: 0, y: 0, angle: 90 },
+		TL: { x: 0, y: 0, angle: 225 },
+		TR: { x: 0, y: 0, angle: 315 },
+		BL: { x: 0, y: 0, angle: 135 },
+		BR: { x: 0, y: 0, angle: 45 }
+	};
+	// 控制点按优先级从低到高排序。
+	// 原先写成「`rectList: null as unknown as {x;y;angle}[]`，紧接着再整体赋一次」，
+	// 那个 `null as unknown as` 只是为了先立个非空的属性类型 —— 把两个子对象提前成
+	// 局部 const，就能在字面量里直接内联这份有序数组，断言随之消失（2026-09-18）。
 	const points = {
 		jointRotate: {},
-		rectRotate: {
-			TL: { x: 0, y: 0, angle: 225 },
-			TR: { x: 0, y: 0, angle: 315 },
-			BL: { x: 0, y: 0, angle: 135 },
-			BR: { x: 0, y: 0, angle: 45 }
-		},
-		rectResize: {
-			T: { x: 0, y: 0, angle: 270 },
-			L: { x: 0, y: 0, angle: 180 },
-			R: { x: 0, y: 0, angle: 0 },
-			B: { x: 0, y: 0, angle: 90 },
-			TL: { x: 0, y: 0, angle: 225 },
-			TR: { x: 0, y: 0, angle: 315 },
-			BL: { x: 0, y: 0, angle: 135 },
-			BR: { x: 0, y: 0, angle: 45 }
-		},
-		rectList: null as unknown as { x: number; y: number; angle: number }[]
+		rectRotate,
+		rectResize,
+		rectList: [
+			rectRotate.TL,
+			rectRotate.TR,
+			rectRotate.BL,
+			rectRotate.BR,
+			rectResize.T,
+			rectResize.L,
+			rectResize.R,
+			rectResize.B,
+			rectResize.TL,
+			rectResize.TR,
+			rectResize.BL,
+			rectResize.BR
+		]
 	};
-	// 控制点按优先级从低到高排序
-	points.rectList = [
-		points.rectRotate.TL,
-		points.rectRotate.TR,
-		points.rectRotate.BL,
-		points.rectRotate.BR,
-		points.rectResize.T,
-		points.rectResize.L,
-		points.rectResize.R,
-		points.rectResize.B,
-		points.rectResize.TL,
-		points.rectResize.TR,
-		points.rectResize.BL,
-		points.rectResize.BR
-	];
 	this.controlPoints = points;
 
 	this.translationTimer = new Timer({

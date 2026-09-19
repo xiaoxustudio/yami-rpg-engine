@@ -1,6 +1,7 @@
 import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { engineEls } from '@app/engine/element-registry';
+import { uiEls } from '@app/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { renderDetached } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
@@ -40,7 +41,7 @@ import { Particle } from '@app/particle/particle-window.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { Home } from '@app/title/home-page.ts';
 import { Title } from '@app/title/title-bar.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { h, nextTick, type VNode } from 'vue';
 
@@ -60,8 +61,6 @@ interface LayoutScheme {
 	split?: string;
 	children?: LayoutScheme[];
 	tabs?: string[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 type LayoutItemElement = HTMLElement & {
@@ -492,8 +491,33 @@ Layout.initialize = function () {
 	this.heads = [
 		Scene.head,
 		elementDataOf<{ head: HTMLElement }>(Scene.list).head,
-		UI.head,
-		elementDataOf<{ head: HTMLElement }>(UI.list).head,
+		// ⚠️ 这里**不能**用 `getUIStore().head` / `.list`（2026-09-18 实测崩溃点）。
+		//
+		// `Layout.initialize` 由 `initCore` 调用，而 `initCore` 在 `Editor.initialize` 里跑得
+		// **早于** `UI.initialize()`——后者唯一的调用方是 `LayoutPanel.vue` 的 `onMounted`
+		// 里 `nextTick(() => getUIStore().initialize())`，即「LayoutPanel 挂载后的下一个 tick」。
+		// 于是在这个时刻注册表里的 `ui-list` / `ui-head` 还没登记，`getUIStore().head`
+		// 会是 `undefined`，而 `elementDataOf(undefined)` 会抛
+		// `TypeError: Invalid value used as weak map key`
+		// —— 启动即挂：`[init] Layout stack: TypeError: Invalid value used as weak map key`。
+		//
+		// 而遗留的 `UI.head` / `UI.list` 是 `ui-window.ts` 在**模块加载期**就赋好的
+		// （`|| {}` 兜底，见该文件 `list:` 那一行），所以旧代码没事。
+		// 这里改读**元素注册表**（`uiEls`）：它是 `LayoutPanel.vue` 模板 `:ref` 登记的，
+		// 而 Vue 挂载后才会走到 `vue-app-mounted` → `Editor.initialize()`，
+		// 因此到此刻一定已经登记好；而且注册表始终反映**当前**元素，不受初始化时序影响。
+		//
+		// 注：store 的 `head` / `list` 也改成从同一张注册表派生了，所以两者同源；
+		// 但这里仍直接读注册表——本地 `heads` 数组要的是**元素本身**，少一层 store 间接。
+		uiEls.get('ui-head'),
+		// ⚠️ 注册表在**没有挂载 Vue** 的环境里取不到元素（单测就是这种环境），
+		// 而 `elementDataOf(undefined)` 会抛 `Invalid value used as weak map key`
+		// —— 直接对 `uiEls.get(...)` 的结果调用它，会让
+		// `layout-item-registry.spec.ts` 的 3 条用例全炸（2026-09-18 实测）。
+		// `?? {}` 与遗留层 `ui-window.ts` 的 `list: (…) || {}` 是同一个手法：
+		// 兜一个**真对象**进去，`.head` 读出来是 `undefined`，由消费侧
+		// （`for (const head of Layout.heads ?? [])`）跳过。
+		elementDataOf<{ head: HTMLElement }>(uiEls.get('ui-list') ?? {}).head,
 		Animation.head,
 		elementDataOf<{ head: HTMLElement }>(Animation.list).head,
 		elementDataOf<{ head: HTMLElement }>(Animation.timeline).head,
@@ -1323,8 +1347,8 @@ Layout.pageSwitch = function (event: YamiEvent) {
 				Scene.close!();
 				break;
 			case 'ui':
-				UI.save();
-				UI.close();
+				getUIStore().save();
+				getUIStore().close();
 				break;
 			case 'animation':
 				Animation.save();
@@ -1361,7 +1385,12 @@ Layout.pageSwitch = function (event: YamiEvent) {
 			break;
 		}
 		case 'ui': {
-			const body = UI.body;
+			// 同 heads 的教训：当年 `getUIStore().body` 在 UI 窗口**关闭**时是 null
+			// （`ui-file.ts` 的 close 会经桥接把它置空），而 `UI.body` 是 `hide(uiEls.get("ui-body"))`
+			// 的结果 —— 一个始终存在的元素（关闭时只是被隐藏，不是 null）。
+			// 所以这里读元素注册表：既能拿到元素，也不会在未打开时变成 null。
+			// （store 的 `body` 现已同源改成注册表 `computed`，两者等价；此处保留直读以少一层间接。）
+			const body = uiEls.get('ui-body')!;
 			const target = body.firstChild;
 			body.insertBefore(GL.canvas, target);
 			break;

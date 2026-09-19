@@ -150,7 +150,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 		key: string,
 		value: unknown
 	) {
-		const layerInstance = Particle.emitter.getLayer(layer);
+		const layerInstance = Particle.emitter!.getLayer(layer);
 		Particle.planToSave!();
 		switch (key) {
 			case 'name':

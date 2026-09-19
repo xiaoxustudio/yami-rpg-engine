@@ -25,6 +25,21 @@ const uiKitStylesAlias =
 		? fileToPath('../ui-kit/src/styles/prod.css')
 		: fileToPath('../ui-kit/src/styles/index.css');
 
+/**
+ * 启动 Electron 前剔除 ELECTRON_RUN_AS_NODE。
+ *
+ * 某些终端 / 工具链（例如 DSH 的 node、pnpm shim）会把这个变量导出给整棵子进程树，
+ * 于是 electron.exe 会退化成纯 Node 进程：require('electron') 返回的是可执行文件路径字符串，
+ * 主进程随即在 require('electron').ipcMain 处抛
+ * `TypeError: Cannot read properties of undefined (reading 'handle')`。
+ * 这里显式还原成真正的 Electron 启动，避免开发环境依赖外部 shell 的状态。
+ */
+function devElectronEnv() {
+	const env = { ...process.env };
+	delete env.ELECTRON_RUN_AS_NODE;
+	return env;
+}
+
 export default defineConfig({
 	root: '.',
 	base: './',
@@ -94,9 +109,10 @@ export default defineConfig({
 					}
 				}
 				// 插件默认以 server.config.root 为 cwd，electron 需要在项目根找 package.json 入口
+				// env 里剔除 ELECTRON_RUN_AS_NODE，否则 electron 会以纯 Node 模式启动主进程
 				await startup(
 					['.', `--dirname=${projectDir}`, `--dev-server-url=${devServerUrl}`],
-					{ cwd: __dirname }
+					{ cwd: __dirname, env: devElectronEnv() }
 				);
 			}
 		})

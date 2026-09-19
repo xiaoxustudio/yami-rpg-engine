@@ -34,13 +34,28 @@ export class DirectoryTree {
 	updating: Promise<unknown> | null = null;
 
 	private hooks: DirectoryTreeHooks;
+	/**
+	 * `focus` 监听器的具名引用——没有它就无法 remove（匿名箭头函数拿不到引用）。
+	 *
+	 * 原先 `initialize()` 直接 `window.addEventListener('focus', (e) => this.windowFocus(e))`：
+	 * 一块匿名函数、注册后永不摘除。只要 `initialize()` 被调用两次（或将来某个流程重新
+	 * 初始化目录树），`window` 上就会叠第二份，旧的那份还持有已作废的实例——
+	 * 属于 `scripts/migration-ledger.mjs` 里 unremovable-listeners 轴记不到的真实累积泄漏
+	 * （那轴把进程级常驻监听和实例级泄漏混在一起，只要求不增，见其注释）。
+	 */
+	private focusListener: ((event: FocusEvent) => void) | null = null;
 
 	constructor(hooks: DirectoryTreeHooks) {
 		this.hooks = hooks;
 	}
 
 	initialize() {
-		window.addEventListener('focus', (event: FocusEvent) => this.windowFocus(event));
+		// 幂等：先摘掉上一份再挂新的，保证 `window` 上恒为一份
+		if (this.focusListener) {
+			window.removeEventListener('focus', this.focusListener);
+		}
+		this.focusListener = (event: FocusEvent) => this.windowFocus(event);
+		window.addEventListener('focus', this.focusListener);
 	}
 
 	read(): Promise<unknown> {
@@ -75,6 +90,12 @@ export class DirectoryTree {
 		this.inoMap = {};
 		this.assets = null;
 		this.symbol = null;
+		// 目录树关闭时摘掉 focus 监听：`close()` 会在项目打开/关闭流程里被调用
+		// （services/project/open.ts、close.ts），此时再响应 window focus 已无意义。
+		if (this.focusListener) {
+			window.removeEventListener('focus', this.focusListener);
+			this.focusListener = null;
+		}
 	}
 
 	update(): Promise<unknown> | null {

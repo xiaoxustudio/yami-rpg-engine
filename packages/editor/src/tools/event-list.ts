@@ -1,4 +1,4 @@
-import { getListConfig, setTreeItemClass, treeOwnerListOf } from '@ui-kit';
+import { getListConfig, setTreeItemClass, treeOwnerListOf, type ListConfig } from '@ui-kit';
 import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/data/data-object.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -59,6 +59,15 @@ const FILTER_BY_LIST_ID: Record<string, string> = {
 	'uiElement-events': 'element'
 };
 
+/**
+ * list 配置 + 我们挂上去的本地化监听引用。
+ *
+ * `getListConfig()` 内部是 `WeakMap<object, ListConfig>`，返回的是**同一个对象**，
+ * 所以把监听器存上去既能跨多次 `initialize()` 复用，又随元素被回收而自然失效，
+ * 不需要额外的清理表。
+ */
+type ListConfigWithLocalize = ListConfig & { localizeListener?: () => void };
+
 export class EventListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
@@ -98,9 +107,25 @@ export class EventListInterface implements IListInterface {
 			this.history!.save = EventListInterface.historySave;
 		}
 
-		window.addEventListener('localize', (_event: Event) => {
+		// 本地化监听：**幂等注册**。
+		//
+		// 原先这里是 `window.addEventListener('localize', () => { … })`，一块匿名箭头函数、
+		// 一个实例注册一份、且从不摘除。而检查器有 15 个页面各自 `new EventListInterface(...)`
+		// 后调 `initialize()`，每进一次页面就多挂一份到 `window` 上——切换页面/语言时这些
+		// 陈旧监听会被全部触发，属于真实的累积泄漏（`scripts/migration-ledger.mjs` 的
+		// unremovable-listeners 轴把它和进程级常驻监听混在一起，所以那轴只要求不增，见其注释）。
+		//
+		// 修法：把监听存进**该元素自己的** list 配置里（`getListConfig` 是 WeakMap + 元素数据，
+		// 天然随元素共存亡），重复 `initialize()` 时先摘掉上一份再挂新的 ⇒ 同一元素恒为 1 份。
+		// 这样不需要给 15 个页面的组件生命周期都加上 dispose 调用，也就不引入卸载时序风险。
+		const config = getListConfig(list) as ListConfigWithLocalize;
+		if (config.localizeListener) {
+			window.removeEventListener('localize', config.localizeListener);
+		}
+		config.localizeListener = () => {
 			if (list.data) list.update();
-		});
+		};
+		window.addEventListener('localize', config.localizeListener);
 	}
 
 	parse(event: EventListEventShape) {

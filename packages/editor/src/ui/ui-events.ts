@@ -27,10 +27,13 @@ UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, stri
 };
 
 UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
+	// `background` / `foreground` 的真源是 store 的 `loadFromConfig`（见 `stores/ui.ts`），
+	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的路径（如 `saveToConfig`）用。
 	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
 		if (getUIStore().state === 'open') {
-			this.root.resize();
+			// `root` 已迁到 store；`this.root` 是 `undefined`（2026-09-18）。
+			getUIStore().root?.resize();
 			this.requestRendering!();
 		}
 	});

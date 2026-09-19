@@ -17,3 +17,5 @@ xr.md
 scripts/smoke-report-*
 electron-out.log
 electron-err.log
+# 台账的 DOM 迁移矩阵报表（pnpm dom:guard:tracker 每次复跑重写，属生成物）
+scripts/dom-migration-tracker.md

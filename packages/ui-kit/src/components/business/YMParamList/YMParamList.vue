@@ -115,7 +115,7 @@ type ParamListElement = HTMLElement & {
 	height?: number;
 	_paddingTop?: number;
 	padded?: boolean;
-	object: ParamObject;
+	object: ParamObject | null;
 	type: string | null;
 	history: ParamHistory | null;
 	data: (ParamDataItem | null)[] | null;
@@ -188,11 +188,7 @@ type DragEventState = PointerEvent & {
 
 const props = withDefaults(defineProps<Props>(), {
 	flexible: false,
-	historyFactory: null as unknown as (list: ParamListElement) => ParamHistory,
-	menuPopup: null as unknown as (options: MenuOptions, items: MenuItem[]) => void,
-	localize: null as unknown as (key: string) => string,
-	clipboard: null,
-	ctrl: null as unknown as (keyName: string) => string
+	clipboard: null
 });
 
 const emit = defineEmits<{
@@ -205,7 +201,7 @@ const root = ref<HTMLElement | null>(null);
 let el: ParamListElement | null = null;
 
 const state = {
-	object: null as unknown,
+	object: null,
 	type: null as string | null,
 	data: null as (ParamDataItem | null)[] | null,
 	elements: [] as unknown as ParamElements,
@@ -256,9 +252,9 @@ const createHistory = (list: ParamListElement): ParamHistory =>
 	props.historyFactory ? props.historyFactory(list) : new ParamListHistory(list);
 
 const getMenuPopup = (): ((options: MenuOptions, items: MenuItem[]) => void) | null =>
-	props.menuPopup;
+	props.menuPopup ?? null;
 
-const getLocalize = (): ((key: string) => string) | null => props.localize;
+const getLocalize = (): ((key: string) => string) | null => props.localize ?? null;
 
 const getClipboard = (): ClipboardAdapter | null => props.clipboard;
 
@@ -320,7 +316,7 @@ const update = (): void => {
 	elements.start = -1;
 	elements.count = 0;
 
-	const object = self.object;
+	const object = self.object!;
 	const length = data.length;
 	for (let i = 0; i < length; i++) {
 		const item = data[i];
@@ -650,8 +646,8 @@ const insert = (): void => {
 	const self = el!;
 	if (self.start !== null) {
 		self.inserting = true;
-		self.object.target = self;
-		self.object.open();
+		self.object!.target = self;
+		self.object!.open();
 	}
 };
 
@@ -663,12 +659,12 @@ const edit = (): void => {
 		self.inserting = element.dataItem === null;
 		switch (self.inserting) {
 			case true:
-				self.object.target = self;
-				self.object.open();
+				self.object!.target = self;
+				self.object!.open();
 				break;
 			case false:
-				self.object.target = self;
-				self.object.open(self.data![self.start]);
+				self.object!.target = self;
+				self.object!.open(self.data![self.start]);
 				break;
 		}
 	}
@@ -739,7 +735,7 @@ const paste = (): void => {
 				index: start,
 				items: copies
 			});
-			self.object.onPaste?.(self, copies);
+			self.object!.onPaste?.(self, copies);
 			data.splice(start, 0, ...(copies as ParamDataItem[]));
 			update();
 			select(start + copies.length);
@@ -788,7 +784,7 @@ const redo = (): void => {
 
 const save = (): void => {
 	const self = el!;
-	const item = self.object.save();
+	const item = self.object!.save();
 	if (item === undefined) {
 		return;
 	}
@@ -833,8 +829,8 @@ const clear = (): HTMLElement => {
 	const self = el!;
 	unselect();
 	self.textContent = '';
+	self.start = null;
 	self.data = null;
-	self.start = null as unknown as number;
 	self.end = null;
 	self.history!.reset();
 	clearElements(0);
@@ -1221,8 +1217,8 @@ onMounted(() => {
 	el = root.value as ParamListElement | null;
 	if (!el) return;
 	const self = el;
+	self.object = null;
 	attachStateAccessors(self);
-	self.object = null as unknown as ParamObject;
 	self.type = null;
 	self.data = null;
 	self.elements = [] as unknown as ParamElements;
@@ -1233,8 +1229,8 @@ onMounted(() => {
 	self.elements.head = null;
 	self.elements.foot = null;
 	self.selections = [] as unknown as ParamSelections;
+	self.start = null;
 	self.selections.count = 0;
-	self.start = null as unknown as number;
 	self.end = null;
 	self.origin = null;
 	self.active = null;

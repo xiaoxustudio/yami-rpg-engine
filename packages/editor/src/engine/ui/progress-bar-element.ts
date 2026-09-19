@@ -1,4 +1,5 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { clamp, radians, modRadians } from '@app/utils/math';
@@ -19,7 +20,7 @@ interface ProgressBarElementData {
 	blend?: string;
 }
 
-UI.ProgressBar = class ProgressBarElement extends UI.Element {
+uiElClasses.ProgressBar = class ProgressBarElement extends uiElClasses.Element! {
 	texture: ImageTexture | null;
 	_image!: string;
 	display: string;
@@ -67,7 +68,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 			if (value) {
 				this.texture = new ImageTexture(value);
 				this.texture.on('load', () => {
-					UI.requestRendering!();
+					getUIStore().requestRendering();
 				});
 			}
 		}
@@ -99,7 +100,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 			GL.blend = this.blend;
 			GL.matrix
 				.project(GL.flip, GL.width, GL.height)
-				.multiply(UI.matrix)
+				.multiply(getUIStore().matrix!)
 				.multiply(this.matrix)
 				.translate(this.x, this.y)
 				.scale(scaleX, scaleY);
@@ -141,7 +142,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 		const h = texture.height;
 		const tw = texture.base!.width;
 		const th = texture.base!.height;
-		const response = UI.ProgressBar.response;
+		const response = uiElClasses.ProgressBar!.response;
 		const vertices = response.vertices;
 		const step = this.step;
 		switch (type) {
@@ -363,7 +364,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition!();
@@ -380,7 +381,9 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 		vertices: new Float32Array(28),
 		angles: new Float64Array(4),
 		array: new Float64Array(6),
-		vertexLength: null as unknown as number,
-		drawingLength: null as unknown as number
+		// `calculateProgressVertices()` 的每条返回路径都会先写这两个字段再返回；
+		// 这里给「长度」一个自然初值 0，而不是谎报成 null 再 cast 回 number。
+		vertexLength: 0,
+		drawingLength: 0
 	};
 };

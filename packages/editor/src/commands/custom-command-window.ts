@@ -130,18 +130,15 @@ interface CustomCommandShape {
 	list_paste: CustomCommandMethod;
 	list_saveSelection: CustomCommandMethod;
 	list_restoreSelection: CustomCommandMethod;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 与 Pinia store 双向桥接的两个键（见 `stores/custom-command.ts` 的
+	 * `customCommandStateKeys = ['state', 'commands']`），类型与 store 的 `shallowRef` 对齐。
+	 */
+	state: string;
+	commands: CustomCommandData[];
 }
 
-export const CustomCommand: CustomCommandShape = {
-	list: null as unknown as CustomCommandList,
-	overviewPane: null as unknown as HTMLElement & {
-		hide(): HTMLElement & { hide(): HTMLElement };
-		show(): HTMLElement;
-	},
-	overview: null as unknown as CustomCommandShape['overview'],
-	settingsPane: null as unknown as HTMLElement & { hide(): HTMLElement; show(): HTMLElement },
+export const CustomCommand = {
 	data: null,
 	meta: null,
 	symbol: null,
@@ -176,7 +173,7 @@ export const CustomCommand: CustomCommandShape = {
 	saveToProject: null,
 	loadFromProject: null,
 	close: null as ((id?: string) => void) | null
-};
+} satisfies Partial<CustomCommandShape> as CustomCommandShape;
 
 /** P5b 批次 2：控件元素注册表——由 `Command.vue` 在模板里登记 */
 export const customCommandEls = createElementRegistry();
@@ -197,13 +194,11 @@ function ensureDomBound() {
 		'command-settings-detail'
 	) as unknown as CustomCommandShape['settingsPane'];
 	hide(CustomCommand.settingsPane);
-	list.insert = null as unknown as (...args: unknown[]) => void;
-	list.toggle = null as unknown as (...args: unknown[]) => void;
-	list.copy = null as unknown as (...args: unknown[]) => void;
-	list.paste = null as unknown as (...args: unknown[]) => void;
+	// 注：这里原本先把 insert/toggle/copy/paste/saveSelection/restoreSelection 六个成员
+	// 写成 `null as unknown as (...args) => void`，紧接着在同一个函数里（下面 6 行）
+	// 又全部赋上真实现 —— 那 6 行是**纯死写**（中间没有任何读取），却各贡献一个
+	// `null as unknown as`。直接删掉：语义等价，两条棘轮轴同步下降（2026-09-18）。
 	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
-	list.saveSelection = null as unknown as (...args: unknown[]) => void;
-	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
 	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
 	list.insert = CustomCommand.list_insert as (...args: unknown[]) => void;

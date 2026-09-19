@@ -1,7 +1,8 @@
 import { inspectorEls } from './element-registry.ts';
 import { read } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 
 {
 	interface UIWindowShape {
@@ -16,7 +17,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		[k: string]: unknown;
 	}
 	const UIWindow: UIWindowShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -73,8 +74,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 	UIWindow.close = function (this: typeof UIWindow) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -86,7 +88,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'layout':
@@ -113,7 +115,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				}
 				break;
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: unknown }, _event: Event) {

@@ -186,16 +186,10 @@ export interface EventEditorShape {
 	apply: EventEditorMethod;
 }
 
-export const EventEditor: EventEditorShape = {
-	list: null as unknown as HTMLElement & EventEditorList,
-	commandList: null as unknown as EventCommandListShape,
-	outerGutter: null as unknown as HTMLElement,
-	innerGutter: null as unknown as HTMLElement,
+export const EventEditor = {
 	closing: false,
 	data: null,
 	caches: [],
-	// oxlint-disable-next-line no-explicit-any
-	types: null as unknown as Record<string, any[]>,
 	initialize: null,
 	openLocalEvent: null,
 	openGlobalEvent: null,
@@ -239,7 +233,7 @@ export const EventEditor: EventEditorShape = {
 	planToSave: null as ((meta?: Record<string, unknown>) => void) | null,
 	open: null as ((id: string) => void) | null,
 	close: null as ((id?: string) => void) | null
-};
+} satisfies Partial<EventEditorShape> as Partial<EventEditorShape> as EventEditorShape;
 
 const eventEditorBridgeKeys = ['closing'] as const;
 import { getEventEditorStore } from '@app/stores/event-editor';

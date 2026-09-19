@@ -1,6 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { Animation } from '@app/animation/animation-window.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { radians } from '@app/utils/math';
 
@@ -31,7 +32,7 @@ interface AnimationElementDataShape {
 	offsetY: number;
 }
 
-UI.Animation = class AnimationElement extends UI.Element {
+uiElClasses.Animation = class AnimationElement extends uiElClasses.Element! {
 	player: AnimationPlayerShape | null;
 	_animation!: string;
 	_motion!: string;
@@ -163,10 +164,15 @@ UI.Animation = class AnimationElement extends UI.Element {
 		if (player !== null) {
 			GL.alpha = this.opacity;
 			const gl = GL;
-			const sl = UI.scrollLeft;
-			const st = UI.scrollTop;
-			const sr = UI.scrollRight;
-			const sb = UI.scrollBottom;
+			// 这四个值每帧由 `UIEngine.updateTransform` 写进遗留单例的 `this.scrollLeft…`
+			// （`ui-engine.ts` 那四行），store 侧的 `scrollLeft…` 是**委托该单例**的访问器
+			// （见 `stores/ui.ts` 的说明）。早先 store 里是同名 `shallowRef` 且没有写入方，
+			// 配合这里的 `!` 断言会在 `project(gl.flip, sr - sl, sb - st)` 上抛错（2026-09-18）。
+			// 现在数据源已接通，`?? 0` 只是防御性兜底——即便某帧顺序异常也只是渲不出内容，不会崩。
+			const sl = getUIStore().scrollLeft ?? 0;
+			const st = getUIStore().scrollTop ?? 0;
+			const sr = getUIStore().scrollRight ?? 0;
+			const sb = getUIStore().scrollBottom ?? 0;
 			const program = gl.spriteProgram.use();
 			const matrix = gl.matrix
 				.project(gl.flip, sr - sl, sb - st)
@@ -190,10 +196,10 @@ UI.Animation = class AnimationElement extends UI.Element {
 	}
 
 	drawAnchor() {
-		if (UI.target === this.node) {
+		if (getUIStore().target! === this.node) {
 			const gl = GL;
 			const vertices = gl.arrays[0].float32;
-			const matrix = gl.matrix.set(UI.matrix).multiply(this.matrix);
+			const matrix = gl.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 			const ax = this.animationX;
 			const ay = this.animationY;
 			const a = matrix[0];
@@ -225,7 +231,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();

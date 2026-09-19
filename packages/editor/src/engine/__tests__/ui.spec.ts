@@ -182,11 +182,32 @@ const mockGL = vi.hoisted(() => ({
 
 vi.mock('@app/engine/webgl/webgl-init.ts', () => ({ GL: mockGL }));
 
+/**
+ * 矩阵替身。`vi.mock` 的工厂会被提升到 import 之前，因此**不能在工厂里引用它**，
+ * 只能各自构造一份（下面 `@app/ui/ui-window` 的 mock 里另有一份等价的）。
+ * 这里放在模块作用域，供 `@app/stores/ui` 的 mock 使用。
+ */
+const matrixStub = {
+	set: vi.fn().mockReturnThis(),
+	multiply: vi.fn().mockReturnThis(),
+	rotateAt: vi.fn().mockReturnThis(),
+	scaleAt: vi.fn().mockReturnThis(),
+	skewAt: vi.fn().mockReturnThis(),
+	project: vi.fn().mockReturnThis(),
+	reset: vi.fn().mockReturnThis(),
+	translate: vi.fn().mockReturnThis()
+};
+
 vi.mock('@app/stores/ui', () => ({
+	// 阶段 1b 起：元素代码不再读 `UI.matrix` / `UI.foreground`，改读 store。
+	// 这里给出的都是元素构造/绘制路径会碰到的字段（matrix 供 GL.matrix.set，
+	// foreground 供 RootElement.draw 的 getINTRGBA）。
 	getUIStore: () => ({
 		zoom: 2,
 		state: 'open',
-		target: null
+		target: null,
+		matrix: matrixStub,
+		foreground: { getINTRGBA: vi.fn(() => 0xff000000) }
 	})
 }));
 
@@ -277,11 +298,13 @@ import '@app/engine/ui/progress-bar-element.ts';
 import '@app/engine/ui/root-element.ts';
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 
-const { UI } = await import('@app/ui/ui-window.ts');
+// 阶段 1b 起：元素类登记在 `uiElClasses`（由上面这些 `import './xxx-element.ts'` 在模块顶层填好），
+// 而不再挂在被 mock 掉的 `UI` 单例上。所以这里读真实注册表，而不是读 mock 对象。
+import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 
 describe('UI.Element 构造与初始状态', () => {
 	it('默认参数创建元素', () => {
-		const el = new (UI.Element as any)();
+		const el = new (uiElClasses.Element as any)();
 		expect(el.x).toBe(0);
 		expect(el.y).toBe(0);
 		expect(el.width).toBe(0);
@@ -293,12 +316,12 @@ describe('UI.Element 构造与初始状态', () => {
 	});
 
 	it('hidden 参数隐藏元素', () => {
-		const el = new (UI.Element as any)({ hidden: true });
+		const el = new (uiElClasses.Element as any)({ hidden: true });
 		expect(el.visible).toBe(false);
 	});
 
 	it('connect/disconnect 切换 connected 标志', () => {
-		const el = new (UI.Element as any)();
+		const el = new (uiElClasses.Element as any)();
 		expect(el.connected).toBe(false);
 		el.connect();
 		expect(el.connected).toBe(true);
@@ -309,14 +332,14 @@ describe('UI.Element 构造与初始状态', () => {
 
 describe('UI.Container', () => {
 	it('draw 调用 drawChildren', () => {
-		const container = new (UI.Container as any)();
+		const container = new (uiElClasses.Container as any)();
 		const spy = vi.spyOn(container, 'drawChildren');
 		container.draw();
 		expect(spy).toHaveBeenCalled();
 	});
 
 	it('destroy 调用 destroyChildren', () => {
-		const container = new (UI.Container as any)();
+		const container = new (uiElClasses.Container as any)();
 		const spy = vi.spyOn(container, 'destroyChildren');
 		container.destroy();
 		expect(spy).toHaveBeenCalled();
@@ -325,7 +348,7 @@ describe('UI.Container', () => {
 
 describe('UI.Text 构造', () => {
 	it('设置默认属性', () => {
-		const text = new (UI.Text as any)({});
+		const text = new (uiElClasses.Text as any)({});
 		expect(text.texture).toBeNull();
 		expect(text.printer).toBeNull();
 		expect(text._direction).toBe('horizontal-tb');
@@ -339,7 +362,7 @@ describe('UI.Text 构造', () => {
 	});
 
 	it('horizontalAlign 只接受 left/center/right', () => {
-		const text = new (UI.Text as any)({});
+		const text = new (uiElClasses.Text as any)({});
 		text.horizontalAlign = 'center';
 		expect(text._horizontalAlign).toBe('center');
 		text.horizontalAlign = 'invalid';
@@ -347,7 +370,7 @@ describe('UI.Text 构造', () => {
 	});
 
 	it('verticalAlign 只接受 top/middle/bottom', () => {
-		const text = new (UI.Text as any)({});
+		const text = new (uiElClasses.Text as any)({});
 		text.verticalAlign = 'top';
 		expect(text._verticalAlign).toBe('top');
 		text.verticalAlign = 'bad';
@@ -357,17 +380,17 @@ describe('UI.Text 构造', () => {
 
 describe('UI.Image 构造', () => {
 	it('默认 display 为 stretch', () => {
-		const img = new (UI.Image as any)();
+		const img = new (uiElClasses.Image as any)();
 		expect(img.display).toBe('stretch');
 	});
 
 	it('flip 默认 none', () => {
-		const img = new (UI.Image as any)();
+		const img = new (uiElClasses.Image as any)();
 		expect(img.flip).toBe('none');
 	});
 
 	it('blend 默认 normal', () => {
-		const img = new (UI.Image as any)();
+		const img = new (uiElClasses.Image as any)();
 		expect(img.blend).toBe('normal');
 	});
 });
@@ -393,7 +416,7 @@ describe('UIInstanceList', () => {
 
 describe('UI.Root', () => {
 	it('addReference 和 removeReference', () => {
-		const root = new (UI.Root as any)();
+		const root = new (uiElClasses.Root as any)();
 		const prefab = { node: { presetId: 'p1' }, parent: null, update: vi.fn() };
 		root.addReference(prefab);
 		expect(root.references['p1'].length).toBe(1);

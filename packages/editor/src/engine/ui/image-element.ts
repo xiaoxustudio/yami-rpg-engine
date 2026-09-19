@@ -1,4 +1,5 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
@@ -14,7 +15,7 @@ interface ImageElementData {
 	blend?: string;
 }
 
-UI.Image = class ImageElement extends UI.Element {
+uiElClasses.Image = class ImageElement extends uiElClasses.Element! {
 	texture: ImageTexture | null;
 	_display!: string;
 	_image!: string;
@@ -54,7 +55,7 @@ UI.Image = class ImageElement extends UI.Element {
 			if (value) {
 				this.texture = new ImageTexture(value);
 				this.texture.on('load', () => {
-					UI.requestRendering!();
+					getUIStore().requestRendering();
 				});
 			}
 		}
@@ -95,7 +96,7 @@ UI.Image = class ImageElement extends UI.Element {
 					GL.alpha = this.opacity;
 					GL.blend = this.blend;
 				}
-				GL.matrix.set(UI.matrix).multiply(this.matrix);
+				GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 				switch (this.display) {
 					case 'stretch':
 						texture.clip(
@@ -179,7 +180,7 @@ UI.Image = class ImageElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition!();
@@ -193,7 +194,7 @@ UI.Image = class ImageElement extends UI.Element {
 	}
 
 	computeBoundingRectangle() {
-		const matrix = GL.matrix.set(UI.matrix).multiply(this.matrix);
+		const matrix = GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 		const L = this.x;
 		const T = this.y;
 		const R = L + this.width;

@@ -186,4 +186,20 @@ describe('YMTabBar', () => {
 		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(tab.classList.contains('selected')).toBe(true);
 	});
+
+	it('close 拖动期间再次 pointerdown：dragend 不因 hint 为 null 而中断', () => {
+		const wrapper = mount(YMTabBar, { attachTo: document.body });
+		const el = wrapper.element as unknown as TabBarElement;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
+		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
+		// close / popup 两条路径构造出的 dragging 没有拖拽提示元素（hint === null）
+		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(listData(el).dragging).toBeTruthy();
+		// 第二次 pointerdown 会先跑 dragend()：修复前 hint.remove() 抛错并使 dragend 中断 ⇒ dragging 残留
+		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 2 }));
+		expect(listData(el).dragging).toBe(null);
+	});
 });

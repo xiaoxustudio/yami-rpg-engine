@@ -1,5 +1,6 @@
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses, type UIElementInstance } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { set } from '@app/utils/array';
 
 interface TextEffectShape {
@@ -39,7 +40,7 @@ interface ShadowImageShape {
 	border: number;
 	tint: number[];
 	visible: boolean;
-	parent: InstanceType<typeof UI.Element>;
+	parent: UIElementInstance;
 	connected: boolean;
 	resize(): void;
 	draw(): void;
@@ -60,7 +61,7 @@ interface ShadowTextShape {
 	typeface: string;
 	effect: unknown;
 	visible: boolean;
-	parent: InstanceType<typeof UI.Element>;
+	parent: UIElementInstance;
 	connected: boolean;
 	updateTextContent(): void;
 	updatePrinter(): void;
@@ -69,7 +70,7 @@ interface ShadowTextShape {
 	destroy(): void;
 }
 
-UI.Button = class ButtonElement extends UI.Element {
+uiElClasses.Button = class ButtonElement extends uiElClasses.Element! {
 	state: string;
 	shadowImage: ShadowImageShape;
 	shadowText: ShadowTextShape;
@@ -287,7 +288,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		const clip = data.normalClip;
 		const tint = [0, 0, 0, 0];
 		const transform = this.createShadowTransform();
-		const element = new UI.Image({ ...data, image, clip, tint, transform });
+		const element = new uiElClasses.Image!({ ...data, image, clip, tint, transform });
 		element.parent = this;
 		element.connected = true;
 		return element;
@@ -297,7 +298,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		const color = data.normalColor;
 		const effect = data.textEffect;
 		const transform = this.createShadowTransform();
-		const element = new UI.Text({ ...data, color, effect, transform });
+		const element = new uiElClasses.Text!({ ...data, color, effect, transform });
 		element.parent = this;
 		element.connected = true;
 		return element;
@@ -324,9 +325,9 @@ UI.Button = class ButtonElement extends UI.Element {
 
 	updateImage() {
 		let state;
-		if (UI.dragging?.node === this.node) {
+		if (getUIStore().dragging?.node === this.node) {
 			state = 'active';
-		} else if (UI.hover === this.node) {
+		} else if (getUIStore().hover! === this.node) {
 			state = 'hover';
 		} else {
 			state = 'normal';
@@ -409,7 +410,7 @@ UI.Button = class ButtonElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();

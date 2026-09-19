@@ -8,6 +8,7 @@ import { File } from './file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { DirectoryTree, registerDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { emitCustom } from '@app/events/custom-events';
+import { remove } from '@app/utils/array';
 
 // oxlint-disable-next-line no-explicit-any
 type DirectoryMethod = (...args: any[]) => any;
@@ -64,9 +65,11 @@ export const Directory: {
 		},
 		getChanges: () => Data.manifest.changes,
 		onSaved: (metas: Array<unknown>) => {
+			// 同 `File.planToSave`：`changes` 是普通数组，没有 `remove` 方法，
+			// 必须用自由函数 `remove(changes, meta)`（2026-09-18）。
 			const changes = Data.manifest.changes;
 			for (const meta of metas) {
-				changes.remove(meta);
+				remove(changes, meta as (typeof changes)[number]);
 			}
 		},
 		fileItem: {

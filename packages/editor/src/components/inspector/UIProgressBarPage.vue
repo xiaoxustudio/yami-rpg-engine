@@ -230,7 +230,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -385,7 +385,7 @@ onMounted(() => {
 		'uiProgressBar-color-2-slider',
 		'uiProgressBar-color-3-slider'
 	]);
-	bindInput(elements, uiProgressBar, UI);
+	bindInput(elements, getUIStore(), uiProgressBar);
 	bindSliders(sliders);
 
 	const el = inspectorEls.get('uiProgressBar-vue-mount');

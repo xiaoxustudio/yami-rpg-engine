@@ -20,7 +20,11 @@ interface TreeListStaticsType {
 export const TreeList: TreeListStaticsType = {
 	createParents: treeListStatics.createParents,
 	deleteCaches: treeListStatics.deleteCaches,
-	textBox: treeListStatics.textBox,
+	// ui-kit 侧的 `textBox` 现在是惰性 getter（首次访问才建 DOM）。这里若照旧直接求值，
+	// 就会在模块加载期把它触发掉，等于白改 —— 所以原样转发成 getter。
+	get textBox() {
+		return treeListStatics.textBox;
+	},
 	prototype: treeListPrototype
 };
 

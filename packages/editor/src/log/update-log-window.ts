@@ -13,8 +13,8 @@ export interface UpdateLogItem {
 
 export const UpdateLog = {
 	currentMode: null as string | null,
-	internalItems: null as unknown as UpdateLogItem[] | null,
-	communityItems: null as unknown as UpdateLogItem[] | null,
+	internalItems: null as UpdateLogItem[] | null,
+	communityItems: null as UpdateLogItem[] | null,
 	open: null as ((...args: unknown[]) => unknown) | null,
 	update: null as ((...args: unknown[]) => unknown) | null,
 	initialize: null as ((...args: unknown[]) => unknown) | null,

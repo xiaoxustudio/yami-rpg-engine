@@ -1,5 +1,4 @@
 import { elementDataOf } from '@ui-kit';
-import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
@@ -31,7 +30,7 @@ export interface UIShape {
 	head: YamiElement;
 	body: YamiElement;
 	screen: YamiElement;
-	history: History;
+	history: History | null;
 	controlPoints: UIControlPoints | null;
 	controlPointActive: ControlPoint | null;
 	controlPointRotation: number;
@@ -97,7 +96,7 @@ export type UIPointerEvent = YamiMouseEvent & {
 	startY?: number;
 };
 
-export const UI: UIShape = {
+export const UI = {
 	page: uiEls.get('ui') as YamiElement,
 	head: uiEls.get('ui-head') as YamiElement,
 	body: hide(uiEls.get('ui-body') as YamiElement),
@@ -105,35 +104,13 @@ export const UI: UIShape = {
 	marquee: (uiEls.get('ui-marquee') as YamiElement) || {},
 	searcher: uiEls.get('ui-searcher') as YamiElement,
 	list: (uiEls.get('ui-list') as YamiElement) || {},
-	dragging: null,
-	hover: null,
-	history: null as unknown as History,
+	dragging: null as UIPointerEvent | null,
+	hover: null as UINodeShape | null,
 	controlPoints: null,
 	controlPointActive: null,
-	controlPointRotation: null as unknown as number,
 	translationKey: 0b0000,
 	translationTimer: null,
-	background: null as unknown as StageColor,
-	foreground: null as unknown as StageColor,
-	matrix: null as unknown as Matrix,
 	zoomTimer: null,
-	scale: null as unknown as number,
-	scaleX: null as unknown as number,
-	scaleY: null as unknown as number,
-	outerWidth: null as unknown as number,
-	outerHeight: null as unknown as number,
-	scrollLeft: null as unknown as number,
-	scrollTop: null as unknown as number,
-	scrollRight: null as unknown as number,
-	scrollBottom: null as unknown as number,
-	centerX: null as unknown as number,
-	centerY: null as unknown as number,
-	centerOffsetX: null as unknown as number,
-	centerOffsetY: null as unknown as number,
-	padding: null as unknown as number,
-	paddingLeft: null as unknown as number,
-	paddingTop: null as unknown as number,
-	inspectorTypeMap: null as unknown as Record<string, string>,
 	context: null,
 	meta: null,
 	nodes: null,
@@ -254,7 +231,7 @@ export const UI: UIShape = {
 	Container: null,
 	Reference: null,
 	createShortcut: null
-};
+} satisfies Partial<UIShape> as Partial<UIShape> as UIShape;
 
 UI.marquee.resize = null;
 
@@ -272,10 +249,6 @@ EventBus.once('editor_loaded', () => {
 	// Scene.list.* 真定义（scene-list.ts）在 editor_loaded 时才确定，提前赋值会固化拿 null
 });
 UI.list.updateHead = null;
-getListConfig(UI.list).onCreate = null as unknown as (item: unknown) => void;
-getListConfig(UI.list).onRemove = null as unknown as (item: unknown) => void;
-getListConfig(UI.list).onDelete = null as unknown as (item: unknown) => void;
-getListConfig(UI.list).onResume = null as unknown as (item: unknown) => void;
 
 const uiBridgeKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'] as const;
 

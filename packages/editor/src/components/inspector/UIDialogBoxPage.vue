@@ -188,7 +188,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -310,7 +310,7 @@ onMounted(() => {
 		'uiDialogBox-blend'
 	]);
 	const sliders = registryElements(inspectorEls, ['uiDialogBox-size-slider', 'uiDialogBox-lineSpacing-slider', 'uiDialogBox-letterSpacing-slider']);
-	bindInput(elements, uiDialogBox, UI);
+	bindInput(elements, getUIStore(), uiDialogBox);
 	bindSliders(sliders);
 
 	const el = inspectorEls.get('uiDialogBox-vue-mount');

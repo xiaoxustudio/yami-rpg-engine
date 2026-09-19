@@ -1,6 +1,7 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { windowShellEls } from '@app/tools/window-object.ts';
 import { titleEls } from '@app/title/element-registry';
+import { uiEls } from '@app/ui/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -8,7 +9,7 @@ import { addClass, hasClass, hide, on, removeClass, show } from '@app/utils/elem
 import { Path } from '@app/utils/config';
 import { ctrl } from '@app/utils/event-accessors';
 import { Scene } from '@app/scene/scene-window.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Animation } from '@app/animation/animation-window.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Menu } from '@app/components/menu-list.ts';
@@ -129,9 +130,7 @@ interface TitleShape extends DynamicShape {
 	closeClick: TitleMethod;
 }
 
-export const Title: TitleShape = {
-	target: null as unknown as TitleTargetShape,
-	tabBar: null as unknown as TitleTabBarShape,
+export const Title = {
 	initialize: null,
 	newProject: null,
 	openProject: null,
@@ -170,7 +169,7 @@ export const Title: TitleShape = {
 	minimizeClick: null,
 	maximizeClick: null,
 	closeClick: null
-};
+} satisfies Partial<TitleShape> as TitleShape;
 
 Title.initialize = function (this: TitleShape) {
 	this.target = windowShellEls.get('title') as YamiElement;
@@ -626,7 +625,7 @@ Title.tabBarPointerdown = function (this: TitleShape, _event: YamiEvent) {
 			Layout.readyToFocus(Scene.screen);
 			break;
 		case 'ui':
-			Layout.readyToFocus(UI.screen);
+			Layout.readyToFocus(uiEls.get('ui-screen') as never);
 			break;
 		case 'animation':
 			Layout.readyToFocus(Animation.screen);
@@ -652,8 +651,16 @@ Title.tabBarSelect = function (this: TitleShape, event: YamiEvent) {
 			break;
 		case 'ui':
 			Layout.manager.switch('ui');
-			UI.open!(context);
-			UI.screen.focus();
+			getUIStore().open(context);
+			// 读元素注册表而不是 store：当时 `getUIStore().screen` 要等 `UI.initialize()` 才赋值，
+			// 而这里是「切到 ui 标签页」的路径，若 UI 窗口尚未打开过它就是 null
+			// ⇒ `Cannot read properties of null (reading 'focus')`（2026-09-18 实测）。
+			// 注册表里的 `ui-screen` 与 `UI.initialize` 读的是同一个元素
+			//（`ui-initialize.ts:23` 就是 `uiEls.get('ui-screen')`），语义完全一致。
+			//
+			// 注：store 的 `screen` 后来也改成从同一张注册表 `computed` 求值，两者现已同源；
+			// 这里保持直读注册表——少一层 store 间接，且 `?.` 的判空语义最直白。
+			uiEls.get('ui-screen')?.focus();
 			break;
 		case 'animation':
 			Layout.manager.switch('animation');
@@ -676,7 +683,7 @@ Title.tabBarClosed = function (this: TitleShape, event: YamiEvent & { closedItem
 				Scene.destroy!(context as never);
 				break;
 			case 'ui':
-				UI.destroy!(context);
+				getUIStore().destroy(context as never);
 				break;
 			case 'animation':
 				Animation.destroy!(context);

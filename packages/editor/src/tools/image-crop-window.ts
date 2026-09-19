@@ -38,34 +38,39 @@ interface CropMarquee extends HTMLElement {
 	height: number;
 }
 
-export const ImageClip = {
-	window: null as unknown as YamiElement,
-	screen: null as unknown as YamiElement,
-	image: null as unknown as HTMLImageElement,
-	marquee: null as unknown as CropMarquee,
-	target: null as unknown as CropTarget | null,
-	symbol: null as unknown as symbol | null,
-	dragging: null as unknown as CropDrag | null,
-	initialize: null as unknown as () => void,
-	open: null as unknown as (...args: unknown[]) => Promise<void>,
-	loadImage: null as unknown as () => void,
-	updateImage: null as unknown as () => void,
-	updateTitle: null as unknown as (...args: unknown[]) => void,
-	updateMarquee: null as unknown as () => void,
-	shiftMarquee: null as unknown as (...args: unknown[]) => void,
-	scrollToMarquee: null as unknown as (...args: unknown[]) => void,
-	startDragging: null as unknown as (event: CropDrag) => void,
-	dprchange: null as unknown as (event: Event) => void,
-	windowClosed: null as unknown as (event: Event) => void,
-	windowResize: null as unknown as (event: Event) => void,
-	screenKeydown: null as unknown as (event: KeyboardEvent) => void,
-	marqueePointerdown: null as unknown as (event: PointerEvent) => void,
-	marqueeDoubleclick: null as unknown as (event: MouseEvent) => void,
-	pointerup: null as unknown as (event: PointerEvent) => void,
-	pointermove: null as unknown as (event: PointerEvent) => void,
-	paramInput: null as unknown as (event: Event) => void,
-	confirm: null as unknown as (event: Event) => void
-};
+export const ImageClip = {} as ImageClipSlots;
+
+/**
+ * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
+ */
+interface ImageClipSlots {
+	window: YamiElement;
+	screen: YamiElement;
+	image: HTMLImageElement;
+	marquee: CropMarquee;
+	target: CropTarget | null;
+	symbol: symbol | null;
+	dragging: CropDrag | null;
+	initialize: () => void;
+	open: (...args: unknown[]) => Promise<void>;
+	loadImage: () => void;
+	updateImage: () => void;
+	updateTitle: (...args: unknown[]) => void;
+	updateMarquee: () => void;
+	shiftMarquee: (...args: unknown[]) => void;
+	scrollToMarquee: (...args: unknown[]) => void;
+	startDragging: (event: CropDrag) => void;
+	dprchange: (event: Event) => void;
+	windowClosed: (event: Event) => void;
+	windowResize: (event: Event) => void;
+	screenKeydown: (event: KeyboardEvent) => void;
+	marqueePointerdown: (event: PointerEvent) => void;
+	marqueeDoubleclick: (event: MouseEvent) => void;
+	pointerup: (event: PointerEvent) => void;
+	pointermove: (event: PointerEvent) => void;
+	paramInput: (event: Event) => void;
+	confirm: (event: Event) => void;
+}
 
 function ensureDomBound() {
 	if (ImageClip.window) return;
@@ -113,7 +118,11 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 		image.src = File.route!(path);
 
 		const symbol = (this.symbol = Symbol());
-		void new Promise((resolve: (img: HTMLImageElement) => void) => {
+		// Promise 的元素类型写成 `HTMLImageElement | null`：图片加载失败（`image.complete` 但宽度为 0）
+		// 时**确实**会 resolve null，下面 `.then` 的回调本来也是按可空声明的。
+		// 原先把 resolve 标注成 `(img: HTMLImageElement) => void`，于是那处 `resolve(null)` 只能
+		// `null as unknown as HTMLImageElement` 圆谎。
+		void new Promise<HTMLImageElement | null>((resolve) => {
 			const intervalIndex = setInterval(() => {
 				if (image.naturalWidth !== 0) {
 					if (this.symbol === symbol) {
@@ -125,13 +134,14 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 					resolve(image);
 				} else if (image.complete) {
 					clearInterval(intervalIndex);
-					resolve(null as unknown as HTMLImageElement);
+					resolve(null);
 				}
 			});
-		}).then((image: HTMLImageElement | null) => {
+		}).then((image) => {
 			if (this.symbol === symbol) {
 				this.symbol = null;
-				this.updateTitle!(path, image ?? (null as unknown as HTMLImageElement));
+				// `updateTitle` 的参数是 `(...args: unknown[])`，直接传可空值即可
+				this.updateTitle!(path, image);
 			}
 		});
 	} else {

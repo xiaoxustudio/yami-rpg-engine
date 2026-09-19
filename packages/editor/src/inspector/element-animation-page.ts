@@ -2,7 +2,8 @@ import { inspectorEls } from './element-registry.ts';
 import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 
@@ -19,7 +20,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 		[k: string]: unknown;
 	}
 	const UIAnimation: UIAnimationShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -75,8 +76,9 @@ import type { YamiEvent } from '@app/types/editor-event';
 
 	UIAnimation.close = function (this: typeof UIAnimation) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -88,7 +90,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'animation':
@@ -106,7 +108,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 				}
 				break;
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	UIAnimation.paramInput = function (this: typeof UIAnimation, event: YamiEvent) {

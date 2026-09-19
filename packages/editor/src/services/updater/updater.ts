@@ -39,7 +39,7 @@ interface UpdaterShape {
 	hooks: UpdaterHooks;
 }
 
-export const Updater: UpdaterShape = {
+export const Updater = {
 	latestEditorVersion: '1.0.18',
 	latestProjectVersion: '1.0.147',
 	// runtime 挂载: version-warning.ts 中挂载 TS 版本警告函数
@@ -48,7 +48,6 @@ export const Updater: UpdaterShape = {
 	updateConfig: null,
 	updateLocalEvents: null,
 	updateGlobalEvents: null,
-	updateGlobalEvent: null as unknown as (meta: unknown) => void,
 	updateActors: null,
 	updateSkills: null,
 	updateTriggers: null,
@@ -64,10 +63,8 @@ export const Updater: UpdaterShape = {
 	createLocalization: null,
 	backupProject: null,
 	updateToLatest: null,
-	updateIncrementalChanges: null as unknown as (version: string) => unknown,
-	getVersionNumber: null,
-	hooks: null as unknown as UpdaterHooks
-};
+	getVersionNumber: null
+} satisfies Partial<UpdaterShape> as UpdaterShape;
 
 export function setUpdaterHooks(hooks: UpdaterHooks) {
 	Updater.hooks = hooks;

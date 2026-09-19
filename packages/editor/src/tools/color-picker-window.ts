@@ -5,7 +5,7 @@ import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -27,41 +27,46 @@ type ColorDrag = PointerEvent & {
 	mode: string;
 };
 
-export const Color = {
-	target: null as unknown as ColorTarget | null,
-	dragging: null as unknown as ColorDrag | null,
-	paletteX: null as unknown as number,
-	paletteY: null as unknown as number,
-	pillarY: null as unknown as number,
-	indexEnabled: null as unknown as boolean,
-	initialize: null as unknown as () => void,
-	open: null as unknown as (...args: unknown[]) => void,
-	drawPalette: null as unknown as () => void,
-	drawPillar: null as unknown as (...args: unknown[]) => void,
-	drawViewer: null as unknown as (...args: unknown[]) => void,
-	setPaletteCursor: null as unknown as (...args: unknown[]) => void,
-	setPillarCursor: null as unknown as (...args: unknown[]) => void,
-	getRGBFromPalette: null as unknown as () => [number, number, number],
-	getRGBFromPillar: null as unknown as () => [number, number, number],
-	getRGBAFromHex: null as unknown as (...args: unknown[]) => [number, number, number, number],
-	getHexFromRGBA: null as unknown as (...args: unknown[]) => string,
-	getCSSColorFromRGBA: null as unknown as (...args: unknown[]) => string,
-	writeRGBAToInputs: null as unknown as (...args: unknown[]) => void,
-	readRGBAFromInputs: null as unknown as () => unknown[],
-	loadIndexedColors: null as unknown as () => void,
-	simplifyHexColor: null as unknown as (...args: unknown[]) => string,
-	windowClosed: null as unknown as (event: Event) => void,
-	palettePointerdown: null as unknown as (event: ColorDrag) => void,
-	pillarPointerdown: null as unknown as (event: ColorDrag) => void,
-	indexedColorInput: null as unknown as (event: Event & { value?: string }) => void,
-	indexedColorPointerdown: null as unknown as (event: PointerEvent) => void,
-	pointerup: null as unknown as (event: PointerEvent) => void,
-	pointermove: null as unknown as (event: PointerEvent) => void,
-	hexBeforeinput: null as unknown as (event: InputEvent) => void,
-	hexInput: null as unknown as (event: Event) => void,
-	rgbaInput: null as unknown as (event: Event) => void,
-	confirm: null as unknown as (event: Event) => void
-};
+export const Color = {} as ColorSlots;
+
+/**
+ * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
+ */
+interface ColorSlots {
+	target: ColorTarget | null;
+	dragging: ColorDrag | null;
+	paletteX: number;
+	paletteY: number;
+	pillarY: number;
+	indexEnabled: boolean;
+	initialize: () => void;
+	open: (...args: unknown[]) => void;
+	drawPalette: () => void;
+	drawPillar: (...args: unknown[]) => void;
+	drawViewer: (...args: unknown[]) => void;
+	setPaletteCursor: (...args: unknown[]) => void;
+	setPillarCursor: (...args: unknown[]) => void;
+	getRGBFromPalette: () => [number, number, number];
+	getRGBFromPillar: () => [number, number, number];
+	getRGBAFromHex: (...args: unknown[]) => [number, number, number, number];
+	getHexFromRGBA: (...args: unknown[]) => string;
+	getCSSColorFromRGBA: (...args: unknown[]) => string;
+	writeRGBAToInputs: (...args: unknown[]) => void;
+	readRGBAFromInputs: () => unknown[];
+	loadIndexedColors: () => void;
+	simplifyHexColor: (...args: unknown[]) => string;
+	windowClosed: (event: Event) => void;
+	palettePointerdown: (event: ColorDrag) => void;
+	pillarPointerdown: (event: ColorDrag) => void;
+	indexedColorInput: (event: Event & { value?: string }) => void;
+	indexedColorPointerdown: (event: PointerEvent) => void;
+	pointerup: (event: PointerEvent) => void;
+	pointermove: (event: PointerEvent) => void;
+	hexBeforeinput: (event: InputEvent) => void;
+	hexInput: (event: Event) => void;
+	rgbaInput: (event: Event) => void;
+	confirm: (event: Event) => void;
+}
 
 Color.initialize = function (this: typeof Color) {
 	if (!colorEls.get('color-hex')) return;
@@ -367,7 +372,7 @@ Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEven
 							if (indexedColor.code !== hex) {
 								indexedColor.code = hex;
 								element.style.backgroundColor = csscolor;
-								UI.updateIndexedColor(index);
+								getUIStore().updateIndexedColor(index);
 								File.planToSave!(Data.manifest.project.config);
 							}
 						}

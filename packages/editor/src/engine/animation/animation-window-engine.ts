@@ -2,7 +2,7 @@ import { screenScrollData } from '../screen-scroll-data';
 import { getAnimationStore } from '@app/stores/animation';
 import type { Animation } from '@app/animation/animation-window.ts';
 import { Timer } from '@app/utils/timer';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
@@ -11,7 +11,7 @@ import { clamp, roundTo, dist, radians } from '@app/utils/math';
 // oxlint-disable-next-line no-explicit-any
 export const AnimationWindowEngine: Record<string, any> = {};
 
-let animationWindow = null as unknown as typeof Animation;
+let animationWindow: typeof Animation | null = null;
 
 export function bindAnimationWindow(instance: typeof Animation): void {
 	animationWindow = instance;
@@ -122,7 +122,7 @@ AnimationWindowEngine.drawSpriteLayers = function (
 					const program = gl.spriteProgram.use();
 					const matrix = gl.matrix
 						.project(gl.flip, gl.width, gl.height)
-						.multiply(animationWindow.matrix);
+						.multiply(animationWindow!.matrix);
 					gl.batchRenderer.setAttrSize(8);
 					gl.bindVertexArray(program.vao);
 					gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
@@ -146,7 +146,7 @@ AnimationWindowEngine.drawEmitters = function (this: typeof Animation) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'particle' && !layer.hidden && frame !== null) {
-			matrix.set(animationWindow.matrix).multiply(context.matrix);
+			matrix.set(animationWindow!.matrix).multiply(context.matrix);
 			let vi = 0;
 			const x = matrix[6];
 			const y = matrix[7];
@@ -257,7 +257,7 @@ AnimationWindowEngine.drawFrontParticles = function (this: typeof Animation) {
 AnimationWindowEngine.drawCoordinateAxes = function (this: typeof Animation) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
-	const matrix = gl.matrix.set(animationWindow.matrix);
+	const matrix = gl.matrix.set(animationWindow!.matrix);
 	// 避免缩放时虚线抖动
 	const L = -10000 / this.scaleX;
 	const T = -10000 / this.scaleY;
@@ -311,7 +311,7 @@ AnimationWindowEngine.drawJointNodes = function (this: typeof Animation) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'joint' && !layer.hidden && frame !== null) {
-			matrix.set(animationWindow.matrix).multiply(context.matrix);
+			matrix.set(animationWindow!.matrix).multiply(context.matrix);
 			let vi = 0;
 			const x = matrix[6];
 			const y = matrix[7];
@@ -370,10 +370,10 @@ AnimationWindowEngine.drawJointArrows = function (this: typeof Animation) {
 			parent.frame !== null &&
 			!parent.layer.hidden
 		) {
-			matrix.set(animationWindow.matrix).multiply(parent.matrix);
+			matrix.set(animationWindow!.matrix).multiply(parent.matrix);
 			const sx = matrix[6];
 			const sy = matrix[7];
-			matrix.set(animationWindow.matrix).multiply(context.matrix);
+			matrix.set(animationWindow!.matrix).multiply(context.matrix);
 			const dx = matrix[6];
 			const dy = matrix[7];
 			if (sx === dx && sy === dy) {
@@ -434,7 +434,7 @@ AnimationWindowEngine.drawJointSpinner = function (this: typeof Animation) {
 	) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
-		const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
+		const matrix = gl.matrix.set(animationWindow!.matrix).multiply(context.matrix);
 		let vi = 0;
 		const x = matrix[6];
 		const y = matrix[7];
@@ -545,7 +545,7 @@ AnimationWindowEngine.drawSpriteWireframe = function (
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
+	const matrix = gl.matrix.set(animationWindow!.matrix).multiply(context.matrix);
 	const L = -(texture.width * context.anchorX + context.pivotX);
 	const T = -(texture.height * context.anchorY + context.pivotY);
 	const R = L + texture.width;
@@ -616,7 +616,7 @@ AnimationWindowEngine.drawEmitterWireframe = function (
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
+	const matrix = gl.matrix.set(animationWindow!.matrix).multiply(context.matrix);
 	const L = emitter.outerLeft * emitter.scale;
 	const T = emitter.outerTop * emitter.scale;
 	const R = emitter.outerRight * emitter.scale;
@@ -683,7 +683,7 @@ AnimationWindowEngine.drawTargetAnchor = function (this: typeof Animation) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;
-		const matrix = gl.matrix.set(animationWindow.matrix).multiply(context.matrix);
+		const matrix = gl.matrix.set(animationWindow!.matrix).multiply(context.matrix);
 		const x = matrix[6];
 		const y = matrix[7];
 		const crossColor = 0xff0000ff;
@@ -713,8 +713,11 @@ AnimationWindowEngine.drawTargetAnchor = function (this: typeof Animation) {
 AnimationWindowEngine.drawSpriteControlPoints = function (this: typeof Animation) {
 	const context = this.targetContext;
 	const target = getAnimationStore().target;
-	const texture = UI.controlPointTexture;
-	if (!context || !target || !texture) return;
+	const texture = getUIStore().controlPointTexture;
+	// `texture.base` 是可空的（ImageTexture 继承自 Texture，`base` 在贴图真正就绪前为 null）。
+	// 老路径走的是 `UIShape` 的 `[k: string]: any` 索引签名，这个空值被 any 吞掉了；
+	// 换成有类型的 store 字段后 tsc 把它暴露出来——这里按贴图尚未就绪处理，直接跳过绘制。
+	if (!context || !target || !texture?.base) return;
 	if (this.updateControlPoints!(context)) {
 		const POINT_RADIUS = 4 / this.scale;
 		const gl = GL;
@@ -750,7 +753,7 @@ AnimationWindowEngine.drawSpriteControlPoints = function (this: typeof Animation
 		const program = gl.imageProgram.use();
 		const matrix = gl.matrix
 			.project(gl.flip, gl.width, gl.height)
-			.multiply(animationWindow.matrix);
+			.multiply(animationWindow!.matrix);
 		gl.bindVertexArray(program.vao);
 		gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
 		gl.uniform1i(program.u_LightMode, 0);
@@ -771,32 +774,32 @@ AnimationWindowEngine.requestAnimation = function (this: typeof Animation) {
 AnimationWindowEngine.updateAnimation = function (this: typeof Animation, deltaTime: number) {
 	deltaTime *= getAnimationStore().speed ?? 0;
 	if (getAnimationStore().playing) {
-		const { start, end } = animationWindow.getAnimationRange!();
-		const offset = deltaTime / animationWindow.Player.step;
-		let index = Math.max(animationWindow.animIndex + offset, start);
+		const { start, end } = animationWindow!.getAnimationRange!();
+		const offset = deltaTime / animationWindow!.Player.step;
+		let index = Math.max(animationWindow!.animIndex + offset, start);
 		if (index >= end) {
 			if (getAnimationStore().loop && end > 0) {
 				do {
 					index += start - end;
 				} while (index >= end);
-				animationWindow.resetSoundContexts!();
+				animationWindow!.resetSoundContexts!();
 			} else {
-				animationWindow.animIndex = index;
-				animationWindow.stop!();
+				animationWindow!.animIndex = index;
+				animationWindow!.stop!();
 				return;
 			}
 		}
-		animationWindow.animIndex = index;
-		animationWindow.loadFrames!(index);
-		animationWindow.emitParticles!(deltaTime);
-		animationWindow.updateSoundContexts!(index);
+		animationWindow!.animIndex = index;
+		animationWindow!.loadFrames!(index);
+		animationWindow!.emitParticles!(deltaTime);
+		animationWindow!.updateSoundContexts!(index);
 	}
-	animationWindow.updateParticles!(deltaTime);
+	animationWindow!.updateParticles!(deltaTime);
 	// 不能保证加载帧的时候一定会请求渲染(尾帧截止) 所以在播放状态时再次请求渲染
-	if (getAnimationStore().playing || animationWindow.particleUpdating) {
-		animationWindow.requestRendering!();
+	if (getAnimationStore().playing || animationWindow!.particleUpdating) {
+		animationWindow!.requestRendering!();
 	} else {
-		animationWindow.stopAnimation!();
+		animationWindow!.stopAnimation!();
 	}
 };
 
@@ -812,21 +815,21 @@ AnimationWindowEngine.requestRendering = function (this: typeof Animation) {
 
 AnimationWindowEngine.renderingFunction = function (this: typeof Animation) {
 	if (GL.width * GL.height !== 0) {
-		animationWindow.drawBackground!();
-		if (animationWindow.layers !== null) {
-			animationWindow.drawOnionskins!();
-			animationWindow.drawBackParticles!();
-			animationWindow.drawSpriteLayers!();
-			animationWindow.drawFrontParticles!();
-			animationWindow.drawCoordinateAxes!();
-			animationWindow.drawEmitters!();
-			animationWindow.drawJointNodes!();
-			animationWindow.drawJointArrows!();
-			animationWindow.drawJointSpinner!();
-			animationWindow.drawHoverWireframe!();
-			animationWindow.drawTargetWireframe!();
-			animationWindow.drawTargetAnchor!();
-			animationWindow.drawSpriteControlPoints!();
+		animationWindow!.drawBackground!();
+		if (animationWindow!.layers !== null) {
+			animationWindow!.drawOnionskins!();
+			animationWindow!.drawBackParticles!();
+			animationWindow!.drawSpriteLayers!();
+			animationWindow!.drawFrontParticles!();
+			animationWindow!.drawCoordinateAxes!();
+			animationWindow!.drawEmitters!();
+			animationWindow!.drawJointNodes!();
+			animationWindow!.drawJointArrows!();
+			animationWindow!.drawJointSpinner!();
+			animationWindow!.drawHoverWireframe!();
+			animationWindow!.drawTargetWireframe!();
+			animationWindow!.drawTargetAnchor!();
+			animationWindow!.drawSpriteControlPoints!();
 		}
 	}
 };

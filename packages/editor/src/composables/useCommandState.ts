@@ -1,5 +1,5 @@
-import { reactive } from 'vue';
-import type { WordListShape } from './useWordList.ts';
+import { markRaw, reactive } from 'vue';
+import { WordList, type WordListShape } from './useWordList.ts';
 
 interface CommandTargetShape {
 	scrollAndResize?: () => void;
@@ -9,7 +9,16 @@ interface CommandTargetShape {
 
 interface CommandState {
 	target: CommandTargetShape | null;
-	id: string;
+	/** 指令 id：解析阶段才写入，之前**确实是 null** */
+	id: string | null;
+	/**
+	 * 词表：默认是一个空 `WordList`；每次解析由
+	 * `Command.words = markRaw(new Command.WordList())` 换成**新实例**，schema 解析函数在开头
+	 * `const words = commandState.words` 抓住它、随后连续 `push`。
+	 *
+	 * `markRaw` 不能省：`WordList` 内部用私有字段 `#arr`，被 Vue 包成 Proxy 后一调用就抛
+	 * （`Cannot read private member #arr from an object whose class did not declare it`）。
+	 */
 	words: WordListShape;
 	invalid: boolean;
 	saveVars: boolean;
@@ -32,8 +41,8 @@ interface CommandState {
 
 export const commandState = reactive<CommandState>({
 	target: null,
-	id: null as unknown as string,
-	words: null as unknown as WordListShape,
+	id: null,
+	words: markRaw(new WordList()),
 	invalid: false,
 	saveVars: false,
 	returnType: '',

@@ -76,7 +76,9 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 };
 
 Variable.typeWrite = function (event: Event & { value?: string }) {
-	const { style } = Variable.inputs.value;
+	// `inputs.value` 在 `initialize()` 里绑定；类型下拉框能触发本函数就说明已经过了绑定阶段
+	// （`!` 只是编译期断言，运行期行为不变）。
+	const { style } = Variable.inputs.value!;
 	Variable.manager.switch(event.value ?? null);
 	switch (event.value) {
 		case 'boolean':

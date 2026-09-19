@@ -125,10 +125,7 @@ interface CommandSuggestionShape {
 		| null;
 }
 
-export const CommandSuggestion: CommandSuggestionShape = {
-	widget: null as unknown as CommandSuggestionWidget,
-	searcher: null as unknown as CommandSuggestionSearcher,
-	list: null as unknown as HTMLElement & CommandSuggestionList,
+export const CommandSuggestion = {
 	data: null,
 	initialize: null,
 	open: null,
@@ -142,7 +139,7 @@ export const CommandSuggestion: CommandSuggestionShape = {
 	listPointerdown: null,
 	listUpdate: null,
 	listOpen: null
-};
+} satisfies Partial<CommandSuggestionShape> as CommandSuggestionShape;
 
 /** P5b 批次 2：控件元素注册表——由 `CommandWidget.vue` / `CommandSuggestions.vue` 在模板里登记 */
 export const commandSuggestionEls = createElementRegistry();

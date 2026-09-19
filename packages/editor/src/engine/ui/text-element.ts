@@ -2,7 +2,8 @@ import { CSSRGBA } from '@app/utils/color-utils';
 import { getVariable } from '@app/utils/safe';
 import { GameLocal } from '@app/local/local-object.ts';
 import { Printer } from '@app/printer/printer.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
@@ -41,7 +42,7 @@ interface EmbeddedImageShape {
 	resize(): void;
 }
 
-UI.Text = class TextElement extends UI.Element {
+uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	texture: ImageTexture | null;
 	printer: Printer | null;
 	_direction!: string;
@@ -389,7 +390,7 @@ UI.Text = class TextElement extends UI.Element {
 		if (this.content) {
 			GL.alpha = this.opacity;
 			GL.blend = this.blend;
-			GL.matrix.set(UI.matrix).multiply(this.matrix);
+			GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 			GL.drawImage(
 				this.texture!,
 				this.textOuterX,
@@ -407,7 +408,7 @@ UI.Text = class TextElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		if (this.printer) {

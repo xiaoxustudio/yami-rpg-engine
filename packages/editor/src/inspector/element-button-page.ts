@@ -2,7 +2,8 @@ import { inspectorEls } from './element-registry.ts';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 import type { ButtonForm } from '@app/composables/useUIButtonPage';
 import type { YamiEvent } from '@app/types/editor-event';
 
@@ -24,7 +25,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 		[k: string]: unknown;
 	}
 	const UIButton: UIButtonShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -110,8 +111,9 @@ import type { YamiEvent } from '@app/types/editor-event';
 
 	UIButton.close = function (this: typeof UIButton) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -123,14 +125,14 @@ import type { YamiEvent } from '@app/types/editor-event';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'horizontalAlign':
 				if (node.horizontalAlign !== value) {
 					const event = window.event as YamiEvent | null;
 					if (event && event.type === 'input' && event.value !== undefined) {
-						UI.history.save({
+						getUIStore().history!.save({
 							type: 'inspector-change',
 							editor: this,
 							target: this.target,
@@ -156,7 +158,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 				if (node.verticalAlign !== value) {
 					const event = window.event as YamiEvent | null;
 					if (event && event.type === 'input' && event.value !== undefined) {
-						UI.history.save({
+						getUIStore().history!.save({
 							type: 'inspector-change',
 							editor: this,
 							target: this.target,
@@ -285,7 +287,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 				break;
 			}
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	Inspector.uiButton = UIButton;

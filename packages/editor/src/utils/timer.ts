@@ -121,7 +121,6 @@ Timer.tpf = Infinity;
 Timer.animationIndex = -1;
 Timer.animationWaiting = 0;
 Timer.initialize = null;
-Timer.start = null as unknown as (timestamp: number) => void;
 Timer.update = null;
 Timer.play = null;
 Timer.appendUpdater = null;

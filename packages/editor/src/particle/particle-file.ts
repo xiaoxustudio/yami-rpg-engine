@@ -2,7 +2,6 @@ import { Particle } from './particle-window.ts';
 import type {
 	ParticleContextShape,
 	ParticleEmitterDataShape,
-	ParticleEmitterShape,
 	ParticleLayerShape
 } from './particle-window.ts';
 import { TreeList } from '@app/components/tree-list.ts';
@@ -89,7 +88,7 @@ Particle.save = function () {
 		const { editor } = this.context!;
 
 		editor.target = getParticleStore().target;
-		editor.emitter = this.emitter;
+		editor.emitter = this.emitter!;
 		editor.history = this.history!;
 		editor.centerX = this.centerX!;
 		editor.centerY = this.centerY!;
@@ -104,8 +103,8 @@ Particle.close = function () {
 		getParticleStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
+		this.emitter = null;
 		this.layers = null;
-		this.emitter = null as unknown as ParticleEmitterShape;
 		this.history = null;
 		hide(this.body);
 		this.stopAnimation!();
@@ -129,6 +128,6 @@ Particle.destroy = function (this: typeof Particle, context: ParticleContextShap
 };
 
 Particle.restart = function () {
-	this.emitter.clear();
+	this.emitter!.clear();
 	this.requestRendering!();
 };

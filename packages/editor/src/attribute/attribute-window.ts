@@ -142,10 +142,7 @@ interface AttributeWindowShape {
  * 字面量给不出它 ⇒ 字面量按 `Omit<AttributeWindowShape, 'idMap'>` 校验（其余成员仍逐项受检），
  * 导出时再断言成完整形状（与 `AudioManager`/`Log`/`Variable` 同一手法）。
  */
-const attribute: Omit<AttributeWindowShape, 'idMap'> = {
-	list: null as unknown as AttributeWindowShape['list'],
-	panel: null as unknown as AttributeWindowShape['panel'],
-	searcher: null as unknown as AttributeWindowShape['searcher'],
+const attribute = {
 	inputs: {
 		name: null,
 		key: null,
@@ -153,56 +150,8 @@ const attribute: Omit<AttributeWindowShape, 'idMap'> = {
 		enum: null,
 		enumBox: null,
 		type: null
-	},
-	initialize: null as unknown as AttributeWindowShape['initialize'],
-	open: null as unknown as AttributeWindowShape['open'],
-	undo: null as unknown as AttributeWindowShape['undo'],
-	redo: null as unknown as AttributeWindowShape['redo'],
-	createId: null as unknown as AttributeWindowShape['createId'],
-	register: null as unknown as AttributeWindowShape['register'],
-	unregister: null as unknown as AttributeWindowShape['unregister'],
-	getItemById: null as unknown as AttributeWindowShape['getItemById'],
-	setFolderGroup: null as unknown as AttributeWindowShape['setFolderGroup'],
-	getGroup: null as unknown as AttributeWindowShape['getGroup'],
-	getAttribute: null as unknown as AttributeWindowShape['getAttribute'],
-	getGroupAttribute: null as unknown as AttributeWindowShape['getGroupAttribute'],
-	getDefAttributeId: null as unknown as AttributeWindowShape['getDefAttributeId'],
-	getAttributeItems: null as unknown as AttributeWindowShape['getAttributeItems'],
-	openPropertyPanel: null as unknown as AttributeWindowShape['openPropertyPanel'],
-	closePropertyPanel: null as unknown as AttributeWindowShape['closePropertyPanel'],
-	unpackAttribute: null as unknown as AttributeWindowShape['unpackAttribute'],
-	packAttribute: null as unknown as AttributeWindowShape['packAttribute'],
-	saveHistory: null as unknown as AttributeWindowShape['saveHistory'],
-	windowClose: null as unknown as AttributeWindowShape['windowClose'],
-	windowClosed: null as unknown as AttributeWindowShape['windowClosed'],
-	keydown: null as unknown as AttributeWindowShape['keydown'],
-	listKeydown: null as unknown as AttributeWindowShape['listKeydown'],
-	listPointerdown: null as unknown as AttributeWindowShape['listPointerdown'],
-	listDoubleclick: null as unknown as AttributeWindowShape['listDoubleclick'],
-	listSelect: null as unknown as AttributeWindowShape['listSelect'],
-	listRecord: null as unknown as AttributeWindowShape['listRecord'],
-	listOpen: null as unknown as AttributeWindowShape['listOpen'],
-	listPopup: null as unknown as AttributeWindowShape['listPopup'],
-	nameInput: null as unknown as AttributeWindowShape['nameInput'],
-	keyInput: null as unknown as AttributeWindowShape['keyInput'],
-	typeWrite: null as unknown as AttributeWindowShape['typeWrite'],
-	typeInput: null as unknown as AttributeWindowShape['typeInput'],
-	enumInput: null as unknown as AttributeWindowShape['enumInput'],
-	noteInput: null as unknown as AttributeWindowShape['noteInput'],
-	panelKeydown: null as unknown as AttributeWindowShape['panelKeydown'],
-	searcherInput: null as unknown as AttributeWindowShape['searcherInput'],
-	confirm: null as unknown as AttributeWindowShape['confirm'],
-	apply: null as unknown as AttributeWindowShape['apply'],
-	list_saveScroll: null as unknown as AttributeWindowShape['list_saveScroll'],
-	list_restoreScroll: null as unknown as AttributeWindowShape['list_restoreScroll'],
-	list_cancelSearch: null as unknown as AttributeWindowShape['list_cancelSearch'],
-	list_createFolder: null as unknown as AttributeWindowShape['list_createFolder'],
-	list_createAttribute: null as unknown as AttributeWindowShape['list_createAttribute'],
-	list_parseName: null as unknown as AttributeWindowShape['list_parseName'],
-	list_onCreate: null as unknown as AttributeWindowShape['list_onCreate'],
-	list_onDelete: null as unknown as AttributeWindowShape['list_onDelete'],
-	list_onResume: null as unknown as AttributeWindowShape['list_onResume']
-};
+	}
+} satisfies Partial<Omit<AttributeWindowShape, 'idMap'>> as Omit<AttributeWindowShape, 'idMap'>;
 
 export const Attribute = attribute as AttributeWindowShape;
 
@@ -220,9 +169,6 @@ function ensureDomBound() {
 	Attribute.inputs.note = attributeEls.get('attribute-note') as YamiElement;
 	Attribute.inputs.enum = attributeEls.get('attribute-enum') as YamiElement;
 	Attribute.inputs.enumBox = attributeEls.get('attribute-enum-box') as YamiElement;
-	list.copy = null as unknown as (...args: unknown[]) => void;
-	list.paste = null as unknown as (...args: unknown[]) => void;
-	list.delete = null as unknown as (...args: unknown[]) => void;
 	list.saveScroll = Attribute.list_saveScroll;
 	list.restoreScroll = Attribute.list_restoreScroll;
 	list.cancelSearch = Attribute.list_cancelSearch;

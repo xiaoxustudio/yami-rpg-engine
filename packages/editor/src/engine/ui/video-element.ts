@@ -1,6 +1,6 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
 
-UI.Video = class VideoElement extends UI.Element {
+uiElClasses.Video = class VideoElement extends uiElClasses.Element! {
 	video: string;
 	loop: boolean;
 	flip: string;
@@ -20,7 +20,7 @@ UI.Video = class VideoElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();

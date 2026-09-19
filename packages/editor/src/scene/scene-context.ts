@@ -10,6 +10,7 @@ import { Parallax } from './parallax.ts';
 import { Scene } from './scene-window.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 import { radians } from '@app/utils/math';
+import { remove } from '@app/utils/array';
 
 Scene.updateParallaxes = SceneAnimateEngine.updateParallaxes;
 
@@ -514,17 +515,21 @@ Scene.createPreviewObject = function (this: typeof Scene, file: PreviewFile) {
 Scene.deletePreviewObject = function (this: typeof Scene) {
 	const object = this.previewObject;
 	if (object) {
+		// ⚠️ `actors` / `animations` / `particles` 都是**普通数组**（`scene-context.ts` 里
+		// `actors: []` 初始化、用 `actors.length = actorIndex` 收缩），没有 `remove` 方法。
+		// 必须用 `@app/utils/array` 的自由函数形态 —— 写成 `arr.remove(x)` 会抛
+		// `... .remove is not a function`（数组元素类型带索引签名，tsc 看不见）（2026-09-18）。
 		switch (object.class) {
 			case 'actor':
-				this.actors.remove(object);
+				remove(this.actors, object);
 				object.player?.destroy();
 				break;
 			case 'animation':
-				this.animations.remove(object);
+				remove(this.animations, object);
 				object.player?.destroy();
 				break;
 			case 'particle':
-				this.particles.remove(object);
+				remove(this.particles, object);
 				object.emitter?.destroy();
 				break;
 		}

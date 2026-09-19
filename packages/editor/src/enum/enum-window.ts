@@ -116,53 +116,13 @@ interface EnumModule {
 	[k: string]: any;
 }
 
-export const Enum: EnumModule = {
-	list: null as unknown as EnumModule['list'],
-	panel: null as unknown as EnumModule['panel'],
-	searcher: null as unknown as EnumModule['searcher'],
+export const Enum = {
 	inputs: {
 		name: null,
 		value: null,
 		note: null
-	},
-	initialize: null as unknown as EnumModule['initialize'],
-	open: null as unknown as EnumModule['open'],
-	undo: null as unknown as EnumModule['undo'],
-	redo: null as unknown as EnumModule['redo'],
-	createId: null as unknown as EnumModule['createId'],
-	register: null as unknown as EnumModule['register'],
-	unregister: null as unknown as EnumModule['unregister'],
-	getItemById: null as unknown as EnumModule['getItemById'],
-	setFolderGroup: null as unknown as EnumModule['setFolderGroup'],
-	getGroup: null as unknown as EnumModule['getGroup'],
-	getString: null as unknown as EnumModule['getString'],
-	getGroupString: null as unknown as EnumModule['getGroupString'],
-	getDefStringId: null as unknown as EnumModule['getDefStringId'],
-	getStringItems: null as unknown as EnumModule['getStringItems'],
-	getMergedItems: null as unknown as EnumModule['getMergedItems'],
-	openPropertyPanel: null as unknown as EnumModule['openPropertyPanel'],
-	closePropertyPanel: null as unknown as EnumModule['closePropertyPanel'],
-	unpackEnumeration: null as unknown as EnumModule['unpackEnumeration'],
-	packEnumeration: null as unknown as EnumModule['packEnumeration'],
-	saveHistory: null as unknown as EnumModule['saveHistory'],
-	windowClose: null as unknown as EnumModule['windowClose'],
-	windowClosed: null as unknown as EnumModule['windowClosed'],
-	keydown: null as unknown as EnumModule['keydown'],
-	listKeydown: null as unknown as EnumModule['listKeydown'],
-	listPointerdown: null as unknown as EnumModule['listPointerdown'],
-	listDoubleclick: null as unknown as EnumModule['listDoubleclick'],
-	listSelect: null as unknown as EnumModule['listSelect'],
-	listRecord: null as unknown as EnumModule['listRecord'],
-	listOpen: null as unknown as EnumModule['listOpen'],
-	listPopup: null as unknown as EnumModule['listPopup'],
-	nameInput: null as unknown as EnumModule['nameInput'],
-	valueInput: null as unknown as EnumModule['valueInput'],
-	noteInput: null as unknown as EnumModule['noteInput'],
-	panelKeydown: null as unknown as EnumModule['panelKeydown'],
-	searcherInput: null as unknown as EnumModule['searcherInput'],
-	confirm: null as unknown as EnumModule['confirm'],
-	apply: null as unknown as EnumModule['apply']
-};
+	}
+} satisfies Partial<EnumModule> as EnumModule;
 
 function ensureDomBound() {
 	if (Enum.list) return;
@@ -176,16 +136,6 @@ function ensureDomBound() {
 	Enum.inputs.name = enumEls.get('enum-name') as YamiElement;
 	Enum.inputs.value = enumEls.get('enum-value') as YamiElement;
 	Enum.inputs.note = enumEls.get('enum-note') as YamiElement;
-	Enum.list.copy = null as unknown as (...args: unknown[]) => void;
-	Enum.list.paste = null as unknown as (...args: unknown[]) => void;
-	Enum.list.delete = null as unknown as (...args: unknown[]) => void;
-	Enum.list.saveScroll = null as unknown as (...args: unknown[]) => void;
-	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
-	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => void;
-	Enum.list.createString = null as unknown as () => unknown;
-	Enum.list.parseName = null as unknown as (...args: unknown[]) => void;
-	getListConfig(Enum.list).onDelete = null as unknown as (item: unknown) => void;
-	getListConfig(Enum.list).onResume = null as unknown as (item: unknown) => void;
 	bindListClipboardMethods({
 		module: Enum as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list: Enum.list,

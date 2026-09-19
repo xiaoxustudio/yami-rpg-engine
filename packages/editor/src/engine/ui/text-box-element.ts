@@ -1,6 +1,7 @@
 import { INTRGBA } from '@app/utils/color-utils';
 import { Printer } from '@app/printer/printer.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Texture } from '@app/engine/webgl/texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { empty as fnEmpty } from '@app/utils/function';
@@ -22,7 +23,7 @@ interface TextBoxElementData {
 	selectionBgColor?: string;
 }
 
-UI.TextBox = class TextBoxElement extends UI.Element {
+uiElClasses.TextBox = class TextBoxElement extends uiElClasses.Element! {
 	focusing: boolean;
 	texture: Texture | null;
 	_type!: string;
@@ -227,12 +228,12 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 
 		GL.alpha = this.opacity;
 		GL.blend = 'normal';
-		GL.matrix.set(UI.matrix).multiply(this.matrix);
+		GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 
 		const { scale } = Printer;
 		const { texture } = this;
 		if (texture !== null) {
-			if (UI.hover === this.node) {
+			if (getUIStore().hover! === this.node) {
 				const dx = this.textX;
 				const dy = this.selectionY;
 				const dw = this.selectionWidth!;
@@ -262,7 +263,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition!();

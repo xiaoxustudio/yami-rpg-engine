@@ -558,7 +558,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -805,7 +805,7 @@ onMounted(() => {
 		'uiButton-letterSpacing-slider',
 		'uiButton-textPadding-slider'
 	]);
-	bindInput(elements, uiButton, UI);
+	bindInput(elements, getUIStore(), uiButton);
 	bindSliders(sliders);
 
 	const el = inspectorEls.get('uiButton-vue-mount');

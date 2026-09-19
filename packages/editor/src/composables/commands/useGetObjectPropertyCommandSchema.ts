@@ -16,8 +16,8 @@ export type ObjectPropertyItem = { text: string };
 export const indexForm = reactive<{ name: string }>({ name: '' });
 
 export const IndexBind = {
-	target: null as unknown as YamiElement | null,
-	type: null as unknown as string | null,
+	target: null as YamiElement | null,
+	type: null as string | null,
 	initialize() {
 		this.target = null;
 		this.type = 'get-object-index';

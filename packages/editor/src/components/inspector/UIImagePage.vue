@@ -512,7 +512,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -639,7 +639,7 @@ onMounted(() => {
 		'uiImage-tint-2-slider',
 		'uiImage-tint-3-slider'
 	]);
-	bindInput(elements, uiImage, UI);
+	bindInput(elements, getUIStore(), uiImage);
 	bindSliders(sliders);
 
 	const el = inspectorEls.get('uiImage-vue-mount');

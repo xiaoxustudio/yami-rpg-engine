@@ -39,7 +39,7 @@ interface EditorShape {
 	hooks: EditorProjectHooks;
 }
 
-export const Editor: EditorShape = {
+export const Editor = {
 	get state(): EditorState {
 		return getEditorStore().state;
 	},
@@ -71,9 +71,8 @@ export const Editor: EditorShape = {
 	saveManifest: null,
 	checkForEditorUpdates: null,
 	checkForProjectUpdates: null,
-	isProjectVersionSupported: null,
-	hooks: null as unknown as EditorProjectHooks
-};
+	isProjectVersionSupported: null
+} satisfies Partial<EditorShape> as EditorShape;
 
 export function setEditorProjectHooks(hooks: EditorProjectHooks) {
 	Editor.hooks = hooks;

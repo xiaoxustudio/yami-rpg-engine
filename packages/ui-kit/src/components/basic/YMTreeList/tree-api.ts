@@ -176,7 +176,11 @@ export const treeOwnerListOf = (item: unknown): unknown => treeListOfItem(item);
 const isSSR = typeof document === 'undefined';
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	const host = isSSR ? (null as unknown as HTMLDivElement) : document.createElement('div');
+	// SSR 分支原先写 `null as unknown as HTMLDivElement`，等于谎报一个非空 host；
+	// 一旦真在无 DOM 环境走到这里，下面 `render(vnode, null)` 会以一个难懂的方式炸。
+	// 明确抛错，把「这里需要 DOM」讲清楚（本项目只在 Electron 渲染进程/ jsdom 测试里跑）。
+	if (isSSR) throw new Error('[tree-api] renderElement 需要 DOM 环境');
+	const host = document.createElement('div');
 	render(vnode, host);
 	const element = host.firstElementChild as HTMLElement;
 	host.removeChild(element);
@@ -193,6 +197,138 @@ type TextBox = HTMLDivElement & {
 	fitContent: () => void;
 };
 
+/**
+ * 重命名文本框的创建体。
+ *
+ * 原先这是对象字面量里的一个立即执行 IIFE：模块加载期就 `document.createElement`，
+ * 无 DOM 时返回 `null as unknown as TextBox`（谎报一个非空 host）。现在改成
+ * `treeListStatics.textBox` 首次访问时惰性调用；无 DOM 时明确抛错。
+ */
+const createTextBox = (): TextBox => {
+	const textBox = document.createElement('div') as TextBox;
+	addClass(textBox, 'text-box');
+	addClass(textBox, 'node-list-text-box');
+	const input = document.createElement('input');
+	addClass(input, 'text-box-input');
+	addClass(input, 'node-list-text-box-input');
+	input.type = 'text';
+	textBox.appendChild(input);
+	textBox.input = input;
+	const textBoxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
+		textBox
+	);
+	textBoxData.hiddenNodes = null;
+	textBoxData.lastText = '';
+
+	textBox.read = function (): string {
+		return input.value;
+	};
+
+	textBox.write = function (value: string): void {
+		input.value = value;
+	};
+
+	textBox.getFocus = function (mode: string | null): HTMLInputElement {
+		input.focus();
+		switch (mode) {
+			case 'all':
+				input.select();
+				input.scrollLeft = 0;
+				break;
+			case 'end':
+				input.setSelectionRange(input.value.length, input.value.length);
+				input.scrollLeft = input.scrollWidth;
+				break;
+		}
+		return input;
+	};
+
+	textBox.fitContent = function (): void {
+		const value = input.value;
+		const span = document.createElement('span');
+		span.style.position = 'absolute';
+		span.style.visibility = 'hidden';
+		span.style.whiteSpace = 'pre';
+		span.textContent = value || ' ';
+		document.body.appendChild(span);
+		const width = span.getBoundingClientRect().width + 8;
+		span.remove();
+		input.style.width = `${width}px`;
+	};
+
+	textBox.addEventListener('keydown', function (this: HTMLElement, event: KeyboardEvent) {
+		event.stopPropagation();
+		switch (event.code) {
+			case 'Enter':
+			case 'NumpadEnter':
+			case 'Escape': {
+				const item = this.parentNode as HTMLElement & { parentNode: HTMLElement };
+				const list = item.parentNode;
+				(this as HTMLDivElement & { input: HTMLInputElement }).input.blur();
+				list.focus();
+				break;
+			}
+		}
+	});
+
+	textBox.addEventListener('input', function (this: HTMLDivElement & { fitContent: () => void }) {
+		this.fitContent();
+	});
+
+	textBox.addEventListener('select', (event: Event) => {
+		event.stopPropagation();
+	});
+
+	textBox.addEventListener('change', (event: Event) => {
+		event.stopPropagation();
+	});
+
+	input.addEventListener('blur', () => {
+		textBox.dispatchEvent(new FocusEvent('blur'));
+	});
+
+	textBox.addEventListener('blur', function (this: TextBox) {
+		// P2b-3：这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
+		// （结构由 `rename()` 保证：文本框会被挂到行元素下）。类型上按这条链显式写出来。
+		const element = this.parentNode as HTMLElement;
+		const list = element.parentNode as TreeListHost;
+		// 重命名框的父节点就是行元素（`bindRowElement` 必定写过 item），与原 `element.item` 同义
+		const item = rowData(element).item!;
+		const name = this.read().trim();
+		const boxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
+			this
+		);
+		for (const node of boxData.hiddenNodes ?? []) {
+			removeClass(node, 'hidden');
+		}
+		boxData.hiddenNodes = null;
+		this.remove();
+		const last = item.name;
+		if (last !== name) {
+			item.name = name;
+			list.updateItemName(item);
+			if (list.recordEventEnabled) {
+				const record: ValueEvent = new Event('record') as ValueEvent;
+				const response = {
+					type: 'rename',
+					item: item,
+					oldValue: last,
+					newValue: name
+				};
+				record.value = response;
+				list.dispatchEvent(record);
+			}
+			dispatchChangeEvent(list);
+		} else {
+			rowData(element).textNode!.nodeValue = boxData.lastText;
+		}
+	});
+
+	return textBox;
+};
+
+let textBoxInstance: TextBox | null = null;
+
 export const treeListStatics = {
 	createParents: (items: TreeItem[], parent: TreeItem | null): void => {
 		treeCore.createParents(items, parent);
@@ -202,134 +338,18 @@ export const treeListStatics = {
 		treeCore.deleteCaches(data);
 	},
 
-	textBox: (function IIFE() {
-		if (isSSR) {
-			return null as unknown as TextBox;
+	get textBox(): TextBox {
+		if (textBoxInstance) {
+			return textBoxInstance;
 		}
-		const textBox = document.createElement('div') as TextBox;
-		addClass(textBox, 'text-box');
-		addClass(textBox, 'node-list-text-box');
-		const input = document.createElement('input');
-		addClass(input, 'text-box-input');
-		addClass(input, 'node-list-text-box-input');
-		input.type = 'text';
-		textBox.appendChild(input);
-		textBox.input = input;
-		const textBoxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
-			textBox
-		);
-		textBoxData.hiddenNodes = null;
-		textBoxData.lastText = '';
-
-		textBox.read = function (): string {
-			return input.value;
-		};
-
-		textBox.write = function (value: string): void {
-			input.value = value;
-		};
-
-		textBox.getFocus = function (mode: string | null): HTMLInputElement {
-			input.focus();
-			switch (mode) {
-				case 'all':
-					input.select();
-					input.scrollLeft = 0;
-					break;
-				case 'end':
-					input.setSelectionRange(input.value.length, input.value.length);
-					input.scrollLeft = input.scrollWidth;
-					break;
-			}
-			return input;
-		};
-
-		textBox.fitContent = function (): void {
-			const value = input.value;
-			const span = document.createElement('span');
-			span.style.position = 'absolute';
-			span.style.visibility = 'hidden';
-			span.style.whiteSpace = 'pre';
-			span.textContent = value || ' ';
-			document.body.appendChild(span);
-			const width = span.getBoundingClientRect().width + 8;
-			span.remove();
-			input.style.width = `${width}px`;
-		};
-
-		textBox.addEventListener('keydown', function (this: HTMLElement, event: KeyboardEvent) {
-			event.stopPropagation();
-			switch (event.code) {
-				case 'Enter':
-				case 'NumpadEnter':
-				case 'Escape': {
-					const item = this.parentNode as HTMLElement & { parentNode: HTMLElement };
-					const list = item.parentNode;
-					(this as HTMLDivElement & { input: HTMLInputElement }).input.blur();
-					list.focus();
-					break;
-				}
-			}
-		});
-
-		textBox.addEventListener(
-			'input',
-			function (this: HTMLDivElement & { fitContent: () => void }) {
-				this.fitContent();
-			}
-		);
-
-		textBox.addEventListener('select', (event: Event) => {
-			event.stopPropagation();
-		});
-
-		textBox.addEventListener('change', (event: Event) => {
-			event.stopPropagation();
-		});
-
-		input.addEventListener('blur', () => {
-			textBox.dispatchEvent(new FocusEvent('blur'));
-		});
-
-		textBox.addEventListener('blur', function (this: TextBox) {
-			// P2b-3：这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
-			// （结构由 `rename()` 保证：文本框会被挂到行元素下）。类型上按这条链显式写出来。
-			const element = this.parentNode as HTMLElement;
-			const list = element.parentNode as TreeListHost;
-			// 重命名框的父节点就是行元素（`bindRowElement` 必定写过 item），与原 `element.item` 同义
-			const item = rowData(element).item!;
-			const name = this.read().trim();
-			const boxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
-				this
-			);
-			for (const node of boxData.hiddenNodes ?? []) {
-				removeClass(node, 'hidden');
-			}
-			boxData.hiddenNodes = null;
-			this.remove();
-			const last = item.name;
-			if (last !== name) {
-				item.name = name;
-				list.updateItemName(item);
-				if (list.recordEventEnabled) {
-					const record: ValueEvent = new Event('record') as ValueEvent;
-					const response = {
-						type: 'rename',
-						item: item,
-						oldValue: last,
-						newValue: name
-					};
-					record.value = response;
-					list.dispatchEvent(record);
-				}
-				dispatchChangeEvent(list);
-			} else {
-				rowData(element).textNode!.nodeValue = boxData.lastText;
-			}
-		});
-
-		return textBox;
-	})()
+		// 本项目只在 Electron 渲染进程 / jsdom 测试里跑（与 renderElement 同一约定）：
+		// 无 DOM 时明确抛错，而不是返回一个假的非空元素。
+		if (isSSR) {
+			throw new Error('[tree-api] textBox 需要 DOM 环境');
+		}
+		textBoxInstance = createTextBox();
+		return textBoxInstance;
+	}
 };
 
 export interface TreeListApiOptions {

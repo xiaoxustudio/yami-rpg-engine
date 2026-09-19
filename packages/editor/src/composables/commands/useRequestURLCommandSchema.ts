@@ -25,8 +25,8 @@ export const requestKeyValueForm = reactive<{
 });
 
 export const RequestkeyValueBind = {
-	target: null as unknown as (string & { save?: () => unknown }) | null,
-	type: null as unknown as string | null,
+	target: null as (string & { save?: () => unknown }) | null,
+	type: null as string | null,
 	initialize() {
 		this.target = null;
 		this.type = 'request-header';

@@ -1,6 +1,7 @@
 import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 
 {
 	interface UITextBoxShape {
@@ -36,7 +37,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		[k: string]: unknown;
 	}
 	const UITextBox: UITextBoxShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -101,8 +102,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 	UITextBox.close = function (this: typeof UITextBox) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
@@ -114,7 +116,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		// const element = node.instance
 		switch (key) {
 			case 'type':
@@ -166,7 +168,7 @@ import { UI } from '@app/ui/ui-window.ts';
 				}
 				break;
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	Inspector.uiTextBox = UITextBox;

@@ -1,0 +1,579 @@
+#!/usr/bin/env node
+// 迁移台账（Migration Ledger）：把「Vue 3 迁移还差什么」收敛成**一份可复现的数字**，
+// 并用棘轮（ratchet）把它守住——只许变小，变大就红。
+//
+// 用法：
+//   node scripts/migration-ledger.mjs                  打印台账 + 与 baseline 比对（只读）
+//   node scripts/migration-ledger.mjs --json           机器可读 JSON（CI / 其它脚本消费）
+//   node scripts/migration-ledger.mjs --check           任一轴**上升**则 exit 1（门禁用）
+//   node scripts/migration-ledger.mjs --update-baseline 重写 baseline（人工复核后执行）
+//   node scripts/migration-ledger.mjs --axis <id>       只看某一轴的明细
+//
+// 设计要点：
+//   1. **不 spawn 子进程**。沙箱 / 受限 CI 里 spawn 会 EPERM，而「门禁起不来」会被误读成
+//      「门禁通过」——这是最危险的失败模式。本脚本所有数字都来自纯文本扫描
+//      （scripts/lib/scan.mjs），因此在任何环境都能跑出同样的结果。
+//   2. **不使用 docs/**。`docs/` 已在 Phase 15 按收尾流程退役（dom-guard.mjs 源码专门注明
+//      「不要再 mkdirSync」）。台账数字落在 scripts/migration-ledger-baseline.json。
+//   3. **口径来自共享实现**。DOM 模式、监听器扫描、白名单都 import 自 scripts/lib/，
+//      报表之间不可能再分叉。
+//
+// 与其它守卫的分工：
+//   dom-guard.mjs         单轴深挖（受限 API 明细 + 陈旧豁免注释）
+//   event-surface.mjs     单轴深挖（事件名 / 自定义事件 / 单侧事件）
+//   global-types-audit.mjs 单轴深挖（global.d.ts 的接口块）
+//   migration-ledger.mjs  **跨轴总账 + 棘轮**；消费上面三者的口径，不替代它们的明细
+
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+	ROOT,
+	SCAN_DIRS,
+	collectFiles,
+	readSource,
+	countCodeMatches,
+	importRefs,
+	unremovableListeners,
+	hasDomExemption,
+	DOM_PATTERNS,
+	NULL_CAST_RE,
+	UNKNOWN_CAST_RE,
+	ANY_HATCH_RE
+} from './lib/scan.mjs';
+import { loadDomWhitelist, readDomWhitelist } from './lib/dom-whitelist.mjs';
+import { uiSlotCoverage } from './lib/ui-slots.mjs';
+
+const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
+
+// ---------------------------------------------------------------------------
+// 轴定义
+// ---------------------------------------------------------------------------
+
+/** 按「真实代码」统计每个文件与总量（排除注释/字符串/.vue 的 template+style） */
+function countCodeByFile(files, re) {
+	let total = 0;
+	const perFile = [];
+	for (const { full, rel } of files) {
+		const n = countCodeMatches(readSource(full), re);
+		if (n === 0) continue;
+		total += n;
+		perFile.push({ rel, count: n });
+	}
+	perFile.sort((a, b) => b.count - a.count || a.rel.localeCompare(b.rel));
+	return { total, fileCount: perFile.length, perFile };
+}
+
+/**
+ * 每个轴 = { id, label, target, measure() }。
+ *   target: 'zero'    —— 终态为 0（能逐轮下降直到销账）
+ *           'stable'  —— 只要求不增长（含合理保留项）
+ *           'boolean' —— 0/1 状态位，1 才算收尾
+ * measure() 返回 { value, detail }：
+ *   value 为数字或「数字字段的对象」；对象时所有数字字段一起参与棘轮比对。
+ */
+function buildAxes() {
+	const src = collectFiles({ dirs: SCAN_DIRS });
+	const srcWithTests = collectFiles({ dirs: SCAN_DIRS, includeTests: true });
+	const { match: isWhitelisted, patterns: whitelistPatterns } = loadDomWhitelist();
+
+	return [
+		{
+			id: 'dom-pending',
+			label: 'DOM 待迁移文件（受限 API 命中且未进白名单）',
+			target: 'zero',
+			measure() {
+				const offenders = [];
+				for (const { full, rel } of src) {
+					if (isWhitelisted(rel)) continue;
+					const source = readSource(full);
+					const hits = DOM_PATTERNS.filter((p) => p.lint).reduce(
+						(sum, p) => sum + countCodeMatches(source, p.re),
+						0
+					);
+					if (hits > 0) offenders.push({ rel, hits });
+				}
+				offenders.sort((a, b) => b.hits - a.hits || a.rel.localeCompare(b.rel));
+				return {
+					value: {
+						total: offenders.length,
+						hits: offenders.reduce((s, o) => s + o.hits, 0)
+					},
+					detail: offenders.slice(0, 15)
+				};
+			}
+		},
+		{
+			id: 'dom-whitelist-drift',
+			label: '设计豁免白名单双源漂移（.oxlintrc.json ↔ 台账）',
+			target: 'zero',
+			measure() {
+				// 单一真源后这里**按构造**恒为 0。保留这条轴是为了让「有人又把名单抄回脚本里」
+				// 这件事立刻可见：漂移的定义 = 白名单 glob 与它实际覆盖的文件对不上。
+				const entries = readDomWhitelist();
+				const covered = srcWithTests.filter((f) => isWhitelisted(f.rel));
+				// 一条 glob 都没覆盖到任何文件 ⇒ 要么写错了，要么文件已删（陈旧白名单）
+				const res = entries.map((e) => {
+					const re = new RegExp(
+						`^${String(e.pattern)
+							.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+							.replace(/\*\*/g, '\u0000')
+							.replace(/\*/g, '[^/]*')
+							.replace(/\u0000/g, '.*')}$`
+					);
+					return {
+						pattern: e.pattern,
+						hits: srcWithTests.filter((f) => re.test(f.rel)).length
+					};
+				});
+				const stale = res.filter((r) => r.hits === 0);
+				return {
+					value: {
+						total: stale.length,
+						patterns: entries.length,
+						coveredFiles: covered.length
+					},
+					detail: stale
+				};
+			}
+		},
+		{
+			id: 'dom-on-exempted',
+			label: 'DOM 受限 API 命中落在白名单内（设计豁免在用）',
+			target: 'stable',
+			measure() {
+				let hits = 0;
+				const perFile = [];
+				for (const { full, rel } of src) {
+					if (!isWhitelisted(rel)) continue;
+					const n = DOM_PATTERNS.filter((p) => p.lint).reduce(
+						(sum, p) => sum + countCodeMatches(readSource(full), p.re),
+						0
+					);
+					if (n > 0) {
+						hits += n;
+						perFile.push({ rel, hits: n });
+					}
+				}
+				perFile.sort((a, b) => b.hits - a.hits || a.rel.localeCompare(b.rel));
+				return {
+					value: { total: hits, files: perFile.length },
+					detail: perFile.slice(0, 10)
+				};
+			}
+		},
+		{
+			id: 'legacy-ui-refs',
+			label: '引用遗留 UI 单例（@app/ui/*，不含元素注册表）',
+			target: 'zero',
+			measure() {
+				// 口径：`@app/ui/` 下的**遗留单例**模块（`ui-window.ts` 等）。
+				//
+				// ⚠️ 必须排除 `@app/ui/element-registry`：它是**元素注册表**（SFC 用
+				// `:ref="registryRef(uiEls, id)"` 把元素登记进去、模块侧按 id 取用的那个 Map），
+				// 与「遗留 UI 单例」是两件不相干的事。把它算进来会制造假回归 ——
+				// 实测 2026-09-18：`engine/layout/layout.ts` 因为改读 `uiEls`（修启动崩溃）
+				// 反而让这条轴从 4 涨到 5，纯属噪音。
+				//
+				// 同理，`@app/engine/ui/*`（element-classes 等）也不属于遗留层。
+				const r = importRefs(src, /^@app\/ui\/(?!element-registry$|element-registry\.)/);
+				return {
+					value: { total: r.total, runtime: r.runtime, files: r.perFile.length },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'legacy-ui-lines',
+			label: '遗留层 src/ui/* 行数',
+			target: 'zero',
+			measure() {
+				const dir = join('packages', 'editor', 'src', 'ui');
+				const files = collectFiles({ dirs: [dir], includeTests: true });
+				const rows = files.map(({ full, rel }) => ({
+					rel,
+					lines: readSource(full).split('\n').length
+				}));
+				rows.sort((a, b) => b.lines - a.lines || a.rel.localeCompare(b.rel));
+				return {
+					value: { total: rows.reduce((s, r) => s + r.lines, 0), files: rows.length },
+					detail: rows
+				};
+			}
+		},
+		{
+			id: 'null-casts',
+			label: '遗留单例形状：null as unknown as',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(src, NULL_CAST_RE);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'unknown-casts',
+			label: '双重断言 as unknown as',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(src, UNKNOWN_CAST_RE);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'any-hatches',
+			label: '泛型逃生口 [k|key: string]: any',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(src, ANY_HATCH_RE);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'unremovable-listeners',
+			label: '内联匿名监听（window；含进程级常驻，仅需不增）',
+			target: 'stable',
+			measure() {
+				// 口径说明：这一轴把**两类**东西放在一起——模块作用域注册一次的进程级常驻监听
+				// （keyboard / dpr / main / webgl-init / toast / constants / net /
+				// setting-config 等），以及类成员里随实例增长的潜在泄漏。
+				// 前者没有 remove 也不构成泄漏，所以这一轴只要求「不增」，不设归零。
+				//
+				// **已修的两处实例级泄漏**（2026-09-17，改用具名引用 + 幂等注册）：
+				//   - services/file-system/directory-tree.ts —— initialize() 的 focus 监听
+				//   - tools/event-list.ts —— initialize() 的 localize 监听（15 个检查器页面各注册一份）
+				//
+				// 自动化替代方案试过并**放弃**：`scan.mjs` 的 `unpairedNamedListeners()`
+				//（「同文件里有 remove 纪律却漏摘的具名监听」）实测报 66 处 / 21 文件，绝大多数是误报
+				// ——`addEventListener('pointerup', this.pointerup)` 在多个元素上注册而 remove 只做一次
+				// 是常见且正确的写法，按「句柄名是否出现过」无法区分。宁可这条轴只覆盖匿名监听，
+				// 也不要报一个大半是噪音、没人会逐条核对的数字。
+				const r = unremovableListeners(src);
+				return {
+					value: { total: r.count, files: r.files.length },
+					detail: r.files.map(([rel, n]) => ({ rel, count: n }))
+				};
+			}
+		},
+		{
+			id: 'stale-exemptions',
+			label: '陈旧豁免注释（注释在、命中已为 0）',
+			target: 'zero',
+			measure() {
+				const stale = [];
+				for (const { full, rel } of src) {
+					const source = readSource(full);
+					if (!hasDomExemption(source)) continue;
+					const hits = DOM_PATTERNS.filter((p) => p.lint).reduce(
+						(sum, p) => sum + countCodeMatches(source, p.re),
+						0
+					);
+					if (hits === 0) stale.push({ rel });
+				}
+				return { value: { total: stale.length }, detail: stale };
+			}
+		},
+		{
+			id: 'ui-slot-coverage',
+			label: 'store 引用的 UI 槽位从未被赋值（会静默读到 undefined）',
+			target: 'zero',
+			measure() {
+				// store 的动作层是 `UI?.x?.()`：槽位不存在时**静默返回 undefined、不报错**，
+				// 于是「某功能静默不工作」既过 tsc（UIShape 有 [k: string]: any）也过 oxlint。
+				// 这条轴把那个缺口变成可测量的数字（`total` = 未赋值却仍被引用的槽位数，终态 0）。
+				//
+				// `storeRefs` = store 引用到的槽位总数 —— 它们**在删掉 `src/ui/` 时会全部失效**
+				// （惰加载 ui-window 挂了 ⇒ UI 永远 undefined），所以这才是「1c 还要处理多少」的口径。
+				// `engineBacked` = 其中实现已在 `ui-engine.ts` 里的个数（**上升是好事**）。
+				//
+				// 曾经这里还有个 `legacyOnly` 被当棘轮指标，已删除：它把「把转发器抽成工厂函数」
+				// 这种纯重构也算成依赖变重（实测 41→42，只是词法引用变多）。
+				// **度量只应对真实状态敏感，不该对写法敏感。**
+				const r = uiSlotCoverage();
+				return {
+					value: {
+						total: r.storeRefsUnassigned.length,
+						declared: r.declared,
+						assigned: r.assigned,
+						storeRefs: r.storeRefs,
+						engineBacked: r.engineBacked.length
+					},
+					detail: r.storeRefsUnassigned.map((rel) => ({ rel }))
+				};
+			}
+		},
+		{
+			id: 'dom-whitelist-size',
+			label: '设计豁免白名单条数（应只减不增）',
+			target: 'stable',
+			measure() {
+				return {
+					value: { total: whitelistPatterns.length },
+					detail: whitelistPatterns.map((p) => ({ rel: p }))
+				};
+			}
+		},
+		{
+			id: 'dom-whitelist-unjustified',
+			label: '无设计理由的豁免条目（白名单后门检测）',
+			target: 'zero',
+			measure() {
+				// 白名单必须是「有理由才进得来」的清单。加一条 glob 就能绕过 DOM 门禁，
+				// 但没有理由的豁免会在 review 里被这条轴立刻顶出来。
+				const unjustified = readDomWhitelist().filter((e) => e.reason === null);
+				return {
+					value: { total: unjustified.length, entries: readDomWhitelist().length },
+					detail: unjustified.map((e) => ({ rel: e.pattern }))
+				};
+			}
+		}
+	];
+}
+
+// ---------------------------------------------------------------------------
+// baseline 比对（棘轮）
+// ---------------------------------------------------------------------------
+
+/** 展开 value 里的所有数字字段，键形如 `legacy-ui-refs`, `legacy-ui-refs.runtime` */
+function flattenMetrics(value) {
+	if (typeof value === 'number') return { '': value };
+	const out = {};
+	for (const [k, v] of Object.entries(value)) {
+		if (typeof v === 'number') out[k] = v;
+	}
+	return out;
+}
+
+function loadBaseline() {
+	if (!existsSync(BASELINE_FILE)) return null;
+	try {
+		return JSON.parse(readFileSync(BASELINE_FILE, 'utf8'));
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * 比对。返回 { rows, regressions, improvements, baselineMissing, scanMismatch }
+ * 口径变化（scan 段）时**不做棘轮判定**——否则口径一改就会凭空报一堆假回归。
+ */
+function compare(axes, baseline, scanMeta) {
+	const rows = [];
+	const regressions = [];
+	const improvements = [];
+	const baselineAxes = baseline?.axes ?? {};
+	const scanMismatch =
+		baseline !== null && JSON.stringify(baseline.scan ?? {}) !== JSON.stringify(scanMeta);
+	for (const axis of axes) {
+		const base = baselineAxes[axis.id]?.value;
+		const row = { axis, baseline: base ?? null, regression: false, improved: false };
+		if (base !== undefined && base !== null && !scanMismatch) {
+			const cur = flattenMetrics(axis.value);
+			const old = flattenMetrics(base);
+			for (const key of Object.keys(cur)) {
+				const before = old[key];
+				if (before === undefined) {
+					// baseline 里没记过这个子指标：新增即视为上升（例如 runtime 从 0 变有）
+					if (cur[key] > 0) {
+						row.regression = true;
+						regressions.push(
+							`${axis.id}${key ? `.${key}` : ''}: （新增）→ ${cur[key]}`
+						);
+					}
+					continue;
+				}
+				if (cur[key] > before) {
+					row.regression = true;
+					regressions.push(`${axis.id}${key ? `.${key}` : ''}: ${before} → ${cur[key]}`);
+				} else if (cur[key] < before) {
+					row.improved = true;
+					improvements.push(`${axis.id}${key ? `.${key}` : ''}: ${before} → ${cur[key]}`);
+				}
+			}
+		}
+		rows.push(row);
+	}
+	return { rows, regressions, improvements, scanMismatch };
+}
+
+// ---------------------------------------------------------------------------
+// 渲染
+// ---------------------------------------------------------------------------
+
+const TARGET_MARK = { zero: '归零', stable: '不增', boolean: '翻转' };
+
+function renderValue(value) {
+	if (typeof value === 'number') return String(value);
+	return Object.entries(value)
+		.filter(([, v]) => typeof v === 'number')
+		.map(([k, v]) => (k === 'total' ? String(v) : `${k}=${v}`))
+		.join(' ');
+}
+
+function renderTable(axes, cmp) {
+	const w = (s) => [...String(s)].reduce((n, c) => n + (c.charCodeAt(0) > 0x2e80 ? 2 : 1), 0);
+	const pad = (s, n) => String(s) + ' '.repeat(Math.max(0, n - w(s)));
+	const idW = Math.max(...axes.map((a) => w(a.id)));
+	const labelW = Math.max(...axes.map((a) => w(a.label)));
+	const targetW = 6;
+
+	const lines = [];
+	lines.push('');
+	lines.push('迁移台账（migration-ledger）—— 只许变小');
+	lines.push('');
+	lines.push(
+		`${pad('轴', idW + 2)}${pad('说明', labelW + 2)}${pad('终态', targetW)}${pad('当前', 14)}${pad('基线', 14)}状态`
+	);
+	lines.push('-'.repeat(idW + labelW + targetW + 40));
+	for (const row of cmp.rows) {
+		const { axis } = row;
+		let state = '—';
+		if (row.regression) state = '✗ 上升';
+		else if (row.improved) state = '✓ 下降';
+		else if (row.baseline !== null) state = '= 持平';
+		lines.push(
+			`${pad(axis.id, idW + 2)}${pad(axis.label, labelW + 2)}${pad(TARGET_MARK[axis.target], targetW)}` +
+				`${pad(renderValue(axis.value), 14)}${pad(row.baseline === null ? '(未记录)' : renderValue(row.baseline), 14)}${state}`
+		);
+	}
+	lines.push('');
+	return lines.join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// main
+// ---------------------------------------------------------------------------
+
+function main() {
+	const argv = process.argv.slice(2);
+	const asJson = argv.includes('--json');
+	const check = argv.includes('--check');
+	const updateBaseline = argv.includes('--update-baseline');
+	const axisFilter = argv.includes('--axis') ? argv[argv.indexOf('--axis') + 1] : null;
+
+	const scanMeta = {
+		dirs: SCAN_DIRS.map((d) => d.replace(/\\/g, '/')),
+		extensions: ['.ts', '.tsx', '.vue'],
+		exclude: '*.spec.ts | *.d.ts | __tests__/ | *.demo.vue',
+		source: 'pure-regex (no child_process)'
+	};
+
+	const axes = buildAxes();
+	const results = axes
+		.filter((a) => axisFilter === null || a.id === axisFilter)
+		.map((a) => {
+			const { value, detail } = a.measure();
+			return { id: a.id, label: a.label, target: a.target, value, detail };
+		});
+
+	if (axisFilter !== null && results.length === 0) {
+		console.error(
+			`migration-ledger: 未知轴 "${axisFilter}"。可用：${axes.map((a) => a.id).join(', ')}`
+		);
+		process.exit(2);
+	}
+
+	const baseline = loadBaseline();
+	const cmp = compare(results, baseline, scanMeta);
+
+	if (updateBaseline) {
+		const payload = {
+			version: 1,
+			generatedAt: new Date().toISOString(),
+			scan: scanMeta,
+			axes: Object.fromEntries(
+				results
+					.slice()
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((r) => [r.id, { label: r.label, target: r.target, value: r.value }])
+			)
+		};
+		writeFileSync(BASELINE_FILE, JSON.stringify(payload, null, '\t') + '\n');
+		console.log(
+			`migration-ledger: baseline 已更新（${results.length} 轴）→ ${BASELINE_FILE.replace(/\\/g, '/')}`
+		);
+		for (const r of results) console.log(`  ${r.id}: ${renderValue(r.value)}`);
+		return;
+	}
+
+	if (asJson) {
+		console.log(
+			JSON.stringify(
+				{
+					scan: scanMeta,
+					baseline: baseline
+						? { generatedAt: baseline.generatedAt, scan: baseline.scan }
+						: null,
+					regressions: cmp.regressions,
+					improvements: cmp.improvements,
+					scanMismatch: cmp.scanMismatch,
+					axes: results
+				},
+				null,
+				'\t'
+			)
+		);
+		return;
+	}
+
+	if (axisFilter !== null) {
+		const r = results[0];
+		console.log(`\n${r.id} —— ${r.label}（终态：${TARGET_MARK[r.target]}）`);
+		console.log(`当前：${renderValue(r.value)}\n`);
+		if (r.detail.length === 0) {
+			console.log('  （无明细 —— 该轴已归零）');
+		} else {
+			for (const d of r.detail) {
+				const extra = Object.entries(d)
+					.filter(([k]) => k !== 'rel' && k !== 'lines')
+					.map(([k, v]) => `${k}=${v}`)
+					.join(' ');
+				console.log(
+					`  ${d.rel}${d.lines ? ` (${d.lines} 行)` : ''}${extra ? `  ${extra}` : ''}`
+				);
+			}
+		}
+		console.log('');
+		return;
+	}
+
+	console.log(renderTable(results, cmp));
+
+	if (baseline === null) {
+		console.log('提示：尚未建立 baseline。复核上面的数字后用 `--update-baseline` 落盘。\n');
+		return;
+	}
+	if (cmp.scanMismatch) {
+		console.log(
+			'提示：baseline 的 scan 段与当前口径不一致，本次**跳过棘轮判定**（口径变更不算回归）。\n' +
+				'      确认新口径无误后执行 `--update-baseline`。\n'
+		);
+		return;
+	}
+	if (cmp.regressions.length > 0) {
+		console.log(`✗ 有 ${cmp.regressions.length} 项指标**上升**（棘轮不允许）：`);
+		for (const r of cmp.regressions) console.log(`  + ${r}`);
+		console.log('');
+		console.log(
+			'若这是有意的设计变更，请复核后在 PR 里显式执行 `--update-baseline` 并在描述里贴前后对比。\n'
+		);
+		if (check) process.exit(1);
+		return;
+	}
+	if (cmp.improvements.length > 0) {
+		console.log(`✓ ${cmp.improvements.length} 项指标下降：`);
+		for (const r of cmp.improvements) console.log(`  - ${r}`);
+		console.log('\n提示：合并本次改动时顺手 `--update-baseline`，把进步固化成新基线。\n');
+		return;
+	}
+	console.log('✓ 全部轴与基线持平——无回归。\n');
+}
+
+main();

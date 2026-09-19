@@ -3,6 +3,7 @@ import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Path } from '@app/utils/config';
+import { append, remove } from '@app/utils/array';
 import { Data } from '@app/data/data-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { filterGUID, parseFileSize, parseGUID } from '@app/services/file-system/path-utils.ts';
@@ -233,14 +234,20 @@ File.saveFile = function (meta) {
 
 File.planToSave = function (meta) {
 	if (meta instanceof Object) {
-		return Data.manifest.changes.append(meta);
+		// ⚠️ 这里**必须**用 `@app/utils/array` 的自由函数形态。
+		// `changes` 是**普通数组**（`Manifest` 里 `changes: { value: [] }`），
+		// 没有 `append` / `remove` 方法 —— 写成 `changes.append(meta)` 会抛
+		// `TypeError: Data.manifest.changes.append is not a function`。
+		// 该形态全仓库几十处（`services/updater/*.ts` 全是 `append(changes, meta)`），
+		// 属迁移时把自由函数误改成方法调用的产物（2026-09-18 实测定位）。
+		return append(Data.manifest.changes, meta);
 	} else {
 		throw new Error('Invalid file meta');
 	}
 };
 
 File.cancelSave = function (meta) {
-	return Data.manifest.changes.remove(meta);
+	return remove(Data.manifest.changes, meta);
 };
 
 File.parseFileSize = parseFileSize;

@@ -1,4 +1,5 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { radians } from '@app/utils/math';
@@ -48,7 +49,7 @@ interface TransformShape {
 	[k: string]: unknown;
 }
 
-UI.Element = class UIElement {
+uiElClasses.Element = class UIElement {
 	declare node: UINodeShape | null;
 	x: number;
 	y: number;
@@ -81,7 +82,7 @@ UI.Element = class UIElement {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;
-		const matrix = gl.matrix.set(UI.matrix).multiply(this.matrix);
+		const matrix = gl.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 		const L = this.x;
 		const T = this.y;
 		const R = L + this.width;
@@ -145,7 +146,7 @@ UI.Element = class UIElement {
 	drawDefaultImage() {
 		GL.alpha = this.opacity;
 		GL.blend = (this as unknown as { blend: string }).blend;
-		GL.matrix.set(UI.matrix).multiply(this.matrix);
+		GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 		GL.fillRect(this.x, this.y, this.width, this.height, 0x80ffffff);
 	}
 
@@ -210,7 +211,12 @@ UI.Element = class UIElement {
 
 	appendChild(element: UIElementShape) {
 		if (element && append(this.children, element)) {
-			if (element.parent instanceof UI.Element) element.parent!.children.remove(element);
+			// ⚠️ `children` 是**普通数组**（`this.children = []`），没有 `remove` 方法；
+			// 必须与下一行同形的自由函数 `remove(arr, value)`。
+			// 写成 `children.remove(x)` 会抛 `... .remove is not a function`
+			// —— `UIElementShape` 是 `[k: string]: any`，所以 tsc 永远看不见（2026-09-18）。
+			if (element.parent instanceof uiElClasses.Element!)
+				remove(element.parent!.children, element);
 			element.parent = this;
 			if (this.connected) {
 				if (!element.connected) element.connect();
@@ -220,12 +226,12 @@ UI.Element = class UIElement {
 	}
 
 	appendChildTo(element: UIElementShape, index: number) {
-		if (element instanceof UI.Element) {
-			if (element.parent instanceof UI.Element) {
-				UI.root.tryUpdateReferenceElements(element.parent);
-				element.parent!.children.remove(element);
+		if (element instanceof uiElClasses.Element!) {
+			if (element.parent instanceof uiElClasses.Element!) {
+				getUIStore().root!.tryUpdateReferenceElements(element.parent);
+				remove(element.parent!.children, element);
 			}
-			if (element.parent instanceof UI.Window) {
+			if (element.parent instanceof uiElClasses.Window!) {
 				element.parent!.requestResizing();
 			}
 			element.parent = this;
@@ -234,14 +240,14 @@ UI.Element = class UIElement {
 				if (!element.connected) element.connect();
 				element.resize();
 			}
-			UI.root.tryUpdateReferenceElements(this);
+			getUIStore().root!.tryUpdateReferenceElements(this);
 		}
 	}
 
 	remove() {
-		if (this.parent instanceof UI.Element && remove(this.parent!.children, this)) {
-			UI.root.tryUpdateReferenceElements(this.parent);
-			if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Element! && remove(this.parent!.children, this)) {
+			getUIStore().root!.tryUpdateReferenceElements(this.parent);
+			if (this.parent instanceof uiElClasses.Window!) {
 				this.parent!.requestResizing();
 			}
 			this.parent = null;

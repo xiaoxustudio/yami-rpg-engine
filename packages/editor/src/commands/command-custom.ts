@@ -90,14 +90,6 @@ Command.custom = {
 	parsingScript: { id: '', parameters: null } as ScriptObject,
 	loadedScript: { id: '', parameters: null } as ScriptObject,
 	// P5b 批次 2：这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
-	windowFrame: null as unknown as YamiElement & {
-		style: CSSStyleDeclaration;
-		absolute(x: number | null, y: number | null): void;
-		setTitle(title: string): void;
-		addEventListener(type: string, listener: (event: Event) => void): void;
-	},
-	parameterPane: null as unknown as ParameterPane,
-	parameterGrid: null as unknown as YamiElement,
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
@@ -119,10 +111,11 @@ Command.custom = {
 
 		const grid = this.parameterGrid;
 		this.parameterPane.onResize = () => {
+			// 回调体里丢失了 `initialize()` 里的赋值收窄，这里用 `!` 复述「槽位已绑定」这一前提
 			const height = grid.clientHeight;
-			this.windowFrame.style.height = `${height + 78}px`;
+			this.windowFrame!.style.height = `${height + 78}px`;
 			// 如果窗口被拖动过会重置位置，不过影响不大
-			this.windowFrame.absolute(this.windowX, this.windowY);
+			this.windowFrame!.absolute(this.windowX, this.windowY);
 		};
 
 		const box = scriptCommandEls.get(
@@ -311,12 +304,12 @@ Command.custom = {
 		this.loadedScript.parameters = deepClone(parameters);
 		this.windowX = Window.absolutePos.x;
 		this.windowY = Window.absolutePos.y;
-		this.parameterPane.update();
+		this.parameterPane!.update();
 		const selector = Layout.focusableSelector;
-		const focusable = this.parameterPane.querySelector(selector);
+		const focusable = this.parameterPane!.querySelector(selector);
 		if (focusable) getFocus(focusable);
 		// 标题只是展示：名表缺失时退回指令 id，窗口照常打开（编辑能力不取决于名表）
-		this.windowFrame.setTitle(this.commandNameMap?.[id] ?? id);
+		this.windowFrame!.setTitle(this.commandNameMap?.[id] ?? id);
 	},
 
 	save: function (): void {

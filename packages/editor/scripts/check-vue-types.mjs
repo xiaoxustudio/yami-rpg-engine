@@ -22,9 +22,14 @@ function runVueTsc() {
 		cwd: ROOT,
 		encoding: 'utf8'
 	});
-	if (res.error) {
-		console.error(`typecheck:vue: failed to launch vue-tsc: ${res.error.message}`);
-		process.exit(1);
+	// 「工具起不来」必须与「工具说 0 错误」区分开。
+	// 受限环境（沙箱 / 精简容器）里 spawnSync 会 EPERM；过去只报一条 failed to launch 然后
+	// exit 1，但**那种 1 和「真发现了新增错误」的 1 长得一样**，很容易被当成同一个信号忽略。
+	// 现在用退出码 3 单独标记「不可判定」。
+	if (res.error || (res.status === null && !res.stdout)) {
+		console.error(`typecheck:vue: 无法启动 vue-tsc（${res.error?.code ?? 'unknown'}）。`);
+		console.error('  这是**环境问题**，不是「0 新增错误」。CI 里应把它当作失败处理。');
+		process.exit(3);
 	}
 	return `${res.stdout ?? ''}${res.stderr ?? ''}`;
 }
@@ -43,7 +48,14 @@ function loadBaseline() {
 }
 
 function updateBaseline(signatures) {
-	writeFileSync(BASELINE_FILE, JSON.stringify([...signatures].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)), null, '\t') + '\n');
+	writeFileSync(
+		BASELINE_FILE,
+		JSON.stringify(
+			[...signatures].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
+			null,
+			'\t'
+		) + '\n'
+	);
 	console.log(`baseline: updated ${BASELINE_FILE} (${signatures.length} errors).`);
 }
 
@@ -52,7 +64,9 @@ function check(signatures) {
 	const baseline = new Set(loadBaseline());
 	const added = [...current].filter((s) => !baseline.has(s));
 	const fixed = [...baseline].filter((s) => !current.has(s));
-	console.log(`vue-tsc errors: ${current.size} (baseline ${baseline.size}, new ${added.length}, fixed ${fixed.length})`);
+	console.log(
+		`vue-tsc errors: ${current.size} (baseline ${baseline.size}, new ${added.length}, fixed ${fixed.length})`
+	);
 	if (fixed.length > 0) {
 		console.log(`fixed (consider updating baseline):`);
 		for (const s of fixed) console.log(`  - ${s}`);
@@ -60,7 +74,9 @@ function check(signatures) {
 	if (added.length > 0) {
 		console.log(`new errors:`);
 		for (const s of added) console.log(`  + ${s}`);
-		console.log(`typecheck:vue: ${added.length} new error(s) detected. Fix them or run \`node scripts/check-vue-types.mjs --update-baseline\` after review.`);
+		console.log(
+			`typecheck:vue: ${added.length} new error(s) detected. Fix them or run \`node scripts/check-vue-types.mjs --update-baseline\` after review.`
+		);
 		process.exit(1);
 	}
 	console.log('typecheck:vue: passed (0 new errors).');

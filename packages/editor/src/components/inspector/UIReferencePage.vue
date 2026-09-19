@@ -35,7 +35,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -61,7 +61,7 @@ onMounted(() => {
 		const elements = [elPrefabId.value?.root, elSynchronous.value?.root].filter(
 			(el): el is HTMLElement => el != null
 		);
-		bindInput(elements, uiReference, UI);
+		bindInput(elements, getUIStore(), uiReference);
 	}
 	const el = inspectorEls.get('uiReference-vue-mount');
 	if (el) {

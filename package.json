@@ -34,6 +34,15 @@
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit",
 		"dom:guard:tracker": "node scripts/dom-guard.mjs tracker",
 		"dom:guard:fix": "node scripts/dom-guard.mjs fix",
+		"migration:ledger": "node scripts/migration-ledger.mjs",
+		"migration:check": "node scripts/migration-ledger.mjs --check",
+		"migration:baseline": "node scripts/migration-ledger.mjs --update-baseline",
+		"migration:selftest": "node scripts/lib/self-test.mjs",
+		"migration:null-dead-stores": "node scripts/null-cast-dead-store-audit.mjs",
+		"migration:cast-shapes": "node scripts/null-cast-shapes.mjs",
+		"migration:lazy-slots": "node scripts/lazy-slot-codemod.mjs",
+		"migration:lazy-slots-untyped": "node scripts/lazy-slot-untyped-codemod.mjs",
+		"migration:lazy-slots-assign": "node scripts/lazy-slot-assign-codemod.mjs",
 		"docs:check": "node scripts/docs-check.mjs",
 		"stale-exemptions": "node scripts/stale-exemptions.mjs",
 		"events:surface": "node scripts/event-surface.mjs",
@@ -48,7 +57,7 @@
 		"lint-staged": "^16.4.0",
 		"oxfmt": "^0.60.0",
 		"oxlint": "^1.83.0",
-		"oxlint-tsgolint": "^7.0.2001"
+		"oxlint-tsgolint": "^7.0.2002"
 	},
 	"packageManager": "pnpm@12.3.4+sha512.961aa41fb077da3a04a441d9f8e15ebc0c96da8ef710b2eb67bf9ee7cb0610eabd48f1fd85f51cffe73846785fa0f87c56a3a872a1d893f8446741b5cce45457"
 }

@@ -860,11 +860,22 @@ export const commandListPrototype: Record<
 			parent: row.parent,
 			contents: source.contents ?? []
 		});
-		if (source.fold !== undefined && node.fold === undefined) {
-			const fold = renderElement(h('span', { class: 'command-fold' }));
-			addClass(fold, 'command-fold');
-			node.fold = fold;
-			node.appendChild(fold);
+		if (source.fold !== undefined) {
+			if (node.fold === undefined) {
+				const fold = renderElement(h('span', { class: 'command-fold' }));
+				addClass(fold, 'command-fold');
+				node.fold = fold;
+				node.appendChild(fold);
+			}
+		} else if (node.fold !== undefined) {
+			// ⚠️ 必须**对称地清掉**：行元素会被 Vue 复用，而 `fold` 把手是挂在元素上的
+			// expando（下面的行内清理还刻意保留了 `.command-fold` 子节点）。
+			// 只加不减 ⇒ 一个"曾经可折叠"的行元素被复用到**不可折叠**的行（例如列表末尾
+			// 那行"插入指令"的空白行）时，仍带着 `fold`，`updateCommandElementFold` 便会
+			// 去取这条空白行根本不存在的 `command` —— 就是那次
+			// `reading 'folded'` 崩溃的来源之一（2026-09-18）。
+			node.fold.remove();
+			node.fold = undefined;
 		}
 		// 行内 DOM 已经与内容一致 ⇒ **不重建**。这一步同时保住了行内文本节点的身份
 		// （双击靠 `event.target === last.target` 判定，重建会让它失配，见 `rowRenderSignatureOf`）。
@@ -1367,8 +1378,10 @@ export const commandListPrototype: Record<
 				continue;
 			}
 		}
-		element.contents = null as unknown as { text?: string; color?: string; fold?: boolean }[] &
-			CommandContent[];
+		// `CommandItemElement.contents` 本来就声明成 `CommandContent[] | null`（readers 一律
+		// `?? []` 或 `!== null` 判空），这里直接写 null 即可 ——
+		// 原先那个 `{ text?… }[] & CommandContent[]` 的双重断言是纯多余的。
+		element.contents = null;
 
 		this.updateCommandElementFold(element);
 	},
@@ -1379,7 +1392,18 @@ export const commandListPrototype: Record<
 	): void {
 		if (element?.fold) {
 			const command = rowOf(element).command;
-			const folded = !!command!.folded;
+			// ⚠️ `rowOf().command` 的类型就是 `CommandData | null` —— **null 是合法值**：
+			// 空白行（列表末尾那一行"插入指令"）的 `dataItem` 是 `get: () => null`
+			// （见 `createBlankElement`），`rebuildCommandRowData` 于是把它记成
+			// `command: null`。空白行天然没有"折叠"概念，直接跳过。
+			//
+			// 原来的 `!!command!.folded` 用 `!` 把这个分支抹掉了，于是在事件编辑器里
+			// **插入指令**、列表重建并重绑行时抛
+			// `TypeError: Cannot read properties of null (reading 'folded')`；
+			// 异常发生在 Vue 的 `:ref` 回写桥里（`setRef`），会让整棵子树的 patch 中断，
+			// 紧接着爆出 `Cannot set properties of null (setting '__vnode')` 这类连锁错（2026-09-18）。
+			if (!command) return;
+			const folded = !!command.folded;
 			if (element.folded !== folded) {
 				element.folded = folded;
 				if (folded) {

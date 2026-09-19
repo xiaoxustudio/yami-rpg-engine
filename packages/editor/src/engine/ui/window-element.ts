@@ -1,5 +1,6 @@
 import { Timer } from '@app/utils/timer';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { clamp } from '@app/utils/math';
@@ -29,7 +30,7 @@ interface WindowElementData {
 	overflow?: string;
 }
 
-UI.Window = class WindowElement extends UI.Element {
+uiElClasses.Window = class WindowElement extends uiElClasses.Element! {
 	_layout!: string;
 	scrollWidth: number;
 	scrollHeight: number;
@@ -70,7 +71,7 @@ UI.Window = class WindowElement extends UI.Element {
 			y: 0,
 			width: 0,
 			height: 0,
-			matrix: null as unknown as Matrix,
+			matrix: new Matrix(),
 			opacity: 0,
 			children: []
 		};
@@ -113,7 +114,7 @@ UI.Window = class WindowElement extends UI.Element {
 			this._scrollX = scrollX;
 			if (this.connected) {
 				this.resize();
-				UI.requestRendering();
+				getUIStore().requestRendering();
 			}
 		}
 	}
@@ -129,7 +130,7 @@ UI.Window = class WindowElement extends UI.Element {
 			this._scrollY = scrollY;
 			if (this.connected) {
 				this.resize();
-				UI.requestRendering();
+				getUIStore().requestRendering();
 			}
 		}
 	}
@@ -140,7 +141,7 @@ UI.Window = class WindowElement extends UI.Element {
 				this.drawChildren();
 				break;
 			case 'hidden': {
-				const matrix = GL.matrix.set(UI.matrix).multiply(this.matrix);
+				const matrix = GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 				const L = this.x;
 				const T = this.y;
 				const R = L + this.width;
@@ -220,7 +221,7 @@ UI.Window = class WindowElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();

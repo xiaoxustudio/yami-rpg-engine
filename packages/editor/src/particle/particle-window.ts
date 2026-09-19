@@ -1,4 +1,3 @@
-import { getListConfig } from '@ui-kit';
 import { particleEls } from '@app/particle/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { getParticleStore } from '@app/stores/particle';
@@ -166,7 +165,11 @@ export interface ParticleShape {
 	context: ParticleContextShape | null;
 	meta: ParticleContextShape['meta'] | null;
 	layers: ParticleLayerShape[] | null;
-	emitter: ParticleEmitterShape;
+	/**
+	 * 窗口打开时由 `editor.emitter` 带过来，`close()` 里清空 ⇒ 关闭后**确实是 null**。
+	 * 读侧都落在「窗口已打开」上下文（或已有 `state === 'open'` 守卫）里，故用 `!` 收口。
+	 */
+	emitter: ParticleEmitterShape | null;
 	initialize: (() => void) | null;
 	open: ParticleMethod;
 	load: ((context: ParticleContextShape) => void) | null;
@@ -250,7 +253,7 @@ export interface ParticleShape {
 	};
 }
 
-export const Particle: ParticleShape = {
+export const Particle = {
 	page: particleEls.get('particle') as YamiElement,
 	head: particleEls.get('particle-head') as unknown as HTMLElement & {
 		left: number;
@@ -274,7 +277,6 @@ export const Particle: ParticleShape = {
 	translationKey: 0b0000,
 	translationTimer: null,
 	showAxes: true,
-	background: null as unknown as StageColor,
 	matrix: null,
 	zoomTimer: null,
 	scale: null,
@@ -292,7 +294,6 @@ export const Particle: ParticleShape = {
 	context: null,
 	meta: null,
 	layers: null,
-	emitter: null as unknown as ParticleEmitterShape,
 	initialize: null,
 	open: null,
 	load: null,
@@ -363,30 +364,9 @@ export const Particle: ParticleShape = {
 	listSelect: null,
 	listRecord: null,
 	listPopup: null,
-	listChange: null,
-	Emitter: null as unknown as { new (data: ParticleEmitterDataShape): ParticleEmitterShape },
-	Layer: null as unknown as {
-		new (emitter: ParticleEmitterShape, data: ParticleLayerDataShape): ParticleLayerShape;
-	},
-	Element: null as unknown as {
-		new (layer: ParticleElementLayer): ParticleElementShape;
-		// oxlint-disable-next-line no-explicit-any
-		stage: Record<string, any>;
-	}
-};
+	listChange: null
+} satisfies Partial<ParticleShape> as Partial<ParticleShape> as ParticleShape;
 
-// oxlint-disable-next-line no-explicit-any
-Particle.list.create = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Particle.list.copy = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Particle.list.paste = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Particle.list.delete = null as unknown as (...args: unknown[]) => any;
-getListConfig(Particle.list).onCreate = null as unknown as (item: unknown) => void;
-getListConfig(Particle.list).onRemove = null as unknown as (item: unknown) => void;
-getListConfig(Particle.list).onDelete = null as unknown as (item: unknown) => void;
-getListConfig(Particle.list).onResume = null as unknown as (item: unknown) => void;
 const particleBridgeKeys = [
 	'state',
 	'target',

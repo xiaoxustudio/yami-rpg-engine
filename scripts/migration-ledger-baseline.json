@@ -1,0 +1,126 @@
+{
+	"version": 1,
+	"generatedAt": "2026-09-19T15:04:42.570Z",
+	"scan": {
+		"dirs": [
+			"packages/editor/src",
+			"packages/ui-kit/src"
+		],
+		"extensions": [
+			".ts",
+			".tsx",
+			".vue"
+		],
+		"exclude": "*.spec.ts | *.d.ts | __tests__/ | *.demo.vue",
+		"source": "pure-regex (no child_process)"
+	},
+	"axes": {
+		"any-hatches": {
+			"label": "泛型逃生口 [k|key: string]: any",
+			"target": "zero",
+			"value": {
+				"total": 64,
+				"files": 35
+			}
+		},
+		"dom-on-exempted": {
+			"label": "DOM 受限 API 命中落在白名单内（设计豁免在用）",
+			"target": "stable",
+			"value": {
+				"total": 120,
+				"files": 46
+			}
+		},
+		"dom-pending": {
+			"label": "DOM 待迁移文件（受限 API 命中且未进白名单）",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"hits": 0
+			}
+		},
+		"dom-whitelist-drift": {
+			"label": "设计豁免白名单双源漂移（.oxlintrc.json ↔ 台账）",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"patterns": 14,
+				"coveredFiles": 217
+			}
+		},
+		"dom-whitelist-size": {
+			"label": "设计豁免白名单条数（应只减不增）",
+			"target": "stable",
+			"value": {
+				"total": 14
+			}
+		},
+		"dom-whitelist-unjustified": {
+			"label": "无设计理由的豁免条目（白名单后门检测）",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"entries": 14
+			}
+		},
+		"legacy-ui-lines": {
+			"label": "遗留层 src/ui/* 行数",
+			"target": "zero",
+			"value": {
+				"total": 2868,
+				"files": 10
+			}
+		},
+		"legacy-ui-refs": {
+			"label": "引用遗留 UI 单例（@app/ui/*，不含元素注册表）",
+			"target": "zero",
+			"value": {
+				"total": 1,
+				"runtime": 1,
+				"files": 1
+			}
+		},
+		"null-casts": {
+			"label": "遗留单例形状：null as unknown as",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"files": 0
+			}
+		},
+		"stale-exemptions": {
+			"label": "陈旧豁免注释（注释在、命中已为 0）",
+			"target": "zero",
+			"value": {
+				"total": 0
+			}
+		},
+		"ui-slot-coverage": {
+			"label": "store 引用的 UI 槽位从未被赋值（会静默读到 undefined）",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"declared": 134,
+				"assigned": 153,
+				"storeRefs": 49,
+				"engineBacked": 7
+			}
+		},
+		"unknown-casts": {
+			"label": "双重断言 as unknown as",
+			"target": "zero",
+			"value": {
+				"total": 764,
+				"files": 262
+			}
+		},
+		"unremovable-listeners": {
+			"label": "内联匿名监听（window；含进程级常驻，仅需不增）",
+			"target": "stable",
+			"value": {
+				"total": 9,
+				"files": 8
+			}
+		}
+	}
+}

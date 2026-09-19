@@ -428,15 +428,7 @@ Scene.marquee.tiles = null;
 Scene.marquee.terrain = null;
 Scene.marquee.previewTiles = false;
 Scene.marquee.pointerevent = null;
-// oxlint-disable-next-line no-explicit-any
-Scene.marquee.save = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.switch = null;
-// oxlint-disable-next-line no-explicit-any
-Scene.marquee.resize = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.marquee.clear = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.marquee.select = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.selectInPencilMode = null;
 Scene.marquee.selectInRectMode = null;
 Scene.marquee.selectInCopyMode = null;
@@ -450,33 +442,9 @@ elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
 ) as YamiElement;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.copy = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.paste = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.duplicate = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.delete = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.toggle = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.createFolder = null as unknown as (...args: unknown[]) => any;
 Scene.list.createTilemapShortcutItems = null;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.restoreRecursiveStates = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.setRecursiveStates = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateFolderState = null;
 Scene.list.canSwitchState = null;
-// oxlint-disable-next-line no-explicit-any
-Scene.list.updateHead = null as unknown as (...args: unknown[]) => any;
-getListConfig(Scene.list).onCreate = null as unknown as (item: unknown) => void;
-getListConfig(Scene.list).onRemove = null as unknown as (item: unknown) => void;
-getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
-getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = sceneEls.get('scene') as YamiElement;

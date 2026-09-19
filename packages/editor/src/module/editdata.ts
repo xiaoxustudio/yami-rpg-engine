@@ -29,10 +29,14 @@ interface EditDataContentItem {
 }
 
 export const EditDataInstance = new (class {
-	editor = null as unknown as monacoNs.editor.IStandaloneCodeEditor & {
-		getFocus?: () => void;
-	};
-	model = null as unknown as monacoNs.editor.ITextModel;
+	editor: (monacoNs.editor.IStandaloneCodeEditor & { getFocus?: () => void }) | null = null;
+	/**
+	 * Monaco 的 model 在 `createEditor()`（L279 附近 `this.editor.getModel()`）之前**确实是 null**，
+	 * 原先写成 `null as unknown as ITextModel` 是在撒谎。改成真实的可空类型；
+	 * 下面各读取点用 `!` 表示「这里已经过了创建阶段」这一既有前置条件
+	 * （原先若在创建前调用，读到的是 null，同样会炸 —— 行为不变）。
+	 */
+	model: monacoNs.editor.ITextModel | null = null;
 	versionId: number | null = null;
 	commandList: unknown = null;
 	changed = false;
@@ -101,7 +105,7 @@ export const EditDataInstance = new (class {
 		});
 
 		on(this.editorParent, 'closed', () => {
-			this.model.setValue('');
+			this.model!.setValue('');
 		});
 	}
 	isMaximized() {
@@ -114,7 +118,9 @@ export const EditDataInstance = new (class {
 			content.style.width = '';
 			content.style.height = '';
 			const boundingRect = content.getBoundingClientRect();
-			this.editor.layout({
+			// `editor` 在 `createEditor()` 之前确实是 null；这里与相邻的 `this.model!` 同一约定：
+			// 用 `!` 声明「此处已过创建阶段」这一既有前提（编译期断言，不改运行期行为）。
+			this.editor!.layout({
 				width: boundingRect.width,
 				height: parent!.clientHeight - 60
 			});
@@ -123,7 +129,7 @@ export const EditDataInstance = new (class {
 			// 保持content左右间距相同
 			content!.style.width = parent!.clientWidth - boundingRect.left * 2 + 'px';
 			content!.style.height = parent!.clientHeight - 60 + 'px';
-			this.editor.layout({
+			this.editor!.layout({
 				width: parseFloat(content!.style.width),
 				height: parseFloat(content!.style.height)
 			});
@@ -157,7 +163,7 @@ export const EditDataInstance = new (class {
 	}
 
 	save() {
-		const modelValue = this.model.getValue();
+		const modelValue = this.model!.getValue();
 		const parse = this.parseJSON(modelValue);
 		if (!parse) return;
 		const originalStart = (this.eventListDom as unknown as { start: unknown }).start;
@@ -301,7 +307,7 @@ export const EditDataInstance = new (class {
 				(event: { isFlush: boolean; isUndoing: boolean; isRedoing: boolean }) => {
 					if (event.isFlush) return;
 					if (event.isUndoing || event.isRedoing) {
-						const versionId = this.model.getAlternativeVersionId();
+						const versionId = this.model!.getAlternativeVersionId();
 						const changed = this.versionId !== versionId;
 						if (this.changed !== changed) {
 							this.setChangeState(changed);
@@ -312,12 +318,12 @@ export const EditDataInstance = new (class {
 				}
 			);
 		}
-		this.model.setValue('');
-		this.versionId = this.model.getAlternativeVersionId();
-		this.editor.setPosition(new monaco.Position(9999, 9999));
-		this.editor.setScrollTop(0);
-		this.editor.revealLine(9999);
-		getFocus(this.editor);
+		this.model!.setValue('');
+		this.versionId = this.model!.getAlternativeVersionId();
+		this.editor!.setPosition(new monaco.Position(9999, 9999));
+		this.editor!.setScrollTop(0);
+		this.editor!.revealLine(9999);
+		getFocus(this.editor!);
 		this.commandList = current;
 		this.loadData();
 	}
@@ -339,7 +345,7 @@ export const EditDataInstance = new (class {
 					commands: sData.commands
 				}
 			};
-			this.model.setValue(JSON.stringify(this.currentContent.value, null, 2));
+			this.model!.setValue(JSON.stringify(this.currentContent.value, null, 2));
 		} else {
 			const value: EditDataContentItem[] = [];
 			const includeArr: unknown[] = [];
@@ -358,7 +364,7 @@ export const EditDataInstance = new (class {
 				if (elem.mark === 'header') includeArr.push(eData); // 将buffer也存储，这样能保证有唯一性
 			}
 			this.currentContent = value;
-			this.model.setValue(
+			this.model!.setValue(
 				JSON.stringify(
 					value.map((v: EditDataContentItem) => v.value),
 					null,

@@ -53,7 +53,7 @@ import { getLocalStore } from '@app/stores/local';
 import { UndoManager } from '@app/tools/undo-manager.ts';
 
 import { Zoom } from '@app/composables/useZoomWindow';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { ctrl } from '@app/utils/event-accessors';
 import { Variable } from '@app/variable/variable.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -322,25 +322,25 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 				}
 				break;
 			case 'ui':
-				if (UI.state === 'open') {
-					const selected = UI.target instanceof Object;
+				if (getUIStore().state === 'open') {
+					const selected = getUIStore().target instanceof Object;
 					const pastable = GlobalClipboard.has('yami.ui.object');
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
 					items.delete.enabled = selected;
 					items.cut.click = () => {
-						UI.copy!();
-						UI.delete!();
+						getUIStore().copy();
+						getUIStore().delete();
 					};
 					items.copy.click = () => {
-						UI.copy!();
+						getUIStore().copy();
 					};
 					items.paste.click = () => {
-						UI.paste!();
+						getUIStore().paste();
 					};
 					items.delete.click = () => {
-						UI.delete!();
+						getUIStore().delete();
 					};
 				}
 				break;
@@ -464,16 +464,16 @@ Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 					submenu: [
 						{
 							label: get('ui.background'),
-							icon: this.createColorIcon!(UI.background.hex),
+							icon: this.createColorIcon!(getUIStore().background!.hex),
 							click: () => {
-								Color.open(UI.background);
+								Color.open(getUIStore().background!);
 							}
 						},
 						{
 							label: get('ui.foreground'),
-							icon: this.createColorIcon!(UI.foreground.hex),
+							icon: this.createColorIcon!(getUIStore().foreground!.hex),
 							click: () => {
-								Color.open(UI.foreground);
+								Color.open(getUIStore().foreground!);
 							}
 						}
 					]
@@ -1043,14 +1043,14 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 			case 'KeyZ':
 				if (!macRedoKey(event)) {
 					Scene.undo!();
-					UI.undo!();
+					getUIStore().undo();
 					Animation.undo!();
 					Particle.undo!();
 					break;
 				}
 			case 'KeyY':
 				Scene.redo!();
-				UI.redo!();
+				getUIStore().redo();
 				Animation.redo!();
 				Particle.redo!();
 				break;

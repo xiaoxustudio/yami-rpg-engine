@@ -97,7 +97,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIAnimationPage } from '@app/composables/useUIAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -142,7 +142,7 @@ onMounted(() => {
 		elOffsetX.value?.root,
 		elOffsetY.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, uiAnimation, UI);
+	bindInput(elements, getUIStore(), uiAnimation);
 
 	const el = inspectorEls.get('uiAnimation-vue-mount');
 	if (el) {

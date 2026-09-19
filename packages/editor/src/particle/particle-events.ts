@@ -62,7 +62,7 @@ Particle.themechange = function (this: ParticleShape, _event: YamiEvent) {
 
 Particle.datachange = function (event: YamiEvent) {
 	if (getParticleStore().state === 'open' && event.key === 'easings') {
-		Particle.emitter.updateEasing();
+		Particle.emitter!.updateEasing();
 	}
 };
 

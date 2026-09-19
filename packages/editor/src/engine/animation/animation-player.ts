@@ -1,7 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Easing } from '@app/data/transition-window.ts';
 import { Particle, type ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
@@ -26,7 +26,10 @@ interface AnimationData {
 }
 
 const debouncedSceneRender = debounce(() => Scene.requestRendering!(), 60);
-const debouncedUiRender = debounce(() => UI.requestRendering(), 60);
+// 迁出遗留层：`UI.requestRendering()` 是 `ui-window.ts` 上的方法，现在走 store。
+// store 的 action 内部就是 `UI?.requestRendering?.()`（带可选链，比直接调用更安全），
+// 且这里本来就在 debounce 回调里执行 ⇒ 不在模块加载期触发，无循环依赖风险。
+const debouncedUiRender = debounce(() => getUIStore().requestRendering(), 60);
 
 export class AnimationPlayer {
 	visible!: boolean;
@@ -667,7 +670,10 @@ export class AnimationPlayer {
 				context = contexts[contexts.count!] = {
 					animation: animation,
 					parent: null,
-					layer: null as unknown as PlayerLayer,
+					// 循环变量 `layer` 此刻就在作用域里 ⇒ 直接用它，
+					// 不必先写 `null as unknown as PlayerLayer` 占位（下面 688 行的
+					// `context.layer = layer` 仍要保留：它服务"复用已存在的 context"那条路径）。
+					layer,
 					frame: null,
 					matrix: new Matrix(),
 					anchorX: 0,

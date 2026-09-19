@@ -1,5 +1,6 @@
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { append, remove } from '@app/utils/array';
 
 interface PrefabElementShape {
@@ -9,7 +10,7 @@ interface PrefabElementShape {
 	[k: string]: any;
 }
 
-UI.Root = class RootElement extends UI.Element {
+uiElClasses.Root = class RootElement extends uiElClasses.Element! {
 	background: number | null;
 	references: Record<string, Array<PrefabElementShape>> = {};
 
@@ -23,7 +24,7 @@ UI.Root = class RootElement extends UI.Element {
 	}
 
 	draw() {
-		GL.matrix.set(UI.matrix);
+		GL.matrix.set(getUIStore().matrix!);
 		GL.alpha = 1;
 		GL.blend = 'normal';
 		GL.fillRect(this.x, this.y, this.width, this.height, this.background);
@@ -33,9 +34,9 @@ UI.Root = class RootElement extends UI.Element {
 	resize() {
 		this.x = 0;
 		this.y = 0;
-		this.width = UI.width;
-		this.height = UI.height;
-		this.background = UI.foreground.getINTRGBA();
+		this.width = getUIStore().width!;
+		this.height = getUIStore().height!;
+		this.background = getUIStore().foreground!.getINTRGBA();
 		this.resizeChildren();
 	}
 

@@ -1,4 +1,5 @@
 import { UI } from './ui-window.ts';
+import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -101,41 +102,45 @@ UI.clearInvalidPrefabs = function (this: UIShape, uiPrefabs: string[]) {
 	}
 };
 
-UI.createElement = function (this: UIShape, node: UINodeShape, main?: boolean) {
+uiElClasses.createElement = UI.createElement = function (
+	this: UIShape,
+	node: UINodeShape,
+	main?: boolean
+) {
 	let instance;
 	switch (node.class) {
 		case 'image':
-			instance = new UI.Image!(node);
+			instance = new uiElClasses.Image!(node);
 			break;
 		case 'text':
-			instance = new UI.Text!(node);
+			instance = new uiElClasses.Text!(node);
 			break;
 		case 'textbox':
-			instance = new UI.TextBox!(node);
+			instance = new uiElClasses.TextBox!(node);
 			break;
 		case 'dialogbox':
-			instance = new UI.DialogBox!(node);
+			instance = new uiElClasses.DialogBox!(node);
 			break;
 		case 'progressbar':
-			instance = new UI.ProgressBar!(node);
+			instance = new uiElClasses.ProgressBar!(node);
 			break;
 		case 'button':
-			instance = new UI.Button!(node);
+			instance = new uiElClasses.Button!(node);
 			break;
 		case 'animation':
-			instance = new UI.Animation!(node);
+			instance = new uiElClasses.Animation!(node);
 			break;
 		case 'video':
-			instance = new UI.Video!(node);
+			instance = new uiElClasses.Video!(node);
 			break;
 		case 'window':
-			instance = new UI.Window!(node);
+			instance = new uiElClasses.Window!(node);
 			break;
 		case 'container':
-			instance = new UI.Container!(node);
+			instance = new uiElClasses.Container!(node);
 			break;
 		case 'reference':
-			instance = new UI.Reference!(node);
+			instance = new uiElClasses.Reference!(node);
 			break;
 	}
 	instance.node = node;

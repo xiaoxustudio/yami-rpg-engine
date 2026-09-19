@@ -68,7 +68,7 @@ interface MenuItemData {
 const menuItemData = (el: unknown): MenuItemData => elementDataOf<MenuItemData>(el);
 
 export function createMenuApi(el: HTMLElement): MenuApi {
-	const menu: MenuApi = {
+	const menu = {
 		el,
 		state: 'closed',
 		callback: null,
@@ -80,25 +80,8 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		submenu: null,
 		buttonPressed: false,
 		minWidth: 0,
-		parentMenuItem: null,
-		windowBlur: null as unknown as () => void,
-		windowKeydown: null as unknown as (event: KeyboardEvent) => void,
-		windowPointerdown: null as unknown as (event: PointerEvent) => void,
-		windowPointerup: null as unknown as (event: PointerEvent) => void,
-		windowPointerover: null as unknown as (event: PointerEvent) => void,
-		windowPointerout: null as unknown as (event: PointerEvent) => void,
-		popup: null as unknown as (options: MenuOptions, items: MenuItem[]) => void,
-		computeMenuWidth: null as unknown as () => void,
-		close: null as unknown as () => void,
-		clear: null as unknown as () => HTMLElement,
-		createItem: null as unknown as (item: MenuItem) => HTMLElement,
-		select: null as unknown as (element: HTMLElement) => void,
-		unselect: null as unknown as () => void,
-		reselect: null as unknown as (offset: number) => void,
-		popupSubmenu: null as unknown as (delay: number) => void,
-		closeSubmenu: null as unknown as (delay: number) => void,
-		pointerenter: null as unknown as (event: PointerEvent) => void
-	};
+		parentMenuItem: null
+	} satisfies Partial<MenuApi> as MenuApi;
 
 	const onWindow = (
 		type: string,

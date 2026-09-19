@@ -1,5 +1,6 @@
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 
 {
 	interface UIContainerShape {
@@ -22,7 +23,7 @@ import { UI } from '@app/ui/ui-window.ts';
 		[k: string]: unknown;
 	}
 	const UIContainer: UIContainerShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		initialize: null,
 		create: null,
@@ -61,8 +62,9 @@ import { UI } from '@app/ui/ui-window.ts';
 
 	UIContainer.close = function (this: typeof UIContainer) {
 		if (this.target) {
-			UI.list.unselect(this.target);
-			UI.updateTarget!();
+			const uiList = getUIStore().elements.list;
+			if (uiList) uiList.unselect(this.target);
+			getUIStore().updateTarget();
 			Inspector.uiElement.close();
 			this.target = null;
 		}

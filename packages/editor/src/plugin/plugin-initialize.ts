@@ -20,20 +20,10 @@ function ensureDomBound() {
 	PluginManager.overview = pluginEls.get('plugin-overview') as YamiElement;
 	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as YamiElement;
 	hide(PluginManager.parameterPane);
-	// oxlint-disable-next-line no-explicit-any
-	list.insert = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.toggle = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.copy = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.paste = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.delete = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.saveSelection = null as unknown as (...args: unknown[]) => any;
-	// oxlint-disable-next-line no-explicit-any
-	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
+	// 注：这里原本先把 7 个成员写成 `null as unknown as (...args) => any`（占位），
+	// 紧接着在同一个函数里又逐个赋上 `PluginManager.list_*` 的真实现 —— 那 14 行是
+	// **纯死写**（中间没有任何读取），却贡献了 7 个 `null as unknown as` 与 7 条
+	// `no-explicit-any` 豁免。直接删掉：语义等价，棘轮同步下降（2026-09-18）。
 	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
 		...args: unknown[]
 		// oxlint-disable-next-line no-explicit-any

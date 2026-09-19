@@ -2,7 +2,7 @@ import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/ui/element-registry';
 import { UI } from './ui-window.ts';
-import type { UIShape, UINodeShape } from './ui-window.ts';
+import type { UIShape, UINodeShape, UIControlPoints } from './ui-window.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
 import { addScrollbars, hide, on, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -42,7 +42,7 @@ UI.initialize = function (this: UIShape) {
 	elementDataOf<{ head: HTMLElement }>(this.list).head = uiEls.get('ui-list-head') as YamiElement;
 	if (this.screen) addScrollbars(this.screen);
 
-	const points = {
+	const points: UIControlPoints = {
 		rotate: {
 			TL: { x: 0, y: 0, angle: 225 },
 			TR: { x: 0, y: 0, angle: 315 },
@@ -59,7 +59,7 @@ UI.initialize = function (this: UIShape) {
 			BL: { x: 0, y: 0, angle: 135 },
 			BR: { x: 0, y: 0, angle: 45 }
 		},
-		list: null as unknown as { x: number; y: number; angle: number }[]
+		list: []
 	};
 	// 控制点按优先级从低到高排序
 	points.list = [
@@ -145,6 +145,14 @@ UI.initialize = function (this: UIShape) {
 	this.padding = 800;
 
 	this.matrix = new Matrix();
+	// ⚠️ 必须把**同一个实例**交给 store：相机每帧改的是 `this.matrix`
+	// （`ui-engine.ts` 的 `updateTransform` 里 `this.matrix.reset().scale().translate()`），
+	// 而**所有绘制**读的是 `getUIStore().matrix`（`element-base.ts` 的
+	// `gl.matrix.set(getUIStore().matrix!)…`、`ui-engine.ts` 的坐标轴/控制点）。
+	// store 里那个 `new Matrix()` 兜底**没有写入方**，于是绘制一直用一个
+	// 永远停留在单位矩阵的副本 —— 表现是「画面能出来、但平移/缩放完全不动、且不报错」
+	// （单位矩阵是合法值，所以连异常都没有）（2026-09-18 实测定位）。
+	getUIStore().matrix = this.matrix;
 
 	this.inspectorTypeMap = {
 		image: 'uiImage',
@@ -166,6 +174,10 @@ UI.initialize = function (this: UIShape) {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
+	// 绑 `this.nodes`：`ui-file.ts` 的 `load()` 会把它与 store 的 `nodes` 同步写入，
+	// 两者始终是同一个数组。这里保持绑 `this.nodes` 是**刻意**的 ——
+	// TreeList 的 `bind` 只接受精确的 `TreeItem[]`，直接绑 `getUIStore().nodes`
+	// 需要一层难看的断言；既然两者同源，就没有必要付那个代价（2026-09-18）。
 	list.bind(() => this.nodes);
 
 	History.processors['ui-object-create'] = (

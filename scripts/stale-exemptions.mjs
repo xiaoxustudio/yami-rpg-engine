@@ -28,13 +28,33 @@ const OXLINT = join(ROOT, 'node_modules', 'oxlint', 'bin', 'oxlint');
 function collectStale() {
 	const res = spawnSync(
 		process.execPath,
-		[OXLINT, '-c', '.oxlintrc.json', '--report-unused-disable-directives', '--format=json', 'packages/editor', 'packages/ui-kit'],
+		[
+			OXLINT,
+			'-c',
+			'.oxlintrc.json',
+			'--report-unused-disable-directives',
+			'--format=json',
+			'packages/editor',
+			'packages/ui-kit'
+		],
 		{ cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }
 	);
+	// 「工具起不来」必须与「工具说没问题」区分开。
+	// 受限环境（沙箱 / 精简容器）里 spawnSync 会直接 EPERM——过去这里只看 stdout，
+	// 拿不到 JSON 就 exit 2；但**调用方**很容易把非 0 当成「环境问题，跳过」，
+	// 于是一个本该红门禁的检查变成了静默通过。现在把两种情形拆成不同的退出码：
+	//   3 = 工具不可用（环境问题，门禁应视为 **不可判定**，不得当作通过）
+	//   2 = 工具可用但输出无法解析（真的异常，要人看）
+	if (res.error || (res.status === null && !res.stdout)) {
+		console.error(`stale-exemptions: oxlint 无法启动（${res.error?.code ?? 'unknown'}）。`);
+		console.error('  这是**环境问题**，不是「无陈旧豁免」。CI 里应把它当作失败处理。');
+		process.exit(3);
+	}
 	const text = res.stdout ?? '';
 	const json = text.match(/\{[\s\S]*\}/);
 	if (json === null) {
-		console.error('stale-exemptions: 无法解析 oxlint 输出（oxlint 是否可用？）');
+		console.error('stale-exemptions: oxlint 可执行但输出无法解析为 JSON。');
+		console.error(`  stderr: ${(res.stderr ?? '').trim().slice(0, 400)}`);
 		process.exit(2);
 	}
 	const diagnostics = JSON.parse(json[0]).diagnostics ?? [];
@@ -58,11 +78,14 @@ function collectStale() {
 	return stale;
 }
 
-const DIRECTIVE_RE = /^\s*(?:\ufeff)?\/\* oxlint-disable\s+eslint\/no-restricted-properties\s*\*\/\s*$/;
+const DIRECTIVE_RE =
+	/^\s*(?:\ufeff)?\/\* oxlint-disable\s+eslint\/no-restricted-properties\s*\*\/\s*$/;
 
 function strip(rel, lines) {
 	const kept = [];
-	let bom = /\ufeff/.test(lines[0] ?? '') || readFileSync(join(ROOT, rel), 'utf8').charCodeAt(0) === 0xfeff;
+	let bom =
+		/\ufeff/.test(lines[0] ?? '') ||
+		readFileSync(join(ROOT, rel), 'utf8').charCodeAt(0) === 0xfeff;
 	const removed = [];
 	for (const line of lines) {
 		if (DIRECTIVE_RE.test(line)) {
@@ -85,14 +108,17 @@ function main() {
 			console.log('stale-exemptions: OK（无陈旧豁免注释）');
 			process.exit(0);
 		}
-		console.error(`stale-exemptions: ${files.length} 个文件仍带「已无命中」的 no-restricted-properties 豁免注释（C2 未完成）。`);
+		console.error(
+			`stale-exemptions: ${files.length} 个文件仍带「已无命中」的 no-restricted-properties 豁免注释（C2 未完成）。`
+		);
 		process.exit(1);
 	}
 
 	if (!APPLY) {
 		console.log(`stale-exemptions: 干跑 —— 待删注释 ${files.length} 个文件。`);
 		for (const rel of files.slice(0, 20)) console.log(`  - ${rel}`);
-		if (files.length > 20) console.log(`  …（其余 ${files.length - 20} 个见 --check 或逐文件核对）`);
+		if (files.length > 20)
+			console.log(`  …（其余 ${files.length - 20} 个见 --check 或逐文件核对）`);
 		if (SIMULATE) {
 			// 用与 --apply 完全相同的 strip() 预演，但不写盘：证明"删哪几行"可预期
 			let removedTotal = 0;
@@ -107,9 +133,13 @@ function main() {
 				}
 				removedTotal += removed.length;
 			}
-			console.log(`stale-exemptions: 预演（--simulate）——将删除 ${removedTotal} 行、覆盖 ${files.length - skipped} 个文件，跳过 ${skipped} 个。`);
+			console.log(
+				`stale-exemptions: 预演（--simulate）——将删除 ${removedTotal} 行、覆盖 ${files.length - skipped} 个文件，跳过 ${skipped} 个。`
+			);
 		}
-		console.log('提示：确认无误后用 `node scripts/stale-exemptions.mjs --apply` 执行；执行后跑 `pnpm lint` 与 `pnpm dom:guard:tracker`。');
+		console.log(
+			'提示：确认无误后用 `node scripts/stale-exemptions.mjs --apply` 执行；执行后跑 `pnpm lint` 与 `pnpm dom:guard:tracker`。'
+		);
 		return;
 	}
 
@@ -134,14 +164,20 @@ function main() {
 	}
 	console.log(`stale-exemptions: 已删除 ${changed} 个文件的陈旧豁免注释（跳过 ${skipped}）。`);
 
-	const lint = spawnSync(process.execPath, [OXLINT, '-c', '.oxlintrc.json', 'packages/editor', 'packages/ui-kit'], {
-		cwd: ROOT,
-		encoding: 'utf8'
-	});
+	const lint = spawnSync(
+		process.execPath,
+		[OXLINT, '-c', '.oxlintrc.json', 'packages/editor', 'packages/ui-kit'],
+		{
+			cwd: ROOT,
+			encoding: 'utf8'
+		}
+	);
 	const tail = (lint.stdout ?? '').trim().split('\n').slice(-2).join(' ');
 	console.log(`stale-exemptions: 复跑 oxlint → ${tail}`);
 	if (lint.status !== 0) {
-		console.error('stale-exemptions: lint 未通过——请用 `git checkout -- packages` 回滚后排查。');
+		console.error(
+			'stale-exemptions: lint 未通过——请用 `git checkout -- packages` 回滚后排查。'
+		);
 		process.exit(1);
 	}
 	const after = collectStale();

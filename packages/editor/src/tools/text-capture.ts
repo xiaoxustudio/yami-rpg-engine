@@ -64,8 +64,8 @@ interface EventListenerElement {
 }
 
 interface ColorProxy {
-	color: string;
-	read(): string;
+	color: string | null;
+	read(): string | null;
 	input(color: string): void;
 }
 
@@ -77,7 +77,8 @@ interface ColorController {
 interface VariableProxy {
 	key: string;
 	filter: string;
-	element: EventTargetElement;
+	/** `open()` 里由 `this.proxy.element = Selection.target` 写入；`getFocus()` 本来就是真值判断读取 */
+	element: EventTargetElement | null;
 	read(): string;
 	input(key: string): void;
 	getFocus(): unknown;
@@ -126,45 +127,15 @@ interface SelectionShape {
 	sizes?: string[];
 }
 
-export const Selection: SelectionShape = {
-	target: null as unknown as EventTargetElement,
+export const Selection = {
 	inserting: false,
-	context: null as unknown as {
-		target: EventTargetElement;
-		inserting: boolean;
-	},
 	regexps: {
 		local: /<local:(.*?)>/,
 		global: /<global:([0-9a-f]{16})?>/,
 		dynamicGlobal: /<global::([0-9a-f]{16})?>/,
 		ref: /<ref:([0-9a-f]{16})?>/
-	},
-	initialize: null as unknown as SelectionShape['initialize'],
-	saveContext: null as unknown as SelectionShape['saveContext'],
-	restoreContext: null as unknown as SelectionShape['restoreContext'],
-	addEventListeners: null as unknown as SelectionShape['addEventListeners'],
-	removeEventListeners: null as unknown as SelectionShape['removeEventListeners'],
-	match: null as unknown as SelectionShape['match'],
-	insert: null as unknown as SelectionShape['insert'],
-	edit: null as unknown as SelectionShape['edit'],
-	wrap: null as unknown as SelectionShape['wrap'],
-	inputKeydown: null as unknown as SelectionShape['inputKeydown'],
-	inputKeyup: null as unknown as SelectionShape['inputKeyup'],
-	inputPointerdown: null as unknown as SelectionShape['inputPointerdown'],
-	inputPointerup: null as unknown as SelectionShape['inputPointerup'],
-	color: null as unknown as TagController,
-	font: null as unknown as TagController,
-	italic: null as unknown as TagController,
-	bold: null as unknown as TagController,
-	fontSize: null as unknown as TagController,
-	textPosition: null as unknown as TagController,
-	textEffect: null as unknown as TagController,
-	image: null as unknown as TagController,
-	localVariable: null as unknown as TagController,
-	globalVariable: null as unknown as TagController,
-	dynamicGlobalVariable: null as unknown as TagController,
-	localization: null as unknown as TagController
-};
+	}
+} satisfies Partial<SelectionShape> as SelectionShape;
 
 const listenerScopes = new WeakMap<EventListenerElement, { off(): void }>();
 
@@ -659,7 +630,9 @@ Selection.color = {
 		Color.open(this.proxy, true);
 	},
 	proxy: {
-		color: null as unknown as string,
+		// `open()` 会先 `this.proxy.color = color`（默认 `'000000ff'`）再交给 `Color.open`，
+		// 所以这个 null 只在「从未打开过」时存在 ⇒ 类型如实写成可空即可。
+		color: null,
 		read: function (this: ColorProxy) {
 			return this.color;
 		},
@@ -931,7 +904,7 @@ Selection.globalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null as unknown as EventTargetElement,
+		element: null,
 		read: function (this: VariableProxy) {
 			return this.key;
 		},
@@ -956,7 +929,7 @@ Selection.dynamicGlobalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null as unknown as EventTargetElement,
+		element: null,
 		read: function (this: VariableProxy) {
 			return this.key;
 		},

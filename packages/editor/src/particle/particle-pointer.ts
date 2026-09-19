@@ -16,7 +16,7 @@ Particle.marqueePointerdown = function (
 	switch (event.button) {
 		case 0:
 			if (!isDragKey(event)) {
-				const { emitter } = this;
+				const emitter = this.emitter!;
 				if (emitter.active) {
 					emitter.selected = true;
 					if (getParticleStore().paused) break;
@@ -50,8 +50,8 @@ Particle.marqueePointermove = function (this: ParticleShape, event: PointerEvent
 		this.marquee.pointerevent = event;
 		const { x, y } = this.getPointerCoords!(event);
 		const active = this.selectEmitter!(x, y);
-		if (this.emitter.active !== active) {
-			this.emitter.active = active;
+		if (this.emitter!.active !== active) {
+			this.emitter!.active = active;
 			this.requestRendering!();
 		}
 	}
@@ -106,7 +106,7 @@ Particle.pointermove = function (event: PointerEvent) {
 						break;
 					}
 				}
-				const emitter = Particle.emitter;
+				const emitter = Particle.emitter!;
 				const dpr = window.devicePixelRatio;
 				const distX =
 					((event.clientX - dragging.clientX) * dpr) / getParticleStore().scaleX!;

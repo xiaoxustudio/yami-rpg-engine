@@ -4,7 +4,8 @@ export interface WordListShape {
 	join(joint?: string): string;
 	readonly length: number;
 	[Symbol.iterator](): IterableIterator<string>;
-	[index: number]: string;
+	// 这里**不**声明数值索引签名：数据在私有 `#arr` 里，实例上 `wordList[0]` 其实是 undefined，
+	// 那条签名对真实实例是假的（全仓亦无处使用）；没有它，`new WordList()` 才能直接赋给本接口。
 }
 
 export class WordList {

@@ -6,8 +6,57 @@ import { dist, radians } from '@app/utils/math';
 // oxlint-disable-next-line no-explicit-any
 export const SceneSelectionEngine: Record<string, any> = {};
 
-// oxlint-disable-next-line no-explicit-any
-type SceneObjectShape = { hidden?: boolean; locked?: boolean; [k: string]: any };
+/**
+ * 场景选择引擎读到的对象形状（角色 / 动画 / 区域 / 光照 / 粒子 / 视差 / 瓦片地图共用）。
+ *
+ * 成员按**实际读点**枚举，不用 `[k: string]: any` 兜底 —— 否则读错成员名也能编译。
+ *
+ * 约定与读侧一致：面板几何量（x/y/width/height/scale/…）在读取处**从不判空**
+ * （缺失时得到 NaN，不是崩溃），因此声明为必需；只有真正可缺的子对象才标 `?`——
+ * `data`（`object.data?.size ?? 1`）与 `emitter`（`emitter?.bounding`）读侧本来就写了 `?.`。
+ */
+type SceneObjectShape = {
+	hidden?: boolean;
+	locked?: boolean;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scale: number;
+	angle: number;
+	scaleX: number;
+	scaleY: number;
+	repeatX: number;
+	repeatY: number;
+	offsetX: number;
+	offsetY: number;
+	anchorX: number;
+	anchorY: number;
+	/** 图层类别（`parallax` / `tilemap` …），`selectSortedLayer` 按它分派 */
+	class: string;
+	/** 光照类型（`point` / `area`），`selectLight` 按它分派 */
+	type: string;
+	/** 点光源半径 */
+	range: number;
+	/** 视差图层上的播放器（取贴图尺寸用） */
+	player: { texture: { width: number; height: number } | null };
+	/** 区域光的实例（锚点偏移 + 角度） */
+	instance: { anchorOffsetX: number; anchorOffsetY: number; angle: number };
+	/** 粒子发射器（只有粒子有；读侧已 `?.`） */
+	emitter?: {
+		bounding: {
+			hasArea: boolean;
+			left: number;
+			top: number;
+			right: number;
+			bottom: number;
+			width: number;
+			height: number;
+		};
+	};
+	/** 角色 / 动画的碰撞尺寸（读侧 `?.size ?? 1`） */
+	data?: { size?: number };
+};
 type SceneSelectionThis = {
 	actors: SceneObjectShape[];
 	animations: SceneObjectShape[];

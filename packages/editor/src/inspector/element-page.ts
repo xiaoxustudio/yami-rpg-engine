@@ -5,7 +5,8 @@ import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
+import { UIOwner } from './ui-owner.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /** P1b：尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
@@ -58,7 +59,7 @@ const SIZE_INPUT_IDS = [
 		[k: string]: unknown;
 	}
 	const UIElement: UIElementShape = {
-		owner: UI,
+		owner: UIOwner,
 		target: null,
 		synchronous: false,
 		nameBox: null,
@@ -79,8 +80,18 @@ const SIZE_INPUT_IDS = [
 		alignmentClick: null
 	};
 
+	/**
+	 * 初始化：**幂等**，且允许在「控件还没登记」时被调用（早退时不置位，之后可重试）。
+	 *
+	 * 因为 inspector 的控件由 SFC **挂载时**登记（见 `element-registry.ts`），而页面是**按需渲染**的
+	 * —— 首次 `open()` 往往早于该页挂载。若把初始化当作一次性的，早退后就再也不补，
+	 * 之后每次 `open()` 都会在 `this.pointerEvents.previousElementSibling` 上抛
+	 * `Cannot read properties of null`。补初始化/重试的责任在 `open()`。
+	 */
 	UIElement.initialize = function (this: typeof UIElement) {
+		if (this._elementInitialized) return;
 		if (!inspectorEls.get('uiElement-name')) return;
+		this._elementInitialized = true;
 		this.nameBox = inspectorEls.get('uiElement-name') as YamiElement;
 		this.pointerEvents = inspectorEls.get('uiElement-pointerEvents') as YamiElement;
 		this.generalGroup = inspectorEls.get('uiElement-general-group') as YamiElement;
@@ -94,9 +105,9 @@ const SIZE_INPUT_IDS = [
 			{ name: 'Skipped', value: 'skipped' }
 		]);
 
-		inspectorEls.get('uiElement-events')?.bind?.(new EventListInterface(this, UI));
+		inspectorEls.get('uiElement-events')?.bind?.(new EventListInterface(this, UIOwner));
 
-		inspectorEls.get('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UI));
+		inspectorEls.get('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UIOwner));
 
 		this.parameterPane.bind(inspectorEls.get('uiElement-scripts'));
 
@@ -130,9 +141,11 @@ const SIZE_INPUT_IDS = [
 			'uiElement-transform-opacity'
 		]);
 		otherElements.forEach((el) => on(el, 'focus', Inspector.inputFocus));
-		otherElements.forEach((el: HTMLElement) => on(el, 'blur', Inspector.inputBlur!(this, UI)));
+		otherElements.forEach((el: HTMLElement) =>
+			on(el, 'blur', Inspector.inputBlur!(this, UIOwner))
+		);
 		registryElements(inspectorEls, ['uiElement-events', 'uiElement-scripts']).forEach((el) =>
-			on(el, 'change', UI.listChange)
+			on(el, 'change', getUIStore().listChange)
 		);
 	};
 
@@ -172,16 +185,30 @@ const SIZE_INPUT_IDS = [
 	};
 
 	UIElement.open = function (this: typeof UIElement, node: UIElementData) {
+		// 控件由 SFC 挂载时才登记，而 inspector 页面按需渲染 ⇒ 首次 open 可能早于挂载。
+		// 先在「打开时」补一次初始化（幂等）；若仍未就绪，下一个宏任务（Vue 的挂载刷新之后）
+		// 再试一次 —— 绝不在元素为 null 的情况下继续往下读。
+		this.initialize();
+		if (!this.pointerEvents) {
+			if (this._openRetry < 10) {
+				this._openRetry = (this._openRetry ?? 0) + 1;
+				setTimeout(() => this.open(node), 0);
+			}
+			return;
+		}
+		this._openRetry = 0;
 		if (this.target !== node) {
 			this.target = node;
 
 			const write = getElementWriter('uiElement', node);
+			// `previousElementSibling` 的读取对 null 不安全（`show`/`hide` 本身对 null 是安全的），
+			// 这里再兜一层：即使 pointerEvents 真的缺失也只是不显示行，不会抛错。
 			if (node.pointerEvents) {
 				show(this.pointerEvents);
-				show(this.pointerEvents.previousElementSibling);
+				show(this.pointerEvents?.previousElementSibling);
 			} else {
 				hide(this.pointerEvents);
-				hide(this.pointerEvents.previousElementSibling);
+				hide(this.pointerEvents?.previousElementSibling);
 			}
 			if (node.class === 'reference' && node.synchronous) {
 				this.lockSizeInputs();
@@ -213,13 +240,14 @@ const SIZE_INPUT_IDS = [
 		key: string,
 		value: unknown
 	) {
-		UI.planToSave!();
+		getUIStore().planToSave();
 		const transform = node.transform;
 		switch (key) {
 			case 'name':
 				if (node.name !== value) {
 					node.name = value;
-					UI.list.updateItemName(node);
+					const uiList = getUIStore().elements.list;
+					if (uiList) uiList.updateItemName(node);
 				}
 				break;
 			case 'pointerEvents':
@@ -253,7 +281,7 @@ const SIZE_INPUT_IDS = [
 				break;
 			}
 		}
-		UI.requestRendering!();
+		getUIStore().requestRendering();
 	};
 
 	UIElement.pageSwitch = function (this: typeof UIElement, event: Event & { value?: string }) {
@@ -373,9 +401,9 @@ const SIZE_INPUT_IDS = [
 		}
 		if (changes.length !== 0) {
 			elements.resize();
-			UI.planToSave!();
-			UI.requestRendering!();
-			UI.history.save({
+			getUIStore().planToSave();
+			getUIStore().requestRendering();
+			getUIStore().history!.save({
 				type: 'inspector-change',
 				editor: UIElement,
 				target: UIElement.target,

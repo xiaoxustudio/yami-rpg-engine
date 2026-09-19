@@ -4,7 +4,8 @@ import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from '@app/engine/ui/element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Title } from '@app/title/title-bar.ts';
 import { Texture as PrinterTexture } from '@app/engine/webgl/texture.ts';
 
@@ -431,7 +432,9 @@ export class Printer {
 			this.newLine!();
 		}
 
-		const imageElement: ImageElementShape = new UI.Image(new Inspector.uiText.create());
+		const imageElement: ImageElementShape = new uiElClasses.Image!(
+			new Inspector.uiText.create()
+		);
 		imageElement.startX = this.getRawX!();
 		imageElement.startY = this.getRawY!();
 		imageElement.image = guid;
@@ -1136,7 +1139,7 @@ export class Printer {
 			);
 		}
 		return Promise.all(promises).then(() => {
-			UI.updateElementFont();
+			getUIStore().updateElementFont();
 		});
 	}
 
@@ -1209,8 +1212,8 @@ export class Printer {
 				font: '',
 				size: 0,
 				color: 0 as unknown as string,
-				effect: null as unknown as TextEffectShape | null,
-				image: null as unknown as ImageElementShape | null,
+				effect: null as TextEffectShape | null,
+				image: null as ImageElementShape | null,
 				imageWidth: 0,
 				imageHeight: 0,
 				imageSpacing: 0,
@@ -1330,7 +1333,7 @@ export class Printer {
 			if (name) {
 				void this.importFonts!([guid]).then(() => {
 					this.font = `${name}, ${fontFamily}`;
-					UI.updateElementFont();
+					getUIStore().updateElementFont();
 				});
 			}
 		}
@@ -1339,19 +1342,19 @@ export class Printer {
 	static setSizeScale(scale: number) {
 		if (this.sizeScale !== scale) {
 			this.sizeScale = scale;
-			UI.updateAllPrinters();
+			getUIStore().updateAllPrinters();
 		}
 	}
 
 	static updateScale() {
 		this.scale = this.highDefinition ? 4 : 1;
-		UI.updateAllPrinters();
+		getUIStore().updateAllPrinters();
 	}
 
 	static setWordWrap(wordWrap: string) {
 		if (this.wordWrap !== wordWrap) {
 			this.wordWrap = wordWrap;
-			UI.updateAllPrinters();
+			getUIStore().updateAllPrinters();
 		}
 	}
 
@@ -1365,7 +1368,7 @@ export class Printer {
 						context.fontChanged = true;
 					}
 				}
-				UI.updateElementFont();
+				getUIStore().updateElementFont();
 			}
 
 			const { importedFonts } = Data.config.text;

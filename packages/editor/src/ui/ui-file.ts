@@ -7,6 +7,7 @@ import { clear, hide, show, write } from '@app/utils/element-utils.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { History } from '@app/tools/history.ts';
+import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import { UndoManager } from '@app/tools/undo-manager.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { TreeList } from '@app/components/tree-list.ts';
@@ -28,6 +29,10 @@ UI.open = function (this: UIShape, context: UIContextShape) {
 		getUIStore().state = 'open';
 		this.context = context;
 		this.meta = meta;
+		// 同 `load()` 里的 root/nodes/history：`meta` 的读取方已迁到 `getUIStore()`
+		// （`ui-events.ts` 的 `File.planToSave!(this.meta)`、`usePresetElementWindow.ts:87`），
+		// 只写 `this.meta` 会让它们永远读到 null。
+		getUIStore().meta = meta;
 		show(this.body);
 		this.load!(context);
 		this.resize!();
@@ -52,7 +57,7 @@ UI.load = function (this: UIShape, context: UIContextShape) {
 	if (firstLoad) {
 		context.editor = {
 			target: null,
-			root: new UI.Root!(),
+			root: new uiElClasses.Root!(),
 			history: new History(100),
 			centerX: context.ui!.width / 2,
 			centerY: context.ui!.height / 2
@@ -64,9 +69,17 @@ UI.load = function (this: UIShape, context: UIContextShape) {
 	getUIStore().width = ui!.width;
 	getUIStore().height = ui!.height;
 	this.nodes = ui!.nodes;
+	// ⚠️ root / nodes / history 必须**同时**写 store：读取方（reference-element / element-base /
+	// ui-engine / inspector 共 15 处）已迁到 `getUIStore()`，而 store 里的 shallowRef 没有别的
+	// 写入点。只写 `this.x` 会让它们永远是 null —— 打开 UI 文件时
+	// `getUIStore().root!.addReference(...)` 直接抛错（2026-09-18）。
+	// `nodes` 用同一数组实例（TreeList 的 `bind` 绑的是 `this.nodes`，两者必须同源）。
+	this.nodes = getUIStore().nodes = this.nodes;
 
 	this.root = editor!.root;
 	this.history = editor!.history;
+	getUIStore().root = this.root;
+	getUIStore().history = this.history;
 	this.centerX = editor!.centerX;
 	this.centerY = editor!.centerY;
 
@@ -127,9 +140,12 @@ UI.close = function (this: UIShape) {
 		getUIStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
+		getUIStore().meta = null;
 		this.nodes = null;
+		this.history = null;
 		this.root = null;
-		this.history = null as unknown as History;
+		// 故意不清 store 的 root/nodes/history：只在 load() 写入，关闭后保留旧值不会误导
+		// 消费者（同一文件重开时 load() 的 else 分支会重新指向它），却能避免让调用方读到 null。
 		write(this.searcher, '');
 		clear(this.list);
 		hide(this.body);
@@ -243,14 +259,14 @@ UI.toggle = function (this: UIShape) {
 };
 
 UI.undo = function (this: UIShape) {
-	if (getUIStore().state === 'open' && !this.dragging && this.history.canUndo()) {
+	if (getUIStore().state === 'open' && !this.dragging && this.history?.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
 UI.redo = function (this: UIShape) {
-	if (getUIStore().state === 'open' && !this.dragging && this.history.canRedo()) {
+	if (getUIStore().state === 'open' && !this.dragging && this.history?.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
 	}

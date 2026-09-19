@@ -327,8 +327,7 @@ export function useCallEventCommandSchema() {
 			true
 		) as HTMLElement;
 		labelEl.textContent = name;
-		let input: HTMLElement & CallEventInputApi = null as unknown as YamiElement &
-			CallEventInputApi;
+		let input: HTMLElement & CallEventInputApi;
 		switch (type) {
 			case 'boolean':
 				input = createSelectBox() as unknown as YamiElement & CallEventInputApi;
@@ -391,6 +390,12 @@ export function useCallEventCommandSchema() {
 				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'element';
 				break;
+			default:
+				// 未知参数类型。原先写成 `let input = null as unknown as …` 把类型糊过去，
+				// 实际后果是在下面的 setTooltip/appendChild 处以「null 上取属性」的形式炸，
+				// 报错点离真正原因很远。这里显式抛错：既让 tsc 的「使用前赋值」分析通过，
+				// 也把原因说清楚（`CallEventArg.type` 是普通 string，switch 本来就无法穷尽）。
+				throw new Error(`[CallEvent] 未支持的参数类型: ${type}`);
 		}
 		if (note) {
 			setTooltip(input, `<b>${name}</b>\n${note}`);
@@ -403,8 +408,7 @@ export function useCallEventCommandSchema() {
 		parameters.push({ key, type, label: labelEl, input });
 	};
 	const createEventResultElements = (type: string): void => {
-		let input: HTMLElement & CallEventInputApi = null as unknown as YamiElement &
-			CallEventInputApi;
+		let input: HTMLElement & CallEventInputApi;
 		switch (type) {
 			case 'none':
 				return;
@@ -440,6 +444,9 @@ export function useCallEventCommandSchema() {
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
+			default:
+				// 同上：未支持的返回值类型显式抛错，而不是让 input 保持 null 然后在下面炸。
+				throw new Error(`[CallEvent] 未支持的返回值类型: ${type}`);
 		}
 		write(input, { type: 'local', key: '' });
 		const text = t('command.callEvent.return');

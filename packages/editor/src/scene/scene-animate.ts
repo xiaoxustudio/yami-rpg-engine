@@ -26,11 +26,13 @@ Scene.updateFont = SceneAnimateEngine.updateFont;
 
 Scene.switchLayer = (function IIFE() {
 	let layerGroup: HTMLElement | null = null;
-	let items: Record<string, HTMLElement> = { tilemap: null as unknown as HTMLElement };
+	// `tilemap` 这一项在层元素被查出来之前**就是 null**（读取处 L56 本来就是 `if (element)` 真值判断），
+	// 所以记录的值类型写成可空，而不是谎报成 HTMLElement。
+	let items: Record<string, HTMLElement | null> = { tilemap: null };
 	let selection: HTMLElement | null | undefined = undefined;
 	const query = () => {
 		layerGroup = sceneEls.get('scene-layer') as YamiElement;
-		items = { tilemap: null as unknown as HTMLElement };
+		items = { tilemap: null };
 		if (layerGroup) {
 			for (const item of layerGroup.children) {
 				const layer = item.getAttribute('value')!;

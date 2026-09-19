@@ -7,7 +7,7 @@ import {
 	type PresetElementNode
 } from '@app/composables/usePresetElementWindow';
 import { Window } from '@app/tools/window-object.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
@@ -24,9 +24,9 @@ vi.mock('@app/data/data-object.ts', () => ({
 	}
 }));
 
-vi.mock('@app/ui/ui-window.ts', () => ({
-	UI: { target: null, meta: { guid: 'ui-guid' }, hasPrefab: () => false }
-}));
+// 阶段 1b 起：`usePresetElementWindow` 读的是 `getUIStore()`，不再读遗留 `UI` 单例。
+// 本 spec 已经在 beforeEach 里 `setActivePinia(createPinia())`（见下方），所以直接用真 store ——
+// 这比 mock 更接近真实行为，也正是迁移想要的：测试不再绑定遗留层的形状。
 
 type PresetElementListEl = HTMLElement & {
 	read(): PresetElementNode | null;
@@ -99,8 +99,8 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		Window.close = vi.fn();
 		vi.mocked(Data).uiPresets = {};
 		vi.mocked(Data).ui = {};
-		vi.mocked(UI).target = null;
-		vi.mocked(UI).meta = { guid: 'ui-guid' };
+		getUIStore().target = null;
+		getUIStore().meta = { guid: 'ui-guid', path: '' };
 	});
 
 	it('open 打开窗口、写入目标 presetId 对应 UI', async () => {
@@ -225,9 +225,9 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 	});
 
 	it('getDefaultPresetId 返回 UI.target 的 presetId', () => {
-		vi.mocked(UI).target = { presetId: 'preset-3' };
+		getUIStore().target = { presetId: 'preset-3' } as never;
 		expect(usePresetElementWindow().getDefaultPresetId()).toBe('preset-3');
-		vi.mocked(UI).target = null;
+		getUIStore().target = null;
 		expect(usePresetElementWindow().getDefaultPresetId()).toBe('');
 	});
 

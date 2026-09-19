@@ -121,7 +121,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIWindowPage } from '@app/composables/useUIWindowPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -206,7 +206,7 @@ onMounted(() => {
 		'uiWindow-paddingY',
 		'uiWindow-overflow'
 	]);
-	bindInput(elements, uiWindow, UI);
+	bindInput(elements, getUIStore(), uiWindow);
 
 	const el = inspectorEls.get('uiWindow-vue-mount');
 	if (el) {

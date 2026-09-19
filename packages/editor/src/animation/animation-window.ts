@@ -1,5 +1,4 @@
 import { elementDataOf } from '@ui-kit';
-import { getListConfig } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
@@ -433,9 +432,6 @@ export const Animation: AnimationShape = {
 	Player: null
 };
 
-// oxlint-disable-next-line no-explicit-any
-Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
-
 // P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls.get(
 	'animation-motion'
@@ -443,37 +439,10 @@ elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls
 elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationEls.get(
 	'animation-list-head'
 ) as YamiElement;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.copy = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.paste = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.delete = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.updateHead = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.list.parseName = null as unknown as (...args: unknown[]) => any;
-getListConfig(Animation.list).onDelete = null as unknown as (item: unknown) => void;
-
-// oxlint-disable-next-line no-explicit-any
-Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.layerList.copy = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
-// oxlint-disable-next-line no-explicit-any
-Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
-getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
 elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get(
 	'animation-timeline-head'
 ) as YamiElement;
-// oxlint-disable-next-line no-explicit-any
-Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 
 // outerTimelineList properties
 // P4b：`dragging` 是 outerTimelineList 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）

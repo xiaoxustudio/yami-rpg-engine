@@ -14,7 +14,9 @@ export const Meta = (function IIFE() {
 		other: 'others'
 	});
 	const loaderDescriptor = { path: null as string | null, type: 'json' };
-	const fileDescriptor = { writable: true, value: null as unknown as FileItem };
+	// 标成 `PropertyDescriptor`：标准库里 `value` 是可选 `any`，因此初值可直接写 `null`，
+	// 不必再用 `null as unknown as FileItem` 去凑"非空"（真值在下面 `fileDescriptor.value = file`）。
+	const fileDescriptor: PropertyDescriptor = { writable: true, value: null };
 	const guidDescriptor = { writable: true, value: '' };
 	const codeDescriptor = { writable: true, value: '' };
 	const groupDescriptor = { value: null };

@@ -67,7 +67,7 @@ interface DataModule {
 	[k: string]: any;
 }
 
-export const Data: DataModule = {
+export const Data = {
 	manifest: null,
 	scenePresets: null,
 	uiPresets: null,
@@ -93,41 +93,8 @@ export const Data: DataModule = {
 	ui: null,
 	animations: null,
 	particles: null,
-	tilesets: null,
-	// oxlint-disable-next-line no-explicit-any
-	loadAll: null as unknown as () => Promise<any>,
-	// oxlint-disable-next-line no-explicit-any
-	loadMeta: null as unknown as () => Promise<any>,
-	// oxlint-disable-next-line no-explicit-any
-	loadFile: null as unknown as (filename: string) => Promise<any>,
-	// oxlint-disable-next-line no-explicit-any
-	loadScene: null as unknown as (guid: string) => Promise<any>,
-	close: null as unknown as () => void,
-	createEasingItems: null as unknown as () => Array<{ name: string; value: string }>,
-	createTeamItems: null as unknown as () => Array<{ name: string; value: string }>,
-	createDataMaps: null as unknown as () => void,
-	createGUIDMap: null as unknown as (list: Array<GUIDItem>) => void,
-	createTeamMap: null as unknown as () => void,
-	createVariableMap: null as unknown as () => void,
-	createAttributeContext: null as unknown as () => void,
-	createEnumerationContext: null as unknown as () => void,
-	createLocalizationMap: null as unknown as () => void,
-	createReferencedFileIDMap: null as unknown as () => Record<string, boolean>,
-	generateVariableEnumScript: null as unknown as () => void,
-	registerScenePresets: null as unknown as (sceneId: string) => void,
-	unregisterScenePresets: null as unknown as (sceneId: string) => void,
-	registerUiPresets: null as unknown as (uiId: string) => void,
-	unregisterUiPresets: null as unknown as (uiId: string) => void,
-	createManifest: null as unknown as () => void,
-	saveManifest: null as unknown as () => Promise<void> | null,
-	filterManifest: null as unknown as (
-		manifest: Manifest & Record<string, unknown>
-	) => Record<string, unknown>,
-	inheritMetaData: null as unknown as () => void,
-	parseGUID: null as unknown as (meta: { path: string }) => string,
-	loadScript: null as unknown as (file: ScriptFile) => Promise<void>,
-	jsonReplacer: null as unknown as (key: string, value: unknown) => unknown
-};
+	tilesets: null
+} satisfies Partial<DataModule> as Partial<DataModule> as DataModule;
 
 Data.loadAll = function (this: typeof Data) {
 	this.createDataMaps();

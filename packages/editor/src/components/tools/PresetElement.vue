@@ -32,7 +32,7 @@ import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import { Data } from '@app/data/data-object.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { getUIStore } from '@app/stores/ui';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -78,7 +78,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	if (node.class === 'reference' && iconClass !== 'icon-ui-reference') {
 		iconClasses.push('icon-ui-reference-active');
 	}
-	if (UI.hasPrefab?.(node)) {
+	if (getUIStore().hasPrefab(node)) {
 		iconClasses.push('icon-ui-set-as-prefab');
 	}
 	return [h('span', { class: ['node-icon', iconClasses] })];

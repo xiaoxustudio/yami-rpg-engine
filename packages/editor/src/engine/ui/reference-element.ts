@@ -2,7 +2,8 @@ import { $ } from '@app/utils/dom';
 import { write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
+import { getUIStore } from '@app/stores/ui';
 
 type ReferenceNodeShape = {
 	class?: string;
@@ -11,7 +12,7 @@ type ReferenceNodeShape = {
 	[k: string]: unknown;
 };
 
-UI.Reference = class ReferenceElement extends UI.Element {
+uiElClasses.Reference = class ReferenceElement extends uiElClasses.Element! {
 	_prefabId: string | undefined = undefined;
 	_synchronous: boolean | undefined = undefined;
 	historyEnabled = false;
@@ -39,7 +40,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 				this.loadElement(preset.data, this);
 				if (this.children.length !== 0) {
 					this.prefab = this.children[0];
-					UI.root.addReference(this.prefab);
+					getUIStore().root!.addReference(this.prefab);
 					if (this.synchronous) {
 						this.lockTransform();
 						this.setToPrefabSize();
@@ -95,7 +96,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 			}
 		}
 		if (changes.length !== 0) {
-			UI.history.save({
+			getUIStore().history!.save({
 				type: 'inspector-change',
 				editor: Inspector.uiElement,
 				target: this.node,
@@ -112,7 +113,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 		const { presetId } = node;
 		const { paths } = parent;
 		if (!(presetId in paths)) {
-			const element = UI.createElement(node, false);
+			const element = uiElClasses.createElement!(node, false);
 			element.paths = Object.create(paths);
 			element.paths[presetId] = true;
 			parent.appendChild(element);
@@ -323,7 +324,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 	}
 
 	resize() {
-		if (this.parent instanceof UI.Window) {
+		if (this.parent instanceof uiElClasses.Window!) {
 			return this.parent.requestResizing();
 		}
 		this.calculatePosition();
@@ -345,9 +346,9 @@ UI.Reference = class ReferenceElement extends UI.Element {
 	}
 
 	getRoot() {
-		if (UI.root) return UI.root;
+		if (getUIStore().root!) return getUIStore().root!;
 		let element = this.parent;
-		while (!(element instanceof UI.Root)) {
+		while (!(element instanceof uiElClasses.Root!)) {
 			element = element.parent;
 		}
 		return element;

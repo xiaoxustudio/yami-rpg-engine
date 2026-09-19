@@ -83,19 +83,19 @@ UI.listRecord = function (this: UIShape, event: YamiMouseEvent) {
 			UI.listRename!(response);
 			break;
 		case 'create':
-			UI.history.save({
+			UI.history!.save({
 				type: 'ui-object-create',
 				response: response
 			});
 			break;
 		case 'delete':
-			UI.history.save({
+			UI.history!.save({
 				type: 'ui-object-delete',
 				response: response
 			});
 			break;
 		case 'remove':
-			UI.history.save({
+			UI.history!.save({
 				type: 'ui-object-remove',
 				response: response
 			});
@@ -322,7 +322,7 @@ UI.listRename = function (
 	const input = editor.nameBox;
 	const { oldValue, newValue } = response;
 	write(input, newValue);
-	UI.history.save({
+	UI.history!.save({
 		type: 'inspector-change',
 		editor: editor,
 		target: target,
@@ -384,7 +384,7 @@ UI.list.delete = function (this: UIShape, item: UINodeShape) {
 // 列表 - 开关
 UI.list.toggle = function (this: UIShape, item: UINodeShape) {
 	if (item) {
-		UI.history.save({
+		UI.history!.save({
 			type: 'ui-object-toggle',
 			item: item,
 			oldValue: item.enabled,

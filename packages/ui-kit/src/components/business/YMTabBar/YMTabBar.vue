@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { elementDataOf } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
@@ -16,7 +16,8 @@ interface TabHint extends HTMLElement {
 }
 
 interface TabDraggingEvent {
-	hint: TabHint;
+	// close / popup 两条路径没有拖拽提示元素（只有 HTML5 dragstart 会创建），读取前必须判空
+	hint: TabHint | null;
 	target: HTMLElement;
 	offsetX: number;
 	mode?: 'close' | 'popup';
@@ -86,9 +87,10 @@ const tabData = (el: unknown): TabElementData => elementDataOf<TabElementData>(e
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 
-const props = withDefaults(defineProps<Props>(), {
-	updateAppRegion: null as unknown as () => void
-});
+// `updateAppRegion` 是可选 prop：不传时本来就是 undefined（读侧已经是 `props.updateAppRegion?.()`）。
+// 原先用 `withDefaults(..., { updateAppRegion: null as unknown as () => void })` 塞一个 null 默认值，
+// 纯属谎报类型 —— 可选 prop 不需要默认值。
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
 	write: [value: TabItem | undefined];
@@ -327,7 +329,7 @@ const dragend = (): void => {
 	const data = tabBarData(el);
 	if (data.dragging) {
 		removeClass(el, 'dragging');
-		data.dragging.hint.remove();
+		data.dragging.hint?.remove();
 		data.dragging = null;
 		el.removeEventListener('dragenter', dragenter);
 		el.removeEventListener('dragleave', dragleave);
@@ -348,7 +350,7 @@ const pointerdown = (event: PointerEvent): void => {
 				event.preventDefault();
 				const parent = element.parentNode as HTMLElement;
 				const dragging: TabDraggingEvent = {
-					hint: null as unknown as TabHint,
+					hint: null,
 					target: parent,
 					offsetX: event.offsetX,
 					mode: 'close',
@@ -370,7 +372,7 @@ const pointerdown = (event: PointerEvent): void => {
 				const target = event.target as HTMLElement;
 				if (hasClass(target, 'tab-item') || hasClass(target, 'tab-bar')) {
 					const dragging: TabDraggingEvent = {
-						hint: null as unknown as TabHint,
+						hint: null,
 						target,
 						offsetX: event.offsetX,
 						mode: 'popup'
@@ -422,7 +424,7 @@ const dragleave = (event: DragEvent): void => {
 	const data = tabBarData(el);
 	if (data.dragging && !el.contains(event.relatedTarget as Node)) {
 		data.dragging.offsetX = -1;
-		hide(data.dragging.hint);
+		hide(data.dragging.hint!);
 	}
 };
 
@@ -439,7 +441,7 @@ const dragover = (event: DragEvent): void => {
 	}
 	dragging.offsetX = event.offsetX;
 	const element = (event.target as HTMLElement).closest('.tab-item') as HTMLElement | null;
-	const hint = dragging.hint;
+	const hint = dragging.hint!;
 	const hintState = hintData(hint);
 	show(hint);
 	if (element && hasClass(element, 'tab-item')) {
@@ -501,7 +503,7 @@ const drop = (event: DragEvent): void => {
 	const dragging = data.dragging;
 	if (!dragging) return;
 	event.stopPropagation();
-	const hint = dragging.hint;
+	const hint = dragging.hint!;
 	if (!hasClass(hint, 'hidden')) {
 		const items = el.data!;
 		const sItem = tabData(dragging.target).item;

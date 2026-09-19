@@ -120,8 +120,12 @@ interface FileBrowserLinks {
 		scrollToSelection(mode: string): void;
 	};
 	body?: HTMLElement | null;
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	/**
+	 * 视图切换器：`setViewIndex()` 写 `head.view.write(idx)`。
+	 * 由 `YMFileBrowser.setupLinks()` 在初始化时挂上，**在那之前可能为 null**
+	 *（元素还没渲染出来），所以标 `?` 并在唯一读点补 `!`。
+	 */
+	head?: { view: { write(index: number): void } } | null;
 }
 
 type FileBodyIconApi = HTMLElement & {
@@ -411,7 +415,8 @@ function setViewIndex(idx: number): void {
 	if (viewIndex !== idx) {
 		const { head } = props.links;
 		viewIndex = idx;
-		head.view.write(idx);
+		// 能改视图下标说明浏览器的 setupLinks() 早已跑过（head 已挂上）
+		head!.view.write(idx);
 		updateViewMode();
 	}
 }

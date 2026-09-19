@@ -108,7 +108,8 @@ Particle.updateTargetItem = function () {
 };
 
 Particle.updateParticleInfo = function () {
-	const { emitter, info } = this;
+	const { info } = this;
+	const emitter = this.emitter!;
 	const words = Command.words;
 	for (const layer of emitter.layers) {
 		const { name } = layer.data;
@@ -224,11 +225,11 @@ Particle.updateTransform = function () {
 };
 
 Particle.updateElements = function (deltaTime: number) {
-	this.emitter.update(deltaTime * getParticleStore().speed!);
+	this.emitter!.update(deltaTime * getParticleStore().speed!);
 };
 
 Particle.drawElements = function () {
-	for (const layer of this.emitter.layers) {
+	for (const layer of this.emitter!.layers) {
 		if (!layer.data.hidden) layer.draw();
 	}
 };
@@ -289,7 +290,7 @@ Particle.drawCoordinateAxes = function () {
 
 Particle.drawEmitterWireframe = function () {
 	let color;
-	const emitter = this.emitter;
+	const emitter = this.emitter!;
 	if (emitter.active) color = 0xffffffff;
 	if (emitter.selected) color = 0xffc0ff00;
 	if (
@@ -331,7 +332,7 @@ Particle.drawEmitterWireframe = function () {
 };
 
 Particle.drawEmitterAnchor = function () {
-	const emitter = this.emitter;
+	const emitter = this.emitter!;
 	if (!emitter.selected) return;
 	const X = emitter.startX;
 	const Y = emitter.startY;
@@ -432,7 +433,7 @@ Particle.drawElementWireframes = function () {
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix;
 	let vi = 0;
-	for (const layer of this.emitter.layers) {
+	for (const layer of this.emitter!.layers) {
 		if (layer.data.hidden) continue;
 		const { texture } = layer;
 		if (texture instanceof ImageTexture) {
@@ -525,7 +526,7 @@ Particle.drawElementAnchors = function () {
 	const matrix = gl.matrix;
 	let vi = 0;
 	let li = 0;
-	for (const layer of this.emitter.layers) {
+	for (const layer of this.emitter!.layers) {
 		const elements = layer.elements;
 		const count = elements.count;
 		const sw = layer.unitWidth;
@@ -579,7 +580,7 @@ Particle.drawElementAnchors = function () {
 };
 
 Particle.computeOuterRect = function () {
-	const emitter = this.emitter;
+	const emitter = this.emitter!;
 	const sx = emitter.startX;
 	const sy = emitter.startY;
 	const rect = emitter.calculateOuterRect();
@@ -593,7 +594,7 @@ Particle.computeOuterRect = function () {
 };
 
 Particle.selectEmitter = function (x: number, y: number) {
-	const emitter = this.emitter;
+	const emitter = this.emitter!;
 	if (
 		x >= emitter.outerLeft &&
 		y >= emitter.outerTop &&

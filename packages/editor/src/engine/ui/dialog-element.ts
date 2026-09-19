@@ -1,6 +1,6 @@
-import { UI } from '@app/ui/ui-window.ts';
+import { uiElClasses } from './element-classes.ts';
 
-UI.DialogBox = class DialogBoxElement extends UI.Text {
+uiElClasses.DialogBox = class DialogBoxElement extends uiElClasses.Text! {
 	constructor(data: Record<string, unknown>) {
 		super({
 			...data,
