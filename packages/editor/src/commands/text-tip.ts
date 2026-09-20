@@ -9,7 +9,7 @@ import {
 	type TreeListRowApi
 } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { createDetachedElement } from '@app/utils/dom';
@@ -138,7 +138,7 @@ export const textSuggestionEls = createElementRegistry();
 
 export const TextSuggestion: TextSuggestionShape = {
 	list:
-		(textSuggestionEls.get('text-suggestions') as unknown as TextSuggestionList) ??
+		registryElement<TextSuggestionList>(textSuggestionEls, 'text-suggestions') ??
 		createEmptyList(),
 	inserting: false,
 	target: null,

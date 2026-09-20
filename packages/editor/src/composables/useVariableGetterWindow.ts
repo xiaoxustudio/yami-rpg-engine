@@ -9,6 +9,7 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { TextSuggestion, TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { selectBoxSetItemNames } from '@app/components/select-box.ts';
 import type { YamiElement } from '@app/types/element-api';
+import { registryElement } from '@app/utils/element-registry';
 
 type VarTypeItem = { name: string; value: string };
 
@@ -483,16 +484,16 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = composableEls.get('variableGetter-preset-key') as unknown as
-				| (HTMLElement & {
-						selectBox?: HTMLElement & {
-							textContent: string;
-							write(v: unknown): void;
-							read(): unknown;
-							dataItems: VarTypeItem[];
-						};
-				  })
-				| null;
+			const keyBox = registryElement<
+				HTMLElement & {
+					selectBox?: HTMLElement & {
+						textContent: string;
+						write(v: unknown): void;
+						read(): unknown;
+						dataItems: VarTypeItem[];
+					};
+				}
+			>(composableEls, 'variableGetter-preset-key');
 			const selectBox = keyBox?.selectBox ?? null;
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;

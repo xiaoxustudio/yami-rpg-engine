@@ -9,6 +9,7 @@ import { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
+import { registryElement } from '@app/utils/element-registry';
 
 /**
  * P4b：场景选框元素上的 `key`（`'tile' | 'terrain' | 'edit' | …` 的选区种类）是**元素数据**，
@@ -80,12 +81,12 @@ interface TileNodeWindow {
 }
 
 const getCanvas = (): HTMLCanvasElement =>
-	composableEls.get('autoTile-selectNode-canvas') as unknown as HTMLCanvasElement;
+	registryElement<HTMLCanvasElement>(composableEls, 'autoTile-selectNode-canvas')!;
 
 const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as YamiElement;
 
 const getMarquee = (): TileNodeMarquee =>
-	composableEls.get('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
+	registryElement<TileNodeMarquee>(composableEls, 'autoTile-selectNode-marquee')!;
 
 let context: CanvasRenderingContext2D | null = null;
 let dragging: TileNodeDragging | null = null;

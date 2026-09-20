@@ -1,5 +1,6 @@
 import { Window } from '@app/tools/window-object.ts';
 import { localEls } from '@app/local/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -53,11 +54,9 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 	}
 	localEls.get('exportLanguage-first')?.loadItems?.(items);
 	localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
-	const setForm = (
-		localEls.get('exportLanguage') as unknown as
-			| (HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void })
-			| null
-	)?.setForm;
+	const setForm = registryElement<
+		HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void }
+	>(localEls, 'exportLanguage')?.setForm;
 	setForm?.({ first: items[0]?.value ?? '', second: '' });
 };
 
@@ -98,10 +97,9 @@ ExportLanguage.stringifyLanguagePack = function (
 ExportLanguage.confirm = function (this: typeof ExportLanguage, _event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
-	const getForm = (
-		localEls.get('exportLanguage') as unknown as
-			| (HTMLElement & { getForm?: () => ExportLanguageForm })
-			| null
+	const getForm = registryElement<HTMLElement & { getForm?: () => ExportLanguageForm }>(
+		localEls,
+		'exportLanguage'
 	)?.getForm;
 	const { first, second } = getForm?.() ?? ({} as ExportLanguageForm);
 	File.showSaveDialog!({

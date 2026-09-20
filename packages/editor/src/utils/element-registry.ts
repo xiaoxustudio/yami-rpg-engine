@@ -66,3 +66,54 @@ export const registerElement = (registry: ElementRegistry, id: string, el: unkno
  */
 export const registryElements = (registry: ElementRegistry, ids: string[]): YamiElement[] =>
 	ids.map((id) => registry.get(id)).filter((el): el is YamiElement => el instanceof HTMLElement);
+
+/**
+ * 按 id 取一个**具体类型**的句柄 —— 把「收窄」集中在这一处。
+ *
+ * ## 为什么需要它（P4 / `unknown-casts` 收口，2026-09-20）
+ *
+ * 注册表的元素类型是**故意宽的** `YamiElement | null`：登记时（`registryRef`）只知道
+ * 「这是一个来自本仓模板 ref 的元素」，静态上无法表达「这个 id 是 canvas、那个 id 是 marquee」
+ * （id 是字符串、由模板里的 `:ref="registryRef(reg, 'x')"` 决定）。
+ *
+ * 于是每个想把 `get('color-palette-canvas')` 当 `HTMLCanvasElement` 用的调用方，都只能自己
+ * `as unknown as HTMLCanvasElement`。实测**全仓 56 处**都是这个形状 —— 它是
+ * `unknown-casts`（285 处）里最大的一块单一形态。
+ *
+ * ## 这个函数做了什么、没做什么（别读成「类型安全变好了」）
+ *
+ * - **做了**：把 56 处**各自为政、没有理由**的收窄，换成 1 处**具名、有文档、可审计**的收窄。
+ *   想知道「谁在骗类型系统」现在只需要看这一个函数；将来若给注册表换成 id→类型 的映射表，
+ *   也只需要改这一处。
+ * - **没做**：类型系统在这条路径上**依然不受检**。收窄是**必要的**（注册表按 id 存异构元素），
+ *   问题从来不是「要不要断言」，而是「断言散落 56 处、没人复核」。
+ *   ⇒ 所以台账上的 `unknown-casts` 从 56 降到 1 是**如实**的，但**不等于**这 56 个用法变安全了。
+ *
+ * ## 返回值为什么是可空的
+ *
+ * 旧写法 `as unknown as T` 同时撒了两个谎：**类型不对** + **一定存在**。
+ * 这里只保留「类型由调用方指定」这一个约定，**存在性交回类型系统**（返回 `T | null`）。
+ * 因此调用方要写 `registryElement<HTMLCanvasElement>(colorEls, '…')!` 或自己判空 ——
+ * 那个 `!` 是**可见**的，而 `as unknown as` 里的非空假设是**看不见**的。
+ *
+ * ## 为什么 `T` 只约束到 `object`，而不是 `HTMLElement`
+ *
+ * 注册表里存的是元素，但**调用方要的形状不一定是元素**：例如
+ * `commands/text-tip.ts` 要的是 `TextSuggestionList`（`Partial<TreeListRowApi<…>>`，
+ * 一个**方法包**），`composables/useCurveWindow.ts` 要的是 `CurveList` 等同理。
+ * 收窄到 `HTMLElement` 会把这些真实用法挡在门外（实测 1 处），
+ * 而放到 `object` 既允许它们、又仍能挡住 `registryElement<number>(…)` 这类明显的误用。
+ *
+ * ## 用法：**不要把 `| null` 写进尖括号里**
+ *
+ * `T` 只写「存在的那个类型」，可空性由返回值负责。写 `registryElement<BoundList | null>(…)`
+ * 会当场报 `TS2344`（`null` 不满足 `T extends object`）——
+ * 而旧写法 `as unknown as BoundList | null` 里那个 `| null` 是**必须**写的
+ * （因为 `Map.get` 的 `undefined` 要自己补上）。
+ * ⇒ 搬迁时**顺手把 `| null` 删掉**即可，语义完全一致。实测撞到 1 处
+ * （`composables/__tests__/branch-registry.spec.ts`）。
+ */
+export const registryElement = <T extends object>(
+	registry: ElementRegistry,
+	id: string
+): T | null => (registry.get(id) as T | null) ?? null;

@@ -5,6 +5,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { radians } from '@app/utils/math';
+import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface SceneAnimationData {
@@ -185,9 +186,10 @@ import { radians } from '@app/utils/math';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = inspectorEls.get('sceneAnimation-motion') as unknown as
-			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
-			| null;
+		const elMotion = registryElement<HTMLElement & { loadItems?: (items: unknown[]) => void }>(
+			inspectorEls,
+			'sceneAnimation-motion'
+		);
 		const items = Animation.getMotionListItems!(event.value);
 		elMotion?.loadItems?.(items);
 		if (elMotion) {

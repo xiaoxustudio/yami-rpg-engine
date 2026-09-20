@@ -1,6 +1,6 @@
 import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { dataEls } from '@app/data/element-registry';
-import { registryElements } from '@app/utils/element-registry';
+import { registryElements, registryElement } from '@app/utils/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -182,8 +182,8 @@ function ensureDomBound() {
 	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
 	Easing.list = list as unknown as typeof Easing.list;
-	Easing.curve = dataEls.get('easing-curve-canvas') as unknown as EasingCanvasShape;
-	Easing.preview = dataEls.get('easing-preview-canvas') as unknown as EasingCanvasShape;
+	Easing.curve = registryElement<EasingCanvasShape>(dataEls, 'easing-curve-canvas');
+	Easing.preview = registryElement<EasingCanvasShape>(dataEls, 'easing-preview-canvas');
 	list.saveSelection = Easing.list_saveSelection;
 	list.restoreSelection = Easing.list_restoreSelection;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;

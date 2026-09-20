@@ -6,6 +6,7 @@ import SwitchBranch from '@app/components/tools/SwitchBranch.vue';
 import IfCondition from '@app/components/tools/IfCondition.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { composableEls } from '@app/composables/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 
 /**
  * P1b 第 3 刀回归：`components/tools` 的分支/条件表单。
@@ -59,9 +60,7 @@ describe('分支/条件表单注册表（P1b 第 3 刀）', () => {
 	it('SwitchBranch：conditions 列表同样登记并被 bind', async () => {
 		const wrapper = await mountSettle(SwitchBranch);
 
-		const conditions = composableEls.get(
-			'switch-branch-conditions'
-		) as unknown as BoundList | null;
+		const conditions = registryElement<BoundList>(composableEls, 'switch-branch-conditions');
 		expect(conditions?.id).toBe('switch-branch-conditions');
 		expect(conditions).toBe(document.getElementById('switch-branch-conditions'));
 		expect(conditions?.object, 'switch-branch-conditions 未被 bind').toBeTruthy();

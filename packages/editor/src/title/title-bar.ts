@@ -33,6 +33,7 @@ import { NewProject } from './new-project-window.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
 import { remove } from '@app/utils/array';
+import { registryElement } from '@app/utils/element-registry';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -173,7 +174,7 @@ export const Title = {
 
 Title.initialize = function (this: TitleShape) {
 	this.target = windowShellEls.get('title') as YamiElement;
-	this.tabBar = titleEls.get('title-tabBar') as unknown as TitleTabBarShape;
+	this.tabBar = registryElement<TitleTabBarShape>(titleEls, 'title-tabBar')!;
 	if (this.tabBar) this.tabBar.data = [];
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {

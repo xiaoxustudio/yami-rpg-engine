@@ -9,6 +9,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { registryElement } from '@app/utils/element-registry';
 
 // oxlint-disable-next-line no-explicit-any
 export type SetStringOperand = Record<string, any>;
@@ -564,9 +565,10 @@ export function useSetStringCommandSchema() {
 				filter = 'object';
 				break;
 		}
-		const element = composableEls.get('setString-operand-common-variable') as unknown as
-			| (HTMLElement & { filter?: string })
-			| null;
+		const element = registryElement<HTMLElement & { filter?: string }>(
+			composableEls,
+			'setString-operand-common-variable'
+		);
 		if (element) {
 			element.filter = filter;
 		}

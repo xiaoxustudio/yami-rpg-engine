@@ -1,4 +1,4 @@
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
@@ -100,9 +100,10 @@ Command.custom = {
 			setTitle(title: string): void;
 			addEventListener(type: string, listener: (event: Event) => void): void;
 		};
-		this.parameterPane = scriptCommandEls.get(
+		this.parameterPane = registryElement<ParameterPane>(
+			scriptCommandEls,
 			'scriptCommand-parameter-pane'
-		) as unknown as ParameterPane;
+		)!;
 		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as YamiElement;
 
 		if (!this.parameterPane) return;
@@ -118,9 +119,10 @@ Command.custom = {
 			this.windowFrame!.absolute(this.windowX, this.windowY);
 		};
 
-		const box = scriptCommandEls.get(
+		const box = registryElement<ParameterWrapBox>(
+			scriptCommandEls,
 			'scriptCommand-parameter-detail'
-		) as unknown as ParameterWrapBox;
+		)!;
 		const wrap = { box, grid, children: [] } as unknown as ParameterWrap;
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {

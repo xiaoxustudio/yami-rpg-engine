@@ -10,6 +10,7 @@ import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiMouseEvent } from '@app/types/editor-event';
+import { registryElement } from '@app/utils/element-registry';
 
 interface VariableModule {
 	list: YamiElement;
@@ -139,7 +140,7 @@ function ensureDomBound() {
 	Variable.list = list;
 	Variable.panel = variableEls.get('variable-properties-flex') as YamiElement;
 	hide(Variable.panel);
-	Variable.manager = variableEls.get('variable-value-manager') as unknown as PageManagerApi;
+	Variable.manager = registryElement<PageManagerApi>(variableEls, 'variable-value-manager')!;
 	Variable.searcher = variableEls.get('variable-searcher') as YamiElement;
 	Variable.inputs.name = variableEls.get('variable-name') as YamiElement;
 	Variable.inputs.value = variableEls.get('variable-value-box') as YamiElement;

@@ -30,6 +30,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
 import type { YamiElement } from '@app/types/element-api';
+import { registryElement } from '@app/utils/element-registry';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -544,11 +545,9 @@ const open = (
 			otherTeamId = operand.teamId ?? otherTeamId;
 			break;
 	}
-	const setForm = (
-		composableEls.get('setNumber-operand') as unknown as
-			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
-			| null
-	)?.setForm;
+	const setForm = registryElement<
+		HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void }
+	>(composableEls, 'setNumber-operand')?.setForm;
 	setForm?.({
 		operation: operand.operation,
 		operandType: operand.type,
@@ -586,10 +585,9 @@ const open = (
 };
 
 const save = (): unknown => {
-	const getForm = (
-		composableEls.get('setNumber-operand') as unknown as
-			| (HTMLElement & { getForm?: () => NumberOperandForm })
-			| null
+	const getForm = registryElement<HTMLElement & { getForm?: () => NumberOperandForm }>(
+		composableEls,
+		'setNumber-operand'
 	)?.getForm;
 	const form = getForm?.() ?? ({} as NumberOperandForm);
 	const operation = form.operation;

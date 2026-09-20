@@ -2,6 +2,7 @@ import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
 import { UIOwner } from './ui-owner.ts';
+import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface UITextBoxShape {
@@ -151,9 +152,9 @@ import { UIOwner } from './ui-owner.ts';
 					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
-					const numberEl = inspectorEls.get('uiTextBox-number') as unknown as
-						| (NumberBoxHostElement & { input?: Record<string, unknown> })
-						| null;
+					const numberEl = registryElement<
+						NumberBoxHostElement & { input?: Record<string, unknown> }
+					>(inspectorEls, 'uiTextBox-number');
 					if (numberEl?.input) numberEl.input[key] = value;
 				}
 				break;

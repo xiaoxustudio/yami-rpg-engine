@@ -1,5 +1,5 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $ } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/utils/doubleclick';
@@ -78,9 +78,9 @@ function ensureDomBound() {
 	if (!win) return;
 	ImageClip.window = win;
 	ImageClip.screen = imageClipEls.get('imageClip-screen') as YamiElement;
-	ImageClip.image = imageClipEls.get('imageClip-image') as unknown as HTMLImageElement;
+	ImageClip.image = registryElement<HTMLImageElement>(imageClipEls, 'imageClip-image')!;
 	hide(ImageClip.image!);
-	ImageClip.marquee = imageClipEls.get('imageClip-marquee') as unknown as CropMarquee;
+	ImageClip.marquee = registryElement<CropMarquee>(imageClipEls, 'imageClip-marquee')!;
 	hide(ImageClip.marquee!);
 }
 

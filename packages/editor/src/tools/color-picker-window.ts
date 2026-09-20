@@ -1,7 +1,7 @@
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -112,7 +112,7 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 };
 
 Color.drawPalette = function (this: typeof Color) {
-	const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
+	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
 	// P4b: initialized now lives in element data (field removed from DATA_FIELDS)
 	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
 		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
@@ -161,7 +161,7 @@ Color.drawPalette = function (this: typeof Color) {
 
 Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b] = args[0] as [number, number, number];
-	const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
+	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
 	const context = canvas.getContext('2d', { willReadFrequently: true })!;
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
 	gradient.addColorStop(0, `rgba(${r}, ${g}, ${b})`);
@@ -196,7 +196,7 @@ Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 Color.getRGBFromPalette = function (this: typeof Color) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
-	const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
+	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(x, y, 1, 1).data;
 	return [r, g, b];
@@ -204,7 +204,7 @@ Color.getRGBFromPalette = function (this: typeof Color) {
 
 Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
-	const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
+	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(0, y, 1, 1).data;
 	return [r, g, b];
@@ -292,7 +292,7 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement;
+			const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
 			const coords = getRelativeCoords(event, canvas);
 			const x = clamp(coords.x, 0, 255);
 			const y = clamp(coords.y, 0, 193);
@@ -321,7 +321,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = colorEls.get('color-pillar-canvas') as unknown as HTMLCanvasElement;
+			const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
 			const coords = getRelativeCoords(event, canvas);
 			const y = clamp(coords.y, 0, 255);
 			this.setPillarCursor(y);

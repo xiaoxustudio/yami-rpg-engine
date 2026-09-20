@@ -6,6 +6,7 @@ import { getUIStore } from '@app/stores/ui';
 import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { ButtonForm } from '@app/composables/useUIButtonPage';
 import type { YamiEvent } from '@app/types/editor-event';
+import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface UIButtonShape {
@@ -252,10 +253,9 @@ import type { YamiEvent } from '@app/types/editor-event';
 			}
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
-					const form = (
-						inspectorEls.get('uiButton-vue-mount') as unknown as
-							| (HTMLElement & { form?: ButtonForm })
-							| null
+					const form = registryElement<HTMLElement & { form?: ButtonForm }>(
+						inspectorEls,
+						'uiButton-vue-mount'
 					)?.form;
 					const textEffect: Record<string, unknown> = { type: value };
 					switch (value) {

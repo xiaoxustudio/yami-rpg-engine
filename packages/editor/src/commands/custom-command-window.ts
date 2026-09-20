@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
@@ -183,16 +183,19 @@ function ensureDomBound() {
 	const list = customCommandEls.get('command-list');
 	if (!list) return;
 	CustomCommand.list = list as unknown as CustomCommandList;
-	CustomCommand.overviewPane = customCommandEls.get(
+	CustomCommand.overviewPane = registryElement<CustomCommandShape['overviewPane']>(
+		customCommandEls,
 		'command-overview-detail'
-	) as unknown as CustomCommandShape['overviewPane'];
+	)!;
 	hide(CustomCommand.overviewPane);
-	CustomCommand.overview = customCommandEls.get(
+	CustomCommand.overview = registryElement<CustomCommandShape['overview']>(
+		customCommandEls,
 		'command-overview'
-	) as unknown as CustomCommandShape['overview'];
-	CustomCommand.settingsPane = customCommandEls.get(
+	)!;
+	CustomCommand.settingsPane = registryElement<CustomCommandShape['settingsPane']>(
+		customCommandEls,
 		'command-settings-detail'
-	) as unknown as CustomCommandShape['settingsPane'];
+	)!;
 	hide(CustomCommand.settingsPane);
 	// 注：这里原本先把 insert/toggle/copy/paste/saveSelection/restoreSelection 六个成员
 	// 写成 `null as unknown as (...args) => void`，紧接着在同一个函数里（下面 6 行）

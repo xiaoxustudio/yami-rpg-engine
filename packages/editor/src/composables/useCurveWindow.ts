@@ -8,6 +8,7 @@ import { Easing } from '@app/data/transition-window.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import type { YamiEvent } from '@app/types/editor-event';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
+import { registryElement } from '@app/utils/element-registry';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
 
@@ -82,8 +83,8 @@ let curveMap: CurveMapInstance | null = null;
 const initialize = (): void => {
 	page = animationEls.get('animation-easing') ?? null;
 	head = animationEls.get('animation-easing-head') ?? null;
-	list = animationEls.get('animation-easing-id') as unknown as CurveList;
-	canvas = animationEls.get('animation-easing-canvas') as unknown as CurveCanvas;
+	list = registryElement<CurveList>(animationEls, 'animation-easing-id')!;
+	canvas = registryElement<CurveCanvas>(animationEls, 'animation-easing-canvas')!;
 	hide(page);
 	hide(list);
 

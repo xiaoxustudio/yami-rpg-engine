@@ -34,6 +34,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { requestFocus } from '@app/directives/focus';
+import { registryElement } from '@app/utils/element-registry';
 
 export interface IfConditionTarget {
 	save: () => unknown;
@@ -178,9 +179,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			break;
 	}
 	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-	(composableEls.get('if-condition-common-variable') as unknown as CustomBoxApi).filter = filter1;
-	(composableEls.get('if-condition-operand-variable') as unknown as CustomBoxApi).filter =
-		filter2;
+	registryElement<CustomBoxApi>(composableEls, 'if-condition-common-variable')!.filter = filter1;
+	registryElement<CustomBoxApi>(composableEls, 'if-condition-operand-variable')!.filter = filter2;
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {
@@ -567,11 +567,9 @@ const open = (
 			otherKey = condition.key;
 			break;
 	}
-	const setForm = (
-		composableEls.get('if-condition') as unknown as
-			| (HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void })
-			| null
-	)?.setForm;
+	const setForm = registryElement<
+		HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void }
+	>(composableEls, 'if-condition')?.setForm;
 	setForm?.({
 		type: condition.type,
 		commonVariable,
@@ -619,10 +617,9 @@ const open = (
 };
 
 const save = (): unknown => {
-	const getForm = (
-		composableEls.get('if-condition') as unknown as
-			| (HTMLElement & { getForm?: () => IfConditionForm })
-			| null
+	const getForm = registryElement<HTMLElement & { getForm?: () => IfConditionForm }>(
+		composableEls,
+		'if-condition'
 	)?.getForm;
 	const form = getForm?.() ?? ({} as IfConditionForm);
 	const type = form.type;

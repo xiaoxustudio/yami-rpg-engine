@@ -9,7 +9,7 @@ import {
 	type TreeListRowApi
 } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import {
@@ -149,12 +149,14 @@ function ensureDomBound() {
 	const widget = commandSuggestionEls.get('command-widget');
 	if (!widget) return;
 	CommandSuggestion.widget = widget as unknown as CommandSuggestionWidget;
-	CommandSuggestion.searcher = commandSuggestionEls.get(
+	CommandSuggestion.searcher = registryElement<CommandSuggestionSearcher>(
+		commandSuggestionEls,
 		'command-searcher'
-	) as unknown as CommandSuggestionSearcher;
-	CommandSuggestion.list = commandSuggestionEls.get(
+	)!;
+	CommandSuggestion.list = registryElement<HTMLElement & CommandSuggestionList>(
+		commandSuggestionEls,
 		'command-suggestions'
-	) as unknown as HTMLElement & CommandSuggestionList;
+	)!;
 	bindListMethods();
 }
 

@@ -6,6 +6,7 @@ import { getUIStore } from '@app/stores/ui';
 import { UIOwner } from './ui-owner.ts';
 import type { TextForm } from '@app/composables/useUITextPage';
 import type { YamiEvent } from '@app/types/editor-event';
+import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface UITextShape {
@@ -182,10 +183,9 @@ import type { YamiEvent } from '@app/types/editor-event';
 			}
 			case 'effect-type':
 				if (node.effect.type !== value) {
-					const form = (
-						inspectorEls.get('uiText-vue-mount') as unknown as
-							| (HTMLElement & { form?: TextForm })
-							| null
+					const form = registryElement<HTMLElement & { form?: TextForm }>(
+						inspectorEls,
+						'uiText-vue-mount'
 					)?.form;
 					const effect: Record<string, unknown> = { type: value };
 					switch (value) {

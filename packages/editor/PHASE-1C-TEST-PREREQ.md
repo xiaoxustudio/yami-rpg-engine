@@ -1596,6 +1596,250 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 73 轮（续轮）：`unknown-casts` 250 → 242 —— 多行 `.get(` 形态 9 处
+
+### 形状 A：调用本身跨行，类型单行
+
+```ts
+CustomCommand.overview = customCommandEls.get(
+	'command-overview'
+) as unknown as CustomCommandShape['overview'];
+```
+→ `registryElement<CustomCommandShape['overview']>(customCommandEls, 'command-overview')`
+
+一次改掉 **9 处**（`custom-command-window.ts` 3 · `command-custom.ts` 2 · `command-tip.ts` 2 ·
+`event-editor-initialize.ts` 1 · `branch-registry.spec.ts` 1[不计台账]）。
+
+### 又一批「谎言浮出水面」：4 处必须补 `!`
+
+`custom-command-window.ts` 2 · `event-editor-initialize.ts` 1 · `command-tip.ts` 2
+（另有 1 处**下游**使用因收窄而报 `'box' is possibly 'null'`）。
+这些站点的旧写法把「元素一定在」与「类型是 T」捆在一个 `as unknown as` 里；
+拆开之后，**非空假设必须显式写出来**。
+
+累计至今：**单行 13 处里 11 处要 `!`；带 `| null` 的 13 处里 0 处要 `!`；
+本批 9 处里 4 处要 `!`。** 三个数字合起来说明一件事 ——
+**`!` 的多少完全取决于旧代码有没有把 `| null` 写出来，而不是取决于改动方式。**
+
+### 新增一条 helper 用法规则（实测撞出来的）
+
+**不要把 `| null` 写进尖括号里。** `registryElement<BoundList | null>(…)` 会报 `TS2344`
+（`null` 不满足 `T extends object`）；而旧写法 `as unknown as BoundList | null` 里那个 `| null`
+是**必须**写的（要自己补上 `Map.get` 的 `undefined`）。⇒ 搬迁时**顺手删掉**即可，语义一致。
+这条已写进 `element-registry.ts` 的 JSDoc。
+
+### 验证（本轮）
+
+- `unknown-casts` **250 → 242 处**（计入台账 −8，另 1 处在 spec 内）
+- `tsc` 0 · `lint` 0-0 · `typecheck:vue` 0 新增 · `migration:selftest` 38/38
+- editor 252 文件 / 2056 通过（exit 0，无 flake）；ui-kit 811 通过
+
+### 剩余：形状 B —— 类型跨行的 8 处
+
+`command-custom.ts` 1（`windowFrame`）· `file-event-page.ts` 2 · `SetNumberOperand.vue` 2 ·
+`scene-window.ts` 1 · `particle-window.ts` 1 · `sprite.ts` 1 · `Reference.vue` 1。
+这 8 处的类型**从 `as unknown as` 那一行开始跨行**（`HTMLElement & { … }` 多行书写），
+需要把整块类型搬进 `<>` 并找到类型的结束位置 —— **人工活，不再交给正则**
+（第 72 轮已经证明「找结尾的朴素循环」会截断含 `)` 的类型）。
+
+## 第 72 轮（续轮）：`unknown-casts` 263 → 250 —— `| (T) | null` 家族 13 处，**零 `!`**
+
+### 这一族为什么最便宜
+
+`Registry.get` 返回 `| undefined`，所以旧代码在**该诚实的地方**不得不写出 `| null`：
+
+```ts
+X.get('id') as unknown as
+	| (HTMLElement & { form?: TextForm })
+	| null
+```
+
+而这个形状与 `registryElement<T>()` 的 **`T | null` 完全对齐** ⇒ 改完**一个 `!` 都不用加**：
+
+```ts
+registryElement<HTMLElement & { form?: TextForm }>(inspectorEls, 'uiText-vue-mount')
+```
+
+本轮一次改掉 **13 处 / 10 个文件**（`inspector/` 的 6 个 `*-vue-mount` 页、`useIfConditionSchema` 2、
+`useNumberOperandSchema` 2、`useSetStringCommandSchema` 1、`useVariableGetterWindow` 1、
+`scene-animation-page.ts` 1）。其中 `useVariableGetterWindow.ts:486` 的类型里还嵌着两级对象
+（`selectBox?: HTMLElement & { … }`），跨行照原样压成单行后依然通过 —— 因为 `<>` 里放的是**类型**，
+换行与缩进不影响语义。
+
+> 与第 71 轮那 13 处对照：那一批是**单行**站点，11/13 必须补 `!`；
+> 这一批是**多行且带 `| null`** 的站点，0/13 需要 `!`。
+> **`!` 的数量不是风格差异，而是旧代码「有没有承认可能为空」的直接读数。**
+
+### ⚠️ 同一族里又踩了两次「仪器不精确」（第 5、6 次）
+
+| 轮次 | 仪器 | 错在哪 |
+| --- | --- | --- |
+| 第 70 轮 | 行式 `grep 'Els\.get\([^)]*\)\s*as unknown as'` | **ripgrep 按行匹配，`\s*` 跨不了行** ⇒ `.get('x')` 与 `as unknown as` 分行写的站点**全部漏掉**。所以「56 处」是**低估** |
+| 第 72 轮 | 自写的分类脚本 | 用「往下找第一个以 `;` 或 `)` 结尾的行」来判定类型块结尾 ⇒ 类型里**含 `)`** 的（如 `{ setForm?: (data: X) => void }`）**当场截断**，于是把绝大多数 `| null` 站点误判成「不以 `| null` 结尾」 |
+
+**两次都指向同一条**：**多行形态不能用行式工具，也不能用「找结尾」的朴素循环去量。**
+本轮最后改用**跨行正则**（`\.get\(([^)]*)\)\s*as unknown as`，`\s` 显式跨行）才拿到准数：
+
+```
+全部站点       31 处
+  其中 spec 内 14 处（不计入台账）
+  计入台账     17 处，分布在 10 个文件
+```
+
+⇒ 加上本轮已改的 13 处与前面各轮，这个形态的真实总量在 **60+**，比第 70 轮报的 56 更大。
+**「打印命中集合、并用已知会命中的样例反证」这条（第 69 轮定下）在这里第二次救了场** ——
+这次是靠「打印每个文件的计数」看出 `inspector/` 明明有 6 个 `vue-mount` 却只报 1 处。
+
+### 验证（本轮）
+
+- `unknown-casts` **263 → 250 处 / 129 → 121 文件**；`any-hatches` 52 未动
+- `tsc` 0 · `lint` 0-0 · `typecheck:vue` 0 新增 · `migration:selftest` 38/38
+- editor 252 文件 / 2056 通过（exit 0，本轮无 flake）；ui-kit 811 通过
+- 语义不变：旧写法本来就写了 `| null`，新的 `T | null` 语义一致
+
+### 剩余（下一轮）
+
+**计入台账的 17 处**，按文件：`command-custom.ts` 3 · `custom-command-window.ts` 3 ·
+`file-event-page.ts` 2 · `SetNumberOperand.vue` 2 · `command-tip.ts` 2 · `scene-window.ts` 1 ·
+`particle-window.ts` 1 · `sprite.ts` 1 · `Reference.vue` 1 · `event-editor-initialize.ts` 1。
+另有 **14 处在 spec 内**（不影响台账，可顺手改）。
+
+## 第 71 轮（续轮）：`unknown-casts` 279 → 266 —— 注册表形态第一批 13 处（单行站点）
+
+承接第 70 轮定型的 `registryElement<T>()`，本轮把**单行形态**的 13 处一次改完
+（7 个文件：`variable.ts` · `text-tip.ts` · `transition-window.ts` ×2 · `image-crop-window.ts` ×2 ·
+`title-bar.ts` · `useCurveWindow.ts` ×2 · `useIfConditionSchema.ts` ×2 · `useTileNodeWindow.ts` ×2）。
+
+### 顺带修掉 helper 的一个过窄约束（实测撞出来的）
+
+第 70 轮把 `T` 约束成 `extends HTMLElement`。本轮 `text-tip.ts` 立刻报
+**TS2344**：`TextSuggestionList does not satisfy the constraint 'HTMLElement'` ——
+因为注册表里虽然存的是元素，但**调用方要的形状不一定是元素**：
+`TextSuggestionList extends Partial<TreeListRowApi<…>>` 是个**方法包**，
+`CurveList` 同理。⇒ 约束放宽到 `extends object`（仍能挡住
+`registryElement<number>(…)` 这类明显误用）。**这条只有真改一遍才会暴露**，
+与第 65/69 轮那两次「数字看起来合理所以没怀疑」正好相反：这次是**编译期**替我把关。
+
+### 一个如实的数据：13 处里有 **11 处**必须补 `!`
+
+说明这 11 个站点的旧写法 `as unknown as T` **同时在两个维度撒谎**：类型不对 **且** 谎称非空。
+现在类型由调用方指定、存在性交回类型系统，于是那 11 个 `!` 全部**浮到表面上**。
+剩下 2 处（`transition-window.ts` 的 `Easing.curve` / `Easing.preview`）目标本来就是可空，
+所以**一个 `!` 都不用加** —— 这也反过来印证了返回可空是**如实**的。
+
+### 做法（可复核）
+
+用一个只处理**单行**形态的 codemod（`X.get('id') as unknown as T`，类型段禁止跨行、
+禁止吃到 `)` / `;`），**逐站点打印改了什么**（本仓规矩：只报计数的批量脚本不可信）。
+多行站点（类型跨行，约 30 处）**故意不交给正则** —— 需要把类型搬进 `<>`
+并找到类型的结束位置，属人工活，留下一轮。
+
+新增 import 的处理也自动化了：已有 `@app/utils/element-registry` 的并入该行，
+否则插在最后一条 import 之后（7 个文件全部核对过）。
+
+### 多行形态也拿下 3 处（同轮第二批）
+
+多行站点里有一类**极整齐**的形状 —— 因为 `Registry.get` 返回 `| undefined`，旧代码不得不把
+`| null` 写出来：
+
+```ts
+const setForm = (
+	sceneEls.get('scene-shift') as unknown as
+		| (HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void })
+		| null
+)?.setForm;
+```
+
+⇒ 这个 `| (T) | null` 与 `registryElement<T>()` 的 `T | null` **完全对齐**，
+所以改完**一个 `!` 都不用加**：
+
+```ts
+const setForm = (
+	registryElement<HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }>(
+		sceneEls,
+		'scene-shift'
+	)
+)?.setForm;
+```
+
+已改 3 处：`scene/move-scene.ts`（1）· `local/export-language-window.ts`（2）。
+**这是「多行形态」里最好啃的一类**，下一轮优先按这个形状筛（同样的 `| (T) | null` 结尾）。
+
+### 验证（本轮）
+
+- `unknown-casts` **279 → 279 − 13 − 3 = 263 处 / 135 → 129 文件**；`any-hatches` 52 未动
+- `tsc` 0 · `lint` 0-0 · `typecheck:vue` 0 新增 · `migration:selftest` 38/38
+- editor 252 文件 / 2056 通过（exit 0）；ui-kit 811 通过
+- 语义不变：旧写法在元素未登记时同样抛错，新增的 `!` 行为一致
+
+### 剩余（下一轮直接接）
+
+**多行形态约 30 处**，集中在：`YMFileBrowser.vue` 13 · `eslints.ts` 12 · `command-api.ts` 9 ·
+`tree-api.ts` 8 · `command-custom.ts` 7 · `custom-command-window.ts` 7 · `layout.ts` 6 ·
+`tile-frame-index.ts` 6 · `printer.ts` 6 · `scene-window.ts` 6 · `particle-window.ts` 5 ·
+`element-base.ts` 2 …（含 `SetNumberOperand.vue` 与 `branch-registry.spec.ts` 的
+`as unknown as unknown as` 双写形态）。其中 spec 里的 9 处不影响台账。
+
+## 第 70 轮（续轮）：`unknown-casts` 285 → 279 —— 开始 P4，找到最大的**单一形态**（56 处）
+
+第 69 轮更正了「哪些字段真有类型」的真相后，`Scene*` 剩余几处都归入「先动核」。
+本轮转向**此前一直没碰过的 P4**（`unknown-casts` 285 处 / 135 文件），先找有没有**可复用的形态**。
+
+### 找到的形态：注册表查找 `xxxEls.get(id) as unknown as T`（56 处）
+
+`grep 'Els\.get\([^)]*\)\s*as unknown as'` 实测 **56 处**，是 285 里最大的一块单一形态。
+根因是**注册表的类型故意宽**：`ElementRegistry = Map<string, YamiElement | null>` ——
+登记时（`registryRef`）只知道「这是来自本仓模板 ref 的元素」，
+静态上**无法表达**「这个 id 是 canvas、那个 id 是 marquee」（id 是字符串，由模板里的
+`:ref="registryRef(reg, 'x')"` 决定）。
+
+⇒ 收窄是**必要的**。问题从来不是「要不要断言」，而是**断言散落 56 处、各自没有理由**。
+
+### 做法：把收窄集中到 `registryElement<T>()` 一处
+
+```ts
+export const registryElement = <T extends HTMLElement>(
+	registry: ElementRegistry,
+	id: string
+): T | null => (registry.get(id) as T | null) ?? null;
+```
+
+- 调用方从 `colorEls.get('color-palette-canvas') as unknown as HTMLCanvasElement`
+  改成 `registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!`；
+- **返回值故意是可空的**：旧写法 `as unknown as T` 同时撒了两个谎（**类型不对** + **一定存在**），
+  这里只保留「类型由调用方指定」这一个约定，**存在性交回类型系统**。
+  于是调用方那个 `!` 是**可见**的，而 `as unknown as` 里的非空假设是**看不见**的。
+
+> ### ⚠️ 别把这个读成「类型安全变好了」
+>
+> 类型系统在这条路径上**依然不受检**。本轮把**56 处各自为政的收窄**换成了
+> **1 处具名、有文档、可审计的收窄**。台账上 `unknown-casts` 从 56 降到 1 是**如实**的，
+> 但这 56 个用法**并没有变安全**。
+>
+> 收益是真实的但属于**可维护性**：① 想知道「谁在骗类型系统」只需看这一个函数；
+> ② 将来若给注册表换成 id→类型 的映射表，只需改这一处；
+> ③ review 时那 56 个站点不再是噪音。
+>
+> 这与第 69 轮记的「别把轴数字当作类型安全程度的读数」是同一条纪律。
+
+### 本轮只做了 1 个文件（6 处），**剩余 50 处待做**
+
+已迁移：`tools/color-picker-window.ts`（6 处，全是 `colorEls` 的 canvas 查找）。
+**剩余 50 处**分布（按文件计数，供下一轮机械推进）：
+
+`YMFileBrowser.vue` 13（含 6 个 `registryElement` 形态）· `eslints.ts` 12 · `command-api.ts` 9 ·
+`tree-api.ts` 8 · `command-custom.ts` 7 · `custom-command-window.ts` 7 ·
+`layout.ts` 6 · `tile-frame-index.ts` 6 · `printer.ts` 6 · …
+其中**测试文件里的 9 处**（`*-registry.spec.ts` 等）不影响台账（`.spec.ts` 被 `EXCLUDE_RE` 排除），
+可顺手改但**没有轴收益**。
+
+### 验证（本轮）
+
+- `unknown-casts` **285 → 279 处**（−6）；`any-hatches` 52 未动
+- `tsc` 0 · `lint` 0-0 · `typecheck:vue` 0 新增 · `migration:selftest` 38/38
+- editor 252 文件 / 2056 通过；ui-kit 811 通过
+- 语义不变：旧写法在元素未登记时也是抛错，新的 `!` 行为一致
+
 ## 第 69 轮（续轮）：**自查并更正第 68 轮的两处过度声称** —— 一个关于「仪器自证」的收束
 
 本轮没有推进任何轴。原计划是照第 68 轮的结论直接做 `scene-camera-engine`，

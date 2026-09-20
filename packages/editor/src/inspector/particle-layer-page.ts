@@ -3,6 +3,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import type { ParticleForm } from '@app/composables/useParticleLayerPage';
+import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface ParticleLayerShape {
@@ -169,10 +170,9 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete area.width;
 					delete area.height;
 					delete area.radius;
-					const form = (
-						inspectorEls.get('particleLayer-vue-mount') as unknown as
-							| (HTMLElement & { form?: ParticleForm })
-							| null
+					const form = registryElement<HTMLElement & { form?: ParticleForm }>(
+						inspectorEls,
+						'particleLayer-vue-mount'
 					)?.form;
 					switch (value) {
 						case 'point':
@@ -287,10 +287,9 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete color.endMin;
 					delete color.endMax;
 					delete color.tint;
-					const form = (
-						inspectorEls.get('particleLayer-vue-mount') as unknown as
-							| (HTMLElement & { form?: ParticleForm })
-							| null
+					const form = registryElement<HTMLElement & { form?: ParticleForm }>(
+						inspectorEls,
+						'particleLayer-vue-mount'
 					)?.form;
 					switch (value) {
 						case 'fixed':

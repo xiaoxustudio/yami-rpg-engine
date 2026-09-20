@@ -7,7 +7,7 @@ import type {
 	EventListItem
 } from './event-editor.ts';
 import { getListConfig, treeRowCount, treeRowItemAt } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
 import { getElementData } from '@app/utils/element-data';
@@ -28,9 +28,10 @@ function ensureDomBound() {
 	const list = eventEditorEls.get('event-open-list');
 	if (!list) return;
 	EventEditor.list = list as unknown as HTMLElement & EventEditorList;
-	EventEditor.commandList = eventEditorEls.get(
+	EventEditor.commandList = registryElement<EventCommandListShape>(
+		eventEditorEls,
 		'event-commands'
-	) as unknown as EventCommandListShape;
+	)!;
 	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
