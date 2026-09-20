@@ -1078,7 +1078,7 @@ import { titleEls } from '@app/title/element-registry';
 import { particleEls } from '@app/particle/element-registry';
 import { engineEls } from '@app/engine/element-registry';
 import { composableEls } from '@app/composables/element-registry';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
 import { animationEls } from '@app/animation/element-registry';

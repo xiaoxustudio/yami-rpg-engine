@@ -27,6 +27,7 @@ import {
 	ROOT
 } from './scan.mjs';
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
+import { uiWindowRel } from './ui-slots.mjs';
 
 // ---------------------------------------------------------------------------
 // 极简测试框架（够用就好：一个用例 = 一个函数 + 一句断言）
@@ -414,7 +415,15 @@ test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () =
 	// 这 21 行不是「间接层」而是 **this 绑定**：UIEngine 的方法内部会用 `this.planToSave` 等，
 	// 所以 UI 对象必须以接收者身份调用它们。若某个名字在 UIEngine 上不存在，
 	// 这行会把 UI 槽位置成 undefined —— 而 UIShape 的 `[k: string]: any` 不会报错。
-	const winSrc = readSource(join(ROOT, 'packages/editor/src/ui/ui-window.ts'));
+	//
+	// ⚠️ 路径必须走 `uiWindowRel()`，**不要写死** `packages/editor/src/ui/ui-window.ts`。
+	// 2026-09-20 的 P5-B 纯移动把整个 `src/ui/` 搬到 `src/engine/ui/legacy/` 之后，
+	// 写死路径的版本读不到任何赋值，本用例当场红 —— 而且这条门禁当时**没被复跑**
+	// （`migration:check` 是绿的，红的只有 `migration:selftest`），
+	// 正是「挪了目录，仪器跟着瞎」的又一次实例。仪器只维护一份。
+	const winRel = uiWindowRel();
+	ok(winRel !== null, '找不到 UI 单例对象字面量所在文件（uiWindowRel() 返回 null）');
+	const winSrc = readSource(join(ROOT, winRel));
 	const engineSrc = readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'));
 	const assigned = [
 		...winSrc.matchAll(/^UI\.([A-Za-z_$][\w$]*)\s*=\s*UIEngine\.([A-Za-z_$][\w$]*);/gm)

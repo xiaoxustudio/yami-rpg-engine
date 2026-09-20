@@ -1,7 +1,7 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { windowShellEls } from '@app/tools/window-object.ts';
 import { titleEls } from '@app/title/element-registry';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';

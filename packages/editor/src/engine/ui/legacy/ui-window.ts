@@ -1,5 +1,5 @@
 import { elementDataOf } from '@ui-kit';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';

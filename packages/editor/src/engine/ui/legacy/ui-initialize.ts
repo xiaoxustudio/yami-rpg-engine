@@ -1,6 +1,6 @@
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { UI } from './ui-window.ts';
 import type { UIShape, UINodeShape, UIControlPoints } from './ui-window.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';

@@ -1,15 +1,105 @@
 import { Data } from '@app/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Palette } from '@app/palette/palette.ts';
-import { Scene } from '@app/scene/scene-window.ts';
-
-// oxlint-disable-next-line no-explicit-any
-export const SceneEditEngine: Record<string, any> = {};
+// 只留**类型**导入：本文件此前 `import { Scene }` 唯一的用途就是写 `this: typeof Scene`，
+// 改成本地 `SceneEditThis` 之后运行时依赖随之消失（`import type` 会被完全擦除）。
+import type { SceneShape } from '@app/scene/scene-window.ts';
 
 type TileBuffer = Uint32Array & { width: number; height: number; rowOffset: number };
 type TerrainBuffer = Uint8Array & { width: number; height: number; rowOffset: number };
+
+/**
+ * `SceneEditEngine` 各成员**实际读到**的 `this` 面。
+ *
+ * **口径收紧（2026-09-20，`any-hatches` 收口）**：此前是 `Record<string, any>`，
+ * 于是 `scene-edit.ts` 里那 12 行**逐条镜像**（`Scene.edit = SceneEditEngine.edit;`）
+ * **拼错也不报错** —— 会静默给 `Scene` 挂个 `undefined`，直到运行时点画笔才炸。
+ *
+ * 做法：`Pick<SceneShape, …>` **直接复用 `SceneShape` 上已有的声明**，只列出本文件真正
+ * 读到的成员，不手抄签名。与同目录 `SceneSelectionThis` / 已落地的 `SceneAnimateThis`
+ * 同一手法；那两处是手写窄类型，这里因为字段**基本都已在 `SceneShape` 声明**（21/22）
+ * 才可以直接 Pick。
+ *
+ * ⚠️ 两个字段必须就地补：
+ * - `layer`：`SceneShape` 上**没有**声明（一直靠 `[k: string]: any` 兜着）；
+ * - `tilemap`：`SceneShape` 声明为 `unknown`（它是「场景或瓦片地图」的联合，故意没收）。
+ *   本文件只把它当 `context` 读 `width` / `height`，故就地收窄到这两个成员。
+ */
+type SceneEditThis = Pick<
+	SceneShape,
+	| 'brush'
+	| 'editInFillMode'
+	| 'editInOvalMode'
+	| 'editInPencilMode'
+	| 'editInRectMode'
+	| 'getNewTilesetIndex'
+	| 'height'
+	| 'marquee'
+	| 'patternOriginX'
+	| 'patternOriginY'
+	| 'planToSave'
+	| 'recordMapData'
+	| 'requestRendering'
+	| 'restoreMapData'
+	| 'setTerrain'
+	| 'setTile'
+	| 'setTileFrame'
+	| 'shiftKey'
+	| 'terrains'
+	| 'tilemap'
+	| 'width'
+> & {
+	/** `SceneShape` 未声明（见上） */
+	layer: string;
+	/** 就地收窄 `unknown`（见上） */
+	tilemap: { width: number; height: number } | null;
+};
+
+type SceneEditEngineShape = {
+	edit: (this: SceneEditThis, x: number, y: number, width: number, height: number) => void;
+	editInPencilMode: (
+		this: SceneEditThis,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	editInRectMode: (
+		this: SceneEditThis,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	editInOvalMode: (
+		this: SceneEditThis,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	editInFillMode: (this: SceneEditThis, x: number, y: number) => void;
+	setTile: (
+		this: SceneEditThis,
+		sTiles: TileBuffer,
+		sx: number,
+		sy: number,
+		dx: number,
+		dy: number
+	) => void;
+	setTileFrame: (this: SceneEditThis, x: number, y: number) => void;
+	setTerrain: (this: SceneEditThis, x: number, y: number) => void;
+	createTiles: (this: SceneEditThis, width: number, height: number) => TileBuffer;
+	cloneTiles: (this: SceneEditThis, sTiles: TileBuffer) => TileBuffer;
+	createTerrains: (this: SceneEditThis, width: number, height: number) => TerrainBuffer;
+	getNewTilesetIndex: (this: SceneEditThis, tilesetMap: Record<string, string>) => number;
+};
+
+/** `Partial<>` 是**如实描述**：对象在下面按域挂载，`{}` 时确实一个成员都没有。 */
+export const SceneEditEngine: Partial<SceneEditEngineShape> = {};
+
 SceneEditEngine.edit = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	x: number,
 	y: number,
 	width: number,
@@ -37,7 +127,7 @@ SceneEditEngine.edit = function (
 };
 
 SceneEditEngine.editInPencilMode = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	x: number,
 	y: number,
 	width: number,
@@ -80,7 +170,7 @@ SceneEditEngine.editInPencilMode = function (
 };
 
 SceneEditEngine.editInRectMode = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	x: number,
 	y: number,
 	width: number,
@@ -131,7 +221,7 @@ SceneEditEngine.editInRectMode = function (
 };
 
 SceneEditEngine.editInOvalMode = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	x: number,
 	y: number,
 	width: number,
@@ -228,7 +318,7 @@ SceneEditEngine.editInOvalMode = function (
 	}
 };
 
-SceneEditEngine.editInFillMode = function (this: typeof Scene, x: number, y: number) {
+SceneEditEngine.editInFillMode = function (this: SceneEditThis, x: number, y: number) {
 	let mapData: Uint32Array = new Uint32Array(0),
 		mapWidth: number = 0,
 		mapHeight: number = 0,
@@ -412,7 +502,7 @@ SceneEditEngine.editInFillMode = function (this: typeof Scene, x: number, y: num
 };
 
 SceneEditEngine.setTile = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	sTiles: TileBuffer,
 	sx: number,
 	sy: number,
@@ -456,7 +546,7 @@ SceneEditEngine.setTile = function (
 	}
 };
 
-SceneEditEngine.setTileFrame = function (this: typeof Scene, x: number, y: number) {
+SceneEditEngine.setTileFrame = function (this: SceneEditThis, x: number, y: number) {
 	const tilemap = this.tilemap;
 	const width = tilemap.width;
 	const height = tilemap.height;
@@ -528,7 +618,7 @@ SceneEditEngine.setTileFrame = function (this: typeof Scene, x: number, y: numbe
 	}
 };
 
-SceneEditEngine.setTerrain = function (this: typeof Scene, x: number, y: number) {
+SceneEditEngine.setTerrain = function (this: SceneEditThis, x: number, y: number) {
 	const terrain = this.marquee.terrain;
 	const terrains = this.terrains;
 	const ro = terrains.rowOffset;
@@ -537,7 +627,7 @@ SceneEditEngine.setTerrain = function (this: typeof Scene, x: number, y: number)
 	terrains[pi] = terrain;
 };
 
-SceneEditEngine.createTiles = function (this: typeof Scene, width: number, height: number) {
+SceneEditEngine.createTiles = function (this: SceneEditThis, width: number, height: number) {
 	const tiles: TileBuffer = new Uint32Array(width * height) as TileBuffer;
 	tiles.width = width;
 	tiles.height = height;
@@ -545,7 +635,7 @@ SceneEditEngine.createTiles = function (this: typeof Scene, width: number, heigh
 	return tiles;
 };
 
-SceneEditEngine.cloneTiles = function (this: typeof Scene, sTiles: TileBuffer) {
+SceneEditEngine.cloneTiles = function (this: SceneEditThis, sTiles: TileBuffer) {
 	const dTiles: TileBuffer = new Uint32Array(sTiles) as TileBuffer;
 	dTiles.width = sTiles.width;
 	dTiles.height = sTiles.height;
@@ -553,14 +643,14 @@ SceneEditEngine.cloneTiles = function (this: typeof Scene, sTiles: TileBuffer) {
 	return dTiles;
 };
 
-SceneEditEngine.createTerrains = function (this: typeof Scene, width: number, height: number) {
+SceneEditEngine.createTerrains = function (this: SceneEditThis, width: number, height: number) {
 	const terrains: TerrainBuffer = new Uint8Array(width * height) as TerrainBuffer;
 	terrains.rowOffset = width;
 	return terrains;
 };
 
 SceneEditEngine.getNewTilesetIndex = function (
-	this: typeof Scene,
+	this: SceneEditThis,
 	tilesetMap: Record<string, string>
 ) {
 	for (let i = 1; i < 256; i++) {

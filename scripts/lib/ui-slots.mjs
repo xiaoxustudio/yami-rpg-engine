@@ -64,8 +64,12 @@ export function uiWindowRel() {
  *
  * 取舍：同目录里若混进非家族文件，它们的 `this.x = ` 也会被算进来 ⇒ `assigned` 偏大 ⇒
  * 告警**偏少**（保守方向，与文件头部对 `uiElClasses` 的取舍一致）。
+ *
+ * **导出**：`self-test.mjs` / `audit-ui-slots.mjs` 都用它，别在各自文件里再抄一份写死的
+ * `^packages/editor/src/ui/` —— 2026-09-20 的 P5-B 纯移动把 `src/ui/` 搬成
+ * `src/engine/ui/legacy/` 时，抄了副本的地方**当场全瞎**（见 PHASE-1C 第 66 轮）。
  */
-function uiDirRe() {
+export function uiDirRe() {
 	const rel = uiWindowRel();
 	if (rel === null) return /^\u0000never$/;
 	return new RegExp(`^${dirname(rel).replace(/\\/g, '/')}/`);

@@ -96,7 +96,7 @@ vi.mock('@app/engine/webgl/webgl-init', () => ({
 	}
 }));
 
-vi.mock('@app/ui/ui-window', () => ({
+vi.mock('@app/engine/ui/legacy/ui-window', () => ({
 	UI: {
 		controlPointTexture: null,
 		requestRendering: vi.fn()

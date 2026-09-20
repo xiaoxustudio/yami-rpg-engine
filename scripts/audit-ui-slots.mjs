@@ -19,9 +19,8 @@
  *   因此这一列只作参考，**不要**据此判定「赋值方白做」。
  * - 真正有行动价值的只有前两列。
  */
-import { join } from 'node:path';
-import { ROOT, SCAN_DIRS, collectFiles, readSource } from './lib/scan.mjs';
-import { declaredSlots } from './lib/ui-slots.mjs';
+import { SCAN_DIRS, collectFiles, readSource } from './lib/scan.mjs';
+import { declaredSlots, uiDirRe } from './lib/ui-slots.mjs';
 
 const files = collectFiles({ dirs: SCAN_DIRS });
 
@@ -30,8 +29,12 @@ const files = collectFiles({ dirs: SCAN_DIRS });
 // 复用 lib 里的实现，不再本地复制一份：这里的副本曾经写死 `'export const UI: UIShape = {'`
 // 与 `'\n};'`，技法 5 改写声明形态后它会**静默读到 0 个槽位**，于是后面的
 // 「三态核对」全表变成空表 —— 一个看起来「干净」的假结论。仪器只维护一份。
-const windowRel = 'packages/editor/src/ui/ui-window.ts';
-const windowSrc = readSource(join(ROOT, windowRel));
+//
+// ⚠️ 同一个教训 2026-09-20 又应验一次（P5-B 纯移动把 `src/ui/` 搬到 `src/engine/ui/legacy/`）：
+// 这里原本还留着一行写死的 `const windowRel = 'packages/editor/src/ui/ui-window.ts'`，
+// 搬完之后那个文件不存在了 —— 而它**根本没被用到**（下面只用 `declaredSlots()`），
+// 于是纯粹变成一句 `readFileSync` 的 ENOENT 地雷。写死路径的副本一律删掉，改用
+// `uiWindowRel()` / `uiDirRe()`。
 const declared = declaredSlots();
 
 // 2) 全仓库对各槽位的赋值。
@@ -43,11 +46,11 @@ const declared = declaredSlots();
 //   - 把 `this.x =` 全仓库收进来（第二版）⇒ 把**每个类的每个字段**都算成 UI 槽位，
 //     「有赋值无消费」从 71 涨到 715，全是噪音。
 //
-// 真相是：`this` 只有在 **`src/ui/` 自己的方法里**才等于 UI 单例（那些方法都以
+// 真相是：`this` 只有在 **UI 单例家族自己的方法里**才等于 UI 单例（那些方法都以
 // `this: UIShape` 声明、由 `UI.open()` / `u.initialize()` 这类以 UI 为接收者的调用触发）。
-// 所以 `this.x =` 只在 `src/ui/**` 内统计。
+// 所以 `this.x =` 只在家族目录内统计 —— 目录由 `uiDirRe()` 动态解析（不写死）。
 const assigned = new Set();
-const UI_DIR = /^packages\/editor\/src\/ui\//;
+const UI_DIR = uiDirRe();
 for (const { full, rel } of files) {
 	const src = readSource(full);
 	// ① `UI.x = …`（任何模块）

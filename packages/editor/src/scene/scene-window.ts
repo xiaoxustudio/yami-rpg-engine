@@ -71,7 +71,14 @@ interface SceneListExtensions {
 	updaters: unknown[];
 }
 
-interface SceneShape {
+/**
+ * 场景单例的形状。
+ *
+ * **导出**（2026-09-20）：`engine/scene/*-engine.ts` 的各个命名空间需要按读点
+ * `Pick<SceneShape, …>` 出精确的 `this`，不再写 `this: typeof Scene` 或 `Record<string, any>`。
+ * 只导出**类型**，运行时没有任何变化（`import type` 会被完全擦除，不引入循环依赖）。
+ */
+export interface SceneShape {
 	page: YamiElement;
 	head: HTMLElement & { width?: number };
 	body: YamiElement;

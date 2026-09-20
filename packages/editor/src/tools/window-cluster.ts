@@ -1,5 +1,5 @@
 export { Scene } from '@app/scene/scene-window.ts';
-export { UI } from '@app/ui/ui-window.ts';
+export { UI } from '@app/engine/ui/legacy/ui-window.ts';
 export { Animation } from '@app/animation/animation-window.ts';
 export { Particle } from '@app/particle/particle-window.ts';
 export { Inspector } from '@app/inspector/inspector.ts';
@@ -45,7 +45,7 @@ import '@app/commands/event-editor-register.ts';
 import '@app/plugin/register.ts';
 
 import { sceneWindowReady } from '@app/scene/scene-window.ts';
-import { uiWindowReady } from '@app/ui/ui-window.ts';
+import { uiWindowReady } from '@app/engine/ui/legacy/ui-window.ts';
 import { animationWindowReady } from '@app/animation/animation-window.ts';
 import { particleWindowReady } from '@app/particle/particle-window.ts';
 import { paletteReady } from '@app/palette/palette.ts';

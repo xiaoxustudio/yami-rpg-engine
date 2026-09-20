@@ -1596,6 +1596,301 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 69 轮（续轮）：**自查并更正第 68 轮的两处过度声称** —— 一个关于「仪器自证」的收束
+
+本轮没有推进任何轴。原计划是照第 68 轮的结论直接做 `scene-camera-engine`，
+但动手前按第 68 轮自己写下的教训**做了一次「已知会命中的样例」反证**，
+结果发现**第 68 轮的检查本身也错了**。先把错误的记录改对，比再多清一处更值钱。
+
+### 一、两次错误叠加的完整链条
+
+| 轮次 | 我写了什么 | 错在哪 | 真相 |
+| --- | --- | --- | --- |
+| 第 65 轮 | 「三个引擎读的字段在 `SceneShape` 里 **0 命中**声明」 | PowerShell 里 `'^\\\\t'` → node 收到 `^\\t` → 正则匹配「反斜杠 + t」，**永不命中** | — |
+| 第 68 轮 | 「修好了：`edit` **21/22**、`camera` **29/32** 已声明」 | 检查面放大到**整个 `scene-window.ts`**，把 `export const Scene = { matrix: null, … }` 的**对象字面量键**当成了接口声明 | `SceneShape` 只有 **27 个成员**；`edit` 命中 **3**、`camera` 命中 **2** |
+
+两次都产出了一个**看起来完全合理**的数字，所以都没触发怀疑 —— 第一次是「22 个全未声明」
+（那个索引签名确实背着一大堆字段，很可信），第二次是「21/29 已声明」（也符合直觉）。
+
+### 二、由此定下的一条硬规矩（写给后面的每一轮）
+
+> **只报计数的脚本不可信；数字必须连同「数的是哪个区间」一起自证。**
+
+具体两条动作，缺一不可：
+
+1. **反证**：拿一个**已知会命中**的样例跑一遍（这里测 `marquee` —— 它确实在 `SceneShape` 接口里）。
+   若不命中，脚本就是瞎的，不要读它的数字。
+2. **打印命中集合本身**，而不只是计数。这里一打印就会看到 `matrix` / `scaledTileWidth`
+   这些明显**不该出现在接口里**的名字 —— 区间错误当场暴露，根本不用等到下结论。
+
+> 这与第 37 / 46 轮记的「探针撒谎」「只报计数的批量脚本不可信」是同一个病，
+> 只是这次犯在了**测量脚本**上而不是**改写脚本**上。本仓的 `migration:selftest` 之所以存在，
+> 就是为了把这类错误变成**可执行的断言**而不是纪律。
+
+### 三、第 68 轮的代码改动**是否成立**？—— 成立，但价值要说准
+
+`SceneEditEngine` 那次改动的**真实收益**（逐条可验证）：
+
+1. **命名空间键集被关掉**：`SceneEditEngine.AnythignAtAll` 以前能编译，现在报错；
+   `scene-edit.ts` 那 12 行镜像**拼错成员名会编译失败**。**这正是本轴的定义**
+   （「泛型逃生口 = 任何成员名都能编译」），所以 `any-hatches` 53 → 52 **是正当的**。
+2. `this.layer` / `this.tilemap` 两个**手动补的**字段是真类型。
+3. 运行时 `import { Scene }` 消失（此前唯一用途就是 `typeof Scene` 注解）。
+
+**它没有做到的**：其余 **17 个 `this` 字段仍是 `any`**（因为它们在 `SceneShape` 的
+索引签名里，`Pick` 出来就是 `any`）。我上一轮写成「字段有类型了」，**是过度声称**。
+
+### 四、新发现的**仪表盲区**（本轮只记录，不扩轴）
+
+`Pick<SomeTypeWithIndexSignature, K>` 会让字段变成 `any`，但**文本上不出现 `any`** ——
+所以 `any-hatches` / `unknown-casts` **两条轴都看不见它**。也就是说：
+
+> **本轴可以因为「关掉键集」而下降，同时字段层面一个新类型都没加上。**
+
+这不是说该轴没用（键集检查是真实收益），而是说**别把轴数字当作「类型安全程度」的读数**。
+真正的读数需要另立口径（例如「`this` 上 `any` 字段数」），但**本轮不扩轴** ——
+按本仓纪律，扩口径要先想清楚再记基线，不能顺手做。
+
+### 五、正确的下一步（据更正后的真相重排）
+
+- `scene-camera-engine.ts`：只有 `marquee` / `screen` 两个字段有真类型 ⇒ **不值得**照第 68 轮
+  的配方做（那只会是又一次「关键集」）。要做就先**把这 30 个字段声明出来** —— 那才是真活。
+- 真正便宜、且**有真实类型收益**的，是像第 63 轮 `scene-selection-engine.ts` 那样
+  **手写窄接收者类型**（字段类型逐个由读点定），或先把字段补进 `SceneShape`。
+- 因此`Scene*` 剩余三处（`camera` / `marquee`，`edit` 已做完但只关键集）
+  应当归入**「先动核」**那一档，与 `DynamicShape` / `UIShape` / `DataModule` / particle 同批。
+
+### 验证（本轮）
+
+本轮**只改文档**（`PHASE-1C-TEST-PREREQ.md`），无源码改动；
+`migration:selftest` 38/38、`migration:check` 14 轴持平（与上一轮相同的数字）。
+
+## 第 68 轮（续轮）：`any-hatches` 53 → 52 —— 纠正第 65 轮的 grep 错误后，`SceneEditEngine` 一轮拿下
+
+> ### ⚠️ 本轮有两处过度声称，已在第 69 轮更正（保留原文以便对照）
+>
+> 1. 本轮写「`edit` **21/22** 已声明、`camera` **29/32** 已声明 ⇒ `Pick` 拿到的是**真类型**」——
+>    **数字与结论都错**。第二次的检查面误把 **`export const Scene` 对象字面量的键**
+>    当成了接口声明；`SceneShape` 实际只有 **27 个成员**，`edit` 命中 **3 个**、`camera` **2 个**。
+> 2. 因此「`edit` 与 `camera` 都便宜」「camera 下一轮直接做」**不成立**：
+>    `Pick` 只关掉了**命名空间的键集**，字段类型**大部分仍是 `any`**。
+>
+> **本轮的代码改动本身仍然成立**（它正当且有益，理由见第 69 轮），
+> 但**不要**据本轮的结论去推断「字段有类型了」或「camera 很便宜」。
+
+### 先纠错：第 65 轮那句「0 命中」是我的 grep 写错了
+
+第 65 轮我记「`edit`/`camera`/`marquee` 读的 22/32/24 个字段在 `SceneShape` 里一个都没有显式声明」，
+并据此判定「`Pick<SceneShape, …>` 是假绿，不做」。**理由是错的**（详见证文里的勘误框）；
+**结论「不宜据此宣称字段有类型」在方向上是对的**。
+
+### 拿下 `scene-edit-engine.ts`（12 个成员）
+
+```ts
+type SceneEditThis = Pick<SceneShape, 'brush' | 'editInPencilMode' | … 21 个 …> & {
+	layer: string;                                    // SceneShape 未声明
+	tilemap: { width: number; height: number } | null; // SceneShape 声明为 unknown，就地收窄
+};
+export const SceneEditEngine: Partial<SceneEditEngineShape> = {};
+```
+
+配套（全部机械，`tsc` 一次全绿，**无任何预料之外的连带**）：
+
+1. `SceneShape` 改为**导出**（`import type` 会被擦除，不引入循环依赖）；
+2. 本文件 12 处 `this: typeof Scene` → `this: SceneEditThis`；
+3. 3 个返回类型按实际签名修正（`createTiles` / `cloneTiles` → `TileBuffer`，
+   `createTerrains` → `TerrainBuffer`）—— 这是 `tsc` 当场点出来的，`Record<string, any>` 之前一直盖着；
+4. **`import { Scene }` 整个消失了**：本文件运行时用到 `Scene` 的**唯一**地方就是那些
+   `typeof Scene` 注解，换成本地窄类型后运行时依赖随之归零。
+
+> 顺带一条**不对称**，记下来免得下次困惑：`scene-animate.ts` 的 7 行镜像**需要补 `!`**
+> （`Partial` 的必然结果），而 `scene-edit.ts` 的 12 行**不需要** —— 因为
+> `SceneShape` **显式声明**了 `requestAnimation` / `requestRendering` 等（类型是 `(() => void) | null`，
+> 收不下 `| undefined`），却没显式声明 `edit` / `setTile` 这些（由索引签名兜着，`any` 来者不拒）。
+> ⇒ **`!` 的有无不是风格问题，是「该成员有没有被显式声明」的直接读数。**
+
+### 剩下的 `Scene*` 命名空间，按同一判据分流
+
+| 文件 | 字段已声明比例 | 结论 |
+| --- | --- | --- |
+| `scene-edit-engine.ts` | 21/22 | ✅ 本轮拿下 |
+| `scene-camera-engine.ts` | **29/32** | ⏭ **同样便宜**，下一轮直接做（只差 `layer` / `scaleX` / `scaleY`） |
+| `scene-marquee-engine.ts` | 5/24 | ❌ 它的接收者是 `Scene.marquee`（`HTMLElement & { [k: string]: any }`），19 个字段要另找类型 |
+| `scene-animate-engine.ts` / `scene-selection-engine.ts` / `scene-draw-engine.ts` | — | ✅ 已拿下（本地窄类型 / 无 `this`） |
+
+### 验证（本轮）
+
+- `any-hatches` **53 → 52 处 / 27 → 26 文件**
+- `tsc` 0 · `lint` 0-0 · `typecheck:vue` 0 新增 · `migration:selftest` 38/38
+- editor 252 文件 / 2056 通过；ui-kit 811 通过
+- 纯类型改动；**运行时依赖还少了一条**（`scene-edit-engine.ts` 不再 import `Scene`）
+
+## 第 67 轮（续轮）：修掉一个**真 bug**（`FSP.existsSync`）+ 补上第 66 轮留下的**三处仪器盲区**
+
+本轮由「按孤例判据找 `any-hatches` 便宜站点」开始，结果先挖出一个真实缺陷，
+再被第 66 轮的纯移动**反咬了一口** —— 两件事都比一个轴数字值钱。
+
+### 一、`Record<string, any>` 底下压着一个必崩的调用：`FSP.existsSync`
+
+`services/file-system/fs-bridge.ts` 的 `FSP` **就是 `fs.promises` 本体**，
+而 `fs.promises` **没有** `existsSync`（实测 `node -e "typeof require('fs').promises.existsSync"`
+→ `undefined`；同步的 `existsSync` 只在 `fs` 上，`fs.promises` 只有异步 `access`）。
+
+而 `components/file-browser/FileBrowser.vue:101` 写的是 `existsSync: (p) => FSP.existsSync(p)`，
+经 `YMFileBrowser.vue:211` 转发到 `YMFileNavPane.vue:719` 的**重命名失焦**分支：
+
+```ts
+if (!props.fileSystem!.existsSync(path)) { return …rename…; }
+```
+
+⇒ **在文件浏览器里重命名文件会直接抛 `TypeError: FSP.existsSync is not a function`，改名不生效。**
+它能编译、且一直没人发现，纯粹因为 `FSP` 当时的类型是 `Record<string, any>`。
+
+这是本轴挖出的**第二个真实运行时缺陷**（第一个是第 0 轮 `tree-core.ts` 的
+`children: null` 崩溃）。两次都不是「类型不好看」，而是**会崩**。
+
+已改为 `FS.existsSync`。全仓 `existsSync` 的其它 30 余处调用**都正确地写在 `fs`/`FS` 上**，
+只有这一处是孤例 —— 又一次印证「**同名成员在别处的写法**」是最有效的判据。
+
+> **`FSP` 的 hatch 这轮没有收**，理由写进了 `fs-bridge.ts` 的注释（不是偷懒）：
+> ① `writeFile` 是**语义不兼容**的覆盖（node 第三参是 `options`，这里换成了布尔 `check`），
+> 收紧要先定义 `FSP` 的对外面并同步改约 30 个调用点；
+> ② 就是这次踩到的 `existsSync`。换成一个更窄但**不成立**的类型会把差别藏得更深。
+
+### 二、`any-hatches` 54 → 53：`palette-file.ts` 的 `meta` 参数
+
+```ts
+meta: { guid: string; path?: string } & Record<string, any>   // 旧
+meta: FileMeta | null                                          // 新
+```
+
+两处「对齐已有口径」的便宜：
+- 唯一调用方 `inspector/file-tileset-page.ts:73` 传的本来**就是** `FileMeta | null`
+  （`this.meta`，类型 `FileMeta | null`）；
+- `FileMeta` 连 `x` / `y`（`number | null`）都有 —— 而 `palette-engine.ts` 正是往
+  `Palette.meta.x` / `.y` 写值，两边因此**第一次对上**。
+
+### 三、⚠️ 第 66 轮的纯移动咬回来的三处**仪器盲区**（比移动本身更值得记）
+
+第 66 轮我把「`vi.mock` 字符串要跟着改」写进了记录，**但漏了另外三类同样不走类型系统的路径**：
+
+| 位置 | 症状 | 严重度 |
+| --- | --- | --- |
+| `scripts/lib/self-test.mjs:417` | 写死 `packages/editor/src/ui/ui-window.ts`，读不到 ⇒ **`migration:selftest` 红（37/38）** | **CI 门禁红** |
+| `scripts/audit-ui-slots.mjs:33` | 同一路径写死；那行 `windowSrc` **根本没被用到** ⇒ 一句纯粹的 ENOENT 地雷 | 诊断脚本崩 |
+| `components/__tests__/bridge-integrity.spec.ts:37` | 根目录清单里写死 `'ui'`。空目录还在时 `walk()` 返回 `[]` ⇒ **用例照样绿（覆盖悄悄变小）**；空目录一删就 ENOENT ⇒ 红 | **测试假绿→红** |
+
+**最该记的是第一行的「没被复跑」**：第 66 轮我跑了 `migration:check`（绿）就以为门禁全过，
+而 `migration:selftest` 才是红的 —— **验收清单里的两条命令不能互相替代**。
+这正是「仪器瞎了，却表现为指标正常」的自家版本。
+
+**修法是让仪器只维护一份**（本仓一贯的口径纪律）：
+- `ui-slots.mjs` 把 `uiDirRe()` 也**导出**（此前只有 `uiWindowRel()` 是导出的）；
+- `self-test.mjs` 与 `audit-ui-slots.mjs` 一律改用 `uiWindowRel()` / `uiDirRe()`，
+  **删掉各自的写死副本**；
+- `bridge-integrity.spec.ts` 的根目录清单把 `'ui'` 换成 `'engine/ui/legacy'`，
+  并加一句**显式断言**：清单里的根目录不存在就直接抛错 ——
+  **宁可红在「清单过期」，也不要绿在「覆盖变小」**。
+
+修完复核：`migration:selftest` **38/38**、`audit-ui-slots.mjs` 报 `声明槽位：134`
+（与台账 `declared=134` 一致，证明动态定位在独立脚本里也对）、`bridge-integrity` 1 passed。
+
+### 验证（本轮，全部实跑）
+
+`migration:selftest` 38/38 · `migration:check` 无上升 · `lint` 0-0 · `tsc` 0 ·
+`typecheck:vue` 0 新增 · editor **252 文件 / 2056 通过（exit 0，本轮无 flake）** ·
+ui-kit 115 文件 / 811 通过 · `bridge-integrity` 1 passed · `audit-ui-slots.mjs` 正常输出。
+
+### 本轮新增的实机回归项
+
+- **文件浏览器里重命名文件**（此前必抛 `TypeError`，现应正常改名并刷新列表）。
+
+## 第 66 轮（续轮）：**P5-B 纯移动落地** —— `legacy-ui-lines` 2866 → **0**、`legacy-ui-refs` 1 → **0**
+
+按文末「删完之后应该发生什么」的第 ② 步执行：把 `src/ui/` 整个搬走，**内容零改动**，只改 import 路径。
+
+### 搬迁映射
+
+| 原路径 | 新路径 |
+| --- | --- |
+| `src/ui/ui-window.ts` | `src/engine/ui/legacy/ui-window.ts` |
+| `src/ui/{ui-events,ui-transform,ui-file,ui-list,ui-pointer,ui-prefab,ui-initialize}.ts` | `src/engine/ui/legacy/…`（同上，7 个域模块） |
+| `src/ui/register.ts` | `src/engine/ui/legacy/register.ts` |
+| `src/ui/element-registry.ts` | `src/engine/ui/element-registry.ts` |
+
+**为什么 9 个文件进 `legacy/`、唯独 `element-registry.ts` 不进**：
+`uiEls` 是**活的元素注册表**（SFC 用 `:ref="registryRef(uiEls, id)"` 登记、模块按 id 取用），
+不是遗留单例 —— 台账早就把它排除在 `legacy-ui-refs` 之外。放在 `engine/ui/` 与
+`engine/element-registry.ts`（`engineEls`）形成同一命名约定。
+
+### 为什么相对 import 全都不用改
+
+8 个域模块一律 `import { UI } from './ui-window.ts'`，`register.ts` 又相对 import 那 7 个 ——
+**它们是一起搬的**，相对关系不变。需要改的只有两类**别名说明符**：
+
+- `@app/ui/element-registry` → `@app/engine/ui/element-registry`（6 处代码 + 2 处搬迁文件内部）
+- `@app/ui/ui-window.ts` → `@app/engine/ui/legacy/ui-window.ts`（`tools/window-cluster.ts` 2 处）
+
+### ⚠️ 一处**不会报错**、只能靠人工发现的连带：5 个 `vi.mock` 路径
+
+`vi.mock('@app/ui/ui-window.ts', …)` 的**字符串必须与实际 import 说明符一致**，
+否则 mock 静默失效 —— `tsc` 不报错、测试**照样通过**（只是测的不再是原来那个东西）。
+本轮逐一改了这 5 处：`engine/__tests__/webgl.spec.ts`、`ui.spec.ts`、`scene.spec.ts`（无扩展名形式）、
+`animation.spec.ts`（无扩展名形式）、`printer/__tests__/printer-draw.spec.ts`。
+
+⇒ **记法：纯移动类改动，除 `tsc` 外必须单独 grep `vi.mock(` 与动态 `import(` 的字符串**
+（两者都不走类型系统）。
+
+### 验证（本轮，全部实跑）
+
+| 项 | 结果 |
+| --- | --- |
+| `tsc --noEmit -p tsconfig.strict.json` | **0** 错误 |
+| `lint` | 0 warning / 0 error |
+| `typecheck:vue` | **0 新增** |
+| `-F @yami/ui-kit test` | 115 文件 / **811 通过** |
+| `-F @yami/editor test` | 252 文件 / **2056 通过**（仅既有的 `ui-state.spec.ts` teardown flake 噪声，无失败用例） |
+| `build:vite` | **exit 0** —— 这一条对纯移动尤其关键：它才验证得了 `ui-window.ts` 里那句**动态** `import('./register.ts')` 与整张模块图 |
+| `migration:check` | 14 轴全平（baseline 已固化） |
+
+### 轴的变化 —— 以及「替代轴」这一轮证明了自己
+
+```
+legacy-ui-lines      2866 → 0     ✓ 下降（2866 行 / 10 文件 → 0）
+legacy-ui-refs          1 → 0     ✓ 下降
+ui-singleton-members  103 → 103   = 持平   ← 关键
+```
+
+**`ui-singleton-members` 保持 103 / `declared=134` 不动**，正是第 62 轮补这条轴的全部目的：
+搬迁**没有**让任何遗留成员消失，只是换了目录。如果没有这条轴，本轮之后
+「1c 已完成 2/4 条轴」看起来会非常漂亮，而**103 处成员挂载、134 个槽位一行没少**。
+
+第 62 轮同时修的另外两处「仪器瞎了」也经受住了检验：
+`declaredSlots()` 的动态定位（写死路径的话这里会静默返回空数组、`declared` 假降到 0）
+与 `assignedSlots()` 的目录判定（写死 `^packages/editor/src/ui/` 的话，
+域模块里的 `this.x = …` 会不再计入 `assigned` ⇒ 凭空报一条**假回归**）。
+两者本轮都无漂移：`ui-slot-coverage` 仍是 `declared=134 / assigned=153 / storeRefs=49 / engineBacked=7`。
+
+### 下一步（1c 第 ③ 步）与**实机回归清单**
+
+**必须先实机回归**：本轮是运行时高危改动（附录四/六/七/八/九记的都是这一带的静默失效）。
+请按顺序点一遍：
+
+1. **启动编辑器不崩**（附录四：初始化时序类回归曾导致启动即崩）；
+2. UI 窗口：打开 / 新建 / 保存 / 关闭 / 撤销重做 / 复制粘贴 / 缩放；
+3. UI 画布：点选、框选、右键菜单、拖动控制点（附录八：`selectObject` 读已迁字段导致点选无反应）；
+4. 左侧列表：快捷键、重命名、拖拽、分页；
+5. 预设 / 预制体：注册、创建、无效预设清理；
+6. 主题切换 + 语言切换后 UI 正常（附录六：`background`/`foreground` 双存储导致「一片黑且不报错」）；
+7. UI 窗口交互后**不冻住**（附录七：`updateTargetItem` 读已迁字段）；
+8. 保存 / 重新打开项目后 UI 布局与缩放正常；
+9. 图块组（Palette）窗口与自动图块生成（用到了 `element-registry` 改名后的 `uiEls`）。
+
+回归通过后再做第 ③ 步（逐域把 store 缺的 41 个槽位补上，`ui-singleton-members` 103 → 0），
+最后第 ④ 步（换接线 + 退役对象字面量，`declared` 134 → 0）。
+
+**回滚**：本次搬迁是单个 commit，`git revert` 即可原样退回 `src/ui/`（rename 保留了历史）。
+
 ## 第 65 轮（续轮）：`any-hatches` 55 → 54，**拿下 `SceneAnimateEngine`** —— `this: typeof Scene` 的正确解法
 
 第 63 轮把 `SceneAnimateEngine` 判为「被 `SceneShape` 挡住」并回退；第 64 轮把挡因修正为
@@ -1642,6 +1937,82 @@ type SceneAnimateThis = {
 | 几十个 / 含大量写入 / 子对象本身是承重形状 | 整片留到最后 | `SceneCameraEngine`（≈30 个，含 `this.scrollLeft = …` 等**写入**）、`SceneMarqueeEngine`（`typeof Scene.marquee` 是 hatch） |
 
 「字段数」比「`Y` 是不是承重形状」有用得多 —— 前者是**可实测的成本**，后者只是个标签。
+
+### 用「字段数」把整批命名空间量了一遍（本轮实测，可直接接着做）
+
+`this.*` 的**去重字段数**（读+写），以及这些字段在 `SceneShape` 里**有没有显式声明**：
+
+| 文件 | 命名空间成员 | `this.*` 去重字段 | 其中写入 | `SceneShape` 显式声明 | 结论 |
+| --- | --- | --- | --- | --- | --- |
+| `scene-animate-engine.ts` | 8 | **5** | 0 | —（用本地窄类型） | ✅ 本轮拿下 |
+| `scene-draw-engine.ts` | 27 | **0** | 0 | — | ✅ 第 63 轮拿下 |
+| `scene-selection-engine.ts` | 10 | 24 | 0 | —（文件自带 `SceneSelectionThis`） | ✅ 第 63 轮拿下 |
+| `scene-edit-engine.ts` | 12 | **22** | 0 | **0** | ❌ 见下 |
+| `scene-camera-engine.ts` | 8 | **32** | 10 | **0** | ❌ 见下 |
+| `scene-marquee-engine.ts` | 10 | **24** | 8 | **0** | ❌ 见下 |
+| `engine/palette/palette-engine.ts` | 20 | 41 | — | — | ❌ |
+| `engine/animation/animation-window-engine.ts` | — | 28 | — | — | ❌ |
+| `engine/ui/ui-engine.ts` | 21 | 31 | — | — | ❌ |
+| `engine/particle/particle-engine.ts` | 3 | 96 | — | — | ❌ |
+| `engine/palette/auto-tile-engine.ts` | 5 | **7** | — | — | ⚠️ 见下 |
+
+**本轮最有用的一条实测**（⚠️ **本表在第 67 / 69 轮被更正过两次，见下**）：
+
+| 文件 | 读到的字段 | ~~曾记为已声明~~ | **真相：在 `SceneShape` 接口体内声明** |
+| --- | --- | --- | --- |
+| `scene-edit-engine.ts` | 22 | ~~21~~ | **3**（`marquee` `planToSave` `requestRendering`） |
+| `scene-camera-engine.ts` | 32 | ~~29~~ | **2**（`marquee` `screen`） |
+| `scene-marquee-engine.ts` | 24 | 5 | 0（它的 `this` 是 `Scene.marquee`，**不是** `Scene`） |
+
+**真相的关键**：`SceneShape` 是**一个只有 27 个成员的扁平接口**
+（`body close copy create destroy duplicate head info initialize list load loadFromConfig
+loadFromProject marquee open page paste planToSave redo requestRendering save saveToConfig
+saveToProject screen searcher toggle undo`），外加一个 `[k: string]: any` 索引签名。
+`width` / `height` / `tileWidth` 这些**属于另一个接口**（`SceneDataShape`，L127 起），
+所以 `Pick<SceneShape, 'width'>` 拿到的是**索引签名给的 `any`**，不是 `number`。
+
+⇒ **结论（第 69 轮定稿）**：`Pick<SceneShape, K>` 只对那 **27 个成员**给真类型，
+其余一律 `any`。因此它对 `edit` / `camera` 这类引擎**主要是「关掉命名空间键集」**，
+**不是**「把字段类型补上」。轴数字下降是**正当的**（该命名空间上
+`SceneEditEngine.AnythignAtAll` 以前能编译、现在会报错，这正是本轴的定义），
+但**不能**说成「字段有类型了」。
+
+要真正给字段补类型，只有两条路：
+1. 把字段**声明进 `SceneShape`**（或声明进一个专门的窄接口）；
+2. 像 `SceneSelectionThis` 那样**手写**窄接收者类型（12 个函数签名 + 10 个数据字段，是真活）。
+
+> ### ⚠️ 勘误一（第 67 轮追记）：本节原先写的「**0 命中**」是**我自己的 grep 写错了**
+>
+> 原话是「`edit` 的 22 个、`camera` 的 32 个、`marquee` 的 24 个
+> ——**在 `SceneShape` 里一个都没有显式声明**（grep 实测 0 命中）」，
+> 并据此下了结论「`Pick<SceneShape, …>` 只能让台账下降、不带来安全性 —— 属假绿，不做」。
+>
+> **错因**：PowerShell 双引号里写 `'^\\\\t'`：PowerShell 不处理反斜杠，node 收到 `'^\\\\t'`
+> ⇒ JS 字符串是 `^\\t` ⇒ 正则匹配的是「**一个字面反斜杠 + t**」，于是对任何字段名都返回 false
+> ⇒ 全被误报成「未声明」。**结论「属假绿」在方向上是对的**（见勘误二），但**理由是错的数字**。
+>
+> ### ⚠️ 勘误二（第 69 轮追记）：修好正则后写下的「21 / 29」**也是错的**
+>
+> 第二次我把检查面从「接口体」放大到了**整个 `scene-window.ts` 文件** ——
+> 于是 `export const Scene: SceneShape = { matrix: null, scaledTileWidth: null, … }`
+> 这些**对象字面量的键**被当成了「接口声明」。真值是 **3 / 2**（上表）。
+>
+> **教训（两次同一个病）**：**「数出来的数字」必须连同「数的是哪个区间」一起自证。**
+> 第一次是转义写错（正则永远不命中），第二次是**区间选错**（把字面量当接口）。
+> 两次都产出了一个**看起来完全合理**的数字，所以都没触发怀疑。
+> ⇒ 下结论前必须做两件事：
+> ① 用一个**已知会命中**的样例反证（这里测 `marquee` —— 它确实在接口里，若它也不命中，脚本就是瞎的）；
+> ② 打印**命中集合本身**（而不只是计数）—— 一打印就会看到 `matrix` / `scaledTileWidth`
+> 这些明显不该出现在接口里的名字，区间错误当场暴露。
+
+**`auto-tile-engine.ts`（7 个字段，本应便宜）** 卡在一个具体的类型细节上：
+`image` 是**哨兵联合** `CanvasImageSource | symbol`（`noImage` 是「无图」哨兵、加载中临时用
+`Symbol()` 占位）。而 `drawFrame()` 里 `const symbol = (this.image = Symbol());` 这次**赋值**
+会让 `this.image` 的 `instanceof Image` 收窄失效，块后的 `const image = this.image`
+又变回联合类型，`drawAndFitImage(context, image, …)` 报错。
+给 `image` 写 `any`（等于没做）、改 `drawFrame` 流程（动生产逻辑）、调用点加断言（糊）——
+**都不是「只加类型」** ⇒ 留到最后与 `AutoTile`（`palette/auto-tile.ts:49`）一起处理
+（那个单例本身也是 hatch，两边是同一份形状的两半）。
 
 ### 验证（本轮）
 

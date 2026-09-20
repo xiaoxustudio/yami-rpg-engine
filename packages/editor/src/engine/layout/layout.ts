@@ -1,7 +1,7 @@
 import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { engineEls } from '@app/engine/element-registry';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { renderDetached } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';

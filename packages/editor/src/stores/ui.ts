@@ -3,7 +3,7 @@ import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { computed, markRaw, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
-import { uiEls } from '@app/ui/element-registry';
+import { uiEls } from '@app/engine/ui/element-registry';
 import { StageColor } from '@app/utils/stage-color';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { History } from '@app/tools/history.ts';
@@ -15,7 +15,7 @@ import type { YamiElement } from '@app/types/element-api';
  *
  * 导出给 `engine/ui/ui-engine.ts`：它的 `renderingFunction` 需要以**方法调用**形态
  * 调用 `UI.drawXxx()`（见该处注释——`Timer` 是裸调用，没有接收者），
- * 而直接 `import { UI } from '@app/ui/ui-window.ts'` 会与 `ui-window.ts → ui-engine.ts`
+ * 而直接 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'` 会与 `ui-window.ts → ui-engine.ts`
  * 形成静态循环导入。这个惰加载代理只在**运行时**解析目标，天然避开循环。
  */
 export const loadUI = () =>
@@ -108,7 +108,7 @@ export const useUIStore = defineStore('ui', () => {
 	 * 控制点贴图（WebGL 资源）。原先只挂在遗留单例 `UI.controlPointTexture` 上，
 	 * 由 `ui-initialize.ts:87` 在异步载图回调里赋值、`animation-window-engine.ts:716` 读取。
 	 *
-	 * 升进 store 的理由：它正是让 `animation-window-engine` 摆脱 `@app/ui/ui-window.ts` 的
+	 * 升进 store 的理由：它正是让 `animation-window-engine` 摆脱 `@app/engine/ui/legacy/ui-window.ts` 的
 	 * 唯一阻塞点（那个文件只用到这一个成员）。
 	 *
 	 * 为什么写入能同步过来：`stores/ui.ts:63` 是 `u?.initialize?.()`，接收者就是 UI 单例，
@@ -120,7 +120,7 @@ export const useUIStore = defineStore('ui', () => {
 	 * class 名 → 检查器类型 的映射表。由 `ui-initialize.ts:149` 以对象字面量整体赋值
 	 * （`this.inspectorTypeMap = { … }`），所以按**整体替换**语义存取即可，不需要深层响应式。
 	 *
-	 * 升进 store 的理由：它是 `update/updater-hooks.ts` 摆脱 `@app/ui/ui-window.ts` 的唯一阻塞点。
+	 * 升进 store 的理由：它是 `update/updater-hooks.ts` 摆脱 `@app/engine/ui/legacy/ui-window.ts` 的唯一阻塞点。
 	 * 同一个名字在 Scene / Animation 单例上各有一份互不相干的表，这里只接 UI 那一份。
 	 */
 	const inspectorTypeMap = shallowRef<Record<string, string> | null>(null);

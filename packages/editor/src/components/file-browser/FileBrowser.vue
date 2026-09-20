@@ -34,7 +34,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { Directory } from '@app/file/directory-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { FSP } from '@app/services/file-system/fs-bridge.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/services/file-system/file-item.ts';
 import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
@@ -98,7 +98,20 @@ const directoryApi = {
 			.then(() => FSP.rename(oldPath, newPath))
 			.catch((e) => toast.show(String(e), 'error'));
 	},
-	existsSync: (p: string) => FSP.existsSync(p),
+	/**
+	 * ⚠️ 必须是 `FS.existsSync`（`node:fs` 上的**同步**方法），**不是** `FSP.existsSync`。
+	 *
+	 * `FSP` 就是 `fs.promises` 本体，而 `fs.promises` **没有** `existsSync`
+	 * （实测 `node -e "typeof require('fs').promises.existsSync"` → `undefined`；
+	 *  它只有异步的 `access`）。原先写的 `FSP.existsSync(p)` 因此是
+	 * `undefined(p)` ⇒ 调用即 `TypeError: FSP.existsSync is not a function`。
+	 *
+	 * 它一路被 `YMFileBrowser.vue:211` 转发到 `YMFileNavPane.vue:719` 的**重命名失焦**
+	 * 分支（`if (!props.fileSystem!.existsSync(path)) return …rename…`）——
+	 * 也就是说**在文件浏览器里重命名文件会直接抛错、改名不生效**。
+	 * 它能编译（且一直没人发现）纯粹是因为 `FSP` 当时的类型是 `Record<string, any>`。
+	 */
+	existsSync: (p: string) => FS.existsSync(p),
 	get assets() {
 		return Directory.assets;
 	},

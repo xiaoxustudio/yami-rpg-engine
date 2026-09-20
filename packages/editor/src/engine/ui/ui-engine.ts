@@ -16,7 +16,7 @@ import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 /**
  * 惰加载的 UI 单例代理。`renderingFunction` 要以**方法调用**形态调 `UI.drawXxx()`，
  * 而那些 `drawXxx` 实现就在本文件、由 `ui-window.ts` 在模块加载期镜像到 UI 对象上。
- * 不能 `import { UI } from '@app/ui/ui-window.ts'`：那是静态循环导入；这个代理只在运行时解析。
+ * 不能 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'`：那是静态循环导入；这个代理只在运行时解析。
  */
 const UI = getLazyWindow('ui', loadUI);
 

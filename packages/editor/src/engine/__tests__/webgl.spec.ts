@@ -131,7 +131,7 @@ vi.mock('@app/file/file-system-core.ts', () => ({
 	File: { get: vi.fn() }
 }));
 
-vi.mock('@app/ui/ui-window.ts', () => {
+vi.mock('@app/engine/ui/legacy/ui-window.ts', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),

@@ -1,5 +1,6 @@
 import { Palette } from './palette.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
+import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { clear, hide } from '@app/utils/element-utils.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -8,8 +9,20 @@ import { getPaletteStore } from '@app/stores/palette';
 
 Palette.open = function (
 	this: typeof Palette,
-	// oxlint-disable-next-line no-explicit-any
-	meta: { guid: string; path?: string } & Record<string, any>
+	/**
+	 * 图块组元数据。
+	 *
+	 * **口径收紧（2026-09-20，`any-hatches` 收口）**：此前是
+	 * `{ guid: string; path?: string } & Record<string, any>` —— 末尾那个索引签名
+	 * 让 `meta.` 后面接**任何**名字都能编译。
+	 *
+	 * 改成已有的具名类型 `FileMeta`（`data/metadata.ts` 的 `Meta` 类实例）：
+	 * - 唯一调用方 `inspector/file-tileset-page.ts:73` 传的本来就是 `FileMeta | null`，
+	 *   所以这是**把形参对齐到调用方已有的口径**；
+	 * - 而且 `FileMeta` 连 `x` / `y`（`number | null`）都有 —— `palette-engine.ts`
+	 *   正是往 `Palette.meta.x` / `.y` 写值，两边因此对上了。
+	 */
+	meta: FileMeta | null
 ) {
 	if (!meta || meta === this.meta) {
 		return;
