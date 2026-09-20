@@ -126,8 +126,11 @@ interface LocalizationShape {
 	close: (() => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 与 Pinia store 双向桥接的窗口状态（`stores/localization.ts` 的
+	 * `localizationStateKeys = ['state', 'strings']` 之一），类型与 store 的 `shallowRef` 对齐。
+	 */
+	state: string;
 }
 
 export const Localization = {

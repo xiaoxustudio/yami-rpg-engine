@@ -1,11 +1,15 @@
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { UIOwner } from './ui-owner.ts';
+import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 
 {
 	interface UIContainerShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		owner: UIOwnerShape;
+		target: UIContainerData | null;
+		initialize: (() => void) | null;
+		create: (() => UIContainerData) | null;
+		open: ((node: UIContainerData) => void) | null;
+		close: (() => void) | null;
 	}
 	interface UIContainerData {
 		class: string;

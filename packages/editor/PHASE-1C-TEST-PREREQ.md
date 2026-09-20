@@ -1595,7 +1595,217 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
-## 附录十一：真机崩溃 —— 「按需渲染的 inspector 页面 + 一次性 initialize」的 null 链（2026-09-19）
+## 第 45 轮（续轮）：inspector 单点族**收尾** —— 52 → 47，以及类型逼出来的三处真问题
+
+第 44 轮立的口径（**成员清单就在该文件自己的对象字面量里**）让这一族变成机械活。
+本轮把剩下 5 个一次做完，`inspector/` 里再没有 `[k: string]: any`：
+
+| 文件 | 成员 | 类型上的关键决定 |
+| --- | --- | --- |
+| `file-script-page.ts` | 10 | `create: () => string`；`open` 是 **async** ⇒ `Promise<void>` ⇒ 立刻被 oxlint 的 `no-floating-promises` 抓住 ⇒ 调用点加 `void`（见下「产物差异」） |
+| `file-font-page.ts` | 11 | `previews: YamiElement[] & { dpr?: number }` —— 列表由 Vue 页的 `registryElements` 赋值，`dpr` 是运行时挂上去的 |
+| `file-actor-page.ts` | 14 | 四个列表描述符共用 `ActorListDescriptor`（用**方法语法**换双变检查，`parse(item: never)` 兼容各不相同的入参）；`inventory` 写成 `ActorListDescriptor & { loadTypeItems(): void }` 而**不是**可选成员 —— 否则调用点只能写 `?.()`，产物会跟着变 |
+| `element-page.ts` | 21 | `_elementInitialized` / `_openRetry` 声明为**可选**：它们不在字面量初值里，声明必填就得往字面量加初值（那是运行时改动）；`owner` 复用 `UIOwnerShape`；`UIElementData` 补 `id: string` 才过得了 `ScriptListInterface` 的 `{ target?: ScriptListItem }` 门 |
+| `file-audio-page.ts` | 36 | 三个具名别名描述「运行时挂字段」：`AudioWaveformPromise`（带 `canceled`）、`AudioProgressElement`（带 `percent`）、`AudioPointerElement`（带 `time`）；`dataArray: Uint8Array<ArrayBuffer>` / `intervals: Float64Array` / `intensities: Float64Array & { index: number }` 全部**照 Vue 页的真实赋值写**（`new Uint8Array(analyser.frequencyBinCount)`、`new Float64Array(64)`、`.index = 0`），不是猜的 |
+
+顺带改了一处**共享类型**：`script-list.ts` 的 `editor: { target?: ScriptListItem }` 补 `| null` ——
+页面的 `target` 在关闭时就是 `null`，原来的声明与真实调用方不符（第 44 轮口径的推论：**枚举之后，
+门面类型该松的松、该紧的紧，不能靠调用方 `any` 蒙过去**）。
+
+### ⚠️ 类型逼出来的三处真问题（本轮**只记录，不顺手改**）
+
+类型收窄的价值就在这里：三处都是「原来被 `any` 兜住的真实缺陷」，本轮一律用**零运行时增量的写法**
+保住既有行为，改不改留给人决定。
+
+1. **`element-page.ts` 的重试路径其实是死的**（第 43 轮崩溃修复里的缺口）：
+   `_openRetry` 首值是 `undefined`，而 `undefined < 10` 恒为 `false` ⇒ **第一次 `open()`（页面还没挂载时）
+   根本不会重试**。有意思的是下一行写的是 `(this._openRetry ?? 0) + 1` —— 作者本意显然允许 `undefined`，
+   是判断那行漏了 `?? 0`。本轮写成 `(this._openRetry ?? NaN) < 10`：`undefined < 10` ≡ `NaN < 10` ≡ `false`，
+   **语义逐字保持**。要真正修好得写 `?? 0`（那会改变行为：首次 open 也开始重试），需要实机回归。
+2. **`file-audio-page.ts` 未移动就点击进度条**：`pointer.time` 在首次 `pointermove` 之前是 `undefined`
+   （Vue 页只赋 element，不赋 `time`），而 `time !== -1` 为 `true` ⇒ 会把 `undefined` 交给
+   `audio.currentTime`。本轮写 `time as number`（断言被擦除，行为不变）；要不要加 `!== undefined` 同理需决定。
+3. **`file-audio-page.ts` 的 `this` 标注与运行时不一致**：`progressPointermove` 标的是 `this: typeof FileAudio`，
+   但它由 `progress.addEventListener('pointermove', …)` 注册 ⇒ 运行时 `this` 是 **DOM 元素**；
+   里面读的 `this.clientWidth` 正是按 DOM 读才工作。本轮把标注改成 `this: HTMLElement`（纯类型、产物不变）
+   —— 这是「标注撒谎、代码照跑」的一处实例，值得记住：**注册成监听器的函数，`this` 由注册方决定**。
+
+### 验证（本轮）
+
+- **产物自证**（esbuild，逐字节）：`file-font-page` / `file-audio-page` / `file-actor-page` / `script-list.ts`
+  与 HEAD **完全相同**；`file-script-page` 唯一差异是 `void FileScript.open(…)` 的 **`void ` 前缀**
+  （oxlint 要求显式忽略 promise；`void expr` 的求值与副作用不变）。
+- `pnpm typecheck` 0；`typecheck:vue` 0 new；`pnpm lint` 1603 文件 0/0；
+  改动文件 `oxfmt --check` 合规；`migration:selftest` 30/30。
+- 台账：`any-hatches` **52 → 47 处、25 → 20 文件**，其余轴持平，基线已固化。
+- 测试：`@yami/editor` 全绿（见交接一节的噪声说明：计数器才是判据）。
+
+### 下一轮工作单（`any-hatches` 47 / 20 文件）
+
+1. **`HTMLElement & { [k: string]: any }` 一族（8 处 / 2 文件）**——现在这是**唯一一类「形状已知但没做」**的：
+   `scene/scene-window.ts`（`marquee` L75 / `searcher` L78 / `list` L80、L164 的 `{} as unknown as …` 兜底、L470）
+   + `ui-kit` 的 `YMParameterPane.vue`（L164 / L201 / L970）。
+   照同文件 `HTMLElement & SceneListExtensions` 的先例：声明**具名扩展接口**，把运行时挂的字段枚举进去。
+2. **承重核心（必须与读侧分批改）**：`types/shapes.ts`(990) / `data/data-object.ts`(600) /
+   `scene/scene-window.ts`(296) / `particle/particle-window.ts`(71) / `engine/particle/particle-engine.ts`(62) /
+   `types/history.ts`(31) / `stores/ui.ts` + `engine/ui/ui-engine.ts`。
+3. **口径缺口仍待决定**：`Record<string, any>`（35 处 / 31 文件）是否纳入本轴；
+   以及上面三处「真问题」要不要修（都需要一次实机回归）。
+
+## 第 44 轮（续轮）：`any-hatches` 56 → 52 —— 四个 inspector 单点，和一条被实测推翻的假设
+
+本轮先把**剩下所有「单点」文件一次性删签名、跑一次 `tsc` 归因**（第 41 轮用过的批量法），
+再按级联来源分三类：能枚举的当场做、承重的回退、形状待查的记进工作单。
+
+| 文件（删签名后） | 级联 | 判定 / 处理 |
+| --- | --- | --- |
+| `inspector/file-audio-page.ts` | 80 | 见「下一轮工作单」第 1 条 |
+| `inspector/element-page.ts` | 50 | 同上 |
+| `inspector/file-actor-page.ts` | 26 | 同上 |
+| `inspector/file-font-page.ts` | 26 | 同上 |
+| `inspector/file-script-page.ts` | 23 | 同上 |
+| `inspector/file-scene-page.ts` | 15 | ✅ 本轮枚举（**级联数被高估**，见 ①） |
+| `inspector/element-container-page.ts` | 0 | ✅ 本轮枚举 |
+| `inspector/element-button-page.ts` | 0 | ✅ 本轮枚举 |
+| `inspector/file-trigger-page.ts` | 1 | ✅ 本轮处理（`any` → `unknown`） |
+
+### ① ⚠️ 一条被推翻的假设：「级联 15 / 50 / 80」≠「形状未知」
+
+第 41 轮把 inspector 一族的缺口写成「**很可能**是动态挂载成员，要按 `attachStateAccessors`
+的字段清单枚举（`element-page.ts` 同源）」。本轮拿级联最小的那个（`file-scene-page.ts`，15）实测：
+**假设不成立。**
+
+删掉索引签名后的 15 个错误**全部落在同一个文件里**，而且**全部指向该文件自己的对象字面量**
+（`FileScene = { button, owner, target, initialize, create, open, close, write, update }`）——
+清一色 `TS2339: Property 'x' does not exist on type 'FileSceneShape'`。
+
+原因是索引签名把**同一处声明的两件事**一起放行了：①「对象字面量的多余属性检查」
+（`const X: XShape = {…}` 本来会逐项核对）②之后所有 `X.成员` 的读取。
+所以**成员清单不用去别处找 —— 它就在下面那 9 行字面量里**。
+
+> **规矩（对后面 5 个文件同样适用）**：`interface XShape { [k: string]: any }` 配
+> `const X: XShape = {…}` 这种写法，**级联数 ∝ 访问次数，与「形状是否已知」无关**。
+> 判断承重与否的口径是**错误有没有落在同一文件、同一份字面量覆盖的成员上**；
+> 只有落在别处的才是真承重（对照第 41 轮：`types/shapes.ts` 990 / `data-object.ts` 600 是真承重）。
+
+### ② 本轮落地的四处
+
+| 文件 | 处理 |
+| --- | --- |
+| `element-container-page.ts` | 6 个成员；`owner` 直接复用 `ui-owner.ts` 已导出的 **`UIOwnerShape`**（3 成员）—— 两处 `owner: any` 从此是同一份契约 |
+| `element-button-page.ts` | 7 个成员；`create` 的返回是 **`Omit<UIButtonData, 'instances'>`**（`instances` 由运行时补，写成 `() => UIButtonData` 立刻 TS2322） |
+| `file-scene-page.ts` | 9 个成员；顺带删掉 **`FileSceneData` 的 `[k: string]: unknown`** —— 它只是「允许额外字段」，而该类型在本文件里只作形参/返回标注、没有任何动态键读取；删掉后 `Codec.encodeScene` 的返回（codec 私有的 `SceneData`）才赋得进 `create` 的返回类型 |
+| `file-trigger-page.ts` | 索引签名**有意保留**（`update()` 按运行时键分派，键来自属性面板），只把 `any` 降成 `unknown`；连带修掉「联合键写入」这个新坑（③） |
+
+两个 `element-*-page.ts` 顶上原本挂着 `// oxlint-disable-next-line no-explicit-any` ——
+说明这两处**从第一天起就是「懒得写形状」**，不是真需要索引签名。
+
+### ③ 新坑：用「联合字面量」做键**写入**时，目标类型是那些键声明类型的**交**
+
+```ts
+switch (key) {                    // key: 'selector' | 'onHitWalls' | …
+	case 'selector':
+		trigger[key] = value;         // ✗ TS2322：unknown 不能赋给 string
+```
+
+`selector` 有静态类型 `string`，于是 `trigger[key]` 的**写入**目标退化成 `string`，
+而索引签名的值类型是 `unknown` ⇒ 不可赋。**读侧没事（读是并集），只有写侧这样。**
+
+修法是显式走索引签名视图，且**零运行时增量**（断言在产物里被擦除）：
+
+```ts
+if ((trigger as Record<string, unknown>)[key] !== value) {
+	(trigger as Record<string, unknown>)[key] = value;
+}
+```
+
+`as Record<string, unknown>` **不撞任何轴**（`unknown-casts` 轴的正则是双断言 `as unknown as`）；
+比引入局部别名更好：别名会让产物多一行，而这个写法产物逐字节不变。
+
+### 验证（本轮）
+
+- **产物自证**：四个文件的 esbuild 转译结果与 HEAD **逐字节相同**
+  （`05c0201265223dce` / `7befecbbc7362830` / `786971ab4e94e1b0` / `67f0ec68b65750fd`，长度也一致）
+  ⇒ 纯类型层，运行时不变。
+- `pnpm typecheck` 0；`typecheck:vue` 0 new；`pnpm lint` 1603 文件 0/0；四文件 `oxfmt --check` 合规。
+- 测试：`@yami/editor` **252 文件 / 2056 测试全绿**；`@yami/ui-kit` **115 / 810 全绿**。
+- 门禁：`migration:selftest` 30/30；`migration:check` 仅 `any-hatches` 下降（**56 → 52、29 → 25 文件**），
+  基线已固化；`dom:guard:tracker` exit 0；`build:vite` exit 0。
+
+⚠️ **「测试退出码噪声」本轮查清了**：`ui-state.spec.ts` 会触发
+`EnvironmentTeardownError: Cannot load '/src/title/menu-bar.ts' imported from … window-cluster.ts
+after the environment was torn down` —— 惰加载在**环境拆除之后**才落地。计数始终 252/2056 全绿，
+退出码在 0 与 1 之间**随机**（本轮两次跑：一次 0、一次 1）。与迁移改动无关（四处产物逐字节相同），
+但会让 CI 的 tests job 偶发红，值得单独修一轮（在 `ui-state.spec.ts` 里等惰加载落定，或 mock 该动态导入）。
+
+> 交接一节（第 40 轮）的数字是当时的快照：`any-hatches` 64/35 → 现 **52/25**；
+> editor 测试 251/2054 → 现 **252/2056**。
+
+### 下一轮工作单
+
+1. **inspector 剩 5 处，同一形状**：`file-audio-page`(80) / `element-page`(50) / `file-actor-page`(26) /
+   `file-font-page`(26) / `file-script-page`(23)。按 ① 的口径做：**读该文件的对象字面量 + 该文件的错误清单**，
+   逐成员标类型即可 —— 不要再当成「未知形状」去别处找字段清单。
+2. **`HTMLElement & { [k: string]: any }` 一族（8 处 / 2 文件）**：`scene/scene-window.ts`
+   （`marquee` L75 / `searcher` L78 / `list` L80、L164 的 `{} as unknown as …` 兜底、L470 的返回类型）+
+   `ui-kit` 的 `YMParameterPane.vue`（L164 / L201 / L970，`attachStateAccessors` 挂上去的字段）。
+   先例可抄：同文件 L80 的 `HTMLElement & SceneListExtensions` —— 声明**具名扩展接口**，
+   把运行时挂上去的字段枚举进去，兜底那处也就一起消掉了。
+3. **承重核心（不要单文件删）**：`types/shapes.ts`(990) / `data/data-object.ts`(600) /
+   `scene/scene-window.ts`(296) / `particle/particle-window.ts`(71) / `engine/particle/particle-engine.ts`(62) /
+   `types/history.ts`(31) / `stores/ui.ts` + `engine/ui/ui-engine.ts`（第 41 轮量的 72 的一部分）。
+   必须**与读侧分批改**，且宜先扩 `Record<string, any>` 口径（见交接第五节第 1 条）再动。
+
+## 第 43 轮（续轮）：`SceneItem` 双向枚举 —— 58 → 56
+
+第 42 轮量清的那条（`scene-list.ts` 的 `SceneItem`）本轮做完了。三件事必须一起改，缺一处就报错：
+
+1. **两个声明同步枚举**：`SceneItem`（实现侧）与 store 门面的 `SceneListItem`（`scene-window.ts:28`）各补 `name?` / `shortcut?` / `parent?` / `children?` —— 门面要求 `SceneListItem` 可赋给 `SceneItem`，两边字段不一致就 TS2322（6 处）。
+   *两边注释里都写了「成对维护」*，免得下次只改一边。
+2. **`parent` 的类型是节点自身**（`parent?: SceneItem`），不是 `{ children: … }` —— 因为 `check(folder.parent)` 要把父节点当节点用；读点补 `!`（3 处，都是「已在树里」的路径）。
+3. **运行时键改用 `Reflect`**：`node[key]` / `folder[key]` / `item[key]` 共 **6 处**（`restoreRecursiveStates`、`setRecursiveStates`、`updateFolderState`）改成 `Reflect.get/set(node, key, …)`。
+   这样**不需要**给整个类型挂索引签名（那会连门面赋值一起卡住），也**不需要**任何 `as unknown as`（会撞 `unknown-casts` 轴）。
+
+另外两处 `?? []` 兜底：`folder.children` / `item.children`（叶子/空文件夹本来就没有 children —— 原来会抛「undefined is not iterable」，现在是空循环，语义更正确）。
+
+**验证**：`scene-window.ts` 产物与 HEAD **逐字节相同**（纯类型层）；`scene-list.ts` 的差异**逐条核对过**，恰好是上面那 11 行（6 处 Reflect + 2 处 `?? []` + 3 处断言，断言在产物里不可见）。`tsc` 0、`check-vue-types` 0 new、`lint` 0/0。
+
+## 第 42 轮（续轮）：`any-hatches` 61 → 58（`LightData` 枚举 + `HomeShape.state`）
+
+| 文件 | 处理 |
+| --- | --- |
+| `scene/light.ts`（`LightData`） | ✅ 按实测读点枚举 6 个成员：`red`/`green`/`blue`/`intensity`（`drawPointLight` 里参与算术）、`blend: string`（`gl.blend` 就是 string，见 `webgl-methods.ts`）、`mask: string`（`Scene.textures` 的键）；产物**逐字节相同** |
+| `title/home-page.ts`（`HomeShape`） | ✅ 补 `state: string` + 字面量 `state: 'closed'`。store 侧其实早就写了 `homeStateKeys: (keyof HomeShape)[] = ['state']` —— 也就是说这条**类型一直在等这个字段**；产物差异恰为新增的一行 `state: "closed",` |
+| `title/__tests__/home-init.spec.ts` | 顺手修正：mock 原本把 `Home.state` 重置成 `null`（旧类型是 `any` 才允许），现按 store 的初值改成 `'closed'` |
+
+**`scene/scene-list.ts` 的 `SceneItem`：本轮量清但没做**（留下批）。删掉索引签名后 32 个错误分三类：
+
+1. 可枚举成员 `name` / `shortcut` / `parent` / `children` ✓；
+2. `restoreRecursiveStates` / `snapshotStates` 按**运行时键**读写（`node[key]`）⇒ 需要索引签名或断言；
+3. 真正卡住的是：给 `SceneItem` 加索引签名后，**store 侧 `SceneListItem` 门面赋值**（`Scene.list.copy` 等 6 处）全部报 TS2322 —— 因为「没有索引签名的类型」不能赋给「有索引签名的类型」。
+
+⇒ 正确做法是**两边一起枚举**（`SceneItem` 与 store 的 `SceneListItem` 同步补齐 `name`/`shortcut`/`parent`/`children`），再加一处局部断言处理运行时键；本轮只把这条写进工作单，避免半改。
+
+## 第 41 轮（续轮）：`any-hatches` 再清 3 处 —— 64 → 61
+
+方法同前：**逐批删签名 → tsc/vue-tsc 点名 → 按真契约处理**。本轮把 8 个单点文件一起删、再按错误来源回退，一次 tsc 就量出了这批的承重情况：
+
+| 文件 | 级联 | 处理 |
+| --- | --- | --- |
+| `data/data-object.ts`（`DataModule`） | **600** | 承重 ⇒ 回退（全局数据模块，读点遍布全仓） |
+| `stores/ui.ts`（`UINodeShape`） | 72 的一部分 | 承重 ⇒ 回退 |
+| `engine/ui/ui-engine.ts`（`UIShape`） | 72 的一部分 | 承重 ⇒ 回退 |
+| `enum/enum-window.ts`（`EnumModule`） | 29 的一部分 | 承重 ⇒ 回退 |
+| `scene/light.ts`（`LightData`） | 29 的一部分 | **可枚举**（`blend`/`red`/`green`/`blue`/`intensity`/`mask`）⇒ 留下一批 |
+| `title/deploy-project-window.ts` | 4 | ✅ manifest 的键本来就都声明了，索引签名只是让**字符串循环变量**通过 ⇒ 两处循环加 `as DeploymentGroupKey[]` / `as DeploymentListKey[]`（12 个分组键 / 5 个数组键）；循环键从此也被类型检查 |
+| `local/local-window.ts` | 11 的一部分 | ✅ `LocalizationShape` 补 `state: string`（与 `localizationStateKeys = ['state','strings']` 对齐） |
+| `title/menu-bar.ts` | 11 的一部分 | ✅ `MenubarShape` 补 `state: string`，并给 `Menubar` 字面量补初值 `state: 'closed'`（与 store 的 `shallowRef('closed')` 一致） |
+
+**验证**：`local-window.ts` 与 `deploy-project-window.ts` 的 esbuild 产物**逐字节相同**（纯类型层）；`menu-bar.ts` 产物**只多一行** `state: "closed",` —— 删掉该行后两份产物逐字节相同（即差异恰为那一个预期属性）。`tsc` 0、`check-vue-types` 0 new、`lint` 0/0、三文件 `oxfmt` 合规、定向测试 8 例通过。
+
+**下一批工作单**：`scene/light.ts` 的 `LightData`（6 个成员）；`scene/scene-list.ts`、`title/home-page.ts`（各 2 处）；`inspector/element-*-page.ts` / `file-*-page.ts` 一族（各 1 处，形状与 `element-page.ts` 同源 —— 很可能是**动态挂载成员**，要按 `attachStateAccessors` 的字段清单枚举）。
+
+## 附录十二：真机崩溃 —— 「按需渲染的 inspector 页面 + 一次性 initialize」的 null 链（2026-09-19）
 
 **现象**（用户贴的真实栈）：点选一个 UI 元素就报
 

@@ -6,7 +6,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { getUIStore } from '@app/stores/ui';
-import { UIOwner } from './ui-owner.ts';
+import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /** P1b：尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
@@ -27,8 +27,28 @@ const SIZE_INPUT_IDS = [
 
 {
 	interface UIElementShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		owner: UIOwnerShape;
+		target: UIElementData | null;
+		synchronous: boolean;
+		nameBox: YamiElement | null;
+		pointerEvents: YamiElement | null;
+		generalGroup: YamiElement | null;
+		transformGroup: YamiElement | null;
+		eventsGroup: YamiElement | null;
+		scriptsGroup: YamiElement | null;
+		parameterPane: YamiElement | null;
+		initialize: (() => void) | null;
+		createTransform: (() => UIElementTransform) | null;
+		lockSizeInputs: (() => void) | null;
+		unlockSizeInputs: (() => void) | null;
+		open: ((node: UIElementData) => void) | null;
+		close: (() => void) | null;
+		update: ((node: UIElementData, key: string, value: unknown) => void) | null;
+		pageSwitch: ((event: Event & { value?: string }) => void) | null;
+		alignmentClick: ((event: Event) => void) | null;
+		/** 不在字面量初值里（首值为 `undefined`）⇒ 声明为可选，免得为了类型去改运行时 */
+		_elementInitialized?: boolean;
+		_openRetry?: number;
 	}
 	interface UIElementTransform {
 		anchorX: number;
@@ -50,6 +70,7 @@ const SIZE_INPUT_IDS = [
 		[k: string]: unknown;
 	}
 	interface UIElementData {
+		id: string;
 		name: unknown;
 		pointerEvents?: unknown;
 		class?: string;
@@ -113,10 +134,10 @@ const SIZE_INPUT_IDS = [
 
 		// this.generalGroup.remove() this.transformGroup.remove() this.eventsGroup.remove() this.scriptsGroup.remove()
 
-		on(Inspector.manager, 'switch', this.pageSwitch);
+		on(Inspector.manager, 'switch', this.pageSwitch!);
 		const alignElements = $('.uiElement-transform-align');
 		(alignElements as unknown as HTMLElement[]).forEach((el) =>
-			on(el, 'click', this.alignmentClick)
+			on(el, 'click', this.alignmentClick!)
 		);
 		// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妲呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楀极瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
 		// P1b：控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls（原先 document.querySelectorAll）
@@ -188,11 +209,13 @@ const SIZE_INPUT_IDS = [
 		// 控件由 SFC 挂载时才登记，而 inspector 页面按需渲染 ⇒ 首次 open 可能早于挂载。
 		// 先在「打开时」补一次初始化（幂等）；若仍未就绪，下一个宏任务（Vue 的挂载刷新之后）
 		// 再试一次 —— 绝不在元素为 null 的情况下继续往下读。
-		this.initialize();
+		this.initialize!();
 		if (!this.pointerEvents) {
-			if (this._openRetry < 10) {
+			// `_openRetry` 首值是 `undefined`，而 `undefined < 10` 为 false —— `?? NaN` 保持这个既有语义
+			// （即「第一次 open 不重试」），不在类型轮里改变它。
+			if ((this._openRetry ?? NaN) < 10) {
 				this._openRetry = (this._openRetry ?? 0) + 1;
-				setTimeout(() => this.open(node), 0);
+				setTimeout(() => this.open!(node), 0);
 			}
 			return;
 		}
@@ -211,9 +234,9 @@ const SIZE_INPUT_IDS = [
 				hide(this.pointerEvents?.previousElementSibling);
 			}
 			if (node.class === 'reference' && node.synchronous) {
-				this.lockSizeInputs();
+				this.lockSizeInputs!();
 			} else {
-				this.unlockSizeInputs();
+				this.unlockSizeInputs!();
 			}
 			write('events');
 			write('scripts');
@@ -331,7 +354,7 @@ const SIZE_INPUT_IDS = [
 				y = 1;
 				break;
 		}
-		const node = UIElement.target;
+		const node = UIElement.target!;
 		const elements = node.instances;
 		const transform = node.transform;
 		const changes: { input: HTMLElement; oldValue: number; newValue: number }[] = [];

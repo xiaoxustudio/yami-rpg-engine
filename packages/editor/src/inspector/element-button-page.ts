@@ -3,14 +3,20 @@ import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { UIOwner } from './ui-owner.ts';
+import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { ButtonForm } from '@app/composables/useUIButtonPage';
 import type { YamiEvent } from '@app/types/editor-event';
 
 {
 	interface UIButtonShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		owner: UIOwnerShape;
+		target: UIButtonData | null;
+		initialize: (() => void) | null;
+		/** `create()` 返回的是「实例还没挂上」的数据（`instances` 由运行时补），故 Omit 掉它 */
+		create: (() => Omit<UIButtonData, 'instances'>) | null;
+		open: ((node: UIButtonData) => void) | null;
+		close: (() => void) | null;
+		update: ((node: UIButtonData, key: string, value: unknown) => void) | null;
 	}
 	interface UIButtonData {
 		textEffect: {

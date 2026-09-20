@@ -90,8 +90,11 @@ interface MenubarShape {
 	pointerup: MenubarMethod;
 	pointerover: MenubarMethod;
 	hrefClick: MenubarMethod;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 与 Pinia store 双向桥接的窗口状态（`stores/menubar.ts` 的
+	 * `menubarStateKeys = ['state']`），类型与 store 的 `shallowRef` 对齐。
+	 */
+	state: string;
 }
 
 type RecentTabMeta = { guid?: string; path: string; [k: string]: unknown };
@@ -117,6 +120,7 @@ let stopExportApkFormWatch: (() => void) | null = null;
 export const Menubar: MenubarShape = {
 	// methods,
 	initialize: null,
+	state: 'closed',
 	toggleFullScreen: null,
 	popupFileMenu: null,
 	popupEditMenu: null,

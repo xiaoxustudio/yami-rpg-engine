@@ -41,9 +41,28 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		save(): unknown;
 		on(event: string, listener: (event: Event) => void): void;
 	};
+	/** 四个列表编辑器描述符（sprites/skills/equipments/inventory）在读侧只用这些成员 */
+	interface ActorListDescriptor {
+		initialize(list: ListShape): void;
+		parse(item: never): unknown;
+		open(item?: unknown): void;
+		save(): unknown;
+	}
 	interface FileActorShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		target: ActorShape | null;
+		meta: { guid: string; file?: unknown } | null;
+		sprites: ActorListDescriptor | null;
+		skills: ActorListDescriptor | null;
+		equipments: ActorListDescriptor | null;
+		inventory: (ActorListDescriptor & { loadTypeItems(): void }) | null;
+		initialize: (() => void) | null;
+		create: (() => ActorShape) | null;
+		open: ((actor: ActorShape, meta: { guid: string }) => void) | null;
+		close: (() => void) | null;
+		update: ((actor: ActorShape, key: string, value: unknown) => void) | null;
+		animationIdWrite: ((event: Event & { value?: string }) => void) | null;
+		paramInput: unknown;
+		listChange: ((event: Event) => void) | null;
 	}
 	const FileActor: FileActorShape = {
 		target: null,
@@ -141,7 +160,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			case 'clip':
 				if (actor[key] !== value) {
 					(actor as Record<string, unknown>)[key] = value;
-					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
+					getBrowserInstance()?.body?.updateIcon?.(this.meta!.file);
 				}
 				break;
 			case 'animationId':
@@ -249,7 +268,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	FileActor.sprites = {
 		initialize: function (this, list: ListShape) {
 			on(list, 'change', (_event: Event) => {
-				const guid = FileActor.meta.guid;
+				const guid = FileActor.meta!.guid;
 				if (Scene.actors instanceof Array) {
 					for (const actor of Scene.actors) {
 						if (actor.actorId === guid) {
@@ -262,7 +281,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		parse: function ({ id, image }: { id: string; image: string }) {
 			Command.invalid = false;
-			const animationId = FileActor.target.animationId;
+			const animationId = FileActor.target!.animationId;
 			const spriteName = Command.parseSpriteName!(animationId, id);
 			const spriteClass = Command.invalid ? 'invalid' : '';
 			Command.invalid = false;
@@ -275,7 +294,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', image = '' } = {}) {
 			Window.open!('fileActor-sprite');
-			const animationId = FileActor.target.animationId;
+			const animationId = FileActor.target!.animationId;
 			const items = Animation.getSpriteListItems!(animationId);
 			inspectorEls.get('fileActor-sprite-id')?.loadItems?.(items);
 			Object.assign(fileActorSpriteForm, { id, image });
@@ -379,7 +398,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 	FileActor.inventory = {
 		initialize: function (this, _list: ListShape) {
-			FileActor.inventory.loadTypeItems();
+			FileActor.inventory!.loadTypeItems();
 		},
 		loadTypeItems: function () {
 			const invTypeEl = inspectorEls.get('fileActor-inventory-type') as YamiElement;
@@ -453,7 +472,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ type = 'item', id = '', quantity = 1, money = 1 } = {}) {
 			Window.open!('fileActor-inventory-goods');
-			FileActor.inventory.loadTypeItems();
+			FileActor.inventory!.loadTypeItems();
 			const itemId = type === 'item' ? id : '';
 			const equipmentId = type === 'equipment' ? id : '';
 			Object.assign(fileActorInventoryForm, {

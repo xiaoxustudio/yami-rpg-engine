@@ -41,8 +41,6 @@ interface RecentProject {
 	name: string;
 	path: string;
 	date: string | number;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 export interface HomeRecentCard {
@@ -59,6 +57,11 @@ interface HomeShape {
 	openProject: ((path?: string) => void) | null;
 	createProject: ((path?: string) => void) | null;
 	recentCards: HomeRecentCard[] | null;
+	/**
+	 * 与 Pinia store 双向桥接的窗口状态（`stores/home.ts` 的 `homeStateKeys` 就是它），
+	 * 类型与 store 的 `shallowRef<string>('closed')` 对齐。
+	 */
+	state: string;
 
 	initialize: ((this: typeof Home) => void) | null;
 	updateCenterPosition: ((this: typeof Home) => void) | null;
@@ -72,12 +75,11 @@ interface HomeShape {
 	startClick: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
 	recentClick: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
 	recentPointerup: ((this: typeof Home, event: YamiMouseEvent) => void) | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 export const Home: HomeShape = {
 	dependsOn: ['Layout'],
+	state: 'closed',
 	initialize: null,
 	updateCenterPosition: null,
 	parseRecentProjects: null,

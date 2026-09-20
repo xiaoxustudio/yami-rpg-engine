@@ -55,11 +55,11 @@ export class ScriptListInterface implements IScriptListInterface {
 	type!: string;
 	filter!: string;
 	script: ScriptData | null = null;
-	editor: { target?: ScriptListItem } | null = null;
+	editor: { target?: ScriptListItem | null } | null = null;
 	owner: { history?: unknown } | null = null;
 	history: IEditableHistory | null = null;
 
-	constructor(editor?: { target?: ScriptListItem }, owner?: unknown) {
+	constructor(editor?: { target?: ScriptListItem | null }, owner?: unknown) {
 		this.editor = editor ?? null;
 		this.owner = owner ?? null;
 	}

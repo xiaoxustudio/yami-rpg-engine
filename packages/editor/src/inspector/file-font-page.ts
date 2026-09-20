@@ -13,9 +13,19 @@ import { encodeURL } from '@app/utils/css';
 		extname: string;
 		path: string;
 	}
+	type FileFontPreviews = YamiElement[] & { dpr?: number };
 	interface FileFontShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		target: FileFontFileShape | null;
+		meta: unknown;
+		symbol: symbol | null;
+		info: { name: string; size: string } | null;
+		font: FontFace | null;
+		previews: FileFontPreviews | null;
+		initialize: (() => void) | null;
+		open: ((file: FileFontFileShape, meta: unknown) => void) | null;
+		close: (() => void) | null;
+		update: (() => void) | null;
+		windowResize: (() => void) | null;
 	}
 	const FileFont: FileFontShape = {
 		target: null,
@@ -45,7 +55,7 @@ import { encodeURL } from '@app/utils/css';
 			};
 			this.update!();
 
-			const previews = this.previews;
+			const previews = this.previews!;
 			const path = File.route!(file.path);
 			const url = encodeURL(path);
 			const font = new FontFace('preview', url);
@@ -89,7 +99,7 @@ import { encodeURL } from '@app/utils/css';
 	};
 
 	FileFont.windowResize = function (this: FileFontShape) {
-		const previews = FileFont.previews;
+		const previews = FileFont.previews!;
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;

@@ -15,10 +15,15 @@ import { clone as deepClone } from '@app/utils/object';
 
 type SceneItem = {
 	class: string;
-	// oxlint-disable-next-line no-explicit-any
-	element: HTMLElement & { [k: string]: any };
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	element: HTMLElement;
+	/** 树列表里的显示名（`copy` 写入、重命名读写） */
+	name?: string;
+	/** tilemap 的快捷栏编号（只有 tilemap 有） */
+	shortcut?: number;
+	/** 树列表挂上的父节点（新建时还没有，`!` 只在「已在树里」的读点用） */
+	parent?: SceneItem;
+	/** 子树（叶子没有） */
+	children?: SceneItem[];
 };
 
 // 列表 - 复制
@@ -79,12 +84,12 @@ Scene.list.duplicate = function (this: typeof Scene, item: SceneItem) {
 			break;
 	}
 	copy.name = this.generateUniqueName!(item);
-	const index = item.parent.children.indexOf(item);
-	const next = item.parent.children[index + 1];
+	const index = item.parent!.children!.indexOf(item);
+	const next = item.parent!.children![index + 1];
 	if (next) {
 		this.addNodeTo!(copy, next, true);
 	} else {
-		this.addNodeTo!(copy, item.parent);
+		this.addNodeTo!(copy, item.parent!);
 	}
 };
 
@@ -175,8 +180,8 @@ Scene.list.createTilemapShortcutItems = function (this: typeof Scene, tilemap: S
 // 列表 - 恢复递归状态
 Scene.list.restoreRecursiveStates = (function IIFE() {
 	const restore = (node: SceneItem, key: string, states: SceneItem[], index: number) => {
-		if (node[key] !== undefined) {
-			node[key] = states[index++];
+		if (Reflect.get(node, key) !== undefined) {
+			Reflect.set(node, key, states[index++]);
 		}
 		const children = node.children;
 		if (children !== undefined) {
@@ -195,9 +200,9 @@ Scene.list.restoreRecursiveStates = (function IIFE() {
 // 列表 - 设置递归状态
 Scene.list.setRecursiveStates = (function IIFE() {
 	const set = (node: SceneItem, key: string, state: boolean, backups: unknown[]) => {
-		if (node[key] !== undefined) {
-			backups.push(node[key]);
-			node[key] = state;
+		if (Reflect.get(node, key) !== undefined) {
+			backups.push(Reflect.get(node, key));
+			Reflect.set(node, key, state);
 		}
 		const children = node.children;
 		if (children !== undefined) {
@@ -223,23 +228,23 @@ Scene.list.updateFolderState = (function IIFE() {
 		}
 	};
 	const toggle = (folder: SceneItem) => {
-		folder[key] = !folder[key];
+		Reflect.set(folder, key, !Reflect.get(folder, key));
 		list.update();
-		check(folder.parent);
+		check(folder.parent!);
 	};
 	const update = (folder: SceneItem) => {
-		const items = folder.children;
-		const state = folder[key];
+		const items = folder.children ?? [];
+		const state = Reflect.get(folder, key);
 		if (state) {
 			for (const item of items) {
-				if (item[key] === false) {
+				if (Reflect.get(item, key) === false) {
 					toggle(folder);
 					return;
 				}
 			}
 		} else {
 			for (const item of items) {
-				if (item[key] === false) {
+				if (Reflect.get(item, key) === false) {
 					return;
 				}
 			}
@@ -256,7 +261,7 @@ Scene.list.updateFolderState = (function IIFE() {
 Scene.list.canSwitchState = (function IIFE() {
 	const check = (item: SceneItem) => {
 		if (item.class === 'folder') {
-			for (const child of item.children) {
+			for (const child of item.children ?? []) {
 				if (check(child)) return true;
 			}
 			return false;

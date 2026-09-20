@@ -10,15 +10,25 @@ import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileSceneShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		button: YamiElement | null;
+		owner: {
+			setTarget: (target: unknown) => void;
+			planToSave: () => void;
+			readonly history: unknown;
+		} | null;
+		target: FileSceneData | null;
+		initialize: (() => void) | null;
+		create: (() => FileSceneData) | null;
+		open: ((scene: FileSceneData) => void) | null;
+		close: (() => void) | null;
+		write: ((options: { width?: number; height?: number }) => void) | null;
+		update: ((scene: FileSceneData, key: string, value: unknown) => void) | null;
 	}
 	interface FileSceneData {
 		width: number;
 		height: number;
 		tileWidth: number;
 		tileHeight: number;
-		[k: string]: unknown;
 	}
 	const FileScene: FileSceneShape = {
 		button: null,

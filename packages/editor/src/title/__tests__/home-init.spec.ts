@@ -9,14 +9,14 @@ describe('Home.initialize（Layout 时序判空回归：11.32/11.32b）', () => 
 
 	beforeEach(() => {
 		Layout.manager = null;
-		Home.state = null;
+		Home.state = 'closed';
 		Home.windowResize = vi.fn();
 		Home.windowLocalize = vi.fn();
 	});
 
 	afterEach(() => {
 		Layout.manager = null;
-		Home.state = null;
+		Home.state = 'closed';
 		Home.windowResize = originalWindowResize;
 		Home.windowLocalize = originalWindowLocalize;
 	});

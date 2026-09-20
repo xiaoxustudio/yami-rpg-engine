@@ -14,9 +14,49 @@ import { roundTo } from '@app/utils/math';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 {
+	/** 波形 Promise：运行时会被挂上 `canceled` 标记（close 时用来作废回调）；url 可能缺（见 getWaveform 声明） */
+	type AudioWaveformPromise = Promise<string | undefined> & { canceled?: boolean };
+	/** 进度条元素：运行时被挂上 `percent` */
+	type AudioProgressElement = HTMLElement & { percent?: number };
+	/** 指针元素：运行时被挂上 `time` */
+	type AudioPointerElement = HTMLElement & { time?: number };
 	interface FileAudioShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		target: FileItem | null;
+		meta: FileMeta | null;
+		symbol: symbol | null;
+		promise: AudioWaveformPromise | null;
+		progress: AudioProgressElement | null;
+		progressFiller: HTMLElement | null;
+		pointer: AudioPointerElement | null;
+		currentTimeInfo: HTMLElement | null;
+		pointerTimeInfo: HTMLElement | null;
+		canvas: HTMLCanvasElement | null;
+		context: CanvasRenderingContext2D | null;
+		dataArray: Uint8Array<ArrayBuffer> | null;
+		intervals: Float64Array | null;
+		intensities: (Float64Array & { index: number }) | null;
+		rotation: number | null;
+		lineColor: string | null;
+		initialize: (() => void) | null;
+		open: ((file: FileItem, meta: FileMeta | null) => void) | null;
+		close: (() => void) | null;
+		play: (() => void) | null;
+		writeParams: ((params: AudioParams) => void) | null;
+		updateParams: ((params: AudioParams) => void) | null;
+		updateParamInfos: ((params: AudioParams) => void) | null;
+		updateCanvas: (() => void) | null;
+		formatTime: ((time: number) => string) | null;
+		requestAnimation: (() => void) | null;
+		updateAnimation: ((deltaTime: number) => void) | null;
+		stopAnimation: (() => void) | null;
+		themechange: ((event: YamiEvent) => void) | null;
+		windowResize: ((event: YamiEvent) => void) | null;
+		progressPointerdown: ((event: PointerEvent) => void) | null;
+		progressPointermove: ((event: PointerEvent) => void) | null;
+		progressPointerleave: ((event: PointerEvent) => void) | null;
+		info: { name: string; size: string; duration: string; bitrate: string } | null;
+		params: AudioParams | null;
+		update: (() => void) | null;
 	}
 	interface AudioParams {
 		volume: number;
@@ -93,7 +133,8 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 				void promise.then((url) => {
 					if (this.promise === promise) {
 						this.promise = null;
-						this.progress.style.webkitMaskImage = url;
+						// url 可能是 undefined（getWaveform 的声明如此）：塞给 CSSOM 会被当无效值忽略 —— 断言只为过类型
+						this.progress!.style.webkitMaskImage = url as string;
 						addClass(this.progress, 'visible');
 					}
 				});
@@ -176,7 +217,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 	FileAudio.updateCanvas = function (this: typeof FileAudio) {
 		const manager = Inspector.manager;
-		const canvas = this.canvas;
+		const canvas = this.canvas!;
 		const scrollTop = manager.scrollTop;
 		if (hasClass(canvas, 'hidden')) {
 			if (canvas.width !== 0) {
@@ -218,7 +259,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 	FileAudio.requestAnimation = function (this: typeof FileAudio) {
 		if (this.target !== null) {
-			Timer.appendUpdater!('sharedAnimation', this.updateAnimation);
+			Timer.appendUpdater!('sharedAnimation', this.updateAnimation!);
 		}
 	};
 
@@ -230,32 +271,32 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		const pw = Math.round((cw * currentTime) / duration);
 		const pp = roundTo((pw / cw) * 100, 6);
 		const { progress, progressFiller } = FileAudio;
-		if (progress.percent !== pp) {
-			progress.percent = pp;
-			progressFiller.style.width = `${pp}%`;
+		if (progress!.percent !== pp) {
+			progress!.percent = pp;
+			progressFiller!.style.width = `${pp}%`;
 		}
 
-		const time = FileAudio.formatTime(currentTime);
-		const currentTimeInfo = FileAudio.currentTimeInfo;
+		const time = FileAudio.formatTime!(currentTime);
+		const currentTimeInfo = FileAudio.currentTimeInfo!;
 		if (currentTimeInfo.textContent !== time) {
 			currentTimeInfo.textContent = time;
 		}
 
-		const canvas = FileAudio.canvas;
-		const context = FileAudio.context;
+		const canvas = FileAudio.canvas!;
+		const context = FileAudio.context!;
 		const width = canvas.width;
 		const height = canvas.height;
 		if (width * height === 0) {
 			return;
 		}
 		const analyser = AudioManager.analyser!;
-		const array = FileAudio.dataArray;
+		const array = FileAudio.dataArray!;
 		const aLength = array.length;
 		const start = Math.floor(aLength * 0.1);
 		const end = Math.floor(aLength * 0.85);
 		const step = (Math.PI * 2) / (end - start);
-		const intervals = FileAudio.intervals;
-		const intensities = FileAudio.intensities;
+		const intervals = FileAudio.intervals!;
+		const intensities = FileAudio.intensities!;
 		const length = intensities.length;
 		const index = intensities.index;
 		let intensity = 0;
@@ -298,12 +339,12 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		const lineWidth = size * 0.005;
 		const halfWidth = lineWidth / 2;
 		const fRadius = size / 2 - padding - amplitude;
-		const rotation = FileAudio.rotation - start * step;
+		const rotation = FileAudio.rotation! - start * step;
 		const MathCos = Math.cos;
 		const MathSin = Math.sin;
 		context.clearRect(0, 0, width, height);
 		context.lineWidth = lineWidth;
-		context.strokeStyle = FileAudio.lineColor;
+		context.strokeStyle = FileAudio.lineColor!;
 		context.beginPath();
 		for (let i = start; i < end; i++) {
 			const freq = array[i];
@@ -345,11 +386,11 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		context.globalAlpha = 0.25;
 		context.stroke();
 
-		FileAudio.rotation -= (Math.PI * deltaTime) / 15000;
+		FileAudio.rotation! -= (Math.PI * deltaTime) / 15000;
 	};
 
 	FileAudio.stopAnimation = function (this: typeof FileAudio) {
-		Timer.removeUpdater!('sharedAnimation', this.updateAnimation);
+		Timer.removeUpdater!('sharedAnimation', this.updateAnimation!);
 	};
 
 	FileAudio.themechange = function (this: typeof FileAudio, event: YamiEvent) {
@@ -365,7 +406,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 	FileAudio.windowResize = function (this: typeof FileAudio, _event: YamiEvent) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
-			FileAudio.updateCanvas();
+			FileAudio.updateCanvas!();
 		}
 	};
 
@@ -373,16 +414,18 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		switch (event.button) {
 			case 0: {
 				const { audio } = AudioManager.player!;
-				const { time } = FileAudio.pointer;
+				const { time } = FileAudio.pointer!;
 				if (time !== -1) {
-					audio.currentTime = time;
+					// `pointer.time` 在首次 pointermove 之前是 undefined（Vue 页只设 element，不设 time），
+					// `undefined !== -1` 为 true ⇒ 这里本来就会把 undefined 交给 currentTime。断言只为过类型。
+					audio.currentTime = time as number;
 				}
 				break;
 			}
 		}
 	};
 
-	FileAudio.progressPointermove = function (this: typeof FileAudio, event: PointerEvent) {
+	FileAudio.progressPointermove = function (this: HTMLElement, event: PointerEvent) {
 		const { pointer, pointerTimeInfo } = FileAudio;
 		const { duration } = AudioManager.player!.audio;
 		if (!isNaN(duration)) {
@@ -390,21 +433,21 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 			const boxWidth = this.clientWidth;
 			const ratio = pointerX / Math.max(boxWidth - 1, 1);
 			const time = ratio * duration;
-			pointer.time = time;
-			pointer.style.left = `${pointerX}px`;
+			pointer!.time = time;
+			pointer!.style.left = `${pointerX}px`;
 			show(pointer);
-			pointerTimeInfo.textContent = FileAudio.formatTime(time);
+			pointerTimeInfo!.textContent = FileAudio.formatTime!(time);
 			show(pointerTimeInfo);
-			const infoWidth = pointerTimeInfo.clientWidth + 16;
+			const infoWidth = pointerTimeInfo!.clientWidth + 16;
 			const infoX = Math.min(pointerX, boxWidth - infoWidth);
-			pointerTimeInfo.style.left = `${infoX}px`;
+			pointerTimeInfo!.style.left = `${infoX}px`;
 		}
 	};
 
 	FileAudio.progressPointerleave = function (this: typeof FileAudio, _event: PointerEvent) {
 		const { pointer, pointerTimeInfo } = FileAudio;
-		if (pointer.time !== -1) {
-			pointer.time = -1;
+		if (pointer!.time !== -1) {
+			pointer!.time = -1;
 			hide(pointer);
 			hide(pointerTimeInfo);
 		}

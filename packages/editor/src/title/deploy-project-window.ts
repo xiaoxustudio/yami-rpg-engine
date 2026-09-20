@@ -70,6 +70,23 @@ type DeploymentFileItem = {
 // oxlint-disable-next-line no-explicit-any
 type DeploymentMethod = ((...args: any[]) => any) | null;
 
+/** `manifest` 里**按 guid 分组**的键（值是 `Record<string, unknown>`） */
+type DeploymentGroupKey =
+	| 'ui'
+	| 'scenes'
+	| 'actors'
+	| 'triggers'
+	| 'states'
+	| 'events'
+	| 'tilesets'
+	| 'animations'
+	| 'particles'
+	| 'skills'
+	| 'items'
+	| 'equipments';
+/** `manifest` 里**以数组**保存文件元数据的键 */
+type DeploymentListKey = 'images' | 'audio' | 'videos' | 'fonts' | 'others';
+
 interface DeploymentManifest {
 	ui: Record<string, unknown>;
 	scenes: Record<string, unknown>;
@@ -89,8 +106,6 @@ interface DeploymentManifest {
 	fonts: unknown[];
 	script: unknown[];
 	others: unknown[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 interface DeploymentShape {
@@ -314,7 +329,7 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 		'tilesets',
 		'animations',
 		'particles'
-	]) {
+	] as DeploymentGroupKey[]) {
 		const sGroup = Data[key];
 		const dGroup = manifest[key];
 		for (const guid of Object.keys(sGroup)) {
@@ -323,7 +338,7 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 		}
 	}
 	const guidAndExt = /\.[0-9a-f]{16}\.\S+$/;
-	for (const key of ['skills', 'items', 'equipments']) {
+	for (const key of ['skills', 'items', 'equipments'] as DeploymentGroupKey[]) {
 		const dataGroup = Data[key];
 		const manifestGroup = manifest[key];
 		for (const { guid, path } of Data.manifest[key]) {
@@ -439,7 +454,7 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 		});
 	}
 	const fontNameRegexp = /([^/]+)\.\S+\.\S+$/;
-	for (const key of ['images', 'audio', 'videos', 'fonts', 'others']) {
+	for (const key of ['images', 'audio', 'videos', 'fonts', 'others'] as DeploymentListKey[]) {
 		const sMetaList = Data.manifest[key];
 		const dMetaList = manifest[key];
 		for (const { guid, path, size } of sMetaList) {

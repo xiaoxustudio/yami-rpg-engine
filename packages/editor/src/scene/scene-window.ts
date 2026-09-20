@@ -25,9 +25,15 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
 // 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
+// 形状与 `scene-list.ts` 的 `SceneItem` **成对维护**：两边字段不一致时，`Scene.list.*` 的
+// 赋值会以 TS2322 报出来（门面要求 `SceneListItem` 可赋给实现侧的 `SceneItem`）。
 interface SceneListItem {
 	class: string;
 	element: HTMLElement & { [k: string]: unknown };
+	name?: string;
+	shortcut?: number;
+	parent?: SceneListItem;
+	children?: SceneListItem[];
 }
 
 interface SceneListExtensions {

@@ -9,8 +9,16 @@ import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileScriptShape {
-		// oxlint-disable-next-line no-explicit-any
-		[k: string]: any;
+		target: FileItem | null;
+		meta: FileMeta | null;
+		info: { name: string; size: string } | null;
+		overview: HTMLElement | null;
+		initialize: (() => void) | null;
+		create: (() => string) | null;
+		open: ((file: FileItem, meta: FileMeta | null) => Promise<void>) | null;
+		close: (() => void) | null;
+		update: (() => void) | null;
+		windowLocalize: ((event: Event) => void) | null;
 	}
 	const FileScript: FileScriptShape = {
 		target: null,
@@ -76,7 +84,7 @@ export default class Plugin {
 		if (FileScript.target) {
 			const { target, meta } = FileScript;
 			FileScript.target = null;
-			FileScript.open(target, meta);
+			void FileScript.open!(target, meta);
 		}
 	};
 
