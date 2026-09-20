@@ -1605,7 +1605,7 @@ head?: { view: { write(index: number): void } } | null;
 | `unitWidth` / `unitHeight` / `textureWidth` / `textureHeight` | `number` | 读点在渲染循环（`const sw = layer.unitWidth`），赋点 `this.unitWidth = Math.floor(texture.width / data.sprite.hframes)` |
 | `easing` | `{ ease(t: number): number }` | 读点只有 `easing.ease(this.elapsed / this.lifetime)`。⚠️ 这里**不能**写 `Easing`：`data/transition-window.ts` 的 `Easing` 是 `export const Easing = EasingBase as …`（**值**，不是类型），所以按结构写；另外它也不该写成 `Float32Array`（同名的 `easing` 在 `ParticleLayerShape` 上才是 `Float32Array | null`，两个接口的 `easing` **不是一回事** —— 一开始照抄就吃了 `Property 'ease' does not exist on type 'Float32Array'`） |
 
-**结果**：`any-hatches` **35 → 34 处**（`particle-engine.ts` 从 8 处清到 **2 处**，只剩嵌套形状的
+**结果**：`any-hatches` **35 → 34 处**（`particle-engine.ts` 从 8 处清到 **4 处**（第 53 轮内联 `static stage`、第 54 轮 `ParticleLayerShape` + `ParticleElementRef`、第 55 轮 `ParticleElementLayer`），只剩嵌套形状的
 `ParticleLayerData`(color/sprite) 与 `ParticleElementLayerData`(area/color)）。产物与 HEAD **逐字节相同**；
 `tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
 
@@ -2253,6 +2253,24 @@ pnpm build:vite              # 构建
 > 外溢约 60 个 `use*CommandSchema`）；`element-base.ts` 2 处；其余 6 个文件各 1 处
 > （`data-object.ts` / `element-classes.ts` / `ui-engine.ts` / `enum-window.ts` / `stores/ui.ts` / `types/shapes.ts`），
 > 其中 `DynamicShape` 与 `UIShape` / `UIElementInstance` / `DataModule` 是**读点遍布全仓**的承重形状。
+>
+> **`element-classes.ts` 的 `UIElementInstance`（1 处）单独记一笔**（第 56 轮试过、已回退）：它缺的是
+> `draw()` / `resize()` / `tryUpdateReferenceElements(parent)` / `addReference(prefab)` 四个方法，
+> 但**形参类型跨了三个文件**：调用点分别传 `UIElementInstance`（`element.parent`）、
+> `element-base.ts` 自己的 `UIElementShape`（`this`）、`UIParentShape`（`this.parent`）、
+> `PrefabElementShape`（`this.prefab`），而实现写在 `root-element.ts`：
+> `addReference(prefabElement: PrefabElementShape | null)`、
+> `tryUpdateReferenceElements(element: PrefabElementShape | this | null)`。
+> ⇒ 正确做法是**把这套共享形状抽出来导出**（`PrefabElementShape` 目前没导出），两边都用它；
+> 在调用点加单断言的话还要额外 `import type`（擦除、无循环依赖），且要过一遍实现侧的参数检查。
+> **别在轮末硬塞**——这是一次小小的类型设计决定，不是机械枚举。
+>
+> **`engine/ui/ui-engine.ts` 的 `UIShape`（1 处）同理**（第 57 轮试过、已回退）：7 个成员里 4 个是现成的
+> （`planToSave` / `requestRendering` / `updateControlPoints` 可空方法，另有 `renderingFunction`
+> 实际签名是 `(deltaTime: number) => void`），但 `controlPointTexture` / `marquee` / `hover`
+> 会把 WebGL 侧的形状拉进来 —— 报错落在 `ui-engine.ts` L554（`.instance` on `{} | undefined`）与
+> L653（`.base` on `{}`）⇒ 得先把这几个成员的真实形状（贴图/选框对象）追出来。
+> 记法：**凡是"某个成员的类型要把另一个子系统的形状拉进来"，就先停手**。
 
 ### 二、下一批工作单（都带**实测**成本，不是估的）
 
@@ -2280,6 +2298,9 @@ pnpm build:vite              # 构建
    （附录四/六/七/八/九记的都是这类改动造成的静默失效）。
 
 ### 三、门禁（本地 = CI 同一套；第 47/48 轮全部跑绿）
+
+> 站点归属先跑 `node scripts/any-hatch-inventory.mjs [--axis]`：它按站点行往上找最近的 interface 声明，
+> 输出「文件:行 + 接口名 + 是否 `export`」，口径与台账一致（第 58 轮新增；动机是第 54 轮漏掉 `export interface` 的那次错位）。
 
 ```bash
 pnpm migration:selftest && pnpm migration:check && pnpm dom:guard:tracker
