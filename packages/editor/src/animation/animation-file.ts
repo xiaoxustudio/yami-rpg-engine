@@ -149,7 +149,5 @@ Animation.destroy = function (this: typeof Animation, context: AnimationFileCont
 		this.close!();
 	}
 	context.editor.player.destroy();
-	TreeList.deleteCaches!(
-		context.animation.motions as unknown as Parameters<typeof TreeList.deleteCaches>[0]
-	);
+	TreeList.deleteCaches!(context.animation.motions);
 };

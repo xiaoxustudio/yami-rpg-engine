@@ -22,6 +22,7 @@ import {
 	ANY_HATCH_RE,
 	NULL_CAST_RE,
 	UNKNOWN_CAST_RE,
+	UI_SINGLETON_RE,
 	readSource,
 	ROOT
 } from './scan.mjs';
@@ -212,6 +213,72 @@ test('真实代码里的逃生口与断言照常命中', () => {
 	eq(countCodeMatches('interface X { [k: string]: any }', ANY_HATCH_RE), 1);
 	eq(countCodeMatches('const a = null as unknown as Foo;', NULL_CAST_RE), 1);
 	eq(countCodeMatches('const a = x as unknown as Foo;', UNKNOWN_CAST_RE), 1);
+});
+
+// 2026-09-20 扩口径：`Record<string, any>` 与索引签名是**同一个逃生的两种写法**。
+// 只数一种的话，把 `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」。
+test('Record<string, any> 与索引签名计同一条轴', () => {
+	eq(countCodeMatches('const m: Record<string, any> = {};', ANY_HATCH_RE), 1);
+	eq(countCodeMatches('type M = Record<string, any>;', ANY_HATCH_RE), 1);
+	eq(countCodeMatches('interface X { [key: string]: any }', ANY_HATCH_RE), 1);
+});
+
+test('Record 收紧后的写法不算逃生口', () => {
+	eq(countCodeMatches('const m: Record<string, unknown> = {};', ANY_HATCH_RE), 0);
+	eq(countCodeMatches('const m: Record<string, string> = {};', ANY_HATCH_RE), 0);
+	// `Record<string, any[]>` 的元素类型是数组，不是 `any` 本身
+	eq(countCodeMatches('const m: Record<string, any[]> = {};', ANY_HATCH_RE), 0);
+});
+
+test('注释里提到 Record<string, any> 不算逃生口', () => {
+	eq(countCodeMatches('// 旧写法是 Record<string, any>\nconst a = 1;\n', ANY_HATCH_RE), 0);
+});
+
+// ---------------------------------------------------------------------------
+// UI 单例成员挂载：legacy-ui-lines 的替代轴口径
+// ---------------------------------------------------------------------------
+
+process.stdout.write('\nUI_SINGLETON_RE —— 不受目录影响的 1c 进度口径\n');
+
+test('成员挂载照常命中（含链式赋值）', () => {
+	eq(countCodeMatches('UI.open = function () {};', UI_SINGLETON_RE), 1);
+	eq(countCodeMatches('UI.setZoom = UIEngine.setZoom;', UI_SINGLETON_RE), 1);
+	// 链式：行首锚定的 grep 数不到这一处（实测 ui-prefab.ts:105）
+	eq(
+		countCodeMatches('uiElClasses.createElement = UI.createElement = function () {};', UI_SINGLETON_RE),
+		1
+	);
+});
+
+// 本轴数的是「挂在 UI **单例本身**上的成员」。`UI.list.copy = null` / `UI.marquee.resize = null`
+// 这类改的是**成员的成员**，`list` / `marquee` 早已挂好 —— 不算新的挂载点。
+// （注意：`ui-slots.mjs` 的 `assignedSlots()` 把这类算作「该槽位有赋值」，那是**另一个口径**，
+//   服务的是「槽位会不会读到 undefined」，不是「单例面上还剩多少成员」。两者不可互换。）
+test('成员的成员不算单例挂载', () => {
+	eq(countCodeMatches('UI.list.copy = null;', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('UI.marquee.resize = null;', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('UI.prefabs.x = 1;', UI_SINGLETON_RE), 0);
+});
+
+// 唯一的程序化挂载写法：ui-window.ts:256 给 6 个 store 桥接键装 getter/setter。
+// 那是**状态同步**，不是成员挂载，故有意不计入本轴。
+test('Object.defineProperty(UI, key, …) 不计入本轴', () => {
+	eq(countCodeMatches('Object.defineProperty(UI, key, { get, set });', UI_SINGLETON_RE), 0);
+});
+
+// 裸 `\s*=` 会把比较误判成赋值：实测 ui-events.ts:80 就栽在这里（104 vs 103）
+test('比较运算符不算成员挂载', () => {
+	eq(countCodeMatches('if (state === "open" && UI.dragging === null) {}', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('if (UI.zoom == null) {}', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('const a = UI.height >= 1;', UI_SINGLETON_RE), 0);
+});
+
+test('只读与注释不算成员挂载（纯移动不该让本轴下降）', () => {
+	eq(countCodeMatches('const h = UI.outerHeight;', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('UI.page.resize();', UI_SINGLETON_RE), 0);
+	eq(countCodeMatches('// 原先这里是 UI.background = new StageColor(…)\nconst a = 1;\n', UI_SINGLETON_RE), 0);
+	// 别的单例不算：本轴只盯 UI
+	eq(countCodeMatches('Scene.list = {};', UI_SINGLETON_RE), 0);
 });
 
 // ---------------------------------------------------------------------------

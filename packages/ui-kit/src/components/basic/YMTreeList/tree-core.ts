@@ -9,6 +9,29 @@ export type TreeItem = {
 	[key: string]: unknown;
 };
 
+/**
+ * 树形参数的**最小结构契约**（P2b-4，2026-09-20）。
+ *
+ * `TreeItem` 带 `[key: string]: unknown` 索引签名 —— 它在 `cloneNode`（`node[key]`）与
+ * `findItemByProperties`（`item[key]`）里是**承重的**，删不掉。但**接口没有隐式索引签名**，
+ * 于是任何以 `interface` 声明的树形数据（`CustomCommandItem[]` / `AnimationMotion[]` /
+ * `PluginData[]` / `CommandObject[]` …）都**不能**赋给 `TreeItem[]`。
+ *
+ * 这就是调用方被迫写 `as unknown as Parameters<typeof TreeList.deleteCaches>[0]`
+ * 的**唯一**原因 —— 不是数据形状不对，是索引签名对不上。
+ *
+ * `createParents` / `deleteCaches` 这两个 API 实际只用「可挂 `parent` / 可枚举 `children`」，
+ * 并不需要索引签名。所以参数改用这个结构类型：调用方零断言，且 `TreeItem` 依然可赋进来
+ * （有索引签名的类型赋给无索引签名的目标是合法的）。
+ *
+ * ⚠️ 注意 `children` 显式接受 `null` —— `CustomFolder.children` 就是
+ * `CustomCommandItem[] | null`（父/子可以是**不同**类型，所以这里不能写成单个泛型 `<T>`）。
+ */
+export type TreeShapeNode = {
+	children?: TreeShapeNode[] | null;
+	parent?: TreeShapeNode | null;
+};
+
 export type NodeElement = HTMLElement & {
 	item?: TreeItem;
 	indent: number;
@@ -24,8 +47,8 @@ export type NodeElement = HTMLElement & {
 };
 
 export interface TreeCore {
-	createParents: (items: TreeItem[], parent: TreeItem | null) => void;
-	deleteCaches: (data: TreeItem[] & { initialized?: unknown }) => void;
+	createParents: (items: TreeShapeNode[], parent: TreeShapeNode | null) => void;
+	deleteCaches: (data: TreeShapeNode[] & { initialized?: unknown }) => void;
 	cloneNode: (node: TreeItem) => TreeItem;
 	searchNodesAlgorithm: (data: TreeItem[], keyword: RegExp, list: TreeItem[]) => void;
 	generateUniqueName: (item: TreeItem) => string;
@@ -43,7 +66,7 @@ export function createTreeCore(): TreeCore {
 		value: null
 	};
 
-	const createParents = (items: TreeItem[], parent: TreeItem | null): void => {
+	const createParents = (items: TreeShapeNode[], parent: TreeShapeNode | null): void => {
 		const length = items.length;
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
@@ -58,11 +81,17 @@ export function createTreeCore(): TreeCore {
 		}
 	};
 
-	const deleteCaches = (data: TreeItem[] & { initialized?: unknown }): void => {
-		const uninstall = (items: TreeItem[]): void => {
+	const deleteCaches = (data: TreeShapeNode[] & { initialized?: unknown }): void => {
+		const uninstall = (items: TreeShapeNode[]): void => {
 			for (const item of items) {
 				delete item.parent;
-				if (item.children !== undefined) {
+				// `children` 在树形数据里可以是 `null`（`CustomFolder.children` 就是
+				// `CustomCommandItem[] | null`），而 `null` **不等于** `undefined` ——
+				// 原先写 `!== undefined` 会让 `null` 被送进 `uninstall()`，在
+				// `for (const item of items)` 上抛 "TypeError: items is not iterable"。
+				// 用真值判断同时收掉 `undefined` / `null` / `[]`（后两者都是空转，
+				// 与 `createParents` 的 `if (children && children.length > 0)` 一致）。
+				if (item.children) {
 					uninstall(item.children);
 				}
 			}

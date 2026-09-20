@@ -38,10 +38,11 @@ import {
 	DOM_PATTERNS,
 	NULL_CAST_RE,
 	UNKNOWN_CAST_RE,
-	ANY_HATCH_RE
+	ANY_HATCH_RE,
+	UI_SINGLETON_RE
 } from './lib/scan.mjs';
 import { loadDomWhitelist, readDomWhitelist } from './lib/dom-whitelist.mjs';
-import { uiSlotCoverage } from './lib/ui-slots.mjs';
+import { uiSlotCoverage, declaredSlots } from './lib/ui-slots.mjs';
 
 const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
 
@@ -201,6 +202,46 @@ function buildAxes() {
 			}
 		},
 		{
+			id: 'ui-singleton-members',
+			label: '遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）',
+			target: 'zero',
+			measure() {
+				// 为什么必须有这条轴（2026-09-20 实测的度量漏洞）：
+				//
+				// `legacy-ui-lines` 的口径是 `collectFiles({ dirs: ['packages/editor/src/ui'] })`
+				// ——**目录**行数。阶段 1c 的第 ② 步是「把 8 个域模块**原样搬到**
+				// `engine/ui/`，内容零改动，只改 import 路径」，那一步会让 `legacy-ui-lines`
+				// **立刻读到 0**，而遗留代码一行都没少。实测 `collectFiles` 对不存在的目录
+				// 返回 `[]`（不抛错），所以这条轴会**静默变绿**，后续 ③④ 步再无数字守着。
+				//
+				// 本口径按 `UI.x = ` 赋值处数计，与文件在哪个目录无关：
+				// 纯移动不会让它下降，只有真正把成员迁走才会。两条轴**同时**归零才算 1c 收口。
+				//
+				// 站点构成（2026-09-20 起始值 103 处 / 8 文件）：
+				//   ui-events 21 · ui-window 21（全是 `UI.x = UIEngine.x` 镜像）· ui-transform 18
+				//   ui-file 15 · ui-list 10 · ui-prefab 9 · ui-pointer 8 · ui-initialize 1
+				//
+				// ⚠️ 不要改用「行首锚定」近似：`ui-prefab.ts:105` 是链式赋值
+				// `uiElClasses.createElement = UI.createElement = …`，行首数不到它
+				// （文档里「102 处」就是那么来的，比真实值少 1）。同理裸 `\s*=` 会把
+				// `UI.dragging === null` 数成赋值（+1）。正则与理由见 `scan.mjs`。
+				const r = countCodeByFile(src, UI_SINGLETON_RE);
+				return {
+					// `declared` = 对象字面量**自身**的槽位数（现 134）。为什么并进这条轴：
+					//
+					// 1c 的第 ④ 步才是「对象字面量退役」，而守它的 `legacy-ui-lines` 是**目录**
+					// 口径 —— 第 ② 步搬完就 0。若本轴只数挂载点，「删掉 21 行镜像、留下字面量」
+					// 就能让它归零，1c 会在**字面量还在**的情况下被判收口。
+					// 两个数字（挂载点 103 / 字面量槽位 134）**同时**为 0，才是真的删干净了。
+					//
+					// `declaredSlots()` 已改为按内容定位 UI 窗口文件（原先是写死路径），
+					// 否则第 ② 步的纯搬运会让它静默返回空数组 —— 那同样是「仪器瞎了」。
+					value: { total: r.total, files: r.fileCount, declared: declaredSlots().length },
+					detail: r.perFile
+				};
+			}
+		},
+		{
 			id: 'null-casts',
 			label: '遗留单例形状：null as unknown as',
 			target: 'zero',
@@ -226,9 +267,13 @@ function buildAxes() {
 		},
 		{
 			id: 'any-hatches',
-			label: '泛型逃生口 [k|key: string]: any',
+			label: '泛型逃生口 [k|key: string]: any / Record<string, any>',
 			target: 'zero',
 			measure() {
+				// 口径在 2026-09-20 扩过一次：原先只数索引签名 `[k: string]: any`，
+				// 看不见 `Record<string, any>`（实测 35 处 / 31 文件）。两者是**同一个逃生的
+				// 两种写法**，只数一种的话，改个写法就能凭空「归零」。扩展当轮：
+				// 32（索引签名）+ 35（Record）= **67 处 / 38 文件**，已按棘轮纪律显式记入新基线。
 				const r = countCodeByFile(src, ANY_HATCH_RE);
 				return {
 					value: { total: r.total, files: r.fileCount },
@@ -420,6 +465,10 @@ function renderValue(value) {
 function renderTable(axes, cmp) {
 	const w = (s) => [...String(s)].reduce((n, c) => n + (c.charCodeAt(0) > 0x2e80 ? 2 : 1), 0);
 	const pad = (s, n) => String(s) + ' '.repeat(Math.max(0, n - w(s)));
+	// 列值超过列宽时 `pad` 会原样返回、**不留分隔** ⇒ 相邻列的「当前」与「基线」会连成
+	// 一串，被读成一个数。实测就有人把 `…engineBacked=7` 后面的 `0 declared=…` 读成了
+	// 「engineBacked=70」，并把这个数字抄进了文档。所有列一律带一个尾随空格，杜绝粘连。
+	const col = (s, n) => pad(`${String(s)} `, n);
 	const idW = Math.max(...axes.map((a) => w(a.id)));
 	const labelW = Math.max(...axes.map((a) => w(a.label)));
 	const targetW = 6;
@@ -429,7 +478,7 @@ function renderTable(axes, cmp) {
 	lines.push('迁移台账（migration-ledger）—— 只许变小');
 	lines.push('');
 	lines.push(
-		`${pad('轴', idW + 2)}${pad('说明', labelW + 2)}${pad('终态', targetW)}${pad('当前', 14)}${pad('基线', 14)}状态`
+		`${pad('轴', idW + 2)}${pad('说明', labelW + 2)}${pad('终态', targetW)}${col('当前', 14)}${col('基线', 14)}状态`
 	);
 	lines.push('-'.repeat(idW + labelW + targetW + 40));
 	for (const row of cmp.rows) {
@@ -440,7 +489,7 @@ function renderTable(axes, cmp) {
 		else if (row.baseline !== null) state = '= 持平';
 		lines.push(
 			`${pad(axis.id, idW + 2)}${pad(axis.label, labelW + 2)}${pad(TARGET_MARK[axis.target], targetW)}` +
-				`${pad(renderValue(axis.value), 14)}${pad(row.baseline === null ? '(未记录)' : renderValue(row.baseline), 14)}${state}`
+				`${col(renderValue(axis.value), 14)}${col(row.baseline === null ? '(未记录)' : renderValue(row.baseline), 14)}${state}`
 		);
 	}
 	lines.push('');

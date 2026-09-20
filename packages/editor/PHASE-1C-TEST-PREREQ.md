@@ -191,7 +191,8 @@ export const UndoManager = {
 | `ui-initialize.ts` | 1（`initialize`） | DOM 引用与定时器初始化 |
 | `element-registry.ts` / `register.ts` | 0 | 元素注册表 + import 顺序 |
 
-合计约 **102 处 `UI.x = ` 赋值**分布在 8 个域模块里。
+合计 **103 处 `UI.x = ` 赋值**分布在 8 个域模块里（本行早先写 102，漏了 `ui-prefab.ts:105` 的链式赋值；
+实测口径与守卫见文末「删完之后应该发生什么」）。
 
 ### 一个必须先补的缺口：**41 个槽位**
 
@@ -1595,6 +1596,60 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 62 轮（续轮）：`any-hatches`「可白捡组」探测 —— **负面结果：0 处**，以及一个度量漏洞
+
+第 38–61 轮反复出现「某个站点删了签名、`tsc` 零报错 ⇒ 直接删」的白捡（第 60 轮 `ParticleEmitterRef`
+就是这么拿下的）。本轮把这一步**机械化**成工具，以便不再靠人工试：
+
+```bash
+node scripts/any-hatch-probe.mjs
+```
+
+它逐文件删掉该文件里**独占一行**的索引签名（`\t[k: string]: any;`），跑 `tsc`，0 报错即「白捡」。
+自带工作树脏检查，结束时用 `git checkout -- .` 还原（只统计**已跟踪**文件，脚本自身是未跟踪的）。
+
+### 结果：13 个文件全部承重，白捡 0 处
+
+23 处独占一行站点逐文件实测（报错数含测试侧连带）：
+
+| 文件 | 独占一行站点 | 删后 `tsc` 报错 | 首条报错点名 |
+| --- | --- | --- | --- |
+| `scene/scene-window.ts` | 1 | **1446** | `MockedObject<SceneShape>` 缺 `target` / `meta` |
+| `animation/animation-window.ts` | 2 | **1191** | `AnimationShape` 缺 `requestRefreshingList` / `switchMark` / `requestRendering` |
+| `types/shapes.ts` | 1 | **889** | `DynamicShape` 缺 `fileAnimation` / `open` / `close` |
+| `data/data-object.ts` | 1 | **528** | `DataModule` 缺 `animations` / `attribute` |
+| `ui/ui-window.ts` | 2 | **520** | `UIShape` 缺 `drawBackground` / `drawElements`（`TS2551` 还提示 "Did you mean 'background'?"） |
+| `commands/schema.ts` | 2 | 110 | `TS7053` 索引取键 + `CommandSchema` 缺 `colorizeCodeLines` |
+| `particle/particle-window.ts` | 3 | 71 | `ParticleEmitterShape` 缺 `hasArea` / `outerLeft` / `outerTop` / `outerRight` |
+| `composables/useCommandParse.ts` | 3 | 70 | `CommandObjectShape` 缺 `eventId` |
+| `stores/ui.ts` | 1 | 27 | `UINodeShape` 缺 `presetId` / `instances` / `transform` |
+| `engine/ui/element-base.ts` | 2 | 22 | `UIElementShape` 缺 `connect` / `disconnect` / `draw` / `resize` |
+| `engine/particle/particle-engine.ts` | 3 | 19 | `ParticleLayerData` 缺 `sort` / `blend` / `color` |
+| `engine/ui/ui-engine.ts` | 1 | 16 | `UIShape` 缺 `planToSave` / `requestRendering` |
+| `engine/ui/element-classes.ts` | 1 | 7 | `UIElementInstance` 缺 `tryUpdateReferenceElements` / `addReference` |
+| **合计** | **23** | — | **可白捡 0 处** |
+
+**结论（写给下一批）**：`any-hatches` 剩下的 32 处**没有任何一处可以靠「只删签名」拿下**。
+白捡机制已经榨干 —— 第 38–61 轮能白捡的都捡完了，**剩下 100% 是「逐成员枚举进具名接口」的活**，
+且最小的 `element-classes.ts`（7 处报错）也已被第 56 轮判定为类型设计决定而非机械枚举。
+不要再用「先删了看 `tsc` 报什么」当作省力的赌注 —— **它一定报错，报错数是上表那一列**。
+
+> 另外注意：报错数**含测试侧连带**（`tsconfig.strict.json` 的 `include` 覆盖 `src/**/*.ts`，
+> 故 `src/**/__tests__/*.spec.ts` 也在内）。`scene-window.ts` 的 1446 里首条就是
+> `usePresetObjectWindow.spec.ts` 的 `MockedObject<SceneShape>` —— 说明改这些承重形状时
+> **测试侧 mock 会成批变红**，那正是「测试该改」与「代码真坏了」最容易混淆的地方。
+
+### 本轮同时修掉一个度量漏洞（详见文末）
+
+`legacy-ui-lines` 是**目录**口径，阶段 1c 第 ② 步「纯移动」会让它归零而遗留代码一行未少。
+已在文末「删完之后应该发生什么」一节写明替代轴 `ui-singleton-members`（**第 62 轮已落地**，起点实测 **103 处 / 8 文件**、`declared=134`）。
+
+### 验证（本轮）
+
+- 探针结束后工作树**干净**（`git status --porcelain --untracked-files=no` 为空）、`tsc` 0、
+  台账 13 轴与基线持平（`migration:check` 全绿）。
+- 本轮**无源码改动**，只新增工具 `scripts/any-hatch-probe.mjs`；`.oxlintrc` 白名单未动。
+
 ## 第 61 轮（续轮）：`element-base.ts` 的 2 处试过、判定为类型设计活并回退
 
 探针（删两处签名 → 一次 `tsc` → 按「类型.成员」去重）：22 条报错、**9 个成员**，看着是叶字段 ——
@@ -2001,6 +2056,7 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
    `types/history.ts`(31) / `stores/ui.ts` + `engine/ui/ui-engine.ts`。
 3. **口径缺口仍待决定**：`Record<string, any>`（35 处 / 31 文件）是否纳入本轴；
    以及上面三处「真问题」要不要修（都需要一次实机回归）。
+   > 〔第 62 轮补注〕`Record<string, any>` **已决定纳入**（见文末交接节）；三处「真问题」仍待决定。
 
 ## 第 44 轮（续轮）：`any-hatches` 56 → 52 —— 四个 inspector 单点，和一条被实测推翻的假设
 
@@ -2237,7 +2293,7 @@ editor **2056** 测试、ui-kit **810** 测试、台账全部轴持平。
 | `any-hatches` | 64 处 / 35 文件 | 按第 39 轮的量化排序：① `YMParameterPane.vue` 的 **71** 个动态成员读点（需要把 `attachStateAccessors` 挂的字段枚举进类型）；② 三个「全局/核心形状」`types/shapes.ts`（`DynamicShape`，全删引发 990 个错误）、`types/history.ts`（`HistoryData`，31 个错误）、`particle/particle-window.ts`（`ParticleEmitterShape`，71 个错误）—— 必须与读侧分批改；③ 其余按「删签名 → tsc/vue-tsc 点名 → 逐个枚举」推进 |
 | `legacy-ui-lines` | 2868 行 / 10 文件 | 阶段 1c：`src/ui/` 是 8 个域模块 + 1 个接线文件（附录三有拆分账）。收尾顺序见文末「删完之后应该发生什么」 |
 | `legacy-ui-refs` | 1 | = 阶段 1c 第 ① 步：`stores/ui.ts` 的 `loadUI` 从 `window-cluster → m.UI` 改为直连 `ui-engine.ts`。**运行时高危**（UI 窗口是本项目反复出崩溃的地方），**必须实机回归**，不要在没有实机验证的会话里动 |
-| `Record<string, any>` | 35 处 / 31 文件 | **口径缺口**：`any-hatches` 只统计 `[k: string]: any` 索引签名，看不见这种写法。要扩轴的话应先扩口径、再记新基线（会立刻从 64 抬到 99），**需要人的决定** |
+| `Record<string, any>` | 35 处 / 31 文件 | ✅ **已解决（2026-09-20 第 62 轮）**：口径已扩展并入 `any-hatches`，该轴随之 **32 → 67**，并显式记入新基线。理由：它与索引签名是**同一个逃生的两种写法**，只数一种的话把 `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」 |
 
 ### 三、门禁怎么跑（本地 = CI 同一套）
 
@@ -2268,23 +2324,34 @@ pnpm build:vite              # 构建
 
 ### 五、需要人来做决定 / 需要实机的两件事
 
-1. **`Record<string, any>` 是否纳入 `any-hatches` 口径**（见上；不纳入的话，这条轴的「归零」只覆盖约一半形态）。
+1. ~~**`Record<string, any>` 是否纳入 `any-hatches` 口径**~~ —— ✅ **已决定并落地（第 62 轮）**：纳入。口径扩展后该轴 32 → 67，并显式记入新基线（理由：两种写法是同一个逃生）。
 2. **阶段 1c 的实机回归**：`legacy-ui-refs` 1 → 0 与 `legacy-ui-lines` 2868 → 0 是运行时高危改动，需要能启动编辑器、逐个窗口点一遍的环境（附录四、六、七、八、九记的都是这类改动曾经造成的静默失效）。
 
 **另外**：本轮所有迁移改动都在**工作区**（HEAD 是 `9d19bb91 build(deps): bump vue to rc.9…`，即 rc.9 事务本身已提交）—— 是否分批提交由你决定。
 
-## 交接（第 47 轮 · 2026-09-19）：**当前**真实数字与工作单
+## 交接（第 62 轮 · 2026-09-20）：**当前**真实数字与工作单
 
-> 上面那节「交接（第 40 轮）」是当时的快照，数字已过时；**以本节为准**。
+> 本节原为「第 47 轮」的交接，**第 62 轮在其上刷新**（补 `ui-singleton-members` 轴、
+> 扩 `any-hatches` 口径、修两处「仪器瞎了」的写死路径）。下面各小节的**表格数字**是第 62 轮实测；
+> 其中的**逐文件工作单与教训**仍是第 47–61 轮沉淀的，依然有效。
+> 更早两节「交接（第 40 轮）」「交接（第 47 轮）」的数字已过时，保留作历史；**以本节为准**。
+>
+> ⚠️ 本文件里**任何数字**都请跑 `pnpm migration:ledger` 复核。本轮就抓到一次转录事故：
+> 台账表格列宽不足时相邻两列会**粘连**成一串，有人把 `…engineBacked=7` 后面的
+> `0 declared=…` 读成了「engineBacked=70」并抄进了 `xr.md`（真值 **7**）。该渲染缺陷已修
+> （每列加尾随空格），但「以脚本输出为准」这条纪律不能省。
 
-### 一、台账现状（13 轴，`pnpm migration:check` 全平）
+### 一、台账现状（14 轴，`pnpm migration:check` 全平）
+
+> 数字刷新于 **2026-09-20 第 62 轮**（补轴 + 扩口径当轮）。**以 `pnpm migration:ledger` 输出为准。**
 
 | 轴 | 现值 | 目标 |
 | --- | --- | --- |
-| `any-hatches` | **32 处 / 14 文件**（第 51–60 轮：43 → 41 → 38 → 37 → 35 → 34 → 33 → 32） | 归零 |
-| `unknown-casts` | **292 处 / 138 文件**（第 48 轮从 764 降下来） | 归零 |
+| `any-hatches` | **67 处 / 38 文件**（索引签名 32 + `Record<string, any>` 35；口径本轮扩展） | 归零 |
+| `unknown-casts` | **285 处 / 135 文件**（第 48 轮从 764 降下来） | 归零 |
+| `ui-singleton-members` | **103 处 / 8 文件**（`declared=134`）—— 本轮新增的替代轴 | 归零（与 `legacy-ui-lines` 同时） |
 | `legacy-ui-lines` | 2866 行 / 10 文件 | 归零（阶段 1c，高危） |
-| `legacy-ui-refs` | 1 | 归零（= 1c 第 ① 步） |
+| `legacy-ui-refs` | 1 | 归零（= 1c 收尾步） |
 | `null-casts` | 0 | ✅ 已归零 |
 | `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
 | `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
@@ -2353,9 +2420,16 @@ pnpm build:vite              # 构建
    `particle/particle-window.ts`(71)、`engine/particle/particle-engine.ts`(62)、
    `stores/ui.ts` + `engine/ui/ui-engine.ts`。
    ⚠️ 这批正是 `unknown-casts` 剩下 292 处的**同一批类型**：两侧类型相容之后，两条轴会一起下降。
-5. **阶段 1c**（`legacy-ui-lines` 2866 → 0、`legacy-ui-refs` 1 → 0）：运行时高危，**必须实机回归**
-   （附录四/六/七/八/九记的都是这类改动造成的静默失效）。⚠️ **动它之前先补 `ui-singleton-members`
-   替代轴**（见文末「删完之后应该发生什么」——`legacy-ui-lines` 是**目录**口径，纯移动就会归零）。
+5. **阶段 1c**（`legacy-ui-lines` 2866 → 0、`ui-singleton-members` 103 → 0、`legacy-ui-refs` 1 → 0）：
+   运行时高危，**必须实机回归**（附录四/六/七/八/九记的都是这类改动造成的静默失效）。
+   ✅ **前置条件已就绪**：`ui-singleton-members` 替代轴第 62 轮已落地（见文末），
+   `ui-slots.mjs` 的两处写死路径也已改为动态定位，搬运不会再让仪器失明或制造假回归。
+
+   ⚠️ **顺序必须改**：原文附录三写的 ①→②→③→④ **按字面执行会打断运行时**。
+   ① 说「`stores/ui.ts` 的 `loadUI` 改为直连 `ui-engine.ts`」——但 `loadUI` 决定惰加载代理
+   解析到谁，而 `ui-engine.ts` 只实现 **21** 个成员、store 引用 **49** 个槽位，
+   先做 ① 会让 **41 个动作在 `UI?.x?.()` 下静默 no-op**。正确顺序是
+   **B（纯移动）→ C（逐域补槽位）→ D（换接线 + 退场）**。
 
 ### 三、门禁（本地 = CI 同一套；第 47/48 轮全部跑绿）
 
@@ -2382,7 +2456,7 @@ pnpm build:vite
 
 ### 五、仍需人决定的三件事
 
-1. `Record<string, any>`（35 处 / 31 文件）是否纳入 `any-hatches` 口径（纳入则基线要从 45 抬到约 80）。
+1. ~~`Record<string, any>`（35 处 / 31 文件）是否纳入 `any-hatches` 口径~~ —— ✅ **已纳入（第 62 轮）**：基线 32 → **67**（含该写法 35 处 / 31 文件）。
 2. 第 45 轮记的三处真问题要不要修 —— `element-page.ts` 的 `_openRetry` 首次 `open` 其实不重试、
    `file-audio-page.ts` 未移动就点进度条会把 `undefined` 交给 `currentTime`、
    `progressPointermove` 的 `this` 标注与运行时不一致。三处都会**改变行为**，需要一次实机回归。
@@ -2395,9 +2469,9 @@ pnpm build:vite
 - `legacy-ui-lines` 轴：**2866 行 / 10 文件** → 0
 - `legacy-ui-refs` 轴：**1 → 0**（唯一剩项是 `tools/window-cluster.ts:2` 的 `export { UI }`）
 
-### ⚠️ 先补一个替代轴：`ui-singleton-members`
+### ✅ 替代轴已落地：`ui-singleton-members`（第 62 轮）
 
-**这是第 62 轮发现的度量漏洞。** `legacy-ui-lines` 的口径是**目录行数**：
+**这是第 62 轮发现的度量漏洞，当轮即已修复。** `legacy-ui-lines` 的口径是**目录行数**：
 
 ```js
 const dir = join('packages', 'editor', 'src', 'ui');
@@ -2405,24 +2479,40 @@ const files = collectFiles({ dirs: [dir], includeTests: true });
 ```
 
 ⇒ 阶段 1c 的第 ② 步（把 8 个域模块**原样搬到** `engine/ui/`）会**立刻把这条轴打到 0，
-而遗留代码一行都没少**。棘轮就此失明，后续 ③④ 步再没有任何数字守着。
+而遗留代码一行都没少。实测 `collectFiles` 对不存在的目录返回 `[]`（不抛错），
+所以它会**静默变绿** —— 棘轮就此失明，后续 ③④ 步再没有任何数字守着。
 
-**补法**：在台账新增轴 `ui-singleton-members`，口径 = `src/**` 内 `UI.<name> = ` 赋值的处数
-（**不受目录影响**），2026-09-20 实测起点 **102 处**，分布在 8 个文件：
+**已落地的口径**：台账新增轴 `ui-singleton-members` = 扫描面内 `UI.<name> = ` 的处数
+（**不受目录影响**），2026-09-20 实测起点 **103 处**，分布在 8 个文件：
 
 | 文件 | `UI.x =` 处数 | 域 |
 | --- | --- | --- |
 | `ui-events.ts` | 21 | 窗口事件（21 个 handler） |
-| `ui-window.ts` | 21 | 接线/形状（其中 21 行是 `UI.x = UIEngine.x` 镜像） |
+| `ui-window.ts` | 21 | 接线/形状（全部是 `UI.x = UIEngine.x` 镜像） |
 | `ui-transform.ts` | 18 | 元素变换/属性同步 |
 | `ui-file.ts` | 15 | 文档生命周期 |
 | `ui-list.ts` | 10 | 列表交互 |
+| `ui-prefab.ts` | 9 | 预设/预制体 |
 | `ui-pointer.ts` | 8 | 画布指针交互 |
-| `ui-prefab.ts` | 8 | 预设/预制体 |
 | `ui-initialize.ts` | 1 | DOM 引用与定时器初始化 |
-| **合计** | **102** | |
+| **合计** | **103** | |
 
-`target: 'zero'`，与 `legacy-ui-lines` **同时**降到 0 才算 1c 收口。
+`target: 'zero'`，另带子指标 `declared`（对象字面量**自身**槽位数，现 **134**，同样归零）：
+两个数字同时为 0 才说明「挂载点删干净了**且**字面量退役了」——
+否则删掉 21 行镜像、留着字面量就能让挂载点归零。
+
+> ⚠️ **不要用「行首锚定」近似这个口径**：`ui-prefab.ts:105` 是链式赋值
+> `uiElClasses.createElement = UI.createElement = …`，行首数不到它 ——
+> 本文早先写的「102 处」就是这么来的，比真值少 1。同理裸 `\s*=` 会把
+> `UI.dragging === null`（`ui-events.ts:80`）数成赋值（+1）。
+> 正则、`(?!=)` 守卫与四条 self-test 见 `scripts/lib/scan.mjs` / `scripts/lib/self-test.mjs`。
+
+**顺带修掉的两个同类「仪器瞎了」风险**（`scripts/lib/ui-slots.mjs`）：
+`declaredSlots()` 与 `assignedSlots()` 原先写死 `packages/editor/src/ui/ui-window.ts` 路径与
+`^packages/editor/src/ui/` 目录前缀 ⇒ 第 ② 步搬运后，前者会静默返回空数组
+（`declared` 134 → 0，看着像「改善」），后者会让域模块里的 `this.x = …` 不再计入 `assigned`
+⇒ `storeRefsUnassigned` 凭空变非空、`ui-slot-coverage` 报**上升**，用一条假回归挡住搬运。
+现两者都改为按内容 / 按「UI 窗口所在目录」动态定位，搬运前后读数一致（已实测 `declared=134` 不变）。
 
 ### 其余收尾项
 

@@ -476,9 +476,7 @@ CustomCommand.apply = function (this: CustomCommandShape, event: Event): void {
 		if (event instanceof Event) {
 			commands = deepClone(commands);
 		} else {
-			TreeList.deleteCaches(
-				commands as unknown as Parameters<typeof TreeList.deleteCaches>[0]
-			);
+			TreeList.deleteCaches(commands!);
 		}
 		Data.commands = commands;
 		File.planToSave!(Data.manifest.project.commands);

@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-20T06:31:49.789Z",
+	"generatedAt": "2026-09-20T10:33:02.397Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -16,11 +16,11 @@
 	},
 	"axes": {
 		"any-hatches": {
-			"label": "泛型逃生口 [k|key: string]: any",
+			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 32,
-				"files": 14
+				"total": 67,
+				"files": 38
 			}
 		},
 		"dom-on-exempted": {
@@ -95,6 +95,15 @@
 				"total": 0
 			}
 		},
+		"ui-singleton-members": {
+			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
+			"target": "zero",
+			"value": {
+				"total": 103,
+				"files": 8,
+				"declared": 134
+			}
+		},
 		"ui-slot-coverage": {
 			"label": "store 引用的 UI 槽位从未被赋值（会静默读到 undefined）",
 			"target": "zero",
@@ -110,8 +119,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 292,
-				"files": 138
+				"total": 285,
+				"files": 135
 			}
 		},
 		"unremovable-listeners": {

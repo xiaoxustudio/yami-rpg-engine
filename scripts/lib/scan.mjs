@@ -431,15 +431,40 @@ export function importRefs(files, specifierRe) {
 }
 
 // ---------------------------------------------------------------------------
-// 遗留单例形状（null as unknown as / as unknown as / 泛型逃生口）
+// 遗留单例形状（null as unknown as / as unknown as / 泛型逃生口 / UI 成员挂载）
 // ---------------------------------------------------------------------------
 
 /** `null as unknown as` —— 遗留单例「先声明 null 再 cast 回真类型」的形状 */
 export const NULL_CAST_RE = /\bnull\s+as\s+unknown\s+as\b/g;
 /** 任意双重断言 */
 export const UNKNOWN_CAST_RE = /\bas\s+unknown\s+as\b/g;
-/** `[k: string]: any` / `[key: string]: any` 逃生口 */
-export const ANY_HATCH_RE = /\[(?:k|key):\s*string\]:\s*any\b/g;
+/**
+ * 泛型逃生口：`[k: string]: any` / `[key: string]: any`，以及 `Record<string, any>`。
+ *
+ * ⚠️ `Record<string, any>` 是 2026-09-20 补进口径的（此前只数索引签名）。它和索引签名是
+ * **同一个逃生的两种写法**：都让类型检查在该形状上失效。只数一种的话，把
+ * `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」——这正是本仓反复
+ * 强调的「度量必须对真实状态敏感，而不是对写法敏感」。
+ * 实测：索引签名 32 处 + `Record<string, any>` 35 处 = **67 处**（口径扩展当轮）。
+ */
+export const ANY_HATCH_RE = /(?:\[(?:k|key):\s*string\]:\s*any\b|Record<string,\s*any>)/g;
+
+/**
+ * 遗留 `UI` 单例的**成员挂载点**：`UI.<name> = …`。
+ *
+ * 这是 `legacy-ui-lines` 的**替代轴**口径，用来补一个已实测的度量漏洞：
+ * `legacy-ui-lines` 数的是 `packages/editor/src/ui/` 这个**目录**的行数，于是把 8 个域模块
+ * 「原样搬到」`engine/ui/` 就会让它立刻读到 0，而遗留代码**一行都没少**——棘轮当场失明。
+ * 本口径**不受目录影响**，纯移动不会让它下降，只有真正把成员迁走才会。
+ *
+ * ⚠️ `(?!=)` 不是装饰：裸的 `\s*=` 会把 `UI.dragging === null`（`ui-events.ts:80`）
+ * 误判成一次赋值，而那是**只读**。实测：裸正则 104 处 → 加 `(?!=)` **103 处**。
+ *
+ * 另注：行首锚定的 grep（`^UI\.`）数不到链式赋值
+ * `uiElClasses.createElement = UI.createElement = …`（`ui-prefab.ts:105`），
+ * 所以 `\b` 边界 + `codeOnly` 才是正确口径，不要用「行首」近似。
+ */
+export const UI_SINGLETON_RE = /\bUI\.[A-Za-z_$][\w$]*\s*=(?!=)/g;
 
 /**
  * 按正则统计每个文件与总量。

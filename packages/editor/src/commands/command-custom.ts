@@ -369,8 +369,5 @@ export async function loadCustomCommandList(): Promise<void> {
 	Command.custom.customFolder.children = commands;
 	Command.custom.commandNameMap = commandNameMap;
 	CommandSuggestion.windowLocalize!(new Event('localize'));
-	TreeList.createParents(
-		commands as unknown as Parameters<typeof TreeList.createParents>[0],
-		Command.custom.customFolder as unknown as Parameters<typeof TreeList.createParents>[1]
-	);
+	TreeList.createParents(commands, Command.custom.customFolder);
 }

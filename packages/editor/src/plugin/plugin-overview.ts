@@ -65,9 +65,7 @@ PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 		if (event instanceof Event) {
 			plugins = deepClone(plugins);
 		} else {
-			TreeList.deleteCaches(
-				plugins as unknown as Parameters<typeof TreeList.deleteCaches>[0]
-			);
+			TreeList.deleteCaches(plugins!);
 		}
 		Data.plugins = plugins;
 		File.planToSave!(Data.manifest.project.plugins);

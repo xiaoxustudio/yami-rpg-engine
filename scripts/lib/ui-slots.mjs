@@ -26,11 +26,50 @@
  * `uiElClasses` 那条的正则带 `/i`，会顺带匹配到 `WebGLClass.foo =` 之类无关赋值 ⇒
  * 「有赋值」一列偏宽松。它只会让告警**变少**（偏保守），不会凭空制造告警。
  */
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { existsSync } from 'node:fs';
 import { ROOT, SCAN_DIRS, collectFiles, readSource, codeOnly } from './scan.mjs';
 
-const WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
-const UI_DIR = /^packages\/editor\/src\/ui\//;
+/** 阶段 1c 之前的路径；优先用它（快且稳），找不到再动态搜索 */
+const LEGACY_WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
+
+/**
+ * UI 单例对象字面量所在文件 —— **动态定位，不能写死路径**。
+ *
+ * ⚠️ 为什么必须动态（2026-09-20，本文件记的第二次同类事故）：
+ * 阶段 1c 的第 ② 步会把 `src/ui/` 下的 8 个域模块**原样搬到** `engine/ui/`。
+ * 写死路径的话，搬运当轮 `declaredSlots()` 就会**静默返回空数组**：`declared` 从 134
+ * 掉到 0，`ui-slot-coverage` 报「改善」——而遗留代码一行没少。这正是本文件头部
+ * 已经为「技法 5 改写声明行」记过一次的那种失败：**仪器瞎了，却表现为指标变好。**
+ *
+ * 定位方式：先试旧路径；否则在扫描面里找含 `export const UI … = {` 声明的那个文件。
+ * 声明行怎么写都不影响（类型标注可选），与 `declaredSlots()` 的定位逻辑同源。
+ * @returns {string|null} 相对 ROOT 的路径
+ */
+export function uiWindowRel() {
+	if (existsSync(join(ROOT, LEGACY_WINDOW_REL))) return LEGACY_WINDOW_REL;
+	for (const { full, rel } of collectFiles({ dirs: SCAN_DIRS })) {
+		if (/export const UI\s*(?::[^=]*)?=\s*\{/.test(codeOnly(readSource(full)))) return rel;
+	}
+	return null;
+}
+
+/**
+ * 「UI 单例家族」所在的目录 —— 用来界定「`this.x = …` 只在单例家族内部才算槽位赋值」。
+ *
+ * 同样**不能写死** `^packages/editor/src/ui/`：1c 搬运之后，域模块里的
+ * `this.controlPointTexture = …` 会不再被计入 `assigned`，于是 `storeRefsUnassigned`
+ * **凭空变非空**、`ui-slot-coverage` 报上升 —— 搬运会被一条假回归挡住。
+ * 按「UI 窗口所在目录」界定则搬运前后一致。
+ *
+ * 取舍：同目录里若混进非家族文件，它们的 `this.x = ` 也会被算进来 ⇒ `assigned` 偏大 ⇒
+ * 告警**偏少**（保守方向，与文件头部对 `uiElClasses` 的取舍一致）。
+ */
+function uiDirRe() {
+	const rel = uiWindowRel();
+	if (rel === null) return /^\u0000never$/;
+	return new RegExp(`^${dirname(rel).replace(/\\/g, '/')}/`);
+}
 
 /**
  * 声明：`ui-window.ts` 对象字面量里的槽位名。
@@ -41,9 +80,13 @@ const UI_DIR = /^packages\/editor\/src\/ui\//;
  * 这里就静默返回空数组：`declared` 从 156 掉到 0，看起来像「指标改善」，实际是**仪器瞎了**。
  * 现在改成「先匹配声明（类型标注可有可无），再用花括号配平找闭合」，
  * 声明行怎么写都不影响读数。`codeOnly` 长度保持，所以括号计数不会被字符串/注释里的花括号干扰。
+ *
+ * 同理，**文件位置也必须对搬运免疫**（见 `uiWindowRel()`）。
  */
 export function declaredSlots() {
-	const src = readSource(join(ROOT, WINDOW_REL));
+	const rel = uiWindowRel();
+	if (rel === null) return [];
+	const src = readSource(join(ROOT, rel));
 	const code = codeOnly(src);
 	const m = /export const UI\s*(?::[^=]*)?=\s*\{/.exec(code);
 	if (!m) return [];
@@ -66,11 +109,12 @@ export function declaredSlots() {
 export function assignedSlots(files) {
 	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
 	const assigned = new Set();
+	const uiDir = uiDirRe();
 	for (const { full, rel } of all) {
 		const src = readSource(full);
 		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 		for (const m of src.matchAll(/\buiElClasses\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
-		if (UI_DIR.test(rel)) {
+		if (uiDir.test(rel)) {
 			for (const m of src.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 		}
 		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\.[A-Za-z_$][\w$]*\s*=/g))

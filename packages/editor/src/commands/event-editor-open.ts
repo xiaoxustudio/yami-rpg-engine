@@ -80,10 +80,7 @@ EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: Even
 			item = this.getItemById!(id);
 			if (!item) {
 				item = list.createGlobalEventItem!(id!);
-				TreeList.createParents!(
-					[item] as unknown as Parameters<typeof TreeList.createParents>[0],
-					null
-				);
+				TreeList.createParents!([item], null);
 				this.data!.push(item);
 			}
 		} else {
@@ -91,10 +88,7 @@ EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: Even
 			item = this.getItemByEvent!(event);
 			if (!item) {
 				item = list.createLocalEventItem!(false, filter, name!, event!, null);
-				TreeList.createParents!(
-					[item] as unknown as Parameters<typeof TreeList.createParents>[0],
-					null
-				);
+				TreeList.createParents!([item], null);
 				this.data!.push(item);
 			}
 		}

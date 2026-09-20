@@ -25,7 +25,7 @@ import {
 	createDragAndDropHintElement,
 	type DragAndDropHintApi
 } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
-import { createTreeCore, type NodeElement, type TreeItem } from './tree-core';
+import { createTreeCore, type NodeElement, type TreeItem, type TreeShapeNode } from './tree-core';
 import {
 	createTreeRenderState,
 	flattenRows,
@@ -330,12 +330,26 @@ const createTextBox = (): TextBox => {
 let textBoxInstance: TextBox | null = null;
 
 export const treeListStatics = {
-	createParents: (items: TreeItem[], parent: TreeItem | null): void => {
-		treeCore.createParents(items, parent);
+	// ⚠️ 这两个 API 的形参用 `object[]` 而不是 `TreeItem[]`，理由必须记清楚（P2b-4，2026-09-20）：
+	//
+	// 树的 `children` / `parent` 是**运行时挂上去的**（见 `createParents` 的
+	// `Object.defineProperty`）。于是调用方的类型声明里**普遍没有**这两个字段：
+	//   - `AnimationMotion` / `EasingDataShape` / `PluginItemShape` / `CustomCommandData`
+	//     只声明业务字段；`EventListItem` 声明了 name/id/class… 但没有 children/parent。
+	//   ⇒ 用精确的 `TreeItem[]` 要求源类型带索引签名（接口没有隐式索引签名）→ 不通过；
+	//      改用「全可选」的结构类型（`TreeShapeNode`）又会撞上 TS 的 **weak-type 检查**
+	//      （`Type 'X' has no properties in common with type 'TreeShapeNode'`，实测 7 处）。
+	//      两个方向都被量过，**没有任何单一结构类型能同时接纳这批调用方**。
+	//
+	// 所以断言在这里**收敛一处**、并写明理由，而不是让 7 个调用点各自写
+	// `as unknown as Parameters<typeof TreeList.createParents>[0]`。收窄走单次
+	// `as TreeShapeNode`（不是双重断言，不给 `unknown-casts` 加数）。
+	createParents: (items: object[], parent: object | null): void => {
+		treeCore.createParents(items as TreeShapeNode[], parent as TreeShapeNode | null);
 	},
 
-	deleteCaches: (data: TreeItem[] & { initialized?: unknown }): void => {
-		treeCore.deleteCaches(data);
+	deleteCaches: (data: object[] & { initialized?: unknown }): void => {
+		treeCore.deleteCaches(data as TreeShapeNode[] & { initialized?: unknown });
 	},
 
 	get textBox(): TextBox {
