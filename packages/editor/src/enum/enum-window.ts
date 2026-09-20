@@ -112,8 +112,12 @@ interface EnumModule {
 	searcherInput: (this: YamiElement, event: InputEvent) => void;
 	confirm: (this: typeof Enum, event?: Event) => void;
 	apply: (this: typeof Enum, event?: Event) => void;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 由 store 桥接（见 stores/enum.ts 与 stores/__tests__/window-state.spec.ts 的 legacy 写入用例） */
+	mode: string;
+	data: unknown[] | null;
+	changed: boolean;
+	/** guid → 枚举项 id 的映射（monkey-patches.ts 用 `Enum.idMap![copy.id]` 判重） */
+	idMap: Record<string, unknown> | null;
 }
 
 export const Enum = {

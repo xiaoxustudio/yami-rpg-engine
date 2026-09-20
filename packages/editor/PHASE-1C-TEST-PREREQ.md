@@ -1595,6 +1595,51 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 61 轮（续轮）：`element-base.ts` 的 2 处试过、判定为类型设计活并回退
+
+探针（删两处签名 → 一次 `tsc` → 按「类型.成员」去重）：22 条报错、**9 个成员**，看着是叶字段 ——
+`UIElementShape` 缺 `connect/disconnect/draw/resize/destroy/connected/parent`，`UIParentShape` 缺
+`parent/requestResizing`。但补进去是**越补越深**：`UIElementShape` 在本文件里**是空的**
+（`interface UIElementShape {}`），成员实际要由 `Element` 类反向决定；`element.parent = this` 报
+「this 不能赋给 UIElementShape」（类的 `resize` 等带形参，`() => void` 收不下）；改多态
+`parent: this | null` 后比较点又报 `UIParentShape 与 this 无重叠`。
+
+⇒ 正确解法是把**元素类的公共成员抽成接口**（或让类 `implements` 它），属类型设计决定。本轮**全部回退**
+（树已还原、`tsc` 0、台账 32/14 与基线持平）。
+
+> 再确认第 56/57 轮那条规矩：**「成员数少」不等于「活小」**；判据是**成员的类型由谁决定** ——
+> 答案里出现另一个类或另一个子系统，就先停手。
+
+## 第 60 轮（续轮）：`ParticleEmitterRef` 白捡 1 处 —— 33 → 32（`particle-engine.ts` 从 8 处到 3 处）
+
+用 `any-hatch-inventory` 把 `particle-engine.ts` 剩下的 4 处逐个点名归属：`ParticleLayerData`（color/sprite
+嵌套 ✗）、`ParticleEmitterShape`（跨文件读点 ✗）、`ParticleElementLayerData`（area/color 嵌套 ✗）、
+**`ParticleEmitterRef`（未测过）** —— 只测最后那个：删掉签名后 `tsc` **零报错** ⇒ 白捡（连同上方的
+豁免注释一起删）。至此 `particle-engine.ts` 从 8 处清到 3 处（第 53/54/55/60 轮共清 5 处）。
+
+**结果**：`any-hatches` **33 → 32 处**；产物与 HEAD 逐字节相同；`tsc` 0、`typecheck:vue` 0 new、
+`lint` 0/0，基线已固化。
+
+
+## 第 59 轮（续轮）：`EnumModule` 清 1 处 —— 34 → 33（先用新工具定位，再按名字找大括号）
+
+第 58 轮新增的 `scripts/any-hatch-inventory.mjs` 先给出归属：`enum-window.ts:116` → 接口 `EnumModule`。
+探针（删签名 → 一次 `tsc` → 按「类型.成员」去重）只有 **4 个成员 / 7 条报错**：
+
+| 成员 | 类型 | 依据 |
+| --- | --- | --- |
+| `mode` | `string` | 测试里 `Enum.mode = 'string'` / `store.state.mode = 'normal'` |
+| `data` | `unknown[] | null` | 桥接用例 `Enum.data = [{ id: 'e1' }]`、`Enum.data = null`；元素形状交给 store（那里才是真源） |
+| `changed` | `boolean` | `Enum.changed = true` |
+| `idMap` | `Record<string, unknown> | null` | `monkey-patches.ts` 的 `Enum.idMap![copy.id]` 判重 |
+
+⚠️ **又一个小坑（这次是脚本自己的）**：探针已经把签名删掉了，我却让「找签名行再替换」的脚本去定位 ——
+自然找不到（`no hatch`）。改用第 54 轮那条规矩就一次过：**按接口名找到声明行，再往下找第一个 `}`**，
+在它前面插入成员。⇒ 结论：**探针与落地要用两种不同的定位方式**，探针可以按模式删，落地必须按名字插。
+
+**结果**：`any-hatches` **34 → 33 处、15 → 14 文件**（`enum-window.ts` 归零）。产物与 HEAD **逐字节相同**；
+`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
 ## 第 55 轮（续轮）：`ParticleElementLayer` 再清 1 处 —— 35 → 34（`particle-engine.ts` 只剩 2 处）
 
 第 54 轮那条教训（按**接口名**定位、别按行号映射）本轮直接用上了：`ParticleElementLayer` 正是
@@ -2226,7 +2271,7 @@ pnpm build:vite              # 构建
 1. **`Record<string, any>` 是否纳入 `any-hatches` 口径**（见上；不纳入的话，这条轴的「归零」只覆盖约一半形态）。
 2. **阶段 1c 的实机回归**：`legacy-ui-refs` 1 → 0 与 `legacy-ui-lines` 2868 → 0 是运行时高危改动，需要能启动编辑器、逐个窗口点一遍的环境（附录四、六、七、八、九记的都是这类改动曾经造成的静默失效）。
 
-**另外**：本轮所有迁移改动都在**工作区**（HEAD 是 `42a99077 build(deps): bump vue to rc.9…`，即 rc.9 事务本身已提交）—— 是否分批提交由你决定。
+**另外**：本轮所有迁移改动都在**工作区**（HEAD 是 `9d19bb91 build(deps): bump vue to rc.9…`，即 rc.9 事务本身已提交）—— 是否分批提交由你决定。
 
 ## 交接（第 47 轮 · 2026-09-19）：**当前**真实数字与工作单
 
@@ -2236,7 +2281,7 @@ pnpm build:vite              # 构建
 
 | 轴 | 现值 | 目标 |
 | --- | --- | --- |
-| `any-hatches` | **34 处 / 15 文件**（第 51–55 轮：43 → 41 → 38 → 37 → 35 → 34） | 归零 |
+| `any-hatches` | **32 处 / 14 文件**（第 51–60 轮：43 → 41 → 38 → 37 → 35 → 34 → 33 → 32） | 归零 |
 | `unknown-casts` | **292 处 / 138 文件**（第 48 轮从 764 降下来） | 归零 |
 | `legacy-ui-lines` | 2866 行 / 10 文件 | 归零（阶段 1c，高危） |
 | `legacy-ui-refs` | 1 | 归零（= 1c 第 ① 步） |
@@ -2244,15 +2289,29 @@ pnpm build:vite              # 构建
 | `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
 | `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
 
-> **`any-hatches` 剩下的 15 个文件都是「多轮」规模的活**（第 52/53 轮量出来的准确尺寸）：
-> `particle-engine.ts` 还剩 7 处、要枚举 **35–40 个叶字段**（`data.color` / `data.sprite` / `data.area`
-> 自身又是形状）；`scene-window.ts` 5 处（marquee 待对齐 `saveData` 两个写入方 + list 需 19 签名/45 处 `!`）；
-> `animation-window.ts` 3 处（`AnimationShape`）；`useCommandParse.ts` 3 处（`CommandObjectShape`，级联 67）；
-> `particle-window.ts` 3 处（`ParticleEmitterShape`，级联 71）；`ui/ui-window.ts` 3 处（`UIShape`）；
-> `YMParameterPane.vue` 3 处（只能靠 `typecheck:vue`）；`commands/schema.ts` 2 处（`CommandSchema`，
-> 外溢约 60 个 `use*CommandSchema`）；`element-base.ts` 2 处；其余 6 个文件各 1 处
-> （`data-object.ts` / `element-classes.ts` / `ui-engine.ts` / `enum-window.ts` / `stores/ui.ts` / `types/shapes.ts`），
-> 其中 `DynamicShape` 与 `UIShape` / `UIElementInstance` / `DataModule` 是**读点遍布全仓**的承重形状。
+> **`any-hatches` 剩下的 14 个文件 / 32 处**（第 62 轮用 `node scripts/any-hatch-inventory.mjs`
+> + 台账逐文件计数**重测**。此前本节写的是第 52/53 轮的快照「15 个文件」，其中 `particle-engine.ts`
+> 记的 7 处与 `enum-window.ts` 各 1 处均已被第 55/59/60 轮清掉 —— **按接口名而不是行号定位站点**）：
+>
+> | 文件 | 处数 | 所属接口（`any-hatch-inventory` 输出） |
+> | --- | --- | --- |
+> | `scene/scene-window.ts` | **5** | `SceneShape`×3（L74 声明）+ `PresetNodeShape` + `SceneMarqueeData`；marquee 待对齐 `saveData` 两个写入方，list 需 19 签名 / 45 处 `!` |
+> | `engine/particle/particle-engine.ts` | **3** | `ParticleLayerData` / `ParticleEmitterShape` / `ParticleElementLayerData` —— 要枚举 **35–40 个叶字段**（`data.color` / `data.sprite` / `data.area` 自身又是形状），级联实测 62 |
+> | `particle/particle-window.ts` | **3** | `ParticleElementShape` / `ParticleLayerShape` / `ParticleEmitterShape`，级联实测 71 |
+> | `ui-kit/.../YMParameterPane.vue` | **3** | `Props`（L130 接口 / L164、L201、L971 站点）—— **只能靠 `typecheck:vue` 量** |
+> | `animation/animation-window.ts` | **3** | `AnimationElement` / `AnimationFileContext` / `AnimationShape` |
+> | `composables/useCommandParse.ts` | **3** | `CommandObjectShape` / `CommandNode` / `TextContent`，级联实测 67 |
+> | `ui/ui-window.ts` | **3** | `UIShape` / `UINodeShape` / `UIContextShape` |
+> | `commands/schema.ts` | **2** | `CommandSchemaConfig`，外溢约 60 个 `use*CommandSchema` |
+> | `engine/ui/element-base.ts` | **2** | `UIElementShape` / `UIParentShape` —— 第 61 轮试过并回退（见下） |
+> | `data/data-object.ts` | **1** | `DataModule`（读点遍布全仓） |
+> | `engine/ui/element-classes.ts` | **1** | `UIElementInstance` —— 第 56 轮试过并回退（见下） |
+> | `engine/ui/ui-engine.ts` | **1** | `UIShape` —— 第 57 轮试过并回退（见下） |
+> | `stores/ui.ts` | **1** | `UINodeShape` |
+> | `types/shapes.ts` | **1** | `DynamicShape`（独立实测级联**上千**，承重之首） |
+>
+> 其中 `DynamicShape` 与 `UIShape` / `UIElementInstance` / `DataModule` / `SceneShape` / `AnimationShape`
+> 是**读点遍布全仓**的承重形状，**必须与读侧分批改** —— 且正是 `unknown-casts` 剩下 292 处的同一批类型。
 >
 > **`element-classes.ts` 的 `UIElementInstance`（1 处）单独记一笔**（第 56 轮试过、已回退）：它缺的是
 > `draw()` / `resize()` / `tryUpdateReferenceElements(parent)` / `addReference(prefab)` 四个方法，
@@ -2294,8 +2353,9 @@ pnpm build:vite              # 构建
    `particle/particle-window.ts`(71)、`engine/particle/particle-engine.ts`(62)、
    `stores/ui.ts` + `engine/ui/ui-engine.ts`。
    ⚠️ 这批正是 `unknown-casts` 剩下 292 处的**同一批类型**：两侧类型相容之后，两条轴会一起下降。
-5. **阶段 1c**（`legacy-ui-lines` 2863 → 0、`legacy-ui-refs` 1 → 0）：运行时高危，**必须实机回归**
-   （附录四/六/七/八/九记的都是这类改动造成的静默失效）。
+5. **阶段 1c**（`legacy-ui-lines` 2866 → 0、`legacy-ui-refs` 1 → 0）：运行时高危，**必须实机回归**
+   （附录四/六/七/八/九记的都是这类改动造成的静默失效）。⚠️ **动它之前先补 `ui-singleton-members`
+   替代轴**（见文末「删完之后应该发生什么」——`legacy-ui-lines` 是**目录**口径，纯移动就会归零）。
 
 ### 三、门禁（本地 = CI 同一套；第 47/48 轮全部跑绿）
 
@@ -2330,8 +2390,42 @@ pnpm build:vite
 
 ## 删完之后应该发生什么
 
-- `legacy-ui-lines` 轴：2820 → 0
-- `legacy-ui-refs` 轴：4 → 0（当前那 4 项里有 2 项就是 `ui/` 自身）
-- `stores/ui.ts` 里那 21 行 `UI.x = UIEngine.x` 的转发（`ui-window.ts`）可删；`stores/ui.ts` 的
+> 数字为 2026-09-20 第 62 轮实测（此前本节写的 2820 / 4 是阶段 1b 前后的快照）。
+
+- `legacy-ui-lines` 轴：**2866 行 / 10 文件** → 0
+- `legacy-ui-refs` 轴：**1 → 0**（唯一剩项是 `tools/window-cluster.ts:2` 的 `export { UI }`）
+
+### ⚠️ 先补一个替代轴：`ui-singleton-members`
+
+**这是第 62 轮发现的度量漏洞。** `legacy-ui-lines` 的口径是**目录行数**：
+
+```js
+const dir = join('packages', 'editor', 'src', 'ui');
+const files = collectFiles({ dirs: [dir], includeTests: true });
+```
+
+⇒ 阶段 1c 的第 ② 步（把 8 个域模块**原样搬到** `engine/ui/`）会**立刻把这条轴打到 0，
+而遗留代码一行都没少**。棘轮就此失明，后续 ③④ 步再没有任何数字守着。
+
+**补法**：在台账新增轴 `ui-singleton-members`，口径 = `src/**` 内 `UI.<name> = ` 赋值的处数
+（**不受目录影响**），2026-09-20 实测起点 **102 处**，分布在 8 个文件：
+
+| 文件 | `UI.x =` 处数 | 域 |
+| --- | --- | --- |
+| `ui-events.ts` | 21 | 窗口事件（21 个 handler） |
+| `ui-window.ts` | 21 | 接线/形状（其中 21 行是 `UI.x = UIEngine.x` 镜像） |
+| `ui-transform.ts` | 18 | 元素变换/属性同步 |
+| `ui-file.ts` | 15 | 文档生命周期 |
+| `ui-list.ts` | 10 | 列表交互 |
+| `ui-pointer.ts` | 8 | 画布指针交互 |
+| `ui-prefab.ts` | 8 | 预设/预制体 |
+| `ui-initialize.ts` | 1 | DOM 引用与定时器初始化 |
+| **合计** | **102** | |
+
+`target: 'zero'`，与 `legacy-ui-lines` **同时**降到 0 才算 1c 收口。
+
+### 其余收尾项
+
+- `stores/ui.ts` 里那 21 行 `UI.x = UIEngine.x` 的转发（在 `ui-window.ts`）可删；`stores/ui.ts` 的
   动作层改为直连 `UIEngine`，`getLazyWindow('ui')` 也能一并退场
-- 台账的 `dom-on-exempted` 会小幅下降（`ui-window.ts` 不在白名单里，但 `legacy-ui-lines` 归零是主信号）
+- 台账的 `dom-on-exempted` 会小幅下降（`ui-window.ts` 不在白名单里，但 `ui-singleton-members` 归零才是主信号）

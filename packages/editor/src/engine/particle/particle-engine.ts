@@ -149,8 +149,6 @@ interface ParticleEmitterRef {
 	startX: number;
 	startY: number;
 	matrix: Matrix | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 export interface ParticleElementLayer {
