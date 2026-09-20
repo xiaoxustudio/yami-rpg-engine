@@ -1595,6 +1595,91 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 52 轮（续轮）：`animation-player.ts` 的三处 —— 41 → 38（一轮清掉一个文件）
+
+第 50 轮量到这个文件级联「约 24」就搁下了。本轮先用**探针**把范围收窄（删三处签名 → 一次 `tsc` →
+按 `类型.成员` 去重），结果只有 **6 个成员**、8 条报错：
+
+| 形状 | 需要补的成员 |
+| --- | --- |
+| `AnimationData` | **一个都不用补** ⇒ 索引签名纯粹没人按运行时键读，直接删 |
+| `PlayerLayer` | `angle: string`（`switch (layer.angle)`）· `sprite: string`（当 key 用）· `blend: string`（`setBlendMode`）· `light: string`（`Scene.showLight ? layer.light : 'raw'`）· `particleId: string`（当 guid 用） |
+| `PlayerContext` | `tint?: Int16Array` —— 读点是**惰性初始化**（`let tint = this.tint; if (tint === undefined) tint = this.tint = new Int16Array(4)`，见 L787-790）⇒ 必须**可选**，否则上下文对象字面量（L668）立刻 TS2741 |
+
+两个过程性收获：
+
+1. **探针要按「类型.成员」去重再报**：直接看「约 24 条报错」会以为是大活，去重后只有 6 个成员 ——
+   报错条数 ∝ 读点次数，成员数才是工作量（第 44 轮那条规矩的又一次验证）。
+2. `tint` 那处补完之后 `tsc` 还报 4 处 `possibly undefined`（L427/428 用了 `tint[0..3]`）；
+   把局部声明收窄成 `const tint = context.tint!;` 即可 —— 与 L787 的惰性初始化是同一个不变式
+   （`reset()` 跑过之后 `tint` 必然存在），断言被擦除、运行时不变。
+
+**结果**：`any-hatches` **41 → 38 处、16 → 15 文件**（该文件 3 处全清，索引签名一个不剩）。
+产物与 HEAD **逐字节相同**；`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
+## 第 51 轮（续轮）：`useIfConditionSchema` 的两个条件数据形状 —— 43 → 41
+
+这处（第 46 轮量过级联：`IfConditionData` 18 + `IfConditionOperandShape` 33）属于「按 `type` 分派」的
+**异质载荷**，与 `HistoryData`（第 46 轮）同类 —— 但这里能**真枚举**，因为字段名是固定的：
+
+- `IfConditionOperandShape` 补 10 个字段：`value?: boolean | number | string`（三种 type 共用一个常量字段）、
+  `variable?: { type; key }`（变量操作数），以及 8 个对象类操作数
+  `actor / skill / state / equipment / item / trigger / light / element`（各自只用到 `type`）。
+- `IfConditionData` 补 5 个：`variable` / `actor` / `element` / `list` / `target`（都是「按 type 才出现」的字段）。
+- 读点收窄走**模式表**脚本（每条规则带**期望计数**、逐条打印 before/after）：`operand!.value!.toString()` ×2、
+  `as string/number/boolean` ×3、`parseX(operand.X!)` ×9、`parseVariable(…variable!, …)` ×8、
+  `commonVariable = condition.variable!` ×4 …… 共 25 条。
+
+⚠️ 值得记一笔：第一轮有一条规则的**期望计数我写错了**（`'object'` 那处被我单列，所以主规则实际只有 3 处、
+不是 4 处）。脚本按「计数不符就**不改**」的策略跳过了它，于是 `tsc` 精确点名剩下 4 处 ⇒ 补一轮即过。
+**这正是配计数断言的价值**：它把「静默改错」变成「明确跳过 + 编译期点名」。
+
+**结果**：`any-hatches` **43 → 41 处、17 → 16 文件**（该文件 2 处全清）。产物与 HEAD **逐字节相同**
+（纯类型层 + 被擦除的断言）；`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
+## 第 50 轮（续轮）：再探四个候选 —— **全部承重**，并记一次「台账降了、`tsc` 却红了」
+
+沿用第 49 轮的批量探针（`engine/ui/` 那两个能删，是因为**没人按运行时键读**），本轮一次删四个文件的签名，
+按报错里提到的**形状名**归因：
+
+| 文件 | 形状 | 级联 | 判定 |
+| --- | --- | --- | --- |
+| `particle/particle-window.ts` | `ParticleEmitterShape` | **71** | 承重（发射器字段读点遍布 `particle-motion.ts` / `animation-motion.ts` …） |
+| `composables/useCommandParse.ts` | `CommandObjectShape` | **67** | 承重（`parseVariable` / `parseActor` … 一族都读 `.type` / `.key` …） |
+| `composables/useIfConditionSchema.ts` | `IfConditionData` + `IfConditionOperandShape` | **18 + 33** | 承重（条件数据的「按 `type` 分派」字段，第 46 轮已分析过改法） |
+| `engine/animation/animation-player.ts` | `PlayerLayer` / `PlayerContext` | **约 24** | 承重（`angle` / `sprite` / `tint` / `blend` / `light` 都是运行时挂上去的） |
+
+四处**全部回退**，本轮没有新增落地。但过程里有一条值得单独记下来的观察：
+
+> ⚠️ **台账会降，`tsc` 会红。** 只删 `animation-player.ts` 的三处签名时，`any-hatches` 从 43 掉到 **40**、
+> 文件数 17 → 16 —— 台账「看起来进步了」；而同一时刻 `tsc` 报出 `PlayerLayer.angle` / `PlayerContext.tint`
+> 等错误。**台账是代理指标，`tsc` / `typecheck:vue` / 测试才是判据**：先跑判据，再信指标。
+> 任何「只看台账下降就合并」的自动化都是危险的 —— 这一条也正是本台账当初要配 CI 门禁的原因。
+
+**下一步**（都已在交接一节的工作单里）：`particle-window`(71)、`useCommandParse`(67)、
+`useIfConditionSchema`(51) 属于「必须与读侧一起改」的那一类；`Scene.list`（19 个签名 + 45 处缺 `!`）
+与 `YMParameterPane.vue`（只能靠 `typecheck:vue` 量）是另外两块。
+
+## 第 49 轮（续轮）：四个 UI 元素基类形状的「删签名」实验 —— 45 → 43
+
+`engine/ui/` 下四个单点文件一起删签名、一次 `tsc` 归因（第 41 轮的批量法；脚本逐站点打印 before/after，
+遵守第 46 轮的规矩）：
+
+| 文件 | 形状 | 结果 |
+| --- | --- | --- |
+| `window-element.ts` | `WindowProxyShape` | ✅ 干净（成员都声明了，没人按动态键读）⇒ **保留删除** |
+| `root-element.ts` | `PrefabElementShape` | ✅ 干净 ⇒ **保留删除** |
+| `element-classes.ts` | `UIElementInstance` | ✗ 7 处：`tryUpdateReferenceElements`×3 / `addReference` / `draw` / `resize`×2 ⇒ 回退 |
+| `ui-engine.ts` | `UIShape` | ✗ 约 16 处：`planToSave`×4 / `requestRendering`×4 / `hover`×3 / `renderingFunction`×2 / `controlPointTexture` / `marquee` / `updateControlPoints` ⇒ 回退 |
+
+**结果**：`any-hatches` **45 → 43 处、19 → 17 文件**。保留下来的两处删除，esbuild 产物与 HEAD
+**逐字节相同**（纯类型层）；`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
+**判据再次成立**（第 44 轮那条的推论）：`interface XShape { [k: string]: any }` 是否承重，只取决于
+**有没有人按运行时键读它**；「有没有人往里写」不影响 —— 写侧的兼容性由声明成员与字面量本身保证。
+`UIElementInstance` / `UIShape` 属于「元素实例上挂任意字段」那一类，读点遍布派生类
+（`element-base.ts` / `reference-element.ts` / `stores/ui.ts` / `ui/ui-events.ts`）⇒ 必须与读侧一起改。
+
 ## 第 48 轮（续轮）：`unknown-casts` 764 → 292 —— 「批量收窄断言」的完整流水线
 
 这一轴（双重断言 `as unknown as`）此前一直是 764 处 / 262 文件的存量。本轮的观察是：
@@ -2080,6 +2165,75 @@ pnpm build:vite              # 构建
 2. **阶段 1c 的实机回归**：`legacy-ui-refs` 1 → 0 与 `legacy-ui-lines` 2868 → 0 是运行时高危改动，需要能启动编辑器、逐个窗口点一遍的环境（附录四、六、七、八、九记的都是这类改动曾经造成的静默失效）。
 
 **另外**：本轮所有迁移改动都在**工作区**（HEAD 是 `42a99077 build(deps): bump vue to rc.9…`，即 rc.9 事务本身已提交）—— 是否分批提交由你决定。
+
+## 交接（第 47 轮 · 2026-09-19）：**当前**真实数字与工作单
+
+> 上面那节「交接（第 40 轮）」是当时的快照，数字已过时；**以本节为准**。
+
+### 一、台账现状（13 轴，`pnpm migration:check` 全平）
+
+| 轴 | 现值 | 目标 |
+| --- | --- | --- |
+| `any-hatches` | **45 处 / 19 文件** | 归零 |
+| `unknown-casts` | **292 处 / 138 文件**（第 48 轮从 764 降下来） | 归零 |
+| `legacy-ui-lines` | 2863 行 / 10 文件 | 归零（阶段 1c，高危） |
+| `legacy-ui-refs` | 1 | 归零（= 1c 第 ① 步） |
+| `null-casts` | 0 | ✅ 已归零 |
+| `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
+| `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
+
+### 二、下一批工作单（都带**实测**成本，不是估的）
+
+1. **`Scene.list`**（`scene/scene-window.ts` L80 声明 + L470 初始化，2 处）：索引签名兜住的是
+   `SceneListExtensions` 之外的约 19 个成员（`addNodeTo / canSwitchState / createFolder /
+   createTilemapShortcutItems / data / deleteNode / duplicate / generateUniqueName / getItemByProperties /
+   read / resize / restoreSelection / saveScroll / saveSelection / scrollTop / searchNodesDebounced /
+   select / selectDefaultCommand / unselect / update / updateFolderState / updateItemName / updateNodeElement`）。
+   成本：19 个签名 + 调用点 **45 处缺 `!`**（已有 9 处）。
+   ⚠️ **不能**直接拿 `ui-kit` 的 `TreeListElementApi` 当这个类型：它的兜底是 `[k: string]: unknown`，
+   接上去会让 `addNodeTo` 之类变成 `unknown` 而不可调用。
+2. **`Scene.marquee`**（L75 + L164，2 处）：先对齐 `saveData` 的**两个写入方** ——
+   `scene-marquee-engine.ts` 写 `{x,y,width,height,offsetX,offsetY,tiles}`，而 `palette-engine.ts`
+   读 `width/height/rowOffset`（后者根本不在前者的形状里）；对齐后约 12 处 `!`。
+   成员清单见第 47 轮。⚠️ `scene.spec.ts` 的 marquee mock 是 `as any`：**类型写错测试不会红**。
+3. **`YMParameterPane.vue`**（3 处）：`.vue` 对 `tsc` 不可见，只能靠 `typecheck:vue` 量；
+   按 `attachStateAccessors` 挂上去的字段清单枚举。
+4. **核心形状（承重，必须与读侧分批）**：`types/shapes.ts` 的 `DynamicShape`（独立实测仍是**上千**级联）、
+   `data/data-object.ts`(600)、`scene/scene-window.ts` 的 `SceneShape`(296)、
+   `engine/animation/animation-window.ts` 的 `AnimationShape`、`ui/ui-window.ts` 的 `UIShape`、
+   `particle/particle-window.ts`(71)、`engine/particle/particle-engine.ts`(62)、
+   `stores/ui.ts` + `engine/ui/ui-engine.ts`。
+   ⚠️ 这批正是 `unknown-casts` 剩下 292 处的**同一批类型**：两侧类型相容之后，两条轴会一起下降。
+5. **阶段 1c**（`legacy-ui-lines` 2863 → 0、`legacy-ui-refs` 1 → 0）：运行时高危，**必须实机回归**
+   （附录四/六/七/八/九记的都是这类改动造成的静默失效）。
+
+### 三、门禁（本地 = CI 同一套；第 47/48 轮全部跑绿）
+
+```bash
+pnpm migration:selftest && pnpm migration:check && pnpm dom:guard:tracker
+pnpm lint && pnpm typecheck && pnpm -F @yami/editor typecheck:vue
+pnpm -F @yami/editor test     # 252 文件 / 2056 测试（exit 0）
+pnpm -F @yami/ui-kit test     # 115 文件 / 810 测试
+pnpm build:vite
+```
+
+### 四、三条仪器/流程教训（都是这几十轮真踩出来的，写给下一批）
+
+1. **只报计数的批量脚本不可信**（第 46 轮）：必须逐站点打印「改了什么」。判据是台账 + 原文 diff + `tsc`，
+   不是脚本自己的计数。而且 `codeOnly()` 与原文**并非处处等长** —— 按偏移做行映射会错位，
+   错位后「删掉相邻的无害行」会伪装成「没有错误」，一次就骗过了整轮判断。
+2. **`tsc` / `vue-tsc` 的点名行号指向整个表达式起点，不是 `as` 记号那一行**（第 48 轮）：
+   按行回退必须留「迭代 + 顽固站点整文件回退」两手。
+3. **`.vue` 里的类型债只有 `typecheck:vue` 看得见**（第 31 / 39 / 48 轮，同一个坑三次）：
+   批量改写只要碰了 `.vue`，就必须再跑它。
+
+### 五、仍需人决定的三件事
+
+1. `Record<string, any>`（35 处 / 31 文件）是否纳入 `any-hatches` 口径（纳入则基线要从 45 抬到约 80）。
+2. 第 45 轮记的三处真问题要不要修 —— `element-page.ts` 的 `_openRetry` 首次 `open` 其实不重试、
+   `file-audio-page.ts` 未移动就点进度条会把 `undefined` 交给 `currentTime`、
+   `progressPointermove` 的 `this` 标注与运行时不一致。三处都会**改变行为**，需要一次实机回归。
+3. 阶段 1c（`src/ui/` 搬迁 + 换接线）的实机回归安排在什么时候。
 
 ## 删完之后应该发生什么
 

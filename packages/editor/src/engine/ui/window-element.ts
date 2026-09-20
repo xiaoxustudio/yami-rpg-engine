@@ -14,7 +14,6 @@ interface WindowProxyShape {
 	opacity: number;
 	children: never[];
 	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 interface WindowElementData {

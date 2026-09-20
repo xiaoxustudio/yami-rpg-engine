@@ -44,8 +44,19 @@ export interface IfConditionTarget {
 export interface IfConditionOperandShape {
 	type: string;
 	stringId?: string;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 常量值：boolean / number / string 三种 type 共用这一个字段（见下方 save()） */
+	value?: boolean | number | string;
+	/** 变量操作数 */
+	variable?: { type: string; key: string };
+	/** 对象类操作数：各自只用到 type（见 parseObjectOperand） */
+	actor?: { type: string };
+	skill?: { type: string };
+	state?: { type: string };
+	equipment?: { type: string };
+	item?: { type: string };
+	trigger?: { type: string };
+	light?: { type: string };
+	element?: { type: string };
 }
 
 export interface IfConditionData {
@@ -63,8 +74,12 @@ export interface IfConditionData {
 	quantity?: number;
 	shortcutKey?: string;
 	teamId?: string;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 按 type 分派时才出现的字段（见 parseTypeHandlers 与 save()）：变量 / 对象 / 列表 / 目标 */
+	variable?: { type: string; key: string };
+	actor?: { type: string };
+	element?: { type: string };
+	list?: { type: string; key: string };
+	target?: { type: string; key: string };
 }
 
 export interface IfConditionForm {
@@ -183,9 +198,9 @@ const parseBooleanOperand = ({ operand }: IfConditionData) => {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return setBooleanColor(operand!.value.toString());
+			return setBooleanColor(operand!.value!.toString());
 		case 'variable':
-			return parseVariable(operand!.variable, 'boolean');
+			return parseVariable(operand!.variable!, 'boolean');
 	}
 };
 
@@ -212,9 +227,9 @@ const parseNumberOperand = ({ operand }: IfConditionData) => {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return setNumberColor(operand!.value.toString());
+			return setNumberColor(operand!.value!.toString());
 		case 'variable':
-			return parseVariable(operand!.variable, 'number');
+			return parseVariable(operand!.variable!, 'number');
 	}
 };
 
@@ -235,9 +250,9 @@ const parseStringOperand = ({ operand }: IfConditionData) => {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return setStringColor(`"${parseMultiLineString(operand!.value)}"`);
+			return setStringColor(`"${parseMultiLineString(operand!.value as string)}"`);
 		case 'variable':
-			return parseVariable(operand!.variable, 'string');
+			return parseVariable(operand!.variable!, 'string');
 		case 'enum':
 			return parseEnumStringTag(operand!.stringId!);
 	}
@@ -261,23 +276,23 @@ const parseObjectOperand = ({ operand }: IfConditionData) => {
 		case 'none':
 			return Token('null');
 		case 'actor':
-			return parseActor(operand.actor);
+			return parseActor(operand.actor!);
 		case 'skill':
-			return parseSkill(operand.skill);
+			return parseSkill(operand.skill!);
 		case 'state':
-			return parseState(operand.state);
+			return parseState(operand.state!);
 		case 'equipment':
-			return parseEquipment(operand.equipment);
+			return parseEquipment(operand.equipment!);
 		case 'item':
-			return parseItem(operand.item);
+			return parseItem(operand.item!);
 		case 'trigger':
-			return parseTrigger(operand.trigger);
+			return parseTrigger(operand.trigger!);
 		case 'light':
-			return parseLight(operand.light);
+			return parseLight(operand.light!);
 		case 'element':
-			return parseElement(operand.element);
+			return parseElement(operand.element!);
 		case 'variable':
-			return parseVariable(operand.variable, 'object');
+			return parseVariable(operand.variable!, 'object');
 	}
 };
 
@@ -314,7 +329,7 @@ const parseActorOperation = ({
 		case 'is-teammate':
 		case 'is-friend':
 		case 'is-enemy':
-			return t('command.if.actor.' + operation, { actor: parseActor(actorTarget)! });
+			return t('command.if.actor.' + operation, { actor: parseActor(actorTarget!)! });
 		case 'is-team-member':
 		case 'is-team-friend':
 		case 'is-team-enemy':
@@ -354,36 +369,36 @@ const parseOther = ({ key }: IfConditionData): string => {
 
 const parseTypeHandlers: Record<string, (condition: IfConditionData) => string> = {
 	boolean: function (condition) {
-		const variable = parseVariable(condition.variable, 'boolean');
+		const variable = parseVariable(condition.variable!, 'boolean');
 		const operator = parseBooleanOperation(condition);
 		const value = parseBooleanOperand(condition);
 		return `${variable} ${operator} ${value}`;
 	},
 	number: function (condition) {
-		const variable = parseVariable(condition.variable, 'number');
+		const variable = parseVariable(condition.variable!, 'number');
 		const operator = parseNumberOperation(condition);
 		const value = parseNumberOperand(condition);
 		return `${variable} ${operator} ${value}`;
 	},
 	string: function (condition) {
-		const variable = parseVariable(condition.variable, 'string');
+		const variable = parseVariable(condition.variable!, 'string');
 		const operator = parseStringOperation(condition);
 		const value = parseStringOperand(condition);
 		return `${variable} ${operator} ${value}`;
 	},
 	object: function (condition) {
-		const variable = parseVariable(condition.variable, 'object');
+		const variable = parseVariable(condition.variable!, 'object');
 		const operator = parseObjectOperation(condition);
 		const value = parseObjectOperand(condition);
 		return `${variable} ${operator} ${value}`.trim();
 	},
 	actor: function (condition) {
-		const actor = parseActor(condition.actor);
+		const actor = parseActor(condition.actor!);
 		const operation = parseActorOperation(condition);
 		return `${actor} ${operation}`;
 	},
 	element: function (condition) {
-		const element = parseElement(condition.element);
+		const element = parseElement(condition.element!);
 		const operation = parseElementOperation(condition);
 		return `${element} ${operation}`;
 	},
@@ -406,9 +421,9 @@ const parseTypeHandlers: Record<string, (condition: IfConditionData) => string> 
 		return mouse + Token('[') + setStringColor(button) + Token(']') + ' ' + state;
 	},
 	list: function (condition) {
-		const list = parseVariable(condition.list, 'object');
+		const list = parseVariable(condition.list!, 'object');
 		const operation = parseListOperation(condition);
-		const targetValue = parseVariable(condition.target, 'any');
+		const targetValue = parseVariable(condition.target!, 'any');
 		return `${list} ${operation} ${targetValue}`;
 	},
 	other: function (condition) {
@@ -480,29 +495,29 @@ const open = (
 	let otherKey: string | undefined = 'mouse-entered';
 	switch (condition.type) {
 		case 'boolean':
-			commonVariable = condition.variable;
+			commonVariable = condition.variable!;
 			booleanOperation = condition.operation;
 			booleanOperandType = condition.operand!.type;
-			booleanConstantValue = condition.operand!.value ?? booleanConstantValue;
+			booleanConstantValue = (condition.operand!.value as boolean) ?? booleanConstantValue;
 			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'number':
-			commonVariable = condition.variable;
+			commonVariable = condition.variable!;
 			numberOperation = condition.operation;
 			numberOperandType = condition.operand!.type;
-			numberConstantValue = condition.operand!.value ?? numberConstantValue;
+			numberConstantValue = (condition.operand!.value as number) ?? numberConstantValue;
 			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'string':
-			commonVariable = condition.variable;
+			commonVariable = condition.variable!;
 			stringOperation = condition.operation;
 			stringOperandType = condition.operand!.type;
-			stringConstantValue = condition.operand!.value ?? stringConstantValue;
+			stringConstantValue = (condition.operand!.value as string) ?? stringConstantValue;
 			stringEnumStringId = condition.operand!.stringId ?? stringEnumStringId;
 			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'object':
-			commonVariable = condition.variable;
+			commonVariable = condition.variable!;
 			objectOperation = condition.operation;
 			objectOperandType = condition.operand?.type ?? objectOperandType;
 			operandVariable = condition.operand?.variable ?? operandVariable;
@@ -516,7 +531,7 @@ const open = (
 			commonElement = condition.operand?.element ?? commonElement;
 			break;
 		case 'actor':
-			commonActor = condition.actor;
+			commonActor = condition.actor!;
 			actorOperation = condition.operation;
 			actorSkillId = condition.skillId ?? actorSkillId;
 			actorStateId = condition.stateId ?? actorStateId;
@@ -528,7 +543,7 @@ const open = (
 			actorTeamId = condition.teamId ?? actorTeamId;
 			break;
 		case 'element':
-			commonElement = condition.element;
+			commonElement = condition.element!;
 			elementOperation = condition.operation;
 			break;
 		case 'keyboard':
@@ -544,9 +559,9 @@ const open = (
 			mouseState = condition.state;
 			break;
 		case 'list':
-			commonVariable = condition.list;
+			commonVariable = condition.list!;
 			listOperation = condition.operation;
-			operandVariable = condition.target;
+			operandVariable = condition.target!;
 			break;
 		case 'other':
 			otherKey = condition.key;

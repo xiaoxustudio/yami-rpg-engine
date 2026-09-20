@@ -21,8 +21,6 @@ import { remove } from '@app/utils/array';
 interface AnimationData {
 	sprites: Array<AnimationSprite & { image: string }>;
 	motions: Array<AnimationMotion & { id: string }>;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 const debouncedSceneRender = debounce(() => Scene.requestRendering!(), 60);
@@ -387,7 +385,7 @@ export class AnimationPlayer {
 		const matrix = context.matrix;
 		const layer = context.layer;
 		const frame = context.frame;
-		const tint = context.tint;
+		const tint = context.tint!;
 		const base = texture.base!;
 		const tw = base.width;
 		const th = base.height;
@@ -426,8 +424,8 @@ export class AnimationPlayer {
 		const mode = AnimationPlayer.lightSamplingModes[light ?? 'raw'];
 		const alpha = Math.round(context.opacity * OPACITY_BYTE);
 		const param = response[1] | (alpha << 8) | (mode << 16);
-		const redGreen = tint[0] + (tint[1] << 16) + 0x00ff00ff;
-		const blueGray = tint[2] + (tint[3] << 16) + 0x00ff00ff;
+		const redGreen = tint![0] + (tint![1] << 16) + 0x00ff00ff;
+		const blueGray = tint![2] + (tint![3] << 16) + 0x00ff00ff;
 		const anchor =
 			light !== 'anchor'
 				? 0
@@ -856,8 +854,12 @@ interface PlayerLayer {
 	class: string;
 	children: PlayerLayer[];
 	frames: PlayerFrame[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	// 运行时挂上的渲染字段（读点见下方渲染循环）
+	angle: string;
+	sprite: string;
+	blend: string;
+	light: string;
+	particleId: string;
 }
 
 interface PlayerAnimation {
@@ -881,6 +883,6 @@ interface PlayerContext {
 	update: ((frame: PlayerFrame, time?: number, next?: PlayerFrame) => void) | null;
 	reset: () => void;
 	emitter?: ParticleEmitterShape;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 染色数组：this.tint = new Int16Array(4) */
+	tint?: Int16Array;
 }
