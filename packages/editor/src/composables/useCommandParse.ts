@@ -114,7 +114,7 @@ export function fetchVariables(
 					const file = Data.manifest?.guidMap[params.eventId]?.file;
 					if (
 						file instanceof FileItem &&
-						!(file as unknown as { data?: { namespace?: unknown } }).data?.namespace
+						!(file as { data?: { namespace?: unknown } }).data?.namespace
 					) {
 						let lastEventName = commandState.eventName;
 						let lasteventIndex = commandState.eventIndex;
@@ -122,8 +122,7 @@ export function fetchVariables(
 						commandState.eventIndex = ++eventIndex;
 						fetchParameters(params.eventId);
 						fetchVariables(
-							(file as unknown as { data?: { commands?: CommandNode[] } }).data
-								?.commands ?? []
+							(file as { data?: { commands?: CommandNode[] } }).data?.commands ?? []
 						);
 						commandState.eventName = lastEventName;
 						commandState.eventIndex = lasteventIndex;

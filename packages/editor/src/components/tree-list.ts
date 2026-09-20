@@ -60,5 +60,5 @@ export function attachTreeListApi(el: HTMLElement): void {
 
 export function createTreeList(): TreeListElement {
 	const el = createTreeListElement({ getMenuState });
-	return el as unknown as TreeListElement;
+	return el as TreeListElement;
 }

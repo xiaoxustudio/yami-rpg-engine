@@ -67,7 +67,7 @@ let nodes: PresetElementNode[] | null = null;
 let initializedElement: PresetElementList | null = null;
 
 function initialize(): void {
-	const current = composableEls.get('presetElement-list') as unknown as PresetElementList | null;
+	const current = composableEls.get('presetElement-list') as PresetElementList | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;

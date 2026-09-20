@@ -34,7 +34,7 @@ Scene.list.copy = function (this: typeof Scene, item: SceneItem) {
 				Codec.encodeTilemap!(item);
 				break;
 		}
-		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.scene.object', item);
+		(GlobalClipboard as GlobalClipboardHost).write('yami.scene.object', item);
 	}
 };
 
@@ -44,7 +44,7 @@ Scene.list.paste = function (
 	dItem: SceneItem | 'auto' | null,
 	callback: ((item: SceneItem) => void) | undefined
 ) {
-	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.scene.object');
+	const copy = (GlobalClipboard as GlobalClipboardHost).read('yami.scene.object');
 	if (copy && this.data) {
 		switch (copy.class) {
 			case 'tilemap':
@@ -120,7 +120,7 @@ Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 Scene.list.cancelSearch = function (this: typeof Scene) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
-		Scene.searcher.deleteInputContent();
+		Scene.searcher.deleteInputContent!();
 		this.expandToSelection!();
 		this.scrollToSelection!();
 		(active as HTMLElement | null)?.focus();

@@ -94,8 +94,7 @@ for (const key of teamStateKeys) {
 	Object.defineProperty(Team, key, {
 		get: () => getTeamStore()[key],
 		set: (value: unknown) => {
-			(getTeamStore() as unknown as Record<(typeof teamStateKeys)[number], unknown>)[key] =
-				value;
+			(getTeamStore() as Record<(typeof teamStateKeys)[number], unknown>)[key] = value;
 		},
 		configurable: true
 	});

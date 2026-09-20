@@ -135,8 +135,12 @@
 				@input="onParamInput"
 			></SelectBox>
 			<div class="text">{{ t('components.uiProgressBar-color-0-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-0-box"
-				v-tip="t('components.uiProgressBar-color-0-box.tip')" ref="elColor0Box">
+			<div
+				class="flex-box"
+				id="uiProgressBar-color-0-box"
+				v-tip="t('components.uiProgressBar-color-0-box.tip')"
+				ref="elColor0Box"
+			>
 				<SliderBox
 					id="uiProgressBar-color-0-slider"
 					ref="elColor0Slider"
@@ -156,8 +160,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-1-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-1-box"
-				v-tip="t('components.uiProgressBar-color-1-box.tip')" ref="elColor1Box">
+			<div
+				class="flex-box"
+				id="uiProgressBar-color-1-box"
+				v-tip="t('components.uiProgressBar-color-1-box.tip')"
+				ref="elColor1Box"
+			>
 				<SliderBox
 					id="uiProgressBar-color-1-slider"
 					ref="elColor1Slider"
@@ -177,8 +185,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-2-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-2-box"
-				v-tip="t('components.uiProgressBar-color-2-box.tip')" ref="elColor2Box">
+			<div
+				class="flex-box"
+				id="uiProgressBar-color-2-box"
+				v-tip="t('components.uiProgressBar-color-2-box.tip')"
+				ref="elColor2Box"
+			>
 				<SliderBox
 					id="uiProgressBar-color-2-slider"
 					ref="elColor2Slider"
@@ -198,8 +210,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiProgressBar-color-3-box.label') || 'Alpha' }}</div>
-			<div class="flex-box" id="uiProgressBar-color-3-box"
-				v-tip="t('components.uiProgressBar-color-3-box.tip')" ref="elColor3Box">
+			<div
+				class="flex-box"
+				id="uiProgressBar-color-3-box"
+				v-tip="t('components.uiProgressBar-color-3-box.tip')"
+				ref="elColor3Box"
+			>
 				<SliderBox
 					id="uiProgressBar-color-3-slider"
 					ref="elColor3Slider"
@@ -244,7 +260,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIProgressBarPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -412,4 +428,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

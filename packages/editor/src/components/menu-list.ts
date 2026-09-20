@@ -28,7 +28,7 @@ interface MenuListElement extends HTMLElement {
 
 export function attachMenuListApi(el: HTMLElement): void {
 	const menu = createMenuApi(el);
-	const box = el as unknown as MenuListElement;
+	const box = el as MenuListElement;
 	Object.defineProperty(box, 'state', {
 		get: () => menu.state,
 		configurable: true
@@ -42,7 +42,7 @@ export function attachMenuListApi(el: HTMLElement): void {
 	// oxlint-disable-next-line unbound-method
 	box.clear = menu.clear;
 	// oxlint-disable-next-line unbound-method
-	box.createItem = menu.createItem as unknown as (...args: unknown[]) => unknown;
+	box.createItem = menu.createItem as (...args: unknown[]) => unknown;
 	// oxlint-disable-next-line unbound-method
 	box.select = menu.select;
 	// oxlint-disable-next-line unbound-method

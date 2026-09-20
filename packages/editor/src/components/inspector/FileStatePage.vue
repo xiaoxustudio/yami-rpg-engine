@@ -40,7 +40,7 @@
 		<ParamList
 			ref="elAttributes"
 			id="fileState-attributes"
-				v-tip="t('components.fileState-attributes.tip')"
+			v-tip="t('components.fileState-attributes.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			group="state"
@@ -52,7 +52,7 @@
 		<ParamList
 			ref="elEvents"
 			id="fileState-events"
-				v-tip="t('components.fileState-events.tip')"
+			v-tip="t('components.fileState-events.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			filter="state"
@@ -64,7 +64,7 @@
 		<ParamList
 			ref="elScripts"
 			id="fileState-scripts"
-				v-tip="t('components.fileState-scripts.tip')"
+			v-tip="t('components.fileState-scripts.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			flexible
@@ -94,7 +94,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useFileStatePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onListChange = () => {

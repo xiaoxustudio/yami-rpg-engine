@@ -13,7 +13,7 @@ Animation.requestRefreshingList = function (this: typeof Animation) {
 	if (getAnimationStore().state === 'open') {
 		const list = this.list;
 		// P4b：改用显式元素数据（`getElementData`）而不是原型访问器 `list.refreshing`
-		const data = getElementData(list as unknown as HTMLElement);
+		const data = getElementData(list as HTMLElement);
 		if (!data.refreshing) {
 			data.refreshing = true;
 			void Promise.resolve().then(() => {

@@ -69,7 +69,7 @@ export const WebServer = new (class {
 		this.load!();
 	}
 	setContent(url: string, img: string) {
-		const content = serviceEls.get('qr-code-content') as unknown as HTMLElement & {
+		const content = serviceEls.get('qr-code-content') as HTMLElement & {
 			update?: (value: { url: string; img: string }) => void;
 		};
 		content?.update?.({ url, img });

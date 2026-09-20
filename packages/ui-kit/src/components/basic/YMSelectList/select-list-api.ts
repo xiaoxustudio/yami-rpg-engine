@@ -100,7 +100,7 @@ export function createSelectListApi(
 	el: HTMLElement,
 	options?: SelectListApiOptions
 ): SelectListApi {
-	const box = el as unknown as SelectListApi;
+	const box = el as SelectListApi;
 	// P4b：`target` / `selection` 走显式元素数据
 	const data = listData(box);
 	const setTooltip =
@@ -209,11 +209,11 @@ export function createSelectListApi(
 	};
 
 	const resize = (): void => {
-		commonListResize(box as unknown as CommonListLike);
+		commonListResize(box as CommonListLike);
 	};
 
 	const updateHeadAndFoot = (): void => {
-		commonListUpdateHeadAndFoot(box as unknown as CommonListLike);
+		commonListUpdateHeadAndFoot(box as CommonListLike);
 	};
 
 	const updateOnResize = (): void => {};
@@ -234,7 +234,7 @@ export function createSelectListApi(
 			elements[elements.count++] = li;
 		}
 
-		commonListClearElements(box as unknown as CommonListLike, elements.count);
+		commonListClearElements(box as CommonListLike, elements.count);
 	};
 
 	const pageUp = (selectFlag: boolean): void => {
@@ -290,13 +290,13 @@ export function createSelectListApi(
 	};
 
 	const clearElements = (start: number): void => {
-		commonListClearElements(box as unknown as CommonListLike, start);
+		commonListClearElements(box as CommonListLike, start);
 	};
 
 	const clear = (): HTMLElement => {
 		unselect();
 		box.textContent = '';
-		commonListClearElements(box as unknown as CommonListLike, 0);
+		commonListClearElements(box as CommonListLike, 0);
 		box.elements.count = 0;
 		box.elements.start = -1;
 		box.elements.end = -1;

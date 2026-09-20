@@ -423,7 +423,7 @@ export function initCommandParseBridges(): void {
 }
 
 Command.forEachCommand = forEachCommand;
-Command.WordList = WordList as unknown as typeof Command.WordList;
+Command.WordList = WordList as typeof Command.WordList;
 
 export function bindCommandSchema(Schema: typeof CommandSchema): void {
 	// oxlint-disable-next-line unbound-method

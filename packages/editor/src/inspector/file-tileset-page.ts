@@ -83,9 +83,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 					break;
 			}
 
-			(
-				inspectorEls.get('fileTileset') as unknown as HTMLElement & { sync?: () => void }
-			)?.sync?.();
+			(inspectorEls.get('fileTileset') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

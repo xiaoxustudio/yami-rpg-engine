@@ -56,7 +56,7 @@ import { UIOwner } from './ui-owner.ts';
 			this.target = node;
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiReference-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiReference-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

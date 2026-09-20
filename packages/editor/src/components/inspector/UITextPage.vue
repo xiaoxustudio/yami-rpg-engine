@@ -16,7 +16,7 @@
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
 					id="uiText-align-left"
-				v-tip="t('components.uiText-align-left.tip')"
+					v-tip="t('components.uiText-align-left.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="left"
@@ -25,7 +25,7 @@
 				>
 				<RadioBox
 					id="uiText-align-center"
-				v-tip="t('components.uiText-align-center.tip')"
+					v-tip="t('components.uiText-align-center.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="center"
@@ -34,7 +34,7 @@
 				>
 				<RadioBox
 					id="uiText-align-right"
-				v-tip="t('components.uiText-align-right.tip')"
+					v-tip="t('components.uiText-align-right.tip')"
 					name="uiText-horizontalAlign"
 					class="uiText-align"
 					value="right"
@@ -43,7 +43,7 @@
 				>
 				<RadioBox
 					id="uiText-align-top"
-				v-tip="t('components.uiText-align-top.tip')"
+					v-tip="t('components.uiText-align-top.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="top"
@@ -52,7 +52,7 @@
 				>
 				<RadioBox
 					id="uiText-align-middle"
-				v-tip="t('components.uiText-align-middle.tip')"
+					v-tip="t('components.uiText-align-middle.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="middle"
@@ -61,7 +61,7 @@
 				>
 				<RadioBox
 					id="uiText-align-bottom"
-				v-tip="t('components.uiText-align-bottom.tip')"
+					v-tip="t('components.uiText-align-bottom.tip')"
 					name="uiText-verticalAlign"
 					class="uiText-align rotated"
 					value="bottom"
@@ -79,8 +79,7 @@
 				@input="onParamInput"
 			></TextArea>
 			<div class="text">{{ t('components.uiText-size-box.label') || 'Size' }}</div>
-			<div class="flex-box" id="uiText-size-box"
-				v-tip="t('components.uiText-size-box.tip')">
+			<div class="flex-box" id="uiText-size-box" v-tip="t('components.uiText-size-box.tip')">
 				<SliderBox
 					ref="elSizeSlider"
 					id="uiText-size-slider"
@@ -103,8 +102,11 @@
 			<div class="text">
 				{{ t('components.uiText-lineSpacing-box.label') || 'Line Spacing' }}
 			</div>
-			<div class="flex-box" id="uiText-lineSpacing-box"
-				v-tip="t('components.uiText-lineSpacing-box.tip')">
+			<div
+				class="flex-box"
+				id="uiText-lineSpacing-box"
+				v-tip="t('components.uiText-lineSpacing-box.tip')"
+			>
 				<SliderBox
 					ref="elLineSpacingSlider"
 					id="uiText-lineSpacing-slider"
@@ -127,8 +129,11 @@
 			<div class="text">
 				{{ t('components.uiText-letterSpacing-box.label') || 'Letter Spacing' }}
 			</div>
-			<div class="flex-box" id="uiText-letterSpacing-box"
-				v-tip="t('components.uiText-letterSpacing-box.tip')">
+			<div
+				class="flex-box"
+				id="uiText-letterSpacing-box"
+				v-tip="t('components.uiText-letterSpacing-box.tip')"
+			>
 				<SliderBox
 					ref="elLetterSpacingSlider"
 					id="uiText-letterSpacing-slider"
@@ -149,14 +154,22 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div>
-			<ColorBox id="uiText-color"
+			<ColorBox
+				id="uiText-color"
 				:ref="registryRef(inspectorEls, 'uiText-color')"
-				v-tip="t('components.uiText-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
+				v-tip="t('components.uiText-color.tip')"
+				v-model="form.color"
+				@input="onParamInput"
+			></ColorBox>
 			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
-			<TextBox id="uiText-font"
-			:placeholder="t('components.uiText-font.placeholder')"
+			<TextBox
+				id="uiText-font"
+				:placeholder="t('components.uiText-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiText-font')"
-				v-tip="t('components.uiText-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
+				v-tip="t('components.uiText-font.tip')"
+				v-model="form.font"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				ref="elTypeface"
@@ -267,7 +280,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUITextPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -323,32 +336,104 @@ onMounted(() => {
 	if (!uiText) return;
 
 	elDirection.value?.loadItems([
-		{ name: t('components.uiText-direction.options.horizontal-tb.name'), tip: t('components.uiText-direction.options.horizontal-tb.tip'), value: 'horizontal-tb'  },
-		{ name: t('components.uiText-direction.options.vertical-lr.name'), tip: t('components.uiText-direction.options.vertical-lr.tip'), value: 'vertical-lr'  },
-		{ name: t('components.uiText-direction.options.vertical-rl.name'), tip: t('components.uiText-direction.options.vertical-rl.tip'), value: 'vertical-rl'  }
+		{
+			name: t('components.uiText-direction.options.horizontal-tb.name'),
+			tip: t('components.uiText-direction.options.horizontal-tb.tip'),
+			value: 'horizontal-tb'
+		},
+		{
+			name: t('components.uiText-direction.options.vertical-lr.name'),
+			tip: t('components.uiText-direction.options.vertical-lr.tip'),
+			value: 'vertical-lr'
+		},
+		{
+			name: t('components.uiText-direction.options.vertical-rl.name'),
+			tip: t('components.uiText-direction.options.vertical-rl.tip'),
+			value: 'vertical-rl'
+		}
 	]);
 	elTypeface.value?.loadItems([
-		{ name: t('components.uiText-typeface.options.regular.name'), tip: t('components.uiText-typeface.options.regular.tip'), value: 'regular'  },
-		{ name: t('components.uiText-typeface.options.bold.name'), tip: t('components.uiText-typeface.options.bold.tip'), value: 'bold'  },
-		{ name: t('components.uiText-typeface.options.italic.name'), tip: t('components.uiText-typeface.options.italic.tip'), value: 'italic'  },
-		{ name: t('components.uiText-typeface.options.bold-italic.name'), tip: t('components.uiText-typeface.options.bold-italic.tip'), value: 'bold-italic'  }
+		{
+			name: t('components.uiText-typeface.options.regular.name'),
+			tip: t('components.uiText-typeface.options.regular.tip'),
+			value: 'regular'
+		},
+		{
+			name: t('components.uiText-typeface.options.bold.name'),
+			tip: t('components.uiText-typeface.options.bold.tip'),
+			value: 'bold'
+		},
+		{
+			name: t('components.uiText-typeface.options.italic.name'),
+			tip: t('components.uiText-typeface.options.italic.tip'),
+			value: 'italic'
+		},
+		{
+			name: t('components.uiText-typeface.options.bold-italic.name'),
+			tip: t('components.uiText-typeface.options.bold-italic.tip'),
+			value: 'bold-italic'
+		}
 	]);
 	elEffectType.value?.loadItems([
-		{ name: t('components.uiText-effect-type.options.none.name'), tip: t('components.uiText-effect-type.options.none.tip'), value: 'none'  },
-		{ name: t('components.uiText-effect-type.options.shadow.name'), tip: t('components.uiText-effect-type.options.shadow.tip'), value: 'shadow'  },
-		{ name: t('components.uiText-effect-type.options.stroke.name'), tip: t('components.uiText-effect-type.options.stroke.tip'), value: 'stroke'  },
-		{ name: t('components.uiText-effect-type.options.outline.name'), tip: t('components.uiText-effect-type.options.outline.tip'), value: 'outline'  }
+		{
+			name: t('components.uiText-effect-type.options.none.name'),
+			tip: t('components.uiText-effect-type.options.none.tip'),
+			value: 'none'
+		},
+		{
+			name: t('components.uiText-effect-type.options.shadow.name'),
+			tip: t('components.uiText-effect-type.options.shadow.tip'),
+			value: 'shadow'
+		},
+		{
+			name: t('components.uiText-effect-type.options.stroke.name'),
+			tip: t('components.uiText-effect-type.options.stroke.tip'),
+			value: 'stroke'
+		},
+		{
+			name: t('components.uiText-effect-type.options.outline.name'),
+			tip: t('components.uiText-effect-type.options.outline.tip'),
+			value: 'outline'
+		}
 	]);
 	elOverflow.value?.loadItems([
-		{ name: t('components.uiText-overflow.options.visible.name'), tip: t('components.uiText-overflow.options.visible.tip'), value: 'visible'  },
-		{ name: t('components.uiText-overflow.options.wrap.name'), tip: t('components.uiText-overflow.options.wrap.tip'), value: 'wrap'  },
-		{ name: t('components.uiText-overflow.options.truncate.name'), tip: t('components.uiText-overflow.options.truncate.tip'), value: 'truncate'  },
-		{ name: t('components.uiText-overflow.options.wrap-truncate.name'), tip: t('components.uiText-overflow.options.wrap-truncate.tip'), value: 'wrap-truncate'  }
+		{
+			name: t('components.uiText-overflow.options.visible.name'),
+			tip: t('components.uiText-overflow.options.visible.tip'),
+			value: 'visible'
+		},
+		{
+			name: t('components.uiText-overflow.options.wrap.name'),
+			tip: t('components.uiText-overflow.options.wrap.tip'),
+			value: 'wrap'
+		},
+		{
+			name: t('components.uiText-overflow.options.truncate.name'),
+			tip: t('components.uiText-overflow.options.truncate.tip'),
+			value: 'truncate'
+		},
+		{
+			name: t('components.uiText-overflow.options.wrap-truncate.name'),
+			tip: t('components.uiText-overflow.options.wrap-truncate.tip'),
+			value: 'wrap-truncate'
+		}
 	]);
 	elBlend.value?.loadItems([
-		{ name: t('components.uiText-blend.options.normal.name'), tip: t('components.uiText-blend.options.normal.tip'), value: 'normal'  },
-		{ name: t('components.uiText-blend.options.additive.name'), tip: t('components.uiText-blend.options.additive.tip'), value: 'additive'  },
-		{ name: t('components.uiText-blend.options.subtract.name'), tip: t('components.uiText-blend.options.subtract.tip'), value: 'subtract'  }
+		{
+			name: t('components.uiText-blend.options.normal.name'),
+			tip: t('components.uiText-blend.options.normal.tip'),
+			value: 'normal'
+		},
+		{
+			name: t('components.uiText-blend.options.additive.name'),
+			tip: t('components.uiText-blend.options.additive.tip'),
+			value: 'additive'
+		},
+		{
+			name: t('components.uiText-blend.options.subtract.name'),
+			tip: t('components.uiText-blend.options.subtract.tip'),
+			value: 'subtract'
+		}
 	]);
 	synchronize(elSizeSlider.value, elSize.value);
 	synchronize(elLineSpacingSlider.value, elLineSpacing.value);
@@ -370,8 +455,7 @@ onMounted(() => {
 		{ case: 'outline', targets: [elEffectColor.value?.root ?? null] }
 	]);
 
-	const elements =
-		registryElements(inspectorEls, [
+	const elements = registryElements(inspectorEls, [
 		'uiText-direction',
 		'uiText-horizontalAlign',
 		'uiText-verticalAlign',
@@ -390,7 +474,11 @@ onMounted(() => {
 		'uiText-overflow',
 		'uiText-blend'
 	]);
-	const sliders = registryElements(inspectorEls, ['uiText-size-slider', 'uiText-lineSpacing-slider', 'uiText-letterSpacing-slider']);
+	const sliders = registryElements(inspectorEls, [
+		'uiText-size-slider',
+		'uiText-lineSpacing-slider',
+		'uiText-letterSpacing-slider'
+	]);
 	bindInput(elements, getUIStore(), uiText);
 	bindSliders(sliders);
 
@@ -420,4 +508,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

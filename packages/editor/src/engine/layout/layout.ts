@@ -752,7 +752,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 		}
 	}
 	// P1b：布局诊断里改读注册表（原先 document.getElementById）
-	const browser = storesEls.get('project-browser') as unknown as HTMLElement | null;
+	const browser = storesEls.get('project-browser') as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();
 		lines.push(`#project-browser: ${describe(browser)}`);

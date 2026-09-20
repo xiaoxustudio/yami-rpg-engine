@@ -108,7 +108,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 			Inspector.uiElement.open(node);
 
 			(
-				inspectorEls.get('uiButton-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiButton-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -253,7 +253,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
 					const form = (
-						inspectorEls.get('uiButton-vue-mount') as unknown as unknown as
+						inspectorEls.get('uiButton-vue-mount') as unknown as
 							| (HTMLElement & { form?: ButtonForm })
 							| null
 					)?.form;

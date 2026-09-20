@@ -429,7 +429,7 @@ const open = (
 		operation: 'add',
 		type: 'constant',
 		value: 0
-	} as unknown as NumberOperandData
+	} as NumberOperandData
 ): void => {
 	getWindowStore().open('setNumber-operand');
 
@@ -545,7 +545,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		composableEls.get('setNumber-operand') as unknown as unknown as
+		composableEls.get('setNumber-operand') as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
 			| null
 	)?.setForm;
@@ -587,7 +587,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		composableEls.get('setNumber-operand') as unknown as unknown as
+		composableEls.get('setNumber-operand') as unknown as
 			| (HTMLElement & { getForm?: () => NumberOperandForm })
 			| null
 	)?.getForm;

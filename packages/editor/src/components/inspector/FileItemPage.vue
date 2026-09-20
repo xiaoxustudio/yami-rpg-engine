@@ -40,7 +40,7 @@
 		<ParamList
 			ref="elAttributes"
 			id="fileItem-attributes"
-				v-tip="t('components.fileItem-attributes.tip')"
+			v-tip="t('components.fileItem-attributes.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			group="item"
@@ -52,7 +52,7 @@
 		<ParamList
 			ref="elEvents"
 			id="fileItem-events"
-				v-tip="t('components.fileItem-events.tip')"
+			v-tip="t('components.fileItem-events.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			filter="item"
@@ -64,7 +64,7 @@
 		<ParamList
 			ref="elScripts"
 			id="fileItem-scripts"
-				v-tip="t('components.fileItem-scripts.tip')"
+			v-tip="t('components.fileItem-scripts.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			flexible
@@ -94,7 +94,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useFileItemPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onListChange = () => {

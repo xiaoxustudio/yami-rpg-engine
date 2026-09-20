@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
 			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div>
-			<TextBox id="sceneParticle-name"
+			<TextBox
+				id="sceneParticle-name"
 				:ref="registryRef(inspectorEls, 'sceneParticle-name')"
-				v-tip="t('components.sceneParticle-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneParticle-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">
 				{{ t('components.sceneParticle-particleId.label') || 'Particle' }}
 			</div>
@@ -45,8 +49,11 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParticle-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneParticle-angle-box"
-				v-tip="t('components.sceneParticle-angle-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParticle-angle-box"
+				v-tip="t('components.sceneParticle-angle-box.tip')"
+			>
 				<SliderBox
 					id="sceneParticle-angle-slider"
 					ref="elAngleSlider"
@@ -68,8 +75,11 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneParticle-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneParticle-scale-box"
-				v-tip="t('components.sceneParticle-scale-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParticle-scale-box"
+				v-tip="t('components.sceneParticle-scale-box.tip')"
+			>
 				<SliderBox
 					id="sceneParticle-scale-slider"
 					ref="elScaleSlider"
@@ -90,8 +100,11 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneParticle-speed-box.label') || 'Speed' }}</div>
-			<div class="flex-box" id="sceneParticle-speed-box"
-				v-tip="t('components.sceneParticle-speed-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParticle-speed-box"
+				v-tip="t('components.sceneParticle-speed-box.tip')"
+			>
 				<SliderBox
 					id="sceneParticle-speed-slider"
 					ref="elSpeedSlider"
@@ -114,8 +127,11 @@
 			<div class="text">
 				{{ t('components.sceneParticle-opacity-box.label') || 'Opacity' }}
 			</div>
-			<div class="flex-box" id="sceneParticle-opacity-box"
-				v-tip="t('components.sceneParticle-opacity-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParticle-opacity-box"
+				v-tip="t('components.sceneParticle-opacity-box.tip')"
+			>
 				<SliderBox
 					id="sceneParticle-opacity-slider"
 					ref="elOpacitySlider"
@@ -138,8 +154,11 @@
 			<div class="text">
 				{{ t('components.sceneParticle-priority-box.label') || 'Priority' }}
 			</div>
-			<div class="flex-box" id="sceneParticle-priority-box"
-				v-tip="t('components.sceneParticle-priority-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParticle-priority-box"
+				v-tip="t('components.sceneParticle-priority-box.tip')"
+			>
 				<SliderBox
 					id="sceneParticle-priority-slider"
 					ref="elPrioritySlider"
@@ -165,7 +184,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParticle-conditions"
-				v-tip="t('components.sceneParticle-conditions.tip')"
+			v-tip="t('components.sceneParticle-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -175,7 +194,7 @@
 		<DetailSummary>{{ t('components.sceneParticle-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-events"
-				v-tip="t('components.sceneParticle-events.tip')"
+			v-tip="t('components.sceneParticle-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="particle"
@@ -188,16 +207,13 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParticle-scripts"
-				v-tip="t('components.sceneParticle-scripts.tip')"
+			v-tip="t('components.sceneParticle-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<ParameterPane
-		id="sceneParticle-parameter-pane"
-		ref="elParameterPane"
-	></ParameterPane>
+	<ParameterPane id="sceneParticle-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -227,7 +243,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneParticlePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -280,7 +296,7 @@ onMounted(() => {
 		elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 		elEvents.value?.bind(new EventListInterface(editor, Scene));
 		elScripts.value?.bind(
-			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+			new ScriptListInterface(editor as { target?: { id: string } }, Scene)
 		);
 		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
@@ -291,28 +307,31 @@ onMounted(() => {
 		elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
 
 		const elements = registryElements(inspectorEls, [
-		'sceneParticle-name',
-		'sceneParticle-particleId',
-		'sceneParticle-x',
-		'sceneParticle-y',
-		'sceneParticle-angle',
-		'sceneParticle-scale',
-		'sceneParticle-speed',
-		'sceneParticle-opacity',
-		'sceneParticle-priority'
-	]);
+			'sceneParticle-name',
+			'sceneParticle-particleId',
+			'sceneParticle-x',
+			'sceneParticle-y',
+			'sceneParticle-angle',
+			'sceneParticle-scale',
+			'sceneParticle-speed',
+			'sceneParticle-opacity',
+			'sceneParticle-priority'
+		]);
 		const sliders = registryElements(inspectorEls, [
-		'sceneParticle-angle-slider',
-		'sceneParticle-scale-slider',
-		'sceneParticle-speed-slider',
-		'sceneParticle-opacity-slider',
-		'sceneParticle-priority-slider'
-	]);
+			'sceneParticle-angle-slider',
+			'sceneParticle-scale-slider',
+			'sceneParticle-speed-slider',
+			'sceneParticle-opacity-slider',
+			'sceneParticle-priority-slider'
+		]);
 		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
-		registryElements(inspectorEls, ['sceneParticle-conditions', 'sceneParticle-events', 'sceneParticle-scripts'])
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
+		registryElements(inspectorEls, [
+			'sceneParticle-conditions',
+			'sceneParticle-events',
+			'sceneParticle-scripts'
+		]).forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneParticlePage] init skipped:', (e as Error)?.message);
 	}
@@ -339,4 +358,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

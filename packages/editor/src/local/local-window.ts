@@ -153,12 +153,12 @@ function ensureDomBound() {
 	if (Localization.list) return;
 	const list = localEls.get('localization-list') as YamiElement;
 	if (!list) return;
-	Localization.list = list as unknown as TreeListElement;
-	Localization.panel = localEls.get('localization-inspector') as unknown as HTMLElement & {
+	Localization.list = list as TreeListElement;
+	Localization.panel = localEls.get('localization-inspector') as HTMLElement & {
 		item: LocalizationItem | null;
 	};
 	hide(Localization.panel);
-	Localization.searcher = localEls.get('localization-searcher') as unknown as HTMLElement & {
+	Localization.searcher = localEls.get('localization-searcher') as HTMLElement & {
 		addCloseButton(): void;
 		deleteInputContent(): void;
 	};
@@ -166,10 +166,8 @@ function ensureDomBound() {
 	list.restoreScroll = Localization.list_restoreScroll;
 	list.cancelSearch = Localization.list_cancelSearch;
 	list.createFolder = Localization.list_createFolder;
-	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => unknown;
-	list.updateItemName = Localization.list_updateItemName as unknown as (
-		...args: unknown[]
-	) => unknown;
+	list.createItem = Localization.list_createItem as (...args: unknown[]) => unknown;
+	list.updateItemName = Localization.list_updateItemName as (...args: unknown[]) => unknown;
 	getListConfig(list).onCreate = Localization.list_onCreate as (item: unknown) => void;
 	getListConfig(list).onDelete = Localization.list_onDelete as (item: unknown) => void;
 	getListConfig(list).onResume = Localization.list_onResume as (item: unknown) => void;

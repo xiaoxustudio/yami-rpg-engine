@@ -193,8 +193,8 @@ const registerNode = (node: HTMLElement | null): void => {
 		return;
 	}
 	if (props.bridge === 'selector') {
-		selector.setComponent(node as unknown as SelectorInstance);
-		const selectorNode = node as unknown as SelectorInstance;
+		selector.setComponent(node as SelectorInstance);
+		const selectorNode = node as SelectorInstance;
 		selectorNode.open = (target: unknown, allowNone = true) =>
 			selector.open(
 				target as { read(): string; filter?: string; input?(value?: unknown): void },
@@ -202,7 +202,7 @@ const registerNode = (node: HTMLElement | null): void => {
 			);
 		return;
 	}
-	const browserNode = node as unknown as FileBrowserInstance;
+	const browserNode = node as FileBrowserInstance;
 	getBrowserStore().setComponent(browserNode);
 	browserNode.open = (target: unknown, allowNone = true) =>
 		selector.open(

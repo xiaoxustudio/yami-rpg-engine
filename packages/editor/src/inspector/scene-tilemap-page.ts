@@ -110,7 +110,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneTilemap-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -131,7 +131,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 
 	SceneTilemap.write = function (this: typeof SceneTilemap, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneTilemap-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();
@@ -194,7 +194,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 	) {
 		const lightBox =
 			SceneTilemap.lightBox ??
-			(inspectorEls.get('sceneTilemap-light') as unknown as typeof SceneTilemap.lightBox);
+			(inspectorEls.get('sceneTilemap-light') as typeof SceneTilemap.lightBox);
 		if (!lightBox?.lightItems) return;
 		SceneTilemap.lightBox = lightBox;
 		const type = event.value === 'object' ? 'sprite' : 'tile';

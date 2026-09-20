@@ -49,7 +49,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimSoundFramePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -63,11 +63,16 @@ onMounted(() => {
 		const elements = [elSound.value?.root, elVolume.value?.root].filter(
 			(el): el is HTMLElement => el != null
 		);
-		bindInput(elements, animSoundFrame, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
-			data.type = 'inspector-frame-change';
-			data.motion = animSoundFrame.motion;
-			data.direction = Animation.direction;
-		});
+		bindInput(
+			elements,
+			animSoundFrame,
+			Animation as unknown as { history: unknown },
+			(data: Record<string, unknown>) => {
+				data.type = 'inspector-frame-change';
+				data.motion = animSoundFrame.motion;
+				data.direction = Animation.direction;
+			}
+		);
 	}
 	const el = inspectorEls.get('animSoundFrame-vue-mount');
 	if (el) {

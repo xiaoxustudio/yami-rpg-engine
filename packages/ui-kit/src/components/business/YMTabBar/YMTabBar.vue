@@ -61,7 +61,7 @@ type TabBarElement = HTMLElement & {
 		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	) => void;
-}
+};
 
 interface Props {
 	id?: string;
@@ -215,10 +215,13 @@ const close = (item: TabItem): void => {
 			}
 		}
 		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent('closed', {} as {
-				closedItems: TabItem[];
-				lastValue: TabItem | undefined;
-			});
+			const closedEvent = createPayloadEvent(
+				'closed',
+				{} as {
+					closedItems: TabItem[];
+					lastValue: TabItem | undefined;
+				}
+			);
 			closedEvent.closedItems = [item];
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -246,10 +249,13 @@ const closeOtherTabs = (item: TabItem): void => {
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent('closed', {} as {
-				closedItems: TabItem[];
-				lastValue: TabItem | undefined;
-			});
+			const closedEvent = createPayloadEvent(
+				'closed',
+				{} as {
+					closedItems: TabItem[];
+					lastValue: TabItem | undefined;
+				}
+			);
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -267,10 +273,13 @@ const closeTabsToTheRight = (item: TabItem): void => {
 	if (closedItems.length !== 0) {
 		update();
 		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent('closed', {} as {
-				closedItems: TabItem[];
-				lastValue: TabItem | undefined;
-			});
+			const closedEvent = createPayloadEvent(
+				'closed',
+				{} as {
+					closedItems: TabItem[];
+					lastValue: TabItem | undefined;
+				}
+			);
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
 			el.dispatchEvent(closedEvent);
@@ -283,7 +292,7 @@ const find = (meta: TabItemMeta): TabItem | undefined => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
 	// oxlint-disable-next-line no-explicit-any
-	for (const node of el.childNodes as unknown as NodeListOf<any>) {
+	for (const node of el.childNodes as NodeListOf<any>) {
 		const nodeItem = tabData(node).item;
 		if (nodeItem && nodeItem.meta === meta) {
 			return nodeItem;
@@ -390,7 +399,7 @@ const dragstart = (event: DragEvent): void => {
 	if (!el || !el.parentNode) return;
 	const data = tabBarData(el);
 	if (!data.dragging) {
-		const hint = createDragAndDropHintElement() as unknown as TabHint;
+		const hint = createDragAndDropHintElement() as TabHint;
 		const dragging: TabDraggingEvent = {
 			hint,
 			target: event.target as HTMLElement,
@@ -398,7 +407,7 @@ const dragstart = (event: DragEvent): void => {
 		};
 		data.dragging = dragging;
 		Object.defineProperty(event, 'offsetX', { writable: true });
-		event.preventDefault = (() => {}) as unknown as () => void;
+		event.preventDefault = (() => {}) as () => void;
 		addClass(hint, 'for-tab');
 		el.parentNode.insertBefore(hide(hint), el);
 		addClass(el, 'dragging');
@@ -414,7 +423,7 @@ const dragenter = (event: DragEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (el && tabBarData(el).dragging) {
 		event.preventDefault();
-		(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
+		(event.dataTransfer as { dropEffect: string }).dropEffect = 'move';
 	}
 };
 
@@ -435,7 +444,7 @@ const dragover = (event: DragEvent): void => {
 	const dragging = data.dragging;
 	if (!dragging) return;
 	event.preventDefault();
-	(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
+	(event.dataTransfer as { dropEffect: string }).dropEffect = 'move';
 	if (dragging.offsetX === event.offsetX) {
 		return;
 	}
@@ -539,11 +548,14 @@ const windowPointerup = (event: PointerEvent): void => {
 			}
 			case 'popup':
 				if (dragging.target === event.target) {
-					const popupEvent = createPayloadEvent('popup', {} as {
-						value?: TabItem | null;
-						clientX: number;
-						clientY: number;
-					});
+					const popupEvent = createPayloadEvent(
+						'popup',
+						{} as {
+							value?: TabItem | null;
+							clientX: number;
+							clientY: number;
+						}
+					);
 					const item = tabData(event.target).item;
 					popupEvent.value = item ?? null;
 					popupEvent.clientX = event.clientX;

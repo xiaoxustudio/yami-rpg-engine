@@ -56,9 +56,7 @@ for (const key of projectStateKeys) {
 	Object.defineProperty(Project, key, {
 		get: () => getProjectStore()[key],
 		set: (value: unknown) => {
-			(getProjectStore() as unknown as Record<(typeof projectStateKeys)[number], unknown>)[
-				key
-			] = value;
+			(getProjectStore() as Record<(typeof projectStateKeys)[number], unknown>)[key] = value;
 		},
 		configurable: true
 	});

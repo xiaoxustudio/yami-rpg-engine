@@ -338,8 +338,8 @@ export function attachScrollBarApi(
 					break;
 				}
 				case 'repeat':
-					data.dragging = event as unknown as ScrollDragging;
-					(event as unknown as ScrollDragging).mode = 'repeat';
+					data.dragging = event as ScrollDragging;
+					(event as ScrollDragging).mode = 'repeat';
 					break;
 			}
 		}
@@ -355,12 +355,11 @@ export function attachScrollBarApi(
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				if (event.target === data.thumb) {
-					data.dragging = event as unknown as ScrollDragging;
-					(event as unknown as ScrollDragging).mode = 'scroll';
-					(event as unknown as ScrollDragging).scrollLeft = data.target!.scrollLeft;
-					(event as unknown as ScrollDragging).scrollTop = data.target!.scrollTop;
-					(event as unknown as ScrollDragging).relate = (e: PointerEvent) =>
-						relate(event, e);
+					data.dragging = event as ScrollDragging;
+					(event as ScrollDragging).mode = 'scroll';
+					(event as ScrollDragging).scrollLeft = data.target!.scrollLeft;
+					(event as ScrollDragging).scrollTop = data.target!.scrollTop;
+					(event as ScrollDragging).relate = (e: PointerEvent) => relate(event, e);
 					window.addEventListener('pointerup', windowPointerup, true);
 					window.addEventListener('pointermove', windowPointermove, true);
 				} else {
@@ -373,10 +372,9 @@ export function attachScrollBarApi(
 							scrollRelative(event.clientY < r.top ? -1 : 1);
 							break;
 					}
-					data.dragging = event as unknown as ScrollDragging;
-					(event as unknown as ScrollDragging).mode = 'repeat';
-					(event as unknown as ScrollDragging).relate = (e: PointerEvent) =>
-						relate(event, e);
+					data.dragging = event as ScrollDragging;
+					(event as ScrollDragging).mode = 'repeat';
+					(event as ScrollDragging).relate = (e: PointerEvent) => relate(event, e);
 					window.addEventListener('pointerup', windowPointerup, true);
 					window.addEventListener('pointermove', windowPointermove, true);
 				}

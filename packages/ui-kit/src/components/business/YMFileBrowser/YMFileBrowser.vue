@@ -1,7 +1,37 @@
 <template>
-	<YMFileNavPane ref="navEl" :links="links" :directory-api="childDirectoryApi" :file-system="childFileSystem" :path-util="childPathUtil" :menu-state="childMenuState" :create-text-box="childCreateTextBox" />
-	<YMFileHeadPane ref="headEl" :links="links" :menu-popup="props.menuPopup" :is-folder-item="isFolderItem" />
-	<YMFileBodyPane ref="bodyEl" :links="links" :data-api="props.dataApi" :window-api="props.windowApi" :gl-api="props.glApi" :menu-state="props.menuState" :clipboard-api="props.clipboardApi" :reference-api="props.referenceApi" :localize="props.localize" :editor-api="props.editorApi" :directory-api="props.directoryApi" :file-system-api="props.fileSystemApi" :path-util="props.pathUtil" :file-classes="props.fileClasses" :set-icon-clip="props.setIconClip" :create-text-box="props.createTextBox" />
+	<YMFileNavPane
+		ref="navEl"
+		:links="links"
+		:directory-api="childDirectoryApi"
+		:file-system="childFileSystem"
+		:path-util="childPathUtil"
+		:menu-state="childMenuState"
+		:create-text-box="childCreateTextBox"
+	/>
+	<YMFileHeadPane
+		ref="headEl"
+		:links="links"
+		:menu-popup="props.menuPopup"
+		:is-folder-item="isFolderItem"
+	/>
+	<YMFileBodyPane
+		ref="bodyEl"
+		:links="links"
+		:data-api="props.dataApi"
+		:window-api="props.windowApi"
+		:gl-api="props.glApi"
+		:menu-state="props.menuState"
+		:clipboard-api="props.clipboardApi"
+		:reference-api="props.referenceApi"
+		:localize="props.localize"
+		:editor-api="props.editorApi"
+		:directory-api="props.directoryApi"
+		:file-system-api="props.fileSystemApi"
+		:path-util="props.pathUtil"
+		:file-classes="props.fileClasses"
+		:set-icon-clip="props.setIconClip"
+		:create-text-box="props.createTextBox"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -22,7 +52,7 @@ type FileBrowserApi = HTMLElement & {
 	display?: string;
 	searchResults?: unknown[];
 	[key: string]: unknown;
-}
+};
 type FileNavApi = HTMLElement & {
 	load?(...folders: unknown[]): void;
 	select?(item: unknown): void;
@@ -31,7 +61,7 @@ type FileNavApi = HTMLElement & {
 	clear?(): void;
 	selections?: unknown[];
 	[key: string]: unknown;
-}
+};
 type FileBodyApi = HTMLElement & {
 	load?(folders: unknown[]): void;
 	select?(...files: unknown[]): void;
@@ -39,7 +69,7 @@ type FileBodyApi = HTMLElement & {
 	updateFiles?(): void;
 	selections?: unknown[];
 	[key: string]: unknown;
-}
+};
 interface FileHeadApi extends HTMLElement {
 	updateAddress?(): void;
 	/** 头部搜索框（YMTextBox 元素 API）：close 用 legacy 的 `searcher.write('')` 清关键字 */
@@ -93,7 +123,7 @@ interface OsDragEvent {
 
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
-import { hideDragImage,  addClass, hasClass, removeClass } from '../../../utils/dom';
+import { hideDragImage, addClass, hasClass, removeClass } from '../../../utils/dom';
 import type { MenuItem, MenuOptions } from '../../basic/YMMenuList/menu-api';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
 import YMFileHeadPane from '../YMFileHeadPane/YMFileHeadPane.vue';
@@ -176,7 +206,8 @@ const childDirectoryApi = {
 };
 const childFileSystem = {
 	path: (p: string) => File?.path?.(p) ?? p,
-	rename: (oldPath: string, newPath: string) => Directory?.rename?.(oldPath, newPath) ?? Promise.resolve(),
+	rename: (oldPath: string, newPath: string) =>
+		Directory?.rename?.(oldPath, newPath) ?? Promise.resolve(),
 	existsSync: (p: string) => Directory?.existsSync?.(p) ?? false
 };
 const childPathUtil = { dirname: (p: string) => Path?.dirname?.(p) ?? '' };
@@ -201,7 +232,7 @@ let links: any = {};
  * 一致（legacy 里它同时是搜索基集：`Directory.searchFiles(filters, kw, this.directory, list)`）。
  */
 const directoryItems = (): unknown[] | null => {
-	const value = (el.value as unknown as FileBrowserApi | undefined)?.directory;
+	const value = (el.value as FileBrowserApi | undefined)?.directory;
 	return Array.isArray(value) ? value : null;
 };
 
@@ -211,7 +242,7 @@ const directoryItems = (): unknown[] | null => {
  * legacy 里 `display` 就是元素属性本身，改完即生效；换源后它是模块变量，漏镜像就会读到旧值。
  */
 function syncDisplayState(): void {
-	const node = el.value as unknown as FileBrowserApi | undefined;
+	const node = el.value as FileBrowserApi | undefined;
 	if (!node) return;
 	node.display = display;
 	node.searchResults = searchResults;
@@ -219,13 +250,13 @@ function syncDisplayState(): void {
 
 function update(): void {
 	syncDisplayState();
-	const body = bodyEl.value?.el as unknown as FileBodyApi;
+	const body = bodyEl.value?.el as FileBodyApi;
 	body?.updateFiles?.();
 	(headEl.value as unknown as FileHeadApi)?.updateAddress?.();
 }
 
 function searchFiles(kw: RegExp | string): void {
-	const nav = navEl.value?.el as unknown as FileNavApi;
+	const nav = navEl.value?.el as FileNavApi;
 	if (kw instanceof RegExp || kw.length !== 0) {
 		if (display === 'normal') {
 			display = 'search';
@@ -263,7 +294,7 @@ function restoreDisplay(): void {
 			// （P2b 删掉的那句裸 `?.el?.querySelector?.('.file-head-searcher')` 正是它的残骸——
 			// 有调用无接收方，从未生效；现在走头部元素的搜索框 API，与 legacy 同一句 `write('')`。）
 			(
-				(headEl.value as unknown as { el?: FileHeadApi } | undefined)?.el?.searcher as
+				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
 					| { write?(value: string): void }
 					| undefined
 			)?.write?.('');
@@ -272,7 +303,7 @@ function restoreDisplay(): void {
 }
 
 function backToParentFolder(): boolean {
-	const nav = navEl.value?.el as unknown as FileNavApi;
+	const nav = navEl.value?.el as FileNavApi;
 	switch (display) {
 		case 'normal': {
 			const folders = nav.selections ?? [];
@@ -291,7 +322,7 @@ function backToParentFolder(): boolean {
 			// 接收方是**头部元素**里的搜索框（组件只暴露 `{ updateAddress, el }`）；
 			// 原来的 `headEl.value?.searcherEl` 字段名与接收方都不对，一直是静默 no-op
 			(
-				(headEl.value as unknown as { el?: FileHeadApi } | undefined)?.el?.searcher as
+				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
 					| { deleteInputContent?(): void }
 					| undefined
 			)?.deleteInputContent?.();
@@ -303,7 +334,7 @@ function backToParentFolder(): boolean {
 }
 
 function dirchange(_event: Event): void {
-	const body = bodyEl.value?.el as unknown as FileBodyApi;
+	const body = bodyEl.value?.el as FileBodyApi;
 	switch (display) {
 		case 'normal':
 			break;
@@ -313,7 +344,7 @@ function dirchange(_event: Event): void {
 	}
 	const files = Array.from((body as FileBodyApi).selections ?? []);
 	if (files.length !== 0) {
-		const { inoMap } = Directory as unknown as { inoMap: Record<string, unknown> };
+		const { inoMap } = Directory as { inoMap: Record<string, unknown> };
 		let modified = false;
 		let i = files.length;
 		while (--i >= 0) {
@@ -336,22 +367,22 @@ function dirchange(_event: Event): void {
 }
 
 function close(): void {
-	const node = el.value as unknown as FileBrowserApi | undefined;
+	const node = el.value as FileBrowserApi | undefined;
 	if (node?.directory) {
 		node.directory = null;
 		restoreDisplay();
-		const nav = navEl.value?.el as unknown as FileNavApi | undefined;
-		const body = bodyEl.value?.el as unknown as FileBodyApi | undefined;
+		const nav = navEl.value?.el as FileNavApi | undefined;
+		const body = bodyEl.value?.el as FileBodyApi | undefined;
 		nav?.clear?.();
 		body?.clear?.();
 		// legacy 的 `head.address.clear()`：头部的面包屑是数据派生，清空选择后重算即为空
-		(headEl.value as unknown as FileHeadApi | undefined)?.updateAddress?.();
+		(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
 	}
 }
 
 function getActivePage(event: Event): HTMLElement | null {
-	const nav = navEl.value?.el as unknown as FileNavApi;
-	const body = bodyEl.value?.el as unknown as FileBodyApi;
+	const nav = navEl.value?.el as FileNavApi;
+	const body = bodyEl.value?.el as FileBodyApi;
 	return nav.contains(event.target as Node)
 		? nav
 		: body.contains(event.target as Node)
@@ -377,13 +408,20 @@ function pointerdown(_event: PointerEvent): void {
 }
 
 function dragstart(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
-	const page = getActivePage(event) as unknown as { pressing?: unknown; activeFile?: unknown; selections: unknown[]; textBox: { parentNode: Node | null } };
+	const node = el.value as FileBrowserApi;
+	const page = getActivePage(event) as unknown as {
+		pressing?: unknown;
+		activeFile?: unknown;
+		selections: unknown[];
+		textBox: { parentNode: Node | null };
+	};
 	if (page && !dragging) {
 		if (page.pressing) {
 			page.pressing = null;
 		}
-		const files = page.activeFile ? [page.activeFile] : (page as { selections: unknown[] }).selections;
+		const files = page.activeFile
+			? [page.activeFile]
+			: (page as { selections: unknown[] }).selections;
 		if (!files.includes(Directory?.assets) && !page.textBox.parentNode) {
 			const { relativePaths, absolutePaths } = getFilePaths(files);
 			dragging = event;
@@ -398,7 +436,8 @@ function dragstart(event: DragEvent): void {
 			(event as OsDragEvent).page = page;
 			(event as OsDragEvent).files = files;
 			(event as OsDragEvent).filePaths = relativePaths;
-			(event as OsDragEvent).promise = Directory?.readdir?.(absolutePaths) ?? Promise.resolve([]);
+			(event as OsDragEvent).promise =
+				Directory?.readdir?.(absolutePaths) ?? Promise.resolve([]);
 			(event as OsDragEvent).promise!.then((dir: unknown[]) => {
 				if (dir.length === 0) {
 					dragend();
@@ -406,12 +445,14 @@ function dragstart(event: DragEvent): void {
 			});
 			(event as OsDragEvent).dataTransfer.effectAllowed = 'copyMove';
 			hideDragImage(event.dataTransfer);
-			node.addEventListener('dragenter', dragover as unknown as EventListener);
-			node.addEventListener('dragleave', dragleave as unknown as EventListener);
-			node.addEventListener('dragover', dragover as unknown as EventListener);
-			node.addEventListener('drop', drop as unknown as EventListener);
+			node.addEventListener('dragenter', dragover as EventListener);
+			node.addEventListener('dragleave', dragleave as EventListener);
+			node.addEventListener('dragover', dragover as EventListener);
+			node.addEventListener('drop', drop as EventListener);
 			if (files.length === 1 && files[0] instanceof FileItem) {
-				const name = (files[0] as { basename: string; extname: string }).basename + (files[0] as { extname: string }).extname;
+				const name =
+					(files[0] as { basename: string; extname: string }).basename +
+					(files[0] as { extname: string }).extname;
 				(event as OsDragEvent).dataTransfer.setData(
 					'DownloadURL',
 					`application/octet-stream:${name}:${absolutePaths[0]}`
@@ -422,7 +463,7 @@ function dragstart(event: DragEvent): void {
 }
 
 function dragend(_event?: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
+	const node = el.value as FileBrowserApi;
 	if (dragging) {
 		const { dropTarget, page } = dragging as unknown as DragState;
 		if (dropTarget instanceof HTMLElement) {
@@ -434,10 +475,10 @@ function dragend(_event?: DragEvent): void {
 			(page as { selectActiveFile?(): void }).selectActiveFile?.();
 		}
 		dragging = null;
-		node.removeEventListener('dragenter', dragover as unknown as EventListener);
-		node.removeEventListener('dragleave', dragleave as unknown as EventListener);
-		node.removeEventListener('dragover', dragover as unknown as EventListener);
-		node.removeEventListener('drop', drop as unknown as EventListener);
+		node.removeEventListener('dragenter', dragover as EventListener);
+		node.removeEventListener('dragleave', dragleave as EventListener);
+		node.removeEventListener('dragover', dragover as EventListener);
+		node.removeEventListener('drop', drop as EventListener);
 	}
 }
 
@@ -479,30 +520,30 @@ function dragover(event: DragEvent): void {
 			if ((element as { file?: unknown }).file instanceof FolderItem) {
 				addClass(element, 'drop-target');
 				d.dropPath = (element as unknown as { file: { path: string } }).file.path;
-				d.promise!
-					.then((dir: unknown[]) => {
-						const { path } = (element as unknown as { file: { path: string } }).file;
-						const filePaths = d.filePaths ?? [];
-						for (const filePath of filePaths) {
-							if (
-								path === (filePath as string) ||
-								(path.indexOf(filePath as string) === 0 && path[(filePath as string).length] === '/')
-							) {
-								return true;
-							}
+				d.promise!.then((dir: unknown[]) => {
+					const { path } = (element as unknown as { file: { path: string } }).file;
+					const filePaths = d.filePaths ?? [];
+					for (const filePath of filePaths) {
+						if (
+							path === (filePath as string) ||
+							(path.indexOf(filePath as string) === 0 &&
+								path[(filePath as string).length] === '/')
+						) {
+							return true;
 						}
-						return Directory?.existFiles?.(path, dir as unknown[]) ?? false;
-					})
-					.then((existed: boolean) => {
-						if (!existed && d.dropTarget === element) {
-							d.allowMove = true;
-						}
-					});
+					}
+					return Directory?.existFiles?.(path, dir as unknown[]) ?? false;
+				}).then((existed: boolean) => {
+					if (!existed && d.dropTarget === element) {
+						d.allowMove = true;
+					}
+				});
 			} else {
 				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as unknown as FileNavApi;
+					const nav = navEl.value?.el as FileNavApi;
 					const selections = nav.selections ?? [];
-					d.dropPath = selections.length === 1 ? (selections[0] as { path: string }).path : null;
+					d.dropPath =
+						selections.length === 1 ? (selections[0] as { path: string }).path : null;
 				} else {
 					d.dropPath = null;
 				}
@@ -532,18 +573,21 @@ function drop(event: DragEvent): void {
 		if (!d.dropPath) return;
 		const dropPath = File?.path?.(d.dropPath) ?? d.dropPath;
 		const dropName = Path?.basename?.(dropPath) ?? dropPath;
-		const get = (Local as unknown as { createGetter?: (key: string) => (key: string) => string })?.createGetter?.('menuFileOnDrop') ?? ((_key: string) => '');
+		const get =
+			(Local as { createGetter?: (key: string) => (key: string) => string })?.createGetter?.(
+				'menuFileOnDrop'
+			) ?? ((_key: string) => '');
 		const menuItems: { label: string; click: () => void }[] = [];
 		switch (d.dropMode) {
 			case 'move':
 				menuItems.push({
 					label: get('moveTo').replace('<dirName>', dropName),
 					click: () => {
-						d.promise!
-							.then((dir: unknown[]) => Directory?.moveFiles?.(dropPath, dir))
-							.finally(() => {
-								Directory?.update?.();
-							});
+						d.promise!.then((dir: unknown[]) =>
+							Directory?.moveFiles?.(dropPath, dir)
+						).finally(() => {
+							Directory?.update?.();
+						});
 					}
 				});
 				break;
@@ -551,15 +595,13 @@ function drop(event: DragEvent): void {
 				menuItems.push({
 					label: get('copyTo').replace('<dirName>', dropName),
 					click: () => {
-						d.promise!
-							.then((dir: unknown[]) =>
-								Directory?.saveFiles?.(d.files)?.then(() =>
-									Directory?.copyFiles?.(dropPath, dir)
-								)
+						d.promise!.then((dir: unknown[]) =>
+							Directory?.saveFiles?.(d.files)?.then(() =>
+								Directory?.copyFiles?.(dropPath, dir)
 							)
-							.finally(() => {
-								Directory?.update?.();
-							});
+						).finally(() => {
+							Directory?.update?.();
+						});
 					}
 				});
 				break;
@@ -570,31 +612,31 @@ function drop(event: DragEvent): void {
 }
 
 function osDragstart(event: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
+	const node = el.value as FileBrowserApi;
 	if (!dragging) {
 		dragging = event;
 		(event as OsDragEvent).mode = 'os-drag';
 		(event as { dropTarget?: unknown }).dropTarget = null;
 		(event as { dropPath?: string | null }).dropPath = null;
-		node.addEventListener('dragenter', osDragover as unknown as EventListener);
-		node.addEventListener('dragleave', osDragleave as unknown as EventListener);
-		node.addEventListener('dragover', osDragover as unknown as EventListener);
-		node.addEventListener('drop', osDrop as unknown as EventListener);
+		node.addEventListener('dragenter', osDragover as EventListener);
+		node.addEventListener('dragleave', osDragleave as EventListener);
+		node.addEventListener('dragover', osDragover as EventListener);
+		node.addEventListener('drop', osDrop as EventListener);
 	}
 }
 
 function osDragend(_event?: DragEvent): void {
-	const node = el.value as unknown as FileBrowserApi;
+	const node = el.value as FileBrowserApi;
 	if (dragging) {
 		const { dropTarget } = dragging as unknown as DragState;
 		if (dropTarget instanceof HTMLElement) {
 			removeClass(dropTarget, 'drop-target');
 		}
 		dragging = null;
-		node.removeEventListener('dragenter', osDragover as unknown as EventListener);
-		node.removeEventListener('dragleave', osDragleave as unknown as EventListener);
-		node.removeEventListener('dragover', osDragover as unknown as EventListener);
-		node.removeEventListener('drop', osDrop as unknown as EventListener);
+		node.removeEventListener('dragenter', osDragover as EventListener);
+		node.removeEventListener('dragleave', osDragleave as EventListener);
+		node.removeEventListener('dragover', osDragover as EventListener);
+		node.removeEventListener('drop', osDrop as EventListener);
 	}
 }
 
@@ -627,9 +669,10 @@ function osDragover(event: DragEvent): void {
 				d.dropPath = (element as unknown as { file: { path: string } }).file.path;
 			} else {
 				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as unknown as FileNavApi;
+					const nav = navEl.value?.el as FileNavApi;
 					const selections = nav.selections ?? [];
-					d.dropPath = selections.length === 1 ? (selections[0] as { path: string }).path : null;
+					d.dropPath =
+						selections.length === 1 ? (selections[0] as { path: string }).path : null;
 				} else {
 					d.dropPath = null;
 				}
@@ -650,7 +693,10 @@ function osDrop(event: DragEvent): void {
 		let { dropPath } = d;
 		if (!dropPath) return;
 		dropPath = File?.path?.(dropPath) ?? dropPath;
-		const paths = Array.prototype.map.call(files, (file: File) => (file as File & { path: string }).path);
+		const paths = Array.prototype.map.call(
+			files,
+			(file: File) => (file as File & { path: string }).path
+		);
 		Directory?.readdir?.(paths)
 			?.then((dir: unknown[]) => {
 				return Directory?.copyFiles?.(dropPath, dir, '');
@@ -662,10 +708,14 @@ function osDrop(event: DragEvent): void {
 }
 
 function setupLinks() {
-	const nav = navEl.value?.el as unknown as FileNavApi;
-	const head = (headEl.value?.el as unknown as FileHeadApi) || (el.value?.querySelector('.file-head-pane') as unknown as FileHeadApi);
-	const body = (bodyEl.value?.el as unknown as FileBodyApi) || (el.value?.querySelector('.file-body-pane') as unknown as FileBodyApi);
-	const node = (nav?.closest('.file-browser') || el.value) as unknown as FileBrowserApi;
+	const nav = navEl.value?.el as FileNavApi;
+	const head =
+		(headEl.value?.el as FileHeadApi) ||
+		(el.value?.querySelector('.file-head-pane') as FileHeadApi);
+	const body =
+		(bodyEl.value?.el as FileBodyApi) ||
+		(el.value?.querySelector('.file-body-pane') as FileBodyApi);
+	const node = (nav?.closest('.file-browser') || el.value) as FileBrowserApi;
 	el.value = node;
 	links.browser = node;
 	links.nav = nav;
@@ -700,18 +750,18 @@ function setupLinks() {
 
 let dirchangeHandler: (event: Event) => void;
 
-	onMounted(() => {
-		nextTick(() => {
-			setupLinks();
-			const node = el.value as unknown as FileBrowserApi;
-			if (!node) return;
-		node.addEventListener('pointerdown', pointerdown as unknown as EventListener);
-		node.addEventListener('dragstart', dragstart as unknown as EventListener);
-		node.addEventListener('dragend', dragend as unknown as EventListener);
-		window.addEventListener('os-dragstart', osDragstart as unknown as EventListener);
-		window.addEventListener('os-dragend', osDragend as unknown as EventListener);
+onMounted(() => {
+	nextTick(() => {
+		setupLinks();
+		const node = el.value as FileBrowserApi;
+		if (!node) return;
+		node.addEventListener('pointerdown', pointerdown as EventListener);
+		node.addEventListener('dragstart', dragstart as EventListener);
+		node.addEventListener('dragend', dragend as EventListener);
+		window.addEventListener('os-dragstart', osDragstart as EventListener);
+		window.addEventListener('os-dragend', osDragend as EventListener);
 		dirchangeHandler = dirchange;
-		window.addEventListener('dirchange', dirchangeHandler as unknown as EventListener);
+		window.addEventListener('dirchange', dirchangeHandler as EventListener);
 
 		if (node.id === 'project-browser') {
 			props.onBrowserMount?.();
@@ -749,9 +799,9 @@ let dirchangeHandler: (event: Event) => void;
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('os-dragstart', osDragstart as unknown as EventListener);
-	window.removeEventListener('os-dragend', osDragend as unknown as EventListener);
-	window.removeEventListener('dirchange', dirchangeHandler as unknown as EventListener);
+	window.removeEventListener('os-dragstart', osDragstart as EventListener);
+	window.removeEventListener('os-dragend', osDragend as EventListener);
+	window.removeEventListener('dirchange', dirchangeHandler as EventListener);
 });
 
 defineExpose({ update, searchFiles, backToParentFolder, el });

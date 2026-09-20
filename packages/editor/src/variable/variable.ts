@@ -137,7 +137,7 @@ function ensureDomBound() {
 	const list = variableEls.get('variable-list') as YamiElement;
 	if (!list) return;
 	Variable.list = list;
-	Variable.panel = variableEls.get('variable-properties-flex') as unknown as YamiElement;
+	Variable.panel = variableEls.get('variable-properties-flex') as YamiElement;
 	hide(Variable.panel);
 	Variable.manager = variableEls.get('variable-value-manager') as unknown as PageManagerApi;
 	Variable.searcher = variableEls.get('variable-searcher') as YamiElement;
@@ -156,7 +156,7 @@ function ensureDomBound() {
 	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
 	getListConfig(Variable.list).onResume = Variable.list_onResume;
 	bindListClipboardMethods({
-		module: Variable as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
+		module: Variable as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list,
 		clipboardKey: 'yami.data.variable'
 	});
@@ -237,7 +237,7 @@ Variable.initialize = function () {
 		data.value = item.name;
 		item.name = value;
 		list.updateItemName(item);
-		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
+		if (getVariableStore().state.selected === (item as VariableItemShape)) {
 			write(this.inputs.name, value);
 		} else {
 			list.select(item);
@@ -262,7 +262,7 @@ Variable.initialize = function () {
 		item.sort = sort;
 		item.value = value;
 		list.update();
-		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
+		if (getVariableStore().state.selected === (item as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.sort, sort);
 			write(this.inputs.type, type);
@@ -282,7 +282,7 @@ Variable.initialize = function () {
 		data.value = item.value;
 		item.value = value;
 		list.update();
-		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
+		if (getVariableStore().state.selected === (item as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.type, type);
 			if (this.inputs[type]) write(this.inputs[type], value);
@@ -301,7 +301,7 @@ Variable.initialize = function () {
 		data.value = item.value;
 		item.value = value;
 		list.update();
-		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
+		if (getVariableStore().state.selected === (item as VariableItemShape)) {
 			write(this.inputs[typeof value], value);
 		} else {
 			list.select(item);
@@ -318,7 +318,7 @@ Variable.initialize = function () {
 		data.value = item.note;
 		item.note = value;
 		list.update();
-		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
+		if (getVariableStore().state.selected === (item as VariableItemShape)) {
 			write(this.inputs.note, value);
 		} else {
 			list.select(item);

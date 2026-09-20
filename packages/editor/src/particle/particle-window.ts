@@ -270,7 +270,7 @@ export const Particle = {
 	marquee: particleEls.get('particle-marquee') as YamiElement & {
 		pointerevent: unknown;
 	},
-	list: (particleEls.get('particle-list') as unknown as never) || ({} as never),
+	list: (particleEls.get('particle-list') as never) || ({} as never),
 	dragging: null,
 	history: null,
 	restartKey: false,

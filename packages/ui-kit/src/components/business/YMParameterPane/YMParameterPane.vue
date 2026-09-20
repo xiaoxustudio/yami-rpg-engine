@@ -87,7 +87,7 @@ type ParamInput = HTMLElement & {
 	update?(): void;
 	input?: HTMLElement & { value?: string };
 	numBox?: { input: HTMLElement & { value?: string } };
-}
+};
 
 /** P4b：控件元素上的元素数据（`parameters` / `key` 仍在 DATA_FIELDS 内） */
 interface ParamInputData {
@@ -325,8 +325,8 @@ const update = (): void => {
 			self.appendChild(banner);
 		}
 		const { groupOrder, groupMap } = core.groupParameters(paramList);
-const createParamRow = (
-	_box: HTMLElement,
+		const createParamRow = (
+			_box: HTMLElement,
 			grid: HTMLElement,
 			children: ParamWrap[],
 			parameter: ParamDef
@@ -477,8 +477,9 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 				write(wrap.input, value);
 			} else if (typeof value === 'number') {
 				// P4b：numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
-				elementDataOf<{ numBox?: { input: { value: string } } }>(wrap.input).numBox!.input.value =
-					value.toString();
+				elementDataOf<{ numBox?: { input: { value: string } } }>(
+					wrap.input
+				).numBox!.input.value = value.toString();
 			}
 			break;
 		case 'keyboard-box':
@@ -749,7 +750,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 		input.write(data);
 		container.dispatchEvent(new Event('change', { bubbles: true }));
 	};
-	return { tag, label, input: container as unknown as ParamInput };
+	return { tag, label, input: container as ParamInput };
 };
 
 const recycle = (wrap: RecycleWrap): void => {

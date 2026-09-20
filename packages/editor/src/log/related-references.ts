@@ -732,7 +732,7 @@ Reference.filterUselessComments = function (items: ReferenceItem[]) {
 		}
 	}
 	return list;
-} as unknown as ((...args: unknown[]) => ReferenceListShape) | null;
+} as ((...args: unknown[]) => ReferenceListShape) | null;
 
 Reference.findRelated = function (this: typeof Reference, guid: string) {
 	const items = [];
@@ -755,12 +755,12 @@ Reference.findRelated = function (this: typeof Reference, guid: string) {
 		});
 	}
 	return filtered;
-} as unknown as ((...args: unknown[]) => ReferenceItem[]) | null;
+} as ((...args: unknown[]) => ReferenceItem[]) | null;
 
 Reference.openRelated = function (this: typeof Reference, guid: string) {
 	Window.open!('reference');
 	this.openList!(this.findRelated!(guid));
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.findInvalid = function () {
 	const items = [];
@@ -791,7 +791,7 @@ Reference.findInvalid = function () {
 Reference.openInvalid = function (this: typeof Reference, _guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findInvalid!());
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.findUnused = function () {
 	const items = [];
@@ -815,20 +815,20 @@ Reference.findUnused = function () {
 Reference.openUnused = function (this: typeof Reference, _guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findUnused!());
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.openList = function (items: ReferenceItem[]) {
 	Window.open!('reference');
 	Reference.update!(items);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.update = function (items: ReferenceItem[]) {
 	referenceUpdateHandler?.(items);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (_event: Event) {
 	clear(logEls.get('reference-list') as YamiElement);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {
 	const item = event.value;
@@ -849,7 +849,7 @@ Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | 
 			]
 		);
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 Reference.getKeydownListener = function (this: typeof Reference, list: HTMLElement, winId = '') {
 	let listener = this.keydownMap.get(list);
@@ -874,7 +874,7 @@ Reference.getKeydownListener = function (this: typeof Reference, list: HTMLEleme
 		};
 	}
 	return listener;
-} as unknown as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
+} as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
 
 Reference.getKeyupListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.keyupMap.get(list);
@@ -895,7 +895,7 @@ Reference.getKeyupListener = function (this: typeof Reference, list: HTMLElement
 		};
 	}
 	return listener;
-} as unknown as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
+} as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
 
 Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.pointerdownMap.get(list);
@@ -919,7 +919,7 @@ Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLE
 		};
 	}
 	return listener;
-} as unknown as ((...args: unknown[]) => (event: PointerEvent) => void) | null;
+} as ((...args: unknown[]) => (event: PointerEvent) => void) | null;
 
 Reference.getPointermoveListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.pointermoveMap.get(list);
@@ -933,4 +933,4 @@ Reference.getPointermoveListener = function (this: typeof Reference, list: HTMLE
 		};
 	}
 	return listener;
-} as unknown as ((...args: unknown[]) => (event: PointerEvent) => void) | null;
+} as ((...args: unknown[]) => (event: PointerEvent) => void) | null;

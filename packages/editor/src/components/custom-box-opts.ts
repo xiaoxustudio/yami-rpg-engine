@@ -78,7 +78,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			),
 		clip: (el: GetterElement) => ImageClip.open(el),
 		variable: (el: GetterElement) =>
-			VariableGetter.open(el as unknown as Parameters<typeof VariableGetter.open>[0]),
+			VariableGetter.open(el as Parameters<typeof VariableGetter.open>[0]),
 		'global-variable': (el: GetterElement) => Variable.open!(el),
 		actor: (el: GetterElement) => ActorGetter.open!(el),
 		skill: (el: GetterElement) => SkillGetter.open!(el),
@@ -86,9 +86,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		equipment: (el: GetterElement) => EquipmentGetter.open!(el),
 		item: (el: GetterElement) => ItemGetter.open!(el),
 		position: (el: GetterElement) =>
-			PositionGetter.open!(
-				el as unknown as Parameters<NonNullable<typeof PositionGetter.open>>[0]
-			),
+			PositionGetter.open!(el as Parameters<NonNullable<typeof PositionGetter.open>>[0]),
 		angle: (el: GetterElement) => AngleGetter.open!(el),
 		trigger: (el: GetterElement) => TriggerGetter.open!(el),
 		light: (el: GetterElement) => LightGetter.open!(el),
@@ -96,14 +94,10 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		tilemap: (el: GetterElement) => TilemapGetter.open!(el),
 		object: (el: GetterElement) => ObjectGetter.open!(el),
 		element: (el: GetterElement) =>
-			ElementGetter.open!(
-				el as unknown as Parameters<NonNullable<typeof ElementGetter.open>>[0]
-			),
+			ElementGetter.open!(el as Parameters<NonNullable<typeof ElementGetter.open>>[0]),
 		'ancestor-element': (el: GetterElement) => AncestorGetter.open!(el),
 		'preset-object': (el: GetterElement) =>
-			PresetObject.open!(
-				el as unknown as Parameters<NonNullable<typeof PresetObject.open>>[0]
-			),
+			PresetObject.open!(el as Parameters<NonNullable<typeof PresetObject.open>>[0]),
 		'preset-element': (el: GetterElement) => PresetElement.open!(el),
 		array: (el: GetterElement) =>
 			ArrayList.open(el as unknown as Parameters<typeof ArrayList.open>[0]),
@@ -256,7 +250,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		}),
 	browser: () => ({
 		dragging: getBrowserInstance()?.dragging as boolean,
-		body: getBrowserInstance()?.body as unknown as
+		body: getBrowserInstance()?.body as
 			| { activeFile?: { type?: string; meta?: { guid: string } } }
 			| undefined
 	}),

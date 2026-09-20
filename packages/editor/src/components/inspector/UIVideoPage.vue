@@ -28,14 +28,29 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div>
-			<SelectBox id="uiVideo-loop"
-				v-tip="t('components.uiVideo-loop.tip')" ref="elLoop" v-model="form.loop" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="uiVideo-loop"
+				v-tip="t('components.uiVideo-loop.tip')"
+				ref="elLoop"
+				v-model="form.loop"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiVideo-flip"
-				v-tip="t('components.uiVideo-flip.tip')" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="uiVideo-flip"
+				v-tip="t('components.uiVideo-flip.tip')"
+				ref="elFlip"
+				v-model="form.flip"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div>
-			<SelectBox id="uiVideo-blend"
-				v-tip="t('components.uiVideo-blend.tip')" ref="elBlend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="uiVideo-blend"
+				v-tip="t('components.uiVideo-blend.tip')"
+				ref="elBlend"
+				v-model="form.blend"
+				@input="onParamInput"
+			></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -61,7 +76,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIVideoPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -77,21 +92,57 @@ onMounted(() => {
 	if (!editor) return;
 
 	elLoop.value?.loadItems([
-		{ name: t('components.uiVideo-loop.options.false.name'), tip: t('components.uiVideo-loop.options.false.tip'), value: false  },
-		{ name: t('components.uiVideo-loop.options.true.name'), tip: t('components.uiVideo-loop.options.true.tip'), value: true  }
+		{
+			name: t('components.uiVideo-loop.options.false.name'),
+			tip: t('components.uiVideo-loop.options.false.tip'),
+			value: false
+		},
+		{
+			name: t('components.uiVideo-loop.options.true.name'),
+			tip: t('components.uiVideo-loop.options.true.tip'),
+			value: true
+		}
 	]);
 
 	elFlip.value?.loadItems([
-		{ name: t('components.uiVideo-flip.options.none.name'), tip: t('components.uiVideo-flip.options.none.tip'), value: 'none'  },
-		{ name: t('components.uiVideo-flip.options.horizontal.name'), tip: t('components.uiVideo-flip.options.horizontal.tip'), value: 'horizontal'  },
-		{ name: t('components.uiVideo-flip.options.vertical.name'), tip: t('components.uiVideo-flip.options.vertical.tip'), value: 'vertical'  },
-		{ name: t('components.uiVideo-flip.options.both.name'), tip: t('components.uiVideo-flip.options.both.tip'), value: 'both'  }
+		{
+			name: t('components.uiVideo-flip.options.none.name'),
+			tip: t('components.uiVideo-flip.options.none.tip'),
+			value: 'none'
+		},
+		{
+			name: t('components.uiVideo-flip.options.horizontal.name'),
+			tip: t('components.uiVideo-flip.options.horizontal.tip'),
+			value: 'horizontal'
+		},
+		{
+			name: t('components.uiVideo-flip.options.vertical.name'),
+			tip: t('components.uiVideo-flip.options.vertical.tip'),
+			value: 'vertical'
+		},
+		{
+			name: t('components.uiVideo-flip.options.both.name'),
+			tip: t('components.uiVideo-flip.options.both.tip'),
+			value: 'both'
+		}
 	]);
 
 	elBlend.value?.loadItems([
-		{ name: t('components.uiVideo-blend.options.normal.name'), tip: t('components.uiVideo-blend.options.normal.tip'), value: 'normal'  },
-		{ name: t('components.uiVideo-blend.options.additive.name'), tip: t('components.uiVideo-blend.options.additive.tip'), value: 'additive'  },
-		{ name: t('components.uiVideo-blend.options.subtract.name'), tip: t('components.uiVideo-blend.options.subtract.tip'), value: 'subtract'  }
+		{
+			name: t('components.uiVideo-blend.options.normal.name'),
+			tip: t('components.uiVideo-blend.options.normal.tip'),
+			value: 'normal'
+		},
+		{
+			name: t('components.uiVideo-blend.options.additive.name'),
+			tip: t('components.uiVideo-blend.options.additive.tip'),
+			value: 'additive'
+		},
+		{
+			name: t('components.uiVideo-blend.options.subtract.name'),
+			tip: t('components.uiVideo-blend.options.subtract.tip'),
+			value: 'subtract'
+		}
 	]);
 
 	const elements = [

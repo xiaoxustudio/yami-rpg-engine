@@ -226,7 +226,7 @@ export class AttributeListInterface implements IListInterface {
 
 	static keyWrite(event: { value: string }) {
 		if (!event.value) return;
-		let group = this.target?.getAttribute?.('group') as unknown as string;
+		let group = this.target?.getAttribute?.('group') as string;
 		if (!group && this.target) {
 			let match = this.target.id.match(/^config-(.+)-tempAttributes$/);
 			if (!match) {

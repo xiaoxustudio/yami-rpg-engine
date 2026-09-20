@@ -5,8 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="animMotion-general-grid">
 			<div class="text">{{ t('components.animMotion-mode.label') || 'Direction' }}</div>
-			<SelectBox id="animMotion-mode"
-				v-tip="t('components.animMotion-mode.tip')" ref="elMode" v-model="form.mode" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="animMotion-mode"
+				v-tip="t('components.animMotion-mode.tip')"
+				ref="elMode"
+				v-model="form.mode"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.animMotion-skip.label') || 'Skip Last Frame' }}</div>
 			<CheckBox
 				id="animMotion-skip"
@@ -60,7 +65,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimMotionPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -83,14 +88,46 @@ onMounted(() => {
 	};
 
 	elMode.value?.loadItems([
-		{ name: t('components.animMotion-mode.options.1-dir.name'), tip: t('components.animMotion-mode.options.1-dir.tip'), value: '1-dir'  },
-		{ name: t('components.animMotion-mode.options.2-dir.name'), tip: t('components.animMotion-mode.options.2-dir.tip'), value: '2-dir'  },
-		{ name: t('components.animMotion-mode.options.4-dir.name'), tip: t('components.animMotion-mode.options.4-dir.tip'), value: '4-dir'  },
-		{ name: t('components.animMotion-mode.options.8-dir.name'), tip: t('components.animMotion-mode.options.8-dir.tip'), value: '8-dir'  },
-		{ name: t('components.animMotion-mode.options.1-dir-mirror.name'), tip: t('components.animMotion-mode.options.1-dir-mirror.tip'), value: '1-dir-mirror'  },
-		{ name: t('components.animMotion-mode.options.2-dir-mirror.name'), tip: t('components.animMotion-mode.options.2-dir-mirror.tip'), value: '2-dir-mirror'  },
-		{ name: t('components.animMotion-mode.options.3-dir-mirror.name'), tip: t('components.animMotion-mode.options.3-dir-mirror.tip'), value: '3-dir-mirror'  },
-		{ name: t('components.animMotion-mode.options.5-dir-mirror.name'), tip: t('components.animMotion-mode.options.5-dir-mirror.tip'), value: '5-dir-mirror'  }
+		{
+			name: t('components.animMotion-mode.options.1-dir.name'),
+			tip: t('components.animMotion-mode.options.1-dir.tip'),
+			value: '1-dir'
+		},
+		{
+			name: t('components.animMotion-mode.options.2-dir.name'),
+			tip: t('components.animMotion-mode.options.2-dir.tip'),
+			value: '2-dir'
+		},
+		{
+			name: t('components.animMotion-mode.options.4-dir.name'),
+			tip: t('components.animMotion-mode.options.4-dir.tip'),
+			value: '4-dir'
+		},
+		{
+			name: t('components.animMotion-mode.options.8-dir.name'),
+			tip: t('components.animMotion-mode.options.8-dir.tip'),
+			value: '8-dir'
+		},
+		{
+			name: t('components.animMotion-mode.options.1-dir-mirror.name'),
+			tip: t('components.animMotion-mode.options.1-dir-mirror.tip'),
+			value: '1-dir-mirror'
+		},
+		{
+			name: t('components.animMotion-mode.options.2-dir-mirror.name'),
+			tip: t('components.animMotion-mode.options.2-dir-mirror.tip'),
+			value: '2-dir-mirror'
+		},
+		{
+			name: t('components.animMotion-mode.options.3-dir-mirror.name'),
+			tip: t('components.animMotion-mode.options.3-dir-mirror.tip'),
+			value: '3-dir-mirror'
+		},
+		{
+			name: t('components.animMotion-mode.options.5-dir-mirror.name'),
+			tip: t('components.animMotion-mode.options.5-dir-mirror.tip'),
+			value: '5-dir-mirror'
+		}
 	]);
 
 	const loopStartEl = elLoopStart.value?.root;

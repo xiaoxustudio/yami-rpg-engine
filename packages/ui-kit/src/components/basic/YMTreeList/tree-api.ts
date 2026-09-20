@@ -564,7 +564,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		resize: function (this: TreeListHost): void {
-			(this as unknown as { syncRenderWindow: () => void }).syncRenderWindow();
+			(this as { syncRenderWindow: () => void }).syncRenderWindow();
 		},
 
 		updateHeadAndFoot: function (this: TreeListHost): void {
@@ -1040,7 +1040,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				}
 				data.selections = [];
 				if (this.renderState !== undefined) {
-					(this as unknown as { syncRenderRows: () => void }).syncRenderRows();
+					(this as { syncRenderRows: () => void }).syncRenderRows();
 				}
 			}
 		},

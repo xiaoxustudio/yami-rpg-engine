@@ -152,7 +152,7 @@ export class ScriptListInterface implements IScriptListInterface {
 					// 之后走**元素数据**（元素属性 `item` 已退役）——按属性读会拿到 undefined，
 					// 随后 `item.id` 直接抛错（点脚本行的编辑按钮时爆）。
 					const item =
-						(el as unknown as { dataItem?: ScriptListItem }).dataItem ??
+						(el as { dataItem?: ScriptListItem }).dataItem ??
 						elementDataOf<{ item?: ScriptListItem }>(el).item;
 					const path = item ? File.getPath!(item.id) : undefined;
 					if (path) getBrowserStore().openScript?.(path);

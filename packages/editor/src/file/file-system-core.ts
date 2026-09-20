@@ -70,7 +70,7 @@ export const File: {
 
 // 开发模式取 process.cwd()/Project，生产模式从 HTML 文件位置推导避免 process.cwd() 不准确
 function getFallbackRoot(): string {
-	if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) {
+	if ((import.meta as { env?: { DEV?: boolean } }).env?.DEV) {
 		return typeof process !== 'undefined' && typeof process.cwd === 'function'
 			? Path.resolve(process.cwd(), 'Project')
 			: '';
@@ -353,7 +353,7 @@ File.route = function (relativePath) {
 		/[\\/]{2,}/g,
 		'/'
 	);
-	if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) {
+	if ((import.meta as { env?: { DEV?: boolean } }).env?.DEV) {
 		return `/local-file/?path=${route.replace(/\?ver=(\d+)$/, '#ver=$1')}`;
 	}
 	return route;

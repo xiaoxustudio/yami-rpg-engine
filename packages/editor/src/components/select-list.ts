@@ -6,7 +6,7 @@ export function attachSelectListApi(el: HTMLElement): void {
 }
 
 export function createSelectList(): SelectListApi {
-	return createSelectListElement({ setTooltip }) as unknown as SelectListApi;
+	return createSelectListElement({ setTooltip }) as SelectListApi;
 }
 
 // 注：Select 必须是真实的 SelectList 实例（继承其 windowPointerdown/windowKeydown/resize/createItems 等所有方法）

@@ -67,7 +67,7 @@ export class TreeDataContext {
 
 		const settings = data.settings;
 		for (const [key, groupId] of Object.entries(settings)) {
-			const groupKey = groupId as unknown as string;
+			const groupKey = groupId as string;
 			if (groupKey in groupMap) {
 				groupMap[key] = groupMap[groupKey];
 			} else {

@@ -412,7 +412,7 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	const { x, y } = this.getPointerCoords!(event);
 	const target = getUIStore().target;
 	const selected = !!target;
-	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
+	const pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.ui.object');
 	const get = (key: string) => t('menuUIList.' + key);
 	const items = [
 		{

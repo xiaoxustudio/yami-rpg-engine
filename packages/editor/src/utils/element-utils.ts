@@ -180,8 +180,8 @@ export function read(el: unknown): any {
 	if (el == null) {
 		return undefined;
 	}
-	if (typeof (el as unknown as { read: () => unknown }).read === 'function') {
-		return (el as unknown as { read: () => unknown }).read();
+	if (typeof (el as { read: () => unknown }).read === 'function') {
+		return (el as { read: () => unknown }).read();
 	}
 	// P4b：`dataValue` 有两种承载者（组件 own 访问器 / 元素数据），统一走 elementDataValueOf。
 	return elementDataValueOf(el);
@@ -191,15 +191,15 @@ export function write(el: unknown, value: unknown): void {
 	if (el == null) {
 		return;
 	}
-	if (typeof (el as unknown as { write: (value: unknown) => void }).write === 'function') {
-		(el as unknown as { write: (value: unknown) => void }).write(value);
+	if (typeof (el as { write: (value: unknown) => void }).write === 'function') {
+		(el as { write: (value: unknown) => void }).write(value);
 	} else if (
 		el instanceof HTMLElement &&
 		!Object.prototype.hasOwnProperty.call(el, 'dataValue')
 	) {
 		elementDataOf<{ dataValue?: unknown }>(el).dataValue = value;
 	} else {
-		(el as unknown as { dataValue: unknown }).dataValue = value;
+		(el as { dataValue: unknown }).dataValue = value;
 	}
 }
 

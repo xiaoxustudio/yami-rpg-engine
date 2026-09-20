@@ -438,8 +438,7 @@ for (const key of homeBridgeKeys) {
 		get: () => getHomeStore()[key],
 		set: (value: unknown) => {
 			// oxlint-disable-next-line no-explicit-any
-			(getHomeStore() as unknown as Record<(typeof homeBridgeKeys)[number], any>)[key] =
-				value;
+			(getHomeStore() as Record<(typeof homeBridgeKeys)[number], any>)[key] = value;
 		},
 		configurable: true
 	});

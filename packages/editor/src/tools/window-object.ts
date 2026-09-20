@@ -85,7 +85,7 @@ Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
 	// P1b：窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
-	const element = windowShellEls.get(id) as unknown as WindowFrame | undefined;
+	const element = windowShellEls.get(id) as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
 		if (modalActive() && frames.length === 0) {
@@ -126,7 +126,7 @@ Window.open = function (this: typeof Window, id: string) {
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		if (!Title.target) {
 			// 沿用原先 $() 的非空类型语义（运行时窗口可能尚未挂载）
-			Title.target = windowShellEls.get('title') as unknown as typeof Title.target;
+			Title.target = windowShellEls.get('title') as typeof Title.target;
 		}
 		if (Title.target) {
 			Title.target.tabIndex = -1;

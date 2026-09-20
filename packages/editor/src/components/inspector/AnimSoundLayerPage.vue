@@ -36,7 +36,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimSoundLayerPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -47,8 +47,16 @@ onMounted(() => {
 	const animSoundLayer = Inspector.animSoundLayer;
 	if (animSoundLayer) {
 		elPlaybackRate.value?.loadItems([
-			{ name: t('components.animSoundLayer-playbackRate.options.default.name'), tip: t('components.animSoundLayer-playbackRate.options.default.tip'), value: 'default'  },
-			{ name: t('components.animSoundLayer-playbackRate.options.inherit.name'), tip: t('components.animSoundLayer-playbackRate.options.inherit.tip'), value: 'inherit'  }
+			{
+				name: t('components.animSoundLayer-playbackRate.options.default.name'),
+				tip: t('components.animSoundLayer-playbackRate.options.default.tip'),
+				value: 'default'
+			},
+			{
+				name: t('components.animSoundLayer-playbackRate.options.inherit.name'),
+				tip: t('components.animSoundLayer-playbackRate.options.inherit.tip'),
+				value: 'inherit'
+			}
 		]);
 		const el = elPlaybackRate.value?.root;
 		if (el) {

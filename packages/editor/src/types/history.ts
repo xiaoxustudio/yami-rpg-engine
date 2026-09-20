@@ -50,8 +50,13 @@ export interface IOwnedHistory extends IEditableHistory {
 // 历史数据基础契约。 各 History 类的 stack 元素都至少含 type 字段（'insert'/'replace'/'delete'/'toggle'/'custom'）， 用于 restore 分支判断。其余字段（array/index/items/commands/value 等）按场景扩展。
 export interface HistoryData {
 	type: string;
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
+	/**
+	 * 各 History 的 stack 元素是**异质载荷**：写侧各编辑器往里塞自己的
+	 * `editor` / `item` / `settings` / `response` / `swap` …，读侧按 `type` 分派后再取。
+	 * 所以保留索引签名（写侧全放行），但值类型是 `unknown` 而不是 `any`：
+	 * 读侧必须先收窄/断言，拼错键也不会静默变成 `any`。
+	 */
+	[key: string]: unknown;
 }
 
 export type HistoryToggleMethod = 'enable' | 'disable';

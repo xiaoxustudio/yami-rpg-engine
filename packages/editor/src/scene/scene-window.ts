@@ -36,6 +36,13 @@ interface SceneListItem {
 	children?: SceneListItem[];
 }
 
+/** `Scene.searcher`（TextBox 元素）运行时挂载的实例 API —— 见 `components/common/TextBox.vue` */
+interface SceneSearcherExtensions {
+	deleteInputContent?(): void;
+	addCloseButton?(): void;
+	addKeydownFilter?(): void;
+}
+
 interface SceneListExtensions {
 	// 列表基础方法（Scene.list.* 运行时挂载）
 	create: ((dItem?: unknown) => unknown) | null;
@@ -73,9 +80,9 @@ interface SceneShape {
 	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
 	// oxlint-disable-next-line no-explicit-any
 	marquee: HTMLElement & { [k: string]: any };
-	// searcher 运行时挂载 .deleteInputContent/.input 等扩展（scene-list.ts:97 调用）
-	// oxlint-disable-next-line no-explicit-any
-	searcher: HTMLElement & { [k: string]: any };
+	// searcher 运行时挂载 TextBox 的实例 API（`components/common/TextBox.vue` 暴露、经元素 API 挂上）
+	// 声明为可选：不保证每种形态都挂全，调用点用 `?.` / `!` 兜底
+	searcher: HTMLElement & SceneSearcherExtensions;
 	// oxlint-disable-next-line no-explicit-any
 	list: HTMLElement & SceneListExtensions & { [k: string]: any };
 	initialize: (() => void) | null;
@@ -161,9 +168,9 @@ export const Scene: SceneShape = {
 	info: sceneEls.get('scene-info') as YamiElement,
 	screen: sceneEls.get('scene-screen') as YamiElement,
 	// oxlint-disable-next-line no-explicit-any
-	marquee: sceneEls.get('scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
+	marquee: sceneEls.get('scene-marquee') || ({} as HTMLElement & { [k: string]: any }),
 	searcher: sceneEls.get('scene-searcher') as YamiElement,
-	list: (sceneEls.get('scene-list') as unknown as never) || ({} as never),
+	list: (sceneEls.get('scene-list') as never) || ({} as never),
 	dragging: null,
 	brush: null,
 	symbol: null,
@@ -664,18 +671,14 @@ Scene.initialize = function (this: SceneShape) {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(
-				item as unknown as SceneListItem,
+				item as SceneListItem,
 				'hidden',
-				oldValues as unknown as SceneListItem[]
+				oldValues as SceneListItem[]
 			);
 		} else {
-			list.setRecursiveStates!(
-				item as unknown as SceneListItem,
-				'hidden',
-				newValue as unknown as boolean
-			);
+			list.setRecursiveStates!(item as SceneListItem, 'hidden', newValue as boolean);
 		}
-		list.updateFolderState(item.parent as unknown as SceneListItem, 'hidden');
+		list.updateFolderState(item.parent as SceneListItem, 'hidden');
 		list.update();
 		Scene.requestRendering!();
 		Scene.planToSave!();
@@ -687,18 +690,14 @@ Scene.initialize = function (this: SceneShape) {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(
-				item as unknown as SceneListItem,
+				item as SceneListItem,
 				'locked',
-				oldValues as unknown as SceneListItem[]
+				oldValues as SceneListItem[]
 			);
 		} else {
-			list.setRecursiveStates!(
-				item as unknown as SceneListItem,
-				'locked',
-				newValue as unknown as boolean
-			);
+			list.setRecursiveStates!(item as SceneListItem, 'locked', newValue as boolean);
 		}
-		list.updateFolderState(item.parent as unknown as SceneListItem, 'locked');
+		list.updateFolderState(item.parent as SceneListItem, 'locked');
 		list.update();
 		Scene.planToSave!();
 	};
@@ -953,7 +952,7 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 
 	const scene = Data.scenes[meta.guid];
 	if (scene) {
-		context.scene = Codec.decodeScene!(scene) as unknown as SceneDataShape;
+		context.scene = Codec.decodeScene!(scene) as SceneDataShape;
 		getSceneStore().state = 'loading';
 		this.load!(context);
 	} else {

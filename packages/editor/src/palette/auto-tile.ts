@@ -122,12 +122,8 @@ function ensureDomBound(): boolean {
 	AutoTile.templateList = templateList;
 	AutoTile.nodeList = paletteEls.get('autoTile-nodes') as YamiElement;
 	AutoTile.frameList = paletteEls.get('autoTile-frames') as YamiElement;
-	templateList.updateItemName = Team.list_updateItemName as unknown as (
-		...args: unknown[]
-	) => unknown;
-	templateList.updateTextNode = Easing.list_updateTextNode as unknown as (
-		...args: unknown[]
-	) => unknown;
+	templateList.updateItemName = Team.list_updateItemName as (...args: unknown[]) => unknown;
+	templateList.updateTextNode = Easing.list_updateTextNode as (...args: unknown[]) => unknown;
 	return true;
 }
 

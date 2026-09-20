@@ -1595,6 +1595,164 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 48 轮（续轮）：`unknown-casts` 764 → 292 —— 「批量收窄断言」的完整流水线
+
+这一轴（双重断言 `as unknown as`）此前一直是 764 处 / 262 文件的存量。本轮的观察是：
+**`x as unknown as T` 里的 `unknown` 跳板，很多时候是多余的** —— 直接写 `x as T` 同样合法。
+而断言在产物里是**空的**，所以收窄它**运行时可证不变**。于是做成一条可复用的流水线：
+
+1. **全量改写**（口径与台账一致：`collectFiles` / `codeOnly` / `UNKNOWN_CAST_RE`）：`as unknown as` → `as`，
+   只做**单行**站点（跨行的 12 处本轮不动），并**逐站点打印 before/after 到日志**（第 46 轮的规矩：
+   改写脚本必须能说明自己改了什么）⇒ 752 处 / 257 文件。
+2. **`tsc` 点名**：收窄后不合法的（TS2352）就是**真的需要 `unknown` 跳板**的 ⇒ 191 处 / 94 文件。
+3. **按报错行回退**（脚本从备份重建、只保留不在报错行上的站点）→ 再跑 → 迭代。
+4. **`.vue` 单独一轮**：`tsc` 对 `.vue` 是盲的（第 31/39 轮的教训），必须再跑 `typecheck:vue` ——
+   它又点出 **54 处 / 29 文件**（全是 TS2352），同样回退。
+5. 还剩 17 处「报错行号指向整个表达式起点、而不是 `as` 记号那一行」的顽固站点 ⇒ 按**整份文件回退**收尾（11 个文件）。
+6. `oxfmt --write` 统一格式（收窄后换行位置会变）。
+
+**结果**：`unknown-casts` **764 → 292 处、262 → 138 文件**（净清 472 处）；`any-hatches` 不变（45 处）。
+
+### 验证
+
+- **产物逐字节相同**：148 个被改动的 `.ts` 文件逐个用 esbuild 转译、与 HEAD 版本比对 ——
+  **148/148 完全相同、0 个不同**（这就是「断言是空的」的直接证据）；52 个 `.vue` 的断言同样在编译期被抹掉。
+- `tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0、`migration:selftest` 30/30、
+  `@yami/editor` 252 文件 / 2056 测试全绿；台账仅本轴下降，基线已固化。
+
+### 教训 / 留给下一轮
+
+- **`tsc` 的点名行号不一定落在 `as` 上**（它指向整个断言表达式的起点）⇒ 按行回退必须留
+  「迭代 + 顽固站点整文件回退」这两手，否则会反复把已经回退掉的站点又改回去（本轮真实发生过一次）。
+- `.vue` 里的这类站点**只能**靠 `typecheck:vue` 发现（本轮 54 处）—— 同一个坑第三次踩。
+- 剩下的 292 处是**真需要** `unknown` 跳板的（两侧类型确实不相交，例如 `AnimationShape` → `HTMLElement`、
+  `YamiElement | null` → 具名接口）。要再降，得先让**那两侧的类型**真正相容 —— 多半和
+  `any-hatches` 剩下的 45 处是同一批活（`types/shapes.ts` 的 `DynamicShape`、`AnimationShape`、`UIShape`…）。
+
+## 第 47 轮（续轮）：`Scene.searcher` 落地（46 → 45）；`Scene.marquee` 试完**回退**，坑记在下面
+
+### ① 落地：`Scene.searcher` 的运行时扩展
+
+`Scene.searcher` 上真正被用到的扩展只有三个（仓内 grep 实测）：`deleteInputContent()`
+（`scene-list.ts:123`）、`addCloseButton()` / `addKeydownFilter()`（`scene-window.ts:597/598`），
+来自 `components/common/TextBox.vue` 暴露的实例 API。照仓内既有先例
+（`local/local-window.ts` 的 `searcher: (HTMLElement & { addCloseButton(): void; deleteInputContent(): void }) | null`、
+`stores/browser.ts` 的 `searcher?: HTMLElement & { addKeydownFilter?(): void }`）声明为**可选方法**：
+
+```ts
+interface SceneSearcherExtensions {
+	deleteInputContent?(): void;
+	addCloseButton?(): void;
+	addKeydownFilter?(): void;
+}
+```
+
+**为什么必须可选**：字面量里那行是 `searcher: sceneEls.get('scene-searcher') as YamiElement` ——
+`YamiElement` 上没有这几个方法；成员一旦写成必填，这行初始化立刻 TS2352（且不能用双断言绕，
+那会撞 `unknown-casts`）。可选之后：既有的 `this.searcher?.addCloseButton?.()` 原样通过，
+只有 `scene-list.ts:123` 那处直呼补了一个 `!`。两个文件的产物**逐字节相同**。
+
+### ② 回退：`Scene.marquee` —— 89 个错误，真正的坑是**存档数据有两套形状**
+
+按上轮记的清单把 `SceneMarqueeExtensions`（引擎 11 个方法 + 状态/数据字段 + 组件实例属性）写全、
+并解决掉初始化那行的可赋值性之后，`tsc` 报 **89 个错误**，分布很有信息量：
+`useTileNodeWindow.ts` 12 个、`palette-engine.ts` 约 70 个。
+
+决定性发现在 `palette-engine.ts`：它把 `Scene.marquee.saveData.tile` 当成
+`{ width, height, rowOffset, tiles … }` 用（`sTiles.width` / `sTiles.height` / `sTiles.rowOffset`），
+而 `engine/scene/scene-marquee-engine.ts` 的 `save()` 写进去的是
+`{ x, y, width, height, offsetX, offsetY, tiles }` —— **`rowOffset` 根本不在里面**。
+即 `saveData` 至少有**两个写入方、两套形状**；只读引擎那一个文件是量不出来的。
+89 个里绝大多数是「可空读取」（加 `!` 就能过），但 `rowOffset` / `width` / `height` 这几条是
+**类型本身错了**，不能靠断言糊过去。
+
+⇒ 正确顺序：**先把 `saveData` 的两个写入方（`scene-marquee-engine.ts` / `palette-engine.ts`）
+与全部读点对齐**，再动 `marquee` 的类型。本轮不硬推，已完整回退（三处反向编辑逐字还原）。
+
+⚠️ **顺带记一条危险**：`engine/__tests__/scene.spec.ts` 的 marquee mock（L280-308）虽然把成员列全了
+（`visible/x/y/width/height/offsetX/offsetY/tiles/terrain/tilesetMap/saveData/key/…Color*/previewTiles/
+save/restore/select/getTiles/pointerevent/info`），但**整个对象是 `as any`** —— 所以
+**marquee 的类型写错了测试也不会红**。这一族的正确性只能靠 `tsc` + 逐站点核对读点，不能指望测试兜底。
+
+### 验证（本轮）
+
+- `scene-window.ts` / `scene-list.ts` 的 esbuild 产物与 HEAD **逐字节相同**（纯类型层 + 被擦除的 `!`）；
+- `tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0；台账 46 → **45 处**
+  （文件数仍 19：`scene-window.ts` 里还剩 marquee / list / `SceneShape` 共 5 处），基线已固化。
+
+## 第 46 轮（续轮）：`HistoryData` 的异质载荷 → `unknown`（47 → 46），以及**一次探针撒谎**
+
+第 44/45 轮把 inspector 一族清完之后，剩下的 47 处全落在「核心形状」上。本轮先想验证一个
+诱人的猜想：**这些索引签名会不会其实没人用**（去掉就行）。为此写了批量探针，结果两个：
+
+### ① ⚠️ 探针撒谎了 —— 只报计数的仪器必须废弃
+
+第一版探针（`codeOnly` 口径匹配 + 按行删除 + **只打印每个文件删了几行**）报出的结果是
+「47 处全删 → 全仓只剩 **2 个语法错误**」，看起来意味着这一轴几乎可以直接归零。
+换成一个**逐站点打印 before/after 文本**的清扫脚本重放同一批删除，结果是**上千个错误**
+（`AnimationShape` / `UIShape` / `CommandSchema` / `DynamicShape` … 各几十到几千处）。
+
+两者只差一件事：**探针不打印它到底删了什么**。最可能的原因是偏移错位（`codeOnly` 未必处处
+与原文等长），于是它删掉的是**相邻的**那些行 —— 而索引签名原封不动地留着，所以「没有错误」；
+因为不打印文本，这个错完全看不出来。教训与文档里已有那几次仪器故障同源，单独记一条：
+
+> **批量改写脚本必须打印「改了什么」，否则它的计数毫无意义。**
+> 判据不是「脚本说了 0 个错误」，而是「**台账 + 原文 diff** 说站点确实没了、而 `tsc` 干净」。
+> 本轮最终采用的清扫脚本在**删除前**逐站点回报 `整行删除 "<原文>"` / `删片段 "<前>⟨片段⟩<后>"`，
+> 可逐条核对；这也是后面所有批量的标准形态。
+
+### ② 实测：这 47 处全是承重的（没有「顺手删掉」的）
+
+用可信的那版脚本做过三组实验，全部回退：
+
+| 批次 | 站点 | 结果 |
+| --- | --- | --- |
+| 除 `scene-window.ts` / `YMParameterPane.vue` / `types/shapes.ts` 外的 17 个文件 | 37 | 数百个错误：`AnimationShape`(27+24+17+16+15+15+13+12…) / `UIShape`(`ui-list.ts`、`ui-file.ts`) / `ElementShape` 派生类 … 全部承重 |
+| `commands/schema.ts` + `types/history.ts` + `element-classes.ts` + `root-element.ts` | 5 | `CommandSchema`/`CommandSchemaConfig` 的缺口外溢到 **约 60 个** `use*CommandSchema.ts` + 测试；`HistoryData` 缺 4 个成员；UI 元素基类缺口外溢到 `ui-engine.ts`/`element-base.ts`/`reference-element.ts` |
+| 只删 `types/shapes.ts`（`DynamicShape`） | 1 | **上千个**错误（`Animation`/`Scene`/`Inspector`/`Window` 全靠它动态挂字段）——第 41 轮「990 级联」的结论仍然成立 |
+
+⇒ 结论：**「删签名 → tsc → 留下干净的」这条路已经走到头**，剩下的一律是逐族枚举。
+这轮最大的产出就是**否掉了这条捷径**，免得后面几轮反复试。
+
+### ③ 本轮唯一落地：`types/history.ts` 的 `HistoryData`
+
+`HistoryData` 的索引签名是**真需要**的，但它属于另一类：**异质载荷容器**。写侧有 12 处塞
+`editor`、10 处塞 `response`、5 处塞 `item`、2 处塞 `settings`（另有 `swap`）——都是「各编辑器
+按 `type` 往同一容器里放自己的字段」。所以照第 44 轮 `file-trigger-page.ts` 的先例，**保留结构、
+把 `any` 降成 `unknown`**，并把理由写在类型上（写侧全放行、读侧必须先收窄）。
+
+降级后只暴露出**一处**真实读点：`tools/event-list.ts` 的 `delete data.swap.commands.symbol;`
+（`swap` 现在是 `unknown`）⇒ 按该 `type` 的形状原地断言收窄：
+
+```ts
+delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
+```
+
+**验证**：`types/history.ts` 与 `tools/event-list.ts` 的 esbuild 产物与 HEAD **逐字节相同**
+（纯类型层 + 被擦除的断言）；`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0、
+`stale-exemptions` 仍为 0（顺手删掉了那条 `oxlint-disable` 豁免）；台账 47 → **46 处、20 → 19 文件**，
+基线已固化。
+
+### ④ 顺手量清的下一批「清单」（省掉后面的探查）
+
+- **`Scene.marquee`**（`scene/scene-window.ts` L75/L164 两处）：方法由 `scene/scene-marquee.ts`
+  在运行时从 `SceneMarqueeEngine` 挂上（`save/switch/resize/clear/select/selectInPencilMode/
+  selectInRectMode/selectInCopyMode/selectInObjectMode/getTiles`）⇒ 槽位初值是 `null`，故都应是
+  `((…) => …) | null`；`key` 是**元素数据**（`scene-window.ts` 的 `marqueeData`/WeakMap，类型 `string | null`）；
+  `visible/x/y/width/height/background*Color*/border*Color*` 是 `YMMarqueeArea.vue` 的**组件实例属性**；
+  数据字段 `offsetX/offsetY/tilesetMap/tiles/saveData/terrain/previewTiles/pointerevent`。
+  其中 `tiles` 是**带 `standard` 属性的定型数组**（`scene-marquee-engine.ts` 里 `sTiles.standard = dTiles`），
+  `getTiles(raw)` 返回它；`tilesetMap` 是数字键 → guid 的映射（`palette-engine.ts` 赋值）。
+- **`Scene.searcher`**（L78）：Scene 侧只用到 `deleteInputContent()`（`scene-list.ts:123`）、
+  `addCloseButton()`、`addKeydownFilter()`（`scene-window.ts:597/598`）。
+- **`Scene.list`**（L80/L470）：`SceneListExtensions` 已覆盖约 13 个成员，索引签名兜住的是另外约 19 个 ——
+  `addNodeTo / canSwitchState / createFolder / createTilemapShortcutItems / data / deleteNode / duplicate /
+  generateUniqueName / getItemByProperties / read / resize / restoreSelection / saveScroll / saveSelection /
+  scrollTop / searchNodesDebounced / select / selectDefaultCommand / unselect / update / updateFolderState /
+  updateItemName / updateNodeElement`（仓内 grep 实测）。
+- **`YMParameterPane.vue`**（3 处）：`.vue` 对 `tsc` 不可见 ⇒ 只能靠 `typecheck:vue` 量，
+  按 `attachStateAccessors` 挂上去的字段清单枚举（第 39 轮的既有结论）。
+
 ## 第 45 轮（续轮）：inspector 单点族**收尾** —— 52 → 47，以及类型逼出来的三处真问题
 
 第 44 轮立的口径（**成员清单就在该文件自己的对象字面量里**）让这一族变成机械活。

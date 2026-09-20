@@ -97,7 +97,7 @@ export const CommandList: CommandListStaticsType = {
 	prototype: commandListPrototype
 };
 
-export const commandListOptions = options as unknown as CommandListApiOptions;
+export const commandListOptions = options as CommandListApiOptions;
 
 // M5 收尾（2026-09-17）：删掉两个从未被调用的转发函数
 //   - `attachCommandListApi(el)`：元素 API 的装载现在由 `YMCommandList.vue` 自己经

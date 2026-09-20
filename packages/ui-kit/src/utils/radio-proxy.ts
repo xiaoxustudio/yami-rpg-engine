@@ -83,13 +83,11 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 	Object.defineProperty(proxy, 'group', {
 		configurable: true,
 		get: (): RadioProxyElement[] =>
-			Array.from(document.getElementsByName(proxy.id)) as unknown as RadioProxyElement[]
+			Array.from(document.getElementsByName(proxy.id)) as RadioProxyElement[]
 	});
 
 	proxy.write = function (value: unknown): void {
-		const elements = document.getElementsByName(
-			proxy.id
-		) as unknown as NodeListOf<RadioProxyElement>;
+		const elements = document.getElementsByName(proxy.id) as NodeListOf<RadioProxyElement>;
 		for (const element of elements) {
 			if (memberDataValue(element) === value) {
 				addClass(element as HTMLElement, 'selected');
@@ -130,9 +128,7 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 
 	proxy.reset = function (): void {
 		if (data.dataValue !== null) {
-			const elements = document.getElementsByName(
-				proxy.id
-			) as unknown as NodeListOf<RadioProxyElement>;
+			const elements = document.getElementsByName(proxy.id) as NodeListOf<RadioProxyElement>;
 			for (const element of elements) {
 				if (memberDataValue(element) === data.dataValue) {
 					removeClass(element as HTMLElement, 'selected');

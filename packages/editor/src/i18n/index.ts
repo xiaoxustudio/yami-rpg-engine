@@ -116,9 +116,7 @@ export async function loadI18n(language?: string): Promise<string> {
 				store.setLanguages(languages);
 				store.properties = flattenProperties(data.properties ?? {});
 				store.components = data.components ?? {};
-				localizeDomComponents(
-					data.components as unknown as Record<string, LocalComponentItem>
-				);
+				localizeDomComponents(data.components as Record<string, LocalComponentItem>);
 			}
 			if (requested !== undefined && Editor.config) {
 				Editor.config.language = requested;

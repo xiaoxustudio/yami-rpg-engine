@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
 			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div>
-			<TextBox id="sceneAnimation-name"
+			<TextBox
+				id="sceneAnimation-name"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-name')"
-				v-tip="t('components.sceneAnimation-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneAnimation-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">
 				{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}
 			</div>
@@ -66,8 +70,11 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneAnimation-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneAnimation-angle-box"
-				v-tip="t('components.sceneAnimation-angle-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneAnimation-angle-box"
+				v-tip="t('components.sceneAnimation-angle-box.tip')"
+			>
 				<SliderBox
 					id="sceneAnimation-angle-slider"
 					ref="elAngleSlider"
@@ -89,8 +96,11 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneAnimation-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneAnimation-scale-box"
-				v-tip="t('components.sceneAnimation-scale-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneAnimation-scale-box"
+				v-tip="t('components.sceneAnimation-scale-box.tip')"
+			>
 				<SliderBox
 					id="sceneAnimation-scale-slider"
 					ref="elScaleSlider"
@@ -111,8 +121,11 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneAnimation-speed-box.label') || 'Speed' }}</div>
-			<div class="flex-box" id="sceneAnimation-speed-box"
-				v-tip="t('components.sceneAnimation-speed-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneAnimation-speed-box"
+				v-tip="t('components.sceneAnimation-speed-box.tip')"
+			>
 				<SliderBox
 					id="sceneAnimation-speed-slider"
 					ref="elSpeedSlider"
@@ -135,8 +148,11 @@
 			<div class="text">
 				{{ t('components.sceneAnimation-opacity-box.label') || 'Opacity' }}
 			</div>
-			<div class="flex-box" id="sceneAnimation-opacity-box"
-				v-tip="t('components.sceneAnimation-opacity-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneAnimation-opacity-box"
+				v-tip="t('components.sceneAnimation-opacity-box.tip')"
+			>
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
 					ref="elOpacitySlider"
@@ -159,8 +175,11 @@
 			<div class="text">
 				{{ t('components.sceneAnimation-priority-box.label') || 'Priority' }}
 			</div>
-			<div class="flex-box" id="sceneAnimation-priority-box"
-				v-tip="t('components.sceneAnimation-priority-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneAnimation-priority-box"
+				v-tip="t('components.sceneAnimation-priority-box.tip')"
+			>
 				<SliderBox
 					id="sceneAnimation-priority-slider"
 					ref="elPrioritySlider"
@@ -186,7 +205,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-conditions"
-				v-tip="t('components.sceneAnimation-conditions.tip')"
+			v-tip="t('components.sceneAnimation-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -196,7 +215,7 @@
 		<DetailSummary>{{ t('components.sceneAnimation-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-events"
-				v-tip="t('components.sceneAnimation-events.tip')"
+			v-tip="t('components.sceneAnimation-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="animation"
@@ -209,16 +228,13 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-scripts"
-				v-tip="t('components.sceneAnimation-scripts.tip')"
+			v-tip="t('components.sceneAnimation-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<ParameterPane
-		id="sceneAnimation-parameter-pane"
-		ref="elParameterPane"
-	></ParameterPane>
+	<ParameterPane id="sceneAnimation-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -249,7 +265,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneAnimationPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -307,15 +323,21 @@ onMounted(() => {
 	}
 
 	elRotatable.value?.loadItems([
-		{ name: t('components.sceneAnimation-rotatable.options.true.name'), tip: t('components.sceneAnimation-rotatable.options.true.tip'), value: true  },
-		{ name: t('components.sceneAnimation-rotatable.options.false.name'), tip: t('components.sceneAnimation-rotatable.options.false.tip'), value: false  }
+		{
+			name: t('components.sceneAnimation-rotatable.options.true.name'),
+			tip: t('components.sceneAnimation-rotatable.options.true.tip'),
+			value: true
+		},
+		{
+			name: t('components.sceneAnimation-rotatable.options.false.name'),
+			tip: t('components.sceneAnimation-rotatable.options.false.tip'),
+			value: false
+		}
 	]);
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
-	elScripts.value?.bind(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
+	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
@@ -348,8 +370,11 @@ onMounted(() => {
 	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	registryElements(inspectorEls, ['sceneAnimation-conditions', 'sceneAnimation-events', 'sceneAnimation-scripts'])
-		.forEach((el) => el.addEventListener('change', Scene.listChange));
+	registryElements(inspectorEls, [
+		'sceneAnimation-conditions',
+		'sceneAnimation-events',
+		'sceneAnimation-scripts'
+	]).forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
 });
@@ -373,4 +398,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

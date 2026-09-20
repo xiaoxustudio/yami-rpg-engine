@@ -281,8 +281,8 @@ export class FolderItem {
 		this.path = path;
 		this.stats = null;
 		this.parent = parent;
-		this.children = [] as unknown as FileItem[];
-		this.subfolders = [] as unknown as FolderItem[];
+		this.children = [] as FileItem[];
+		this.subfolders = [] as FolderItem[];
 		this.contexts = null;
 		this.hooks = hooks;
 	}

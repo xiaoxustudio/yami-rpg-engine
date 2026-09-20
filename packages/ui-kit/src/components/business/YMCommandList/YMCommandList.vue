@@ -60,7 +60,7 @@ function refreshRows(): void {
 			if (element instanceof HTMLElement) node.bindRowElement(element, row.index);
 		});
 		// 行都挂好了，再让上层做跨行处理（折叠线分类；editor 的 eslints 覆盖这个钩子）
-		(node as unknown as { updateLineClasses?: () => void }).updateLineClasses?.();
+		(node as { updateLineClasses?: () => void }).updateLineClasses?.();
 	});
 }
 

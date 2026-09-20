@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-20T04:43:45.235Z",
+	"generatedAt": "2026-09-20T05:33:45.698Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -19,8 +19,8 @@
 			"label": "泛型逃生口 [k|key: string]: any",
 			"target": "zero",
 			"value": {
-				"total": 47,
-				"files": 20
+				"total": 45,
+				"files": 19
 			}
 		},
 		"dom-on-exempted": {
@@ -67,7 +67,7 @@
 			"label": "遗留层 src/ui/* 行数",
 			"target": "zero",
 			"value": {
-				"total": 2868,
+				"total": 2866,
 				"files": 10
 			}
 		},
@@ -110,8 +110,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 764,
-				"files": 262
+				"total": 292,
+				"files": 138
 			}
 		},
 		"unremovable-listeners": {

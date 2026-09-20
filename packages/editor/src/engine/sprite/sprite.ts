@@ -131,8 +131,8 @@ Sprite.initialize = function (this: typeof Sprite) {
 	};
 	this.info = engineEls.get('sprite-info') as YamiElement;
 	this.slider = engineEls.get('sprite-zoom') as YamiElement;
-	this.screen = engineEls.get('sprite-screen') as unknown as SpriteScreen;
-	this.marquee = engineEls.get('sprite-marquee') as unknown as SpriteMarquee;
+	this.screen = engineEls.get('sprite-screen') as SpriteScreen;
+	this.marquee = engineEls.get('sprite-marquee') as SpriteMarquee;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true })!;

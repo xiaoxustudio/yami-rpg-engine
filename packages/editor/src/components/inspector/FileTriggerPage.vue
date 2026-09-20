@@ -206,9 +206,13 @@
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">{{ t('components.fileTrigger-motion.label') || 'Motion' }}</div>
-			<SelectBox id="fileTrigger-motion"
+			<SelectBox
+				id="fileTrigger-motion"
 				v-tip="t('components.fileTrigger-motion.tip')"
-				:ref="registryRef(inspectorEls, 'fileTrigger-motion')" v-model="form.motion" @input="onParamInput" />
+				:ref="registryRef(inspectorEls, 'fileTrigger-motion')"
+				v-model="form.motion"
+				@input="onParamInput"
+			/>
 			<div class="text">{{ t('components.fileTrigger-priority.label') || 'Priority' }}</div>
 			<NumberBox
 				id="fileTrigger-priority"
@@ -242,7 +246,7 @@
 		<DetailSummary>{{ t('components.fileTrigger-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-events"
-				v-tip="t('components.fileTrigger-events.tip')"
+			v-tip="t('components.fileTrigger-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="trigger"
@@ -254,7 +258,7 @@
 		<DetailSummary>{{ t('components.fileTrigger-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileTrigger-scripts"
-				v-tip="t('components.fileTrigger-scripts.tip')"
+			v-tip="t('components.fileTrigger-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible
@@ -287,7 +291,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useFileTriggerPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onAnimationIdWrite = (value: unknown) => {
@@ -327,23 +331,67 @@ onMounted(() => {
 	}
 
 	elSelector.value?.loadItems([
-		{ name: t('components.fileTrigger-selector.options.enemy.name'), tip: t('components.fileTrigger-selector.options.enemy.tip'), value: 'enemy'  },
-		{ name: t('components.fileTrigger-selector.options.friend.name'), tip: t('components.fileTrigger-selector.options.friend.tip'), value: 'friend'  },
-		{ name: t('components.fileTrigger-selector.options.team.name'), tip: t('components.fileTrigger-selector.options.team.tip'), value: 'team'  },
-		{ name: t('components.fileTrigger-selector.options.team-except-self.name'), tip: t('components.fileTrigger-selector.options.team-except-self.tip'), value: 'team-except-self'  },
-		{ name: t('components.fileTrigger-selector.options.any-except-self.name'), tip: t('components.fileTrigger-selector.options.any-except-self.tip'), value: 'any-except-self'  },
-		{ name: t('components.fileTrigger-selector.options.any.name'), tip: t('components.fileTrigger-selector.options.any.tip'), value: 'any'  }
+		{
+			name: t('components.fileTrigger-selector.options.enemy.name'),
+			tip: t('components.fileTrigger-selector.options.enemy.tip'),
+			value: 'enemy'
+		},
+		{
+			name: t('components.fileTrigger-selector.options.friend.name'),
+			tip: t('components.fileTrigger-selector.options.friend.tip'),
+			value: 'friend'
+		},
+		{
+			name: t('components.fileTrigger-selector.options.team.name'),
+			tip: t('components.fileTrigger-selector.options.team.tip'),
+			value: 'team'
+		},
+		{
+			name: t('components.fileTrigger-selector.options.team-except-self.name'),
+			tip: t('components.fileTrigger-selector.options.team-except-self.tip'),
+			value: 'team-except-self'
+		},
+		{
+			name: t('components.fileTrigger-selector.options.any-except-self.name'),
+			tip: t('components.fileTrigger-selector.options.any-except-self.tip'),
+			value: 'any-except-self'
+		},
+		{
+			name: t('components.fileTrigger-selector.options.any.name'),
+			tip: t('components.fileTrigger-selector.options.any.tip'),
+			value: 'any'
+		}
 	]);
 
 	elOnHitWalls.value?.loadItems([
-		{ name: t('components.fileTrigger-onHitWalls.options.penetrate.name'), tip: t('components.fileTrigger-onHitWalls.options.penetrate.tip'), value: 'penetrate'  },
-		{ name: t('components.fileTrigger-onHitWalls.options.destroy.name'), tip: t('components.fileTrigger-onHitWalls.options.destroy.tip'), value: 'destroy'  }
+		{
+			name: t('components.fileTrigger-onHitWalls.options.penetrate.name'),
+			tip: t('components.fileTrigger-onHitWalls.options.penetrate.tip'),
+			value: 'penetrate'
+		},
+		{
+			name: t('components.fileTrigger-onHitWalls.options.destroy.name'),
+			tip: t('components.fileTrigger-onHitWalls.options.destroy.tip'),
+			value: 'destroy'
+		}
 	]);
 
 	elOnHitActors.value?.loadItems([
-		{ name: t('components.fileTrigger-onHitActors.options.penetrate.name'), tip: t('components.fileTrigger-onHitActors.options.penetrate.tip'), value: 'penetrate'  },
-		{ name: t('components.fileTrigger-onHitActors.options.destroy.name'), tip: t('components.fileTrigger-onHitActors.options.destroy.tip'), value: 'destroy'  },
-		{ name: t('components.fileTrigger-onHitActors.options.penetrate-destroy.name'), tip: t('components.fileTrigger-onHitActors.options.penetrate-destroy.tip'), value: 'penetrate-destroy'  }
+		{
+			name: t('components.fileTrigger-onHitActors.options.penetrate.name'),
+			tip: t('components.fileTrigger-onHitActors.options.penetrate.tip'),
+			value: 'penetrate'
+		},
+		{
+			name: t('components.fileTrigger-onHitActors.options.destroy.name'),
+			tip: t('components.fileTrigger-onHitActors.options.destroy.tip'),
+			value: 'destroy'
+		},
+		{
+			name: t('components.fileTrigger-onHitActors.options.penetrate-destroy.name'),
+			tip: t('components.fileTrigger-onHitActors.options.penetrate-destroy.tip'),
+			value: 'penetrate-destroy'
+		}
 	]);
 	if (elOnHitActors.value) {
 		elOnHitActors.value.enableHiddenMode();
@@ -356,9 +404,21 @@ onMounted(() => {
 	}
 
 	elShapeType.value?.loadItems([
-		{ name: t('components.fileTrigger-shape-type.options.rectangle.name'), tip: t('components.fileTrigger-shape-type.options.rectangle.tip'), value: 'rectangle'  },
-		{ name: t('components.fileTrigger-shape-type.options.circle.name'), tip: t('components.fileTrigger-shape-type.options.circle.tip'), value: 'circle'  },
-		{ name: t('components.fileTrigger-shape-type.options.sector.name'), tip: t('components.fileTrigger-shape-type.options.sector.tip'), value: 'sector'  }
+		{
+			name: t('components.fileTrigger-shape-type.options.rectangle.name'),
+			tip: t('components.fileTrigger-shape-type.options.rectangle.tip'),
+			value: 'rectangle'
+		},
+		{
+			name: t('components.fileTrigger-shape-type.options.circle.name'),
+			tip: t('components.fileTrigger-shape-type.options.circle.tip'),
+			value: 'circle'
+		},
+		{
+			name: t('components.fileTrigger-shape-type.options.sector.name'),
+			tip: t('components.fileTrigger-shape-type.options.sector.tip'),
+			value: 'sector'
+		}
 	]);
 	if (elShapeType.value) {
 		elShapeType.value.enableHiddenMode();
@@ -383,20 +443,38 @@ onMounted(() => {
 	}
 
 	elHitMode.value?.loadItems([
-		{ name: t('components.fileTrigger-hitMode.options.once.name'), tip: t('components.fileTrigger-hitMode.options.once.tip'), value: 'once'  },
-		{ name: t('components.fileTrigger-hitMode.options.once-on-overlap.name'), tip: t('components.fileTrigger-hitMode.options.once-on-overlap.tip'), value: 'once-on-overlap'  },
-		{ name: t('components.fileTrigger-hitMode.options.repeat.name'), tip: t('components.fileTrigger-hitMode.options.repeat.tip'), value: 'repeat'  }
+		{
+			name: t('components.fileTrigger-hitMode.options.once.name'),
+			tip: t('components.fileTrigger-hitMode.options.once.tip'),
+			value: 'once'
+		},
+		{
+			name: t('components.fileTrigger-hitMode.options.once-on-overlap.name'),
+			tip: t('components.fileTrigger-hitMode.options.once-on-overlap.tip'),
+			value: 'once-on-overlap'
+		},
+		{
+			name: t('components.fileTrigger-hitMode.options.repeat.name'),
+			tip: t('components.fileTrigger-hitMode.options.repeat.tip'),
+			value: 'repeat'
+		}
 	]);
 	if (elHitMode.value) {
 		elHitMode.value.enableHiddenMode();
-		elHitMode.value.relate([
-			{ case: 'repeat', targets: [elHitInterval.value?.root ?? null] }
-		]);
+		elHitMode.value.relate([{ case: 'repeat', targets: [elHitInterval.value?.root ?? null] }]);
 	}
 
 	elRotatable.value?.loadItems([
-		{ name: t('components.fileTrigger-rotatable.options.true.name'), tip: t('components.fileTrigger-rotatable.options.true.tip'), value: true  },
-		{ name: t('components.fileTrigger-rotatable.options.false.name'), tip: t('components.fileTrigger-rotatable.options.false.tip'), value: false  }
+		{
+			name: t('components.fileTrigger-rotatable.options.true.name'),
+			tip: t('components.fileTrigger-rotatable.options.true.tip'),
+			value: true
+		},
+		{
+			name: t('components.fileTrigger-rotatable.options.false.name'),
+			tip: t('components.fileTrigger-rotatable.options.false.tip'),
+			value: false
+		}
 	]);
 
 	elEvents.value?.bind(new EventListInterface(editor));

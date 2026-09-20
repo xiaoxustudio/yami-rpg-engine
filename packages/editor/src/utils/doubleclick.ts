@@ -46,8 +46,8 @@ export const attachDoubleclick = function (
 	listener: (event: PointerEvent) => void,
 	options?: boolean | AddEventListenerOptions
 ) {
-	element.addEventListener('pointerdown', pointerdown as unknown as EventListener);
-	element.addEventListener('doubleclick', listener as unknown as EventListener, options);
+	element.addEventListener('pointerdown', pointerdown as EventListener);
+	element.addEventListener('doubleclick', listener as EventListener, options);
 };
 
 export const detachDoubleclick = function (
@@ -55,6 +55,6 @@ export const detachDoubleclick = function (
 	listener: (event: PointerEvent) => void,
 	options?: boolean | EventListenerOptions
 ) {
-	element.removeEventListener('pointerdown', pointerdown as unknown as EventListener, options);
-	element.removeEventListener('doubleclick', listener as unknown as EventListener, options);
+	element.removeEventListener('pointerdown', pointerdown as EventListener, options);
+	element.removeEventListener('doubleclick', listener as EventListener, options);
 };

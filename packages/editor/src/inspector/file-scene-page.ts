@@ -122,7 +122,7 @@ import type { YamiElement } from '@app/types/element-api';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('fileScene-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('fileScene-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -145,7 +145,7 @@ import type { YamiElement } from '@app/types/element-api';
 		_options: { width?: number; height?: number }
 	) {
 		(
-			inspectorEls.get('fileScene-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('fileScene-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();

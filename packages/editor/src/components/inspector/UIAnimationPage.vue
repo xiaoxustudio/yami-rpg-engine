@@ -65,7 +65,7 @@
 			<div id="uiAnimation-offset-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiAnimation-offsetX"
-				v-tip="t('components.uiAnimation-offsetX.tip')"
+					v-tip="t('components.uiAnimation-offsetX.tip')"
 					ref="elOffsetX"
 					v-model="form.offsetX"
 					min="-10000"
@@ -75,7 +75,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiAnimation-offsetY"
-				v-tip="t('components.uiAnimation-offsetY.tip')"
+					v-tip="t('components.uiAnimation-offsetY.tip')"
 					ref="elOffsetY"
 					v-model="form.offsetY"
 					min="-10000"
@@ -113,7 +113,7 @@ const { bindInput } = useInspectorInput();
 const { form, sync, onParamInput: onParamInputEvent } = useUIAnimationPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const elAnimation = ref<InstanceType<typeof CustomBox> | null>(null);

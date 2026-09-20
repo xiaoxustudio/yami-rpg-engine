@@ -8,9 +8,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.condition-type.label') }}</div>
-			<SelectBox id="condition-type"
+			<SelectBox
+				id="condition-type"
 				v-tip="t('components.condition-type.tip')"
-				:ref="registryRef(conditionEls, 'condition-type')" v-focus v-model="form.type" @write="onTypeWrite" />
+				:ref="registryRef(conditionEls, 'condition-type')"
+				v-focus
+				v-model="form.type"
+				@write="onTypeWrite"
+			/>
 			<div class="text">{{ t('components.condition-key.label') }}</div>
 			<CustomBox
 				id="condition-key"
@@ -22,17 +27,26 @@
 				v-model="form.key"
 			/>
 			<div class="text">{{ t('components.condition-boolean-operation.label') }}</div>
-			<SelectBox id="condition-boolean-operation"
+			<SelectBox
+				id="condition-boolean-operation"
 				v-tip="t('components.condition-boolean-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-boolean-operation')" v-model="form.booleanOperation" />
+				:ref="registryRef(conditionEls, 'condition-boolean-operation')"
+				v-model="form.booleanOperation"
+			/>
 			<div class="text">{{ t('components.condition-boolean-value.label') }}</div>
-			<SelectBox id="condition-boolean-value"
+			<SelectBox
+				id="condition-boolean-value"
 				v-tip="t('components.condition-boolean-value.tip')"
-				:ref="registryRef(conditionEls, 'condition-boolean-value')" v-model="form.booleanValue" />
+				:ref="registryRef(conditionEls, 'condition-boolean-value')"
+				v-model="form.booleanValue"
+			/>
 			<div class="text">{{ t('components.condition-number-operation.label') }}</div>
-			<SelectBox id="condition-number-operation"
+			<SelectBox
+				id="condition-number-operation"
 				v-tip="t('components.condition-number-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-number-operation')" v-model="form.numberOperation" />
+				:ref="registryRef(conditionEls, 'condition-number-operation')"
+				v-model="form.numberOperation"
+			/>
 			<div class="text">{{ t('components.condition-number-value.label') }}</div>
 			<NumberBox
 				id="condition-number-value"
@@ -44,13 +58,19 @@
 				v-model="form.numberValue"
 			/>
 			<div class="text">{{ t('components.condition-string-operation.label') }}</div>
-			<SelectBox id="condition-string-operation"
+			<SelectBox
+				id="condition-string-operation"
 				v-tip="t('components.condition-string-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-string-operation')" v-model="form.stringOperation" />
+				:ref="registryRef(conditionEls, 'condition-string-operation')"
+				v-model="form.stringOperation"
+			/>
 			<div class="text">{{ t('components.condition-string-value.label') }}</div>
-			<TextArea id="condition-string-value"
+			<TextArea
+				id="condition-string-value"
 				v-tip="t('components.condition-string-value.tip')"
-				:ref="registryRef(conditionEls, 'condition-string-value')" v-model="form.stringValue" />
+				:ref="registryRef(conditionEls, 'condition-string-value')"
+				v-model="form.stringValue"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -75,7 +95,7 @@ const onTypeWrite = (value: unknown) => {
 	ConditionListInterface?.typeWrite?.({ value } as Event & { value: string });
 };
 const onConfirm = () => {
-	(ConditionListInterface?.target as unknown as YamiElement | undefined)?.save?.();
+	(ConditionListInterface?.target as YamiElement | undefined)?.save?.();
 };
 
 onMounted(() => {});
@@ -102,4 +122,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

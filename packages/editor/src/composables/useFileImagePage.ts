@@ -28,8 +28,7 @@ export function useFileImagePage() {
 	};
 
 	const updateImage = (): void => {
-		const image =
-			(inspectorEls.get('fileImage-image') as unknown as HTMLImageElement | null) ?? null;
+		const image = (inspectorEls.get('fileImage-image') as HTMLImageElement | null) ?? null;
 		if (!image) return;
 		hide(image);
 		const frame = image.parentElement!;

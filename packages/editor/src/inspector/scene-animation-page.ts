@@ -76,7 +76,7 @@ import { radians } from '@app/utils/math';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneAnimation-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -101,7 +101,7 @@ import { radians } from '@app/utils/math';
 		_options: Record<string, unknown>
 	) {
 		(
-			inspectorEls.get('sceneAnimation-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();
@@ -185,7 +185,7 @@ import { radians } from '@app/utils/math';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = inspectorEls.get('sceneAnimation-motion') as unknown as unknown as
+		const elMotion = inspectorEls.get('sceneAnimation-motion') as unknown as
 			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
 			| null;
 		const items = Animation.getMotionListItems!(event.value);

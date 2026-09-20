@@ -31,7 +31,7 @@ let saveItems: Record<string, LocalComponentItem> = {};
 
 export function setLocalElement(element: HTMLElement, item: LocalComponentItem): void {
 	// P4c：外壳元素（window-frame / text-box / select-box）带本仓库装配的元素 API
-	const target = element as unknown as YamiElement;
+	const target = element as YamiElement;
 	if (item.save !== undefined) {
 		saveItems[item.save] = item;
 	}

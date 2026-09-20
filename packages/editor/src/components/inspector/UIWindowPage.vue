@@ -133,7 +133,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIWindowPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -165,9 +165,21 @@ onMounted(() => {
 	if (!uiWindow) return;
 
 	elLayout.value?.loadItems([
-		{ name: t('components.uiWindow-layout.options.normal.name'), tip: t('components.uiWindow-layout.options.normal.tip'), value: 'normal'  },
-		{ name: t('components.uiWindow-layout.options.horizontal-grid.name'), tip: t('components.uiWindow-layout.options.horizontal-grid.tip'), value: 'horizontal-grid'  },
-		{ name: t('components.uiWindow-layout.options.vertical-grid.name'), tip: t('components.uiWindow-layout.options.vertical-grid.tip'), value: 'vertical-grid'  }
+		{
+			name: t('components.uiWindow-layout.options.normal.name'),
+			tip: t('components.uiWindow-layout.options.normal.tip'),
+			value: 'normal'
+		},
+		{
+			name: t('components.uiWindow-layout.options.horizontal-grid.name'),
+			tip: t('components.uiWindow-layout.options.horizontal-grid.tip'),
+			value: 'horizontal-grid'
+		},
+		{
+			name: t('components.uiWindow-layout.options.vertical-grid.name'),
+			tip: t('components.uiWindow-layout.options.vertical-grid.tip'),
+			value: 'vertical-grid'
+		}
 	]);
 	elLayout.value?.enableHiddenMode();
 	elLayout.value?.relate([
@@ -190,8 +202,16 @@ onMounted(() => {
 		}
 	]);
 	elOverflow.value?.loadItems([
-		{ name: t('components.uiWindow-overflow.options.visible.name'), tip: t('components.uiWindow-overflow.options.visible.tip'), value: 'visible'  },
-		{ name: t('components.uiWindow-overflow.options.hidden.name'), tip: t('components.uiWindow-overflow.options.hidden.tip'), value: 'hidden'  }
+		{
+			name: t('components.uiWindow-overflow.options.visible.name'),
+			tip: t('components.uiWindow-overflow.options.visible.tip'),
+			value: 'visible'
+		},
+		{
+			name: t('components.uiWindow-overflow.options.hidden.name'),
+			tip: t('components.uiWindow-overflow.options.hidden.tip'),
+			value: 'hidden'
+		}
 	]);
 
 	const elements = registryElements(inspectorEls, [

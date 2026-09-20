@@ -190,8 +190,7 @@ for (const key of pluginBridgeKeys) {
 		get: () => getPluginStore()[key],
 		set: (value: unknown) => {
 			// oxlint-disable-next-line no-explicit-any
-			(getPluginStore() as unknown as Record<(typeof pluginBridgeKeys)[number], any>)[key] =
-				value;
+			(getPluginStore() as Record<(typeof pluginBridgeKeys)[number], any>)[key] = value;
 		},
 		configurable: true
 	});

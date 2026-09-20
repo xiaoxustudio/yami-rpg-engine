@@ -66,7 +66,7 @@ import type { YamiElement } from '@app/types/element-api';
 				if (this.symbol === symbol) {
 					this.symbol = null;
 					(
-						inspectorEls.get('fileImage') as unknown as HTMLElement & {
+						inspectorEls.get('fileImage') as HTMLElement & {
 							updateImage?: () => void;
 						}
 					)?.updateImage?.();

@@ -1621,7 +1621,7 @@ GL.createImageTexture = function (
 	const { gl: _gl } = GL;
 	const magFilter = options.magFilter ?? this.NEAREST;
 	const minFilter = options.minFilter ?? this.LINEAR;
-	const guid = image instanceof Image ? (image as unknown as { guid?: string }).guid : image;
+	const guid = image instanceof Image ? (image as { guid?: string }).guid : image;
 	const manager = this.textureManager;
 	let texture = manager.images[guid as string];
 	if (!texture) {

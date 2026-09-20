@@ -10,19 +10,18 @@ let installed = false;
 export function setupMonacoWorker(): void {
 	if (installed) return;
 	installed = true;
-	(
-		self as unknown as { MonacoEnvironment?: { getWorker(...args: unknown[]): Worker } }
-	).MonacoEnvironment = {
-		getWorker(_workerId: string, label: string) {
-			switch (label) {
-				case 'typescript':
-				case 'javascript':
-					return new TsWorker();
-				case 'json':
-					return new JsonWorker();
-				default:
-					return new EditorWorker();
+	(self as { MonacoEnvironment?: { getWorker(...args: unknown[]): Worker } }).MonacoEnvironment =
+		{
+			getWorker(_workerId: string, label: string) {
+				switch (label) {
+					case 'typescript':
+					case 'javascript':
+						return new TsWorker();
+					case 'json':
+						return new JsonWorker();
+					default:
+						return new EditorWorker();
+				}
 			}
-		}
-	};
+		};
 }

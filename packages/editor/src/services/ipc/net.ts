@@ -2,7 +2,7 @@ import { fs } from '@app/module/global.ts';
 import axios, { type AxiosRequestConfig } from 'axios';
 
 const proxyRewrite = (url: string): string => {
-	if (!(import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) return url;
+	if (!(import.meta as { env?: { DEV?: boolean } }).env?.DEV) return url;
 	const rawMatch = url.match(/https:\/\/raw\.githubusercontent\.com(\/.*)$/);
 	if (rawMatch) return '/github-raw' + rawMatch[1];
 	const jsdelivrMatch = url.match(/https:\/\/cdn\.jsdelivr\.net(\/.*)$/);

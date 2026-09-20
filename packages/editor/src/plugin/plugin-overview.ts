@@ -42,7 +42,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 				break;
 		}
 	};
-})() as unknown as ((...args: unknown[]) => void) | null;
+})() as ((...args: unknown[]) => void) | null;
 
 PluginManager.parameterPaneUpdate = function (this: TreeListElement, _event: Event) {
 	if (this.wraps.length !== 0) {
@@ -50,12 +50,12 @@ PluginManager.parameterPaneUpdate = function (this: TreeListElement, _event: Eve
 	} else {
 		hide(this);
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.confirm = function (this: typeof PluginManager, _event: Event) {
 	this.apply!();
 	Window.close!('plugin');
-}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
+}.bind(PluginManager) as ((...args: unknown[]) => void) | null;
 
 PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
@@ -72,4 +72,4 @@ PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 		Data.plugins = plugins;
 		File.planToSave!(Data.manifest.project.plugins);
 	}
-}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
+}.bind(PluginManager) as ((...args: unknown[]) => void) | null;

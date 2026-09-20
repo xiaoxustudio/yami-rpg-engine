@@ -27,7 +27,7 @@ function createPresetAccessor(
 		initialize: null,
 		open: null,
 		confirm: null
-	} as unknown as PresetAccessorShape;
+	} as PresetAccessorShape;
 
 	accessor.initialize = function (this: PresetAccessorShape) {
 		if (!$(`#${domKey}-type`)) return;

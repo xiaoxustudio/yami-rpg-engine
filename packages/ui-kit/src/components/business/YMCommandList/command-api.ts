@@ -248,7 +248,7 @@ export interface CommandListApiOptions {
 /** 按变量文本的 `name`（`local-number-speed` 这类 id）在**已渲染**的行里找文本元素 */
 const findVariableTexts = (...ids: string[]): HTMLElement[] =>
 	Array.from(document.querySelectorAll<HTMLElement>('.command-text')).filter((el) =>
-		ids.includes((el as unknown as { name?: string }).name ?? '')
+		ids.includes((el as { name?: string }).name ?? '')
 	);
 
 export const commandListStatics = {
@@ -778,7 +778,7 @@ export const commandListPrototype: Record<
 		if (!data.history) {
 			// P2b-3：`commandHistory` 在对外契约里的构造签名是 `new (list: never)`（"收任何类"的占位，
 			// 于是无法直接 `new`）。这里只做一次显式转写——按运行期实情：它就是"拿命令列表元素去构造"。
-			const HistoryCtor = options.commandHistory as unknown as new (
+			const HistoryCtor = options.commandHistory as new (
 				list: CommandListHost
 			) => CommandHistory;
 			Object.defineProperty(data, 'history', {
@@ -1016,7 +1016,7 @@ export const commandListPrototype: Record<
 			let className = '';
 			let color = '';
 			let mainColor = 'normal';
-			li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
+			li = renderDetachedDiv('command-item') as CommandItemElement;
 			// M3 切片 1：行 key 由派生层发号（同一 command 跨多次渲染稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
 			li.rowKey = commandRender.rowKeyOf(command);
 			let liContents: CommandContent[] | null = [];
@@ -1098,7 +1098,7 @@ export const commandListPrototype: Record<
 				}
 
 				if (content.break !== undefined) {
-					li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
+					li = renderDetachedDiv('command-item') as CommandItemElement;
 					let breakContents: CommandContent[] | null = [];
 					Object.defineProperty(li, 'contents', {
 						configurable: true,
@@ -1146,7 +1146,7 @@ export const commandListPrototype: Record<
 					buffer.push(content.children);
 
 					if (i < length) {
-						li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
+						li = renderDetachedDiv('command-item') as CommandItemElement;
 						let childContents: CommandContent[] | null = [];
 						Object.defineProperty(li, 'contents', {
 							configurable: true,
@@ -1192,7 +1192,7 @@ export const commandListPrototype: Record<
 					const items = Array.from<CommandItemElement>({ length: slength });
 					items[0] = li;
 					for (let i = 1; i < slength; i++) {
-						li = renderDetachedDiv('command-item') as unknown as CommandItemElement;
+						li = renderDetachedDiv('command-item') as CommandItemElement;
 						let scriptContents: CommandContent[] | null = [];
 						Object.defineProperty(li, 'contents', {
 							configurable: true,
@@ -1446,7 +1446,7 @@ export const commandListPrototype: Record<
 	): CommandItemElement {
 		let blank = commands.blank;
 		if (blank === undefined) {
-			blank = renderDetachedDiv('command-item') as unknown as CommandItemElement;
+			blank = renderDetachedDiv('command-item') as CommandItemElement;
 
 			// M3 换源前置：空白行同样需要**稳定行 key**（`v-for` 的每一行都要 `:key`）。
 			// 派生规则与派生层**共用同一个函数**（`commandRender.blankRowKeyOf`），
@@ -2903,7 +2903,7 @@ export const commandListPrototype: Record<
 						index = this.elements.count - 1;
 					}
 				} else if (hasClass(element, 'command-fold')) {
-					this.fold((element as HTMLElement).parentNode as unknown as CommandItemElement);
+					this.fold((element as HTMLElement).parentNode as CommandItemElement);
 					break;
 				} else {
 					row = (element as HTMLElement)?.closest?.(

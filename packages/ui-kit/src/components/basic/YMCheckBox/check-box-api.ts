@@ -41,7 +41,7 @@ const disableElement = (element: HTMLElement & { disable?: () => void }): void =
 };
 
 export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions = {}): CheckBoxApi {
-	const box = el as unknown as CheckBoxApi;
+	const box = el as CheckBoxApi;
 	if (isApiAttached(box)) return box;
 
 	const standard = options.standard ?? hasClass(box, 'standard');

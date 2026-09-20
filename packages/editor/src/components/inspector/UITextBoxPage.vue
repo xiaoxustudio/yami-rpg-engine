@@ -103,14 +103,22 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiTextBox-font.label') || 'Font' }}</div>
-			<TextBox id="uiTextBox-font"
-			:placeholder="t('components.uiTextBox-font.placeholder')"
+			<TextBox
+				id="uiTextBox-font"
+				:placeholder="t('components.uiTextBox-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiTextBox-font')"
-				v-tip="t('components.uiTextBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
+				v-tip="t('components.uiTextBox-font.tip')"
+				v-model="form.font"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.uiTextBox-color.label') || 'Text Color' }}</div>
-			<ColorBox id="uiTextBox-color"
+			<ColorBox
+				id="uiTextBox-color"
 				:ref="registryRef(inspectorEls, 'uiTextBox-color')"
-				v-tip="t('components.uiTextBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
+				v-tip="t('components.uiTextBox-color.tip')"
+				v-model="form.color"
+				@input="onParamInput"
+			></ColorBox>
 			<div class="text">
 				{{ t('components.uiTextBox-selectionColor.label') || 'Selection Color' }}
 			</div>
@@ -157,7 +165,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUITextBoxPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -185,13 +193,33 @@ onMounted(() => {
 	if (!uiTextBox) return;
 
 	elType.value?.loadItems([
-		{ name: t('components.uiTextBox-type.options.text.name'), tip: t('components.uiTextBox-type.options.text.tip'), value: 'text'  },
-		{ name: t('components.uiTextBox-type.options.number.name'), tip: t('components.uiTextBox-type.options.number.tip'), value: 'number'  }
+		{
+			name: t('components.uiTextBox-type.options.text.name'),
+			tip: t('components.uiTextBox-type.options.text.tip'),
+			value: 'text'
+		},
+		{
+			name: t('components.uiTextBox-type.options.number.name'),
+			tip: t('components.uiTextBox-type.options.number.tip'),
+			value: 'number'
+		}
 	]);
 	elAlign.value?.loadItems([
-		{ name: t('components.uiTextBox-align.options.left.name'), tip: t('components.uiTextBox-align.options.left.tip'), value: 'left'  },
-		{ name: t('components.uiTextBox-align.options.center.name'), tip: t('components.uiTextBox-align.options.center.tip'), value: 'center'  },
-		{ name: t('components.uiTextBox-align.options.right.name'), tip: t('components.uiTextBox-align.options.right.tip'), value: 'right'  }
+		{
+			name: t('components.uiTextBox-align.options.left.name'),
+			tip: t('components.uiTextBox-align.options.left.tip'),
+			value: 'left'
+		},
+		{
+			name: t('components.uiTextBox-align.options.center.name'),
+			tip: t('components.uiTextBox-align.options.center.tip'),
+			value: 'center'
+		},
+		{
+			name: t('components.uiTextBox-align.options.right.name'),
+			tip: t('components.uiTextBox-align.options.right.tip'),
+			value: 'right'
+		}
 	]);
 	elType.value?.enableHiddenMode();
 	elType.value?.relate([

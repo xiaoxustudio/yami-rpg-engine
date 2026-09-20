@@ -112,13 +112,13 @@ const initialize = (): void => {
 		}
 	};
 
-	window.addEventListener('themechange', themechange as unknown as EventListener);
-	window.addEventListener('datachange', datachange as unknown as EventListener);
-	on(page!, 'resize', windowResize as unknown as (event?: Event) => void);
+	window.addEventListener('themechange', themechange as EventListener);
+	window.addEventListener('datachange', datachange as EventListener);
+	on(page!, 'resize', windowResize as (event?: Event) => void);
 	on(
 		animationEls.get('animation-easing-settings'),
 		'pointerdown',
-		settingsPointerdown as unknown as (event: PointerEvent) => void
+		settingsPointerdown as (event: PointerEvent) => void
 	);
 };
 
@@ -385,7 +385,7 @@ const easingIdWrite = (event: YamiEvent): void => {
 				{ x: 1, y: 1 }
 			];
 			const { startPoint, endPoint } = Easing;
-			(curveMap as unknown as { update(...pts: unknown[]): void }).update(
+			(curveMap as { update(...pts: unknown[]): void }).update(
 				startPoint,
 				...points,
 				endPoint

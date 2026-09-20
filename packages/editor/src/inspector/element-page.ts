@@ -241,7 +241,7 @@ const SIZE_INPUT_IDS = [
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('uiImage-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiImage-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -433,7 +433,7 @@ const SIZE_INPUT_IDS = [
 				changes: changes
 			});
 			(
-				inspectorEls.get('uiImage-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiImage-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

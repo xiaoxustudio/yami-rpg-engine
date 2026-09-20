@@ -54,7 +54,7 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 	localEls.get('exportLanguage-first')?.loadItems?.(items);
 	localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
 	const setForm = (
-		localEls.get('exportLanguage') as unknown as unknown as
+		localEls.get('exportLanguage') as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void })
 			| null
 	)?.setForm;
@@ -99,7 +99,7 @@ ExportLanguage.confirm = function (this: typeof ExportLanguage, _event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
 	const getForm = (
-		localEls.get('exportLanguage') as unknown as unknown as
+		localEls.get('exportLanguage') as unknown as
 			| (HTMLElement & { getForm?: () => ExportLanguageForm })
 			| null
 	)?.getForm;

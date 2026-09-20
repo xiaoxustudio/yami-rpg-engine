@@ -564,7 +564,7 @@ export const useUIStore = defineStore('ui', () => {
 	// oxlint-disable-next-line no-explicit-any
 	const forwarders: Record<string, (...args: any[]) => unknown> = {};
 	for (const key of uiForwardKeys) {
-		forwarders[key] = makeForwarder(key, () => UI as unknown as Record<string, unknown> | null);
+		forwarders[key] = makeForwarder(key, () => UI as Record<string, unknown> | null);
 	}
 
 	/**
@@ -593,7 +593,7 @@ export const useUIStore = defineStore('ui', () => {
 		'setControlPoint'
 	] as const;
 	for (const key of uiEngineForwardKeys) {
-		forwarders[key] = makeForwarder(key, () => UI as unknown as Record<string, unknown> | null);
+		forwarders[key] = makeForwarder(key, () => UI as Record<string, unknown> | null);
 	}
 
 	function saveToConfig(config: { colors: Record<string, unknown> }) {

@@ -162,9 +162,7 @@ UI.destroy = function (this: UIShape, context: UIContextShape) {
 	}
 	// 销毁UI组件实例
 	context.editor.root!.destroy();
-	TreeList.deleteCaches!(
-		context.ui!.nodes as unknown as Parameters<typeof TreeList.deleteCaches>[0]
-	);
+	TreeList.deleteCaches!(context.ui!.nodes as Parameters<typeof TreeList.deleteCaches>[0]);
 };
 
 UI.copy = function (this: UIShape) {

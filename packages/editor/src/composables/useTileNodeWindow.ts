@@ -394,7 +394,7 @@ const marqueePointerdown = (event: PointerEvent): void => {
 	switch (event.button) {
 		case 0: {
 			if (event.altKey) {
-				dragging = event as unknown as TileNodeDragging;
+				dragging = event as TileNodeDragging;
 				dragging.mode = 'scroll';
 				dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
 				dragging.scrollLeft = dragging.screen.scrollLeft;
@@ -411,14 +411,14 @@ const marqueePointerdown = (event: PointerEvent): void => {
 			const index = x | (y << 3);
 			if (index < nodes!.length) {
 				marquee.select(x, y, 1, 1);
-				dragging = event as unknown as TileNodeDragging;
+				dragging = event as TileNodeDragging;
 				dragging.mode = 'select';
 				window.addEventListener('pointerup', pointerup);
 			}
 			break;
 		}
 		case 2:
-			dragging = event as unknown as TileNodeDragging;
+			dragging = event as TileNodeDragging;
 			dragging.mode = 'scroll';
 			dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
 			dragging.scrollLeft = dragging.screen.scrollLeft;

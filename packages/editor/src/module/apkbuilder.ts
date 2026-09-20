@@ -32,9 +32,7 @@ export const ApkBuilder = new (class {
 		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
-		(
-			moduleEls.get('export-apk-content') as unknown as HTMLElement & { update?: () => void }
-		).update?.();
+		(moduleEls.get('export-apk-content') as HTMLElement & { update?: () => void }).update?.();
 	}
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();

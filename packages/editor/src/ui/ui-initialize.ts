@@ -20,7 +20,7 @@ UI.initialize = function (this: UIShape) {
 	this.page = uiEls.get('ui') as YamiElement;
 	this.head = uiEls.get('ui-head') as YamiElement;
 	this.body = hide(uiEls.get('ui-body') as YamiElement);
-	this.screen = uiEls.get('ui-screen') as unknown as YamiElement & {
+	this.screen = uiEls.get('ui-screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};

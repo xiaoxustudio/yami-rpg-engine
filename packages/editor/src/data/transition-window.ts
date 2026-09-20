@@ -325,7 +325,7 @@ Easing.initialize = () => {
 			return (maps[id] = map);
 		}
 
-		return linear as unknown as EasingMapInstance;
+		return linear as EasingMapInstance;
 	};
 	const clear = () => {
 		for (const key of Object.keys(maps)) {
@@ -1164,7 +1164,7 @@ Easing.pointerup = function (
 		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(
-	Easing as unknown as typeof Easing & {
+	Easing as typeof Easing & {
 		relate: (start: EasingDrag, end: PointerEvent) => boolean;
 	}
 );
@@ -1368,9 +1368,7 @@ for (const key of easingStateKeys) {
 	Object.defineProperty(Easing, key, {
 		get: () => getEasingStore()[key],
 		set: (value: unknown) => {
-			(getEasingStore() as unknown as Record<(typeof easingStateKeys)[number], unknown>)[
-				key
-			] = value;
+			(getEasingStore() as Record<(typeof easingStateKeys)[number], unknown>)[key] = value;
 		},
 		configurable: true
 	});

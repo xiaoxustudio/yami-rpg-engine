@@ -386,14 +386,7 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 					removeClass(target, 'selected');
 				}
 			},
-			[
-				items.cut,
-				items.copy,
-				items.paste,
-				items.delete,
-				items.undo,
-				items.redo
-			] as unknown as MenuItem[]
+			[items.cut, items.copy, items.paste, items.delete, items.undo, items.redo] as MenuItem[]
 		);
 	}
 };

@@ -77,8 +77,13 @@
 				image="uiButton-activeImage"
 			></CustomBox>
 			<div class="text">{{ t('components.uiButton-flip.label') || 'Flip' }}</div>
-			<SelectBox id="uiButton-flip"
-				v-tip="t('components.uiButton-flip.tip')" ref="elFlip" v-model="form.flip" @input="onParamInput"></SelectBox>
+			<SelectBox
+				id="uiButton-flip"
+				v-tip="t('components.uiButton-flip.tip')"
+				ref="elFlip"
+				v-model="form.flip"
+				@input="onParamInput"
+			></SelectBox>
 			<div class="text">{{ t('components.uiButton-border.label') || 'Border' }}</div>
 			<NumberBox
 				id="uiButton-border"
@@ -93,12 +98,15 @@
 			<div class="text">
 				{{ t('components.uiButton-imagePadding-box.label') || 'Padding' }}
 			</div>
-			<div class="flex-box" id="uiButton-imagePadding-box"
-				v-tip="t('components.uiButton-imagePadding-box.tip')">
+			<div
+				class="flex-box"
+				id="uiButton-imagePadding-box"
+				v-tip="t('components.uiButton-imagePadding-box.tip')"
+			>
 				<SliderBox
-				id="uiButton-imagePadding-slider"
-				ref="elImagePaddingSlider"
-				v-model="form.imagePadding"
+					id="uiButton-imagePadding-slider"
+					ref="elImagePaddingSlider"
+					v-model="form.imagePadding"
 					min="0"
 					max="20"
 				></SliderBox>
@@ -115,12 +123,15 @@
 			<div class="text">
 				{{ t('components.uiButton-imageOpacity-box.label') || 'Opacity' }}
 			</div>
-			<div class="flex-box" id="uiButton-imageOpacity-box"
-				v-tip="t('components.uiButton-imageOpacity-box.tip')">
+			<div
+				class="flex-box"
+				id="uiButton-imageOpacity-box"
+				v-tip="t('components.uiButton-imageOpacity-box.tip')"
+			>
 				<SliderBox
-				id="uiButton-imageOpacity-slider"
-				ref="elImageOpacitySlider"
-				v-model="form.imageOpacity"
+					id="uiButton-imageOpacity-slider"
+					ref="elImageOpacitySlider"
+					v-model="form.imageOpacity"
 					min="0"
 					max="1"
 					step="0.05"
@@ -147,11 +158,15 @@
 			<div class="text">
 				{{ t('components.uiButton-normalTint-box.label') || 'Normal Tint' }}
 			</div>
-			<div id="uiButton-normalTint-box"
-				v-tip="t('components.uiButton-normalTint-box.tip')" ref="elNormalTintBox" class="box uiElement-grid-box with-4-columns">
+			<div
+				id="uiButton-normalTint-box"
+				v-tip="t('components.uiButton-normalTint-box.tip')"
+				ref="elNormalTintBox"
+				class="box uiElement-grid-box with-4-columns"
+			>
 				<NumberBox
 					id="uiButton-normalTint-0"
-				:ref="registryRef(inspectorEls, 'uiButton-normalTint-0')"
+					:ref="registryRef(inspectorEls, 'uiButton-normalTint-0')"
 					v-model="form.normalTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -160,7 +175,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-1"
-				:ref="registryRef(inspectorEls, 'uiButton-normalTint-1')"
+					:ref="registryRef(inspectorEls, 'uiButton-normalTint-1')"
 					v-model="form.normalTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -169,7 +184,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-2"
-				:ref="registryRef(inspectorEls, 'uiButton-normalTint-2')"
+					:ref="registryRef(inspectorEls, 'uiButton-normalTint-2')"
 					v-model="form.normalTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -178,7 +193,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-3"
-				:ref="registryRef(inspectorEls, 'uiButton-normalTint-3')"
+					:ref="registryRef(inspectorEls, 'uiButton-normalTint-3')"
 					v-model="form.normalTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -189,11 +204,15 @@
 			<div class="text">
 				{{ t('components.uiButton-hoverTint-box.label') || 'Hover Tint' }}
 			</div>
-			<div id="uiButton-hoverTint-box"
-				v-tip="t('components.uiButton-hoverTint-box.tip')" ref="elHoverTintBox" class="box uiElement-grid-box with-4-columns">
+			<div
+				id="uiButton-hoverTint-box"
+				v-tip="t('components.uiButton-hoverTint-box.tip')"
+				ref="elHoverTintBox"
+				class="box uiElement-grid-box with-4-columns"
+			>
 				<NumberBox
 					id="uiButton-hoverTint-0"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-0')"
+					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-0')"
 					v-model="form.hoverTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -202,7 +221,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-1"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-1')"
+					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-1')"
 					v-model="form.hoverTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -211,7 +230,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-2"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-2')"
+					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-2')"
 					v-model="form.hoverTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -220,7 +239,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-3"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverTint-3')"
+					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-3')"
 					v-model="form.hoverTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -231,11 +250,15 @@
 			<div class="text">
 				{{ t('components.uiButton-activeTint-box.label') || 'Active Tint' }}
 			</div>
-			<div id="uiButton-activeTint-box"
-				v-tip="t('components.uiButton-activeTint-box.tip')" ref="elActiveTintBox" class="box uiElement-grid-box with-4-columns">
+			<div
+				id="uiButton-activeTint-box"
+				v-tip="t('components.uiButton-activeTint-box.tip')"
+				ref="elActiveTintBox"
+				class="box uiElement-grid-box with-4-columns"
+			>
 				<NumberBox
 					id="uiButton-activeTint-0"
-				:ref="registryRef(inspectorEls, 'uiButton-activeTint-0')"
+					:ref="registryRef(inspectorEls, 'uiButton-activeTint-0')"
 					v-model="form.activeTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -244,7 +267,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-1"
-				:ref="registryRef(inspectorEls, 'uiButton-activeTint-1')"
+					:ref="registryRef(inspectorEls, 'uiButton-activeTint-1')"
 					v-model="form.activeTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -253,7 +276,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-2"
-				:ref="registryRef(inspectorEls, 'uiButton-activeTint-2')"
+					:ref="registryRef(inspectorEls, 'uiButton-activeTint-2')"
 					v-model="form.activeTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -262,7 +285,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-3"
-				:ref="registryRef(inspectorEls, 'uiButton-activeTint-3')"
+					:ref="registryRef(inspectorEls, 'uiButton-activeTint-3')"
 					v-model="form.activeTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -289,7 +312,7 @@
 			<div class="flex-box" id="uiButton-align-box">
 				<RadioBox
 					id="uiButton-align-left"
-				v-tip="t('components.uiButton-align-left.tip')"
+					v-tip="t('components.uiButton-align-left.tip')"
 					name="uiButton-horizontalAlign"
 					class="uiText-align"
 					value="left"
@@ -298,7 +321,7 @@
 				>
 				<RadioBox
 					id="uiButton-align-center"
-				v-tip="t('components.uiButton-align-center.tip')"
+					v-tip="t('components.uiButton-align-center.tip')"
 					name="uiButton-horizontalAlign"
 					class="uiText-align"
 					value="center"
@@ -307,7 +330,7 @@
 				>
 				<RadioBox
 					id="uiButton-align-right"
-				v-tip="t('components.uiButton-align-right.tip')"
+					v-tip="t('components.uiButton-align-right.tip')"
 					name="uiButton-horizontalAlign"
 					class="uiText-align"
 					value="right"
@@ -316,7 +339,7 @@
 				>
 				<RadioBox
 					id="uiButton-align-top"
-				v-tip="t('components.uiButton-align-top.tip')"
+					v-tip="t('components.uiButton-align-top.tip')"
 					name="uiButton-verticalAlign"
 					class="uiText-align rotated"
 					value="top"
@@ -325,7 +348,7 @@
 				>
 				<RadioBox
 					id="uiButton-align-middle"
-				v-tip="t('components.uiButton-align-middle.tip')"
+					v-tip="t('components.uiButton-align-middle.tip')"
 					name="uiButton-verticalAlign"
 					class="uiText-align rotated"
 					value="middle"
@@ -334,7 +357,7 @@
 				>
 				<RadioBox
 					id="uiButton-align-bottom"
-				v-tip="t('components.uiButton-align-bottom.tip')"
+					v-tip="t('components.uiButton-align-bottom.tip')"
 					name="uiButton-verticalAlign"
 					class="uiText-align rotated"
 					value="bottom"
@@ -352,12 +375,15 @@
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextBox>
 			<div class="text">{{ t('components.uiButton-size-box.label') || 'Size' }}</div>
-			<div class="flex-box" id="uiButton-size-box"
-				v-tip="t('components.uiButton-size-box.tip')">
+			<div
+				class="flex-box"
+				id="uiButton-size-box"
+				v-tip="t('components.uiButton-size-box.tip')"
+			>
 				<SliderBox
-				id="uiButton-size-slider"
-				ref="elSizeSlider"
-				v-model="form.size"
+					id="uiButton-size-slider"
+					ref="elSizeSlider"
+					v-model="form.size"
 					min="12"
 					max="52"
 					step="2"
@@ -376,12 +402,15 @@
 			<div class="text">
 				{{ t('components.uiButton-letterSpacing-box.label') || 'Letter Spacing' }}
 			</div>
-			<div class="flex-box" id="uiButton-letterSpacing-box"
-				v-tip="t('components.uiButton-letterSpacing-box.tip')">
+			<div
+				class="flex-box"
+				id="uiButton-letterSpacing-box"
+				v-tip="t('components.uiButton-letterSpacing-box.tip')"
+			>
 				<SliderBox
-				id="uiButton-letterSpacing-slider"
-				ref="elLetterSpacingSlider"
-				v-model="form.letterSpacing"
+					id="uiButton-letterSpacing-slider"
+					ref="elLetterSpacingSlider"
+					v-model="form.letterSpacing"
 					min="0"
 					max="20"
 					step="1"
@@ -400,12 +429,15 @@
 			<div class="text">
 				{{ t('components.uiButton-textPadding-box.label') || 'Padding' }}
 			</div>
-			<div class="flex-box" id="uiButton-textPadding-box"
-				v-tip="t('components.uiButton-textPadding-box.tip')">
+			<div
+				class="flex-box"
+				id="uiButton-textPadding-box"
+				v-tip="t('components.uiButton-textPadding-box.tip')"
+			>
 				<SliderBox
-				id="uiButton-textPadding-slider"
-				ref="elTextPaddingSlider"
-				v-model="form.textPadding"
+					id="uiButton-textPadding-slider"
+					ref="elTextPaddingSlider"
+					v-model="form.textPadding"
 					min="0"
 					max="40"
 					step="2"
@@ -422,10 +454,14 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiButton-font.label') || 'Font' }}</div>
-			<TextBox id="uiButton-font"
-			:placeholder="t('components.uiButton-font.placeholder')"
+			<TextBox
+				id="uiButton-font"
+				:placeholder="t('components.uiButton-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiButton-font')"
-				v-tip="t('components.uiButton-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
+				v-tip="t('components.uiButton-font.tip')"
+				v-model="form.font"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				id="uiButton-typeface"
@@ -575,7 +611,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIButtonPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -797,8 +833,7 @@ onMounted(() => {
 		'uiButton-hoverSound',
 		'uiButton-clickSound'
 	]);
-	const sliders =
-		registryElements(inspectorEls, [
+	const sliders = registryElements(inspectorEls, [
 		'uiButton-imagePadding-slider',
 		'uiButton-imageOpacity-slider',
 		'uiButton-size-slider',

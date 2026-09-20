@@ -74,7 +74,7 @@ import { radians } from '@app/utils/math';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneActor-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('sceneActor-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -95,7 +95,7 @@ import { radians } from '@app/utils/math';
 
 	SceneActor.write = function (this: typeof SceneActor, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneActor-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('sceneActor-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();

@@ -320,9 +320,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				}
 			});
 		} else {
-			const element = itemElement as unknown as
-				| (YamiElement & { file: { type?: string } })
-				| null;
+			const element = itemElement as (YamiElement & { file: { type?: string } }) | null;
 			if (element !== null && hasClass(element, 'selected')) {
 				const { selections } = Selector ?? {};
 				const { file } = element;

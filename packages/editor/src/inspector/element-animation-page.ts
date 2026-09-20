@@ -67,7 +67,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiAnimation-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiAnimation-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

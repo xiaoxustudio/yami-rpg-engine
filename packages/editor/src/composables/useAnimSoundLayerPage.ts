@@ -46,7 +46,7 @@ AnimSoundLayer.open = function (this: typeof AnimSoundLayer, layer: AnimSoundLay
 		this.motion = Animation.motion;
 
 		(
-			composableEls.get('animSoundLayer-vue-mount') as unknown as HTMLElement & {
+			composableEls.get('animSoundLayer-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();

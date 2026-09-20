@@ -353,7 +353,7 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEvent) {
 	switch (event.button) {
 		case 2: {
-			const element = event.target as unknown as YamiElement & { dataValue?: string };
+			const element = event.target as YamiElement & { dataValue?: string };
 			const index = element.dataValue as unknown as number;
 			const indexedColor = Data.config.indexedColors[index];
 			const get = (key: string) => t('menuIndexedColor.' + key);
@@ -408,9 +408,9 @@ Color.pointermove = function (this: typeof Color, event: PointerEvent) {
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'palette':
-				return this.palettePointerdown(event as unknown as ColorDrag);
+				return this.palettePointerdown(event as ColorDrag);
 			case 'pillar':
-				return this.pillarPointerdown(event as unknown as ColorDrag);
+				return this.pillarPointerdown(event as ColorDrag);
 		}
 	}
 }.bind(Color);

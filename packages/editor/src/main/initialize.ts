@@ -89,7 +89,7 @@ Editor.initialize = async function (this: typeof Editor) {
 
 		clusterRef = await import('@app/tools/window-cluster');
 		await clusterRef.clusterReady;
-		primeWindows(clusterRef as unknown as Record<string, unknown>);
+		primeWindows(clusterRef as Record<string, unknown>);
 		const cluster = clusterRef;
 		const { Layout } = cluster;
 		if (this.config) this.checkForEditorUpdates!();
@@ -114,16 +114,16 @@ Editor.initialize = async function (this: typeof Editor) {
 				initEditors(cluster);
 				initTools(cluster);
 
-				registerTool('ArrayList', cluster.ArrayList as unknown as ToolInstance);
-				registerTool('Color', cluster.Color as unknown as ToolInstance);
-				registerTool('ImageClip', cluster.ImageClip as unknown as ToolInstance);
-				registerTool('Rename', cluster.Rename as unknown as ToolInstance);
-				registerTool('SetKey', cluster.SetKey as unknown as ToolInstance);
-				registerTool('SetQuantity', cluster.SetQuantity as unknown as ToolInstance);
-				registerTool('Zoom', cluster.Zoom as unknown as ToolInstance);
-				registerTool('PresetObject', cluster.PresetObject as unknown as ToolInstance);
-				registerTool('PresetElement', cluster.PresetElement as unknown as ToolInstance);
-				registerTool('Selection', cluster.Selection as unknown as ToolInstance);
+				registerTool('ArrayList', cluster.ArrayList as ToolInstance);
+				registerTool('Color', cluster.Color as ToolInstance);
+				registerTool('ImageClip', cluster.ImageClip as ToolInstance);
+				registerTool('Rename', cluster.Rename as ToolInstance);
+				registerTool('SetKey', cluster.SetKey as ToolInstance);
+				registerTool('SetQuantity', cluster.SetQuantity as ToolInstance);
+				registerTool('Zoom', cluster.Zoom as ToolInstance);
+				registerTool('PresetObject', cluster.PresetObject as ToolInstance);
+				registerTool('PresetElement', cluster.PresetElement as ToolInstance);
+				registerTool('Selection', cluster.Selection as ToolInstance);
 
 				EventBus.emit('editor_loaded');
 			})

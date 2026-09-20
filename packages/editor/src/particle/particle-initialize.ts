@@ -14,24 +14,24 @@ import { roundTo } from '@app/utils/math';
 
 Particle.initialize = function () {
 	this.page = particleEls.get('particle') as YamiElement;
-	this.head = particleEls.get('particle-head') as unknown as YamiElement & {
+	this.head = particleEls.get('particle-head') as YamiElement & {
 		width: number;
 	};
 	this.body = hide(particleEls.get('particle-body') as YamiElement);
 	this.info = particleEls.get('particle-info') as YamiElement;
-	this.screen = particleEls.get('particle-screen') as unknown as YamiElement & {
+	this.screen = particleEls.get('particle-screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};
 	const oldMarquee = this.marquee;
-	this.marquee = particleEls.get('particle-marquee') as unknown as YamiElement & {
+	this.marquee = particleEls.get('particle-marquee') as YamiElement & {
 		pointerevent: unknown;
 	};
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	const oldList = this.list;
-	this.list = particleEls.get('particle-list') as unknown as never;
+	this.list = particleEls.get('particle-list') as never;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}

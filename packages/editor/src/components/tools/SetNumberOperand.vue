@@ -8,12 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setNumber-operation.label') }}</div>
-			<SelectBox id="setNumber-operation"
+			<SelectBox
+				id="setNumber-operation"
 				v-tip="t('components.setNumber-operation.tip')"
-				:ref="fieldRef('setNumber-operation')" v-focus />
-			<SelectBox id="setNumber-operand-operation"
+				:ref="fieldRef('setNumber-operation')"
+				v-focus
+			/>
+			<SelectBox
+				id="setNumber-operand-operation"
 				v-tip="t('components.setNumber-operand-operation.tip')"
-				:ref="fieldRef('setNumber-operand-operation')" v-focus :model-value="form.operation" />
+				:ref="fieldRef('setNumber-operand-operation')"
+				v-focus
+				:model-value="form.operation"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-type.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-type"
@@ -33,17 +40,26 @@
 				:model-value="form.constantValue"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-method.label') }}</div>
-			<SelectBox id="setNumber-operand-math-method"
+			<SelectBox
+				id="setNumber-operand-math-method"
 				v-tip="t('components.setNumber-operand-math-method.tip')"
-				:ref="fieldRef('setNumber-operand-math-method')" :model-value="form.mathMethod" />
+				:ref="fieldRef('setNumber-operand-math-method')"
+				:model-value="form.mathMethod"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-string-method.label') }}</div>
-			<SelectBox id="setNumber-operand-string-method"
+			<SelectBox
+				id="setNumber-operand-string-method"
 				v-tip="t('components.setNumber-operand-string-method.tip')"
-				:ref="fieldRef('setNumber-operand-string-method')" :model-value="form.stringMethod" />
+				:ref="fieldRef('setNumber-operand-string-method')"
+				:model-value="form.stringMethod"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-object-property.label') }}</div>
-			<SelectBox id="setNumber-operand-object-property"
+			<SelectBox
+				id="setNumber-operand-object-property"
 				v-tip="t('components.setNumber-operand-object-property.tip')"
-				:ref="fieldRef('setNumber-operand-object-property')" :model-value="form.objectProperty" />
+				:ref="fieldRef('setNumber-operand-object-property')"
+				:model-value="form.objectProperty"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-element-property.label') }}</div>
 			<SelectBox
 				id="setNumber-operand-element-property"
@@ -230,13 +246,20 @@
 				:model-value="form.parameterKey"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-script.label') }}</div>
-			<TextBox id="setNumber-operand-script"
+			<TextBox
+				id="setNumber-operand-script"
 				v-tip="t('components.setNumber-operand-script.tip')"
-				:ref="fieldRef('setNumber-operand-script')" v-focus :model-value="form.script" />
+				:ref="fieldRef('setNumber-operand-script')"
+				v-focus
+				:model-value="form.script"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div>
-			<SelectBox id="setNumber-operand-other-data"
+			<SelectBox
+				id="setNumber-operand-other-data"
 				v-tip="t('components.setNumber-operand-other-data.tip')"
-				:ref="fieldRef('setNumber-operand-other-data')" :model-value="form.otherData" />
+				:ref="fieldRef('setNumber-operand-other-data')"
+				:model-value="form.otherData"
+			/>
 			<div class="text">{{ t('components.setNumber-operand-other-touchId.label') }}</div>
 			<NumberVar
 				id="setNumber-operand-other-touchId"
@@ -247,9 +270,12 @@
 				:model-value="form.otherTouchId"
 			/>
 			<div class="text">{{ t('components.setNumber-operand-other-teamId.label') }}</div>
-			<SelectBox id="setNumber-operand-other-teamId"
+			<SelectBox
+				id="setNumber-operand-other-teamId"
 				v-tip="t('components.setNumber-operand-other-teamId.tip')"
-				:ref="fieldRef('setNumber-operand-other-teamId')" :model-value="form.otherTeamId" />
+				:ref="fieldRef('setNumber-operand-other-teamId')"
+				:model-value="form.otherTeamId"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -320,8 +346,8 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
+		const control = composableEls.get(id) as unknown as unknown as
+			| (HTMLElement & { write?: (value: unknown) => void })
 			| null;
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
@@ -332,8 +358,8 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 const getForm = (): NumberOperandForm => {
 	const data = { ...form } as NumberOperandForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { read?: () => unknown })
+		const control = composableEls.get(id) as unknown as unknown as
+			| (HTMLElement & { read?: () => unknown })
 			| null;
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
@@ -442,15 +468,31 @@ onMounted(() => {
 		{ name: 'Mod', value: 'mod' }
 	]);
 
-	useLocalizedOptions('setNumber-operand-operation', ['add', 'sub', 'mul', 'div', 'mod', 'add()', 'sub()', 'mul()', 'div()', 'mod()'], (items) =>
-		fieldEls.get('setNumber-operand-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-operation',
+		['add', 'sub', 'mul', 'div', 'mod', 'add()', 'sub()', 'mul()', 'div()', 'mod()'],
+		(items) => fieldEls.get('setNumber-operand-operation')?.loadItems?.(items)
 	);
 
-	useLocalizedOptions('setNumber-operand-type', ['constant', 'variable', 'math', 'string', 'object', 'element', 'list', 'parameter', 'script', 'other'], (items) =>
-		fieldEls.get('setNumber-operand-type')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-type',
+		[
+			'constant',
+			'variable',
+			'math',
+			'string',
+			'object',
+			'element',
+			'list',
+			'parameter',
+			'script',
+			'other'
+		],
+		(items) => fieldEls.get('setNumber-operand-type')?.loadItems?.(items)
 	);
 
-	fieldEls.get('setNumber-operand-type')
+	fieldEls
+		.get('setNumber-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -495,11 +537,29 @@ onMounted(() => {
 			{ case: 'other', targets: [fieldEls.get('setNumber-operand-other-data')?.root] }
 		]);
 
-	useLocalizedOptions('setNumber-operand-math-method', ['round', 'floor', 'ceil', 'sqrt', 'abs', 'cos', 'sin', 'tan', 'random', 'random-int', 'distance', 'distance-x', 'distance-y', 'relative-angle'], (items) =>
-		fieldEls.get('setNumber-operand-math-method')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-math-method',
+		[
+			'round',
+			'floor',
+			'ceil',
+			'sqrt',
+			'abs',
+			'cos',
+			'sin',
+			'tan',
+			'random',
+			'random-int',
+			'distance',
+			'distance-x',
+			'distance-y',
+			'relative-angle'
+		],
+		(items) => fieldEls.get('setNumber-operand-math-method')?.loadItems?.(items)
 	);
 
-	fieldEls.get('setNumber-operand-math-method')
+	fieldEls
+		.get('setNumber-operand-math-method')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -515,7 +575,10 @@ onMounted(() => {
 			},
 			{
 				case: 'random-int',
-				targets: [fieldEls.get('setNumber-operand-math-min')?.root, fieldEls.get('setNumber-operand-math-max')?.root]
+				targets: [
+					fieldEls.get('setNumber-operand-math-min')?.root,
+					fieldEls.get('setNumber-operand-math-max')?.root
+				]
 			},
 			{
 				case: ['distance', 'distance-x', 'distance-y', 'relative-angle'],
@@ -530,7 +593,8 @@ onMounted(() => {
 		fieldEls.get('setNumber-operand-string-method')?.loadItems?.(items)
 	);
 
-	fieldEls.get('setNumber-operand-string-method')
+	fieldEls
+		.get('setNumber-operand-string-method')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -546,11 +610,57 @@ onMounted(() => {
 			}
 		]);
 
-	useLocalizedOptions('setNumber-operand-object-property', ['actor-x', 'actor-y', 'actor-ui-x', 'actor-ui-y', 'actor-screen-x', 'actor-screen-y', 'actor-angle', 'actor-direction', 'actor-movement-speed', 'actor-collision-size', 'actor-collision-weight', 'actor-scaling-factor', 'actor-inventory-item-quantity', 'actor-inventory-equipment-quantity', 'actor-inventory-money', 'actor-inventory-used-space', 'actor-inventory-version', 'actor-skill-version', 'actor-state-version', 'actor-equipment-version', 'actor-shortcut-version', 'actor-animation-current-time', 'actor-animation-duration', 'actor-animation-progress', 'actor-cooldown-time', 'actor-cooldown-duration', 'actor-cooldown-progress', 'skill-cooldown-time', 'skill-cooldown-duration', 'skill-cooldown-progress', 'state-current-time', 'state-duration', 'state-progress', 'equipment-order', 'item-order', 'item-quantity', 'trigger-speed', 'trigger-angle', 'tilemap-width', 'tilemap-height', 'tilemap-tag', 'list-length'], (items) =>
-		fieldEls.get('setNumber-operand-object-property')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-object-property',
+		[
+			'actor-x',
+			'actor-y',
+			'actor-ui-x',
+			'actor-ui-y',
+			'actor-screen-x',
+			'actor-screen-y',
+			'actor-angle',
+			'actor-direction',
+			'actor-movement-speed',
+			'actor-collision-size',
+			'actor-collision-weight',
+			'actor-scaling-factor',
+			'actor-inventory-item-quantity',
+			'actor-inventory-equipment-quantity',
+			'actor-inventory-money',
+			'actor-inventory-used-space',
+			'actor-inventory-version',
+			'actor-skill-version',
+			'actor-state-version',
+			'actor-equipment-version',
+			'actor-shortcut-version',
+			'actor-animation-current-time',
+			'actor-animation-duration',
+			'actor-animation-progress',
+			'actor-cooldown-time',
+			'actor-cooldown-duration',
+			'actor-cooldown-progress',
+			'skill-cooldown-time',
+			'skill-cooldown-duration',
+			'skill-cooldown-progress',
+			'state-current-time',
+			'state-duration',
+			'state-progress',
+			'equipment-order',
+			'item-order',
+			'item-quantity',
+			'trigger-speed',
+			'trigger-angle',
+			'tilemap-width',
+			'tilemap-height',
+			'tilemap-tag',
+			'list-length'
+		],
+		(items) => fieldEls.get('setNumber-operand-object-property')?.loadItems?.(items)
 	);
 
-	fieldEls.get('setNumber-operand-object-property')
+	fieldEls
+		.get('setNumber-operand-object-property')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -638,15 +748,96 @@ onMounted(() => {
 			}
 		]);
 
-	useLocalizedOptions('setNumber-operand-element-property', ['element-x', 'element-y', 'element-width', 'element-height', 'element-children-count', 'element-index-of-selected-button', 'transform-anchorX', 'transform-anchorY', 'transform-x', 'transform-y', 'transform-width', 'transform-height', 'transform-x2', 'transform-y2', 'transform-width2', 'transform-height2', 'transform-rotation', 'transform-scaleX', 'transform-scaleY', 'transform-skewX', 'transform-skewY', 'transform-opacity', 'window-visibleGridColumns', 'window-visibleGridRows', 'text-textWidth', 'text-textHeight', 'textBox-number', 'dialogBox-printEndX', 'dialogBox-printEndY'], (items) =>
-		fieldEls.get('setNumber-operand-element-property')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-element-property',
+		[
+			'element-x',
+			'element-y',
+			'element-width',
+			'element-height',
+			'element-children-count',
+			'element-index-of-selected-button',
+			'transform-anchorX',
+			'transform-anchorY',
+			'transform-x',
+			'transform-y',
+			'transform-width',
+			'transform-height',
+			'transform-x2',
+			'transform-y2',
+			'transform-width2',
+			'transform-height2',
+			'transform-rotation',
+			'transform-scaleX',
+			'transform-scaleY',
+			'transform-skewX',
+			'transform-skewY',
+			'transform-opacity',
+			'window-visibleGridColumns',
+			'window-visibleGridRows',
+			'text-textWidth',
+			'text-textHeight',
+			'textBox-number',
+			'dialogBox-printEndX',
+			'dialogBox-printEndY'
+		],
+		(items) => fieldEls.get('setNumber-operand-element-property')?.loadItems?.(items)
 	);
 
-	useLocalizedOptions('setNumber-operand-other-data', ['trigger-button', 'trigger-wheel-y', 'trigger-gamepad-button', 'gamepad-left-stick-angle', 'gamepad-right-stick-angle', 'mouse-screen-x', 'mouse-screen-y', 'mouse-ui-x', 'mouse-ui-y', 'mouse-scene-x', 'mouse-scene-y', 'touch-screen-x', 'touch-screen-y', 'touch-ui-x', 'touch-ui-y', 'touch-scene-x', 'touch-scene-y', 'virtual-axis-x', 'virtual-axis-y', 'virtual-axis-angle', 'start-position-x', 'start-position-y', 'camera-x', 'camera-y', 'camera-zoom', 'raw-camera-zoom', 'screen-width', 'screen-height', 'scene-width', 'scene-height', 'scene-scale', 'ui-scale', 'play-time', 'elapsed-time', 'delta-time', 'raw-delta-time', 'timestamp', 'party-version', 'party-member-count', 'actor-count', 'latest-item-increment', 'latest-money-increment', 'loader-loaded-bytes', 'loader-total-bytes', 'loader-completion-progress'], (items) =>
-		fieldEls.get('setNumber-operand-other-data')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setNumber-operand-other-data',
+		[
+			'trigger-button',
+			'trigger-wheel-y',
+			'trigger-gamepad-button',
+			'gamepad-left-stick-angle',
+			'gamepad-right-stick-angle',
+			'mouse-screen-x',
+			'mouse-screen-y',
+			'mouse-ui-x',
+			'mouse-ui-y',
+			'mouse-scene-x',
+			'mouse-scene-y',
+			'touch-screen-x',
+			'touch-screen-y',
+			'touch-ui-x',
+			'touch-ui-y',
+			'touch-scene-x',
+			'touch-scene-y',
+			'virtual-axis-x',
+			'virtual-axis-y',
+			'virtual-axis-angle',
+			'start-position-x',
+			'start-position-y',
+			'camera-x',
+			'camera-y',
+			'camera-zoom',
+			'raw-camera-zoom',
+			'screen-width',
+			'screen-height',
+			'scene-width',
+			'scene-height',
+			'scene-scale',
+			'ui-scale',
+			'play-time',
+			'elapsed-time',
+			'delta-time',
+			'raw-delta-time',
+			'timestamp',
+			'party-version',
+			'party-member-count',
+			'actor-count',
+			'latest-item-increment',
+			'latest-money-increment',
+			'loader-loaded-bytes',
+			'loader-total-bytes',
+			'loader-completion-progress'
+		],
+		(items) => fieldEls.get('setNumber-operand-other-data')?.loadItems?.(items)
 	);
 
-	fieldEls.get('setNumber-operand-other-data')
+	fieldEls
+		.get('setNumber-operand-other-data')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -671,7 +862,7 @@ onMounted(() => {
 	});
 
 	on(frame.value?.root, 'closed', () => {
-		(fieldEls.get('setNumber-operation') as unknown as { root?: YamiElement } | null)?.root?.restore();
+		(fieldEls.get('setNumber-operation') as { root?: YamiElement } | null)?.root?.restore();
 	});
 });
 </script>
@@ -692,5 +883,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

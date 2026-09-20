@@ -845,4 +845,4 @@ PluginManager.parseMeta = (function IIFE() {
 			window.dispatchEvent(event);
 		}
 	};
-})() as unknown as ((...args: unknown[]) => void) | null;
+})() as ((...args: unknown[]) => void) | null;

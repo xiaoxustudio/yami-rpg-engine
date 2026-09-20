@@ -149,7 +149,7 @@ Selection.initialize = function (this: SelectionShape) {
 
 	for (const textbox of $('text-box')) {
 		if (!exclusions[textbox.id]) {
-			this.addEventListeners!(textbox.input! as unknown as EventListenerElement);
+			this.addEventListeners!(textbox.input! as EventListenerElement);
 		}
 	}
 
@@ -387,10 +387,10 @@ Selection.wrap = function (
 			string = prefix;
 			input.selectionEnd = input.selectionStart;
 		}
-		(input.parentNode as unknown as YamiElement).insert(string);
+		(input.parentNode as YamiElement).insert(string);
 		input.selectionStart = start;
 	} else {
-		(input.parentNode as unknown as YamiElement).insert(prefix);
+		(input.parentNode as YamiElement).insert(prefix);
 		input.selectionStart = start;
 	}
 };
@@ -878,7 +878,7 @@ Selection.localVariable = {
 		const key = textCaptureEls.get('localVariable-key');
 		if (!key) return;
 		TextSuggestion.listen!(
-			key as unknown as TextSuggestionTarget,
+			key as TextSuggestionTarget,
 			VariableGetter.createVarListGenerator!(this as never)
 		);
 	},

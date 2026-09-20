@@ -40,7 +40,7 @@
 		<ParamList
 			ref="elAttributes"
 			id="fileEquipment-attributes"
-				v-tip="t('components.fileEquipment-attributes.tip')"
+			v-tip="t('components.fileEquipment-attributes.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			group="equipment"
@@ -52,7 +52,7 @@
 		<ParamList
 			ref="elEvents"
 			id="fileEquipment-events"
-				v-tip="t('components.fileEquipment-events.tip')"
+			v-tip="t('components.fileEquipment-events.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			filter="equipment"
@@ -66,7 +66,7 @@
 		<ParamList
 			ref="elScripts"
 			id="fileEquipment-scripts"
-				v-tip="t('components.fileEquipment-scripts.tip')"
+			v-tip="t('components.fileEquipment-scripts.tip')"
 			@change="onListChange"
 			class="inspector-list"
 			flexible
@@ -96,7 +96,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useFileEquipmentPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onListChange = () => {

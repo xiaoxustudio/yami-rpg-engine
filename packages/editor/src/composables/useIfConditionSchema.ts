@@ -431,7 +431,7 @@ const open = (
 		variable: { type: 'local', key: '' },
 		operation: 'equal',
 		operand: { type: 'constant', value: 0 }
-	} as unknown as IfConditionData
+	} as IfConditionData
 ): void => {
 	composableEls
 		.get('if-condition-actor-shortcutKey')
@@ -553,7 +553,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		composableEls.get('if-condition') as unknown as unknown as
+		composableEls.get('if-condition') as unknown as
 			| (HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void })
 			| null
 	)?.setForm;
@@ -605,7 +605,7 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		composableEls.get('if-condition') as unknown as unknown as
+		composableEls.get('if-condition') as unknown as
 			| (HTMLElement & { getForm?: () => IfConditionForm })
 			| null
 	)?.getForm;

@@ -328,7 +328,7 @@ const createEditor = async (): Promise<void> => {
 				horizontalScrollbarSize: 12,
 				verticalScrollbarSize: 12
 			}
-		} as unknown as Parameters<typeof monaco.editor.create>[1]
+		} as Parameters<typeof monaco.editor.create>[1]
 	);
 	model = editor!.getModel() as unknown as ScriptModel;
 
@@ -346,7 +346,7 @@ const createEditor = async (): Promise<void> => {
 		}
 		const monaco = await getMonaco();
 		monaco.editor.setModelLanguage(
-			model! as unknown as Parameters<typeof monaco.editor.setModelLanguage>[0],
+			model! as Parameters<typeof monaco.editor.setModelLanguage>[0],
 			languageId
 		);
 	});

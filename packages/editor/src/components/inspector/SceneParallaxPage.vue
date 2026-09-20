@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
 			<div class="text">{{ t('components.sceneParallax-name.label') || 'Name' }}</div>
-			<TextBox id="sceneParallax-name"
+			<TextBox
+				id="sceneParallax-name"
 				:ref="registryRef(inspectorEls, 'sceneParallax-name')"
-				v-tip="t('components.sceneParallax-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneParallax-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.sceneParallax-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="sceneParallax-image"
@@ -250,8 +254,11 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-0-box"
-				v-tip="t('components.sceneParallax-tint-0-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParallax-tint-0-box"
+				v-tip="t('components.sceneParallax-tint-0-box.tip')"
+			>
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
 					ref="elTint0Slider"
@@ -273,8 +280,11 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-1-box"
-				v-tip="t('components.sceneParallax-tint-1-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParallax-tint-1-box"
+				v-tip="t('components.sceneParallax-tint-1-box.tip')"
+			>
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
 					ref="elTint1Slider"
@@ -296,8 +306,11 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-2-box"
-				v-tip="t('components.sceneParallax-tint-2-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParallax-tint-2-box"
+				v-tip="t('components.sceneParallax-tint-2-box.tip')"
+			>
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
 					ref="elTint2Slider"
@@ -319,8 +332,11 @@
 			<div class="text">
 				{{ t('components.sceneParallax-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="sceneParallax-tint-3-box"
-				v-tip="t('components.sceneParallax-tint-3-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneParallax-tint-3-box"
+				v-tip="t('components.sceneParallax-tint-3-box.tip')"
+			>
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
 					ref="elTint3Slider"
@@ -347,7 +363,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParallax-conditions"
-				v-tip="t('components.sceneParallax-conditions.tip')"
+			v-tip="t('components.sceneParallax-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -357,7 +373,7 @@
 		<DetailSummary>{{ t('components.sceneParallax-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-events"
-				v-tip="t('components.sceneParallax-events.tip')"
+			v-tip="t('components.sceneParallax-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="parallax"
@@ -370,16 +386,13 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneParallax-scripts"
-				v-tip="t('components.sceneParallax-scripts.tip')"
+			v-tip="t('components.sceneParallax-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<ParameterPane
-		id="sceneParallax-parameter-pane"
-		ref="elParameterPane"
-	></ParameterPane>
+	<ParameterPane id="sceneParallax-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -411,7 +424,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneParallaxPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const tint = computed(() => form.tint as number[]);
@@ -489,9 +502,7 @@ onMounted(() => {
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
-	elScripts.value?.bind(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
+	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	const elements = registryElements(inspectorEls, [
@@ -529,8 +540,11 @@ onMounted(() => {
 	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	registryElements(inspectorEls, ['sceneParallax-conditions', 'sceneParallax-events', 'sceneParallax-scripts'])
-		.forEach((el) => el.addEventListener('change', Scene.listChange));
+	registryElements(inspectorEls, [
+		'sceneParallax-conditions',
+		'sceneParallax-events',
+		'sceneParallax-scripts'
+	]).forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
 });
@@ -552,4 +566,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

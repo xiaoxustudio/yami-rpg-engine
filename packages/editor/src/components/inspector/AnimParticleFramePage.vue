@@ -10,7 +10,7 @@
 			<div id="animParticleFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-x"
-				v-tip="t('components.animParticleFrame-x.tip')"
+					v-tip="t('components.animParticleFrame-x.tip')"
 					ref="elX"
 					v-model="form.x"
 					min="-10000"
@@ -21,7 +21,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-y"
-				v-tip="t('components.animParticleFrame-y.tip')"
+					v-tip="t('components.animParticleFrame-y.tip')"
 					ref="elY"
 					v-model="form.y"
 					min="-10000"
@@ -37,7 +37,7 @@
 			<div id="animParticleFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-rotation"
-				v-tip="t('components.animParticleFrame-rotation.tip')"
+					v-tip="t('components.animParticleFrame-rotation.tip')"
 					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
@@ -53,7 +53,7 @@
 			<div id="animParticleFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-scaleX"
-				v-tip="t('components.animParticleFrame-scaleX.tip')"
+					v-tip="t('components.animParticleFrame-scaleX.tip')"
 					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
@@ -64,7 +64,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-scaleY"
-				v-tip="t('components.animParticleFrame-scaleY.tip')"
+					v-tip="t('components.animParticleFrame-scaleY.tip')"
 					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
@@ -80,7 +80,7 @@
 			<div id="animParticleFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animParticleFrame-opacity"
-				v-tip="t('components.animParticleFrame-opacity.tip')"
+					v-tip="t('components.animParticleFrame-opacity.tip')"
 					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
@@ -138,7 +138,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimParticleFramePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -171,11 +171,16 @@ onMounted(() => {
 		elScale.value?.root,
 		elSpeed.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, editor, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
-		data.type = 'inspector-frame-change';
-		data.motion = editor.motion;
-		data.direction = Animation.direction;
-	});
+	bindInput(
+		elements,
+		editor,
+		Animation as unknown as { history: unknown },
+		(data: Record<string, unknown>) => {
+			data.type = 'inspector-frame-change';
+			data.motion = editor.motion;
+			data.direction = Animation.direction;
+		}
+	);
 
 	sync();
 });

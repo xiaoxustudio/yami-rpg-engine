@@ -86,7 +86,7 @@ uiElClasses.Window = class WindowElement extends uiElClasses.Element! {
 			this._layout = value;
 			switch (value) {
 				case 'normal':
-					delete (this as unknown as { resize?: unknown }).resize;
+					delete (this as { resize?: unknown }).resize;
 					break;
 				case 'horizontal-grid':
 					// oxlint-disable-next-line unbound-method

@@ -41,23 +41,23 @@ PluginManager.listKeydown = function (this: TreeListElement, event: KeyboardEven
 				break;
 		}
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.listSelect = function (
 	this: typeof PluginManager,
 	event: Event & { value?: PluginItemShape }
 ) {
 	void PluginManager.load!(event.value!);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 // 列表 - 取消选择事件
 PluginManager.listUnselect = function (this: typeof PluginManager, _event: Event) {
 	PluginManager.unload!();
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.listChange = function (this: typeof PluginManager, _event: Event) {
 	PluginManager.changed = true;
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.listPopup = function (
 	this: typeof PluginManager,
@@ -124,14 +124,14 @@ PluginManager.listPopup = function (
 			}
 		]
 	);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.listOpen = function (
 	this: typeof PluginManager,
 	event: Event & { value?: PluginItemShape }
 ) {
 	(PluginManager.list as TreeListElement).edit(event.value);
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 // 列表 - 编辑
 PluginManager.list_edit = function (this: TreeListElement, item: PluginItemShape) {

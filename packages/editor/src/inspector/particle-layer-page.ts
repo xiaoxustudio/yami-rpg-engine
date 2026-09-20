@@ -129,7 +129,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 			this.easingDefaultId = Data.easings[0].id;
 
 			(
-				inspectorEls.get('particleLayer-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('particleLayer-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -170,7 +170,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete area.height;
 					delete area.radius;
 					const form = (
-						inspectorEls.get('particleLayer-vue-mount') as unknown as unknown as
+						inspectorEls.get('particleLayer-vue-mount') as unknown as
 							| (HTMLElement & { form?: ParticleForm })
 							| null
 					)?.form;
@@ -288,7 +288,7 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 					delete color.endMax;
 					delete color.tint;
 					const form = (
-						inspectorEls.get('particleLayer-vue-mount') as unknown as unknown as
+						inspectorEls.get('particleLayer-vue-mount') as unknown as
 							| (HTMLElement & { form?: ParticleForm })
 							| null
 					)?.form;

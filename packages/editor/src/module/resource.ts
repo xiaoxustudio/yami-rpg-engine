@@ -255,7 +255,7 @@ export const Resources = new (class {
 			headers: {
 				type: 'application/json'
 			},
-			...({ cache: 'no-cache' } as unknown as Record<string, unknown>)
+			...({ cache: 'no-cache' } as Record<string, unknown>)
 		}).catch((error) => {
 			console.error('downloadNetMeta error:', error?.message || error);
 			return { data: [] };

@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneTilemap-general-grid">
 			<div class="text">{{ t('components.sceneTilemap-name.label') || 'Name' }}</div>
-			<TextBox id="sceneTilemap-name"
+			<TextBox
+				id="sceneTilemap-name"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-name')"
-				v-tip="t('components.sceneTilemap-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneTilemap-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
 				ref="elLayer"
@@ -184,7 +188,7 @@
 		<ParamList
 			ref="elConditions"
 			id="sceneTilemap-conditions"
-				v-tip="t('components.sceneTilemap-conditions.tip')"
+			v-tip="t('components.sceneTilemap-conditions.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -194,7 +198,7 @@
 		<ParamList
 			ref="elEvents"
 			id="sceneTilemap-events"
-				v-tip="t('components.sceneTilemap-events.tip')"
+			v-tip="t('components.sceneTilemap-events.tip')"
 			class="inspector-list"
 			filter="tilemap"
 			flexible
@@ -205,7 +209,7 @@
 		<ParamList
 			ref="elScripts"
 			id="sceneTilemap-scripts"
-				v-tip="t('components.sceneTilemap-scripts.tip')"
+			v-tip="t('components.sceneTilemap-scripts.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -241,7 +245,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneTilemapPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -276,15 +280,27 @@ onMounted(() => {
 	}
 
 	elLayer.value?.loadItems([
-		{ name: t('components.sceneTilemap-layer.options.background.name'), tip: t('components.sceneTilemap-layer.options.background.tip'), value: 'background'  },
-		{ name: t('components.sceneTilemap-layer.options.foreground.name'), tip: t('components.sceneTilemap-layer.options.foreground.tip'), value: 'foreground'  },
-		{ name: t('components.sceneTilemap-layer.options.object.name'), tip: t('components.sceneTilemap-layer.options.object.tip'), value: 'object'  }
+		{
+			name: t('components.sceneTilemap-layer.options.background.name'),
+			tip: t('components.sceneTilemap-layer.options.background.tip'),
+			value: 'background'
+		},
+		{
+			name: t('components.sceneTilemap-layer.options.foreground.name'),
+			tip: t('components.sceneTilemap-layer.options.foreground.tip'),
+			value: 'foreground'
+		},
+		{
+			name: t('components.sceneTilemap-layer.options.object.name'),
+			tip: t('components.sceneTilemap-layer.options.object.tip'),
+			value: 'object'
+		}
 	]);
 
 	const refreshLocalizedItems = () => {
 		try {
 			const readOption = (id: string, key: string) => {
-				const legacyComponents = local.components as unknown as Record<
+				const legacyComponents = local.components as Record<
 					string,
 					{ options?: Record<string, { name?: string }> }
 				>;
@@ -334,9 +350,7 @@ onMounted(() => {
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
-	elScripts.value?.bind(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
+	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	const elements = registryElements(inspectorEls, [
@@ -357,8 +371,11 @@ onMounted(() => {
 	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	elLayer.value?.on('input', editor.layerInput!);
-	registryElements(inspectorEls, ['sceneTilemap-conditions', 'sceneTilemap-events', 'sceneTilemap-scripts'])
-		.forEach((el) => el.addEventListener('change', Scene.listChange));
+	registryElements(inspectorEls, [
+		'sceneTilemap-conditions',
+		'sceneTilemap-events',
+		'sceneTilemap-scripts'
+	]).forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	watch(
 		() => local.components,

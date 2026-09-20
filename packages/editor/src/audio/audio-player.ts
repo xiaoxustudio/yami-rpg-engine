@@ -12,7 +12,7 @@ export class AudioPlayer {
 
 	constructor() {
 		const context = AudioManager.context!;
-		this.audio = new Audio() as unknown as HTMLAudioElement & { path: string };
+		this.audio = new Audio() as HTMLAudioElement & { path: string };
 		this.source = context.createMediaElementSource(this.audio);
 		this.panner = context.createStereoPanner();
 		this.reverb = null;

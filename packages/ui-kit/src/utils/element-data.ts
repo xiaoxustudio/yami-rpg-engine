@@ -40,7 +40,7 @@ export function getElementData(el: HTMLElement): Record<string, unknown> {
  * （WeakMap 键必须是非空对象），因此**调用前必须自行判空**——这一点在迁移期反复踩过（见 remaining-work）。
  */
 export function elementDataOf<T>(el: unknown): T {
-	return getElementData(el as HTMLElement) as unknown as T;
+	return getElementData(el as HTMLElement) as T;
 }
 
 /**

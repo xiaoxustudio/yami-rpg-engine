@@ -22,16 +22,16 @@ export function getLazyWindow<T extends object>(name: string, loader: () => Prom
 				void ensure(name, loader as () => Promise<unknown>);
 				return undefined;
 			}
-			return (instance as unknown as Record<string, unknown>)[prop as string];
+			return (instance as Record<string, unknown>)[prop as string];
 		},
 		set(_target: object, prop: string | symbol, value: unknown) {
 			const instance = windows.get(name);
 			if (instance !== undefined) {
-				(instance as unknown as Record<string, unknown>)[prop as string] = value;
+				(instance as Record<string, unknown>)[prop as string] = value;
 				return true;
 			}
 			void ensure(name, loader as () => Promise<unknown>).then((inst) => {
-				(inst as unknown as Record<string, unknown>)[prop as string] = value;
+				(inst as Record<string, unknown>)[prop as string] = value;
 			});
 			return true;
 		},
@@ -44,7 +44,7 @@ export function getLazyWindow<T extends object>(name: string, loader: () => Prom
 		getOwnPropertyDescriptor() {
 			return { configurable: true, enumerable: true };
 		}
-	}) as unknown as T;
+	}) as T;
 	return proxy;
 }
 

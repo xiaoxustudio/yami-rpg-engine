@@ -182,34 +182,26 @@ export const Animation: AnimationShape = {
 	head: animationEls.get('animation-head') as YamiElement,
 	body: animationEls.get('animation-body') as YamiElement,
 	screen: animationEls.get('animation-screen') as YamiElement,
-	marquee:
-		(animationEls.get('animation-marquee') as YamiElement) ||
-		({} as unknown as AnimationElement),
+	marquee: (animationEls.get('animation-marquee') as YamiElement) || ({} as AnimationElement),
 	dirList: animationEls.get('animation-dirList') as YamiElement,
 	searcher: animationEls.get('animation-searcher') as YamiElement,
-	list:
-		(animationEls.get('animation-list') as YamiElement) || ({} as unknown as AnimationElement),
+	list: (animationEls.get('animation-list') as YamiElement) || ({} as AnimationElement),
 	layerList:
-		(animationEls.get('animation-layer-list') as YamiElement) ||
-		({} as unknown as AnimationElement),
-	timeline:
-		(animationEls.get('animation-timeline') as YamiElement) ||
-		({} as unknown as AnimationElement),
+		(animationEls.get('animation-layer-list') as YamiElement) || ({} as AnimationElement),
+	timeline: (animationEls.get('animation-timeline') as YamiElement) || ({} as AnimationElement),
 	toolbar: animationEls.get('animation-timeline-toolbar') as YamiElement,
 	outerRuler: animationEls.get('animation-timeline-ruler-outer') as YamiElement,
 	innerRuler: animationEls.get('animation-timeline-ruler-inner') as YamiElement,
 	outerTimelineList:
 		(animationEls.get('animation-timeline-list-outer') as YamiElement) ||
-		({} as unknown as AnimationElement),
+		({} as AnimationElement),
 	innerTimelineList:
 		(animationEls.get('animation-timeline-list-inner') as YamiElement) ||
-		({} as unknown as AnimationElement),
+		({} as AnimationElement),
 	timelineCursor:
-		(animationEls.get('animation-timeline-cursor') as YamiElement) ||
-		({} as unknown as AnimationElement),
+		(animationEls.get('animation-timeline-cursor') as YamiElement) || ({} as AnimationElement),
 	timelineMarquee:
-		(animationEls.get('animation-timeline-marquee') as YamiElement) ||
-		({} as unknown as AnimationElement),
+		(animationEls.get('animation-timeline-marquee') as YamiElement) || ({} as AnimationElement),
 	timelineMarqueeShift: animationEls.get('animation-timeline-marquee-shift') as YamiElement,
 	outerPointerArea: animationEls.get('animation-timeline-pointer-area-outer') as YamiElement,
 	innerPointerArea: animationEls.get('animation-timeline-pointer-area-inner') as YamiElement,

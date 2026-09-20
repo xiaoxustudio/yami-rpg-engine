@@ -32,7 +32,7 @@ export function useInspectorInput() {
 		callback?: (data: Record<string, unknown>) => void
 	) {
 		const blur = inputBlur(editor, owner, callback);
-		(elements as unknown as HTMLElement[]).forEach((el) => {
+		(elements as HTMLElement[]).forEach((el) => {
 			el.addEventListener('focus', inputFocus);
 			el.addEventListener('blur', blur);
 		});
@@ -42,7 +42,7 @@ export function useInspectorInput() {
 		if (!sliderFocus || !sliderBlur) {
 			return;
 		}
-		(sliders as unknown as HTMLElement[]).forEach((el) => {
+		(sliders as HTMLElement[]).forEach((el) => {
 			el.addEventListener('focus', sliderFocus);
 			el.addEventListener('blur', sliderBlur);
 		});

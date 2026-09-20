@@ -290,7 +290,7 @@ Animation.layerListScroll = function (this: typeof Animation, _event: Event) {
 	const { scrollTop } = this;
 	// P4b：改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
 	getElementData(this as unknown as HTMLElement).lastScrollTop = scrollTop;
-	if (getElementData(outerTimelineList as unknown as HTMLElement).lastScrollTop !== scrollTop) {
+	if (getElementData(outerTimelineList as HTMLElement).lastScrollTop !== scrollTop) {
 		outerTimelineList.scrollTop = scrollTop;
 	}
 };
@@ -604,7 +604,7 @@ Animation.outerTimelineListScroll = function (this: typeof Animation, _event: Ev
 	if (selfData.lastScrollTop !== scrollTop) {
 		selfData.lastScrollTop = scrollTop;
 		const { layerList } = Animation;
-		if (getElementData(layerList as unknown as HTMLElement).lastScrollTop !== scrollTop) {
+		if (getElementData(layerList as HTMLElement).lastScrollTop !== scrollTop) {
 			layerList.scrollTop = scrollTop;
 		}
 	}

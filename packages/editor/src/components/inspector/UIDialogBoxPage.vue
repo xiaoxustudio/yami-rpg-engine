@@ -28,8 +28,11 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.uiDialogBox-size-box.label') || 'Size' }}</div>
-			<div class="flex-box" id="uiDialogBox-size-box"
-				v-tip="t('components.uiDialogBox-size-box.tip')">
+			<div
+				class="flex-box"
+				id="uiDialogBox-size-box"
+				v-tip="t('components.uiDialogBox-size-box.tip')"
+			>
 				<SliderBox
 					ref="elSizeSlider"
 					id="uiDialogBox-size-slider"
@@ -51,8 +54,11 @@
 			<div class="text">
 				{{ t('components.uiDialogBox-lineSpacing-box.label') || 'Line Spacing' }}
 			</div>
-			<div class="flex-box" id="uiDialogBox-lineSpacing-box"
-				v-tip="t('components.uiDialogBox-lineSpacing-box.tip')">
+			<div
+				class="flex-box"
+				id="uiDialogBox-lineSpacing-box"
+				v-tip="t('components.uiDialogBox-lineSpacing-box.tip')"
+			>
 				<SliderBox
 					ref="elLineSpacingSlider"
 					id="uiDialogBox-lineSpacing-slider"
@@ -74,8 +80,11 @@
 			<div class="text">
 				{{ t('components.uiDialogBox-letterSpacing-box.label') || 'Letter Spacing' }}
 			</div>
-			<div class="flex-box" id="uiDialogBox-letterSpacing-box"
-				v-tip="t('components.uiDialogBox-letterSpacing-box.tip')">
+			<div
+				class="flex-box"
+				id="uiDialogBox-letterSpacing-box"
+				v-tip="t('components.uiDialogBox-letterSpacing-box.tip')"
+			>
 				<SliderBox
 					ref="elLetterSpacingSlider"
 					id="uiDialogBox-letterSpacing-slider"
@@ -95,14 +104,22 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.uiDialogBox-color.label') || 'Color' }}</div>
-			<ColorBox id="uiDialogBox-color"
+			<ColorBox
+				id="uiDialogBox-color"
 				:ref="registryRef(inspectorEls, 'uiDialogBox-color')"
-				v-tip="t('components.uiDialogBox-color.tip')" v-model="form.color" @input="onParamInput"></ColorBox>
+				v-tip="t('components.uiDialogBox-color.tip')"
+				v-model="form.color"
+				@input="onParamInput"
+			></ColorBox>
 			<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div>
-			<TextBox id="uiDialogBox-font"
-			:placeholder="t('components.uiDialogBox-font.placeholder')"
+			<TextBox
+				id="uiDialogBox-font"
+				:placeholder="t('components.uiDialogBox-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiDialogBox-font')"
-				v-tip="t('components.uiDialogBox-font.tip')" v-model="form.font" @input="onParamInput"></TextBox>
+				v-tip="t('components.uiDialogBox-font.tip')"
+				v-model="form.font"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
 				ref="elTypeface"
@@ -204,7 +221,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIDialogBoxPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -256,21 +273,65 @@ onMounted(() => {
 	if (!uiDialogBox) return;
 
 	elTypeface.value?.loadItems([
-		{ name: t('components.uiDialogBox-typeface.options.regular.name'), tip: t('components.uiDialogBox-typeface.options.regular.tip'), value: 'regular'  },
-		{ name: t('components.uiDialogBox-typeface.options.bold.name'), tip: t('components.uiDialogBox-typeface.options.bold.tip'), value: 'bold'  },
-		{ name: t('components.uiDialogBox-typeface.options.italic.name'), tip: t('components.uiDialogBox-typeface.options.italic.tip'), value: 'italic'  },
-		{ name: t('components.uiDialogBox-typeface.options.bold-italic.name'), tip: t('components.uiDialogBox-typeface.options.bold-italic.tip'), value: 'bold-italic'  }
+		{
+			name: t('components.uiDialogBox-typeface.options.regular.name'),
+			tip: t('components.uiDialogBox-typeface.options.regular.tip'),
+			value: 'regular'
+		},
+		{
+			name: t('components.uiDialogBox-typeface.options.bold.name'),
+			tip: t('components.uiDialogBox-typeface.options.bold.tip'),
+			value: 'bold'
+		},
+		{
+			name: t('components.uiDialogBox-typeface.options.italic.name'),
+			tip: t('components.uiDialogBox-typeface.options.italic.tip'),
+			value: 'italic'
+		},
+		{
+			name: t('components.uiDialogBox-typeface.options.bold-italic.name'),
+			tip: t('components.uiDialogBox-typeface.options.bold-italic.tip'),
+			value: 'bold-italic'
+		}
 	]);
 	elEffectType.value?.loadItems([
-		{ name: t('components.uiDialogBox-effect-type.options.none.name'), tip: t('components.uiDialogBox-effect-type.options.none.tip'), value: 'none'  },
-		{ name: t('components.uiDialogBox-effect-type.options.shadow.name'), tip: t('components.uiDialogBox-effect-type.options.shadow.tip'), value: 'shadow'  },
-		{ name: t('components.uiDialogBox-effect-type.options.stroke.name'), tip: t('components.uiDialogBox-effect-type.options.stroke.tip'), value: 'stroke'  },
-		{ name: t('components.uiDialogBox-effect-type.options.outline.name'), tip: t('components.uiDialogBox-effect-type.options.outline.tip'), value: 'outline'  }
+		{
+			name: t('components.uiDialogBox-effect-type.options.none.name'),
+			tip: t('components.uiDialogBox-effect-type.options.none.tip'),
+			value: 'none'
+		},
+		{
+			name: t('components.uiDialogBox-effect-type.options.shadow.name'),
+			tip: t('components.uiDialogBox-effect-type.options.shadow.tip'),
+			value: 'shadow'
+		},
+		{
+			name: t('components.uiDialogBox-effect-type.options.stroke.name'),
+			tip: t('components.uiDialogBox-effect-type.options.stroke.tip'),
+			value: 'stroke'
+		},
+		{
+			name: t('components.uiDialogBox-effect-type.options.outline.name'),
+			tip: t('components.uiDialogBox-effect-type.options.outline.tip'),
+			value: 'outline'
+		}
 	]);
 	elBlend.value?.loadItems([
-		{ name: t('components.uiDialogBox-blend.options.normal.name'), tip: t('components.uiDialogBox-blend.options.normal.tip'), value: 'normal'  },
-		{ name: t('components.uiDialogBox-blend.options.additive.name'), tip: t('components.uiDialogBox-blend.options.additive.tip'), value: 'additive'  },
-		{ name: t('components.uiDialogBox-blend.options.subtract.name'), tip: t('components.uiDialogBox-blend.options.subtract.tip'), value: 'subtract'  }
+		{
+			name: t('components.uiDialogBox-blend.options.normal.name'),
+			tip: t('components.uiDialogBox-blend.options.normal.tip'),
+			value: 'normal'
+		},
+		{
+			name: t('components.uiDialogBox-blend.options.additive.name'),
+			tip: t('components.uiDialogBox-blend.options.additive.tip'),
+			value: 'additive'
+		},
+		{
+			name: t('components.uiDialogBox-blend.options.subtract.name'),
+			tip: t('components.uiDialogBox-blend.options.subtract.tip'),
+			value: 'subtract'
+		}
 	]);
 	synchronize(elSizeSlider.value, elSize.value);
 	synchronize(elLineSpacingSlider.value, elLineSpacing.value);
@@ -292,8 +353,7 @@ onMounted(() => {
 		{ case: 'outline', targets: [elEffectColor.value?.root ?? null] }
 	]);
 
-	const elements =
-		registryElements(inspectorEls, [
+	const elements = registryElements(inspectorEls, [
 		'uiDialogBox-content',
 		'uiDialogBox-interval',
 		'uiDialogBox-size',
@@ -309,7 +369,11 @@ onMounted(() => {
 		'uiDialogBox-effect-color',
 		'uiDialogBox-blend'
 	]);
-	const sliders = registryElements(inspectorEls, ['uiDialogBox-size-slider', 'uiDialogBox-lineSpacing-slider', 'uiDialogBox-letterSpacing-slider']);
+	const sliders = registryElements(inspectorEls, [
+		'uiDialogBox-size-slider',
+		'uiDialogBox-lineSpacing-slider',
+		'uiDialogBox-letterSpacing-slider'
+	]);
 	bindInput(elements, getUIStore(), uiDialogBox);
 	bindSliders(sliders);
 
@@ -339,4 +403,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

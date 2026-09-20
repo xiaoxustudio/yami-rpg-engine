@@ -561,7 +561,7 @@ class ParticleLayer {
 			if (texture.complete) {
 				this.texture = texture;
 				this.calculateElementSize!();
-				delete (this as unknown as Record<string, unknown>).draw;
+				delete (this as Record<string, unknown>).draw;
 				return;
 			}
 			this.texture = texture;
@@ -570,7 +570,7 @@ class ParticleLayer {
 					this.texture = texture;
 					this.calculateElementSize!();
 					debouncedStageRender();
-					delete (this as unknown as Record<string, unknown>).draw;
+					delete (this as Record<string, unknown>).draw;
 				} else {
 					texture.destroy();
 				}

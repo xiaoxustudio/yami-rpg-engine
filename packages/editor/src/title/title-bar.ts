@@ -189,7 +189,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = titleEls.get('title-app-region') as unknown as HTMLElement;
+	this.target.element = titleEls.get('title-app-region') as HTMLElement;
 
 	this.pointerenter!();
 
@@ -770,8 +770,7 @@ for (const key of titleStateKeys) {
 		get: () => getTitleStore()[key],
 		set: (value: unknown) => {
 			// oxlint-disable-next-line no-explicit-any
-			(getTitleStore() as unknown as Record<(typeof titleStateKeys)[number], any>)[key] =
-				value;
+			(getTitleStore() as Record<(typeof titleStateKeys)[number], any>)[key] = value;
 		},
 		configurable: true
 	});

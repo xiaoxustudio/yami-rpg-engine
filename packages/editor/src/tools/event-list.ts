@@ -216,7 +216,8 @@ export class EventListInterface implements IListInterface {
 	static historySave(data: HistoryData) {
 		ParamHistory.prototype.save.call(this, data as never);
 		if (data.type === 'inspector-param-replace') {
-			delete data.swap.commands.symbol;
+			// `HistoryData` 的异质载荷现在是 `unknown`（见 types/history.ts）⇒ 这里按该 type 的形状收窄
+			delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
 		}
 	}
 }

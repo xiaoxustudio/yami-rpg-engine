@@ -164,12 +164,8 @@ TextSuggestion.list.selectDefaultCommand = null;
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 	const element = textSuggestionEls.get('text-suggestions');
 	if (element && element !== (this.list as unknown as HTMLElement)) {
-		element.updateNodeElement = this.list.updateNodeElement as unknown as (
-			item: unknown
-		) => unknown;
-		element.selectDefaultCommand = this.list.selectDefaultCommand as unknown as (
-			item: unknown
-		) => unknown;
+		element.updateNodeElement = this.list.updateNodeElement as (item: unknown) => unknown;
+		element.selectDefaultCommand = this.list.selectDefaultCommand as (item: unknown) => unknown;
 		this.list = element as unknown as TextSuggestionList;
 	}
 	const { list } = this;
@@ -270,7 +266,7 @@ TextSuggestion.textBoxKeydown = function (this: TextSuggestionTarget, event: Key
 				break;
 		}
 	}
-} as unknown as TextBoxMethod;
+} as TextBoxMethod;
 
 TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: InputEvent): void {
 	if (
@@ -283,7 +279,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 		TextSuggestion.list.searchNodes(text);
 		TextSuggestion.list.selectDefaultCommand!();
 	}
-} as unknown as TextBoxMethod;
+} as TextBoxMethod;
 
 TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Event): void {
 	// P4b：行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行

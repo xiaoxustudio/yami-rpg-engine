@@ -46,7 +46,7 @@ export function attachKeyboardBoxApi(
 	el: HTMLElement,
 	options: KeyboardBoxApiOptions = {}
 ): KeyboardBoxApi {
-	const box = el as unknown as KeyboardBoxApi;
+	const box = el as KeyboardBoxApi;
 	if (isApiAttached(box)) return box;
 
 	const input = document.createElement('input');

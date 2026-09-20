@@ -24,25 +24,25 @@ function ensureDomBound() {
 	// 紧接着在同一个函数里又逐个赋上 `PluginManager.list_*` 的真实现 —— 那 14 行是
 	// **纯死写**（中间没有任何读取），却贡献了 7 个 `null as unknown as` 与 7 条
 	// `no-explicit-any` 豁免。直接删掉：语义等价，棘轮同步下降（2026-09-18）。
-	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
+	list.updateTextNode = PluginManager.list_updateTextNode as (
 		...args: unknown[]
 		// oxlint-disable-next-line no-explicit-any
 	) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.edit = PluginManager.list_edit as unknown as (...args: unknown[]) => any;
+	list.edit = PluginManager.list_edit as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.insert = PluginManager.list_insert as unknown as (...args: unknown[]) => any;
+	list.insert = PluginManager.list_insert as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.toggle = PluginManager.list_toggle as unknown as (...args: unknown[]) => any;
+	list.toggle = PluginManager.list_toggle as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.copy = PluginManager.list_copy as unknown as (...args: unknown[]) => any;
+	list.copy = PluginManager.list_copy as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.paste = PluginManager.list_paste as unknown as (...args: unknown[]) => any;
+	list.paste = PluginManager.list_paste as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.delete = PluginManager.list_delete as unknown as (...args: unknown[]) => any;
+	list.delete = PluginManager.list_delete as (...args: unknown[]) => any;
 	// oxlint-disable-next-line no-explicit-any
-	list.saveSelection = PluginManager.list_saveSelection as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = PluginManager.list_restoreSelection as unknown as (
+	list.saveSelection = PluginManager.list_saveSelection as (...args: unknown[]) => any;
+	list.restoreSelection = PluginManager.list_restoreSelection as (
 		...args: unknown[]
 		// oxlint-disable-next-line no-explicit-any
 	) => any;
@@ -123,9 +123,9 @@ PluginManager.createData = function (this: typeof PluginManager, id?: string) {
 		enabled: true,
 		parameters: {}
 	};
-} as unknown as (...args: unknown[]) => PluginItemShape;
+} as (...args: unknown[]) => PluginItemShape;
 
-PluginManager.getItemById = Easing.getItemById as unknown as (
+PluginManager.getItemById = Easing.getItemById as (
 	...args: unknown[]
 ) => ReturnType<typeof Easing.getItemById>;
 

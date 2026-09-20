@@ -39,7 +39,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="fileSkill-attributes"
-				v-tip="t('components.fileSkill-attributes.tip')"
+			v-tip="t('components.fileSkill-attributes.tip')"
 			ref="elAttributes"
 			@change="onListChange"
 			class="inspector-list"
@@ -51,7 +51,7 @@
 		<DetailSummary>{{ t('components.fileSkill-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-events"
-				v-tip="t('components.fileSkill-events.tip')"
+			v-tip="t('components.fileSkill-events.tip')"
 			ref="elEvents"
 			@change="onListChange"
 			class="inspector-list"
@@ -63,7 +63,7 @@
 		<DetailSummary>{{ t('components.fileSkill-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-scripts"
-				v-tip="t('components.fileSkill-scripts.tip')"
+			v-tip="t('components.fileSkill-scripts.tip')"
 			ref="elScripts"
 			@change="onListChange"
 			class="inspector-list"
@@ -94,7 +94,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useFileSkillPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onListChange = () => {

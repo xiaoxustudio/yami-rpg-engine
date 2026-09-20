@@ -319,7 +319,7 @@ ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerE
 	switch (event.button) {
 		case 0: {
 			if (event.altKey) {
-				return this.startDragging!(event as unknown as CropDrag);
+				return this.startDragging!(event as CropDrag);
 			}
 			const marquee = this.marquee;
 			const coords = getRelativeCoords(event, marquee);
@@ -336,7 +336,7 @@ ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerE
 			break;
 		}
 		case 2:
-			this.startDragging!(event as unknown as CropDrag);
+			this.startDragging!(event as CropDrag);
 			break;
 	}
 }.bind(ImageClip);

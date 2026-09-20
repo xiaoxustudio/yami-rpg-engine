@@ -54,7 +54,7 @@ Particle.load = function (this: typeof Particle, context: ParticleContextShape) 
 	if (!context.editor) {
 		context.editor = {
 			target: null,
-			emitter: new Particle.Emitter(context.particle! as unknown as ParticleEmitterDataShape),
+			emitter: new Particle.Emitter(context.particle! as ParticleEmitterDataShape),
 			history: new History(100),
 			centerX: 0,
 			centerY: 0,

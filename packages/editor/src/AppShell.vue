@@ -1,5 +1,10 @@
 <template>
-	<div class="box" id="title" :ref="registryRef(windowShellEls, 'title')" @pointerenter="onTitlePointerenter">
+	<div
+		class="box"
+		id="title"
+		:ref="registryRef(windowShellEls, 'title')"
+		@pointerenter="onTitlePointerenter"
+	>
 		<div
 			class="box"
 			id="menu"
@@ -8,16 +13,28 @@
 			@pointerup="onMenuPointerup"
 			@pointerover="onMenuPointerover"
 		>
-			<div class="item menu-item" id="menu-file" value="file">{{ t('components.menu-file.content') }}</div>
-			<div class="item menu-item" id="menu-edit" value="edit">{{ t('components.menu-edit.content') }}</div>
-			<div class="item menu-item" id="menu-view" value="view">{{ t('components.menu-view.content') }}</div>
-			<div class="item menu-item" id="menu-window" value="window">{{ t('components.menu-window.content') }}</div>
-			<div class="item menu-item" id="menu-help" value="help">{{ t('components.menu-help.content') }}</div>
-			<div class="item menu-item" id="menu-open-yami" value="openYami">{{ t('components.menu-open-yami.content') }}</div>
+			<div class="item menu-item" id="menu-file" value="file">
+				{{ t('components.menu-file.content') }}
+			</div>
+			<div class="item menu-item" id="menu-edit" value="edit">
+				{{ t('components.menu-edit.content') }}
+			</div>
+			<div class="item menu-item" id="menu-view" value="view">
+				{{ t('components.menu-view.content') }}
+			</div>
+			<div class="item menu-item" id="menu-window" value="window">
+				{{ t('components.menu-window.content') }}
+			</div>
+			<div class="item menu-item" id="menu-help" value="help">
+				{{ t('components.menu-help.content') }}
+			</div>
+			<div class="item menu-item" id="menu-open-yami" value="openYami">
+				{{ t('components.menu-open-yami.content') }}
+			</div>
 		</div>
 		<TabBar
 			id="title-tabBar"
-				:ref="registryRef(titleEls, 'title-tabBar')"
+			:ref="registryRef(titleEls, 'title-tabBar')"
 			@select="onTabBarSelect"
 			@closed="onTabBarClosed"
 			@popup="onTabBarPopup"
@@ -26,7 +43,6 @@
 			<div
 				class="box"
 				id="title-play"
-
 				v-tip="t('components.title-play.tip')"
 				:ref="registryRef(titleEls, 'title-play')"
 				hotkey="F4"
@@ -39,8 +55,7 @@
 			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
 			<div class="close" id="title-close" @click="onCloseClick"></div>
 		</div>
-		<div id="title-app-region"
-				:ref="registryRef(titleEls, 'title-app-region')" />
+		<div id="title-app-region" :ref="registryRef(titleEls, 'title-app-region')" />
 	</div>
 	<LayoutPanel />
 	<Teleport to="#project-browser">
@@ -205,14 +220,11 @@ const idleToolEntries = toolWindowEntries.filter(
 const immediateToolComponents = Object.fromEntries(
 	criticalToolEntries.map(([path, loader]) => [
 		path,
-		asyncComp(loader as unknown as () => Promise<Component>)
+		asyncComp(loader as () => Promise<Component>)
 	])
 );
 const idleToolComponents = Object.fromEntries(
-	idleToolEntries.map(([path, loader]) => [
-		path,
-		asyncComp(loader as unknown as () => Promise<Component>)
-	])
+	idleToolEntries.map(([path, loader]) => [path, asyncComp(loader as () => Promise<Component>)])
 );
 // 非关键弹窗（其余工具/命令/检查器）延后到浏览器空闲时挂载，避免首屏并行拉取全部异步组件
 const idleReady = ref(false);
@@ -229,7 +241,7 @@ onMounted(() => {
 const commandComponents = Object.fromEntries(
 	Object.entries(commandModules).map(([path, loader]) => [
 		path,
-		asyncComp(loader as unknown as () => Promise<Component>)
+		asyncComp(loader as () => Promise<Component>)
 	])
 );
 const inspectorSpecialTargets = new Set([
@@ -252,7 +264,7 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 	return {
 		value,
 		target,
-		comp: asyncComp(loader as unknown as () => Promise<Component>)
+		comp: asyncComp(loader as () => Promise<Component>)
 	};
 });
 </script>
@@ -303,4 +315,3 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 	-webkit-app-region: no-drag;
 }
 </style>
-

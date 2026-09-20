@@ -101,12 +101,12 @@ Particle.listPopup = function (this: ParticleShape['list'], event: YamiMouseEven
 	let renamable;
 	if (item) {
 		copyable = true;
-		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
+		pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = true;
 		renamable = true;
 	} else {
 		copyable = false;
-		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
+		pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = false;
 		renamable = false;
 	}
@@ -182,13 +182,13 @@ Particle.list.create = function (dItem) {
 // 列表 - 复制
 Particle.list.copy = function (item) {
 	if (item) {
-		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.particle.layer', item);
+		(GlobalClipboard as GlobalClipboardHost).write('yami.particle.layer', item);
 	}
 };
 
 // 列表 - 粘贴
 Particle.list.paste = function (dItem) {
-	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.particle.layer');
+	const copy = (GlobalClipboard as GlobalClipboardHost).read('yami.particle.layer');
 	if (copy && this.data) {
 		this.addNodeTo(copy, dItem);
 	}

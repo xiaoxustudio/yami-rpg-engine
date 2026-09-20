@@ -111,7 +111,7 @@ export class SettingRenderer {
 	 */
 	private byId(id: string): YamiElement | null {
 		if (id === '') return null;
-		const frame = serviceEls.get('setting') as unknown as HTMLElement | undefined;
+		const frame = serviceEls.get('setting') as HTMLElement | undefined;
 		return (frame?.querySelector(`#${CSS.escape(id)}`) as YamiElement | null) ?? null;
 	}
 

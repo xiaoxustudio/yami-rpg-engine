@@ -153,8 +153,8 @@ export class Parallax {
 			this.draw = fnEmpty;
 			texture.on('load', () => {
 				Scene.requestRendering!();
-				delete (this as unknown as { update?: unknown; draw?: unknown }).update;
-				delete (this as unknown as { update?: unknown; draw?: unknown }).draw;
+				delete (this as { update?: unknown; draw?: unknown }).update;
+				delete (this as { update?: unknown; draw?: unknown }).draw;
 			});
 		}
 	}

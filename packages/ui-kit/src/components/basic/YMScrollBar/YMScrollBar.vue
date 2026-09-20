@@ -31,7 +31,7 @@ type DragState = PointerEvent & {
 	clientX: number;
 	clientY: number;
 	relate?: (event: PointerEvent) => boolean;
-}
+};
 
 const state = {
 	target: null as HTMLElement | null,
@@ -291,7 +291,7 @@ const pointerdown = (event: PointerEvent): void => {
 	const thumb = state.thumb;
 	if (!thumb) return;
 	if (event.target === thumb) {
-		state.dragging = event as unknown as DragState;
+		state.dragging = event as DragState;
 		state.dragging.mode = 'scroll';
 		state.dragging.scrollLeft = target.scrollLeft;
 		state.dragging.scrollTop = target.scrollTop;
@@ -308,7 +308,7 @@ const pointerdown = (event: PointerEvent): void => {
 				scrollRelative(event.clientY < r.top ? -1 : 1);
 				break;
 		}
-		state.dragging = event as unknown as DragState;
+		state.dragging = event as DragState;
 		state.dragging.mode = 'repeat';
 		state.dragging.relate = (e: PointerEvent) => relate(event, e);
 		window.addEventListener('pointerup', windowPointerup);
@@ -329,12 +329,7 @@ defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="scroll-bar"
-		:id="props.id"
-		@pointerdown="pointerdown"
-	>
+	<div ref="root" class="scroll-bar" :id="props.id" @pointerdown="pointerdown">
 		<div ref="thumb" class="scroll-thumb">
 			<div class="scroll-thumb-inner"></div>
 		</div>

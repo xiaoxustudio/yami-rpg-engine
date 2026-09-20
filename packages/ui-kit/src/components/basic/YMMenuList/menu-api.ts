@@ -349,7 +349,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 	}
 
 	function pointerenter(_event: PointerEvent): void {
-		(menu.parent as unknown as MenuApi)?.select(menu.parentMenuItem as HTMLElement);
+		(menu.parent as MenuApi)?.select(menu.parentMenuItem as HTMLElement);
 	}
 
 	function windowBlur(): void {

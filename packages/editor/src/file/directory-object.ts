@@ -82,7 +82,7 @@ export const Directory: {
 			onTextureLoad: (guid: string) => GL.textureManager.updateImage(guid),
 			onLoadScript: (file) => {
 				void Data.loadScript(
-					file as unknown as {
+					file as {
 						meta?: { guid: string; code?: string };
 						promise?: Promise<unknown> | null;
 						path: string;

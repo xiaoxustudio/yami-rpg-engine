@@ -79,7 +79,7 @@ function updateElements(verNum: number) {
 				const node = Updater.hooks.createInspectorSchema(type);
 				keys = keysMap[sNode.class] = Object.keys(node);
 			}
-			const dNode = {} as unknown as UiNode;
+			const dNode = {} as UiNode;
 			for (const key of keys) {
 				if (key in sNode) {
 					dNode[key] = sNode[key];

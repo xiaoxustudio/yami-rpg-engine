@@ -179,7 +179,7 @@ function ensureDomBound() {
 	getListConfig(list).onDelete = Attribute.list_onDelete as (item: unknown) => void;
 	getListConfig(list).onResume = Attribute.list_onResume as (item: unknown) => void;
 	bindListClipboardMethods({
-		module: Attribute as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
+		module: Attribute as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list,
 		clipboardKey: 'yami.data.attribute'
 	});
@@ -533,9 +533,7 @@ Attribute.packAttribute = (function IIFE() {
 		return copies;
 	};
 	return function (this: typeof Attribute) {
-		Data.attribute.keys = clone(
-			getAttributeStore().state.data as unknown as AttributeItem[] | null
-		);
+		Data.attribute.keys = clone(getAttributeStore().state.data as AttributeItem[] | null);
 		Data.attribute.settings = deepClone(getAttributeStore().state.settings);
 		Data.createAttributeContext();
 	};

@@ -331,7 +331,7 @@ export function useCallEventCommandSchema() {
 		switch (type) {
 			case 'boolean':
 				input = createSelectBox() as unknown as YamiElement & CallEventInputApi;
-				(input as unknown as { loadItems?: (items: unknown[]) => void }).loadItems?.([
+				(input as { loadItems?: (items: unknown[]) => void }).loadItems?.([
 					{ name: 'False', value: false },
 					{ name: 'True', value: true }
 				]);
@@ -354,40 +354,40 @@ export function useCallEventCommandSchema() {
 				Selection.addEventListeners!(strBoxOf(input)!);
 				break;
 			case 'object':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
 			case 'actor':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'actor';
 				break;
 			case 'skill':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'skill';
 				break;
 			case 'state':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'state';
 				break;
 			case 'equipment':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'equipment';
 				break;
 			case 'item':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'item';
 				break;
 			case 'trigger':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'trigger';
 				break;
 			case 'light':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'light';
 				break;
 			case 'element':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'element';
 				break;
 			default:
@@ -413,22 +413,22 @@ export function useCallEventCommandSchema() {
 			case 'none':
 				return;
 			case 'boolean':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'boolean';
 				break;
 			case 'number':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'number';
 				break;
 			case 'string':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'string';
 				break;
 			case 'object':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
@@ -440,7 +440,7 @@ export function useCallEventCommandSchema() {
 			case 'trigger':
 			case 'light':
 			case 'element':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
+				input = createCustomBox() as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;

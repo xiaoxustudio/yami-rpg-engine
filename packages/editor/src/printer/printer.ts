@@ -862,9 +862,9 @@ export class Printer {
 				operation === 'set'
 					? value
 					: operation === 'add'
-						? (this as unknown as Record<'x' | 'y', number>)[key] + value
+						? (this as Record<'x' | 'y', number>)[key] + value
 						: null;
-			(this as unknown as Record<'x' | 'y', number>)[key] = Math.max(position ?? 0, 0);
+			(this as Record<'x' | 'y', number>)[key] = Math.max(position ?? 0, 0);
 			this.index += match[0].length;
 			return true;
 		}
@@ -1399,8 +1399,7 @@ for (const key of printerBridgeKeys) {
 		get: () => getPrinterStore()[key],
 		set: (value: unknown) => {
 			// oxlint-disable-next-line no-explicit-any
-			(getPrinterStore() as unknown as Record<(typeof printerBridgeKeys)[number], any>)[key] =
-				value;
+			(getPrinterStore() as Record<(typeof printerBridgeKeys)[number], any>)[key] = value;
 		},
 		configurable: true
 	});

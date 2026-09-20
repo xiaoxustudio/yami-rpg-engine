@@ -478,7 +478,7 @@ Enum.packEnumeration = (function IIFE() {
 		return copies;
 	};
 	return function (this: typeof Enum) {
-		Data.enumeration.strings = clone(getEnumStore().state.data as unknown as EnumItem[] | null);
+		Data.enumeration.strings = clone(getEnumStore().state.data as EnumItem[] | null);
 		Data.enumeration.settings = deepClone(getEnumStore().state.settings);
 		Data.createEnumerationContext();
 	};

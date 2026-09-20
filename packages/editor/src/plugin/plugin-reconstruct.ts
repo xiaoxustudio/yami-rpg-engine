@@ -328,4 +328,4 @@ PluginManager.reconstruct = (function IIFE() {
 		}
 		return false;
 	};
-})() as unknown as (...args: unknown[]) => boolean;
+})() as (...args: unknown[]) => boolean;

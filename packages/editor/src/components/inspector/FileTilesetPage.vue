@@ -1,6 +1,10 @@
 <template>
-	<div class="box" id="palette-head"
-				:ref="registryRef(paletteEls, 'palette-head')" @pointerdown="onHeadPointerdown">
+	<div
+		class="box"
+		id="palette-head"
+		:ref="registryRef(paletteEls, 'palette-head')"
+		@pointerdown="onHeadPointerdown"
+	>
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
 				id="palette-scroll"
@@ -42,12 +46,17 @@
 				value="edit"
 				:class="{ selected: palette.mode === 'edit' }"
 			></div>
-			<div id="palette-flip"
-				v-tip="t('components.palette-flip.tip')" class="item toolbar-item" value="flip" hotkey="F"></div>
+			<div
+				id="palette-flip"
+				v-tip="t('components.palette-flip.tip')"
+				class="item toolbar-item"
+				value="flip"
+				hotkey="F"
+			></div>
 		</div>
 		<SliderBox
 			id="palette-zoom"
-				:ref="registryRef(paletteEls, 'palette-zoom')"
+			:ref="registryRef(paletteEls, 'palette-zoom')"
 			name="zoom"
 			min="0"
 			max="4"
@@ -56,12 +65,14 @@
 			@focus="onZoomFocus"
 		/>
 	</div>
-	<div class="box" id="palette-body"
-				:ref="registryRef(paletteEls, 'palette-body')">
-		<div class="box" id="palette-frame"
-				:ref="registryRef(paletteEls, 'palette-frame')">
-			<canvas id="palette-canvas"
-				:ref="registryRef(paletteEls, 'palette-canvas')" width="0" height="0"></canvas>
+	<div class="box" id="palette-body" :ref="registryRef(paletteEls, 'palette-body')">
+		<div class="box" id="palette-frame" :ref="registryRef(paletteEls, 'palette-frame')">
+			<canvas
+				id="palette-canvas"
+				:ref="registryRef(paletteEls, 'palette-canvas')"
+				width="0"
+				height="0"
+			></canvas>
 			<div
 				class="box"
 				id="palette-screen"
@@ -72,7 +83,7 @@
 			>
 				<MarqueeArea
 					id="palette-marquee"
-				:ref="registryRef(paletteEls, 'palette-marquee')"
+					:ref="registryRef(paletteEls, 'palette-marquee')"
 					@pointerdown="onMarqueePointerdown"
 					@doubleclick="onMarqueeDoubleclick"
 				></MarqueeArea>
@@ -80,8 +91,11 @@
 		</div>
 		<div class="text" id="palette-info">{{ paletteInfo }}</div>
 	</div>
-	<DetailBox id="fileTileset-general-detail"
-				:ref="registryRef(paletteEls, 'fileTileset-general-detail')" open>
+	<DetailBox
+		id="fileTileset-general-detail"
+		:ref="registryRef(paletteEls, 'fileTileset-general-detail')"
+		open
+	>
 		<DetailSummary>{{
 			t('components.fileTileset-general-grid.label') || 'Tileset'
 		}}</DetailSummary>
@@ -202,10 +216,10 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 const { t } = useI18n();
 const palette = usePaletteStore();
 
-	const { form, sync, onParamInput: onParamInputEvent } = useFileTilesetPage();
+const { form, sync, onParamInput: onParamInputEvent } = useFileTilesetPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const onHeadPointerdown = (event: PointerEvent) => {
@@ -350,4 +364,3 @@ onMounted(() => {
 	pointer-events: none;
 }
 </style>
-

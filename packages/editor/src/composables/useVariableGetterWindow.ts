@@ -229,7 +229,7 @@ const initialize = (): void => {
 	const commonKey = composableEls.get('variableGetter-common-key');
 	if (commonKey) {
 		TextSuggestion.listen!(
-			commonKey as unknown as TextSuggestionTarget,
+			commonKey as TextSuggestionTarget,
 			createVarListGenerator(filterState)
 		);
 	}
@@ -396,7 +396,7 @@ const createVarListGenerator = (filterObject: {
 						? 'object'
 						: 'any';
 
-		const list = EventEditor.commandList as unknown as {
+		const list = EventEditor.commandList as {
 			elements: YamiElement[] & { count?: number };
 			varList?: VarListEntry[];
 		};
@@ -483,7 +483,7 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = composableEls.get('variableGetter-preset-key') as unknown as unknown as
+			const keyBox = composableEls.get('variableGetter-preset-key') as unknown as
 				| (HTMLElement & {
 						selectBox?: HTMLElement & {
 							textContent: string;

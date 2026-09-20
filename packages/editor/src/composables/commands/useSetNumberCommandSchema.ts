@@ -27,9 +27,7 @@ Command.cases.setNumber = new CommandSchema({
 		{ key: 'operation', default: 'set' },
 		{
 			key: 'operands',
-			default: () => [
-				{ operation: 'add', type: 'constant', value: 0 } as unknown as SetNumberOperand
-			]
+			default: () => [{ operation: 'add', type: 'constant', value: 0 } as SetNumberOperand]
 		}
 	],
 	parseOperation(operation: string) {

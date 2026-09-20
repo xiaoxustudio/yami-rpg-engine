@@ -110,7 +110,7 @@ UI.listPopup = function (this: UIShape, event: YamiMouseEvent) {
 	const get = (key: string) => t('menuUIList.' + key);
 	const selected = !!item;
 	const copyable = selected;
-	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
+	const pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.ui.object');
 	const deletable = selected;
 	const renamable = selected;
 	menuItems.push({
@@ -355,7 +355,7 @@ UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEven
 // 列表 - 复制
 UI.list.copy = function (this: UIShape, item: UINodeShape) {
 	if (item) {
-		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.ui.object', item);
+		(GlobalClipboard as GlobalClipboardHost).write('yami.ui.object', item);
 	}
 };
 
@@ -365,7 +365,7 @@ UI.list.paste = function (
 	dItem: UINodeShape | null,
 	callback?: (data: unknown) => void
 ) {
-	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.ui.object');
+	const copy = (GlobalClipboard as GlobalClipboardHost).read('yami.ui.object');
 	if (copy && this.data) {
 		callback?.(copy);
 		this.addNodeTo!(copy, dItem);

@@ -36,7 +36,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 };
 
 export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions = {}): ColorBoxApi {
-	const box = el as unknown as ColorBoxApi;
+	const box = el as ColorBoxApi;
 	if (isApiAttached(box)) return box;
 
 	const background = document.createElement('div');

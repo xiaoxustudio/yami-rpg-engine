@@ -30,5 +30,5 @@ export function createPayloadEvent<T extends object>(
  * 因此赋值给 `Event & { … }` 的既有变量不会因为"变窄/变宽"报错。
  */
 export function readPayload<T extends object>(event: Event): PayloadEvent<T> {
-	return event as unknown as PayloadEvent<T>;
+	return event as PayloadEvent<T>;
 }

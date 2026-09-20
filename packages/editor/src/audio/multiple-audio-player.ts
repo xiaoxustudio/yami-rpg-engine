@@ -20,7 +20,7 @@ export class MultipleAudioPlayer {
 	getAudio(): MultipleAudioElement {
 		let audio = this.audioPool.pop();
 		if (audio === undefined) {
-			audio = new Audio() as unknown as MultipleAudioElement;
+			audio = new Audio() as MultipleAudioElement;
 			const source = AudioManager.context!.createMediaElementSource(audio);
 			const onStop = () => {
 				if (remove(this.audios, audio!)) {

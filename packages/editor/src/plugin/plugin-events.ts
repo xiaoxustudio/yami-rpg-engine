@@ -23,17 +23,17 @@ PluginManager.checkValidate = function (
 		return false;
 	if (v.pattern && typeof value === 'string' && !v.pattern.test(value)) return false;
 	return true;
-} as unknown as ((...args: unknown[]) => boolean) | null;
+} as ((...args: unknown[]) => boolean) | null;
 
 PluginManager.saveToProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
 	plugin!.detailed = this.detailed;
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.loadFromProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
 	this.detailed = plugin!.detailed!;
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.windowClose = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
@@ -57,7 +57,7 @@ PluginManager.windowClose = function (this: typeof PluginManager, event: Event) 
 			]
 		);
 	}
-}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
+}.bind(PluginManager) as ((...args: unknown[]) => void) | null;
 
 PluginManager.windowClosed = function (this: typeof PluginManager, _event: Event) {
 	(this.list as TreeListElement).saveSelection();
@@ -66,7 +66,7 @@ PluginManager.windowClosed = function (this: typeof PluginManager, _event: Event
 	window.removeEventListener('keydown', this.keydown!);
 	window.removeEventListener('pointerdown', this.pointerdown!);
 	window.removeEventListener('script-change', this.scriptChange!);
-}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
+}.bind(PluginManager) as ((...args: unknown[]) => void) | null;
 
 PluginManager.keydown = function (this: typeof PluginManager, event: KeyboardEvent) {
 	if (event.ctrlKey || event.metaKey) {
@@ -76,7 +76,7 @@ PluginManager.keydown = function (this: typeof PluginManager, event: KeyboardEve
 				break;
 		}
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.pointerdown = function (this: typeof PluginManager, event: PointerEvent) {
 	// 阻止鼠标在窗口外部双击会选中概述内容的行为 并且调用失去焦点方法避免阻止后失效
@@ -84,7 +84,7 @@ PluginManager.pointerdown = function (this: typeof PluginManager, event: Pointer
 		event.preventDefault();
 		(document.activeElement as HTMLElement | null)?.blur();
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;
 
 PluginManager.scriptChange = function (
 	this: typeof PluginManager,
@@ -93,4 +93,4 @@ PluginManager.scriptChange = function (
 	if (PluginManager.meta === event.changedMeta) {
 		PluginManager.loadOverview!();
 	}
-} as unknown as ((...args: unknown[]) => void) | null;
+} as ((...args: unknown[]) => void) | null;

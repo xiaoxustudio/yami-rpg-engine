@@ -19,7 +19,15 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, shallowRef, computed, onMounted, onBeforeUnmount, type ComponentPublicInstance } from 'vue';
+import {
+	h,
+	ref,
+	shallowRef,
+	computed,
+	onMounted,
+	onBeforeUnmount,
+	type ComponentPublicInstance
+} from 'vue';
 import {
 	addClass,
 	hasClass,
@@ -153,7 +161,7 @@ type FileBodyContentApi = HTMLElement & {
 	itemSize?: number;
 	itemWidth?: number;
 	visibleLines?: number;
-}
+};
 
 type FileBodyPaneApi = HTMLElement & {
 	textBox?: FileBodyTextBox;
@@ -194,7 +202,7 @@ type FileBodyPaneApi = HTMLElement & {
 		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	) => void;
-}
+};
 
 /** P4b：内容元素上的元素数据（`count` 仍在 DATA_FIELDS 内） */
 const contentData = (el: unknown): { count?: number } => elementDataOf<{ count?: number }>(el);
@@ -550,11 +558,14 @@ const visibleRows = computed<FileBodyRowDescriptor[]>(() => rowModel.value.rows)
  * （`elements[]` 与 `file.context.element`），并沿用既有 `updateOnResize`
  * 生成图标、名称与拖拽属性——这三块的实现没有改动。
  */
-function bindRowElement(row: FileBodyRowDescriptor, target: Element | ComponentPublicInstance | null): void {
+function bindRowElement(
+	row: FileBodyRowDescriptor,
+	target: Element | ComponentPublicInstance | null
+): void {
 	// 注意：`ComponentPublicInstance` 是**类型**，运行时不存在，不能 `instanceof`；
 	// 行元素一定是 `HTMLElement`，据此判别即可。
 	if (!(target instanceof HTMLElement)) return;
-	const node = target as unknown as FileBodyItemApi;
+	const node = target as FileBodyItemApi;
 	const file = flatFiles[row.index];
 	if (file === undefined) return;
 	const pane = el.value as FileBodyPaneApi;
@@ -600,7 +611,10 @@ function rebuildRowDescriptors(start: number, end: number, cpl: number): void {
 			key,
 			index: i,
 			// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
-			name: file instanceof FileItem ? ((file as unknown as { basename?: string }).basename ?? '') : file.name,
+			name:
+				file instanceof FileItem
+					? ((file as { basename?: string }).basename ?? '')
+					: file.name,
 			isFolder: !(file instanceof FileItem),
 			selected: selections.includes(file),
 			style: { left, top }
@@ -638,7 +652,11 @@ function resize(): void {
 
 /** M3 切片 3：读取可见行模型（只读副本，避免调用方改到内部状态） */
 function getRowModel(): FileBodyRowModel {
-	return { ...rowModel.value, keys: [...rowModel.value.keys], rows: rowModel.value.rows.map((row) => ({ ...row, style: { ...row.style } })) };
+	return {
+		...rowModel.value,
+		keys: [...rowModel.value.keys],
+		rows: rowModel.value.rows.map((row) => ({ ...row, style: { ...row.style } }))
+	};
 }
 
 /**
@@ -651,7 +669,9 @@ function refreshRowSelection(): void {
 	const next: FileBodyRowDescriptor[] = [];
 	for (const row of rows) {
 		const element = elements[row.index] as FileBodyItemApi | undefined;
-		next.push(element === undefined ? row : { ...row, selected: hasClass(element, 'selected') });
+		next.push(
+			element === undefined ? row : { ...row, selected: hasClass(element, 'selected') }
+		);
 	}
 	rowModel.value = { ...rowModel.value, rows: next };
 }
@@ -1158,9 +1178,13 @@ function scrollToSelectionInGridMode(mode: string = 'active'): void {
 				}
 				let scroll = node[property];
 				switch (mode) {
-				case 'active':
-					scroll = core.clamp(scroll, pos + size + PADDING * 2 - GAP - clientSize, pos);
-					break;
+					case 'active':
+						scroll = core.clamp(
+							scroll,
+							pos + size + PADDING * 2 - GAP - clientSize,
+							pos
+						);
+						break;
 					default:
 						return;
 				}
@@ -1732,10 +1756,10 @@ function pointerdown(event: PointerEvent): void {
 					}
 				}
 			}
-		if (event.target === node) {
-			event.preventDefault();
-			focusWithOptions(content, { preventScroll: true });
-		}
+			if (event.target === node) {
+				event.preventDefault();
+				focusWithOptions(content, { preventScroll: true });
+			}
 			break;
 		}
 		case 3: {
@@ -1865,7 +1889,7 @@ function createTextBox(): FileBodyTextBox {
 	});
 
 	// oxlint-disable-next-line no-explicit-any
-		tb.addEventListener('input', function (this: any, _event: Event) {
+	tb.addEventListener('input', function (this: any, _event: Event) {
 		if (this.style.width !== '') {
 			this.fitContent();
 		}
@@ -1899,8 +1923,8 @@ function createTextBox(): FileBodyTextBox {
 						throw new Error('same file');
 					}
 				})
-			.catch((_error: unknown) => {
-				return FSP?.rename(File?.path(file.path) ?? file.path, path).then(() => {
+				.catch((_error: unknown) => {
+					return FSP?.rename(File?.path(file.path) ?? file.path, path).then(() => {
 						item.nameBox.textContent = name;
 						return Directory?.update();
 					});

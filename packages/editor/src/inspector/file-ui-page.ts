@@ -74,7 +74,7 @@ import type { YamiElement } from '@app/types/element-api';
 			addClass(this.button, 'selected');
 
 			(
-				inspectorEls.get('fileUI-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('fileUI-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

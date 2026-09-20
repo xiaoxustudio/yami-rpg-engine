@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="jumpTo"
-				:ref="registryRef(fieldEls, 'jumpTo')" @confirm="onConfirm">
+	<WindowFrame id="jumpTo" :ref="registryRef(fieldEls, 'jumpTo')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.jumpTo.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.jumpTo-operation.label') }}</div>
-			<SelectBox id="jumpTo-operation"
+			<SelectBox
+				id="jumpTo-operation"
 				v-tip="t('components.jumpTo-operation.tip')"
-				:ref="registryRef(fieldEls, 'jumpTo-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'jumpTo-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.jumpTo-label.label') }}</div>
-			<TextBox id="jumpTo-label"
+			<TextBox
+				id="jumpTo-label"
 				v-tip="t('components.jumpTo-label.tip')"
-				:ref="registryRef(fieldEls, 'jumpTo-label')" v-focus v-model="label" />
+				:ref="registryRef(fieldEls, 'jumpTo-label')"
+				v-focus
+				v-model="label"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -52,11 +59,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	TextSuggestion.listen!(fieldEls.get('jumpTo-label') as unknown as TextSuggestionTarget, loadLabels);
+	TextSuggestion.listen!(fieldEls.get('jumpTo-label') as TextSuggestionTarget, loadLabels);
 	useLocalizedOptions('jumpTo-operation', ['jump', 'save-jump', 'return'], (items) =>
 		fieldEls.get('jumpTo-operation')?.loadItems?.(items)
 	);
-	fieldEls.get('jumpTo-operation')
+	fieldEls
+		.get('jumpTo-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: ['jump', 'save-jump'], targets: [fieldEls.get('jumpTo-label')] }]);
 });
@@ -78,5 +86,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

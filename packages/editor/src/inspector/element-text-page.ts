@@ -78,7 +78,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 			Inspector.uiElement.open(node);
 
 			(
-				inspectorEls.get('uiText-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiText-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -183,7 +183,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 			case 'effect-type':
 				if (node.effect.type !== value) {
 					const form = (
-						inspectorEls.get('uiText-vue-mount') as unknown as unknown as
+						inspectorEls.get('uiText-vue-mount') as unknown as
 							| (HTMLElement & { form?: TextForm })
 							| null
 					)?.form;

@@ -65,7 +65,7 @@ import { radians } from '@app/utils/math';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneParticle-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -86,7 +86,7 @@ import { radians } from '@app/utils/math';
 
 	SceneParticle.write = function (this: typeof SceneParticle, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneParticle-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();

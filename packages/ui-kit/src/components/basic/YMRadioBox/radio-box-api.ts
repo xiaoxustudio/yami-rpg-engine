@@ -30,7 +30,7 @@ export type RadioBoxApi = HTMLElement & {
 };
 
 export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions = {}): RadioBoxApi {
-	const box = el as unknown as RadioBoxApi;
+	const box = el as RadioBoxApi;
 	if (isApiAttached(box)) return box;
 	// P4b: proxy now lives in element data (field removed from DATA_FIELDS)
 	const data = elementDataOf<RadioBoxApi>(box);

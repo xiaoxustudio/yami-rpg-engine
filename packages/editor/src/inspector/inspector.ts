@@ -423,14 +423,14 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 };
 
 Inspector.scrollPointerdown = function (this: YamiElement, event: YamiMouseEvent) {
-	const data = scrollData(this) as unknown as { dragging: YamiMouseEvent | null };
+	const data = scrollData(this) as { dragging: YamiMouseEvent | null };
 	if (data.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0:
 			if (event.altKey && !(event.target as HTMLElement).closest('.marquee-area')) {
-				let element = event.target as unknown as YamiElement;
+				let element = event.target as YamiElement;
 				while (element !== this) {
 					if (typeof element.scrollPointerup === 'function' && hasScrollBar(element)) {
 						return;

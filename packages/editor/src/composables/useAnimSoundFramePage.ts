@@ -36,7 +36,7 @@ AnimSoundFrame.open = function (this: typeof AnimSoundFrame, frame: Record<strin
 		this.target = frame;
 		this.motion = Animation.motion;
 		(
-			composableEls.get('animSoundFrame-vue-mount') as unknown as HTMLElement & {
+			composableEls.get('animSoundFrame-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();
@@ -53,7 +53,7 @@ AnimSoundFrame.close = function (this: typeof AnimSoundFrame) {
 
 AnimSoundFrame.write = function (this: typeof AnimSoundFrame, _options: Record<string, unknown>) {
 	(
-		composableEls.get('animSoundFrame-vue-mount') as unknown as HTMLElement & {
+		composableEls.get('animSoundFrame-vue-mount') as HTMLElement & {
 			sync?: () => void;
 		}
 	)?.sync?.();

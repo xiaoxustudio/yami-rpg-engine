@@ -94,7 +94,7 @@ function mountListMethods(listElement: TeamListElement): void {
 }
 
 function initialize(): void {
-	const current = composableEls.get('team-list') as unknown as TeamListElement | null;
+	const current = composableEls.get('team-list') as TeamListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
@@ -122,7 +122,7 @@ function open(_data?: unknown): void {
 	getWindowStore().open('team');
 
 	unpackTeams();
-	getTeamStore().teams = Data.teams.map as unknown as Record<string, TeamData>;
+	getTeamStore().teams = Data.teams.map as Record<string, TeamData>;
 
 	getTeamStore().state = 'open';
 	list!.restoreSelection();

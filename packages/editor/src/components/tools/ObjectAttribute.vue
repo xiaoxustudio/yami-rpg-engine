@@ -8,13 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.object-attribute-key.label') }}</div>
-			<SelectBox id="object-attribute-key"
+			<SelectBox
+				id="object-attribute-key"
 				v-tip="t('components.object-attribute-key.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-key')" v-focus v-model="form.key" @write="onKeyWrite" />
+				:ref="registryRef(objectAttributeEls, 'object-attribute-key')"
+				v-focus
+				v-model="form.key"
+				@write="onKeyWrite"
+			/>
 			<div class="text">{{ t('components.object-attribute-boolean-value.label') }}</div>
-			<SelectBox id="object-attribute-boolean-value"
+			<SelectBox
+				id="object-attribute-boolean-value"
 				v-tip="t('components.object-attribute-boolean-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-boolean-value')" v-focus v-model="form.booleanValue" />
+				:ref="registryRef(objectAttributeEls, 'object-attribute-boolean-value')"
+				v-focus
+				v-model="form.booleanValue"
+			/>
 			<div class="text">{{ t('components.object-attribute-number-value.label') }}</div>
 			<NumberBox
 				id="object-attribute-number-value"
@@ -36,9 +45,13 @@
 				v-model="form.stringValue"
 			/>
 			<div class="text">{{ t('components.object-attribute-enum-value.label') }}</div>
-			<SelectBox id="object-attribute-enum-value"
+			<SelectBox
+				id="object-attribute-enum-value"
 				v-tip="t('components.object-attribute-enum-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-enum-value')" v-focus v-model="form.enumValue" />
+				:ref="registryRef(objectAttributeEls, 'object-attribute-enum-value')"
+				v-focus
+				v-model="form.enumValue"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -62,7 +75,7 @@ const onKeyWrite = (value: unknown) => {
 	AttributeListInterface?.keyWrite?.({ value } as { value: string });
 };
 const onConfirm = () => {
-	(AttributeListInterface?.target as unknown as YamiElement | undefined)?.save?.();
+	(AttributeListInterface?.target as YamiElement | undefined)?.save?.();
 };
 
 onMounted(() => {});
@@ -89,4 +102,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

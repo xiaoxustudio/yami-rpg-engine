@@ -79,7 +79,7 @@ type FileHeadElement = HTMLElement & {
 	view?: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number };
 	searcher?: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
 	address?: HTMLElement;
-}
+};
 
 interface Props {
 	links: FileBrowserLinks;
@@ -124,7 +124,7 @@ const AddressPart = defineComponent({
 	setup(props) {
 		const root = ref<HTMLElement | null>(null);
 		onMounted(() => {
-			const element = root.value as unknown as {
+			const element = root.value as {
 				file?: FileItem;
 				disabled?: boolean;
 			};
@@ -247,9 +247,10 @@ function addressPointerdown(event: PointerEvent) {
 								case 'FILE-HEAD-ADDRESS-ARROW': {
 									const MAX_MENU_ITEMS = 32;
 									// P4b：与写入点同源——都读显式元素数据
-									const addressData = elementDataOf<{ folders?: FileItem[]; target?: FileItem }>(
-										element
-									);
+									const addressData = elementDataOf<{
+										folders?: FileItem[];
+										target?: FileItem;
+									}>(element);
 									const folders = addressData.folders ?? [];
 									const target = addressData.target;
 									const elementRect = rect(element);
@@ -336,15 +337,17 @@ onMounted(() => {
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
 	const viewRoot = viewEl.value?.root;
-	const viewInputEl = (viewEl.value?.input ??
-		viewRoot?.querySelector('input')) as HTMLInputElement | null | undefined;
+	const viewInputEl = (viewEl.value?.input ?? viewRoot?.querySelector('input')) as
+		| HTMLInputElement
+		| null
+		| undefined;
 	if (viewRoot) {
 		// oxlint-disable-next-line no-explicit-any
-		const viewApi = viewEl.value as unknown as Record<string, any>;
+		const viewApi = viewEl.value as Record<string, any>;
 		for (const key of ['read', 'write', 'updateFiller', 'bar', 'filler']) {
 			if (viewApi?.[key] !== undefined) {
 				// oxlint-disable-next-line no-explicit-any
-				(viewRoot as unknown as Record<string, any>)[key] = viewApi[key];
+				(viewRoot as Record<string, any>)[key] = viewApi[key];
 			}
 		}
 		if (viewInputEl) {

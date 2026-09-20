@@ -197,7 +197,7 @@ export const attachDoubleclick = (
 	listener: (event: PointerEvent) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	element.addEventListener('pointerdown', doubleclickPointerdown as unknown as EventListener);
+	element.addEventListener('pointerdown', doubleclickPointerdown as EventListener);
 	element.addEventListener('doubleclick', listener as EventListener, options);
 };
 

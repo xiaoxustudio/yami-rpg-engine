@@ -179,7 +179,7 @@ function $(selector: string): YamiElement | NodeListOf<YamiElement> {
 	if (regexp.test(selector)) {
 		return document.querySelector(selector) as YamiElement;
 	} else {
-		return document.querySelectorAll(selector) as unknown as NodeListOf<YamiElement>;
+		return document.querySelectorAll(selector) as NodeListOf<YamiElement>;
 	}
 }
 export { $ };

@@ -246,12 +246,10 @@ Animation.initialize = function (this: typeof Animation) {
 	getListConfig(layerList).renamable = true;
 	layerList.bind(() => this.layers);
 	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 567/569/580/582 段 layerList.* 调用姿势不变
-	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates as unknown as (
+	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates as (
 		...args: unknown[]
 	) => unknown;
-	layerList.setRecursiveStates = Scene.list.setRecursiveStates as unknown as (
-		...args: unknown[]
-	) => unknown;
+	layerList.setRecursiveStates = Scene.list.setRecursiveStates as (...args: unknown[]) => unknown;
 
 	History.processors['animation-object-create'] = (
 		operation: string,

@@ -125,7 +125,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			write('scripts');
 
 			(
-				inspectorEls.get('fileActor-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('fileActor-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

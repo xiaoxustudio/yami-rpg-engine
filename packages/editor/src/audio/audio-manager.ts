@@ -148,8 +148,7 @@ for (const key of audioBridgeKeys) {
 	Object.defineProperty(AudioManager, key, {
 		get: () => getAudioStore()[key],
 		set: (value: unknown) => {
-			(getAudioStore() as unknown as Record<(typeof audioBridgeKeys)[number], unknown>)[key] =
-				value;
+			(getAudioStore() as Record<(typeof audioBridgeKeys)[number], unknown>)[key] = value;
 		},
 		configurable: true
 	});

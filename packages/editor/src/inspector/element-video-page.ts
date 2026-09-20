@@ -63,7 +63,7 @@ import { UIOwner } from './ui-owner.ts';
 
 			Inspector.uiElement.open(node);
 			(
-				inspectorEls.get('uiVideo-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('uiVideo-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

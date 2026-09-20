@@ -1,6 +1,9 @@
 <template>
-	<DetailBox id="animSpriteFrame-properties-detail"
-				:ref="registryRef(engineEls, 'animSpriteFrame-properties-detail')" open>
+	<DetailBox
+		id="animSpriteFrame-properties-detail"
+		:ref="registryRef(engineEls, 'animSpriteFrame-properties-detail')"
+		open
+	>
 		<DetailSummary>{{
 			t('components.animSpriteFrame-properties-grid.label') || 'Frame'
 		}}</DetailSummary>
@@ -11,7 +14,7 @@
 			<div id="animSpriteFrame-anchor-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-anchorX"
-				v-tip="t('components.animSpriteFrame-anchorX.tip')"
+					v-tip="t('components.animSpriteFrame-anchorX.tip')"
 					ref="elAnchorX"
 					v-model="form.anchorX"
 					min="-10"
@@ -22,7 +25,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
-				v-tip="t('components.animSpriteFrame-anchorY.tip')"
+					v-tip="t('components.animSpriteFrame-anchorY.tip')"
 					ref="elAnchorY"
 					v-model="form.anchorY"
 					min="-10"
@@ -36,7 +39,7 @@
 			<div id="animSpriteFrame-pivot-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-pivotX"
-				v-tip="t('components.animSpriteFrame-pivotX.tip')"
+					v-tip="t('components.animSpriteFrame-pivotX.tip')"
 					ref="elPivotX"
 					v-model="form.pivotX"
 					min="-10000"
@@ -47,7 +50,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
-				v-tip="t('components.animSpriteFrame-pivotY.tip')"
+					v-tip="t('components.animSpriteFrame-pivotY.tip')"
 					ref="elPivotY"
 					v-model="form.pivotY"
 					min="-10000"
@@ -63,7 +66,7 @@
 			<div id="animSpriteFrame-position-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-x"
-				v-tip="t('components.animSpriteFrame-x.tip')"
+					v-tip="t('components.animSpriteFrame-x.tip')"
 					ref="elX"
 					v-model="form.x"
 					min="-10000"
@@ -74,7 +77,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
-				v-tip="t('components.animSpriteFrame-y.tip')"
+					v-tip="t('components.animSpriteFrame-y.tip')"
 					ref="elY"
 					v-model="form.y"
 					min="-10000"
@@ -90,7 +93,7 @@
 			<div id="animSpriteFrame-rotation-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-rotation"
-				v-tip="t('components.animSpriteFrame-rotation.tip')"
+					v-tip="t('components.animSpriteFrame-rotation.tip')"
 					ref="elRotation"
 					v-model="form.rotation"
 					min="-36000"
@@ -104,7 +107,7 @@
 			<div id="animSpriteFrame-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-scaleX"
-				v-tip="t('components.animSpriteFrame-scaleX.tip')"
+					v-tip="t('components.animSpriteFrame-scaleX.tip')"
 					ref="elScaleX"
 					v-model="form.scaleX"
 					min="-100"
@@ -115,7 +118,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
-				v-tip="t('components.animSpriteFrame-scaleY.tip')"
+					v-tip="t('components.animSpriteFrame-scaleY.tip')"
 					ref="elScaleY"
 					v-model="form.scaleY"
 					min="-100"
@@ -131,7 +134,7 @@
 			<div id="animSpriteFrame-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="animSpriteFrame-opacity"
-				v-tip="t('components.animSpriteFrame-opacity.tip')"
+					v-tip="t('components.animSpriteFrame-opacity.tip')"
 					ref="elOpacity"
 					v-model="form.opacity"
 					min="0"
@@ -144,8 +147,11 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-0-box"
-				v-tip="t('components.animSpriteFrame-tint-0-box.tip')">
+			<div
+				class="flex-box"
+				id="animSpriteFrame-tint-0-box"
+				v-tip="t('components.animSpriteFrame-tint-0-box.tip')"
+			>
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
 					ref="elTint0Slider"
@@ -166,8 +172,11 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-1-box"
-				v-tip="t('components.animSpriteFrame-tint-1-box.tip')">
+			<div
+				class="flex-box"
+				id="animSpriteFrame-tint-1-box"
+				v-tip="t('components.animSpriteFrame-tint-1-box.tip')"
+			>
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
 					ref="elTint1Slider"
@@ -188,8 +197,11 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-2-box"
-				v-tip="t('components.animSpriteFrame-tint-2-box.tip')">
+			<div
+				class="flex-box"
+				id="animSpriteFrame-tint-2-box"
+				v-tip="t('components.animSpriteFrame-tint-2-box.tip')"
+			>
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
 					ref="elTint2Slider"
@@ -210,8 +222,11 @@
 			<div class="text">
 				{{ t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale' }}
 			</div>
-			<div class="flex-box" id="animSpriteFrame-tint-3-box"
-				v-tip="t('components.animSpriteFrame-tint-3-box.tip')">
+			<div
+				class="flex-box"
+				id="animSpriteFrame-tint-3-box"
+				v-tip="t('components.animSpriteFrame-tint-3-box.tip')"
+			>
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
 					ref="elTint3Slider"
@@ -231,12 +246,14 @@
 			</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="animSpriteFrame-sprite-detail"
-				:ref="registryRef(engineEls, 'animSpriteFrame-sprite-detail')" open>
+	<DetailBox
+		id="animSpriteFrame-sprite-detail"
+		:ref="registryRef(engineEls, 'animSpriteFrame-sprite-detail')"
+		open
+	>
 		<DetailSummary id="animSpriteFrame-sprite-summary">
 			<div class="text" id="sprite-label">{{ t('components.sprite-label.content') }}</div>
-			<div class="box" id="sprite-info"
-				:ref="registryRef(engineEls, 'sprite-info')"></div>
+			<div class="box" id="sprite-info" :ref="registryRef(engineEls, 'sprite-info')"></div>
 			<SliderBox
 				id="sprite-zoom"
 				:ref="registryRef(engineEls, 'sprite-zoom')"
@@ -248,23 +265,25 @@
 				@focus="onZoomFocus"
 			></SliderBox>
 		</DetailSummary>
-		<div class="box" id="sprite-body"
-				:ref="registryRef(engineEls, 'sprite-body')">
-			<div class="box" id="sprite-frame"
-				:ref="registryRef(engineEls, 'sprite-frame')">
-				<canvas id="sprite-canvas"
-				:ref="registryRef(engineEls, 'sprite-canvas')" width="0" height="0"></canvas>
+		<div class="box" id="sprite-body" :ref="registryRef(engineEls, 'sprite-body')">
+			<div class="box" id="sprite-frame" :ref="registryRef(engineEls, 'sprite-frame')">
+				<canvas
+					id="sprite-canvas"
+					:ref="registryRef(engineEls, 'sprite-canvas')"
+					width="0"
+					height="0"
+				></canvas>
 				<div
 					class="box"
 					id="sprite-screen"
-				:ref="registryRef(engineEls, 'sprite-screen')"
+					:ref="registryRef(engineEls, 'sprite-screen')"
 					tabindex="-1"
 					@keydown="onScreenKeydown"
 					@wheel="onScreenWheel"
 				>
 					<MarqueeArea
 						id="sprite-marquee"
-				:ref="registryRef(engineEls, 'sprite-marquee')"
+						:ref="registryRef(engineEls, 'sprite-marquee')"
 						@pointerdown="onMarqueePointerdown"
 					></MarqueeArea>
 				</div>
@@ -296,7 +315,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimSpriteFramePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const tint = computed(() => form.tint as number[]);
@@ -377,11 +396,16 @@ onMounted(() => {
 		elTint2Slider.value?.root,
 		elTint3Slider.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(elements, animSpriteFrame, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
-		data.type = 'inspector-frame-change';
-		data.motion = animSpriteFrame.motion;
-		data.direction = Animation.direction;
-	});
+	bindInput(
+		elements,
+		animSpriteFrame,
+		Animation as unknown as { history: unknown },
+		(data: Record<string, unknown>) => {
+			data.type = 'inspector-frame-change';
+			data.motion = animSpriteFrame.motion;
+			data.direction = Animation.direction;
+		}
+	);
 	bindSliders(sliders);
 	Sprite.initialize();
 

@@ -11,7 +11,7 @@ let manager: HTMLElement | null = null;
 export const Toast = {
 	_manager(): HTMLElement {
 		if (!manager) {
-			manager = createToastManager() as unknown as HTMLElement;
+			manager = createToastManager() as HTMLElement;
 			document.body.appendChild(manager);
 		}
 		return manager;

@@ -47,7 +47,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useUIReferencePage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();

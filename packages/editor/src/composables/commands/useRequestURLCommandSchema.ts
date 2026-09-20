@@ -42,7 +42,7 @@ export const RequestkeyValueBind = {
 	},
 	save() {
 		const data = { key: requestKeyValueForm.key, value: requestKeyValueForm.value };
-		const headers = read(this.target as unknown as string);
+		const headers = read(this.target as string);
 		if (headers.some((item: RequestKeyValue) => item.key === data.key)) {
 			headers.splice(
 				headers.findIndex((item: RequestKeyValue) => item.key === data.key),

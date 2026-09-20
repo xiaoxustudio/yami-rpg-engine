@@ -5,11 +5,21 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
 			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div>
-			<TextBox id="sceneRegion-name"
-				v-tip="t('components.sceneRegion-name.tip')" ref="elName" v-model="form.name" @input="onParamInput"></TextBox>
+			<TextBox
+				id="sceneRegion-name"
+				v-tip="t('components.sceneRegion-name.tip')"
+				ref="elName"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div>
-			<ColorBox id="sceneRegion-color"
-				v-tip="t('components.sceneRegion-color.tip')" ref="elColor" v-model="form.color" @input="onParamInput"></ColorBox>
+			<ColorBox
+				id="sceneRegion-color"
+				v-tip="t('components.sceneRegion-color.tip')"
+				ref="elColor"
+				v-model="form.color"
+				@input="onParamInput"
+			></ColorBox>
 			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div>
 			<NumberBox
 				id="sceneRegion-x"
@@ -62,14 +72,19 @@
 		<DetailSummary>{{
 			t('components.sceneRegion-conditions.label') || 'Conditions'
 		}}</DetailSummary>
-		<ParamList id="sceneRegion-conditions"
-				v-tip="t('components.sceneRegion-conditions.tip')" ref="elConditions" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneRegion-conditions"
+			v-tip="t('components.sceneRegion-conditions.tip')"
+			ref="elConditions"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-events"
-				v-tip="t('components.sceneRegion-events.tip')"
+			v-tip="t('components.sceneRegion-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="region"
@@ -78,8 +93,13 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneRegion-scripts.label') || 'Scripts' }}</DetailSummary>
-		<ParamList id="sceneRegion-scripts"
-				v-tip="t('components.sceneRegion-scripts.tip')" ref="elScripts" class="inspector-list" flexible></ParamList>
+		<ParamList
+			id="sceneRegion-scripts"
+			v-tip="t('components.sceneRegion-scripts.tip')"
+			ref="elScripts"
+			class="inspector-list"
+			flexible
+		></ParamList>
 	</DetailBox>
 	<ParameterPane id="sceneRegion-parameter-pane" ref="elParameterPane"></ParameterPane>
 </template>
@@ -110,7 +130,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneRegionPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -145,7 +165,7 @@ onMounted(() => {
 		elEvents.value?.bind(new EventListInterface(editor, Scene));
 
 		elScripts.value?.bind(
-			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+			new ScriptListInterface(editor as { target?: { id: string } }, Scene)
 		);
 
 		const scriptsEl = elScripts.value?.root;

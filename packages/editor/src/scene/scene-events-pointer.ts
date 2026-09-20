@@ -546,9 +546,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 		this.translationKeyup();
 		const target = this.target;
 		const selected = !!target;
-		const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has(
-			'yami.scene.object'
-		);
+		const pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.scene.object');
 		const get = (key: string) => t('menuScene.' + key);
 		const menuItems: MenuItem[] = [
 			{

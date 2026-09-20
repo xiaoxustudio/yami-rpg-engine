@@ -54,7 +54,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useAnimSpriteLayerPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput } = useInspectorInput();
@@ -83,11 +83,16 @@ onMounted(() => {
 	const elements = [elSprite.value?.root, elBlend.value?.root, elLight.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
-	bindInput(elements, animSpriteLayer, Animation as unknown as { history: unknown }, (data: Record<string, unknown>) => {
-		data.type = 'inspector-layer-change';
-		data.motion = animSpriteLayer.motion;
-		data.direction = Animation.direction;
-	});
+	bindInput(
+		elements,
+		animSpriteLayer,
+		Animation as unknown as { history: unknown },
+		(data: Record<string, unknown>) => {
+			data.type = 'inspector-layer-change';
+			data.motion = animSpriteLayer.motion;
+			data.direction = Animation.direction;
+		}
+	);
 
 	const el = inspectorEls.get('animSpriteLayer-vue-mount');
 	if (el) {

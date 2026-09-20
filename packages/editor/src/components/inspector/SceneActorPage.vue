@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
 			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div>
-			<TextBox id="sceneActor-name"
+			<TextBox
+				id="sceneActor-name"
 				:ref="registryRef(inspectorEls, 'sceneActor-name')"
-				v-tip="t('components.sceneActor-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneActor-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
 			<SelectBox
 				ref="elType"
@@ -60,8 +64,11 @@
 				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneActor-angle-box"
-				v-tip="t('components.sceneActor-angle-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneActor-angle-box"
+				v-tip="t('components.sceneActor-angle-box.tip')"
+			>
 				<SliderBox
 					ref="elAngleSlider"
 					id="sceneActor-angle-slider"
@@ -83,8 +90,11 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div>
-			<div class="flex-box" id="sceneActor-scale-box"
-				v-tip="t('components.sceneActor-scale-box.tip')">
+			<div
+				class="flex-box"
+				id="sceneActor-scale-box"
+				v-tip="t('components.sceneActor-scale-box.tip')"
+			>
 				<SliderBox
 					ref="elScaleSlider"
 					id="sceneActor-scale-slider"
@@ -113,7 +123,7 @@
 		<ParamList
 			ref="elConditions"
 			id="sceneActor-conditions"
-				v-tip="t('components.sceneActor-conditions.tip')"
+			v-tip="t('components.sceneActor-conditions.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -123,19 +133,22 @@
 		<ParamList
 			ref="elEvents"
 			id="sceneActor-events"
-				v-tip="t('components.sceneActor-events.tip')"
+			v-tip="t('components.sceneActor-events.tip')"
 			class="inspector-list"
 			filter="actor"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<DetailBox id="sceneActor-scripts-detail"
-				:ref="registryRef(inspectorEls, 'sceneActor-scripts-detail')" open>
+	<DetailBox
+		id="sceneActor-scripts-detail"
+		:ref="registryRef(inspectorEls, 'sceneActor-scripts-detail')"
+		open
+	>
 		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			ref="elScripts"
 			id="sceneActor-scripts"
-				v-tip="t('components.sceneActor-scripts.tip')"
+			v-tip="t('components.sceneActor-scripts.tip')"
 			class="inspector-list"
 			flexible
 		></ParamList>
@@ -144,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref , onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef, registerElement, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -171,7 +184,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneActorPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -226,22 +239,28 @@ onMounted(() => {
 	}
 
 	elType.value?.loadItems([
-		{ name: t('components.sceneActor-type.options.local.name'), tip: t('components.sceneActor-type.options.local.tip'), value: 'local'  },
-		{ name: t('components.sceneActor-type.options.global.name'), tip: t('components.sceneActor-type.options.global.tip'), value: 'global'  }
+		{
+			name: t('components.sceneActor-type.options.local.name'),
+			tip: t('components.sceneActor-type.options.local.tip'),
+			value: 'local'
+		},
+		{
+			name: t('components.sceneActor-type.options.global.name'),
+			tip: t('components.sceneActor-type.options.global.tip'),
+			value: 'global'
+		}
 	]);
 
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
-	elScripts.value?.bind(
-		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
-	);
+	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
 	synchronize(elAngleSlider.value, elAngle.value);
 	synchronize(elScaleSlider.value, elScale.value);
 
 	// E1：存变量再 add/remove（原先只 add）
-	datachangeHandler = editor.datachange as unknown as EventListener;
+	datachangeHandler = editor.datachange as EventListener;
 	window.addEventListener('datachange', datachangeHandler);
 	const elements = registryElements(inspectorEls, [
 		'sceneActor-name',
@@ -253,11 +272,17 @@ onMounted(() => {
 		'sceneActor-angle',
 		'sceneActor-scale'
 	]);
-	const sliders = registryElements(inspectorEls, ['sceneActor-angle-slider', 'sceneActor-scale-slider']);
+	const sliders = registryElements(inspectorEls, [
+		'sceneActor-angle-slider',
+		'sceneActor-scale-slider'
+	]);
 	bindInput(elements, editor, Scene as unknown as { history: unknown });
 	bindSliders(sliders);
-	registryElements(inspectorEls, ['sceneActor-conditions', 'sceneActor-events', 'sceneActor-scripts'])
-		.forEach((el) => el.addEventListener('change', Scene.listChange));
+	registryElements(inspectorEls, [
+		'sceneActor-conditions',
+		'sceneActor-events',
+		'sceneActor-scripts'
+	]).forEach((el) => el.addEventListener('change', Scene.listChange));
 
 	sync();
 });
@@ -278,4 +303,3 @@ onBeforeUnmount(() => {
 	flex: 1 1 auto;
 }
 </style>
-

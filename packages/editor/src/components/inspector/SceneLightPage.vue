@@ -5,9 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="sceneLight-general-grid">
 			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div>
-			<TextBox id="sceneLight-name"
+			<TextBox
+				id="sceneLight-name"
 				:ref="registryRef(inspectorEls, 'sceneLight-name')"
-				v-tip="t('components.sceneLight-name.tip')" v-model="form.name" @input="onParamInput"></TextBox>
+				v-tip="t('components.sceneLight-name.tip')"
+				v-model="form.name"
+				@input="onParamInput"
+			></TextBox>
 			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div>
 			<SelectBox
 				id="sceneLight-type"
@@ -49,8 +53,12 @@
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ t('components.sceneLight-range-box.label') || 'Range' }}</div>
-			<div class="flex-box" id="sceneLight-range-box"
-				v-tip="t('components.sceneLight-range-box.tip')" ref="elRangeBox">
+			<div
+				class="flex-box"
+				id="sceneLight-range-box"
+				v-tip="t('components.sceneLight-range-box.tip')"
+				ref="elRangeBox"
+			>
 				<SliderBox
 					id="sceneLight-range-slider"
 					ref="elRangeSlider"
@@ -72,8 +80,12 @@
 			<div class="text">
 				{{ t('components.sceneLight-intensity-box.label') || 'Intensity' }}
 			</div>
-			<div class="flex-box" id="sceneLight-intensity-box"
-				v-tip="t('components.sceneLight-intensity-box.tip')" ref="elIntensityBox">
+			<div
+				class="flex-box"
+				id="sceneLight-intensity-box"
+				v-tip="t('components.sceneLight-intensity-box.tip')"
+				ref="elIntensityBox"
+			>
 				<SliderBox
 					id="sceneLight-intensity-slider"
 					ref="elIntensitySlider"
@@ -104,8 +116,12 @@
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ t('components.sceneLight-anchorX-box.label') || 'Anchor X' }}</div>
-			<div class="flex-box" id="sceneLight-anchorX-box"
-				v-tip="t('components.sceneLight-anchorX-box.tip')" ref="elAnchorXBox">
+			<div
+				class="flex-box"
+				id="sceneLight-anchorX-box"
+				v-tip="t('components.sceneLight-anchorX-box.tip')"
+				ref="elAnchorXBox"
+			>
 				<SliderBox
 					id="sceneLight-anchorX-slider"
 					ref="elAnchorXSlider"
@@ -126,8 +142,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-anchorY-box.label') || 'Anchor Y' }}</div>
-			<div class="flex-box" id="sceneLight-anchorY-box"
-				v-tip="t('components.sceneLight-anchorY-box.tip')" ref="elAnchorYBox">
+			<div
+				class="flex-box"
+				id="sceneLight-anchorY-box"
+				v-tip="t('components.sceneLight-anchorY-box.tip')"
+				ref="elAnchorYBox"
+			>
 				<SliderBox
 					id="sceneLight-anchorY-slider"
 					ref="elAnchorYSlider"
@@ -148,8 +168,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-width-box.label') || 'Width' }}</div>
-			<div class="flex-box" id="sceneLight-width-box"
-				v-tip="t('components.sceneLight-width-box.tip')" ref="elWidthBox">
+			<div
+				class="flex-box"
+				id="sceneLight-width-box"
+				v-tip="t('components.sceneLight-width-box.tip')"
+				ref="elWidthBox"
+			>
 				<SliderBox
 					id="sceneLight-width-slider"
 					ref="elWidthSlider"
@@ -170,8 +194,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-height-box.label') || 'Height' }}</div>
-			<div class="flex-box" id="sceneLight-height-box"
-				v-tip="t('components.sceneLight-height-box.tip')" ref="elHeightBox">
+			<div
+				class="flex-box"
+				id="sceneLight-height-box"
+				v-tip="t('components.sceneLight-height-box.tip')"
+				ref="elHeightBox"
+			>
 				<SliderBox
 					id="sceneLight-height-slider"
 					ref="elHeightSlider"
@@ -192,8 +220,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-angle-box.label') || 'Angle' }}</div>
-			<div class="flex-box" id="sceneLight-angle-box"
-				v-tip="t('components.sceneLight-angle-box.tip')" ref="elAngleBox">
+			<div
+				class="flex-box"
+				id="sceneLight-angle-box"
+				v-tip="t('components.sceneLight-angle-box.tip')"
+				ref="elAngleBox"
+			>
 				<SliderBox
 					id="sceneLight-angle-slider"
 					ref="elAngleSlider"
@@ -214,8 +246,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-red-box.label') || 'Red' }}</div>
-			<div class="flex-box" id="sceneLight-red-box"
-				v-tip="t('components.sceneLight-red-box.tip')" ref="elRedBox">
+			<div
+				class="flex-box"
+				id="sceneLight-red-box"
+				v-tip="t('components.sceneLight-red-box.tip')"
+				ref="elRedBox"
+			>
 				<SliderBox
 					id="sceneLight-red-slider"
 					ref="elRedSlider"
@@ -235,8 +271,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-green-box.label') || 'Green' }}</div>
-			<div class="flex-box" id="sceneLight-green-box"
-				v-tip="t('components.sceneLight-green-box.tip')" ref="elGreenBox">
+			<div
+				class="flex-box"
+				id="sceneLight-green-box"
+				v-tip="t('components.sceneLight-green-box.tip')"
+				ref="elGreenBox"
+			>
 				<SliderBox
 					id="sceneLight-green-slider"
 					ref="elGreenSlider"
@@ -256,8 +296,12 @@
 				></NumberBox>
 			</div>
 			<div class="text">{{ t('components.sceneLight-blue-box.label') || 'Blue' }}</div>
-			<div class="flex-box" id="sceneLight-blue-box"
-				v-tip="t('components.sceneLight-blue-box.tip')" ref="elBlueBox">
+			<div
+				class="flex-box"
+				id="sceneLight-blue-box"
+				v-tip="t('components.sceneLight-blue-box.tip')"
+				ref="elBlueBox"
+			>
 				<SliderBox
 					id="sceneLight-blue-slider"
 					ref="elBlueSlider"
@@ -279,8 +323,12 @@
 			<div class="text">
 				{{ t('components.sceneLight-direct-box.label') || 'Direct Light Ratio' }}
 			</div>
-			<div class="flex-box" id="sceneLight-direct-box"
-				v-tip="t('components.sceneLight-direct-box.tip')" ref="elDirectBox">
+			<div
+				class="flex-box"
+				id="sceneLight-direct-box"
+				v-tip="t('components.sceneLight-direct-box.tip')"
+				ref="elDirectBox"
+			>
 				<SliderBox
 					id="sceneLight-direct-slider"
 					ref="elDirectSlider"
@@ -308,7 +356,7 @@
 		}}</DetailSummary>
 		<ParamList
 			id="sceneLight-conditions"
-				v-tip="t('components.sceneLight-conditions.tip')"
+			v-tip="t('components.sceneLight-conditions.tip')"
 			ref="elConditions"
 			class="inspector-list"
 			flexible
@@ -318,7 +366,7 @@
 		<DetailSummary>{{ t('components.sceneLight-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-events"
-				v-tip="t('components.sceneLight-events.tip')"
+			v-tip="t('components.sceneLight-events.tip')"
 			ref="elEvents"
 			class="inspector-list"
 			filter="light"
@@ -329,7 +377,7 @@
 		<DetailSummary>{{ t('components.sceneLight-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-scripts"
-				v-tip="t('components.sceneLight-scripts.tip')"
+			v-tip="t('components.sceneLight-scripts.tip')"
 			ref="elScripts"
 			class="inspector-list"
 			flexible
@@ -366,7 +414,7 @@ const { t } = useI18n();
 const { form, sync, onParamInput: onParamInputEvent } = useSceneLightPage();
 
 const onParamInput = (value: unknown): void => {
-	onParamInputEvent(value as unknown as Event);
+	onParamInputEvent(value as Event);
 };
 
 const { bindInput, bindSliders } = useInspectorInput();
@@ -454,15 +502,39 @@ onMounted(() => {
 
 	try {
 		elType.value?.loadItems([
-			{ name: t('components.sceneLight-type.options.point.name'), tip: t('components.sceneLight-type.options.point.tip'), value: 'point'  },
-			{ name: t('components.sceneLight-type.options.area.name'), tip: t('components.sceneLight-type.options.area.tip'), value: 'area'  }
+			{
+				name: t('components.sceneLight-type.options.point.name'),
+				tip: t('components.sceneLight-type.options.point.tip'),
+				value: 'point'
+			},
+			{
+				name: t('components.sceneLight-type.options.area.name'),
+				tip: t('components.sceneLight-type.options.area.tip'),
+				value: 'area'
+			}
 		]);
 
 		elBlend.value?.loadItems([
-			{ name: t('components.sceneLight-blend.options.screen.name'), tip: t('components.sceneLight-blend.options.screen.tip'), value: 'screen'  },
-			{ name: t('components.sceneLight-blend.options.additive.name'), tip: t('components.sceneLight-blend.options.additive.tip'), value: 'additive'  },
-			{ name: t('components.sceneLight-blend.options.subtract.name'), tip: t('components.sceneLight-blend.options.subtract.tip'), value: 'subtract'  },
-			{ name: t('components.sceneLight-blend.options.max.name'), tip: t('components.sceneLight-blend.options.max.tip'), value: 'max'  }
+			{
+				name: t('components.sceneLight-blend.options.screen.name'),
+				tip: t('components.sceneLight-blend.options.screen.tip'),
+				value: 'screen'
+			},
+			{
+				name: t('components.sceneLight-blend.options.additive.name'),
+				tip: t('components.sceneLight-blend.options.additive.tip'),
+				value: 'additive'
+			},
+			{
+				name: t('components.sceneLight-blend.options.subtract.name'),
+				tip: t('components.sceneLight-blend.options.subtract.tip'),
+				value: 'subtract'
+			},
+			{
+				name: t('components.sceneLight-blend.options.max.name'),
+				tip: t('components.sceneLight-blend.options.max.tip'),
+				value: 'max'
+			}
 		]);
 
 		if (elType.value) {
@@ -489,7 +561,7 @@ onMounted(() => {
 		elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 		elEvents.value?.bind(new EventListInterface(editor, Scene));
 		elScripts.value?.bind(
-			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+			new ScriptListInterface(editor as { target?: { id: string } }, Scene)
 		);
 		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
 
@@ -506,42 +578,45 @@ onMounted(() => {
 		elDirectSlider.value?.synchronize(elDirect.value?.root as SyncTarget);
 
 		const elements = registryElements(inspectorEls, [
-		'sceneLight-name',
-		'sceneLight-type',
-		'sceneLight-blend',
-		'sceneLight-x',
-		'sceneLight-y',
-		'sceneLight-range',
-		'sceneLight-intensity',
-		'sceneLight-mask',
-		'sceneLight-anchorX',
-		'sceneLight-anchorY',
-		'sceneLight-width',
-		'sceneLight-height',
-		'sceneLight-angle',
-		'sceneLight-red',
-		'sceneLight-green',
-		'sceneLight-blue',
-		'sceneLight-direct'
-	]);
+			'sceneLight-name',
+			'sceneLight-type',
+			'sceneLight-blend',
+			'sceneLight-x',
+			'sceneLight-y',
+			'sceneLight-range',
+			'sceneLight-intensity',
+			'sceneLight-mask',
+			'sceneLight-anchorX',
+			'sceneLight-anchorY',
+			'sceneLight-width',
+			'sceneLight-height',
+			'sceneLight-angle',
+			'sceneLight-red',
+			'sceneLight-green',
+			'sceneLight-blue',
+			'sceneLight-direct'
+		]);
 		const sliders = registryElements(inspectorEls, [
-		'sceneLight-range-slider',
-		'sceneLight-intensity-slider',
-		'sceneLight-anchorX-slider',
-		'sceneLight-anchorY-slider',
-		'sceneLight-width-slider',
-		'sceneLight-height-slider',
-		'sceneLight-angle-slider',
-		'sceneLight-red-slider',
-		'sceneLight-green-slider',
-		'sceneLight-blue-slider',
-		'sceneLight-direct-slider'
-	]);
+			'sceneLight-range-slider',
+			'sceneLight-intensity-slider',
+			'sceneLight-anchorX-slider',
+			'sceneLight-anchorY-slider',
+			'sceneLight-width-slider',
+			'sceneLight-height-slider',
+			'sceneLight-angle-slider',
+			'sceneLight-red-slider',
+			'sceneLight-green-slider',
+			'sceneLight-blue-slider',
+			'sceneLight-direct-slider'
+		]);
 		bindInput(elements, editor, Scene as unknown as { history: unknown });
 		bindSliders(sliders);
 
-		registryElements(inspectorEls, ['sceneLight-conditions', 'sceneLight-events', 'sceneLight-scripts'])
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
+		registryElements(inspectorEls, [
+			'sceneLight-conditions',
+			'sceneLight-events',
+			'sceneLight-scripts'
+		]).forEach((el) => el.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneLightPage] init skipped:', (e as Error)?.message);
 	}
@@ -580,4 +655,3 @@ onMounted(() => {
 	flex: 1 1 auto;
 }
 </style>
-

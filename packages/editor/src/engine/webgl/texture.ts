@@ -108,7 +108,7 @@ export class Texture {
 				gl.FRAMEBUFFER,
 				gl.COLOR_ATTACHMENT0,
 				gl.TEXTURE_2D,
-				(base as unknown as { glTexture?: WebGLTexture | null }).glTexture,
+				(base as { glTexture?: WebGLTexture | null }).glTexture,
 				0
 			);
 			gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, uint8);

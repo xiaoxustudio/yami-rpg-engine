@@ -52,7 +52,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('sceneRegion-vue-mount') as unknown as HTMLElement & {
+				inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -73,7 +73,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 	SceneRegion.write = function (this: typeof SceneRegion, _options: Record<string, unknown>) {
 		(
-			inspectorEls.get('sceneRegion-vue-mount') as unknown as HTMLElement & {
+			inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & {
 				sync?: () => void;
 			}
 		)?.sync?.();

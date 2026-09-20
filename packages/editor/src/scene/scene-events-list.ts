@@ -234,12 +234,12 @@ Scene.listPopup = function (
 				});
 				break;
 		}
-		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
+		pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.scene.object');
 		deletable = true;
 		renamable = true;
 	} else {
 		copyable = false;
-		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
+		pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.scene.object');
 		deletable = false;
 		renamable = false;
 	}
@@ -306,7 +306,7 @@ Scene.listPopup = function (
 			accelerator: '/',
 			enabled: copyable,
 			click: () => {
-				list.toggle!(item as unknown as never);
+				list.toggle!(item as never);
 			}
 		},
 		{
@@ -317,8 +317,8 @@ Scene.listPopup = function (
 			accelerator: ctrl('X'),
 			enabled: copyable,
 			click: () => {
-				list.copy!(item as unknown as never);
-				list.delete!(item as unknown as never);
+				list.copy!(item as never);
+				list.delete!(item as never);
 			}
 		},
 		{
@@ -326,7 +326,7 @@ Scene.listPopup = function (
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				list.copy!(item as unknown as never);
+				list.copy!(item as never);
 			}
 		},
 		{
@@ -334,7 +334,7 @@ Scene.listPopup = function (
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				(list.paste as unknown as (item: unknown) => unknown)(item);
+				(list.paste as (item: unknown) => unknown)(item);
 			}
 		},
 		{
@@ -350,7 +350,7 @@ Scene.listPopup = function (
 			accelerator: 'Delete',
 			enabled: deletable,
 			click: () => {
-				list.delete!(item as unknown as never);
+				list.delete!(item as never);
 			}
 		},
 		{
