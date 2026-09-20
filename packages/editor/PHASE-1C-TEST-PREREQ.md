@@ -1595,6 +1595,68 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 55 轮（续轮）：`ParticleElementLayer` 再清 1 处 —— 35 → 34（`particle-engine.ts` 只剩 2 处）
+
+第 54 轮那条教训（按**接口名**定位、别按行号映射）本轮直接用上了：`ParticleElementLayer` 正是
+`export interface` 声明的那一个（第 54 轮踩空就是漏了它们）。补 5 个成员：
+
+| 成员 | 类型 | 依据 |
+| --- | --- | --- |
+| `unitWidth` / `unitHeight` / `textureWidth` / `textureHeight` | `number` | 读点在渲染循环（`const sw = layer.unitWidth`），赋点 `this.unitWidth = Math.floor(texture.width / data.sprite.hframes)` |
+| `easing` | `{ ease(t: number): number }` | 读点只有 `easing.ease(this.elapsed / this.lifetime)`。⚠️ 这里**不能**写 `Easing`：`data/transition-window.ts` 的 `Easing` 是 `export const Easing = EasingBase as …`（**值**，不是类型），所以按结构写；另外它也不该写成 `Float32Array`（同名的 `easing` 在 `ParticleLayerShape` 上才是 `Float32Array | null`，两个接口的 `easing` **不是一回事** —— 一开始照抄就吃了 `Property 'ease' does not exist on type 'Float32Array'`） |
+
+**结果**：`any-hatches` **35 → 34 处**（`particle-engine.ts` 从 8 处清到 **2 处**，只剩嵌套形状的
+`ParticleLayerData`(color/sprite) 与 `ParticleElementLayerData`(area/color)）。产物与 HEAD **逐字节相同**；
+`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
+> 又一条可复用的判据：**同名成员在不同接口上不一定是同一回事**（这里的 `easing` 一个是 `Float32Array`
+> 一个是缓动器）。跨接口「照抄类型」之前，先把该成员的**读点**过一遍 —— 读点用什么形状，它就是什么形状。
+
+## 第 54 轮（续轮）：`particle-engine.ts` 再清 2 处 —— 37 → 35（以及一次「接口→行号」映射踩空）
+
+接着第 53 轮在同一文件里推进，这次挑**形状自足**的那两个接口：
+
+| 接口 | 处理 |
+| --- | --- |
+| `ParticleLayerShape` | 6 个方法全部来自引擎自身装配（读点就是 `layer.emitParticles(dt)` / `updateParticles(dt)`（返回计数）/ `draw(opacity)` / `updateEasing()` / `clear()` / `destroy()`）⇒ 逐个写出签名 |
+| `ParticleElementRef` | 索引签名删掉后没有任何成员报错 ⇒ 纯属没人按运行时键读，直接删（连同上方的豁免注释） |
+
+留着的三处仍是**嵌套形状**（`ParticleLayerData` 的 `color` / `sprite`、`ParticleElementLayerData` 的
+`area` / `color`、`ParticleElementLayer`），按第 53 轮的判定不做。
+
+⚠️ **踩空一次，记下来**：我先用 `grep '^interface '` 把「接口 → 签名行号」列了个映射表，据此删了 4 处；
+结果 `tsc` 报 `ParticleElementLayer.unitWidth` 等错误 —— 因为**有些接口是 `export interface` 声明的**，
+`^interface ` 根本没匹配到，映射表整体错位，删掉的是别的接口的签名。教训：
+
+> 用 grep 建立「接口 → 行号」映射时，模式必须覆盖 `export interface`（以及 `interface X extends Y`），
+> 否则行号会**整体错位**；错位后删掉的仍是合法语法（编译能过一部分），但语义已经完全不是你想改的那个接口。
+> 可靠的替代：**按接口名定位**（先读该行，再在它到下一条 `^}` 之间找签名），或干脆让 `tsc` 点名成员再回头补。
+
+本轮已回退错删的 2 处、只保留 `tsc` 证明干净的那 2 处。**结果**：`any-hatches` **37 → 35 处**
+（`particle-engine.ts` 从 8 处清到 3 处）。产物与 HEAD **逐字节相同**；`tsc` 0、`typecheck:vue` 0 new、
+`lint` 1603 文件 0/0，基线已固化。
+
+## 第 53 轮（续轮）：`particle-engine.ts` 的 8 处里先做**内联的那一处**（38 → 37），其余 7 处量清了但**不做**
+
+这个文件有 8 处索引签名，是本轮剩余文件里最多的。探针结果值得完整记下来，因为它把「看着像大活」
+和「其实是大活」区分开了：
+
+- **8 处里 7 处是独立签名行**（`ParticleLayerShape` / `ParticleLayerData` / `ParticleElementLayer` /
+  `ParticleElementLayerData` 等）。删掉后 32 条报错，但按「类型.成员」去重后是 **20 个成员** ——
+  乍看像 animation-player（第 52 轮，6 个成员，一轮做完）。**但这里不一样**：`data.color` / `data.sprite` /
+  `data.area` 这些成员自己又是**嵌套形状**（读点里出现 `data.color.mode` / `.tint` / `.rgba` / `.min` /
+  `.max` / `.startMin`…、`data.sprite.hframes` / `.vframes`、`area` 的多个字段）⇒ 实际要枚举的是
+  **35–40 个成员**，且散在四层。**判定：本轮不做**，已完整回退（备份还原）。
+- **第 8 处是内联的**：`static stage: { matrix: Matrix; requestRendering: () => void; [k: string]: any };`
+  —— 删掉索引签名后 `tsc` 只点名 4 个成员（`scrollLeft` / `scrollTop` / `scrollRight` / `scrollBottom`，
+  都是 `number`）⇒ **落地**。
+
+> **教训（补第 52 轮那条）**：去重后的「成员数」还要再看一层 —— **成员是不是又是形状**。
+> 20 个成员里有 3 个是嵌套对象，工作量就翻了近一倍。估工时看的是**叶字段数**，不是成员数。
+
+**结果**：`any-hatches` **38 → 37 处**（该文件 8 处里清掉 1 处，剩 7 处）。产物与 HEAD **逐字节相同**；
+`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
+
 ## 第 52 轮（续轮）：`animation-player.ts` 的三处 —— 41 → 38（一轮清掉一个文件）
 
 第 50 轮量到这个文件级联「约 24」就搁下了。本轮先用**探针**把范围收窄（删三处签名 → 一次 `tsc` →
@@ -2174,13 +2236,23 @@ pnpm build:vite              # 构建
 
 | 轴 | 现值 | 目标 |
 | --- | --- | --- |
-| `any-hatches` | **45 处 / 19 文件** | 归零 |
+| `any-hatches` | **34 处 / 15 文件**（第 51–55 轮：43 → 41 → 38 → 37 → 35 → 34） | 归零 |
 | `unknown-casts` | **292 处 / 138 文件**（第 48 轮从 764 降下来） | 归零 |
-| `legacy-ui-lines` | 2863 行 / 10 文件 | 归零（阶段 1c，高危） |
+| `legacy-ui-lines` | 2866 行 / 10 文件 | 归零（阶段 1c，高危） |
 | `legacy-ui-refs` | 1 | 归零（= 1c 第 ① 步） |
 | `null-casts` | 0 | ✅ 已归零 |
 | `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
 | `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
+
+> **`any-hatches` 剩下的 15 个文件都是「多轮」规模的活**（第 52/53 轮量出来的准确尺寸）：
+> `particle-engine.ts` 还剩 7 处、要枚举 **35–40 个叶字段**（`data.color` / `data.sprite` / `data.area`
+> 自身又是形状）；`scene-window.ts` 5 处（marquee 待对齐 `saveData` 两个写入方 + list 需 19 签名/45 处 `!`）；
+> `animation-window.ts` 3 处（`AnimationShape`）；`useCommandParse.ts` 3 处（`CommandObjectShape`，级联 67）；
+> `particle-window.ts` 3 处（`ParticleEmitterShape`，级联 71）；`ui/ui-window.ts` 3 处（`UIShape`）；
+> `YMParameterPane.vue` 3 处（只能靠 `typecheck:vue`）；`commands/schema.ts` 2 处（`CommandSchema`，
+> 外溢约 60 个 `use*CommandSchema`）；`element-base.ts` 2 处；其余 6 个文件各 1 处
+> （`data-object.ts` / `element-classes.ts` / `ui-engine.ts` / `enum-window.ts` / `stores/ui.ts` / `types/shapes.ts`），
+> 其中 `DynamicShape` 与 `UIShape` / `UIElementInstance` / `DataModule` 是**读点遍布全仓**的承重形状。
 
 ### 二、下一批工作单（都带**实测**成本，不是估的）
 

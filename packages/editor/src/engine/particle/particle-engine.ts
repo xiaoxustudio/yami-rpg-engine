@@ -52,8 +52,6 @@ interface ParticleElementRef {
 	scaleFactor: number;
 	spriteX: number;
 	spriteY: number;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 interface ParticleEmitterShape {
@@ -84,8 +82,13 @@ interface ParticleLayerShape {
 	stocks: number;
 	elements: ParticleElementRef[] & { count: number };
 	reserves: ParticleElementRef[] & { count: number };
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 引擎装配时把 `ParticleEngine.*` 的实现挂到图层对象上（读点见 render/update 循环） */
+	emitParticles: (deltaTime: number) => void;
+	updateParticles: (deltaTime: number) => number;
+	draw: (opacity: number) => void;
+	updateEasing: () => void;
+	clear: () => void;
+	destroy: () => void;
 }
 
 // 粒子元素层数据对象（layer.data，与 particle-layer.ts 的 ParticleLayerData 共享） 注：随机参数字段运行时是 [standard, deviation] 元组；纯值字段是 number
@@ -153,8 +156,13 @@ interface ParticleEmitterRef {
 export interface ParticleElementLayer {
 	emitter: ParticleEmitterRef;
 	data: ParticleElementLayerData;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 渲染尺寸：由精灵帧尺寸算出（读点见 render 循环，赋点见 unitWidth/unitHeight） */
+	unitWidth: number;
+	unitHeight: number;
+	textureWidth: number;
+	textureHeight: number;
+	/** 缓动器：只用到 ease(0..1)（Easing 是值不是类型，故按结构写） */
+	easing: { ease(t: number): number };
 }
 
 class ParticleEmitter {
@@ -1279,7 +1287,14 @@ class ParticleElement {
 	}
 
 	// oxlint-disable-next-line no-explicit-any
-	static stage: { matrix: Matrix; requestRendering: () => void; [k: string]: any };
+	static stage: {
+		matrix: Matrix;
+		requestRendering: () => void;
+		scrollLeft: number;
+		scrollTop: number;
+		scrollRight: number;
+		scrollBottom: number;
+	};
 
 	static sharedFloat64Array = new Float64Array(4);
 	static sharedClampedArray = new Uint8ClampedArray(4);
