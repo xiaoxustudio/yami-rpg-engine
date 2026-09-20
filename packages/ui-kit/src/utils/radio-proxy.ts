@@ -91,8 +91,11 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 		for (const element of elements) {
 			if (memberDataValue(element) === value) {
 				addClass(element as HTMLElement, 'selected');
-				// oxlint-disable-next-line no-explicit-any
-				data.dataValue = value as string | number | boolean | Record<string, any> | null;
+				// 无需断言：`dataValue` 本来就声明为 `unknown`（见 RadioProxyElement），
+				// 而 `value` 也是 `unknown` —— 原先那串
+				// `as string | number | boolean | Record<string, any> | null` 既没约束力
+				// （`unknown` 直接可赋），又白白贡献了一个 `any` 逃生口。
+				data.dataValue = value;
 			} else {
 				removeClass(element as HTMLElement, 'selected');
 			}

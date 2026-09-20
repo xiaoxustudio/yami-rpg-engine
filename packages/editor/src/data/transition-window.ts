@@ -83,7 +83,11 @@ interface EasingSlots {
 	list:
 		| (YamiElement & {
 				// oxlint-disable-next-line no-explicit-any
-				read: () => Record<string, any>;
+				// 全仓其它 `read` 声明一律是 `unknown` 或精确类型（`command-tip.ts:104`
+				// 的 `read(...args: unknown[]): unknown`、`custom-command-window.ts:57` 的
+				// `read(): CustomCommandData | null` …），只有这一处写成 `Record<string, any>`
+				// —— 孤例。改成 `unknown` 后唯一的读点（`Easing.pointInput`）用一次单断言收窄。
+				read: () => Record<string, unknown>;
 				rename: (item: EasingData | null) => void;
 				restoreSelection: () => void;
 				addNodeTo: (data: EasingData, dItem?: unknown) => void;
@@ -1036,7 +1040,9 @@ Easing.pointInput = function (this: YamiElement, _event: YamiEvent) {
 	const end = keys.length - 1;
 	let node = Easing.list!.read();
 	for (let i = 0; i < end; i++) {
-		node = node[keys[i]];
+		// `list.read()` 返回浅层的 `Record<string, unknown>`；这里按 `-` 分段逐层下钻，
+		// 每层都是同一种「具名对象」。用一次单断言收窄（不是双重断言）。
+		node = node[keys[i]] as Record<string, unknown>;
 	}
 	const property = keys[end];
 	if (node[property] !== value) {

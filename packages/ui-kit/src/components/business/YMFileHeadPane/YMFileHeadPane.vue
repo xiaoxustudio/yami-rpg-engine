@@ -342,12 +342,17 @@ onMounted(() => {
 		| null
 		| undefined;
 	if (viewRoot) {
-		// oxlint-disable-next-line no-explicit-any
-		const viewApi = viewEl.value as Record<string, any>;
-		for (const key of ['read', 'write', 'updateFiller', 'bar', 'filler']) {
+		// 这里把 5 个**具名**成员从滑块组件的公开面搬到它的 root 元素上（消费方按 root 取用）。
+		// 原先两端都写成 `Record<string, any>` —— 于是名单里拼错一个名字、或某天多搬一个
+		// 不在名单里的成员，都静默通过。改成「具名联合 + unknown 值」：
+		// `as const` 让 `key` 是字面量联合（不需要索引签名），名字仍受名单约束；
+		// 值保持 `unknown`（这 5 个成员类型各异，逐个写全签名属于类型设计，不在本轴范围）。
+		const sliderMemberKeys = ['read', 'write', 'updateFiller', 'bar', 'filler'] as const;
+		type SliderViewMember = (typeof sliderMemberKeys)[number];
+		const viewApi = viewEl.value as Partial<Record<SliderViewMember, unknown>>;
+		for (const key of sliderMemberKeys) {
 			if (viewApi?.[key] !== undefined) {
-				// oxlint-disable-next-line no-explicit-any
-				(viewRoot as Record<string, any>)[key] = viewApi[key];
+				(viewRoot as Partial<Record<SliderViewMember, unknown>>)[key] = viewApi[key];
 			}
 		}
 		if (viewInputEl) {

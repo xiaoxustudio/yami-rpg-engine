@@ -533,9 +533,13 @@ export const useUIStore = defineStore('ui', () => {
 	 * 语义与原来的 `UI.listChange(e)` 完全一致（含 `this` 绑定、含不存在时静默跳过）。
 	 *
 	 * @param resolve 每次调用时求值，返回**真正的接收者对象**（延迟求值是这个机制的关键）
+	 *
+	 * `resolve` 的返回类型是 `Record<string, unknown>` 而不是 `Record<string, any>`：
+	 * 两个调用点（`UI` 惰加载代理）本来就写的是 `() => UI as Record<string, unknown> | null`，
+	 * 这里只是把形参对齐到调用方已有的口径。`any` 换来的是 `target[key]` 不经 `typeof`
+	 * 检查就能当函数调用 —— 而下面紧跟着的就是那次检查，所以它没有任何作用。
 	 */
-	// oxlint-disable-next-line no-explicit-any
-	const makeForwarder = (key: string, resolve: () => Record<string, any> | null) => {
+	const makeForwarder = (key: string, resolve: () => Record<string, unknown> | null) => {
 		return (...args: unknown[]) => {
 			const target = resolve();
 			if (target === null) return undefined;

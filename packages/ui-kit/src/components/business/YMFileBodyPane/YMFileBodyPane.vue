@@ -240,8 +240,16 @@ interface Props {
 		saveFiles(files: FileBodyFile[]): Promise<void>;
 		readdir(paths: string[]): Promise<FileBodyFile[]>;
 		assets: FileBodyFile | null;
-		// oxlint-disable-next-line no-explicit-any
-		inoMap: Record<string, any>;
+		/**
+		 * inode → 文件引用 的映射。
+		 *
+		 * **口径收紧（2026-09-20）**：全仓**其余** 5 处 `inoMap` 声明（`YMFileNavPane.vue:143`、
+		 * `file-nav-pane-core.ts:43/138`、`YMFileBrowser.vue:347`、`directory-tree.ts:30`、
+		 * `directory-object.ts:17`）**全都是 `Record<string, unknown>`**，只有这一处还写着 `any`。
+		 * 而真正的提供方是 `Directory.inoMap`（`directory-object.ts:17`，即 `Record<string, unknown>`）
+		 * ⇒ 原先的 `any` 比它的实际来源还宽，属纯粹的孤例，直接对齐。
+		 */
+		inoMap: Record<string, unknown>;
 	};
 	fileSystemApi?: {
 		path(p: string): string;

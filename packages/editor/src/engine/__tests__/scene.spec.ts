@@ -422,25 +422,25 @@ describe('SceneSelectionEngine.selectObject', () => {
 	});
 
 	it('空场景返回 null', () => {
-		const target = SceneSelectionEngine.selectObject.call(Scene, 10, 10);
+		const target = SceneSelectionEngine.selectObject!.call(Scene, 10, 10);
 		expect(target).toBeNull();
 	});
 
 	it('选中未隐藏且未锁定的对象', () => {
 		Scene.actors = [{ x: 5, y: 5, data: { size: 4 } }];
-		const target = SceneSelectionEngine.selectObject.call(Scene, 5, 5);
+		const target = SceneSelectionEngine.selectObject!.call(Scene, 5, 5);
 		expect(target).toEqual(Scene.actors[0]);
 	});
 
 	it('跳过隐藏的对象', () => {
 		Scene.actors = [{ x: 5, y: 5, hidden: true, data: { size: 4 } }];
-		const target = SceneSelectionEngine.selectObject.call(Scene, 5, 5);
+		const target = SceneSelectionEngine.selectObject!.call(Scene, 5, 5);
 		expect(target).toBeNull();
 	});
 
 	it('跳过锁定的对象', () => {
 		Scene.actors = [{ x: 5, y: 5, locked: true, data: { size: 4 } }];
-		const target = SceneSelectionEngine.selectObject.call(Scene, 5, 5);
+		const target = SceneSelectionEngine.selectObject!.call(Scene, 5, 5);
 		expect(target).toBeNull();
 	});
 });
@@ -451,19 +451,19 @@ describe('SceneSelectionEngine.selectRegion', () => {
 	});
 
 	it('空列表返回 null', () => {
-		const target = SceneSelectionEngine.selectRegion.call(Scene, 10, 10);
+		const target = SceneSelectionEngine.selectRegion!.call(Scene, 10, 10);
 		expect(target).toBeNull();
 	});
 
 	it('选中包含点击点的区域', () => {
 		Scene.regions = [{ x: 10, y: 10, width: 20, height: 20 }];
-		const target = SceneSelectionEngine.selectRegion.call(Scene, 10, 10);
+		const target = SceneSelectionEngine.selectRegion!.call(Scene, 10, 10);
 		expect(target).toEqual(Scene.regions[0]);
 	});
 
 	it('跳过隐藏的区域', () => {
 		Scene.regions = [{ x: 10, y: 10, width: 20, height: 20, hidden: true }];
-		const target = SceneSelectionEngine.selectRegion.call(Scene, 10, 10);
+		const target = SceneSelectionEngine.selectRegion!.call(Scene, 10, 10);
 		expect(target).toBeNull();
 	});
 });
@@ -526,7 +526,7 @@ describe('SceneAnimateEngine', () => {
 	});
 
 	it('requestRendering 追加 stageRendering', () => {
-		SceneAnimateEngine.requestRendering.call(Scene);
+		SceneAnimateEngine.requestRendering!.call(Scene);
 		expect(mockTimer.appendUpdater).toHaveBeenCalledWith(
 			'stageRendering',
 			Scene.renderingFunction
@@ -534,7 +534,7 @@ describe('SceneAnimateEngine', () => {
 	});
 
 	it('stopRendering 移除 stageRendering', () => {
-		SceneAnimateEngine.stopRendering.call(Scene);
+		SceneAnimateEngine.stopRendering!.call(Scene);
 		expect(mockTimer.removeUpdater).toHaveBeenCalledWith(
 			'stageRendering',
 			Scene.renderingFunction
@@ -542,7 +542,7 @@ describe('SceneAnimateEngine', () => {
 	});
 
 	it('requestAnimation 在 open+showAnimation 时追加', () => {
-		SceneAnimateEngine.requestAnimation.call(Scene);
+		SceneAnimateEngine.requestAnimation!.call(Scene);
 		expect(mockTimer.appendUpdater).toHaveBeenCalledWith(
 			'stageAnimation',
 			Scene.updateAnimation
@@ -550,7 +550,7 @@ describe('SceneAnimateEngine', () => {
 	});
 
 	it('stopAnimation 移除 stageAnimation', () => {
-		SceneAnimateEngine.stopAnimation.call(Scene);
+		SceneAnimateEngine.stopAnimation!.call(Scene);
 		expect(mockTimer.removeUpdater).toHaveBeenCalledWith(
 			'stageAnimation',
 			Scene.updateAnimation
@@ -559,7 +559,7 @@ describe('SceneAnimateEngine', () => {
 
 	it('requestRendering 不在 closed 状态追加', () => {
 		Scene.state = 'closed';
-		SceneAnimateEngine.requestRendering.call(Scene);
+		SceneAnimateEngine.requestRendering!.call(Scene);
 		expect(mockTimer.appendUpdater).not.toHaveBeenCalled();
 	});
 });

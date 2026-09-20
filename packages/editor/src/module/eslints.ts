@@ -272,6 +272,19 @@ export function initEslints(): void {
 	});
 }
 
+/**
+ * `getSelectionPosition` 的**宿主形状**。
+ *
+ * 原先这里写的是 `prototype as HTMLElement & Record<string, any>` —— 为了给一个
+ * `HTMLElement` 挂新方法而临时造一个索引签名。代价是那次断言之后**任何**成员名都不再受检。
+ * 真实契约只有一个方法：消费方早已各自声明了它（`commands/schema.ts:45`、
+ * `composables/useCommandState.ts:6`、`commands/command-tip.ts:61` 的
+ * `getSelectionPosition?: () => { x; y } | null`），这里只是把它命名下来。
+ */
+type SelectionPositionHost = HTMLElement & {
+	getSelectionPosition: (this: HTMLElement) => { x: number; y: number } | null;
+};
+
 export function applyCommandListInstanceOverride(
 	commandList: typeof CommandList | HTMLElement
 ): void {
@@ -280,8 +293,7 @@ export function applyCommandListInstanceOverride(
 		'prototype' in commandList && commandList.prototype
 			? (commandList as typeof CommandList).prototype
 			: (commandList as HTMLElement);
-	// oxlint-disable-next-line no-explicit-any
-	(prototype as HTMLElement & Record<string, any>).getSelectionPosition = function (
+	(prototype as SelectionPositionHost).getSelectionPosition = function (
 		this: HTMLElement
 	): { x: number; y: number } | null {
 		const index = activeIndexOf(this);

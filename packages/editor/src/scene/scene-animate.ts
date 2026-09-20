@@ -16,13 +16,17 @@ interface SceneMarqueeData {
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-Scene.requestAnimation = SceneAnimateEngine.requestAnimation;
-Scene.updateAnimation = SceneAnimateEngine.updateAnimation;
-Scene.stopAnimation = SceneAnimateEngine.stopAnimation;
-Scene.requestRendering = SceneAnimateEngine.requestRendering;
-Scene.renderingFunction = SceneAnimateEngine.renderingFunction;
-Scene.stopRendering = SceneAnimateEngine.stopRendering;
-Scene.updateFont = SceneAnimateEngine.updateFont;
+// `!` 是**如实**的：`SceneAnimateEngine` 声明为 `Partial<…>`（它确实是「先建空对象、
+// 下面按域挂载」），而这几行在本模块求值期执行，此时 `scene-animate-engine.ts` 已求值完毕
+// ⇒ 7 个成员必然已就位。用 `Partial` 而不是 `{} as Shape` 就是为了让「可能未挂载」
+// 在类型上可见，代价就是这里要写 `!`。
+Scene.requestAnimation = SceneAnimateEngine.requestAnimation!;
+Scene.updateAnimation = SceneAnimateEngine.updateAnimation!;
+Scene.stopAnimation = SceneAnimateEngine.stopAnimation!;
+Scene.requestRendering = SceneAnimateEngine.requestRendering!;
+Scene.renderingFunction = SceneAnimateEngine.renderingFunction!;
+Scene.stopRendering = SceneAnimateEngine.stopRendering!;
+Scene.updateFont = SceneAnimateEngine.updateFont!;
 
 Scene.switchLayer = (function IIFE() {
 	let layerGroup: HTMLElement | null = null;

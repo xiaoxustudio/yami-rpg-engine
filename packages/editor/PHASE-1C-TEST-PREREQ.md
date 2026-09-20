@@ -1596,6 +1596,275 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 第 65 轮（续轮）：`any-hatches` 55 → 54，**拿下 `SceneAnimateEngine`** —— `this: typeof Scene` 的正确解法
+
+第 63 轮把 `SceneAnimateEngine` 判为「被 `SceneShape` 挡住」并回退；第 64 轮把挡因修正为
+「**测试侧局部 mock 够不着承重形状**」。**本轮给出解法并落地**，且它**不需要**动 `SceneShape`。
+
+### 解法：按**读点**声明本地窄接收者类型（同目录已有先例）
+
+```ts
+type SceneAnimateThis = {
+	state: string;
+	showAnimation: boolean;
+	parallaxes: { hidden?: boolean; player: { update(deltaTime: number): void } }[];
+	updateAnimation: (deltaTime: number) => void;
+	renderingFunction: () => void;
+};
+```
+
+八个成员**读到的全部**只有这 5 个成员 —— 这正是 `scene-selection-engine.ts` 的
+`SceneSelectionThis` 一直在用的手法（那处第 63 轮已拿下）。所以本轮的要点不是新设计，
+而是**意识到它可复用**：`this: typeof Scene` 并不是「必须的精确」，只是当初懒得枚举。
+
+三处配套改动，全部机械：
+
+1. `SceneAnimateEngine` 声明为 `Partial<SceneAnimateEngineShape>`（如实描述先空后挂）；
+2. 本文件 8 处 `function (this: typeof Scene …)` → `(this: SceneAnimateThis …)`；
+3. `scene-animate.ts` 的 7 行镜像补 `!`（`Partial` 的必然结果），**spec 再补 5 处 `!`**。
+
+`tsc` 一次全绿，**没有任何预料之外的连带** —— 与第 63 轮那次「加接口就红 5 处」形成对照：
+**差别只在接收者类型是宽的（`SceneShape`）还是窄的（本地 5 个成员）。**
+
+### 修正第 63/64 轮的两句判断
+
+> 第 63 轮：「`this: typeof Scene` 的三处需 `SceneShape`」→ **不成立**，窄接收者即可。
+> 第 64 轮：「两条路…都不是机械枚举」→ **一半不成立**：`SceneSelectionThis` 那样的窄类型
+> 在这批文件里是**机械枚举**（照读点抄），不是设计决定。
+
+**判据（本轮定型）**：
+`export const XxxEngine: Record<string, any> = {}` 后跟 `XxxEngine.foo = function (this: typeof Y)` 时 ——
+**不要**判定为承重，先**数一下这些成员一共读/写了 `Y` 的哪几个字段**：
+
+| `Y` 上被读/写的字段数 | 做法 | 实例 |
+| --- | --- | --- |
+| 个位数（≈≤10，且全是具名字段） | **本地窄类型**，一轮拿下 | `SceneAnimateThis`（5 个）、`SceneSelectionThis`（本已存在） |
+| 几十个 / 含大量写入 / 子对象本身是承重形状 | 整片留到最后 | `SceneCameraEngine`（≈30 个，含 `this.scrollLeft = …` 等**写入**）、`SceneMarqueeEngine`（`typeof Scene.marquee` 是 hatch） |
+
+「字段数」比「`Y` 是不是承重形状」有用得多 —— 前者是**可实测的成本**，后者只是个标签。
+
+### 验证（本轮）
+
+- `any-hatches` **55 → 54 处 / 29 → 28 文件**
+- `typecheck` 0 / `typecheck:vue` 0 新增 / `lint` 0-0；`scene.spec.ts` 20 测试通过
+- 纯类型改动，无运行时行为变化
+
+## 第 64 轮（续轮）：`any-hatches` 61 → 56 —— `.vue` 三处拿下，`YMParameterPane` 的 3 处的**实测代价 41**
+
+### 拿下 4 处
+
+| 站点 | 做法 | 判据 |
+| --- | --- | --- |
+| `YMParameterPane.vue:691` | `const data: Record<string, any> = {}` → `Record<string, unknown>` | 同一函数里 `result: Array<Record<string, unknown>>` 就是它的去处 ⇒ 纯多余 |
+| `YMFileHeadPane.vue:346,350`（2 处） | `Record<string, any>` → `Partial<Record<SliderViewMember, unknown>>`，名单 `as const` 派生字面量联合 | 搬的本来就只是 5 个**具名**成员；`as const` 让 `key` 是联合而不是 `string`，于是**不需要索引签名**，`any` 就没有存在理由 |
+| `YMFileBodyPane.vue:244` | `inoMap: Record<string, any>` → `Record<string, unknown>` | **全仓其余 5 处 `inoMap` 声明全都是 `Record<string, unknown>`**（`YMFileNavPane.vue:143`、`file-nav-pane-core.ts:43/138`、`YMFileBrowser.vue:347`、`directory-tree.ts:30`、`directory-object.ts:17`），只有这一处是孤例；真正的提供方 `Directory.inoMap` 也是 `unknown` ⇒ 原先的 `any` 比来源还宽 |
+
+**可复用的判据**：遇到 `Record<string, any>`，先全仓搜**同名成员**的其它声明。
+若其余声明都已经是 `unknown`/精确类型，这一处就是**孤例**，对齐即可，零设计成本。
+
+### 试过并**回退**：`YMParameterPane.vue` 的 3 处 `HTMLElement & { [k: string]: any }`（164 / 201 / 971）
+
+三处是同一个类型：面板元素。它被 `attachStateAccessors` 用 `Object.defineProperty` 装上
+`paneState` 的 14 个访问器（`paneStateFields` 与 `paneState` 逐项对应），另外 `bind()` 挂
+`getData`、布局侧挂 `onResize`。看起来很干净：写成
+
+```ts
+type ParameterPaneElement = HTMLElement & typeof paneState & { getData?: …; onResize?: … };
+```
+
+**实测 `typecheck:vue` 一次性红 41 处**（TS2339 成员不存在、TS18046 「of type unknown」、
+TS2322 赋值不兼容……）。**根因不是元素类型写得不对，是 `paneState` 的字段本身全是 `unknown`**：
+14 个字段声明为 `null as unknown` / `[] as unknown[]`，`any` 一直在替它们兜底；一旦把元素
+类型收窄，这 14 个字段的 **`unknown` 就全部暴露到 41 个读点上**。
+
+⇒ 回退（`git diff` 该文件只剩 691 那一处）。**记法**：`.vue` 里 `HTMLElement & { [k: string]: any }`
+的成本**由它承载的状态字段的类型决定，而不是由 `any` 本身决定**。要收这类站点，
+得连 `paneState` 的 14 个字段一起定类型（= 类型设计活），不是给元素加个名字就完事。
+
+> 建议读法：动手前先看**这个 `any` 底下压着多少个 `unknown`**。压着 0 个（如
+> `YMFileHeadPane` 的 5 个具名成员）就便宜；压着十几、几十个就整片留到最后。
+
+### 同批未动：`YMParameterPane.vue:135 / 245` 的 `guidMap: Record<string, any>`
+
+**提供方已经比它窄**：`components/common/ParameterPane.vue:65` 写的是
+`const dataManifest = (): { guidMap: Record<string, unknown> } | null => Data.manifest;`。
+但 ui-kit 侧拿 `guidMap[id]` 之后要读 `meta.parameters` / `meta.langMap.update()` /
+`meta.overview?.deprecated` ⇒ 光换成 `unknown` 会在 3 个读点报「of type unknown」，
+必须同时给出 `ScriptMeta` 形状。而那个形状的来源 `Data.manifest` 正是
+`data/data-object.ts` 的承重 hatch（`DataModule`）⇒ **与核同批**。
+
+### 同批拿下：`data/transition-window.ts:86` 的 `read: () => Record<string, any>`
+
+**孤例判据的第二个实例**：全仓其它 `read` 声明一律是 `unknown` 或精确类型 ——
+`commands/command-tip.ts:104` `read(...args: unknown[]): unknown`、
+`commands/custom-command-window.ts:57` `read(): CustomCommandData | null`、
+`utils/element-utils.ts:183` `(el as { read: () => unknown })`…… 只有这一处是 `Record<string, any>`。
+
+改成 `Record<string, unknown>` 的连带**只有 4 行**，就在唯一的读点 `Easing.pointInput`：
+它按 `-` 分段逐层下钻（`node = node[keys[i]]`），每层都是同一种具名对象 ⇒
+加**一次单断言** `as Record<string, unknown>` 即可（不是双重断言，不增 `unknown-casts`）。
+
+> 与上面的 `guidMap` 对比：同样是「提供方已经更窄」，但那边读侧要 3 个具名成员，
+> 必须同时给出形状；这边读侧只是**继续下钻**，单断言就够。
+> ⇒ **判据要落到「读侧怎么用」上，不只是「别处怎么声明」。**
+
+### 同批判定为**不便宜**（不是孤例）：两处 `config`
+
+`services/project/setting-config/index.ts:16` 的 `config: Record<string, any>` 看着很像孤例 ——
+**它自己那个目录里** `types.ts:5/23/24` 与 `renderer.ts:14` **全都是 `Record<string, unknown>`**。
+但那些是**形参位置**（接受任意 config），而本类是**结构化访问**：
+`this.config[key][sub]`、`this.config.other.browserSearchHistoryLimit`、`this.config.server.port`
+⇒ 换成 `unknown` 会在这几行直接报「of type unknown」，必须同时给出配置 schema 的嵌套形状。
+
+`stores/data.ts:149` 的 `config: Record<string, any> | null` 同理：`Data.config.deadzone` /
+`Data.config.localization.languages` / `Data.config.window.title` / `Data.config.script` /
+`Data.config.lightArea` 全是具名结构化读点。
+
+⇒ **记法修正**：孤例判据要求「成员名相同 **且用法位置同类**」——形参位置与结构化访问是两回事。
+只看「同名成员在别处是什么类型」，会把 `config` 这类误判成便宜。
+
+### 验证（本轮）
+
+- `any-hatches` **61 → 55 处 / 33 → 29 文件**（`.vue` 三处 4 点 + `transition-window` 1 处）
+- `typecheck` 0 / `typecheck:vue` 0 新增（回退后回到 0）/ `lint` 0-0
+- ui-kit 115 文件 811 测试全通过
+- 纯类型改动，无运行时行为变化
+
+## 第 63 轮（续轮）：`any-hatches` 67 → 61 —— 6 处白捡，两处试过并回退
+
+### 本轮最重要的发现：第 62 轮的探针**没覆盖这批站点**
+
+第 62 轮用 `any-hatch-probe.mjs` 得出「23 处站点白捡 0 处、剩下全是逐成员枚举」。**那个结论对
+索引签名成立，但探针的口径只删「独占一行的 `\t[k: string]: any;`」** —— 它**碰不到**
+`Record<string, any>`（第 62 轮扩口径新增的那 35 处）。而这 35 处里有 5 处**根本不是承重形状**，
+是一次断言、一个形参、甚至一行**完全多余的 cast**。
+
+⇒ **教训（写给下一批）**：探针要按**站点形态**分批做。「索引签名」与「`Record<string, any>`」
+在语法位置、可删性、承重方式上都不一样；用一把探针的负面结果去概括两条口径，会**误判整片区域**。
+
+### 清掉的 5 处（逐站点理由，均可复核）
+
+| # | 站点 | 为什么是白捡 |
+| --- | --- | --- |
+| 1 | `ui-kit/.../type-registry.ts:58` `types: Record<string, any>` | `get()` 的返回类型**本来就叫** `RegistryEntry`，`register()` 的 40 处调用**全部**传 `{ component, create }`。改成 `Record<string, RegistryEntry>` 后 `register(config: unknown)` 同步收紧为 `RegistryEntry`；**外部零调用方**（`.types[` 全仓只有本文件 2 处，且只用于 `Object.keys`） |
+| 2 | `ui-kit/utils/radio-proxy.ts:95` `value as string \| number \| boolean \| Record<string, any> \| null` | **纯多余**：`dataValue` 的声明就是 `unknown`，`value` 也是 `unknown` ⇒ `unknown` 直接可赋。那串断言既无约束力，又是该文件唯一的 `any` 逃生口。删掉即可 |
+| 3 | `stores/ui.ts:538` `makeForwarder(key, resolve: () => Record<string, any> \| null)` | **形参与调用方口径不一致**：两个调用点本来写的就是 `() => UI as Record<string, unknown> \| null`。改成 `unknown` 后函数体在 `typeof fn !== 'function'` 处正常收窄，无需新断言 |
+| 4 | `module/eslints.ts:284` `prototype as HTMLElement & Record<string, any>` | 为给 `HTMLElement` 挂一个新方法而临时造索引签名。真实契约**只有一个方法**，且消费方早已各自声明（`commands/schema.ts:45`、`composables/useCommandState.ts:6`、`commands/command-tip.ts:61`）⇒ 提成具名 `SelectionPositionHost`，单次断言（不增 `unknown-casts`） |
+| 5 | `palette/tile-frame-generator.ts:17` `FrameGenerator: Record<string, any>` | 自包含单例，成员就 6 个且**全部在本文件挂载**。`this.callback` / `this.windowClosed` 两处补 `!`（类型层，运行期路径上必已赋值） |
+
+第 5 处顺带说明一个判据：**「成员是否全部在本文件挂载」决定枚举成本**。
+`FrameGenerator`（6 个，全在本文件）一轮拿下；而下面那个反例（9 个 engine 命名空间）全部挂在
+**别的**形状上。
+
+### 试过并**回退**：`engine/scene/scene-animate-engine.ts`（`SceneAnimateEngine`）
+
+按 5 处的经验先挑了它（只有 8 个成员）。加 `interface SceneAnimateEngineShape` 后：
+
+1. `= {}` 初始化立刻报 **TS2740**（接口成员非可选 ⇒ 空对象不满足）；
+2. 更要紧的是 **`scene.spec.ts` 一次性红 5 处**：`SceneAnimateEngine.requestRendering.call(Scene)`
+   里的 `Scene` 是 63 个成员的**局部 mock**，而成员签名写的是 `this: typeof Scene`。
+
+**根因不是签名写错，是接收者形状**：这些 engine 命名空间的方法都以 `Scene`（即 `SceneShape`）为
+`this`，而 `SceneShape` 自己就是第 62 轮实测**级联 296** 的承重 hatch。先给命名空间定类型，
+就必然要么拉进 `SceneShape`、要么临时造一个更窄的 `this` 形状 —— 后者是**类型设计决定**，
+不是机械枚举（第 56/57 轮对 `UIElementInstance` / `UIShape` 的判定完全一样）。
+
+⇒ **回退，且逐字节复原**（`git diff --numstat` 该文件为空即证）。
+**记法**：`export const Xxx: Record<string, any> = {}` 后面跟着 `Xxx.foo = function (this: typeof Y)` 的，
+先看 **`Y` 是不是承重形状**；是就整片留到最后，不是才可以枚举。
+
+### 拿下：`engine/scene/scene-draw-engine.ts` 的 `SceneDrawEngine`（27 个成员，一轮完成）
+
+按「成员是不是全在本文件、且由**上方 import** 提供」这个判据筛出来的第一处。27 个成员
+`SceneDrawEngine.drawScene = drawScene;` …… 全部是 `./draw-*.ts` 的导入函数，**没有 `this`**，
+所以既能改成对象字面量（类型全部由导入推断、零手写签名），又**不需要**动位置：
+
+```ts
+export const SceneDrawEngine = { drawScene, drawBackgrounds, /* …27 个… */ };
+```
+
+唯一的消费方 `scene-draw.ts` 是**逐条镜像**到 `Scene` 上（`Scene.drawScene = …`，30 行），
+而 `SceneShape` 带索引签名 ⇒ 目标侧是 `any`，不会因推断出的精确签名而报错。
+`tsc` / `lint` / `vue-tsc` 一次全绿，无连带。
+
+> 顺带说明这个名字面上 `any` 的真实危害：镜像**逐条**写，若某条拼错，`Record<string, any>`
+> 会让它静默镜像一个 `undefined` 到 `Scene` 上，直到运行时某个绘制调用才炸。
+> 改成字面量后拼错立刻是编译错误。
+
+### 拿下（第二处）：`engine/scene/scene-selection-engine.ts` 的 `SceneSelectionEngine`（10 个成员）
+
+**这一处推翻了上一节那句「`Scene*` 全部被 `SceneShape` 挡住」的概括** —— 真正的判别式是
+**该文件有没有自己声明接收者类型**：
+
+| 文件 | 成员的 `this` | 结果 |
+| --- | --- | --- |
+| `scene-selection-engine.ts` | `SceneSelectionThis`（**本文件声明**，按读点枚举） | ✅ 干净拿下 |
+| `scene-draw-engine.ts` | 无 `this`（纯函数引用） | ✅ 已拿下 |
+| `scene-animate-engine.ts` / `scene-camera-engine.ts` / `scene-edit-engine.ts` | `this: typeof Scene` | ❌ 需 `SceneShape` |
+| `scene-marquee-engine.ts` | `this: typeof Scene.marquee`（`HTMLElement & { [k: string]: any }`） | ❌ 同上 |
+
+做法与本轮 `FrameGenerator` 同构：`Partial<SceneSelectionEngineShape>`（**如实描述**
+「对象在下面按域逐个挂载，`{}` 时确实一个成员都没有」，不用 `{} as Shape` 把它盖掉）。
+接收者类型**直接复用文件里已有的** `SceneSelectionThis`，零新增设计。
+
+连带只有 spec 侧：`scene.spec.ts` 的 7 处 `SceneSelectionEngine.selectObject.call(Scene, …)`
+补 `!`（`Partial` 的必然结果）。
+
+> **重要**：spec 的 `Scene` 局部 mock **满足** `SceneSelectionThis`，却**不满足** `SceneShape`
+> （第 63 轮首测时它「缺 page / head / body / searcher 等 18 个」）。
+> 这正是 `this: typeof Scene` 那三处难做的**真正**原因 —— 不是生产代码，是
+> **测试侧的局部 mock 够不着承重形状**。所以那三处若要推进，要么给引擎声明更窄的接收者类型
+> （= 类型设计决定，见第 56/57 轮判例），要么改 spec 的 mock 形状。**两条路都不是机械枚举。**
+
+### 同类待办（修正后的判据）
+
+先看 `this` 是不是**本文件声明的窄形状**：是 → 直接做（`Partial<>` + spec 补 `!`）；
+是 `typeof Scene` / `typeof Scene.marquee` / 其它承重形状 → 整片留到最后。
+按此，剩下 4 个（`animate` / `camera` / `edit` / `marquee`）与 `UIEngine`
+全部属于后者，**排在 `SceneShape` 之后**。
+
+### 试过并**回退**：`engine/particle/particle-engine.ts` 的 `ParticleEngine`
+
+这里踩到的是**另一种**拦截，和第 56/57 轮那类「接收者形状」不同 —— 值得单独记，因为
+它暴露了一个**真实的、此前被 `any` 掩盖的类型不一致**。
+
+`ParticleEngine` 只有 3 个成员，且都是**类引用**（`Emitter` / `Layer` / `Element`），
+看着是全场最便宜的一处。把「空对象 + 末尾三行赋值」换成类引用字面量后（类型全部推断，
+零手写接口），本文件**自己**通过，但 `particle-initialize.ts` 一处立刻红：
+
+```ts
+Particle.Emitter = ParticleEngine.Emitter;   // ← 137-139，模块求值期执行
+Particle.Layer   = ParticleEngine.Layer;
+Particle.Element = ParticleEngine.Element;
+```
+
+```
+Type 'typeof ParticleLayer' is not assignable to type
+  'new (emitter: ParticleEmitterShape, data: ParticleLayerDataShape) => ParticleLayerShape'
+```
+
+**根因：`ParticleEmitterShape` / `ParticleLayerShape` 这两个名字在全仓有**两份互不相同的定义** ——
+一份在 `engine/particle/particle-engine.ts`（类所用的本地形状），另一份在
+`particle/particle-window.ts`（导出的那个，带 `[k: string]: any`，即台账里的一处 hatch）。
+两边的成员对不上，`particle-window.ts` 的还多出 `speed / opacity / scale / angle / matrix`；
+另有一处 `draw(opacity: number)` vs `draw(opacity?: number)` 在 `strictNullChecks` 下不兼容。
+
+⇒ **`particle-initialize.ts:137-139` 就是这两份同名形状的接缝**。也就是说：
+`ParticleEngine` 的 1 处 hatch **不可能单独清掉** —— 它和 `particle-window.ts` 的 hatch
+（第 62 轮实测级联 **71**）是**同一个决定**的两半。用 `as unknown as` 在接缝上架桥能骗过
+`tsc` 并让 `any-hatches` −1，但会 **+1 `unknown-casts`**，且把真问题藏起来 —— **不做**。
+
+⇒ 回退，**逐字节复原**（`git diff --numstat` 该文件为空即证）。
+**记法**：`Xxx.A = SomeClass` 形态的命名空间，先查 `SomeClass` 与消费侧接口**是不是同一份声明**；
+同名不同源 = 承重形状的两半，与「接收者形状」一并留到最后。
+
+### 验证（本轮）
+
+- `any-hatches` **67 → 61 处 / 38 → 33 文件**（5 处白捡 + `SceneDrawEngine` 1 处；两处回退未计入）
+- `tsc --noEmit -p tsconfig.strict.json` 0 错误；`lint` 0/0；`vue-tsc` 0 新增
+- ui-kit / editor 测试全通过
+- 纯类型改动：**无运行时行为变化**（唯一的语义面是 `FrameGenerator` 两处 `!`，路径上必已赋值）
+
 ## 第 62 轮（续轮）：`any-hatches`「可白捡组」探测 —— **负面结果：0 处**，以及一个度量漏洞
 
 第 38–61 轮反复出现「某个站点删了签名、`tsc` 零报错 ⇒ 直接删」的白捡（第 60 轮 `ParticleEmitterRef`

@@ -54,9 +54,19 @@ interface RegistryEntry {
 }
 
 export interface TypeRegistryApi {
-	// oxlint-disable-next-line no-explicit-any
-	types: Record<string, any>;
-	register(type: string, config: unknown): void;
+	/**
+	 * 注册表：类型名 → 该类型的控件描述符。
+	 *
+	 * **口径收紧（2026-09-20）**：此前是 `Record<string, any>`。它并不是「真的什么都能放」——
+	 * `get()` 的返回类型本来就叫 `RegistryEntry`，`register()` 的 40 处调用也**全部**传
+	 * `{ component, create }`。`any` 只是让这里少写一个类型名，代价是：
+	 * ① `get()` 的返回值不需要任何校验就能当 `RegistryEntry` 用（写错成员名不报错）；
+	 * ② 后代任何一次误写（例如把字符串塞进来）也静默通过。
+	 * 现在按真实契约收紧；`create` 的 `any` 返回值**有意保留**（各控件的包装类型
+	 * 名副其实地异构，由调用方按 type 收窄）。
+	 */
+	types: Record<string, RegistryEntry>;
+	register(type: string, config: RegistryEntry): void;
 	get(type: string): RegistryEntry;
 	has(type: string): boolean;
 }
@@ -65,7 +75,7 @@ export function createTypeRegistry(dataSource: TypeRegistryDataSource): TypeRegi
 	const TypeRegistry: TypeRegistryApi = {
 		types: {},
 
-		register(type: string, config: unknown) {
+		register(type: string, config: RegistryEntry) {
 			this.types[type] = config;
 		},
 

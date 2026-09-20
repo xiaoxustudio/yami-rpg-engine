@@ -687,8 +687,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	input.read = function () {
 		const result: Array<Record<string, unknown>> = [];
 		for (const rowEl of rowsEl.children) {
-			// oxlint-disable-next-line no-explicit-any
-			const data: Record<string, any> = {};
+			const data: Record<string, unknown> = {};
 			for (const { param, input } of (rowEl as HTMLElement & { wraps: RepeatableRowWrap[] })
 				.wraps) {
 				data[param.key] = read(input);

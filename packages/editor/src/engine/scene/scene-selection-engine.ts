@@ -3,8 +3,77 @@ import { Vector } from '@app/engine/webgl/vector2.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { dist, radians } from '@app/utils/math';
 
-// oxlint-disable-next-line no-explicit-any
-export const SceneSelectionEngine: Record<string, any> = {};
+/**
+ * `SceneSelectionEngine` 的成员契约（`any-hatches` 收口，2026-09-20）。
+ *
+ * 此前这里是 `Record<string, any>`，于是唯一的消费方 `scene-selection.ts` 里那 10 行
+ * **逐条镜像**（`Scene.selectObject = SceneSelectionEngine.selectObject;`）**拼错也不报错** ——
+ * 会静默把 `undefined` 挂到 `Scene` 上，直到运行时点选才炸。
+ *
+ * 接收者用本文件既有的 `SceneSelectionThis`（它已经是按实际读点枚举的精确形状），
+ * 所以这里**不需要**把 `SceneShape` 拉进来 —— 与 `SceneAnimateEngine` 那处
+ * （成员写 `this: typeof Scene`）情形不同。
+ *
+ * `Partial<>` 是**如实描述**：对象在下面按域逐个挂载，`{}` 时确实一个成员都没有。
+ * 因此读侧（`scene-selection.ts` 的镜像、spec 的 `.call`）需要 `!` —— 那是真实情况，
+ * 不用 `{} as Shape` 把它盖掉。
+ */
+type SceneSelectionEngineShape = {
+	selectObject: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
+	selectRegion: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
+	selectLight: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
+	selectParticleEmitter: (
+		this: SceneSelectionThis,
+		x: number,
+		y: number
+	) => SceneObjectShape | null;
+	selectSortedLayer: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
+	drawOvalWireframe: (
+		this: SceneSelectionThis,
+		ox: number,
+		oy: number,
+		hr: number,
+		vr: number,
+		color: number
+	) => void;
+	drawTargetAnchor: (
+		this: SceneSelectionThis,
+		target: unknown,
+		angle: number,
+		color?: number
+	) => void;
+	drawRectWireframe: (
+		this: SceneSelectionThis,
+		dl: number,
+		dt: number,
+		dr: number,
+		db: number,
+		ax: number,
+		ay: number,
+		angle: number
+	) => void;
+	drawRectWireframeOnTilemap: (
+		this: SceneSelectionThis,
+		rl: number,
+		rt: number,
+		rw: number,
+		rh: number,
+		ax: number,
+		ay: number,
+		angle: number
+	) => void;
+	setRectWireframeVertices: (
+		this: SceneSelectionThis,
+		vertices: Float32Array,
+		dl: number,
+		dt: number,
+		dr: number,
+		db: number,
+		matrix: Matrix
+	) => void;
+};
+
+export const SceneSelectionEngine: Partial<SceneSelectionEngineShape> = {};
 
 /**
  * 场景选择引擎读到的对象形状（角色 / 动画 / 区域 / 光照 / 粒子 / 视差 / 瓦片地图共用）。

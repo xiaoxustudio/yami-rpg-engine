@@ -13,8 +13,31 @@ export interface FrameGeneratorForm {
 
 const form = reactive<FrameGeneratorForm>({ strideX: 0, strideY: 0, count: 1 });
 
-// oxlint-disable-next-line no-explicit-any
-export const FrameGenerator: Record<string, any> = {
+/**
+ * `FrameGenerator` 的成员契约（`any-hatches` 收口，2026-09-20）。
+ *
+ * 此前是 `Record<string, any>`：`FrameGenerator.open!(…)` 与 `FrameGenerator.initialize!()`
+ * 的**成员名写错也不报错**，且 `this` 不受约束。这里按真实挂载点枚举。
+ *
+ * 可空是有意的：对象字面量先把它们占成 `null`，函数在下方才挂上；`confirm` 里的
+ * `this.callback` 只在窗口打开（= `open` 已赋过值）的路径上被调用，所以沿用 `!`
+ * ——**类型轮不改运行时行为**。
+ */
+interface FrameGeneratorShape {
+	form: FrameGeneratorForm;
+	callback: ((strideX: number, strideY: number, count: number) => void) | null;
+	initialize: ((this: FrameGeneratorShape) => void) | null;
+	open:
+		| ((
+				this: FrameGeneratorShape,
+				callback: (strideX: number, strideY: number, count: number) => void
+		  ) => void)
+		| null;
+	windowClosed: ((this: FrameGeneratorShape, event: Event) => void) | null;
+	confirm: ((this: FrameGeneratorShape, event: Event) => void) | null;
+}
+
+export const FrameGenerator: FrameGeneratorShape = {
 	form,
 	callback: null,
 	initialize: null,
@@ -29,7 +52,7 @@ FrameGenerator.initialize = function (this: typeof FrameGenerator) {
 	form.count = 1;
 
 	const frameWindow = paletteEls.get('autoTile-generateFrames') as YamiElement;
-	if (frameWindow) on(frameWindow, 'closed', this.windowClosed);
+	if (frameWindow) on(frameWindow, 'closed', this.windowClosed!);
 	// confirm 由 AutoTileGenerateFrames.vue 的 @confirm 驱动（按钮由 WindowFrame 生成）
 };
 
@@ -53,6 +76,6 @@ FrameGenerator.confirm = function (this: typeof FrameGenerator, _event: Event) {
 	if (strideX === 0 && strideY === 0) {
 		return requestFocus('autoTile-generateFrames-strideX');
 	}
-	this.callback(strideX, strideY, count);
+	this.callback!(strideX, strideY, count);
 	Window.close!('autoTile-generateFrames');
 }.bind(FrameGenerator);
