@@ -1010,7 +1010,7 @@ for (const key of attributeStateKeys) {
 	Object.defineProperty(Attribute, key, {
 		get: () => getAttributeStore().state[key],
 		set: (value: unknown) => {
-			(getAttributeStore().state as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getAttributeStore().state, key, value);
 		},
 		configurable: true
 	});

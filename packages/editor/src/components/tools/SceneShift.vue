@@ -23,7 +23,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { registryElement, registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -39,9 +39,10 @@ const setForm = (data: Partial<SceneShiftForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
-			| null;
+		const control = registryElement<HTMLElement & { write?: (value: unknown) => void }>(
+			composableEls,
+			id
+		);
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
 		}
@@ -51,9 +52,10 @@ const setForm = (data: Partial<SceneShiftForm>): void => {
 const getForm = (): SceneShiftForm => {
 	const data = { ...form } as SceneShiftForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { read?: () => unknown })
-			| null;
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(
+			composableEls,
+			id
+		);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}

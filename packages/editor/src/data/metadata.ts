@@ -47,7 +47,7 @@ export const Meta = (function IIFE() {
 		constructor(file: FileItem, guid: string) {
 			const { type, path } = file;
 			this.path = path;
-			this.size = Number((file.stats as unknown as { size: number }).size);
+			this.size = Number(file.stats!.size);
 
 			switch (type) {
 				case 'scene':

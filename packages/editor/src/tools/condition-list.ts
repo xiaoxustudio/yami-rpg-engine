@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { createElementRegistry } from '@app/utils/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 import { treeOwnerListOf, type CustomBoxApi } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -226,9 +227,9 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-boolean':
 			case 'global-number':
 			case 'global-string':
-				const keyEl = conditionEls.get('condition-key');
 				// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-				if (keyEl) (keyEl as unknown as CustomBoxApi).filter = type.slice(7);
+				registryElement<CustomBoxApi>(conditionEls, 'condition-key')!.filter =
+					type.slice(7);
 				break;
 		}
 	}

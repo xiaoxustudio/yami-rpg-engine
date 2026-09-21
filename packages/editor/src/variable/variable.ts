@@ -355,7 +355,7 @@ for (const key of variableStateKeys) {
 	Object.defineProperty(Variable, key, {
 		get: () => getVariableStore().state[key],
 		set: (value: unknown) => {
-			(getVariableStore().state as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getVariableStore().state, key, value);
 		},
 		configurable: true
 	});

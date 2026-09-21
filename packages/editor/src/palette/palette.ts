@@ -133,7 +133,7 @@ for (const key of paletteBridgeKeys) {
 	Object.defineProperty(Palette, key, {
 		get: () => getPaletteStore()[key],
 		set: (value: unknown) => {
-			(getPaletteStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getPaletteStore(), key, value);
 		},
 		configurable: true
 	});

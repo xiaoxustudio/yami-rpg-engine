@@ -52,7 +52,7 @@ export default class Plugin {
 			this.target = file;
 			this.meta = meta;
 
-			const size = Number((file.stats as unknown as { size: number }).size);
+			const size = Number(file.stats!.size);
 			this.info = {
 				name: file.basename + file.extname,
 				size: File.parseFileSize!(size)

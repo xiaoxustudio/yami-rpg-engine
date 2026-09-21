@@ -967,7 +967,7 @@ for (const key of autoTileBridgeKeys) {
 	Object.defineProperty(AutoTile, key, {
 		get: () => getAutoTileStore()[key],
 		set: (value: unknown) => {
-			(getAutoTileStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getAutoTileStore(), key, value);
 		},
 		configurable: true
 	});

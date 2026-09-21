@@ -849,7 +849,7 @@ for (const key of enumStateKeys) {
 	Object.defineProperty(Enum, key, {
 		get: () => getEnumStore().state[key],
 		set: (value: unknown) => {
-			(getEnumStore().state as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getEnumStore().state, key, value);
 		},
 		configurable: true
 	});

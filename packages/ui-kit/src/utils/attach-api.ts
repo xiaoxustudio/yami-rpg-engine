@@ -16,6 +16,6 @@
 export function attachApi<Api extends object>(el: HTMLElement, api: Partial<Api>): void {
 	const source = api as Record<string, unknown>;
 	for (const key of Object.keys(source)) {
-		(el as unknown as Record<string, unknown>)[key] = source[key];
+		Reflect.set(el, key, source[key]);
 	}
 }

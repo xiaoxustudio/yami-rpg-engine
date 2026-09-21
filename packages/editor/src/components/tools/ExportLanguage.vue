@@ -29,7 +29,7 @@ const onConfirm = () => {
 };
 import { onMounted, reactive, ref } from 'vue';
 import { localEls } from '@app/local/element-registry';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { registryElement, registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import type { ExportLanguageForm } from '@app/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -50,9 +50,10 @@ const setForm = (data: Partial<ExportLanguageForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
-			| null;
+		const control = registryElement<HTMLElement & { write?: (value: unknown) => void }>(
+			composableEls,
+			id
+		);
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
 		}
@@ -62,9 +63,10 @@ const setForm = (data: Partial<ExportLanguageForm>): void => {
 const getForm = (): ExportLanguageForm => {
 	const data = { ...form } as ExportLanguageForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = composableEls.get(id) as
-		unknown as 	unknown as | (HTMLElement & { read?: () => unknown })
-			| null;
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(
+			composableEls,
+			id
+		);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}

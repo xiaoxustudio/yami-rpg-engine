@@ -1177,7 +1177,7 @@ for (const key of menubarBridgeKeys) {
 	Object.defineProperty(Menubar, key, {
 		get: () => getMenubarStore()[key],
 		set: (value: unknown) => {
-			(getMenubarStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getMenubarStore(), key, value);
 		},
 		configurable: true
 	});

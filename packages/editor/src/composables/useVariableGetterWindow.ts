@@ -247,12 +247,10 @@ const open = (
 	states[prefix] = { target, filter };
 
 	composableEls.get(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
-	const globalKeyEl = composableEls.get(`${prefix}-global-key`);
+	const globalKeyEl = registryElement<CustomBoxApi>(composableEls, `${prefix}-global-key`);
 	if (globalKeyEl) {
 		// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-		(globalKeyEl as unknown as CustomBoxApi).filter = filter.startsWith('writable-')
-			? filter.slice(9)
-			: filter;
+		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 	}
 	if (prefix === 'variableGetter') filterState.filter = filter;
 

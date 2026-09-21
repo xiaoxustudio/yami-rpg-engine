@@ -204,7 +204,7 @@ for (const key of searchStringBridgeKeys) {
 	Object.defineProperty(SearchString, key, {
 		get: () => getSearchStringStore()[key],
 		set: (value: unknown) => {
-			(getSearchStringStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getSearchStringStore(), key, value);
 		},
 		configurable: true
 	});

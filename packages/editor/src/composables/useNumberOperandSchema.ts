@@ -150,9 +150,9 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	const el = composableEls.get('setNumber-operand-common-variable');
 	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
-	if (el) (el as unknown as CustomBoxApi).filter = filter;
+	registryElement<CustomBoxApi>(composableEls, 'setNumber-operand-common-variable')!.filter =
+		filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {

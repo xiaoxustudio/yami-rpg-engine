@@ -735,7 +735,7 @@ for (const key of dataKeys) {
 	Object.defineProperty(Data, key, {
 		get: () => getDataStore().data[key],
 		set: (value: unknown) => {
-			(getDataStore().data as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getDataStore().data, key, value);
 		},
 		configurable: true
 	});

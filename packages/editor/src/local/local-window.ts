@@ -861,7 +861,7 @@ for (const key of localizationBridgeKeys) {
 	Object.defineProperty(Localization, key, {
 		get: () => getLocalizationStore()[key],
 		set: (value: unknown) => {
-			(getLocalizationStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getLocalizationStore(), key, value);
 		},
 		configurable: true
 	});

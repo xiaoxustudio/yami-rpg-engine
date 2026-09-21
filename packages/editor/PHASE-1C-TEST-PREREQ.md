@@ -1708,6 +1708,153 @@ head?: { view: { write(index: number): void } } | null;
   pnpm -F @yami/ui-kit test && pnpm -F @yami/editor test   # editor 那条**独占**跑
   ```
 
+## 第 89 轮（续二）：`unknown-casts` 111 → 102 —— 修声明两批，外加两个**新踩到的坑**
+
+### 一、`FileItemStats`：1 处声明缺口 → 5 处断言（111 → 106）
+
+`stats` 的形状在**三处逐字重复**（`FileItem` 字段 / `FileItem` 构造参数 / `FolderItem` 字段），
+三份**都漏了 `size`**。而 `size` 在运行期一直存在（来自 `FSP.stat`）。
+后果不是「读不到」，而是**每个读点各自撒谎**：
+
+```ts
+Number((file.stats as unknown as { size: number }).size)   // 5 个文件各一遍
+```
+
+收口成具名 `FileItemStats` + 补 `size`，5 处断言消失。
+
+**⚠️ 动笔时发现的真相，值得单独记住**：本仓读到的 `size` 其实**不是 `number` 而是 `bigint`**。
+
+- `FolderItem.bigint = { bigint: true }`；
+- 目录树里的 `FileItem` **全部**由 `FolderItem.readdir` 创建，那里**唯一**的 `FSP.stat` 就是 `bigint: true`；
+- `directory-tree.ts` 里那两处 `FSP.stat(path)` 确实不带 bigint，但它们的返回值**只用来调
+  `isDirectory()`，不构造 `FileItem`** —— 我一开始正是被这两处误导，差点把 `size` 写成 `number`。
+
+所以类型如实写成 **`number | bigint`**。这同时解释了一件事：6 个读点**本来**就都包着
+`Number(...)` —— 那不是啰嗦，是**必需的归一化**，只是从来没人写下理由。
+⇒ **又一次印证「先改类型、让 tsc 把真实契约顶出来」**：我原来的猜测（`number`）是错的，
+而错在类型层就被挡住。
+
+顺带删掉 `FileItem.update` 里一处**收窄型**的 `as { isDirectory; ino?; mtimeMs? }` ——
+它把 `fs.Stats` 上真实存在的字段在类型上抹掉，**正是下游不得不各自断言的源头**。
+
+### 二、`CustomBoxApi` 的 4 处 `filter` 写入（106 → 102）
+
+`if (el) (el as unknown as CustomBoxApi).filter = filter` 在 4 个文件里各一处。
+其中**两个文件本来就 import 了 `registryElement`** 并用它做别的注册表查找 ⇒
+这属于**向既有 helper 收敛**，不是引入新模式。判空守卫直接折进 helper 的可空返回值。
+
+### 三、⚠️ 两个新坑（都不是本轮引入，但都差点骗过我）
+
+1. **PowerShell 的 `Set-Content -Encoding utf8` 会剥掉 BOM。** 实测：`data/metadata.ts` 原本
+   带 UTF-8 BOM（全仓 **173 / 1520** 个文件带），我改写后 BOM 消失 ⇒ diff 里多出一行
+   「看似只有引号不同」的噪音。`.editorconfig` 的 `charset = utf-8` **不要求** BOM，
+   功能上无害，但**不该由一次类型改动顺手改掉文件的字节形态**。
+   **正确做法（本轮后半程已改用）**：写入走 .NET
+   `[System.IO.File]::WriteAllText(path, text, (New-Object System.Text.UTF8Encoding($false)))`，
+   并在改完后用脚本逐文件对比 `HEAD` 与工作区的 BOM 状态（本轮实测 0 处变化）。
+2. **「按行号逐行比对 emit 产物」是错的验证方式。** 本轮我给含**增删行**的改动套用了
+   原先为「行数不变的纯替换」写的对比脚本，于是插入一行 import 让其后**每一行**都错位，
+   脚本报出 671 处「差异」——**全是假阳性**，而真正的 1 处改动淹没在里面。
+   ⇒ **验证脚本也有适用域**：行数不变用逐行比对；含增删行必须用**真正的 diff**（或先按
+   hunk 归一化）。本轮后半程改看 `git diff -U3`（4 个 hunk，逐条即预期改动），
+   并以 `tsc` + 全量套件（**253 files / 2070 tests / exit 0**）为准。
+
+
+
+## 第 89 轮：修掉测试套件级红灯（`unknown-casts` 136 → 111）
+
+本轮是**跨轴体检 + 两批落地**，四件事按价值排序记在这里。
+
+### 一、`@yami/editor` 全量套件曾经**必然红**，且被误记为「flake」
+
+**实测症状**：`252 passed / 2066 passed` 全绿，**进程却 `exit 1`** ——
+`Errors 1 error: EnvironmentTeardownError: Cannot load '/src/composables/useZoomWindow.ts'
+imported from .../title/menu-bar.ts after the environment was torn down`。
+
+**先纠正上一轮（第 87 轮）的判断**：交接节把它记成「真·间歇性」，并推断「并发负载只影响
+`template-localized.spec.ts` 的超时」。**这个判断是错的** —— 它不是 flake，是**确定性缺陷**：
+
+- 根因在 `tools/window-registry.ts`：两处 `void ensure(...)` **丢弃了派生 promise，
+  却没给原始 promise 挂 rejection 回调**。两处都要修，因为它们各自派生一个 promise：
+  `get` trap 的 `void ensure(...)`，以及 `set` trap 的 `void ensure(...).then(回填)`。
+- 触发链（第 84 轮已记录，但当时归因错了）：`ui-state.spec.ts` 写 store 字段 →
+  懒代理 `get`/`set` 取不到实例 → `loadUI()` 动态 `import('window-cluster')` →
+  该 barrel 静态 re-export `useZoomWindow`（→ `menu-bar.ts`）；环境在 import 完成前拆除 ⇒ reject。
+- **vitest 把 unhandled rejection 记成「套件级」错误**，所以它不会让任何 `expect` 失败 ——
+  「用例全绿但退出码 1」正是骗过人的形态。**判据是退出码，不是用例计数。**
+
+**修法**：`ensure()` 内 `void promise.catch(ignoreUnhandledRejection)`（只标记「已处理」，
+**不替换** pending 里的 promise ⇒ `loadWindow()` 调用方仍能照常拿到 rejection），
+`set` trap 的回填链再挂一次。**失败后仍保留在 pending 里**（与改动前一致，避免 loader 反复失败时无限重试）。
+
+**新增自证回归** `tools/__tests__/window-registry-rejection.spec.ts`（4 例）：自己装
+`process.on('unhandledRejection')` 把「静默失败」变成**可断言的数字**。
+**已按本仓纪律实测自证**：把两处 catch 去掉复跑 → `3 failed`
+（`expected 1 to be +0`，正是两条 trap 路径 + 缓存用例），装回 → 4/4 通过。
+**修完事实**：`253 files / 2070 tests passed`，**`Errors 0`，`exit 0`**。
+
+### 二、`unknown-casts` 两批：136 → 121 → 111
+
+**批次 1 · `Reflect.set`（−15 处，纯机械）**：`(getXStore() as unknown as Record<string, unknown>)[key] = value`
+这一形态在**15 个文件各 1 处**，且**13 处上下文完全相同**（都在 `Object.defineProperty` 的
+`set: (value: unknown) => {…}` 里）。改成本仓既有的 `Reflect.set(getXStore(), key, value)`
+（先例：`layout.ts` / `scene-window.ts` / `window-object.ts` 早已这么写）。
+
+> ⚠️ **这批不能用「esbuild 产物逐字节比对」自证** —— 前几轮的手法库是为**纯类型改动**立的，
+> 而 `Reflect.set(...)` 是**真实调用**，产物**必然不同**。本轮改用更贴切的判据：
+> 逐行打印 emit 出来的**每一处差异**，确认**全部且仅有** `obj[k] = v;` → `Reflect.set(obj, k, v);`
+> （15/15，无一处例外）。两者走同一个 `[[Set]]`，语义逐条相同。
+> **教训：验签方式要跟着改动性质走，别把上一轮的结论直接套到下一轮。**
+
+**批次 2 · `registryElement` 收口（−10 处，并修掉一处真损坏）**：
+
+`composableEls.get(id) as unknown as | (HTMLElement & {write?:…}) | null` 这形态在
+**5 个 `tools/*.vue` 各 2 处**，正是 `registryElement<T>()` 文档里点名的那一族。
+但**实测发现真正的病灶不是「写得啰嗦」**：
+
+```ts
+const control = composableEls.get(id) as
+unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
+	| null;
+```
+
+`as unknown as␉unknown as` —— **`as unknown as` 被套了两遍**。这说明**某次 codemod 在
+这 5 个文件上跑了两次**：第一次把 `as unknown as | T | null` 换成 `as unknown as T`（丢掉 `| null`），
+第二次又在已经改过的文本上匹配、再插一遍前缀，于是留下 `unknown as | (…)` 后面还跟着 `| null;`
+的**畸形但合法**的语法。`tsconfig` 接受、`tsc` 不报、`oxlint` 不报；**台账也只数 1 处**
+（`\bas\s+unknown\s+as\b` 匹配 `as unknown as unknown as` 只有 1 次）。
+⇒ 它是**仪器盲区 + 语法畸形**的叠加，只有人工读代码才看得见。
+
+改成既有 helper（`registryElement<HTMLElement & { write?: (value: unknown) => void }>(composableEls, id)`），
+5 个文件各加 import，**10 处畸形与断言一起消失**。
+
+### 三、三条**可复用的新教训**
+
+1. **`.vue` 的类型债，`tsc` 与 `typecheck:vue` 会给出相反结论。** 本轮实测：删掉
+   `AnimMotionPage.vue` 的一个 `as unknown as`，`pnpm typecheck` **`exit 0`（0 错误）**，
+   而同一次改动 `typecheck:vue` 报 **`TS2345`（1 new error）**。第 31/39/48 轮的「`tsc` 对 `.vue`
+   是假绿」这次拿到了**同一改动上的对照证据**，不再只是告诫。
+2. **「一次改两处」能拿到单点实验拿不到的信息。** 本轮把 `useInspectorInput.ts` 的
+   `InputOwner.history` 从 `unknown` 收紧成真实契约 `History | null`（与 `Inspector.inputBlur`
+   的声明一致），再删调用点的断言 —— 立刻报 **17 new errors**，点名 `Scene*` / `Anim*` 一族。
+   ⇒ 这条 `bindInput` 家族（14 处断言）**不是写法问题，而是压在 `SceneShape` / `AnimationShape`
+   的 `[k: string]: any` 上**：删断言与清 hatch 必须**同一轮一起做**，属 P3。**已如实回退，未留半成品。**
+3. **判据要跟着改动性质走**：纯类型改动 → esbuild 逐字节；含真实调用的改动 → 逐行 emit 差异对账。
+
+### 四、顺手关闭的两个待决策项 + 一处文档纠偏
+
+- **③ 已落地**：`pnpm -F @yami/ui-kit build:types` 加进 CI `gates` job（此前 ui-kit 的 `.vue`
+  **不在任何门禁里**）。
+- **② 已关闭**：见本节第一条（不是 flake，是缺陷，已修）。
+- **① 已定性待拍板**：`format:check` 实测 **249 个文件**（原文 261 也已过时）。**它不是
+  「格式从没被管过」** —— husky + `lint-staged` 已在每次提交时对暂存文件跑 `oxfmt`，
+  红的只是**全仓历史存量**。处置二选一：跑 `pnpm format` 收口存量（**249 个文件的大面积机械改写，
+  按第 37 轮教训必须避开任何并行写入者**）后进门禁；或明确降级为非门禁脚本。
+  ⚠️ `format` 的扫描面是 `packages/editor`，**不含 `packages/ui-kit`**。
+- **文档纠偏**：交接节「`any-hatches` 起点 67」是**第 62 轮**的数（第 63→87 轮又清掉 15 处），
+  实测起点就是 **52**；§4 工作单第 1 条「口径跨行漏洞」经穷举证伪（全仓 1196 个 `Record<…>`
+  构造，跨行且为 `string, any` 的 **0 个**）**已删除**；台账表 4 行过时数字已刷新。
+
 ## 第 88 轮（续轮）：`unknown-casts` 137 → 136 —— 用「**两端共用的具名类型**」解开第 84 轮那个死结
 
 ### 第 84 轮留下的问题，这轮正式解掉

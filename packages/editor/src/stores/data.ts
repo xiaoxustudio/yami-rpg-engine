@@ -215,7 +215,7 @@ export const useDataStore = defineStore('data', () => {
 	}
 
 	function setData(key: keyof DataShape, value: DataShape[keyof DataShape]) {
-		(data as unknown as Record<string, unknown>)[key] = value;
+		Reflect.set(data, key, value);
 	}
 
 	return { data, manifest, setManifest, setData };

@@ -244,7 +244,7 @@ for (const key of eventEditorBridgeKeys) {
 	Object.defineProperty(EventEditor, key, {
 		get: () => getEventEditorStore()[key],
 		set: (value: unknown) => {
-			(getEventEditorStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getEventEditorStore(), key, value);
 		},
 		configurable: true
 	});

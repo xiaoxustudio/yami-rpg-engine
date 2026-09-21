@@ -256,7 +256,7 @@ for (const key of uiBridgeKeys) {
 	Object.defineProperty(UI, key, {
 		get: () => getUIStore()[key],
 		set: (value: unknown) => {
-			(getUIStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getUIStore(), key, value);
 		},
 		configurable: true
 	});

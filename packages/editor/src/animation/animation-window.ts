@@ -480,7 +480,7 @@ for (const key of animationBridgeKeys) {
 	Object.defineProperty(Animation, key, {
 		get: () => getAnimationStore()[key],
 		set: (value: unknown) => {
-			(getAnimationStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getAnimationStore(), key, value);
 		},
 		configurable: true
 	});

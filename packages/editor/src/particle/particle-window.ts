@@ -383,7 +383,7 @@ for (const key of particleBridgeKeys) {
 	Object.defineProperty(Particle, key, {
 		get: () => getParticleStore()[key],
 		set: (value: unknown) => {
-			(getParticleStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getParticleStore(), key, value);
 		},
 		configurable: true
 	});
