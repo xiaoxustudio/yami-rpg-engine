@@ -1603,10 +1603,23 @@ head?: { view: { write(index: number): void } } | null;
 
 ### 1. 轴现状
 
+> ### ⚠️ 本节数字的复核记录（2026-09-21，第 89 轮）
+>
+> 有人（AI 会话）在**没有改任何代码**的前提下核对了本节，发现**两处失真**。复核后实测：
+>
+> | 本文原写法 | 实测 | 处置 |
+> |---|---|---|
+> | `any-hatches`「会话起点 **67**」 | 会话起点是 **52** | 67 是**第 62 轮扩口径当轮**的数（`32 + 35`）；第 63→87 轮之间又清掉了 15 处，**67 早就过时了**，却一直留在这里当「起点」 |
+> | §4 工作单第 1 条：「**口径有跨行漏洞**，`Record<\n…,any\n>` 匹配不到」 | **漏洞不存在** | 已删除该任务，理由见 §4 |
+>
+> **教训（与「数字必须自证」同源）**：本文档的**历史轮次小节**是沿革记录，数的是当轮的数，
+> 这是对的；但**交接节**声称「唯一准确」，就必须**每个数字都当场由脚本重测**。
+> 上面那个「67」正是「把第 62 轮的数字抄进第 87 轮的交接节」的产物 —— 抄的当时就已经不是真值。
+
 | 轴 | 现状 | 说明 |
 |---|---|---|
 | `unknown-casts` | **136 处 / 109 文件** | 会话起点 285 ⇒ 已减 149 |
-| `any-hatches` | **52 处 / 26 文件** | 会话起点 67；**口径有跨行漏洞**（见 §4） |
+| `any-hatches` | **52 处 / 26 文件** | **实测起点就是 52**（索引签名 32 + `Record<string, any>` 20）。⚠️ 此前这里写的「起点 67」「跨行漏洞」均已被第 89 轮证伪 —— 见上方复核记录 |
 | `legacy-ui-lines` / `legacy-ui-refs` | **0 / 0** | 阶段 1c 的 B（纯移动）已完成 |
 | `ui-singleton-members` | 103 files=8 declared=134 | 属 P5-C/D，**等实机回归后才能动** |
 | `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0 | — |
@@ -1635,9 +1648,16 @@ head?: { view: { write(index: number): void } } | null;
 
 ### 4. 剩下的活（按性价比排序）
 
-1. **`any-hatches` 口径漏洞先修**：正则 `Record<string,\s*any>` 匹配不到跨行书写的
-   `Record<\n…,\nany\n>`（第 82 轮实测）。修完数字会**上浮**，属正常；不改口径就永远到不了 0。
-2. **P4 剩余 137 处的成组形态**：`eslints.ts` 3（要先动 `CommandListShape` 的类型设计）·
+1. ~~**`any-hatches` 口径漏洞先修**~~ —— ❌ **该任务已于 2026-09-21（第 89 轮）撤销：漏洞不存在。**
+   原文声称正则 `Record<string,\s*any>` 匹配不到跨行书写的 `Record<\n…,\nany\n>`。
+   **实测证伪**：`\s` 在 JS 正则里**本来就包含换行**，所以 `Record<` 与 `string` 之间、
+   `string,` 与 `any` 之间无论怎么换行都能匹配。复核做法是把全仓 `Record<…>` 构造按
+   **尖括号配对**穷举出来（共 **1196** 个），再筛「泛型实参里含 `any`」的：**31** 个；
+   其中**跨行且恰为 `string, any`** 的：**0** 个。另外把「容忍跨行」的正则
+   （`Record<[\s\n]*string[\s\n]*,[\s\n]*any[\s\n]*>`）与现行正则逐文件比对，
+   **无一个文件读数不同**（都是 20）。
+   ⇒ 这条轴**是在口径内被数干净的**，不存在「改个写法就能凭空归零」的后门。不要再做这个任务。
+2. **P4 剩余 136 处的成组形态**：`eslints.ts` 3（要先动 `CommandListShape` 的类型设计）·
    `printer.ts` 3（1 处类→索引签名 + 2 处占位值待决策）· `window-object.ts` 1（frames 后挂方法）·
    `command-tip.ts` 1 · `particle-engine.ts` 1 · 其余多为零散 2 处以内的 `.vue` 组件。
 3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
@@ -1646,16 +1666,29 @@ head?: { view: { write(index: number): void } } | null;
      `ParamHistory` vs `IEditableHistory`（缺 `stack`/`index`）—— 都是**真债务**，不是写法问题；
    - **payload 判别字段**：从 `{ [k: string]: unknown }` 断言到具体字段集时，目标里必须带 `type`（第 78 轮）。
 4. **P3（52 处）**：都压在承重类型上（`SceneShape` 字段、`DynamicShape`、`UIShape`、粒子同名形状…）。
-5. **P5-C/D 与 P6**：**运行时高危，必须等用户按 10 项实机回归清单验证过再动**。
+5. **P5-C/D 与 P6**：**运行时高危，必须等用户按 9 项实机回归清单验证过再动**
+   （清单全文见第 66 轮「下一步（1c 第 ③ 步）与实机回归清单」一节；原文此处写「10 项」是笔误 —— 该清单实测为 9 条）。
 
-### 5. 待用户决策（7 项）
+### 5. 待用户决策（原 7 项 → **已降到 5 项**，2026-09-21 第 89 轮）
 
-① `format:check` 是死门禁（261 文件不合格、不在 CI）② editor 测试 flake（治/不治/摘出）——
-**第 87 轮已收窄**：它在独占跑时也会出现，是真·间歇性；完整调用链见第 84 轮
-（`ui-state.spec.ts` → `stores/ui.ts` → `tools/window-cluster.ts` → `title/menu-bar.ts`）；
-并发负载只影响 `template-localized.spec.ts` 的超时（第 86 轮）③ 把 `-F @yami/ui-kit build:types` 加进门禁
-（ui-kit 的 `.vue` 目前无人检查）④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
+> ✅ **① 已定性，但处置需你拍板**：`format:check` 实测 **249 个文件**不合格（原文记 261，也已过时），
+> 且**不在 CI 里** —— 属「有个红门禁但没人看」。定性如下，**代码未动**：
+> - 它**不是**「格式从没被管过」：`.husky` + `lint-staged.config.js` 已在**每次提交时**
+>   对暂存文件跑 `oxfmt`，所以**新增/改动的代码一直是合规的**；红的只是「全仓历史存量」。
+> - 所以处置是二选一，**两个都要单独一轮**：**(a)** 跑一次 `pnpm format` 收口存量（会动 249 个文件，
+>   属大面积机械改写 —— 按本仓第 37 轮的教训，**这种改动必须避开任何并行写入者**），
+>   然后加进 CI；**(b)** 明确降级为「非门禁脚本」并在本文标注，避免一个永远红的门禁教人忽略门禁。
+> - ⚠️ `format` 脚本的扫描面是 `packages/editor`，**不含 `packages/ui-kit`** —— 选 (a) 时要一并确认。
+> ✅ **② 已关闭，并且它不是 flake**：原文把它记成「真·间歇性」，**这个判断是错的**。
+> 第 89 轮实测：它是 **`tools/window-registry.ts` 里两处 `void ensure(...)` 丢弃了派生 promise
+> 却没给原始 promise 挂 rejection 回调**导致的**确定性**缺陷 —— 全量套件 **2066 用例全绿、
+> 却 `exit 1`**（vitest 把 unhandled rejection 记成**套件级**错误）。已修 + 已加自证回归 spec。
+> 连带纠正：「必须独占跑」只对 `template-localized.spec.ts` 的**超时**成立，与本条无关。
+
+**仍待决策的 4 项**：④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
 ⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑥ P6 三处行为缺陷 ⑦ P5-C/D 开工（前提是实机回归全过）。
+> ✅ **③ 已落地（2026-09-21）**：`pnpm -F @yami/ui-kit build:types` 已加进 CI 的 `gates` job
+> （此前 ui-kit 的 `.vue` **不在任何门禁里**）。
 
 ### 6. 纪律与坑（踩过的，别再踩）
 
@@ -4328,22 +4361,37 @@ pnpm build:vite              # 构建
 
 ### 一、台账现状（14 轴，`pnpm migration:check` 全平）
 
-> 数字刷新于 **2026-09-20 第 62 轮**（补轴 + 扩口径当轮）。**以 `pnpm migration:ledger` 输出为准。**
+> 数字刷新于 **2026-09-21 第 89 轮**（全 14 轴脚本重测）。**以 `pnpm migration:ledger` 输出为准。**
+>
+> ⚠️ 本表此前记的是**第 62 轮的快照**，其中 4 行到第 89 轮已过时（`any-hatches` / `unknown-casts` /
+> `legacy-ui-lines` / `legacy-ui-refs`）。**「刷新于」这句话必须和表里每一行同时成立** ——
+> 否则它就成了一句看起来权威、实际误导的话。
 
-| 轴 | 现值 | 目标 |
+| 轴 | 现值（第 89 轮实测） | 目标 |
 | --- | --- | --- |
-| `any-hatches` | **67 处 / 38 文件**（索引签名 32 + `Record<string, any>` 35；口径本轮扩展） | 归零 |
-| `unknown-casts` | **285 处 / 135 文件**（第 48 轮从 764 降下来） | 归零 |
-| `ui-singleton-members` | **103 处 / 8 文件**（`declared=134`）—— 本轮新增的替代轴 | 归零（与 `legacy-ui-lines` 同时） |
-| `legacy-ui-lines` | 2866 行 / 10 文件 | 归零（阶段 1c，高危） |
-| `legacy-ui-refs` | 1 | 归零（= 1c 收尾步） |
+| `any-hatches` | **52 处 / 26 文件**（索引签名 32 + `Record<string, any>` 20） | 归零 |
+| `unknown-casts` | **136 处 / 109 文件**（第 48 轮从 764 降下来） | 归零 |
+| `ui-singleton-members` | **103 处 / 8 文件**（`declared=134`）—— 第 62 轮新增的替代轴 | 归零（与 `legacy-ui-lines` 同时） |
+| `legacy-ui-lines` | **0 行 / 0 文件**（第 66 轮纯移动已收口） | ✅ 已归零 |
+| `legacy-ui-refs` | **0**（第 66 轮已收口） | ✅ 已归零 |
 | `null-casts` | 0 | ✅ 已归零 |
 | `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
 | `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
 
-> **`any-hatches` 剩下的 14 个文件 / 32 处**（第 62 轮用 `node scripts/any-hatch-inventory.mjs`
-> + 台账逐文件计数**重测**。此前本节写的是第 52/53 轮的快照「15 个文件」，其中 `particle-engine.ts`
-> 记的 7 处与 `enum-window.ts` 各 1 处均已被第 55/59/60 轮清掉 —— **按接口名而不是行号定位站点**）：
+> ⚠️ **`legacy-ui-lines` / `legacy-ui-refs` 归零 ≠ 阶段 1c 收口。** 这两条是**目录口径**，
+> 第 66 轮的**纯移动**（`src/ui/` → `src/engine/ui/legacy/`）就会让它们读到 0，而遗留代码**一行没少** ——
+> 这正是第 62 轮要补 `ui-singleton-members` 替代轴的原因。**1c 真正未完成的证据是
+> `ui-singleton-members` 仍是 103 处 / 8 文件、`declared` 仍是 134。**
+
+> **`any-hatches` 剩下的 15 个文件 / 32 处 —— 与下面的表逐字对账过**（第 89 轮用
+> `node scripts/any-hatch-inventory.mjs --axis` 重测；该脚本与台账共用 `scan.mjs` 的口径）。
+> 此前本行写的是「14 个文件」，**与它正下方那张表并不一致**：表里列了 15 行，缺的是
+> `composables/commands/useSetStringCommandSchema.ts` 的 `SetStringOperand`（1 处，第 62 轮漏记）。
+> ⇒ **处数（32）一直是对的，文件数（14）是错的。**「按接口名而不是行号定位站点」这条要求不变。
+>
+> ⚠️ **上表 15 个文件 / 32 处只覆盖「索引签名」这一种写法。** 本轴还有另一种写法
+> `Record<string, any>`（**20 处 / 13 文件**），合起来才是台账里的 **52 处 / 26 文件**。
+> 只照上表清，清完仍会剩 20 处 —— 那 20 处的清单见下方「下一批工作单」第 1 条：
 >
 > | 文件 | 处数 | 所属接口（`any-hatch-inventory` 输出） |
 > | --- | --- | --- |
@@ -4385,7 +4433,40 @@ pnpm build:vite              # 构建
 
 ### 二、下一批工作单（都带**实测**成本，不是估的）
 
-1. **`Scene.list`**（`scene/scene-window.ts` L80 声明 + L470 初始化，2 处）：索引签名兜住的是
+> **第 89 轮补记：本工作单此前只覆盖了「索引签名」那一半。** `any-hatches` 有两种写法，
+> 上表 15 文件 / 32 处是索引签名；另有一半是 `Record<string, any>`，**20 处 / 13 文件**，
+> 而原工作单**一处都没列**。只照原单清，清完台账仍停在 20。故新增下面第 1 项列全。
+
+1. **`Record<string, any>` 20 处 / 13 文件**（第 89 轮实测，按可做性分三组；**下列 20 条与
+   「`Record<string, any>` 站点清单」逐条对账，不重不漏**）：
+   - **A 组 · 引擎命名空间对象 `export const Xxx: Record<string, any> = {}`（10 处）** ——
+     与第 65 轮定的判据同一族，可照做：先数 `XxxEngine.foo = function (this: typeof Y)` 真正
+     读/写了 `Y` 的哪几个字段，**个位数就走本地窄类型，一轮拿下**。
+     `engine/animation/animation-window-engine.ts:12` · `engine/palette/auto-tile-engine.ts:21` ·
+     `engine/palette/palette-engine.ts:20` · `engine/particle/particle-engine.ts:12` ·
+     `engine/scene/scene-camera-engine.ts:9` · `engine/scene/scene-marquee-engine.ts:16` ·
+     `engine/ui/ui-engine.ts:24` · `palette/auto-tile.ts:49` · `palette/palette.ts:4` ·
+     `palette/tile-frame-index.ts:13`。
+     ⚠️ **以脚本清单为准，本行只是导航**（10 条路径 = 10 处；`engine/palette/palette-engine.ts`
+     与 `palette/palette.ts` 是**两个不同的对象**，各算一处）。行数请以
+     `node scripts/any-hatch-inventory.mjs --axis` + 台账逐文件计数复核。
+     ⚠️ `scene-camera-engine` / `scene-marquee-engine` 是第 65 轮实测过的**真承重**（≈30 个字段、
+     含 `this.scrollLeft = …` 写入），按判据属「整片留到最后」，别当白捡。
+     ⚠️ `ui-engine.ts:24` 与 `useSetStringCommandSchema.ts:15` 顶上各有一行
+     `// oxlint-disable-next-line no-explicit-any`：**删签名时必须一并删掉豁免注释**，
+     否则 `stale-exemptions` 轴会多出一处陈旧豁免（第 38 轮已立此规矩）。
+   - **B 组 · 型态变体（6 处，各需单独设计）**：
+     `particle/particle-window.ts:49`（`Array<Record<string, any>> & { count: number }`）·
+     `particle/particle-window.ts:253`（`stage`）·
+     `scene/scene-window.ts:1365`（`(Inspector as Record<string, any>)[key]` 动态取键）·
+     `composables/commands/useSetStringCommandSchema.ts:15`（`type SetStringOperand` ——
+     **9 个用法全在本文件内**，是「枚举真成员」的好候选）·
+     `ui-kit/.../YMParameterPane.vue:135` 与 `:245`（`guidMap`；`.vue` 只能靠 `typecheck:vue` 量）。
+   - **C 组 · 已注明「承重，别顺手删」（4 处）**：`services/file-system/fs-bridge.ts:29`（`FSP` ——
+     底下曾压着一个必崩的 `existsSync` 调用）· `services/project/setting-config/index.ts:16` ·
+     `stores/data.ts:149` · `engine/ui/element-classes.ts:68`（`UIElementCtor`）。
+     **动之前先读该处注释**，它们各自写着为什么不能直接删。
+2. **`Scene.list`**（`scene/scene-window.ts` L80 声明 + L470 初始化，2 处）：索引签名兜住的是
    `SceneListExtensions` 之外的约 19 个成员（`addNodeTo / canSwitchState / createFolder /
    createTilemapShortcutItems / data / deleteNode / duplicate / generateUniqueName / getItemByProperties /
    read / resize / restoreSelection / saveScroll / saveSelection / scrollTop / searchNodesDebounced /
@@ -4393,7 +4474,7 @@ pnpm build:vite              # 构建
    成本：19 个签名 + 调用点 **45 处缺 `!`**（已有 9 处）。
    ⚠️ **不能**直接拿 `ui-kit` 的 `TreeListElementApi` 当这个类型：它的兜底是 `[k: string]: unknown`，
    接上去会让 `addNodeTo` 之类变成 `unknown` 而不可调用。
-2. **`Scene.marquee`**（L75 + L164，2 处）：先对齐 `saveData` 的**两个写入方** ——
+3. **`Scene.marquee`**（L75 + L164，2 处）：先对齐 `saveData` 的**两个写入方** ——
    `scene-marquee-engine.ts` 写 `{x,y,width,height,offsetX,offsetY,tiles}`，而 `palette-engine.ts`
    读 `width/height/rowOffset`（后者根本不在前者的形状里）；对齐后约 12 处 `!`。
    成员清单见第 47 轮。⚠️ `scene.spec.ts` 的 marquee mock 是 `as any`：**类型写错测试不会红**。

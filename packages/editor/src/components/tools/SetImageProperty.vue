@@ -8,26 +8,41 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setImage-property-key.label') }}</div>
-			<SelectBox id="setImage-property-key" v-model="form.key" />
+			<SelectBox
+				id="setImage-property-key"
+				:ref="fieldRef('setImage-property-key')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setImage-property-image.label') }}</div>
 			<CustomBox
 				id="setImage-property-image"
+				:ref="fieldRef('setImage-property-image')"
 				type="file"
 				filter="image"
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setImage-property-display.label') }}</div>
-			<SelectBox id="setImage-property-display"
-				:ref="fieldRef('setImage-property-display')" v-model="form.display" />
+			<SelectBox
+				id="setImage-property-display"
+				:ref="fieldRef('setImage-property-display')"
+				v-model="form.display"
+			/>
 			<div class="text">{{ t('components.setImage-property-flip.label') }}</div>
-			<SelectBox id="setImage-property-flip"
-				:ref="fieldRef('setImage-property-flip')" v-model="form.flip" />
+			<SelectBox
+				id="setImage-property-flip"
+				:ref="fieldRef('setImage-property-flip')"
+				v-model="form.flip"
+			/>
 			<div class="text">{{ t('components.setImage-property-blend.label') }}</div>
-			<SelectBox id="setImage-property-blend"
-				:ref="fieldRef('setImage-property-blend')" v-model="form.blend" />
+			<SelectBox
+				id="setImage-property-blend"
+				:ref="fieldRef('setImage-property-blend')"
+				v-model="form.blend"
+			/>
 			<div class="text">{{ t('components.setImage-property-shiftX.label') }}</div>
 			<NumberVar
 				id="setImage-property-shiftX"
+				:ref="fieldRef('setImage-property-shiftX')"
 				min="-10000"
 				max="10000"
 				unit="px"
@@ -36,6 +51,7 @@
 			<div class="text">{{ t('components.setImage-property-shiftY.label') }}</div>
 			<NumberVar
 				id="setImage-property-shiftY"
+				:ref="fieldRef('setImage-property-shiftY')"
 				min="-10000"
 				max="10000"
 				unit="px"
@@ -44,6 +60,7 @@
 			<div class="text">{{ t('components.setImage-property-clip-0.label') }}</div>
 			<NumberVar
 				id="setImage-property-clip-0"
+				:ref="fieldRef('setImage-property-clip-0')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -52,6 +69,7 @@
 			<div class="text">{{ t('components.setImage-property-clip-1.label') }}</div>
 			<NumberVar
 				id="setImage-property-clip-1"
+				:ref="fieldRef('setImage-property-clip-1')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -60,6 +78,7 @@
 			<div class="text">{{ t('components.setImage-property-clip-2.label') }}</div>
 			<NumberVar
 				id="setImage-property-clip-2"
+				:ref="fieldRef('setImage-property-clip-2')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -68,6 +87,7 @@
 			<div class="text">{{ t('components.setImage-property-clip-3.label') }}</div>
 			<NumberVar
 				id="setImage-property-clip-3"
+				:ref="fieldRef('setImage-property-clip-3')"
 				min="0"
 				max="10000"
 				unit="px"

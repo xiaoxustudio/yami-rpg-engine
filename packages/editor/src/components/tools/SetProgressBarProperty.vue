@@ -8,24 +8,36 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setProgressBar-property-key.label') }}</div>
-			<SelectBox id="setProgressBar-property-key"
-				v-tip="t('components.setProgressBar-property-key.tip')" v-model="form.key" />
+			<SelectBox
+				id="setProgressBar-property-key"
+				:ref="fieldRef('setProgressBar-property-key')"
+				v-tip="t('components.setProgressBar-property-key.tip')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setProgressBar-property-image.label') }}</div>
 			<CustomBox
 				id="setProgressBar-property-image"
+				:ref="fieldRef('setProgressBar-property-image')"
 				type="file"
 				filter="image"
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setProgressBar-property-display.label') }}</div>
-			<SelectBox id="setProgressBar-property-display"
-				:ref="fieldRef('setProgressBar-property-display')" v-model="form.display" />
+			<SelectBox
+				id="setProgressBar-property-display"
+				:ref="fieldRef('setProgressBar-property-display')"
+				v-model="form.display"
+			/>
 			<div class="text">{{ t('components.setProgressBar-property-blend.label') }}</div>
-			<SelectBox id="setProgressBar-property-blend"
-				:ref="fieldRef('setProgressBar-property-blend')" v-model="form.blend" />
+			<SelectBox
+				id="setProgressBar-property-blend"
+				:ref="fieldRef('setProgressBar-property-blend')"
+				v-model="form.blend"
+			/>
 			<div class="text">{{ t('components.setProgressBar-property-progress.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-progress"
+				:ref="fieldRef('setProgressBar-property-progress')"
 				min="0"
 				max="1"
 				step="0.1"
@@ -35,6 +47,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-clip-0.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-clip-0"
+				:ref="fieldRef('setProgressBar-property-clip-0')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -43,6 +56,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-clip-1.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-clip-1"
+				:ref="fieldRef('setProgressBar-property-clip-1')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -51,6 +65,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-clip-2.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-clip-2"
+				:ref="fieldRef('setProgressBar-property-clip-2')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -59,6 +74,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-clip-3.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-clip-3"
+				:ref="fieldRef('setProgressBar-property-clip-3')"
 				min="0"
 				max="10000"
 				unit="px"
@@ -67,6 +83,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-color-0.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-color-0"
+				:ref="fieldRef('setProgressBar-property-color-0')"
 				min="0"
 				max="255"
 				v-model="form['color-0']"
@@ -74,6 +91,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-color-1.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-color-1"
+				:ref="fieldRef('setProgressBar-property-color-1')"
 				min="0"
 				max="255"
 				v-model="form['color-1']"
@@ -81,6 +99,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-color-2.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-color-2"
+				:ref="fieldRef('setProgressBar-property-color-2')"
 				min="0"
 				max="255"
 				v-model="form['color-2']"
@@ -88,6 +107,7 @@
 			<div class="text">{{ t('components.setProgressBar-property-color-3.label') }}</div>
 			<NumberVar
 				id="setProgressBar-property-color-3"
+				:ref="fieldRef('setProgressBar-property-color-3')"
 				min="0"
 				max="255"
 				v-model="form['color-3']"

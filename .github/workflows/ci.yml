@@ -67,6 +67,13 @@ jobs:
             - name: vue-tsc 棘轮（仅拦截新增错误）
               run: pnpm -F @yami/editor run typecheck:vue
 
+            # ui-kit 的 `.vue` 此前**不在任何门禁里**（editor 的 typecheck:vue 只覆盖 packages/editor）
+            # ⇒ 它的类型债对 CI 完全不可见。这一条把那个盲区关掉（2026-09-21 补，对应待决策第 ③ 项）。
+            # ⚠️ editor 的 `tsc -p tsconfig.strict.json` 对 `.vue` 是**假绿**（第 31/39/48 轮同一个坑
+            #    踩过三次），所以 `.vue` 只能靠 vue-tsc 这一类工具量，不能靠 tsc。
+            - name: vue-tsc 类型检查（组件库 ui-kit）
+              run: pnpm -F @yami/ui-kit run build:types
+
             # --- 体检脚本 ---------------------------------------------------------
             - name: 全局类型增强审计（global.d.ts 接口块应为 0）
               run: node scripts/global-types-audit.mjs

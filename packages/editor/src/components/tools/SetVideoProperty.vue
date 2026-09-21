@@ -9,11 +9,16 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setVideo-property-key.label') }}</div>
-			<SelectBox id="setVideo-property-key"
-				v-tip="t('components.setVideo-property-key.tip')" v-model="form.key" />
+			<SelectBox
+				id="setVideo-property-key"
+				:ref="fieldRef('setVideo-property-key')"
+				v-tip="t('components.setVideo-property-key.tip')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setVideo-property-video.label') }}</div>
 			<CustomBox
 				id="setVideo-property-video"
+				:ref="fieldRef('setVideo-property-video')"
 				type="file"
 				filter="video"
 				v-model="form.video"
@@ -21,20 +26,30 @@
 			<div class="text">{{ t('components.setVideo-property-playbackRate.label') }}</div>
 			<NumberVar
 				id="setVideo-property-playbackRate"
+				:ref="fieldRef('setVideo-property-playbackRate')"
 				min="0"
 				max="4"
 				decimals="4"
 				v-model="form.playbackRate"
 			/>
 			<div class="text">{{ t('components.setVideo-property-loop.label') }}</div>
-			<SelectBox id="setVideo-property-loop"
-				:ref="fieldRef('setVideo-property-loop')" v-model="form.loop" />
+			<SelectBox
+				id="setVideo-property-loop"
+				:ref="fieldRef('setVideo-property-loop')"
+				v-model="form.loop"
+			/>
 			<div class="text">{{ t('components.setVideo-property-flip.label') }}</div>
-			<SelectBox id="setVideo-property-flip"
-				:ref="fieldRef('setVideo-property-flip')" v-model="form.flip" />
+			<SelectBox
+				id="setVideo-property-flip"
+				:ref="fieldRef('setVideo-property-flip')"
+				v-model="form.flip"
+			/>
 			<div class="text">{{ t('components.setVideo-property-blend.label') }}</div>
-			<SelectBox id="setVideo-property-blend"
-				:ref="fieldRef('setVideo-property-blend')" v-model="form.blend" />
+			<SelectBox
+				id="setVideo-property-blend"
+				:ref="fieldRef('setVideo-property-blend')"
+				v-model="form.blend"
+			/>
 		</div>
 	</WindowFrame>
 </template>

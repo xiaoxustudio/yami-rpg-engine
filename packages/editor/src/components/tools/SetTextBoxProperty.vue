@@ -9,16 +9,28 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTextBox-property-key.label') }}</div>
-			<SelectBox id="setTextBox-property-key"
-				v-tip="t('components.setTextBox-property-key.tip')" v-model="form.key" />
+			<SelectBox
+				id="setTextBox-property-key"
+				:ref="fieldRef('setTextBox-property-key')"
+				v-tip="t('components.setTextBox-property-key.tip')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setTextBox-property-type.label') }}</div>
-			<SelectBox id="setTextBox-property-type"
-				:ref="fieldRef('setTextBox-property-type')" v-model="form.type" />
+			<SelectBox
+				id="setTextBox-property-type"
+				:ref="fieldRef('setTextBox-property-type')"
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.setTextBox-property-text.label') }}</div>
-			<StringVar id="setTextBox-property-text" v-model="form.text" />
+			<StringVar
+				id="setTextBox-property-text"
+				:ref="fieldRef('setTextBox-property-text')"
+				v-model="form.text"
+			/>
 			<div class="text">{{ t('components.setTextBox-property-number.label') }}</div>
 			<NumberVar
 				id="setTextBox-property-number"
+				:ref="fieldRef('setTextBox-property-number')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -27,6 +39,7 @@
 			<div class="text">{{ t('components.setTextBox-property-min.label') }}</div>
 			<NumberVar
 				id="setTextBox-property-min"
+				:ref="fieldRef('setTextBox-property-min')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -35,15 +48,26 @@
 			<div class="text">{{ t('components.setTextBox-property-max.label') }}</div>
 			<NumberVar
 				id="setTextBox-property-max"
+				:ref="fieldRef('setTextBox-property-max')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 				v-model="form.max"
 			/>
 			<div class="text">{{ t('components.setTextBox-property-decimals.label') }}</div>
-			<NumberBox id="setTextBox-property-decimals" min="0" max="10" v-model="decimals" />
+			<NumberBox
+				id="setTextBox-property-decimals"
+				:ref="fieldRef('setTextBox-property-decimals')"
+				min="0"
+				max="10"
+				v-model="decimals"
+			/>
 			<div class="text">{{ t('components.setTextBox-property-color.label') }}</div>
-			<ColorBox id="setTextBox-property-color" v-model="color" />
+			<ColorBox
+				id="setTextBox-property-color"
+				:ref="fieldRef('setTextBox-property-color')"
+				v-model="color"
+			/>
 		</div>
 	</WindowFrame>
 </template>

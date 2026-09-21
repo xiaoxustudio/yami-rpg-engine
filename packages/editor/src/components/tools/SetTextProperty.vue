@@ -9,17 +9,23 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setText-property-key.label') }}</div>
-			<SelectBox id="setText-property-key"
-				v-tip="t('components.setText-property-key.tip')" v-model="form.key" />
+			<SelectBox
+				id="setText-property-key"
+				:ref="fieldRef('setText-property-key')"
+				v-tip="t('components.setText-property-key.tip')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setText-property-content.label') }}</div>
 			<TextAreaVar
 				id="setText-property-content"
+				:ref="fieldRef('setText-property-content')"
 				menu="tag-local-var tag-global-var tag-dynamic-global-var tag-localization"
 				v-model="form.content"
 			/>
 			<div class="text">{{ t('components.setText-property-size.label') }}</div>
 			<NumberBox
 				id="setText-property-size"
+				:ref="fieldRef('setText-property-size')"
 				min="10"
 				max="400"
 				unit="px"
@@ -28,6 +34,7 @@
 			<div class="text">{{ t('components.setText-property-lineSpacing.label') }}</div>
 			<NumberBox
 				id="setText-property-lineSpacing"
+				:ref="fieldRef('setText-property-lineSpacing')"
 				min="-10"
 				max="100"
 				unit="px"
@@ -36,23 +43,36 @@
 			<div class="text">{{ t('components.setText-property-letterSpacing.label') }}</div>
 			<NumberBox
 				id="setText-property-letterSpacing"
+				:ref="fieldRef('setText-property-letterSpacing')"
 				min="-10"
 				max="100"
 				unit="px"
 				v-model="letterSpacing"
 			/>
 			<div class="text">{{ t('components.setText-property-color.label') }}</div>
-			<ColorBox id="setText-property-color" v-model="color" />
+			<ColorBox
+				id="setText-property-color"
+				:ref="fieldRef('setText-property-color')"
+				v-model="color"
+			/>
 			<div class="text">{{ t('components.setText-property-font.label') }}</div>
-			<TextBox id="setText-property-font" v-model="font" />
+			<TextBox
+				id="setText-property-font"
+				:ref="fieldRef('setText-property-font')"
+				v-model="font"
+			/>
 			<div class="text">{{ t('components.setText-property-effect-type.label') }}</div>
-			<SelectBox id="setText-property-effect-type"
-				:ref="fieldRef('setText-property-effect-type')" v-model="form['effect-type']" />
+			<SelectBox
+				id="setText-property-effect-type"
+				:ref="fieldRef('setText-property-effect-type')"
+				v-model="form['effect-type']"
+			/>
 			<div class="text">
 				{{ t('components.setText-property-effect-shadowOffsetX.label') }}
 			</div>
 			<NumberBox
 				id="setText-property-effect-shadowOffsetX"
+				:ref="fieldRef('setText-property-effect-shadowOffsetX')"
 				min="-9"
 				max="9"
 				unit="px"
@@ -63,6 +83,7 @@
 			</div>
 			<NumberBox
 				id="setText-property-effect-shadowOffsetY"
+				:ref="fieldRef('setText-property-effect-shadowOffsetY')"
 				min="-9"
 				max="9"
 				unit="px"
@@ -71,16 +92,24 @@
 			<div class="text">{{ t('components.setText-property-effect-strokeWidth.label') }}</div>
 			<NumberBox
 				id="setText-property-effect-strokeWidth"
+				:ref="fieldRef('setText-property-effect-strokeWidth')"
 				min="1"
 				max="20"
 				unit="px"
 				v-model="strokeWidth"
 			/>
 			<div class="text">{{ t('components.setText-property-effect-color.label') }}</div>
-			<ColorBox id="setText-property-effect-color" v-model="effectColor" />
+			<ColorBox
+				id="setText-property-effect-color"
+				:ref="fieldRef('setText-property-effect-color')"
+				v-model="effectColor"
+			/>
 			<div class="text">{{ t('components.setText-property-blend.label') }}</div>
-			<SelectBox id="setText-property-blend"
-				:ref="fieldRef('setText-property-blend')" v-model="form.blend" />
+			<SelectBox
+				id="setText-property-blend"
+				:ref="fieldRef('setText-property-blend')"
+				v-model="form.blend"
+			/>
 		</div>
 	</WindowFrame>
 </template>
