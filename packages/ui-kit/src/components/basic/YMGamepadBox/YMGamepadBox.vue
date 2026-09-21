@@ -101,14 +101,17 @@ const inputKeydown = (event: KeyboardEvent): void => {
 
 const clonePad = (pad: Gamepad): Gamepad => {
 	const clone = {} as Gamepad;
+	// 动态键拷贝：`Reflect.set`/`Reflect.get` 与 `obj[key]` 是同一个 `[[Set]]`/`[[Get]]`，
+	// 但不需要把 `Gamepad` 断言成 `Record<string, unknown>`（interface 没有隐式索引签名，
+	// 那种断言在 TS 里根本没有合法的单次写法，只能 `as unknown as`）。
 	for (const key of Object.keys(pad)) {
-		(clone as unknown as Record<string, unknown>)[key] = (
-			pad as unknown as Record<string, unknown>
-		)[key];
+		Reflect.set(clone, key, Reflect.get(pad, key));
 	}
-	(clone as unknown as Record<string, unknown>).buttons = Array.from(pad.buttons, (button) => ({
-		...button
-	})) as typeof pad.buttons;
+	Reflect.set(
+		clone,
+		'buttons',
+		Array.from(pad.buttons, (button) => ({ ...button }))
+	);
 	return clone;
 };
 
@@ -121,12 +124,12 @@ const inputFocus = (): void => {
 		if (pad !== null) {
 			if (lastPad === null) {
 				lastPad = clonePad(pad);
-				for (const button of lastPad.buttons as unknown as {
-					pressed: boolean;
-					value: number;
-				}[]) {
-					button.pressed = false;
-					button.value = 0;
+				// `GamepadButton` 的 `pressed`/`value` 在 DOM 类型里是 **readonly**（原来是靠
+				// 「断言成可变形状」绕开的）。这里操作的是 `clonePad` 复制出来的普通对象，
+				// `Reflect.set` 与 `button.pressed = false` 是同一个 `[[Set]]`，语义相同且不需要断言。
+				for (const button of lastPad.buttons) {
+					Reflect.set(button, 'pressed', false);
+					Reflect.set(button, 'value', 0);
 				}
 			}
 			if (lastPad.id === pad.id) {

@@ -1221,16 +1221,17 @@ onMounted(() => {
 	attachStateAccessors(self);
 	self.type = null;
 	self.data = null;
-	self.elements = [] as unknown as ParamElements;
-	self.elements.versionId = 0;
-	self.elements.count = 0;
-	self.elements.start = -1;
-	self.elements.end = -1;
-	self.elements.head = null;
-	self.elements.foot = null;
-	self.selections = [] as unknown as ParamSelections;
+	// 与命令列表同一处理（第 84 轮）：断言之后紧跟着把断言里声称的字段逐个写上去 ⇒ `Object.assign` 一次写完。
+	self.elements = Object.assign([], {
+		versionId: 0,
+		count: 0,
+		start: -1,
+		end: -1,
+		head: null,
+		foot: null
+	});
+	self.selections = Object.assign([], { count: 0 });
 	self.start = null;
-	self.selections.count = 0;
 	self.end = null;
 	self.origin = null;
 	self.active = null;
@@ -1241,7 +1242,8 @@ onMounted(() => {
 	self.history = null;
 	getListConfig(self).togglable = false;
 	self.height = undefined;
-	self._paddingTop = undefined as unknown as number;
+	// `_paddingTop` 在类型里本来就是可选的（`_paddingTop?: number`）⇒ 赋 `undefined` 无需断言。
+	self._paddingTop = undefined;
 	Object.defineProperty(self, 'innerHeight', {
 		configurable: true,
 		get: getInnerHeight

@@ -2,6 +2,7 @@ import { screenScrollData } from '../screen-scroll-data';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { engineEls } from '@app/engine/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 import { addScrollbars, on, show, hide, clear, read, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -126,9 +127,10 @@ Sprite.initialize = function (this: typeof Sprite) {
 	this.body = engineEls.get('sprite-body') as YamiElement;
 	this.window = engineEls.get('sprite-frame') as YamiElement;
 	hide(this.window);
-	this.canvas = engineEls.get('sprite-canvas') as unknown as HTMLCanvasElement & {
-		dpr?: number;
-	};
+	this.canvas = registryElement<HTMLCanvasElement & { dpr?: number }>(
+		engineEls,
+		'sprite-canvas'
+	)!;
 	this.info = engineEls.get('sprite-info') as YamiElement;
 	this.slider = engineEls.get('sprite-zoom') as YamiElement;
 	this.screen = engineEls.get('sprite-screen') as SpriteScreen;

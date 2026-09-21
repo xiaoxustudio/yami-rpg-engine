@@ -124,9 +124,11 @@ function renderElement(vnode: VNode): HTMLElement {
 const layoutRootOf = (page: Element | null | undefined): HTMLElement | null => {
 	if (!page) return null;
 	const element = page as Element & { childNodes?: ArrayLike<ChildNode> };
-	const children: ArrayLike<Element> =
-		element.children ?? (element.childNodes as unknown as ArrayLike<Element>) ?? [];
-	const list = Array.from(children).filter((child) => child?.nodeType === 1);
+	// 不再把 `childNodes` 断言成 `ArrayLike<Element>`：那个断言过不了「可比」（DOM 的 `childNodes`
+	// 可能含文本/注释节点）。改成**如实声明 `ArrayLike<ChildNode>` + 下面用类型谓词收窄** ——
+	// 原来那句 `filter(child => child?.nodeType === 1)` 本来就是「只留元素」的收窄，只是类型系统不知道。
+	const children: ArrayLike<ChildNode> = element.children ?? element.childNodes ?? [];
+	const list = Array.from(children).filter((child): child is Element => child?.nodeType === 1);
 	for (const child of list) {
 		if (hasClass(child, 'group')) return child as HTMLElement;
 	}
@@ -540,8 +542,10 @@ Layout.initialize = function () {
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
 	on(this.manager, 'switch', this.pageSwitch!);
-	(window as unknown as Record<string, unknown>).__yamiLayoutDebug = () =>
-		this.logDiagnostics!(true);
+	// 调试钩子挂在 `window` 上。`window` 是 `Window & typeof globalThis`（interface ⇒ 无隐式索引签名），
+	// 所以「断言成 `Record<string, unknown>`」在 TS 里没有合法的单次写法；`Reflect.set` 与
+	// `obj[key] = value` 是同一个 `[[Set]]`，语义相同且不需要任何断言（同 tree-api 那处）。
+	Reflect.set(window, '__yamiLayoutDebug', () => this.logDiagnostics!(true));
 };
 
 Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
@@ -792,7 +796,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 
 Layout.mergeGroups = (function IIFE() {
 	const merge = (outer: LayoutGroupElement) => {
-		const nodes = outer.childNodes as unknown as LayoutGroupElement[];
+		const nodes = outer.childNodes as NodeListOf<LayoutGroupElement>;
 		let i = nodes.length;
 		while (--i >= 0) {
 			const inner = nodes[i];
@@ -804,7 +808,7 @@ Layout.mergeGroups = (function IIFE() {
 				}
 				const gs = prev === null ? 0 : (groupData(prev).end ?? 0);
 				const ge = groupData(inner).end;
-				const nodes = inner.childNodes as unknown as LayoutGroupElement[];
+				const nodes = inner.childNodes as NodeListOf<LayoutGroupElement>;
 				while (nodes.length > 1) {
 					const node = nodes[0];
 					const end = groupData(node).end;
@@ -1004,7 +1008,7 @@ Layout.updateHint = function (location: LayoutDragLocation | null) {
 Layout.getKeyGroups = (function IIFE() {
 	const find = (list: LayoutGroupElement[], node: LayoutGroupElement) => {
 		if (node.split !== undefined) {
-			for (const group of node.childNodes as unknown as LayoutGroupElement[]) {
+			for (const group of node.childNodes as NodeListOf<LayoutGroupElement>) {
 				if (hasClass(group, 'group')) {
 					find(list, group);
 				}
@@ -2127,7 +2131,7 @@ for (const key of layoutBridgeKeys) {
 	Object.defineProperty(Layout, key, {
 		get: () => getLayoutStore()[key],
 		set: (value: unknown) => {
-			(getLayoutStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getLayoutStore(), key, value);
 		},
 		configurable: true
 	});

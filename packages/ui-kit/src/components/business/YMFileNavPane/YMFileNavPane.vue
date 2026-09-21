@@ -15,7 +15,8 @@ import {
 import {
 	commonListResize,
 	commonListUpdateHeadAndFoot,
-	type CommonListLike
+	type CommonListLike,
+	type HeadAndFootListLike
 } from '../../../utils/common-list';
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
@@ -242,11 +243,14 @@ function update(): void {
 }
 
 function resize(): void {
-	commonListResize(el.value! as unknown as CommonListLike);
+	// 单次断言：`FileNavPaneElement` 本身就 `extends HTMLElement`（见类型定义），
+	// 交叉一支与源类型一致 ⇒ 不需要 `unknown` 中转。
+	commonListResize(el.value! as FileNavPaneElement & CommonListLike);
 }
 
 function updateHeadAndFoot(): void {
-	commonListUpdateHeadAndFoot(el.value! as unknown as CommonListLike);
+	// 助手只要窗口游标（第 77 轮已收窄成 `HeadAndFootListLike`），同样单次断言即可。
+	commonListUpdateHeadAndFoot(el.value! as FileNavPaneElement & HeadAndFootListLike);
 }
 
 function updateOnResize(element: FolderElement): void {

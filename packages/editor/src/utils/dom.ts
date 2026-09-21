@@ -63,18 +63,21 @@ export function css(
 	...args: [string] | [string, string] | [Record<string, string>]
 ): string | void {
 	if (args.length === 1) {
-		return (getComputedStyle(el as Element) as unknown as Record<string, string>)[
+		// 单次断言：`CSSStyleDeclaration` 是 interface（无隐式字符串索引签名），
+		// 而这里就是按**动态键**读样式 —— 交叉一支写出「也可当字符串表用」，比 `unknown` 换掉整表诚实。
+		return (getComputedStyle(el as Element) as CSSStyleDeclaration & Record<string, string>)[
 			args[0] as string
 		];
 	}
 	if (args.length === 2) {
-		(el.style as unknown as Record<string, string>)[args[0] as string] = args[1] as string;
+		(el.style as CSSStyleDeclaration & Record<string, string>)[args[0] as string] =
+			args[1] as string;
 		return;
 	}
 	if (typeof args[0] === 'object' && args[0] !== null) {
 		const props = args[0] as Record<string, string>;
 		for (const key in props) {
-			(el.style as unknown as Record<string, string>)[key] = props[key];
+			(el.style as CSSStyleDeclaration & Record<string, string>)[key] = props[key];
 		}
 	}
 }

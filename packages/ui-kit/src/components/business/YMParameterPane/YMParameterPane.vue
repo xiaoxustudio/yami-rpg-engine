@@ -256,15 +256,23 @@ const getMeasureText = (text: string, font: string): { width: number } =>
 
 const getSetTooltip = (): ((el: HTMLElement, tip: string) => void) | null => props.setTooltip;
 
-const bind = (scriptList: HTMLElement): void => {
+/**
+ * `bind()` 收到的列表元素：运行期还挂着父组件的数据面（参数列表挂 `object`，树列表挂 `data`）。
+ * 声明出来之后，两个读点就不必各写一次 `as unknown as { … }` —— 病灶一直在「参数声明写窄了」。
+ */
+interface ParamScriptListElement extends HTMLElement {
+	object?: { update: (...args: unknown[]) => unknown };
+	data?: ScriptDef[];
+}
+
+const bind = (scriptList: ParamScriptListElement): void => {
 	const self = el!;
 	self.scriptList = scriptList;
 	if (scriptList.classList.contains('param-list')) {
-		const { object } = scriptList as unknown as {
-			object: { update: (...args: unknown[]) => unknown };
-		};
+		// `!` 保持原来的空值语义（原先的断言也是「说它有」）
+		const object = scriptList.object!;
 		const { update } = object;
-		self.getData = () => (scriptList as unknown as { data: ScriptDef[] }).data;
+		self.getData = () => scriptList.data!;
 		object.update = (...args: unknown[]) => {
 			update.apply(object, args);
 			self.update();
@@ -678,6 +686,10 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	addBtn.className = 'add-row-btn';
 	container.appendChild(rowsEl);
 	container.appendChild(addBtn);
+	// ⚠️ 保留 `unknown`（第 86 轮实测）：`RepeatableGroupInput extends HTMLElement`，而源是
+	// `HTMLDivElement`；写成 `HTMLElement & RepeatableGroupInput` 也**不行**（TS 要求源对交叉整体可比，
+	// 于是报「缺少 setTooltip/parameters/key/read/write」）。要拆得让 `RepeatableGroupInput`
+	// 直接 `extends HTMLDivElement`，或把构造点改成先建后补 —— 两者都是结构性改动。
 	const input = container as unknown as RepeatableGroupInput;
 	input.setTooltip = () => {};
 	const data = inputData(input);

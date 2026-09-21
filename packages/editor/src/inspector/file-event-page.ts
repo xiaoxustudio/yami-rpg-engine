@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { inspectorEls } from './element-registry.ts';
+import { registryElement } from '@app/utils/element-registry';
 import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -95,10 +96,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			const write = getElementWriter('fileEvent', event);
 			write('parameters');
 
-			(
-				inspectorEls.get('fileEvent-vue-mount') as unknown as HTMLElement & {
-					sync?: () => void;
-				}
+			registryElement<HTMLElement & { sync?: () => void }>(
+				inspectorEls,
+				'fileEvent-vue-mount'
 			)?.sync?.();
 		}
 	};

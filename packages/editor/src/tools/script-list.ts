@@ -34,7 +34,7 @@ interface ScriptListTarget {
 	save: () => void;
 }
 
-interface ScriptListElement {
+interface ScriptListElement extends HTMLElement {
 	elements: HTMLElement[];
 	read: () => ScriptListItem[];
 	togglable?: boolean;
@@ -73,6 +73,10 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
+			// ⚠️ 这里必须保留 `unknown`：`ParamHistory` **结构上并不满足** `IEditableHistory`
+			// （没有 `stack` / `index` 字段，`save`/`restore` 形参也不同），单次断言 TS 直接拒绝。
+			// 而 `types/history.ts` 的注释却把 `ParamHistory` 列为「6 个 implements 该接口」之一 —— 两者矛盾，
+			// 属待决策项（谁读 `history.stack`/`history.index` 就会拿到 undefined），本轮只记录、不改行为。
 			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
 		}
 
@@ -137,7 +141,10 @@ export class ScriptListInterface implements IScriptListInterface {
 
 	input(scriptId: string) {
 		this.script!.id = scriptId;
-		(this.target as unknown as ScriptListTarget).save();
+		// 单个断言（不再用 `unknown` 换掉整张类型表）：`target` 是**带 `save()` 的元素**或 null。
+		// 断言目标里保留 `| null` 才能与源类型（同样含 null）「可比」——这正是第 73 轮那条
+		// 「不要为了好看把 `| null` 删掉」的规则在断言目标侧的同一件事；`!` 保持原来的空值语义。
+		(this.target as (HTMLElement & ScriptListTarget) | null)!.save();
 	}
 
 	static listPointerdown = (function IIFE() {
@@ -175,7 +182,7 @@ export class ScriptListInterface implements IScriptListInterface {
 
 	static listDragleave(this: ScriptListElement, event: Event) {
 		if (!this.contains((event as DragEvent).relatedTarget as Node)) {
-			removeClass(this as unknown as HTMLElement, 'dragover');
+			removeClass(this, 'dragover');
 		}
 	}
 
@@ -185,7 +192,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			if (file instanceof FileItem && file.type === 'script') {
 				(event as DragEvent).dataTransfer!.dropEffect = 'move';
 				event.preventDefault();
-				addClass(this as unknown as HTMLElement, 'dragover');
+				addClass(this, 'dragover');
 			}
 		}
 	}
@@ -200,7 +207,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			this.focus();
 			this.select(Infinity);
 			this.save();
-			removeClass(this as unknown as HTMLElement, 'dragover');
+			removeClass(this, 'dragover');
 		}
 	}
 }

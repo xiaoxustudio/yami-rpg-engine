@@ -180,9 +180,9 @@ export const customCommandEls = createElementRegistry();
 
 function ensureDomBound() {
 	if (CustomCommand.list) return;
-	const list = customCommandEls.get('command-list');
+	const list = registryElement<CustomCommandList>(customCommandEls, 'command-list');
 	if (!list) return;
-	CustomCommand.list = list as unknown as CustomCommandList;
+	CustomCommand.list = list;
 	CustomCommand.overviewPane = registryElement<CustomCommandShape['overviewPane']>(
 		customCommandEls,
 		'command-overview-detail'
@@ -219,6 +219,11 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
+	// ⚠️ 这处保留 `as unknown as`（第 81 轮试过并回退）：真正的病灶是本地别名
+	// `type CustomCommandMethod = ((...args: any[]) => any) | null`（`updateTextNode` 的类型），
+	// 它既带 `any` 又可空。适配器写法会撞上「输出 void vs any」与「可空」两件事，
+	// 而按「不改行为」的原则又不能给它加空值判断（原来是**把可能为 null 的值登记进去**，
+	// 调用点才抛）。⇒ 归到 P3 的 `any` 别名批次去处理，不在 P4 里硬做。
 	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
 
 	const frame = customCommandEls.get('command');
@@ -285,9 +290,7 @@ CustomCommand.createData = function (this: CustomCommandShape, id: string): Cust
 	};
 };
 
-CustomCommand.getItemById = Easing.getItemById as unknown as (
-	id: string
-) => CustomCommandData | null;
+CustomCommand.getItemById = Easing.getItemById as (id: string) => CustomCommandData | null;
 
 CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
@@ -574,13 +577,9 @@ for (const key of customCommandBridgeKeys) {
 	Object.defineProperty(CustomCommand, key, {
 		get: () => getCustomCommandStore()[key],
 		set: (value: unknown) => {
-			(
-				getCustomCommandStore() as unknown as Record<
-					(typeof customCommandBridgeKeys)[number],
-					// oxlint-disable-next-line no-explicit-any
-					any
-				>
-			)[key] = value;
+			// `Reflect.set` 与 `store[key] = value` 是同一个 `[[Set]]`；store 是 interface
+			// （无隐式索引签名），「断言成 Record<…, any>」既过不了可比、又顺带引入一个 `any`。
+			Reflect.set(getCustomCommandStore(), key, value);
 		},
 		configurable: true
 	});

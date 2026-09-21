@@ -4,7 +4,13 @@ import { elementDataOf } from './element-data';
 export interface CommonListLike {
 	scrollTop: number;
 	clientHeight: number;
-	textContent: string;
+	/**
+	 * 助手**只写不读**它（`commonListResize` 里 `el.textContent = ''` 清空用）。
+	 * 所以这里必须用 DOM 的原生类型 `string | null`：写成 `string` 会让所有
+	 * `HTMLElement` 系的调用方与这个契约「不可比」，于是每个调用点都被迫绕道
+	 * `as unknown as CommonListLike`（多一层毫无信息量的逃逸）。
+	 */
+	textContent: string | null;
 	childNodes: NodeListOf<ChildNode>;
 	updateOnResize(element: HTMLElement): void;
 	appendChild(node: Node): Node;
@@ -30,7 +36,17 @@ export const commonListClearElements = (list: CommonListLike, start: number): vo
 	}
 };
 
-export const commonListUpdateHeadAndFoot = (list: CommonListLike): void => {
+/**
+ * `commonListUpdateHeadAndFoot` 真正需要的东西只有 `elements` 上的窗口游标 ——
+ * 它不碰 DOM，也不调 `updateOnResize`。
+ *
+ * 所以参数用这个**窄契约**，而不是整个 `CommonListLike`：树列表的宿主（`TreeListHost`）
+ * 就没有 `updateOnResize`，用宽契约会把「宿主没有的能力」写进契约，
+ * 逼着每个调用方绕道 `as unknown as CommonListLike`。
+ */
+export type HeadAndFootListLike = Pick<CommonListLike, 'elements'>;
+
+export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => {
 	if (list.elements.head) {
 		list.elements.head.style.marginTop = '';
 		list.elements.head = null;

@@ -285,19 +285,19 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 	}
 };
 
-Animation.layerListScroll = function (this: typeof Animation, _event: Event) {
+Animation.layerListScroll = function (this: typeof Animation & HTMLElement, _event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
 	// P4b：改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
-	getElementData(this as unknown as HTMLElement).lastScrollTop = scrollTop;
+	getElementData(this).lastScrollTop = scrollTop;
 	if (getElementData(outerTimelineList as HTMLElement).lastScrollTop !== scrollTop) {
 		outerTimelineList.scrollTop = scrollTop;
 	}
 };
 
-Animation.layerListKeydown = function (this: typeof Animation, event: KeyboardEvent) {
+Animation.layerListKeydown = function (this: typeof Animation & HTMLElement, event: KeyboardEvent) {
 	// 避免重命名输入框键盘按下事件
-	if ((event.target as EventTarget | null) !== (this as unknown as EventTarget) || !this.data) {
+	if (event.target !== this || !this.data) {
 		return;
 	}
 	const item = read(this);
@@ -579,7 +579,7 @@ Animation.outerTimelineListKeydown = function (this: typeof Animation, event: Ke
 	}
 };
 
-Animation.outerTimelineListScroll = function (this: typeof Animation, _event: Event) {
+Animation.outerTimelineListScroll = function (this: typeof Animation & HTMLElement, _event: Event) {
 	const { scrollLeft, scrollTop } = this;
 	if (this.lastScrollLeft !== scrollLeft) {
 		this.lastScrollLeft = scrollLeft;
@@ -600,7 +600,7 @@ Animation.outerTimelineListScroll = function (this: typeof Animation, _event: Ev
 		outerPointerArea.scrollLeft = scrollLeft;
 	}
 	// P4b：改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
-	const selfData = getElementData(this as unknown as HTMLElement);
+	const selfData = getElementData(this);
 	if (selfData.lastScrollTop !== scrollTop) {
 		selfData.lastScrollTop = scrollTop;
 		const { layerList } = Animation;
@@ -619,7 +619,7 @@ Animation.outerTimelineListBlur = function (this: typeof Animation, _event: Even
 };
 
 Animation.outerTimelineListPointerdown = function (
-	this: typeof Animation,
+	this: typeof Animation & HTMLElement,
 	event: TimelineListDragEvent
 ) {
 	if (Animation.dragging) {
@@ -670,7 +670,7 @@ Animation.outerTimelineListPointerdown = function (
 							'pointermove',
 							Animation.outerTimelineListPointermove
 						);
-						addScrollListener(this as unknown as HTMLElement, 'both', 1, true, () => {
+						addScrollListener(this, 'both', 1, true, () => {
 							Animation.outerTimelineListPointermove!(event.latest);
 						});
 						return;
@@ -686,7 +686,7 @@ Animation.outerTimelineListPointerdown = function (
 				event.enableDblclickEvent = true;
 				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
 				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
-				addScrollListener(this as unknown as HTMLElement, 'horizontal', 1, true, () => {
+				addScrollListener(this, 'horizontal', 1, true, () => {
 					Animation.outerTimelineListPointermove!(event.latest);
 				});
 			}

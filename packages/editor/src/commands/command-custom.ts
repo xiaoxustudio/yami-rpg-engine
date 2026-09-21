@@ -49,11 +49,6 @@ interface ScriptObject {
 	parameters: Record<string, unknown> | null;
 }
 
-type WordListInstance = Array<string> & {
-	push(s: string): number;
-	join(j?: string): string;
-};
-
 interface ParameterWrapBox extends HTMLElement {
 	wrap: ParameterWrap;
 	meta: unknown;
@@ -94,12 +89,16 @@ Command.custom = {
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
 
-		this.windowFrame = scriptCommandEls.get('scriptCommand') as unknown as HTMLElement & {
-			style: CSSStyleDeclaration;
-			absolute(x: number | null, y: number | null): void;
-			setTitle(title: string): void;
-			addEventListener(type: string, listener: (event: Event) => void): void;
-		};
+		this.windowFrame =
+			// `windowFrame` 在 command-object.ts 里声明为可选；这里取到即用（与改动前的
+			// 断言同义：真缺元素时下面那句 addEventListener 照样抛，行为未变）。
+			registryElement<
+				HTMLElement & {
+					style: CSSStyleDeclaration;
+					absolute(x: number | null, y: number | null): void;
+					setTitle(title: string): void;
+				}
+			>(scriptCommandEls, 'scriptCommand')!;
 		this.parameterPane = registryElement<ParameterPane>(
 			scriptCommandEls,
 			'scriptCommand-parameter-pane'
@@ -123,7 +122,10 @@ Command.custom = {
 			scriptCommandEls,
 			'scriptCommand-parameter-detail'
 		)!;
-		const wrap = { box, grid, children: [] } as unknown as ParameterWrap;
+		// `ParameterWrap` 的成员就是 `box`/`grid`/`children` 三个 —— 字面量本来就是它的形状。
+		// `grid` 之所以能直接放进来：`parameterGrid` 的声明已按事实改成 `YamiElement`
+		// （原先声明成 `HTMLElement`，只能靠 `as unknown as` 把整个字面量硬塞过去）。
+		const wrap: ParameterWrap = { box, grid, children: [] };
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {
 			return wrap;
@@ -172,7 +174,7 @@ Command.custom = {
 		if (mParameters.length === 0) {
 			return [{ color: 'custom' }, { text: name }];
 		}
-		const words = Command.words as unknown as WordListInstance;
+		const words = Command.words;
 		const states = meta.manager.states;
 		for (const parameter of mParameters) {
 			const { type, key } = parameter;
@@ -267,9 +269,7 @@ Command.custom = {
 				case 'number[]': {
 					const numbers: (number | string)[] = (value as number[]).slice(0, 5);
 					for (let i = 0; i < numbers.length; i++) {
-						numbers[i] = Command.setNumberColor!(
-							numbers[i] as number
-						) as unknown as number;
+						numbers[i] = Command.setNumberColor!(numbers[i] as number);
 					}
 					if ((value as number[]).length > 5) {
 						numbers.push(Token('...'));
@@ -282,7 +282,7 @@ Command.custom = {
 					for (let i = 0; i < strings.length; i++) {
 						strings[i] = Command.setStringColor!(
 							`"${Command.parseMultiLineString!(strings[i])}"`
-						) as unknown as string;
+						);
 					}
 					if ((value as string[]).length > 5) {
 						strings.push(Token('...'));

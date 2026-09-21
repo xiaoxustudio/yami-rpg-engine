@@ -1,4 +1,5 @@
 import { particleEls } from '@app/particle/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { getParticleStore } from '@app/stores/particle';
 
@@ -255,11 +256,10 @@ export interface ParticleShape {
 
 export const Particle = {
 	page: particleEls.get('particle') as YamiElement,
-	head: particleEls.get('particle-head') as unknown as HTMLElement & {
-		left: number;
-		width: number;
-		padding?: number;
-	},
+	head: registryElement<HTMLElement & { left: number; width: number; padding?: number }>(
+		particleEls,
+		'particle-head'
+	)!,
 	body: hide(particleEls.get('particle-body') as YamiElement),
 	info: particleEls.get('particle-info') as YamiElement,
 	screen: particleEls.get('particle-screen') as YamiElement & {

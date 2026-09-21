@@ -70,7 +70,8 @@ export const form = reactive<SwitchConditionForm>({
 });
 
 interface SwitchConditionTarget {
-	save: () => SwitchConditionData;
+	/** 校验失败时返回 `undefined`（焦点回控件、窗口不关）—— 见 spec「save 校验失败返回控件焦点且不关闭窗口」 */
+	save: () => SwitchConditionData | undefined;
 }
 
 export interface SwitchConditionShape {
@@ -78,8 +79,8 @@ export interface SwitchConditionShape {
 	initialize: (() => void) | null;
 	parse: ((condition: SwitchConditionData, listData?: boolean) => string) | null;
 	open: ((condition?: SwitchConditionData) => void) | null;
-	save: (() => SwitchConditionData) | null;
-	confirm: ((event: Event) => SwitchConditionData) | null;
+	save: (() => SwitchConditionData | undefined) | null;
+	confirm: ((event: Event) => SwitchConditionData | undefined) | null;
 }
 
 let target: SwitchConditionTarget | null = null;
@@ -191,7 +192,7 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	requestFocus('switch-condition-type');
 };
 
-const save = (): SwitchConditionData => {
+const save = (): SwitchConditionData | undefined => {
 	const type = form.type;
 	let condition: SwitchConditionData | undefined;
 	switch (type) {
@@ -216,9 +217,11 @@ const save = (): SwitchConditionData => {
 		case 'attribute': {
 			const attributeId = form.attributeId;
 			if (attributeId === '') {
-				return requestFocus(
-					'switch-condition-attribute-attributeId'
-				) as unknown as SwitchConditionData;
+				// 校验失败：焦点回控件、窗口不关。返回 `undefined` 是**既有契约**
+				// （spec：「save 校验失败返回控件焦点且不关闭窗口」断言 `toBeUndefined()`），
+				// 之前只是靠 `as unknown as SwitchConditionData` 把谎话盖住。
+				requestFocus('switch-condition-attribute-attributeId');
+				return undefined;
 			}
 			condition = { type, attributeId };
 			break;
@@ -226,9 +229,8 @@ const save = (): SwitchConditionData => {
 		case 'enum': {
 			const stringId = form.stringId;
 			if (stringId === '') {
-				return requestFocus(
-					'switch-condition-enum-stringId'
-				) as unknown as SwitchConditionData;
+				requestFocus('switch-condition-enum-stringId');
+				return undefined;
 			}
 			condition = { type, stringId };
 			break;
@@ -238,9 +240,8 @@ const save = (): SwitchConditionData => {
 				composableEls.get('switch-condition-keyboard-keycode') as YamiElement
 			) as string;
 			if (keycode === '') {
-				return requestFocus(
-					'switch-condition-keyboard-keycode'
-				) as unknown as SwitchConditionData;
+				requestFocus('switch-condition-keyboard-keycode');
+				return undefined;
 			}
 			condition = { type, keycode };
 			break;
@@ -250,9 +251,8 @@ const save = (): SwitchConditionData => {
 				composableEls.get('switch-condition-gamepad-button') as YamiElement
 			) as number;
 			if (button === -1) {
-				return requestFocus(
-					'switch-condition-gamepad-button'
-				) as unknown as SwitchConditionData;
+				requestFocus('switch-condition-gamepad-button');
+				return undefined;
 			}
 			condition = { type, button };
 			break;
@@ -265,9 +265,8 @@ const save = (): SwitchConditionData => {
 		case 'variable': {
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return requestFocus(
-					'switch-condition-variable-variable'
-				) as unknown as SwitchConditionData;
+				requestFocus('switch-condition-variable-variable');
+				return undefined;
 			}
 			condition = { type, variable };
 			break;
@@ -277,7 +276,7 @@ const save = (): SwitchConditionData => {
 	return condition!;
 };
 
-const confirm = (_event: Event): SwitchConditionData => {
+const confirm = (_event: Event): SwitchConditionData | undefined => {
 	return target!.save();
 };
 

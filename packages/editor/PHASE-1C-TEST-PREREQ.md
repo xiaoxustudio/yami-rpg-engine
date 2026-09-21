@@ -1596,6 +1596,1107 @@ head?: { view: { write(index: number): void } } | null;
 把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
 是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
 
+## 交接（第 87 轮 · 当前真实数字与工作单）——**先读这一节**
+
+> 本节取代下面那份「交接（第 62 轮）」，是**唯一**仍然准确的现状描述。数字取自
+> `node scripts/migration-ledger.mjs --check`（第 87 轮提交后复核）。
+
+### 1. 轴现状
+
+| 轴 | 现状 | 说明 |
+|---|---|---|
+| `unknown-casts` | **136 处 / 109 文件** | 会话起点 285 ⇒ 已减 149 |
+| `any-hatches` | **52 处 / 26 文件** | 会话起点 67；**口径有跨行漏洞**（见 §4） |
+| `legacy-ui-lines` / `legacy-ui-refs` | **0 / 0** | 阶段 1c 的 B（纯移动）已完成 |
+| `ui-singleton-members` | 103 files=8 declared=134 | 属 P5-C/D，**等实机回归后才能动** |
+| `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0 | — |
+| `unremovable-listeners` / `dom-on-exempted` / `dom-whitelist-size` | 9 / 120 / 14 | 只需不增 |
+
+### 2. 已完成
+
+- **P0**（解红）：`tree-core.ts` 的 `children: null` 崩溃（`4d26baf1`）。
+- **P1**（仪器）：补 `ui-singleton-members` 轴、扩 `any-hatches` 口径（`a27d2819`）。
+- **P5-B**（纯移动）：8 个遗留 UI 域模块 → `src/engine/ui/legacy/`（`8c40b735`），
+  7 个文件零改动、2 个只改一个 import。
+- **P4**：285 → 137（本轮会话共 30+ 次提交，逐轮记录见下面各节）。
+- **顺带修的真 bug**：`FSP.existsSync`（`fs.promises.existsSync` 为 undefined，文件改名会抛）。
+
+### 3. 手法库（拆 `as unknown as` 的五条，按判定顺序用）
+
+1. **先看报错码**：TS2540 = 只读 ⇒ 用 `Reflect.set`；TS2352 = 可比性问题 ⇒ 下面几条；
+   TS2345/TS2322 = **声明与事实不符** ⇒ 回去改声明。
+2. **声明写松了**（第 75/76/83 轮）：N 个读点给同一形状打补丁 ⇒ 修声明/抽工厂/抽小工具。
+3. **契约写偏了**（第 77 轮）：`textContent: string` 写紧了、参数要了用不到的能力、宿主漏声明成员。
+4. **断言完紧接着写字段**（第 82/84/87 轮）：换 `Object.assign([], {...})`，零断言。
+5. **索引签名写入 / 解锁只读**（第 78/81 轮）：`Reflect.set` / `Reflect.get`（**别**用它取有类型的返回值，
+   那会引入没被计量的 `any`）。
+6. **交叉断言**（第 85/86 轮）：保留对象类型只补缺口那一支；**边界**：交叉里必须有一支与源类型是同一支，
+   否则 TS 仍报缺成员。
+
+### 4. 剩下的活（按性价比排序）
+
+1. **`any-hatches` 口径漏洞先修**：正则 `Record<string,\s*any>` 匹配不到跨行书写的
+   `Record<\n…,\nany\n>`（第 82 轮实测）。修完数字会**上浮**，属正常；不改口径就永远到不了 0。
+2. **P4 剩余 137 处的成组形态**：`eslints.ts` 3（要先动 `CommandListShape` 的类型设计）·
+   `printer.ts` 3（1 处类→索引签名 + 2 处占位值待决策）· `window-object.ts` 1（frames 后挂方法）·
+   `command-tip.ts` 1 · `particle-engine.ts` 1 · 其余多为零散 2 处以内的 `.vue` 组件。
+3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
+   - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
+   - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、
+     `ParamHistory` vs `IEditableHistory`（缺 `stack`/`index`）—— 都是**真债务**，不是写法问题；
+   - **payload 判别字段**：从 `{ [k: string]: unknown }` 断言到具体字段集时，目标里必须带 `type`（第 78 轮）。
+4. **P3（52 处）**：都压在承重类型上（`SceneShape` 字段、`DynamicShape`、`UIShape`、粒子同名形状…）。
+5. **P5-C/D 与 P6**：**运行时高危，必须等用户按 10 项实机回归清单验证过再动**。
+
+### 5. 待用户决策（7 项）
+
+① `format:check` 是死门禁（261 文件不合格、不在 CI）② editor 测试 flake（治/不治/摘出）——
+**第 87 轮已收窄**：它在独占跑时也会出现，是真·间歇性；完整调用链见第 84 轮
+（`ui-state.spec.ts` → `stores/ui.ts` → `tools/window-cluster.ts` → `title/menu-bar.ts`）；
+并发负载只影响 `template-localized.spec.ts` 的超时（第 86 轮）③ 把 `-F @yami/ui-kit build:types` 加进门禁
+（ui-kit 的 `.vue` 目前无人检查）④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
+⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑥ P6 三处行为缺陷 ⑦ P5-C/D 开工（前提是实机回归全过）。
+
+### 6. 纪律与坑（踩过的，别再踩）
+
+- **editor 全量套件必须独占跑**（第 86 轮实测）：与 ui-kit 测试/`vue-tsc` 并发会把
+  `template-localized.spec.ts`（遍历源码树、单跑 9.9s、上限 60s）逼成超时红。
+- **提交后要按 hook 改写过的树复核**：husky 的 `oxfmt/oxlint` 只作用于 staged 的 `*.{js,ts,css}`
+  （`.vue`/`.mjs` 不在内），提交后必须重跑 `lint`/`typecheck`/`migration:check`。
+- **commitlint**：body 行 ≤100 字符（中英混排时最容易超），subject 不能以 `P5-B` 这类大写专名开头。
+- **仪器要自证**：新增扫描规则时先塞一个「故意错误」验证检查面（第 75 轮对 `build:types` 做过）。
+- **验收命令**（照抄即可）：
+
+  ```bash
+  node scripts/migration-ledger.mjs --check
+  pnpm run migration:selftest && pnpm run lint
+  pnpm -F @yami/editor typecheck && pnpm -F @yami/editor typecheck:vue
+  pnpm -F @yami/ui-kit build:types
+  pnpm -F @yami/ui-kit test && pnpm -F @yami/editor test   # editor 那条**独占**跑
+  ```
+
+## 第 88 轮（续轮）：`unknown-casts` 137 → 136 —— 用「**两端共用的具名类型**」解开第 84 轮那个死结
+
+### 第 84 轮留下的问题，这轮正式解掉
+
+第 84 轮在 `command-api.ts` 的 `textPointerenter` 上撞到过一对约束，当时判定「两条路都不行、
+需要把类型提升成具名类型，属类型设计改动」并回退了。这轮把它做完了 —— 关键动作是**同时改两端**：
+
+```ts
+/**
+ * 变量标识文本元素：`varSpace`/`varType`/`varKey` 由 `updateCommandElement` 用
+ * `Object.defineProperty` 装成 getter，`textPointerenter` 读它们来高亮。
+ * 这个具名类型是**读点与注册点共用**的那一个。
+ */
+interface VariableTextElement extends HTMLDivElement {
+	[k: string]: unknown;              // 该元素还被挂了不少临时字段（如 text.name）
+	varSpace: string;
+	varType: string;
+	varKey: string;
+}
+```
+
+- **读点**：`textPointerenter: function (this: VariableTextElement)` ⇒
+  `commandListStatics.highlightTexts(this)` 直接通过，**一个断言都不需要**；
+- **注册点**：`const text = renderDetachedDiv('command-text') as VariableTextElement;` ⇒
+  后面的 `.call(text)` 也满意。
+
+**为什么单次断言当年过不了、现在却根本不需要**：当年的源类型（`GlobalEventHandlers & { [k: string]: unknown }`）
+与目标类型（`{ varSpace: string; … }`）是**两个临时形状**，谁也不包含谁；现在两端指的是**同一个具名类型**，
+约束自然消失。`[k: string]: unknown` 保留在交叉里，是为了不打断 `text.name = id` 这类临时字段写入。
+
+> ⇒ 这条把第 86 轮的判据补成完整版：**遇到 TS2352 与 TS2345 交替出现时，不要继续在两端各打补丁，
+> 而是找出（或造出）两端共用的那个具名类型。** 造出来往往还能顺手去掉断言本身，而不只是降级。
+
+### 验证（本轮）
+
+- `unknown-casts` **137 → 136 处（−1）**，且这处是**断言彻底消失**（不是降级）
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过** ·
+  editor **252 文件 / 2056 通过（独占跑，exit 0）**
+- **运行期零改动**：只改了类型声明与注解
+
+## 第 87 轮（续轮）：`unknown-casts` 139 → 137 —— 粒子引擎两处 `Object.assign`，外加一处**类与接口漂移**的实测
+
+### 批次 1 `particle-engine.ts` 2 处：`Object.assign` 规则第 3 次复用
+
+```ts
+this.elements = [] as unknown as ParticleElementRef[] & { count: number };
+this.elements.count = 0;                    // 断言之后紧接着写字段 ⇒ 合并
+// ↓
+this.elements = Object.assign([], { count: 0 });
+this.reserves = Object.assign([], { count: 0 });
+```
+
+### 批次 2（试过并回退）：`new ParticleElement(this as unknown as ParticleElementLayer)`
+
+两条路都试了、都被堵死，而且**报错内容本身就说明是真债务**：
+
+- 直接传 `this` → **TS2345**：`this` 不满足 `ParticleElementLayer`；
+- 降成单次断言 `this as ParticleElementLayer` → **TS2352**：「两个类型都不足以重叠」。
+
+⇒ 这不是写法问题：**`ParticleElementLayer` 与该类的实际声明已经漂移**
+（`data`/`emitter` 等成员对不上）。与第 80 轮记下的 `ParamHistory` vs `IEditableHistory` 属同一类债务 ——
+**接口还在，实现已经长歪了**。要修得先把两者对齐（类型设计活 + 需要实机验证行为），已记入 §4。
+
+### 验证（本轮）
+
+- `unknown-casts` **139 → 137 处（−2）**：`particle-engine.ts` 3 → 1
+- `tsc` 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增 · `migration:selftest` 38/38 · 基线已更新
+- ui-kit **115 文件 / 811 通过**
+- editor **独占跑**：252 文件 / 2056 通过 + 1 个 error（那个已知 teardown flake，exit 1）。
+  **这条把第 86 轮的假设收窄了**：flake 在**独占**跑时也会出现（上一轮独占跑时没出现）⇒
+  它是真·间歇性；「并发负载」只确定会影响 `template-localized.spec.ts` 那条**超时**测试，
+  不能用来解释 teardown flake。
+- **运行期改动 2 处**（`Object.assign`，可证等价：原来就是「空数组 + 写 count」）
+
+## 第 86 轮（续轮）：`unknown-casts` 143 → 139 —— 交叉断言**不是万能的**：两处实测边界
+
+这轮 4 处成功、**2 处试过并回退**，而回退的两处把「交叉断言」的适用边界标清楚了 —— 比多减 2 个数更有价值。
+
+### 成功 4 处
+
+**（1）`transition-window.ts` 2 处：交叉的一支就写**源类型本身\*\*
+
+```ts
+// radio 的真实静态类型是 RadioProxyElement
+(radio as RadioProxyElement & { pointerdown: (event: WheelEvent) => void }).pointerdown(event);
+event = dragging as EasingDrag & PointerEvent;
+```
+
+**（2）`YMParameterPane.vue` 2 处：病灶又是「参数声明写窄了」**
+
+```ts
+interface ParamScriptListElement extends HTMLElement {
+	object?: { update: (...args: unknown[]) => unknown };
+	data?: ScriptDef[];
+}
+const bind = (scriptList: ParamScriptListElement): void => { … scriptList.object! … scriptList.data! … };
+```
+
+两个读点原来的 `as unknown as { object: … }` / `as unknown as { data: … }` 随之消失，
+`!` 保持原来的空值语义。（第 75/76/83 轮同一个手法。）
+
+### ⚠️ 回退 1：`typeof Easing.list` 解析出来是**字面量 `null`**
+
+```ts
+Easing.list = list as typeof Easing.list;   // TS2352: Conversion of type 'YamiElement' to type 'null'
+```
+
+`Easing.list` 在形状里的初始值就是 `null`，所以 `typeof Easing.list` **不是**「`YamiElement | null`」而是 `null`。
+⇒ 想拆这处，得先给 `Easing.list` 一个真实声明（类型设计活）。**这提醒我：`typeof x.prop` 在
+「属性是对象字面量初始化」时会退化成字面量类型**，别想当然当它是联合。
+
+### ⚠️ 回退 2：交叉断言**不能**用来「给一个 interface 加 DOM 基类」
+
+```ts
+const input = container as HTMLElement & RepeatableGroupInput;   // TS2352
+// Type 'HTMLDivElement' is missing the following properties from type 'RepeatableGroupInput':
+//   setTooltip, parameters, key, read, write
+```
+
+`RepeatableGroupInput extends HTMLElement`，源是 `HTMLDivElement` —— 我原以为「交叉里有一支是 `HTMLElement`，
+而 `HTMLDivElement` 可赋给 `HTMLElement`」就够了，**实际不行**：TS 会要求源对**交叉整体**可比，
+于是仍报「缺 `RepeatableGroupInput` 的成员」。
+
+> **交叉断言的适用边界（本轮实测收口）**：只有当交叉里有一支**与源类型是同一支**（或源可直接赋值给它、
+> 且另一支不引入**必需**成员冲突）时才成立。经验判据：
+> - ✅ `TreeItem[] & TreeItem`（源就是 `TreeItem[]`）、`RadioProxyElement & {…}`（源就是前者）、
+>   `FileNavPaneElement & CommonListLike`（源可赋给前者、后者成员在源上齐备）；
+> - ❌ `HTMLElement & RepeatableGroupInput`（后者有源上不存在的必需成员）。
+
+### 验证（本轮）
+
+- `unknown-casts` **143 → 139 处（−4）**：`transition-window.ts` 3 → 2 · `YMParameterPane.vue` 3 → 2
+  （另有 2 处试过并回退，已在代码里写明原因）
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过**
+- editor：**独占重跑 = 252 文件 / 2056 通过、exit 0**（而且连那个 teardown flake 也没出现）。
+  但**首次运行出现了 1 个非预期红**，查明是**并发负载导致的超时**，不是代码问题：
+  `src/localize/__tests__/template-localized.spec.ts` 的「与源码反推的集合一致」会**遍历整个源码树**
+  （单跑 ~9.9s，已显式放宽到 60s 上限），而我当时把 ui-kit 测试 + `vue-tsc` + selftest 与它**并发**跑了。
+  单跑该 spec：4/4 通过（9.9s）。
+  ⇒ **操作纪律（记下来）：editor 全量套件必须独占跑。** 否则会把这个「慢但正常」的测试逼成偶发红 ——
+  这也给那个 teardown flake 提供了一个新假设：它同样可能是**负载敏感**的，而不是纯粹的代码竞态。
+- **本轮无运行期改动**（删的/换的都是断言；`ParamScriptListElement` 只是把参数声明加宽）
+
+## 第 85 轮（续轮）：`unknown-casts` 150 → 143 —— 「**保留对象类型、只补索引签名那一支**」的交叉断言
+
+### 批次 1 `utils/dom.ts` 3 → 0：`CSSStyleDeclaration & Record<string, string>`
+
+`css()` 这个 helper 按**动态键**读写样式（`css(el, 'marginLeft')` 这种用法），
+三个站点原来都写 `as unknown as Record<string, string>` —— 等于把整张类型表丢掉，
+只剩「一张字符串表」。改成交叉断言：
+
+```ts
+(getComputedStyle(el as Element) as CSSStyleDeclaration & Record<string, string>)[args[0] as string]
+(el.style as CSSStyleDeclaration & Record<string, string>)[key] = props[key];
+```
+
+为什么这样更好：
+
+- `CSSStyleDeclaration` 是 **interface**（没有隐式字符串索引签名），指向 `Record<string, string>`
+  的断言过不了可比 ⇒ 这是「必须绕」的真实场景；
+- 但**不必把对象类型也丢掉** —— 交叉一支保留了它，读出来的值仍是 `string`（不是 `any`），
+  而且单次断言即可（交叉里有一支与源类型一致）。
+- 与「用 `Reflect.get` 图省事」的区别：`Reflect.get` 返回 `any`，那是**没被计量的坏味道**（第 79 轮已拒绝过一次）。
+
+> ⇒ 这条是「必须绕时怎么绕得最小」的模板：**保留原类型 + 只补缺口的那一支**，而不是 `unknown` 换表。
+
+### 批次 2 `tools/window-object.ts` 3 → 1
+
+- 桥接 setter → `Reflect.set(getWindowStore(), key, value)`（**这是全仓第 4 处同形桥接**：layout / scene /
+  customCommand / window —— 已经够格称为一个「家族」了）。
+- `(window as unknown as { Window: typeof Window }).Window = Window;` → `Reflect.set(window, 'Window', Window)`。
+- 剩下那 1 处（`frames: [] as unknown as HTMLElement[] & { append; remove }`）**留着**：
+  `append`/`remove` 是在文件后半段（470-510 行）**后挂**到这条数组上的，初始字面量里根本没有这两个方法，
+  所以这里没有「先断言、再自己写字段」的结构，`Object.assign` 规则不适用；要拆得先重排初始化顺序。
+
+### 批次 3 `commands/command-tip.ts` 3 → 1
+
+- 「取 → 判空 → 断言」三段式 → `registryElement<CommandSuggestionWidget>(…)`（同第 83 轮）。
+- **又一处死别名**：`Command.words as unknown as { push(s): number; join(j?): string } & Array<string>`
+  —— 与第 83 轮在 `command-custom.ts` 删掉的 `WordListInstance` **是同一个多余形状**，
+  `Command.words` 的真实类型本来就带 `push`/`join` ⇒ 直接读。
+  （同一个死形状在两个文件里各写了一遍，说明它是「照抄型」债务，值得每轮顺手搜一遍。）
+
+### 验证（本轮）
+
+- `unknown-casts` **150 → 143 处（−7）**：`dom.ts` 3 → **0** · `window-object.ts` 3 → 1 ·
+  `command-tip.ts` 3 → 1
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit 本轮未改（仍跑一遍：115 文件 / 811 通过）
+- editor **252 文件 / 2056 全部通过**，1 个 error = 同一个已知 flake（调用链与第 84 轮记下的一致）
+- 运行期改动：2 处 `Reflect.set`（可证等价）；`dom.ts` 三处只是换了个断言写法
+
+## 第 84 轮（续轮）：`unknown-casts` 157 → 150 —— 第 82 轮那条规则**一轮复用了 4 次**
+
+### 批次 1 `command-api.ts` 5 → 1
+
+**(1) `Object.assign` 规则复用（第 82 轮提出，这轮在 ui-kit 里连中两处）**
+
+```ts
+// 前：断言声称有 6 个游标字段，紧接着自己把 6 个逐个写上去
+list.elements = [] as unknown as CommandListElements;
+list.elements.versionId = 0; … list.elements.foot = null;
+// 后
+list.elements = Object.assign([], { versionId: 0, count: 0, start: -1, end: -1, head: null, foot: null });
+listData.selections = Object.assign([], { count: 0 });
+```
+
+**(2) 「声明说的是公开契约、运行期其实是数组」的读点：保留 `| null` 的交叉断言**
+
+```ts
+this.createItems((this.data as (CommandData & CommandList) | null)!, 0);
+const allSelectable = (this.data as (CommandData & CommandList) | null)!.length > 0;
+```
+
+`CommandListHost.data` 声明成 `CommandData | null`，但文件里 397-399 行的注释早就写明**运行期是命令行数组**
+（`createItems` 逐行遍历、`data.length`）。诚实的写法就是把「两者都成立」写成交叉类型；
+因为源是 `X | null`，**断言目标里也必须带 `| null`**（第 80 轮细则），再用 `!` 保持原来的空值语义。
+
+### 批次 2 `YMParamList.vue` 5 → 2
+
+- 同一处 `Object.assign` 规则（`elements` 六字段 + `selections.count`）。
+- `self._paddingTop = undefined as unknown as number;` → **`self._paddingTop = undefined;`**：
+  `_paddingTop` 在类型里本来就是 `_paddingTop?: number`（可选），断言纯属多余。
+  ⇒ 新的一条小分类：**断言在替一个「本来就是可选的字段」圆谎**。
+
+### 试过并**回退**的一处（这轮最有信息量的一次失败）
+
+`command-api.ts` 的 `textPointerenter`：
+
+```ts
+textPointerenter: function (this: GlobalEventHandlers & { [k: string]: unknown }): void {
+	commandListStatics.highlightTexts(this as unknown as { varSpace: string; varType: string; varKey: string });
+```
+
+两条路都试了、都被编译器堵死：
+
+1. **降成单次断言** `this as { varSpace: string; … }` → TS2352：源与目标**两个方向都不可比**
+   （源只有索引签名，目标只有三个具名字段，谁也不满足谁）；
+2. **把三个字段写进 `this` 注解**（读点就不用断言了）→ 注册点报 **TS2345**：
+   注册处传的是 `HTMLDivElement & { [k: string]: unknown }`（本文件 1366 行附近），
+   注解一严，轮到注册点不满足。
+
+⇒ 结论：**这里的正解是把「哪一类元素才有这三个字段」提升成一个具名类型、并在注册点一起用**，
+属于类型设计改动，不在 P4 顺手做的范围。已在代码里写清两条路都试过、为什么不行。
+
+> 这也是本轮值得记的：**「读点」与「注册点」是一对约束** —— 只放宽/收紧其中一端，
+> 报错只会从一端跳到另一端。遇到 TS2352 + TS2345 交替出现时，就该停下来找那个**两边共用的具名类型**。
+
+### 验证（本轮）
+
+- `unknown-casts` **157 → 150 处（−7）**：`command-api.ts` 5 → 1 · `YMParamList.vue` 5 → 2
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过**
+- editor **252 文件 / 2056 全部通过**，1 个 error = 那个已知 flake；**这轮抓到了它的完整调用链**
+  （用于日后决定治不治）：
+
+  ```txt
+  EnvironmentTeardownError: Cannot load '/src/title/menu-bar.ts' imported from
+    packages/editor/src/tools/window-cluster.ts after the environment was torn down.
+  - /src/title/menu-bar.ts
+  - packages/editor/src/tools/window-cluster.ts
+  - packages/editor/src/stores/ui.ts
+  - packages/editor/src/stores/__tests__/ui-state.spec.ts
+  ```
+
+  ⇒ 即 `ui-state.spec.ts` 触发 `stores/ui.ts` 的惰性代理 → 模块级 `tools/window-cluster.ts`
+  → 拉起 `title/menu-bar.ts`，而此刻该 spec 的环境已经被拆掉。
+- **运行期改动**：4 处 `Object.assign`（均可证等价：都是「先空数组、再逐个写字段」的合并写法）
+  ＋ 1 处 `= undefined`（原来就是 undefined）；均在 ui-kit 列表装配路径上
+
+## 第 83 轮（续轮）：`unknown-casts` 163 → 157 —— 一个断言常常**同时盖住两件事**
+
+### 批次 1 `command-custom.ts` 4 → 0
+
+**(1) `{ box, grid, children: [] } as unknown as ParameterWrap` —— 拆开才发现它盖了两件事**
+
+第一眼看上去这处是「多写的断言」：`interface ParameterWrap` 的成员**恰好就是**
+`box` / `grid` / `children` 三项，字面量本来就是它的形状。于是改成类型标注：
+
+```ts
+const wrap: ParameterWrap = { box, grid, children: [] };
+```
+
+`tsc` 立刻报第二件事：
+
+```txt
+src/commands/command-custom.ts(132,38): error TS2322: Type 'HTMLElement' is not assignable to type 'YamiElement'.
+```
+
+`grid` 来自 `this.parameterGrid`，而它在 `command-object.ts` 里被声明成 `HTMLElement`；
+`ParameterWrap.grid` 要的是 `YamiElement`。**光删断言不够，得回到声明处把事实写对**：
+
+```ts
+// command-object.ts：initialize() 里就是从元素注册表取的 YamiElement（见 command-custom.ts:111）
+parameterGrid?: YamiElement;
+```
+
+> ⇒ 一条经验：**一个 `as unknown as` 常常同时盖住两件事 ——「多写的断言」与「声明与事实不符」。**
+> 拆的时候两件都要处理；只处理一件，编译器的下一条报错会立刻告诉你另一件在哪。
+
+**(2) `Command.words as unknown as WordListInstance` → 直接 `Command.words`**
+
+而且那个别名**整个都是多余的**：
+
+```ts
+type WordListInstance = Array<string> & { push(s: string): number; join(j?: string): string };
+```
+
+`push`/`join` 本来就在 `Array<string>` 上，而 `Command.words` 的真实类型 `WordListShape` 也自带它们。
+⇒ 断言与别名**一起删掉**（别名删除后由 `tsc` 的 TS6196「声明了但没用到」确认没有别处引用）。
+
+**(3) 两处 `as unknown as number/string` 是无意义的**
+
+```ts
+numbers[i] = Command.setNumberColor!(numbers[i] as number) as unknown as number;
+strings[i] = Command.setStringColor!(`"…"`) as unknown as string;
+```
+
+`Command.setNumberColor/setStringColor` 的类型是 `CommandMethod = (...args: any[]) => any` ——
+**返回值本来就是 `any`**，`any` 可以赋给 `number`/`string` ⇒ 这两个断言纯属噪音，直接删。
+
+### 批次 2 `custom-command-window.ts` −2
+
+1. 三段式「取 → 判空 → 断言」换成一句既有 helper（第 56 轮引入的 `registryElement`）：
+
+   ```ts
+   const list = registryElement<CustomCommandList>(customCommandEls, 'command-list');
+   if (!list) return;
+   CustomCommand.list = list;
+   ```
+2. `Easing.getItemById as unknown as (id: string) => CustomCommandData | null` → 单次断言
+   （两个函数类型本来就可比）。
+
+### 验证（本轮）
+
+- `unknown-casts` **163 → 157 处（−6）**：`command-custom.ts` 4 → **0** ·
+  `custom-command-window.ts` 3 → 1（剩下那处已注明归 P3 的 `any` 别名批次）
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过** · editor **252 文件 / 2056 通过（exit 0）**
+- 本轮**没有运行期改动**：删掉的都是断言和多余类型别名，`parameterGrid` 的声明只影响类型
+
+## 第 82 轮（续轮）：`unknown-casts` 169 → 163 —— 「断言完紧接着把字段写上去」就该用 `Object.assign`
+
+### 批次 1 `scene-window.ts` 4 → 1
+
+**(1) 桥接 setter**：`(getSceneStore() as unknown as Record<string, unknown>)[key] = value`
+→ `Reflect.set(getSceneStore(), key, value)`（与第 78/81 轮同一条）。
+
+**(2) 两行变一行、且零断言（本轮最值得记的一处）**
+
+```ts
+// 前：断言声称有 `count`，紧接着自己把 `count` 写上去
+regions.visibleList = [] as unknown as unknown[] & { count: number };
+regions.visibleList.count = 0;
+// 后
+regions.visibleList = Object.assign([] as unknown[], { count: 0 });
+```
+
+`Object.assign([] as unknown[], { count: 0 })` 与「先 `[]` 再 `.count = 0`」**逐条等价**（同一个 `[[Set]]`），
+类型是 `unknown[] & { count: number }` —— 正好就是字段声明的形状，一个断言都不需要。
+
+> ⇒ 规则：**断言之后紧跟着「把断言里声称的字段写上去」时，`Object.assign` 就是零断言的写法。**
+
+**(3) 两处同形 `[] as unknown as XxxShape` 收敛成一个工厂**
+
+```ts
+/**
+ * 列表型容器：运行期就是「空数组 + 窗口游标」，游标由 `common-list` 家族助手稍后填写。
+ * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在** ——
+ * 这是本文件里唯一真正需要 `unknown` 的地方，收敛到这一个工厂里。
+ */
+const emptyListWithCursor = <T>(): T => [] as unknown as T;
+```
+
+把「为什么这里必须绕」写在唯一的地方，比在两个站点各写一遍断言更有信息量。
+（第 75/76 轮是「N 个读点 → 1 处声明/工具」，这轮是「N 个构造点 → 1 个工厂」，同一族手法。）
+
+### 批次 2 `custom-command-window.ts` 的桥接 setter
+
+原来是 `getCustomCommandStore() as unknown as Record<…, any>`（**多行泛型实参里的 `any`**，
+还带一条 `oxlint-disable-next-line no-explicit-any`）。改成 `Reflect.set(...)` 后两条一起消失。
+
+> **顺带发现一个计量口径漏洞（如实记账）**：`any-hatches` 的正则是
+> `\[(?:k|key):\s*string\]:\s*any\b|Record<string,\s*any>` —— 它匹配不到
+> `Record<\n\t…,\n\tany\n>` 这种**跨行书写**的 `Record<..., any>`。
+> 也就是说这个站点一直在口径之外。本轮它被删掉了，但**口径漏洞本身仍在**，
+> 若以后要按这条轴归零，得先把正则改成能跨行（属于仪器活，留待 P3 收尾时一起做）。
+
+### 批次 3 `YMFileNavPane.vue` 4 → 2
+
+`commonListResize(el.value! as unknown as CommonListLike)` →
+`as FileNavPaneElement & CommonListLike`（单次断言）；`updateHeadAndFoot` 同理用
+`& HeadAndFootListLike`（第 77 轮收窄出来的窄契约）。为什么单次就够：`FileNavPaneElement`
+本身就 `extends HTMLElement`，**交叉类型里有一支与源类型一致** ⇒ 可比。
+
+### 试过并**回退**的一处（说明「不是所有 unknown-casts 都该在 P4 拆」）
+
+`custom-command-window.ts` 的 `updaters.push(list.updateTextNode as unknown as (item: unknown) => void)`
+本来想用适配器替掉，撞上两件事：
+
+- `updateTextNode` 的类型是**本地别名** `type CustomCommandMethod = ((...args: any[]) => any) | null`
+  —— 既是 `any` 又**可空**，于是 `Parameters<typeof …>` 连约束都不满足（TS2344）；
+- 给它加 `?.` 就**改了行为**：原来是把「可能为 null 的值」登记进去、由调用点抛，
+  加了 `?.` 就变成静默跳过。
+
+⇒ 回退，并在代码里写明**归到 P3 的 `any` 别名批次**（先把别名去掉、再谈拆断言）。
+
+### 验证（本轮）
+
+- `unknown-casts` **169 → 163 处（−6）**：`scene-window.ts` 4 → 1（保留的那 1 处在工厂里）·
+  `custom-command-window.ts` −1 · `YMFileNavPane.vue` 4 → 2
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过**
+- editor **2056 项全部通过**，但**又是**「全通过 + 1 个环境错误」的已知 flake（exit 1）；
+  本轮会话实测 **5 次 exit 1 / 3 次 exit 0**，与本次改动无关（改动点在场景初始化与文件导航面板）
+- **本轮有两处运行期「写法」改动（均可证等价）**：`Reflect.set` ×2 与
+  `Object.assign([] as unknown[], { count: 0 })`。它们分别落在**场景初始化/存档**与
+  **设置桥接**路径上 —— 实机回归清单第 8 项（保存重开项目布局与缩放）会覆盖到。
+
+## 第 81 轮（续轮）：`unknown-casts` 179 → 169 —— 「把 NodeList 当数组」与「readonly 的绕法」两类伪装
+
+### 批次 A `layout.ts` 6 → 0
+
+**(1) 三处同形 `X.childNodes as unknown as LayoutGroupElement[]` → `as NodeListOf<LayoutGroupElement>`**
+
+要点是**不要**图省事写成 `Array.from(node.childNodes)` —— 那是把**活的** NodeList 变成快照，
+语义就变了（这几处的循环体里会 `outer.insertBefore(node, inner)`、`inner.remove()`）。
+`NodeListOf<T>` 既保住活性，又能 `for…of`（`tsconfig` 的 `lib` 里有 `dom.iterable`：见 `tsconfig.json:15`）。
+
+**(2) 去掉一个断言，改用**类型谓词**（本轮最漂亮的一处）**
+
+```ts
+// 前：DOM 的 childNodes 真的可能含文本/注释节点 ⇒ 「断言成 ArrayLike<Element>」过不了「可比」
+const children: ArrayLike<Element> =
+	element.children ?? (element.childNodes as unknown as ArrayLike<Element>) ?? [];
+const list = Array.from(children).filter((child) => child?.nodeType === 1);
+// 后：如实声明 + 把「只留元素」写成类型谓词
+const children: ArrayLike<ChildNode> = element.children ?? element.childNodes ?? [];
+const list = Array.from(children).filter((child): child is Element => child?.nodeType === 1);
+```
+
+运行期**一模一样**（类型谓词是编译期的东西），但类型上第一次说清了那句 filter 的意图。
+⇒ 规则：**当「断言出来的形状」与「后面那句 filter/if」说的是同一件事时，删掉断言、
+把那句过滤改写成类型谓词。**
+
+**(3) 另两处 `Record<string, unknown>` 写入 → `Reflect.set`**（同第 78 轮 tree-api）：
+`window`（interface，无隐式索引签名）与 `getLayoutStore()` 的动态键写入，都没有合法的单次断言写法。
+
+### 批次 B `YMGamepadBox.vue` 4 → 0
+
+`clonePad` 里的动态键拷贝与 `buttons` 赋值（3 处 `Record<string, unknown>`）→
+`Reflect.set(clone, key, Reflect.get(pad, key))` / `Reflect.set(clone, 'buttons', …)`。
+
+第 4 处是**另一种伪装**：
+
+```ts
+for (const button of lastPad.buttons as unknown as { pressed: boolean; value: number }[]) {
+	button.pressed = false;   // ← 报 TS2540：Cannot assign to 'pressed' because it is a read-only property
+	button.value = 0;
+}
+```
+
+第一次直接删掉断言，`vue-tsc` 立刻报 **TS2540 —— DOM 里 `GamepadButton.pressed`/`value` 是 `readonly`**。
+所以这个断言的真实用途不是「形状不符」，而是**解锁只读**。改法：
+
+```ts
+Reflect.set(button, 'pressed', false);
+Reflect.set(button, 'value', 0);
+```
+
+操作的是 `clonePad` 复制出来的普通对象，`Reflect.set` 与 `button.pressed = false` 是同一个 `[[Set]]`，
+语义相同且不需要断言。
+
+> ⇒ 记一条分类：`as unknown as` 至少有两类成因 ——
+> **① 真形状不符**（改声明、收窄、或给个具名交叉类型）；
+> **② 解锁 readonly / 索引签名写入**（用 `Reflect.get`/`Reflect.set`）。
+> 今天这轮把两类都摸清了，判定顺序应当是：先看报什么错（TS2540 就是②，TS2352 才可能是①）。
+
+### 验证（本轮）
+
+- `unknown-casts` **179 → 169 处（−10）**：`layout.ts` 6 → **0** · `YMGamepadBox.vue` 4 → **0**，
+  两者都已从台账的 files 计数里消失
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过**
+- editor **2056 项全部通过**，但**又一次**出现「全通过 + 1 个环境错误」的已知 flake 形态（exit 1）；
+  本轮会话该命令实测 **4 次 exit 1 / 3 次 exit 0**。它与本次改动无关（改动点是布局引擎与手柄克隆，
+  两者都不在那个 teardown 报错的链路上），仍是待用户决策项。
+
+## 第 80 轮（续轮）：`unknown-casts` 193 → 179 —— 一个**由 spec 直接作证**的谎话，外加第 7 项待决策
+
+### 批次 A `useSwitchConditionSchema.ts` 5 → 0：不是「可能为 null」，是**必然 `undefined`**
+
+5 条校验失败路径写的是：
+
+```ts
+return requestFocus('switch-condition-attribute-attributeId') as unknown as SwitchConditionData;
+```
+
+而 `requestFocus` 的签名是 `(id: string, mode?: string): void`（`src/directives/focus.ts:15`）——
+**它返回 `void`**。所以这 5 处的运行期值是 `undefined`，声明却说是 `SwitchConditionData`。
+
+**决定性证据：既有 spec 早就把契约钉死了**（`composables/__tests__/useSwitchConditionSchema.spec.ts`）：
+
+```ts
+it('save 校验失败返回控件焦点且不关闭窗口', async () => {
+	…
+	expect(SwitchCondition.save!()).toBeUndefined();
+});
+```
+
+⇒ 运行期契约一直是「失败返回 `undefined`」，**只有类型在撒谎**。改法（纯类型 + 两条语句拆分）：
+
+```ts
+const save = (): SwitchConditionData | undefined => { … requestFocus('…'); return undefined; }
+// 接口同步：SwitchConditionTarget.save / SwitchConditionShape.save / .confirm 都带上 | undefined
+```
+
+（`return requestFocus(…)` 在 `| undefined` 的返回类型里**不合法** —— `void` 不能赋给 `undefined`，
+所以必须拆成两句；行为逐条相同，spec 的 `toBeUndefined()` 就是验收。）
+
+**零连锁**：改完后 `tsc` **一处新报错都没有**。原因是唯一的真实消费点
+`useSwitchBranchSchema.ts:65-66` 早就写了 `if (condition !== undefined)` ——
+类型一改，那句「不可能的比较」变成有意义的检查。这反过来证明运行期契约确实是 `undefined`。
+
+### 批次 B `animation-list.ts` 5 → 0：`this: typeof Animation & HTMLElement`
+
+4 个处理器（`layerListScroll` / `layerListKeydown` / `outerTimelineListScroll` /
+`outerTimelineListPointerdown`）原来都在用 `this as unknown as HTMLElement`。依据不是猜的：
+
+- 注册处 `animation-initialize.ts:506/512` 写的是 `on(this.layerList, 'scroll', this.layerListScroll)`
+  ⇒ **`this` 就是那个元素**（`on` 是 DOM 事件绑定）；
+- 函数体里本来就在读 `this.scrollTop` / `this.scrollLeft`（元素成员）。
+
+这是第 75 轮「修声明」在 **`this` 参数**上的同一条：声明补上 `& HTMLElement`，5 处断言消失。
+
+### 批次 C `script-list.ts` 5 → 1：接口**漏了继承**，加上去 3 处就没了
+
+`interface ScriptListElement` 逐项声明了 `contains(target: Node): boolean`（DOM 成员），
+却没写 `extends HTMLElement` ⇒ 每个 `removeClass/addClass(this, …)` 都得先断言一次。
+补上继承后 3 处直接消失（`listDragleave` / `listDragover` / `listDrop`）。
+
+第 4 处（`this.target`）改用**保留 `| null` 的单次断言**：`(this.target as (HTMLElement & ScriptListTarget) | null)!.save()`。
+
+> **踩到一条新细则：断言目标里也必须保留 `| null`。** 第一次写成 `as HTMLElement & { save(): void }`
+> 时报 TS2352 —— 因为源是 `X | null`，而「可比」对**联合源要求每个成分都可比**，`null` 与交叉类型不可比。
+> 这与第 73 轮「不要把 `| null` 写进尖括号」是同一族规则的两面：
+> **`registryElement<T>` 里那个 `| null` 该删（`Map.get` 的语义由 helper 表达），断言目标里那个 `| null` 该留。**
+
+### ⚠️ 第 5 处保留 `unknown`，并记下第 7 项待决策：`ParamHistory` 不满足 `IEditableHistory`
+
+`script-list.ts` 把 `new ParamHistory(...)` 当 `IEditableHistory` 用。单次断言被 TS 拒绝，原因不是形式：
+
+| `IEditableHistory` 要求 | `ParamHistory` 实际 |
+|---|---|
+| `stack: HistoryData[]` | **没有** |
+| `index: number` | **没有** |
+| `save(data: HistoryData)` | `save(data: { type: string } & InspectorParamData)` |
+| `restore(operation: HistoryOperation)` | `restore(operation: string)` |
+
+而 `types/history.ts` 的头部注释明确写着「项目中 CommandHistory / NumberHistory / TextHistory /
+ParamListHistory / **ParamHistory** 6 个 History 类重复实现同一组栈式 undo/redo 契约 …… 供各 History 类
+implements 复用」。**注释与结构矛盾**：任何读 `history.stack` / `history.index` 的地方都会拿到 `undefined`。
+
+⇒ 本轮**只记录、不改**（补字段或改使用方都是行为改动，须按计划交实机回归判定），
+已在代码处留下注释，并列入待用户决策清单（第 7 项）。
+
+### 验证（本轮）
+
+- `unknown-casts` **193 → 179 处（−14）**：A 5 处（`useSwitchConditionSchema.ts` 归零）·
+  B 5 处（`animation-list.ts` 归零）· C 4 处（`script-list.ts` 5 → 1）
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` 38/38 · ui-kit **115 文件 / 811 通过**
+- editor **252 文件 / 2056 通过（exit 0）** —— 其中就包含那条把 `save()` 契约钉死的 spec
+
+## 第 79 轮（续轮）：`unknown-casts` 202 → 193 —— 索引签名**直接承接**扩展字段，外加一个**新发现的行为疑点**
+
+### 批次 1 `tile-frame-index.ts` 6 → **0**：连单次断言都不需要
+
+```ts
+TileFrame.marqueePointerdown = function (this: typeof TileFrame, event: PointerEvent & { [k: string]: unknown }) {
+	(event as unknown as { screen: typeof screen }).screen = screen;   // ← 6 处这样的写法
+```
+
+参数声明里**本来就有索引签名**（`{ [k: string]: unknown }`），而索引签名**既能读也能写** ——
+所以写扩展字段只要 `event.screen = screen;` 就够了，一个断言都不需要（两处 ×3 字段全清）。
+
+> 与第 75 轮对照记一条判定顺序：**先看参数/变量的声明里有没有索引签名**。
+> - 有 ⇒ 读写扩展字段都**无需断言**（本轮 6 处）；
+> - 没有、且要**读**回来 ⇒ 在声明处给一个具名交叉类型（第 75 轮 `Dragging`，8 处）；
+> - 没有、且只在**外部**读 ⇒ 抽小工具收一次断言（第 76 轮 `fileElementOf`，3 处）。
+
+补一句如实记账：这个文件的 `TileFrame` 本身是 `Record<string, any>`（P3 的 `any-hatch`，
+现有 oxlint-disable 注释在案），所以 `this.dragging` 是 `any`；本轮清掉的 6 处是打在**有类型**的
+`event` 参数上的。`Record<string, any>` 那一处仍留在 P3 欠账里。
+
+### 批次 2 `printer.ts` 的 `imported.signature` 3 处：又是「修声明」
+
+```ts
+static imported: FontNameList & { signature?: string } = [];   // 运行期在这条数组上挂指纹
+```
+
+3 个读点（1080 / 1376 / 1377）随即变成普通字段访问。与第 75/76/77 轮同一个手法。
+
+### ⚠️ 批次 3：**新发现的行为疑点 —— `TextCommandShape.color` 与文件自身用法不自洽**（本轮只记录、不修）
+
+顺手想把占位命令里的 `color: 0 as unknown as string` 也清掉，于是把声明改成 `string | number`
+（同一文件里效果颜色确实会构造**打包整数**：`color: r + (g + (b + a * 256) * 256) * 256`）。
+`tsc` 立刻报 **4 处**：
+
+```txt
+src/printer/printer.ts(1266,3): error TS2322: Type 'string | number' is not assignable to
+  type 'string | CanvasGradient | CanvasPattern'.
+（另见 1282 / 1298 / 1319，均为 `context.fillStyle = color` 一类）
+```
+
+也就是说：**这个声明与文件自身的用法不自洽，只是被 `as unknown as string` 盖住了。**
+证据链（全部在本文件内）：
+
+| 事实 | 位置 |
+|---|---|
+| 声明 `color: string` | `TextCommandShape` |
+| 占位命令写 `color: 0`（打包整数形状） | `fetchCommand()` |
+| `command.color = this.colors[0]` | `drawBuffer()` |
+| `colors = [Printer.color!]`，而 `Printer.color = CSSRGBA('ffffffff')` | 类静态/初始化 |
+| 同文件效果颜色构造**打包整数** | 三处 `r + (g + (b + a * 256) * 256) * 256` |
+| 4 处把 `color` 直接交给 canvas | `drawText` / `drawTextWithShadow` 等 |
+
+**本轮不修的理由**：真实取值究竟是「打包整数」还是「CSS 颜色串」是**行为问题**，
+改声明 = 改行为（canvas 对非法 `fillStyle` 是静默忽略的，所以线上一旦是整数，文字颜色一直在吃上一次的值）。
+按计划，行为改动必须交用户按实机回归判定 ⇒ **已在代码里（声明处 + 占位处）留下待决策注释**，
+并列入待用户决策清单（第 5 项候选缺陷）。
+
+> 这一条值得单独记住：**P4 的价值不在于「台账数字变小」，而在于把谎话逼出来。**
+> 本轮台账只减 9，但换来了一个可复现、有证据链、且能一句话说清后果的行为疑点。
+
+### `printer.ts` 剩余 3 处（都记了理由）
+
+- 行 406 `Printer as unknown as Record<string, (...args) => unknown>`：`typeof Printer` 是类类型，
+  **没有隐式索引签名** ⇒ 与第 78 轮 `Record<string, unknown>` 同类，**没有合法的单次断言写法**。
+  诚实解法是给绘制方法建一张有类型的查找表（`drawingMethods` 现在只存方法名），属设计改动。
+  **不用 `Reflect.get` 图省事** —— 它返回 `any`，那是把「被计量的坏味道」换成「没被计量的坏味道」，
+  等于骗计量口径，不做。
+- 行 1228 / 1235：两个占位值（`0 as unknown as string`、`'' as unknown as (...args) => unknown`），
+  随上面那条一起待决策。
+
+## 第 78 轮（续轮）：`unknown-casts` 209 → 202 —— `tree-api.ts` 7 → **0**，以及「接口 → 索引签名」无解的那一处
+
+### 6 处单次断言化（纯类型层）
+
+1. **`treeData` 直接复用既有 helper**：
+
+   ```ts
+   // 前：getElementData(el as HTMLElement) as unknown as TreeListElementData
+   const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
+   ```
+
+   依据不是猜的：`utils/element-data.ts:42-44` 里 `elementDataOf<T>` 的实现**就是**
+   `getElementData(el as HTMLElement) as T` —— 同一个调用、同一个单次断言，所以是**可证等价**。
+   顺带删掉因此变成未使用的 `getElementData` 导入（lint 又抓到一次，与第 77 轮同一套路）。
+2. `dItem = data as unknown as TreeItem` → `data as TreeItem[] & TreeItem`：
+   代码上方的注释早就写着「**根"节点"就是 `data` 数组本身**」，所以诚实形状是交叉类型；
+   单次断言合法，因为交叉的一支与源类型一致。
+3. 4× `response as unknown as { … }` → `response as { type: string; … }`（见下）。
+
+### 第一次尝试失败，而**失败信息本身就是一条规则**
+
+4 处只把 `unknown as` 拿掉、原样保留字段集时，编译报：
+
+```txt
+Type '{ [k: string]: unknown; type: string; }' is missing the following properties
+from type '{ item: TreeItem; oldValue: string; newValue: string; }': item, oldValue, newValue
+```
+
+原因是**源类型带索引签名**时，断言要「两个方向之一可比」：目标 → 源这一向要求目标里也有 `type`
+（源把它声明成 required）。**把判别字段 `type: string` 写进目标类型**，单次断言立刻合法。
+
+> 规则：**从 `{ [k: string]: unknown }` 形状的载荷断言到具体字段集时，目标里必须带上判别字段。**
+
+### 最后一处：`unknown` 在这里**不是懒，是 TS 不允许单次断言**
+
+```ts
+const prototypeSink = list as unknown as Record<string, unknown>;   // TreeListHost 是 interface
+```
+
+`TreeListHost` 是 **interface ⇒ 没有隐式索引签名**，而目标是指向索引签名的类型。
+TS 对这种转换**没有合法的单次写法**（`Record<string, unknown>`、`Pick<…>` 都一样会报
+`Index signature for type 'string' is missing`）。两条路：
+
+- 留着 `as unknown as` ⇒ **P4 永远到不了 0**；
+- **换写法**：`Reflect.set(list, name, Reflect.get(treeListPrototype, name))` ——
+  与 `sink[name] = value` 走的是同一个 `[[Set]]`（`Reflect.get` 同 `[[Get]]`），
+  **语义逐条相同，且一个断言都不需要**。本轮采用后者。
+
+> 记一条路线级结论：**「接口 → 索引签名」的转换没有单次断言的合法写法**，
+> P4 归零的路上这类站点只能逐个换写法（`Reflect.*` / `Object.assign` / 或显式声明索引签名）。
+> 目前这类站点很少（本轮 1 处），但**到 0 之前必须逐个处理**，不能靠「反正只剩几处」放着。
+
+### 本轮唯一的运行期改动（可证等价）＋ 它落在哪条回归项上
+
+上面那条 `Reflect.set` 是本轮**唯一**不是纯类型层的改动。它落在 `createTreeListApi()` 里 ——
+**左侧列表的装配入口**，因此实机回归清单第 4 项（左侧列表：快捷键 / 改名 / 拖拽 / 翻页）
+会直接覆盖它。已在提交信息里单独标出。
+
+### 验证（本轮）
+
+- `unknown-casts` **209 → 202 处（−7：类型层 6 处 + 运行期换写法那 1 处）**，
+  且 `files` **118 → 117** ⇒ `tree-api.ts` 已从清单里消失
+  （该文件 `as unknown as` 计数为 **0**，只剩历史注释里提到过它）
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors · `migration:selftest` 38/38
+- ui-kit **115 文件 / 811 通过**（含 `tree-core.spec.ts` 15 项）
+- editor **252 文件 / 2056 通过（exit 0，本轮没有出现那个 flake）**
+
+## 第 77 轮（续轮）：`unknown-casts` 214 → 209 —— **契约写错了，不是类型系统看不懂**
+
+第 75/76 轮的规律是「声明**写松了**，读点各自打补丁」。这一轮的五个站点（`command-api.ts` 4 ·
+`tree-api.ts` 1，全都是 `commonList*` 共享助手）恰恰相反 —— **是契约本身写偏了**，而且三种偏法各占一种：
+
+| 偏法 | 事实 | 后果 |
+|---|---|---|
+| 写**紧**了 | `CommonListLike.textContent: string`，而助手只**写不读**它（`commonListResize` 里 `el.textContent = ''`） | DOM 侧是 `string \| null`，两边「不可比」⇒ 每个调用点 `as unknown as` |
+| 写**宽**了 | `commonListUpdateHeadAndFoot(list: CommonListLike)`，可它只读 `list.elements` 的窗口游标，**从不调 `updateOnResize`** | 树列表宿主**真的没有**这个能力 ⇒ 契约在索要一个用不到的能力 ⇒ 调用方只能绕道 `unknown` |
+| **漏**写了 | `CommandListHost` 没声明 `updateOnResize`（原型上有，接口里没有）；`TreeListHost` 连 `elements` 都没声明 | 宿主「缺零件」⇒ 与助手契约不可比 |
+
+### 改法（4 个文件，全部是类型层）
+
+```ts
+// utils/common-list.ts
+textContent: string | null;                       // 写紧了 → 改回 DOM 的原生类型（助手只写不读）
+
+export type HeadAndFootListLike = Pick<CommonListLike, 'elements'>;   // 写宽了 → 窄契约
+export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => { … };
+
+// command-api.ts：CommandListHost 补上原型真实提供的能力
+updateOnResize(element: HTMLElement): void;
+
+// tree-api.ts：TreeListHost 补上 elements，形状直接复用，不另抄一份
+elements: CommonListLike['elements'];
+```
+
+### 结果比预期好：5 处**断言彻底消失**，而不是「降级成单次断言」
+
+```ts
+commonListClearElements(this, elements.count);          // 原来是 this as unknown as CommonListLike
+commonListUpdateHeadAndFoot(this);                      // 原来两处都是 as unknown as
+```
+
+宿主契约补齐后 `this` 与 `CommonListLike` **真的可赋值**了 ⇒ 一个断言都不需要。
+**这是本轮最值得记的一条：把契约修对，逃逸口会自己消失；只把 `unknown` 拿掉，逃逸口还在。**
+
+### 迭代方式：一次只修一个原因，让编译器点名下一个
+
+1. 先只 relax `textContent` → 报错立刻从「`textContent` 冲突」变成
+   `Property 'updateOnResize' is missing in type 'CommandListHost'`；
+2. 再补 `CommandListHost.updateOnResize` → `command-api.ts` 四处全绿，**只剩** `tree-api.ts:585`，
+   且报错点名 `missing: updateOnResize, elements` —— 两个原因一次说清；
+3. 于是分开处理：`updateOnResize` 是**契约写宽了**（收窄助手参数），`elements` 是**漏写了**（补声明）。
+
+**每一步都只依据编译器的下一条报错，不猜。** 这比「一次性想清楚所有冲突」快得多，
+也不会把「其实不需要的能力」硬声明进宿主契约（那等于用谎话消灭 `unknown`）。
+
+### 一条被门禁抓到的收尾（说明 lint 门禁真的在干活）
+
+`commonListClearElements(this as CommonListLike, …)` 变成 `commonListClearElements(this, …)` 之后，
+`type CommonListLike` 这个**类型导入**在本文件里不再被引用，oxlint 报：
+
+```txt
+Found 1 warning and 0 errors.   help: Consider removing this import.
+```
+
+（warning 也会让 `pnpm run lint` 非零退出 —— 这正是我们要的行为。）已删掉该导入。
+
+### 验证（本轮）
+
+- `unknown-casts` **214 → 209 处（−5）**，且这 5 处的断言是**归零**而非降级
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors
+- `migration:selftest` 38/38 · `migration:check` 下降、基线已更新
+- ui-kit **115 文件 / 811 通过** · editor **252 文件 / 2056 通过**，但**又命中一次**那个已知 flake
+  （`EnvironmentTeardownError`，`ui-state.spec.ts` → `tools/window-cluster.ts`），exit 1 ——
+  本轮会话里这条命令的实测分布是 **3 次 exit 1 / 2 次 exit 0**，间歇性已经不用再怀疑；
+  它仍是待用户决策项（治 / 不治 / 从门禁里摘出来单独跑）。
+- **运行时代码零改动**：4 个文件里改的全是类型（接口成员、参数类型、类型别名）
+
+## 第 76 轮（续轮）：`unknown-casts` 226 → 214 —— 两批 −12：`eslints.ts` 12 → 3、`YMFileBrowser.vue` 5 → 2
+
+### 批次 1 `module/eslints.ts`（−9）：还是「病灶在声明」——**3 个声明喂出 9 个读点**
+
+这个文件是**猴子补丁模块**（给 `CommandList` 的运行期扩展打补丁）。它的类型不是「错的」，
+而是**写松了**，于是每个读点各自拿 `as unknown as` 把松掉的那半截补回来：
+
+| 声明（改前） | 挨着的读点 | 改后 |
+|---|---|---|
+| `CommandItemElement.lines: HTMLElement[]` | 80 / 97 | `lines: (HTMLElement & { mark?: string })[]` ⇒ `needNode.mark !== 'header'` |
+| `CommandListShape[i].mark?: unknown` | 197 / 319 / 327 | `mark?: string` ⇒ `e.mark!` 与普通读取 |
+| `on(…, 'update', function (this: { elements: { dataIndent: number }[] })` | 303 / 323 | `this: { elements: CommandListShape } & HTMLElement` ⇒ `this.elements`、`renderedRowsOf(this)` |
+| `rendered[i] as unknown as { classList: DOMTokenList }`（**两处同形**） | 196 / 326 | 元素类型本来就 `extends YamiElement`（自带 `classList`）⇒ 直接读 |
+
+改 `this` 注解**不是猜的**：同一文件里 `resize(this: { elements: CommandListShape } & HTMLElement, …)`
+早就是同一形状，而且它内部就调 `renderedRowsOf(this)` —— **既有先例可直接照抄**，
+这是「同文件内部的形状一致性」比外部文档更可信的一个例子。
+
+### ⚠️ 一个差点改出 bug 的地方（`?.` 会**反转**分支，不只是简写）
+
+```ts
+// 改前（两处）：
+if (needNode && (needNode as unknown as { mark?: string }).mark !== 'header') { … }
+// 「顺手简化」的写法 —— 错的：
+if (needNode?.mark !== 'header') { … }
+```
+
+`needNode` 为空时，后者求值为 `undefined !== 'header'` ⇒ **`true`**，于是原来的「跳过」
+变成了「继续执行下一行的 `needNode.classList.add('hover')`」⇒ 空指针。
+**本轮保留了 `needNode &&` 这半截**：`&&` 与 `?.` 混用时，`?.` 只在**比较**里等于「undefined 参与比较」，
+不等于「整体跳过」。这类改写没有类型错误、也没有 lint 提示，只能靠人看出来。
+
+### 批次 2 `YMFileBrowser.vue`（−3）：同形 3 处 → 抽一个小工具
+
+```ts
+const fileElementOf = (element: HTMLElement): { path: string } | null => {
+	const file = (element as { file?: unknown }).file;
+	return file instanceof FolderItem ? (file as { path: string }) : null;
+};
+```
+
+3 个读点（行 530 / 532 / 677）改为 `fileElementOf(element)` —— 断言从 3 处收到 1 处。
+**调用点特意保留 `!`**（`fileElementOf(element)!.path`）：外层 `instanceof FolderItem` 已经保证非空，
+用 `?.path ?? null` 会把「不变量被破坏就该抛」悄悄改成「静默地没有 dropPath」。
+**行为等价优先于写法漂亮** —— 这条在 P5/P6 高危区尤其要守。
+
+### 验证（本轮）
+
+- `unknown-casts` **226 → 214 处（−12）**，与两批清单（9 + 3）逐一对上；`any-hatches` 52 持平
+- `tsc` 0 · `build:types`(ui-kit vue-tsc) 0 · `lint` 0 warnings 0 errors
+- `typecheck:vue` 0 新增 · `migration:selftest` 38/38 · `migration:check` 下降、基线已更新
+- ui-kit **115 文件 / 811 通过**
+- editor **252 文件 / 2056 通过（最终代码上 exit 0）**
+- 但同一批改动的**中途**一次运行又命中了那个已知 flake（`EnvironmentTeardownError`，源自
+  `src/stores/__tests__/ui-state.spec.ts` → `tools/window-cluster.ts`），exit 1 ——
+  **同一批代码、同一条命令，一次 1 一次 0**，再次确认它是间歇性的、与本轮改动无关。
+
+### 剩余
+
+- `eslints.ts` 3 处（行 62/63 的 `this.elements ?? CommandList.prototype.elements`、175 的
+  `Object.assign(Array.from(rendered), …)`）：这两处是**真实的结构谎言** ——
+  运行期把 `elements` 与「带 count/findIndex 的数组」互相冒充。要消掉得先动
+  `CommandListShape` 的**定义**（例如 `CommandItemElement[] & { count: number; findIndex(…): number }`），
+  属于「改类型设计」而不是「搬断言」，**需要单独一轮并单独验证**，不在本轮硬做。
+- `YMFileBrowser.vue` 剩 2 处：`headEl.value as unknown as FileHeadApi`（1）·
+  `getActivePage(event) as unknown as { … }`（1）。
+
+## 第 75 轮（续轮）：`unknown-casts` 234 → 226 —— **修声明，而不是修 8 个读点**（`YMFileBrowser.vue` 13 → 5）
+
+第 74 轮结尾建议「挑一个文件内 ≥5 处同形」。按这个口径打开 `YMFileBrowser.vue`（13 处，全仓第一）
+后，发现它根本不是 13 个独立问题 —— 其中 **8 处是同一个根因**：
+
+```ts
+let dragging: DragEvent | PointerEvent | null = null;   // ← 根因在这一行
+...
+const d = dragging as unknown as DragState;             // ×5
+const { dropTarget, page } = dragging as unknown as DragState;  // ×2
+if ((dragging as unknown as DragState).dragLeaved) { ... }      // ×1
+```
+
+### 根因：这个变量装的是「事件 ∩ 状态」，声明只写了一半
+
+`dragstart` / `osDragstart` 把 `dropPath`/`dropTarget`/`mode`/`page` 等字段**直接写在触发它的那个
+DOM 事件对象上**，之后又从同一个变量读回来。所以运行时对象的形状是 `事件 & 状态`，
+而声明只写了 `DragEvent | PointerEvent` —— 差的这半截，就是那 8 个 `as unknown as`。
+
+**改法（一行声明 + 两个赋值点）**：
+
+```ts
+type Dragging = (DragEvent | PointerEvent) & DragState;
+let dragging: Dragging | null = null;
+...
+dragging = event as Dragging;   // 2 处（dragstart / osDragstart）
+```
+
+8 个读点随即变成普通读取：`const d = dragging;` / `if (dragging.dragLeaved)` / `const { dropTarget } = dragging;`。
+**这 8 处不是「换成单次断言」，而是断言彻底消失。**
+
+### 为什么台账减 8 是**合法的**（而不是把 `unknown` 藏起来）
+
+新写法只在**赋值处**留了 **1 次单断言**（`event as Dragging`，×2 处），
+`unknown as` 一次不剩：
+
+- `as unknown as T` 的含义是「我跳过整张类型表，随便你说」；
+- `event as Dragging` 的含义是「事件与 `DragState` 有可比性，我断言交叉部分成立」 ——
+  TS 会**检查可比性**，写错形状会 TS2352。
+
+**这是本轮想记下来的通用手法：当 N 个读点都在给同一个形状打补丁时，病灶在声明，
+不在读点。** 先数同形站点，再去找它们的公共父节点（这里是变量声明），
+往往能让台账掉得比「逐个读点替换」更多。
+
+### 顺带清掉的两处**冗余单断言**
+
+`switch ((dragging as DragState | null)?.mode)` → `switch (dragging?.mode)`；
+`!(d as DragState).target!.contains(element)` → `!d.target!.contains(element)`。
+（单断言不进台账，但它们在声明修好之后已无意义。）
+
+### 如实记账：这个「谎」只是**收敛**，没有被消除
+
+`Dragging` 仍然声称「事件对象上有 `dropPath`/`dropTarget`」——
+这与原来 8 个断言声称的是同一件事，只是从 8 处收敛到 1 处。
+**运行时该是 undefined 还是 undefined**，本轮**没有**去核对「先设后读」的实际顺序。
+⇒ 与第 74 轮 `scene-window.ts` 的 `any` 一样，属于「形状更集中、但承重事实未验证」。
+
+### 又一次「检查面自证」：ui-kit 的 `.vue` **不在任何门禁里**
+
+改动落在一个 `.vue` 文件、而这个包**没有 `typecheck` 脚本**，`pnpm -F @yami/ui-kit build:types`
+（`vue-tsc --emitDeclarationOnly`）看起来是唯一会检查它的命令 —— 但「看起来」不算证据，
+所以照第 39 轮的规矩做了**探针**：在文件里塞一行 `const __probe_type_surface: number = 'x';`，
+`build:types` 立刻报
+
+```txt
+src/components/business/YMFileBrowser/YMFileBrowser.vue(227,7): error TS2322: Type 'string' is not assignable to type 'number'.
+```
+
+⇒ **检查面确认覆盖该文件**（探针已删，复跑 `build:types` exit 0）。
+
+**但由此暴露一个门禁缺口（记入待用户决策）**：editor 的 `typecheck:vue` **不覆盖 ui-kit 的 `.vue`**，
+而 `build:types` **不在 CI 门禁清单里** ⇒ 本轮这类改动目前**只靠人工跑 `build:types` 把关**。
+建议把 `-F @yami/ui-kit build:types` 加进门禁（它与 `typecheck:vue` 同类，都是「tsc 对 .vue 假绿」的解药）。
+
+### 剩余（本文件 5 处，另一批）
+
+`headEl.value as unknown as FileHeadApi`（1）· `getActivePage(event) as unknown as {…}`（1）·
+`(element as unknown as { file: { path: string } }).file.path`（**3 处同形**，行 530/532/677）。
+第 3 组值得照本轮手法再来一次：同一个文件里紧挨着就有
+`(element as { file?: unknown }).file instanceof FolderItem` 的**真实收窄**，
+⇒ 抽一个 `fileElementOf(el)` 小函数把单次断言收在里面，3 处读点全部变成 `fileElementOf(element)?.path`。
+
+### 验证（本轮）
+
+- `unknown-casts` **234 → 226 处**（−8，与 8 个读点逐一对上；`YMFileBrowser.vue` 由 13 降到 5）
+- **运行时代码零改动**：本轮所有编辑都是类型层（断言/声明），不留任何执行语句差异
+- `tsc` 0 · `build:types`(ui-kit, vue-tsc) 0 · `lint` 0 warnings 0 errors · `migration:selftest` 38/38
+- ui-kit **115 文件 / 811 通过** · editor **252 文件 / 2056 通过（exit 0，本轮没有出现那个 flake）**
+
+## 第 74 轮（续轮）：`unknown-casts` 242 → 234 —— **形状 B（类型跨行）8 处清零**，预测与实测逐一对上
+
+第 73 轮结尾预言的「剩余形状 B —— 类型跨行的 8 处」本轮全部拿下，**一处不多、一处不少**：
+`command-custom.ts` 1（`windowFrame`）· `file-event-page.ts` 2 · `SetNumberOperand.vue` 2 ·
+`scene-window.ts` 1 · `particle-window.ts` 1 · `sprite.ts` 1 · `Reference.vue` 1。
+
+台账 `unknown-casts` **242 → 234（−8）**，`files` 121 → 118 —— **减量与清单完全一致**，
+说明第 73 轮那次人工清点是准的（这类「先点名再动手」的清单值得每轮做一次）。
+
+### 形态 B 的搬运手法（与形状 A 不同的两点）
+
+形状 A（类型单行）可以用「先改成调用、再替换类型」的办法；形状 B 的类型**从 `as unknown as`
+那一行开始跨行**，只能整块搬。实际操作顺序固定为三步，避免第 72 轮那种「找结尾」的朴素循环：
+
+1. 先在目标位置写好 `registryElement<` + 换行 + 原类型逐字照抄（含注释）+ `>(registry, 'id')`；
+2. 再删掉旧的 `x.get(id) as unknown as …` 整块；
+3. 最后按 `tsc` 报错决定要不要补 `!` —— **不预先猜**。
+
+### `!` 的分布：4 处要，4 处不要 —— 把第 73 轮的规则补完整
+
+本轮 8 处的旧类型里**没有一处写过 `| null`**，但只有一半需要 `!`：
+
+| 站点 | 要 `!` 吗 | 原因 |
+|---|---|---|
+| `command-custom.ts` | ✅ | `windowFrame` 本身声明为可选（`command-object.ts`） |
+| `scene-window.ts` | ✅ | `SceneShape.list` 非空 |
+| `particle-window.ts` | ✅ | `ParticleShape.head` 非空 |
+| `sprite.ts` | ✅ | `SpriteShape.canvas` 非空 |
+| `file-event-page.ts` ×2 | ❌ | 下游本来就是 `?.(…)` 可选调用 |
+| `SetNumberOperand.vue` ×2 | ❌ | 下游本来就是 `if (control && typeof …)` |
+| `Reference.vue` | ❌ | 下游本来就是 `if (!list) return;` |
+
+⇒ 第 73 轮那条规则应当写成：**旧断言没写 `| null` 时，非空假设必须显式化 —— 要么补 `!`，
+要么下游本来就有真正的空值检查。** 本轮正好 4 + 4 = 8，没有第三种情况。
+
+### 一个「顺手改顺眼」反而弄红 `tsc` 的坑（值得记）
+
+`command-custom.ts` 的第一次落地不是写 `!`，而是写 `?? undefined`（因为 `windowFrame?` 是可选的，
+看起来很「诚实」）。结果 `tsc` 报：
+
+```txt
+src/commands/command-custom.ts(151,3): error TS2532: Object is possibly 'undefined'.
+```
+
+第 151 行是同一个方法里后面的 `this.windowFrame.addEventListener(…)`。原因是**赋值即收窄**：
+旧代码 `this.windowFrame = … as unknown as T` 赋的是非空 `T`，TS 顺着赋值把 `this.windowFrame`
+收窄成非空；换成 `?? undefined` 后收窄结果也带上了 `undefined`，于是下游立刻报错。
+
+**结论**：`!` 在这里不只是「省事」，它同时保住了 ① 收窄结果 ② 运行时值（`!` 是纯类型操作，
+运行时仍是 `registry.get()` 的原值；`?? undefined` 会把 `null` 变成 `undefined`）。
+本轮已改回 `!` 并就近写了理由，**不引入任何运行时差异**。
+
+### `scene-window.ts`：`any` 只搬了家，没被清掉（如实记账）
+
+```ts
+this.list = registryElement<
+	// oxlint-disable-next-line no-explicit-any
+	HTMLElement & SceneListExtensions & { [k: string]: any }
+>(sceneEls, 'scene-list')!;
+```
+
+`{ [k: string]: any }` 从断言里搬进了尖括号 —— `unknown-casts` 减 1，但
+**`any-hatches` 一处都没减（52 持平）**。那条 `oxlint-disable-next-line` 也必须跟着搬进去，
+**实测 `oxfmt` 没有把它和 `any` 拆开**（`lint` 0-0 可证）。这一处仍计入 P3 的欠账。
+
+### 验证（本轮）
+
+- `unknown-casts` **242 → 234 处**（计入台账 −8，与清单 8 处逐一对上）；`any-hatches` 52 持平
+- `tsc` 0（首次 1 处 `TS2532`，见上）· `lint` 0 warnings 0 errors · `typecheck:vue` 0 新增
+- `migration:selftest` **38/38** · `migration:check` ✓ 下降 · 基线已 `--update-baseline`
+- `build:vite` 未跑（本轮无构建面改动）· ui-kit **115 文件 / 811 通过**
+- editor **252 文件 / 2056 通过**，但**照旧**带 1 个已知 flake：
+  `EnvironmentTeardownError`（源自 `src/stores/__tests__/ui-state.spec.ts` → `tools/window-cluster.ts`），
+  exit code 1。**与本轮改动无关，第 66 轮起就在**；这条仍挂在待用户决策项里。
+
+### 形状 B 之后的剩余面（`unknown-casts` 234）
+
+最大的三块已经从「散点」变成「文件内的成组形态」，分别是
+`YMFileBrowser.vue` 13 · `module/eslints.ts` 12 · `command-api.ts` 9 · `tree-api.ts` 8 …
+下一轮宜先挑一个**单一文件内 ≥5 处同形**的（`eslints.ts` 12 处或 `YMFileBrowser.vue` 13 处），
+理由同第 73 轮：同形批量处理时「手法可复用」的判断成本只付一次。
+
 ## 第 73 轮（续轮）：`unknown-casts` 250 → 242 —— 多行 `.get(` 形态 9 处
 
 ### 形状 A：调用本身跨行，类型单行

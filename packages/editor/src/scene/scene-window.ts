@@ -1,5 +1,6 @@
 import { elementDataOf } from '@ui-kit';
 import { sceneEls } from '@app/scene/element-registry';
+import { registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
@@ -479,9 +480,10 @@ Scene.initialize = function (this: SceneShape) {
 	}
 	this.searcher = sceneEls.get('scene-searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = sceneEls.get('scene-list') as unknown as HTMLElement &
+	this.list = registryElement<
 		// oxlint-disable-next-line no-explicit-any
-		SceneListExtensions & { [k: string]: any };
+		HTMLElement & SceneListExtensions & { [k: string]: any }
+	>(sceneEls, 'scene-list')!;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -977,15 +979,25 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 	}
 };
 
+/**
+ * 列表型容器：运行期就是「**空数组** + 窗口游标（`count`/`start`/`end`/`head`/`foot`/`versionId`）」，
+ * 游标由 `common-list` 家族助手稍后填写。
+ *
+ * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在** —— 这是本文件里唯一
+ * 真正需要 `unknown` 的地方。与其在每个站点各写一遍 `[] as unknown as X`，不如收敛到这一个工厂，
+ * 把「为什么这里必须绕」写在唯一的地方。
+ */
+const emptyListWithCursor = <T>(): T => [] as unknown as T;
+
 Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
-		const tilemaps = [] as unknown as TilemapsShape;
+		const tilemaps = emptyListWithCursor<TilemapsShape>();
 		tilemaps.shortcuts = new TilemapShortcuts(tilemaps as TilemapShortcuts['tilemaps']);
 
-		const regions = [] as unknown as RegionsShape;
-		regions.visibleList = [] as unknown as unknown[] & { count: number };
-		regions.visibleList.count = 0;
+		const regions = emptyListWithCursor<RegionsShape>();
+		// `Object.assign` 与「先 `[]` 再 `.count = 0`」逐条等价（同一个 `[[Set]]`），但不需要断言。
+		regions.visibleList = Object.assign([] as unknown[], { count: 0 });
 
 		context.changed = false;
 		context.editor = {
@@ -1528,7 +1540,7 @@ for (const key of sceneBridgeKeys) {
 	Object.defineProperty(Scene, key, {
 		get: () => getSceneStore()[key],
 		set: (value: unknown) => {
-			(getSceneStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getSceneStore(), key, value);
 		},
 		configurable: true
 	});

@@ -17,7 +17,8 @@ const lineClassesScheduled = new WeakSet<object>();
 // command-list 内 command-item 元素运行时挂载的扩展字段
 interface CommandItemElement extends YamiElement {
 	pre: HTMLElement;
-	lines: HTMLElement[];
+	/** 每级缩进一个节点；`mark` 由 `applyLineClasses` 在渲染行上写回（见文件下半部）。 */
+	lines: (HTMLElement & { mark?: string })[];
 	dataIndent: number;
 	eventBinding?: boolean;
 }
@@ -25,7 +26,7 @@ interface CommandItemElement extends YamiElement {
 interface CommandListShape {
 	count: number;
 	findIndex: (cb: (v: unknown) => boolean) => number;
-	[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
+	[i: number]: CommandItemElement & { fold?: boolean; mark?: string; buffer?: unknown };
 }
 export function updateCommandElement(
 	this: typeof CommandList & { computeTextIndent: (indent: number) => string },
@@ -77,8 +78,7 @@ export function updateCommandElement(
 					indent = element.dataIndent;
 				}
 				const needNode = element.lines?.[indent];
-				if (needNode && (needNode as unknown as { mark?: string }).mark !== 'header')
-					needNode.classList.add('hover');
+				if (needNode && needNode.mark !== 'header') needNode.classList.add('hover');
 			}
 		});
 		on(element, 'mouseleave', function () {
@@ -94,8 +94,7 @@ export function updateCommandElement(
 					indent = element.dataIndent;
 				}
 				const needNode = element.lines?.[indent];
-				if (needNode && (needNode as unknown as { mark?: string }).mark !== 'header')
-					needNode.classList.remove('hover');
+				if (needNode && needNode.mark !== 'header') needNode.classList.remove('hover');
 			}
 		});
 		element.eventBinding = true;
@@ -193,8 +192,8 @@ function updateLineClasses(this: HTMLElement & { elements: CommandListShape }): 
 	if (!rendered) return;
 	const list = this.elements;
 	for (let i = 0; i < rendered.count; i++) {
-		const row = rendered[i] as unknown as { classList: DOMTokenList; mark?: string };
-		const source = list[i] as unknown as { mark?: string } | undefined;
+		const row = rendered[i];
+		const source = list[i];
 		if (!source?.mark) continue;
 		// `mark` 既是类名也是**属性**：`applyLineClasses` 里按 footer/header 分支时读的是属性
 		row.mark = source.mark;
@@ -299,8 +298,8 @@ export function applyCommandListInstanceOverride(
 		const index = activeIndexOf(this);
 		return index === null ? null : selectionPointOf(this, index);
 	};
-	on(commandList, 'update', function (this: { elements: { dataIndent: number }[] }) {
-		const list = this.elements as unknown as CommandListShape;
+	on(commandList, 'update', function (this: { elements: CommandListShape } & HTMLElement) {
+		const list = this.elements;
 		(list as { lineClassEnabled?: boolean }).lineClassEnabled = true;
 		for (let i = 0; i < list.count; i++) {
 			const e = list[i];
@@ -316,15 +315,15 @@ export function applyCommandListInstanceOverride(
 					}
 				}
 			}
-			e.classList.add(e.mark as unknown as string);
+			e.classList.add(e.mark!);
 		}
 		applyLineClasses(list);
 		// M3-5b′：把同一套结果同步到**渲染出来的行**（模板行才是用户看到的那些）
-		const rendered = renderedRowsOf(this as unknown as HTMLElement);
+		const rendered = renderedRowsOf(this);
 		if (rendered) {
 			for (let i = 0; i < rendered.count; i++) {
-				const row = rendered[i] as unknown as { classList: DOMTokenList };
-				const source = list[i] as unknown as { mark?: string };
+				const row = rendered[i];
+				const source = list[i];
 				if (source?.mark) row.classList.add(source.mark);
 			}
 			applyLineClasses(rendered);

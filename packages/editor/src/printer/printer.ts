@@ -39,6 +39,14 @@ interface TextCommandShape {
 	y: number;
 	font: string;
 	size: number;
+	/**
+	 * ⚠️ 待决策（第 79 轮发现）：这里声明成 `string`，但同一文件里 `command.color = this.colors[0]`，
+	 * 而 `colors[0]` 来自 `CSSRGBA(...)`；占位命令又用 `0`（打包整数）硬塞进来。
+	 * 把声明改成 `string | number` 后 `tsc` 立刻在 4 处 `context.fillStyle = color` 报 TS2322 ——
+	 * 也就是说**这个声明与文件自身的用法不自洽**，只是被 `as unknown as string` 盖住了。
+	 * 但它属于「真实取值到底是不是打包整数」的行为问题，改它 = 改行为，按计划必须交用户按实机回归判定，
+	 * 所以本轮**只记录、不修**。
+	 */
 	color: string;
 	effect: TextEffectShape | null;
 	image: ImageElementShape | null;
@@ -990,7 +998,11 @@ export class Printer {
 	static commandCount = 0;
 	static commandMaximum = 0;
 	static drawingMethods = null as Record<string, string> | null;
-	static imported: FontNameList = [];
+	/**
+	 * 运行期在这条数组上还挂着一个 `signature`（上一批导入字体的指纹，用来跳过重复导入）。
+	 * 声明里写清它，读点就不必再写一次 `as unknown as { signature: string }`。
+	 */
+	static imported: FontNameList & { signature?: string } = [];
 	static importing: FontNameList = [];
 
 	static regexps: {
@@ -1077,7 +1089,7 @@ export class Printer {
 
 		this.updateScale!();
 
-		(this.imported as unknown as { signature: string }).signature = text.importedFonts.join();
+		this.imported.signature = text.importedFonts.join();
 		return this.importFonts!(text.importedFonts);
 	}
 
@@ -1211,6 +1223,8 @@ export class Printer {
 				y: 0,
 				font: '',
 				size: 0,
+				// ⚠️ 见 `TextCommandShape.color` 的注释：这里的 `0` 是打包整数形状的占位值，
+				// 与声明的 `string` 不自洽。改声明会连带 4 处 canvas 赋值，属行为问题 ⇒ 待用户决策。
 				color: 0 as unknown as string,
 				effect: null as TextEffectShape | null,
 				image: null as ImageElementShape | null,
@@ -1373,8 +1387,8 @@ export class Printer {
 
 			const { importedFonts } = Data.config.text;
 			const signature = importedFonts.join();
-			if ((Printer.imported as unknown as { signature: string }).signature !== signature) {
-				(Printer.imported as unknown as { signature: string }).signature = signature;
+			if (Printer.imported.signature !== signature) {
+				Printer.imported.signature = signature;
 				Printer.clearFonts();
 				void Printer.importFonts(importedFonts);
 			}

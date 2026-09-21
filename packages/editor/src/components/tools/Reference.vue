@@ -13,7 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
+import {
+	createElementRegistry,
+	registerElement,
+	registryElement,
+	registryRef,
+} from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 import { logEls } from '@app/log/element-registry';
 
@@ -27,11 +32,13 @@ import CommonList from '@app/components/common/CommonList.vue';
 import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	const list = fieldEls.get('reference-list') as unknown as HTMLElement & {
-		reload(): void;
-		appendElement(element: HTMLElement): void;
-		update(): void;
-	};
+	const list = registryElement<
+		HTMLElement & {
+			reload(): void;
+			appendElement(element: HTMLElement): void;
+			update(): void;
+		}
+	>(fieldEls, 'reference-list');
 	if (!list) return;
 	list.reload();
 	for (const item of items) {

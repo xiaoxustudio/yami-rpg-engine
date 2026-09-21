@@ -181,6 +181,9 @@ function ensureDomBound() {
 	if (Easing.list) return;
 	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
+	// ⚠️ 这处**只能**保留 `unknown`：`typeof Easing.list` 解析出来是字面量 `null`（该属性在
+	// 形状里就是初始化的 `null`），与 `YamiElement` 完全不可比。要拆得先给 `Easing.list`
+	// 一个真实声明（类型设计活），不在 P4 顺手做。
 	Easing.list = list as unknown as typeof Easing.list;
 	Easing.curve = registryElement<EasingCanvasShape>(dataEls, 'easing-curve-canvas');
 	Easing.preview = registryElement<EasingCanvasShape>(dataEls, 'easing-preview-canvas');
@@ -1133,9 +1136,11 @@ Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 				const step = event.deltaY < 0 ? -1 : 1;
 				const radio = radios[i + step];
 				if (radio !== undefined) {
-					(radio as unknown as { pointerdown: (event: WheelEvent) => void }).pointerdown(
-						event
-					);
+					// 交叉断言：交叉的一支就是源类型本身（`RadioProxyElement`），
+					// 另一支补上运行期真实存在的行处理器 `pointerdown`。
+					(
+						radio as RadioProxyElement & { pointerdown: (event: WheelEvent) => void }
+					).pointerdown(event);
 				}
 				break;
 			}
@@ -1162,7 +1167,8 @@ Easing.pointerup = function (
 		return;
 	}
 	if (event === undefined) {
-		event = dragging as unknown as PointerEvent;
+		// 交叉断言（同上面那处）：`dragging` 是拖拽起始事件，运行期就是一个 PointerEvent。
+		event = dragging as EasingDrag & PointerEvent;
 	}
 	if (this.relate(dragging, event)) {
 		this.dragging = null;

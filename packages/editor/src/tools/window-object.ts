@@ -365,7 +365,7 @@ for (const key of windowBridgeKeys) {
 	Object.defineProperty(Window, key, {
 		get: () => getWindowStore()[key],
 		set: (value: unknown) => {
-			(getWindowStore() as unknown as Record<string, unknown>)[key] = value;
+			Reflect.set(getWindowStore(), key, value);
 		},
 		configurable: true
 	});
@@ -512,4 +512,6 @@ Object.defineProperty(frames, 'remove', {
 	}
 });
 
-(window as unknown as { Window: typeof Window }).Window = Window;
+// 挂到 `window` 上供调试/扩展使用：`window` 是 interface（无隐式索引签名），
+// `Reflect.set` 与 `window.Window = Window` 是同一个 `[[Set]]`，且不需要断言。
+Reflect.set(window, 'Window', Window);

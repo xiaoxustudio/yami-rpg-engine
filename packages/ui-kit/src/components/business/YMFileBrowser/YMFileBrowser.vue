@@ -216,7 +216,15 @@ const childCreateTextBox = props.createTextBox;
 
 let display: 'normal' | 'search' = 'normal';
 let keyword: RegExp | null = null;
-let dragging: DragEvent | PointerEvent | null = null;
+/**
+ * 拖拽状态**挂在触发它的那个 DOM 事件对象上**：`dragstart`/`osDragstart` 把
+ * `dropPath`/`dropTarget`/`mode` 等字段直接写在 `event` 上，之后又从同一个变量读回来。
+ * 所以这里的类型是「事件 ∩ 状态」—— 原先只声明了 `DragEvent | PointerEvent`，
+ * 漏掉了后半截，于是 8 个读点各自写了一次 `as unknown as DragState` 把它补回来。
+ * 现在把这个「谎」收敛到赋值处一次，读点直接读。
+ */
+type Dragging = (DragEvent | PointerEvent) & DragState;
+let dragging: Dragging | null = null;
 let filters: unknown[] | null = null;
 let backupFolders: unknown[] = [];
 let searchResults: unknown[] = [];
@@ -396,8 +404,18 @@ function getFilePaths(files: unknown[]): { relativePaths: string[]; absolutePath
 	return { relativePaths, absolutePaths };
 }
 
+/**
+ * 渲染出来的文件行元素在运行时挂着自己的 `file`（`FileItem`/`FolderItem` 实例）。
+ * 断言只在这一处做，调用方直接用返回值 —— 原先 3 个读点各自写了一遍
+ * `(element as unknown as { file: { path: string } }).file.path`。
+ */
+const fileElementOf = (element: HTMLElement): { path: string } | null => {
+	const file = (element as { file?: unknown }).file;
+	return file instanceof FolderItem ? (file as { path: string }) : null;
+};
+
 function pointerdown(_event: PointerEvent): void {
-	switch ((dragging as DragState | null)?.mode) {
+	switch (dragging?.mode) {
 		case 'drag':
 			dragend();
 			return;
@@ -424,7 +442,7 @@ function dragstart(event: DragEvent): void {
 			: (page as { selections: unknown[] }).selections;
 		if (!files.includes(Directory?.assets) && !page.textBox.parentNode) {
 			const { relativePaths, absolutePaths } = getFilePaths(files);
-			dragging = event;
+			dragging = event as Dragging;
 			(event as OsDragEvent).mode = 'drag';
 			(event as OsDragEvent).preventDefault = () => {};
 			(event as OsDragEvent).allowMove = false;
@@ -465,11 +483,11 @@ function dragstart(event: DragEvent): void {
 function dragend(_event?: DragEvent): void {
 	const node = el.value as FileBrowserApi;
 	if (dragging) {
-		const { dropTarget, page } = dragging as unknown as DragState;
+		const { dropTarget, page } = dragging;
 		if (dropTarget instanceof HTMLElement) {
 			removeClass(dropTarget, 'drop-target');
 		}
-		if ((dragging as unknown as DragState).dragLeaved) {
+		if (dragging.dragLeaved) {
 			(page as { deactivateFile?(): void }).deactivateFile?.();
 		} else {
 			(page as { selectActiveFile?(): void }).selectActiveFile?.();
@@ -483,7 +501,7 @@ function dragend(_event?: DragEvent): void {
 }
 
 function dragleave(event: DragEvent): void {
-	const d = dragging as unknown as DragState;
+	const d = dragging;
 	if (d?.dropTarget && !(el.value as HTMLElement).contains(event.relatedTarget as Node)) {
 		removeClass(d.dropTarget, 'drop-target');
 		d.dropTarget = null;
@@ -494,11 +512,11 @@ function dragleave(event: DragEvent): void {
 }
 
 function dragover(event: DragEvent): void {
-	const d = dragging as unknown as DragState;
+	const d = dragging;
 	if (d) {
 		const { dropTarget } = d;
 		let element = event.target as HTMLElement;
-		if (!d.allowCopy && !(d as DragState).target!.contains(element)) {
+		if (!d.allowCopy && !d.target!.contains(element)) {
 			d.allowCopy = true;
 		}
 		while (
@@ -519,9 +537,9 @@ function dragover(event: DragEvent): void {
 			d.dropTarget = element;
 			if ((element as { file?: unknown }).file instanceof FolderItem) {
 				addClass(element, 'drop-target');
-				d.dropPath = (element as unknown as { file: { path: string } }).file.path;
+				d.dropPath = fileElementOf(element)!.path;
 				d.promise!.then((dir: unknown[]) => {
-					const { path } = (element as unknown as { file: { path: string } }).file;
+					const { path } = fileElementOf(element)!;
 					const filePaths = d.filePaths ?? [];
 					for (const filePath of filePaths) {
 						if (
@@ -567,7 +585,7 @@ function dragover(event: DragEvent): void {
 }
 
 function drop(event: DragEvent): void {
-	const d = dragging as unknown as DragState;
+	const d = dragging;
 	if (d) {
 		event.stopPropagation();
 		if (!d.dropPath) return;
@@ -614,7 +632,7 @@ function drop(event: DragEvent): void {
 function osDragstart(event: DragEvent): void {
 	const node = el.value as FileBrowserApi;
 	if (!dragging) {
-		dragging = event;
+		dragging = event as Dragging;
 		(event as OsDragEvent).mode = 'os-drag';
 		(event as { dropTarget?: unknown }).dropTarget = null;
 		(event as { dropPath?: string | null }).dropPath = null;
@@ -628,7 +646,7 @@ function osDragstart(event: DragEvent): void {
 function osDragend(_event?: DragEvent): void {
 	const node = el.value as FileBrowserApi;
 	if (dragging) {
-		const { dropTarget } = dragging as unknown as DragState;
+		const { dropTarget } = dragging;
 		if (dropTarget instanceof HTMLElement) {
 			removeClass(dropTarget, 'drop-target');
 		}
@@ -645,7 +663,7 @@ function osDragleave(event: DragEvent): void {
 }
 
 function osDragover(event: DragEvent): void {
-	const d = dragging as unknown as DragState;
+	const d = dragging;
 	if (d) {
 		const { dropTarget } = d;
 		let element = event.target as HTMLElement;
@@ -666,7 +684,7 @@ function osDragover(event: DragEvent): void {
 			d.dropTarget = element;
 			if ((element as { file?: unknown }).file instanceof FolderItem) {
 				addClass(element, 'drop-target');
-				d.dropPath = (element as unknown as { file: { path: string } }).file.path;
+				d.dropPath = fileElementOf(element)!.path;
 			} else {
 				if (hasClass(element, 'file-body-pane')) {
 					const nav = navEl.value?.el as FileNavApi;
@@ -688,7 +706,7 @@ function osDragover(event: DragEvent): void {
 function osDrop(event: DragEvent): void {
 	const { files } = (event as OsDragEvent).dataTransfer;
 	if (files.length === 0) return;
-	const d = dragging as unknown as DragState;
+	const d = dragging;
 	if (d) {
 		let { dropPath } = d;
 		if (!dropPath) return;

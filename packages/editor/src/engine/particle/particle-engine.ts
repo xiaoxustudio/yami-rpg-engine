@@ -370,10 +370,9 @@ class ParticleLayer {
 		this.capacity = 0;
 		this.count = 0;
 		this.stocks = 0;
-		this.elements = [] as unknown as ParticleElementRef[] & { count: number };
-		this.elements.count = 0;
-		this.reserves = [] as unknown as ParticleElementRef[] & { count: number };
-		this.reserves.count = 0;
+		// 断言之后紧跟着把断言里声称的字段写上去 ⇒ `Object.assign` 一次写完，零断言（第 82/84 轮规则）。
+		this.elements = Object.assign([], { count: 0 });
+		this.reserves = Object.assign([], { count: 0 });
 
 		this.updateCount!();
 
@@ -411,6 +410,11 @@ class ParticleLayer {
 					}
 				}
 				for (let i = this.capacity; i < maximum; i++) {
+					// ⚠️ 保留 `unknown`（第 87 轮两条路都试过）：直接传 `this` 报 TS2345
+					// （`this` 不满足 `ParticleElementLayer`），降成单次断言又报 TS2352
+					// （「两个类型都不足以重叠」）⇒ 说明**类与接口已经漂移**：`ParticleElementLayer`
+					// 的 `data`/`emitter` 等成员与该类的实际声明对不上。
+					// 正解是把两者对齐（类型设计活），与 `ParamHistory` / `IEditableHistory` 属同一类债务。
 					elements[eCount++] = new ParticleElement(
 						this as unknown as ParticleElementLayer
 					);

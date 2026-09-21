@@ -122,7 +122,12 @@ interface CommandCustomShape {
 		createDetailBox?: () => unknown;
 		clear?: () => void;
 	};
-	parameterGrid?: HTMLElement;
+	/**
+	 * 参数网格元素。`initialize()` 里是从元素注册表取的 **`YamiElement`**
+	 * （见 `command-custom.ts` 的赋值），所以这里如实声明 —— 原先写 `HTMLElement` 时，
+	 * `ParameterWrap` 的字面量只能靠 `as unknown as` 硬塞进去。
+	 */
+	parameterGrid?: YamiElement;
 	[k: string]: unknown;
 }
 

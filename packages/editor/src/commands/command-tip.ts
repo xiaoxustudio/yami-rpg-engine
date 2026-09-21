@@ -146,9 +146,9 @@ export const commandSuggestionEls = createElementRegistry();
 
 function ensureDomBound() {
 	if (CommandSuggestion.widget) return;
-	const widget = commandSuggestionEls.get('command-widget');
+	const widget = registryElement<CommandSuggestionWidget>(commandSuggestionEls, 'command-widget');
 	if (!widget) return;
-	CommandSuggestion.widget = widget as unknown as CommandSuggestionWidget;
+	CommandSuggestion.widget = widget;
 	CommandSuggestion.searcher = registryElement<CommandSuggestionSearcher>(
 		commandSuggestionEls,
 		'command-searcher'
@@ -227,10 +227,9 @@ function bindListMethods() {
 			// 步骤 5b：行元素改由行 API 取（creator 在 bindRow 之后调用，正常必有元素）
 			const element = treeRowElement(item);
 			if (element === undefined) return;
-			const words = Command.words as unknown as {
-				push(s: string): number;
-				join(j?: string): string;
-			} & Array<string>;
+			// `Command.words` 的真实类型本来就带 `push`/`join` ⇒ 直接读，无需断言形状
+			// （与第 83 轮在 command-custom.ts 删掉的 `WordListInstance` 是同一个多余别名）。
+			const words = Command.words;
 			words.push(item.class);
 			if (item.class !== 'custom') {
 				words.push(item.value);

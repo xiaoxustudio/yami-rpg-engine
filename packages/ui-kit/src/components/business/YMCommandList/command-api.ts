@@ -14,11 +14,7 @@ import {
 	removeClass,
 	getRelativeCoords
 } from '../../../utils/dom';
-import {
-	type CommonListLike,
-	commonListClearElements,
-	commonListUpdateHeadAndFoot
-} from '../../../utils/common-list';
+import { commonListClearElements, commonListUpdateHeadAndFoot } from '../../../utils/common-list';
 import { attachScrollListener, type ScrollListenerApi } from '../YMParamList/scroll-listener';
 import { renderDetached, renderDetachedDiv } from '../../../utils/detached';
 import { createCommandCore } from './command-core';
@@ -254,11 +250,10 @@ const findVariableTexts = (...ids: string[]): HTMLElement[] =>
 export const commandListStatics = {
 	alphabetCode,
 	highlightedTexts: [] as HTMLElement[],
-	textPointerenter: function (this: GlobalEventHandlers & { [k: string]: unknown }): void {
+	textPointerenter: function (this: VariableTextElement): void {
 		commandListStatics.unhighlightTexts();
-		commandListStatics.highlightTexts(
-			this as unknown as { varSpace: string; varType: string; varKey: string }
-		);
+		// 具名类型 `VariableTextElement` 就是两边共用的那一个 ⇒ 不需要任何断言。
+		commandListStatics.highlightTexts(this);
 	},
 	textPointerleave: function (): void {
 		commandListStatics.unhighlightTexts();
@@ -389,6 +384,23 @@ interface CommandListElements extends Array<CommandItemElement> {
  * （消费方要的宽松兜底），继承它等于让"没声明的成员"继续静默通过——那份宽松正是这里要收窄掉的东西。
  * 公开方法契约仍只有 `CommandListElementApi` 一份，本接口只描述"被访问到的成员"。
  */
+/**
+ * 变量标识文本元素：`varSpace`/`varType`/`varKey` 由 `updateCommandElement` 用
+ * `Object.defineProperty` 装成 getter，`textPointerenter` 读它们来高亮。
+ *
+ * 这个具名类型是**读点与注册点共用**的那一个（第 84 轮记的教训）：
+ * - 读点 `textPointerenter` 用它当 `this` 注解 ⇒ 不必再断言形状；
+ * - 注册点 `text.onpointerenter = () => … .call(text)` 里的 `text` 也用它 ⇒ 两边一致。
+ * 之前两端各写一半（读点断言、注册点用 `HTMLDivElement & { [k: string]: unknown }`），
+ * 于是「收紧任一端」都会把另一端弄红。
+ */
+interface VariableTextElement extends HTMLDivElement {
+	[k: string]: unknown;
+	varSpace: string;
+	varType: string;
+	varKey: string;
+}
+
 interface CommandListHost extends HTMLElement {
 	// —— 装配期字段（`createCommandListApi` 逐个挂上）——
 	/** 元素 API 选项（装配时写入，之后只读） */
@@ -401,6 +413,12 @@ interface CommandListHost extends HTMLElement {
 	data: CommandData | null;
 	/** 行元素数组（装配时赋成同一数组，另挂窗口游标；见 `CommandListElements`） */
 	elements: CommandListElements;
+	/**
+	 * 行元素「重新物化」钩子（原型上的 `updateOnResize` 提供）。
+	 * 共享助手 `commonListResize`（`utils/common-list.ts`）会调用它，所以宿主契约里必须声明 ——
+	 * 之前漏了它，于是每次把 `this` 交给共享助手都得写一次 `as unknown as CommonListLike`。
+	 */
+	updateOnResize(element: HTMLElement): void;
 	/** 变量表（`analyzeVariables` 写、`clear` 清空） */
 	varList: VariableItem[] | null;
 	/** 变量索引（同上） */
@@ -800,16 +818,16 @@ export const commandListPrototype: Record<
 
 		// P2b-3：`data` 的公开契约是 `CommandData`（`write`），运行期实为**命令行数组**（`createItems` 逐行遍历）；
 		// 这两个按数组用的站点各自显式转写一次，行为不变（见 `CommandListHost.data` 的说明）。
-		this.createItems(this.data as unknown as CommandList, 0);
+		this.createItems((this.data as (CommandData & CommandList) | null)!, 0);
 
 		const { count } = elements;
 		for (let i = 0; i < count; i++) {
 			rowElementData(elements[i]).dataValue = i;
 		}
 
-		// P2b-3：`CommonListLike` 比 `HTMLElement` 更严（例如把 `textContent` 声明成 `string`，
-		// 而 DOM 上是 `string | null`），这里与 `clearElements` 同一处理：显式跨到助手契约的形状。
-		commonListClearElements(this as unknown as CommonListLike, elements.count);
+		// P2b-3：跨到助手契约的形状 —— 现在**连断言都不需要**：`CommonListHost` 补齐了
+		// `updateOnResize` 声明，`CommonListLike.textContent` 也改回 DOM 的 `string | null`。
+		commonListClearElements(this, elements.count);
 
 		// M3（命令列表）：重建行数据与行模型快照
 		rebuildCommandRowData(elements);
@@ -927,7 +945,7 @@ export const commandListPrototype: Record<
 	},
 
 	updateHeadAndFoot: function (this: CommandListHost): void {
-		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
+		return commonListUpdateHeadAndFoot(this);
 	},
 
 	updateOnResize: function (this: CommandListHost, element: CommandItemElement): void {
@@ -1286,9 +1304,8 @@ export const commandListPrototype: Record<
 
 		for (const content of element.contents!) {
 			if (content.text !== undefined) {
-				const text = renderDetachedDiv('command-text') as HTMLDivElement & {
-					[k: string]: unknown;
-				};
+				// 注册点与读点共用同一个具名类型 `VariableTextElement`（见其定义处的说明）。
+				const text = renderDetachedDiv('command-text') as VariableTextElement;
 				text.textContent = content.text;
 				addClass(text, content.color!);
 				if (content.textId) {
@@ -2274,7 +2291,7 @@ export const commandListPrototype: Record<
 	},
 
 	clearElements: function (this: CommandListHost, start: number): void {
-		commonListClearElements(this as unknown as CommonListLike, start);
+		commonListClearElements(this, start);
 	},
 
 	clear: function (this: CommandListHost): HTMLElement {
@@ -2289,8 +2306,8 @@ export const commandListPrototype: Record<
 		listData.origin = null;
 		listData.active = null;
 		listData.anchor = null;
-		// 同上（`CommonListLike` 的收窄）
-		commonListClearElements(this as unknown as CommonListLike, 0);
+		// 同上（宿主契约补全后不再需要断言）
+		commonListClearElements(this, 0);
 		this.elements.count = 0;
 		this.elements.start = -1;
 		this.elements.end = -1;
@@ -2994,7 +3011,8 @@ export const commandListPrototype: Record<
 					const editable = sEnabled && sData === eData;
 					const pastable = pEnabled && !!options.clipboard?.has('yami.commands');
 					// 同样按运行期实情读命令行数组（见 `CommandListHost.data`），判定语义不变
-					const allSelectable = (this.data as unknown as CommandList).length > 0;
+					const allSelectable =
+						(this.data as (CommandData & CommandList) | null)!.length > 0;
 					const undoable = this.history.canUndo();
 					const redoable = this.history.canRedo();
 					const get =
@@ -3227,15 +3245,16 @@ export function createCommandListApi(
 	list.data = null;
 	list.varList = null;
 	list.varMap = null;
-	list.elements = [] as unknown as CommandListElements;
-	list.elements.versionId = 0;
-	list.elements.count = 0;
-	list.elements.start = -1;
-	list.elements.end = -1;
-	list.elements.head = null;
-	list.elements.foot = null;
-	listData.selections = [] as unknown as CommandSelections;
-	listData.selections.count = 0;
+	// 断言之后紧跟着把断言里声称的字段逐个写上去 ⇒ 用 `Object.assign` 一次写完，零断言（同第 82 轮）。
+	list.elements = Object.assign([], {
+		versionId: 0,
+		count: 0,
+		start: -1,
+		end: -1,
+		head: null,
+		foot: null
+	});
+	listData.selections = Object.assign([], { count: 0 });
 	listData.start = null;
 	listData.end = null;
 	listData.origin = null;

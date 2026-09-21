@@ -278,9 +278,11 @@ TileFrame.marqueePointerdown = function (
 					scrollLeft: number;
 					scrollTop: number;
 				};
-				(event as unknown as { screen: typeof screen }).screen = screen;
-				(event as unknown as { scrollLeft: number }).scrollLeft = screen.scrollLeft;
-				(event as unknown as { scrollTop: number }).scrollTop = screen.scrollTop;
+				// `event` 的声明里已有 `{ [k: string]: unknown }` 索引签名 ⇒ 直接写扩展字段即可，
+				// 不需要「断言成另一个形状」。写入的仍是同一个 `[[Set]]`，语义不变。
+				event.screen = screen;
+				event.scrollLeft = screen.scrollLeft;
+				event.scrollTop = screen.scrollTop;
 				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
@@ -303,9 +305,10 @@ TileFrame.marqueePointerdown = function (
 				scrollLeft: number;
 				scrollTop: number;
 			};
-			(event as unknown as { screen: typeof screen }).screen = screen;
-			(event as unknown as { scrollLeft: number }).scrollLeft = screen.scrollLeft;
-			(event as unknown as { scrollTop: number }).scrollTop = screen.scrollTop;
+			// 同上：索引签名直接承接扩展字段
+			event.screen = screen;
+			event.scrollLeft = screen.scrollLeft;
+			event.scrollTop = screen.scrollTop;
 			Cursor.open('cursor-grab');
 			window.addEventListener('pointerup', this.pointerup);
 			window.addEventListener('pointermove', this.pointermove);

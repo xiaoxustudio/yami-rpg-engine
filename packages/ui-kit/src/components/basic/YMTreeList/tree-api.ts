@@ -1,7 +1,7 @@
 import { h, render } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { type YamiElementApi } from '../../../utils/element-contract';
-import { elementDataOf, getElementData } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 import {
 	hideDragImage,
@@ -57,8 +57,7 @@ interface TreeListElementData {
 	/** P4b：当前选中项（列表元素自身的元素数据） */
 	selections: TreeItem[];
 }
-const treeData = (el: unknown): TreeListElementData =>
-	getElementData(el as HTMLElement) as unknown as TreeListElementData;
+const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
 
 /** 行元素（`NodeElement`）上的字段同样走元素数据（P4b：`nodeIcon`/`textNode` 已从 DATA_FIELDS 摘除） */
 const rowData = (el: unknown): NodeElement => elementDataOf<NodeElement>(el);
@@ -441,6 +440,12 @@ export interface TreeListHost extends HTMLElement {
 	innerHeight: number;
 	/** `searchNodesDebounced` 的防抖缓存 */
 	_searchNodesDebounced?: (keyword: string | RegExp) => void;
+	/**
+	 * 行元素数组（运行时由组件装配；形状直接复用 `CommonListLike['elements']`，
+	 * 不另抄一份）—— 共享助手 `commonListUpdateHeadAndFoot` 就是读它的窗口游标撑滚动高度。
+	 * 之前没声明，导致这句调用得写成 `this as unknown as CommonListLike`。
+	 */
+	elements: CommonListLike['elements'];
 
 	// —— 事件开关（`on()` 按事件名置位，各方法体里读） ——
 	recordEventEnabled: boolean;
@@ -582,7 +587,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		updateHeadAndFoot: function (this: TreeListHost): void {
-			return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
+			return commonListUpdateHeadAndFoot(this);
 		},
 
 		searchNodes: function (this: TreeListHost, keyword: string | RegExp): void {
@@ -720,7 +725,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			const { data } = this;
 			if (!dItem) {
 				// 根"节点"就是 `data` 数组本身（历史语义，见 `bind` 里对该元素的 `data` 定义）
-				dItem = data as unknown as TreeItem;
+				dItem = data as TreeItem[] & TreeItem;
 			}
 			if ((dItem as unknown) === data) {
 				dList = data;
@@ -900,7 +905,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			}
 			switch (response.type) {
 				case 'rename': {
-					const { item, oldValue, newValue } = response as unknown as {
+					const { item, oldValue, newValue } = response as {
+						type: string;
 						item: TreeItem;
 						oldValue: string;
 						newValue: string;
@@ -921,7 +927,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 					break;
 				}
 				case 'create': {
-					const { sItem, dItem, insertBefore } = response as unknown as {
+					const { sItem, dItem, insertBefore } = response as {
+						type: string;
 						sItem: TreeItem;
 						dItem: TreeItem | null | undefined;
 						insertBefore: boolean;
@@ -941,7 +948,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 					break;
 				}
 				case 'delete': {
-					const { items, index, item } = response as unknown as {
+					const { items, index, item } = response as {
+						type: string;
 						items: TreeItem[];
 						index: number;
 						item: TreeItem;
@@ -968,7 +976,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 					break;
 				}
 				case 'remove': {
-					const { item, source, destination } = response as unknown as {
+					const { item, source, destination } = response as {
+						type: string;
 						item: TreeItem;
 						source: { parent: TreeItem; index: number };
 						destination: { parent: TreeItem; index: number };
@@ -1702,11 +1711,13 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.renderState = createTreeRenderState(list);
 	attachApi<TreeListElementApi>(list, { getMenuState });
 
-	// 原型表是动态键集合（`Object.keys` 驱动），这里显式落到索引访问上；
-	// 其余成员访问一律走 `TreeListHost` 的逐项声明。
-	const prototypeSink = list as unknown as Record<string, unknown>;
+	// 原型表是动态键集合（`Object.keys` 驱动）。这里用 `Reflect.get`/`Reflect.set` 而不是
+	// 「把宿主断言成 `Record<string, unknown>`」：
+	// `TreeListHost` 是 interface，**没有隐式索引签名**，指向索引签名类型的断言在 TS 里就是不允许的
+	// （只能靠 `as unknown as` 绕）。而 `Reflect.set(list, name, value)` 与 `sink[name] = value`
+	// 走的是同一个 `[[Set]]`（`Reflect.get` 同 `[[Get]]`）—— **语义逐条相同，且不需要任何断言**。
 	for (const name of Object.keys(treeListPrototype)) {
-		prototypeSink[name] = (treeListPrototype as Record<string, unknown>)[name];
+		Reflect.set(list, name, Reflect.get(treeListPrototype, name));
 	}
 
 	// P4b: the attach guard now lives in element data (helper in element-data.ts)
