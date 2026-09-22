@@ -1643,9 +1643,9 @@ head?: { view: { write(index: number): void } } | null;
 | ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `unknown-casts`                                                        | **89 处 / 76 文件**             | 会话起点 285 ⇒ 已减 196（第 91 轮又清 12：修声明 5 / `registryElement` 收窄 5 / `Reflect.set` 2）                                                                                                                              |
 | `any-hatches`                                                          | **52 处 / 26 文件**             | **实测起点就是 52**（索引签名 32 + `Record<string, any>` 20）。⚠️ 此前这里写的「起点 67」「跨行漏洞」均已被第 89 轮证伪 —— 见上方复核记录。**剩余全在承重形状上**（`SceneShape` / `DynamicShape` / `UIShape` / 粒子同名形状…） |
-| `legacy-ui-lines`                                                      | **2859 行 / 9 文件**            | 遗留单例层所在的**目录**（`dirname(uiWindowRel())`）。⚠️ 曾经假 0，见上方复核记录                                                                                                                                              |
+| `legacy-ui-lines`                                                      | **316 行 / 2 文件**             | 遗留单例层所在的**目录**（`dirname(uiWindowRel())`）。⚠️ 曾经假 0，见上方复核记录。**第 98 轮后目录里只剩 `ui-window.ts`（对象字面量 + 21 行镜像）与 `register.ts`（接线清单）** —— 2859 → 2807（第 96 轮 prefab）→ 2412（第 97 轮 transform）→ **316**（第 98 轮其余 6 个域模块）                                                                        |
 | `legacy-ui-refs`                                                       | **1 处 / 1 文件**（runtime=1）  | 唯一剩项是 `tools/window-cluster.ts` 的 `import { uiWindowReady }`（`clusterReady` 必须等 UI 窗口就绪，属**正当依赖**，随 ④ 一起走）。⚠️ 曾经假 0。**只抓静态依赖**：1c ① 之后 `UI` 改由**三处内联 `import()`** 取（`stores/ui.ts`、`file/file-system-core.ts`、`components/layout/LayoutPanel.vue`），而动态 `import()` **不在这条轴的口径里** ⇒ **读数 1 不代表只剩 1 个耦合点**，④ 收尾必须按这三处手工核对 |
-| `1c-store-slot-gaps`                                                   | **41 个槽位**（`storeRefs=49`） | **第 90 轮新增**：store 引用了、但**实现只在遗留目录里**的槽位 = 1c 第 ③ 步的工作单（首轮实测 41，与附录三手工数出的 41 一致）。⚠️ **第 ③ 步开工前必须先读 `xr.md` 第 95 轮**：这条轴的口径只认「遗留目录**之外**出现 `UI.<slot> =` 文本」，所以「转发」与「纯移动」都不会让它下降；而常规做法（把绑定写进 `loadUI`）在真机上会被 `main/initialize.ts:91` 的 `primeWindows` 短路 —— **套件会绿着骗你** |
+| `1c-store-slot-gaps`                                                   | **0 ✅（第 98 轮收口）**        | **第 90 轮新增**：store 引用了、但**实现只在遗留目录里**的槽位 = 1c 第 ③ 步的工作单（首轮 41）。**41 → 35**（第 96 轮 prefab 6 个槽位）→ **21**（第 97 轮 `ui-transform.ts`）→ **0**（第 98 轮其余 6 个域模块搬出）。⚠️ **为 0 只说明「实现在遗留目录里」按目录口径不再成立，不等于 store 拿到了所有权** —— 那 14 个槽位仍是 `UI.xxx = function(){…}`；真正拦着 1c 的是 `ui-singleton-members`（103 / declared 134，**不受目录影响**） |
 | `ui-singleton-members`                                                 | 103 files=8 declared=134        | 属 P5-C/D，**等实机回归后才能动**（三条 1c 轴必须**同时**归零才算收口）                                                                                                                                                        |
 | `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0                            | —                                                                                                                                                                                                                              |
 | `unremovable-listeners` / `dom-on-exempted` / `dom-whitelist-size`     | 9 / 120 / 14                    | 只需不增                                                                                                                                                                                                                       |
@@ -1667,6 +1667,33 @@ head?: { view: { write(index: number): void } } | null;
   新增 `replacement-char` 规则并修掉 15 处 U+FFFD 编码事故（11 处从污染前的历史版本逐字恢复）。
 - **顺带修的真 bug**：`FSP.existsSync`（`fs.promises.existsSync` 为 undefined，文件改名会抛）；
   7 个文件的文本污染（单词首字母被控制字符吃掉、两条真代码被吞进 `//` 注释）。
+- **第 92–94 轮**：交接节里那项**查无内容**的待决策就地展开（「P6 三处行为缺陷」这个标签全仓
+  `grep` + `git log -S` 都只有引用、没有清单，而唯一的清单在被本节声明已取代的旧交接节里）；
+  修掉第 45 轮那两处行为缺陷并各配**会自证的**回归用例；**阶段 1c 第 ① 步落地**
+  （`legacy-ui-refs` 2 → 1，并纠正计划里「直连 `ui-engine.ts`」这个**不能执行**的写法）。
+- **第 95–96 轮**：量清 ③ 的机制（轴只认「遗留目录之外出现 `UI.<slot> =` 文本」，
+  所以转发/纯移动都不降轴），并量出**绑定点不能放在 `loadUI`**（会被 `primeWindows` 短路，
+  且 vitest 走 loader 路径 ⇒ 套件绿着骗你）；据此落地 ③ 的**首批切片** ——
+  `ui-prefab.ts` 的 6 个 store 槽位（`hasPrefab` / `clearInvalidPrefabs` / `registerPreset` /
+  `unregisterPreset` / `setAsPrefab` / `unsetAsPrefab`）搬到目录外的新模块
+  `engine/ui/ui-slots.ts`，动态挂在 `uiWindowReady` 上 ⇒ `1c-store-slot-gaps` **41 → 35**、
+  `legacy-ui-lines` 2859 → 2807，而 `ui-slot-coverage` **持平 0**（没有槽位搬丢）。
+- **第 97 轮**：把 `ui-transform.ts` 整个从 `legacy/` 搬到 `engine/ui/`（纯移动，只改 import 路径）
+  ⇒ `1c-store-slot-gaps` **35 → 21**、`legacy-ui-lines` 2807 → **2412**（文件数 9 → 8）。
+  搬迁时实测到**一处仪器缺陷**并修掉：`assignedSlots()` 原先按「在不在 `legacy/` 目录里」
+  决定要不要数 `this.x = …`，于是域模块一搬出去就少算它的 `this.x =`（实测 153 → 144）；
+  当某个 store 引用的槽位只靠 `this.x =` 赋值时，`ui-slot-coverage` 会**凭空报上升**、
+  把正确的搬运挡成假回归。判据已改为「`engine/ui/` 下、且自己直接写 `UI.<slot> = …` 的文件」。
+- **第 98 轮**：把其余 6 个域模块（`ui-file` / `ui-events` / `ui-initialize` / `ui-list` /
+  `ui-pointer` / `ui-prefab`）一并搬到 `engine/ui/`（仍是**纯移动**：只改 import 路径 +
+  `register.ts` 的清单）⇒ **`1c-store-slot-gaps` 21 → 0（③ 收口）**、
+  `legacy-ui-lines` 2412 → **316**（文件数 8 → 2：目录里只剩 `ui-window.ts` 与 `register.ts`）。
+  同时改写了台账自证用例里那条「遗留层还在 ⟹ 槽位轴必须非 0」——它的前提已不成立，
+  新判据**更强**：① 「主体还在」改由**与目录无关**的 `ui-singleton-members` 口径守；
+  ② 「轴为 0」必须能被**独立重算**解释（直接翻遗留目录，不允许仍有非镜像的 store 槽位实现）；
+  ③ 目录判据本身必须仍能把「已搬走的模块」与「遗留目录」分开。
+  ⚠️ 但 ③ 收口**不等于 1c 收口**：`ui-singleton-members` 仍是 **103 处 / declared 134**，
+  一字未动 —— 那是第 ④ 步（对象字面量退役），且是**运行时高危**，必须实机验证。
 
 ### 3. 手法库（拆 `as unknown as` 的五条，按判定顺序用）
 

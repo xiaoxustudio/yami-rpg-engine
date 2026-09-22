@@ -1,6 +1,6 @@
 import { getListConfig, elementDataOf } from '@ui-kit';
-import { UI } from './ui-window.ts';
-import type { UIShape, UINodeShape, UIPointerEvent } from './ui-window.ts';
+import { UI } from './legacy/ui-window.ts';
+import type { UIShape, UINodeShape, UIPointerEvent } from './legacy/ui-window.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';

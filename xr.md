@@ -1247,3 +1247,209 @@ export function primeWindows(instances) { const name = key.toLowerCase(); window
 
 - 纯文档（PHASE-1C 一处补注 + 本节）；无运行期改动，台账 15 轴不变。
 - ③ 的下一步已经可以照着 §一 的机制逐域做，不需要再猜。
+
+## 第 96 轮（2026-09-21）：1c ③ 首批切片 —— 绑定点选定 `engine/ui/ui-slots.ts`，prefab 域清空
+
+按第 95 轮量出的机制落地：不再猜，先定绑定点，再搬**无 `this` 依赖**的两个槽位。
+
+### 一、绑定点：为什么是「目录外的新模块 + 动态 import 挂 `uiWindowReady`」
+
+| 要求                                                | 满足方式                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **能降低 `1c-store-slot-gaps`**                     | `UI.hasPrefab = …` 的文本出现在 `engine/ui/ui-slots.ts`（`legacy/` 之外）     |
+| **真机与测试两条路径都会跑到**                      | 挂在 `uiWindowReady` 上 —— `loadUI` 与 `primeWindows` 都要先 `await clusterReady`，而后者含它 |
+| **不踩 TDZ**                                        | 用**动态** `import()`：求值发生在 `ui-window.ts` 模块体之后 ⇒ `UI` 已建好     |
+| **不引入静态环**                                    | 查过：全仓**只有** `tools/window-cluster.ts` 一条生产级静态边指向 `ui-window.ts`，且其余地方都是用动态 `import('window-cluster')` |
+
+改动只有三处：新增 `engine/ui/ui-slots.ts`、`ui-window.ts` 的 `uiWindowReady` 多一条动态 import、
+`legacy/ui-prefab.ts` 删掉那两个赋值（保留一行注释说明它们去哪了）。**store 一行没动** ——
+它原来的转发 `UI?.hasPrefab?.(node)` 现在自然解析到新实现。
+
+### 二、用例必须能证否坏改动（否则只是摆设）
+
+新增 `engine/ui/__tests__/ui-slots.spec.ts`，**故意不 import `ui-slots.ts`** ——
+若直接 import，用例会把待验证的链路自己短路掉，变成「证明了它被 import 过」。
+三条断言：绑定确实发生（`typeof === 'function'`，而不是字面量的 `null`）、
+`hasPrefab` 语义不变、`clearInvalidPrefabs` **就地**改（调用方 `ui-events.ts` 依赖传引用）。
+
+**实测证否**：把 `uiWindowReady` 里那行动态 import 删掉 ⇒ 3 条全红，
+`AssertionError: UI.hasPrefab 应已被 ui-slots.ts 绑定: expected 'object' to be 'function'`
+（`null` 的 `typeof` 正是 `'object'`）。复原后 3/3 绿。
+
+### 三、落地数字
+
+首批（2 个纯函数槽位）先跑通机制，随后把 `ui-prefab.ts` 里**其余 4 个 store 槽位**
+（`registerPreset` / `unregisterPreset` / `setAsPrefab` / `unsetAsPrefab`）一并搬走 ——
+它们同样不依赖 `this`（用的是模块级的 `UI.meta` / `UI.list` / `Data` / `Editor`，本模块本来就 import 了 `UI`）。
+于是**整个 prefab 域对 store 的贡献清零**。
+
+| 轴                  | 改前   | 首批后 | 第二批后 | 说明                                                         |
+| ------------------- | ------ | ------ | -------- | ------------------------------------------------------------ |
+| `1c-store-slot-gaps`| 41     | 39     | **35**   | 6 个槽位的实现离开遗留目录（prefab 域已清空）                |
+| `legacy-ui-lines`   | 2859   | 2854   | **2807** | `ui-prefab.ts` 从 161 行降到 114 行（两个实现体 + IIFE 搬走） |
+| `ui-slot-coverage`  | 0      | **0**  | **0**    | ⚠️**关键安全性质**：没有任何槽位因此变成「全仓都没人赋值」    |
+| `legacy-ui-refs`    | 1      | 1      | 1        | 不变                                                         |
+
+`ui-slot-coverage` 三次都为 0 是这一步最该盯的数字 —— 它若上升，说明搬动把某个槽位搬丢了
+（那正是第 95 轮警告的「静默读到 undefined」）。基线已固化为最终的 **35 / 2807**。
+
+> `ui-prefab.ts` 现在还留着 `createPrefabItem` / `createElement` / `loadElement` 三个槽位 ——
+> 它们**不在** `1c-store-slot-gaps` 的口径里（store 没有引用它们），所以搬它们不降轴；
+> 要不要顺手搬到 `ui-slots.ts` 以便整文件删除，属于「删掉一个遗留文件」的独立收益，
+> 留到后面按 `ui-singleton-members` 收口时一起做。
+
+### 四、验证
+
+- 专项用例 **5/5**（3 条自证 + 2 条语义钉子：递归登记/注销、列表刷新）；
+  证否实验见上（删掉动态 import ⇒ 3 条全红）。
+- `editor` 全量套件 **252 文件 / 2066 用例全绿、exit 0**
+  （本轮开工前 251/2061 —— 差额恰是本轮新增的 1 文件 5 用例）。
+- `tsc` strict 0 · `typecheck:vue` 0 新增 · `lint` 0/0（1626 文件）· `format:check` 0 ·
+  `migration:check` 全部轴持平（35 / 2807 已入基线）。
+
+> ⚠️ **仍然要记住第 95 轮那条限制**：CI 跑的是 `loadUI` 路径。本轮的用例把绑定钉在
+> `uiWindowReady` 上（两条路径的**唯一汇合点**），所以比「钉在 loadUI 上」强；
+> 但**真机的那条 `primeWindows` 路径依然没有任何测试覆盖**。③ 每搬一个域，
+> 都应该真机启动确认一次 —— 套件绿**不等于**真机绿。
+
+## 第 97 轮（2026-09-21）：搬走 `ui-transform.ts`，以及它当场撞出来的**一处仪器缺陷**
+
+### 一、动作：`ui-transform.ts` 整个搬出 `legacy/`（纯移动）
+
+`engine/ui/legacy/ui-transform.ts` → `engine/ui/ui-transform.ts`。只有两处改动：
+文件内 `./ui-window.ts` → `./legacy/ui-window.ts`（2 个 import），以及 `register.ts` 里
+`./ui-transform.ts` → `../ui-transform.ts`。**390 行内容逐字未动**（`git mv`，不是重打），
+所以这一步的运行时风险接近 0。
+
+⇒ `1c-store-slot-gaps` **35 → 21**（store 引用的那 14 个槽位不再「只在遗留层」），
+`legacy-ui-lines` **2807 → 2412**、文件数 **9 → 8**。
+
+> **这一步意味着什么、不意味着什么（必须写清楚）**：它让「实现在遗留目录里」这句话
+> 按台账的**目录口径**不再成立，但**没有**把实现的所有权交给 store —— 那 14 个槽位
+> 依然是 `UI.xxx = function(){…}` 挂在单例上。**能被这条口径骗过去的唯一保障是
+> `ui-singleton-members`：它数的是 `UI.x = ` 处数（103 处 / declared 134），与目录无关，
+> 本轮纹丝未动。** 1c 要收口，三条轴必须同时归零；`ui-singleton-members` 才是那座真山。
+
+### 二、⚠️ 搬迁当场撞出的仪器缺陷（本轮最有价值的产出）
+
+搬完先量，`ui-slot-coverage` 报 **`assigned: 153 → 144`** —— 少了 9。原因在
+`scripts/lib/ui-slots.mjs` 的 `assignedSlots()`：
+
+```js
+if (uiDir.test(rel)) { /* 才算这份源码里的 this.x = … */ }   // uiDir = legacy/ 目录
+```
+
+`this.x = …` **只有落在单例所在目录里的文件才算槽位赋值**。搬走 `ui-transform.ts`
+就把它那 9 处 `this.x =`（`this.centerX` / `this.hover` …）一起从计数里挪掉了。
+
+**为什么这不只是「读数难看」**：当某个 **store 引用到的**槽位只靠 `this.x =` 赋值时，
+`assigned` 一少，`storeRefsUnassigned` 就凭空变非空 ⇒ `ui-slot-coverage` **报上升** ⇒
+棘轮把一次**正确的搬运**判成回归。`ui-slots.mjs` 的注释其实预言过这个形状，但它假定
+搬运是「整个家族一起搬」（②那一次就是这样，所以按目录界定前后一致）；③ 是**逐个模块**搬
+（第 96 轮搬 prefab、第 97 轮搬 transform），那个假设就不再成立了。
+
+**修法**：把「是不是单例域模块」与「在不在遗留目录里」分开 —— 后者仍是目录问题
+（`legacyOnlyStoreSlots` 要问「这份实现搬出去了没有」），前者是**文件身份**问题。
+判据换成「在 `engine/ui/` 下、且**自己直接写了 `UI.<slot> = …`**」。
+
+**这条路我走了三版，每版都用量出来的数字否掉上一版**（记下来，免得下次走一遍）：
+
+| 判据                                        | 实测 `assigned` | 否掉的理由                                                        |
+| ------------------------------------------- | --------------- | ----------------------------------------------------------------- |
+| 只按 `legacy/` 目录（原实现）                | 144             | 域模块一搬走就少算 `this.x =` ⇒ 会造出假回归                       |
+| 「本文件出现过任意 `UI.…= `」                | **303**         | 元素类文件用 `UI.a.b = …` 写单例**子对象**，被误判成域模块，把它们的 `this.x`（自己的坐标）也数进来 |
+| 「`engine/ui/ui-*.ts` 文件名约定」           | **159**         | `ui-engine.ts` 也符合该命名，被扫进来                              |
+| 「`engine/ui/` 下且**自己写了 `UI.<slot> = `**」 | **153** ✓   | 与搬走前的 153 逐字相等 ⇒ 搬迁不再干扰这条轴                        |
+
+**验收方式就是那个 153**：不是「看着合理」，而是**必须回到搬走前的数**。
+
+### 三、验证
+
+- `1c-store-slot-gaps` 35 → **21**；`legacy-ui-lines` 2807 → **2412**（files 9 → 8）；
+  `ui-slot-coverage` **持平**（`assigned` 153 未变，`storeRefsUnassigned` 仍 0）；
+  其余 12 轴持平；基线已固化。
+- `migration:selftest` **52/52**；`tsc` strict 0；`typecheck:vue` 0 新增；
+  `lint` 0/0（1626 文件）；`format:check` 0；`docs:check` OK；`text:check` 0。
+- `editor` 全量套件 **252 文件 / 2066 用例全绿、exit 0**（本次搬迁未增删用例）。
+
+### 四、下一步
+
+`legacy/` 现在还剩 8 个文件、2412 行，而 `1c-store-slot-gaps` 只剩 21 个槽位，
+集中在 **document lifecycle**（`open/save/close/load/destroy/undo/redo/copy/paste…`，主要在
+`ui-file.ts`）。那一批是附录四/六/七/八/九记的「启动即崩 / 静默冻结」高发区，
+**纯移动同样适用**（同域内 `this` 语义不变），但必须真机走一遍 —— 台账绿不覆盖
+`primeWindows` 路径。
+
+## 第 98 轮（2026-09-21）：其余 6 个域模块一起搬走 —— **③ 收口（21 → 0）**
+
+### 一、动作：仍是纯移动
+
+`ui-file` / `ui-events` / `ui-initialize` / `ui-list` / `ui-pointer` / `ui-prefab`
+一起 `git mv` 到 `engine/ui/`。每个文件只有 2 处 import 要改（`./ui-window.ts` →
+`./legacy/ui-window.ts`，值 + 类型），加上 `register.ts` 的清单改成 `../ui-*.ts`。
+**6 个文件的内容逐字未动**，所以运行时风险仍接近 0。
+
+`legacy/` 里只剩两个文件：`ui-window.ts`（对象字面量 + 21 行 `UI.x = UIEngine.x` 镜像）
+与 `register.ts`（接线清单，职责是「按固定顺序加载域模块」，与模块是不是遗留代码无关）。
+
+| 轴                    | 第 96 轮后 | 第 97 轮后 | 第 98 轮后 |
+| --------------------- | ---------- | ---------- | ---------- |
+| `1c-store-slot-gaps`  | 35         | 21         | **0 ✅**   |
+| `legacy-ui-lines`     | 2807 / 9   | 2412 / 8   | **316 / 2** |
+| `ui-slot-coverage`    | 0          | 0          | **0**      |
+| `ui-singleton-members`| 103        | 103        | **103**    |
+
+**最后一行才是重点**：`ui-singleton-members` 数的是 `UI.x = ` 处数，**与目录无关**，
+纯移动骗不过它 —— 它一字未动，说明这一路搬的都是**位置**、不是**所有权**。
+1c 要收口，③ 与它必须**同时**归零；现在归零的只是前面那条。
+
+### 二、③ 归零把台账自证用例的**前提**打掉了（必须当场改，不能删）
+
+`migration:selftest` 立刻红了一条：
+
+```txt
+✗ 遗留层还在 ⟹ 两条 legacy-ui-* 轴与 1c-store-slot-gaps 都必须非 0
+    只要遗留层还在，就必然有「实现只在遗留层」的 store 槽位
+```
+
+这条用例的**原始意图是对的**（守 2026-09-21 那次「假绿三连」：仪器瞎了却报「✓ 已完成」），
+但它的前提是「遗留层还在 ⟹ ③ 没做完」。**这个前提现在不成立了**：`legacy/` 还有
+`ui-window.ts`（那是 ④ 的活），而 ③ 的轴合法地为 0。
+
+改法是**加强**而不是删掉 —— 把它拆成三条，其中两条能当场咬人：
+
+1. 「**主体还在**」改由**与目录无关**的口径守：直接在遗留目录里数 `UI.<name> =`
+   （`ui-singleton-members` 的口径）。为 0 才说明连这条轴也瞎了。
+2. 「**轴为 0**」必须能被**独立重算**解释：在遗留目录里**正推**（翻 `UI.<slot> =`，
+   排除 `UIEngine.x = …` 镜像），与轴的**反推**（从「遗留目录之外有没有赋值」倒推）
+   必须给出同一个答案。两条路不一致 ⇒ 先怀疑仪器。
+3. 「**目录判据本身**」必须仍能把「已搬走的模块」与「遗留目录」分开 ——
+   `uiDirRe()` 要匹配 `ui-window.ts`、且**不**匹配 `engine/ui/ui-file.ts`。
+
+> ⚠️ **诚实记一笔**：第 2 条在当前状态下是**平凡成立**的（两边都是 0），所以它现在拦不住
+> 什么 —— 真正能当场咬人的是第 3 条。留第 2 条是因为等哪天真有非镜像的 store 槽位实现
+> 落回遗留目录时，它会立刻变成有效守卫（那时轴必须非 0）。
+
+**自证**（本轮实测）：把 `uiDirRe()` 从 `dirname(rel)` 放宽成 `dirname(dirname(rel))`
+（即让「遗留目录」变成整个 `engine/ui/`），第 3 条当场红 ⇒ 判据确实有效。复原后 52/52。
+
+### 三、验证
+
+- `1c-store-slot-gaps` **21 → 0**、`legacy-ui-lines` 2412 → **316**（files 8 → 2），
+  其余 12 轴持平（含 `ui-slot-coverage` 的 `assigned` 仍是 **153** —— 第 97 轮新判据
+  连续跨过 7 个模块的搬迁而读数不变，这正是它该有的样子）；基线已固化。
+- `migration:selftest` **52/52** · `tsc` strict 0 · `typecheck:vue` 0 新增 ·
+  `lint` 0/0（1626 文件）· `format:check` 0 · `docs:check` OK · `text:check` 0。
+- `editor` 全量套件 **252 文件 / 2066 用例全绿、exit 0**。
+
+### 四、下一步：④（对象字面量退役）—— 这才是 1c 的真山
+
+`ui-singleton-members` = **103 处挂载 / declared 134**，分布在 `ui-window.ts`（21 镜像）
+与刚搬出去的 7 个域模块里。第 ④ 步要把这些实现搬到它们的**真家**（store 或 engine 平面），
+让 `ui-window.ts` 的对象字面量退役。
+
+**它和 ③ 有一个本质区别**：③ 是改**路径**（内容零改动，套件能兜住），
+④ 是改**所有权与调用形态**（`this` 绑定、赋值方、就绪时序），
+而且落点在 `primeWindows` 那条**没有任何测试覆盖**的路径上。
+附录四/六/七/八/九记的崩溃与静默失效，全是这一类改动造成的 ——
+所以 ④ 必须先有一次真机启动 + 走查，再谈收口。

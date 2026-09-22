@@ -1,6 +1,6 @@
-import { UI } from './ui-window.ts';
+import { UI } from './legacy/ui-window.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
-import type { UIShape, UINodeShape } from './ui-window.ts';
+import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { getUIStore } from '@app/stores/ui';
 import { Inspector } from '@app/inspector/inspector.ts';

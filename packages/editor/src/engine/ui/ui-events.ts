@@ -1,6 +1,6 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
-import { UI } from './ui-window.ts';
-import type { UIShape } from './ui-window.ts';
+import { UI } from './legacy/ui-window.ts';
+import type { UIShape } from './legacy/ui-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';

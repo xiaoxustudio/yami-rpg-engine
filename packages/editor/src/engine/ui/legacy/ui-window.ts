@@ -286,7 +286,12 @@ UI.stopRendering = UIEngine.stopRendering;
 
 export const uiWindowReady = Promise.all([
 	import('@app/engine/ui/element-register.ts'),
-	import('./register.ts')
+	import('./register.ts'),
+	// 阶段 1c 第 ③ 步：目录外的槽位绑定模块。**必须动态 import** ——
+	// 它要读已经建好的 `UI`（静态 import 会先于本模块体求值，踩 TDZ），
+	// 且挂在 `uiWindowReady` 上才能同时覆盖 `loadUI` 与 `primeWindows` 两条到达路径。
+	// 见 `engine/ui/ui-slots.ts` 头部与 `xr.md` 第 95 轮。
+	import('@app/engine/ui/ui-slots.ts')
 ])
 	.then(() => undefined)
 	.catch(() => undefined);

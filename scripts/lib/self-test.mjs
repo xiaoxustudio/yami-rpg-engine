@@ -30,7 +30,7 @@ import {
 	ROOT
 } from './scan.mjs';
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
-import { uiWindowRel, legacyOnlyStoreSlots } from './ui-slots.mjs';
+import { uiWindowRel, legacyOnlyStoreSlots, storeReferencedSlots, uiDirRe } from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 
 // ---------------------------------------------------------------------------
@@ -483,7 +483,7 @@ test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () =
 	eq(broken, [], '这些 UI 槽位被赋成了不存在的 UIEngine 成员（运行时会读到 undefined）');
 });
 
-test('遗留层还在 ⟹ 两条 legacy-ui-* 轴与 1c-store-slot-gaps 都必须非 0', () => {
+test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slot-gaps 的 0 必须被独立重算解释', () => {
 	// 这一条守的是 2026-09-21 实测到的**假绿三连**：
 	//
 	//   - `legacy-ui-lines` 写死 `packages/editor/src/ui`，而目录已被搬到 `engine/ui/legacy/`
@@ -494,6 +494,14 @@ test('遗留层还在 ⟹ 两条 legacy-ui-* 轴与 1c-store-slot-gaps 都必须
 	//
 	// `collectFiles` 永不报错、`importRefs` 永不报错 —— 仪器瞎了不会有任何信号，
 	// 所以必须有一条用例把「主体还在」与「读数非 0」绑在一起。
+	//
+	// ⚠️ **2026-09-21 第 97 轮改过**：`1c-store-slot-gaps` 现在**合法地为 0** ——
+	// 阶段 1c ③ 已把 7 个域模块全部搬出 `legacy/`，那里只剩 `ui-window.ts` 的对象字面量
+	// 与接线文件。所以原先那条「遗留层还在 ⟹ 槽位轴非 0」的前提**不再成立**，
+	// 但它要守的东西还在。新判据把它拆成两半，**比原来更强**：
+	//   ① 「主体还在」由**与目录无关**的 `ui-singleton-members` 口径守（数 `UI.x =` 处数）；
+	//   ② 「轴为 0」必须能被**独立重算**解释 —— 直接翻遗留目录，若其中仍有属于 store 引用、
+	//      且不是 `UIEngine.x = …` 镜像的 `UI.<slot> =`，那实现就仍在遗留层，轴不该是 0。
 	const winRel = uiWindowRel();
 	ok(winRel !== null, '找不到 UI 窗口文件；本用例的前提变了，请复核而不是删掉它');
 	const legacyDir = dirname(winRel);
@@ -507,9 +515,55 @@ test('遗留层还在 ⟹ 两条 legacy-ui-* 轴与 1c-store-slot-gaps 都必须
 		refs.total > 0,
 		'遗留 UI 单例应当仍被静态引用（若为 0：要么真删干净了，要么仪器漏了 `export … from`）'
 	);
+	// ① 「主体还在」：遗留目录里仍有对象字面量与挂载点 —— 用**与目录无关**的口径
+	// （`ui-singleton-members` 的 `UI.<name> =` 处数）证，纯移动骗不过它。
+	const singletonMembers = countCodeMatches(
+		legacyFiles.map(({ full }) => readSource(full)).join('\n'),
+		UI_SINGLETON_RE
+	);
 	ok(
-		legacyOnlyStoreSlots().length > 0,
-		'只要遗留层还在，就必然有「实现只在遗留层」的 store 槽位；为 0 说明这条轴的排除口径把实现也算进去了'
+		singletonMembers > 0,
+		'遗留目录里还有对象字面量与挂载点；与目录无关的 ui-singleton-members 口径却读到 0 ⇒ 它也瞎了'
+	);
+
+	// ② 「轴为 0」必须能被独立重算解释（在遗留目录里直接翻 `UI.<slot> =`）。
+	// 注意这不是复述轴的实现：轴是从「遗留目录**之外**有没有赋值」反推的，
+	// 这里是从「遗留目录**之内**还有没有实现」正推的 —— 两条路必须给出同一个答案。
+	const engineSrc = readSource(
+		join(ROOT, 'packages', 'editor', 'src', 'engine', 'ui', 'ui-engine.ts')
+	);
+	const storeRefs = storeReferencedSlots();
+	const stillLegacy = new Set();
+	for (const { full } of legacyFiles) {
+		const src = codeOnly(readSource(full));
+		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\s*=/g)) {
+			const slot = m[1];
+			if (!storeRefs.has(slot)) continue;
+			// `UI.x = UIEngine.x` 是**镜像**，实现在 ui-engine.ts，不算「实现只在遗留层」。
+			if (new RegExp(`^UIEngine\\.${slot}\\s*=`, 'm').test(engineSrc)) continue;
+			stillLegacy.add(slot);
+		}
+	}
+	eq(
+		[...stillLegacy].sort((a, b) => a.localeCompare(b)),
+		[],
+		'遗留目录里仍有「实现只在遗留层」的 store 槽位 —— 此时 1c-store-slot-gaps 不该是 0'
+	);
+	eq(
+		legacyOnlyStoreSlots().length,
+		stillLegacy.size,
+		'正推（翻遗留目录）与反推（轴的排除口径）不一致 ⇒ 先怀疑仪器，别信任何一边'
+	);
+
+	// ③ 上面那条交叉校验在「两边都是 0」时是**平凡成立**的 —— 所以再加一条能当场咬人的：
+	// 排出判据本身必须仍按**目录**判（遗留目录内的算「没搬出去」，已搬到 `engine/ui/` 的模块算「搬了」）。
+	// 这条与轴的读数无关，因此不会被「反正都是 0」掩盖。
+	const dirRe = uiDirRe();
+	ok(dirRe.test(winRel), '「遗留目录」判据必须匹配 UI 窗口自己所在的那个文件');
+	const movedModule = join('packages', 'editor', 'src', 'engine', 'ui', 'ui-file.ts');
+	ok(
+		!dirRe.test(movedModule),
+		`已搬到 ${movedModule} 的域模块不该仍被算成「在遗留目录里」（否则搬运白做、轴假 0）`
 	);
 	// 最后一道：台账源码不得回退到那两个已证伪的硬编码口径（回退即静默假 0）
 	const ledgerSrc = readSource(join(ROOT, 'scripts', 'migration-ledger.mjs'));

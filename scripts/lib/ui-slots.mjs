@@ -130,17 +130,42 @@ const SLOT_ASSIGN_RES = [
 	/\(\s*UI\.([A-Za-z_$][\w$]*)\s*\)\.[A-Za-z_$][\w$]*\s*=/g
 ];
 
+/**
+ * 「直接给单例挂一个具名槽位」：`UI.<name> = …`。
+ *
+ * 用它来界定「单例**域模块**」（即 `this.x = …` 该不该算成槽位赋值的那些文件）：
+ *
+ * - 域模块写的正是 `UI.setSize = …` 这种 ⇒ **匹配**；
+ * - 元素类文件（`text-element.ts` 等）只通过 `UI.a.b = …` 写单例的**子对象** ⇒ 不匹配
+ *   （实测：若改用「文件里出现过任意 `UI.…=`」当判据，会把 8 个元素类文件的 `this.x = …`
+ *   —— 那是它们自己的坐标 —— 也数进来，`assigned` 虚高到 **303**）；
+ * - `ui-engine.ts` 写的是 `UIEngine.<name> = …`（`\bUI\.` 要求 `UI` 后紧跟 `.`）⇒ 不匹配
+ *   （若改用 `engine/ui/ui-*.ts` 文件名约定，它会被扫进来，`assigned` 变成 **159**）。
+ *
+ * ⚠️ 为什么非要这个判据、不能只按目录：阶段 1c 第 ③ 步会把域模块**逐个**搬出 `legacy/`。
+ * 第 96 轮实测，搬走 `ui-transform.ts` 后 `assigned` 从 153 掉到 144（少算的正是它那 9 处
+ * `this.x =`）。少算本身只是读数失真，真正的危险是：当某个 **store 引用到的**槽位只靠
+ * `this.x =` 赋值时，`storeRefsUnassigned` 会凭空变非空 —— **一条假回归会把正确的搬运挡住**。
+ */
+const UI_DIRECT_SLOT_RE = /\bUI\.[A-Za-z_$][\w$]*\s*=/;
+
 /** 赋值：全仓库对 UI 单例槽位的写入 */
 export function assignedSlots(files) {
 	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
 	const assigned = new Set();
-	const uiDir = uiDirRe();
+	const dirRe = uiDirRe();
+	const inEngineUiRe = /(^|\/)engine\/ui\//;
+	// 家族判据 = 单例所在目录 ∪（`engine/ui/` 下、且**自己直接挂槽位**的域模块）。
+	// 见 `UI_DOMAIN_MODULE_RE` / `UI_DIRECT_SLOT_RE` 的说明：不能用纯目录判据（域模块会被
+	// 1c ③ 逐个搬出去，一搬就少算 `this.x =`），也不能只看「文件里出现过 `UI.…=`」。
+	const inFamily = (rel, src) =>
+		dirRe.test(rel) || (inEngineUiRe.test(rel) && UI_DIRECT_SLOT_RE.test(src));
 	for (const { full, rel } of all) {
 		const src = readSource(full);
 		for (const re of SLOT_ASSIGN_RES) {
 			for (const m of src.matchAll(re)) assigned.add(m[1]);
 		}
-		if (uiDir.test(rel)) {
+		if (inFamily(rel, src)) {
 			for (const m of src.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 		}
 	}

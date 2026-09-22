@@ -1,5 +1,5 @@
-import { UI } from './ui-window.ts';
-import type { UIShape, UIContextShape, UINodeShape } from './ui-window.ts';
+import { UI } from './legacy/ui-window.ts';
+import type { UIShape, UIContextShape, UINodeShape } from './legacy/ui-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { getUIStore } from '@app/stores/ui';

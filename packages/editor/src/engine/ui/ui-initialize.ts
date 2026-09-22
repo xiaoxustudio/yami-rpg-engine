@@ -1,8 +1,8 @@
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
-import { UI } from './ui-window.ts';
-import type { UIShape, UINodeShape, UIControlPoints } from './ui-window.ts';
+import { UI } from './legacy/ui-window.ts';
+import type { UIShape, UINodeShape, UIControlPoints } from './legacy/ui-window.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
 import { addScrollbars, hide, on, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
